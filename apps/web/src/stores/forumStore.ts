@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
+import { ensureArray, ensureObject } from '@/lib/apiUtils';
 
 export interface Forum {
   id: string;
@@ -156,7 +157,10 @@ export const useForumStore = create<ForumState>((set, get) => ({
     set({ isLoadingForums: true });
     try {
       const response = await api.get('/api/v1/forums');
-      set({ forums: response.data.data, isLoadingForums: false });
+      set({
+        forums: ensureArray<Forum>(response.data, 'forums'),
+        isLoadingForums: false,
+      });
     } catch (error) {
       set({ isLoadingForums: false });
       throw error;
@@ -166,13 +170,16 @@ export const useForumStore = create<ForumState>((set, get) => ({
   fetchForum: async (slug: string) => {
     try {
       const response = await api.get(`/api/v1/forums/${slug}`);
-      const forum = response.data.data;
-      set((state) => ({
-        forums: state.forums.some((f) => f.id === forum.id)
-          ? state.forums.map((f) => (f.id === forum.id ? forum : f))
-          : [...state.forums, forum],
-      }));
-      return forum;
+      const forum = ensureObject<Forum>(response.data, 'forum');
+      if (forum) {
+        set((state) => ({
+          forums: state.forums.some((f) => f.id === forum.id)
+            ? state.forums.map((f) => (f.id === forum.id ? forum : f))
+            : [...state.forums, forum],
+        }));
+        return forum;
+      }
+      throw new Error('Forum not found');
     } catch (error) {
       throw error;
     }
@@ -182,7 +189,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
     set({ isLoadingPosts: true });
     try {
       const { sortBy, timeRange } = get();
-      const params: any = {
+      const params: Record<string, string | number> = {
         sort: sortBy,
         page,
         limit: 25,
@@ -196,7 +203,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
         : '/api/v1/posts/feed';
 
       const response = await api.get(endpoint, { params });
-      const newPosts = response.data.data;
+      const newPosts = ensureArray<Post>(response.data, 'posts');
 
       set((state) => ({
         posts: page === 1 ? newPosts : [...state.posts, ...newPosts],
@@ -212,7 +219,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
   fetchPost: async (postId: string) => {
     try {
       const response = await api.get(`/api/v1/posts/${postId}`);
-      set({ currentPost: response.data.data });
+      const post = ensureObject<Post>(response.data, 'post');
+      set({ currentPost: post });
     } catch (error) {
       throw error;
     }
@@ -225,7 +233,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         comments: {
           ...state.comments,
-          [postId]: response.data.data,
+          [postId]: ensureArray<Comment>(response.data, 'comments'),
         },
         isLoadingComments: false,
       }));
@@ -246,11 +254,14 @@ export const useForumStore = create<ForumState>((set, get) => ({
       category_id: data.categoryId,
       is_nsfw: data.isNsfw,
     });
-    const post = response.data.data;
-    set((state) => ({
-      posts: [post, ...state.posts],
-    }));
-    return post;
+    const post = ensureObject<Post>(response.data, 'post');
+    if (post) {
+      set((state) => ({
+        posts: [post, ...state.posts],
+      }));
+      return post;
+    }
+    throw new Error('Failed to create post');
   },
 
   createComment: async (postId: string, content: string, parentId?: string) => {
@@ -258,28 +269,30 @@ export const useForumStore = create<ForumState>((set, get) => ({
       content,
       parent_id: parentId,
     });
-    const comment = response.data.data;
+    const comment = ensureObject<Comment>(response.data, 'comment');
 
-    set((state) => {
-      const postComments = state.comments[postId] || [];
-      if (parentId) {
-        // Add as child to parent comment (simplified, actual tree logic more complex)
+    if (comment) {
+      set((state) => {
+        const postComments = state.comments[postId] || [];
+        if (parentId) {
+          // Add as child to parent comment (simplified, actual tree logic more complex)
+          return {
+            comments: {
+              ...state.comments,
+              [postId]: postComments, // Would need proper tree insertion
+            },
+          };
+        }
         return {
           comments: {
             ...state.comments,
-            [postId]: postComments, // Would need proper tree insertion
+            [postId]: [comment, ...postComments],
           },
         };
-      }
-      return {
-        comments: {
-          ...state.comments,
-          [postId]: [comment, ...postComments],
-        },
-      };
-    });
-
-    return comment;
+      });
+      return comment;
+    }
+    throw new Error('Failed to create comment');
   },
 
   vote: async (type: 'post' | 'comment', id: string, value: 1 | -1 | null) => {
@@ -359,10 +372,13 @@ export const useForumStore = create<ForumState>((set, get) => ({
       is_nsfw: data.isNsfw,
       is_private: data.isPrivate,
     });
-    const forum = response.data.data;
-    set((state) => ({
-      forums: [forum, ...state.forums],
-    }));
-    return forum;
+    const forum = ensureObject<Forum>(response.data, 'forum');
+    if (forum) {
+      set((state) => ({
+        forums: [forum, ...state.forums],
+      }));
+      return forum;
+    }
+    throw new Error('Failed to create forum');
   },
 }));

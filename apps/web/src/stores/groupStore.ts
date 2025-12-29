@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
+import { ensureArray, ensureObject } from '@/lib/apiUtils';
 
 export interface Group {
   id: string;
@@ -130,7 +131,10 @@ export const useGroupStore = create<GroupState>((set, get) => ({
     set({ isLoadingGroups: true });
     try {
       const response = await api.get('/api/v1/groups');
-      set({ groups: response.data.data, isLoadingGroups: false });
+      set({
+        groups: ensureArray<Group>(response.data, 'groups'),
+        isLoadingGroups: false,
+      });
     } catch (error) {
       set({ isLoadingGroups: false });
       throw error;
@@ -140,12 +144,14 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   fetchGroup: async (groupId: string) => {
     try {
       const response = await api.get(`/api/v1/groups/${groupId}`);
-      const group = response.data.data;
-      set((state) => ({
-        groups: state.groups.some((g) => g.id === groupId)
-          ? state.groups.map((g) => (g.id === groupId ? group : g))
-          : [...state.groups, group],
-      }));
+      const group = ensureObject<Group>(response.data, 'group');
+      if (group) {
+        set((state) => ({
+          groups: state.groups.some((g) => g.id === groupId)
+            ? state.groups.map((g) => (g.id === groupId ? group : g))
+            : [...state.groups, group],
+        }));
+      }
     } catch (error) {
       throw error;
     }
@@ -156,7 +162,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
     try {
       const params = before ? { before, limit: 50 } : { limit: 50 };
       const response = await api.get(`/api/v1/channels/${channelId}/messages`, { params });
-      const newMessages = response.data.data;
+      const newMessages = ensureArray<ChannelMessage>(response.data, 'messages');
       const hasMore = newMessages.length === 50;
 
       set((state) => ({
@@ -184,7 +190,7 @@ export const useGroupStore = create<GroupState>((set, get) => ({
       set((state) => ({
         members: {
           ...state.members,
-          [groupId]: response.data.data,
+          [groupId]: ensureArray<Member>(response.data, 'members'),
         },
       }));
     } catch (error) {
@@ -194,11 +200,14 @@ export const useGroupStore = create<GroupState>((set, get) => ({
 
   sendChannelMessage: async (channelId: string, content: string, replyToId?: string) => {
     try {
-      const payload: any = { content };
+      const payload: Record<string, string> = { content };
       if (replyToId) payload.reply_to_id = replyToId;
 
       const response = await api.post(`/api/v1/channels/${channelId}/messages`, payload);
-      get().addChannelMessage(response.data.data);
+      const message = ensureObject<ChannelMessage>(response.data, 'message');
+      if (message) {
+        get().addChannelMessage(message);
+      }
     } catch (error) {
       throw error;
     }
@@ -264,21 +273,26 @@ export const useGroupStore = create<GroupState>((set, get) => ({
 
   createGroup: async (data) => {
     const response = await api.post('/api/v1/groups', data);
-    const group = response.data.data;
-    set((state) => ({
-      groups: [group, ...state.groups],
-    }));
-    return group;
+    const group = ensureObject<Group>(response.data, 'group');
+    if (group) {
+      set((state) => ({
+        groups: [group, ...state.groups],
+      }));
+      return group;
+    }
+    throw new Error('Failed to create group');
   },
 
   joinGroup: async (inviteCode: string) => {
     const response = await api.post(`/api/v1/invites/${inviteCode}/join`);
-    const group = response.data.data;
-    set((state) => ({
-      groups: state.groups.some((g) => g.id === group.id)
-        ? state.groups
-        : [...state.groups, group],
-    }));
+    const group = ensureObject<Group>(response.data, 'group');
+    if (group) {
+      set((state) => ({
+        groups: state.groups.some((g) => g.id === group.id)
+          ? state.groups
+          : [...state.groups, group],
+      }));
+    }
   },
 
   leaveGroup: async (groupId: string) => {

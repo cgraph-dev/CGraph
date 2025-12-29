@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
+import { ensureArray, ensureObject, extractErrorMessage } from '@/lib/apiUtils';
 
 export interface SearchUser {
   id: string;
@@ -111,7 +112,7 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
         searchPromises.push(
           api.get('/api/v1/search/users', { params: { q: query } })
             .then((res) => {
-              set({ users: res.data.users || res.data || [] });
+              set({ users: ensureArray<SearchUser>(res.data, 'users') });
             })
             .catch(() => set({ users: [] }))
         );
@@ -122,7 +123,7 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
         searchPromises.push(
           api.get('/api/v1/search/messages', { params: { q: query } })
             .then((res) => {
-              set({ messages: res.data.messages || res.data || [] });
+              set({ messages: ensureArray<SearchMessage>(res.data, 'messages') });
             })
             .catch(() => set({ messages: [] }))
         );
@@ -133,7 +134,7 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
         searchPromises.push(
           api.get('/api/v1/search/posts', { params: { q: query } })
             .then((res) => {
-              set({ posts: res.data.posts || res.data || [] });
+              set({ posts: ensureArray<SearchPost>(res.data, 'posts') });
             })
             .catch(() => set({ posts: [] }))
         );
@@ -144,7 +145,7 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
         searchPromises.push(
           api.get('/api/v1/groups', { params: { search: query } })
             .then((res) => {
-              set({ groups: res.data.groups || res.data || [] });
+              set({ groups: ensureArray<SearchGroup>(res.data, 'groups') });
             })
             .catch(() => set({ groups: [] }))
         );
@@ -154,7 +155,7 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
         searchPromises.push(
           api.get('/api/v1/forums', { params: { search: query } })
             .then((res) => {
-              set({ forums: res.data.forums || res.data || [] });
+              set({ forums: ensureArray<SearchForum>(res.data, 'forums') });
             })
             .catch(() => set({ forums: [] }))
         );
@@ -163,9 +164,8 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
       await Promise.all(searchPromises);
       set({ isLoading: false, hasSearched: true });
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Search failed',
+        error: extractErrorMessage(error, 'Search failed'),
         isLoading: false,
         hasSearched: true,
       });
@@ -188,7 +188,7 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
       }
 
       const response = await api.get(endpoint);
-      return response.data.data || response.data;
+      return ensureObject(response.data);
     } catch {
       return null;
     }

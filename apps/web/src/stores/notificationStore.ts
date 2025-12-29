@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
+import { ensureArray, extractPagination } from '@/lib/apiUtils';
 
 export interface Notification {
   id: string;
@@ -7,7 +8,7 @@ export interface Notification {
   title: string;
   body: string;
   isRead: boolean;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   sender?: {
     id: string;
     username: string;
@@ -44,16 +45,18 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       const response = await api.get('/api/v1/notifications', {
         params: { page, limit: 20 },
       });
-      const newNotifications = response.data.data || [];
-      const hasMore = newNotifications.length === 20;
+      const newNotifications = ensureArray<Notification>(response.data, 'notifications');
+      const meta = extractPagination(response.data);
+      const hasMore = newNotifications.length === 20 || meta.hasMore;
 
       set((state) => ({
         notifications:
           page === 1
             ? newNotifications
             : [...state.notifications, ...newNotifications],
-        unreadCount: response.data.meta?.unread_count || 
-          newNotifications.filter((n: Notification) => !n.isRead).length,
+        unreadCount: typeof (response.data as Record<string, unknown>)?.meta === 'object'
+          ? ((response.data as Record<string, { unread_count?: number }>).meta?.unread_count ?? newNotifications.filter((n) => !n.isRead).length)
+          : newNotifications.filter((n) => !n.isRead).length,
         hasMore,
         isLoading: false,
       }));

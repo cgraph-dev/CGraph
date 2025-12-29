@@ -7,6 +7,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.2.0] - 2024-12-30
+
+### 🚀 Full UI Implementation & Code Quality Improvements
+
+This release delivers a comprehensive UI implementation for both web and mobile platforms, introduces robust API response handling utilities, and fixes critical authentication and state management issues.
+
+### Added
+
+#### Web UI Components (9 new components)
+- **Dropdown** - Portal-based dropdown menu with keyboard navigation
+- **Tooltip** - Multi-position tooltip with customizable placement
+- **FileUpload** - Drag-and-drop file upload with progress tracking
+- **TextArea** - Auto-growing textarea with character count
+- **Tabs** - Tab navigation component with pill and underline variants
+- **TagInput** - Tag input field with autocomplete support
+- **ProgressBar** - Progress indicator with size and color variants
+- **Switch** - Toggle switch component with labels
+- **Select** - Searchable select dropdown with filtering
+
+#### Mobile UI Components (4 new components)
+- **Tabs** - Native tab navigation for mobile
+- **Switch** - Native toggle switch
+- **ProgressBar** - Progress indicator component
+- **Select** - Modal-based select picker
+
+#### New Pages/Screens
+- **Web: Notifications Page** - Full notifications inbox with filtering by type
+- **Web: User Profile Page** - Profile viewing with friend actions
+- **Mobile: NotificationsInboxScreen** - Native notifications list
+
+#### API Utilities (`lib/apiUtils.ts`)
+- **ensureArray** - Type-safe array extraction from API responses
+- **ensureObject** - Type-safe object extraction from API responses
+- **extractPagination** - Pagination metadata extraction
+- **extractErrorMessage** - Unified error message extraction
+- **isNonEmptyString** - String validation type guard
+- **isValidId** - ID validation type guard
+
+#### Navigation
+- Web: Added notifications route (`/notifications`)
+- Web: Added user profile route (`/users/:userId`)
+- Mobile: Added NotificationsNavigator with NotificationsTab
+
+### Changed
+- **authStore.ts** - Fixed API response mapping with `mapUserFromApi` helper
+- **friendStore.ts** - Updated to use `ensureArray` for robust response parsing
+- **chatStore.ts** - Updated to use `ensureArray` and `ensureObject`
+- **groupStore.ts** - Updated to use API utilities
+- **forumStore.ts** - Updated to use API utilities
+- **notificationStore.ts** - Updated to use API utilities
+- **searchStore.ts** - Updated to use API utilities with proper error handling
+- **AppLayout.tsx** - Added notifications link with unread badge
+- **App.tsx** - Added AuthInitializer component for proper auth flow
+
+### Fixed
+- **Authentication Infinite Loading** - Added AuthInitializer to call `checkAuth()` on app mount
+- **API Response Parsing** - Fixed `friends.filter is not a function` error by ensuring arrays
+- **Registration Params** - Wrapped user params in `{user: {...}}` for backend compatibility
+- **Token Handling** - Properly extract tokens from nested `tokens` object in responses
+- **Mobile TypeScript** - Installed `@types/react@19.1.0` for proper JSX support
+- **Error Handling** - Replaced inline error casting with `extractErrorMessage` utility
+
+### Technical Debt Addressed
+- Removed all `any` type usages in stores (replaced with proper types)
+- Standardized API response handling across all Zustand stores
+- Added comprehensive JSDoc documentation to API utilities
+- Consistent error message extraction pattern across stores
+
+### Developer Experience
+- VS Code TypeScript errors resolved (compile-time verified)
+- Backend: 215 tests passing
+- Web: TypeScript compiles clean (`npx tsc --noEmit`)
+- Mobile: TypeScript compiles clean (`npx tsc --noEmit`)
+
+---
+
 ## [0.1.1] - 2024-12-29
 
 ### 🎨 UI Component Library & Production Readiness

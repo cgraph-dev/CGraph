@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
+import { ensureArray, ensureObject } from '@/lib/apiUtils';
 
 export interface Message {
   id: string;
@@ -102,7 +103,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set({ isLoadingConversations: true });
     try {
       const response = await api.get('/api/v1/conversations');
-      set({ conversations: response.data.data, isLoadingConversations: false });
+      set({
+        conversations: ensureArray<Conversation>(response.data, 'conversations'),
+        isLoadingConversations: false,
+      });
     } catch (error) {
       set({ isLoadingConversations: false });
       throw error;
@@ -116,7 +120,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       const response = await api.get(`/api/v1/conversations/${conversationId}/messages`, {
         params,
       });
-      const newMessages = response.data.data;
+      const newMessages = ensureArray<Message>(response.data, 'messages');
       const hasMore = newMessages.length === 50;
 
       set((state) => ({
@@ -140,14 +144,17 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   sendMessage: async (conversationId: string, content: string, replyToId?: string) => {
     try {
-      const payload: any = { content };
+      const payload: Record<string, string> = { content };
       if (replyToId) payload.reply_to_id = replyToId;
 
       const response = await api.post(
         `/api/v1/conversations/${conversationId}/messages`,
         payload
       );
-      get().addMessage(response.data.data);
+      const message = ensureObject<Message>(response.data, 'message');
+      if (message) {
+        get().addMessage(message);
+      }
     } catch (error) {
       throw error;
     }
@@ -156,7 +163,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
   editMessage: async (messageId: string, content: string) => {
     try {
       const response = await api.patch(`/api/v1/messages/${messageId}`, { content });
-      get().updateMessage(response.data.data);
+      const message = ensureObject<Message>(response.data, 'message');
+      if (message) {
+        get().updateMessage(message);
+      }
     } catch (error) {
       throw error;
     }
@@ -269,10 +279,13 @@ export const useChatStore = create<ChatState>((set, get) => ({
     const response = await api.post('/api/v1/conversations', {
       participant_ids: userIds,
     });
-    const conversation = response.data.data;
-    set((state) => ({
-      conversations: [conversation, ...state.conversations],
-    }));
-    return conversation;
+    const conversation = ensureObject<Conversation>(response.data, 'conversation');
+    if (conversation) {
+      set((state) => ({
+        conversations: [conversation, ...state.conversations],
+      }));
+      return conversation;
+    }
+    throw new Error('Failed to create conversation');
   },
 }));

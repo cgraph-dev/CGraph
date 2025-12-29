@@ -15,6 +15,111 @@
 
 ---
 
+## December 30, 2024 - v0.2.0 Fixes
+
+### 1. Authentication Infinite Loading Spinner
+
+**Problem:** After logging in or on page refresh, the app would show an infinite loading spinner and never transition to the authenticated state.
+
+**Root Cause:** The `authStore.ts` had `isLoading: true` as the initial state, but `checkAuth()` was never called on app initialization to verify token validity and set `isLoading: false`.
+
+**Solution:** Added an `AuthInitializer` component that calls `checkAuth()` on mount.
+
+**File Modified:** `apps/web/src/App.tsx`
+```typescript
+// Added AuthInitializer component
+function AuthInitializer({ children }: { children: React.ReactNode }) {
+  const { checkAuth, isLoading } = useAuthStore();
+  const initialized = React.useRef(false);
+
+  React.useEffect(() => {
+    if (!initialized.current) {
+      initialized.current = true;
+      checkAuth();
+    }
+  }, [checkAuth]);
+
+  if (isLoading) {
+    return <LoadingOverlay message="Loading..." />;
+  }
+
+  return <>{children}</>;
+}
+```
+
+---
+
+### 2. API Response Array Parsing Error
+
+**Problem:** `friends.filter is not a function` error when viewing the Friends page.
+
+**Root Cause:** The `friendStore.ts` used `response.data.friends || response.data || []` fallback logic, which could assign an object instead of an array if the API response structure was unexpected.
+
+**Solution:** Created `ensureArray<T>()` utility that guarantees array return type by checking multiple common response formats.
+
+**Files Created/Modified:**
+- Created: `apps/web/src/lib/apiUtils.ts`
+- Modified: All Zustand stores to use the new utility
+
+```typescript
+// apps/web/src/lib/apiUtils.ts
+export function ensureArray<T>(data: unknown, key?: string): T[] {
+  if (Array.isArray(data)) return data as T[];
+  if (data && typeof data === 'object') {
+    const obj = data as Record<string, unknown>;
+    if (key && Array.isArray(obj[key])) return obj[key] as T[];
+    // Try common wrapper keys
+    for (const k of ['data', 'items', 'results']) {
+      if (Array.isArray(obj[k])) return obj[k] as T[];
+    }
+  }
+  return [];
+}
+```
+
+---
+
+### 3. Auth Store API Response Mapping
+
+**Problem:** User registration and login were failing silently or storing incorrect user data.
+
+**Root Cause:** The backend returns `{ user: {...}, tokens: { access_token, refresh_token, expires_in }}` but the auth store was expecting `{ data: { token, refreshToken, user }}`.
+
+**Solution:** Added `mapUserFromApi()` helper and updated all auth methods to handle the correct response structure.
+
+**File Modified:** `apps/web/src/stores/authStore.ts`
+```typescript
+// Helper function to map backend response to frontend User type
+function mapUserFromApi(apiUser: any): User {
+  return {
+    id: apiUser.id,
+    email: apiUser.email,
+    username: apiUser.username,
+    displayName: apiUser.display_name || null,
+    avatarUrl: apiUser.avatar_url || null,
+    bio: apiUser.bio || null,
+    // ... rest of mapping
+  };
+}
+```
+
+---
+
+### 4. Mobile TypeScript JSX Errors
+
+**Problem:** VS Code showing "View/Text cannot be used as JSX component" errors for all React Native components.
+
+**Root Cause:** Missing `@types/react` package that's required by React Native 0.81.x.
+
+**Solution:** Installed the correct version of React types with legacy peer deps.
+
+**Command:**
+```bash
+npm install --save-dev @types/react@19.1.0 --legacy-peer-deps
+```
+
+---
+
 ## Bug Fixes by Category
 
 ### 1. Rate Limiting in Test Environment

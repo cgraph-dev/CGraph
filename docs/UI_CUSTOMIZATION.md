@@ -198,7 +198,9 @@ CGraph includes a comprehensive set of reusable UI components in `apps/web/src/c
 | `IconButton` | Icon-only buttons | `import { IconButton } from '@/components'` |
 | `Input` | Text input with labels | `import { Input } from '@/components'` |
 | `Textarea` | Multi-line text input | `import { Textarea } from '@/components'` |
-| `Select` | Dropdown select | `import { Select } from '@/components'` |
+| `TextArea` | Auto-growing text area | `import { TextArea } from '@/components'` |
+| `Select` | Searchable dropdown select | `import { Select } from '@/components'` |
+| `Dropdown` | Portal-based dropdown menu | `import { Dropdown } from '@/components'` |
 | `Modal` | Accessible modal dialog | `import { Modal } from '@/components'` |
 | `ConfirmDialog` | Confirmation prompts | `import { ConfirmDialog } from '@/components'` |
 | `Avatar` | User avatars with status | `import { Avatar } from '@/components'` |
@@ -208,6 +210,12 @@ CGraph includes a comprehensive set of reusable UI components in `apps/web/src/c
 | `ErrorBoundary` | Error handling wrapper | `import ErrorBoundary from '@/components/ErrorBoundary'` |
 | `EmptyState` | Empty content states | `import { EmptyState } from '@/components'` |
 | `ToastProvider` | Toast notifications | `import { ToastProvider, useToast } from '@/components'` |
+| `Tooltip` | Multi-position tooltip | `import { Tooltip } from '@/components'` |
+| `FileUpload` | Drag-and-drop file upload | `import { FileUpload } from '@/components'` |
+| `Tabs` | Tab navigation (pill/underline) | `import { Tabs } from '@/components'` |
+| `TagInput` | Tag input with autocomplete | `import { TagInput } from '@/components'` |
+| `ProgressBar` | Progress indicator | `import { ProgressBar } from '@/components'` |
+| `Switch` | Toggle switch | `import { Switch } from '@/components'` |
 
 #### Quick Start
 
@@ -227,12 +235,21 @@ apps/web/src/
 │   ├── index.ts          # Component exports
 │   ├── Avatar.tsx        # User avatars
 │   ├── Button.tsx        # Button variants
+│   ├── Dropdown.tsx      # Portal-based dropdown menu
 │   ├── EmptyState.tsx    # Empty state templates
 │   ├── ErrorBoundary.tsx # Error handling
+│   ├── FileUpload.tsx    # Drag-and-drop file upload
 │   ├── Input.tsx         # Form inputs
 │   ├── Loading.tsx       # Loading spinners
 │   ├── Modal.tsx         # Modal dialogs
+│   ├── ProgressBar.tsx   # Progress indicators
+│   ├── Select.tsx        # Searchable select dropdown
+│   ├── Switch.tsx        # Toggle switches
+│   ├── Tabs.tsx          # Tab navigation
+│   ├── TagInput.tsx      # Tag input with autocomplete
+│   ├── TextArea.tsx      # Auto-growing textarea
 │   ├── Toast.tsx         # Toast notifications
+│   ├── Tooltip.tsx       # Multi-position tooltips
 │   ├── common/           # Additional primitives
 │   ├── layout/           # Page structure
 │   │   ├── Sidebar.tsx
@@ -248,7 +265,10 @@ apps/web/src/
 ├── styles/
 │   └── index.css         # Global styles
 └── lib/
-    └── cn.ts             # className utility
+    ├── api.ts            # Axios instance
+    ├── apiUtils.ts       # API response utilities
+    ├── cn.ts             # className utility
+    └── socket.ts         # Phoenix socket
 ```
 
 ### Component Template

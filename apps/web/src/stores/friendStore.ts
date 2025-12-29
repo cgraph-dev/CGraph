@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
+import { ensureArray, extractErrorMessage } from '@/lib/apiUtils';
 
 export interface Friend {
   id: string;
@@ -56,13 +57,12 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
     try {
       const response = await api.get('/api/v1/friends');
       set({
-        friends: response.data.friends || response.data || [],
+        friends: ensureArray<Friend>(response.data, 'friends'),
         isLoading: false,
       });
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Failed to fetch friends',
+        error: extractErrorMessage(error, 'Failed to fetch friends'),
         isLoading: false,
       });
     }
@@ -72,12 +72,11 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
     try {
       const response = await api.get('/api/v1/friends/pending');
       set({
-        pendingRequests: response.data.requests || response.data || [],
+        pendingRequests: ensureArray<FriendRequest>(response.data, 'requests'),
       });
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Failed to fetch pending requests',
+        error: extractErrorMessage(error, 'Failed to fetch pending requests'),
       });
     }
   },
@@ -87,15 +86,14 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
       // Using the same endpoint as pending, filter by type on frontend
       // or if backend separates them, this would be a different endpoint
       const response = await api.get('/api/v1/friends/pending');
-      const allRequests = response.data.requests || response.data || [];
+      const allRequests = ensureArray<FriendRequest>(response.data, 'requests');
       set({
-        pendingRequests: allRequests.filter((r: FriendRequest) => r.type === 'incoming'),
-        sentRequests: allRequests.filter((r: FriendRequest) => r.type === 'outgoing'),
+        pendingRequests: allRequests.filter((r) => r.type === 'incoming'),
+        sentRequests: allRequests.filter((r) => r.type === 'outgoing'),
       });
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Failed to fetch sent requests',
+        error: extractErrorMessage(error, 'Failed to fetch sent requests'),
       });
     }
   },
@@ -110,9 +108,8 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
       await get().fetchSentRequests();
       set({ isLoading: false });
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Failed to send friend request',
+        error: extractErrorMessage(error, 'Failed to send friend request'),
         isLoading: false,
       });
       throw error;
@@ -130,9 +127,8 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
       ]);
       set({ isLoading: false });
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Failed to accept friend request',
+        error: extractErrorMessage(error, 'Failed to accept friend request'),
         isLoading: false,
       });
       throw error;
@@ -147,9 +143,8 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
       await get().fetchPendingRequests();
       set({ isLoading: false });
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Failed to decline friend request',
+        error: extractErrorMessage(error, 'Failed to decline friend request'),
         isLoading: false,
       });
       throw error;
@@ -166,9 +161,8 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
         isLoading: false,
       }));
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Failed to remove friend',
+        error: extractErrorMessage(error, 'Failed to remove friend'),
         isLoading: false,
       });
       throw error;
@@ -186,9 +180,8 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
         isLoading: false,
       }));
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Failed to block user',
+        error: extractErrorMessage(error, 'Failed to block user'),
         isLoading: false,
       });
       throw error;
@@ -201,9 +194,8 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
       await api.delete(`/api/v1/friends/${userId}/block`);
       set({ isLoading: false });
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
       set({
-        error: err.response?.data?.error || 'Failed to unblock user',
+        error: extractErrorMessage(error, 'Failed to unblock user'),
         isLoading: false,
       });
       throw error;
