@@ -112,7 +112,7 @@ DATABASE_URL=ecto://user:pass@db.internal:5432/cgraph
 # Application
 SECRET_KEY_BASE=<generate with: mix phx.gen.secret>
 GUARDIAN_SECRET=<generate with: mix phx.gen.secret>
-PHX_HOST=api.cgraph.app
+PHX_HOST=api.cgraph.org
 
 # Redis
 REDIS_URL=redis://default:password@redis.internal:6379
@@ -158,7 +158,7 @@ primary_region = "iad"
   dockerfile = "../../infrastructure/docker/Dockerfile.backend"
 
 [env]
-  PHX_HOST = "api.cgraph.app"
+  PHX_HOST = "api.cgraph.org"
   PORT = "8080"
 
 [http_service]
@@ -429,8 +429,8 @@ jobs:
       - name: Build
         run: pnpm build
         env:
-          VITE_API_URL: https://api.cgraph.app
-          VITE_WS_URL: wss://api.cgraph.app
+          VITE_API_URL: https://api.cgraph.org
+          VITE_WS_URL: wss://api.cgraph.org
       
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
@@ -549,7 +549,7 @@ fly deploy
 fly logs
 
 # Hit the health endpoint
-curl https://api.cgraph.app/api/health
+curl https://api.cgraph.org/api/health
 
 # Check error rates in Sentry
 # Monitor response times
@@ -890,7 +890,7 @@ Before every production deploy:
 | Infrastructure | @chen (Slack, phone in PagerDuty) |
 | Backend/Database | @marcus |
 | Frontend | @aisha |
-| Security | security@cgraph.app |
+| Security | security@cgraph.org |
 | Fly.io Support | support@fly.io |
 | Cloudflare Support | Via dashboard |
 

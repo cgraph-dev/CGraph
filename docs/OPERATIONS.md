@@ -44,7 +44,7 @@ fly status -a cgraph-api
 # 2. Check API health endpoint
 echo ""
 echo "🏥 API Health:"
-curl -s https://api.cgraph.app/api/health | jq
+curl -s https://api.cgraph.org/api/health | jq
 
 # 3. Check database connections
 echo ""
@@ -64,8 +64,8 @@ fly logs -a cgraph-api | grep -c "ERROR" | tail -1
 # 6. Quick metrics summary
 echo ""
 echo "📊 Quick Metrics:"
-echo "- Active WebSocket connections: $(curl -s https://api.cgraph.app/api/health | jq -r '.websocket_count // "N/A"')"
-echo "- Database pool usage: $(curl -s https://api.cgraph.app/api/health | jq -r '.db_pool_usage // "N/A"')"
+echo "- Active WebSocket connections: $(curl -s https://api.cgraph.org/api/health | jq -r '.websocket_count // "N/A"')"
+echo "- Database pool usage: $(curl -s https://api.cgraph.org/api/health | jq -r '.db_pool_usage // "N/A"')"
 
 echo ""
 echo "=== Health Check Complete ==="

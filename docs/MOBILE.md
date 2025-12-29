@@ -150,12 +150,12 @@ const ENV = {
     wsUrl: 'ws://localhost:4000/socket',
   },
   staging: {
-    apiUrl: 'https://staging-api.cgraph.app',
-    wsUrl: 'wss://staging-api.cgraph.app/socket',
+    apiUrl: 'https://staging-api.cgraph.org',
+    wsUrl: 'wss://staging-api.cgraph.org/socket',
   },
   production: {
-    apiUrl: 'https://api.cgraph.app',
-    wsUrl: 'wss://api.cgraph.app/socket',
+    apiUrl: 'https://api.cgraph.org',
+    wsUrl: 'wss://api.cgraph.org/socket',
   },
 };
 

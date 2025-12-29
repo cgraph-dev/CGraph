@@ -27,7 +27,7 @@ Complete API documentation for CGraph backend services. All endpoints return JSO
 ### Base URL
 
 ```
-Production: https://api.cgraph.app/api/v1
+Production: https://api.cgraph.org/api/v1
 Development: http://localhost:4000/api/v1
 ```
 
@@ -256,7 +256,7 @@ Authorization: Bearer <token>
     "email": "user@example.com",
     "username": "johndoe",
     "display_name": "John Doe",
-    "avatar_url": "https://cdn.cgraph.app/avatars/...",
+    "avatar_url": "https://cdn.cgraph.org/avatars/...",
     "bio": "Hello world!",
     "status": "online",
     "is_anonymous": false,
@@ -300,7 +300,7 @@ Content-Type: multipart/form-data
 ```json
 {
   "data": {
-    "avatar_url": "https://cdn.cgraph.app/avatars/..."
+    "avatar_url": "https://cdn.cgraph.org/avatars/..."
   }
 }
 ```
@@ -947,7 +947,7 @@ Authorization: Bearer <token>
 {
   "data": {
     "code": "abc123",
-    "url": "https://cgraph.app/invite/abc123",
+    "url": "https://cgraph.org/invite/abc123",
     "expires_at": "2024-01-16T10:00:00Z"
   }
 }
@@ -1191,7 +1191,7 @@ Content-Type: multipart/form-data
 {
   "data": {
     "id": "upload-id",
-    "url": "https://cdn.cgraph.app/uploads/...",
+    "url": "https://cdn.cgraph.org/uploads/...",
     "filename": "photo.jpg",
     "content_type": "image/jpeg",
     "size": 1024567,
@@ -1255,7 +1255,7 @@ Authorization: Bearer <token>
 
 Connect to the WebSocket at:
 ```
-wss://api.cgraph.app/socket/websocket?token=<jwt_token>
+wss://api.cgraph.org/socket/websocket?token=<jwt_token>
 ```
 
 ### Channels

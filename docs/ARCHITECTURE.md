@@ -557,7 +557,7 @@ If something in this doc doesn't make sense or seems outdated, here's who to bug
 - **Architecture decisions**: @marcus (backend lead)
 - **Frontend questions**: @aisha (frontend lead)  
 - **DevOps/infrastructure**: @chen (SRE)
-- **Security concerns**: security@cgraph.app (or @marcus)
+- **Security concerns**: security@cgraph.org (or @marcus)
 
 ---
 

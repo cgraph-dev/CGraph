@@ -70,7 +70,7 @@ Recommended providers:
 SECRET_KEY_BASE=<64+ char random string>
 DATABASE_URL=postgresql://user:pass@host:5432/cgraph_prod
 GUARDIAN_SECRET=<64+ char random string>
-PHX_HOST=api.cgraph.app
+PHX_HOST=api.cgraph.org
 PORT=4000
 POOL_SIZE=20
 MIX_ENV=prod
@@ -231,7 +231,7 @@ Create a privacy policy that covers:
 - [ ] Contact information
 - [ ] Last updated date
 
-**Host at**: `https://cgraph.app/privacy` or similar
+**Host at**: `https://cgraph.org/privacy` or similar
 
 ### 4.4 EAS Build Setup (Expo)
 ```bash

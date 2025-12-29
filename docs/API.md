@@ -25,8 +25,8 @@ This document provides a complete reference for the CGraph REST API and WebSocke
 
 | Environment | URL |
 |-------------|-----|
-| Production | `https://api.cgraph.app/api/v1` |
-| Staging | `https://staging-api.cgraph.app/api/v1` |
+| Production | `https://api.cgraph.org/api/v1` |
+| Staging | `https://staging-api.cgraph.org/api/v1` |
 | Local | `http://localhost:4000/api/v1` |
 
 ### Request Format
@@ -302,7 +302,7 @@ Get the current authenticated user.
     "email": "alice@example.com",
     "username": "alice",
     "display_name": "Alice Johnson",
-    "avatar_url": "https://cdn.cgraph.app/avatars/abc123.jpg",
+    "avatar_url": "https://cdn.cgraph.org/avatars/abc123.jpg",
     "bio": "Love building things!",
     "status": "online",
     "created_at": "2024-01-01T00:00:00Z"
@@ -770,7 +770,7 @@ Create an invite link.
 {
   "data": {
     "code": "abc123",
-    "url": "https://cgraph.app/join/abc123",
+    "url": "https://cgraph.org/join/abc123",
     "uses": 0,
     "max_uses": 10,
     "expires_at": "2024-02-01T00:00:00Z"
@@ -933,7 +933,7 @@ type: attachment
 {
   "data": {
     "id": "file_abc123",
-    "url": "https://cdn.cgraph.app/files/abc123.jpg",
+    "url": "https://cdn.cgraph.org/files/abc123.jpg",
     "filename": "photo.jpg",
     "size": 102400,
     "mime_type": "image/jpeg"
@@ -978,7 +978,7 @@ CGraph uses Phoenix Channels for real-time communication.
 ```javascript
 import { Socket } from 'phoenix';
 
-const socket = new Socket('wss://api.cgraph.app/socket', {
+const socket = new Socket('wss://api.cgraph.org/socket', {
   params: { token: 'your-jwt-token' }
 });
 
@@ -1113,8 +1113,8 @@ presence.onLeave((id, current, leftPres) => {
 ## OpenAPI Specification
 
 Full OpenAPI 3.0 spec available at:
-- **Interactive Docs:** https://api.cgraph.app/docs
-- **OpenAPI JSON:** https://api.cgraph.app/openapi.json
+- **Interactive Docs:** https://api.cgraph.org/docs
+- **OpenAPI JSON:** https://api.cgraph.org/openapi.json
 
 ### Sample OpenAPI Snippet
 
@@ -1129,14 +1129,14 @@ info:
     - Group channels (Discord-style)
     - Forums (Reddit-style)
   contact:
-    email: api@cgraph.app
+    email: api@cgraph.org
   license:
     name: MIT
 
 servers:
-  - url: https://api.cgraph.app/api/v1
+  - url: https://api.cgraph.org/api/v1
     description: Production
-  - url: https://staging-api.cgraph.app/api/v1
+  - url: https://staging-api.cgraph.org/api/v1
     description: Staging
   - url: http://localhost:4000/api/v1
     description: Local development
@@ -1360,7 +1360,7 @@ components:
 import { CGraphClient } from '@cgraph/sdk';
 
 const client = new CGraphClient({
-  baseUrl: 'https://api.cgraph.app/api/v1',
+  baseUrl: 'https://api.cgraph.org/api/v1',
   token: 'your-jwt-token'
 });
 
@@ -1386,7 +1386,7 @@ client.on('new_message', (message) => {
 from cgraph import CGraphClient
 
 client = CGraphClient(
-    base_url="https://api.cgraph.app/api/v1",
+    base_url="https://api.cgraph.org/api/v1",
     token="your-jwt-token"
 )
 
@@ -1407,16 +1407,16 @@ message = client.conversations.send_message(
 
 ```bash
 # Login
-curl -X POST https://api.cgraph.app/api/v1/auth/login \
+curl -X POST https://api.cgraph.org/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"alice@example.com","password":"secret"}'
 
 # Get current user
-curl https://api.cgraph.app/api/v1/me \
+curl https://api.cgraph.org/api/v1/me \
   -H "Authorization: Bearer YOUR_TOKEN"
 
 # Send a message
-curl -X POST https://api.cgraph.app/api/v1/conversations/conv_abc123/messages \
+curl -X POST https://api.cgraph.org/api/v1/conversations/conv_abc123/messages \
   -H "Authorization: Bearer YOUR_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{"content":"Hello!"}'
@@ -1437,4 +1437,4 @@ curl -X POST https://api.cgraph.app/api/v1/conversations/conv_abc123/messages \
 
 ---
 
-*Questions? Email api@cgraph.app or open an issue on GitHub.*
+*Questions? Email api@cgraph.org or open an issue on GitHub.*

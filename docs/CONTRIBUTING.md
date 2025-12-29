@@ -510,7 +510,7 @@ Features we're especially interested in:
 
 **DO NOT report security vulnerabilities as GitHub issues!**
 
-Instead, email **security@cgraph.app** with:
+Instead, email **security@cgraph.org** with:
 
 1. Description of the vulnerability
 2. Steps to reproduce

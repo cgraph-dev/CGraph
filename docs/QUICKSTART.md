@@ -261,7 +261,7 @@ pnpm ios   # or pnpm android
 4. Check your terminal—the "email" content prints there
 
 Or use the seeded test account:
-- Email: `demo@cgraph.app`
+- Email: `demo@cgraph.org`
 - Password: `password123`
 
 ---

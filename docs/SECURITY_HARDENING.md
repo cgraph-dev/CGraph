@@ -417,7 +417,7 @@ from(u in User, where: u.name == ^name) |> Repo.all()
 # lib/cgraph_web/endpoint.ex
 plug Corsica,
   origins: [
-    "https://cgraph.app",
+    "https://cgraph.org",
     "https://app.cgraph.io"
   ],
   allow_credentials: true,
@@ -961,7 +961,7 @@ Security is not a one-time effort. Keep your systems secure by:
 4. **Review and update** this document quarterly
 5. **Train your team** on security best practices
 
-For security vulnerabilities, contact security@cgraph.app (replace with your actual security contact).
+For security vulnerabilities, contact security@cgraph.org (replace with your actual security contact).
 
 ---
 
