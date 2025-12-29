@@ -5,6 +5,7 @@ import { MainTabParamList } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 import MessagesNavigator from './MessagesNavigator';
 import FriendsNavigator from './FriendsNavigator';
+import NotificationsNavigator from './NotificationsNavigator';
 import SearchNavigator from './SearchNavigator';
 import GroupsNavigator from './GroupsNavigator';
 import ForumsNavigator from './ForumsNavigator';
@@ -41,6 +42,9 @@ export default function MainNavigator() {
             case 'FriendsTab':
               iconName = focused ? 'people' : 'people-outline';
               break;
+            case 'NotificationsTab':
+              iconName = focused ? 'notifications' : 'notifications-outline';
+              break;
             case 'SearchTab':
               iconName = focused ? 'search' : 'search-outline';
               break;
@@ -70,6 +74,11 @@ export default function MainNavigator() {
         name="FriendsTab"
         component={FriendsNavigator}
         options={{ tabBarLabel: 'Friends' }}
+      />
+      <Tab.Screen
+        name="NotificationsTab"
+        component={NotificationsNavigator}
+        options={{ tabBarLabel: 'Alerts' }}
       />
       <Tab.Screen
         name="SearchTab"

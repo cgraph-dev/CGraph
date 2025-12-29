@@ -18,6 +18,8 @@ import GroupChannel from '@/pages/groups/GroupChannel';
 import Forums from '@/pages/forums/Forums';
 import ForumPost from '@/pages/forums/ForumPost';
 import Settings from '@/pages/settings/Settings';
+import Notifications from '@/pages/notifications/Notifications';
+import UserProfile from '@/pages/profile/UserProfile';
 import NotFound from '@/pages/NotFound';
 
 // Protected route wrapper
@@ -118,6 +120,9 @@ export default function App() {
         {/* Friends */}
         <Route path="friends" element={<Friends />} />
 
+        {/* Notifications */}
+        <Route path="notifications" element={<Notifications />} />
+
         {/* Search */}
         <Route path="search" element={<Search />} />
 
@@ -134,6 +139,9 @@ export default function App() {
         {/* Settings */}
         <Route path="settings" element={<Settings />} />
         <Route path="settings/:section" element={<Settings />} />
+
+        {/* User Profile */}
+        <Route path="user/:userId" element={<UserProfile />} />
       </Route>
 
       {/* 404 */}

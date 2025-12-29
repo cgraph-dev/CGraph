@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/chatStore';
 import { useGroupStore } from '@/stores/groupStore';
+import { useNotificationStore } from '@/stores/notificationStore';
 import { socketManager } from '@/lib/socket';
 import {
   ChatBubbleLeftRightIcon,
@@ -21,6 +22,7 @@ import {
   MagnifyingGlassIcon as MagnifyingGlassIconSolid,
   NewspaperIcon as NewspaperIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid,
+  BellIcon as BellIconSolid,
 } from '@heroicons/react/24/solid';
 
 const navItems = [
@@ -35,6 +37,12 @@ const navItems = [
     label: 'Friends',
     icon: UsersIcon,
     activeIcon: UsersIconSolid,
+  },
+  {
+    path: '/notifications',
+    label: 'Notifications',
+    icon: BellIcon,
+    activeIcon: BellIconSolid,
   },
   {
     path: '/search',
@@ -67,17 +75,19 @@ export default function AppLayout() {
   const { user, logout } = useAuthStore();
   const { fetchConversations, conversations } = useChatStore();
   const { fetchGroups } = useGroupStore();
+  const { fetchNotifications, unreadCount } = useNotificationStore();
 
   // Initialize socket and fetch data on mount
   useEffect(() => {
     socketManager.connect();
     fetchConversations();
     fetchGroups();
+    fetchNotifications();
 
     return () => {
       // Don't disconnect on unmount - keep connection alive
     };
-  }, [fetchConversations, fetchGroups]);
+  }, [fetchConversations, fetchGroups, fetchNotifications]);
 
   const handleLogout = async () => {
     socketManager.disconnect();
@@ -132,15 +142,15 @@ export default function AppLayout() {
                     {totalUnread > 99 ? '99+' : totalUnread}
                   </span>
                 )}
+                {item.path === '/notifications' && unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-red-500 text-xs font-bold flex items-center justify-center">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </NavLink>
             );
           })}
         </nav>
-
-        {/* Notification Bell */}
-        <button className="w-12 h-12 rounded-xl flex items-center justify-center text-gray-400 hover:bg-dark-700 hover:text-white transition-all mb-2">
-          <BellIcon className="h-6 w-6" />
-        </button>
 
         {/* User Avatar & Logout */}
         <div className="mt-auto space-y-2">

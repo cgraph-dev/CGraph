@@ -77,14 +77,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   
   const login = async (email: string, password: string) => {
     const response = await api.post('/auth/login', { email, password });
-    const { user: userData, token: authToken, refresh_token: refreshToken } = response.data.data;
-    await saveAuth(authToken, refreshToken, userData);
+    const { user: userData, tokens } = response.data;
+    await saveAuth(tokens.access_token, tokens.refresh_token, userData);
   };
   
   const register = async (email: string, username: string, password: string) => {
-    const response = await api.post('/auth/register', { email, username, password });
-    const { user: userData, token: authToken, refresh_token: refreshToken } = response.data.data;
-    await saveAuth(authToken, refreshToken, userData);
+    const response = await api.post('/auth/register', { 
+      user: { email, username, password }
+    });
+    const { user: userData, tokens } = response.data;
+    await saveAuth(tokens.access_token, tokens.refresh_token, userData);
   };
   
   const logout = async () => {

@@ -16,6 +16,23 @@ export interface User {
   createdAt: string;
 }
 
+// Map API user response to frontend User type
+function mapUserFromApi(apiUser: Record<string, unknown>): User {
+  return {
+    id: apiUser.id as string,
+    email: apiUser.email as string,
+    username: apiUser.username as string,
+    displayName: (apiUser.display_name as string | null) || null,
+    avatarUrl: (apiUser.avatar_url as string | null) || null,
+    walletAddress: (apiUser.wallet_address as string | null) || null,
+    emailVerifiedAt: (apiUser.email_verified_at as string | null) || null,
+    twoFactorEnabled: (apiUser.totp_enabled as boolean) || false,
+    status: (apiUser.status as 'online' | 'idle' | 'dnd' | 'offline') || 'offline',
+    statusMessage: (apiUser.custom_status as string | null) || null,
+    createdAt: apiUser.inserted_at as string,
+  };
+}
+
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -52,11 +69,11 @@ export const useAuthStore = create<AuthState>()(
             email,
             password,
           });
-          const { user, token, refresh_token } = response.data;
+          const { user, tokens } = response.data;
           set({
-            user,
-            token,
-            refreshToken: refresh_token,
+            user: mapUserFromApi(user),
+            token: tokens.access_token,
+            refreshToken: tokens.refresh_token,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -77,11 +94,11 @@ export const useAuthStore = create<AuthState>()(
             signature,
             message,
           });
-          const { user, token, refresh_token } = response.data;
+          const { user, tokens } = response.data;
           set({
-            user,
-            token,
-            refreshToken: refresh_token,
+            user: mapUserFromApi(user),
+            token: tokens.access_token,
+            refreshToken: tokens.refresh_token,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -98,15 +115,17 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         try {
           const response = await api.post('/api/v1/auth/register', {
-            email,
-            username,
-            password,
+            user: {
+              email,
+              username,
+              password,
+            },
           });
-          const { user, token, refresh_token } = response.data;
+          const { user, tokens } = response.data;
           set({
-            user,
-            token,
-            refreshToken: refresh_token,
+            user: mapUserFromApi(user),
+            token: tokens.access_token,
+            refreshToken: tokens.refresh_token,
             isAuthenticated: true,
             isLoading: false,
           });
@@ -141,10 +160,10 @@ export const useAuthStore = create<AuthState>()(
           const response = await api.post('/api/v1/auth/refresh', {
             refresh_token: refreshToken,
           });
-          const { token, refresh_token } = response.data;
+          const { access_token, refresh_token: newRefreshToken } = response.data;
           set({
-            token,
-            refreshToken: refresh_token,
+            token: access_token,
+            refreshToken: newRefreshToken,
           });
         } catch {
           set({
@@ -174,8 +193,9 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           const response = await api.get('/api/v1/me');
+          const userData = response.data.user || response.data;
           set({
-            user: response.data.user || response.data,
+            user: mapUserFromApi(userData),
             isAuthenticated: true,
             isLoading: false,
           });

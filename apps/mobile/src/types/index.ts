@@ -187,6 +187,7 @@ export type AuthStackParamList = {
 export type MainTabParamList = {
   MessagesTab: undefined;
   FriendsTab: undefined;
+  NotificationsTab: undefined;
   SearchTab: undefined;
   GroupsTab: undefined;
   ForumsTab: undefined;
@@ -197,6 +198,10 @@ export type MessagesStackParamList = {
   ConversationList: undefined;
   Conversation: { conversationId: string };
   NewConversation: undefined;
+};
+
+export type NotificationsStackParamList = {
+  NotificationsInbox: undefined;
 };
 
 export type FriendsStackParamList = {

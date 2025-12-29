@@ -34,7 +34,16 @@ export {
 
 // Form Controls
 export { default as Button, IconButton } from './Button';
-export { default as Input, Textarea, Select } from './Input';
+export { default as Input, Textarea } from './Input';
+export { default as TextArea } from './TextArea';
+export { default as Select } from './Select';
+export { default as Switch } from './Switch';
+export { default as TagInput } from './TagInput';
+export { default as FileUpload } from './FileUpload';
 
 // Display
 export { default as Avatar, AvatarGroup } from './Avatar';
+export { default as ProgressBar } from './ProgressBar';
+export { default as Tabs, TabPanel } from './Tabs';
+export { default as Tooltip } from './Tooltip';
+export { default as Dropdown, DropdownItem, DropdownDivider } from './Dropdown';
