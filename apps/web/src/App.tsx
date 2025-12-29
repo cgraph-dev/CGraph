@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -21,6 +22,17 @@ import Settings from '@/pages/settings/Settings';
 import Notifications from '@/pages/notifications/Notifications';
 import UserProfile from '@/pages/profile/UserProfile';
 import NotFound from '@/pages/NotFound';
+
+// Initialize auth check on app load
+function AuthInitializer({ children }: { children: React.ReactNode }) {
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
+  return <>{children}</>;
+}
 
 // Protected route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -62,90 +74,92 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route
-        path="/"
-        element={
-          <PublicRoute>
-            <Navigate to="/login" replace />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/login"
-        element={
-          <PublicRoute>
-            <AuthLayout>
-              <Login />
-            </AuthLayout>
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <PublicRoute>
-            <AuthLayout>
-              <Register />
-            </AuthLayout>
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/forgot-password"
-        element={
-          <PublicRoute>
-            <AuthLayout>
-              <ForgotPassword />
-            </AuthLayout>
-          </PublicRoute>
-        }
-      />
+    <AuthInitializer>
+      <Routes>
+        {/* Public routes */}
+        <Route
+          path="/"
+          element={
+            <PublicRoute>
+              <Navigate to="/login" replace />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <AuthLayout>
+                <Login />
+              </AuthLayout>
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <AuthLayout>
+                <Register />
+              </AuthLayout>
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <AuthLayout>
+                <ForgotPassword />
+              </AuthLayout>
+            </PublicRoute>
+          }
+        />
 
-      {/* Protected routes */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <AppLayout />
-          </ProtectedRoute>
-        }
-      >
-        {/* Messages (DMs) */}
-        <Route path="messages" element={<Messages />}>
-          <Route path=":conversationId" element={<Conversation />} />
+        {/* Protected routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
+          {/* Messages (DMs) */}
+          <Route path="messages" element={<Messages />}>
+            <Route path=":conversationId" element={<Conversation />} />
+          </Route>
+
+          {/* Friends */}
+          <Route path="friends" element={<Friends />} />
+
+          {/* Notifications */}
+          <Route path="notifications" element={<Notifications />} />
+
+          {/* Search */}
+          <Route path="search" element={<Search />} />
+
+          {/* Groups */}
+          <Route path="groups" element={<Groups />}>
+            <Route path=":groupId/channels/:channelId" element={<GroupChannel />} />
+          </Route>
+
+          {/* Forums */}
+          <Route path="forums" element={<Forums />} />
+          <Route path="forums/:forumSlug" element={<Forums />} />
+          <Route path="forums/:forumSlug/post/:postId" element={<ForumPost />} />
+
+          {/* Settings */}
+          <Route path="settings" element={<Settings />} />
+          <Route path="settings/:section" element={<Settings />} />
+
+          {/* User Profile */}
+          <Route path="user/:userId" element={<UserProfile />} />
         </Route>
 
-        {/* Friends */}
-        <Route path="friends" element={<Friends />} />
-
-        {/* Notifications */}
-        <Route path="notifications" element={<Notifications />} />
-
-        {/* Search */}
-        <Route path="search" element={<Search />} />
-
-        {/* Groups */}
-        <Route path="groups" element={<Groups />}>
-          <Route path=":groupId/channels/:channelId" element={<GroupChannel />} />
-        </Route>
-
-        {/* Forums */}
-        <Route path="forums" element={<Forums />} />
-        <Route path="forums/:forumSlug" element={<Forums />} />
-        <Route path="forums/:forumSlug/post/:postId" element={<ForumPost />} />
-
-        {/* Settings */}
-        <Route path="settings" element={<Settings />} />
-        <Route path="settings/:section" element={<Settings />} />
-
-        {/* User Profile */}
-        <Route path="user/:userId" element={<UserProfile />} />
-      </Route>
-
-      {/* 404 */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+        {/* 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </AuthInitializer>
   );
 }
