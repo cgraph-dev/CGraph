@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList } from '../types';
 import { useTheme } from '../contexts/ThemeContext';
 import MessagesNavigator from './MessagesNavigator';
+import FriendsNavigator from './FriendsNavigator';
+import SearchNavigator from './SearchNavigator';
 import GroupsNavigator from './GroupsNavigator';
 import ForumsNavigator from './ForumsNavigator';
 import SettingsNavigator from './SettingsNavigator';
@@ -36,8 +38,14 @@ export default function MainNavigator() {
             case 'MessagesTab':
               iconName = focused ? 'chatbubbles' : 'chatbubbles-outline';
               break;
-            case 'GroupsTab':
+            case 'FriendsTab':
               iconName = focused ? 'people' : 'people-outline';
+              break;
+            case 'SearchTab':
+              iconName = focused ? 'search' : 'search-outline';
+              break;
+            case 'GroupsTab':
+              iconName = focused ? 'globe' : 'globe-outline';
               break;
             case 'ForumsTab':
               iconName = focused ? 'newspaper' : 'newspaper-outline';
@@ -57,6 +65,16 @@ export default function MainNavigator() {
         name="MessagesTab"
         component={MessagesNavigator}
         options={{ tabBarLabel: 'Messages' }}
+      />
+      <Tab.Screen
+        name="FriendsTab"
+        component={FriendsNavigator}
+        options={{ tabBarLabel: 'Friends' }}
+      />
+      <Tab.Screen
+        name="SearchTab"
+        component={SearchNavigator}
+        options={{ tabBarLabel: 'Search' }}
       />
       <Tab.Screen
         name="GroupsTab"

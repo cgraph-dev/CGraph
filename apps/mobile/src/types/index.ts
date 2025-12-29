@@ -186,6 +186,8 @@ export type AuthStackParamList = {
 
 export type MainTabParamList = {
   MessagesTab: undefined;
+  FriendsTab: undefined;
+  SearchTab: undefined;
   GroupsTab: undefined;
   ForumsTab: undefined;
   SettingsTab: undefined;
@@ -195,6 +197,18 @@ export type MessagesStackParamList = {
   ConversationList: undefined;
   Conversation: { conversationId: string };
   NewConversation: undefined;
+};
+
+export type FriendsStackParamList = {
+  FriendList: undefined;
+  AddFriend: undefined;
+  FriendRequests: undefined;
+  UserProfile: { userId: string };
+};
+
+export type SearchStackParamList = {
+  SearchMain: undefined;
+  SearchResults: { query: string; category?: string };
 };
 
 export type GroupsStackParamList = {
@@ -219,3 +233,18 @@ export type SettingsStackParamList = {
   Notifications: undefined;
   Privacy: undefined;
 };
+
+// Friend types
+export interface Friend {
+  id: string;
+  user: UserBasic;
+  status: 'pending' | 'accepted' | 'blocked';
+  created_at: string;
+}
+
+export interface FriendRequest {
+  id: string;
+  user: UserBasic;
+  type: 'incoming' | 'outgoing';
+  created_at: string;
+}

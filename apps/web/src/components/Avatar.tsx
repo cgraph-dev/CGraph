@@ -1,4 +1,4 @@
-import React from 'react';
+
 
 interface AvatarProps {
   src?: string | null;
@@ -75,7 +75,7 @@ export function Avatar({
       'bg-rose-500',
     ];
     const hash = name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-    return colors[hash % colors.length];
+    return colors[hash % colors.length] ?? 'bg-indigo-500';
   };
 
   const initials = fallback || getInitials(alt);

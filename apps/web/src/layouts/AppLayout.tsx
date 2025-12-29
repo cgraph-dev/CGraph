@@ -7,6 +7,8 @@ import { socketManager } from '@/lib/socket';
 import {
   ChatBubbleLeftRightIcon,
   UserGroupIcon,
+  UsersIcon,
+  MagnifyingGlassIcon,
   NewspaperIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
@@ -15,6 +17,8 @@ import {
 import {
   ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid,
   UserGroupIcon as UserGroupIconSolid,
+  UsersIcon as UsersIconSolid,
+  MagnifyingGlassIcon as MagnifyingGlassIconSolid,
   NewspaperIcon as NewspaperIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid,
 } from '@heroicons/react/24/solid';
@@ -25,6 +29,18 @@ const navItems = [
     label: 'Messages',
     icon: ChatBubbleLeftRightIcon,
     activeIcon: ChatBubbleLeftRightIconSolid,
+  },
+  {
+    path: '/friends',
+    label: 'Friends',
+    icon: UsersIcon,
+    activeIcon: UsersIconSolid,
+  },
+  {
+    path: '/search',
+    label: 'Search',
+    icon: MagnifyingGlassIcon,
+    activeIcon: MagnifyingGlassIconSolid,
   },
   {
     path: '/groups',

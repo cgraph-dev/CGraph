@@ -14,7 +14,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "io.cgraph.org",
+      "bundleIdentifier": "org.cgraph.app",
       "buildNumber": "1",
       "infoPlist": {
         "UIBackgroundModes": ["remote-notification"],

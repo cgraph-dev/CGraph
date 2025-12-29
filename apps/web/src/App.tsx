@@ -11,6 +11,8 @@ import Register from '@/pages/auth/Register';
 import ForgotPassword from '@/pages/auth/ForgotPassword';
 import Messages from '@/pages/messages/Messages';
 import Conversation from '@/pages/messages/Conversation';
+import Friends from '@/pages/friends/Friends';
+import Search from '@/pages/search/Search';
 import Groups from '@/pages/groups/Groups';
 import GroupChannel from '@/pages/groups/GroupChannel';
 import Forums from '@/pages/forums/Forums';
@@ -112,6 +114,12 @@ export default function App() {
         <Route path="messages" element={<Messages />}>
           <Route path=":conversationId" element={<Conversation />} />
         </Route>
+
+        {/* Friends */}
+        <Route path="friends" element={<Friends />} />
+
+        {/* Search */}
+        <Route path="search" element={<Search />} />
 
         {/* Groups */}
         <Route path="groups" element={<Groups />}>

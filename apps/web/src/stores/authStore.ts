@@ -120,22 +120,14 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: async () => {
-        const { token } = get();
-        try {
-          if (token) {
-            await api.post('/api/v1/auth/logout');
-          }
-        } catch {
-          // Ignore logout errors
-        } finally {
-          set({
-            user: null,
-            token: null,
-            refreshToken: null,
-            isAuthenticated: false,
-            isLoading: false,
-          });
-        }
+        // Clear state - no logout endpoint needed, just revoke token client-side
+        set({
+          user: null,
+          token: null,
+          refreshToken: null,
+          isAuthenticated: false,
+          isLoading: false,
+        });
       },
 
       refreshSession: async () => {
@@ -181,9 +173,9 @@ export const useAuthStore = create<AuthState>()(
         }
 
         try {
-          const response = await api.get('/api/v1/auth/me');
+          const response = await api.get('/api/v1/me');
           set({
-            user: response.data.user,
+            user: response.data.user || response.data,
             isAuthenticated: true,
             isLoading: false,
           });

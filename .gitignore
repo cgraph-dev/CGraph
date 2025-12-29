@@ -54,6 +54,9 @@ erl_crash.dump
 *.ez
 cgraph-*.tar
 
+# Test upload artifacts
+apps/backend/priv/static/uploads/
+
 # Mobile / Expo
 .expo/
 *.jks

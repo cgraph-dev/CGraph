@@ -15,6 +15,7 @@ interface ThemeContextType {
 const lightColors = {
   background: '#ffffff',
   surface: '#f3f4f6',
+  surfaceSecondary: '#e5e7eb',
   surfaceHover: '#e5e7eb',
   primary: '#6366f1',
   primaryHover: '#4f46e5',
@@ -35,6 +36,7 @@ const lightColors = {
 const darkColors = {
   background: '#111827',
   surface: '#1f2937',
+  surfaceSecondary: '#374151',
   surfaceHover: '#374151',
   primary: '#6366f1',
   primaryHover: '#818cf8',

@@ -3,12 +3,26 @@
 interface ImportMetaEnv {
   readonly VITE_API_URL: string
   readonly VITE_WS_URL: string
+  readonly VITE_SOCKET_URL: string
   readonly VITE_WALLETCONNECT_PROJECT_ID: string
-  // Add more env variables as needed
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv
+}
+
+// Ethereum/Web3 types for wallet integration
+interface EthereumProvider {
+  request(args: { method: string; params?: unknown[] }): Promise<unknown>;
+  on?(eventName: string, callback: (...args: unknown[]) => void): void;
+  removeListener?(eventName: string, callback: (...args: unknown[]) => void): void;
+  isMetaMask?: boolean;
+}
+
+declare global {
+  interface Window {
+    ethereum?: EthereumProvider;
+  }
 }
 
 // Phoenix WebSocket types
