@@ -33,7 +33,8 @@ This document contains all commands to test, run, and develop CGraph - a real-ti
 9. [Project Structure](#project-structure)
 10. [Implementation Status](#implementation-status)
 11. [Recent Bug Fixes](#recent-bug-fixes)
-12. [What's Left To Do](#whats-left-to-do)
+12. [Git Workflow](#git-workflow)
+13. [What's Left To Do](#whats-left-to-do)
 
 ---
 
@@ -552,6 +553,87 @@ CGraph/
 - ✅ Groups/Channels
 - ✅ Forums/Posts
 - ✅ Settings screens
+
+---
+
+## Git Workflow
+
+### Initial Setup
+
+The repository is initialized with a comprehensive `.gitignore` to prevent sensitive data exposure.
+
+```bash
+# Clone the repository
+git clone https://github.com/cgraph-dev/CGraph.git
+cd CGraph
+
+# Configure git identity
+git config user.email "your-email@example.com"
+git config user.name "Your Name"
+```
+
+### Branch Strategy
+
+```bash
+# Create a feature branch
+git checkout -b feature/my-feature
+
+# Create a bugfix branch
+git checkout -b fix/bug-description
+
+# Switch back to main
+git checkout main
+```
+
+### Commit Messages
+
+Follow conventional commits:
+
+```bash
+# Features
+git commit -m "feat: Add user profile editing"
+
+# Bug fixes
+git commit -m "fix: Resolve login redirect issue"
+
+# Documentation
+git commit -m "docs: Update API reference"
+
+# Refactoring
+git commit -m "refactor: Simplify auth logic"
+
+# Tests
+git commit -m "test: Add message controller tests"
+```
+
+### Pre-commit Checks
+
+Always run tests before committing:
+
+```bash
+# Backend tests
+cd apps/backend && mix test
+
+# Web build check
+cd apps/web && npx vite build
+
+# Mobile TypeScript check
+cd apps/mobile && npx tsc --noEmit
+
+# Check for sensitive files
+git status | grep -E '\.(pem|key|crt|env)$' && echo "WARNING: Sensitive files!" || echo "OK"
+```
+
+### Security Reminders
+
+**NEVER commit these files:**
+- `.env` files (use `.env.example` as templates)
+- `*.pem`, `*.key`, `*.crt` files
+- Keystore files (`*.jks`, `*.keystore`)
+- Firebase/Google service account JSON files
+- Terraform state files (`*.tfstate`)
+
+The `.gitignore` is configured to exclude all sensitive patterns automatically.
 
 ---
 
