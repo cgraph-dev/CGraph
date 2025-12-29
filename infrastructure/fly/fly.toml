@@ -1,0 +1,53 @@
+# CGraph Fly.io Configuration
+# Backend application deployment
+
+app = "cgraph"
+primary_region = "iad"
+kill_signal = "SIGTERM"
+kill_timeout = "5s"
+
+[experimental]
+  auto_rollback = true
+
+[build]
+  dockerfile = "../docker/Dockerfile.backend"
+
+[env]
+  MIX_ENV = "prod"
+  PHX_SERVER = "true"
+  PORT = "4000"
+  ECTO_IPV6 = "true"
+  ERL_AFLAGS = "-proto_dist inet6_tcp"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 800
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "512mb"
+
+[metrics]
+  port = 9091
+  path = "/metrics"
+
+[[statics]]
+  guest_path = "/app/priv/static"
+  url_prefix = "/static"

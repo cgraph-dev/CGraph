@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-native",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@cgraph/shared-types": ["../../packages/shared-types/src"],
+      "@cgraph/utils": ["../../packages/utils/src"],
+      "@cgraph/config": ["../../packages/config/src"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "*.js"],
+  "exclude": ["node_modules"]
+}

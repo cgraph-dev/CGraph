@@ -1,0 +1,20 @@
+# CGraph Terraform Variables
+# Define these in terraform.tfvars or environment variables
+
+# Fly.io API Token
+# Get from: https://fly.io/user/personal_access_tokens
+fly_api_token = ""
+
+# Cloudflare API Token
+# Get from: https://dash.cloudflare.com/profile/api-tokens
+cloudflare_api_token = ""
+
+# Cloudflare Zone ID
+# Find in the Overview tab of your domain in Cloudflare dashboard
+cloudflare_zone_id = ""
+
+# Domain name
+domain = "cgraph.dev"
+
+# Environment
+environment = "production"

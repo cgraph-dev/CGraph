@@ -1,0 +1,211 @@
+# CGraph Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [0.1.1] - 2024-12-29
+
+### 🎨 UI Component Library & Production Readiness
+
+This release adds a comprehensive UI component library and prepares the project for production deployment and app store submission.
+
+### Added
+
+#### Web UI Component Library
+- **ErrorBoundary** - React error boundary with recovery functionality
+- **Loading** - Reusable loading spinner with size variants (sm/md/lg)
+- **LoadingOverlay** - Full-screen loading overlay for async operations
+- **Modal** - Accessible modal dialog with focus trapping
+- **ConfirmDialog** - Pre-configured confirmation dialogs
+- **Button** - Versatile button component with variants and loading states
+- **IconButton** - Icon-only buttons for toolbars
+- **Input** - Form input with labels, errors, and icons
+- **Textarea** - Multi-line text input
+- **Select** - Dropdown select component
+- **Avatar** - User avatars with status indicators
+- **AvatarGroup** - Overlapping avatar groups
+- **EmptyState** - Generic empty state with pre-built variants
+- **Toast** - Toast notification system (React context based)
+
+#### Production & App Store
+- **EAS Build Configuration** - Expo Application Services setup (eas.json)
+- **Privacy Policy Page** - Legal compliance for app stores
+- **Terms of Service Page** - Legal compliance for app stores
+- **Environment Examples** - `.env.example` for backend, web, and mobile
+- **Production Readiness Guide** - Comprehensive deployment checklist
+
+#### Documentation
+- Updated UI_CUSTOMIZATION.md with component library reference
+- Created PRODUCTION_READINESS.md for 100-user deployment
+
+### Changed
+- Enhanced `.gitignore` with security patterns (secrets, keys, credentials)
+- Added CSS animations for toast slide-in/fade-out
+- Wrapped App with ErrorBoundary in main.tsx
+
+### Fixed
+- Fixed mobile asset paths in app.json
+
+---
+
+## [0.1.0] - 2024-12-29
+
+### 🎉 Initial Release
+
+This release represents the first working version of CGraph with all core functionality operational.
+
+### Added
+
+#### Backend (Elixir/Phoenix)
+- **Authentication System**
+  - Email/password registration and login
+  - JWT token-based authentication with Guardian
+  - Wallet-based anonymous authentication (Web3)
+  - Session management with refresh tokens
+  - Password reset functionality
+
+- **User Management**
+  - User profiles with bio, avatar, banner
+  - User settings (notifications, privacy, theme)
+  - Friend system (add, remove, block, suggestions)
+  - User presence tracking (online/offline/away)
+
+- **Messaging**
+  - Direct messages (1:1 conversations)
+  - Group conversations
+  - Message reactions (emoji)
+  - Read receipts
+  - Typing indicators via WebSocket
+  - Message search
+
+- **Groups**
+  - Group creation and management
+  - Role-based permissions
+  - Channels within groups
+  - Member management
+  - Invite system with codes
+
+- **Forums**
+  - Forum creation with categories
+  - Posts with markdown support
+  - Comments and replies
+  - Voting system
+  - Post search
+
+- **Push Notifications**
+  - Token registration (iOS/APNS, Android/FCM, Web)
+  - Platform mapping for different providers
+
+- **Rate Limiting**
+  - Configurable per-endpoint limits
+  - Multiple algorithms (token bucket, sliding window, etc.)
+  - Test environment bypass
+
+#### Web Frontend (React/Vite)
+- **Pages**
+  - Authentication (login, register, forgot password)
+  - Messages (conversations list, chat view)
+  - Groups (list, channels, settings)
+  - Forums (posts, comments)
+  - Settings (profile, notifications, privacy)
+
+- **Features**
+  - Real-time updates via Phoenix Channels
+  - Dark/light theme support
+  - Responsive design with TailwindCSS
+  - Form validation with React Hook Form
+  - State management with Zustand
+  - Server state with React Query
+
+#### Mobile App (React Native/Expo)
+- **Screens**
+  - Authentication flow
+  - Messages and chat
+  - Groups and channels
+  - Forums browsing
+  - Settings
+
+- **Features**
+  - Native navigation with React Navigation
+  - Secure storage for tokens
+  - Push notification support
+  - Gesture handling
+  - Native animations with Reanimated
+
+### Fixed
+
+#### December 29, 2024 Bug Fixes
+
+- **Rate Limiting in Tests** - Added configuration to disable rate limiting in test environment to prevent false test failures
+- **Push Token Platform Mapping** - Fixed mismatch between user-facing platform names (ios/android) and internal schema values (apns/fcm)
+- **Push Token Upsert** - Replaced broken `on_conflict` upsert with find-or-create pattern
+- **HTTP Status Codes** - Changed validation errors from 400 to 422 (Unprocessable Entity) for proper REST semantics
+- **Test Assertions** - Fixed multiple test files with incorrect status codes, response paths, and argument orders
+- **ESLint Configuration** - Created ESLint 9 flat config for web frontend
+
+### Technical Details
+
+#### Test Results
+```
+Backend: 215 tests, 0 failures, 1 skipped
+Web Build: ✅ 1.92s build time, 264KB main bundle (gzipped: 70KB)
+Mobile TypeScript: ✅ Compiles without errors
+```
+
+#### API Endpoints Summary
+| Category | Endpoints | Status |
+|----------|-----------|--------|
+| Authentication | 8 | ✅ Working |
+| Users | 12 | ✅ Working |
+| Messaging | 15 | ✅ Working |
+| Groups | 18 | ✅ Working |
+| Forums | 14 | ✅ Working |
+| Settings | 6 | ✅ Working |
+| Notifications | 5 | ✅ Working |
+
+#### Database Schema
+- 25+ tables including users, messages, groups, forums, etc.
+- Full-text search on messages and posts
+- Soft deletes for user data
+- Audit logging for admin actions
+
+---
+
+## Development Notes
+
+### Architecture Decisions
+
+1. **Monorepo Structure** - Using Turborepo for managing backend, web, mobile, and shared packages together
+2. **Phoenix Channels** - Real-time WebSocket communication instead of polling
+3. **Zustand over Redux** - Simpler state management with less boilerplate
+4. **React Query** - Server state management with automatic caching and refetching
+5. **Guardian JWT** - Industry-standard token-based auth for Elixir
+
+### Known Issues
+
+1. ESLint warnings exist but don't block builds
+2. Some mobile dependencies have security advisories (non-critical)
+3. 1 test skipped (group conversation creation - needs investigation)
+
+### Future Improvements
+
+- [ ] Add end-to-end encryption for DMs
+- [ ] Implement voice/video calls
+- [ ] Add i18n/localization support
+- [ ] Implement admin dashboard
+- [ ] Add comprehensive E2E tests
+- [ ] Performance optimization for large group chats
+
+---
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
+
+## License
+
+See [LICENSE](./LICENSE) for license information.

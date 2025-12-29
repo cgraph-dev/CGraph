@@ -1,0 +1,99 @@
+# CGraph Docker Compose - Development Override
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+version: "3.9"
+
+services:
+  # PostgreSQL with exposed port for local development
+  postgres:
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: cgraph_dev_password
+
+  # Redis with exposed port
+  redis:
+    ports:
+      - "6379:6379"
+
+  # Backend with hot reload
+  backend-dev:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.backend.dev
+    container_name: cgraph-backend-dev
+    environment:
+      MIX_ENV: dev
+      PHX_SERVER: "true"
+      DATABASE_URL: ecto://cgraph:cgraph_dev_password@postgres:5432/cgraph_dev
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY_BASE: dev_secret_key_base_at_least_64_bytes_long_for_development_only_1234567890
+      GUARDIAN_SECRET: dev_guardian_secret_key_for_development_only_1234567890
+    volumes:
+      - ./apps/backend:/app
+      - backend_deps:/app/deps
+      - backend_build:/app/_build
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cgraph-network
+    command: mix phx.server
+
+  # pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: cgraph-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@cgraph.dev}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - cgraph-network
+
+  # Redis Commander for Redis management
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: cgraph-redis-commander
+    restart: unless-stopped
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    ports:
+      - "8081:8081"
+    depends_on:
+      - redis
+    networks:
+      - cgraph-network
+
+  # Mailhog for email testing
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: cgraph-mailhog
+    restart: unless-stopped
+    ports:
+      - "1025:1025"  # SMTP
+      - "8025:8025"  # Web UI
+    networks:
+      - cgraph-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  pgadmin_data:
+  backend_deps:
+  backend_build:
+
+networks:
+  cgraph-network:
+    driver: bridge

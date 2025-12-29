@@ -1,0 +1,34 @@
+# CGraph Code Owners
+# Each line defines who is responsible for code in specific paths.
+# Order matters - later patterns take precedence.
+
+# Default owners for everything
+* @cgraph-dev/core-team
+
+# Backend (Elixir/Phoenix)
+/apps/backend/ @cgraph-dev/backend-team
+
+# Web Frontend (React/TypeScript)
+/apps/web/ @cgraph-dev/frontend-team
+
+# Mobile App (React Native/Expo)
+/apps/mobile/ @cgraph-dev/mobile-team
+
+# Shared Packages
+/packages/shared-types/ @cgraph-dev/core-team
+/packages/utils/ @cgraph-dev/core-team
+/packages/ui/ @cgraph-dev/frontend-team
+/packages/config/ @cgraph-dev/core-team
+
+# Infrastructure
+/infrastructure/ @cgraph-dev/devops-team
+/.github/ @cgraph-dev/devops-team
+
+# Documentation
+/docs/ @cgraph-dev/core-team
+*.md @cgraph-dev/core-team
+
+# Security-sensitive files require security team review
+**/auth/ @cgraph-dev/security-team
+**/crypto/ @cgraph-dev/security-team
+.env.example @cgraph-dev/security-team

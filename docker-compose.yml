@@ -1,0 +1,126 @@
+# CGraph Docker Compose Configuration
+# Development and production orchestration
+
+version: "3.9"
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: cgraph-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cgraph}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cgraph_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-cgraph_dev}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cgraph} -d ${POSTGRES_DB:-cgraph_dev}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cgraph-network
+
+  # Redis Cache
+  redis:
+    image: redis:7.2-alpine
+    container_name: cgraph-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cgraph-network
+
+  # Elixir/Phoenix Backend
+  backend:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.backend
+    container_name: cgraph-backend
+    restart: unless-stopped
+    environment:
+      MIX_ENV: ${MIX_ENV:-prod}
+      PHX_SERVER: "true"
+      PHX_HOST: ${PHX_HOST:-localhost}
+      PORT: 4000
+      DATABASE_URL: ecto://${POSTGRES_USER:-cgraph}:${POSTGRES_PASSWORD:-cgraph_dev_password}@postgres:5432/${POSTGRES_DB:-cgraph_dev}
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-generate_with_mix_phx_gen_secret}
+      GUARDIAN_SECRET: ${GUARDIAN_SECRET:-generate_your_guardian_secret}
+    ports:
+      - "${BACKEND_PORT:-4000}:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+    networks:
+      - cgraph-network
+
+  # React Web Frontend
+  web:
+    build:
+      context: .
+      dockerfile: infrastructure/docker/Dockerfile.web
+    container_name: cgraph-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-3000}:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+      - cgraph-network
+
+  # Nginx Reverse Proxy (Production)
+  nginx:
+    image: nginx:alpine
+    container_name: cgraph-nginx
+    restart: unless-stopped
+    volumes:
+      - ./infrastructure/docker/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infrastructure/docker/ssl:/etc/nginx/ssl:ro
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - backend
+      - web
+    profiles:
+      - production
+    networks:
+      - cgraph-network
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  cgraph-network:
+    driver: bridge

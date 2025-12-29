@@ -1,0 +1,38 @@
+# CGraph Backend Development Dockerfile
+# Optimized for hot-reload development
+
+FROM elixir:1.17-otp-27-alpine
+
+# Install build and development dependencies
+RUN apk add --no-cache \
+    build-base \
+    git \
+    npm \
+    nodejs \
+    inotify-tools \
+    postgresql-client
+
+# Set development environment
+ENV MIX_ENV=dev
+
+# Install hex and rebar
+RUN mix local.hex --force && \
+    mix local.rebar --force
+
+# Create and set working directory
+WORKDIR /app
+
+# Copy mix files first for dependency caching
+COPY apps/backend/mix.exs apps/backend/mix.lock ./
+
+# Fetch and compile dependencies
+RUN mix deps.get && mix deps.compile
+
+# Copy the rest of the application
+COPY apps/backend .
+
+# Expose port
+EXPOSE 4000
+
+# Default command
+CMD ["mix", "phx.server"]
