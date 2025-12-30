@@ -301,7 +301,7 @@ function ForumLeaderboardCard({ forum, rank, onVote, isAuthenticated }: ForumLea
             <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
               <span className="flex items-center gap-1">
                 <UsersIcon className="h-3.5 w-3.5" />
-                {forum.memberCount.toLocaleString()} members
+                {(forum.memberCount ?? 0).toLocaleString()} members
               </span>
               <span className="flex items-center gap-1">
                 <ChatBubbleLeftRightIcon className="h-3.5 w-3.5" />
@@ -360,7 +360,7 @@ function TopForumCard({ forum, rank }: TopForumCardProps) {
       
       <div className="flex-1 min-w-0">
         <p className="text-white font-medium truncate text-sm">f/{forum.name}</p>
-        <p className="text-xs text-gray-400">{forum.score.toLocaleString()} points</p>
+        <p className="text-xs text-gray-400">{(forum.score ?? 0).toLocaleString()} points</p>
       </div>
     </Link>
   );

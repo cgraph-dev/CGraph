@@ -241,7 +241,7 @@ export default function PluginMarketplace() {
                       </div>
                       <div className="flex items-center gap-1">
                         <ArrowDownTrayIcon className="h-4 w-4" />
-                        <span>{plugin.download_count.toLocaleString()}</span>
+                        <span>{(plugin.download_count ?? 0).toLocaleString()}</span>
                       </div>
                       <span className="text-gray-500">v{plugin.version}</span>
                     </div>

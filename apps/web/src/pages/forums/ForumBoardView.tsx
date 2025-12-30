@@ -196,7 +196,7 @@ export default function ForumBoardView() {
                 <div className="mt-3 flex items-center gap-6 text-sm text-gray-400">
                   <span className="flex items-center gap-1">
                     <UserIcon className="h-4 w-4" />
-                    {forum.memberCount.toLocaleString()} members
+                    {(forum.memberCount ?? 0).toLocaleString()} members
                   </span>
                   <span className="flex items-center gap-1">
                     <ChatBubbleLeftRightIcon className="h-4 w-4" />
@@ -375,12 +375,12 @@ function BoardRow({ board, forumSlug }: BoardRowProps) {
 
       {/* Thread Count */}
       <div className="col-span-2 flex items-center justify-center text-gray-300">
-        {board.threadCount.toLocaleString()}
+        {(board.threadCount ?? 0).toLocaleString()}
       </div>
 
       {/* Post Count */}
       <div className="col-span-2 flex items-center justify-center text-gray-300">
-        {board.postCount.toLocaleString()}
+        {(board.postCount ?? 0).toLocaleString()}
       </div>
 
       {/* Last Post */}
@@ -487,13 +487,13 @@ function ThreadRow({ thread, forumSlug }: ThreadRowProps) {
 
       {/* Reply Count */}
       <div className="col-span-2 flex items-center justify-center text-gray-300">
-        {thread.replyCount.toLocaleString()}
+        {(thread.replyCount ?? 0).toLocaleString()}
       </div>
 
       {/* View Count */}
       <div className="col-span-2 flex items-center justify-center text-gray-300">
         <EyeIcon className="h-4 w-4 mr-1 text-gray-500" />
-        {thread.viewCount.toLocaleString()}
+        {(thread.viewCount ?? 0).toLocaleString()}
       </div>
 
       {/* Last Reply */}

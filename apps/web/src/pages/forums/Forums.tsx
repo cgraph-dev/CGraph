@@ -156,7 +156,7 @@ export default function Forums() {
                     )}
 
                     <p className="mt-2 text-sm text-gray-500">
-                      {activeForum.memberCount.toLocaleString()} members
+                      {(activeForum.memberCount ?? 0).toLocaleString()} members
                     </p>
                   </div>
                 </div>
@@ -331,7 +331,7 @@ export default function Forums() {
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-400">Members</span>
               <span className="text-white font-medium">
-                {activeForum.memberCount.toLocaleString()}
+                {(activeForum.memberCount ?? 0).toLocaleString()}
               </span>
             </div>
             <div className="flex items-center justify-between text-sm mt-2">
@@ -369,7 +369,7 @@ export default function Forums() {
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-white truncate">c/{forum.slug}</p>
                   <p className="text-xs text-gray-500">
-                    {forum.memberCount.toLocaleString()} members
+                    {(forum.memberCount ?? 0).toLocaleString()} members
                   </p>
                 </div>
               </Link>
