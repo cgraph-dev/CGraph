@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useForumStore, Comment } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDistanceToNow } from 'date-fns';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -70,8 +71,43 @@ export default function ForumPost() {
 
   if (!currentPost) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+      <div className="flex-1 overflow-y-auto bg-dark-900 p-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Skeleton back button */}
+          <div className="h-10 w-48 bg-dark-800 rounded mb-4 animate-pulse" />
+          
+          {/* Skeleton post card */}
+          <div className="bg-dark-800 rounded-lg border border-dark-700 p-6 animate-pulse">
+            <div className="flex gap-4">
+              {/* Vote sidebar skeleton */}
+              <div className="flex flex-col items-center gap-2">
+                <div className="h-6 w-6 bg-dark-700 rounded" />
+                <div className="h-5 w-10 bg-dark-700 rounded" />
+                <div className="h-6 w-6 bg-dark-700 rounded" />
+              </div>
+              
+              {/* Content skeleton */}
+              <div className="flex-1 space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-6 w-6 bg-dark-700 rounded-full" />
+                  <div className="h-4 w-32 bg-dark-700 rounded" />
+                  <div className="h-4 w-24 bg-dark-700 rounded" />
+                </div>
+                <div className="h-8 w-3/4 bg-dark-700 rounded" />
+                <div className="space-y-2">
+                  <div className="h-4 w-full bg-dark-700 rounded" />
+                  <div className="h-4 w-full bg-dark-700 rounded" />
+                  <div className="h-4 w-2/3 bg-dark-700 rounded" />
+                </div>
+                <div className="flex gap-4 pt-4">
+                  <div className="h-8 w-28 bg-dark-700 rounded" />
+                  <div className="h-8 w-20 bg-dark-700 rounded" />
+                  <div className="h-8 w-16 bg-dark-700 rounded" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -189,8 +225,8 @@ export default function ForumPost() {
 
               {/* Content */}
               {currentPost.postType === 'text' && currentPost.content && (
-                <div className="prose prose-invert max-w-none mb-4">
-                  <p className="text-gray-300 whitespace-pre-wrap">{currentPost.content}</p>
+                <div className="mb-4">
+                  <MarkdownRenderer content={currentPost.content} />
                 </div>
               )}
 
@@ -353,7 +389,9 @@ function CommentItem({
           {!isCollapsed && (
             <>
               {/* Content */}
-              <div className="mt-1 text-gray-200 whitespace-pre-wrap">{comment.content}</div>
+              <div className="mt-1">
+                <MarkdownRenderer content={comment.content} className="text-sm" />
+              </div>
 
               {/* Actions */}
               <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useForumStore } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
+import { MarkdownEditor } from '@/components';
 import {
   ArrowLeftIcon,
   PhotoIcon,
@@ -187,12 +188,11 @@ export default function CreatePost() {
           {/* Content based on type */}
           {postType === 'text' && (
             <div>
-              <textarea
-                placeholder="Text (optional)"
+              <MarkdownEditor
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows={8}
-                className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+                onChange={setContent}
+                placeholder="Write your post content... (Markdown supported)"
+                minRows={8}
               />
             </div>
           )}

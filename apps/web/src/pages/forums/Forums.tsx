@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useForumStore, Post } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDistanceToNow } from 'date-fns';
+import { PostCardSkeleton } from '@/components';
 import {
   PlusIcon,
   ArrowUpIcon,
@@ -272,8 +273,10 @@ export default function Forums() {
         {/* Posts */}
         <div className="max-w-4xl mx-auto py-4 space-y-3">
           {isLoadingPosts && posts.length === 0 ? (
-            <div className="flex justify-center py-8">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+            <div className="space-y-3">
+              {[...Array(3)].map((_, i) => (
+                <PostCardSkeleton key={i} />
+              ))}
             </div>
           ) : posts.length === 0 ? (
             <div className="text-center py-12">
@@ -404,7 +407,7 @@ function PostCard({
   onVote: (value: 1 | -1) => void;
 }) {
   return (
-    <div className="bg-dark-800 rounded-lg border border-dark-700 hover:border-dark-600 transition-colors">
+    <div className="bg-dark-800 rounded-lg border border-dark-700 hover:border-dark-600 hover:shadow-lg hover:shadow-black/20 transition-all duration-200 animate-fade-in">
       <div className="flex">
         {/* Vote sidebar */}
         <div className="flex flex-col items-center gap-1 p-3 bg-dark-700/50 rounded-l-lg">
