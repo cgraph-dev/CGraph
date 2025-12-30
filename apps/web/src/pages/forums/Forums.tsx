@@ -177,7 +177,14 @@ export default function Forums() {
                 className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 rounded-full text-sm font-medium text-white transition-colors"
               >
                 <TrophyIcon className="h-4 w-4" />
-                Leaderboard
+                Forums
+              </Link>
+              <Link
+                to="/community/leaderboard"
+                className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-500 hover:to-purple-500 rounded-full text-sm font-medium text-white transition-colors"
+              >
+                <TrophyIcon className="h-4 w-4" />
+                Top Users
               </Link>
               
               {isAuthenticated && (

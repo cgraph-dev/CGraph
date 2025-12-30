@@ -14,6 +14,8 @@ import {
   MapPinIcon,
   LinkIcon,
   CheckBadgeIcon,
+  ArrowTrendingUpIcon,
+  FireIcon,
 } from '@heroicons/react/24/outline';
 import Dropdown, { DropdownItem } from '@/components/Dropdown';
 
@@ -28,6 +30,7 @@ interface UserProfile {
   statusMessage: string | null;
   isVerified: boolean;
   isPremium: boolean;
+  karma: number;
   createdAt: string;
   mutualFriends?: number;
   location?: string;
@@ -69,10 +72,11 @@ export default function UserProfile() {
           bannerUrl: userData.banner_url,
           bio: userData.bio,
           status: userData.status || 'offline',
-          statusMessage: userData.custom_status,
-          isVerified: userData.is_verified,
-          isPremium: userData.is_premium,
-          createdAt: userData.inserted_at,
+          statusMessage: userData.custom_status || userData.status_message,
+          isVerified: userData.is_verified || false,
+          isPremium: userData.is_premium || false,
+          karma: userData.karma || 0,
+          createdAt: userData.inserted_at || userData.created_at,
           mutualFriends: userData.mutual_friends_count,
           location: userData.location,
           website: userData.website,
@@ -309,6 +313,33 @@ export default function UserProfile() {
 
           {/* Sidebar Info */}
           <div className="space-y-6">
+            {/* Karma Card */}
+            <div className="bg-gradient-to-br from-primary-600/20 to-purple-600/20 rounded-xl p-6 border border-primary-500/30">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-2 bg-primary-500/20 rounded-lg">
+                  <ArrowTrendingUpIcon className="h-6 w-6 text-primary-400" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Karma</p>
+                  <p className="text-2xl font-bold text-white">
+                    {(profile.karma ?? 0).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              {profile.karma > 100 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <FireIcon className="h-4 w-4 text-orange-500" />
+                  <span className="text-orange-400">
+                    {profile.karma > 10000 
+                      ? 'Legendary contributor' 
+                      : profile.karma > 1000 
+                        ? 'Top contributor' 
+                        : 'Active contributor'}
+                  </span>
+                </div>
+              )}
+            </div>
+
             <div className="bg-dark-800 rounded-xl p-6 space-y-4">
               <div className="flex items-center gap-3 text-gray-400">
                 <CalendarDaysIcon className="h-5 w-5" />

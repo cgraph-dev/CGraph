@@ -27,6 +27,7 @@ import PluginMarketplace from '@/pages/forums/PluginMarketplace';
 import Settings from '@/pages/settings/Settings';
 import Notifications from '@/pages/notifications/Notifications';
 import UserProfile from '@/pages/profile/UserProfile';
+import UserLeaderboard from '@/pages/community/UserLeaderboard';
 import NotFound from '@/pages/NotFound';
 
 // Initialize auth check on app load
@@ -168,8 +169,12 @@ export default function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="settings/:section" element={<Settings />} />
 
+          {/* Community */}
+          <Route path="community/leaderboard" element={<UserLeaderboard />} />
+
           {/* User Profile */}
           <Route path="user/:userId" element={<UserProfile />} />
+          <Route path="u/:userId" element={<UserProfile />} />
         </Route>
 
         {/* 404 */}

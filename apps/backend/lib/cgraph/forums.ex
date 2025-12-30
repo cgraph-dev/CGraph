@@ -673,6 +673,13 @@ defmodule Cgraph.Forums do
         from(p in Post, where: p.id == ^post.id)
         |> Repo.update_all(inc: [upvotes: inc_up, downvotes: inc_down, score: vote_value])
 
+        # Update post author's karma (only for upvotes, downvotes subtract)
+        if post.author_id && post.author_id != user.id do
+          karma_change = vote_value
+          from(u in Cgraph.Accounts.User, where: u.id == ^post.author_id)
+          |> Repo.update_all(inc: [karma: karma_change])
+        end
+
         {:ok, vote}
         
       error -> error
@@ -681,6 +688,7 @@ defmodule Cgraph.Forums do
 
   defp update_vote(existing, post, new_type) do
     # Vote schema uses 'value' field (1 or -1), not 'vote_type'
+    old_value = existing.value
     new_value = if new_type == :up, do: 1, else: -1
     
     {:ok, vote} = existing
@@ -694,6 +702,13 @@ defmodule Cgraph.Forums do
 
     from(p in Post, where: p.id == ^post.id)
     |> Repo.update_all(inc: [upvotes: upvote_change, downvotes: downvote_change, score: score_change])
+
+    # Update post author's karma (karma swing is the difference between new and old vote)
+    if post.author_id do
+      karma_change = new_value - old_value
+      from(u in Cgraph.Accounts.User, where: u.id == ^post.author_id)
+      |> Repo.update_all(inc: [karma: karma_change])
+    end
 
     {:ok, vote}
   end
@@ -712,6 +727,13 @@ defmodule Cgraph.Forums do
 
         from(p in Post, where: p.id == ^post.id)
         |> Repo.update_all(inc: [upvotes: upvote_change, downvotes: downvote_change, score: score_change])
+
+        # Remove karma from post author
+        if post.author_id do
+          karma_change = -vote.value  # Reverse the karma effect
+          from(u in Cgraph.Accounts.User, where: u.id == ^post.author_id)
+          |> Repo.update_all(inc: [karma: karma_change])
+        end
 
         Repo.delete(vote)
     end
@@ -981,6 +1003,7 @@ defmodule Cgraph.Forums do
   """
   def vote_on_comment(user, comment, vote_type) do
     existing = Repo.get_by(Vote, user_id: user.id, comment_id: comment.id)
+    vote_value = if vote_type == :up, do: 1, else: -1
 
     case existing do
       nil ->
@@ -994,7 +1017,13 @@ defmodule Cgraph.Forums do
 
         {inc_up, inc_down} = if vote_type == :up, do: {1, 0}, else: {0, 1}
         from(c in Comment, where: c.id == ^comment.id)
-        |> Repo.update_all(inc: [upvotes: inc_up, downvotes: inc_down, score: if(vote_type == :up, do: 1, else: -1)])
+        |> Repo.update_all(inc: [upvotes: inc_up, downvotes: inc_down, score: vote_value])
+
+        # Update comment author's karma
+        if comment.author_id && comment.author_id != user.id do
+          from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
+          |> Repo.update_all(inc: [karma: vote_value])
+        end
 
         {:ok, vote}
 
@@ -1002,6 +1031,7 @@ defmodule Cgraph.Forums do
         {:ok, existing}
 
       _ ->
+        old_vote_type = existing.vote_type
         {:ok, vote} = existing
           |> Ecto.Changeset.change(vote_type: to_string(vote_type))
           |> Repo.update()
@@ -1009,6 +1039,14 @@ defmodule Cgraph.Forums do
         score_change = if vote_type == :up, do: 2, else: -2
         from(c in Comment, where: c.id == ^comment.id)
         |> Repo.update_all(inc: [score: score_change])
+
+        # Update comment author's karma (swing from old to new)
+        if comment.author_id do
+          old_value = if old_vote_type == "up", do: 1, else: -1
+          karma_change = vote_value - old_value
+          from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
+          |> Repo.update_all(inc: [karma: karma_change])
+        end
 
         {:ok, vote}
     end
@@ -1021,9 +1059,17 @@ defmodule Cgraph.Forums do
     case Repo.get_by(Vote, user_id: user.id, comment_id: comment.id) do
       nil -> {:ok, :no_vote}
       vote ->
-        score_change = if vote.vote_type == "up", do: -1, else: 1
+        vote_value = if vote.vote_type == "up", do: 1, else: -1
+        score_change = -vote_value
         from(c in Comment, where: c.id == ^comment.id)
         |> Repo.update_all(inc: [score: score_change])
+
+        # Remove karma from comment author
+        if comment.author_id do
+          from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
+          |> Repo.update_all(inc: [karma: -vote_value])
+        end
+
         Repo.delete(vote)
     end
   end

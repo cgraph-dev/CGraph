@@ -361,6 +361,134 @@ All components exported from:
    - Verify all API calls work
    - Test forum browsing and post viewing
 
+5. **Karma System:**
+   - Upvote a post and verify author's karma increases
+   - Downvote a post and verify author's karma decreases
+   - Change vote direction and verify karma swing (±2)
+   - Remove vote and verify karma reverts
+
+6. **User Leaderboard:**
+   - Navigate to `/community/leaderboard`
+   - Verify top users are sorted by karma
+   - Test pagination with Next/Previous buttons
+   - Click on a user to navigate to their profile
+
+---
+
+## Karma & Reputation System
+
+### Overview
+A Reddit-style karma system that tracks user reputation based on community engagement. Users earn karma when their posts and comments receive upvotes, and lose karma when receiving downvotes.
+
+### Backend Changes
+
+#### User Karma Tracking
+**Field Added:** `karma` field on User model (integer, default 0)
+
+#### Karma Updates on Votes
+When voting on posts or comments, the author's karma is automatically updated:
+
+```elixir
+# In forums.ex - create_vote/2
+# Increments author karma by +1 for upvote, -1 for downvote
+update_author_karma(post.author_id, value)
+
+# In forums.ex - update_vote/2  
+# Swings karma by ±2 when changing vote direction
+swing = (new_value - old_value)  # Results in +2 or -2
+update_author_karma(author_id, swing)
+
+# In forums.ex - remove_vote/2
+# Reverses karma when vote is removed
+update_author_karma(author_id, -vote.value)
+```
+
+**Files Modified:**
+- `apps/backend/lib/cgraph/forums.ex` - Vote functions updated
+
+### User API Updates
+
+#### Karma in User Responses
+The user API now includes karma, verification, and premium status:
+
+```elixir
+# user_json.ex - user_data/1 and public_profile/1
+%{
+  karma: user.karma || 0,
+  is_verified: user.is_verified || false,
+  is_premium: user.is_premium || false,
+  # ... other fields
+}
+```
+
+**Files Modified:**
+- `apps/backend/lib/cgraph_web/controllers/api/v1/user_json.ex`
+
+### User Leaderboard
+
+#### Backend
+New endpoint to retrieve top users ranked by karma:
+
+```elixir
+# GET /api/v1/users/leaderboard?page=1&limit=25
+def leaderboard(conn, params) do
+  page = Map.get(params, "page", "1") |> String.to_integer()
+  limit = Map.get(params, "limit", "25") |> String.to_integer() |> min(100)
+  
+  {users, meta} = Accounts.list_top_users_by_karma(page: page, limit: limit)
+  render(conn, :leaderboard, users: users, meta: meta)
+end
+```
+
+**Files Modified:**
+- `apps/backend/lib/cgraph/accounts.ex` - Added `list_top_users_by_karma/1`
+- `apps/backend/lib/cgraph_web/controllers/api/v1/user_controller.ex` - Added `leaderboard/2`
+- `apps/backend/lib/cgraph_web/controllers/api/v1/user_json.ex` - Added `leaderboard/1` and `leaderboard_entry/2`
+- `apps/backend/lib/cgraph_web/router.ex` - Added route
+
+#### Frontend
+New User Leaderboard page at `/community/leaderboard`:
+
+**Features:**
+- Top 3 spotlight with podium-style display
+- Full ranked list with user avatars and karma
+- Pagination controls
+- Navigation to user profiles
+- Sidebar link with trophy icon
+
+**Files Created:**
+- `apps/web/src/pages/community/UserLeaderboard.tsx`
+
+**Files Modified:**
+- `apps/web/src/App.tsx` - Added route and import
+- `apps/web/src/layouts/AppLayout.tsx` - Added leaderboard to sidebar
+- `apps/web/src/pages/forums/Forums.tsx` - Added "Top Users" quick link
+
+### Profile Page Updates
+
+#### Karma Display
+User profile now displays karma with visual indicators:
+
+```tsx
+// UserProfile.tsx
+<div className="flex items-center gap-2">
+  <TrophyIcon className="h-5 w-5 text-yellow-500" />
+  <span className="text-lg font-semibold text-white">
+    {user.karma >= 0 ? '+' : ''}{formatNumber(user.karma)}
+  </span>
+  <span className="text-sm text-gray-400">karma</span>
+</div>
+```
+
+**Features:**
+- Trophy icon with golden color
+- Formatted number (1.2K, 1.5M, etc.)
+- Positive/negative indicator
+- Additional stats display (post count, comment count)
+
+**Files Modified:**
+- `apps/web/src/pages/profile/UserProfile.tsx`
+
 ---
 
 *Last Updated: Current Session*

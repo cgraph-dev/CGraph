@@ -19,6 +19,13 @@ defmodule CgraphWeb.API.V1.UserJSON do
     %{data: public_profile(user)}
   end
 
+  def leaderboard(%{users: users, meta: meta}) do
+    %{
+      data: Enum.with_index(users, 1) |> Enum.map(fn {user, rank} -> leaderboard_entry(user, rank) end),
+      meta: meta
+    }
+  end
+
   def sessions(%{sessions: sessions, current_token: current_token}) do
     %{
       data: Enum.map(sessions, fn session ->
@@ -45,12 +52,16 @@ defmodule CgraphWeb.API.V1.UserJSON do
       username: user.username,
       display_name: user.display_name,
       avatar_url: user.avatar_url,
+      banner_url: user.banner_url,
       bio: user.bio,
       status: user.status,
       status_message: user.status_message,
       wallet_address: user.wallet_address,
       email_verified_at: user.email_verified_at,
       two_factor_enabled: user.totp_enabled,
+      karma: user.karma || 0,
+      is_verified: user.is_verified || false,
+      is_premium: user.is_premium || false,
       created_at: user.inserted_at
     }
   end
@@ -64,10 +75,26 @@ defmodule CgraphWeb.API.V1.UserJSON do
       username: user.username,
       display_name: user.display_name,
       avatar_url: user.avatar_url,
+      banner_url: user.banner_url,
       bio: user.bio,
       status: user.status,
       status_message: user.status_message,
+      karma: user.karma || 0,
+      is_verified: user.is_verified || false,
+      is_premium: user.is_premium || false,
       created_at: user.inserted_at
+    }
+  end
+
+  defp leaderboard_entry(user, rank) do
+    %{
+      rank: rank,
+      id: user.id,
+      username: user.username,
+      display_name: user.display_name,
+      avatar_url: user.avatar_url,
+      karma: user.karma || 0,
+      is_verified: user.is_verified || false
     }
   end
 end

@@ -129,4 +129,19 @@ defmodule CgraphWeb.API.V1.UserController do
       render(conn, :profile, user: user)
     end
   end
+
+  @doc """
+  Get top users by karma (leaderboard).
+  """
+  def leaderboard(conn, params) do
+    page = Map.get(params, "page", "1") |> String.to_integer()
+    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(100)
+
+    {users, meta} = Accounts.list_top_users_by_karma(
+      page: page,
+      per_page: per_page
+    )
+
+    render(conn, :leaderboard, users: users, meta: meta)
+  end
 end

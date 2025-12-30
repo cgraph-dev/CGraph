@@ -125,6 +125,7 @@ defmodule CgraphWeb.Router do
     post "/settings/reset", SettingsController, :reset
 
     # Users
+    get "/users/leaderboard", UserController, :leaderboard
     resources "/users", UserController, only: [:index, :show]
     get "/users/:username/profile", UserController, :profile
 

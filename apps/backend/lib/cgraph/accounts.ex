@@ -328,6 +328,34 @@ defmodule Cgraph.Accounts do
   end
 
   @doc """
+  List top users by karma with pagination.
+  """
+  def list_top_users_by_karma(opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 20)
+
+    query = from u in User,
+      where: u.deleted_at |> is_nil(),
+      order_by: [desc: u.karma, asc: u.username]
+
+    total = Repo.aggregate(query, :count, :id)
+    
+    users = query
+      |> limit(^per_page)
+      |> offset(^((page - 1) * per_page))
+      |> Repo.all()
+
+    meta = %{
+      page: page,
+      per_page: per_page,
+      total: total,
+      total_pages: ceil(total / per_page)
+    }
+
+    {users, meta}
+  end
+
+  @doc """
   Update a user.
   """
   def update_user(user, attrs) do
