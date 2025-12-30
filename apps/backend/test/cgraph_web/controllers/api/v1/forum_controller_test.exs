@@ -175,7 +175,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
   describe "POST /api/v1/forums/:forum_id/posts" do
     setup %{conn: conn} do
       user = user_fixture()
-      forum = forum_fixture()
+      forum = forum_fixture(user)  # Pass user to make them the owner/member
       conn = log_in_user(conn, user)
       
       %{conn: conn, user: user, forum: forum}
@@ -212,7 +212,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
   describe "POST /api/v1/forums/:forum_id/posts/:id/vote" do
     setup %{conn: conn} do
       user = user_fixture()
-      forum = forum_fixture()
+      forum = forum_fixture(user)  # Pass user to make them the owner/member
       %{post: post} = post_fixture(forum)
       conn = log_in_user(conn, user)
       
@@ -278,7 +278,7 @@ defmodule CgraphWeb.API.V1.CommentControllerTest do
   describe "POST /api/v1/forums/:forum_id/posts/:post_id/comments" do
     setup %{conn: conn} do
       user = user_fixture()
-      forum = forum_fixture()
+      forum = forum_fixture(user)  # Pass user to make them the owner/member
       %{post: post} = post_fixture(forum)
       conn = log_in_user(conn, user)
       

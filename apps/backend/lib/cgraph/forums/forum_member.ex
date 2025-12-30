@@ -72,7 +72,7 @@ defmodule Cgraph.Forums.ForumMember do
   Changeset for creating a new forum membership.
   """
   def changeset(member, attrs) do
-    now = DateTime.utc_now()
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
     
     member
     |> cast(attrs, [

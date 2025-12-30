@@ -200,7 +200,7 @@ defmodule Cgraph.Forums do
   Check if a user is a member of a forum.
   """
   def is_member?(forum_id, user_id) do
-    query = from fm in "forum_members",
+    query = from fm in ForumMember,
       where: fm.forum_id == ^forum_id,
       where: fm.user_id == ^user_id,
       limit: 1
@@ -368,7 +368,7 @@ defmodule Cgraph.Forums do
           |> ForumMember.changeset(%{
             forum_id: forum.id,
             user_id: user.id,
-            joined_at: DateTime.utc_now()
+            joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
           })
           |> Repo.insert()
         
@@ -1799,7 +1799,7 @@ defmodule Cgraph.Forums do
         |> ForumMember.changeset(%{
           forum_id: forum_id,
           user_id: user_id,
-          joined_at: DateTime.utc_now()
+          joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
         })
         |> Repo.insert()
       

@@ -299,27 +299,36 @@ defmodule Cgraph.ForumsTest do
   describe "subscriptions" do
     setup %{user: user} do
       {:ok, forum} = Forums.create_forum(user, %{name: "test_forum", slug: "test-forum"})
-      %{user: user, forum: forum}
+      
+      # Create a separate user for subscription tests (not the forum owner)
+      {:ok, subscriber} = Accounts.create_user(%{
+        username: "subscriber_user",
+        email: "subscriber@example.com",
+        password: "ValidPassword123!",
+        password_confirmation: "ValidPassword123!"
+      })
+      
+      %{user: user, forum: forum, subscriber: subscriber}
     end
 
-    test "subscribe/2 subscribes user to forum", %{user: user, forum: forum} do
-      assert {:ok, subscription} = Forums.subscribe(forum, user)
-      assert subscription.user_id == user.id
+    test "subscribe/2 subscribes user to forum", %{subscriber: subscriber, forum: forum} do
+      assert {:ok, subscription} = Forums.subscribe(forum, subscriber)
+      assert subscription.user_id == subscriber.id
       assert subscription.forum_id == forum.id
     end
 
-    test "unsubscribe/2 removes subscription", %{user: user, forum: forum} do
-      {:ok, _} = Forums.subscribe(forum, user)
+    test "unsubscribe/2 removes subscription", %{subscriber: subscriber, forum: forum} do
+      {:ok, _} = Forums.subscribe(forum, subscriber)
       
-      assert {:ok, _} = Forums.unsubscribe(forum, user)
+      assert {:ok, _} = Forums.unsubscribe(forum, subscriber)
     end
 
-    test "is_subscribed?/2 checks subscription status", %{user: user, forum: forum} do
-      assert Forums.is_subscribed?(forum, user) == false
+    test "is_subscribed?/2 checks subscription status", %{subscriber: subscriber, forum: forum} do
+      assert Forums.is_subscribed?(forum, subscriber) == false
       
-      {:ok, _} = Forums.subscribe(forum, user)
+      {:ok, _} = Forums.subscribe(forum, subscriber)
       
-      assert Forums.is_subscribed?(forum, user) == true
+      assert Forums.is_subscribed?(forum, subscriber) == true
     end
   end
 end

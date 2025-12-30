@@ -116,6 +116,7 @@ interface ForumState {
   forums: Forum[];
   posts: Post[];
   currentPost: Post | null;
+  currentForum: Forum | null;
   comments: Record<string, Comment[]>;
   subscribedForums: Forum[];
   // Leaderboard
@@ -187,6 +188,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
   forums: [],
   posts: [],
   currentPost: null,
+  currentForum: null,
   comments: {},
   subscribedForums: [],
   leaderboard: [],
@@ -223,6 +225,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
       if (rawData) {
         const forum = mapForumFromApi(rawData);
         set((state) => ({
+          currentForum: forum,
           forums: state.forums.some((f) => f.id === forum.id)
             ? state.forums.map((f) => (f.id === forum.id ? forum : f))
             : [...state.forums, forum],

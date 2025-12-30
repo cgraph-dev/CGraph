@@ -63,7 +63,6 @@ export default function ForumPost() {
       fetchForum(forumSlug);
     }
   }, [forumSlug, currentForum, fetchForum]);
-  }, [postId, fetchPost, fetchComments]);
 
   const handleVote = async (type: 'post' | 'comment', id: string, value: 1 | -1, currentVote: 1 | -1 | null) => {
     const newValue = currentVote === value ? null : value;
@@ -313,17 +312,17 @@ export default function ForumPost() {
                 >
                   {/* Moderation Actions - Only for moderators/owners */}
                   {(currentForum?.ownerId === user?.id || 
-                    currentForum?.moderators?.some(m => m.id === user?.id)) && (
+                    currentForum?.moderators?.some((m: { id: string }) => m.id === user?.id)) && (
                     <>
                       <DropdownItem
                         onClick={async () => {
                           if (!currentPost.forum?.id) return;
                           try {
                             if (currentPost.isPinned) {
-                              await unpinPost(currentPost.id, currentPost.forum.id);
+                              await unpinPost(currentPost.forum.id, currentPost.id);
                               toast.success('Post unpinned');
                             } else {
-                              await pinPost(currentPost.id, currentPost.forum.id);
+                              await pinPost(currentPost.forum.id, currentPost.id);
                               toast.success('Post pinned');
                             }
                             fetchPost(currentPost.id);
@@ -337,12 +336,13 @@ export default function ForumPost() {
                       </DropdownItem>
                       <DropdownItem
                         onClick={async () => {
+                          if (!currentPost.forum?.id) return;
                           try {
                             if (currentPost.isLocked) {
-                              await unlockPost(currentPost.id);
+                              await unlockPost(currentPost.forum.id, currentPost.id);
                               toast.success('Post unlocked', 'Users can now comment on this post');
                             } else {
-                              await lockPost(currentPost.id);
+                              await lockPost(currentPost.forum.id, currentPost.id);
                               toast.success('Post locked', 'New comments are disabled');
                             }
                             fetchPost(currentPost.id);
