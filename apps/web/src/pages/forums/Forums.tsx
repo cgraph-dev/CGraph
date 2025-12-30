@@ -16,6 +16,7 @@ import {
   ChevronDownIcon,
   TrophyIcon,
   SparklesIcon,
+  LockClosedIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowUpIcon as ArrowUpIconSolid, ArrowDownIcon as ArrowDownIconSolid } from '@heroicons/react/24/solid';
 
@@ -375,7 +376,12 @@ export default function Forums() {
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">c/{forum.slug}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-medium text-white truncate">c/{forum.slug}</p>
+                    {!forum.isPublic && (
+                      <LockClosedIcon className="h-3 w-3 text-yellow-500 flex-shrink-0" />
+                    )}
+                  </div>
                   <p className="text-xs text-gray-500">
                     {(forum.memberCount ?? 0).toLocaleString()} members
                   </p>

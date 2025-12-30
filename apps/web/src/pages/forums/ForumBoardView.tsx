@@ -191,19 +191,35 @@ export default function ForumBoardView() {
                   <p className="mt-2 text-gray-300">{forum.description}</p>
                 )}
 
-                {/* Stats */}
-                <div className="mt-3 flex items-center gap-6 text-sm text-gray-400">
-                  <span className="flex items-center gap-1">
+                {/* Stats & Badges */}
+                <div className="mt-3 flex items-center flex-wrap gap-4 text-sm">
+                  {/* Privacy Badge */}
+                  {!forum.isPublic && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium">
+                      <LockClosedIcon className="h-3 w-3" />
+                      Private
+                    </span>
+                  )}
+                  
+                  {/* Member count */}
+                  <span className="flex items-center gap-1.5 text-gray-400">
                     <UserIcon className="h-4 w-4" />
-                    {(forum.memberCount ?? 0).toLocaleString()} members
+                    <span className="font-medium text-white">{(forum.memberCount ?? 0).toLocaleString()}</span>
+                    <span>members</span>
                   </span>
-                  <span className="flex items-center gap-1">
+                  
+                  {/* Thread count */}
+                  <span className="flex items-center gap-1.5 text-gray-400">
                     <ChatBubbleLeftRightIcon className="h-4 w-4" />
-                    {(forum as any).thread_count?.toLocaleString() || '0'} threads
+                    <span className="font-medium text-white">{(forum as any).thread_count?.toLocaleString() || '0'}</span>
+                    <span>threads</span>
                   </span>
-                  <span className="flex items-center gap-1">
-                    <FireIcon className="h-4 w-4" />
-                    Rank #{(forum as any).rank || '?'}
+                  
+                  {/* Forum score */}
+                  <span className="flex items-center gap-1.5 text-gray-400">
+                    <FireIcon className="h-4 w-4 text-orange-400" />
+                    <span className="font-medium text-orange-400">{forum.score ?? 0}</span>
+                    <span>score</span>
                   </span>
                 </div>
               </div>

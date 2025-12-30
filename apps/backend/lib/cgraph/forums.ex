@@ -348,19 +348,42 @@ defmodule Cgraph.Forums do
   end
 
   @doc """
-  Subscribe to forum.
+  Subscribe to forum (also creates membership).
+  This serves as the "Join" functionality - creates both subscription and membership.
   """
   def subscribe_to_forum(user, forum) do
-    %Subscription{}
-    |> Subscription.changeset(%{
-      forum_id: forum.id,
-      user_id: user.id
-    })
-    |> Repo.insert(on_conflict: :nothing, conflict_target: [:forum_id, :user_id])
-    |> case do
-      {:ok, subscription} -> {:ok, subscription}
-      {:error, changeset} -> {:error, changeset}
-    end
+    Repo.transaction(fn ->
+      # Create subscription
+      subscription_result = %Subscription{}
+      |> Subscription.changeset(%{
+        forum_id: forum.id,
+        user_id: user.id
+      })
+      |> Repo.insert(on_conflict: :nothing, conflict_target: [:forum_id, :user_id])
+
+      # Create membership if not exists
+      case Repo.get_by(ForumMember, forum_id: forum.id, user_id: user.id) do
+        nil ->
+          %ForumMember{}
+          |> ForumMember.changeset(%{
+            forum_id: forum.id,
+            user_id: user.id,
+            joined_at: DateTime.utc_now()
+          })
+          |> Repo.insert()
+        
+        _member -> :ok
+      end
+
+      # Increment member count
+      from(f in Forum, where: f.id == ^forum.id)
+      |> Repo.update_all(inc: [member_count: 1])
+
+      case subscription_result do
+        {:ok, subscription} -> subscription
+        {:error, changeset} -> Repo.rollback(changeset)
+      end
+    end)
   end
 
   @doc """
@@ -369,16 +392,41 @@ defmodule Cgraph.Forums do
   def subscribe(forum, user), do: subscribe_to_forum(user, forum)
 
   @doc """
-  Unsubscribe from forum.
+  Unsubscribe from forum (also removes membership).
+  This serves as the "Leave" functionality - removes both subscription and membership.
+  Note: Forum owners cannot unsubscribe from their own forum.
   """
   def unsubscribe_from_forum(user, forum) do
-    query = from s in Subscription,
-      where: s.forum_id == ^forum.id,
-      where: s.user_id == ^user.id
+    # Prevent owner from leaving their own forum
+    if forum.owner_id == user.id do
+      {:error, :cannot_leave_own_forum}
+    else
+      Repo.transaction(fn ->
+        # Remove subscription
+        subscription_query = from s in Subscription,
+          where: s.forum_id == ^forum.id,
+          where: s.user_id == ^user.id
+        
+        subscription_deleted = case Repo.delete_all(subscription_query) do
+          {count, _} when count > 0 -> true
+          {0, _} -> false
+        end
 
-    case Repo.delete_all(query) do
-      {count, _} when count > 0 -> {:ok, :unsubscribed}
-      {0, _} -> {:ok, :not_subscribed}
+        # Remove membership
+        member_query = from m in ForumMember,
+          where: m.forum_id == ^forum.id,
+          where: m.user_id == ^user.id
+        
+        Repo.delete_all(member_query)
+
+        # Decrement member count if subscription was deleted
+        if subscription_deleted do
+          from(f in Forum, where: f.id == ^forum.id)
+          |> Repo.update_all(inc: [member_count: -1])
+        end
+
+        :unsubscribed
+      end)
     end
   end
 
