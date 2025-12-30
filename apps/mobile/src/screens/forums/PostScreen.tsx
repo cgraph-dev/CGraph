@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
@@ -15,6 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { PostCardSkeleton, CommentSkeleton } from '../../components/Skeleton';
 import api from '../../lib/api';
 import { ForumsStackParamList, Post, Comment } from '../../types';
 
@@ -139,8 +139,16 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
   
   if (isLoading) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
-        <ActivityIndicator size="large" color={colors.primary} />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <ScrollView style={styles.scrollView} contentContainerStyle={{ padding: 16 }}>
+          <PostCardSkeleton />
+          <View style={{ marginTop: 24 }}>
+            <Text style={[styles.commentsTitle, { color: colors.text }]}>Comments</Text>
+            {[1, 2, 3].map((i) => (
+              <CommentSkeleton key={i} />
+            ))}
+          </View>
+        </ScrollView>
       </View>
     );
   }

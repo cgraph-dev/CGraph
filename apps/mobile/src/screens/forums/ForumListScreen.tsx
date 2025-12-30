@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
+import { ForumCardSkeleton } from '../../components/Skeleton';
 import api from '../../lib/api';
 import { ForumsStackParamList, Forum } from '../../types';
 
@@ -22,10 +23,11 @@ export default function ForumListScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const [forums, setForums] = useState<Forum[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     fetchForums();
-  }, []);
+  }, [];
   
   const fetchForums = async () => {
     try {
@@ -33,6 +35,8 @@ export default function ForumListScreen({ navigation }: Props) {
       setForums(response.data.data || []);
     } catch (error) {
       console.error('Error fetching forums:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -94,6 +98,22 @@ export default function ForumListScreen({ navigation }: Props) {
       </View>
     </View>
   );
+  
+  const renderSkeletons = () => (
+    <View style={{ padding: 16, gap: 12 }}>
+      {[1, 2, 3, 4, 5].map((i) => (
+        <ForumCardSkeleton key={i} />
+      ))}
+    </View>
+  );
+  
+  if (isLoading) {
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        {renderSkeletons()}
+      </View>
+    );
+  }
   
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

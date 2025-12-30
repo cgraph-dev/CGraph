@@ -8,6 +8,9 @@ export interface User {
   bio?: string;
   status: 'online' | 'idle' | 'dnd' | 'offline' | 'invisible';
   wallet_address?: string;
+  karma?: number;
+  is_verified?: boolean;
+  is_premium?: boolean;
   inserted_at: string;
   updated_at: string;
 }
@@ -18,6 +21,8 @@ export interface UserBasic {
   display_name?: string;
   avatar_url?: string;
   status: string;
+  karma?: number;
+  is_verified?: boolean;
 }
 
 // Message types
@@ -209,6 +214,7 @@ export type FriendsStackParamList = {
   AddFriend: undefined;
   FriendRequests: undefined;
   UserProfile: { userId: string };
+  Leaderboard: undefined;
 };
 
 export type SearchStackParamList = {

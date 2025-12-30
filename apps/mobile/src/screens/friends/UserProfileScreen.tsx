@@ -6,6 +6,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
@@ -17,10 +18,18 @@ type RouteProps = RouteProp<FriendsStackParamList, 'UserProfile'>;
 interface UserProfile extends UserBasic {
   bio?: string;
   created_at?: string;
+  karma?: number;
+  is_verified?: boolean;
   is_friend?: boolean;
   friend_request_sent?: boolean;
   friend_request_received?: boolean;
 }
+
+const formatKarma = (karma: number): string => {
+  if (karma >= 1000000) return `${(karma / 1000000).toFixed(1)}M`;
+  if (karma >= 1000) return `${(karma / 1000).toFixed(1)}K`;
+  return karma.toString();
+};
 
 export default function UserProfileScreen() {
   const navigation = useNavigation();
@@ -148,6 +157,25 @@ export default function UserProfileScreen() {
           <Text style={[styles.username, { color: colors.textSecondary }]}>
             @{user.username}
           </Text>
+          
+          {/* Karma & Verified Badge */}
+          <View style={styles.badgesRow}>
+            {user.karma !== undefined && (
+              <View style={[styles.karmaBadge, { backgroundColor: colors.surfaceHover }]}>
+                <Ionicons name="trophy" size={16} color="#F59E0B" />
+                <Text style={[styles.karmaText, { color: colors.text }]}>
+                  {formatKarma(user.karma)} karma
+                </Text>
+              </View>
+            )}
+            {user.is_verified && (
+              <View style={[styles.verifiedBadge, { backgroundColor: colors.primary + '20' }]}>
+                <Ionicons name="checkmark-circle" size={16} color={colors.primary} />
+                <Text style={[styles.verifiedText, { color: colors.primary }]}>Verified</Text>
+              </View>
+            )}
+          </View>
+          
           {user.bio && (
             <Text style={[styles.bio, { color: colors.text }]}>
               {user.bio}
@@ -238,6 +266,38 @@ const styles = StyleSheet.create({
   username: {
     fontSize: 16,
     marginTop: 4,
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 12,
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  karmaBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  karmaText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  verifiedBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  verifiedText: {
+    fontSize: 13,
+    fontWeight: '600',
   },
   bio: {
     fontSize: 14,

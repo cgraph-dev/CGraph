@@ -151,6 +151,16 @@ export default function FriendListScreen() {
             </View>
           )}
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionButton, { backgroundColor: '#F59E0B20' }]}
+          onPress={() => navigation.navigate('Leaderboard')}
+        >
+          <Ionicons name="trophy" size={20} color="#F59E0B" />
+          <Text style={[styles.actionButtonText, { color: '#F59E0B' }]}>
+            Top Users
+          </Text>
+        </TouchableOpacity>
       </View>
 
       {/* Friends List */}

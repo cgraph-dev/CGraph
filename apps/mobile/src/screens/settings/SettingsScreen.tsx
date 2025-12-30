@@ -18,6 +18,12 @@ type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'Settings'>;
 };
 
+const formatKarma = (karma: number): string => {
+  if (karma >= 1000000) return `${(karma / 1000000).toFixed(1)}M`;
+  if (karma >= 1000) return `${(karma / 1000).toFixed(1)}K`;
+  return karma.toString();
+};
+
 export default function SettingsScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const { user, logout } = useAuth();
@@ -116,6 +122,14 @@ export default function SettingsScreen({ navigation }: Props) {
           <Text style={[styles.username, { color: colors.textSecondary }]}>
             @{user?.username}
           </Text>
+          {user?.karma !== undefined && (
+            <View style={styles.karmaRow}>
+              <Ionicons name="trophy" size={14} color="#F59E0B" />
+              <Text style={[styles.karmaText, { color: colors.textSecondary }]}>
+                {formatKarma(user.karma)} karma
+              </Text>
+            </View>
+          )}
         </View>
         <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
       </TouchableOpacity>
@@ -210,6 +224,16 @@ const styles = StyleSheet.create({
   },
   username: {
     fontSize: 14,
+  },
+  karmaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 4,
+  },
+  karmaText: {
+    fontSize: 13,
+    fontWeight: '500',
   },
   section: {
     marginHorizontal: 16,

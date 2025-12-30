@@ -5,6 +5,7 @@ import FriendListScreen from '../screens/friends/FriendListScreen';
 import AddFriendScreen from '../screens/friends/AddFriendScreen';
 import FriendRequestsScreen from '../screens/friends/FriendRequestsScreen';
 import UserProfileScreen from '../screens/friends/UserProfileScreen';
+import LeaderboardScreen from '../screens/community/LeaderboardScreen';
 
 const Stack = createNativeStackNavigator<FriendsStackParamList>();
 
@@ -19,6 +20,7 @@ export default function FriendsNavigator() {
       <Stack.Screen name="AddFriend" component={AddFriendScreen} />
       <Stack.Screen name="FriendRequests" component={FriendRequestsScreen} />
       <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+      <Stack.Screen name="Leaderboard" component={LeaderboardScreen} />
     </Stack.Navigator>
   );
 }

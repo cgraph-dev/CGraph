@@ -28,6 +28,13 @@ export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as StatusBadge } from './StatusBadge';
 export { default as UserListItem } from './UserListItem';
 export { default as Toast } from './Toast';
+export { 
+  default as Skeleton,
+  ForumCardSkeleton,
+  PostCardSkeleton,
+  CommentSkeleton,
+  UserCardSkeleton,
+} from './Skeleton';
 export { default as Modal } from './Modal';
 export { default as Header } from './Header';
 export { default as IconButton } from './IconButton';
