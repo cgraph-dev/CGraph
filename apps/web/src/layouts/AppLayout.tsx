@@ -5,6 +5,7 @@ import { useChatStore } from '@/stores/chatStore';
 import { useGroupStore } from '@/stores/groupStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { socketManager } from '@/lib/socket';
+import { ToastContainer } from '@/components/ui';
 import {
   ChatBubbleLeftRightIcon,
   UserGroupIcon,
@@ -190,6 +191,9 @@ export default function AppLayout() {
       <main className="flex-1 flex overflow-hidden">
         <Outlet />
       </main>
+      
+      {/* Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 }

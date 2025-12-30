@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { formatDistanceToNow } from 'date-fns';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import Dropdown, { DropdownItem, DropdownDivider } from '@/components/Dropdown';
+import { toast } from '@/components/ui';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -317,13 +318,18 @@ export default function ForumPost() {
                       <DropdownItem
                         onClick={async () => {
                           if (!currentPost.forum?.id) return;
-                          if (currentPost.isPinned) {
-                            await unpinPost(currentPost.id, currentPost.forum.id);
-                          } else {
-                            await pinPost(currentPost.id, currentPost.forum.id);
+                          try {
+                            if (currentPost.isPinned) {
+                              await unpinPost(currentPost.id, currentPost.forum.id);
+                              toast.success('Post unpinned');
+                            } else {
+                              await pinPost(currentPost.id, currentPost.forum.id);
+                              toast.success('Post pinned');
+                            }
+                            fetchPost(currentPost.id);
+                          } catch {
+                            toast.error('Failed to update pin status');
                           }
-                          // Refresh the post
-                          fetchPost(currentPost.id);
                         }}
                         icon={<MapPinIcon className="h-4 w-4" />}
                       >
@@ -331,13 +337,18 @@ export default function ForumPost() {
                       </DropdownItem>
                       <DropdownItem
                         onClick={async () => {
-                          if (currentPost.isLocked) {
-                            await unlockPost(currentPost.id);
-                          } else {
-                            await lockPost(currentPost.id);
+                          try {
+                            if (currentPost.isLocked) {
+                              await unlockPost(currentPost.id);
+                              toast.success('Post unlocked', 'Users can now comment on this post');
+                            } else {
+                              await lockPost(currentPost.id);
+                              toast.success('Post locked', 'New comments are disabled');
+                            }
+                            fetchPost(currentPost.id);
+                          } catch {
+                            toast.error('Failed to update lock status');
                           }
-                          // Refresh the post
-                          fetchPost(currentPost.id);
                         }}
                         icon={currentPost.isLocked ? <LockOpenIcon className="h-4 w-4" /> : <LockClosedIcon className="h-4 w-4" />}
                       >
