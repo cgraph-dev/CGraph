@@ -84,6 +84,15 @@ defmodule Cgraph.Forums do
   Authorize an action on a forum.
   Actions: :view, :vote, :comment, :create_post, :moderate, :delete
   """
+  def authorize_action(nil, forum, action) do
+    # Anonymous users can only view public forums
+    if action == :view && forum.is_public do
+      :ok
+    else
+      {:error, :unauthorized}
+    end
+  end
+  
   def authorize_action(user, forum, action) do
     cond do
       action == :view && forum.is_public -> :ok
@@ -317,6 +326,63 @@ defmodule Cgraph.Forums do
     end
 
     total = Repo.aggregate(from(p in Post, where: p.forum_id == ^forum.id), :count, :id)
+    
+    posts = query
+      |> limit(^per_page)
+      |> offset(^((page - 1) * per_page))
+      |> Repo.all()
+      |> maybe_add_user_votes(user_id)
+
+    meta = %{page: page, per_page: per_page, total: total}
+    {posts, meta}
+  end
+
+  @doc """
+  List public feed of posts from all public forums.
+  Used for the main discovery page.
+  """
+  def list_public_feed(opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 25)
+    sort = Keyword.get(opts, :sort, "hot")
+    time_range = Keyword.get(opts, :time_range, "day")
+    user_id = Keyword.get(opts, :user_id)
+
+    # Only posts from public forums
+    query = from p in Post,
+      join: f in Forum, on: p.forum_id == f.id,
+      where: f.is_public == true,
+      where: is_nil(f.deleted_at),
+      preload: [:author, :category, forum: []]
+
+    # Apply time filter for "top" sort
+    query = if sort == "top" do
+      time_filter = case time_range do
+        "hour" -> DateTime.add(DateTime.utc_now(), -1, :hour)
+        "day" -> DateTime.add(DateTime.utc_now(), -1, :day)
+        "week" -> DateTime.add(DateTime.utc_now(), -7, :day)
+        "month" -> DateTime.add(DateTime.utc_now(), -30, :day)
+        "year" -> DateTime.add(DateTime.utc_now(), -365, :day)
+        _ -> nil
+      end
+      if time_filter do
+        from p in query, where: p.inserted_at >= ^time_filter
+      else
+        query
+      end
+    else
+      query
+    end
+
+    # Apply sort
+    query = case sort do
+      "new" -> from p in query, order_by: [desc: p.inserted_at]
+      "top" -> from p in query, order_by: [desc: p.score]
+      "controversial" -> from p in query, order_by: [desc: fragment("? + ?", p.upvotes, p.downvotes)]
+      _ -> from p in query, order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at)]
+    end
+
+    total = Repo.aggregate(from(p in Post, join: f in Forum, on: p.forum_id == f.id, where: f.is_public == true), :count, :id)
     
     posts = query
       |> limit(^per_page)

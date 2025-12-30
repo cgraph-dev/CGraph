@@ -14,7 +14,7 @@ defmodule CgraphWeb.API.V1.PostController do
   GET /api/v1/forums/:forum_id/posts
   """
   def index(conn, %{"forum_id" => forum_id} = params) do
-    user = conn.assigns.current_user
+    user = Map.get(conn.assigns, :current_user)
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
     sort = Map.get(params, "sort", "hot") # hot, new, top, controversial
@@ -22,12 +22,13 @@ defmodule CgraphWeb.API.V1.PostController do
     
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view) do
+      user_id = if user, do: user.id, else: nil
       {posts, meta} = Forums.list_posts(forum,
         page: page,
         per_page: per_page,
         sort: sort,
         category_id: category_id,
-        user_id: user.id # For vote status
+        user_id: user_id # For vote status
       )
       render(conn, :index, posts: posts, meta: meta)
     end
@@ -38,14 +39,16 @@ defmodule CgraphWeb.API.V1.PostController do
   GET /api/v1/forums/:forum_id/posts/:id
   """
   def show(conn, %{"forum_id" => forum_id, "id" => post_id}) do
-    user = conn.assigns.current_user
+    user = Map.get(conn.assigns, :current_user)
     
     with {:ok, forum} <- Forums.get_forum(forum_id),
-         :ok <- Forums.authorize_action(user, forum, :view),
-         {:ok, post} <- Forums.get_post(forum, post_id, user_id: user.id) do
-      # Increment view count
-      Forums.increment_post_views(post)
-      render(conn, :show, post: post)
+         :ok <- Forums.authorize_action(user, forum, :view) do
+      user_id = if user, do: user.id, else: nil
+      with {:ok, post} <- Forums.get_post(forum, post_id, user_id: user_id) do
+        # Increment view count
+        Forums.increment_post_views(post)
+        render(conn, :show, post: post)
+      end
     end
   end
 
@@ -265,6 +268,28 @@ defmodule CgraphWeb.API.V1.PostController do
       |> put_status(:created)
       |> render(:report, report: report)
     end
+  end
+
+  @doc """
+  Get aggregated post feed from all public forums.
+  GET /api/v1/posts/feed
+  """
+  def feed(conn, params) do
+    user = Map.get(conn.assigns, :current_user)
+    page = Map.get(params, "page", "1") |> String.to_integer()
+    per_page = Map.get(params, "per_page", "25") |> String.to_integer() |> min(50)
+    sort = Map.get(params, "sort", "hot")
+    time = Map.get(params, "time", "day")
+    
+    user_id = if user, do: user.id, else: nil
+    {posts, meta} = Forums.list_public_feed(
+      page: page,
+      per_page: per_page,
+      sort: sort,
+      time_range: time,
+      user_id: user_id
+    )
+    render(conn, :index, posts: posts, meta: meta)
   end
 
   # Private helpers

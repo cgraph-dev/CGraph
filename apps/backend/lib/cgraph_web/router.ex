@@ -85,6 +85,24 @@ defmodule CgraphWeb.Router do
     delete "/unlink", WalletAuthController, :unlink_wallet
   end
 
+  # Public API routes (no auth required, allows anonymous browsing)
+  scope "/api/v1", CgraphWeb.API.V1 do
+    pipe_through :api_relaxed
+
+    # Public forum browsing - forums are public by default
+    get "/forums", ForumController, :index
+    get "/forums/leaderboard", ForumController, :leaderboard
+    get "/forums/top", ForumController, :top
+    get "/forums/:id", ForumController, :show
+    
+    # Public posts browsing
+    get "/forums/:forum_id/posts", PostController, :index
+    get "/forums/:forum_id/posts/:id", PostController, :show
+    
+    # Public post feed (aggregated from all public forums)
+    get "/posts/feed", PostController, :feed
+  end
+
   # Authenticated API routes
   scope "/api/v1", CgraphWeb.API.V1 do
     pipe_through [:api, :api_auth]
@@ -137,16 +155,13 @@ defmodule CgraphWeb.Router do
     # Join group via invite
     post "/invites/:code/join", InviteController, :join
 
-    # Forum leaderboard (before resources to avoid conflict)
-    get "/forums/leaderboard", ForumController, :leaderboard
-    get "/forums/top", ForumController, :top
-    
     # Plugin marketplace (global, not forum-specific)
     get "/plugins/marketplace", PluginController, :marketplace
     get "/plugins/marketplace/:plugin_id", PluginController, :marketplace_show
 
     # Forums (Reddit-style discovery + MyBB-style hosting)
-    resources "/forums", ForumController do
+    # Note: GET /forums, /forums/:id, /forums/leaderboard, /forums/top are public (no auth required)
+    resources "/forums", ForumController, except: [:index, :show] do
       resources "/posts", PostController do
         post "/vote", PostController, :vote
         post "/save", PostController, :save

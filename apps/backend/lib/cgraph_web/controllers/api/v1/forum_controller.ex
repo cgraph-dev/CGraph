@@ -14,7 +14,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   GET /api/v1/forums
   """
   def index(conn, params) do
-    user = conn.assigns.current_user
+    user = Map.get(conn.assigns, :current_user)
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
     
@@ -29,7 +29,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   The :id parameter can be either a UUID or a slug.
   """
   def show(conn, %{"id" => forum_id_or_slug}) do
-    user = conn.assigns.current_user
+    user = Map.get(conn.assigns, :current_user)
     
     # Try to get forum by ID first, then by slug
     with {:ok, forum} <- get_forum_by_id_or_slug(forum_id_or_slug),
