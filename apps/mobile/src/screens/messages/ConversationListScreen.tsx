@@ -40,7 +40,7 @@ export default function ConversationListScreen({ navigation }: Props) {
   
   const fetchConversations = async () => {
     try {
-      const response = await api.get('/conversations');
+      const response = await api.get('/api/v1/conversations');
       setConversations(response.data.data || []);
     } catch (error) {
       console.error('Error fetching conversations:', error);

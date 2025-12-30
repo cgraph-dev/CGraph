@@ -33,7 +33,7 @@ export default function GroupScreen({ navigation, route }: Props) {
   
   const fetchGroup = async () => {
     try {
-      const response = await api.get(`/groups/${groupId}`);
+      const response = await api.get(`/api/v1/groups/${groupId}`);
       const groupData = response.data.data;
       setGroup(groupData);
       

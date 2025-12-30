@@ -50,7 +50,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   
   const fetchConversation = async () => {
     try {
-      const response = await api.get(`/conversations/${conversationId}`);
+      const response = await api.get(`/api/v1/conversations/${conversationId}`);
       const conv = response.data.data;
       setConversation(conv);
       
@@ -65,7 +65,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   
   const fetchMessages = async () => {
     try {
-      const response = await api.get(`/conversations/${conversationId}/messages`);
+      const response = await api.get(`/api/v1/conversations/${conversationId}/messages`);
       setMessages(response.data.data || []);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -99,7 +99,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     setInputText('');
     
     try {
-      const response = await api.post(`/conversations/${conversationId}/messages`, {
+      const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
         content,
       });
       setMessages((prev) => [...prev, response.data.data]);

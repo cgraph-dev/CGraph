@@ -3,9 +3,12 @@
   "compilerOptions": {
     "strict": true,
     "jsx": "react-native",
+    "lib": ["ES2022"],
+    "types": ["react-native"],
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "noEmit": true,
+    "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"],
       "@cgraph/shared-types": ["../../packages/shared-types/src"],

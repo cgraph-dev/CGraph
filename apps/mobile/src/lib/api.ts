@@ -2,7 +2,9 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 
-const API_URL = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:4000/api/v1';
+// API URL should NOT include /api/v1 - individual endpoints will include the full path
+// This matches the web app's API configuration for consistency
+const API_URL = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:4000';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -36,11 +38,11 @@ api.interceptors.response.use(
       try {
         const refreshToken = await SecureStore.getItemAsync('cgraph_refresh_token');
         if (refreshToken) {
-          const response = await axios.post(`${API_URL}/auth/refresh`, {
+          const response = await axios.post(`${API_URL}/api/v1/auth/refresh`, {
             refresh_token: refreshToken,
           });
           
-          const { token, refresh_token: newRefreshToken } = response.data.data;
+          const { token, refresh_token: newRefreshToken } = response.data.data || response.data;
           
           await SecureStore.setItemAsync('cgraph_auth_token', token);
           await SecureStore.setItemAsync('cgraph_refresh_token', newRefreshToken);

@@ -36,7 +36,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
     
     setIsLoading(true);
     try {
-      await api.post('/auth/forgot-password', { email });
+      await api.post('/api/v1/auth/forgot-password', { email });
       setSent(true);
     } catch (error: any) {
       Alert.alert(

@@ -362,3 +362,169 @@ export interface ChannelBasic {
   name: string;
   type: ChannelType;
 }
+
+// ============================================
+// Friendship Models
+// ============================================
+
+export interface Friendship {
+  id: string;
+  userId: string;
+  friendId: string;
+  status: FriendshipStatus;
+  createdAt: string;
+  acceptedAt: string | null;
+}
+
+export type FriendshipStatus = 'pending' | 'accepted' | 'blocked';
+
+export interface Friend {
+  id: string;
+  username: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  status: UserStatus;
+  statusMessage: string | null;
+  friendshipId: string;
+  since: string;
+}
+
+export interface FriendRequest {
+  id: string;
+  user: UserBasic;
+  type: 'incoming' | 'outgoing';
+  mutualFriendsCount?: number;
+  createdAt: string;
+}
+
+export interface FriendSuggestion {
+  user: UserBasic;
+  reason: string;
+  mutualFriendsCount: number;
+  mutualGroupsCount: number;
+}
+
+// ============================================
+// Forum Hosting Models (MyBB-style)
+// ============================================
+
+export interface HostedForum {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  iconUrl: string | null;
+  bannerUrl: string | null;
+  primaryColor: string;
+  accentColor: string;
+  customCss: string | null;
+  customHeader: string | null;
+  customFooter: string | null;
+  isPrivate: boolean;
+  isNsfw: boolean;
+  requireApproval: boolean;
+  ownerId: string;
+  owner: UserBasic;
+  memberCount: number;
+  threadCount: number;
+  postCount: number;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  hotScore: number;
+  category: ForumHostingCategory;
+  isFeatured: boolean;
+  boards: Board[];
+  myMembership: ForumMembership | null;
+  myVote: VoteValue;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ForumHostingCategory =
+  | 'general'
+  | 'gaming'
+  | 'technology'
+  | 'crypto'
+  | 'art'
+  | 'music'
+  | 'sports'
+  | 'business'
+  | 'education'
+  | 'entertainment'
+  | 'other';
+
+export interface Board {
+  id: string;
+  forumId: string;
+  parentId: string | null;
+  name: string;
+  slug: string;
+  description: string | null;
+  iconUrl: string | null;
+  position: number;
+  isLocked: boolean;
+  threadCount: number;
+  postCount: number;
+  lastPostAt: string | null;
+  lastPostTitle: string | null;
+  lastPostAuthor: UserBasic | null;
+  children: Board[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Thread {
+  id: string;
+  boardId: string;
+  authorId: string;
+  author: UserBasic;
+  title: string;
+  slug: string;
+  content: string;
+  isPinned: boolean;
+  isLocked: boolean;
+  isAnnouncement: boolean;
+  viewCount: number;
+  replyCount: number;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  lastReplyAt: string | null;
+  lastReplyBy: UserBasic | null;
+  myVote: VoteValue;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ThreadPost {
+  id: string;
+  threadId: string;
+  authorId: string;
+  author: UserBasic;
+  content: string;
+  isFirstPost: boolean;
+  isEdited: boolean;
+  editCount: number;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  myVote: VoteValue;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ForumMembership {
+  id: string;
+  forumId: string;
+  userId: string;
+  role: ForumMemberRole;
+  title: string | null;
+  postCount: number;
+  reputation: number;
+  isBanned: boolean;
+  bannedUntil: string | null;
+  joinedAt: string;
+}
+
+export type ForumMemberRole = 'member' | 'moderator' | 'admin' | 'owner';

@@ -51,7 +51,7 @@ export default function ProfileScreen({ navigation }: Props) {
       } as any);
       
       try {
-        const response = await api.post('/users/me/avatar', formData, {
+        const response = await api.post('/api/v1/me/avatar', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         updateUser(response.data.data);
@@ -64,7 +64,7 @@ export default function ProfileScreen({ navigation }: Props) {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const response = await api.patch('/users/me', {
+      const response = await api.put('/api/v1/me', {
         display_name: displayName.trim(),
         bio: bio.trim(),
       });

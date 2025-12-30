@@ -29,7 +29,7 @@ export default function GroupListScreen({ navigation }: Props) {
   
   const fetchGroups = async () => {
     try {
-      const response = await api.get('/groups');
+      const response = await api.get('/api/v1/groups');
       setGroups(response.data.data || []);
     } catch (error) {
       console.error('Error fetching groups:', error);

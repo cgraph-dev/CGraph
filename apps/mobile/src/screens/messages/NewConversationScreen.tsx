@@ -34,7 +34,7 @@ export default function NewConversationScreen({ navigation }: Props) {
     
     setIsSearching(true);
     try {
-      const response = await api.get(`/users/search?q=${encodeURIComponent(query)}`);
+      const response = await api.get(`/api/v1/search/users?q=${encodeURIComponent(query)}`);
       setUsers(response.data.data || []);
     } catch (error) {
       console.error('Error searching users:', error);
@@ -48,7 +48,7 @@ export default function NewConversationScreen({ navigation }: Props) {
     
     setIsCreating(true);
     try {
-      const response = await api.post('/conversations', {
+      const response = await api.post('/api/v1/conversations', {
         participant_ids: [userId],
       });
       navigation.replace('Conversation', { conversationId: response.data.data.id });

@@ -41,8 +41,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         // Verify token is still valid
         try {
-          const response = await api.get('/auth/me');
-          setUser(response.data.data.user);
+          const response = await api.get('/api/v1/me');
+          setUser(response.data.data?.user || response.data.user || response.data);
         } catch {
           // Token invalid, clear auth
           await clearAuth();
@@ -76,22 +76,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
   
   const login = async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
-    const { user: userData, tokens } = response.data;
+    const response = await api.post('/api/v1/auth/login', { email, password });
+    const { user: userData, tokens } = response.data.data || response.data;
     await saveAuth(tokens.access_token, tokens.refresh_token, userData);
   };
   
   const register = async (email: string, username: string, password: string) => {
-    const response = await api.post('/auth/register', { 
+    const response = await api.post('/api/v1/auth/register', { 
       user: { email, username, password }
     });
-    const { user: userData, tokens } = response.data;
+    const { user: userData, tokens } = response.data.data || response.data;
     await saveAuth(tokens.access_token, tokens.refresh_token, userData);
   };
   
   const logout = async () => {
     try {
-      await api.post('/auth/logout');
+      await api.post('/api/v1/auth/logout');
     } catch {
       // Ignore logout errors
     }

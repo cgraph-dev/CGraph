@@ -208,3 +208,84 @@ export interface RegisterPushTokenRequest {
   platform: 'ios' | 'android' | 'web';
   device_name?: string;
 }
+
+// ============================================
+// Friend Endpoints
+// ============================================
+
+export interface SendFriendRequestRequest {
+  user_id: string;
+}
+
+export interface FriendsListResponse {
+  data: import('./models').Friend[];
+  meta?: PaginationMeta;
+}
+
+export interface FriendRequestsResponse {
+  data: import('./models').FriendRequest[];
+  meta?: PaginationMeta;
+}
+
+export interface FriendSuggestionsResponse {
+  data: import('./models').FriendSuggestion[];
+}
+
+// ============================================
+// Forum Hosting Endpoints
+// ============================================
+
+export interface CreateHostedForumRequest {
+  name: string;
+  slug?: string;
+  description?: string;
+  category: import('./models').ForumHostingCategory;
+  primary_color?: string;
+  accent_color?: string;
+  is_private?: boolean;
+  is_nsfw?: boolean;
+  require_approval?: boolean;
+}
+
+export interface UpdateHostedForumRequest {
+  name?: string;
+  description?: string;
+  icon_url?: string;
+  banner_url?: string;
+  primary_color?: string;
+  accent_color?: string;
+  custom_css?: string;
+  custom_header?: string;
+  custom_footer?: string;
+  is_private?: boolean;
+  is_nsfw?: boolean;
+  require_approval?: boolean;
+}
+
+export interface CreateBoardRequest {
+  name: string;
+  slug?: string;
+  description?: string;
+  parent_id?: string;
+  position?: number;
+  is_locked?: boolean;
+}
+
+export interface CreateThreadRequest {
+  title: string;
+  content: string;
+  is_pinned?: boolean;
+  is_announcement?: boolean;
+}
+
+export interface CreateThreadPostRequest {
+  content: string;
+}
+
+export interface ForumLeaderboardResponse {
+  data: import('./models').HostedForum[];
+  meta?: {
+    algorithm: 'hot' | 'rising' | 'trending' | 'top' | 'new';
+    period?: 'day' | 'week' | 'month' | 'year' | 'all';
+  };
+}

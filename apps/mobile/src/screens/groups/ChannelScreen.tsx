@@ -50,7 +50,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
   
   const fetchChannel = async () => {
     try {
-      const response = await api.get(`/groups/${groupId}/channels/${channelId}`);
+      const response = await api.get(`/api/v1/groups/${groupId}/channels/${channelId}`);
       const channelData = response.data.data;
       setChannel(channelData);
       navigation.setOptions({ title: `#${channelData.name}` });
@@ -61,7 +61,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
   
   const fetchMessages = async () => {
     try {
-      const response = await api.get(`/groups/${groupId}/channels/${channelId}/messages`);
+      const response = await api.get(`/api/v1/groups/${groupId}/channels/${channelId}/messages`);
       setMessages(response.data.data || []);
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -88,7 +88,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
     setInputText('');
     
     try {
-      const response = await api.post(`/groups/${groupId}/channels/${channelId}/messages`, {
+      const response = await api.post(`/api/v1/groups/${groupId}/channels/${channelId}/messages`, {
         content,
       });
       setMessages((prev) => [...prev, response.data.data]);

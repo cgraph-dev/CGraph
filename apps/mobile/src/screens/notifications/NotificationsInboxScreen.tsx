@@ -89,7 +89,7 @@ export default function NotificationsInboxScreen({ navigation }: Props) {
         setIsLoadingMore(true);
       }
 
-      const response = await api.get<{ data: Notification[]; hasMore: boolean }>('/notifications', {
+      const response = await api.get<{ data: Notification[]; hasMore: boolean }>('/api/v1/notifications', {
         params: {
           page: pageNum,
           limit: 20,
@@ -134,7 +134,7 @@ export default function NotificationsInboxScreen({ navigation }: Props) {
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
-      await api.put(`/notifications/${notificationId}/read`);
+      await api.post(`/api/v1/notifications/${notificationId}/read`);
       setNotifications((prev) =>
         prev.map((n) => (n.id === notificationId ? { ...n, read: true } : n))
       );
@@ -145,7 +145,7 @@ export default function NotificationsInboxScreen({ navigation }: Props) {
 
   const handleMarkAllAsRead = async () => {
     try {
-      await api.post('/notifications/read');
+      await api.post('/api/v1/notifications/read');
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (error) {
       console.error('Failed to mark all as read:', error);

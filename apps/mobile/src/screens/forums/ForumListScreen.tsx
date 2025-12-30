@@ -29,7 +29,7 @@ export default function ForumListScreen({ navigation }: Props) {
   
   const fetchForums = async () => {
     try {
-      const response = await api.get('/forums');
+      const response = await api.get('/api/v1/forums');
       setForums(response.data.data || []);
     } catch (error) {
       console.error('Error fetching forums:', error);
