@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, loginWithWallet, isLoading, error, clearError } = useAuthStore();
+  const { login, getWalletChallenge, loginWithWallet, isLoading, error, clearError } = useAuthStore();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,17 +37,17 @@ export default function Login() {
       });
       const walletAddress = accounts[0];
 
-      // Create message to sign
-      const message = `Sign this message to login to CGraph.\n\nTimestamp: ${Date.now()}`;
+      // Step 1: Get challenge message with nonce from backend
+      const challenge = await getWalletChallenge(walletAddress);
 
-      // Sign message
+      // Step 2: Sign the challenge message with MetaMask
       const signature = await window.ethereum.request({
         method: 'personal_sign',
-        params: [message, walletAddress],
+        params: [challenge.message, walletAddress],
       });
 
-      // Login with wallet
-      await loginWithWallet(walletAddress, signature, message);
+      // Step 3: Verify signature and login
+      await loginWithWallet(walletAddress, signature);
       navigate('/messages');
     } catch (err) {
       // Error is handled by store or shown locally

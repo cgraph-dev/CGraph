@@ -1064,6 +1064,325 @@ Authorization: Bearer <token>
 
 ---
 
+## Forum Hosting Platform (MyBB-style)
+
+The forum hosting platform allows users to create fully-featured forums with boards, threads, posts, and complete customization. Forums also participate in Reddit-style discovery and voting.
+
+### Forum Voting (Competition)
+
+#### Upvote/Downvote a Forum
+
+```http
+POST /forums/:forum_id/vote
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "value": 1
+}
+```
+
+Value: `1` for upvote, `-1` for downvote. Voting again with the same value removes the vote.
+
+**Response:** `200 OK`
+```json
+{
+  "data": {
+    "voted": true,
+    "value": 1,
+    "score": 42
+  }
+}
+```
+
+#### Get Forum Leaderboard
+
+```http
+GET /forums/leaderboard
+Authorization: Bearer <token>
+```
+
+**Query Parameters:**
+- `sort` - `hot`, `top`, `weekly`, `monthly` (default: `hot`)
+- `page` - Page number (default: 1)
+- `per_page` - Results per page (default: 20)
+
+**Response:** `200 OK`
+```json
+{
+  "data": [
+    {
+      "id": "forum-id",
+      "name": "TechHub",
+      "score": 1543,
+      "upvotes": 1600,
+      "downvotes": 57,
+      "member_count": 15000,
+      "category": "technology"
+    }
+  ],
+  "meta": { "page": 1, "per_page": 20, "total": 100 }
+}
+```
+
+### Boards (Forum Sections)
+
+#### List Boards
+
+```http
+GET /forums/:forum_id/boards
+Authorization: Bearer <token>
+```
+
+**Query Parameters:**
+- `parent_id` - Filter by parent board (for sub-boards)
+- `include_hidden` - Include hidden boards (moderators only)
+
+**Response:** `200 OK`
+```json
+{
+  "data": [
+    {
+      "id": "board-id",
+      "name": "General Discussion",
+      "slug": "general-discussion",
+      "description": "Talk about anything!",
+      "position": 1,
+      "thread_count": 150,
+      "post_count": 2300
+    }
+  ]
+}
+```
+
+#### Create Board
+
+```http
+POST /forums/:forum_id/boards
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "board": {
+    "name": "Announcements",
+    "description": "Official announcements",
+    "icon": "📢",
+    "position": 0,
+    "parent_board_id": null
+  }
+}
+```
+
+#### Update Board
+
+```http
+PUT /forums/:forum_id/boards/:id
+Authorization: Bearer <token>
+```
+
+#### Delete Board
+
+```http
+DELETE /forums/:forum_id/boards/:id
+Authorization: Bearer <token>
+```
+
+### Threads
+
+#### List Threads in a Board
+
+```http
+GET /boards/:board_id/threads
+Authorization: Bearer <token>
+```
+
+**Query Parameters:**
+- `sort` - `latest`, `hot`, `top`, `views` (default: `latest`)
+- `page` - Page number (default: 1)
+- `per_page` - Results per page (default: 20)
+
+**Response:** `200 OK`
+```json
+{
+  "data": [
+    {
+      "id": "thread-id",
+      "title": "Welcome to our forum!",
+      "slug": "welcome-to-our-forum",
+      "is_pinned": true,
+      "is_locked": false,
+      "view_count": 5000,
+      "reply_count": 120,
+      "score": 45,
+      "author": {
+        "id": "user-id",
+        "username": "admin",
+        "avatar_url": "https://..."
+      },
+      "last_post_at": "2024-01-15T10:00:00Z"
+    }
+  ],
+  "meta": { "page": 1, "per_page": 20, "total": 150 }
+}
+```
+
+#### Create Thread
+
+```http
+POST /boards/:board_id/threads
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "thread": {
+    "title": "My new thread",
+    "content": "This is the thread content...",
+    "prefix": "Discussion"
+  }
+}
+```
+
+#### Get Thread
+
+```http
+GET /boards/:board_id/threads/:id
+Authorization: Bearer <token>
+```
+
+#### Pin/Unpin Thread
+
+```http
+POST /boards/:board_id/threads/:id/pin
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "pinned": true
+}
+```
+
+#### Lock/Unlock Thread
+
+```http
+POST /boards/:board_id/threads/:id/lock
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "locked": true
+}
+```
+
+#### Vote on Thread
+
+```http
+POST /boards/:board_id/threads/:id/vote
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "value": 1
+}
+```
+
+### Thread Posts (Replies)
+
+#### List Posts in a Thread
+
+```http
+GET /threads/:thread_id/posts
+Authorization: Bearer <token>
+```
+
+**Query Parameters:**
+- `page` - Page number (default: 1)
+- `per_page` - Posts per page (default: 20)
+
+**Response:** `200 OK`
+```json
+{
+  "data": [
+    {
+      "id": "post-id",
+      "content": "Great thread!",
+      "content_html": "<p>Great thread!</p>",
+      "is_edited": false,
+      "score": 5,
+      "position": 1,
+      "author": {
+        "id": "user-id",
+        "username": "member123",
+        "avatar_url": "https://..."
+      },
+      "inserted_at": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "meta": { "page": 1, "per_page": 20, "total": 50 }
+}
+```
+
+#### Create Post (Reply)
+
+```http
+POST /threads/:thread_id/posts
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "post": {
+    "content": "Thanks for the information!",
+    "reply_to_id": null
+  }
+}
+```
+
+#### Update Post
+
+```http
+PUT /threads/:thread_id/posts/:id
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "post": {
+    "content": "Updated content...",
+    "edit_reason": "Fixed typo"
+  }
+}
+```
+
+#### Vote on Post
+
+```http
+POST /threads/:thread_id/posts/:id/vote
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "value": 1
+}
+```
+
+---
+
 ## Notifications
 
 ### Register Push Token

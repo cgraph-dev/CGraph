@@ -39,6 +39,19 @@ defmodule CgraphWeb.API.V1.ForumJSON do
     }
   end
 
+  def leaderboard(%{forums: forums, meta: meta}) do
+    %{
+      data: Enum.map(forums, &forum_data_with_voting/1),
+      meta: meta
+    }
+  end
+
+  def top(%{forums: forums}) do
+    %{
+      data: Enum.map(forums, &forum_data_with_voting/1)
+    }
+  end
+
   @doc """
   Render forum data with categories and stats.
   """
@@ -54,11 +67,26 @@ defmodule CgraphWeb.API.V1.ForumJSON do
       is_archived: Map.get(forum, :is_archived, false),
       post_count: Map.get(forum, :post_count, 0),
       member_count: Map.get(forum, :member_count, 0),
+      # Voting fields
+      score: Map.get(forum, :score, 0),
+      upvotes: Map.get(forum, :upvotes, 0),
+      downvotes: Map.get(forum, :downvotes, 0),
+      hot_score: Map.get(forum, :hot_score, 0.0),
+      weekly_score: Map.get(forum, :weekly_score, 0),
+      featured: Map.get(forum, :featured, false),
       categories: render_categories(forum.categories),
       owner: render_owner(forum.owner),
       created_at: forum.inserted_at,
       updated_at: forum.updated_at
     }
+  end
+
+  @doc """
+  Render forum data with user's vote status for leaderboard.
+  """
+  def forum_data_with_voting(forum) do
+    forum_data(forum)
+    |> Map.put(:user_vote, Map.get(forum, :user_vote, 0))
   end
 
   defp render_categories(nil), do: []

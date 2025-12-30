@@ -13,6 +13,14 @@ export interface Forum {
   isNsfw: boolean;
   isPrivate: boolean;
   memberCount: number;
+  // Voting fields for competition
+  score: number;
+  upvotes: number;
+  downvotes: number;
+  hotScore: number;
+  weeklyScore: number;
+  featured: boolean;
+  userVote: 1 | -1 | 0;
   categories: ForumCategory[];
   moderators: ForumModerator[];
   isSubscribed: boolean;
@@ -91,7 +99,15 @@ export interface Comment {
 }
 
 type SortOption = 'hot' | 'new' | 'top' | 'controversial';
+type LeaderboardSort = 'hot' | 'top' | 'new' | 'rising' | 'weekly' | 'members';
 type TimeRange = 'hour' | 'day' | 'week' | 'month' | 'year' | 'all';
+
+interface LeaderboardMeta {
+  page: number;
+  perPage: number;
+  total: number;
+  sort: LeaderboardSort;
+}
 
 interface ForumState {
   forums: Forum[];
@@ -99,9 +115,14 @@ interface ForumState {
   currentPost: Post | null;
   comments: Record<string, Comment[]>;
   subscribedForums: Forum[];
+  // Leaderboard
+  leaderboard: Forum[];
+  leaderboardMeta: LeaderboardMeta | null;
+  topForums: Forum[];
   isLoadingForums: boolean;
   isLoadingPosts: boolean;
   isLoadingComments: boolean;
+  isLoadingLeaderboard: boolean;
   hasMorePosts: boolean;
   sortBy: SortOption;
   timeRange: TimeRange;
@@ -115,6 +136,10 @@ interface ForumState {
   createPost: (data: CreatePostData) => Promise<Post>;
   createComment: (postId: string, content: string, parentId?: string) => Promise<Comment>;
   vote: (type: 'post' | 'comment', id: string, value: 1 | -1 | null) => Promise<void>;
+  // Forum voting (competition)
+  voteForum: (forumId: string, value: 1 | -1) => Promise<void>;
+  fetchLeaderboard: (sort?: LeaderboardSort, page?: number) => Promise<void>;
+  fetchTopForums: (limit?: number, sort?: LeaderboardSort) => Promise<void>;
   subscribe: (forumId: string) => Promise<void>;
   unsubscribe: (forumId: string) => Promise<void>;
   setSortBy: (sort: SortOption) => void;
@@ -146,9 +171,13 @@ export const useForumStore = create<ForumState>((set, get) => ({
   currentPost: null,
   comments: {},
   subscribedForums: [],
+  leaderboard: [],
+  leaderboardMeta: null,
+  topForums: [],
   isLoadingForums: false,
   isLoadingPosts: false,
   isLoadingComments: false,
+  isLoadingLeaderboard: false,
   hasMorePosts: true,
   sortBy: 'hot',
   timeRange: 'day',
@@ -357,6 +386,77 @@ export const useForumStore = create<ForumState>((set, get) => ({
     }));
   },
 
+  // Forum voting (competition)
+  voteForum: async (forumId: string, value: 1 | -1) => {
+    try {
+      const response = await api.post(`/api/v1/forums/${forumId}/vote`, { value });
+      const result = response.data;
+      
+      // Update forum in all lists
+      const updateForum = (forum: Forum) => {
+        if (forum.id !== forumId) return forum;
+        return {
+          ...forum,
+          score: result.forum.score,
+          upvotes: result.forum.upvotes,
+          downvotes: result.forum.downvotes,
+          userVote: result.forum.user_vote,
+        };
+      };
+      
+      set((state) => ({
+        forums: state.forums.map(updateForum),
+        leaderboard: state.leaderboard.map(updateForum),
+        topForums: state.topForums.map(updateForum),
+      }));
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  fetchLeaderboard: async (sort: LeaderboardSort = 'hot', page: number = 1) => {
+    set({ isLoadingLeaderboard: true });
+    try {
+      const response = await api.get('/api/v1/forums/leaderboard', {
+        params: { sort, page, per_page: 25 },
+      });
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rawForums = ensureArray<any>(response.data, 'data');
+      const forums = rawForums.map(mapForumFromApi);
+      const meta = response.data.meta;
+      
+      set({
+        leaderboard: page === 1 ? forums : [...get().leaderboard, ...forums],
+        leaderboardMeta: {
+          page: meta.page,
+          perPage: meta.per_page,
+          total: meta.total,
+          sort: meta.sort,
+        },
+        isLoadingLeaderboard: false,
+      });
+    } catch (error) {
+      set({ isLoadingLeaderboard: false });
+      throw error;
+    }
+  },
+
+  fetchTopForums: async (limit: number = 10, sort: LeaderboardSort = 'hot') => {
+    try {
+      const response = await api.get('/api/v1/forums/top', {
+        params: { limit, sort },
+      });
+      
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rawForums = ensureArray<any>(response.data, 'data');
+      const forums = rawForums.map(mapForumFromApi);
+      set({ topForums: forums });
+    } catch (error) {
+      throw error;
+    }
+  },
+
   setSortBy: (sort: SortOption) => {
     set({ sortBy: sort, posts: [], hasMorePosts: true });
   },
@@ -382,3 +482,30 @@ export const useForumStore = create<ForumState>((set, get) => ({
     throw new Error('Failed to create forum');
   },
 }));
+
+// Helper to map API response to Forum type
+function mapForumFromApi(data: Record<string, unknown>): Forum {
+  return {
+    id: data.id as string,
+    name: data.name as string,
+    slug: data.slug as string,
+    description: (data.description as string | null) || null,
+    iconUrl: (data.icon as string | null) || null,
+    bannerUrl: (data.banner as string | null) || null,
+    customCss: null,
+    isNsfw: (data.is_nsfw as boolean) || false,
+    isPrivate: (data.is_private as boolean) || false,
+    memberCount: (data.member_count as number) || 0,
+    score: (data.score as number) || 0,
+    upvotes: (data.upvotes as number) || 0,
+    downvotes: (data.downvotes as number) || 0,
+    hotScore: (data.hot_score as number) || 0,
+    weeklyScore: (data.weekly_score as number) || 0,
+    featured: (data.featured as boolean) || false,
+    userVote: ((data.user_vote as number) || 0) as 1 | -1 | 0,
+    categories: ensureArray(data.categories, 'categories'),
+    moderators: [],
+    isSubscribed: false,
+    createdAt: data.created_at as string,
+  };
+}

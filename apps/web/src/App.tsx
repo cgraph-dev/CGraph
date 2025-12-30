@@ -18,6 +18,7 @@ import Groups from '@/pages/groups/Groups';
 import GroupChannel from '@/pages/groups/GroupChannel';
 import Forums from '@/pages/forums/Forums';
 import ForumPost from '@/pages/forums/ForumPost';
+import ForumLeaderboard from '@/pages/forums/ForumLeaderboard';
 import Settings from '@/pages/settings/Settings';
 import Notifications from '@/pages/notifications/Notifications';
 import UserProfile from '@/pages/profile/UserProfile';
@@ -146,6 +147,7 @@ export default function App() {
 
           {/* Forums */}
           <Route path="forums" element={<Forums />} />
+          <Route path="forums/leaderboard" element={<ForumLeaderboard />} />
           <Route path="forums/:forumSlug" element={<Forums />} />
           <Route path="forums/:forumSlug/post/:postId" element={<ForumPost />} />
 

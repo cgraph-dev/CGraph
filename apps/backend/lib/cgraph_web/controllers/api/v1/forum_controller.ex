@@ -152,6 +152,129 @@ defmodule CgraphWeb.API.V1.ForumController do
     end
   end
 
+  # ============================================================================
+  # Forum Voting (Competition)
+  # ============================================================================
+
+  @doc """
+  Vote on a forum.
+  POST /api/v1/forums/:id/vote
+  Body: { "value": 1 } for upvote, { "value": -1 } for downvote
+  """
+  def vote(conn, %{"id" => forum_id, "value" => value}) when value in [1, -1, "1", "-1"] do
+    user = conn.assigns.current_user
+    vote_value = if is_binary(value), do: String.to_integer(value), else: value
+    
+    with {:ok, forum} <- Forums.get_forum(forum_id),
+         :ok <- Forums.authorize_action(user, forum, :vote),
+         {:ok, result} <- Forums.vote_forum(user, forum_id, vote_value),
+         {:ok, updated_forum} <- Forums.get_forum_with_vote(forum_id, user.id) do
+      conn
+      |> put_status(:ok)
+      |> json(%{
+        result: result,
+        forum: %{
+          id: updated_forum.id,
+          score: updated_forum.score,
+          upvotes: updated_forum.upvotes,
+          downvotes: updated_forum.downvotes,
+          user_vote: updated_forum.user_vote
+        }
+      })
+    end
+  end
+
+  def vote(conn, %{"id" => _forum_id}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{error: "value must be 1 (upvote) or -1 (downvote)"})
+  end
+
+  @doc """
+  Get user's vote on a forum.
+  GET /api/v1/forums/:id/vote
+  """
+  def get_vote(conn, %{"id" => forum_id}) do
+    user = conn.assigns.current_user
+    
+    vote = Forums.get_user_forum_vote(user.id, forum_id)
+    user_vote = if vote, do: vote.value, else: 0
+    
+    conn
+    |> put_status(:ok)
+    |> json(%{user_vote: user_vote})
+  end
+
+  @doc """
+  Remove vote on a forum.
+  DELETE /api/v1/forums/:id/vote
+  """
+  def remove_vote(conn, %{"id" => forum_id}) do
+    user = conn.assigns.current_user
+    
+    case Forums.get_user_forum_vote(user.id, forum_id) do
+      nil ->
+        conn
+        |> put_status(:ok)
+        |> json(%{result: :no_vote})
+      
+      vote ->
+        with {:ok, _} <- Forums.vote_forum(user, forum_id, vote.value) do
+          conn
+          |> put_status(:ok)
+          |> json(%{result: :removed})
+        end
+    end
+  end
+
+  # ============================================================================
+  # Leaderboard
+  # ============================================================================
+
+  @doc """
+  Get forum leaderboard.
+  GET /api/v1/forums/leaderboard
+  Query params: sort (hot, top, new, rising, weekly, members), page, per_page
+  """
+  def leaderboard(conn, params) do
+    user = conn.assigns[:current_user]
+    page = Map.get(params, "page", "1") |> String.to_integer()
+    per_page = Map.get(params, "per_page", "25") |> String.to_integer() |> min(50)
+    sort = Map.get(params, "sort", "hot")
+    featured_only = Map.get(params, "featured", "false") == "true"
+
+    {forums, meta} = Forums.list_forum_leaderboard(
+      page: page,
+      per_page: per_page,
+      sort: sort,
+      featured_only: featured_only
+    )
+
+    # Add user votes if authenticated
+    forums_with_votes = if user do
+      Enum.map(forums, fn forum ->
+        vote = Forums.get_user_forum_vote(user.id, forum.id)
+        Map.put(forum, :user_vote, if(vote, do: vote.value, else: 0))
+      end)
+    else
+      Enum.map(forums, fn forum -> Map.put(forum, :user_vote, 0) end)
+    end
+
+    render(conn, :leaderboard, forums: forums_with_votes, meta: meta)
+  end
+
+  @doc """
+  Get top forums (quick list).
+  GET /api/v1/forums/top
+  """
+  def top(conn, params) do
+    limit = Map.get(params, "limit", "10") |> String.to_integer() |> min(25)
+    sort = Map.get(params, "sort", "hot")
+    
+    forums = Forums.get_top_forums(limit, sort)
+    render(conn, :top, forums: forums)
+  end
+
   # Private helpers
 
   defp authorize_forum_creation(user) do

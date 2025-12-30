@@ -137,7 +137,11 @@ defmodule CgraphWeb.Router do
     # Join group via invite
     post "/invites/:code/join", InviteController, :join
 
-    # Forums (Reddit-style)
+    # Forum leaderboard (before resources to avoid conflict)
+    get "/forums/leaderboard", ForumController, :leaderboard
+    get "/forums/top", ForumController, :top
+
+    # Forums (Reddit-style discovery + MyBB-style hosting)
     resources "/forums", ForumController do
       resources "/posts", PostController do
         post "/vote", PostController, :vote
@@ -149,6 +153,33 @@ defmodule CgraphWeb.Router do
       
       resources "/categories", CategoryController
       get "/modqueue", ForumController, :mod_queue
+      
+      # Forum voting (competition)
+      post "/vote", ForumController, :vote
+      get "/vote", ForumController, :get_vote
+      delete "/vote", ForumController, :remove_vote
+      
+      # MyBB-style boards
+      resources "/boards", BoardController, except: [:new, :edit] do
+        get "/by-slug/:slug", BoardController, :show_by_slug
+      end
+    end
+
+    # Boards -> Threads (nested outside forums for cleaner URLs)
+    resources "/boards", BoardController, only: [] do
+      resources "/threads", ThreadController, except: [:new, :edit] do
+        get "/by-slug/:slug", ThreadController, :show_by_slug
+        post "/pin", ThreadController, :pin
+        post "/lock", ThreadController, :lock
+        post "/vote", ThreadController, :vote
+      end
+    end
+
+    # Threads -> Posts (replies)
+    resources "/threads", ThreadController, only: [] do
+      resources "/posts", ThreadPostController, except: [:new, :edit] do
+        post "/vote", ThreadPostController, :vote
+      end
     end
 
     # Reactions (for messages)

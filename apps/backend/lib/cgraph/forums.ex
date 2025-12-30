@@ -3,12 +3,19 @@ defmodule Cgraph.Forums do
   The Forums context.
   
   Handles forums, posts, comments, categories, and voting.
-  Reddit-style discussion functionality.
+  Reddit-style discussion functionality with forum competition.
+  
+  Also handles MyBB-style forum hosting with boards, threads, and posts.
   """
 
   import Ecto.Query, warn: false
   alias Cgraph.Repo
-  alias Cgraph.Forums.{Forum, Post, Comment, Category, Vote, Moderator, Subscription}
+  alias Cgraph.Forums.{
+    Forum, Post, Comment, Category, Vote, ForumVote, Moderator, Subscription,
+    Board, Thread, ThreadPost, ForumMember, ForumUserGroup,
+    ThreadVote, PostVote, ThreadPoll, PollVote,
+    ForumTheme, ForumPlugin, ForumAnnouncement, ThreadAttachment
+  }
 
   # ============================================================================
   # Forums
@@ -943,5 +950,883 @@ defmodule Cgraph.Forums do
 
     meta = %{page: page, per_page: per_page, total: total}
     {posts, meta}
+  end
+
+  # ============================================================================
+  # Forum Voting (Competition)
+  # ============================================================================
+
+  @doc """
+  Vote on a forum. Users can upvote (1) or downvote (-1) forums.
+  
+  Changes vote if user already voted, removes if same vote.
+  Returns {:ok, :upvoted | :downvoted | :removed} with updated forum.
+  """
+  def vote_forum(user, forum_id, value) when value in [1, -1] do
+    Repo.transaction(fn ->
+      case get_user_forum_vote(user.id, forum_id) do
+        nil ->
+          # New vote
+          create_forum_vote(user.id, forum_id, value)
+          update_forum_scores(forum_id, value, 0)
+          if value == 1, do: :upvoted, else: :downvoted
+
+        %ForumVote{value: ^value} = existing ->
+          # Same vote - remove it
+          Repo.delete!(existing)
+          update_forum_scores(forum_id, 0, value)
+          :removed
+
+        existing ->
+          # Different vote - change it
+          old_value = existing.value
+          existing
+          |> ForumVote.changeset(%{value: value})
+          |> Repo.update!()
+          update_forum_scores(forum_id, value, old_value)
+          if value == 1, do: :upvoted, else: :downvoted
+      end
+    end)
+  end
+
+  @doc """
+  Get user's vote on a forum.
+  """
+  def get_user_forum_vote(user_id, forum_id) do
+    Repo.one(
+      from v in ForumVote,
+        where: v.user_id == ^user_id and v.forum_id == ^forum_id
+    )
+  end
+
+  defp create_forum_vote(user_id, forum_id, value) do
+    %ForumVote{}
+    |> ForumVote.changeset(%{user_id: user_id, forum_id: forum_id, value: value})
+    |> Repo.insert!()
+  end
+
+  defp update_forum_scores(forum_id, new_value, old_value) do
+    # Calculate deltas
+    upvote_delta = (if new_value == 1, do: 1, else: 0) - (if old_value == 1, do: 1, else: 0)
+    downvote_delta = (if new_value == -1, do: 1, else: 0) - (if old_value == -1, do: 1, else: 0)
+    score_delta = new_value - old_value
+
+    from(f in Forum, where: f.id == ^forum_id)
+    |> Repo.update_all(
+      inc: [
+        upvotes: upvote_delta,
+        downvotes: downvote_delta,
+        score: score_delta,
+        weekly_score: score_delta
+      ]
+    )
+
+    # Recalculate hot score
+    update_forum_hot_score(forum_id)
+  end
+
+  @doc """
+  Calculate hot score using Reddit's algorithm.
+  Combines score with time decay.
+  """
+  def update_forum_hot_score(forum_id) do
+    forum = Repo.get!(Forum, forum_id)
+    
+    # Reddit-style hot ranking
+    # score = sign(score) * log10(max(abs(score), 1)) + (created_at / 45000)
+    score = forum.score
+    sign = if score >= 0, do: 1, else: -1
+    order = :math.log10(max(abs(score), 1))
+    
+    # Time factor: seconds since epoch, divided by 45000 (roughly 12.5 hours)
+    seconds = DateTime.to_unix(forum.inserted_at)
+    hot = sign * order + (seconds / 45000)
+
+    from(f in Forum, where: f.id == ^forum_id)
+    |> Repo.update_all(set: [hot_score: hot])
+  end
+
+  # ============================================================================
+  # Leaderboard
+  # ============================================================================
+
+  @doc """
+  Get forum leaderboard sorted by various criteria.
+  
+  Options:
+  - sort: "hot" (default), "top", "new", "rising", "weekly"
+  - page, per_page: pagination
+  - featured_only: only show featured forums
+  """
+  def list_forum_leaderboard(opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 25)
+    sort = Keyword.get(opts, :sort, "hot")
+    featured_only = Keyword.get(opts, :featured_only, false)
+
+    query = from f in Forum,
+      where: is_nil(f.deleted_at) and f.is_public == true,
+      preload: [:owner]
+
+    query = if featured_only do
+      from f in query, where: f.featured == true
+    else
+      query
+    end
+
+    query = case sort do
+      "hot" -> from f in query, order_by: [desc: f.hot_score]
+      "top" -> from f in query, order_by: [desc: f.score]
+      "new" -> from f in query, order_by: [desc: f.inserted_at]
+      "rising" -> from f in query, order_by: [desc: f.weekly_score, desc: f.inserted_at]
+      "weekly" -> from f in query, order_by: [desc: f.weekly_score]
+      "members" -> from f in query, order_by: [desc: f.member_count]
+      _ -> from f in query, order_by: [desc: f.hot_score]
+    end
+
+    total = Repo.aggregate(query, :count, :id)
+
+    forums = query
+      |> limit(^per_page)
+      |> offset(^((page - 1) * per_page))
+      |> Repo.all()
+
+    meta = %{page: page, per_page: per_page, total: total, sort: sort}
+    {forums, meta}
+  end
+
+  @doc """
+  Get top N forums for a quick leaderboard display.
+  """
+  def get_top_forums(limit \\ 10, sort \\ "hot") do
+    query = from f in Forum,
+      where: is_nil(f.deleted_at) and f.is_public == true,
+      preload: [:owner],
+      limit: ^limit
+
+    query = case sort do
+      "hot" -> from f in query, order_by: [desc: f.hot_score]
+      "top" -> from f in query, order_by: [desc: f.score]
+      "weekly" -> from f in query, order_by: [desc: f.weekly_score]
+      _ -> from f in query, order_by: [desc: f.hot_score]
+    end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  Get forum with user's vote status.
+  """
+  def get_forum_with_vote(forum_id, user_id) do
+    case get_forum(forum_id) do
+      {:ok, forum} ->
+        vote = if user_id, do: get_user_forum_vote(user_id, forum_id), else: nil
+        user_vote = if vote, do: vote.value, else: 0
+        {:ok, Map.put(forum, :user_vote, user_vote)}
+      
+      error -> error
+    end
+  end
+
+  @doc """
+  Reset weekly scores (run via scheduler).
+  """
+  def reset_weekly_scores do
+    from(f in Forum)
+    |> Repo.update_all(set: [weekly_score: 0])
+  end
+
+  @doc """
+  Set a forum as featured.
+  """
+  def set_forum_featured(forum_id, featured) when is_boolean(featured) do
+    from(f in Forum, where: f.id == ^forum_id)
+    |> Repo.update_all(set: [featured: featured])
+  end
+
+  # ============================================================================
+  # Boards (MyBB-style sections/categories)
+  # ============================================================================
+
+  @doc """
+  List boards for a forum.
+  """
+  def list_boards(forum_id, opts \\ []) do
+    include_hidden = Keyword.get(opts, :include_hidden, false)
+    parent_id = Keyword.get(opts, :parent_id, nil)
+
+    query = from b in Board,
+      where: b.forum_id == ^forum_id and is_nil(b.deleted_at),
+      order_by: [asc: b.position, asc: b.name]
+
+    query = if parent_id do
+      from b in query, where: b.parent_board_id == ^parent_id
+    else
+      from b in query, where: is_nil(b.parent_board_id)
+    end
+
+    query = if include_hidden do
+      query
+    else
+      from b in query, where: b.is_hidden == false
+    end
+
+    Repo.all(query)
+  end
+
+  @doc """
+  Get a board by ID.
+  """
+  def get_board(id) do
+    case Repo.get(Board, id) do
+      nil -> {:error, :not_found}
+      board -> {:ok, Repo.preload(board, [:forum])}
+    end
+  end
+
+  @doc """
+  Get a board by forum_id and slug.
+  """
+  def get_board_by_slug(forum_id, slug) do
+    query = from b in Board,
+      where: b.forum_id == ^forum_id and b.slug == ^slug and is_nil(b.deleted_at)
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      board -> {:ok, Repo.preload(board, [:forum])}
+    end
+  end
+
+  @doc """
+  Create a board.
+  """
+  def create_board(attrs \\ %{}) do
+    %Board{}
+    |> Board.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Update a board.
+  """
+  def update_board(%Board{} = board, attrs) do
+    board
+    |> Board.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a board (soft delete).
+  """
+  def delete_board(%Board{} = board) do
+    board
+    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+    |> Repo.update()
+  end
+
+  # ============================================================================
+  # Threads
+  # ============================================================================
+
+  @doc """
+  List threads in a board.
+  """
+  def list_threads(board_id, opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 20)
+    sort = Keyword.get(opts, :sort, "latest")
+
+    query = from t in Thread,
+      where: t.board_id == ^board_id and is_nil(t.deleted_at) and t.is_hidden == false,
+      preload: [:author, :last_poster]
+
+    # Pinned threads always first
+    query = case sort do
+      "latest" ->
+        from t in query, order_by: [desc: t.is_pinned, desc: t.last_post_at]
+      "hot" ->
+        from t in query, order_by: [desc: t.is_pinned, desc: t.hot_score]
+      "top" ->
+        from t in query, order_by: [desc: t.is_pinned, desc: t.score]
+      "views" ->
+        from t in query, order_by: [desc: t.is_pinned, desc: t.view_count]
+      _ ->
+        from t in query, order_by: [desc: t.is_pinned, desc: t.last_post_at]
+    end
+
+    total = Repo.aggregate(query, :count, :id)
+    
+    threads = query
+      |> limit(^per_page)
+      |> offset(^((page - 1) * per_page))
+      |> Repo.all()
+
+    meta = %{page: page, per_page: per_page, total: total}
+    {threads, meta}
+  end
+
+  @doc """
+  Get a thread by ID.
+  """
+  def get_thread(id) do
+    query = from t in Thread,
+      where: t.id == ^id,
+      preload: [:author, :board]
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      thread -> {:ok, thread}
+    end
+  end
+
+  @doc """
+  Get a thread by board_id and slug.
+  """
+  def get_thread_by_slug(board_id, slug) do
+    query = from t in Thread,
+      where: t.board_id == ^board_id and t.slug == ^slug and is_nil(t.deleted_at)
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      thread -> {:ok, Repo.preload(thread, [:author, :board])}
+    end
+  end
+
+  @doc """
+  Create a thread.
+  """
+  def create_thread(attrs \\ %{}) do
+    Repo.transaction(fn ->
+      result = %Thread{}
+        |> Thread.changeset(attrs)
+        |> Repo.insert()
+      
+      case result do
+        {:ok, thread} ->
+          # Update board stats
+          from(b in Board, where: b.id == ^thread.board_id)
+          |> Repo.update_all(inc: [thread_count: 1])
+          
+          # Update forum stats
+          board = Repo.get!(Board, thread.board_id)
+          from(f in Forum, where: f.id == ^board.forum_id)
+          |> Repo.update_all(inc: [thread_count: 1])
+          
+          Repo.preload(thread, [:author, :board])
+        
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  @doc """
+  Update a thread.
+  """
+  def update_thread(%Thread{} = thread, attrs) do
+    thread
+    |> Thread.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a thread (soft delete).
+  """
+  def delete_thread(%Thread{} = thread) do
+    thread
+    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+    |> Repo.update()
+  end
+
+  @doc """
+  Increment thread view count.
+  """
+  def increment_thread_views(thread_id) do
+    from(t in Thread, where: t.id == ^thread_id)
+    |> Repo.update_all(inc: [view_count: 1])
+  end
+
+  @doc """
+  Pin or unpin a thread.
+  """
+  def toggle_thread_pin(thread_id, pinned) when is_boolean(pinned) do
+    from(t in Thread, where: t.id == ^thread_id)
+    |> Repo.update_all(set: [is_pinned: pinned])
+  end
+
+  @doc """
+  Lock or unlock a thread.
+  """
+  def toggle_thread_lock(thread_id, locked) when is_boolean(locked) do
+    from(t in Thread, where: t.id == ^thread_id)
+    |> Repo.update_all(set: [is_locked: locked])
+  end
+
+  # ============================================================================
+  # Thread Posts (Replies)
+  # ============================================================================
+
+  @doc """
+  List posts in a thread.
+  """
+  def list_thread_posts(thread_id, opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 20)
+
+    query = from p in ThreadPost,
+      where: p.thread_id == ^thread_id and is_nil(p.deleted_at) and p.is_hidden == false,
+      order_by: [asc: p.position, asc: p.inserted_at],
+      preload: [:author]
+
+    total = Repo.aggregate(query, :count, :id)
+    
+    posts = query
+      |> limit(^per_page)
+      |> offset(^((page - 1) * per_page))
+      |> Repo.all()
+
+    meta = %{page: page, per_page: per_page, total: total}
+    {posts, meta}
+  end
+
+  @doc """
+  Get a thread post by ID.
+  """
+  def get_thread_post(id) do
+    case Repo.get(ThreadPost, id) do
+      nil -> {:error, :not_found}
+      post -> {:ok, Repo.preload(post, [:author, :thread])}
+    end
+  end
+
+  @doc """
+  Create a thread post (reply).
+  """
+  def create_thread_post(attrs \\ %{}) do
+    Repo.transaction(fn ->
+      thread_id = attrs[:thread_id] || attrs["thread_id"]
+      
+      # Get position for new post
+      last_position = from(p in ThreadPost, 
+        where: p.thread_id == ^thread_id, 
+        select: max(p.position))
+        |> Repo.one() || 0
+
+      attrs = Map.put(attrs, :position, last_position + 1)
+      
+      result = %ThreadPost{}
+        |> ThreadPost.changeset(attrs)
+        |> Repo.insert()
+      
+      case result do
+        {:ok, post} ->
+          # Update thread stats
+          now = DateTime.utc_now()
+          from(t in Thread, where: t.id == ^thread_id)
+          |> Repo.update_all(
+            inc: [reply_count: 1],
+            set: [last_post_at: now, last_post_id: post.id, last_poster_id: post.author_id]
+          )
+          
+          # Update board stats
+          thread = Repo.get!(Thread, thread_id)
+          from(b in Board, where: b.id == ^thread.board_id)
+          |> Repo.update_all(
+            inc: [post_count: 1],
+            set: [last_post_at: now, last_post_id: post.id, last_thread_id: thread_id]
+          )
+          
+          # Update forum stats
+          board = Repo.get!(Board, thread.board_id)
+          from(f in Forum, where: f.id == ^board.forum_id)
+          |> Repo.update_all(inc: [post_count: 1])
+          
+          # Update member post count
+          from(m in ForumMember, 
+            where: m.forum_id == ^board.forum_id and m.user_id == ^post.author_id)
+          |> Repo.update_all(inc: [post_count: 1], set: [last_post_at: now])
+          
+          Repo.preload(post, [:author])
+        
+        {:error, changeset} ->
+          Repo.rollback(changeset)
+      end
+    end)
+  end
+
+  @doc """
+  Update a thread post.
+  """
+  def update_thread_post(%ThreadPost{} = post, attrs, editor_id) do
+    attrs = Map.merge(attrs, %{
+      is_edited: true,
+      edit_count: (post.edit_count || 0) + 1,
+      edited_at: DateTime.utc_now(),
+      edited_by_id: editor_id
+    })
+
+    post
+    |> ThreadPost.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a thread post (soft delete).
+  """
+  def delete_thread_post(%ThreadPost{} = post) do
+    post
+    |> Ecto.Changeset.change(deleted_at: DateTime.utc_now())
+    |> Repo.update()
+  end
+
+  # ============================================================================
+  # Forum Members
+  # ============================================================================
+
+  @doc """
+  Get or create forum membership for a user.
+  """
+  def get_or_create_member(forum_id, user_id) do
+    case Repo.get_by(ForumMember, forum_id: forum_id, user_id: user_id) do
+      nil ->
+        %ForumMember{}
+        |> ForumMember.changeset(%{
+          forum_id: forum_id,
+          user_id: user_id,
+          joined_at: DateTime.utc_now()
+        })
+        |> Repo.insert()
+      
+      member ->
+        {:ok, member}
+    end
+  end
+
+  @doc """
+  Get forum member.
+  """
+  def get_forum_member(forum_id, user_id) do
+    Repo.get_by(ForumMember, forum_id: forum_id, user_id: user_id)
+  end
+
+  @doc """
+  List forum members.
+  """
+  def list_forum_members(forum_id, opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 50)
+    sort = Keyword.get(opts, :sort, "reputation")
+
+    query = from m in ForumMember,
+      where: m.forum_id == ^forum_id and m.is_banned == false,
+      preload: [:user]
+
+    query = case sort do
+      "reputation" -> from m in query, order_by: [desc: m.reputation]
+      "posts" -> from m in query, order_by: [desc: m.post_count]
+      "joined" -> from m in query, order_by: [asc: m.joined_at]
+      _ -> from m in query, order_by: [desc: m.reputation]
+    end
+
+    total = Repo.aggregate(query, :count, :id)
+    
+    members = query
+      |> limit(^per_page)
+      |> offset(^((page - 1) * per_page))
+      |> Repo.all()
+
+    meta = %{page: page, per_page: per_page, total: total}
+    {members, meta}
+  end
+
+  @doc """
+  Update forum member role.
+  """
+  def update_member_role(forum_id, user_id, role) when role in ["member", "moderator", "admin"] do
+    case get_forum_member(forum_id, user_id) do
+      nil -> {:error, :not_found}
+      member ->
+        member
+        |> ForumMember.changeset(%{role: role})
+        |> Repo.update()
+    end
+  end
+
+  @doc """
+  Ban a forum member.
+  """
+  def ban_forum_member(forum_id, user_id, reason, banned_by_id, expires_at \\ nil) do
+    case get_forum_member(forum_id, user_id) do
+      nil -> {:error, :not_found}
+      member ->
+        member
+        |> ForumMember.changeset(%{
+          is_banned: true,
+          ban_reason: reason,
+          banned_by_id: banned_by_id,
+          ban_expires_at: expires_at
+        })
+        |> Repo.update()
+    end
+  end
+
+  @doc """
+  Unban a forum member.
+  """
+  def unban_forum_member(forum_id, user_id) do
+    case get_forum_member(forum_id, user_id) do
+      nil -> {:error, :not_found}
+      member ->
+        member
+        |> ForumMember.changeset(%{
+          is_banned: false,
+          ban_reason: nil,
+          banned_by_id: nil,
+          ban_expires_at: nil
+        })
+        |> Repo.update()
+    end
+  end
+
+  # ============================================================================
+  # Thread Voting
+  # ============================================================================
+
+  @doc """
+  Vote on a thread.
+  """
+  def vote_thread(user_id, thread_id, value) when value in [1, -1] do
+    case Repo.get_by(ThreadVote, user_id: user_id, thread_id: thread_id) do
+      nil ->
+        # New vote
+        result = %ThreadVote{}
+          |> ThreadVote.changeset(%{user_id: user_id, thread_id: thread_id, value: value})
+          |> Repo.insert()
+        
+        case result do
+          {:ok, vote} ->
+            update_thread_score(thread_id, value)
+            {:ok, vote}
+          error -> error
+        end
+      
+      existing_vote when existing_vote.value == value ->
+        # Same vote - remove it
+        Repo.delete(existing_vote)
+        update_thread_score(thread_id, -value)
+        {:ok, :removed}
+      
+      existing_vote ->
+        # Change vote
+        old_value = existing_vote.value
+        result = existing_vote
+          |> ThreadVote.changeset(%{value: value})
+          |> Repo.update()
+        
+        case result do
+          {:ok, vote} ->
+            update_thread_score(thread_id, value - old_value)
+            {:ok, vote}
+          error -> error
+        end
+    end
+  end
+
+  defp update_thread_score(thread_id, delta) do
+    thread = Repo.get!(Thread, thread_id)
+    
+    upvotes = if delta > 0, do: 1, else: 0
+    downvotes = if delta < 0, do: 1, else: 0
+    
+    from(t in Thread, where: t.id == ^thread_id)
+    |> Repo.update_all(
+      inc: [score: delta, upvotes: upvotes, downvotes: downvotes]
+    )
+  end
+
+  # ============================================================================
+  # Post Voting
+  # ============================================================================
+
+  @doc """
+  Vote on a post.
+  """
+  def vote_post(user_id, post_id, value) when value in [1, -1] do
+    case Repo.get_by(PostVote, user_id: user_id, post_id: post_id) do
+      nil ->
+        result = %PostVote{}
+          |> PostVote.changeset(%{user_id: user_id, post_id: post_id, value: value})
+          |> Repo.insert()
+        
+        case result do
+          {:ok, vote} ->
+            update_post_score(post_id, value)
+            {:ok, vote}
+          error -> error
+        end
+      
+      existing_vote when existing_vote.value == value ->
+        Repo.delete(existing_vote)
+        update_post_score(post_id, -value)
+        {:ok, :removed}
+      
+      existing_vote ->
+        old_value = existing_vote.value
+        result = existing_vote
+          |> PostVote.changeset(%{value: value})
+          |> Repo.update()
+        
+        case result do
+          {:ok, vote} ->
+            update_post_score(post_id, value - old_value)
+            {:ok, vote}
+          error -> error
+        end
+    end
+  end
+
+  defp update_post_score(post_id, delta) do
+    upvotes = if delta > 0, do: 1, else: 0
+    downvotes = if delta < 0, do: 1, else: 0
+    
+    from(p in ThreadPost, where: p.id == ^post_id)
+    |> Repo.update_all(
+      inc: [score: delta, upvotes: upvotes, downvotes: downvotes]
+    )
+  end
+
+  # ============================================================================
+  # Thread Polls
+  # ============================================================================
+
+  @doc """
+  Create a poll for a thread.
+  """
+  def create_thread_poll(thread_id, attrs) do
+    %ThreadPoll{}
+    |> ThreadPoll.changeset(Map.put(attrs, :thread_id, thread_id))
+    |> Repo.insert()
+  end
+
+  @doc """
+  Get poll for a thread.
+  """
+  def get_thread_poll(thread_id) do
+    Repo.get_by(ThreadPoll, thread_id: thread_id)
+  end
+
+  @doc """
+  Vote on a poll.
+  """
+  def vote_poll(poll_id, user_id, option_ids) when is_list(option_ids) do
+    poll = Repo.get!(ThreadPoll, poll_id)
+    
+    # Check if poll is closed
+    if poll.close_date && DateTime.compare(DateTime.utc_now(), poll.close_date) == :gt do
+      {:error, :poll_closed}
+    else
+      case Repo.get_by(PollVote, poll_id: poll_id, user_id: user_id) do
+        nil ->
+          # Validate options count
+          if !poll.multiple_choice && length(option_ids) > 1 do
+            {:error, :single_choice_only}
+          else
+            result = %PollVote{}
+              |> PollVote.changeset(%{poll_id: poll_id, user_id: user_id, option_ids: option_ids})
+              |> Repo.insert()
+            
+            case result do
+              {:ok, vote} ->
+                # Update poll totals
+                from(p in ThreadPoll, where: p.id == ^poll_id)
+                |> Repo.update_all(inc: [total_votes: 1])
+                {:ok, vote}
+              error -> error
+            end
+          end
+        
+        _existing ->
+          {:error, :already_voted}
+      end
+    end
+  end
+
+  # ============================================================================
+  # Forum User Groups
+  # ============================================================================
+
+  @doc """
+  List user groups for a forum.
+  """
+  def list_user_groups(forum_id) do
+    from(g in ForumUserGroup, 
+      where: g.forum_id == ^forum_id,
+      order_by: [asc: g.position, asc: g.name])
+    |> Repo.all()
+  end
+
+  @doc """
+  Create a user group.
+  """
+  def create_user_group(attrs) do
+    %ForumUserGroup{}
+    |> ForumUserGroup.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Update a user group.
+  """
+  def update_user_group(%ForumUserGroup{} = group, attrs) do
+    group
+    |> ForumUserGroup.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Get default user groups for a new forum.
+  """
+  def create_default_user_groups(forum_id) do
+    groups = [
+      %{
+        name: "Administrators",
+        forum_id: forum_id,
+        is_staff: true,
+        is_admin: true,
+        color: "#FF0000",
+        position: 1,
+        can_moderate: true,
+        can_manage_users: true,
+        can_manage_settings: true
+      },
+      %{
+        name: "Moderators",
+        forum_id: forum_id,
+        is_staff: true,
+        color: "#00AA00",
+        position: 2,
+        can_moderate: true,
+        can_edit_posts: true,
+        can_delete_posts: true,
+        can_lock_threads: true,
+        can_pin_threads: true
+      },
+      %{
+        name: "Members",
+        forum_id: forum_id,
+        is_default: true,
+        position: 3
+      },
+      %{
+        name: "Guests",
+        forum_id: forum_id,
+        position: 4,
+        can_create_threads: false,
+        can_reply: false,
+        can_give_reputation: false
+      }
+    ]
+
+    Enum.map(groups, &create_user_group/1)
   end
 end

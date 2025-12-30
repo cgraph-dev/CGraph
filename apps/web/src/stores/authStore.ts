@@ -33,6 +33,11 @@ function mapUserFromApi(apiUser: Record<string, unknown>): User {
   };
 }
 
+interface WalletChallenge {
+  message: string;
+  nonce: string;
+}
+
 interface AuthState {
   user: User | null;
   token: string | null;
@@ -43,7 +48,8 @@ interface AuthState {
 
   // Actions
   login: (email: string, password: string) => Promise<void>;
-  loginWithWallet: (walletAddress: string, signature: string, message: string) => Promise<void>;
+  getWalletChallenge: (walletAddress: string) => Promise<WalletChallenge>;
+  loginWithWallet: (walletAddress: string, signature: string) => Promise<void>;
   register: (email: string, username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
@@ -86,13 +92,28 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      loginWithWallet: async (walletAddress: string, signature: string, message: string) => {
+      getWalletChallenge: async (walletAddress: string): Promise<WalletChallenge> => {
+        try {
+          const response = await api.post('/api/v1/auth/wallet/challenge', {
+            wallet_address: walletAddress,
+          });
+          return {
+            message: response.data.message,
+            nonce: response.data.nonce,
+          };
+        } catch (error: any) {
+          const errorMessage = error.response?.data?.error || 'Failed to get wallet challenge';
+          set({ error: errorMessage });
+          throw new Error(errorMessage);
+        }
+      },
+
+      loginWithWallet: async (walletAddress: string, signature: string) => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api.post('/api/v1/auth/wallet', {
+          const response = await api.post('/api/v1/auth/wallet/verify', {
             wallet_address: walletAddress,
             signature,
-            message,
           });
           const { user, tokens } = response.data;
           set({
