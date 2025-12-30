@@ -487,8 +487,13 @@ function PostCard({
           <Link to={`/forums/${post.forum.slug}/post/${post.id}`}>
             <h2 className="text-lg font-medium text-white hover:text-primary-400 transition-colors mb-2">
               {post.isPinned && (
-                <span className="inline-block mr-2 px-1.5 py-0.5 bg-green-600 text-xs rounded">
-                  Pinned
+                <span className="inline-flex items-center gap-0.5 mr-2 px-1.5 py-0.5 bg-green-600 text-xs rounded">
+                  📌 Pinned
+                </span>
+              )}
+              {post.isLocked && (
+                <span className="inline-flex items-center gap-0.5 mr-2 px-1.5 py-0.5 bg-yellow-600 text-xs rounded">
+                  <LockClosedIcon className="h-3 w-3" /> Locked
                 </span>
               )}
               {post.isNsfw && (

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useForumStore, Comment } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDistanceToNow } from 'date-fns';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
+import Dropdown, { DropdownItem, DropdownDivider } from '@/components/Dropdown';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -12,14 +13,34 @@ import {
   BookmarkIcon,
   EllipsisHorizontalIcon,
   ArrowLeftIcon,
+  MapPinIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+  TrashIcon,
+  FlagIcon,
+  PencilIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowUpIcon as ArrowUpIconSolid, ArrowDownIcon as ArrowDownIconSolid } from '@heroicons/react/24/solid';
 
 export default function ForumPost() {
   const { forumSlug, postId } = useParams<{ forumSlug: string; postId: string }>();
+  const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { currentPost, comments, isLoadingComments, fetchPost, fetchComments, vote, createComment } =
-    useForumStore();
+  const { 
+    currentPost, 
+    comments, 
+    isLoadingComments, 
+    fetchPost, 
+    fetchComments, 
+    fetchForum,
+    vote, 
+    createComment,
+    pinPost,
+    unpinPost,
+    lockPost,
+    unlockPost,
+    currentForum,
+  } = useForumStore();
 
   const [commentContent, setCommentContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -33,6 +54,14 @@ export default function ForumPost() {
       fetchPost(postId);
       fetchComments(postId);
     }
+  }, [postId, fetchPost, fetchComments]);
+
+  // Fetch forum data for moderation permissions
+  useEffect(() => {
+    if (forumSlug && (!currentForum || currentForum.slug !== forumSlug)) {
+      fetchForum(forumSlug);
+    }
+  }, [forumSlug, currentForum, fetchForum]);
   }, [postId, fetchPost, fetchComments]);
 
   const handleVote = async (type: 'post' | 'comment', id: string, value: 1 | -1, currentVote: 1 | -1 | null) => {
@@ -203,8 +232,15 @@ export default function ForumPost() {
               {/* Title */}
               <h1 className="text-2xl font-bold text-white mb-4">
                 {currentPost.isPinned && (
-                  <span className="inline-block mr-2 px-2 py-1 bg-green-600 text-sm rounded">
+                  <span className="inline-flex items-center gap-1 mr-2 px-2 py-1 bg-green-600 text-sm rounded">
+                    <MapPinIcon className="h-3.5 w-3.5" />
                     Pinned
+                  </span>
+                )}
+                {currentPost.isLocked && (
+                  <span className="inline-flex items-center gap-1 mr-2 px-2 py-1 bg-yellow-600 text-sm rounded">
+                    <LockClosedIcon className="h-3.5 w-3.5" />
+                    Locked
                   </span>
                 )}
                 {currentPost.isNsfw && (
@@ -265,36 +301,124 @@ export default function ForumPost() {
                   <BookmarkIcon className="h-5 w-5" />
                   <span>Save</span>
                 </button>
-                <button className="flex items-center gap-1.5 text-sm hover:bg-dark-700 px-2 py-1 rounded transition-colors">
-                  <EllipsisHorizontalIcon className="h-5 w-5" />
-                </button>
+                
+                {/* More Actions Dropdown */}
+                <Dropdown
+                  trigger={
+                    <button className="flex items-center gap-1.5 text-sm hover:bg-dark-700 px-2 py-1 rounded transition-colors">
+                      <EllipsisHorizontalIcon className="h-5 w-5" />
+                    </button>
+                  }
+                >
+                  {/* Moderation Actions - Only for moderators/owners */}
+                  {(currentForum?.ownerId === user?.id || 
+                    currentForum?.moderators?.some(m => m.id === user?.id)) && (
+                    <>
+                      <DropdownItem
+                        onClick={async () => {
+                          if (!currentPost.forum?.id) return;
+                          if (currentPost.isPinned) {
+                            await unpinPost(currentPost.id, currentPost.forum.id);
+                          } else {
+                            await pinPost(currentPost.id, currentPost.forum.id);
+                          }
+                          // Refresh the post
+                          fetchPost(currentPost.id);
+                        }}
+                        icon={<MapPinIcon className="h-4 w-4" />}
+                      >
+                        {currentPost.isPinned ? 'Unpin Post' : 'Pin Post'}
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={async () => {
+                          if (currentPost.isLocked) {
+                            await unlockPost(currentPost.id);
+                          } else {
+                            await lockPost(currentPost.id);
+                          }
+                          // Refresh the post
+                          fetchPost(currentPost.id);
+                        }}
+                        icon={currentPost.isLocked ? <LockOpenIcon className="h-4 w-4" /> : <LockClosedIcon className="h-4 w-4" />}
+                      >
+                        {currentPost.isLocked ? 'Unlock Post' : 'Lock Post'}
+                      </DropdownItem>
+                      <DropdownDivider />
+                    </>
+                  )}
+                  
+                  {/* Author Actions */}
+                  {currentPost.authorId === user?.id && (
+                    <>
+                      <DropdownItem
+                        onClick={() => navigate(`/forums/${forumSlug}/posts/${postId}/edit`)}
+                        icon={<PencilIcon className="h-4 w-4" />}
+                      >
+                        Edit Post
+                      </DropdownItem>
+                      <DropdownItem
+                        onClick={() => {
+                          // TODO: Implement delete
+                          if (confirm('Are you sure you want to delete this post?')) {
+                            console.log('Delete post');
+                          }
+                        }}
+                        icon={<TrashIcon className="h-4 w-4" />}
+                        danger
+                      >
+                        Delete Post
+                      </DropdownItem>
+                      <DropdownDivider />
+                    </>
+                  )}
+                  
+                  {/* General Actions */}
+                  <DropdownItem
+                    onClick={() => {
+                      // TODO: Implement report
+                      console.log('Report post');
+                    }}
+                    icon={<FlagIcon className="h-4 w-4" />}
+                  >
+                    Report
+                  </DropdownItem>
+                </Dropdown>
               </div>
             </div>
           </div>
         </article>
 
         {/* Comment Input */}
-        <div className="mt-4 bg-dark-800 rounded-lg border border-dark-700 p-4">
-          <p className="text-sm text-gray-400 mb-2">
-            Comment as <span className="text-primary-400">{user?.username}</span>
-          </p>
-          <textarea
-            value={commentContent}
-            onChange={(e) => setCommentContent(e.target.value)}
-            placeholder="What are your thoughts?"
-            rows={4}
-            className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-          />
-          <div className="flex justify-end mt-2">
-            <button
-              onClick={handleSubmitComment}
-              disabled={!commentContent.trim() || isSubmitting}
-              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-full transition-colors"
-            >
-              {isSubmitting ? 'Submitting...' : 'Comment'}
-            </button>
+        {currentPost.isLocked ? (
+          <div className="mt-4 bg-dark-800 rounded-lg border border-yellow-600/50 p-4">
+            <div className="flex items-center gap-3 text-yellow-400">
+              <LockClosedIcon className="h-5 w-5" />
+              <p className="text-sm">This post is locked. New comments are disabled.</p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="mt-4 bg-dark-800 rounded-lg border border-dark-700 p-4">
+            <p className="text-sm text-gray-400 mb-2">
+              Comment as <span className="text-primary-400">{user?.username}</span>
+            </p>
+            <textarea
+              value={commentContent}
+              onChange={(e) => setCommentContent(e.target.value)}
+              placeholder="What are your thoughts?"
+              rows={4}
+              className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            />
+            <div className="flex justify-end mt-2">
+              <button
+                onClick={handleSubmitComment}
+                disabled={!commentContent.trim() || isSubmitting}
+                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-full transition-colors"
+              >
+                {isSubmitting ? 'Submitting...' : 'Comment'}
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Comments */}
         <div className="mt-4 space-y-4">

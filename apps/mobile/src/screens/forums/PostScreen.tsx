@@ -8,6 +8,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -172,6 +173,23 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
           <Text style={[styles.postMeta, { color: colors.textSecondary }]}>
             r/{post.forum.slug} • u/{post.author.username} • {formatTime(post.inserted_at)}
           </Text>
+          
+          {/* Status Badges */}
+          <View style={styles.badgesRow}>
+            {post.is_pinned && (
+              <View style={[styles.badge, { backgroundColor: '#16a34a' }]}>
+                <Ionicons name="pin" size={12} color="#fff" />
+                <Text style={styles.badgeText}>Pinned</Text>
+              </View>
+            )}
+            {post.is_locked && (
+              <View style={[styles.badge, { backgroundColor: '#ca8a04' }]}>
+                <Ionicons name="lock-closed" size={12} color="#fff" />
+                <Text style={styles.badgeText}>Locked</Text>
+              </View>
+            )}
+          </View>
+          
           <Text style={[styles.postTitle, { color: colors.text }]}>{post.title}</Text>
           {post.content && (
             <Text style={[styles.postContent, { color: colors.text }]}>{post.content}</Text>
@@ -222,34 +240,43 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
       </ScrollView>
       
       {/* Comment input */}
-      <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-        <TextInput
-          style={[styles.commentInput, { backgroundColor: colors.input, color: colors.text }]}
-          placeholder="Add a comment..."
-          placeholderTextColor={colors.textTertiary}
-          value={commentText}
-          onChangeText={setCommentText}
-          multiline
-        />
-        <TouchableOpacity
-          style={[
-            styles.sendButton,
-            { backgroundColor: commentText.trim() ? colors.primary : colors.surfaceHover },
-          ]}
-          onPress={submitComment}
-          disabled={!commentText.trim() || isSubmitting}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color="#fff" />
-          ) : (
-            <Ionicons
-              name="send"
-              size={18}
-              color={commentText.trim() ? '#fff' : colors.textTertiary}
-            />
-          )}
-        </TouchableOpacity>
-      </View>
+      {post.is_locked ? (
+        <View style={[styles.lockedContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+          <Ionicons name="lock-closed" size={18} color="#ca8a04" />
+          <Text style={[styles.lockedText, { color: '#ca8a04' }]}>
+            This post is locked. New comments are disabled.
+          </Text>
+        </View>
+      ) : (
+        <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+          <TextInput
+            style={[styles.commentInput, { backgroundColor: colors.input, color: colors.text }]}
+            placeholder="Add a comment..."
+            placeholderTextColor={colors.textTertiary}
+            value={commentText}
+            onChangeText={setCommentText}
+            multiline
+          />
+          <TouchableOpacity
+            style={[
+              styles.sendButton,
+              { backgroundColor: commentText.trim() ? colors.primary : colors.surfaceHover },
+            ]}
+            onPress={submitComment}
+            disabled={!commentText.trim() || isSubmitting}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#fff" />
+            ) : (
+              <Ionicons
+                name="send"
+                size={18}
+                color={commentText.trim() ? '#fff' : colors.textTertiary}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -372,5 +399,33 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  badgesRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 8,
+  },
+  badge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  lockedContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    padding: 12,
+    borderTopWidth: 1,
+  },
+  lockedText: {
+    fontSize: 14,
   },
 });

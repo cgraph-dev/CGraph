@@ -150,6 +150,12 @@ interface ForumState {
   createForum: (data: CreateForumData) => Promise<Forum>;
   updateForum: (forumId: string, data: UpdateForumData) => Promise<Forum>;
   deleteForum: (forumId: string) => Promise<void>;
+  // Moderation actions
+  pinPost: (forumId: string, postId: string) => Promise<void>;
+  unpinPost: (forumId: string, postId: string) => Promise<void>;
+  lockPost: (forumId: string, postId: string) => Promise<void>;
+  unlockPost: (forumId: string, postId: string) => Promise<void>;
+  deletePost: (forumId: string, postId: string) => Promise<void>;
 }
 
 interface CreatePostData {
@@ -533,6 +539,87 @@ export const useForumStore = create<ForumState>((set, get) => ({
       }));
     } catch (error) {
       console.error('[forumStore] deleteForum error:', error);
+      throw error;
+    }
+  },
+
+  pinPost: async (forumId: string, postId: string) => {
+    try {
+      await api.post(`/api/v1/forums/${forumId}/posts/${postId}/pin`);
+      set((state) => ({
+        posts: state.posts.map((p) =>
+          p.id === postId ? { ...p, isPinned: true } : p
+        ),
+        currentPost: state.currentPost?.id === postId
+          ? { ...state.currentPost, isPinned: true }
+          : state.currentPost,
+      }));
+    } catch (error) {
+      console.error('[forumStore] pinPost error:', error);
+      throw error;
+    }
+  },
+
+  unpinPost: async (forumId: string, postId: string) => {
+    try {
+      await api.delete(`/api/v1/forums/${forumId}/posts/${postId}/pin`);
+      set((state) => ({
+        posts: state.posts.map((p) =>
+          p.id === postId ? { ...p, isPinned: false } : p
+        ),
+        currentPost: state.currentPost?.id === postId
+          ? { ...state.currentPost, isPinned: false }
+          : state.currentPost,
+      }));
+    } catch (error) {
+      console.error('[forumStore] unpinPost error:', error);
+      throw error;
+    }
+  },
+
+  lockPost: async (forumId: string, postId: string) => {
+    try {
+      await api.post(`/api/v1/forums/${forumId}/posts/${postId}/lock`);
+      set((state) => ({
+        posts: state.posts.map((p) =>
+          p.id === postId ? { ...p, isLocked: true } : p
+        ),
+        currentPost: state.currentPost?.id === postId
+          ? { ...state.currentPost, isLocked: true }
+          : state.currentPost,
+      }));
+    } catch (error) {
+      console.error('[forumStore] lockPost error:', error);
+      throw error;
+    }
+  },
+
+  unlockPost: async (forumId: string, postId: string) => {
+    try {
+      await api.delete(`/api/v1/forums/${forumId}/posts/${postId}/lock`);
+      set((state) => ({
+        posts: state.posts.map((p) =>
+          p.id === postId ? { ...p, isLocked: false } : p
+        ),
+        currentPost: state.currentPost?.id === postId
+          ? { ...state.currentPost, isLocked: false }
+          : state.currentPost,
+      }));
+    } catch (error) {
+      console.error('[forumStore] unlockPost error:', error);
+      throw error;
+    }
+  },
+
+  deletePost: async (forumId: string, postId: string) => {
+    try {
+      await api.delete(`/api/v1/forums/${forumId}/posts/${postId}`);
+      set((state) => ({
+        posts: state.posts.filter((p) => p.id !== postId),
+        currentPost: state.currentPost?.id === postId ? null : state.currentPost,
+      }));
+    } catch (error) {
+      console.error('[forumStore] deletePost error:', error);
       throw error;
     }
   },
