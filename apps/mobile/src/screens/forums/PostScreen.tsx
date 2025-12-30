@@ -428,4 +428,9 @@ const styles = StyleSheet.create({
   lockedText: {
     fontSize: 14,
   },
+  commentsTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
 });

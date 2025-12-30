@@ -26,12 +26,23 @@ export interface UserBasic {
 }
 
 // Message types
+export interface MessageMetadata {
+  url?: string;
+  filename?: string;
+  size?: number;
+  mimeType?: string;
+  width?: number;
+  height?: number;
+  duration?: number;
+  thumbnail?: string;
+}
+
 export interface Message {
   id: string;
   content: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'video' | 'system';
   attachments: Attachment[];
-  metadata?: Record<string, unknown>;
+  metadata?: MessageMetadata;
   sender: UserBasic;
   sender_id: string;
   conversation_id?: string;
