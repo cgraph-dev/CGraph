@@ -517,13 +517,21 @@ Owners access a MyBB-style Admin Control Panel:
 - [x] Board controller and routes
 - [x] Thread controller and routes
 - [x] Post controller and routes
+- [x] Forum creation by any authenticated user
+- [x] Tier-based forum limits (free: 1, starter: 3, pro: 10, business: unlimited)
 
 ### Phase 2: Discovery System ✅ COMPLETE
 - [x] Forum voting (upvote/downvote)
 - [x] Leaderboard API
 - [x] Discovery feed with sorting (hot, top, new, rising)
 - [x] Categories and tags
-- [x] Hot score algorithm
+- [x] Hot score algorithm (Reddit-style)
+- [x] Rising score algorithm (vote velocity)
+- [x] Trending score algorithm (growth + performance)
+- [x] Controversy score algorithm
+- [x] Wilson score for statistical confidence
+- [x] Weekly score reset mechanism
+- [x] Auto-featuring top forums
 
 ### Phase 3: Forum Features ✅ COMPLETE
 - [x] User groups and permissions - `Cgraph.Forums.ForumUserGroup`
@@ -545,6 +553,7 @@ Owners access a MyBB-style Admin Control Panel:
 ### Phase 5: Subscription System 🔄 IN PROGRESS
 - [x] Subscription table created
 - [x] Tier field on forums
+- [x] Tier-based forum limits enforced in API
 - [ ] Stripe integration
 - [ ] Billing portal
 - [ ] Usage limit enforcement
@@ -552,9 +561,18 @@ Owners access a MyBB-style Admin Control Panel:
 ### Phase 6: Advanced Features 🔄 IN PROGRESS
 - [x] Polls - `Cgraph.Forums.ThreadPoll`, `Cgraph.Forums.PollVote`
 - [x] File attachments - `Cgraph.Forums.ThreadAttachment`
+- [x] Ranking Engine - `Cgraph.Forums.RankingEngine`
 - [ ] Full-text search
 - [ ] Email notifications
 - [ ] Real-time updates (WebSocket)
+
+### Phase 7: Frontend UI ✅ COMPLETE
+- [x] ForumLeaderboard.tsx - Competition view with voting
+- [x] CreateForum.tsx - Multi-step forum creation wizard
+- [x] ForumBoardView.tsx - MyBB-style board/thread listing
+- [x] forumHostingStore.ts - State management for forum hosting
+- [x] Leaderboard and Create Forum buttons in Forums.tsx
+- [x] Routes for all forum hosting features
 
 ---
 
