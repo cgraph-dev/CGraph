@@ -491,5 +491,92 @@ User profile now displays karma with visual indicators:
 
 ---
 
+## Mobile App Enhancements
+
+### Skeleton Loading Component
+Created a comprehensive skeleton loading system for React Native:
+
+**File Created:** `apps/mobile/src/components/Skeleton.tsx`
+
+**Components:**
+- `Skeleton` - Base animated skeleton with shimmer effect
+- `ForumCardSkeleton` - Forum list item skeleton
+- `PostCardSkeleton` - Post display skeleton
+- `CommentSkeleton` - Comment skeleton
+- `UserCardSkeleton` - User card skeleton for leaderboard
+
+### Mobile Karma Display
+
+#### Settings Screen
+Profile card now shows karma with trophy icon:
+- Golden trophy icon
+- Formatted karma number (1.2K format)
+- Integrated into profile card
+
+**File Modified:** `apps/mobile/src/screens/settings/SettingsScreen.tsx`
+
+#### User Profile Screen
+Enhanced profile viewing with:
+- Karma badge with trophy icon
+- Verified badge for verified users
+- Visual badges row
+
+**File Modified:** `apps/mobile/src/screens/friends/UserProfileScreen.tsx`
+
+### Mobile Leaderboard Screen
+New user leaderboard for mobile at:
+
+**File Created:** `apps/mobile/src/screens/community/LeaderboardScreen.tsx`
+
+**Features:**
+- Top contributors header with trophy icon
+- Rank badges (gold/silver/bronze for top 3)
+- User cards with avatar, karma, verified status
+- Pull-to-refresh and infinite scroll
+- Skeleton loading states
+- Navigation to user profiles
+
+### Navigation Updates
+
+#### Friends Navigator
+Added Leaderboard route:
+
+**File Modified:** `apps/mobile/src/navigation/FriendsNavigator.tsx`
+
+#### Friend List Screen
+Added "Top Users" quick action button:
+
+**File Modified:** `apps/mobile/src/screens/friends/FriendListScreen.tsx`
+
+### Type Updates
+Added karma and verification fields to mobile types:
+
+```typescript
+// types/index.ts
+interface User {
+  karma?: number;
+  is_verified?: boolean;
+  is_premium?: boolean;
+  // ... other fields
+}
+
+interface UserBasic {
+  karma?: number;
+  is_verified?: boolean;
+  // ... other fields
+}
+```
+
+**File Modified:** `apps/mobile/src/types/index.ts`
+
+### Forum Screens Loading States
+Updated to use skeleton loading instead of spinners:
+
+**Files Modified:**
+- `apps/mobile/src/screens/forums/ForumListScreen.tsx` - ForumCardSkeleton
+- `apps/mobile/src/screens/forums/PostScreen.tsx` - PostCardSkeleton, CommentSkeleton
+
+---
+
 *Last Updated: Current Session*
 *Author: Development Session*
