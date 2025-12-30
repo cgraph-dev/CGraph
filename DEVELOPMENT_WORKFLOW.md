@@ -655,19 +655,20 @@ The `.gitignore` is configured to exclude all sensitive patterns automatically.
 | **E2E Encryption** | Schema exists | Full Signal Protocol implementation |
 | **Polls** | Schema exists (`poll.ex`) | Controller, endpoints, UI |
 | **Custom Emoji** | Schema exists | Upload endpoints, picker UI |
-| **Pinned Messages** | Schema exists | Endpoints, UI components |
+| **Pinned Posts** | ✅ COMPLETE | Backend endpoints + web/mobile UI |
 | **Payment/Stripe** | Architecture defined | Implementation |
 
 ### 🟢 Polish & Testing (Priority: Medium)
 
-| Task | Description |
-|------|-------------|
-| **Test Coverage** | Backend & frontend test completion |
-| **Error Handling** | Comprehensive error states in UI |
-| **Loading States** | Skeleton loaders, optimistic updates |
-| **Accessibility** | ARIA labels, keyboard navigation |
-| **i18n** | Internationalization setup |
-| **Dark Mode** | Complete dark theme support |
+| Task | Description | Status |
+|------|-------------|--------|
+| **Test Coverage** | Backend & frontend test completion | ⏳ |
+| **Error Handling** | Comprehensive error states in UI | ✅ ErrorState, EmptyState components |
+| **Loading States** | Skeleton loaders, optimistic updates | ✅ Web + Mobile skeletons |
+| **Accessibility** | ARIA labels, keyboard navigation | ✅ Skip links, ARIA labels, focus rings |
+| **i18n** | Internationalization setup | ⏳ |
+| **Dark Mode** | Complete dark theme support | ✅ |
+| **Toast Notifications** | User feedback system | ✅ Toast component |
 
 ### 🔵 Infrastructure (Priority: Low)
 

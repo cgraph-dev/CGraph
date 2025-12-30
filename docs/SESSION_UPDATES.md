@@ -578,5 +578,94 @@ Updated to use skeleton loading instead of spinners:
 
 ---
 
+## Post Moderation Features
+
+### Pin/Unpin Posts
+Added ability for forum moderators and owners to pin/unpin posts.
+
+#### Store Functions Added:
+```typescript
+// forumStore.ts
+pinPost(postId: string, forumId: string)
+unpinPost(postId: string, forumId: string)
+lockPost(postId: string)
+unlockPost(postId: string)
+```
+
+#### UI Changes:
+- Moderation dropdown in ForumPost.tsx with Pin/Unpin, Lock/Unlock options
+- Pinned/Locked badges displayed on posts
+- Locked posts show disabled comment input with message
+
+**Files Modified:**
+- `apps/web/src/stores/forumStore.ts`
+- `apps/web/src/pages/forums/ForumPost.tsx`
+- `apps/web/src/pages/forums/Forums.tsx`
+
+### Mobile Moderation UI
+Added pinned/locked badges and locked comment message to mobile:
+
+**File Modified:** `apps/mobile/src/screens/forums/PostScreen.tsx`
+
+---
+
+## UI Component Library Expansion
+
+### ErrorState Component
+Reusable error display with retry functionality:
+- `NetworkError` - Connection issues
+- `NotFoundError` - Missing content
+- `PermissionError` - Access denied
+- `RateLimitError` - Too many requests
+
+**File Created:** `apps/web/src/components/ui/ErrorState.tsx`
+
+### EmptyState Component
+Empty content placeholder with action buttons:
+- `NoPostsEmpty` - No posts in forum
+- `NoCommentsEmpty` - No comments on post
+- `NoMembersEmpty` - No members in group
+- `NoMessagesEmpty` - Empty chat
+- `NoFriendsEmpty` - No friends added
+- `SearchNoResults` - No search results
+
+**File Created:** `apps/web/src/components/ui/EmptyState.tsx`
+
+### Toast Notification System
+Global toast notifications for user feedback:
+- Success, Error, Warning, Info variants
+- Auto-dismiss with configurable duration
+- Slide-in animation
+
+**File Created:** `apps/web/src/components/ui/Toast.tsx`
+
+### Tooltip Component
+Accessible tooltip with positioning:
+- Top, bottom, left, right positions
+- Keyboard accessible (focus/blur)
+- Portal-based rendering
+
+**File Created:** `apps/web/src/components/ui/Tooltip.tsx`
+
+---
+
+## Accessibility (a11y) Improvements
+
+### Skip to Content Link
+Added hidden skip link for keyboard navigation:
+- Only visible when focused
+- Jumps to main content area
+
+### ARIA Labels
+Enhanced semantic markup:
+- Navigation landmarks with aria-label
+- Current page indication with aria-current
+- Decorative icons hidden from screen readers
+- Focus rings for keyboard navigation
+
+**File Modified:** `apps/web/src/layouts/AppLayout.tsx`
+
+---
+
 *Last Updated: Current Session*
 *Author: Development Session*
