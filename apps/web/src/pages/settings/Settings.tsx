@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useTheme } from '@/contexts/ThemeContext';
+import { api } from '@/lib/api';
+import { toast } from '@/components/Toast';
 import {
   UserIcon,
   ShieldCheckIcon,
@@ -77,11 +79,18 @@ function AccountSettings() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    // TODO: API call to save
-    setTimeout(() => {
-      updateUser({ displayName });
+    try {
+      const response = await api.put('/api/v1/me', {
+        display_name: displayName,
+      });
+      updateUser({ displayName: response.data.data.display_name || response.data.data.displayName });
+      toast.success('Settings saved');
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      toast.error('Failed to save settings');
+    } finally {
       setIsSaving(false);
-    }, 1000);
+    }
   };
 
   return (

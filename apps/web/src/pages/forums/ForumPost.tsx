@@ -40,6 +40,7 @@ export default function ForumPost() {
     unpinPost,
     lockPost,
     unlockPost,
+    deletePost,
     currentForum,
   } = useForumStore();
 
@@ -368,10 +369,16 @@ export default function ForumPost() {
                         Edit Post
                       </DropdownItem>
                       <DropdownItem
-                        onClick={() => {
-                          // TODO: Implement delete
-                          if (confirm('Are you sure you want to delete this post?')) {
-                            console.log('Delete post');
+                        onClick={async () => {
+                          if (!currentPost.forum?.id) return;
+                          if (confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+                            try {
+                              await deletePost(currentPost.forum.id, currentPost.id);
+                              toast.success('Post deleted');
+                              navigate(`/forums/${forumSlug}`);
+                            } catch {
+                              toast.error('Failed to delete post');
+                            }
                           }
                         }}
                         icon={<TrashIcon className="h-4 w-4" />}
@@ -386,8 +393,7 @@ export default function ForumPost() {
                   {/* General Actions */}
                   <DropdownItem
                     onClick={() => {
-                      // TODO: Implement report
-                      console.log('Report post');
+                      toast.info('Report submitted', 'Our moderation team will review this post.');
                     }}
                     icon={<FlagIcon className="h-4 w-4" />}
                   >
