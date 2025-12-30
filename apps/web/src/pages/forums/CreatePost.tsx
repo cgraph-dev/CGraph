@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useForumStore } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { MarkdownEditor } from '@/components';
+import { toast } from '@/components/ui/Toast';
 import {
   ArrowLeftIcon,
   PhotoIcon,
@@ -16,13 +17,14 @@ export default function CreatePost() {
   const { forumSlug } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthStore();
-  const { forums, fetchForum, createPost } = useForumStore();
+  const { forums, fetchForum, createPost, subscribe } = useForumStore();
 
   const [postType, setPostType] = useState<PostType>('text');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [url, setUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const forum = forums.find((f) => f.slug === forumSlug);
@@ -42,6 +44,20 @@ export default function CreatePost() {
 
   // Check if user can post (must be a member for private forums)
   const canPost = forum?.isPublic || forum?.isMember || forum?.ownerId === user?.id;
+
+  const handleJoinForum = async () => {
+    if (!forum) return;
+    setIsJoining(true);
+    try {
+      await subscribe(forum.id);
+      toast.success(`Joined c/${forum.name} successfully!`);
+    } catch (err) {
+      toast.error('Failed to join forum');
+      console.error('Failed to join forum:', err);
+    } finally {
+      setIsJoining(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,10 +138,11 @@ export default function CreatePost() {
             <p className="text-yellow-400">
               You must join this forum to create posts.{' '}
               <button
-                onClick={() => {/* TODO: Join forum */}}
-                className="underline hover:text-yellow-300"
+                onClick={handleJoinForum}
+                disabled={isJoining}
+                className="underline hover:text-yellow-300 disabled:opacity-50"
               >
-                Join now
+                {isJoining ? 'Joining...' : 'Join now'}
               </button>
             </p>
           </div>
