@@ -186,8 +186,10 @@ export const useForumStore = create<ForumState>((set, get) => ({
     set({ isLoadingForums: true });
     try {
       const response = await api.get('/api/v1/forums');
+      const rawForums = ensureArray<Record<string, unknown>>(response.data, 'forums');
+      const forums = rawForums.map(mapForumFromApi);
       set({
-        forums: ensureArray<Forum>(response.data, 'forums'),
+        forums,
         isLoadingForums: false,
       });
     } catch (error) {
@@ -199,8 +201,9 @@ export const useForumStore = create<ForumState>((set, get) => ({
   fetchForum: async (slug: string) => {
     try {
       const response = await api.get(`/api/v1/forums/${slug}`);
-      const forum = ensureObject<Forum>(response.data, 'forum');
-      if (forum) {
+      const rawData = ensureObject<Record<string, unknown>>(response.data, 'forum');
+      if (rawData) {
+        const forum = mapForumFromApi(rawData);
         set((state) => ({
           forums: state.forums.some((f) => f.id === forum.id)
             ? state.forums.map((f) => (f.id === forum.id ? forum : f))

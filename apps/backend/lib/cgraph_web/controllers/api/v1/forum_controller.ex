@@ -23,15 +23,35 @@ defmodule CgraphWeb.API.V1.ForumController do
   end
 
   @doc """
-  Get a specific forum.
+  Get a specific forum by ID or slug.
   GET /api/v1/forums/:id
+  
+  The :id parameter can be either a UUID or a slug.
   """
-  def show(conn, %{"id" => forum_id}) do
+  def show(conn, %{"id" => forum_id_or_slug}) do
     user = conn.assigns.current_user
     
-    with {:ok, forum} <- Forums.get_forum(forum_id),
+    # Try to get forum by ID first, then by slug
+    with {:ok, forum} <- get_forum_by_id_or_slug(forum_id_or_slug),
          :ok <- Forums.authorize_action(user, forum, :view) do
       render(conn, :show, forum: forum)
+    end
+  end
+  
+  # Helper to get forum by ID or slug
+  defp get_forum_by_id_or_slug(id_or_slug) do
+    # Check if it looks like a UUID (36 chars with hyphens or 32 chars alphanumeric)
+    if is_uuid?(id_or_slug) do
+      Forums.get_forum(id_or_slug)
+    else
+      Forums.get_forum_by_slug(id_or_slug)
+    end
+  end
+  
+  defp is_uuid?(string) do
+    case Ecto.UUID.cast(string) do
+      {:ok, _} -> true
+      :error -> false
     end
   end
 
