@@ -140,6 +140,10 @@ defmodule CgraphWeb.Router do
     # Forum leaderboard (before resources to avoid conflict)
     get "/forums/leaderboard", ForumController, :leaderboard
     get "/forums/top", ForumController, :top
+    
+    # Plugin marketplace (global, not forum-specific)
+    get "/plugins/marketplace", PluginController, :marketplace
+    get "/plugins/marketplace/:plugin_id", PluginController, :marketplace_show
 
     # Forums (Reddit-style discovery + MyBB-style hosting)
     resources "/forums", ForumController do
@@ -166,6 +170,11 @@ defmodule CgraphWeb.Router do
       
       # Forum threads (all threads across all boards for a forum)
       get "/threads", ThreadController, :forum_threads
+      
+      # Forum plugins
+      resources "/plugins", PluginController, except: [:new, :edit] do
+        post "/toggle", PluginController, :toggle
+      end
     end
 
     # Boards -> Threads (nested outside forums for cleaner URLs)
