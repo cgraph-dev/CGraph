@@ -10,6 +10,7 @@ export interface Board {
   id: string;
   forumId: string;
   parentBoardId: string | null;
+  parentId: string | null; // Alias for compatibility
   name: string;
   slug: string;
   description: string | null;
@@ -20,6 +21,8 @@ export interface Board {
   threadCount: number;
   postCount: number;
   lastPostAt: string | null;
+  lastPostTitle: string | null;
+  lastPostAuthor: string | null;
   insertedAt: string;
   updatedAt: string;
 }
@@ -44,8 +47,11 @@ export interface Thread {
   upvotes: number;
   downvotes: number;
   lastPostAt: string | null;
+  lastReplyAt: string | null; // Alias
+  lastReplyBy: string | null;
   author: ThreadAuthor | null;
   lastPoster: ThreadAuthor | null;
+  createdAt: string;
   insertedAt: string;
   updatedAt: string;
 }
@@ -74,6 +80,7 @@ export interface ThreadPost {
 export interface ThreadAuthor {
   id: string;
   username: string;
+  displayName: string | null;
   avatarUrl: string | null;
 }
 
@@ -130,6 +137,7 @@ interface ForumHostingState {
 
   // Actions - Threads
   fetchThreads: (boardId: string, opts?: ThreadListOptions) => Promise<void>;
+  fetchRecentThreads: (forumId: string, limit?: number) => Promise<void>;
   fetchThread: (threadId: string) => Promise<Thread>;
   createThread: (boardId: string, data: CreateThreadData) => Promise<Thread>;
   updateThread: (threadId: string, data: Partial<CreateThreadData>) => Promise<Thread>;
@@ -266,6 +274,23 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
   // =========================================================================
   // Threads
   // =========================================================================
+
+  fetchRecentThreads: async (forumId: string, limit: number = 20) => {
+    set({ isLoadingThreads: true });
+    try {
+      const response = await api.get(`/api/v1/forums/${forumId}/threads`, {
+        params: { limit, sort: 'latest' },
+      });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rawThreads = ensureArray<any>(response.data, 'data');
+      const threads = rawThreads.map(mapThreadFromApi);
+      set({ threads, isLoadingThreads: false });
+    } catch (error) {
+      set({ isLoadingThreads: false });
+      // Don't throw - forum may not have threads endpoint yet
+      console.warn('Failed to fetch recent threads:', error);
+    }
+  },
 
   fetchThreads: async (boardId: string, opts?: ThreadListOptions) => {
     set({ isLoadingThreads: true });
@@ -443,6 +468,7 @@ function mapBoardFromApi(data: Record<string, unknown>): Board {
     id: data.id as string,
     forumId: data.forum_id as string,
     parentBoardId: (data.parent_board_id as string) || null,
+    parentId: (data.parent_board_id as string) || null,
     name: data.name as string,
     slug: data.slug as string,
     description: (data.description as string) || null,
@@ -453,12 +479,18 @@ function mapBoardFromApi(data: Record<string, unknown>): Board {
     threadCount: (data.thread_count as number) || 0,
     postCount: (data.post_count as number) || 0,
     lastPostAt: (data.last_post_at as string) || null,
+    lastPostTitle: (data.last_post_title as string) || null,
+    lastPostAuthor: (data.last_post_author as string) || null,
     insertedAt: data.inserted_at as string,
     updatedAt: data.updated_at as string,
   };
 }
 
 function mapThreadFromApi(data: Record<string, unknown>): Thread {
+  const insertedAt = data.inserted_at as string;
+  const lastPostAt = (data.last_post_at as string) || null;
+  const lastPoster = data.last_poster ? mapAuthorFromApi(data.last_poster as Record<string, unknown>) : null;
+  
   return {
     id: data.id as string,
     boardId: data.board_id as string,
@@ -478,10 +510,13 @@ function mapThreadFromApi(data: Record<string, unknown>): Thread {
     score: (data.score as number) || 0,
     upvotes: (data.upvotes as number) || 0,
     downvotes: (data.downvotes as number) || 0,
-    lastPostAt: (data.last_post_at as string) || null,
+    lastPostAt: lastPostAt,
+    lastReplyAt: lastPostAt,
+    lastReplyBy: lastPoster?.username || null,
     author: data.author ? mapAuthorFromApi(data.author as Record<string, unknown>) : null,
-    lastPoster: data.last_poster ? mapAuthorFromApi(data.last_poster as Record<string, unknown>) : null,
-    insertedAt: data.inserted_at as string,
+    lastPoster: lastPoster,
+    createdAt: insertedAt,
+    insertedAt: insertedAt,
     updatedAt: data.updated_at as string,
   };
 }
@@ -513,6 +548,7 @@ function mapAuthorFromApi(data: Record<string, unknown>): ThreadAuthor {
   return {
     id: data.id as string,
     username: data.username as string,
+    displayName: (data.display_name as string) || (data.username as string),
     avatarUrl: (data.avatar_url as string) || null,
   };
 }

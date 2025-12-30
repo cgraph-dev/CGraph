@@ -155,6 +155,18 @@ defmodule Cgraph.Forums do
   end
 
   @doc """
+  Count forums owned by a user.
+  Used for tier-based forum limits.
+  """
+  def count_user_forums(user_id) do
+    Repo.aggregate(
+      from(f in Forum, where: f.owner_id == ^user_id and is_nil(f.deleted_at)),
+      :count,
+      :id
+    )
+  end
+
+  @doc """
   Create a forum.
   """
   def create_forum(user, attrs) do
@@ -1263,6 +1275,36 @@ defmodule Cgraph.Forums do
 
     meta = %{page: page, per_page: per_page, total: total}
     {threads, meta}
+  end
+
+  @doc """
+  List all threads in a forum (across all boards).
+  Used for "Recent Threads" view on forum homepage.
+  """
+  def list_forum_threads(forum_id, opts \\ []) do
+    limit = Keyword.get(opts, :limit, 20)
+    sort = Keyword.get(opts, :sort, "latest")
+
+    # Get all board IDs for this forum
+    board_ids = from(b in Board,
+      where: b.forum_id == ^forum_id and is_nil(b.deleted_at),
+      select: b.id
+    ) |> Repo.all()
+
+    query = from t in Thread,
+      where: t.board_id in ^board_ids and is_nil(t.deleted_at) and t.is_hidden == false,
+      preload: [:author, :last_poster, :board],
+      limit: ^limit
+
+    query = case sort do
+      "latest" -> from t in query, order_by: [desc: t.is_pinned, desc: t.inserted_at]
+      "hot" -> from t in query, order_by: [desc: t.is_pinned, desc: t.hot_score]
+      "top" -> from t in query, order_by: [desc: t.is_pinned, desc: t.score]
+      "active" -> from t in query, order_by: [desc: t.is_pinned, desc: t.last_post_at]
+      _ -> from t in query, order_by: [desc: t.is_pinned, desc: t.inserted_at]
+    end
+
+    Repo.all(query)
   end
 
   @doc """

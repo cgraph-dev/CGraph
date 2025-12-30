@@ -64,6 +64,22 @@ defmodule CgraphWeb.FallbackController do
     |> render(:error, message: "Resource already exists.")
   end
 
+  # Handle forum limit reached (tier-based limits)
+  def call(conn, {:error, %{code: :forum_limit_reached} = error_info}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error,
+      code: "forum_limit_reached",
+      message: error_info.message,
+      details: %{
+        current_count: error_info.current_count,
+        max_allowed: error_info.max_allowed,
+        tier: error_info.tier
+      }
+    )
+  end
+
   # Handle already member
   def call(conn, {:error, :already_member}) do
     conn

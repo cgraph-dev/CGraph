@@ -38,7 +38,12 @@ defmodule CgraphWeb.API.V1.ForumController do
   @doc """
   Create a new forum.
   POST /api/v1/forums
-  Requires admin privileges.
+  
+  Any authenticated user can create forums, subject to their subscription tier limits:
+  - Free: 1 forum
+  - Starter ($5/mo): 3 forums
+  - Pro ($15/mo): 10 forums  
+  - Business ($50/mo): Unlimited
   """
   def create(conn, params) do
     user = conn.assigns.current_user
@@ -278,12 +283,33 @@ defmodule CgraphWeb.API.V1.ForumController do
   # Private helpers
 
   defp authorize_forum_creation(user) do
-    # Check if user has permission to create forums
-    # Currently allows admins; could be extended to check account age/reputation
-    if user.is_admin do
-      :ok
-    else
-      {:error, :unauthorized}
+    # Check user's subscription tier and forum count limits
+    # Tier limits:
+    # - free: 1 forum
+    # - starter: 3 forums
+    # - pro: 10 forums
+    # - business: unlimited
+    user_tier = Map.get(user, :subscription_tier) || "free"
+    owned_forums_count = Forums.count_user_forums(user.id)
+    
+    max_forums = case user_tier do
+      "business" -> :infinity
+      "pro" -> 10
+      "starter" -> 3
+      _ -> 1  # free tier
+    end
+    
+    cond do
+      max_forums == :infinity -> :ok
+      owned_forums_count < max_forums -> :ok
+      true -> 
+        {:error, %{
+          code: :forum_limit_reached,
+          message: "You've reached your forum limit (#{max_forums}). Upgrade your subscription to create more forums.",
+          current_count: owned_forums_count,
+          max_allowed: max_forums,
+          tier: user_tier
+        }}
     end
   end
 end

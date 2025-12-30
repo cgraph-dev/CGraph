@@ -163,6 +163,9 @@ defmodule CgraphWeb.Router do
       resources "/boards", BoardController, except: [:new, :edit] do
         get "/by-slug/:slug", BoardController, :show_by_slug
       end
+      
+      # Forum threads (all threads across all boards for a forum)
+      get "/threads", ThreadController, :forum_threads
     end
 
     # Boards -> Threads (nested outside forums for cleaner URLs)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useForumStore, Post } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDistanceToNow } from 'date-fns';
@@ -14,6 +14,8 @@ import {
   ClockIcon,
   ArrowTrendingUpIcon,
   ChevronDownIcon,
+  TrophyIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowUpIcon as ArrowUpIconSolid, ArrowDownIcon as ArrowDownIconSolid } from '@heroicons/react/24/solid';
 
@@ -34,7 +36,8 @@ const timeRangeOptions = [
 
 export default function Forums() {
   const { forumSlug } = useParams();
-  const { user: _user } = useAuthStore();
+  const navigate = useNavigate();
+  const { user: _user, isAuthenticated } = useAuthStore();
   const {
     forums,
     posts,
@@ -165,6 +168,27 @@ export default function Forums() {
         {/* Sort Controls */}
         <div className="sticky top-0 z-10 bg-dark-900 border-b border-dark-700 px-4 py-3">
           <div className="max-w-4xl mx-auto flex items-center gap-4">
+            {/* Quick Actions */}
+            <div className="flex items-center gap-2 mr-auto">
+              <Link
+                to="/forums/leaderboard"
+                className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 rounded-full text-sm font-medium text-white transition-colors"
+              >
+                <TrophyIcon className="h-4 w-4" />
+                Leaderboard
+              </Link>
+              
+              {isAuthenticated && (
+                <button
+                  onClick={() => navigate('/forums/create')}
+                  className="flex items-center gap-2 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 rounded-full text-sm font-medium text-white transition-colors"
+                >
+                  <SparklesIcon className="h-4 w-4" />
+                  Create Forum
+                </button>
+              )}
+            </div>
+
             {/* Sort Dropdown */}
             <div className="relative">
               <button

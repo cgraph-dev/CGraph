@@ -97,17 +97,42 @@ defmodule CgraphWeb.API.V1.ForumControllerTest do
     setup %{conn: conn} do
       user = user_fixture()
       conn = log_in_user(conn, user)
-      %{conn: conn}
+      %{conn: conn, user: user}
     end
 
-    test "returns unauthorized for non-admin", %{conn: conn} do
+    test "allows any authenticated user to create a forum (free tier)", %{conn: conn} do
       conn = post(conn, ~p"/api/v1/forums", %{
         name: "NewForum",
         slug: "new-forum"
       })
       
-      # Returns 401 Unauthorized for non-admin users
-      assert json_response(conn, 401)
+      # Any authenticated user can now create forums (up to tier limit)
+      response = json_response(conn, 201)
+      assert response["data"]["name"] == "NewForum"
+      assert response["data"]["slug"] == "new-forum"
+    end
+
+    test "enforces free tier limit of 1 forum", %{conn: conn, user: user} do
+      # Create first forum (should succeed)
+      conn = post(conn, ~p"/api/v1/forums", %{
+        name: "FirstForum",
+        slug: "first-forum"
+      })
+      assert json_response(conn, 201)
+
+      # Create second forum (should fail for free tier)
+      conn = build_conn()
+        |> put_req_header("accept", "application/json")
+        |> log_in_user(user)
+        |> post(~p"/api/v1/forums", %{
+          name: "SecondForum",
+          slug: "second-forum"
+        })
+      
+      # Should return error about forum limit
+      response = json_response(conn, 422)
+      assert response["error"]["code"] == "forum_limit_reached" or 
+             String.contains?(response["error"]["message"] || "", "limit")
     end
   end
 end

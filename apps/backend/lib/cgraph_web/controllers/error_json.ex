@@ -18,6 +18,11 @@ defmodule CgraphWeb.ErrorJSON do
     %{error: %{message: message}}
   end
 
+  # Render with code, message and details (for tier limits, etc.)
+  def error(%{code: code, message: message, details: details}) do
+    %{error: %{code: code, message: message, details: details}}
+  end
+
   # Standard HTTP error codes
   def render("400.json", _assigns) do
     %{error: %{message: "Bad request"}}

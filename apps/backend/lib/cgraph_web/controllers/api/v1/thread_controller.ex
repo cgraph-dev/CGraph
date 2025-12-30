@@ -164,4 +164,18 @@ defmodule CgraphWeb.API.V1.ThreadController do
         error
     end
   end
+
+  @doc """
+  List all threads in a forum (across all boards).
+  GET /api/v1/forums/:forum_id/threads
+  Used for "Recent Threads" view on forum homepage.
+  """
+  def forum_threads(conn, %{"forum_id" => forum_id} = params) do
+    limit = String.to_integer(Map.get(params, "limit", "20"))
+    sort = Map.get(params, "sort", "latest")
+    
+    threads = Forums.list_forum_threads(forum_id, limit: limit, sort: sort)
+    
+    render(conn, :index, threads: threads, meta: %{total: length(threads)})
+  end
 end
