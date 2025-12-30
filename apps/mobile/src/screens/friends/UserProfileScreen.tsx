@@ -7,7 +7,7 @@ import {
   Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp, CommonActions } from '@react-navigation/native';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { FriendsStackParamList, UserBasic } from '../../types';
@@ -190,9 +190,25 @@ export default function UserProfileScreen() {
               <Button
                 variant="primary"
                 fullWidth
-                onPress={() => {
-                  // Navigate to messages with this user
-                  // TODO: Implement conversation creation
+                onPress={async () => {
+                  // Create or get existing conversation and navigate
+                  try {
+                    const response = await api.post('/api/v1/conversations', {
+                      participant_ids: [user.id],
+                    });
+                    const conversationId = response.data.data?.id || response.data.id;
+                    navigation.dispatch(
+                      CommonActions.navigate({
+                        name: 'MessagesTab',
+                        params: {
+                          screen: 'Conversation',
+                          params: { conversationId },
+                        },
+                      })
+                    );
+                  } catch (error) {
+                    Alert.alert('Error', 'Could not start conversation');
+                  }
                 }}
               >
                 Send Message
