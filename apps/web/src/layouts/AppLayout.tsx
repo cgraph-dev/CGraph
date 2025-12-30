@@ -107,16 +107,33 @@ export default function AppLayout() {
 
   return (
     <div className="flex h-screen bg-dark-900 text-white">
+      {/* Skip to content link for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-lg focus:outline-none"
+      >
+        Skip to main content
+      </a>
+      
       {/* Sidebar */}
-      <aside className="w-20 bg-dark-800 border-r border-dark-700 flex flex-col items-center py-4">
+      <aside 
+        className="w-20 bg-dark-800 border-r border-dark-700 flex flex-col items-center py-4"
+        role="navigation"
+        aria-label="Main navigation"
+      >
         {/* Logo */}
         <div className="mb-6">
-          <div className="h-12 w-12 rounded-xl bg-primary-600 flex items-center justify-center">
+          <div 
+            className="h-12 w-12 rounded-xl bg-primary-600 flex items-center justify-center"
+            role="img"
+            aria-label="CGraph logo"
+          >
             <svg
               className="h-7 w-7 text-white"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -129,7 +146,7 @@ export default function AppLayout() {
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 flex flex-col items-center gap-2">
+        <nav className="flex-1 flex flex-col items-center gap-2" aria-label="Primary">
           {navItems.map((item) => {
             const isActive = location.pathname.startsWith(item.path);
             const Icon = isActive ? item.activeIcon : item.icon;
@@ -138,6 +155,8 @@ export default function AppLayout() {
               <NavLink
                 key={item.path}
                 to={item.path}
+                aria-label={item.label}
+                aria-current={isActive ? 'page' : undefined}
                 className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
                   isActive
                     ? 'bg-primary-600 text-white'
@@ -162,16 +181,21 @@ export default function AppLayout() {
         </nav>
 
         {/* User Avatar & Logout */}
-        <div className="mt-auto space-y-2">
+        <div className="mt-auto space-y-2" role="group" aria-label="User actions">
           <button
             onClick={handleLogout}
-            className="w-12 h-12 rounded-xl flex items-center justify-center text-gray-400 hover:bg-red-600/20 hover:text-red-400 transition-all"
+            className="w-12 h-12 rounded-xl flex items-center justify-center text-gray-400 hover:bg-red-600/20 hover:text-red-400 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-dark-800"
             title="Logout"
+            aria-label="Logout from your account"
           >
-            <ArrowRightOnRectangleIcon className="h-6 w-6" />
+            <ArrowRightOnRectangleIcon className="h-6 w-6" aria-hidden="true" />
           </button>
 
-          <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-dark-600">
+          <div 
+            className="w-12 h-12 rounded-xl overflow-hidden border-2 border-dark-600"
+            role="img"
+            aria-label={`Your profile picture: ${user?.displayName || user?.username || 'User'}`}
+          >
             {user?.avatarUrl ? (
               <img
                 src={user.avatarUrl}
@@ -188,7 +212,7 @@ export default function AppLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex overflow-hidden">
+      <main id="main-content" className="flex-1 flex overflow-hidden" role="main">
         <Outlet />
       </main>
       
