@@ -124,7 +124,7 @@ api.get('/api/v1/friends');
 ## 🧪 Testing
 
 ```bash
-# Backend tests (216 tests)
+# Backend tests (220 tests)
 cd apps/backend
 mix test
 
@@ -134,7 +134,7 @@ pnpm tsc --noEmit
 
 # Mobile TypeScript check
 cd apps/mobile
-pnpm typecheck
+npx tsc --noEmit
 ```
 
 ## 📚 Documentation

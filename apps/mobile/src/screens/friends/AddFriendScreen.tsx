@@ -30,15 +30,19 @@ export default function AddFriendScreen() {
     setSuccess(false);
 
     try {
-      await api.post('/api/v1/friends', { user_id: username.trim() });
+      // Send username instead of user_id - backend now supports both
+      await api.post('/api/v1/friends', { username: username.trim() });
       setSuccess(true);
       setUsername('');
       setTimeout(() => {
         navigation.goBack();
       }, 1500);
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { error?: string } } };
-      setError(error.response?.data?.error || 'Failed to send friend request');
+      const error = err as { response?: { data?: { error?: { message?: string } | string } } };
+      const errorMessage = typeof error.response?.data?.error === 'object' 
+        ? error.response?.data?.error?.message 
+        : error.response?.data?.error;
+      setError(errorMessage || 'Failed to send friend request');
     } finally {
       setLoading(false);
     }

@@ -101,9 +101,13 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
   sendRequest: async (usernameOrId: string) => {
     set({ isLoading: true, error: null });
     try {
-      await api.post('/api/v1/friends', {
-        user_id: usernameOrId,
-      });
+      // Determine if it's a UUID or username
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(usernameOrId);
+      const payload = isUuid 
+        ? { user_id: usernameOrId }
+        : { username: usernameOrId };
+      
+      await api.post('/api/v1/friends', payload);
       // Refresh the lists
       await get().fetchSentRequests();
       set({ isLoading: false });

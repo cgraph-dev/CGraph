@@ -7,6 +7,52 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.3.0] - 2024-12-30
+
+### 🎉 Production Ready for 100 Users
+
+This release focuses on making the platform ready for initial users with working 1:1 messaging, friend requests, and username improvements.
+
+### Added
+
+#### Unique User ID System
+- **Database**: Auto-increment `user_id` sequence for unique numeric IDs
+- **Display Format**: User IDs displayed as `#0001`, `#0042`, etc.
+- **Optional Usernames**: Username is now optional at registration
+- **14-Day Username Cooldown**: Users can change username every 14 days
+
+#### Friend Request Improvements
+- **Add by Username**: Can now send friend requests using username (not just user_id)
+- **Backend Support**: `POST /api/v1/friends` accepts both `user_id` and `username`
+
+#### Messaging Improvements
+- **Start Chat from Friends**: Clicking "Message" on a friend creates/opens conversation
+- **Auto-redirect**: Messages page handles `?userId=` param to start new conversations
+
+#### Animation Libraries
+- **Web**: `src/lib/animations.ts` with CSS animation utilities
+- **Mobile**: `src/lib/animations.ts` with React Native Animated helpers
+
+#### New Components
+- **Web UserBadge**: Displays user ID, username, verification badges, karma
+- **Mobile UserBadge**: Mobile version of user identity component
+- **Mobile AnimatedCard**: Reusable animated container with press feedback
+
+### Changed
+- Username is now nullable in User schema
+- Registration no longer requires username (can be set later)
+- API returns `user_id_display`, `can_change_username`, `next_username_change_at`
+
+### Fixed
+- Mobile AddFriendScreen now sends `username` instead of `user_id`
+- Web friend store detects UUID vs username format automatically
+
+### Documentation
+- Updated API.md with accurate friend endpoints and response formats
+- Updated README with correct test count (220 tests)
+
+---
+
 ## [0.2.0] - 2024-12-30
 
 ### 🚀 Full UI Implementation & Code Quality Improvements

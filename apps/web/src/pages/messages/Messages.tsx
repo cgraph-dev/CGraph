@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Outlet, useParams, NavLink } from 'react-router-dom';
+import { Outlet, useParams, NavLink, useSearchParams, useNavigate } from 'react-router-dom';
 import { useChatStore, Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDistanceToNow } from 'date-fns';
@@ -11,9 +11,49 @@ import {
 
 export default function Messages() {
   const { conversationId } = useParams();
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { conversations, isLoadingConversations, fetchConversations } = useChatStore();
+  const { conversations, isLoadingConversations, fetchConversations, createConversation } = useChatStore();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isCreatingConversation, setIsCreatingConversation] = useState(false);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
+
+  // Handle userId query param (from friends page)
+  useEffect(() => {
+    const userId = searchParams.get('userId');
+    if (userId && !isCreatingConversation) {
+      handleStartConversationWithUser(userId);
+    }
+  }, [searchParams]);
+
+  const handleStartConversationWithUser = async (userId: string) => {
+    // Check if conversation already exists with this user
+    const existingConv = conversations.find((conv) => {
+      if (conv.type !== 'direct') return false;
+      return conv.participants.some((p) => p.userId === userId);
+    });
+
+    if (existingConv) {
+      navigate(`/messages/${existingConv.id}`, { replace: true });
+      return;
+    }
+
+    // Create new conversation
+    setIsCreatingConversation(true);
+    try {
+      const newConv = await createConversation([userId]);
+      navigate(`/messages/${newConv.id}`, { replace: true });
+    } catch (error) {
+      console.error('Failed to create conversation:', error);
+      navigate('/messages', { replace: true });
+    } finally {
+      setIsCreatingConversation(false);
+    }
+  };
 
   useEffect(() => {
     fetchConversations();

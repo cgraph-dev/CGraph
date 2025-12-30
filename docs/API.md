@@ -559,14 +559,25 @@ List all friends.
 {
   "data": [
     {
-      "id": "usr_xyz789",
-      "username": "bob",
-      "display_name": "Bob Smith",
-      "avatar_url": "...",
-      "status": "online",
-      "friendship_since": "2024-01-01T00:00:00Z"
+      "id": "friendship_id",
+      "user": {
+        "id": "usr_xyz789",
+        "username": "bob",
+        "display_name": "Bob Smith",
+        "avatar_url": "...",
+        "status": "online",
+        "user_id": 42,
+        "user_id_display": "#0042"
+      },
+      "nickname": null,
+      "since": "2024-01-01T00:00:00Z"
     }
-  ]
+  ],
+  "meta": {
+    "page": 1,
+    "per_page": 50,
+    "total": 10
+  }
 }
 ```
 
@@ -574,14 +585,56 @@ List all friends.
 
 List pending friend requests (received).
 
+**Response:**
+```json
+{
+  "data": [
+    {
+      "id": "request_id",
+      "user": {
+        "id": "usr_abc123",
+        "username": "alice",
+        "display_name": "Alice",
+        "avatar_url": "..."
+      },
+      "created_at": "2024-01-15T10:30:00Z",
+      "type": "incoming"
+    }
+  ],
+  "meta": { "page": 1, "per_page": 20, "total": 1 }
+}
+```
+
+#### `GET /friends/sent`
+
+List sent friend requests (outgoing).
+
 #### `POST /friends`
 
-Send a friend request.
+Send a friend request. Accepts either `user_id` or `username`.
 
-**Request:**
+**Request (by username):**
+```json
+{
+  "username": "alice"
+}
+```
+
+**Request (by user_id):**
 ```json
 {
   "user_id": "usr_xyz789"
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "request_id",
+    "status": "pending",
+    "created_at": "2024-01-15T10:30:00Z"
+  }
 }
 ```
 
@@ -595,7 +648,7 @@ Decline a friend request.
 
 #### `DELETE /friends/:id`
 
-Remove a friend.
+Remove a friend or cancel sent request.
 
 #### `POST /friends/:id/block`
 

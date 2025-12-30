@@ -65,11 +65,29 @@ defmodule CgraphWeb.API.V1.FriendController do
   @doc """
   Send a friend request.
   POST /api/v1/friends
+  Accepts either user_id or username parameter.
   """
   def create(conn, %{"user_id" => target_user_id}) do
     user = conn.assigns.current_user
     
     with {:ok, target_user} <- Accounts.get_user(target_user_id),
+         :ok <- validate_not_self(user, target_user),
+         :ok <- validate_not_blocked(user, target_user),
+         :ok <- validate_not_already_friends(user, target_user),
+         {:ok, friendship} <- Accounts.send_friend_request(user, target_user) do
+      # Notify target user
+      Accounts.notify_friend_request(friendship)
+      
+      conn
+      |> put_status(:created)
+      |> render(:show, friendship: friendship)
+    end
+  end
+
+  def create(conn, %{"username" => username}) do
+    user = conn.assigns.current_user
+    
+    with {:ok, target_user} <- Accounts.get_user_by_username(username),
          :ok <- validate_not_self(user, target_user),
          :ok <- validate_not_blocked(user, target_user),
          :ok <- validate_not_already_friends(user, target_user),
