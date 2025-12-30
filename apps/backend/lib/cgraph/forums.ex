@@ -30,16 +30,32 @@ defmodule Cgraph.Forums do
 
   @doc """
   List forums accessible to a user.
+  For anonymous users, only show public forums.
+  For authenticated users, show public forums + private forums they're members of.
   """
-  def list_forums_for_user(_user, opts \\ []) do
+  def list_forums_for_user(user, opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 20)
 
-    # Filter out deleted forums (no is_archived field in schema)
-    query = from f in Forum,
+    # Base query - exclude deleted forums
+    base_query = from f in Forum,
       where: is_nil(f.deleted_at),
       order_by: [desc: f.member_count],
       preload: [:categories, :owner]
+
+    # Apply visibility filter based on user
+    query = case user do
+      nil ->
+        # Anonymous users only see public forums
+        from f in base_query, where: f.is_public == true
+      
+      %{id: user_id} ->
+        # Authenticated users see public forums + private forums they're members of
+        from f in base_query,
+          left_join: m in assoc(f, :memberships),
+          where: f.is_public == true or (f.is_public == false and m.user_id == ^user_id),
+          distinct: true
+    end
 
     total = Repo.aggregate(query, :count, :id)
     
@@ -47,9 +63,59 @@ defmodule Cgraph.Forums do
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
       |> Repo.all()
+      |> Enum.map(&add_membership_status(&1, user))
 
     meta = %{page: page, per_page: per_page, total: total}
     {forums, meta}
+  end
+
+  @doc """
+  Add membership and subscription status to a forum struct.
+  """
+  def add_membership_status(forum, nil) do
+    forum
+    |> Map.put(:is_member, false)
+    |> Map.put(:is_subscribed, false)
+  end
+
+  def add_membership_status(forum, user) do
+    is_member = is_forum_member(user, forum)
+    is_subscribed = is_forum_subscribed(user, forum)
+    
+    forum
+    |> Map.put(:is_member, is_member)
+    |> Map.put(:is_subscribed, is_subscribed)
+  end
+
+  @doc """
+  Check if a user is subscribed to a forum.
+  """
+  def is_forum_subscribed(nil, _forum), do: false
+  def is_forum_subscribed(user, forum) do
+    from(s in Subscription,
+      where: s.user_id == ^user.id and s.forum_id == ^forum.id,
+      select: count(s.id)
+    )
+    |> Repo.one()
+    |> Kernel.>(0)
+  end
+
+  @doc """
+  Check if a user is a member of a forum.
+  """
+  def is_forum_member(nil, _forum), do: false
+  def is_forum_member(user, forum) do
+    # Check if user is owner, moderator, or has a membership
+    cond do
+      forum.owner_id == user.id -> true
+      true ->
+        from(m in ForumMember,
+          where: m.user_id == ^user.id and m.forum_id == ^forum.id,
+          select: count(m.id)
+        )
+        |> Repo.one()
+        |> Kernel.>(0)
+    end
   end
 
   @doc """
@@ -83,6 +149,12 @@ defmodule Cgraph.Forums do
   @doc """
   Authorize an action on a forum.
   Actions: :view, :vote, :comment, :create_post, :moderate, :delete
+  
+  Authorization rules:
+  - Anonymous users can only view public forums
+  - Forum owners and moderators can do everything
+  - For private forums, only members can view/interact
+  - For public forums, anyone can view but must be member to post
   """
   def authorize_action(nil, forum, action) do
     # Anonymous users can only view public forums
@@ -95,12 +167,44 @@ defmodule Cgraph.Forums do
   
   def authorize_action(user, forum, action) do
     cond do
-      action == :view && forum.is_public -> :ok
+      # Owners can do anything
       forum.owner_id == user.id -> :ok
-      is_moderator?(forum, user) -> :ok
-      action in [:view, :vote, :comment, :create_post] -> :ok
+      
+      # Moderators can moderate but not manage (settings)
+      is_moderator?(forum, user) && action in [:view, :vote, :comment, :create_post, :moderate] -> :ok
+      
+      # Manage/delete are owner-only (already handled above, this returns error for non-owners)
+      action in [:manage, :delete] ->
+        {:error, :owner_only}
+      
+      # Public forums: anyone can view
+      action == :view && forum.is_public -> :ok
+      
+      # Private forums: only members can view
+      action == :view && !forum.is_public ->
+        if is_member?(forum.id, user.id), do: :ok, else: {:error, :not_a_member}
+      
+      # Interactive actions (post, vote, comment) require membership
+      action in [:vote, :comment, :create_post] ->
+        if is_member?(forum.id, user.id), do: :ok, else: {:error, :must_join_first}
+      
+      # Moderation actions require moderator status
+      action == :moderate ->
+        {:error, :insufficient_permissions}
+      
       true -> {:error, :insufficient_permissions}
     end
+  end
+  
+  @doc """
+  Check if a user is a member of a forum.
+  """
+  def is_member?(forum_id, user_id) do
+    query = from fm in "forum_members",
+      where: fm.forum_id == ^forum_id,
+      where: fm.user_id == ^user_id,
+      limit: 1
+    Repo.exists?(query)
   end
 
   @doc """
@@ -553,10 +657,10 @@ defmodule Cgraph.Forums do
     case Repo.get_by(Vote, user_id: user.id, post_id: post.id) do
       nil -> {:ok, :no_vote}
       vote ->
-        # Adjust score
-        score_change = if vote.vote_type == "up", do: -1, else: 1
-        upvote_change = if vote.vote_type == "up", do: -1, else: 0
-        downvote_change = if vote.vote_type == "down", do: -1, else: 0
+        # Adjust score - value is 1 (upvote) or -1 (downvote)
+        score_change = -vote.value
+        upvote_change = if vote.value == 1, do: -1, else: 0
+        downvote_change = if vote.value == -1, do: -1, else: 0
 
         from(p in Post, where: p.id == ^post.id)
         |> Repo.update_all(inc: [upvotes: upvote_change, downvotes: downvote_change, score: score_change])

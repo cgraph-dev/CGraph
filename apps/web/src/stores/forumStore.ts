@@ -12,6 +12,7 @@ export interface Forum {
   customCss: string | null;
   isNsfw: boolean;
   isPrivate: boolean;
+  isPublic: boolean;
   memberCount: number;
   // Voting fields for competition
   score: number;
@@ -24,6 +25,8 @@ export interface Forum {
   categories: ForumCategory[];
   moderators: ForumModerator[];
   isSubscribed: boolean;
+  isMember: boolean;
+  ownerId: string | null;
   createdAt: string;
 }
 
@@ -145,12 +148,14 @@ interface ForumState {
   setSortBy: (sort: SortOption) => void;
   setTimeRange: (range: TimeRange) => void;
   createForum: (data: CreateForumData) => Promise<Forum>;
+  updateForum: (forumId: string, data: UpdateForumData) => Promise<Forum>;
+  deleteForum: (forumId: string) => Promise<void>;
 }
 
 interface CreatePostData {
   forumId: string;
   title: string;
-  content: string;
+  content?: string;
   postType: 'text' | 'link' | 'image' | 'video';
   linkUrl?: string;
   mediaUrls?: string[];
@@ -163,6 +168,13 @@ interface CreateForumData {
   description?: string;
   isNsfw?: boolean;
   isPrivate?: boolean;
+}
+
+interface UpdateForumData {
+  name?: string;
+  description?: string;
+  isPublic?: boolean;
+  isNsfw?: boolean;
 }
 
 export const useForumStore = create<ForumState>((set, get) => ({
@@ -489,10 +501,46 @@ export const useForumStore = create<ForumState>((set, get) => ({
       throw error;
     }
   },
+
+  updateForum: async (forumId: string, data: UpdateForumData) => {
+    try {
+      const response = await api.put(`/api/v1/forums/${forumId}`, {
+        name: data.name,
+        description: data.description,
+        is_public: data.isPublic,
+        is_nsfw: data.isNsfw,
+      });
+      const forum = ensureObject<Forum>(response.data, 'forum');
+      if (forum) {
+        const mappedForum = mapForumFromApi(forum as unknown as Record<string, unknown>);
+        set((state) => ({
+          forums: state.forums.map((f) => (f.id === forumId ? mappedForum : f)),
+        }));
+        return mappedForum;
+      }
+      throw new Error('Failed to update forum');
+    } catch (error) {
+      console.error('[forumStore] updateForum error:', error);
+      throw error;
+    }
+  },
+
+  deleteForum: async (forumId: string) => {
+    try {
+      await api.delete(`/api/v1/forums/${forumId}`);
+      set((state) => ({
+        forums: state.forums.filter((f) => f.id !== forumId),
+      }));
+    } catch (error) {
+      console.error('[forumStore] deleteForum error:', error);
+      throw error;
+    }
+  },
 }));
 
 // Helper to map API response to Forum type
 function mapForumFromApi(data: Record<string, unknown>): Forum {
+  const owner = data.owner as Record<string, unknown> | null;
   return {
     id: data.id as string,
     name: data.name as string,
@@ -503,6 +551,7 @@ function mapForumFromApi(data: Record<string, unknown>): Forum {
     customCss: null,
     isNsfw: (data.is_nsfw as boolean) || false,
     isPrivate: (data.is_private as boolean) || false,
+    isPublic: !(data.is_private as boolean),
     memberCount: (data.member_count as number) || 0,
     score: (data.score as number) || 0,
     upvotes: (data.upvotes as number) || 0,
@@ -513,7 +562,9 @@ function mapForumFromApi(data: Record<string, unknown>): Forum {
     userVote: ((data.user_vote as number) || 0) as 1 | -1 | 0,
     categories: ensureArray(data.categories, 'categories'),
     moderators: [],
-    isSubscribed: false,
+    isSubscribed: (data.is_subscribed as boolean) || false,
+    isMember: (data.is_member as boolean) || false,
+    ownerId: owner?.id as string | null || null,
     createdAt: data.created_at as string,
   };
 }

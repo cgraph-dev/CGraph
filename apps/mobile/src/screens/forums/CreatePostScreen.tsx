@@ -36,7 +36,7 @@ export default function CreatePostScreen({ navigation, route }: Props) {
     
     setIsSubmitting(true);
     try {
-      await api.post(`/forums/${forumId}/posts`, {
+      await api.post(`/api/v1/forums/${forumId}/posts`, {
         title: title.trim(),
         content: content.trim(),
         type: 'text',

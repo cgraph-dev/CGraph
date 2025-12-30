@@ -64,9 +64,14 @@ defmodule CgraphWeb.API.V1.ForumJSON do
       icon: forum.icon_url,
       banner: forum.banner_url,
       is_private: Map.get(forum, :is_private, false),
+      is_public: Map.get(forum, :is_public, true),
       is_archived: Map.get(forum, :is_archived, false),
+      is_nsfw: Map.get(forum, :is_nsfw, false),
       post_count: Map.get(forum, :post_count, 0),
       member_count: Map.get(forum, :member_count, 0),
+      # Membership status (set by controller if user is authenticated)
+      is_subscribed: Map.get(forum, :is_subscribed, false),
+      is_member: Map.get(forum, :is_member, false),
       # Voting fields
       score: Map.get(forum, :score, 0),
       upvotes: Map.get(forum, :upvotes, 0),

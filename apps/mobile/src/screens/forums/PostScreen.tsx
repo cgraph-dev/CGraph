@@ -41,7 +41,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
   
   const fetchPost = async () => {
     try {
-      const response = await api.get(`/posts/${postId}`);
+      const response = await api.get(`/api/v1/posts/${postId}`);
       setPost(response.data.data);
     } catch (error) {
       console.error('Error fetching post:', error);
@@ -50,7 +50,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
   
   const fetchComments = async () => {
     try {
-      const response = await api.get(`/posts/${postId}/comments`);
+      const response = await api.get(`/api/v1/posts/${postId}/comments`);
       setComments(response.data.data || []);
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -62,7 +62,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
   const handleVotePost = async (value: 1 | -1) => {
     if (!post) return;
     try {
-      await api.post(`/posts/${postId}/vote`, { value });
+      await api.post(`/api/v1/posts/${postId}/vote`, { value });
       setPost((prev) => {
         if (!prev) return prev;
         const oldVote = prev.my_vote || 0;
@@ -83,7 +83,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
     
     setIsSubmitting(true);
     try {
-      const response = await api.post(`/posts/${postId}/comments`, {
+      const response = await api.post(`/api/v1/posts/${postId}/comments`, {
         content: commentText,
       });
       setComments((prev) => [response.data.data, ...prev]);

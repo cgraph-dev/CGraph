@@ -20,6 +20,8 @@ import Forums from '@/pages/forums/Forums';
 import ForumPost from '@/pages/forums/ForumPost';
 import ForumLeaderboard from '@/pages/forums/ForumLeaderboard';
 import CreateForum from '@/pages/forums/CreateForum';
+import CreatePost from '@/pages/forums/CreatePost';
+import ForumSettings from '@/pages/forums/ForumSettings';
 import ForumBoardView from '@/pages/forums/ForumBoardView';
 import PluginMarketplace from '@/pages/forums/PluginMarketplace';
 import Settings from '@/pages/settings/Settings';
@@ -155,6 +157,8 @@ export default function App() {
           <Route path="forums/plugins" element={<PluginMarketplace />} />
           <Route path="forums/:forumSlug" element={<ForumBoardView />} />
           <Route path="forums/:forumSlug/posts" element={<Forums />} />
+          <Route path="forums/:forumSlug/create-post" element={<CreatePost />} />
+          <Route path="forums/:forumSlug/settings" element={<ForumSettings />} />
           <Route path="forums/:forumSlug/post/:postId" element={<ForumPost />} />
           <Route path="forums/:forumSlug/boards/:boardSlug" element={<ForumBoardView />} />
           <Route path="forums/:forumSlug/threads/:threadId" element={<ForumPost />} />

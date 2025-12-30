@@ -87,8 +87,7 @@ export default function ForumBoardView() {
     setForum(updated);
   };
 
-  const isOwner = forum && user && forum.id && user.id;
-  // TODO: Add actual owner check when user.id is available
+  const isOwner = forum && user && forum.ownerId === user.id;
 
   if (isLoadingForum) {
     return (

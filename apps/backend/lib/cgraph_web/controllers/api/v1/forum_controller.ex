@@ -34,7 +34,9 @@ defmodule CgraphWeb.API.V1.ForumController do
     # Try to get forum by ID first, then by slug
     with {:ok, forum} <- get_forum_by_id_or_slug(forum_id_or_slug),
          :ok <- Forums.authorize_action(user, forum, :view) do
-      render(conn, :show, forum: forum)
+      # Add membership status for the current user
+      forum_with_status = Forums.add_membership_status(forum, user)
+      render(conn, :show, forum: forum_with_status)
     end
   end
   
