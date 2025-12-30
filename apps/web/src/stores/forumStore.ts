@@ -466,20 +466,25 @@ export const useForumStore = create<ForumState>((set, get) => ({
   },
 
   createForum: async (data: CreateForumData) => {
-    const response = await api.post('/api/v1/forums', {
-      name: data.name,
-      description: data.description,
-      is_nsfw: data.isNsfw,
-      is_private: data.isPrivate,
-    });
-    const forum = ensureObject<Forum>(response.data, 'forum');
-    if (forum) {
-      set((state) => ({
-        forums: [forum, ...state.forums],
-      }));
-      return forum;
+    try {
+      const response = await api.post('/api/v1/forums', {
+        name: data.name,
+        description: data.description,
+        is_nsfw: data.isNsfw,
+        is_private: data.isPrivate,
+      });
+      const forum = ensureObject<Forum>(response.data, 'forum');
+      if (forum) {
+        set((state) => ({
+          forums: [forum, ...state.forums],
+        }));
+        return forum;
+      }
+      throw new Error('Failed to create forum - no forum returned');
+    } catch (error) {
+      console.error('[forumStore] createForum error:', error);
+      throw error;
     }
-    throw new Error('Failed to create forum');
   },
 }));
 

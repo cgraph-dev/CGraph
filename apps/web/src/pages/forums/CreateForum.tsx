@@ -74,15 +74,34 @@ export default function CreateForum() {
     { value: 'other', label: 'Other' },
   ];
 
-  // Auto-generate slug from name
-  const handleNameChange = (name: string) => {
-    const slug = name
+  // Auto-generate slug from name (forum names can only contain letters, numbers, underscores)
+  const handleNameChange = (inputName: string) => {
+    // Sanitize name: only allow letters, numbers, underscores - remove spaces and special chars
+    const sanitizedName = inputName.replace(/[^a-zA-Z0-9_]/g, '');
+    const slug = sanitizedName
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '')
       .substring(0, 50);
     
-    setFormData({ ...formData, name, slug });
+    setFormData({ ...formData, name: sanitizedName, slug });
+  };
+
+  // Validate form data before submission
+  const validateForm = (): string | null => {
+    if (!formData.name || formData.name.length < 3) {
+      return 'Forum name must be at least 3 characters long';
+    }
+    if (formData.name.length > 21) {
+      return 'Forum name must be at most 21 characters long';
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(formData.name)) {
+      return 'Forum name can only contain letters, numbers, and underscores';
+    }
+    if (!formData.slug) {
+      return 'Forum URL slug is required';
+    }
+    return null;
   };
 
   const handleSubmit = async () => {
@@ -91,10 +110,24 @@ export default function CreateForum() {
       return;
     }
 
+    // Validate before submission
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
 
     try {
+      console.log('[CreateForum] Submitting:', {
+        name: formData.name,
+        description: formData.description,
+        isNsfw: formData.isNsfw,
+        isPrivate: !formData.isPublic,
+      });
+
       const forum = await createForum({
         name: formData.name,
         description: formData.description,
@@ -102,12 +135,64 @@ export default function CreateForum() {
         isPrivate: !formData.isPublic,
       });
 
+      console.log('[CreateForum] Success:', forum);
+
       // Navigate to the new forum
       navigate(`/forums/${forum.slug}`);
     } catch (err: unknown) {
-      const errorObj = err as { response?: { data?: { error?: { message?: string } } } };
-      const message = errorObj.response?.data?.error?.message;
-      setError(message || 'Failed to create forum. Please try again.');
+      console.error('[CreateForum] Error:', err);
+      const errorObj = err as { 
+        response?: { 
+          data?: { 
+            error?: string | { 
+              message?: string;
+              details?: Record<string, string[]>;
+              code?: string;
+            };
+            message?: string;
+          } 
+        };
+        message?: string;
+      };
+      
+      // Handle various error formats from backend
+      let message = 'Failed to create forum. Please try again.';
+      
+      const errorData = errorObj.response?.data?.error;
+      
+      if (typeof errorData === 'string') {
+        // Simple string error: { error: "Unauthorized" }
+        message = errorData;
+        if (errorObj.response?.data?.message) {
+          message += `: ${errorObj.response.data.message}`;
+        }
+      } else if (errorData && typeof errorData === 'object') {
+        // Object error: { error: { message, details } }
+        if (errorData.message) {
+          message = errorData.message;
+        }
+        
+        // If there are details (Ecto changeset validation errors), append them
+        if (errorData.details && typeof errorData.details === 'object') {
+          const detailMessages = Object.entries(errorData.details)
+            .map(([field, msgs]) => {
+              const fieldName = field.replace(/_/g, ' ');
+              const msgArray = Array.isArray(msgs) ? msgs : [String(msgs)];
+              return `${fieldName}: ${msgArray.join(', ')}`;
+            })
+            .join('; ');
+          
+          if (detailMessages) {
+            message = detailMessages;
+          }
+        }
+      } else if (errorObj.response?.data?.message) {
+        message = errorObj.response.data.message;
+      } else if (errorObj.message) {
+        message = errorObj.message;
+      }
+      
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -204,13 +289,25 @@ export default function CreateForum() {
                 type="text"
                 value={formData.name}
                 onChange={(e) => handleNameChange(e.target.value)}
-                placeholder="My Awesome Forum"
-                className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                maxLength={100}
+                placeholder="MyAwesomeForum"
+                className={`w-full px-4 py-3 bg-dark-700 border rounded-lg text-white placeholder-gray-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500 ${
+                  formData.name && (formData.name.length < 3 || formData.name.length > 21)
+                    ? 'border-red-500'
+                    : 'border-dark-600'
+                }`}
+                maxLength={21}
               />
-              <p className="mt-1 text-sm text-gray-500">
-                Choose a unique, memorable name for your forum
-              </p>
+              <div className="mt-1 flex justify-between">
+                <p className="text-sm text-gray-500">
+                  3-21 characters. Letters, numbers, underscores only.
+                </p>
+                <span className={`text-sm ${
+                  formData.name.length < 3 ? 'text-red-400' :
+                  formData.name.length > 21 ? 'text-red-400' : 'text-gray-500'
+                }`}>
+                  {formData.name.length}/21
+                </span>
+              </div>
             </div>
 
             <div>
@@ -524,7 +621,7 @@ export default function CreateForum() {
           {step < 4 ? (
             <button
               onClick={() => setStep(step + 1)}
-              disabled={step === 1 && (!formData.name || !formData.slug)}
+              disabled={step === 1 && (!formData.name || !formData.slug || formData.name.length < 3 || formData.name.length > 21 || !/^[a-zA-Z0-9_]+$/.test(formData.name))}
               className="flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next

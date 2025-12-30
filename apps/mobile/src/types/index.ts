@@ -228,6 +228,7 @@ export type ForumsStackParamList = {
   Forum: { forumId: string };
   Post: { postId: string };
   CreatePost: { forumId: string };
+  CreateForum: undefined;
 };
 
 export type SettingsStackParamList = {

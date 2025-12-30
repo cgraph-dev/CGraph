@@ -6,6 +6,7 @@ import ForumListScreen from '../screens/forums/ForumListScreen';
 import ForumScreen from '../screens/forums/ForumScreen';
 import PostScreen from '../screens/forums/PostScreen';
 import CreatePostScreen from '../screens/forums/CreatePostScreen';
+import CreateForumScreen from '../screens/forums/CreateForumScreen';
 
 const Stack = createNativeStackNavigator<ForumsStackParamList>();
 
@@ -44,6 +45,11 @@ export default function ForumsNavigator() {
         name="CreatePost"
         component={CreatePostScreen}
         options={{ title: 'Create Post', presentation: 'modal' }}
+      />
+      <Stack.Screen
+        name="CreateForum"
+        component={CreateForumScreen}
+        options={{ title: 'Create Forum', presentation: 'modal' }}
       />
     </Stack.Navigator>
   );

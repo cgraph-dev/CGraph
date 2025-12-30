@@ -78,7 +78,10 @@ export default function ForumListScreen({ navigation }: Props) {
         Join a forum or create your own
       </Text>
       <View style={styles.emptyButtons}>
-        <TouchableOpacity style={[styles.emptyButton, { backgroundColor: colors.primary }]}>
+        <TouchableOpacity 
+          style={[styles.emptyButton, { backgroundColor: colors.primary }]}
+          onPress={() => navigation.navigate('CreateForum')}
+        >
           <Text style={styles.emptyButtonText}>Create Forum</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -107,6 +110,14 @@ export default function ForumListScreen({ navigation }: Props) {
         ]}
         ListEmptyComponent={renderEmptyState}
       />
+      
+      {/* Floating Action Button */}
+      <TouchableOpacity
+        style={[styles.fab, { backgroundColor: colors.primary }]}
+        onPress={() => navigation.navigate('CreateForum')}
+      >
+        <Ionicons name="add" size={28} color="#fff" />
+      </TouchableOpacity>
     </View>
   );
 }
@@ -200,5 +211,20 @@ const styles = StyleSheet.create({
   emptyButtonOutlineText: {
     fontSize: 14,
     fontWeight: '600',
+  },
+  fab: {
+    position: 'absolute',
+    right: 16,
+    bottom: 16,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
   },
 });
