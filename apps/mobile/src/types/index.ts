@@ -2,7 +2,9 @@
 export interface User {
   id: string;
   email: string;
-  username: string;
+  username: string | null;
+  user_id: number;
+  user_id_display: string;
   display_name?: string;
   avatar_url?: string;
   bio?: string;
@@ -11,6 +13,9 @@ export interface User {
   karma?: number;
   is_verified?: boolean;
   is_premium?: boolean;
+  username_changed_at?: string;
+  can_change_username: boolean;
+  next_username_change_at?: string;
   inserted_at: string;
   updated_at: string;
 }

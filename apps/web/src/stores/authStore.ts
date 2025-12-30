@@ -4,8 +4,10 @@ import { api } from '@/lib/api';
 
 export interface User {
   id: string;
+  userId: number;
+  userIdDisplay: string;
   email: string;
-  username: string;
+  username: string | null;
   displayName: string | null;
   avatarUrl: string | null;
   walletAddress: string | null;
@@ -13,6 +15,11 @@ export interface User {
   twoFactorEnabled: boolean;
   status: 'online' | 'idle' | 'dnd' | 'offline';
   statusMessage: string | null;
+  karma: number;
+  isVerified: boolean;
+  isPremium: boolean;
+  canChangeUsername: boolean;
+  usernameNextChangeAt: string | null;
   createdAt: string;
 }
 
@@ -20,8 +27,10 @@ export interface User {
 function mapUserFromApi(apiUser: Record<string, unknown>): User {
   return {
     id: apiUser.id as string,
+    userId: (apiUser.user_id as number) || 0,
+    userIdDisplay: (apiUser.user_id_display as string) || '#0000',
     email: apiUser.email as string,
-    username: apiUser.username as string,
+    username: (apiUser.username as string | null) || null,
     displayName: (apiUser.display_name as string | null) || null,
     avatarUrl: (apiUser.avatar_url as string | null) || null,
     walletAddress: (apiUser.wallet_address as string | null) || null,
@@ -29,6 +38,11 @@ function mapUserFromApi(apiUser: Record<string, unknown>): User {
     twoFactorEnabled: (apiUser.totp_enabled as boolean) || false,
     status: (apiUser.status as 'online' | 'idle' | 'dnd' | 'offline') || 'offline',
     statusMessage: (apiUser.custom_status as string | null) || null,
+    karma: (apiUser.karma as number) || 0,
+    isVerified: (apiUser.is_verified as boolean) || false,
+    isPremium: (apiUser.is_premium as boolean) || false,
+    canChangeUsername: (apiUser.can_change_username as boolean) ?? true,
+    usernameNextChangeAt: (apiUser.username_next_change_at as string | null) || null,
     createdAt: apiUser.inserted_at as string,
   };
 }

@@ -32,8 +32,8 @@ export default function RegisterScreen({ navigation }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   
   const handleRegister = async () => {
-    if (!email.trim() || !username.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please fill in all fields');
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please fill in email and password');
       return;
     }
     
@@ -47,9 +47,15 @@ export default function RegisterScreen({ navigation }: Props) {
       return;
     }
     
+    // Validate username if provided
+    if (username.trim() && username.trim().length < 3) {
+      Alert.alert('Error', 'Username must be at least 3 characters');
+      return;
+    }
+    
     setIsLoading(true);
     try {
-      await register(email, username, password);
+      await register(email, username.trim() || null, password);
     } catch (error: any) {
       Alert.alert(
         'Registration Failed',
@@ -103,7 +109,12 @@ export default function RegisterScreen({ navigation }: Props) {
               </View>
               
               <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>Username</Text>
+                <View style={styles.labelRow}>
+                  <Text style={[styles.label, { color: colors.text }]}>Username</Text>
+                  <Text style={[styles.labelHint, { color: colors.textTertiary }]}>
+                    (Optional)
+                  </Text>
+                </View>
                 <TextInput
                   style={[
                     styles.input,
@@ -113,13 +124,17 @@ export default function RegisterScreen({ navigation }: Props) {
                       color: colors.text,
                     },
                   ]}
-                  placeholder="Choose a username"
+                  placeholder="Choose a username (optional)"
                   placeholderTextColor={colors.textTertiary}
                   value={username}
-                  onChangeText={setUsername}
+                  onChangeText={(text) => setUsername(text.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
                   autoCapitalize="none"
                   autoCorrect={false}
+                  maxLength={30}
                 />
+                <Text style={[styles.inputHint, { color: colors.textTertiary }]}>
+                  You can set this later. Can be changed every 14 days.
+                </Text>
               </View>
               
               <View style={styles.inputGroup}>
@@ -225,15 +240,28 @@ const styles = StyleSheet.create({
   inputGroup: {
     gap: 6,
   },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   label: {
     fontSize: 14,
     fontWeight: '500',
+  },
+  labelHint: {
+    fontSize: 12,
+    fontStyle: 'italic',
   },
   input: {
     borderWidth: 1,
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
+  },
+  inputHint: {
+    fontSize: 12,
+    marginTop: 4,
   },
   button: {
     padding: 16,

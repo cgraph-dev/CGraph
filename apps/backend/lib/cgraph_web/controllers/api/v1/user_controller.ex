@@ -35,6 +35,35 @@ defmodule CgraphWeb.API.V1.UserController do
   end
 
   @doc """
+  Change the current user's username (14-day cooldown).
+  """
+  def change_username(conn, %{"username" => username}) do
+    user = conn.assigns.current_user
+
+    case Accounts.change_username(user, username) do
+      {:ok, updated_user} ->
+        render(conn, :show, user: updated_user)
+      
+      {:error, %Ecto.Changeset{} = changeset} ->
+        errors = Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+          Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
+            opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+          end)
+        end)
+        
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: %{message: format_changeset_error(errors)}})
+    end
+  end
+
+  defp format_changeset_error(errors) do
+    errors
+    |> Enum.map(fn {field, messages} -> "#{field}: #{Enum.join(messages, ", ")}" end)
+    |> Enum.join("; ")
+  end
+
+  @doc """
   Delete the current user's account (soft delete with grace period).
   """
   def delete(conn, _params) do

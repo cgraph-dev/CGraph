@@ -186,4 +186,50 @@ defmodule CgraphWeb.API.V1.UserControllerTest do
       assert is_list(sessions)
     end
   end
+
+  describe "PUT /api/v1/me/username" do
+    setup %{conn: conn} do
+      user = user_fixture()
+      conn = log_in_user(conn, user)
+      %{conn: conn, user: user}
+    end
+
+    test "changes username successfully", %{conn: conn, user: _user} do
+      new_username = "new_username_#{System.unique_integer([:positive])}"
+      conn = put(conn, ~p"/api/v1/me/username", %{username: new_username})
+      
+      assert %{
+        "data" => %{
+          "username" => ^new_username,
+          "can_change_username" => false
+        }
+      } = json_response(conn, 200)
+    end
+
+    test "rejects username change within cooldown period", %{conn: conn, user: user} do
+      # First, set the user's username_changed_at to now (truncate to seconds for :utc_datetime)
+      {:ok, _} = Cgraph.Repo.update(
+        Ecto.Changeset.change(user, %{username_changed_at: DateTime.truncate(DateTime.utc_now(), :second)})
+      )
+
+      new_username = "another_username_#{System.unique_integer([:positive])}"
+      conn = put(conn, ~p"/api/v1/me/username", %{username: new_username})
+      
+      assert %{"error" => _} = json_response(conn, 422)
+    end
+
+    test "rejects duplicate username", %{conn: conn, user: _user} do
+      other_user = user_fixture()
+      
+      conn = put(conn, ~p"/api/v1/me/username", %{username: other_user.username})
+      
+      assert %{"error" => _} = json_response(conn, 422)
+    end
+
+    test "rejects invalid username format", %{conn: conn, user: _user} do
+      conn = put(conn, ~p"/api/v1/me/username", %{username: "ab"}) # too short
+      
+      assert %{"error" => _} = json_response(conn, 422)
+    end
+  end
 end

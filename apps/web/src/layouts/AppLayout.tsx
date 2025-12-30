@@ -199,7 +199,7 @@ export default function AppLayout() {
             {user?.avatarUrl ? (
               <img
                 src={user.avatarUrl}
-                alt={user.displayName || user.username}
+                alt={user.displayName || user.username || 'User avatar'}
                 className="w-full h-full object-cover"
               />
             ) : (

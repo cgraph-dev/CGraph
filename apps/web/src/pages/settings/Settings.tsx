@@ -74,8 +74,15 @@ export default function Settings() {
 function AccountSettings() {
   const { user, updateUser } = useAuthStore();
   const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [username, setUsername] = useState(user?.username || '');
   const [email, setEmail] = useState(user?.email || '');
   const [isSaving, setIsSaving] = useState(false);
+  const [isChangingUsername, setIsChangingUsername] = useState(false);
+
+  const canChangeUsername = user?.canChangeUsername ?? true;
+  const nextChangeDate = user?.usernameNextChangeAt 
+    ? new Date(user.usernameNextChangeAt).toLocaleDateString()
+    : null;
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -93,15 +100,72 @@ function AccountSettings() {
     }
   };
 
+  const handleChangeUsername = async () => {
+    if (!username.trim() || username === user?.username) return;
+    
+    setIsChangingUsername(true);
+    try {
+      const response = await api.put('/api/v1/me/username', { username });
+      updateUser({ 
+        username: response.data.data.username,
+        canChangeUsername: false,
+        usernameNextChangeAt: response.data.data.username_next_change_at,
+      });
+      toast.success('Username changed successfully');
+    } catch (error: unknown) {
+      const errorMessage = (error as { response?: { data?: { error?: { message?: string } } } })
+        ?.response?.data?.error?.message || 'Failed to change username';
+      toast.error(errorMessage);
+    } finally {
+      setIsChangingUsername(false);
+    }
+  };
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Account Settings</h1>
+    <div className="animate-[fadeIn_300ms_ease-out]">
+      <h1 className="text-2xl font-bold text-white mb-2">Account Settings</h1>
+      
+      {/* User ID Badge */}
+      <div className="mb-8 p-4 bg-gradient-to-r from-primary-900/30 to-dark-800 rounded-xl border border-primary-800/30">
+        <div className="flex items-center gap-4">
+          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center ring-4 ring-primary-500/20">
+            {user?.avatarUrl ? (
+              <img src={user.avatarUrl} alt="" className="w-full h-full object-cover rounded-full" />
+            ) : (
+              <span className="text-2xl font-bold text-white">
+                {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl font-bold text-white">
+                {user?.displayName || user?.username || 'Anonymous User'}
+              </span>
+              {user?.isVerified && (
+                <span className="text-blue-400">✓</span>
+              )}
+            </div>
+            <div className="flex items-center gap-3 mt-1">
+              <span className="text-sm font-mono px-2 py-1 rounded bg-dark-700 text-primary-400 border border-primary-800/50">
+                {user?.userIdDisplay || '#0000'}
+              </span>
+              {user?.username && (
+                <span className="text-gray-400">@{user.username}</span>
+              )}
+              {user?.karma !== undefined && user.karma > 0 && (
+                <span className="text-amber-400 text-sm">⚡ {user.karma.toLocaleString()} karma</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Avatar */}
       <div className="mb-8">
         <label className="block text-sm font-medium text-gray-300 mb-3">Profile Picture</label>
         <div className="flex items-center gap-4">
-          <div className="h-20 w-20 rounded-full bg-dark-700 overflow-hidden">
+          <div className="h-20 w-20 rounded-full bg-dark-700 overflow-hidden ring-2 ring-dark-600 transition-all hover:ring-primary-500">
             {user?.avatarUrl ? (
               <img src={user.avatarUrl} alt="" className="w-full h-full object-cover" />
             ) : (
@@ -111,7 +175,7 @@ function AccountSettings() {
             )}
           </div>
           <div>
-            <button className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-colors">
+            <button className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-primary-500/20 active:scale-95">
               Upload Image
             </button>
             <p className="text-xs text-gray-500 mt-1">JPG, PNG, or GIF. Max 2MB.</p>
@@ -119,16 +183,43 @@ function AccountSettings() {
         </div>
       </div>
 
-      {/* Username */}
+      {/* Username with 14-day cooldown */}
       <div className="mb-6">
-        <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
-        <input
-          type="text"
-          value={user?.username || ''}
-          disabled
-          className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-gray-500 cursor-not-allowed"
-        />
-        <p className="text-xs text-gray-500 mt-1">Username cannot be changed</p>
+        <label className="block text-sm font-medium text-gray-300 mb-2">
+          Username
+          {!canChangeUsername && nextChangeDate && (
+            <span className="ml-2 text-xs text-amber-400">
+              (Can change after {nextChangeDate})
+            </span>
+          )}
+        </label>
+        <div className="flex gap-3">
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+            disabled={!canChangeUsername}
+            placeholder={user?.username || 'Choose a username'}
+            className={`flex-1 px-4 py-3 bg-dark-700 border rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all ${
+              canChangeUsername ? 'border-dark-600' : 'border-dark-600/50 text-gray-500 cursor-not-allowed'
+            }`}
+          />
+          {canChangeUsername && username !== user?.username && username.length >= 3 && (
+            <button
+              onClick={handleChangeUsername}
+              disabled={isChangingUsername}
+              className="px-4 py-3 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-primary-500/20"
+            >
+              {isChangingUsername ? 'Saving...' : 'Change'}
+            </button>
+          )}
+        </div>
+        <p className="text-xs text-gray-500 mt-1">
+          {canChangeUsername 
+            ? 'Username can be changed every 14 days. Letters, numbers, and underscores only.'
+            : `You changed your username recently. Next change available on ${nextChangeDate}.`
+          }
+        </p>
       </div>
 
       {/* Display Name */}
@@ -139,7 +230,7 @@ function AccountSettings() {
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
           placeholder="How should we call you?"
-          className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
         />
       </div>
 
@@ -150,7 +241,7 @@ function AccountSettings() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
         />
       </div>
 
@@ -165,12 +256,12 @@ function AccountSettings() {
               disabled
               className="flex-1 px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-gray-400 font-mono text-sm"
             />
-            <button className="px-4 py-3 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-sm font-medium rounded-lg transition-colors">
+            <button className="px-4 py-3 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-sm font-medium rounded-lg transition-all hover:scale-105 active:scale-95">
               Disconnect
             </button>
           </div>
         ) : (
-          <button className="px-4 py-3 bg-dark-700 hover:bg-dark-600 border border-dark-600 text-white text-sm font-medium rounded-lg transition-colors">
+          <button className="px-4 py-3 bg-dark-700 hover:bg-dark-600 border border-dark-600 text-white text-sm font-medium rounded-lg transition-all hover:border-primary-500">
             Connect Wallet
           </button>
         )}

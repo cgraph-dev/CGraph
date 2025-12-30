@@ -48,6 +48,8 @@ defmodule CgraphWeb.API.V1.UserJSON do
   def user_data(%User{} = user) do
     %{
       id: user.id,
+      user_id: user.user_id,
+      user_id_display: User.format_user_id(user),
       email: user.email,
       username: user.username,
       display_name: user.display_name,
@@ -62,6 +64,8 @@ defmodule CgraphWeb.API.V1.UserJSON do
       karma: user.karma || 0,
       is_verified: user.is_verified || false,
       is_premium: user.is_premium || false,
+      can_change_username: User.can_change_username?(user),
+      username_next_change_at: User.next_username_change_date(user),
       created_at: user.inserted_at
     }
   end

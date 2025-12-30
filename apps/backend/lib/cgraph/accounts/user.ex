@@ -13,13 +13,19 @@ defmodule Cgraph.Accounts.User do
   @timestamps_opts [type: :utc_datetime_usec]
 
   @derive {Jason.Encoder, only: [
-    :id, :username, :display_name, :email, :avatar_url, :bio,
+    :id, :user_id, :username, :display_name, :email, :avatar_url, :bio,
     :wallet_address, :is_verified, :is_premium, :status, :last_seen_at,
     :inserted_at
   ]}
 
+  # 14 days in seconds for username change cooldown
+  @username_change_cooldown_days 14
+
   schema "users" do
+    # Unique sequential ID for display (e.g., #0001)
+    field :user_id, :integer, read_after_writes: true
     field :username, :string
+    field :username_changed_at, :utc_datetime
     field :display_name, :string
     field :email, :string
     field :password_hash, :string
@@ -77,11 +83,19 @@ defmodule Cgraph.Accounts.User do
   def registration_changeset(user, attrs) do
     user
     |> cast(attrs, [:username, :email, :password, :password_confirmation, :display_name])
-    |> validate_required([:username, :email, :password])
-    |> validate_username()
+    |> validate_required([:email, :password])  # username is now optional
+    |> maybe_validate_username()
     |> validate_email()
     |> validate_password()
     |> hash_password()
+  end
+
+  defp maybe_validate_username(changeset) do
+    case get_change(changeset, :username) do
+      nil -> changeset
+      "" -> changeset
+      _ -> validate_username(changeset)
+    end
   end
 
   @doc """
@@ -145,6 +159,64 @@ defmodule Cgraph.Accounts.User do
     |> cast(attrs, [:display_name, :bio, :avatar_url, :banner_url, :custom_status])
     |> validate_length(:bio, max: 500)
     |> validate_length(:custom_status, max: 100)
+  end
+
+  @doc """
+  Username change changeset with 14-day cooldown.
+  """
+  def username_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:username])
+    |> validate_required([:username])
+    |> validate_username()
+    |> validate_username_cooldown()
+    |> put_change(:username_changed_at, DateTime.utc_now() |> DateTime.truncate(:second))
+  end
+
+  defp validate_username_cooldown(changeset) do
+    user = changeset.data
+    
+    case user.username_changed_at do
+      nil ->
+        # First time setting username, no cooldown
+        changeset
+      
+      last_changed ->
+        cooldown_end = DateTime.add(last_changed, @username_change_cooldown_days * 24 * 60 * 60, :second)
+        now = DateTime.utc_now()
+        
+        if DateTime.compare(now, cooldown_end) == :lt do
+          days_remaining = div(DateTime.diff(cooldown_end, now, :second), 86400) + 1
+          add_error(changeset, :username, "can only be changed every 14 days. #{days_remaining} day(s) remaining")
+        else
+          changeset
+        end
+    end
+  end
+
+  @doc """
+  Returns true if the user can change their username.
+  """
+  def can_change_username?(%__MODULE__{username_changed_at: nil}), do: true
+  def can_change_username?(%__MODULE__{username_changed_at: last_changed}) do
+    cooldown_end = DateTime.add(last_changed, @username_change_cooldown_days * 24 * 60 * 60, :second)
+    DateTime.compare(DateTime.utc_now(), cooldown_end) != :lt
+  end
+
+  @doc """
+  Returns the date when the user can next change their username.
+  """
+  def next_username_change_date(%__MODULE__{username_changed_at: nil}), do: nil
+  def next_username_change_date(%__MODULE__{username_changed_at: last_changed}) do
+    DateTime.add(last_changed, @username_change_cooldown_days * 24 * 60 * 60, :second)
+  end
+
+  @doc """
+  Formats user_id as display string (e.g., #0001).
+  """
+  def format_user_id(%__MODULE__{user_id: nil}), do: nil
+  def format_user_id(%__MODULE__{user_id: user_id}) do
+    "#" <> String.pad_leading(Integer.to_string(user_id), 4, "0")
   end
 
   @doc """

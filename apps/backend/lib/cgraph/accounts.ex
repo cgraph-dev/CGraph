@@ -365,6 +365,41 @@ defmodule Cgraph.Accounts do
   end
 
   @doc """
+  Change a user's username with 14-day cooldown enforcement.
+  
+  Returns {:error, changeset} if within cooldown period.
+  """
+  def change_username(user, new_username) do
+    user
+    |> User.username_changeset(%{username: new_username})
+    |> Repo.update()
+  end
+
+  @doc """
+  Check if user can change their username.
+  """
+  def can_change_username?(user) do
+    User.can_change_username?(user)
+  end
+
+  @doc """
+  Get the date when user can next change their username.
+  """
+  def next_username_change_date(user) do
+    User.next_username_change_date(user)
+  end
+
+  @doc """
+  Get a user by their unique numeric user_id.
+  """
+  def get_user_by_user_id(user_id) when is_integer(user_id) do
+    case Repo.get_by(User, user_id: user_id) do
+      nil -> {:error, :not_found}
+      user -> {:ok, user}
+    end
+  end
+
+  @doc """
   Delete a user account.
   """
   def delete_user(user) do

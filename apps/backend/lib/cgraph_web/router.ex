@@ -110,6 +110,7 @@ defmodule CgraphWeb.Router do
     # Current user
     get "/me", UserController, :me
     put "/me", UserController, :update
+    put "/me/username", UserController, :change_username
     delete "/me", UserController, :delete
     post "/me/avatar", UserController, :upload_avatar
     get "/me/sessions", UserController, :sessions
