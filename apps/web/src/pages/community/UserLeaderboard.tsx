@@ -11,7 +11,7 @@ import {
   TrophyIcon as TrophyIconSolid,
   CheckBadgeIcon,
 } from '@heroicons/react/24/solid';
-import { Card } from '@/components/ui';
+import { Card, ErrorState, EmptyState } from '@/components/ui';
 
 interface LeaderboardUser {
   rank: number;
@@ -225,23 +225,19 @@ export default function UserLeaderboard() {
       {/* Content */}
       <div className="max-w-3xl mx-auto p-4 space-y-4">
         {error ? (
-          <Card className="p-8 text-center">
-            <p className="text-red-400">{error}</p>
-            <button 
-              onClick={() => setPage(1)}
-              className="mt-4 px-4 py-2 bg-primary-600 hover:bg-primary-500 text-white rounded-lg transition-colors"
-            >
-              Retry
-            </button>
-          </Card>
+          <ErrorState
+            title="Failed to load leaderboard"
+            message={error}
+            onRetry={() => setPage(1)}
+          />
         ) : isLoading ? (
           <LoadingSkeleton />
         ) : users.length === 0 ? (
-          <Card className="p-8 text-center">
-            <TrophyIcon className="h-12 w-12 text-gray-500 mx-auto mb-4" />
-            <p className="text-gray-400">No users on the leaderboard yet.</p>
-            <p className="text-sm text-gray-500 mt-2">Be the first to earn karma by creating posts and comments!</p>
-          </Card>
+          <EmptyState
+            icon={<TrophyIcon className="h-8 w-8 text-gray-500" />}
+            title="No users on the leaderboard yet"
+            message="Be the first to earn karma by creating posts and comments!"
+          />
         ) : (
           <>
             {/* Top 3 Spotlight */}

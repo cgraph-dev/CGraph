@@ -407,7 +407,39 @@ function MessageBubble({
                 : 'bg-dark-700 text-white rounded-bl-md'
             }`}
           >
-            <p className="whitespace-pre-wrap break-words">{message.content}</p>
+            {/* Image/Media messages */}
+            {message.messageType === 'image' && message.metadata?.url && (
+              <img
+                src={message.metadata.url as string}
+                alt="Shared image"
+                className="max-w-xs rounded-lg mb-2 cursor-pointer hover:opacity-90 transition-opacity"
+                onClick={() => window.open(message.metadata.url as string, '_blank')}
+              />
+            )}
+            {message.messageType === 'video' && message.metadata?.url && (
+              <video
+                src={message.metadata.url as string}
+                controls
+                className="max-w-xs rounded-lg mb-2"
+              />
+            )}
+            {message.messageType === 'file' && message.metadata?.url && (
+              <a
+                href={message.metadata.url as string}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 p-2 bg-dark-600/50 rounded-lg mb-2 hover:bg-dark-600 transition-colors"
+              >
+                <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span className="text-sm truncate">{(message.metadata.filename as string) || 'File'}</span>
+              </a>
+            )}
+            {/* Text content */}
+            {message.content && (
+              <p className="whitespace-pre-wrap break-words">{message.content}</p>
+            )}
             <div className={`flex items-center gap-1 mt-1 text-xs ${isOwn ? 'text-primary-200' : 'text-gray-500'}`}>
               <span>{format(new Date(message.createdAt), 'h:mm a')}</span>
               {message.isEdited && <span>(edited)</span>}

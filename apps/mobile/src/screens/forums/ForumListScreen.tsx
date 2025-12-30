@@ -27,7 +27,7 @@ export default function ForumListScreen({ navigation }: Props) {
   
   useEffect(() => {
     fetchForums();
-  }, [];
+  }, []);
   
   const fetchForums = async () => {
     try {

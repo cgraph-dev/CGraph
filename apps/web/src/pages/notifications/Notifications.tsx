@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationStore, Notification } from '@/stores/notificationStore';
 import { formatDistanceToNow } from 'date-fns';
+import { EmptyState } from '@/components/ui';
 import {
   BellIcon,
   ChatBubbleLeftIcon,
@@ -144,17 +145,15 @@ export default function Notifications() {
         {/* Notification List */}
         <div className="space-y-2">
           {filteredNotifications.length === 0 ? (
-            <div className="text-center py-12">
-              <BellIcon className="h-16 w-16 mx-auto text-gray-600 mb-4" />
-              <h3 className="text-lg font-semibold text-white mb-2">
-                {filter === 'unread' ? 'All caught up!' : 'No notifications yet'}
-              </h3>
-              <p className="text-gray-400">
-                {filter === 'unread'
+            <EmptyState
+              title={filter === 'unread' ? 'All caught up!' : 'No notifications yet'}
+              message={
+                filter === 'unread'
                   ? 'You have no unread notifications'
-                  : 'When you get notifications, they will appear here'}
-              </p>
-            </div>
+                  : 'When you get notifications, they will appear here'
+              }
+              icon={<BellIcon className="h-8 w-8 text-gray-500" />}
+            />
           ) : (
             filteredNotifications.map((notification) => (
               <NotificationItem

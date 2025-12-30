@@ -149,14 +149,36 @@ export default function ConversationScreen({ navigation, route }: Props) {
               : { backgroundColor: colors.surface },
           ]}
         >
-          <Text
-            style={[
-              styles.messageText,
-              { color: isOwnMessage ? '#fff' : colors.text },
-            ]}
-          >
-            {item.content}
-          </Text>
+          {/* Image messages */}
+          {item.type === 'image' && item.metadata?.url && (
+            <TouchableOpacity activeOpacity={0.9}>
+              <Image
+                source={{ uri: item.metadata.url }}
+                style={styles.messageImage}
+                resizeMode="cover"
+              />
+            </TouchableOpacity>
+          )}
+          {/* File messages */}
+          {item.type === 'file' && item.metadata?.url && (
+            <View style={[styles.fileAttachment, { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.1)' : colors.input }]}>
+              <Ionicons name="document-outline" size={20} color={isOwnMessage ? '#fff' : colors.textSecondary} />
+              <Text style={{ color: isOwnMessage ? '#fff' : colors.text, marginLeft: 8, flex: 1 }} numberOfLines={1}>
+                {item.metadata.filename || 'File'}
+              </Text>
+            </View>
+          )}
+          {/* Text content */}
+          {item.content && (
+            <Text
+              style={[
+                styles.messageText,
+                { color: isOwnMessage ? '#fff' : colors.text },
+              ]}
+            >
+              {item.content}
+            </Text>
+          )}
           <Text
             style={[
               styles.messageTime,
@@ -281,6 +303,19 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: 15,
     lineHeight: 20,
+  },
+  messageImage: {
+    width: 200,
+    height: 150,
+    borderRadius: 8,
+    marginBottom: 4,
+  },
+  fileAttachment: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 8,
+    marginBottom: 4,
   },
   messageTime: {
     fontSize: 11,

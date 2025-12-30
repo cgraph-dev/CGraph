@@ -31,6 +31,7 @@ export interface Message {
   content: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'video' | 'system';
   attachments: Attachment[];
+  metadata?: Record<string, unknown>;
   sender: UserBasic;
   sender_id: string;
   conversation_id?: string;

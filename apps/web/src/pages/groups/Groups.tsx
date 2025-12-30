@@ -54,7 +54,7 @@ export default function Groups() {
     if (activeGroup?.categories) {
       setExpandedCategories(new Set(activeGroup.categories.map((c) => c.id)));
     }
-  }, [activeGroup?.id]);
+  }, [activeGroup?.id, activeGroup?.categories]);
 
   return (
     <div className="flex flex-1">
