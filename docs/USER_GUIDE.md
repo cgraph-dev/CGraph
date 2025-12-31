@@ -108,6 +108,21 @@ You can link both authentication methods to one account:
 
 Go to **Settings → Security → Linked Accounts** to manage your authentication methods.
 
+### Username and User ID
+
+Every CGraph account has two identifiers:
+
+- **User ID:** A permanent number like `#0042` assigned when you create your account
+- **Username:** An optional display name you can choose (e.g., `alice_dev`)
+
+**Key points:**
+- Username is optional during registration—you can set it later
+- Your User ID never changes and is always visible
+- Usernames can be changed, but only once every 14 days
+- Friends can add you by username OR by sharing your profile
+
+To change your username: **Settings → Account → Change Username**
+
 ---
 
 ## Direct Messaging
@@ -271,10 +286,23 @@ Build your social network on CGraph.
 
 ### Sending Friend Requests
 
+You can add friends by username or from their profile:
+
+**By Username:**
+1. Go to **Friends → Add Friend**
+2. Type their username (e.g., `alice_dev`)
+3. Click "Send Request"
+
+**From Profile:**
 1. Visit someone's profile (click their username anywhere)
 2. Click "Add Friend"
-3. Optionally include a message
-4. Wait for them to accept
+3. Wait for them to accept
+
+### Starting a Conversation with Friends
+
+1. Go to **Friends** and find your friend
+2. Click the "Message" button (or their profile → "Send Message")
+3. You'll be taken directly to your conversation
 
 ### Managing Friend Requests
 

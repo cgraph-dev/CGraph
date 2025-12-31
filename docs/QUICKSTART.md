@@ -386,20 +386,20 @@ console.log(response.data); // { pong: true, ... }
 ### Running Tests
 
 ```bash
-# Backend tests
+# Backend tests (220 tests)
 cd apps/backend
 mix test
 
 # With coverage
 mix test --cover
 
-# Web frontend tests
+# Web frontend type check
 cd apps/web
-pnpm test
+npx tsc --noEmit
 
-# Mobile tests
+# Mobile type check
 cd apps/mobile
-pnpm test
+npx tsc --noEmit
 ```
 
 ### Linting & Formatting

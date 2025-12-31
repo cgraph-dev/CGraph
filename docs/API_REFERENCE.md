@@ -85,7 +85,7 @@ X-RateLimit-Reset: 1704067200
 
 ### Register
 
-Creates a new user account with email and password.
+Creates a new user account with email and password. Username is optional and can be set later.
 
 ```http
 POST /auth/register
@@ -103,16 +103,22 @@ POST /auth/register
 }
 ```
 
+Note: `username` is optional. If omitted, user will be identified by their `user_id` (e.g., `#0042`).
+
 **Response:** `201 Created`
 ```json
 {
   "data": {
     "user": {
       "id": "550e8400-e29b-41d4-a716-446655440000",
+      "user_id": 42,
+      "user_id_display": "#0042",
       "email": "user@example.com",
       "username": "johndoe",
       "display_name": "John Doe",
       "avatar_url": null,
+      "can_change_username": true,
+      "next_username_change_at": null,
       "created_at": "2024-01-15T10:30:00Z"
     },
     "token": "eyJhbGciOiJIUzI1NiIs...",

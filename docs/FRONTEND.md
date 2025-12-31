@@ -915,6 +915,37 @@ export function cn(...inputs: ClassValue[]) {
 }
 ```
 
+### Animation Library
+
+The web app includes a comprehensive animation library at `src/lib/animations.ts`:
+
+```typescript
+// src/lib/animations.ts
+import { easings, durations, fadeIn, slideUp, scaleIn, staggerDelay } from '@/lib/animations';
+
+// Timing functions
+easings.easeOut    // 'cubic-bezier(0.16, 1, 0.3, 1)'
+easings.spring     // 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+easings.bounce     // 'cubic-bezier(0.68, -0.55, 0.265, 1.55)'
+
+// Duration presets (in ms)
+durations.fast     // 150
+durations.normal   // 200
+durations.slow     // 300
+
+// Animation generators
+fadeIn(200)        // { animation: 'fadeIn 200ms ...' }
+slideUp(300)       // { animation: 'slideUp 300ms ...' }
+scaleIn()          // { animation: 'scaleIn 200ms ...' }
+
+// Staggered list animations
+items.map((item, i) => (
+  <div style={{ ...slideUp(), ...staggerDelay(i) }}>{item}</div>
+))
+```
+
+Available keyframes: `fadeIn`, `fadeOut`, `slideUp`, `slideDown`, `slideInRight`, `slideInLeft`, `scaleIn`, `pulse`, `shimmer`
+
 ### Common Patterns
 
 ```tsx

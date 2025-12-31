@@ -1097,6 +1097,50 @@ export function useResponsive() {
 }
 ```
 
+### Animation Library
+
+The mobile app includes a comprehensive animation library at `src/lib/animations.ts` using React Native's Animated API:
+
+```typescript
+// src/lib/animations.ts
+import { createFadeIn, createSlideUp, createScale, pulseAnimation } from '@/lib/animations';
+
+// Duration and easing presets
+durations.fast     // 200
+durations.normal   // 300
+durations.slow     // 500
+
+// Create animation values with built-in animations
+const opacity = createFadeIn(300);    // Animated.Value with fadeIn
+const translateY = createSlideUp();   // Animated.Value with slide
+const scale = createScale(1);         // Animated.Value for scaling
+
+// Run animations
+fadeInAnimation(opacity);             // Fade from 0 to 1
+slideUpAnimation(translateY, -20);    // Slide up 20px
+scaleAnimation(scale, 1.1, 1);        // Scale up then back
+
+// Pulse animation (looping)
+pulseAnimation(scale);                // 1 -> 1.05 -> 1 loop
+
+// Staggered list animations
+{items.map((item, i) => (
+  <AnimatedCard delay={i * 50}>{item}</AnimatedCard>
+))}
+```
+
+### AnimatedCard Component
+
+```tsx
+// src/components/AnimatedCard.tsx
+import { AnimatedCard } from '@/components';
+
+// Animated container with press feedback
+<AnimatedCard onPress={handlePress} delay={100}>
+  <Text>Content with fade-in and press scale</Text>
+</AnimatedCard>
+```
+
 ---
 
 ## Device Features

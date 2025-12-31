@@ -299,16 +299,22 @@ Get the current authenticated user.
 {
   "data": {
     "id": "usr_abc123",
+    "user_id": 42,
+    "user_id_display": "#0042",
     "email": "alice@example.com",
     "username": "alice",
     "display_name": "Alice Johnson",
     "avatar_url": "https://cdn.cgraph.org/avatars/abc123.jpg",
     "bio": "Love building things!",
     "status": "online",
+    "can_change_username": true,
+    "next_username_change_at": null,
     "created_at": "2024-01-01T00:00:00Z"
   }
 }
 ```
+
+Note: `username` can be `null` if user registered without one. `can_change_username` is `false` if changed within last 14 days.
 
 #### `PUT /me`
 
@@ -319,6 +325,36 @@ Update the current user's profile.
 {
   "display_name": "Alice J.",
   "bio": "Building cool stuff at CGraph"
+}
+```
+
+#### `PUT /me/username`
+
+Change the current user's username. Subject to 14-day cooldown.
+
+**Request:**
+```json
+{
+  "username": "new_username"
+}
+```
+
+**Response (success):**
+```json
+{
+  "data": {
+    "username": "new_username",
+    "can_change_username": false,
+    "next_username_change_at": "2024-01-29T10:30:00Z"
+  }
+}
+```
+
+**Response (cooldown active):**
+```json
+{
+  "error": "Username can only be changed once every 14 days",
+  "next_change_at": "2024-01-29T10:30:00Z"
 }
 ```
 

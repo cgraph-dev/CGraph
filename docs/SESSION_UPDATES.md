@@ -722,5 +722,34 @@ Fixed malformed useEffect dependency array syntax in mobile.
 
 ---
 
-*Last Updated: Current Session*
-*Author: Development Session*
+*Last Updated: December 30, 2024*
+
+## December 30, 2024 Updates
+
+### User ID System
+- Added auto-increment `user_id` sequence for unique numeric IDs
+- Display format: `#0001`, `#0042`, etc.
+- Username is now optional at registration
+- 14-day cooldown for username changes
+
+### Friend System Improvements
+- Friend requests now accept username (not just user_id)
+- Backend `friend_controller.ex` supports both formats
+- Frontend stores auto-detect UUID vs username
+
+### Messaging Fixes
+- Web Messages page handles `?userId=` query param
+- Mobile "Send Message" button creates conversations
+- Conversations properly created from friend profiles
+
+### Animation Libraries
+- Web: `src/lib/animations.ts` with CSS keyframe utilities
+- Mobile: `src/lib/animations.ts` with Animated API helpers
+
+### New Components
+- Web: `UserBadge.tsx` - displays user identity with badges
+- Mobile: `UserBadge.tsx` - mobile user identity component
+- Mobile: `AnimatedCard.tsx` - animated container with press feedback
+
+### Test Count
+- Backend: 220 tests passing (was 215)

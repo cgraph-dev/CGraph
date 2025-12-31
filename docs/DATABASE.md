@@ -30,8 +30,10 @@ Here's the full schema. I tried to use a fancy tool but honestly ASCII art is ea
     │      users       │
     ├──────────────────┤
     │ id (PK, UUID)    │
+    │ user_id (unique) │──────── Auto-increment sequence (#0001)
     │ email            │─────────┐
-    │ username         │         │
+    │ username (null)  │         │  Username is optional, can be set later
+    │ username_changed │         │  Timestamp of last username change
     │ display_name     │         │
     │ password_hash    │         │
     │ avatar_url       │         │
