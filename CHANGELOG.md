@@ -7,6 +7,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0] - 2024-12-31
+
+### 🎨 UI Polish & Internal Documentation
+
+This release adds micro-interactions and animation polish across web and mobile, along with comprehensive internal developer documentation.
+
+### Added
+
+#### UI Micro-Interactions (Web)
+- **Button**: Scale press feedback (0.97), shadow lift effect, smooth transitions
+- **Loading**: Fade-in animation on mount
+- **Tooltip**: Fade-in animation for tooltip content
+- **Dropdown**: Scale-in animation with origin-top
+- **Switch**: Hover glow effect, focus ring, smooth toggle
+- **Tabs**: TabPanel fade-in when switching tabs
+- **FileUpload**: Drag state scale, preview fade-in animations
+
+#### Page Animations (Web)
+- **Login/Register**: Form fade-in, input focus animations
+- **UserProfile**: Content fade-in, avatar hover scale
+- **Settings**: Navigation slide-in, content fade animation
+- **CreatePost**: Form element stagger animation
+- **Forums**: Post list stagger animation
+- **ForumPost**: Content fade-in, smooth interactions
+- **Notifications**: Item stagger, hover lift effect
+- **Groups**: Server icon hover animations
+- **Search**: Input focus shadow effect
+- **Messages/Friends/Conversation**: Various polish
+
+#### Mobile Animations
+- **Button**: Spring press animation using Reanimated
+- **UserListItem**: Animated entrance with staggered delay
+
+#### Stability Features
+- **Database Backup Worker**: Oban-based automated PostgreSQL backups
+  - Runs daily at 3 AM
+  - Compresses with gzip
+  - Uploads to S3/R2
+  - Configurable retention policy (30 daily, 12 weekly, 12 monthly)
+  - Health check integration
+
+#### Internal Documentation
+- Created `docs/PrivateFolder/` for internal developer documentation
+- 8 comprehensive documents covering architecture, startup, backend, frontend, database, upgrading, and scaling
+
+### Technical Details
+- All animations use CSS transforms/opacity for performance (hardware accelerated)
+- Mobile uses react-native-reanimated for 60fps animations
+- Backup worker uses Oban cron with ExAWS for S3 uploads
+
+---
+
 ## [0.3.0] - 2024-12-30
 
 ### 🎉 Production Ready for 100 Users
