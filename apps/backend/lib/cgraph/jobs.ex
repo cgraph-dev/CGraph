@@ -1026,7 +1026,7 @@ defmodule Cgraph.Jobs do
         end
         
       [] ->
-        Logger.warn("[Jobs] Received completion for unknown workflow: #{workflow_id}")
+        Logger.warning("[Jobs] Received completion for unknown workflow: #{workflow_id}")
     end
   end
   
@@ -1051,7 +1051,7 @@ defmodule Cgraph.Jobs do
         finalize_workflow(updated_workflow, :failed)
         
       [] ->
-        Logger.warn("[Jobs] Received failure for unknown workflow: #{workflow_id}")
+        Logger.warning("[Jobs] Received failure for unknown workflow: #{workflow_id}")
     end
   end
   

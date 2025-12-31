@@ -137,14 +137,6 @@ defmodule CgraphWeb.API.V1.RoleController do
 
   # Private helpers
 
-  # Extract role params when not nested
-  defp extract_role_params(params) do
-    params
-    |> Map.take(["name", "color", "permissions", "position", "is_mentionable", "is_hoisted"])
-    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
-    |> Map.new()
-  end
-
   defp validate_not_default_role(role) do
     if role.is_default do
       {:error, :cannot_modify_default_role}

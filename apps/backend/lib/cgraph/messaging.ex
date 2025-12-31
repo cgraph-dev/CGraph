@@ -175,7 +175,7 @@ defmodule Cgraph.Messaging do
     end
   end
 
-  defp do_create_conversation(creator, participant_ids) do
+  defp do_create_conversation(_creator, participant_ids) do
     # For DMs, use the ordered user_one_id/user_two_id pattern
     if length(participant_ids) == 2 do
       [user1_id, user2_id] = participant_ids

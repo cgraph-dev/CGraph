@@ -1939,7 +1939,7 @@ defmodule Cgraph.Forums do
   end
 
   defp update_thread_score(thread_id, delta) do
-    thread = Repo.get!(Thread, thread_id)
+    _thread = Repo.get!(Thread, thread_id)
     
     upvotes = if delta > 0, do: 1, else: 0
     downvotes = if delta < 0, do: 1, else: 0
@@ -1951,13 +1951,14 @@ defmodule Cgraph.Forums do
   end
 
   # ============================================================================
-  # Post Voting
+  # Post Voting (by IDs)
   # ============================================================================
 
   @doc """
-  Vote on a post.
+  Vote on a post by user_id and post_id.
+  Value must be 1 (upvote) or -1 (downvote).
   """
-  def vote_post(user_id, post_id, value) when value in [1, -1] do
+  def vote_post_by_id(user_id, post_id, value) when value in [1, -1] do
     case Repo.get_by(PostVote, user_id: user_id, post_id: post_id) do
       nil ->
         result = %PostVote{}

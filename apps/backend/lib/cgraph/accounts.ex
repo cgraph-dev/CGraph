@@ -1060,7 +1060,7 @@ defmodule Cgraph.Accounts do
         :ok
         
       {:ok, user} ->
-        token = generate_password_reset_token(user)
+        _token = generate_password_reset_token(user)
         # TODO: Implement actual email sending via a dedicated worker
         # For now, just generate and store the token - email sending is a TODO
         # The token is stored in cache and can be verified later

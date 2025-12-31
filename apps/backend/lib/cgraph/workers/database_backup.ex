@@ -80,7 +80,7 @@ defmodule Cgraph.Workers.DatabaseBackup do
           {:error, {:pg_dump_failed, code, output}}
       end
     else
-      Logger.warn("DATABASE_URL not set, skipping backup")
+      Logger.warning("DATABASE_URL not set, skipping backup")
       {:error, :no_database_url}
     end
   end
@@ -150,14 +150,14 @@ defmodule Cgraph.Workers.DatabaseBackup do
         :ok
       
       {:error, reason} ->
-        Logger.warn("Failed to list old backups: #{inspect(reason)}")
+        Logger.warning("Failed to list old backups: #{inspect(reason)}")
         :ok  # Don't fail the job for cleanup issues
     end
   end
   
   # Optional notifications
   defp notify_backup_complete(path, type) do
-    Cgraph.Events.emit(:database_backup_complete, %{
+    Cgraph.Events.publish(:database_backup_complete, %{
       path: path,
       type: type,
       timestamp: DateTime.utc_now()
@@ -165,7 +165,7 @@ defmodule Cgraph.Workers.DatabaseBackup do
   end
   
   defp notify_backup_failure(reason) do
-    Cgraph.Events.emit(:database_backup_failed, %{
+    Cgraph.Events.publish(:database_backup_failed, %{
       reason: inspect(reason),
       timestamp: DateTime.utc_now()
     })

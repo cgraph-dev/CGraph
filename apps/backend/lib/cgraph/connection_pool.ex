@@ -225,7 +225,7 @@ defmodule Cgraph.ConnectionPool do
       
       case health.status do
         :healthy -> :ok
-        :degraded -> Logger.warn("Database performance degraded")
+        :degraded -> Logger.warning("Database performance degraded")
         :unhealthy -> Logger.error("Database connection failed")
       end
   """

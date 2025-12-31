@@ -102,7 +102,6 @@ defmodule CgraphWeb.API.V1.PostJSON do
     end)
   end
 
-  defp render_flair(nil), do: nil
   # Handle flair as a text field with optional color
   defp render_flair(nil), do: nil
   defp render_flair(text) when is_binary(text) do
