@@ -10,9 +10,11 @@ import {
   Alert,
   ActivityIndicator,
   ScrollView,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthStackParamList } from '../../types';
@@ -29,6 +31,7 @@ export default function RegisterScreen({ navigation }: Props) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
   const handleRegister = async () => {
@@ -52,14 +55,20 @@ export default function RegisterScreen({ navigation }: Props) {
       Alert.alert('Error', 'Username must be at least 3 characters');
       return;
     }
+
+    if (!agreedToTerms) {
+      Alert.alert('Error', 'Please agree to the Terms of Service and Privacy Policy');
+      return;
+    }
     
     setIsLoading(true);
     try {
       await register(email, username.trim() || null, password);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } } };
       Alert.alert(
         'Registration Failed',
-        error.response?.data?.message || 'Could not create account'
+        err.response?.data?.message || 'Could not create account'
       );
     } finally {
       setIsLoading(false);
@@ -176,6 +185,41 @@ export default function RegisterScreen({ navigation }: Props) {
                   secureTextEntry
                 />
               </View>
+
+              {/* Terms of Service Agreement - Required for App Store */}
+              <TouchableOpacity 
+                style={styles.termsRow}
+                onPress={() => setAgreedToTerms(!agreedToTerms)}
+                activeOpacity={0.7}
+              >
+                <View style={[
+                  styles.checkbox,
+                  { 
+                    borderColor: agreedToTerms ? colors.primary : colors.border,
+                    backgroundColor: agreedToTerms ? colors.primary : 'transparent',
+                  }
+                ]}>
+                  {agreedToTerms && (
+                    <Ionicons name="checkmark" size={14} color="#fff" />
+                  )}
+                </View>
+                <Text style={[styles.termsText, { color: colors.textSecondary }]}>
+                  I agree to the{' '}
+                  <Text 
+                    style={[styles.termsLink, { color: colors.primary }]}
+                    onPress={() => Linking.openURL('https://cgraph.org/terms')}
+                  >
+                    Terms of Service
+                  </Text>
+                  {' '}and{' '}
+                  <Text 
+                    style={[styles.termsLink, { color: colors.primary }]}
+                    onPress={() => Linking.openURL('https://cgraph.org/privacy')}
+                  >
+                    Privacy Policy
+                  </Text>
+                </Text>
+              </TouchableOpacity>
               
               <TouchableOpacity
                 style={[styles.button, { backgroundColor: colors.primary }]}
@@ -262,6 +306,30 @@ const styles = StyleSheet.create({
   inputHint: {
     fontSize: 12,
     marginTop: 4,
+  },
+  termsRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+    marginTop: 8,
+    paddingHorizontal: 4,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderWidth: 2,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 1,
+  },
+  termsText: {
+    flex: 1,
+    fontSize: 13,
+    lineHeight: 19,
+  },
+  termsLink: {
+    fontWeight: '600',
   },
   button: {
     padding: 16,

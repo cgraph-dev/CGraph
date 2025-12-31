@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
+    "scheme": "cgraph",
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -16,11 +17,24 @@
       "supportsTablet": true,
       "bundleIdentifier": "org.cgraph.app",
       "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "infoPlist": {
         "UIBackgroundModes": ["remote-notification"],
         "NSCameraUsageDescription": "CGraph needs camera access to take photos for messages and profile pictures.",
         "NSPhotoLibraryUsageDescription": "CGraph needs photo library access to share images in messages.",
-        "NSMicrophoneUsageDescription": "CGraph needs microphone access for voice messages and calls."
+        "NSMicrophoneUsageDescription": "CGraph needs microphone access for voice messages and calls.",
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserTrackingUsageDescription": "CGraph uses this to provide personalized content. You can opt-out in settings."
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
+            "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          }
+        ]
       }
     },
     "android": {
@@ -28,7 +42,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#6366f1"
       },
-      "package": "io.cgraph.org",
+      "package": "org.cgraph.app",
       "versionCode": 1,
       "permissions": [
         "CAMERA",
@@ -36,8 +50,11 @@
         "WRITE_EXTERNAL_STORAGE",
         "RECORD_AUDIO",
         "VIBRATE",
-        "RECEIVE_BOOT_COMPLETED"
-      ]
+        "RECEIVE_BOOT_COMPLETED",
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -51,7 +68,8 @@
         }
       ],
       "expo-camera",
-      "expo-image-picker"
+      "expo-image-picker",
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {
