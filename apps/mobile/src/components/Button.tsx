@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   ViewStyle,
   TextStyle,
+  Animated,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -42,6 +43,22 @@ export default function Button({
   textStyle,
 }: ButtonProps) {
   const { colors } = useTheme();
+  const scaleValue = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scaleValue, {
+      toValue: 0.96,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      friction: 3,
+      useNativeDriver: true,
+    }).start();
+  };
 
   const getVariantStyles = (): ViewStyle => {
     switch (variant) {
@@ -114,32 +131,36 @@ export default function Button({
   };
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      disabled={disabled || loading}
-      activeOpacity={0.7}
-      style={[
-        styles.button,
-        getVariantStyles(),
-        getSizeStyles(),
-        fullWidth && styles.fullWidth,
-        style,
-      ]}
-    >
-      {loading ? (
-        <ActivityIndicator color={getTextColor()} size="small" />
-      ) : (
-        <Text
-          style={[
-            styles.text,
-            { color: getTextColor(), fontSize: getTextSize() },
-            textStyle,
-          ]}
-        >
-          {children}
-        </Text>
-      )}
-    </TouchableOpacity>
+    <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+      <TouchableOpacity
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled || loading}
+        activeOpacity={0.9}
+        style={[
+          styles.button,
+          getVariantStyles(),
+          getSizeStyles(),
+          fullWidth && styles.fullWidth,
+          style,
+        ]}
+      >
+        {loading ? (
+          <ActivityIndicator color={getTextColor()} size="small" />
+        ) : (
+          <Text
+            style={[
+              styles.text,
+              { color: getTextColor(), fontSize: getTextSize() },
+              textStyle,
+            ]}
+          >
+            {children}
+          </Text>
+        )}
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 
