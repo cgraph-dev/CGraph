@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 
@@ -13,6 +13,19 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
+
+  const displayError = localError || error;
+
+  // Auto-dismiss error after 1.5 seconds
+  useEffect(() => {
+    if (!displayError) return;
+    
+    const timer = setTimeout(() => {
+      clearError();
+      setLocalError(null);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [displayError, clearError]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,12 +51,10 @@ export default function Register() {
     try {
       await register(email, username, password);
       navigate('/messages');
-    } catch (err) {
+    } catch {
       // Error is handled by store
     }
   };
-
-  const displayError = localError || error;
 
   return (
     <div className="space-y-8 animate-fadeIn">

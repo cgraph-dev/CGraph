@@ -1,6 +1,26 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { api } from '@/lib/api';
+import { AxiosError } from 'axios';
+
+// Type for API error responses
+interface ApiErrorResponse {
+  error?: string;
+  message?: string;
+  errors?: Record<string, string[]>;
+}
+
+// Helper to extract error message from API errors
+function getApiErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof AxiosError) {
+    const data = error.response?.data as ApiErrorResponse | undefined;
+    return data?.error || data?.message || fallback;
+  }
+  if (error instanceof Error) {
+    return error.message;
+  }
+  return fallback;
+}
 
 export interface User {
   id: string;
@@ -97,9 +117,9 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           set({
-            error: error.response?.data?.error || 'Login failed',
+            error: getApiErrorMessage(error, 'Login failed'),
             isLoading: false,
           });
           throw error;
@@ -115,8 +135,8 @@ export const useAuthStore = create<AuthState>()(
             message: response.data.message,
             nonce: response.data.nonce,
           };
-        } catch (error: any) {
-          const errorMessage = error.response?.data?.error || 'Failed to get wallet challenge';
+        } catch (error: unknown) {
+          const errorMessage = getApiErrorMessage(error, 'Failed to get wallet challenge');
           set({ error: errorMessage });
           throw new Error(errorMessage);
         }
@@ -137,9 +157,9 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           set({
-            error: error.response?.data?.error || 'Wallet login failed',
+            error: getApiErrorMessage(error, 'Wallet login failed'),
             isLoading: false,
           });
           throw error;
@@ -165,9 +185,9 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           });
-        } catch (error: any) {
+        } catch (error: unknown) {
           set({
-            error: error.response?.data?.error || 'Registration failed',
+            error: getApiErrorMessage(error, 'Registration failed'),
             isLoading: false,
           });
           throw error;

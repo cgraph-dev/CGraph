@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { api, getErrorMessage } from '@/lib/api';
 
@@ -7,6 +7,16 @@ export default function ForgotPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Auto-dismiss error after 1.5 seconds
+  useEffect(() => {
+    if (!error) return;
+    
+    const timer = setTimeout(() => {
+      setError(null);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [error]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

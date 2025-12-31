@@ -1,7 +1,7 @@
 defmodule Cgraph.MixProject do
   use Mix.Project
 
-  @version "0.1.0"
+  @version "1.0.0"
   # Using Elixir 1.19+ with OTP 28 for latest features and security
   @elixir_version "~> 1.19"
 

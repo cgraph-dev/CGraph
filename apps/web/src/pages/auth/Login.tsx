@@ -1,10 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 
 export default function Login() {
   const navigate = useNavigate();
   const { login, getWalletChallenge, loginWithWallet, isLoading, error, clearError } = useAuthStore();
+
+  // Auto-dismiss error after 1.5 seconds
+  useEffect(() => {
+    if (!error) return;
+    
+    const timer = setTimeout(() => {
+      clearError();
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [error, clearError]);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -85,9 +95,9 @@ export default function Login() {
         <p className="mt-2 text-gray-400">Sign in to your account to continue</p>
       </div>
 
-      {/* Error Alert */}
+      {/* Error Alert with auto-dismiss */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400 text-sm">
+        <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400 text-sm animate-fadeIn">
           {error}
         </div>
       )}

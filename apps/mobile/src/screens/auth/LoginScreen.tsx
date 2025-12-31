@@ -37,10 +37,11 @@ export default function LoginScreen({ navigation }: Props) {
     setIsLoading(true);
     try {
       await login(email, password);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string; message?: string } } };
       Alert.alert(
         'Login Failed',
-        error.response?.data?.message || 'Invalid credentials'
+        err.response?.data?.error || err.response?.data?.message || 'Invalid credentials'
       );
     } finally {
       setIsLoading(false);

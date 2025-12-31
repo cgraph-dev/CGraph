@@ -196,9 +196,9 @@ export default function UserLeaderboard() {
           total: metaData.total || data.length,
           totalPages: metaData.total_pages || 1,
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Failed to fetch leaderboard:', err);
-        setError(err.message || 'Failed to load leaderboard');
+        setError(err instanceof Error ? err.message : 'Failed to load leaderboard');
       } finally {
         setIsLoading(false);
       }
