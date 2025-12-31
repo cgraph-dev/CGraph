@@ -100,7 +100,7 @@ export function Modal({
     >
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-fade-in"
         onClick={closeOnOverlayClick ? onClose : undefined}
         aria-hidden="true"
       />
@@ -108,7 +108,7 @@ export function Modal({
       {/* Modal panel */}
       <div
         ref={modalRef}
-        className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-gray-900 rounded-xl shadow-2xl transform transition-all`}
+        className={`relative w-full ${sizeClasses[size]} bg-white dark:bg-gray-900 rounded-xl shadow-2xl animate-scale-in`}
       >
         {/* Header */}
         {(title || showCloseButton) && (

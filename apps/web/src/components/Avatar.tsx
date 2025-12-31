@@ -82,12 +82,12 @@ export function Avatar({
   const bgColor = getColorFromName(alt);
 
   return (
-    <div className={`relative inline-flex flex-shrink-0 ${className}`}>
+    <div className={`relative inline-flex flex-shrink-0 group ${className}`}>
       {src ? (
         <img
           src={src}
           alt={alt}
-          className={`${sizeClasses[size]} rounded-full object-cover ring-2 ring-white dark:ring-gray-800`}
+          className={`${sizeClasses[size]} rounded-full object-cover ring-2 ring-white dark:ring-gray-800 transition-transform duration-200 group-hover:scale-105`}
           onError={(e) => {
             // Hide broken image and show fallback
             e.currentTarget.style.display = 'none';

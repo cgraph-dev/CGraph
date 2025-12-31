@@ -61,7 +61,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             id={inputId}
             className={`
-              block rounded-lg border shadow-sm
+              block rounded-lg border shadow-sm transition-all duration-200
               ${sizeStyles[size]}
               ${paddingLeft}
               ${paddingRight}
@@ -69,10 +69,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
               ${
                 error
                   ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500 dark:border-red-600 dark:text-red-400'
-                  : 'border-gray-300 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-white'
+                  : 'border-gray-300 dark:border-gray-600 focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-800 dark:text-white hover:border-gray-400 dark:hover:border-gray-500'
               }
-              focus:outline-none focus:ring-2
+              focus:outline-none focus:ring-2 focus:ring-offset-0
               disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 dark:disabled:bg-gray-900
+              placeholder:text-gray-400 dark:placeholder:text-gray-500
               ${className}
             `}
             aria-invalid={error ? 'true' : 'false'}

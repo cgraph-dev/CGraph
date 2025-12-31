@@ -157,14 +157,14 @@ export default function AppLayout() {
                 to={item.path}
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
-                className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all ${
+                className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group ${
                   isActive
-                    ? 'bg-primary-600 text-white'
-                    : 'text-gray-400 hover:bg-dark-700 hover:text-white'
+                    ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
+                    : 'text-gray-400 hover:bg-dark-700 hover:text-white hover:scale-105'
                 }`}
                 title={item.label}
               >
-                <Icon className="h-6 w-6" />
+                <Icon className="h-6 w-6 transition-transform group-hover:scale-110" />
                 {item.path === '/messages' && totalUnread > 0 && (
                   <span className="absolute -top-1 -right-1 h-5 min-w-[20px] px-1 rounded-full bg-red-500 text-xs font-bold flex items-center justify-center">
                     {totalUnread > 99 ? '99+' : totalUnread}
