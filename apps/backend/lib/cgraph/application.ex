@@ -38,6 +38,9 @@ defmodule Cgraph.Application do
       # Start Presence for online status tracking
       Cgraph.Presence,
 
+      # Start the data export service (GDPR compliance)
+      Cgraph.DataExport,
+
       # Start the Phoenix endpoint (must be last)
       CgraphWeb.Endpoint
     ]

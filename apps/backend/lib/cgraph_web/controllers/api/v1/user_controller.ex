@@ -173,4 +173,43 @@ defmodule CgraphWeb.API.V1.UserController do
 
     render(conn, :leaderboard, users: users, meta: meta)
   end
+
+  @doc """
+  Request a data export for the current user (GDPR compliance).
+  
+  The export will be generated asynchronously and the user will be notified
+  when it's ready to download.
+  """
+  def request_data_export(conn, _params) do
+    user = conn.assigns.current_user
+
+    case Cgraph.DataExport.export_user_data(user.id, [
+      format: :json,
+      include_messages: true,
+      include_posts: true,
+      include_comments: true,
+      include_groups: true,
+      include_friends: true,
+      include_settings: true
+    ]) do
+      {:ok, export} ->
+        conn
+        |> put_status(:accepted)
+        |> json(%{
+          message: "Data export requested. You will be notified when it's ready.",
+          export_id: export.id,
+          status: export.status
+        })
+      
+      {:error, :rate_limited} ->
+        conn
+        |> put_status(:too_many_requests)
+        |> json(%{error: "You can only request one data export per day. Please try again later."})
+      
+      {:error, reason} ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{error: "Failed to start data export: #{inspect(reason)}"})
+    end
+  end
 end

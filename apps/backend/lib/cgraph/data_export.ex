@@ -949,48 +949,48 @@ defmodule Cgraph.DataExport do
   defp log_export_started(export) do
     Logger.info("[DataExport] Started export #{export.id} for user #{export.user_id}")
     
-    Cgraph.Audit.log(:data_export_started, %{
+    Cgraph.Audit.log(:data_export, :export_started, %{
       export_id: export.id,
       user_id: export.user_id,
       type: export.type,
       format: export.format
-    })
+    }, actor_id: export.user_id)
   end
   
   defp log_export_completed(export) do
     Logger.info("[DataExport] Completed export #{export.id}, size: #{export.file_size} bytes")
     
-    Cgraph.Audit.log(:data_export_completed, %{
+    Cgraph.Audit.log(:data_export, :export_completed, %{
       export_id: export.id,
       user_id: export.user_id,
       file_size: export.file_size,
       duration_ms: DateTime.diff(export.completed_at, export.created_at, :millisecond)
-    })
+    }, actor_id: export.user_id)
   end
   
   defp log_export_failed(export) do
     Logger.error("[DataExport] Export #{export.id} failed: #{export.error}")
     
-    Cgraph.Audit.log(:data_export_failed, %{
+    Cgraph.Audit.log(:data_export, :export_failed, %{
       export_id: export.id,
       user_id: export.user_id,
       error: export.error
-    })
+    }, actor_id: export.user_id)
   end
   
   defp log_download(export) do
-    Cgraph.Audit.log(:data_export_downloaded, %{
+    Cgraph.Audit.log(:data_export, :export_downloaded, %{
       export_id: export.id,
       user_id: export.user_id,
       download_count: export.download_count + 1
-    })
+    }, actor_id: export.user_id)
   end
   
   defp log_export_deleted(export) do
-    Cgraph.Audit.log(:data_export_deleted, %{
+    Cgraph.Audit.log(:data_export, :export_deleted, %{
       export_id: export.id,
       user_id: export.user_id
-    })
+    }, actor_id: export.user_id)
   end
   
   # ---------------------------------------------------------------------------

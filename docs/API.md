@@ -433,6 +433,32 @@ List all active sessions for the current user.
 
 Revoke a specific session (log out that device).
 
+#### `POST /me/export`
+
+Request a data export of all user data (GDPR compliance). The export is processed asynchronously and the user will be notified when it's ready.
+
+**Response (202 Accepted):**
+```json
+{
+  "message": "Data export requested. You will be notified when it's ready.",
+  "export_id": "exp_abc123def456",
+  "status": "processing"
+}
+```
+
+**Response (429 Too Many Requests):**
+```json
+{
+  "error": "You can only request one data export per day. Please try again later."
+}
+```
+
+**Notes:**
+- Data exports include: profile, messages, posts, comments, groups, friends, and settings
+- Export format is JSON
+- Rate limited to 1 export request per day
+- Export files are available for download for 7 days
+
 ---
 
 ### User Settings

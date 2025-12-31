@@ -120,6 +120,7 @@ defmodule CgraphWeb.Router do
     post "/me/avatar", UserController, :upload_avatar
     get "/me/sessions", UserController, :sessions
     delete "/me/sessions/:id", UserController, :revoke_session
+    post "/me/export", UserController, :request_data_export
 
     # User Settings
     get "/settings", SettingsController, :show

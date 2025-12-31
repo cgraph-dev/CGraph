@@ -232,4 +232,34 @@ defmodule CgraphWeb.API.V1.UserControllerTest do
       assert %{"error" => _} = json_response(conn, 422)
     end
   end
+
+  describe "POST /api/v1/me/export" do
+    setup %{conn: conn} do
+      user = user_fixture()
+      conn = log_in_user(conn, user)
+      %{conn: conn, user: user}
+    end
+
+    test "starts a data export", %{conn: conn, user: _user} do
+      conn = post(conn, ~p"/api/v1/me/export")
+      
+      # Should return 202 Accepted with export details
+      assert %{
+        "message" => message,
+        "export_id" => export_id,
+        "status" => status
+      } = json_response(conn, 202)
+      
+      assert message =~ "export"
+      assert is_binary(export_id)
+      assert status in ["pending", "processing"]
+    end
+
+    test "returns 401 without authentication", %{conn: _conn} do
+      conn = build_conn()
+      conn = post(conn, ~p"/api/v1/me/export")
+      
+      assert json_response(conn, 401)
+    end
+  end
 end
