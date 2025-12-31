@@ -139,4 +139,48 @@ defmodule CgraphWeb.API.V1.AuthControllerTest do
       assert conn.status in [200, 202]
     end
   end
+
+  describe "POST /api/v1/auth/logout" do
+    test "logs out authenticated user", %{conn: conn} do
+      password = "ValidPassword123!"
+      user = CgraphWeb.UserFixtures.user_fixture(%{password: password, password_confirmation: password})
+
+      # First login to get a token
+      login_conn = post(conn, ~p"/api/v1/auth/login", %{
+        email: user.email,
+        password: password
+      })
+
+      response = json_response(login_conn, 200)
+      access_token = response["tokens"]["access_token"]
+      
+      # Logout with the token
+      logout_conn = conn
+        |> put_req_header("authorization", "Bearer #{access_token}")
+        |> post(~p"/api/v1/auth/logout")
+      
+      assert json_response(logout_conn, 200)["message"] =~ "Logged out"
+    end
+  end
+
+  describe "POST /api/v1/auth/verify-email" do
+    test "returns error with invalid token", %{conn: conn} do
+      conn = post(conn, ~p"/api/v1/auth/verify-email", %{token: "invalid_token"})
+      assert json_response(conn, 400)["error"] =~ "Invalid"
+    end
+  end
+
+  describe "POST /api/v1/auth/resend-verification" do
+    test "sends verification email for authenticated user", %{conn: conn} do
+      user = CgraphWeb.UserFixtures.user_fixture()
+      
+      # Use the log_in_user helper to properly authenticate
+      authed_conn = log_in_user(conn, user)
+      
+      # Request verification email
+      resend_conn = post(authed_conn, ~p"/api/v1/auth/resend-verification")
+      
+      assert json_response(resend_conn, 200)["message"] =~ "Verification"
+    end
+  end
 end

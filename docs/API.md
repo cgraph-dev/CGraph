@@ -129,6 +129,42 @@ Content-Type: application/json
 }
 ```
 
+**Logout (requires auth):**
+```http
+POST /api/v1/auth/logout
+Authorization: Bearer <access-token>
+```
+
+**Response:**
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+**Verify Email:**
+```http
+POST /api/v1/auth/verify-email
+Content-Type: application/json
+
+{
+  "token": "verification-token-from-email"
+}
+```
+
+**Resend Verification Email (requires auth):**
+```http
+POST /api/v1/auth/resend-verification
+Authorization: Bearer <access-token>
+```
+
+**Response:**
+```json
+{
+  "message": "Verification email sent"
+}
+```
+
 ### 2. Wallet-Based Anonymous Authentication
 
 For privacy-focused users. No email required.

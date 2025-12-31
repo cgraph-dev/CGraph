@@ -42,15 +42,23 @@ api.interceptors.response.use(
             refresh_token: refreshToken,
           });
           
-          const { token, refresh_token: newRefreshToken } = response.data.data || response.data;
+          // Backend returns tokens.access_token and tokens.refresh_token
+          const data = response.data.data || response.data;
+          const tokens = data.tokens || data;
+          const newAccessToken = tokens.access_token || tokens.token;
+          const newRefreshToken = tokens.refresh_token;
           
-          await SecureStore.setItemAsync('cgraph_auth_token', token);
-          await SecureStore.setItemAsync('cgraph_refresh_token', newRefreshToken);
-          
-          api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          
-          return api(originalRequest);
+          if (newAccessToken) {
+            await SecureStore.setItemAsync('cgraph_auth_token', newAccessToken);
+            if (newRefreshToken) {
+              await SecureStore.setItemAsync('cgraph_refresh_token', newRefreshToken);
+            }
+            
+            api.defaults.headers.common['Authorization'] = `Bearer ${newAccessToken}`;
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            
+            return api(originalRequest);
+          }
         }
       } catch (refreshError) {
         // Refresh failed, clear tokens

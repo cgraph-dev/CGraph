@@ -82,7 +82,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
   
   const register = async (email: string, username: string | null, password: string) => {
-    const userData: Record<string, string> = { email, password };
+    const userData: Record<string, string> = { 
+      email, 
+      password,
+      password_confirmation: password  // Backend requires confirmation
+    };
     if (username) {
       userData.username = username;
     }

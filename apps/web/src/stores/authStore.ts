@@ -154,6 +154,7 @@ export const useAuthStore = create<AuthState>()(
               email,
               username,
               password,
+              password_confirmation: password,  // Backend requires confirmation
             },
           });
           const { user, tokens } = response.data;
@@ -195,11 +196,18 @@ export const useAuthStore = create<AuthState>()(
           const response = await api.post('/api/v1/auth/refresh', {
             refresh_token: refreshToken,
           });
-          const { access_token, refresh_token: newRefreshToken } = response.data;
-          set({
-            token: access_token,
-            refreshToken: newRefreshToken,
-          });
+          // Handle both wrapped and unwrapped token responses
+          const data = response.data;
+          const tokens = data.tokens || data;
+          const accessToken = tokens.access_token;
+          const newRefreshToken = tokens.refresh_token;
+          
+          if (accessToken) {
+            set({
+              token: accessToken,
+              refreshToken: newRefreshToken || refreshToken,
+            });
+          }
         } catch {
           set({
             user: null,

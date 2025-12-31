@@ -4,12 +4,17 @@ defmodule Cgraph.Workers.SendEmailNotification do
   
   Handles batched email delivery with configurable delays
   to prevent notification spam.
+  
+  Supports different email types:
+  - notification: Regular notification emails (requires notification_id)
+  - verification: Email verification emails (requires verification_token)
+  - password_reset: Password reset emails (requires reset_token)
   """
   use Oban.Worker,
     queue: :email_notifications,
     max_attempts: 5,
     priority: 2,
-    unique: [period: 300, keys: [:user_id]]  # Dedupe emails within 5 minutes
+    unique: [period: 300, keys: [:user_id, :email_type]]  # Dedupe emails within 5 minutes
 
   alias Cgraph.Repo
   alias Cgraph.Accounts.User
@@ -18,7 +23,50 @@ defmodule Cgraph.Workers.SendEmailNotification do
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: %{"user_id" => user_id, "notification_id" => notification_id}}) do
+  # Handle verification emails
+  def perform(%Oban.Job{args: %{"user_id" => user_id, "email_type" => "verification"} = args}) do
+    with {:ok, user} <- get_user(user_id),
+         :ok <- check_email_exists(user) do
+      token = Map.get(args, "verification_token", "")
+      send_verification_email(user, token)
+    else
+      {:error, :user_not_found} ->
+        Logger.warning("Email notification failed: user #{user_id} not found")
+        :ok
+        
+      {:error, :no_email} ->
+        Logger.debug("User #{user_id} has no email address")
+        :ok
+        
+      error ->
+        Logger.error("Verification email failed: #{inspect(error)}")
+        error
+    end
+  end
+
+  # Handle password reset emails
+  def perform(%Oban.Job{args: %{"user_id" => user_id, "email_type" => "password_reset"} = args}) do
+    with {:ok, user} <- get_user(user_id),
+         :ok <- check_email_exists(user) do
+      token = Map.get(args, "reset_token", "")
+      send_password_reset_email(user, token)
+    else
+      {:error, :user_not_found} ->
+        Logger.warning("Password reset email failed: user #{user_id} not found")
+        :ok
+        
+      {:error, :no_email} ->
+        Logger.debug("User #{user_id} has no email address")
+        :ok
+        
+      error ->
+        Logger.error("Password reset email failed: #{inspect(error)}")
+        error
+    end
+  end
+
+  # Handle regular notification emails
+  def perform(%Oban.Job{args: %{"user_id" => user_id, "notification_id" => notification_id}}) when not is_nil(notification_id) do
     with {:ok, user} <- get_user(user_id),
          {:ok, notification} <- get_notification(notification_id),
          :ok <- validate_email(user) do
@@ -47,6 +95,12 @@ defmodule Cgraph.Workers.SendEmailNotification do
     end
   end
 
+  # Fallback for unknown email types
+  def perform(%Oban.Job{args: args}) do
+    Logger.warning("Unknown email notification type: #{inspect(args)}")
+    :ok
+  end
+
   defp get_user(user_id) do
     case Repo.get(User, user_id) do
       nil -> {:error, :user_not_found}
@@ -61,12 +115,29 @@ defmodule Cgraph.Workers.SendEmailNotification do
     end
   end
 
+  defp check_email_exists(user) do
+    if is_nil(user.email), do: {:error, :no_email}, else: :ok
+  end
+
   defp validate_email(user) do
     cond do
       is_nil(user.email) -> {:error, :no_email}
       is_nil(user.email_verified_at) -> {:error, :email_not_verified}
       true -> :ok
     end
+  end
+
+  defp send_verification_email(user, token) do
+    Logger.info("Sending verification email to #{user.email} with token #{String.slice(token, 0, 8)}...")
+    # TODO: Integrate with actual email provider (SendGrid, Mailgun, etc.)
+    # For now, log the email details
+    :ok
+  end
+
+  defp send_password_reset_email(user, token) do
+    Logger.info("Sending password reset email to #{user.email} with token #{String.slice(token, 0, 8)}...")
+    # TODO: Integrate with actual email provider
+    :ok
   end
 
   defp send_email(user, notification) do

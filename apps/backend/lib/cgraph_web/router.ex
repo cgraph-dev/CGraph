@@ -63,6 +63,7 @@ defmodule CgraphWeb.Router do
     post "/auth/wallet/verify", AuthController, :wallet_verify
     post "/auth/forgot-password", AuthController, :forgot_password
     post "/auth/reset-password", AuthController, :reset_password
+    post "/auth/verify-email", AuthController, :verify_email
   end
 
   # Anonymous Wallet Authentication (CGraph-style) - strict rate limiting
@@ -106,6 +107,10 @@ defmodule CgraphWeb.Router do
   # Authenticated API routes
   scope "/api/v1", CgraphWeb.API.V1 do
     pipe_through [:api, :api_auth]
+
+    # Authentication - logout and email verification require auth
+    post "/auth/logout", AuthController, :logout
+    post "/auth/resend-verification", AuthController, :resend_verification
 
     # Current user
     get "/me", UserController, :me

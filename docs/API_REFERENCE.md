@@ -188,7 +188,59 @@ POST /auth/logout
 Authorization: Bearer <token>
 ```
 
-**Response:** `204 No Content`
+**Response:** `200 OK`
+```json
+{
+  "message": "Logged out successfully"
+}
+```
+
+### Email Verification
+
+#### Verify Email
+
+Verifies a user's email address using the token from the verification email.
+
+```http
+POST /auth/verify-email
+```
+
+**Request Body:**
+```json
+{
+  "token": "verification-token-from-email"
+}
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Email verified successfully"
+}
+```
+
+**Error Responses:**
+- `400`: Invalid or expired token
+
+#### Resend Verification Email
+
+Resends the verification email. Rate limited to once per 5 minutes.
+
+```http
+POST /auth/resend-verification
+Authorization: Bearer <token>
+```
+
+**Response:** `200 OK`
+```json
+{
+  "message": "Verification email sent"
+}
+```
+
+**Error Responses:**
+- `401`: Not authenticated
+- `429`: Rate limited (wait before requesting again)
 
 ### Wallet Authentication (Anonymous)
 

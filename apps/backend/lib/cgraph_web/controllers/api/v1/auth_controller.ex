@@ -54,7 +54,7 @@ defmodule CgraphWeb.API.V1.AuthController do
   def refresh(conn, %{"refresh_token" => refresh_token}) do
     case Guardian.refresh_tokens(refresh_token) do
       {:ok, tokens} ->
-        json(conn, tokens)
+        json(conn, %{tokens: tokens})
 
       {:error, _reason} ->
         conn
@@ -129,6 +129,75 @@ defmodule CgraphWeb.API.V1.AuthController do
         |> put_status(:unprocessable_entity)
         |> put_view(json: CgraphWeb.ChangesetJSON)
         |> render(:error, changeset: changeset)
+    end
+  end
+
+  @doc """
+  Logout and revoke the current session.
+  """
+  def logout(conn, _params) do
+    # Get the token from Authorization header
+    case get_req_header(conn, "authorization") do
+      ["Bearer " <> token] ->
+        Accounts.delete_session_token(token)
+        json(conn, %{message: "Logged out successfully"})
+      
+      _ ->
+        json(conn, %{message: "Logged out successfully"})
+    end
+  end
+
+  @doc """
+  Verify email with token.
+  """
+  def verify_email(conn, %{"token" => token}) do
+    case Accounts.verify_email(token) do
+      {:ok, _user} ->
+        json(conn, %{message: "Email verified successfully"})
+
+      {:error, :invalid_token} ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{error: "Invalid verification token"})
+
+      {:error, :expired_token} ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{error: "Verification token has expired. Please request a new one."})
+
+      {:error, _} ->
+        conn
+        |> put_status(:internal_server_error)
+        |> json(%{error: "Failed to verify email"})
+    end
+  end
+
+  @doc """
+  Resend verification email.
+  Requires authentication.
+  """
+  def resend_verification(conn, _params) do
+    case Guardian.Plug.current_resource(conn) do
+      nil ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Authentication required"})
+      
+      user ->
+        case Accounts.resend_verification_email(user) do
+          {:ok, _token} ->
+            json(conn, %{message: "Verification email sent"})
+
+          {:error, :rate_limited} ->
+            conn
+            |> put_status(:too_many_requests)
+            |> json(%{error: "Please wait before requesting another verification email"})
+
+          {:error, _} ->
+            conn
+            |> put_status(:internal_server_error)
+            |> json(%{error: "Failed to send verification email"})
+        end
     end
   end
 end
