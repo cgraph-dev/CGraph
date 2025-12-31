@@ -4,6 +4,7 @@ import { useForumStore, Post } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatDistanceToNow } from 'date-fns';
 import { PostCardSkeleton } from '@/components';
+import { LeaderboardSidebar } from '@/components/forums/LeaderboardWidget';
 import {
   PlusIcon,
   ArrowUpIcon,
@@ -174,17 +175,10 @@ export default function Forums() {
             <div className="flex items-center gap-2 mr-auto">
               <Link
                 to="/forums/leaderboard"
-                className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-500 hover:to-orange-500 rounded-full text-sm font-medium text-white transition-colors"
+                className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-yellow-600/80 to-orange-600/80 hover:from-yellow-500 hover:to-orange-500 rounded-full text-sm font-medium text-white transition-all shadow-sm hover:shadow-yellow-500/20"
               >
                 <TrophyIcon className="h-4 w-4" />
-                Forums
-              </Link>
-              <Link
-                to="/community/leaderboard"
-                className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-500 hover:to-purple-500 rounded-full text-sm font-medium text-white transition-colors"
-              >
-                <TrophyIcon className="h-4 w-4" />
-                Top Users
+                Competition
               </Link>
               
               {isAuthenticated && (
@@ -361,6 +355,14 @@ export default function Forums() {
             </div>
           </div>
         )}
+
+        {/* Leaderboard Widget - Forum-specific or Global */}
+        <div className="mb-4">
+          <LeaderboardSidebar
+            forumId={activeForum?.id}
+            forumSlug={activeForum?.slug}
+          />
+        </div>
 
         {/* Popular Communities */}
         <div className="bg-dark-700 rounded-lg p-4">

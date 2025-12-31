@@ -893,3 +893,153 @@ Fixed malformed useEffect dependency array syntax in mobile.
 
 ### Test Count
 - Backend: 220 tests passing (was 215)
+
+---
+
+## Session: January 2025 - Leaderboard UX Redesign & Anti-Abuse Voting
+
+### Overview
+
+Major UX overhaul that removes the standalone Leaderboards tab and integrates leaderboards directly into the Forums page with beautiful, compact widgets. Added comprehensive anti-abuse voting security system with 5 layers of protection.
+
+### Key Changes
+
+#### 1. Sidebar Navigation Cleanup
+
+**Removed:** Leaderboards tab from main sidebar navigation
+
+| File Modified | Change |
+|---------------|--------|
+| `apps/web/src/layouts/AppLayout.tsx` | Removed TrophyIcon import and Leaderboard nav item |
+
+#### 2. Leaderboard Integration into Forums
+
+Created a new compact leaderboard widget system that displays in the Forums sidebar:
+
+**New File:** `apps/web/src/components/forums/LeaderboardWidget.tsx`
+
+| Component | Purpose |
+|-----------|---------|
+| `UserRow` | Compact user display with rank icon, avatar, name, karma |
+| `GlobalLeaderboardWidget` | Shows top users globally by karma |
+| `ForumLeaderboardWidget` | Shows top contributors within a specific forum |
+| `LeaderboardSidebar` | Combined widget with global/forum-specific toggle |
+
+**Features:**
+- Time range filtering (week, month, year, all)
+- Rank icons (🥇 gold, 🥈 silver, 🥉 bronze)
+- Verified badges display
+- Hover effects and smooth animations
+- Compact responsive design
+
+**File Modified:** `apps/web/src/pages/forums/Forums.tsx`
+- Added `LeaderboardSidebar` to right sidebar
+- Passes selected forum context for forum-specific leaderboards
+- Removed redundant leaderboard links from sort controls
+
+#### 3. Anti-Abuse Voting Security System
+
+Implemented 5-layer protection against vote manipulation:
+
+| Security Layer | Requirement | Error Message |
+|----------------|-------------|---------------|
+| Account Age | Minimum 24 hours old | "Account must be at least 24 hours old to vote" |
+| Karma for Downvote | 10+ karma to downvote | "You need at least 10 karma to downvote" |
+| Self-Vote Prevention | Can't vote own forum | "You cannot vote on your own forum" |
+| Vote Cooldown | 5 minutes between changes | "Please wait 4 minutes before changing your vote" |
+| Standard Validation | Logged in user exists | Standard auth errors |
+
+**File Modified:** `apps/backend/lib/cgraph/forums.ex`
+
+```elixir
+# New constants
+@min_account_age_hours 24
+@min_karma_for_downvote 10
+@vote_change_cooldown_seconds 300
+
+# New functions
+def vote_forum_secure(user, forum_id, value)
+defp validate_account_age(user)
+defp validate_karma_for_downvote(user, value)
+defp validate_not_self_vote(user, forum_id)
+defp validate_vote_cooldown(user_id, forum_id)
+
+# Forum-specific leaderboard
+def get_forum_contributors(forum_id, opts \\ [])
+```
+
+#### 4. New API Endpoints
+
+| Method | Endpoint | Auth | Description |
+|--------|----------|------|-------------|
+| GET | `/api/v1/forums/:id/contributors` | Public | Forum-specific user leaderboard |
+| GET | `/api/v1/forums/:id/vote-eligibility` | Required | Check if user can vote + cooldown time |
+
+**Files Modified:**
+- `apps/backend/lib/cgraph_web/router.ex` - Added routes
+- `apps/backend/lib/cgraph_web/controllers/api/v1/forum_controller.ex` - Added endpoints
+- `apps/backend/lib/cgraph_web/controllers/api/v1/forum_json.ex` - Added contributors view
+
+#### 5. Vote Controller Error Handling
+
+Enhanced vote action to handle abuse errors gracefully:
+
+```elixir
+# In forum_controller.ex vote/2
+case Forums.vote_forum_secure(user, id, value) do
+  {:ok, forum} -> render(conn, :show, forum: forum)
+  {:error, :account_too_new} -> # 403 with message
+  {:error, :insufficient_karma} -> # 403 with message
+  {:error, :self_vote_blocked} -> # 403 with message
+  {:error, {:cooldown, remaining}} -> # 429 with retry info
+  {:error, :not_found} -> # 404
+  {:error, _} -> # 422
+end
+```
+
+### Leaderboard Types Explained
+
+| Leaderboard | Scope | Ranking Criteria | Location |
+|-------------|-------|------------------|----------|
+| Global User | All users | Total karma (posts + comments) | Forums sidebar |
+| Forum-Specific | Single forum | Posts + comments karma in that forum | Forums sidebar (when forum selected) |
+| Forum Ranking | All forums | Score (upvotes - downvotes) | Unchanged |
+
+### UX Research Applied
+
+Researched best practices from:
+- Discourse gamification patterns
+- Reddit karma systems
+- StackOverflow reputation mechanics
+- GitHub contribution graphs
+
+Applied insights:
+- Compact sidebar widgets don't disrupt main content
+- Time-based filtering lets users see recent activity
+- Visual rank indicators (medals) provide instant recognition
+- Forum-specific leaderboards encourage niche community participation
+
+### Test Status
+
+| Suite | Status |
+|-------|--------|
+| Backend | 255 tests, 0 failures |
+| TypeScript | Compiles clean (no errors) |
+| Web Dev Server | Running successfully |
+
+### Files Changed Summary
+
+```
+apps/backend/lib/cgraph/forums.ex                           # Anti-abuse + contributors
+apps/backend/lib/cgraph_web/router.ex                       # New routes
+apps/backend/lib/cgraph_web/controllers/api/v1/forum_controller.ex  # New endpoints
+apps/backend/lib/cgraph_web/controllers/api/v1/forum_json.ex        # Contributors view
+apps/web/src/components/forums/LeaderboardWidget.tsx        # NEW - Compact widgets
+apps/web/src/layouts/AppLayout.tsx                          # Removed leaderboard nav
+apps/web/src/pages/forums/Forums.tsx                        # Integrated sidebar
+apps/web/src/pages/community/UserLeaderboard.tsx            # Null safety fixes
+```
+
+---
+
+*Last Updated: January 2025*

@@ -1230,16 +1230,84 @@ defmodule Cgraph.Forums do
   end
 
   # ============================================================================
-  # Forum Voting (Competition)
+  # Forum Voting (Competition) - With Anti-Abuse Protection
   # ============================================================================
 
+  # Minimum account age (in days) required to vote
+  @vote_min_account_age_days 1
+  # Minimum karma required to downvote (prevents new accounts from mass-downvoting)
+  @downvote_min_karma 10
+  # Vote cooldown in seconds (time between changing votes on same target)
+  @vote_change_cooldown_seconds 60
+
   @doc """
-  Vote on a forum. Users can upvote (1) or downvote (-1) forums.
+  Vote on a forum with anti-abuse protection.
   
-  Changes vote if user already voted, removes if same vote.
-  Returns {:ok, :upvoted | :downvoted | :removed} with updated forum.
+  Security measures:
+  - Account must be at least #{@vote_min_account_age_days} day(s) old
+  - Downvoting requires #{@downvote_min_karma}+ karma
+  - Vote changes have #{@vote_change_cooldown_seconds}s cooldown
+  - Users cannot vote on forums they own/moderate
+  
+  Returns {:ok, :upvoted | :downvoted | :removed} or {:error, reason}
   """
   def vote_forum(user, forum_id, value) when value in [1, -1] do
+    with :ok <- validate_vote_eligibility(user, value),
+         :ok <- validate_not_self_vote(user, forum_id),
+         :ok <- validate_vote_cooldown(user.id, forum_id) do
+      execute_forum_vote(user, forum_id, value)
+    end
+  end
+
+  # Check if user account is old enough and has enough karma for downvotes
+  defp validate_vote_eligibility(user, value) do
+    account_age_days = DateTime.diff(DateTime.utc_now(), user.inserted_at, :day)
+    
+    cond do
+      account_age_days < @vote_min_account_age_days ->
+        {:error, :account_too_new}
+      
+      value == -1 and (user.karma || 0) < @downvote_min_karma ->
+        {:error, :insufficient_karma_for_downvote}
+      
+      true ->
+        :ok
+    end
+  end
+
+  # Prevent voting on your own forums
+  defp validate_not_self_vote(user, forum_id) do
+    case Repo.get(Forum, forum_id) do
+      nil -> {:error, :forum_not_found}
+      %Forum{owner_id: owner_id} when owner_id == user.id -> {:error, :cannot_vote_own_forum}
+      forum -> 
+        # Also check if user is a moderator (owners are excluded above)
+        # Load forum with preloads for moderator check
+        forum = Repo.preload(forum, :moderators)
+        case is_moderator?(forum, user) do
+          true -> {:error, :moderators_cannot_vote}
+          false -> :ok
+        end
+    end
+  end
+
+  # Enforce cooldown on vote changes
+  defp validate_vote_cooldown(user_id, forum_id) do
+    case get_user_forum_vote(user_id, forum_id) do
+      nil -> :ok
+      %ForumVote{updated_at: updated_at} ->
+        seconds_since_vote = DateTime.diff(DateTime.utc_now(), updated_at, :second)
+        if seconds_since_vote < @vote_change_cooldown_seconds do
+          remaining = @vote_change_cooldown_seconds - seconds_since_vote
+          {:error, {:vote_cooldown, remaining}}
+        else
+          :ok
+        end
+    end
+  end
+
+  # Execute the actual vote after all validations pass
+  defp execute_forum_vote(user, forum_id, value) do
     Repo.transaction(fn ->
       case get_user_forum_vote(user.id, forum_id) do
         nil ->
@@ -2387,5 +2455,124 @@ defmodule Cgraph.Forums do
       where: p.forum_id == ^forum_id and p.is_active == true and ^hook in p.hooks
     )
     |> Repo.all()
+  end
+
+  # ============================================================================
+  # Forum-Specific User Leaderboard
+  # ============================================================================
+
+  @doc """
+  Get top contributors for a specific forum based on their post/comment scores.
+  
+  This calculates a forum-specific karma score by summing the scores of all
+  posts and comments a user has made within that forum.
+  
+  ## Options
+  - `:page` - Page number (default: 1)
+  - `:per_page` - Items per page (default: 10, max: 50)
+  - `:time_range` - Filter by time: :all, :week, :month, :year (default: :all)
+  """
+  def get_forum_user_leaderboard(forum_id, opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = min(Keyword.get(opts, :per_page, 10), 50)
+    time_range = Keyword.get(opts, :time_range, :all)
+
+    # Build time filter
+    time_filter = case time_range do
+      :week -> DateTime.add(DateTime.utc_now(), -7, :day)
+      :month -> DateTime.add(DateTime.utc_now(), -30, :day)
+      :year -> DateTime.add(DateTime.utc_now(), -365, :day)
+      _ -> nil
+    end
+
+    # Calculate karma from posts
+    post_karma_query = from p in Post,
+      where: p.forum_id == ^forum_id and is_nil(p.deleted_at),
+      group_by: p.author_id,
+      select: %{user_id: p.author_id, karma: sum(p.score)}
+
+    post_karma_query = if time_filter do
+      from p in post_karma_query, where: p.inserted_at >= ^time_filter
+    else
+      post_karma_query
+    end
+
+    # Calculate karma from comments (need to join through posts)
+    comment_karma_query = from c in Comment,
+      join: p in Post, on: c.post_id == p.id,
+      where: p.forum_id == ^forum_id and is_nil(c.deleted_at),
+      group_by: c.author_id,
+      select: %{user_id: c.author_id, karma: sum(c.score)}
+
+    comment_karma_query = if time_filter do
+      from c in comment_karma_query, where: c.inserted_at >= ^time_filter
+    else
+      comment_karma_query
+    end
+
+    # Union and aggregate total karma per user
+    # Using raw SQL for efficiency with CTEs
+    post_scores = Repo.all(post_karma_query)
+    comment_scores = Repo.all(comment_karma_query)
+
+    # Combine scores
+    combined_scores = 
+      (post_scores ++ comment_scores)
+      |> Enum.group_by(& &1.user_id)
+      |> Enum.map(fn {user_id, scores} ->
+        total_karma = Enum.reduce(scores, 0, fn %{karma: k}, acc -> 
+          acc + (k || 0) 
+        end)
+        %{user_id: user_id, forum_karma: total_karma}
+      end)
+      |> Enum.filter(& &1.user_id != nil)
+      |> Enum.sort_by(& -(&1.forum_karma))
+
+    total = length(combined_scores)
+    
+    # Paginate
+    users_with_karma = combined_scores
+      |> Enum.drop((page - 1) * per_page)
+      |> Enum.take(per_page)
+      |> Enum.with_index(((page - 1) * per_page) + 1)
+      |> Enum.map(fn {%{user_id: user_id, forum_karma: forum_karma}, rank} ->
+        user = Repo.get(Cgraph.Accounts.User, user_id)
+        %{
+          rank: rank,
+          user: user,
+          forum_karma: forum_karma
+        }
+      end)
+      |> Enum.filter(& &1.user != nil)
+
+    meta = %{
+      page: page,
+      per_page: per_page,
+      total: total,
+      total_pages: max(ceil(total / per_page), 1),
+      forum_id: forum_id,
+      time_range: time_range
+    }
+
+    {users_with_karma, meta}
+  end
+
+  @doc """
+  Get voting eligibility info for a user.
+  Useful for frontend to show why a user can't vote.
+  """
+  def get_vote_eligibility(user) do
+    account_age_days = DateTime.diff(DateTime.utc_now(), user.inserted_at, :day)
+    karma = user.karma || 0
+
+    %{
+      can_upvote: account_age_days >= @vote_min_account_age_days,
+      can_downvote: account_age_days >= @vote_min_account_age_days and karma >= @downvote_min_karma,
+      account_age_days: account_age_days,
+      karma: karma,
+      min_account_age_days: @vote_min_account_age_days,
+      min_karma_for_downvote: @downvote_min_karma,
+      vote_cooldown_seconds: @vote_change_cooldown_seconds
+    }
   end
 end

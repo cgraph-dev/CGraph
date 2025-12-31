@@ -146,4 +146,34 @@ defmodule CgraphWeb.API.V1.ForumJSON do
   end
 
   defp render_mod_content(_), do: nil
+
+  @doc """
+  Render forum contributors (leaderboard within a forum).
+  """
+  def contributors(%{contributors: contributors, meta: meta, forum: forum}) do
+    %{
+      data: Enum.map(contributors, &contributor_data/1),
+      meta: meta,
+      forum: %{
+        id: forum.id,
+        name: forum.name,
+        slug: forum.slug
+      }
+    }
+  end
+
+  defp contributor_data(%{rank: rank, user: user, forum_karma: forum_karma}) do
+    %{
+      rank: rank,
+      forum_karma: forum_karma,
+      user: %{
+        id: user.id,
+        username: user.username,
+        display_name: user.display_name,
+        avatar_url: user.avatar_url,
+        is_verified: user.is_verified || false,
+        karma: user.karma || 0
+      }
+    }
+  end
 end

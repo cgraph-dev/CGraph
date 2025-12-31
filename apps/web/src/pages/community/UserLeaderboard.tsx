@@ -99,7 +99,7 @@ function UserLeaderboardCard({ user }: { user: LeaderboardUser }) {
             <div className={`flex items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-white font-semibold ${
               isTopThree ? 'w-14 h-14 text-xl' : 'w-12 h-12 text-lg'
             }`}>
-              {(user.displayName || user.username).charAt(0).toUpperCase()}
+              {(user.displayName || user.username || '?').charAt(0).toUpperCase()}
             </div>
           )}
         </Link>
@@ -113,7 +113,7 @@ function UserLeaderboardCard({ user }: { user: LeaderboardUser }) {
                 isTopThree ? 'text-lg text-white' : 'text-gray-200'
               }`}
             >
-              {user.displayName || user.username}
+              {user.displayName || user.username || 'Unknown'}
             </Link>
             {user.isVerified && (
               <CheckBadgeIcon className="h-5 w-5 text-primary-400 shrink-0" />
@@ -263,7 +263,7 @@ export default function UserLeaderboard() {
                       </div>
                     </div>
                     <p className="mt-3 text-center text-sm font-medium text-gray-300 group-hover:text-white truncate max-w-20">
-                      {users[1]?.displayName || users[1]?.username}
+                      {users[1]?.displayName || users[1]?.username || 'Unknown'}
                     </p>
                     <p className="text-center text-xs text-gray-500">{formatKarma(users[1]?.karma || 0)}</p>
                   </Link>
@@ -289,7 +289,7 @@ export default function UserLeaderboard() {
                       </div>
                     </div>
                     <p className="mt-3 text-center font-semibold text-white group-hover:text-yellow-400 truncate max-w-24">
-                      {users[0]?.displayName || users[0]?.username}
+                      {users[0]?.displayName || users[0]?.username || 'Unknown'}
                     </p>
                     <p className="text-center text-sm text-yellow-400 font-medium">{formatKarma(users[0]?.karma || 0)}</p>
                   </Link>
@@ -315,7 +315,7 @@ export default function UserLeaderboard() {
                       </div>
                     </div>
                     <p className="mt-3 text-center text-sm font-medium text-gray-300 group-hover:text-white truncate max-w-16">
-                      {users[2]?.displayName || users[2]?.username}
+                      {users[2]?.displayName || users[2]?.username || 'Unknown'}
                     </p>
                     <p className="text-center text-xs text-gray-500">{formatKarma(users[2]?.karma || 0)}</p>
                   </Link>

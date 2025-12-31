@@ -95,6 +95,7 @@ defmodule CgraphWeb.Router do
     get "/forums/leaderboard", ForumController, :leaderboard
     get "/forums/top", ForumController, :top
     get "/forums/:id", ForumController, :show
+    get "/forums/:id/contributors", ForumController, :contributors
     
     # Public posts browsing
     get "/forums/:forum_id/posts", PostController, :index
@@ -169,6 +170,10 @@ defmodule CgraphWeb.Router do
 
     # Forums (Reddit-style discovery + MyBB-style hosting)
     # Note: GET /forums, /forums/:id, /forums/leaderboard, /forums/top are public (no auth required)
+    
+    # Vote eligibility check
+    get "/forums/vote-eligibility", ForumController, :vote_eligibility
+    
     resources "/forums", ForumController, except: [:index, :show] do
       resources "/posts", PostController do
         post "/vote", PostController, :vote

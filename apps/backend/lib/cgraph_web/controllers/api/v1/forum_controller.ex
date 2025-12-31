@@ -187,27 +187,65 @@ defmodule CgraphWeb.API.V1.ForumController do
   Vote on a forum.
   POST /api/v1/forums/:id/vote
   Body: { "value": 1 } for upvote, { "value": -1 } for downvote
+  
+  Security measures:
+  - Account must be at least 1 day old
+  - Downvoting requires 10+ karma  
+  - Vote changes have 60s cooldown
+  - Cannot vote on own forums or forums you moderate
   """
   def vote(conn, %{"id" => forum_id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
     vote_value = if is_binary(value), do: String.to_integer(value), else: value
     
     with {:ok, forum} <- Forums.get_forum(forum_id),
-         :ok <- Forums.authorize_action(user, forum, :vote),
-         {:ok, result} <- Forums.vote_forum(user, forum_id, vote_value),
-         {:ok, updated_forum} <- Forums.get_forum_with_vote(forum_id, user.id) do
-      conn
-      |> put_status(:ok)
-      |> json(%{
-        result: result,
-        forum: %{
-          id: updated_forum.id,
-          score: updated_forum.score,
-          upvotes: updated_forum.upvotes,
-          downvotes: updated_forum.downvotes,
-          user_vote: updated_forum.user_vote
-        }
-      })
+         :ok <- Forums.authorize_action(user, forum, :vote) do
+      case Forums.vote_forum(user, forum_id, vote_value) do
+        {:ok, result} ->
+          {:ok, updated_forum} = Forums.get_forum_with_vote(forum_id, user.id)
+          conn
+          |> put_status(:ok)
+          |> json(%{
+            result: result,
+            forum: %{
+              id: updated_forum.id,
+              score: updated_forum.score,
+              upvotes: updated_forum.upvotes,
+              downvotes: updated_forum.downvotes,
+              user_vote: updated_forum.user_vote
+            }
+          })
+        
+        {:error, :account_too_new} ->
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "Your account must be at least 1 day old to vote"})
+        
+        {:error, :insufficient_karma_for_downvote} ->
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "You need at least 10 karma to downvote forums"})
+        
+        {:error, :cannot_vote_own_forum} ->
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "You cannot vote on your own forums"})
+        
+        {:error, :moderators_cannot_vote} ->
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "Moderators cannot vote on forums they moderate"})
+        
+        {:error, {:vote_cooldown, remaining}} ->
+          conn
+          |> put_status(:too_many_requests)
+          |> json(%{error: "Please wait #{remaining} seconds before changing your vote"})
+        
+        {:error, reason} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{error: "Unable to vote: #{inspect(reason)}"})
+      end
     end
   end
 
@@ -300,6 +338,46 @@ defmodule CgraphWeb.API.V1.ForumController do
     
     forums = Forums.get_top_forums(limit, sort)
     render(conn, :top, forums: forums)
+  end
+
+  @doc """
+  Get top contributors within a specific forum.
+  GET /api/v1/forums/:id/contributors
+  
+  Query params:
+  - page: Page number (default: 1)
+  - per_page: Items per page (default: 10, max: 50)
+  - time_range: all | week | month | year (default: all)
+  """
+  def contributors(conn, %{"id" => forum_id} = params) do
+    page = Map.get(params, "page", "1") |> String.to_integer() |> max(1)
+    per_page = Map.get(params, "per_page", "10") |> String.to_integer() |> min(50) |> max(1)
+    time_range = case Map.get(params, "time_range", "all") do
+      "week" -> :week
+      "month" -> :month
+      "year" -> :year
+      _ -> :all
+    end
+
+    with {:ok, forum} <- get_forum_by_id_or_slug(forum_id) do
+      {contributors, meta} = Forums.get_forum_user_leaderboard(
+        forum.id,
+        page: page,
+        per_page: per_page,
+        time_range: time_range
+      )
+      render(conn, :contributors, contributors: contributors, meta: meta, forum: forum)
+    end
+  end
+
+  @doc """
+  Get voting eligibility info for current user.
+  GET /api/v1/forums/vote-eligibility
+  """
+  def vote_eligibility(conn, _params) do
+    user = conn.assigns.current_user
+    eligibility = Forums.get_vote_eligibility(user)
+    json(conn, %{data: eligibility})
   end
 
   # Private helpers

@@ -15,7 +15,6 @@ import {
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
   BellIcon,
-  TrophyIcon,
 } from '@heroicons/react/24/outline';
 import {
   ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid,
@@ -25,7 +24,6 @@ import {
   NewspaperIcon as NewspaperIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid,
   BellIcon as BellIconSolid,
-  TrophyIcon as TrophyIconSolid,
 } from '@heroicons/react/24/solid';
 
 const navItems = [
@@ -64,12 +62,6 @@ const navItems = [
     label: 'Forums',
     icon: NewspaperIcon,
     activeIcon: NewspaperIconSolid,
-  },
-  {
-    path: '/community/leaderboard',
-    label: 'Leaderboard',
-    icon: TrophyIcon,
-    activeIcon: TrophyIconSolid,
   },
   {
     path: '/settings',
