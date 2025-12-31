@@ -3,11 +3,92 @@
 This document details all the changes, enhancements, and bug fixes made during the development session.
 
 ## Table of Contents
-1. [Bug Fixes](#bug-fixes)
-2. [New Features](#new-features)
-3. [UI/UX Improvements](#uiux-improvements)
-4. [Architecture Changes](#architecture-changes)
-5. [Component Library](#component-library)
+1. [Session: December 31, 2025](#session-december-31-2025)
+2. [Bug Fixes](#bug-fixes)
+3. [New Features](#new-features)
+4. [UI/UX Improvements](#uiux-improvements)
+5. [Architecture Changes](#architecture-changes)
+6. [Component Library](#component-library)
+
+---
+
+## Session: December 31, 2025
+
+### App Store Compliance & Pattern Matching Fixes
+
+This session focused on preparing the app for Google Play and App Store submission, along with fixing critical pattern matching issues across the codebase.
+
+#### Backend Pattern Matching Fixes
+
+All functions now properly handle `{:ok, value}` / `{:error, reason}` return patterns:
+
+| File | Fix |
+|------|-----|
+| `conversation_channel.ex` | Fixed `get_conversation/2` pattern matching |
+| `group_channel.ex` | Fixed `get_channel/2`, `get_member/2`, `get_message/1` patterns |
+| `user_socket.ex` | Fixed `get_user/1` pattern matching |
+| `workers/base.ex` | Fixed `SendWelcomeEmail` and `SyncExternalData` patterns |
+| `token_manager.ex` | Fixed `get_user/1` pattern matching |
+| `accounts.ex` | Fixed `get_online_friends/1` - Presence returns string not map |
+| `health_check.ex` | Fixed `Redis.ping()` returns `:ok`/`:error`, not `{:ok, "PONG"}` |
+| `connection_pool.ex` | Fixed `perform_health_check` always returns `{:ok, ...}` |
+| `batch_processor.ex` | Fixed `process/3` always returns `{:ok, result}` |
+| `post_controller.ex` | Simplified rate limit validation |
+| `comment_controller.ex` | Simplified rate limit validation |
+
+**Test Results:** 255 tests, 0 failures, 1 skipped
+
+#### Mobile App Store Compliance
+
+**AccountScreen.tsx - GDPR Features:**
+- ✅ Data export button calling `/api/v1/me/data-export`
+- ✅ Account deletion with "DELETE" confirmation
+- ✅ Privacy Policy link (opens external browser)
+- ✅ Terms of Service link (opens external browser)
+
+**RegisterScreen.tsx - Terms Acceptance:**
+- ✅ Checkbox for Terms of Service & Privacy Policy agreement
+- ✅ Cannot register without accepting terms
+- ✅ Links to actual policy documents
+
+**app.json - iOS/Android Configuration:**
+- ✅ `ITSAppUsesNonExemptEncryption: false` (skip export compliance)
+- ✅ iOS Privacy Manifest with `NSPrivacyAccessedAPITypes`
+- ✅ URL scheme for deep linking (`cgraph://`)
+- ✅ Normalized package/bundle ID: `org.cgraph.app`
+- ✅ `expo-secure-store` plugin added
+- ✅ All required permission descriptions
+
+#### Documentation Updates
+
+- Updated `MOBILE.md` with comprehensive App Store Submission guide
+- Added pre-submission checklist with GDPR requirements
+- Added EAS build and submit commands
+- Added iOS/Android specific requirements
+
+#### Files Changed
+
+```
+apps/backend/lib/cgraph/accounts.ex
+apps/backend/lib/cgraph/auth/token_manager.ex
+apps/backend/lib/cgraph/batch_processor.ex
+apps/backend/lib/cgraph/connection_pool.ex
+apps/backend/lib/cgraph/forums.ex
+apps/backend/lib/cgraph/forums/forum.ex
+apps/backend/lib/cgraph/health_check.ex
+apps/backend/lib/cgraph/workers/base.ex
+apps/backend/lib/cgraph_web/channels/conversation_channel.ex
+apps/backend/lib/cgraph_web/channels/group_channel.ex
+apps/backend/lib/cgraph_web/channels/user_socket.ex
+apps/backend/lib/cgraph_web/controllers/api/v1/comment_controller.ex
+apps/backend/lib/cgraph_web/controllers/api/v1/post_controller.ex
+apps/backend/priv/repo/seeds.exs (new)
+apps/mobile/app.json
+apps/mobile/src/screens/auth/RegisterScreen.tsx
+apps/mobile/src/screens/settings/AccountScreen.tsx
+docs/MOBILE.md
+docs/SESSION_UPDATES.md
+```
 
 ---
 

@@ -1318,9 +1318,57 @@ eas build --platform all --profile production
 
 ## App Store Submission
 
+### Pre-Submission Checklist
+
+Before submitting to app stores, ensure the following:
+
+**GDPR/Privacy Compliance (Required):**
+- ✅ Terms of Service acceptance on registration
+- ✅ Privacy Policy link accessible in app
+- ✅ Terms of Service link accessible in app
+- ✅ Data export functionality (GDPR "right to access")
+- ✅ Account deletion with confirmation (GDPR "right to be forgotten")
+- ✅ iOS Privacy Manifest configured in `app.json`
+- ✅ `ITSAppUsesNonExemptEncryption: false` declared (or proper export compliance)
+
+**App Configuration (`app.json`):**
+```json
+{
+  "expo": {
+    "ios": {
+      "bundleIdentifier": "org.cgraph.app",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "...",
+        "NSPhotoLibraryUsageDescription": "...",
+        "NSMicrophoneUsageDescription": "..."
+      },
+      "privacyManifests": {
+        "NSPrivacyAccessedAPITypes": [...]
+      }
+    },
+    "android": {
+      "package": "org.cgraph.app",
+      "permissions": [...]
+    }
+  }
+}
+```
+
+**EAS Configuration (`eas.json`):**
+- Development, preview, and production build profiles
+- Submission configuration for iOS and Android
+- Auto-increment enabled for production
+
 ### iOS (App Store Connect)
 
 ```bash
+# Build for production
+eas build --platform ios --profile production
+
 # Submit to App Store
 eas submit --platform ios --latest
 
@@ -1329,23 +1377,54 @@ eas submit --platform ios --id <build-id>
 ```
 
 **Required Assets:**
-- App icon (1024x1024)
-- Screenshots for all device sizes
-- Privacy policy URL
-- App description
+- App icon (1024x1024, no alpha channel)
+- Screenshots for all required device sizes:
+  - 6.7" (iPhone 15 Pro Max)
+  - 6.5" (iPhone 14 Plus)
+  - 5.5" (iPhone 8 Plus)
+  - iPad Pro 12.9" (if supporting tablets)
+- Privacy policy URL (hosted publicly)
+- App description and keywords
+- Support URL
+- Age rating questionnaire completed
+
+**App Store Review Tips:**
+- Ensure demo credentials if login required
+- All features must be functional
+- No placeholder text or "coming soon" features
+- Handle all error states gracefully
 
 ### Android (Google Play)
 
 ```bash
+# Build for production (AAB format)
+eas build --platform android --profile production
+
 # Submit to Google Play
 eas submit --platform android --latest
 ```
 
 **Required:**
 - Feature graphic (1024x500)
-- Screenshots
-- Privacy policy
+- App icon (512x512)
+- Screenshots (phone and tablet)
+- Privacy policy URL
 - Content rating questionnaire
+- Data safety form completed
+- Target API level 34+ (Android 14)
+
+**Google Play Data Safety:**
+When completing the data safety form, declare:
+- Account info (email, username)
+- User-generated content (messages, posts)
+- Device identifiers (for push notifications)
+
+### Post-Submission
+
+1. Monitor review status in App Store Connect / Play Console
+2. Respond promptly to any rejection feedback
+3. Test TestFlight / Internal testing builds before full release
+4. Set up staged rollout for Android (10% → 50% → 100%)
 
 ---
 
