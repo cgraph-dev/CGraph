@@ -46,7 +46,7 @@ export default function Register() {
   const displayError = localError || error;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 animate-fadeIn">
       {/* Mobile Logo */}
       <div className="lg:hidden text-center">
         <Link to="/" className="inline-flex items-center gap-3">
@@ -211,7 +211,7 @@ export default function Register() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 px-4 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 px-4 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-primary-600/30 transform hover:-translate-y-0.5 active:translate-y-0"
         >
           {isLoading ? (
             <>

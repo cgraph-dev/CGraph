@@ -60,8 +60,8 @@ interface LoadingScreenProps {
  */
 export function LoadingScreen({ message = 'Loading...' }: LoadingScreenProps) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <div className="text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 animate-fadeIn">
+      <div className="text-center animate-pulseSubtle">
         <LoadingSpinner size="lg" className="mx-auto mb-4" />
         <p className="text-gray-600 dark:text-gray-400 text-sm">{message}</p>
       </div>
@@ -78,8 +78,8 @@ interface LoadingOverlayProps {
  */
 export function LoadingOverlay({ message }: LoadingOverlayProps) {
   return (
-    <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 flex items-center justify-center z-50">
-      <div className="text-center">
+    <div className="absolute inset-0 bg-white/80 dark:bg-gray-900/80 flex items-center justify-center z-50 animate-fadeIn backdrop-blur-sm">
+      <div className="text-center animate-scaleIn">
         <LoadingSpinner size="md" className="mx-auto mb-2" />
         {message && (
           <p className="text-gray-600 dark:text-gray-400 text-sm">{message}</p>

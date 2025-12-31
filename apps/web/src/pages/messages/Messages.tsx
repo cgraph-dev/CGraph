@@ -199,13 +199,13 @@ function ConversationItem({
   return (
     <NavLink
       to={`/messages/${conversation.id}`}
-      className={`flex items-center gap-3 px-4 py-3 hover:bg-dark-700 transition-colors ${
-        isActive ? 'bg-dark-700' : ''
+      className={`flex items-center gap-3 px-4 py-3 hover:bg-dark-700 transition-all duration-200 group ${
+        isActive ? 'bg-dark-700 border-l-2 border-primary-500' : 'border-l-2 border-transparent'
       }`}
     >
       {/* Avatar */}
       <div className="relative flex-shrink-0">
-        <div className="h-12 w-12 rounded-full overflow-hidden bg-dark-600">
+        <div className="h-12 w-12 rounded-full overflow-hidden bg-dark-600 transition-transform duration-200 group-hover:scale-105">
           {avatar ? (
             <img src={avatar} alt={name} className="h-full w-full object-cover" />
           ) : (
@@ -236,7 +236,7 @@ function ConversationItem({
             {conversation.lastMessage?.content || 'No messages yet'}
           </p>
           {conversation.unreadCount > 0 && (
-            <span className="flex-shrink-0 h-5 min-w-[20px] px-1.5 rounded-full bg-primary-600 text-xs font-bold flex items-center justify-center">
+            <span className="flex-shrink-0 h-5 min-w-[20px] px-1.5 rounded-full bg-primary-600 text-xs font-bold flex items-center justify-center animate-pulse-subtle">
               {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
             </span>
           )}

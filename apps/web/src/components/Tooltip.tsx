@@ -90,7 +90,7 @@ export default function Tooltip({ children, content, position = 'top', delay = 3
       {isVisible &&
         createPortal(
           <div
-            className={`fixed z-[100] px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded shadow-lg pointer-events-none ${getTransformClass()}`}
+            className={`fixed z-[100] px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded shadow-lg pointer-events-none animate-fadeIn ${getTransformClass()}`}
             style={{
               left: coords.x,
               top: coords.y,

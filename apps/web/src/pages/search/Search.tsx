@@ -129,7 +129,7 @@ export default function Search() {
             value={inputValue}
             onChange={(e) => handleInputChange(e.target.value)}
             placeholder="Search users, groups, forums, posts..."
-            className="w-full pl-12 pr-12 py-3 bg-dark-700 border border-dark-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            className="w-full pl-12 pr-12 py-3 bg-dark-700 border border-dark-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200 focus:shadow-lg focus:shadow-primary-500/20"
           />
           {inputValue && (
             <button

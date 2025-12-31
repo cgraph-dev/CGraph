@@ -170,9 +170,9 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="flex-1 bg-dark-900 overflow-y-auto">
+    <div className="flex-1 bg-dark-900 overflow-y-auto animate-fadeIn">
       {/* Banner */}
-      <div className="relative h-48 bg-gradient-to-r from-primary-600 to-purple-600">
+      <div className="relative h-48 bg-gradient-to-r from-primary-600 to-purple-600 animate-slideUp">
         {profile.bannerUrl && (
           <img
             src={profile.bannerUrl}
@@ -186,7 +186,7 @@ export default function UserProfile() {
       <div className="max-w-4xl mx-auto px-6 -mt-16 relative">
         <div className="flex items-end gap-6">
           {/* Avatar */}
-          <div className="relative">
+          <div className="relative transform hover:scale-105 transition-transform duration-300">
             <Avatar
               src={profile.avatarUrl || undefined}
               alt={profile.displayName || profile.username}

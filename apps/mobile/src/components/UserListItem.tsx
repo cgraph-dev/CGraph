@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ViewStyle,
+  Animated,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 import Avatar from './Avatar';
@@ -25,6 +26,8 @@ interface UserListItemProps {
   showStatus?: boolean;
   /** Additional styles */
   style?: ViewStyle;
+  /** Animation delay for stagger effect */
+  animationDelay?: number;
 }
 
 export default function UserListItem({
@@ -35,17 +38,61 @@ export default function UserListItem({
   onLongPress,
   showStatus = true,
   style,
+  animationDelay = 0,
 }: UserListItemProps) {
   const { colors } = useTheme();
+  const scaleValue = useRef(new Animated.Value(1)).current;
+  const opacityValue = useRef(new Animated.Value(0)).current;
+  const translateYValue = useRef(new Animated.Value(10)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacityValue, {
+        toValue: 1,
+        duration: 300,
+        delay: animationDelay,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateYValue, {
+        toValue: 0,
+        duration: 300,
+        delay: animationDelay,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [animationDelay]);
+
+  const handlePressIn = () => {
+    Animated.spring(scaleValue, {
+      toValue: 0.98,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      friction: 3,
+      useNativeDriver: true,
+    }).start();
+  };
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      onLongPress={onLongPress}
-      disabled={!onPress && !onLongPress}
-      activeOpacity={0.7}
-      style={[styles.container, { backgroundColor: colors.surface }, style]}
+    <Animated.View
+      style={{
+        opacity: opacityValue,
+        transform: [{ translateY: translateYValue }, { scale: scaleValue }],
+      }}
     >
+      <TouchableOpacity
+        onPress={onPress}
+        onLongPress={onLongPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={!onPress && !onLongPress}
+        activeOpacity={0.9}
+        style={[styles.container, { backgroundColor: colors.surface }, style]}
+      >
       <Avatar
         source={user.avatar_url}
         name={user.display_name || user.username}
@@ -67,7 +114,8 @@ export default function UserListItem({
         )}
       </View>
       {rightContent && <View style={styles.rightContent}>{rightContent}</View>}
-    </TouchableOpacity>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 

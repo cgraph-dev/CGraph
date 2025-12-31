@@ -143,7 +143,7 @@ export default function Notifications() {
         </div>
 
         {/* Notification List */}
-        <div className="space-y-2">
+        <div className="space-y-2 stagger-animation">
           {filteredNotifications.length === 0 ? (
             <EmptyState
               title={filter === 'unread' ? 'All caught up!' : 'No notifications yet'}
@@ -201,10 +201,10 @@ function NotificationItem({
   return (
     <div
       onClick={onClick}
-      className={`flex items-start gap-4 p-4 rounded-lg cursor-pointer transition-colors ${
+      className={`flex items-start gap-4 p-4 rounded-lg cursor-pointer transition-all duration-200 animate-fadeIn animate-slideUp transform hover:-translate-y-0.5 hover:shadow-lg hover:shadow-black/20 ${
         notification.isRead
           ? 'bg-dark-800/50 hover:bg-dark-800'
-          : 'bg-dark-800 hover:bg-dark-700'
+          : 'bg-dark-800 hover:bg-dark-700 ring-1 ring-primary-500/20'
       }`}
     >
       {/* Icon or Avatar */}

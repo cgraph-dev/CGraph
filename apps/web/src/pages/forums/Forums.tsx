@@ -278,7 +278,7 @@ export default function Forums() {
         </div>
 
         {/* Posts */}
-        <div className="max-w-4xl mx-auto py-4 space-y-3">
+        <div className="max-w-4xl mx-auto py-4 space-y-3 stagger-animation">
           {isLoadingPosts && posts.length === 0 ? (
             <div className="space-y-3">
               {[...Array(3)].map((_, i) => (
@@ -367,10 +367,10 @@ export default function Forums() {
           <h3 className="font-semibold text-white mb-3">Popular Communities</h3>
           <div className="space-y-2">
             {forums.slice(0, 5).map((forum) => (
-              <Link
+                <Link
                 key={forum.id}
                 to={`/forums/${forum.slug}`}
-                className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-dark-600 transition-colors"
+                className="flex items-center gap-3 p-2 -mx-2 rounded hover:bg-dark-600 transition-all duration-200 transform hover:translate-x-1"
               >
                 <div className="h-8 w-8 rounded-full bg-dark-600 overflow-hidden">
                   {forum.iconUrl ? (
@@ -414,7 +414,7 @@ function PostCard({
   onVote: (value: 1 | -1) => void;
 }) {
   return (
-    <div className="bg-dark-800 rounded-lg border border-dark-700 hover:border-dark-600 hover:shadow-lg hover:shadow-black/20 transition-all duration-200 animate-fade-in">
+    <div className="bg-dark-800 rounded-lg border border-dark-700 hover:border-primary-700/40 hover:shadow-lg hover:shadow-primary-900/20 transition-all duration-300 animate-fadeIn animate-slideUp transform hover:-translate-y-0.5">
       <div className="flex">
         {/* Vote sidebar */}
         <div className="flex flex-col items-center gap-1 p-3 bg-dark-700/50 rounded-l-lg">

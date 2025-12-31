@@ -328,22 +328,22 @@ function FriendCard({
   setDropdownOpen,
 }: FriendCardProps) {
   return (
-    <div className="flex items-center justify-between p-3 bg-dark-800 hover:bg-dark-700 rounded-lg transition-colors group">
+    <div className="flex items-center justify-between p-3 bg-dark-800 hover:bg-dark-700 rounded-lg transition-all duration-200 group hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5">
       <div className="flex items-center gap-3">
         <div className="relative">
           {friend.avatarUrl ? (
             <img
               src={friend.avatarUrl}
               alt={friend.username}
-              className="h-10 w-10 rounded-full object-cover"
+              className="h-10 w-10 rounded-full object-cover transition-transform duration-200 group-hover:scale-110"
             />
           ) : (
-            <div className="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-medium">
+            <div className="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-medium transition-transform duration-200 group-hover:scale-110">
               {friend.username.charAt(0).toUpperCase()}
             </div>
           )}
           <span
-            className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ${statusColor} ring-2 ring-dark-800`}
+            className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ${statusColor} ring-2 ring-dark-800 ${friend.status === 'online' ? 'animate-pulse-subtle' : ''}`}
           />
         </div>
         <div>

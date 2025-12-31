@@ -319,7 +319,7 @@ export default function Conversation() {
           <button
             onClick={handleSend}
             disabled={!messageInput.trim() || isSending}
-            className="p-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors"
+            className="p-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-white transition-all duration-200"
           >
             <PaperAirplaneIcon className="h-5 w-5" />
           </button>
@@ -345,7 +345,7 @@ function MessageBubble({
 
   return (
     <div
-      className={`flex items-end gap-2 group ${isOwn ? 'flex-row-reverse' : ''}`}
+      className={`flex items-end gap-2 group animate-fade-in ${isOwn ? 'flex-row-reverse' : ''}`}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}
     >
@@ -401,10 +401,10 @@ function MessageBubble({
 
           {/* Bubble */}
           <div
-            className={`px-4 py-2 rounded-2xl ${
+            className={`px-4 py-2 rounded-2xl transition-all duration-200 hover:shadow-lg ${
               isOwn
-                ? 'bg-primary-600 text-white rounded-br-md'
-                : 'bg-dark-700 text-white rounded-bl-md'
+                ? 'bg-primary-600 text-white rounded-br-md hover:bg-primary-500'
+                : 'bg-dark-700 text-white rounded-bl-md hover:bg-dark-600'
             }`}
           >
             {/* Image/Media messages */}

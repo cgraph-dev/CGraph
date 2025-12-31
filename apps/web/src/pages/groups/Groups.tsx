@@ -63,7 +63,7 @@ export default function Groups() {
         {/* Home/DMs button */}
         <NavLink
           to="/messages"
-          className="h-12 w-12 rounded-2xl bg-dark-700 hover:bg-primary-600 hover:rounded-xl flex items-center justify-center transition-all"
+          className="h-12 w-12 rounded-2xl bg-dark-700 hover:bg-primary-600 hover:rounded-xl flex items-center justify-center transition-all duration-200 hover:shadow-lg hover:shadow-primary-600/30 transform hover:scale-105"
         >
           <ChatBubbleLeftRightIcon className="h-6 w-6 text-white" />
         </NavLink>
@@ -76,7 +76,7 @@ export default function Groups() {
         ))}
 
         {/* Add server button */}
-        <button className="h-12 w-12 rounded-2xl bg-dark-700 hover:bg-green-600 hover:rounded-xl flex items-center justify-center transition-all group">
+        <button className="h-12 w-12 rounded-2xl bg-dark-700 hover:bg-green-600 hover:rounded-xl flex items-center justify-center transition-all duration-200 hover:shadow-lg hover:shadow-green-600/30 transform hover:scale-105 group">
           <PlusIcon className="h-6 w-6 text-green-400 group-hover:text-white transition-colors" />
         </button>
       </div>
