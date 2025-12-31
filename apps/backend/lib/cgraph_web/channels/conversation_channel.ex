@@ -20,10 +20,10 @@ defmodule CgraphWeb.ConversationChannel do
     user = socket.assigns.current_user
 
     case Messaging.get_conversation(conversation_id) do
-      nil ->
+      {:error, :not_found} ->
         {:error, %{reason: "not_found"}}
 
-      conversation ->
+      {:ok, conversation} ->
         if Messaging.user_in_conversation?(user.id, conversation) do
           send(self(), :after_join)
           {:ok, assign(socket, :conversation_id, conversation_id)}

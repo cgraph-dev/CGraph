@@ -205,13 +205,6 @@ defmodule Cgraph.Forums.Forum do
     end
   end
 
-  defp generate_slug(changeset) do
-    case get_change(changeset, :name) do
-      nil -> changeset
-      name -> put_change(changeset, :slug, String.downcase(name))
-    end
-  end
-
   # Basic CSS sanitization - in production use a proper sanitizer
   defp sanitize_css(changeset) do
     case get_change(changeset, :custom_css) do

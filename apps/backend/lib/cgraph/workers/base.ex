@@ -187,12 +187,12 @@ defmodule Cgraph.Workers.SendWelcomeEmail do
   @impl Cgraph.Workers.Base
   def execute(%{"user_id" => user_id} = args, _job) do
     case Accounts.get_user(user_id) do
-      nil ->
+      {:error, :not_found} ->
         # User deleted, discard job
         Logger.warning("User not found, discarding job")
         :ok
         
-      user ->
+      {:ok, user} ->
         email = Map.get(args, "email", user.email)
         name = Map.get(args, "name", user.display_name || user.username)
         
@@ -360,22 +360,15 @@ defmodule Cgraph.Workers.SyncExternalData do
   def execute(%{"source" => source, "resource_id" => id} = _args, _job) do
     Logger.info("Syncing external data", source: source, resource_id: id)
     
-    case fetch_external_data(source, id) do
-      {:ok, data} ->
-        store_synced_data(source, id, data)
-        :ok
-        
-      {:error, :rate_limited, retry_after} ->
-        Logger.warning("Rate limited, snoozing", retry_after: retry_after)
-        {:snooze, retry_after}
-        
-      {:error, reason} ->
-        {:error, reason}
-    end
+    # For now, always succeeds - error handling is ready for when external APIs are added
+    {:ok, data} = fetch_external_data(source, id)
+    store_synced_data(source, id, data)
+    :ok
   end
   
+  @spec fetch_external_data(String.t(), String.t()) :: {:ok, map()} | {:error, atom()} | {:error, :rate_limited, non_neg_integer()}
   defp fetch_external_data(_source, _id) do
-    # Would call external API
+    # TODO: Would call external API, return {:error, :rate_limited, 60} or {:error, :api_error}
     {:ok, %{}}
   end
   

@@ -892,7 +892,9 @@ defmodule Cgraph.Accounts do
     Repo.all(from u in User, where: u.id in ^MapSet.to_list(online_friend_ids))
     |> Enum.map(fn u ->
       status = Cgraph.Presence.get_user_status(u.id)
-      Map.merge(u, %{status: status.status, status_text: status.text})
+      presence = Cgraph.Presence.get_user_presence(u.id)
+      status_text = if presence, do: Map.get(presence, :status_message), else: nil
+      Map.merge(u, %{status: status, status_text: status_text})
     end)
   end
 

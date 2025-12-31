@@ -10,12 +10,13 @@ defmodule Cgraph.Forums do
 
   import Ecto.Query, warn: false
   alias Cgraph.Repo
-  alias Cgraph.Forums.{
-    Forum, Post, Comment, Category, Vote, ForumVote, Moderator, Subscription,
-    Board, Thread, ThreadPost, ForumMember, ForumUserGroup,
-    ThreadVote, PostVote, ThreadPoll, PollVote,
-    ForumTheme, ForumPlugin, ForumAnnouncement, ThreadAttachment
-  }
+  alias Cgraph.Forums.{Forum, Post, Comment, Category, Vote, ForumVote, Moderator, Subscription}
+  alias Cgraph.Forums.{Board, Thread, ThreadPost, ForumMember, ForumUserGroup}
+  alias Cgraph.Forums.{ThreadVote, PostVote, ThreadPoll, PollVote, ForumPlugin}
+  # Reserved for future features - these schemas exist but are not yet fully integrated
+  alias Cgraph.Forums.ForumTheme, warn: false
+  alias Cgraph.Forums.ForumAnnouncement, warn: false  
+  alias Cgraph.Forums.ThreadAttachment, warn: false
 
   # ============================================================================
   # Forums

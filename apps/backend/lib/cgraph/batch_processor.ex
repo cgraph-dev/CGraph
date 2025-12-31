@@ -358,13 +358,9 @@ defmodule Cgraph.BatchProcessor do
     Task.start(fn ->
       update_job_status(batch_id, :running)
       
-      case process(items, processor, opts) do
-        {:ok, result} ->
-          update_job_status(batch_id, :completed, result)
-          
-        {:error, reason} ->
-          update_job_status(batch_id, :failed, %{error: reason})
-      end
+      # process/3 always returns {:ok, result}
+      {:ok, result} = process(items, processor, opts)
+      update_job_status(batch_id, :completed, result)
     end)
     
     {:ok, batch_id}

@@ -20,8 +20,8 @@ defmodule CgraphWeb.UserSocket do
     case verify_token(token) do
       {:ok, user_id} ->
         case Accounts.get_user(user_id) do
-          nil -> :error
-          user -> {:ok, assign(socket, :current_user, user)}
+          {:error, :not_found} -> :error
+          {:ok, user} -> {:ok, assign(socket, :current_user, user)}
         end
 
       {:error, _reason} ->

@@ -202,10 +202,8 @@ defmodule CgraphWeb.API.V1.CommentController do
   end
 
   defp validate_comment_rate_limit(user) do
-    case Forums.check_comment_rate_limit(user) do
-      :ok -> :ok
-      {:error, seconds_remaining} -> {:error, {:rate_limited, seconds_remaining}}
-    end
+    # Rate limiting always passes for now (TODO: implement)
+    Forums.check_comment_rate_limit(user)
   end
 
   defp authorize_comment_edit(user, comment, forum) do

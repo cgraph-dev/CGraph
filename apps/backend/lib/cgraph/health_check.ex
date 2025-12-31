@@ -413,7 +413,7 @@ defmodule Cgraph.HealthCheck do
     
     try do
       case Cgraph.Redis.ping() do
-        {:ok, "PONG"} ->
+        :ok ->
           latency = System.monotonic_time(:millisecond) - start_time
           
           %{
@@ -424,11 +424,11 @@ defmodule Cgraph.HealthCheck do
             details: %{}
           }
         
-        error ->
+        _error ->
           %{
             name: :redis,
             status: :unhealthy,
-            message: inspect(error),
+            message: "Redis ping failed",
             latency_ms: nil,
             details: %{}
           }

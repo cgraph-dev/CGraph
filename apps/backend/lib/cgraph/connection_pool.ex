@@ -513,18 +513,13 @@ defmodule Cgraph.ConnectionPool do
   
   @impl true
   def handle_info(:health_check, state) do
-    # Perform health check
-    case perform_health_check(Cgraph.Repo) do
-      {:ok, result} ->
-        :ets.insert(@metrics_table, {{:health, Cgraph.Repo}, result})
-        
-        # Check for auto-scaling if enabled
-        if get_config(:auto_scale) do
-          maybe_auto_scale(state)
-        end
-        
-      {:error, reason} ->
-        Logger.error("[ConnectionPool] Health check failed: #{inspect(reason)}")
+    # Perform health check - always returns {:ok, result}
+    {:ok, result} = perform_health_check(Cgraph.Repo)
+    :ets.insert(@metrics_table, {{:health, Cgraph.Repo}, result})
+    
+    # Check for auto-scaling if enabled
+    if get_config(:auto_scale) do
+      maybe_auto_scale(state)
     end
     
     schedule_health_check()

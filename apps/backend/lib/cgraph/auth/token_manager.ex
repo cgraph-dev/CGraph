@@ -390,10 +390,6 @@ defmodule Cgraph.Auth.TokenManager do
     DateTime.utc_now() |> DateTime.add(amount * 60, :second)
   end
   
-  defp compute_expiration({amount, :hours}) do
-    DateTime.utc_now() |> DateTime.add(amount * 3600, :second)
-  end
-  
   defp compute_expiration({amount, :days}) do
     DateTime.utc_now() |> DateTime.add(amount * 86400, :second)
   end
@@ -512,8 +508,8 @@ defmodule Cgraph.Auth.TokenManager do
   
   defp get_user(user_id) do
     case Cgraph.Accounts.get_user(user_id) do
-      nil -> {:error, :user_not_found}
-      user -> {:ok, user}
+      {:error, :not_found} -> {:error, :user_not_found}
+      {:ok, user} -> {:ok, user}
     end
   end
   

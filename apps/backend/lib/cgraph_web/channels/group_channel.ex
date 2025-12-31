@@ -19,15 +19,15 @@ defmodule CgraphWeb.GroupChannel do
     user = socket.assigns.current_user
 
     case Groups.get_channel(channel_id) do
-      nil ->
+      {:error, :not_found} ->
         {:error, %{reason: "not_found"}}
 
-      channel ->
+      {:ok, channel} ->
         case Groups.get_member(channel.group_id, user.id) do
-          nil ->
+          {:error, :not_found} ->
             {:error, %{reason: "unauthorized"}}
 
-          member ->
+          {:ok, member} ->
             if Groups.can_view_channel?(member, channel) do
               send(self(), :after_join)
               socket = socket
@@ -122,10 +122,10 @@ defmodule CgraphWeb.GroupChannel do
     member = socket.assigns.member
 
     case Messaging.get_message(message_id) do
-      nil ->
+      {:error, :not_found} ->
         {:reply, {:error, %{reason: "not_found"}}, socket}
 
-      message ->
+      {:ok, message} ->
         can_delete = message.sender_id == user.id or Groups.can_manage_messages?(member)
 
         if can_delete do
