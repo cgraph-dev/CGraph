@@ -64,7 +64,7 @@ export interface Post {
   category: ForumCategory | null;
   author: {
     id: string;
-    username: string;
+    username: string | null;
     displayName: string | null;
     avatarUrl: string | null;
   };
@@ -93,7 +93,7 @@ export interface Comment {
   children: Comment[];
   author: {
     id: string;
-    username: string;
+    username: string | null;
     displayName: string | null;
     avatarUrl: string | null;
   };

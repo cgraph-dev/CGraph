@@ -222,8 +222,8 @@ export default function ForumPost() {
                 <span>•</span>
                 <span>
                   Posted by{' '}
-                  <Link to="#" className="hover:underline">
-                    u/{currentPost.author.username}
+                  <Link to={currentPost.author.username ? `/u/${currentPost.author.username}` : '#'} className="hover:underline">
+                    u/{currentPost.author.username || currentPost.author.displayName || 'unknown'}
                   </Link>
                 </span>
                 <span>•</span>
@@ -507,15 +507,15 @@ function CommentItem({
         <div className="flex-1">
           {/* Comment header */}
           <div className="flex items-center gap-2 text-xs text-gray-400">
-            <Link to="#" className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-full bg-dark-600 overflow-hidden">
+            <Link to={comment.author.username ? `/u/${comment.author.username}` : '#'} className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-dark-600 overflow-hidden flex items-center justify-center">
                 {comment.author.avatarUrl ? (
                   <img src={comment.author.avatarUrl} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  <span className="text-[10px]">{comment.author.username.charAt(0)}</span>
+                  <span className="text-[10px]">{(comment.author.username || comment.author.displayName || '?').charAt(0).toUpperCase()}</span>
                 )}
               </div>
-              <span className="font-medium text-gray-300 hover:underline">{comment.author.username}</span>
+              <span className="font-medium text-gray-300 hover:underline">{comment.author.username || comment.author.displayName || 'Unknown'}</span>
             </Link>
             <span>•</span>
             <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>

@@ -477,8 +477,8 @@ function PostCard({
             <span>•</span>
             <span>
               Posted by{' '}
-              <Link to="#" className="hover:underline">
-                u/{post.author.username}
+              <Link to={post.author.username ? `/u/${post.author.username}` : '#'} className="hover:underline">
+                u/{post.author.username || post.author.displayName || 'unknown'}
               </Link>
             </span>
             <span>•</span>
