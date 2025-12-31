@@ -41,10 +41,11 @@ CGraph/
 ## 📦 Quick Start
 
 ### Prerequisites
-- Node.js 18+ with pnpm
-- Elixir 1.15+ with Erlang 26+
-- PostgreSQL 15+
+- Node.js 22 LTS with pnpm 9+
+- Elixir 1.19+ with Erlang/OTP 28+
+- PostgreSQL 16+
 - Docker (optional)
+- asdf version manager (recommended)
 
 ### Development Setup
 

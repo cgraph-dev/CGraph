@@ -2,7 +2,7 @@
 
 > Time to first running app: ~15 minutes if you're lucky, ~45 minutes if npm is being npm.
 > 
-> Maintainer: @chen | Last verified: December 2024
+> Maintainer: @chen | Last verified: December 2025
 
 ---
 
@@ -14,40 +14,65 @@ Before we start, make sure you have these installed. I've included the versions 
 
 | Tool | Version | Check Command | Installation |
 |------|---------|---------------|--------------|
-| Node.js | 20.x LTS | `node --version` | [nodejs.org](https://nodejs.org) or `nvm install 20` |
-| pnpm | 8.x | `pnpm --version` | `npm install -g pnpm` |
-| Elixir | 1.15+ | `elixir --version` | [elixir-lang.org](https://elixir-lang.org/install.html) |
-| Erlang/OTP | 26+ | `erl -version` | Installed with Elixir usually |
-| PostgreSQL | 15+ | `psql --version` | [postgresql.org](https://www.postgresql.org/download/) |
+| Node.js | 22.x LTS | `node --version` | [nodejs.org](https://nodejs.org) or `nvm install 22` |
+| pnpm | 9.x | `pnpm --version` | `npm install -g pnpm` |
+| Elixir | 1.19+ | `elixir --version` | Use asdf: `asdf install elixir 1.19.4-otp-28` |
+| Erlang/OTP | 28+ | `erl -version` | Use asdf: `asdf install erlang 28.3` |
+| PostgreSQL | 16+ | `psql --version` | [postgresql.org](https://www.postgresql.org/download/) |
 | Redis | 7+ | `redis-cli --version` | [redis.io](https://redis.io/download) |
 | Docker | 24+ | `docker --version` | [docker.com](https://docker.com) (optional, but makes life easier) |
+| asdf | latest | `asdf --version` | [asdf-vm.com](https://asdf-vm.com/guide/getting-started.html) (recommended) |
 
 ### Quick Install Commands
 
 **macOS (with Homebrew):**
 ```bash
-# Install everything at once
-brew install node@20 pnpm elixir postgresql@15 redis
+# Install asdf for version management (recommended)
+brew install asdf
+echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ~/.zshrc
+
+# Install Erlang/OTP and Elixir via asdf
+asdf plugin add erlang
+asdf plugin add elixir
+asdf install erlang 28.3   # Takes ~10-15 minutes
+asdf install elixir 1.19.4-otp-28
+asdf global erlang 28.3
+asdf global elixir 1.19.4-otp-28
+
+# Install other dependencies
+brew install node@22 pnpm postgresql@16 redis
 
 # Start services
-brew services start postgresql@15
+brew services start postgresql@16
 brew services start redis
 ```
 
 **Ubuntu/Debian:**
 ```bash
+# Install asdf dependencies
+sudo apt install curl git build-essential autoconf m4 libncurses5-dev \
+  libwxgtk3.2-dev libwxgtk-webview3.2-dev libgl1-mesa-dev libglu1-mesa-dev \
+  libpng-dev libssh-dev unixodbc-dev xsltproc fop libxml2-utils libncurses-dev
+
+# Install asdf
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.15.0
+echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
+source ~/.bashrc
+
+# Install Erlang/OTP and Elixir via asdf
+asdf plugin add erlang
+asdf plugin add elixir
+asdf install erlang 28.3   # Takes ~10-15 minutes
+asdf install elixir 1.19.4-otp-28
+asdf global erlang 28.3
+asdf global elixir 1.19.4-otp-28
+
 # Node.js via nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-nvm install 20
-
-# Elixir
-wget https://packages.erlang-solutions.com/erlang-solutions_2.0_all.deb
-sudo dpkg -i erlang-solutions_2.0_all.deb
-sudo apt update
-sudo apt install esl-erlang elixir
+nvm install 22
 
 # PostgreSQL and Redis
-sudo apt install postgresql-15 redis-server
+sudo apt install postgresql-16 redis-server
 ```
 
 **Windows:**

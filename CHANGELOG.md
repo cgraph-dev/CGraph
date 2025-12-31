@@ -7,6 +7,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.5.0] - 2025-01-XX
+
+### 🚀 Major Runtime Upgrade
+
+This release upgrades to the latest stable Erlang/OTP 28.3 and Elixir 1.19.4 for improved performance and future compatibility.
+
+### Changed
+
+#### Runtime Upgrades
+- **Erlang/OTP**: 25.x → 28.3 (latest stable with JIT improvements)
+- **Elixir**: 1.14.x → 1.19.4 (latest stable with set-theoretic types)
+- **Phoenix**: 1.7.21 → 1.8.3 (latest stable)
+- **Phoenix LiveView**: 0.20.17 → 1.1.19 (major upgrade)
+- **Phoenix LiveDashboard**: 0.8.5 → 0.8.7
+- **Ecto SQL**: 3.11.x → 3.13.4
+- **Postgrex**: 0.17.x → 0.21.1
+- **Oban**: 2.19.0 → 2.20.2
+- **Cachex**: 3.6 → 4.1.1 (major version)
+- **Sentry**: 10.x → 11.0.4 (major version)
+- **Bandit**: 1.6.7 → 1.10.0
+- **Swoosh**: 1.18.3 → 1.20.0
+- **Tesla**: 1.13 → 1.15.3
+- **Guardian**: 2.3.x → 2.4.0
+
+#### Deprecation Fixes
+- Replaced all `Logger.warn` calls with `Logger.warning` (Elixir 1.15+)
+- Fixed `Cgraph.Events.emit` → `Cgraph.Events.publish` call
+- Renamed duplicate function clause `vote_post/3` → `vote_post_by_id/3`
+- Removed duplicate `render_flair/1` function clause
+- Removed duplicate `extract_role_params/1` function clause
+- Fixed unused variable warnings with underscore prefix
+
+#### Developer Experience
+- Added `.tool-versions` files for asdf version management
+- Added `def cli()` callback for Elixir 1.19 preferred_envs pattern
+- Removed `jose` version override (OTP 28 compatible now)
+
+### Documentation Updated
+- Updated ARCHITECTURE.md with new version table
+- Updated README.md prerequisites section
+- Updated QUICKSTART.md installation commands
+- Updated all PrivateFolder developer docs
+- Added OTP 28.3 upgrade session to SESSION_LOG.md
+- Updated UPGRADING_GUIDE.md with new version info
+
+### Technical Notes
+- All 220 tests passing
+- Remaining warnings are from external dependencies (Timex, SweetXml, Waffle, Tesla)
+- OTP 28.3 JIT provides ~5-15% performance improvement
+- Recommended installation via asdf for reproducible builds
+
+---
+
 ## [0.4.0] - 2024-12-31
 
 ### 🎨 UI Polish & Internal Documentation

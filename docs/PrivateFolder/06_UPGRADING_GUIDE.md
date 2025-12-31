@@ -10,12 +10,17 @@ Current versions (as of December 2025):
 
 | Component | Version | Notes |
 |-----------|---------|-------|
-| Elixir | 1.15+ | Required |
-| Erlang/OTP | 25+ | Required |
-| Phoenix | 1.7.21 | Latest 1.7 |
-| Ecto | 3.11+ | Latest 3.x |
-| PostgreSQL | 14+ | Production uses 15 |
-| Node.js | 18+ | LTS recommended |
+| Elixir | 1.19.4 | Latest stable, set-theoretic types |
+| Erlang/OTP | 28.3 | Latest stable, JIT performance |
+| Phoenix | 1.8.3 | Latest stable |
+| Phoenix LiveView | 1.1.19 | Major upgrade from 0.20.x |
+| Ecto SQL | 3.13.4 | Latest stable |
+| Postgrex | 0.21.1 | PostgreSQL 16 support |
+| Oban | 2.20.2 | Background jobs |
+| Cachex | 4.1.1 | In-memory caching |
+| Bandit | 1.10.0 | HTTP server |
+| PostgreSQL | 16+ | Production uses 16 |
+| Node.js | 22 LTS | LTS recommended |
 | React | 18.x | Web frontend |
 | React Native | 0.73 | Mobile |
 | Expo | 50 | Mobile SDK |
@@ -24,12 +29,12 @@ Current versions (as of December 2025):
 
 ## Elixir and OTP Upgrades
 
-### Minor Version Upgrade (1.15.x → 1.15.y)
+### Minor Version Upgrade (1.19.x → 1.19.y)
 
-1. Update `.tool-versions` or similar:
+1. Update `.tool-versions`:
    ```
-   elixir 1.15.7
-   erlang 26.2
+   elixir 1.19.4-otp-28
+   erlang 28.3
    ```
 
 2. Clean and reinstall:
@@ -43,7 +48,7 @@ Current versions (as of December 2025):
 
 3. Verify everything works before committing.
 
-### Major Version Upgrade (1.15 → 1.16)
+### Major Version Upgrade (1.19 → 1.20)
 
 1. Read the changelog: https://hexdocs.pm/elixir/changelog.html
 
@@ -58,15 +63,31 @@ Current versions (as of December 2025):
 
 5. Test in staging before production.
 
+### OTP Major Upgrade (28 → 29)
+
+1. Build new OTP version with asdf:
+   ```bash
+   asdf install erlang 29.x
+   ```
+
+2. Install matching Elixir:
+   ```bash
+   asdf install elixir 1.20.x-otp-29
+   ```
+
+3. Update `.tool-versions`.
+
+4. Full test cycle.
+
 ---
 
 ## Phoenix Upgrades
 
-### Patch Version (1.7.20 → 1.7.21)
+### Patch Version (1.8.x → 1.8.y)
 
 1. Update `mix.exs`:
    ```elixir
-   {:phoenix, "~> 1.7.21"}
+   {:phoenix, "~> 1.8.3"}
    ```
 
 2. Run:
@@ -75,7 +96,7 @@ Current versions (as of December 2025):
    mix test
    ```
 
-### Minor Version (1.7 → 1.8)
+### Minor Version (1.8 → 1.9)
 
 1. Read upgrade guide on phoenixframework.org
 

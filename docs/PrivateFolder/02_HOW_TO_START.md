@@ -12,37 +12,43 @@ Before anything else, install these:
 
 | Software | Version | Check Command |
 |----------|---------|---------------|
-| Node.js | 18+ | `node --version` |
-| pnpm | 8+ | `pnpm --version` |
-| Elixir | 1.15+ | `elixir --version` |
-| Erlang | 26+ | `erl -version` |
-| PostgreSQL | 15+ | `psql --version` |
+| Node.js | 22 LTS | `node --version` |
+| pnpm | 9+ | `pnpm --version` |
+| Elixir | 1.19+ | `elixir --version` |
+| Erlang/OTP | 28+ | `erl -version` |
+| PostgreSQL | 16+ | `psql --version` |
 | Docker | 24+ | `docker --version` |
+| asdf | latest | `asdf --version` |
 
 ### Install Guide (Ubuntu/Debian)
 
 ```bash
+# Install asdf build dependencies
+sudo apt install curl git build-essential autoconf m4 libncurses5-dev \
+  libwxgtk3.2-dev libwxgtk-webview3.2-dev libgl1-mesa-dev libglu1-mesa-dev \
+  libpng-dev libssh-dev unixodbc-dev xsltproc fop libxml2-utils libncurses-dev
+
 # Node.js via nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-nvm install 18
-nvm use 18
+nvm install 22
+nvm use 22
 
 # pnpm
 npm install -g pnpm
 
-# Elixir (via asdf - recommended)
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf
+# Elixir (via asdf - required for OTP 28)
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.15.0
 echo '. $HOME/.asdf/asdf.sh' >> ~/.bashrc
 source ~/.bashrc
 asdf plugin add erlang
 asdf plugin add elixir
-asdf install erlang 26.0
-asdf install elixir 1.15.7-otp-26
-asdf global erlang 26.0
-asdf global elixir 1.15.7-otp-26
+asdf install erlang 28.3          # Takes ~10-15 min
+asdf install elixir 1.19.4-otp-28
+asdf global erlang 28.3
+asdf global elixir 1.19.4-otp-28
 
 # PostgreSQL
-sudo apt install postgresql postgresql-contrib
+sudo apt install postgresql-16 postgresql-contrib
 sudo systemctl start postgresql
 ```
 
@@ -52,9 +58,22 @@ sudo systemctl start postgresql
 # Homebrew (if not installed)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
-# Everything else
-brew install node@18 pnpm elixir postgresql@15
-brew services start postgresql@15
+# Install asdf (required for OTP 28)
+brew install asdf
+echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ~/.zshrc
+source ~/.zshrc
+
+# Install Erlang/OTP and Elixir
+asdf plugin add erlang
+asdf plugin add elixir
+asdf install erlang 28.3          # Takes ~10-15 min
+asdf install elixir 1.19.4-otp-28
+asdf global erlang 28.3
+asdf global elixir 1.19.4-otp-28
+
+# Other dependencies
+brew install node@22 pnpm postgresql@16
+brew services start postgresql@16
 ```
 
 ---

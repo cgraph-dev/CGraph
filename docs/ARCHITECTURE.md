@@ -1,6 +1,6 @@
 # CGraph System Architecture
 
-> Last updated: December 2024 by the core team  
+> Last updated: December 2025 by the core team  
 > This doc gets outdated fast—if something looks wrong, it probably is. Ping @sarah in Slack.
 
 ---
@@ -42,7 +42,7 @@ Our tech stack prioritizes developer happiness and real-time performance. Elixir
 ┌─────────────────────────────────────────────────────────────────────┐
 │                       APPLICATION LAYER                              │
 ├─────────────────────────────────────────────────────────────────────┤
-│  Phoenix Framework (Elixir 1.15+ / OTP 26)                          │
+│  Phoenix Framework (Elixir 1.19+ / OTP 28)                          │
 │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐   │
 │  │   REST API  │ │  WebSocket  │ │  Background │ │   Guardian  │   │
 │  │  Endpoints  │ │  Channels   │ │  Jobs(Oban) │ │    (Auth)   │   │
@@ -69,15 +69,21 @@ Our tech stack prioritizes developer happiness and real-time performance. Elixir
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Version Numbers (as of Dec 2024)
+### Version Numbers (as of Dec 2025)
 
 | Component | Version | Why This Version |
 |-----------|---------|------------------|
-| Elixir | 1.15.x | Stable, great perf |
-| Phoenix | 1.7.21 | Latest stable |
+| Erlang/OTP | 28.3 | Latest stable, JIT performance |
+| Elixir | 1.19.4 | Latest stable, set-theoretic types |
+| Phoenix | 1.8.3 | Latest stable, LiveView 1.x |
+| Phoenix LiveView | 1.1.19 | Major improvements |
+| Ecto SQL | 3.13.4 | Latest stable |
+| Postgrex | 0.21.1 | PostgreSQL 16 support |
+| Oban | 2.20.2 | Background job processing |
+| Cachex | 4.1.1 | In-memory caching |
+| Bandit | 1.10.0 | HTTP server (replaces Cowboy) |
 | PostgreSQL | 16 | JSONB improvements |
-| Cachex | ETS-based | In-memory caching |
-| Node.js | 20 LTS | For frontend builds |
+| Node.js | 22 LTS | For frontend builds |
 | React | 18.2 | Concurrent features |
 | React Native | 0.73 | New architecture |
 | Expo | 50 | Stable SDK |

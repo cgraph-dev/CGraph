@@ -21,13 +21,17 @@ Think of it as Discord meets Reddit, built to be self-hosted or run as a SaaS.
 
 ### Backend (The Brain)
 
-**Language:** Elixir  
-**Framework:** Phoenix 1.7.21  
-**Database:** PostgreSQL 15+ (via Neon in production)  
+**Language:** Elixir 1.19  
+**Runtime:** Erlang/OTP 28.3 (BEAM VM with JIT)  
+**Framework:** Phoenix 1.8.3 + LiveView 1.1.19  
+**HTTP Server:** Bandit 1.10  
+**Database:** PostgreSQL 16+ (via Neon in production)  
 **Real-time:** Phoenix Channels (WebSockets)  
-**Background Jobs:** Oban  
-**Auth:** Guardian (JWT tokens)  
+**Background Jobs:** Oban 2.20  
+**Caching:** Cachex 4.1 (ETS-based)  
+**Auth:** Guardian 2.4 (JWT tokens)  
 **Password Hashing:** Argon2  
+**Error Tracking:** Sentry 11.0  
 
 Why Elixir? Because it handles concurrent connections like a champ. A single server can handle 2 million+ WebSocket connections. That means cheap infrastructure for real-time features.
 

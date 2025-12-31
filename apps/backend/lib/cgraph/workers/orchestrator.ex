@@ -192,7 +192,7 @@ defmodule Cgraph.Workers.Orchestrator do
       "__pipeline__" => %{
         id: pipeline_id,
         index: index,
-        remaining: Enum.map(remaining_jobs, fn {w, a} -> {to_string(w), a} end)
+        remaining: Enum.map(remaining_jobs, fn {w, a} -> %{worker: to_string(w), args: a} end)
       }
     })
     
@@ -216,9 +216,34 @@ defmodule Cgraph.Workers.Orchestrator do
           [] ->
             complete_pipeline(pipeline_id, :success)
             
-          [{worker_str, next_args} | rest] ->
+          [%{worker: worker_str, args: next_args} | rest] ->
+            worker = String.to_existing_atom(worker_str)
+            # Convert remaining back to the expected format for recursion
+            rest_maps = Enum.map(rest, fn
+              %{worker: w, args: a} -> %{worker: w, args: a}
+              {w, a} -> %{worker: to_string(w), args: a}  # Handle legacy format
+            end)
+            enqueue_pipeline_job(worker, next_args, pipeline_id, index + 1, 
+              Enum.map(rest_maps, fn %{worker: w, args: a} -> {String.to_existing_atom(w), a} end), [])
+            
+          # Handle legacy tuple format for backwards compatibility
+          [{worker_str, next_args} | rest] when is_binary(worker_str) ->
             worker = String.to_existing_atom(worker_str)
             enqueue_pipeline_job(worker, next_args, pipeline_id, index + 1, rest, [])
+        end
+        
+      # Handle string keys (from JSON deserialization)
+      %{"id" => pipeline_id, "index" => index, "remaining" => remaining} ->
+        update_pipeline_progress(pipeline_id, index, :success, result)
+        
+        case remaining do
+          [] ->
+            complete_pipeline(pipeline_id, :success)
+            
+          [%{"worker" => worker_str, "args" => next_args} | rest] ->
+            worker = String.to_existing_atom(worker_str)
+            rest_tuples = Enum.map(rest, fn %{"worker" => w, "args" => a} -> {String.to_existing_atom(w), a} end)
+            enqueue_pipeline_job(worker, next_args, pipeline_id, index + 1, rest_tuples, [])
         end
     end
   end
