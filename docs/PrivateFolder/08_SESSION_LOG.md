@@ -239,3 +239,102 @@ OTP 28.3 includes improved JIT compilation which provides:
 ---
 
 *Updated: January 2025*
+
+---
+
+## December 31, 2025 - App Store Compliance Session
+
+### Overview
+
+Completed authentication flow and GDPR compliance features for Google Play and App Store submission.
+
+### Authentication Flow Fixes
+
+| Issue | Resolution |
+|-------|------------|
+| Mobile register missing `password_confirmation` | Added to AuthContext.tsx |
+| Token refresh expecting wrong response format | Fixed to use `tokens.access_token` |
+| Missing logout endpoint | Added POST `/api/v1/auth/logout` |
+| Missing email verification | Added verify-email, resend-verification endpoints |
+
+### New Endpoints Added
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/api/v1/auth/logout` | POST | Revoke current session (authenticated) |
+| `/api/v1/auth/verify-email` | GET | Verify email with token |
+| `/api/v1/auth/resend-verification` | POST | Resend verification email (rate limited) |
+| `/api/v1/me/export` | POST | Request GDPR data export |
+
+### Backend Changes
+
+1. **Auth Controller** (`auth_controller.ex`)
+   - Added `logout/2` - revokes session, clears cookies
+   - Added `verify_email/2` - validates token, marks email verified
+   - Added `resend_verification/2` - 60-second rate limit
+
+2. **User Controller** (`user_controller.ex`)
+   - Added `request_data_export/2` - GDPR data export request
+
+3. **Accounts Module** (`accounts.ex`)
+   - Added `send_verification_email/1`
+   - Added `verify_email_token/1`
+   - Added `resend_verification_email/1`
+   - Added `generate_verification_token/1` (24h expiry, Cachex storage)
+
+4. **DataExport Module** (`data_export.ex`)
+   - Fixed Audit.log calls (4-argument format)
+   - Added to Application supervisor
+
+5. **Router** (`router.ex`)
+   - Added new auth and user routes
+
+6. **Workers** (`send_email_notification.ex`)
+   - Added support for verification email type
+
+### Frontend Changes
+
+1. **Mobile** (`AuthContext.tsx`, `api.ts`)
+   - Fixed `password_confirmation` in register
+   - Fixed token refresh response handling
+   - Logout calls backend endpoint
+
+2. **Web** (`authStore.ts`)
+   - Fixed `password_confirmation` in register
+   - Fixed token refresh response handling
+   - Added `resendVerificationEmail` function
+
+### Tests Added
+
+- Auth controller: logout, resend-verification
+- User controller: data export
+
+### Documentation Updated
+
+- `API.md` - Added new endpoints documentation
+- Privacy and Terms pages already exist in `/apps/web/public/`
+
+### Git Commits
+
+1. `c1aef31` - feat: Complete authentication flow with email verification
+2. `9ea06c2` - feat: Add GDPR data export endpoint for app store compliance
+
+### Test Status
+
+- Backend: **255 tests, 0 failures**, 1 skipped
+- Web TypeScript: Compiles clean
+- Mobile TypeScript: Compiles clean
+
+### App Store Compliance Checklist
+
+- [x] User registration with email verification
+- [x] Secure logout endpoint
+- [x] Account deletion (30-day grace period)
+- [x] GDPR data export
+- [x] Privacy Policy page
+- [x] Terms of Service page
+- [x] Secure token storage (SecureStore on mobile)
+
+---
+
+*Updated: December 31, 2025*
