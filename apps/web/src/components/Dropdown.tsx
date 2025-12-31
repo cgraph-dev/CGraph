@@ -60,7 +60,7 @@ export default function Dropdown({ trigger, children, align = 'left', className 
         createPortal(
           <div
             ref={dropdownRef}
-            className={`fixed z-50 bg-dark-800 border border-dark-600 rounded-lg shadow-xl py-1 min-w-[160px] ${className}`}
+            className={`fixed z-50 bg-dark-800 border border-dark-600 rounded-lg shadow-xl py-1 min-w-[160px] animate-scaleIn origin-top ${className}`}
             style={{
               top: position.top,
               left: align === 'right' ? 'auto' : position.left,

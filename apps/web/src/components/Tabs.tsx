@@ -37,19 +37,19 @@ export default function Tabs({
 
     switch (variant) {
       case 'pills':
-        return `${base} rounded-full ${
+        return `${base} rounded-full transform active:scale-95 ${
           isActive
             ? 'bg-primary-600 text-white'
             : 'text-gray-400 hover:text-white hover:bg-dark-700'
         }`;
       case 'underline':
-        return `${base} border-b-2 ${
+        return `${base} border-b-2 transform active:scale-95 ${
           isActive
             ? 'border-primary-500 text-white'
             : 'border-transparent text-gray-400 hover:text-white hover:border-gray-600'
         }`;
       default:
-        return `${base} rounded-lg ${
+        return `${base} rounded-lg transform active:scale-95 ${
           isActive
             ? 'bg-dark-700 text-white'
             : 'text-gray-400 hover:text-white hover:bg-dark-800'
@@ -91,5 +91,5 @@ interface TabPanelProps {
 
 export function TabPanel({ children, activeTab, tabId }: TabPanelProps) {
   if (activeTab !== tabId) return null;
-  return <div>{children}</div>;
+  return <div className="animate-fadeIn">{children}</div>;
 }

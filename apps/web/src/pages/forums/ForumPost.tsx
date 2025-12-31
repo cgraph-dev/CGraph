@@ -155,9 +155,9 @@ export default function ForumPost() {
         </Link>
       </div>
 
-      <div className="max-w-4xl mx-auto py-4 px-4">
+      <div className="max-w-4xl mx-auto py-4 px-4 animate-fadeIn">
         {/* Post */}
-        <article className="bg-dark-800 rounded-lg border border-dark-700">
+        <article className="bg-dark-800 rounded-lg border border-dark-700 animate-slideUp">
           <div className="flex">
             {/* Vote sidebar */}
             <div className="flex flex-col items-center gap-1 p-4 bg-dark-700/50 rounded-l-lg">

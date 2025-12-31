@@ -47,8 +47,8 @@ export default function Switch({
         aria-checked={checked}
         disabled={disabled}
         onClick={() => !disabled && onChange(!checked)}
-        className={`relative inline-flex flex-shrink-0 ${currentSize.track} rounded-full transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900 ${
-          checked ? 'bg-primary-600' : 'bg-dark-600'
+        className={`relative inline-flex flex-shrink-0 ${currentSize.track} rounded-full transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-offset-dark-900 hover:shadow-md ${
+          checked ? 'bg-primary-600 hover:bg-primary-700' : 'bg-dark-600 hover:bg-dark-500'
         }`}
       >
         <span

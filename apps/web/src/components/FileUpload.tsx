@@ -104,10 +104,10 @@ export default function FileUpload({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+          className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-all duration-200 ${
             isDragging
-              ? 'border-primary-500 bg-primary-500/10'
-              : 'border-dark-600 hover:border-dark-500 hover:bg-dark-800/50'
+              ? 'border-primary-500 bg-primary-500/10 scale-[1.02] shadow-lg shadow-primary-500/20'
+              : 'border-dark-600 hover:border-dark-500 hover:bg-dark-800/50 hover:shadow-md'
           }`}
         >
           <PhotoIcon className="h-10 w-10 mx-auto text-gray-500 mb-2" />
@@ -125,15 +125,15 @@ export default function FileUpload({
       {previews.length > 0 && (
         <div className="flex flex-wrap gap-2 mt-3">
           {previews.map((preview, idx) => (
-            <div key={preview.url} className="relative">
+            <div key={preview.url} className="relative animate-scaleIn" style={{ animationDelay: `${idx * 50}ms` }}>
               <img
                 src={preview.url}
                 alt={preview.file.name}
-                className="h-20 w-20 rounded-lg object-cover"
+                className="h-20 w-20 rounded-lg object-cover ring-2 ring-transparent hover:ring-primary-500 transition-all duration-200"
               />
               <button
                 onClick={() => removePreview(idx)}
-                className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 flex items-center justify-center"
+                className="absolute -top-2 -right-2 h-5 w-5 rounded-full bg-red-500 flex items-center justify-center transform hover:scale-110 transition-transform"
               >
                 <XMarkIcon className="h-3 w-3 text-white" />
               </button>
