@@ -147,15 +147,15 @@ export default function UserProfileScreen() {
         <View style={[styles.profileCard, { backgroundColor: colors.surface }]}>
           <Avatar
             source={user.avatar_url}
-            name={user.display_name || user.username}
+            name={user.display_name || user.username || 'Unknown'}
             size="xl"
             status={user.status as 'online' | 'offline'}
           />
           <Text style={[styles.displayName, { color: colors.text }]}>
-            {user.display_name || user.username}
+            {user.display_name || user.username || 'Unknown'}
           </Text>
           <Text style={[styles.username, { color: colors.textSecondary }]}>
-            @{user.username}
+            @{user.username || 'unknown'}
           </Text>
           
           {/* Karma & Verified Badge */}

@@ -58,39 +58,45 @@ export default function NewConversationScreen({ navigation }: Props) {
     }
   };
   
-  const renderUser = ({ item }: { item: UserBasic }) => (
-    <TouchableOpacity
-      style={[styles.userItem, { borderBottomColor: colors.border }]}
-      onPress={() => startConversation(item.id)}
-      disabled={isCreating}
-    >
-      <View style={styles.avatarContainer}>
-        {item.avatar_url ? (
-          <Image source={{ uri: item.avatar_url }} style={styles.avatar} />
-        ) : (
-          <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
-            <Text style={styles.avatarText}>
-              {item.username.charAt(0).toUpperCase()}
-            </Text>
-          </View>
-        )}
-        <View
-          style={[
-            styles.statusDot,
-            { backgroundColor: item.status === 'online' ? '#10b981' : colors.textTertiary },
-          ]}
-        />
-      </View>
-      <View style={styles.userInfo}>
-        <Text style={[styles.displayName, { color: colors.text }]}>
-          {item.display_name || item.username}
-        </Text>
-        <Text style={[styles.username, { color: colors.textSecondary }]}>
-          @{item.username}
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderUser = ({ item }: { item: UserBasic }) => {
+    const displayName = item.display_name || item.username || 'Unknown';
+    const handle = item.username || item.id?.slice(0, 8) || 'unknown';
+    const initial = displayName.charAt(0).toUpperCase();
+    
+    return (
+      <TouchableOpacity
+        style={[styles.userItem, { borderBottomColor: colors.border }]}
+        onPress={() => startConversation(item.id)}
+        disabled={isCreating}
+      >
+        <View style={styles.avatarContainer}>
+          {item.avatar_url ? (
+            <Image source={{ uri: item.avatar_url }} style={styles.avatar} />
+          ) : (
+            <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
+              <Text style={styles.avatarText}>
+                {initial}
+              </Text>
+            </View>
+          )}
+          <View
+            style={[
+              styles.statusDot,
+              { backgroundColor: item.status === 'online' ? '#10b981' : colors.textTertiary },
+            ]}
+          />
+        </View>
+        <View style={styles.userInfo}>
+          <Text style={[styles.displayName, { color: colors.text }]}>
+            {displayName}
+          </Text>
+          <Text style={[styles.username, { color: colors.textSecondary }]}>
+            @{handle}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
   
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>

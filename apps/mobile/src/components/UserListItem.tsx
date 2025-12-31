@@ -95,14 +95,14 @@ export default function UserListItem({
       >
       <Avatar
         source={user.avatar_url}
-        name={user.display_name || user.username}
+        name={user.display_name || user.username || 'Unknown'}
         size="md"
         status={showStatus ? (user.status as 'online' | 'idle' | 'dnd' | 'offline') : undefined}
         showStatus={showStatus}
       />
       <View style={styles.content}>
         <Text style={[styles.name, { color: colors.text }]} numberOfLines={1}>
-          {user.display_name || user.username}
+          {user.display_name || user.username || 'Unknown'}
         </Text>
         {subtitle && (
           <Text
