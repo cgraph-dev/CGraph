@@ -277,7 +277,7 @@ export default function GroupChannel() {
               <div className="w-1 h-8 bg-primary-500 rounded-full" />
               <div>
                 <p className="text-xs text-primary-400">
-                  Replying to {replyTo.author.displayName || replyTo.author.username}
+                  Replying to {replyTo.author.displayName || replyTo.author.username || 'Unknown'}
                 </p>
                 <p className="text-sm text-gray-400 truncate max-w-md">{replyTo.content}</p>
               </div>
@@ -389,12 +389,12 @@ function ChannelMessageItem({
             {message.author.avatarUrl ? (
               <img
                 src={message.author.avatarUrl}
-                alt={message.author.username}
+                alt={message.author.username || message.author.displayName || 'User'}
                 className="h-full w-full object-cover"
               />
             ) : (
               <div className="h-full w-full flex items-center justify-center text-lg font-bold text-gray-400">
-                {message.author.username.charAt(0).toUpperCase()}
+                {(message.author.username || message.author.displayName || '?').charAt(0).toUpperCase()}
               </div>
             )}
           </div>
@@ -409,7 +409,7 @@ function ChannelMessageItem({
               className="font-medium hover:underline cursor-pointer"
               style={{ color: message.author.member?.roles?.[0]?.color || '#ffffff' }}
             >
-              {message.author.displayName || message.author.username}
+              {message.author.displayName || message.author.username || 'Unknown User'}
             </span>
             <span className="text-xs text-gray-500">
               {format(new Date(message.createdAt), 'MM/dd/yyyy h:mm a')}
@@ -423,7 +423,7 @@ function ChannelMessageItem({
             <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
             </svg>
-            <span className="text-primary-400">{message.replyTo.author.username}</span>
+            <span className="text-primary-400">{message.replyTo.author.username || message.replyTo.author.displayName || 'Unknown'}</span>
             <span className="truncate max-w-xs">{message.replyTo.content}</span>
           </div>
         )}
@@ -483,12 +483,12 @@ function MemberItem({ member, isOffline = false }: { member: Member; isOffline?:
           {member.user.avatarUrl ? (
             <img
               src={member.user.avatarUrl}
-              alt={member.user.username}
+              alt={member.user.username || member.user.displayName || 'User'}
               className="h-full w-full object-cover"
             />
           ) : (
             <div className="h-full w-full flex items-center justify-center text-sm font-bold text-gray-400">
-              {member.user.username.charAt(0).toUpperCase()}
+              {(member.user.username || member.user.displayName || '?').charAt(0).toUpperCase()}
             </div>
           )}
         </div>
@@ -500,7 +500,7 @@ function MemberItem({ member, isOffline = false }: { member: Member; isOffline?:
         className="text-sm truncate"
         style={{ color: roleColor || (isOffline ? '#6b7280' : '#ffffff') }}
       >
-        {member.nickname || member.user.displayName || member.user.username}
+        {member.nickname || member.user.displayName || member.user.username || 'Unknown User'}
       </span>
     </div>
   );

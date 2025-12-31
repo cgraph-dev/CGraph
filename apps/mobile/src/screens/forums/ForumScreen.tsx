@@ -134,7 +134,7 @@ export default function ForumScreen({ navigation, route }: Props) {
       <View style={styles.postContent}>
         <View style={styles.postMeta}>
           <Text style={[styles.author, { color: colors.textSecondary }]}>
-            u/{item.author.username} • {formatTime(item.inserted_at)}
+            u/{item.author?.username || item.author?.display_name || 'unknown'} • {formatTime(item.inserted_at)}
           </Text>
           {item.flair && (
             <View style={[styles.flair, { backgroundColor: item.flair.color }]}>

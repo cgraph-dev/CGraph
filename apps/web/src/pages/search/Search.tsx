@@ -330,26 +330,30 @@ function ResultSection({ title, count, children, onViewAll, showViewAll }: Resul
 
 // User Result Component
 interface UserResultProps {
-  user: { id: string; username: string; displayName: string | null; avatarUrl: string | null; status: string };
+  user: { id: string; username: string | null; displayName: string | null; avatarUrl: string | null; status: string };
   onClick: () => void;
 }
 
 function UserResult({ user, onClick }: UserResultProps) {
+  const displayName = user.displayName || user.username || 'Unknown User';
+  const handle = user.username || user.id.slice(0, 8);
+  const initial = (displayName).charAt(0).toUpperCase();
+  
   return (
     <button
       onClick={onClick}
       className="w-full flex items-center gap-3 p-3 bg-dark-800 hover:bg-dark-700 rounded-lg transition-colors text-left"
     >
       {user.avatarUrl ? (
-        <img src={user.avatarUrl} alt={user.username} className="h-10 w-10 rounded-full object-cover" />
+        <img src={user.avatarUrl} alt={displayName} className="h-10 w-10 rounded-full object-cover" />
       ) : (
         <div className="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-medium">
-          {user.username.charAt(0).toUpperCase()}
+          {initial}
         </div>
       )}
       <div>
-        <p className="font-medium text-white">{user.displayName || user.username}</p>
-        <p className="text-sm text-gray-400">@{user.username}</p>
+        <p className="font-medium text-white">{displayName}</p>
+        <p className="text-sm text-gray-400">@{handle}</p>
       </div>
     </button>
   );
@@ -411,7 +415,7 @@ function ForumResult({ forum, onClick }: ForumResultProps) {
 
 // Post Result Component
 interface PostResultProps {
-  post: { id: string; title: string; content: string; author: { username: string }; forumSlug: string };
+  post: { id: string; title: string; content: string; author: { username: string | null }; forumSlug: string };
   onClick: () => void;
 }
 
@@ -423,14 +427,14 @@ function PostResult({ post, onClick }: PostResultProps) {
     >
       <p className="font-medium text-white line-clamp-1">{post.title}</p>
       <p className="text-sm text-gray-400 line-clamp-2 mt-1">{post.content}</p>
-      <p className="text-xs text-gray-500 mt-2">by @{post.author.username} in r/{post.forumSlug}</p>
+      <p className="text-xs text-gray-500 mt-2">by @{post.author.username || 'unknown'} in r/{post.forumSlug}</p>
     </button>
   );
 }
 
 // Message Result Component
 interface MessageResultProps {
-  message: { id: string; content: string; sender: { username: string }; conversationId: string };
+  message: { id: string; content: string; sender: { username: string | null }; conversationId: string };
   onClick: () => void;
 }
 
@@ -441,7 +445,7 @@ function MessageResult({ message, onClick }: MessageResultProps) {
       className="w-full p-3 bg-dark-800 hover:bg-dark-700 rounded-lg transition-colors text-left"
     >
       <p className="text-sm text-gray-400 line-clamp-2">{message.content}</p>
-      <p className="text-xs text-gray-500 mt-2">from @{message.sender.username}</p>
+      <p className="text-xs text-gray-500 mt-2">from @{message.sender.username || 'unknown'}</p>
     </button>
   );
 }

@@ -71,8 +71,8 @@ export default function FriendListScreen() {
       setFilteredFriends(
         friends.filter(
           (f) =>
-            f.user.username.toLowerCase().includes(query) ||
-            f.user.display_name?.toLowerCase().includes(query)
+            (f.user.username?.toLowerCase() || '').includes(query) ||
+            (f.user.display_name?.toLowerCase() || '').includes(query)
         )
       );
     }
@@ -91,7 +91,7 @@ export default function FriendListScreen() {
   const renderFriend = ({ item }: { item: FriendItem }) => (
     <UserListItem
       user={item.user}
-      subtitle={`@${item.user.username}`}
+      subtitle={`@${item.user.username || item.user.id?.slice(0, 8) || 'unknown'}`}
       onPress={() => handleFriendPress(item.user.id)}
       style={styles.friendItem}
     />

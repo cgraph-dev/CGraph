@@ -75,22 +75,26 @@ export default function FriendRequestsScreen() {
     }
   };
 
-  const renderRequest = ({ item }: { item: FriendRequest }) => (
-    <View style={[styles.requestItem, { backgroundColor: colors.surface }]}>
-      <Avatar
-        source={item.user.avatar_url}
-        name={item.user.display_name || item.user.username}
-        size="md"
-      />
-      <View style={styles.requestInfo}>
-        <Text style={[styles.requestName, { color: colors.text }]}>
-          {item.user.display_name || item.user.username}
-        </Text>
-        <Text style={[styles.requestUsername, { color: colors.textSecondary }]}>
-          @{item.user.username}
-        </Text>
-      </View>
-      <View style={styles.requestActions}>
+  const renderRequest = ({ item }: { item: FriendRequest }) => {
+    const displayName = item.user.display_name || item.user.username || 'Unknown';
+    const handle = item.user.username || item.user.id?.slice(0, 8) || 'unknown';
+    
+    return (
+      <View style={[styles.requestItem, { backgroundColor: colors.surface }]}>
+        <Avatar
+          source={item.user.avatar_url}
+          name={displayName}
+          size="md"
+        />
+        <View style={styles.requestInfo}>
+          <Text style={[styles.requestName, { color: colors.text }]}>
+            {displayName}
+          </Text>
+          <Text style={[styles.requestUsername, { color: colors.textSecondary }]}>
+            @{handle}
+          </Text>
+        </View>
+        <View style={styles.requestActions}>
         {activeTab === 'incoming' ? (
           <>
             <IconButton
@@ -120,7 +124,8 @@ export default function FriendRequestsScreen() {
         )}
       </View>
     </View>
-  );
+    );
+  };
 
   const currentRequests = activeTab === 'incoming' ? incomingRequests : outgoingRequests;
 

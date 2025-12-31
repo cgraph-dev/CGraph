@@ -22,9 +22,9 @@ export interface User {
 
 export interface UserBasic {
   id: string;
-  username: string;
-  display_name?: string;
-  avatar_url?: string;
+  username: string | null;
+  display_name?: string | null;
+  avatar_url?: string | null;
   status: string;
   karma?: number;
   is_verified?: boolean;

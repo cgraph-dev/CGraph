@@ -20,7 +20,7 @@ import { TrophyIcon as TrophyIconSolid, CheckBadgeIcon } from '@heroicons/react/
 
 interface ContributorUser {
   id: string;
-  username: string;
+  username: string | null;
   displayName: string | null;
   avatarUrl: string | null;
   isVerified: boolean;
@@ -36,7 +36,7 @@ interface Contributor {
 interface LeaderboardUser {
   rank: number;
   id: string;
-  username: string;
+  username: string | null;
   displayName: string | null;
   avatarUrl: string | null;
   karma: number;
@@ -82,17 +82,45 @@ function getRankIcon(rank: number) {
 
 interface UserRowProps {
   rank: number;
-  username: string;
+  userId: string;
+  username: string | null;
   displayName: string | null;
   avatarUrl: string | null;
   karma: number;
   isVerified?: boolean;
 }
 
-function UserRow({ rank, username, displayName, avatarUrl, karma, isVerified }: UserRowProps) {
+/**
+ * Derives the best display identifier for a user with multiple fallback layers.
+ * Priority: displayName > username > userId truncated > Anonymous
+ */
+function deriveUserDisplayInfo(
+  displayName: string | null | undefined,
+  username: string | null | undefined,
+  userId?: string
+): { name: string; handle: string; initial: string } {
+  const effectiveDisplayName = displayName?.trim() || null;
+  const effectiveUsername = username?.trim() || null;
+  
+  // Determine the primary display name
+  const name = effectiveDisplayName || effectiveUsername || (userId ? `User-${userId.slice(0, 8)}` : 'Anonymous');
+  
+  // Determine the handle (username or fallback)
+  const handle = effectiveUsername || (userId ? userId.slice(0, 8) : 'unknown');
+  
+  // Determine the avatar initial letter
+  const initial = (effectiveDisplayName?.[0] || effectiveUsername?.[0] || '?').toUpperCase();
+  
+  return { name, handle, initial };
+}
+
+function UserRow({ rank, userId, username, displayName, avatarUrl, karma, isVerified }: UserRowProps) {
+  const { name, handle, initial } = deriveUserDisplayInfo(displayName, username, userId);
+  const profilePath = username ? `/u/${username}` : `/users/${userId}`;
+  
   return (
     <Link
-      to={`/u/${username}`}
+      to={profilePath}
       className="flex items-center gap-3 p-2 -mx-2 rounded-lg hover:bg-dark-600/50 transition-all duration-200 group"
     >
       {getRankIcon(rank)}
@@ -100,25 +128,25 @@ function UserRow({ rank, username, displayName, avatarUrl, karma, isVerified }: 
       {avatarUrl ? (
         <img
           src={avatarUrl}
-          alt={displayName || username}
+          alt={name}
           className="w-8 h-8 rounded-full object-cover ring-1 ring-dark-600 group-hover:ring-primary-500/50 transition-all"
         />
       ) : (
         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center text-white text-sm font-semibold">
-          {(displayName || username).charAt(0).toUpperCase()}
+          {initial}
         </div>
       )}
       
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1">
           <span className="text-sm font-medium text-gray-200 truncate group-hover:text-white transition-colors">
-            {displayName || username}
+            {name}
           </span>
           {isVerified && (
             <CheckBadgeIcon className="h-4 w-4 text-primary-400 flex-shrink-0" />
           )}
         </div>
-        <span className="text-xs text-gray-500">@{username}</span>
+        <span className="text-xs text-gray-500">@{handle}</span>
       </div>
       
       <div className="flex items-center gap-1 text-right">
@@ -253,6 +281,7 @@ export function ForumLeaderboardWidget({
           <UserRow
             key={contributor.user.id}
             rank={contributor.rank}
+            userId={contributor.user.id}
             username={contributor.user.username}
             displayName={contributor.user.displayName}
             avatarUrl={contributor.user.avatarUrl}
@@ -358,6 +387,7 @@ export function GlobalLeaderboardWidget({ limit = 5, showTitle = true }: GlobalL
           <UserRow
             key={user.id}
             rank={user.rank}
+            userId={user.id}
             username={user.username}
             displayName={user.displayName}
             avatarUrl={user.avatarUrl}

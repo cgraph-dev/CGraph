@@ -108,12 +108,13 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
   };
   
   const renderComment = useCallback((comment: Comment, depth: number = 0) => {
+    const authorName = comment.author?.username || comment.author?.display_name || 'unknown';
     return (
       <View key={comment.id} style={[styles.comment, { marginLeft: depth * 16 }]}>
         <View style={[styles.commentLine, { backgroundColor: colors.border }]} />
         <View style={styles.commentContent}>
           <Text style={[styles.commentMeta, { color: colors.textSecondary }]}>
-            u/{comment.author.username} • {formatTime(comment.inserted_at)}
+            u/{authorName} • {formatTime(comment.inserted_at)}
           </Text>
           <Text style={[styles.commentText, { color: colors.text }]}>
             {comment.content}
@@ -171,7 +172,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
         {/* Post */}
         <View style={[styles.postContainer, { backgroundColor: colors.surface }]}>
           <Text style={[styles.postMeta, { color: colors.textSecondary }]}>
-            r/{post.forum.slug} • u/{post.author.username} • {formatTime(post.inserted_at)}
+            r/{post.forum.slug} • u/{post.author?.username || post.author?.display_name || 'unknown'} • {formatTime(post.inserted_at)}
           </Text>
           
           {/* Status Badges */}
