@@ -35,17 +35,18 @@ export default function Settings() {
       <nav className="w-56 bg-dark-800 border-r border-dark-700 p-4 overflow-y-auto">
         <h2 className="text-lg font-bold text-white mb-4">Settings</h2>
         <div className="space-y-1">
-          {settingsSections.map((item) => (
+          {settingsSections.map((item, index) => (
             <NavLink
               key={item.id}
               to={`/settings/${item.id}`}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 transform hover:translate-x-1 ${
                   isActive || (item.id === 'account' && section === undefined)
-                    ? 'bg-dark-700 text-white'
+                    ? 'bg-dark-700 text-white shadow-md'
                     : 'text-gray-400 hover:text-white hover:bg-dark-700/50'
                 }`
               }
+              style={{ animationDelay: `${index * 30}ms` }}
             >
               <item.icon className="h-5 w-5" />
               <span>{item.label}</span>
@@ -56,8 +57,7 @@ export default function Settings() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-8">
-        <div className="max-w-2xl">
-          {section === 'account' && <AccountSettings />}
+        <div className="max-w-2xl animate-fadeIn\">\n          {section === 'account' && <AccountSettings />}
           {section === 'security' && <SecuritySettings />}
           {section === 'notifications' && <NotificationSettings />}
           {section === 'appearance' && <AppearanceSettings />}
