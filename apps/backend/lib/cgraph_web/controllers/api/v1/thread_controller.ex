@@ -6,6 +6,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
   use CgraphWeb, :controller
   
   alias Cgraph.Forums
+  import CgraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
   
   action_fallback CgraphWeb.FallbackController
 
@@ -14,8 +15,9 @@ defmodule CgraphWeb.API.V1.ThreadController do
   GET /api/v1/boards/:board_id/threads
   """
   def index(conn, %{"board_id" => board_id} = params) do
-    page = String.to_integer(Map.get(params, "page", "1"))
-    per_page = String.to_integer(Map.get(params, "per_page", "20"))
+    pagination = extract_pagination_params(params)
+    page = Keyword.get(pagination, :page)
+    per_page = Keyword.get(pagination, :per_page)
     sort = Map.get(params, "sort", "latest")
     
     opts = [page: page, per_page: per_page, sort: sort]

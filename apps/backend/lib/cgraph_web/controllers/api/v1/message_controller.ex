@@ -71,20 +71,24 @@ defmodule CgraphWeb.API.V1.MessageController do
 
   @doc """
   Send typing indicator.
+  Verifies user is a participant in the conversation before broadcasting.
   """
   def typing(conn, %{"conversation_id" => conversation_id}) do
     user = conn.assigns.current_user
 
-    # Broadcast typing indicator
-    CgraphWeb.Endpoint.broadcast!(
-      "conversation:#{conversation_id}",
-      "typing",
-      %{
-        user_id: user.id,
-        username: user.username
-      }
-    )
+    # Verify user is a participant in this conversation
+    with {:ok, _conversation} <- Messaging.get_user_conversation(user, conversation_id) do
+      # Broadcast typing indicator only after authorization
+      CgraphWeb.Endpoint.broadcast!(
+        "conversation:#{conversation_id}",
+        "typing",
+        %{
+          user_id: user.id,
+          username: user.username
+        }
+      )
 
-    json(conn, %{status: "ok"})
+      json(conn, %{status: "ok"})
+    end
   end
 end

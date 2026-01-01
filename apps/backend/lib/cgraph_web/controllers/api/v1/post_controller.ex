@@ -301,16 +301,16 @@ defmodule CgraphWeb.API.V1.PostController do
 
   defp authorize_post_edit(user, post, forum) do
     cond do
-      post.user_id == user.id -> :ok
-      Forums.is_moderator?(user, forum) -> :ok
+      post.author_id == user.id -> :ok
+      Forums.is_moderator?(forum, user) -> :ok
       true -> {:error, :unauthorized}
     end
   end
 
   defp authorize_post_delete(user, post, forum) do
     cond do
-      post.user_id == user.id -> :ok
-      Forums.is_moderator?(user, forum) -> :ok
+      post.author_id == user.id -> :ok
+      Forums.is_moderator?(forum, user) -> :ok
       true -> {:error, :unauthorized}
     end
   end

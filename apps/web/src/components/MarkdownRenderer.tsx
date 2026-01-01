@@ -1,5 +1,6 @@
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { isValidLinkUrl, isValidImageUrl, sanitizeLinkUrl, sanitizeImageUrl } from '../utils/urlSecurity';
 
 interface MarkdownRendererProps {
   content: string;
@@ -16,6 +17,10 @@ interface MarkdownRendererProps {
  * - Lists (ordered, unordered, task lists)
  * - Tables
  * - Blockquotes
+ * 
+ * Security:
+ * - Validates URLs to prevent javascript: protocol attacks
+ * - Uses react-markdown which doesn't render raw HTML by default
  */
 export default function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
   return (
@@ -23,12 +28,19 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
       className={`markdown-content prose prose-invert max-w-none ${className}`}
       remarkPlugins={[remarkGfm]}
       components={{
-        // Custom link rendering - open external links in new tab
+        // Custom link rendering - open external links in new tab with URL validation
         a: ({ href, children }) => {
+          // Validate URL before rendering
+          if (!isValidLinkUrl(href)) {
+            // For invalid URLs, render as plain text
+            return <span className="text-gray-400">{children}</span>;
+          }
+          
+          const safeHref = sanitizeLinkUrl(href);
           const isExternal = href?.startsWith('http');
           return (
             <a
-              href={href}
+              href={safeHref}
               target={isExternal ? '_blank' : undefined}
               rel={isExternal ? 'noopener noreferrer' : undefined}
               className="text-primary-400 hover:text-primary-300 underline"
@@ -71,15 +83,24 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
             {children}
           </blockquote>
         ),
-        // Images with lazy loading
-        img: ({ src, alt }) => (
-          <img
-            src={src}
-            alt={alt || ''}
-            loading="lazy"
-            className="max-w-full h-auto rounded-lg my-4"
-          />
-        ),
+        // Images with lazy loading and URL validation
+        img: ({ src, alt }) => {
+          // Validate image URL before rendering
+          if (!isValidImageUrl(src)) {
+            // For invalid URLs, don't render the image
+            return <span className="text-gray-400 italic">[Invalid image]</span>;
+          }
+          
+          const safeSrc = sanitizeImageUrl(src);
+          return (
+            <img
+              src={safeSrc}
+              alt={alt || ''}
+              loading="lazy"
+              className="max-w-full h-auto rounded-lg my-4"
+            />
+          );
+        },
         // Tables
         table: ({ children }) => (
           <div className="overflow-x-auto my-4">

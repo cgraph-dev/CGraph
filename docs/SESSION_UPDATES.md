@@ -1043,3 +1043,208 @@ apps/web/src/pages/community/UserLeaderboard.tsx            # Null safety fixes
 ---
 
 *Last Updated: January 2025*
+
+---
+
+## Session: January 1, 2026 - Code Review & Bug Fixes
+
+### Overview
+
+Comprehensive code review and bug fix session focused on security hardening, error handling improvements, and code quality across the entire codebase.
+
+### Critical Backend Bug Fixes
+
+#### 1. Race Condition in Forum Subscription
+
+**File:** `apps/backend/lib/cgraph/forums.ex`
+
+**Problem:** `subscribe_to_forum/2` was incrementing `member_count` unconditionally, even when using `on_conflict: :nothing` for duplicate subscriptions. This caused inflated member counts.
+
+**Solution:** Track whether a membership was actually created and only increment count if `member_created == true`.
+
+```elixir
+# Before: Always incremented
+|> Repo.insert(on_conflict: :nothing, conflict_target: [:forum_id, :user_id])
+# ... later unconditionally:
+|> Repo.update_all(inc: [member_count: 1])
+
+# After: Only increment on actual new membership
+member_created = case Repo.get_by(ForumMember, ...) do
+  nil -> # create and return true
+  _member -> false
+end
+
+if member_created do
+  |> Repo.update_all(inc: [member_count: 1])
+end
+```
+
+#### 2. Post Authorization Using Wrong Field
+
+**File:** `apps/backend/lib/cgraph_web/controllers/api/v1/post_controller.ex`
+
+**Problem:** `authorize_post_edit/3` and `authorize_post_delete/3` were checking `post.user_id` but the Post schema uses `author_id`. This caused all ownership checks to fail.
+
+**Solution:** Changed to `post.author_id == user.id`
+
+#### 3. is_moderator? Argument Order Inconsistency
+
+**Files:** Multiple controllers
+
+**Problem:** `is_moderator?(forum, user)` was called with reversed arguments in some controllers.
+
+**Solution:** Fixed all calls to use consistent `is_moderator?(forum, user)` order.
+
+#### 4. Typing Indicator Security Vulnerability
+
+**File:** `apps/backend/lib/cgraph_web/controllers/api/v1/message_controller.ex`
+
+**Problem:** Any authenticated user could broadcast typing indicators to any conversation by knowing its ID - no authorization check.
+
+**Solution:** Added conversation membership verification before broadcasting:
+
+```elixir
+with {:ok, _conversation} <- Messaging.get_user_conversation(user, conversation_id) do
+  CgraphWeb.Endpoint.broadcast!(...)
+end
+```
+
+### Safe Parameter Parsing
+
+**New File:** `apps/backend/lib/cgraph_web/helpers/controller_helpers.ex`
+
+Created a shared helper module for safe parameter parsing across all controllers:
+
+| Function | Purpose |
+|----------|---------|
+| `safe_to_integer/2` | Parse string to int with default, handles malformed input |
+| `extract_pagination_params/2` | Extract page/per_page with max limits |
+| `sanitize_search_query/2` | Trim, limit length, return nil for empty |
+| `escape_like_pattern/1` | Escape `%` and `_` to prevent LIKE injection |
+| `build_search_pattern/1` | Create safe search patterns for ILIKE queries |
+
+**Updated Controllers:**
+- `thread_controller.ex` - Uses `extract_pagination_params/1`
+- `thread_post_controller.ex` - Uses `extract_pagination_params/1`
+
+### New Error Handlers
+
+**File:** `apps/backend/lib/cgraph_web/controllers/fallback_controller.ex`
+
+Added missing error handlers for all vote-related and forum errors:
+
+| Error Type | HTTP Status | User Message |
+|------------|-------------|--------------|
+| `:owner_only` | 403 | "Only the forum owner can perform this action" |
+| `:must_join_first` | 403 | "You must join this forum first to perform this action" |
+| `:cannot_leave_own_forum` | 403 | "You cannot leave a forum you own. Transfer ownership first" |
+| `{:vote_cooldown, seconds}` | 429 | "Vote cooldown active. Try again in X seconds" |
+| `:insufficient_karma` | 403 | "You need more karma to downvote" |
+| `:account_too_new` | 403 | "Your account is too new to vote" |
+| `:cannot_vote_own_content` | 403 | "You cannot vote on your own content" |
+
+### Frontend Security Fixes
+
+#### 1. XSS Prevention - URL Validation
+
+**New File:** `apps/web/src/utils/urlSecurity.ts`
+
+Created comprehensive URL validation utilities:
+
+| Function | Purpose |
+|----------|---------|
+| `isValidLinkUrl()` | Validates URLs for links (prevents javascript: protocol) |
+| `isValidImageUrl()` | Validates image URLs (allows safe data: URIs) |
+| `sanitizeLinkUrl()` | Returns safe URL or '#' |
+| `sanitizeImageUrl()` | Returns safe URL or placeholder |
+| `escapeHtml()` | Escape HTML special characters |
+| `isValidExternalUrl()` | Strict http/https only check |
+
+**Updated:** `apps/web/src/components/MarkdownRenderer.tsx`
+- All links and images now validated before rendering
+- Invalid URLs rendered as plain text/placeholder
+
+#### 2. Duplicate useEffect Fix
+
+**File:** `apps/web/src/pages/messages/Messages.tsx`
+
+**Problem:** `fetchConversations()` was called twice on component mount due to duplicate useEffect hooks.
+
+**Solution:** Removed duplicate, added proper dependencies to remaining effects, used `useCallback` for handlers.
+
+#### 3. Optimistic Update with Rollback
+
+**File:** `apps/web/src/stores/forumStore.ts`
+
+**Problem:** Vote function would update UI but had no rollback mechanism if API call failed.
+
+**Solution:** Store previous state before optimistic update, restore on error:
+
+```typescript
+vote: async (type, id, value) => {
+  const previousPosts = get().posts;
+  const previousCurrentPost = get().currentPost;
+  
+  // Optimistic update
+  set((state) => ({...}));
+  
+  try {
+    await api.post(...);
+  } catch (error) {
+    // Rollback on failure
+    set({ posts: previousPosts, currentPost: previousCurrentPost });
+    throw error;
+  }
+}
+```
+
+### Forum Voting Tests
+
+**File:** `apps/backend/test/cgraph/forums_test.exs`
+
+Added comprehensive test coverage for forum voting system:
+
+| Test Group | Tests Added |
+|------------|-------------|
+| Account Age | Validates minimum account age requirement |
+| Karma Requirements | Tests downvote karma thresholds |
+| Self-Vote Prevention | Verifies owners can't vote own forums |
+| Vote Cooldown | Tests rate limiting between vote changes |
+| Leaderboard | Verifies forum contributor leaderboard function |
+
+### Test Results
+
+| Suite | Status |
+|-------|--------|
+| Backend | 266 tests, 0 failures, 1 skipped |
+| Web TypeScript | Compiles clean |
+| Web Build | Production build successful |
+
+### Files Changed Summary
+
+```
+# Backend Fixes
+apps/backend/lib/cgraph/forums.ex                              # Race condition fix
+apps/backend/lib/cgraph_web/controllers/api/v1/post_controller.ex     # Authorization fix
+apps/backend/lib/cgraph_web/controllers/api/v1/message_controller.ex  # Typing security
+apps/backend/lib/cgraph_web/controllers/api/v1/thread_controller.ex   # Safe params
+apps/backend/lib/cgraph_web/controllers/api/v1/thread_post_controller.ex # Safe params
+apps/backend/lib/cgraph_web/controllers/fallback_controller.ex        # New handlers
+apps/backend/lib/cgraph_web/helpers/controller_helpers.ex             # NEW
+
+# Tests
+apps/backend/test/cgraph/forums_test.exs                       # New voting tests
+
+# Frontend Fixes
+apps/web/src/utils/urlSecurity.ts                              # NEW
+apps/web/src/components/MarkdownRenderer.tsx                   # URL validation
+apps/web/src/pages/messages/Messages.tsx                       # Duplicate effect fix
+apps/web/src/stores/forumStore.ts                              # Optimistic rollback
+
+# Documentation
+docs/SESSION_UPDATES.md                                        # This update
+```
+
+---
+
+*Last Updated: January 1, 2026*

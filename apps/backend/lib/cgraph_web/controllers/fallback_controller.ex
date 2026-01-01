@@ -174,6 +174,63 @@ defmodule CgraphWeb.FallbackController do
     |> render(:error, message: "This post is locked and cannot receive new comments.")
   end
 
+  # Handle owner only restriction
+  def call(conn, {:error, :owner_only}) do
+    conn
+    |> put_status(:forbidden)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: "Only the forum owner can perform this action.")
+  end
+
+  # Handle must join first
+  def call(conn, {:error, :must_join_first}) do
+    conn
+    |> put_status(:forbidden)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: "You must join this forum first to perform this action.")
+  end
+
+  # Handle cannot leave own forum
+  def call(conn, {:error, :cannot_leave_own_forum}) do
+    conn
+    |> put_status(:forbidden)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: "You cannot leave a forum you own. Transfer ownership first.")
+  end
+
+  # Handle vote cooldown
+  def call(conn, {:error, {:vote_cooldown, seconds_remaining}}) do
+    conn
+    |> put_status(:too_many_requests)
+    |> put_resp_header("retry-after", to_string(seconds_remaining))
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: "Vote cooldown active. Try again in #{seconds_remaining} seconds.")
+  end
+
+  # Handle insufficient karma for downvote
+  def call(conn, {:error, :insufficient_karma}) do
+    conn
+    |> put_status(:forbidden)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: "You need more karma to downvote. Participate more in the community first.")
+  end
+
+  # Handle account too new to vote
+  def call(conn, {:error, :account_too_new}) do
+    conn
+    |> put_status(:forbidden)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: "Your account is too new to vote. Please wait a day before voting.")
+  end
+
+  # Handle self vote attempt
+  def call(conn, {:error, :cannot_vote_own_content}) do
+    conn
+    |> put_status(:forbidden)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: "You cannot vote on your own content.")
+  end
+
   # Handle cannot modify default role
   def call(conn, {:error, :cannot_modify_default_role}) do
     conn

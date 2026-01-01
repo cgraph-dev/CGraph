@@ -363,22 +363,29 @@ defmodule Cgraph.Forums do
       |> Repo.insert(on_conflict: :nothing, conflict_target: [:forum_id, :user_id])
 
       # Create membership if not exists
-      case Repo.get_by(ForumMember, forum_id: forum.id, user_id: user.id) do
+      member_created = case Repo.get_by(ForumMember, forum_id: forum.id, user_id: user.id) do
         nil ->
-          %ForumMember{}
+          result = %ForumMember{}
           |> ForumMember.changeset(%{
             forum_id: forum.id,
             user_id: user.id,
             joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
           })
           |> Repo.insert()
+          
+          case result do
+            {:ok, _member} -> true
+            {:error, _} -> false
+          end
         
-        _member -> :ok
+        _member -> false
       end
 
-      # Increment member count
-      from(f in Forum, where: f.id == ^forum.id)
-      |> Repo.update_all(inc: [member_count: 1])
+      # Only increment member count if a new membership was created
+      if member_created do
+        from(f in Forum, where: f.id == ^forum.id)
+        |> Repo.update_all(inc: [member_count: 1])
+      end
 
       case subscription_result do
         {:ok, subscription} -> subscription

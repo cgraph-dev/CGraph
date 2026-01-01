@@ -351,12 +351,11 @@ export const useForumStore = create<ForumState>((set, get) => ({
   vote: async (type: 'post' | 'comment', id: string, value: 1 | -1 | null) => {
     const endpoint = type === 'post' ? `/api/v1/posts/${id}/vote` : `/api/v1/comments/${id}/vote`;
 
-    if (value === null) {
-      await api.delete(endpoint);
-    } else {
-      await api.post(endpoint, { value });
-    }
+    // Store previous state for rollback on error
+    const previousPosts = get().posts;
+    const previousCurrentPost = get().currentPost;
 
+    // Optimistically update the UI first for better UX
     if (type === 'post') {
       set((state) => ({
         posts: state.posts.map((p) => {
@@ -389,6 +388,21 @@ export const useForumStore = create<ForumState>((set, get) => ({
               }
             : state.currentPost,
       }));
+    }
+
+    try {
+      if (value === null) {
+        await api.delete(endpoint);
+      } else {
+        await api.post(endpoint, { value });
+      }
+    } catch (error) {
+      // Rollback optimistic update on error
+      if (type === 'post') {
+        set({ posts: previousPosts, currentPost: previousCurrentPost });
+      }
+      // Re-throw so callers can handle the error
+      throw error;
     }
   },
 

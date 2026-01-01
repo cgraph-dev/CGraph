@@ -208,16 +208,16 @@ defmodule CgraphWeb.API.V1.CommentController do
 
   defp authorize_comment_edit(user, comment, forum) do
     cond do
-      comment.user_id == user.id -> :ok
-      Forums.is_moderator?(user, forum) -> :ok
+      comment.author_id == user.id -> :ok
+      Forums.is_moderator?(forum, user) -> :ok
       true -> {:error, :unauthorized}
     end
   end
 
   defp authorize_comment_delete(user, comment, forum) do
     cond do
-      comment.user_id == user.id -> :ok
-      Forums.is_moderator?(user, forum) -> :ok
+      comment.author_id == user.id -> :ok
+      Forums.is_moderator?(forum, user) -> :ok
       true -> {:error, :unauthorized}
     end
   end

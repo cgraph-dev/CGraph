@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Outlet, useParams, NavLink, useSearchParams, useNavigate } from 'react-router-dom';
 import { useChatStore, Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -18,19 +18,13 @@ export default function Messages() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
 
+  // Fetch conversations on mount
   useEffect(() => {
     fetchConversations();
   }, [fetchConversations]);
 
-  // Handle userId query param (from friends page)
-  useEffect(() => {
-    const userId = searchParams.get('userId');
-    if (userId && !isCreatingConversation) {
-      handleStartConversationWithUser(userId);
-    }
-  }, [searchParams]);
-
-  const handleStartConversationWithUser = async (userId: string) => {
+  // Memoized handler for starting conversation with user
+  const handleStartConversationWithUser = useCallback(async (userId: string) => {
     // Check if conversation already exists with this user
     const existingConv = conversations.find((conv) => {
       if (conv.type !== 'direct') return false;
@@ -53,11 +47,15 @@ export default function Messages() {
     } finally {
       setIsCreatingConversation(false);
     }
-  };
+  }, [conversations, createConversation, navigate]);
 
+  // Handle userId query param (from friends page)
   useEffect(() => {
-    fetchConversations();
-  }, [fetchConversations]);
+    const userId = searchParams.get('userId');
+    if (userId && !isCreatingConversation) {
+      handleStartConversationWithUser(userId);
+    }
+  }, [searchParams, isCreatingConversation, handleStartConversationWithUser]);
 
   // Filter conversations by search query
   const filteredConversations = conversations.filter((conv) => {
