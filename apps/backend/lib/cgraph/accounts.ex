@@ -544,8 +544,8 @@ defmodule Cgraph.Accounts do
   end
 
   defp create_default_settings(user) do
-    %UserSettings{}
-    |> UserSettings.changeset(%{user_id: user.id})
+    %UserSettings{user_id: user.id}
+    |> UserSettings.changeset(%{})
     |> Repo.insert()
   end
 

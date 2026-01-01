@@ -286,7 +286,7 @@ defmodule Cgraph.Groups do
   """
   def create_channel_message(user, channel, attrs) do
     message_attrs = attrs
-      |> Map.put("user_id", user.id)
+      |> Map.put("sender_id", user.id)
       |> Map.put("channel_id", channel.id)
 
     result = %Message{}
@@ -296,7 +296,7 @@ defmodule Cgraph.Groups do
     case result do
       {:ok, message} ->
         broadcast_channel_message(channel, message)
-        {:ok, Repo.preload(message, [:user, :reactions])}
+        {:ok, Repo.preload(message, [:sender, :reactions])}
       error -> error
     end
   end
