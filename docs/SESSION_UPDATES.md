@@ -4,12 +4,133 @@ This document details all the changes, enhancements, and bug fixes made during t
 
 ## Table of Contents
 1. [Version 1.0.0 Release](#version-100-release)
-2. [Session: December 31, 2025](#session-december-31-2025)
-3. [Bug Fixes](#bug-fixes)
-4. [New Features](#new-features)
-5. [UI/UX Improvements](#uiux-improvements)
-6. [Architecture Changes](#architecture-changes)
-7. [Component Library](#component-library)
+2. [Session: Security Hardening (July 2025)](#session-security-hardening-july-2025)
+3. [Session: December 31, 2025](#session-december-31-2025)
+4. [Bug Fixes](#bug-fixes)
+5. [New Features](#new-features)
+6. [UI/UX Improvements](#uiux-improvements)
+7. [Architecture Changes](#architecture-changes)
+8. [Component Library](#component-library)
+
+---
+
+## Session: Security Hardening (July 2025)
+
+### Overview
+
+This session implemented comprehensive security hardening features to bring CGraph to industry-standard security practices for Google Play deployment.
+
+### New Security Features
+
+#### 1. Token Revocation System
+
+**Module:** `Cgraph.Security.TokenBlacklist`
+
+- Multi-tier storage (Cachex → ETS → Redis)
+- JTI-based token revocation
+- User-level mass revocation for password changes
+- Automatic cleanup of expired entries
+
+```elixir
+# Revoke on logout
+TokenBlacklist.revoke(token, reason: :logout)
+
+# Revoke all for user
+TokenBlacklist.revoke_all_for_user(user_id, reason: :password_change)
+```
+
+#### 2. Security Headers Plug
+
+**Module:** `CgraphWeb.Plugs.SecurityHeaders`
+
+OWASP-compliant security headers:
+- Strict-Transport-Security (HSTS with preload)
+- Content-Security-Policy (strict for API, balanced for browser)
+- X-Frame-Options (DENY)
+- X-Content-Type-Options (nosniff)
+- Referrer-Policy
+- Permissions-Policy (opt-out of FLoC)
+- Cross-Origin policies
+
+#### 3. Account Lockout System
+
+**Module:** `Cgraph.Security.AccountLockout`
+
+- 5 failed attempts → 15 minute lockout
+- Progressive lockout duration (2x multiplier)
+- Max lockout: 24 hours
+- Redis persistence for multi-node support
+- Admin unlock capability
+
+#### 4. Password Breach Check
+
+**Module:** `Cgraph.Security.PasswordBreachCheck`
+
+- HaveIBeenPwned API integration
+- K-anonymity (only 5-char hash prefix sent)
+- Async checking option
+- Changeset validation helper
+- Result caching (24 hours)
+
+#### 5. Two-Factor Authentication (TOTP)
+
+**Module:** `Cgraph.Security.TOTP`
+
+- RFC 6238 compliant TOTP
+- Google Authenticator compatible
+- 10 backup codes per user
+- Encrypted secret storage (AES-256-GCM)
+- Hashed backup codes
+
+### Files Created
+
+| File | Purpose |
+|------|---------|
+| `lib/cgraph/security/token_blacklist.ex` | JWT token revocation system |
+| `lib/cgraph/security/account_lockout.ex` | Brute force protection |
+| `lib/cgraph/security/password_breach_check.ex` | HIBP integration |
+| `lib/cgraph/security/totp.ex` | 2FA implementation |
+| `lib/cgraph_web/plugs/security_headers.ex` | OWASP security headers |
+| `lib/cgraph/guardian/hooks.ex` | Guardian callbacks |
+| `test/cgraph/security_test.exs` | Security feature tests |
+| `docs/SECURITY.md` | Security documentation |
+| `priv/repo/migrations/20250716000001_add_totp_backup_fields.exs` | TOTP migration |
+
+### Files Modified
+
+| File | Changes |
+|------|---------|
+| `lib/cgraph/guardian.ex` | Added JTI generation, revocation integration |
+| `lib/cgraph/application.ex` | Added TokenBlacklist and AccountLockout to supervisor |
+| `lib/cgraph_web/router.ex` | Added SecurityHeaders plug to all pipelines |
+| `lib/cgraph_web/controllers/api/v1/auth_controller.ex` | Integrated lockout and token revocation |
+| `lib/cgraph/accounts.ex` | Added password breach check on registration |
+| `lib/cgraph/accounts/user.ex` | Added TOTP fields and changeset |
+
+### JWT Configuration Updates
+
+```elixir
+# New recommended defaults
+:jwt_access_token_ttl  # 900 seconds (15 min)
+:jwt_refresh_token_ttl # 604,800 seconds (7 days)
+```
+
+### Security Telemetry Events
+
+New telemetry events for monitoring:
+- `[:cgraph, :security, :token_revoked]`
+- `[:cgraph, :security, :account_locked]`
+- `[:cgraph, :security, :password_breached]`
+- `[:cgraph, :security, :headers_applied]`
+
+### Test Coverage
+
+Added ~50 new security-focused tests covering:
+- Token revocation and blacklisting
+- Account lockout progression
+- Password breach detection
+- TOTP generation and verification
+- Security headers validation
 
 ---
 

@@ -8,6 +8,7 @@ defmodule Cgraph.Accounts do
   import Ecto.Query, warn: false
   alias Cgraph.Repo
   alias Cgraph.Accounts.{User, Session, UserSettings, Friendship, WalletChallenge}
+  alias Cgraph.Security.PasswordBreachCheck
 
   # ============================================================================
   # Registration & Authentication
@@ -15,11 +16,46 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Register a new user with email/password credentials.
+  
+  Optionally checks password against HaveIBeenPwned database.
   """
-  def register_user(attrs) do
-    %User{}
+  def register_user(attrs, opts \\ []) do
+    check_breach = Keyword.get(opts, :check_breach, true)
+    
+    changeset = %User{}
     |> User.registration_changeset(attrs)
-    |> Repo.insert()
+    
+    # Apply password breach check if enabled
+    changeset = if check_breach do
+      apply_breach_check(changeset)
+    else
+      changeset
+    end
+    
+    case Repo.insert(changeset) do
+      {:ok, user} = result ->
+        # Async breach check for logging (if sync check was skipped)
+        if !check_breach do
+          password = Map.get(attrs, "password") || Map.get(attrs, :password)
+          if password do
+            PasswordBreachCheck.check_async(password, user_id: user.id)
+          end
+        end
+        result
+      
+      error ->
+        error
+    end
+  end
+  
+  defp apply_breach_check(changeset) do
+    password = Ecto.Changeset.get_change(changeset, :password)
+    
+    if password do
+      PasswordBreachCheck.validate_changeset(changeset, :password)
+    else
+      changeset
+    end
   end
 
   @doc """

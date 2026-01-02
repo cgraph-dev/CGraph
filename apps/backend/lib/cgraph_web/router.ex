@@ -4,6 +4,12 @@ defmodule CgraphWeb.Router do
   
   Defines all API routes organized by feature domain.
   Uses pipeline-based middleware for authentication and authorization.
+  
+  ## Security Features
+  
+  - Rate limiting on all pipelines (strict for auth, relaxed for reads)
+  - Security headers (HSTS, CSP, X-Frame-Options, etc.)
+  - JWT authentication with token revocation support
   """
   use CgraphWeb, :router
 
@@ -16,11 +22,14 @@ defmodule CgraphWeb.Router do
     plug :put_root_layout, html: {CgraphWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug CgraphWeb.Plugs.SecurityHeaders, mode: :browser
     plug :fetch_current_user
   end
 
   pipeline :api do
     plug :accepts, ["json"]
+    # Security headers for API responses
+    plug CgraphWeb.Plugs.SecurityHeaders, mode: :api
     # Enhanced rate limiter with sliding window algorithm
     # See CgraphWeb.Plugs.RateLimiterV2 for tier documentation
     plug CgraphWeb.Plugs.RateLimiterV2, tier: :standard
@@ -29,12 +38,14 @@ defmodule CgraphWeb.Router do
   # Strict rate limiting for authentication endpoints (prevent brute force)
   pipeline :api_auth_strict do
     plug :accepts, ["json"]
+    plug CgraphWeb.Plugs.SecurityHeaders, mode: :api
     plug CgraphWeb.Plugs.RateLimiterV2, tier: :strict
   end
 
   # Relaxed rate limiting for read-heavy endpoints
   pipeline :api_relaxed do
     plug :accepts, ["json"]
+    plug CgraphWeb.Plugs.SecurityHeaders, mode: :api
     plug CgraphWeb.Plugs.RateLimiterV2, tier: :relaxed
   end
 

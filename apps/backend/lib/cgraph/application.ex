@@ -8,6 +8,7 @@ defmodule Cgraph.Application do
   - Redis connection pool
   - Oban background job processor
   - Presence tracking
+  - Token blacklist for JWT revocation
   """
   use Application
 
@@ -28,6 +29,12 @@ defmodule Cgraph.Application do
 
       # Start Cachex for local caching
       {Cachex, name: :cgraph_cache},
+
+      # Start token blacklist for JWT revocation
+      Cgraph.Security.TokenBlacklist,
+
+      # Start account lockout for brute force protection
+      Cgraph.Security.AccountLockout,
 
       # Start Finch for HTTP requests (used by Swoosh, Tesla)
       {Finch, name: Cgraph.Finch},

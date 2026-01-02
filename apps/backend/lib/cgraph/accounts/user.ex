@@ -53,9 +53,11 @@ defmodule Cgraph.Accounts.User do
     field :is_admin, :boolean, default: false
     field :karma, :integer, default: 0
 
-    # 2FA
+    # 2FA / TOTP
     field :totp_secret, :string
     field :totp_enabled, :boolean, default: false
+    field :totp_enabled_at, :utc_datetime
+    field :totp_backup_codes, {:array, :string}, default: []
     field :recovery_codes, {:array, :string}, default: []
 
     # Tracking
@@ -73,6 +75,14 @@ defmodule Cgraph.Accounts.User do
     has_many :comments, Cgraph.Forums.Comment, foreign_key: :author_id
 
     timestamps()
+  end
+
+  @doc """
+  Changeset for TOTP 2FA settings.
+  """
+  def totp_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:totp_enabled, :totp_secret, :totp_backup_codes, :totp_enabled_at])
   end
 
   @doc """
