@@ -236,6 +236,101 @@ Audit.log(:auth, :login_success, %{
 - User actions: 2 years
 - General: 1 year
 
+### 8. End-to-End Encryption (E2EE)
+
+**Module:** `Cgraph.Crypto.E2EE`
+
+Signal-inspired E2EE implementation for private messaging:
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    E2EE KEY HIERARCHY                           │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   Identity Key (Ed25519)         Long-term signing key          │
+│   ├── Signed Prekey (X25519)     Medium-term key exchange       │
+│   │   └── Signature              Identity key signature         │
+│   └── One-Time Prekeys           Single-use keys (100 batch)    │
+│                                                                  │
+│   Key Exchange: X3DH (Extended Triple Diffie-Hellman)           │
+│   Encryption: AES-256-GCM                                       │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+**Usage:**
+
+```elixir
+# Client registers their public keys
+{:ok, result} = E2EE.register_keys(user_id, %{
+  identity_key: base64_public_key,
+  device_id: device_uuid,
+  signed_prekey: base64_signed_prekey,
+  prekey_signature: base64_signature,
+  one_time_prekeys: [{1, base64_key1}, {2, base64_key2}, ...]
+})
+
+# Get recipient's keys for session establishment
+{:ok, bundle} = E2EE.get_prekey_bundle(recipient_id)
+
+# Check prekey count (replenish when < 25)
+count = E2EE.one_time_prekey_count(user_id)
+
+# Generate safety number for verification
+{:ok, safety_number} = E2EE.safety_number(user1_id, user2_id)
+```
+
+**Security Properties:**
+
+| Property | Implementation |
+|----------|----------------|
+| Confidentiality | AES-256-GCM encryption |
+| Forward Secrecy | One-time prekeys consumed per session |
+| Key Verification | Safety numbers derived from identity keys |
+| Key Freshness | Signed prekeys rotated periodically |
+| Deniability | No digital signatures on messages |
+
+**Key Lifecycle:**
+
+1. **Identity Key**: Generated once per device, stored permanently
+2. **Signed Prekey**: Rotated monthly, signed by identity key
+3. **One-Time Prekeys**: Consumed once, replenished in batches of 100
+
+**Privacy Guarantee:**
+- Private keys NEVER leave the client device
+- Server stores only public keys
+- Message content is encrypted client-side before transmission
+- Server sees only ciphertext (opaque blobs)
+
+### 9. Voice Message Security
+
+**Module:** `Cgraph.Messaging.VoiceMessage`
+
+Secure handling of voice message recordings:
+
+**Security Controls:**
+
+| Control | Implementation |
+|---------|----------------|
+| Size Limit | 10 MB maximum |
+| Duration Limit | 5 minutes maximum |
+| Format Validation | Whitelist of audio MIME types |
+| Rate Limiting | 10/minute, 100/hour per user |
+| Storage | Encrypted at rest (S3/R2) |
+| Access Control | Owner or conversation participants only |
+
+**Supported Formats:**
+- `audio/webm` (Opus) - Web preferred
+- `audio/m4a` (AAC) - iOS preferred
+- `audio/ogg`, `audio/mp3`, `audio/wav`
+
+**Processing Pipeline:**
+1. Validate format and size
+2. Store original securely
+3. Extract metadata (duration, waveform)
+4. Transcode to Opus for optimal playback
+5. Generate signed URLs for access
+
 ## JWT Configuration
 
 ```elixir
@@ -267,6 +362,8 @@ Tokens include:
 - [x] SQL injection prevention (Ecto)
 - [x] XSS prevention (CSP)
 - [x] CSRF protection (SameSite cookies)
+- [x] End-to-End Encryption (E2EE)
+- [x] Voice message security controls
 
 ## Security Telemetry Events
 

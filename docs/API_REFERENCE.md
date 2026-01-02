@@ -15,10 +15,12 @@ Complete API documentation for CGraph backend services. All endpoints return JSO
 7. [Groups](#groups)
 8. [Forums](#forums)
 9. [Notifications](#notifications)
-10. [Uploads](#uploads)
-11. [Search](#search)
-12. [WebSocket Events](#websocket-events)
-13. [Error Codes](#error-codes)
+10. [End-to-End Encryption](#end-to-end-encryption)
+11. [Voice Messages](#voice-messages)
+12. [Uploads](#uploads)
+13. [Search](#search)
+14. [WebSocket Events](#websocket-events)
+15. [Error Codes](#error-codes)
 
 ---
 
@@ -1545,6 +1547,251 @@ Authorization: Bearer <token>
 ```http
 POST /notifications/read
 Authorization: Bearer <token>
+```
+
+---
+
+## End-to-End Encryption
+
+E2EE endpoints enable secure messaging where only participants can read message content. The server only stores public keys and encrypted ciphertext.
+
+### Register Keys
+
+Register or update E2EE public keys for a device.
+
+```http
+POST /e2ee/keys
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "device_id": "unique-device-identifier",
+  "identity_key": "base64-encoded-ed25519-public-key",
+  "signed_prekey": "base64-encoded-x25519-public-key",
+  "prekey_signature": "base64-encoded-signature",
+  "prekey_id": 1,
+  "one_time_prekeys": [
+    [1, "base64-key-1"],
+    [2, "base64-key-2"]
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "identity_key_id": "fingerprint-hex-string",
+    "signed_prekey_id": 1,
+    "one_time_prekeys_uploaded": 100
+  }
+}
+```
+
+### Get Prekey Bundle
+
+Get recipient's public keys for establishing an E2EE session (X3DH key exchange).
+
+```http
+GET /e2ee/keys/:user_id/bundle
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "identity_key": "base64-key",
+    "identity_key_id": "fingerprint",
+    "device_id": "device-uuid",
+    "signed_prekey": "base64-key",
+    "signed_prekey_id": 1,
+    "signed_prekey_signature": "base64-signature",
+    "one_time_prekey": "base64-key",
+    "one_time_prekey_id": 42
+  }
+}
+```
+
+### Get Prekey Count
+
+Check remaining one-time prekeys. Replenish when count falls below 25.
+
+```http
+GET /e2ee/keys/count
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "count": 87,
+    "should_upload": false
+  }
+}
+```
+
+### Upload One-Time Prekeys
+
+Upload additional one-time prekeys when count is low.
+
+```http
+POST /e2ee/keys/prekeys
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "prekeys": [
+    [101, "base64-key-1"],
+    [102, "base64-key-2"]
+  ]
+}
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "uploaded": 50,
+    "total": 137
+  }
+}
+```
+
+### Get Safety Number
+
+Get safety number for key verification with another user.
+
+```http
+GET /e2ee/safety-number/:user_id
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "safety_number": "12345 67890 12345 67890 12345 67890"
+  }
+}
+```
+
+### Verify Key
+
+Mark a key as verified after out-of-band verification.
+
+```http
+POST /e2ee/keys/:key_id/verify
+Authorization: Bearer <token>
+```
+
+### Revoke Key
+
+Revoke a compromised key.
+
+```http
+POST /e2ee/keys/:key_id/revoke
+Authorization: Bearer <token>
+```
+
+---
+
+## Voice Messages
+
+Voice message endpoints for recording, uploading, and retrieving audio messages.
+
+### Upload Voice Message
+
+Upload a voice message recording.
+
+```http
+POST /voice-messages
+Authorization: Bearer <token>
+Content-Type: multipart/form-data
+```
+
+**Form Fields:**
+- `audio` - Audio file (webm, m4a, mp3, ogg, wav)
+- `conversation_id` - (optional) Conversation to attach to
+- `channel_id` - (optional) Channel to attach to
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "uuid",
+    "url": "https://storage.example.com/voice/uuid.opus",
+    "duration": 15.5,
+    "waveform": [0.1, 0.3, 0.8, 0.5, ...],
+    "content_type": "audio/opus",
+    "size": 45000,
+    "is_processed": true,
+    "created_at": "2024-01-15T10:00:00Z"
+  }
+}
+```
+
+**Error Responses:**
+- `422` - Unsupported audio format
+- `413` - Voice message too long (max 5 minutes / 10 MB)
+
+### Get Voice Message
+
+Get voice message details.
+
+```http
+GET /voice-messages/:id
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "uuid",
+    "url": "https://storage.example.com/voice/uuid.opus",
+    "duration": 15.5,
+    "waveform": [0.1, 0.3, 0.8, ...],
+    "content_type": "audio/opus",
+    "size": 45000,
+    "message_id": "message-uuid",
+    "created_at": "2024-01-15T10:00:00Z"
+  }
+}
+```
+
+### Delete Voice Message
+
+Delete a voice message (owner only).
+
+```http
+DELETE /voice-messages/:id
+Authorization: Bearer <token>
+```
+
+**Response:** `204 No Content`
+
+### Get Waveform
+
+Get waveform data for audio visualization.
+
+```http
+GET /voice-messages/:id/waveform
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "waveform": [0.1, 0.3, 0.8, 0.5, 0.2, ...]
+  }
+}
 ```
 
 ---

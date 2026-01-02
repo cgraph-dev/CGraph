@@ -24,7 +24,7 @@ defmodule Cgraph.Search do
     search_term = "%#{sanitize_query(query)}%"
     
     base_query = from u in User,
-      where: u.is_active == true,
+      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
       where: ilike(u.username, ^search_term) or 
              ilike(u.display_name, ^search_term) or
              ilike(u.bio, ^search_term),
@@ -52,7 +52,7 @@ defmodule Cgraph.Search do
     
     # Get total count
     count_query = from u in User,
-      where: u.is_active == true,
+      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
       where: ilike(u.username, ^search_term) or 
              ilike(u.display_name, ^search_term) or
              ilike(u.bio, ^search_term),

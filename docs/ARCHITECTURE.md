@@ -1,6 +1,6 @@
-# CGraph System Architecture
+## CGraph System Architecture
 
-> Last updated: December 2025 by the core team  
+> Last updated: January 2026 by the core team  
 > This doc gets outdated fast—if something looks wrong, it probably is. Ping @sarah in Slack.
 
 ---
@@ -305,7 +305,35 @@ Security isn't an afterthought here. We've been burned before (ask me about the 
 | Application | Sensitive fields | AES-256-GCM |
 | Database | At rest | PostgreSQL native encryption |
 | Backups | Backup files | GPG encrypted before S3 |
-| E2EE Messages | Message content | Signal Protocol (optional) |
+| E2EE Messages | Message content | X3DH + AES-256-GCM (Signal-inspired) |
+
+### E2EE Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    E2EE KEY MANAGEMENT                          │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   Client Side (Never leaves device)     Server Side (Public)    │
+│   ┌─────────────────────────┐          ┌─────────────────────┐ │
+│   │ Identity Private Key    │   ──▶    │ Identity Public Key │ │
+│   │ (Ed25519)               │          │ (Ed25519)           │ │
+│   └─────────────────────────┘          └─────────────────────┘ │
+│   ┌─────────────────────────┐          ┌─────────────────────┐ │
+│   │ Signed Prekey Private   │   ──▶    │ Signed Prekey Pub   │ │
+│   │ (X25519)                │          │ + Signature         │ │
+│   └─────────────────────────┘          └─────────────────────┘ │
+│   ┌─────────────────────────┐          ┌─────────────────────┐ │
+│   │ One-Time Prekey Private │   ──▶    │ One-Time Prekeys    │ │
+│   │ (X25519, 100 batch)     │          │ (consumed on use)   │ │
+│   └─────────────────────────┘          └─────────────────────┘ │
+│                                                                  │
+│   Key Exchange: X3DH (Extended Triple Diffie-Hellman)           │
+│   Message Encryption: AES-256-GCM                               │
+│   Implementation: Cgraph.Crypto.E2EE                            │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
+```
 
 ### Rate Limiting Strategy
 
@@ -551,8 +579,14 @@ Things on our radar for 2025:
 1. **Voice/Video calls** - Evaluating LiveKit vs. Jitsi
 2. **AI features** - Message summarization, smart search
 3. **ActivityPub** - Federation with Mastodon/other platforms
-4. **Better E2EE** - Full Signal Protocol implementation
+4. **Double Ratchet** - Full Signal Protocol with session ratcheting
 5. **Self-hosting** - Docker compose for power users
+
+### Recently Completed
+
+- ✅ **E2EE Implementation** - X3DH key exchange, AES-256-GCM encryption
+- ✅ **Voice Messages** - Recording, transcoding, waveform visualization
+- ✅ **Multi-backend Storage** - Local, S3, Cloudflare R2 support
 
 ---
 

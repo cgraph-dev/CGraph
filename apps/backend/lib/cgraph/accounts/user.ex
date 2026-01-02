@@ -48,22 +48,40 @@ defmodule Cgraph.Accounts.User do
     field :status_message, :string
 
     # Account status
+    field :is_active, :boolean, default: true
     field :is_verified, :boolean, default: false
     field :is_premium, :boolean, default: false
     field :is_admin, :boolean, default: false
+    field :is_suspended, :boolean, default: false
     field :karma, :integer, default: 0
+
+    # Ban management
+    field :banned_at, :utc_datetime
+    field :banned_until, :utc_datetime
+    field :ban_reason, :string
+    belongs_to :banned_by, __MODULE__, foreign_key: :banned_by_id
+
+    # Suspension
+    field :suspended_at, :utc_datetime
+    field :suspended_until, :utc_datetime
+    field :suspension_reason, :string
 
     # 2FA / TOTP
     field :totp_secret, :string
     field :totp_enabled, :boolean, default: false
     field :totp_enabled_at, :utc_datetime
     field :totp_backup_codes, {:array, :string}, default: []
+    field :totp_backup_hashes, {:array, :string}, default: []
     field :recovery_codes, {:array, :string}, default: []
 
     # Tracking
     field :last_seen_at, :utc_datetime
+    field :last_active_at, :utc_datetime
+    field :last_login_at, :utc_datetime
+    field :login_count, :integer, default: 0
     field :email_verified_at, :utc_datetime
     field :deleted_at, :utc_datetime
+    field :previous_usernames, {:array, :string}, default: []
 
     # Associations
     has_many :sessions, Cgraph.Accounts.Session

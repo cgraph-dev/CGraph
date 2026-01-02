@@ -241,6 +241,18 @@ defmodule CgraphWeb.Router do
     post "/upload", UploadController, :create
     get "/files/:id", UploadController, :show
 
+    # Voice Messages
+    post "/voice-messages", VoiceMessageController, :upload
+    get "/voice-messages/:id", VoiceMessageController, :show
+    delete "/voice-messages/:id", VoiceMessageController, :delete
+
+    # End-to-End Encryption (E2EE) Key Management
+    post "/e2ee/keys", E2EEController, :register_keys
+    get "/e2ee/keys/:user_id", E2EEController, :get_prekey_bundle
+    post "/e2ee/keys/prekeys", E2EEController, :replenish_prekeys
+    get "/e2ee/devices", E2EEController, :list_devices
+    delete "/e2ee/devices/:device_id", E2EEController, :remove_device
+
     # Search
     get "/search/users", SearchController, :users
     get "/search/messages", SearchController, :messages
