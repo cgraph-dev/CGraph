@@ -23,11 +23,12 @@ defmodule CgraphWeb.GroupChannel do
         {:error, %{reason: "not_found"}}
 
       {:ok, channel} ->
-        case Groups.get_member(channel.group_id, user.id) do
-          {:error, :not_found} ->
+        # get_member_by_user returns member or nil
+        case Groups.get_member_by_user(channel.group, user.id) do
+          nil ->
             {:error, %{reason: "unauthorized"}}
 
-          {:ok, member} ->
+          member ->
             if Groups.can_view_channel?(member, channel) do
               send(self(), :after_join)
               socket = socket

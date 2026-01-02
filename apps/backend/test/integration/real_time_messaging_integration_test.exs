@@ -76,8 +76,8 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
         "conversation_id" => conversation.id
       })
       
-      # Bob should receive the message
-      assert_broadcast("new_message", %{content: ^message_content})
+      # Bob should receive the message (channel broadcasts %{message: message, sender: sender})
+      assert_broadcast("new_message", %{message: %{content: ^message_content}, sender: _})
     end
     
     test "typing indicator is broadcast to other participants", %{
@@ -102,9 +102,9 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
       # Alice starts typing
       push(alice_channel, "typing", %{"typing" => true})
       
-      # Bob should see Alice is typing
+      # Bob should see Alice is typing (channel broadcasts "user_typing")
       alice_username = alice.username
-      assert_broadcast("typing", %{user: %{username: ^alice_username}, typing: true})
+      assert_broadcast("user_typing", %{username: ^alice_username, typing: true})
     end
     
     test "presence tracks online users in conversation", %{
@@ -129,8 +129,9 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
         "conversation:#{conversation.id}"
       )
       
-      # Both users should be in presence
-      assert_broadcast("presence_state", _presences)
+      # When Bob joins, a presence_diff is broadcast showing Bob joined
+      # (presence_state is pushed to the joining socket, not broadcast)
+      assert_broadcast("presence_diff", %{joins: _joins, leaves: _leaves})
     end
     
     test "message edit is broadcast in real-time", %{
@@ -197,9 +198,9 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
       # Alice deletes the message
       push(alice_channel, "delete_message", %{"message_id" => message.id})
       
-      # Bob should see the deletion
+      # Bob should see the deletion (channel broadcasts %{message_id: id, deleted_by: user_id})
       message_id = message.id
-      assert_broadcast("message_deleted", %{id: ^message_id})
+      assert_broadcast("message_deleted", %{message_id: ^message_id})
     end
   end
   
@@ -290,8 +291,8 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
       # Owner sends a message
       push(owner_channel, "new_message", %{"content" => "Welcome everyone!"})
       
-      # Member should receive it
-      assert_broadcast("new_message", %{content: "Welcome everyone!"})
+      # Member should receive it (channel broadcasts %{message: message, sender: sender})
+      assert_broadcast("new_message", %{message: %{content: "Welcome everyone!"}, sender: _})
     end
   end
   

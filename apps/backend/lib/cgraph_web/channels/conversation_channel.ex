@@ -137,6 +137,48 @@ defmodule CgraphWeb.ConversationChannel do
   end
 
   @impl true
+  def handle_in("edit_message", %{"message_id" => message_id, "content" => content}, socket) do
+    user = socket.assigns.current_user
+
+    case Messaging.edit_message(message_id, user.id, content) do
+      {:ok, message} ->
+        broadcast!(socket, "message_updated", %{
+          id: message.id,
+          content: message.content,
+          is_edited: true,
+          edited_at: DateTime.utc_now()
+        })
+        {:reply, {:ok, %{message_id: message.id}}, socket}
+
+      {:error, reason} when is_atom(reason) ->
+        {:reply, {:error, %{reason: to_string(reason)}}, socket}
+
+      {:error, changeset} ->
+        {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
+    end
+  end
+
+  @impl true
+  def handle_in("delete_message", %{"message_id" => message_id}, socket) do
+    user = socket.assigns.current_user
+
+    case Messaging.delete_message(message_id, user.id) do
+      {:ok, _message} ->
+        broadcast!(socket, "message_deleted", %{
+          message_id: message_id,
+          deleted_by: user.id
+        })
+        {:reply, :ok, socket}
+
+      {:error, reason} when is_atom(reason) ->
+        {:reply, {:error, %{reason: to_string(reason)}}, socket}
+
+      {:error, _} ->
+        {:reply, {:error, %{reason: "failed"}}, socket}
+    end
+  end
+
+  @impl true
   def handle_in("add_reaction", %{"message_id" => message_id, "emoji" => emoji}, socket) do
     user = socket.assigns.current_user
 

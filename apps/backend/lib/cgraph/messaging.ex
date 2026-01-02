@@ -597,9 +597,26 @@ defmodule Cgraph.Messaging do
   end
 
   @doc """
+  Edit a message by ID (only by sender).
+  """
+  def edit_message(message_id, user_id, content) do
+    case get_message(message_id) do
+      {:error, :not_found} ->
+        {:error, :not_found}
+
+      {:ok, message} ->
+        if message.sender_id == user_id do
+          update_message(message, %{content: content})
+        else
+          {:error, :unauthorized}
+        end
+    end
+  end
+
+  @doc """
   Delete a message (soft delete, no authorization check).
   """
-  def delete_message(message) do
+  def delete_message(message) when is_struct(message) do
     # Truncate to seconds for :utc_datetime field
     now = DateTime.utc_now() |> DateTime.truncate(:second)
     message
@@ -608,10 +625,27 @@ defmodule Cgraph.Messaging do
   end
 
   @doc """
+  Delete a message by ID (only by sender).
+  """
+  def delete_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
+    case get_message(message_id) do
+      {:error, :not_found} ->
+        {:error, :not_found}
+
+      {:ok, message} ->
+        if message.sender_id == user_id do
+          delete_message(message)
+        else
+          {:error, :unauthorized}
+        end
+    end
+  end
+
+  @doc """
   Delete a message (only by sender or moderator).
   """
-  def delete_message(message, user) do
-    if message.sender_id == user.id do
+  def delete_message(%{sender_id: sender_id} = message, %{id: user_id}) do
+    if sender_id == user_id do
       delete_message(message)
     else
       {:error, :unauthorized}
