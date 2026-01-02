@@ -124,6 +124,15 @@ defmodule CgraphWeb.Router do
     post "/auth/logout", AuthController, :logout
     post "/auth/resend-verification", AuthController, :resend_verification
 
+    # Two-factor authentication
+    get "/auth/2fa/status", TwoFactorController, :status
+    post "/auth/2fa/setup", TwoFactorController, :setup
+    post "/auth/2fa/enable", TwoFactorController, :enable
+    post "/auth/2fa/verify", TwoFactorController, :verify
+    post "/auth/2fa/disable", TwoFactorController, :disable
+    post "/auth/2fa/backup-codes", TwoFactorController, :regenerate_backup_codes
+    post "/auth/2fa/backup-codes/use", TwoFactorController, :use_backup_code
+
     # Current user
     get "/me", UserController, :me
     put "/me", UserController, :update
@@ -244,14 +253,19 @@ defmodule CgraphWeb.Router do
     # Voice Messages
     post "/voice-messages", VoiceMessageController, :upload
     get "/voice-messages/:id", VoiceMessageController, :show
+    get "/voice-messages/:id/waveform", VoiceMessageController, :waveform
     delete "/voice-messages/:id", VoiceMessageController, :delete
 
     # End-to-End Encryption (E2EE) Key Management
     post "/e2ee/keys", E2EEController, :register_keys
     get "/e2ee/keys/:user_id", E2EEController, :get_prekey_bundle
     post "/e2ee/keys/prekeys", E2EEController, :replenish_prekeys
+    get "/e2ee/keys/count", E2EEController, :prekey_count
     get "/e2ee/devices", E2EEController, :list_devices
     delete "/e2ee/devices/:device_id", E2EEController, :remove_device
+    get "/e2ee/safety-number/:user_id", E2EEController, :safety_number
+    post "/e2ee/keys/:key_id/verify", E2EEController, :verify_key
+    post "/e2ee/keys/:key_id/revoke", E2EEController, :revoke_key
 
     # Search
     get "/search/users", SearchController, :users

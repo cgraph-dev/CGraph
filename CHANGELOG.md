@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+
+#### Two-Factor Authentication API
+- TOTP-based 2FA with full API support
+- Setup flow with QR code generation for authenticator apps
+- Enable, verify, and disable endpoints
+- Backup code generation and regeneration
+- Compatible with Google Authenticator, Authy, and other RFC 6238 apps
+
+#### E2EE API Routes
+- Safety number endpoint for identity verification
+- Key verification and revocation endpoints
+- Prekey count endpoint for monitoring key supply
+
+#### Voice Message Routes
+- Waveform data endpoint for audio visualization
+
+#### Frontend Hooks
+- `useMediaQuery` - responsive breakpoint detection
+- `useLocalStorage` - persist state with cross-tab sync
+- `useDebounce` - debounce values and callbacks
+- `useClickOutside` - detect clicks outside elements
+- `useWindowSize` - viewport dimension tracking
+- `useCopyToClipboard` - clipboard operations with feedback
+
+#### Voice Message Components
+- `Waveform` - canvas-based audio visualization
+- `VoiceMessagePlayer` - playback with waveform and seeking
+- `VoiceMessageRecorder` - recording with live visualization
+
+### Security
+- Removed JWT secret fallback (now requires JWT_SECRET env var)
+- Fixed atom exhaustion risk in input validation
+- Fixed unsafe string-to-atom conversion in abuse detection
+- Safe integer parsing in friend controller
+
+---
+
 ## [0.6.0] - 2026-01-02
 
 ### Enterprise Security, E2EE, Email & Push Notifications

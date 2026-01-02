@@ -222,6 +222,97 @@ Content-Type: application/json
 | Access Token | 15 minutes | API requests |
 | Refresh Token | 7 days | Get new access token |
 
+### Two-Factor Authentication (2FA)
+
+Add an extra layer of security with TOTP-based 2FA.
+
+**Check 2FA Status:**
+```http
+GET /api/v1/auth/2fa/status
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "enabled": false,
+  "enabled_at": null,
+  "backup_codes_remaining": 0
+}
+```
+
+**Setup 2FA:**
+```http
+POST /api/v1/auth/2fa/setup
+Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "secret": "base64-encoded-secret",
+  "qr_code_uri": "otpauth://totp/CGraph:user@example.com?secret=...",
+  "backup_codes": ["XXXX-XXXX", "YYYY-YYYY", ...]
+}
+```
+
+**Enable 2FA (after scanning QR code):**
+```http
+POST /api/v1/auth/2fa/enable
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "code": "123456",
+  "secret": "secret-from-setup",
+  "backup_codes": ["array", "from", "setup"]
+}
+```
+
+**Verify 2FA Code:**
+```http
+POST /api/v1/auth/2fa/verify
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "code": "123456"
+}
+```
+
+**Disable 2FA:**
+```http
+POST /api/v1/auth/2fa/disable
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "code": "123456"
+}
+```
+
+**Regenerate Backup Codes:**
+```http
+POST /api/v1/auth/2fa/backup-codes
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "code": "123456"
+}
+```
+
+**Use Backup Code:**
+```http
+POST /api/v1/auth/2fa/backup-codes/use
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "code": "XXXX-XXXX"
+}
+```
+
 ---
 
 ## Rate Limiting
@@ -1095,6 +1186,138 @@ type: attachment
 #### `GET /files/:id`
 
 Get file metadata.
+
+---
+
+### Voice Messages
+
+#### `POST /voice-messages`
+
+Upload a voice message.
+
+**Request:**
+```http
+Content-Type: multipart/form-data
+Authorization: Bearer <token>
+
+audio: (binary webm/opus file)
+duration: 45
+waveform: [0.2, 0.5, 0.8, ...]
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "vm_abc123",
+    "url": "https://cdn.cgraph.org/voice/abc123.webm",
+    "duration": 45,
+    "waveform": [0.2, 0.5, 0.8, ...],
+    "transcription": null
+  }
+}
+```
+
+#### `GET /voice-messages/:id`
+
+Get voice message details.
+
+#### `GET /voice-messages/:id/waveform`
+
+Get waveform data for visualization.
+
+**Response:**
+```json
+{
+  "waveform": [0.1, 0.3, 0.5, 0.7, 0.4, ...]
+}
+```
+
+#### `DELETE /voice-messages/:id`
+
+Delete a voice message.
+
+---
+
+### End-to-End Encryption (E2EE)
+
+CGraph uses the Signal Protocol for end-to-end encrypted messaging.
+
+#### `POST /e2ee/keys`
+
+Register encryption keys (identity key, signed prekey, and one-time prekeys).
+
+**Request:**
+```json
+{
+  "identity_key": "base64-encoded-public-key",
+  "signed_prekey": {
+    "key_id": 1,
+    "public_key": "base64-encoded",
+    "signature": "base64-encoded"
+  },
+  "one_time_prekeys": [
+    { "key_id": 1, "public_key": "base64-encoded" },
+    { "key_id": 2, "public_key": "base64-encoded" }
+  ]
+}
+```
+
+#### `GET /e2ee/keys/:user_id/bundle`
+
+Get a user's prekey bundle to establish a session.
+
+**Response:**
+```json
+{
+  "identity_key": "base64-encoded",
+  "signed_prekey": { ... },
+  "one_time_prekey": { ... }
+}
+```
+
+#### `POST /e2ee/keys/replenish`
+
+Add more one-time prekeys when running low.
+
+#### `GET /e2ee/keys/count`
+
+Get the count of remaining one-time prekeys.
+
+**Response:**
+```json
+{
+  "count": 47
+}
+```
+
+#### `GET /e2ee/safety-number/:user_id`
+
+Get the safety number for verifying a user's identity.
+
+**Response:**
+```json
+{
+  "safety_number": "12345 67890 12345 67890 12345 67890",
+  "qr_code": "base64-encoded-qr-image"
+}
+```
+
+#### `POST /e2ee/keys/:key_id/verify`
+
+Mark a user's key as verified.
+
+#### `POST /e2ee/keys/:key_id/revoke`
+
+Revoke a compromised key.
+
+#### `GET /e2ee/devices`
+
+List all devices with registered keys.
+
+#### `DELETE /e2ee/devices/:device_id`
+
+Remove a device and its keys.
 
 ---
 

@@ -52,6 +52,11 @@ export { default as Dropdown, DropdownItem, DropdownDivider } from './Dropdown';
 export { default as MarkdownRenderer } from './MarkdownRenderer';
 export { default as MarkdownEditor } from './MarkdownEditor';
 
+// Voice Messages
+export { Waveform, generatePlaceholderWaveform } from './Waveform';
+export { VoiceMessagePlayer } from './VoiceMessagePlayer';
+export { VoiceMessageRecorder } from './VoiceMessageRecorder';
+
 // UI Components - Enhanced versions
 export { 
   default as Card, 

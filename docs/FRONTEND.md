@@ -867,6 +867,113 @@ export function Modal({
 }
 ```
 
+### Voice Message Components
+
+Components for recording and playing back voice messages:
+
+**VoiceMessageRecorder** - Record audio with live waveform visualization:
+
+```tsx
+import { VoiceMessageRecorder } from '@/components';
+
+function ChatInput() {
+  const handleVoiceComplete = ({ blob, duration, waveform }) => {
+    // Upload and send the voice message
+    uploadVoiceMessage(blob, duration, waveform);
+  };
+
+  return (
+    <VoiceMessageRecorder
+      onComplete={handleVoiceComplete}
+      onCancel={() => console.log('Recording cancelled')}
+      maxDuration={300}
+    />
+  );
+}
+```
+
+**VoiceMessagePlayer** - Playback with waveform and seeking:
+
+```tsx
+import { VoiceMessagePlayer } from '@/components';
+
+function VoiceMessage({ message }) {
+  return (
+    <VoiceMessagePlayer
+      messageId={message.id}
+      audioUrl={message.audio_url}
+      duration={message.duration}
+      waveformData={message.waveform}
+      showDownload
+    />
+  );
+}
+```
+
+**Waveform** - Standalone waveform visualization:
+
+```tsx
+import { Waveform } from '@/components';
+
+<Waveform
+  data={[0.2, 0.5, 0.8, 0.3, 0.6, ...]}
+  progress={0.5}
+  onSeek={(progress) => seekTo(progress)}
+  height={40}
+  playedColor="#3b82f6"
+  unplayedColor="#d1d5db"
+/>
+```
+
+### Custom Hooks
+
+Reusable hooks are located in `src/hooks/`:
+
+| Hook | Purpose |
+|------|---------|
+| `useMediaQuery` | Responsive breakpoint detection |
+| `useLocalStorage` | Persist state to localStorage |
+| `useDebounce` | Debounce rapidly changing values |
+| `useClickOutside` | Detect clicks outside an element |
+| `useWindowSize` | Track viewport dimensions |
+| `useCopyToClipboard` | Copy text with feedback |
+
+**Example - Responsive design:**
+
+```tsx
+import { useMediaQuery, useIsMobile } from '@/hooks';
+
+function Sidebar() {
+  const isMobile = useIsMobile();
+  const isLargeScreen = useMediaQuery('(min-width: 1280px)');
+
+  if (isMobile) {
+    return <MobileDrawer />;
+  }
+
+  return <DesktopSidebar expanded={isLargeScreen} />;
+}
+```
+
+**Example - Debounced search:**
+
+```tsx
+import { useDebounce } from '@/hooks';
+
+function SearchInput() {
+  const [query, setQuery] = useState('');
+  const debouncedQuery = useDebounce(query, 300);
+
+  useEffect(() => {
+    if (debouncedQuery) {
+      searchAPI(debouncedQuery);
+    }
+  }, [debouncedQuery]);
+
+  return <input value={query} onChange={(e) => setQuery(e.target.value)} />;
+}
+```
+
 ---
 
 ## Styling Guide
