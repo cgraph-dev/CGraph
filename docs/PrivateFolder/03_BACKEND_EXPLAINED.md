@@ -12,8 +12,8 @@ apps/backend/
 │   ├── cgraph/              # Business logic layer
 │   │   ├── accounts/        # User-related stuff
 │   │   ├── messaging/       # Messages, conversations
-│   │   ├── groups/          # Discord-like servers
-│   │   ├── forums/          # Reddit-like communities
+│   │   ├── groups/          # Server-style communities
+│   │   ├── forums/          # Discussion communities
 │   │   ├── notifications/   # Push, in-app notifications
 │   │   ├── workers/         # Background jobs
 │   │   └── *.ex             # Core modules

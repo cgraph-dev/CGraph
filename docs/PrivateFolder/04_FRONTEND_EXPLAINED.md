@@ -18,8 +18,8 @@ apps/web/
 │   ├── pages/            # Route components
 │   │   ├── auth/         # Login, Register
 │   │   ├── messages/     # DMs
-│   │   ├── groups/       # Discord-like
-│   │   ├── forums/       # Reddit-like
+│   │   ├── groups/       # Server communities
+│   │   ├── forums/       # Discussion boards
 │   │   ├── friends/
 │   │   ├── settings/
 │   │   └── ...

@@ -1484,4 +1484,4 @@ focusManager.setEventListener((handleFocus) => {
 
 ---
 
-*Happy mobile development! Questions? #mobile on Slack.*
+*Happy mobile development! Questions? Open an issue on GitHub.*

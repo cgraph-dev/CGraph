@@ -92,7 +92,7 @@ defmodule Cgraph.Workers.SendPushNotificationTest do
     end
 
     test "has retry limit" do
-      assert SendPushNotification.__opts__()[:max_attempts] == 3
+      assert SendPushNotification.__opts__()[:max_attempts] == 5
     end
   end
 

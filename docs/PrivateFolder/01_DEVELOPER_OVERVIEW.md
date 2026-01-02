@@ -2,18 +2,21 @@
 
 This document explains everything you need to know about CGraph from scratch. Written for the solo developer who built this thing and might forget how it all works six months from now.
 
+**Current Version: 0.6.0**
+
 ---
 
 ## What Is CGraph?
 
 CGraph is a real-time communication platform combining:
 
-- **Direct messaging** (like Discord DMs)
-- **Group chat** (like Discord servers with channels)
-- **Community forums** (like Reddit with voting)
-- **Mobile apps** (iOS and Android via React Native)
+- **Direct messaging** - Real-time E2EE encrypted conversations
+- **Group chat** - Server-style communities with channels and roles
+- **Community forums** - Discussion boards with voting and nested comments
+- **Mobile apps** - iOS and Android via React Native
+- **Admin dashboard** - Full system management UI
 
-Think of it as Discord meets Reddit, built to be self-hosted or run as a SaaS.
+Built to be self-hosted or run as a SaaS.
 
 ---
 
@@ -185,7 +188,7 @@ messages
   ├── encrypted_content (for E2E)
   └── inserted_at
 
--- Groups (Discord-like servers)
+-- Groups (server-style communities)
 groups
   ├── id
   ├── name
@@ -198,7 +201,7 @@ channels (inside groups)
   ├── name
   └── type (text/voice/announcement)
 
--- Forums (Reddit-like communities)
+-- Forums (discussion communities)
 forums
   ├── id
   ├── name

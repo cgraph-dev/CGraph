@@ -38,6 +38,7 @@ export interface User {
   karma: number;
   isVerified: boolean;
   isPremium: boolean;
+  isAdmin: boolean;
   canChangeUsername: boolean;
   usernameNextChangeAt: string | null;
   createdAt: string;
@@ -61,6 +62,7 @@ function mapUserFromApi(apiUser: Record<string, unknown>): User {
     karma: (apiUser.karma as number) || 0,
     isVerified: (apiUser.is_verified as boolean) || false,
     isPremium: (apiUser.is_premium as boolean) || false,
+    isAdmin: (apiUser.is_admin as boolean) || false,
     canChangeUsername: (apiUser.can_change_username as boolean) ?? true,
     usernameNextChangeAt: (apiUser.username_next_change_at as string | null) || null,
     createdAt: apiUser.inserted_at as string,

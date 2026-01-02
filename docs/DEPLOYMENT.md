@@ -359,25 +359,13 @@ jobs:
         run: |
           flyctl ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
       
-      - name: Notify Slack
-        if: success()
-        uses: slackapi/slack-github-action@v1
-        with:
-          payload: |
-            {
-              "text": "✅ Backend deployed to production",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Backend deployed* by ${{ github.actor }}\nCommit: `${{ github.sha }}`"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      # Optional: Notify on success via webhook
+      # - name: Notify Webhook
+      #   if: success()
+      #   run: |
+      #     curl -X POST ${{ secrets.DEPLOY_WEBHOOK_URL }} \
+      #       -H "Content-Type: application/json" \
+      #       -d '{"text": "Backend deployed by ${{ github.actor }}"}'
 ```
 
 ### Web Pipeline (`.github/workflows/web.yml`)

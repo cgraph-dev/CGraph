@@ -28,6 +28,7 @@ import Settings from '@/pages/settings/Settings';
 import Notifications from '@/pages/notifications/Notifications';
 import UserProfile from '@/pages/profile/UserProfile';
 import UserLeaderboard from '@/pages/community/UserLeaderboard';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
 import NotFound from '@/pages/NotFound';
 
 // Initialize auth check on app load
@@ -73,6 +74,29 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (isAuthenticated) {
+    return <Navigate to="/messages" replace />;
+  }
+
+  return <>{children}</>;
+}
+
+// Admin route wrapper (requires authentication + admin role)
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, isLoading, user } = useAuthStore();
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-dark-900">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!user?.isAdmin) {
     return <Navigate to="/messages" replace />;
   }
 
@@ -175,6 +199,16 @@ export default function App() {
           {/* User Profile */}
           <Route path="user/:userId" element={<UserProfile />} />
           <Route path="u/:userId" element={<UserProfile />} />
+
+          {/* Admin Dashboard - requires admin role */}
+          <Route
+            path="admin/*"
+            element={
+              <AdminRoute>
+                <AdminDashboard />
+              </AdminRoute>
+            }
+          />
         </Route>
 
         {/* 404 */}

@@ -639,7 +639,7 @@ All components exported from:
 ## Karma & Reputation System
 
 ### Overview
-A Reddit-style karma system that tracks user reputation based on community engagement. Users earn karma when their posts and comments receive upvotes, and lose karma when receiving downvotes.
+A karma system that tracks user reputation based on community engagement. Users earn karma when their posts and comments receive upvotes, and lose karma when receiving downvotes.
 
 ### Backend Changes
 
@@ -1130,9 +1130,9 @@ end
 
 Researched best practices from:
 - Discourse gamification patterns
-- Reddit karma systems
+- Community karma systems
 - StackOverflow reputation mechanics
-- GitHub contribution graphs
+- Contribution graph patterns
 
 Applied insights:
 - Compact sidebar widgets don't disrupt main content

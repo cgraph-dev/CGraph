@@ -24,7 +24,7 @@ defmodule CgraphWeb.ConversationChannel do
         {:error, %{reason: "not_found"}}
 
       {:ok, conversation} ->
-        if Messaging.user_in_conversation?(user.id, conversation) do
+        if Messaging.user_in_conversation?(conversation_id, user.id) do
           send(self(), :after_join)
           {:ok, assign(socket, :conversation_id, conversation_id)}
         else
@@ -47,9 +47,14 @@ defmodule CgraphWeb.ConversationChannel do
     # Send current presence state
     push(socket, "presence_state", Presence.list(socket))
 
-    # Send recent messages
-    messages = Messaging.list_messages(conversation_id, limit: 50)
-    push(socket, "message_history", %{messages: messages})
+    # Send recent messages (fetch the conversation struct first)
+    case Messaging.get_conversation(conversation_id) do
+      {:ok, conversation} ->
+        messages = Messaging.list_messages(conversation, limit: 50)
+        push(socket, "message_history", %{messages: messages})
+      _ ->
+        push(socket, "message_history", %{messages: []})
+    end
 
     {:noreply, socket}
   end

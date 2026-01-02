@@ -1273,21 +1273,21 @@ Full OpenAPI 3.0 spec available at:
 openapi: 3.0.3
 info:
   title: CGraph API
-  version: 1.0.0
+  version: 0.6.0
   description: |
     CGraph is a real-time communication platform combining:
-    - Direct messaging (Telegram-style)
-    - Group channels (Discord-style)
-    - Forums (Reddit-style)
+    - Direct messaging with E2EE
+    - Group channels with roles and permissions
+    - Forums with voting and nested comments
   contact:
-    email: api@cgraph.org
+    email: api@cgraph.app
   license:
     name: MIT
 
 servers:
-  - url: https://api.cgraph.org/api/v1
+  - url: https://api.cgraph.app/api/v1
     description: Production
-  - url: https://staging-api.cgraph.org/api/v1
+  - url: https://staging-api.cgraph.app/api/v1
     description: Staging
   - url: http://localhost:4000/api/v1
     description: Local development

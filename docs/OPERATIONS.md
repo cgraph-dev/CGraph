@@ -746,7 +746,7 @@ Keep these runbooks up to date and accessible:
 **PagerDuty alerts for:**
 - SEV1: Page immediately, any time
 - SEV2: Page during business hours only
-- SEV3+: Slack notification only
+- SEV3+: Email/webhook notification only
 
 **Example alert configuration:**
 ```yaml
@@ -767,7 +767,7 @@ alerts:
     condition: p99_latency > 2000
     duration: 10m
     severity: sev3
-    notify: slack
+    notify: webhook
 ```
 
 ---

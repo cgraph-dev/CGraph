@@ -1,17 +1,17 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 by the core team  
-> This doc gets outdated fast—if something looks wrong, it probably is. Ping @sarah in Slack.
+> Last updated: January 2026 | Version 0.6.0  
+> This doc gets outdated fast—if something looks wrong, check the CHANGELOG.
 
 ---
 
 ## Executive Summary
 
-CGraph is a real-time communication platform that combines the immediacy of Discord-style chat with the depth of Reddit-style forums. We built it because existing solutions either excel at quick conversations OR long-form discussions, but never both.
+CGraph is a real-time communication platform that combines instant messaging with deep forum discussions. We built it because existing solutions either excel at quick conversations OR long-form discussions, but never both.
 
 The platform serves three core use cases: (1) instant messaging between individuals and groups with end-to-end encryption, (2) persistent forum discussions with voting, threading, and customizable communities, and (3) a friends system that ties everything together. Users can authenticate traditionally with email/password or anonymously via crypto wallets—we don't judge.
 
-Our tech stack prioritizes developer happiness and real-time performance. Elixir/Phoenix handles the backend because OTP makes WebSocket connections almost embarrassingly easy to scale. React powers both web (Vite) and mobile (React Native) frontends, sharing types and utilities through a monorepo structure. PostgreSQL stores everything important, with Redis handling the ephemeral stuff like presence and rate limiting.
+Our tech stack prioritizes developer happiness and real-time performance. Elixir/Phoenix handles the backend because OTP makes WebSocket connections almost embarrassingly easy to scale. React powers both web (Vite) and mobile (React Native) frontends, sharing types and utilities through a monorepo structure. PostgreSQL stores everything important, with Cachex/ETS handling the ephemeral stuff like presence and rate limiting.
 
 ---
 
@@ -305,7 +305,7 @@ Security isn't an afterthought here. We've been burned before (ask me about the 
 | Application | Sensitive fields | AES-256-GCM |
 | Database | At rest | PostgreSQL native encryption |
 | Backups | Backup files | GPG encrypted before S3 |
-| E2EE Messages | Message content | X3DH + AES-256-GCM (Signal-inspired) |
+| E2EE Messages | Message content | X3DH + AES-256-GCM (industry-standard protocol) |
 
 ### E2EE Architecture
 
@@ -574,30 +574,34 @@ The cost per user actually decreases as we scale, then stabilizes around $0.02/u
 
 ## What's Next?
 
-Things on our radar for 2025:
+Things on our radar for 2026:
 
 1. **Voice/Video calls** - Evaluating LiveKit vs. Jitsi
 2. **AI features** - Message summarization, smart search
-3. **ActivityPub** - Federation with Mastodon/other platforms
-4. **Double Ratchet** - Full Signal Protocol with session ratcheting
+3. **ActivityPub** - Federation with other platforms
+4. **Double Ratchet** - Full protocol with session ratcheting
 5. **Self-hosting** - Docker compose for power users
 
-### Recently Completed
+### Recently Completed (v0.6.0)
 
 - ✅ **E2EE Implementation** - X3DH key exchange, AES-256-GCM encryption
 - ✅ **Voice Messages** - Recording, transcoding, waveform visualization
 - ✅ **Multi-backend Storage** - Local, S3, Cloudflare R2 support
+- ✅ **Email System** - Transactional emails with templates
+- ✅ **Push Notifications** - APNs, FCM, Expo Push support
+- ✅ **Admin Dashboard** - User management, reports, audit logs
+- ✅ **Security Hardening** - Input validation, abuse detection
 
 ---
 
 ## Questions?
 
-If something in this doc doesn't make sense or seems outdated, here's who to bug:
+If something in this doc doesn't make sense or seems outdated, check the CHANGELOG or open an issue.
 
-- **Architecture decisions**: @marcus (backend lead)
-- **Frontend questions**: @aisha (frontend lead)  
-- **DevOps/infrastructure**: @chen (SRE)
-- **Security concerns**: security@cgraph.org (or @marcus)
+- **Architecture decisions**: Check docs/ARCHITECTURE.md
+- **Frontend questions**: Check docs/FRONTEND.md
+- **DevOps/infrastructure**: Check docs/DEPLOYMENT.md
+- **Security concerns**: security@cgraph.app
 
 ---
 

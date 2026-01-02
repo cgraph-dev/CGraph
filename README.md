@@ -1,20 +1,41 @@
 # CGraph
 
-A modern, full-stack social platform combining messaging, groups, and forum communities with Web3 wallet integration.
+A modern, full-stack social platform combining messaging, groups, and forum communities with Web3 wallet integration and end-to-end encryption.
+
+**Version 0.6.0** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
 
 ## 🚀 Features
 
 ### Core Platform
-- **Direct Messaging** - Real-time encrypted conversations
-- **Groups** - Discord-style servers with channels, roles, and permissions
-- **Forums** - Reddit-style communities with voting and nested comments
-- **Forum Hosting** - MyBB-style forum creation with boards, threads, and customization
+- **Direct Messaging** - Real-time E2EE encrypted conversations
+- **Groups** - Server-style communities with channels, roles, and permissions
+- **Forums** - Community discussion boards with voting and nested comments
+- **Forum Hosting** - Traditional forum creation with boards, threads, and customization
 - **Friends System** - Cross-platform friend requests, mutual friends, suggestions
+- **Voice Messages** - Record and send voice messages with waveform visualization
+
+### Security & Privacy
+- **End-to-End Encryption** - X3DH/AES-256-GCM encryption on all platforms
+- **Two-Factor Authentication** - TOTP-based 2FA with backup codes
+- **Enterprise Security** - Input validation, abuse detection, rate limiting
+- **Session Management** - Multi-device sessions with remote logout
 
 ### Web3 Integration
 - **Wallet Login** - Authenticate with Ethereum/Polygon wallets
 - **Local Wallet Generation** - Create wallets directly in the app with PIN protection
 - **Recovery System** - Backup codes and key file recovery
+
+### Notifications
+- **Push Notifications** - APNs (iOS), FCM (Android), Expo Push
+- **Email Notifications** - Transactional emails via Swoosh/Resend
+- **Real-time Updates** - WebSocket-based instant updates
+
+### Admin Dashboard
+- **System Metrics** - Real-time monitoring and statistics
+- **User Management** - Ban/unban, search, account management
+- **Content Moderation** - Report handling and resolution
+- **Audit Logging** - Complete activity audit trail
+- **Configuration** - Runtime system configuration
 
 ### Cross-Platform
 - **Web App** - React + Vite + TailwindCSS
@@ -125,13 +146,14 @@ api.get('/api/v1/friends');
 ## 🧪 Testing
 
 ```bash
-# Backend tests (220 tests)
+# Backend tests (585 tests)
 cd apps/backend
 mix test
 
-# Web TypeScript check
+# Web TypeScript check + build
 cd apps/web
 pnpm tsc --noEmit
+pnpm build
 
 # Mobile TypeScript check
 cd apps/mobile
@@ -146,8 +168,10 @@ npx tsc --noEmit
 - [Forum Hosting Platform](docs/FORUM_HOSTING_PLATFORM.md)
 - [Frontend Guide](docs/FRONTEND.md)
 - [Mobile Guide](docs/MOBILE.md)
+- [Database Guide](docs/DATABASE.md)
+- [Security Hardening](docs/SECURITY_HARDENING.md)
 - [Deployment](docs/DEPLOYMENT.md)
-- [Security](docs/SECURITY_HARDENING.md)
+- [Operations](docs/OPERATIONS.md)
 
 ## 🔧 Configuration
 

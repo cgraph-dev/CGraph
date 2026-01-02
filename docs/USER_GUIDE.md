@@ -21,18 +21,20 @@
 
 ## What is CGraph?
 
-CGraph is a modern communication platform that combines the best features of Discord, Reddit, and Signal into one seamless experience. Whether you want to chat privately with friends, build communities around shared interests, or participate in topic-based discussions, CGraph has you covered.
+CGraph is a modern communication platform that combines real-time messaging, community servers, and discussion forums into one seamless experience. Whether you want to chat privately with friends, build communities around shared interests, or participate in topic-based discussions, CGraph has you covered.
 
 ### Key Features
 
 | Feature | Description |
 |---------|-------------|
 | **Direct Messages** | Private 1:1 and group conversations with real-time delivery |
-| **Group Servers** | Discord-style communities with channels, roles, and permissions |
-| **Forums** | Reddit-style discussion boards with posts, comments, and voting |
+| **Group Servers** | Communities with channels, roles, and permissions |
+| **Forums** | Discussion boards with posts, comments, and voting |
 | **Dual Authentication** | Sign up with email OR anonymous crypto wallet |
 | **End-to-End Encryption** | Your messages stay private - only you and your recipients can read them |
 | **Cross-Platform** | Seamless experience across web and mobile |
+| **Voice Messages** | Record and send voice messages with waveform visualization |
+| **Push Notifications** | Stay updated on all your devices |
 
 ---
 
@@ -178,7 +180,7 @@ Create group conversations with up to 50 people:
 
 ## Groups & Channels
 
-Groups are communities centered around shared interests, like Discord servers.
+Groups are communities centered around shared interests with organized channels.
 
 ### Joining a Group
 
@@ -233,7 +235,7 @@ To manage roles: **Group Settings → Roles**
 
 ## Forums
 
-Forums are for long-form discussions, similar to Reddit.
+Forums are for long-form discussions with posts, comments, and voting.
 
 ### Browsing Forums
 

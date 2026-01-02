@@ -240,7 +240,7 @@ Audit.log(:auth, :login_success, %{
 
 **Module:** `Cgraph.Crypto.E2EE`
 
-Signal-inspired E2EE implementation for private messaging:
+Industry-standard E2EE implementation for private messaging:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

@@ -82,7 +82,7 @@ schema "messages" do
 end
 ```
 
-### Groups (Discord-like)
+### Groups (Server-Style Communities)
 
 ```elixir
 schema "groups" do
@@ -139,7 +139,7 @@ schema "roles" do
 end
 ```
 
-### Forums (Reddit-like)
+### Forums (Discussion Communities)
 
 ```elixir
 schema "forums" do

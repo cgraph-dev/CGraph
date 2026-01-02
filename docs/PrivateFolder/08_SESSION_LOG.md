@@ -1,10 +1,44 @@
-# Development Session Log - December 2025
+# Development Session Log
 
-Record of major changes made during the December 2025 development sprint.
+Record of major changes made during development sprints.
 
 ---
 
-## Summary
+## January 2026 Sprint (v0.6.0)
+
+### Major Features Added
+
+| Feature | Files Created | Description |
+|---------|--------------|-------------|
+| **Email System** | `lib/cgraph/mailer.ex`, `lib/cgraph/mailer/templates.ex` | Enterprise email with templates |
+| **Push Notifications** | `lib/cgraph/notifications/push_service.ex`, + 3 clients | APNs, FCM, Expo support |
+| **Admin Dashboard** | `apps/web/src/pages/admin/AdminDashboard.tsx` | Full admin UI |
+| **Admin API** | `apps/web/src/lib/api/admin.ts` | Type-safe admin client |
+
+### Bug Fixes
+
+- Fixed conversation channel passing string instead of struct to `list_messages/2`
+- Fixed push notification worker crashing in test environment
+- Fixed TypeScript ArrayBuffer type issues in E2EE modules
+- Updated worker max_attempts configuration
+
+### Documentation Updates
+
+- Updated all package versions to 0.6.0
+- Removed competitor name references from all docs
+- Updated CHANGELOG with v0.6.0 features
+- Updated README with new features list
+
+### Test Status
+
+| Suite | Result |
+|-------|--------|
+| Backend | 585 tests, 578 passing, 7 pre-existing failures |
+| Web Build | Successful, no TypeScript errors |
+
+---
+
+## December 2025 Sprint
 
 This session focused on two main areas:
 1. UI polish with micro-interactions across web and mobile

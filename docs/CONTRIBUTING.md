@@ -585,8 +585,8 @@ mix test.watch
 Stuck on something?
 
 1. **Check existing issues** - Someone might have had the same problem
-2. **Search Slack** - Lots of tribal knowledge there
-3. **Ask in #dev-help** - We're friendly, promise
+2. **Search the docs** - Check the /docs folder for guidance
+3. **Open a discussion** - GitHub Discussions are great for questions
 4. **Pair with someone** - Sometimes two brains are better than one
 
 Don't struggle alone for hours. If you've been stuck for 30 minutes, ask for help. We've all been there.
