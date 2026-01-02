@@ -48,7 +48,7 @@ config :phoenix, :json_library, Jason
 # Guardian configuration
 config :cgraph, Cgraph.Guardian,
   issuer: "cgraph",
-  secret_key: System.get_env("JWT_SECRET") || "dev-secret-please-change-in-production"
+  secret_key: System.get_env("JWT_SECRET", "dev-jwt-key-override-in-production")
 
 # Oban configuration
 config :cgraph, Oban,

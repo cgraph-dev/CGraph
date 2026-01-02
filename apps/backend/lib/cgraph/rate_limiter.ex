@@ -592,10 +592,7 @@ defmodule Cgraph.RateLimiter do
   end
   
   defp cleanup_expired_entries do
-    # This is a simplified cleanup - in production you'd want more sophisticated logic
-    # to handle different algorithm storage formats
-    
-    # Clean expired blacklist entries
+    # Remove expired blacklist entries from ETS
     :ets.foldl(fn
       {{:blacklist, _} = key, until}, acc when until != :infinity ->
         if DateTime.compare(DateTime.utc_now(), until) == :gt do

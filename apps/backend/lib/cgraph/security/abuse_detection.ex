@@ -338,7 +338,7 @@ defmodule Cgraph.Security.AbuseDetection do
     # Check for content issues
     reports = if type == :spam and opts[:content] do
       {_, content_reasons} = analyze_content(opts[:content])
-      Enum.map(content_reasons, &String.to_atom/1) ++ reports
+      Enum.map(content_reasons, &reason_to_atom/1) ++ reports
     else
       reports
     end
@@ -416,6 +416,18 @@ defmodule Cgraph.Security.AbuseDetection do
   
   defp schedule_cleanup do
     Process.send_after(self(), :cleanup, 60_000)  # Every minute
+  end
+  
+  @known_reasons %{
+    "excessive_caps" => :excessive_caps,
+    "repetitive_chars" => :repetitive_chars,
+    "potential_spam_patterns" => :potential_spam_patterns,
+    "suspicious_links" => :suspicious_links,
+    "gibberish_detected" => :gibberish_detected
+  }
+
+  defp reason_to_atom(reason) when is_binary(reason) do
+    Map.get(@known_reasons, reason, :unknown_content_issue)
   end
   
   defp emit_telemetry(event, user_id, type, score, reasons) do

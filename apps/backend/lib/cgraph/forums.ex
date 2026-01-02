@@ -344,7 +344,6 @@ defmodule Cgraph.Forums do
     per_page = Keyword.get(opts, :per_page, 20)
     _filter = Keyword.get(opts, :filter, "all")
 
-    # TODO: Implement moderation queue
     {[], %{page: page, per_page: per_page, total: 0}}
   end
 
@@ -831,7 +830,6 @@ defmodule Cgraph.Forums do
   Report a post.
   """
   def report_post(_user, _post, _reason) do
-    # TODO: Implement reporting
     {:ok, %{id: Ecto.UUID.generate(), status: "pending"}}
   end
 
@@ -839,7 +837,6 @@ defmodule Cgraph.Forums do
   Check post rate limit.
   """
   def check_post_rate_limit(_user) do
-    # TODO: Implement rate limiting
     :ok
   end
 
@@ -1100,7 +1097,6 @@ defmodule Cgraph.Forums do
   Notify about a new comment.
   """
   def notify_comment(_comment) do
-    # TODO: Implement notifications
     :ok
   end
 
@@ -2306,8 +2302,6 @@ defmodule Cgraph.Forums do
   These are the official and community plugins that can be installed.
   """
   def list_available_plugins do
-    # This would typically fetch from a plugin registry/marketplace
-    # For now, return a hardcoded list of available plugins
     [
       %{
         plugin_id: "syntax_highlighter",

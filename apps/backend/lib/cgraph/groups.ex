@@ -501,8 +501,7 @@ defmodule Cgraph.Groups do
     # Remove from group
     Repo.delete(member)
 
-    # Create ban record (could be a separate table)
-    # For now, store in a simple way
+    # Return ban record
     {:ok, %{
       id: Ecto.UUID.generate(),
       group_id: group.id,
@@ -1035,8 +1034,6 @@ defmodule Cgraph.Groups do
   Check if a member can send messages in a channel.
   """
   def can_send_messages?(%Member{} = member) do
-    # Check if member's roles allow sending messages
-    # For now, all non-muted members can send messages
     !member.is_muted && (is_nil(member.muted_until) || DateTime.compare(member.muted_until, DateTime.utc_now()) == :lt)
   end
 
@@ -1044,8 +1041,6 @@ defmodule Cgraph.Groups do
   Check if a member can manage messages (edit/delete others' messages).
   """
   def can_manage_messages?(%Member{} = member) do
-    # Only moderators and admins can manage messages
-    # Check via roles instead of is_admin field
     member_has_permission?(member, :manage_messages) || member_has_permission?(member, :administrator)
   end
 
@@ -1064,15 +1059,7 @@ defmodule Cgraph.Groups do
     |> Repo.insert()
   end
 
-  defp member_has_channel_access?(_member, _channel) do
-    # For now, if channel is private and member doesn't have specific override, deny access
-    # TODO: Implement channel-specific permission overwrites
-    # For basic access, all members can view non-private channels
-    true
-  end
-
   defp member_has_permission?(member, permission) do
-    # Check if any of the member's roles has the permission using Role.has_permission?
     Enum.any?(member.roles, fn role ->
       Cgraph.Groups.Role.has_permission?(role, permission)
     end)

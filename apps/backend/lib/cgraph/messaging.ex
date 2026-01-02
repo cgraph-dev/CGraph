@@ -95,8 +95,6 @@ defmodule Cgraph.Messaging do
     participant_ids = Map.get(attrs, :participant_ids, [])
     name = Map.get(attrs, :name)
     
-    # For now, group conversations are created the same as regular but with name
-    # This would need schema updates for full group support
     case create_conversation(creator, %{"participant_ids" => participant_ids, "name" => name}) do
       {:ok, conversation} -> {:ok, conversation}
       error -> error

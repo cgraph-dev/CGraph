@@ -9,241 +9,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.0] - 2026-01-02
 
-### 🔐 Enterprise Security, E2EE, Email & Push Notifications
+### Enterprise Security, E2EE, Email & Push Notifications
 
-This release delivers enterprise-grade security hardening, complete E2EE implementations for all platforms, a comprehensive email system, multi-platform push notifications, an admin dashboard, and performance optimization infrastructure.
+Major release with enterprise security features, E2EE across all platforms, email delivery, push notifications, and admin tooling.
 
 ### Added
 
 #### Email System
-- **`lib/cgraph/mailer.ex`** (~380 lines)
-  - Enterprise-grade email delivery via Swoosh
-  - Resend adapter for production, Local/Test adapters for dev
-  - Email tracking support (opens, clicks)
-  - Template-based rendering with HTML and plain text
-  - Health check integration
-  - Configurable sender per email type (noreply, security)
+- Enterprise-grade email delivery via Swoosh with Resend for production
+- Welcome, verification, password reset, and security alert templates
+- Notification digest emails with daily/weekly summaries
+- Email tracking and configurable sender addresses
+- Responsive HTML templates with dark mode
 
-- **`lib/cgraph/mailer/templates.ex`** (~700 lines)
-  - Welcome email with onboarding steps
-  - Email verification with secure tokens
-  - Password reset with expiring links
-  - Notification digest (daily/weekly summaries)
-  - Security alerts (new device, password changes)
-  - Two-factor authentication codes
-  - Account locked notifications
-  - Data export ready notifications
-  - Responsive HTML templates with dark mode support
-
-#### Push Notification System
-- **`lib/cgraph/notifications/push_service.ex`** (~300 lines)
-  - Main orchestration GenServer for push notifications
-  - Platform routing (APNs, FCM, Expo, Web Push)
-  - Batch sending with rate limiting
-  - Topic subscriptions for broadcast messages
-  - Scheduled notifications support
-  - Telemetry integration for monitoring
-
-- **`lib/cgraph/notifications/push_service/apns_client.ex`** (~500 lines)
-  - Apple Push Notification Service HTTP/2 client
-  - JWT authentication with automatic token refresh
-  - Connection pooling via Mint
-  - Support for alert, silent, and background notifications
-  - Priority handling (high/normal)
-  - Badge, sound, and category support
-
-- **`lib/cgraph/notifications/push_service/fcm_client.ex`** (~600 lines)
-  - Firebase Cloud Messaging HTTP v1 API client
-  - Service account authentication
-  - Android-specific options (channels, priority)
-  - Data-only and notification messages
-  - Topic messaging support
-  - Multicast sending
-
-- **`lib/cgraph/notifications/push_service/expo_client.ex`** (~600 lines)
-  - Expo Push Service client for React Native
-  - Batch API with chunking (max 100 per request)
-  - Receipt checking for delivery confirmation
-  - Ticket management and error handling
-  - Token validation
-  - Web Push support (VAPID)
+#### Push Notifications
+- APNs client with HTTP/2, JWT auth, and connection pooling
+- FCM v1 API with service account auth and topic messaging
+- Expo Push for React Native with batch sending and receipt tracking
+- Scheduled notifications and broadcast topics
+- Telemetry integration
 
 #### Admin Dashboard
-- **`apps/web/src/pages/admin/AdminDashboard.tsx`** (~1,200 lines)
-  - System metrics overview with real-time updates
-  - User management (search, view, ban/unban, delete)
-  - Content reports handling with resolution workflow
-  - Audit log viewer with filtering by category
-  - System configuration panel
-  - Tabbed interface with animated transitions
+- System metrics with real-time updates
+- User management: search, ban/unban, account actions
+- Content moderation and report resolution
+- Audit log viewer with category filtering
+- Runtime configuration panel
+- Admin API client with type safety
 
-- **`apps/web/src/lib/api/admin.ts`** (~400 lines)
-  - Type-safe admin API client
-  - System metrics and real-time stats
-  - User management operations
-  - Report handling endpoints
-  - Audit log retrieval
-  - Configuration management
-  - Job management (failed jobs, retry, delete)
-  - System announcements
-
-#### End-to-End Encryption - Mobile Client
-- **`apps/mobile/src/lib/crypto/e2ee.ts`** (~600 lines)
-  - X25519 key generation via TweetNaCl
-  - X3DH key agreement protocol (Signal-style)
-  - AES-256-GCM message encryption/decryption
-  - Prekey bundle management with automatic replenishment
-  - SecureStore integration for key persistence
-  - Session establishment and caching
-  - Safety number generation for verification
-- **`apps/mobile/src/lib/crypto/E2EEContext.tsx`**
-  - React Context/Provider for E2EE state
-  - `useE2EE()` hook for encryption operations
-  - `usePreKeyReplenishment()` hook for key maintenance
-- **`apps/mobile/src/lib/crypto/index.ts`** - Barrel export
-
-#### End-to-End Encryption - Web Client
-- **`apps/web/src/lib/crypto/e2ee.ts`** (~650 lines)
-  - Web Crypto API for all cryptographic operations
-  - ECDH P-256 for key exchange (browser-native)
-  - ECDSA P-256 for signatures
-  - AES-256-GCM for message encryption
-  - HKDF for key derivation
-  - IndexedDB persistence for identity and session keys
-  - Automatic prekey replenishment threshold detection
-  - Comprehensive error handling with typed errors
-- **`apps/web/src/lib/crypto/e2eeStore.ts`**
-  - Zustand store with persistence middleware
-  - Automatic initialization on app load
-  - Session cache management
-  - Prekey status monitoring
-- **`apps/web/src/lib/crypto/index.ts`** - Barrel export
+#### End-to-End Encryption
+- **Mobile (React Native)**: X25519 via TweetNaCl, X3DH protocol, AES-256-GCM encryption, SecureStore integration, session management
+- **Web (Browser)**: Web Crypto API, ECDH P-256, ECDSA signatures, IndexedDB persistence, automatic prekey replenishment
+- E2EE React Context/Provider and hooks for both platforms
+- Safety number generation for contact verification
 
 #### Security Hardening
-- **`lib/cgraph/security/input_validator.ex`** (~500 lines)
-  - Email validation with RFC 5322 compliance
-  - Username validation (alphanumeric, underscore, length limits)
-  - Password strength validation (entropy, breach detection)
-  - UUID validation for all ID parameters
-  - URL validation with protocol whitelist
-  - Phone number validation with E.164 format
-  - Content sanitization (XSS prevention)
-  - SQL injection pattern detection
-  - Path traversal prevention
-  - HTML tag stripping and sanitization
+- Comprehensive input validation: email, username, password strength, UUIDs, URLs
+- Abuse detection: spam, harassment, account takeover, brute force
+- Risk scoring with configurable thresholds
+- SQL injection and XSS prevention
+- Password breach detection integration
 
-- **`lib/cgraph/security/abuse_detection.ex`** (~600 lines)
-  - Real-time spam detection (message frequency, content patterns)
-  - Harassment detection (keyword analysis, target patterns)
-  - Account takeover detection (impossible travel, new device)
-  - Brute force detection with exponential backoff
-  - Risk scoring system (0-100) with configurable thresholds
-  - ETS-based event storage for high performance
-  - Automatic cleanup of stale events
-  - Telemetry integration for alerting
-
-#### Performance Optimization
-- **`lib/cgraph/cache/unified.ex`** (~400 lines)
-  - Unified caching layer with namespace support
-  - Multiple backends: ETS (local), Cachex (distributed)
-  - TTL-based expiration per namespace
-  - Cache warming utilities
-  - Pattern-based invalidation
-  - Telemetry for hit/miss monitoring
-  - Cache-aside pattern with fetch callbacks
-
-- **`lib/cgraph/performance/query_optimizer.ex`**
-  - Batched loading to prevent N+1 queries
-  - Cursor-based pagination for large datasets
-  - Query analysis with EXPLAIN ANALYZE
-  - Selective field loading
-  - Preload optimization
-
-- **`lib/cgraph/performance/circuit_breaker.ex`** (~400 lines)
-  - GenServer-based circuit breaker pattern
-  - Three states: closed, open, half-open
-  - Configurable failure thresholds per service
-  - Recovery time with automatic state transitions
-  - Success threshold for half-open recovery
-  - ETS storage for fast status checks
-  - Fallback function support
-  - Telemetry integration
-
-- **`lib/cgraph/performance/connection_pool.ex`**
-  - Database pool sizing calculator
+#### Performance Infrastructure
+- Unified caching layer with ETS and Cachex backends
+- Query optimizer with batched loading and cursor pagination
+- Circuit breaker pattern for external service resilience
+- Connection pool sizing and management
   - HTTP pool configuration (Finch)
   - Redis pool configuration
   - Pool health monitoring
   - Auto-tuning recommendations
 
 #### Integration Testing
-- **`test/integration/e2ee_messaging_integration_test.exs`** (9 tests)
-  - Complete key exchange flow
-  - Message encryption/decryption
-  - One-time prekey consumption
-  - Safety number consistency
-  - Key verification and revocation
-  - Multi-device key management
-  - Voice message metadata encryption
-  - Storage integration with E2EE
-  - Concurrent prekey requests
-
-- **`test/integration/voice_message_storage_integration_test.exs`** (11 tests)
-  - Complete voice message lifecycle
-  - Conversation integration
-  - Presigned URL generation
-  - Deletion cascade to storage
-  - Rate limiting integration
-  - Format validation
-  - Waveform extraction
-  - Size limit enforcement
-  - Concurrent uploads
-
-- **`test/integration/real_time_messaging_integration_test.exs`** (8 tests)
-  - WebSocket message delivery
-  - Typing indicators
-  - Presence tracking
-  - Message editing broadcasts
-  - Message deletion broadcasts
-  - Read receipts
-  - Group channel messaging
-  - Reconnection recovery
-
-#### Test Support
-- **`test/support/channel_case.ex`** - Phoenix channel test helper
+- E2EE messaging: key exchange, encryption/decryption, prekey handling, safety numbers (9 tests)
+- Voice messages: complete lifecycle, storage integration, rate limiting (11 tests)
+- Real-time messaging: WebSocket delivery, typing, presence, edit/delete broadcasts (8 tests)
 
 ### Changed
-
-- Fixed `user_in_conversation?` argument order in ConversationChannel (bug fix)
-- Fixed conversation channel `list_messages` receiving string instead of struct
-- All `Logger.warn` calls updated to `Logger.warning` for Elixir 1.19 compatibility
-- Unused variable warnings fixed across security modules
-- Push notification worker now gracefully handles GenServer not running (test env)
-- Updated `max_attempts` from 3 to 5 for push notification retries
-- Fixed TypeScript ArrayBuffer type issues in E2EE crypto modules
+- Fixed argument order in ConversationChannel for `user_in_conversation?`
+- Fixed conversation channel receiving string instead of struct for `list_messages`
+- Updated `Logger.warn` to `Logger.warning` for Elixir 1.19 compatibility
+- Push notification worker handles GenServer not running gracefully
+- Increased push notification retry attempts from 3 to 5
+- Fixed TypeScript ArrayBuffer type issues in E2EE modules
 
 ### Test Results
-
-- **585 tests** total
-- **578 tests passing** (7 pre-existing real-time integration test issues)
-- **20 new integration tests** added this release
-- All E2EE integration tests passing
-- All voice message storage tests passing
-- Web app builds successfully with no TypeScript errors
+- 585 tests total, 578 passing
+- All E2EE and voice message tests passing
+- Web app builds with no TypeScript errors
 
 ---
 
 ## [0.5.0] - 2026-01-01
 
-### 🚀 Major Runtime Upgrade
+### Runtime Upgrade
 
-This release upgrades to the latest stable Erlang/OTP 28.3 and Elixir 1.19.4 for improved performance and future compatibility.
+Upgraded to Erlang/OTP 28.3 and Elixir 1.19.4 for improved performance.
 
 ### Changed
 
 #### Runtime Upgrades
-- **Erlang/OTP**: 25.x → 28.3 (latest stable with JIT improvements)
-- **Elixir**: 1.14.x → 1.19.4 (latest stable with set-theoretic types)
+- **Erlang/OTP**: 25.x → 28.3 (JIT improvements)
+- **Elixir**: 1.14.x → 1.19.4 (set-theoretic types)
 - **Phoenix**: 1.7.21 → 1.8.3 (latest stable)
 - **Phoenix LiveView**: 0.20.17 → 1.1.19 (major upgrade)
 - **Phoenix LiveDashboard**: 0.8.5 → 0.8.7

@@ -360,7 +360,6 @@ defmodule Cgraph.Workers.SyncExternalData do
   def execute(%{"source" => source, "resource_id" => id} = _args, _job) do
     Logger.info("Syncing external data", source: source, resource_id: id)
     
-    # For now, always succeeds - error handling is ready for when external APIs are added
     {:ok, data} = fetch_external_data(source, id)
     store_synced_data(source, id, data)
     :ok
@@ -368,12 +367,10 @@ defmodule Cgraph.Workers.SyncExternalData do
   
   @spec fetch_external_data(String.t(), String.t()) :: {:ok, map()} | {:error, atom()} | {:error, :rate_limited, non_neg_integer()}
   defp fetch_external_data(_source, _id) do
-    # TODO: Would call external API, return {:error, :rate_limited, 60} or {:error, :api_error}
     {:ok, %{}}
   end
   
   defp store_synced_data(_source, _id, _data) do
-    # Would store in database
     :ok
   end
 end

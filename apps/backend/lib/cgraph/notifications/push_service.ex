@@ -629,8 +629,6 @@ defmodule Cgraph.Notifications.PushService do
   # ============================================================================
   
   defp get_conversation_member_ids(conversation_id, exclude_id) do
-    # This would integrate with your Messaging context
-    # For now, placeholder implementation
     import Ecto.Query
     
     from(cp in "conversation_participants",

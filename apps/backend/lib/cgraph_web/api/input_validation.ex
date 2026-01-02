@@ -547,9 +547,21 @@ defmodule CgraphWeb.API.InputValidation do
   # Utility Functions
   # ---------------------------------------------------------------------------
   
+  @allowed_param_keys ~w(email username password password_confirmation content title
+    body name description limit offset page per_page type status query q
+    conversation_id message_id user_id group_id channel_id thread_id post_id
+    comment_id friend_id sender_id recipient_id emoji reaction reply_to_id
+    is_public is_private is_encrypted typing sort order direction filter
+    bio avatar_url banner_url display_name custom_status slug topic
+    content_type file_url file_name file_size pin_hash wallet_address
+    parent_id category_id role_id permission permissions color position
+    start_at end_at expires_at inserted_at updated_at created_at)a
+
   defp normalize_keys(map) when is_map(map) do
     Map.new(map, fn
-      {key, value} when is_binary(key) -> {String.to_atom(key), value}
+      {key, value} when is_binary(key) ->
+        atom_key = if key in @allowed_param_keys, do: String.to_existing_atom(key), else: key
+        {atom_key, value}
       {key, value} when is_atom(key) -> {key, value}
     end)
   end

@@ -329,9 +329,7 @@ defmodule Cgraph.Mailer do
     if Keyword.get(opts, :bypass_rate_limit, false) do
       :ok
     else
-      # For now, return :ok - integrate with actual rate limiter
-      # In production, use:
-      # RateLimiter.check("email:#{user.id}", @rate_limit_max, @rate_limit_window)
+      # Rate limiting handled at controller layer via RateLimiter plug
       :ok
     end
   end

@@ -226,8 +226,6 @@ defmodule Cgraph.Notifications.PushService.ApnsClient do
   end
   
   defp http2_request(method, host, path, headers, body) do
-    # Use Finch or Mint for HTTP/2
-    # This is a simplified implementation - in production, use connection pooling
     url = "https://#{host}:443#{path}"
     
     request = Finch.build(method, url, headers, body)

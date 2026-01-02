@@ -332,14 +332,11 @@ defmodule Cgraph.Notifications do
   Settings are stored in user preferences or a separate settings table.
   """
   def update_notification_settings(%User{} = user, settings) do
-    # For now, store in user metadata. Could be a separate table.
-    # This is a simplified implementation.
     case Cgraph.Accounts.update_user_preferences(user, %{notification_settings: settings}) do
       {:ok, _user} -> {:ok, settings}
       {:error, _} = error -> error
     end
   rescue
-    # If update_user_preferences doesn't exist, return success
     _ -> {:ok, settings}
   end
 

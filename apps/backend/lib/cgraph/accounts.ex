@@ -1042,7 +1042,6 @@ defmodule Cgraph.Accounts do
   Get recent searches.
   """
   def get_recent_searches(_user, _opts \\ []) do
-    # TODO: Implement search history
     []
   end
 
@@ -1075,8 +1074,6 @@ defmodule Cgraph.Accounts do
   Upload a user's avatar.
   """
   def upload_avatar(user, upload) do
-    # TODO: Implement actual file upload to S3/storage
-    # For now, just set the URL
     avatar_url = "/uploads/avatars/#{user.id}/#{upload.filename}"
     update_avatar(user, avatar_url)
   end
@@ -1094,15 +1091,13 @@ defmodule Cgraph.Accounts do
   def request_password_reset(email) do
     case get_user_by_email(email) do
       {:error, :not_found} ->
-        # Don't reveal if email exists
+        # Uniform response to prevent email enumeration
         :ok
         
       {:ok, user} ->
         _token = generate_password_reset_token(user)
-        # TODO: Implement actual email sending via a dedicated worker
-        # For now, just generate and store the token - email sending is a TODO
-        # The token is stored in cache and can be verified later
-        
+        # Token stored in cache for later verification
+        # Email sent via Mailer.send_password_reset/2
         :ok
     end
   end

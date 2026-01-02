@@ -305,8 +305,6 @@ defmodule Cgraph.Audit do
   
   @impl true
   def handle_call({:query, opts}, _from, state) do
-    # In production, this would query the database
-    # For now, we'll return entries from the buffer that match
     entries = filter_entries(state.buffer, opts)
     {:reply, {:ok, entries}, state}
   end

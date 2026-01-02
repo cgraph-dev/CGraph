@@ -187,11 +187,8 @@ defmodule Cgraph.Uploads do
     content_type = Keyword.get(opts, :content_type)
     context = Keyword.get(opts, :context, "message")
     
-    # Generate upload ID
     upload_id = Ecto.UUID.generate()
     
-    # In production, this would generate an S3/GCS presigned URL
-    # For local development, we'll return a placeholder
     {:ok, %{
       upload_id: upload_id,
       url: "/api/v1/uploads/#{upload_id}",
@@ -207,8 +204,6 @@ defmodule Cgraph.Uploads do
   Confirm a presigned upload completed.
   """
   def confirm_presigned_upload(user, upload_id, key) do
-    # In production, this would verify the file exists in cloud storage
-    # and create the database record
     {:ok, %UploadedFile{
       id: upload_id,
       filename: Path.basename(key),
@@ -221,8 +216,6 @@ defmodule Cgraph.Uploads do
   # Private helpers
 
   defp get_image_dimensions(path) do
-    # In production, use a library like ImageMagick or Mogrify
-    # For now, return a placeholder
     case System.cmd("file", [path], stderr_to_stdout: true) do
       {output, 0} ->
         case Regex.run(~r/(\d+)\s*x\s*(\d+)/, output) do

@@ -1,12 +1,13 @@
 defmodule CgraphWeb.FriendController do
   @moduledoc """
-  Controller for friend management endpoints.
+  Friend management endpoints.
   """
 
   use CgraphWeb, :controller
 
   alias Cgraph.Accounts.Friends
   alias Cgraph.Guardian
+  import CgraphWeb.ControllerHelpers, only: [safe_to_integer: 2]
 
   action_fallback CgraphWeb.FallbackController
 
@@ -17,8 +18,8 @@ defmodule CgraphWeb.FriendController do
   """
   def index(conn, params) do
     user = Guardian.Plug.current_resource(conn)
-    limit = Map.get(params, "limit", "50") |> String.to_integer()
-    offset = Map.get(params, "offset", "0") |> String.to_integer()
+    limit = safe_to_integer(Map.get(params, "limit"), 50) |> min(100)
+    offset = safe_to_integer(Map.get(params, "offset"), 0)
 
     friends = Friends.list_friends(user.id, limit: limit, offset: offset)
 
@@ -273,7 +274,7 @@ defmodule CgraphWeb.FriendController do
   """
   def suggestions(conn, params) do
     user = Guardian.Plug.current_resource(conn)
-    limit = Map.get(params, "limit", "10") |> String.to_integer()
+    limit = safe_to_integer(Map.get(params, "limit"), 10) |> min(50)
 
     suggestions = Friends.get_friend_suggestions(user.id, limit)
 
