@@ -228,6 +228,9 @@ describe('Matrix Types', () => {
         age: 0,
         changeTimer: 10,
         scale: 1.0,
+        morphPhase: 0,
+        morphTarget: '',
+        isEncrypting: false,
       };
       expect(character.value).toBe('A');
       expect(character.isHead).toBe(true);

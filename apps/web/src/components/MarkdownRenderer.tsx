@@ -24,10 +24,10 @@ interface MarkdownRendererProps {
  */
 export default function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
   return (
-    <ReactMarkdown
-      className={`markdown-content prose prose-invert max-w-none ${className}`}
-      remarkPlugins={[remarkGfm]}
-      components={{
+    <div className={`markdown-content prose prose-invert max-w-none ${className}`}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
         // Custom link rendering - open external links in new tab with URL validation
         a: ({ href, children }) => {
           // Validate URL before rendering
@@ -156,5 +156,6 @@ export default function MarkdownRenderer({ content, className = '' }: MarkdownRe
     >
       {content}
     </ReactMarkdown>
+    </div>
   );
 }

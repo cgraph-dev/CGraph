@@ -1240,6 +1240,8 @@ export class MatrixEngine {
    * DEPRECATED: Now using batch rendering via buildLayerRenderQueue
    * Kept for backwards compatibility if atlas is not available
    */
+  // @ts-expect-error - Kept for backwards compatibility, not currently used
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   private renderLayer(columns: MatrixColumn[], layer: DepthLayer): void {
     if (!this.ctx) return;
     

@@ -11,6 +11,84 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.0] - 2026-01-03
+
+### Major Platform Upgrade
+
+Comprehensive platform upgrade bringing cutting-edge performance improvements, security enhancements, and the latest React ecosystem updates. This release marks a significant step forward in both mobile and web capabilities.
+
+### Changed
+
+#### Core Platform Updates
+- **Expo SDK 54** - Full platform upgrade with React Native 0.81.5 and React 19.1
+- **React Navigation 7** - Updated navigation stack with improved type safety and performance
+- **Reanimated v4** - Next-generation animation engine with react-native-worklets integration
+- **ESLint 9** - Migrated to flat config with typescript-eslint v8 for better linting
+- **Turbo v2** - Build pipeline upgraded to Turbo 2.7 for faster monorepo builds
+- **TypeScript 5.9** - Latest TypeScript with improved type inference
+
+#### Mobile Improvements (Expo SDK 54)
+- **New Architecture Enabled** - Default new architecture support for improved performance
+- **Android Edge-to-Edge** - Full edge-to-edge display support on Android
+- **Precompiled iOS Builds** - Significant build time reduction with precompiled React Native modules
+- **Updated Permissions** - Modern Android permissions model (READ_MEDIA_IMAGES instead of deprecated READ_EXTERNAL_STORAGE)
+
+#### Web Improvements
+- **React 19.1** - Latest React with improved concurrent rendering
+- **React Router 7** - Updated routing with enhanced type safety
+- **Vite 6.3** - Faster development server and build times
+- **Framer Motion 12** - Enhanced animation library
+
+### Added
+
+#### Security Enhancements
+- **Biometric Authentication** - New biometric authentication utility (Face ID, Touch ID, Fingerprint)
+  - `getBiometricStatus()` - Check hardware and enrollment status
+  - `authenticateWithBiometrics()` - Secure authentication prompts
+  - `setBiometricLockEnabled()` - Enable/disable biometric lock
+  - `needsReauthentication()` - Timeout-based re-authentication checks
+- **Privacy Manifests** - iOS privacy manifest declarations for App Store compliance
+- **Apple Sign In** - iOS entitlement for Sign in with Apple
+
+#### Developer Experience
+- **Metro Config** - Optimized Metro bundler configuration for monorepo
+- **pnpm Workspace** - Added pnpm-workspace.yaml for proper monorepo support
+- **React 19 Babel** - Updated Babel configuration for React 19 JSX transform
+
+### Fixed
+
+- Metro config compatibility with Expo SDK 54
+- ESLint flat config migration for typescript-eslint v8
+- Monorepo module resolution for shared packages
+- React Navigation 7 type compatibility
+
+### Dependencies
+
+#### Mobile (@cgraph/mobile)
+- expo: ~50.0.0 → ~54.0.0
+- react: 18.2.0 → 19.1.0
+- react-native: 0.73.2 → 0.81.5
+- react-native-reanimated: ~3.6.0 → ~4.1.1
+- @react-navigation/*: 6.x → 7.x
+- expo-local-authentication: Added ~17.0.0
+- react-native-worklets: Added 0.5.1
+
+#### Web (@cgraph/web)
+- react: 18.2.0 → 19.1.0
+- react-dom: 18.2.0 → 19.1.0
+- react-router-dom: 6.x → 7.x
+- framer-motion: 11.x → 12.x
+- vite: 5.2.0 → 6.3.0
+
+#### Root (cgraph)
+- turbo: 1.12.0 → 2.7.0
+- eslint: 8.x → 9.x
+- typescript-eslint: 7.x → 8.x
+- Node.js: >=20 → >=22
+- pnpm: >=8 → >=10
+
+---
+
 ## [0.6.6] - 2026-01-03
 
 ### Matrix Animation Performance Overhaul

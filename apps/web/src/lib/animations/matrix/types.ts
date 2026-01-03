@@ -498,7 +498,7 @@ export interface UseMatrixOptions {
   /** Event handlers */
   events?: Partial<MatrixEvents>;
   /** Canvas ref (if managing externally) */
-  canvasRef?: React.RefObject<HTMLCanvasElement>;
+  canvasRef?: React.RefObject<HTMLCanvasElement | null>;
 }
 
 /**
@@ -506,7 +506,7 @@ export interface UseMatrixOptions {
  */
 export interface UseMatrixReturn {
   /** Canvas ref for rendering */
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   /** Current engine state */
   state: MatrixEngineState;
   /** Start animation */

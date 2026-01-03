@@ -1,16 +1,15 @@
 import js from '@eslint/js';
-import typescript from '@typescript-eslint/eslint-plugin';
-import typescriptParser from '@typescript-eslint/parser';
+import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 
-export default [
+export default tseslint.config(
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
-      parser: typescriptParser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
@@ -50,10 +49,20 @@ export default [
         React: 'readonly',
         JSX: 'readonly',
         process: 'readonly',
+        crypto: 'readonly',
+        indexedDB: 'readonly',
+        navigator: 'readonly',
+        atob: 'readonly',
+        btoa: 'readonly',
+        TextEncoder: 'readonly',
+        TextDecoder: 'readonly',
+        structuredClone: 'readonly',
+        requestAnimationFrame: 'readonly',
+        cancelAnimationFrame: 'readonly',
+        performance: 'readonly',
       },
     },
     plugins: {
-      '@typescript-eslint': typescript,
       react,
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
@@ -71,7 +80,7 @@ export default [
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       
       // General
-      'no-unused-vars': 'off', // Use TypeScript version
+      'no-unused-vars': 'off',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
     settings: {
@@ -81,6 +90,6 @@ export default [
     },
   },
   {
-    ignores: ['dist/', 'node_modules/', '*.config.js', '*.config.ts'],
+    ignores: ['dist/', 'node_modules/', '*.config.js', '*.config.ts', 'coverage/'],
   },
-];
+);

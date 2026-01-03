@@ -2,7 +2,7 @@
 
 A modern, full-stack social platform combining messaging, groups, and forum communities with Web3 wallet integration and end-to-end encryption.
 
-**Version 0.6.6** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
+**Version 0.7.0** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
 
 ## 🚀 Features
 
@@ -13,12 +13,14 @@ A modern, full-stack social platform combining messaging, groups, and forum comm
 - **Forum Hosting** - Traditional forum creation with boards, threads, and customization
 - **Friends System** - Cross-platform friend requests, mutual friends, suggestions
 - **Voice Messages** - Record and send voice messages with waveform visualization
+- **Biometric Authentication** - Face ID, Touch ID, Fingerprint support on mobile
 
 ### Security & Privacy
 - **End-to-End Encryption** - X3DH/AES-256-GCM encryption on all platforms
 - **Two-Factor Authentication** - TOTP-based 2FA with backup codes
 - **Enterprise Security** - Input validation, abuse detection, rate limiting
 - **Session Management** - Multi-device sessions with remote logout
+- **Privacy Manifests** - iOS App Store compliance for data handling
 
 ### Web3 Integration
 - **Wallet Login** - Authenticate with Ethereum/Polygon wallets
@@ -62,7 +64,7 @@ CGraph/
 ## 📦 Quick Start
 
 ### Prerequisites
-- Node.js 22 LTS with pnpm 9+
+- Node.js 22+ LTS with pnpm 10+
 - Elixir 1.19+ with Erlang/OTP 28+
 - PostgreSQL 16+
 - Docker (optional)

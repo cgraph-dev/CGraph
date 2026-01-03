@@ -105,14 +105,14 @@ async function verifyWithBackend(
   
   // CRITICAL: Store tokens in secure storage for persistent auth
   if (result.tokens) {
-    await storage.setItem('access_token', result.tokens.access_token);
-    await storage.setItem('refresh_token', result.tokens.refresh_token);
-    await storage.setItem('token_expiry', String(Date.now() + result.tokens.expires_in * 1000));
+    await storage.secure.setItem('cgraph_auth_token', result.tokens.access_token);
+    await storage.secure.setItem('cgraph_refresh_token', result.tokens.refresh_token);
+    await storage.general.setItem('cgraph_token_expiry', String(Date.now() + result.tokens.expires_in * 1000));
   }
   
   // Store user data for quick access
   if (result.user) {
-    await storage.setItem('user', JSON.stringify(result.user));
+    await storage.setUserData(result.user);
   }
   
   return result;

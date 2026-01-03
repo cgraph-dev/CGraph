@@ -2,11 +2,15 @@
   "expo": {
     "name": "CGraph",
     "slug": "cgraph",
-    "version": "0.6.6",
+    "version": "0.7.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "scheme": "cgraph",
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
@@ -16,12 +20,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.cgraph.app",
-      "buildNumber": "2",
+      "buildNumber": "3",
       "config": {
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"],
+        "UIBackgroundModes": ["remote-notification", "fetch"],
         "NSCameraUsageDescription": "CGraph needs camera access to take photos for messages and profile pictures.",
         "NSPhotoLibraryUsageDescription": "CGraph needs photo library access to share images in messages.",
         "NSPhotoLibraryAddUsageDescription": "CGraph needs permission to save images to your photo library.",
@@ -39,13 +43,22 @@
         }
       },
       "entitlements": {
-        "keychain-access-groups": ["$(AppIdentifierPrefix)org.cgraph.app"]
+        "keychain-access-groups": ["$(AppIdentifierPrefix)org.cgraph.app"],
+        "com.apple.developer.applesignin": ["Default"]
       },
       "privacyManifests": {
         "NSPrivacyAccessedAPITypes": [
           {
             "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryUserDefaults",
             "NSPrivacyAccessedAPITypeReasons": ["CA92.1"]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategorySystemBootTime",
+            "NSPrivacyAccessedAPITypeReasons": ["35F9.1"]
+          },
+          {
+            "NSPrivacyAccessedAPIType": "NSPrivacyAccessedAPICategoryDiskSpace",
+            "NSPrivacyAccessedAPITypeReasons": ["E174.1"]
           }
         ]
       }
@@ -56,38 +69,78 @@
         "backgroundColor": "#6366f1"
       },
       "package": "org.cgraph.app",
-      "versionCode": 1,
+      "versionCode": 2,
       "permissions": [
         "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
+        "READ_MEDIA_IMAGES",
+        "READ_MEDIA_VIDEO",
         "RECORD_AUDIO",
         "VIBRATE",
         "RECEIVE_BOOT_COMPLETED",
         "INTERNET",
-        "ACCESS_NETWORK_STATE"
+        "ACCESS_NETWORK_STATE",
+        "POST_NOTIFICATIONS",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
       ],
-      "googleServicesFile": "./google-services.json"
+      "blockedPermissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       [
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#6366f1"
+          "color": "#6366f1",
+          "defaultChannel": "default"
         }
       ],
-      "expo-camera",
-      "expo-image-picker",
-      "expo-secure-store"
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "CGraph needs camera access to take photos for messages and profile pictures.",
+          "microphonePermission": "CGraph needs microphone access for voice messages and calls.",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "CGraph needs photo library access to share images in messages.",
+          "cameraPermission": "CGraph needs camera access to take photos for messages and profile pictures."
+        }
+      ],
+      [
+        "expo-secure-store",
+        {
+          "faceIDPermission": "CGraph uses Face ID to protect your account and secure messages."
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "CGraph uses Face ID to protect your account and secure messages."
+        }
+      ]
     ],
     "extra": {
       "eas": {
         "projectId": "your-project-id"
       }
+    },
+    "updates": {
+      "enabled": true,
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/your-project-id"
+    },
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }
