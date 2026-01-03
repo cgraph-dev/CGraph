@@ -205,6 +205,7 @@ export class MatrixEngine {
     
     this.state.state = 'starting';
     this.initializeColumns();
+    
     this.lastFrameTime = performance.now();
     this.frameInterval = 1000 / this.config.performance.targetFPS;
     
@@ -365,6 +366,19 @@ export class MatrixEngine {
     const rect = this.canvas.getBoundingClientRect();
     const pixelRatio = window.devicePixelRatio || 1;
     
+    // Ensure canvas has dimensions
+    if (rect.width === 0 || rect.height === 0) {
+      // Schedule retry after layout
+      requestAnimationFrame(() => {
+        this.setupCanvas();
+        // Re-initialize columns if engine is running but had no columns
+        if (this.state.state === 'running' && this.state.columns.length === 0) {
+          this.initializeColumns();
+        }
+      });
+      return;
+    }
+    
     // Apply responsive config
     const responsiveConfig = getResponsiveConfig(this.config, rect.width);
     this.config = responsiveConfig;
@@ -464,7 +478,19 @@ export class MatrixEngine {
   private initializeColumns(): void {
     if (!this.canvas) return;
     
-    const { width } = this.state.dimensions;
+    const { width, height } = this.state.dimensions;
+    
+    // If dimensions are 0, schedule retry after next frame
+    if (width === 0 || height === 0) {
+      requestAnimationFrame(() => {
+        this.setupCanvas();
+        if (this.state.state === 'running') {
+          this.initializeColumns();
+        }
+      });
+      return;
+    }
+    
     const { columns: colConfig, effects, performance: perfConfig } = this.config;
     
     // Calculate total columns based on density
@@ -671,6 +697,16 @@ export class MatrixEngine {
   private animationLoop = (): void => {
     if (this.state.state !== 'running' || this.state.isPaused) {
       return;
+    }
+    
+    // Check if we need to initialize columns (happens if dimensions were 0 at start)
+    if (this.state.columns.length === 0) {
+      this.initializeColumns();
+      if (this.state.columns.length === 0) {
+        // Still no columns, schedule retry
+        this.animationFrameId = requestAnimationFrame(this.animationLoop);
+        return;
+      }
     }
     
     const now = performance.now();

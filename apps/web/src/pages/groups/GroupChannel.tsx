@@ -37,7 +37,7 @@ export default function GroupChannel() {
   const [replyTo, setReplyTo] = useState<ChannelMessage | null>(null);
   const [showMembers, setShowMembers] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const group = groups.find((g) => g.id === groupId);
   const channel = group?.channels?.find((c) => c.id === channelId);

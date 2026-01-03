@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { AxiosError } from 'axios';
 
@@ -99,7 +99,7 @@ interface AuthState {
  * Uses sessionStorage for tokens (cleared on browser close) 
  * and base64 encoding for obfuscation (not encryption)
  */
-const createSecureStorage = () => {
+const createSecureStorage = (): StateStorage => {
   const encode = (data: string): string => {
     try {
       return btoa(encodeURIComponent(data));
@@ -318,7 +318,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'cgraph-auth',
-      storage: createSecureStorage(),
+      storage: createJSONStorage(() => createSecureStorage()),
       partialize: (state) => ({
         token: state.token,
         refreshToken: state.refreshToken,

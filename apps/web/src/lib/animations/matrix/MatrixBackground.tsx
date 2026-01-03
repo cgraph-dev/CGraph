@@ -240,6 +240,7 @@ export const MatrixBackground = memo(forwardRef<MatrixBackgroundRef, MatrixBackg
       display: 'block',
       width: '100%',
       height: '100%',
+      backgroundColor: '#000', // Ensure black background for Matrix rain
     }), []);
     
     return (

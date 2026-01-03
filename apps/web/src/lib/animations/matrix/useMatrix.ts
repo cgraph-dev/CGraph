@@ -103,7 +103,9 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
    */
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) {
+      return;
+    }
     
     // Create engine instance
     const engine = createMatrixEngine(config);
