@@ -1,17 +1,264 @@
 # CGraph Bug Fix Log
 
-> Comprehensive documentation of all bugs fixed and improvements made during the December 2024 stabilization sprint.
+> Comprehensive documentation of all bugs fixed and improvements made during development.
 
 ---
 
 ## Summary
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Backend Tests | 8 failures | 0 failures |
-| Backend Test Count | 215 | 220 |
+| Metric | v0.2.0 | v0.6.1 |
+|--------|--------|--------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures |
 | Web Build | ✅ | ✅ |
 | Mobile TypeScript | ✅ | ✅ |
+| OAuth Tests | - | 35 new tests |
+
+---
+
+## January 3, 2026 - v0.6.1 Security & Performance Fixes
+
+### 1. Wallet Nonce Replay Attack (CRITICAL)
+
+**Problem:** After successful wallet signature verification, the nonce (WalletChallenge) was not deleted, allowing potential replay attacks.
+
+**Root Cause:** The `verify_wallet_signature/3` function verified the signature but never cleaned up the challenge record.
+
+**Solution:** Added nonce deletion immediately after successful verification.
+
+**File Modified:** `lib/cgraph/accounts.ex`
+```elixir
+defp verify_wallet_signature(wallet_address, signature, message) do
+  with {:ok, challenge} <- get_wallet_challenge(wallet_address),
+       :ok <- verify_signature(wallet_address, signature, message) do
+    # Delete challenge after successful verification to prevent replay attacks
+    Repo.delete(challenge)
+    :ok
+  end
+end
+```
+
+**Impact:** Prevents replay attacks using previously captured valid signatures.
+
+---
+
+### 2. Apple JWT Token Verification (CRITICAL)
+
+**Problem:** Apple Sign-In ID tokens were not properly verified - the code didn't validate the JWT signature against Apple's public keys.
+
+**Root Cause:** Missing JWKS (JSON Web Key Set) fetching and signature verification implementation.
+
+**Solution:** Implemented proper Apple JWKS fetching with caching and JWT signature verification using JOSE library.
+
+**File Modified:** `lib/cgraph/oauth.ex`
+```elixir
+defp verify_apple_id_token(id_token, config) do
+  with {:ok, jwks} <- fetch_apple_jwks(),
+       {:ok, claims} <- verify_jwt_with_jwks(id_token, jwks),
+       :ok <- validate_apple_claims(claims, config) do
+    {:ok, claims}
+  end
+end
+
+defp fetch_apple_jwks do
+  # Cache JWKS for 24 hours to reduce API calls
+  cache_key = "apple_jwks"
+  
+  # Fetch from https://appleid.apple.com/auth/keys
+  # Verify JWT signature using matching kid
+end
+```
+
+**Impact:** Ensures Apple Sign-In tokens are cryptographically verified, preventing forged tokens.
+
+---
+
+### 3. Group Invite Race Condition
+
+**Problem:** Multiple users clicking the same invite link simultaneously could exceed the invite's usage limit.
+
+**Root Cause:** Non-atomic check-then-update pattern in `join_via_invite/2`.
+
+**Solution:** Changed to atomic increment using `Repo.update_all` with increment operation.
+
+**File Modified:** `lib/cgraph/groups.ex`
+```elixir
+def join_via_invite(user, invite) do
+  # Atomic increment to prevent race condition
+  case Repo.update_all(
+    from(i in GroupInvite,
+      where: i.id == ^invite.id,
+      where: i.max_uses > i.uses or is_nil(i.max_uses)
+    ),
+    inc: [uses: 1]
+  ) do
+    {1, _} -> 
+      # Successfully incremented, proceed with join
+      do_add_member(user, invite.group_id)
+    {0, _} ->
+      {:error, :invite_exhausted}
+  end
+end
+```
+
+**Impact:** Prevents invite link overuse under concurrent access.
+
+---
+
+### 4. Mark Messages Read N+1 Query
+
+**Problem:** `mark_messages_read/3` made individual database inserts for each message, causing O(n) database calls.
+
+**Root Cause:** Used `Enum.map` with individual `Repo.insert` calls inside the loop.
+
+**Solution:** Converted to batch insert using `Repo.insert_all/3`.
+
+**File Modified:** `lib/cgraph/messaging.ex`
+```elixir
+def mark_messages_read(user, conversation, message_id) do
+  unread_message_ids = Repo.all(unread_query)
+  
+  if length(unread_message_ids) > 0 do
+    now = DateTime.utc_now()
+    read_at = DateTime.truncate(now, :second)
+    
+    read_receipts = Enum.map(unread_message_ids, fn mid ->
+      %{
+        id: Ecto.UUID.generate(),
+        message_id: mid,
+        user_id: user.id,
+        read_at: read_at,
+        inserted_at: now
+      }
+    end)
+    
+    Repo.insert_all(ReadReceipt, read_receipts, on_conflict: :nothing)
+  end
+end
+```
+
+**Impact:** Reduces database calls from O(n) to O(1) for marking messages as read.
+
+---
+
+### 5. Friend Request Race Condition
+
+**Problem:** Simultaneous friend request acceptances could create duplicate friendship records.
+
+**Root Cause:** Non-atomic check for existing friendship before insert.
+
+**Solution:** Added upsert with `on_conflict: :nothing` to handle concurrent inserts gracefully.
+
+**File Modified:** `lib/cgraph/accounts/friends.ex`
+```elixir
+def accept_friend_request(user, request) do
+  Repo.transaction(fn ->
+    # Use upsert to prevent race condition duplicates
+    Repo.insert(
+      %Friendship{user_id: request.sender_id, friend_id: user.id},
+      on_conflict: :nothing
+    )
+    # ... rest of logic
+  end)
+end
+```
+
+**Impact:** Prevents duplicate friendship records under concurrent access.
+
+---
+
+### 6. Mobile Storage Module Missing
+
+**Problem:** Mobile app imported a non-existent `storage.ts` module, causing build failures.
+
+**Root Cause:** Storage module was referenced but never created.
+
+**Solution:** Created storage abstraction layer using Expo SecureStore.
+
+**File Created:** `apps/mobile/src/lib/storage.ts`
+```typescript
+import * as SecureStore from 'expo-secure-store';
+
+export const storage = {
+  getItem: async (key: string) => SecureStore.getItemAsync(key),
+  setItem: async (key: string, value: string) => SecureStore.setItemAsync(key, value),
+  removeItem: async (key: string) => SecureStore.deleteItemAsync(key),
+  // ... additional methods
+};
+```
+
+---
+
+### 7. Mobile API_URL Export Missing
+
+**Problem:** Mobile OAuth module couldn't import `API_URL` from `api.ts`.
+
+**Root Cause:** Only default export existed, named export was missing.
+
+**Solution:** Added named export for `API_URL`.
+
+**File Modified:** `apps/mobile/src/lib/api.ts`
+```typescript
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:4000';
+export { API_URL };
+export default api;
+```
+
+---
+
+### 8. TypeScript Unused Imports
+
+**Problem:** Web OAuth components had unused imports causing TypeScript warnings.
+
+**Files Modified:**
+- `apps/web/src/components/auth/OAuthButtons.tsx` - Removed unused `storeLogin`
+- `apps/web/src/pages/auth/OAuthCallback.tsx` - Removed unused `React` import
+- `apps/mobile/src/components/OAuthButtons.tsx` - Removed unused SVG imports
+
+---
+
+### 9. HTTPoison Not Available
+
+**Problem:** OAuth module used `HTTPoison` which wasn't in dependencies.
+
+**Root Cause:** Wrong HTTP client library referenced.
+
+**Solution:** Changed to use `:hackney` which is available via assent dependency.
+
+**File Modified:** `lib/cgraph/oauth.ex`
+
+---
+
+### 10. Auth Test AccountLockout Contamination
+
+**Problem:** Login test failed with 429 due to AccountLockout state persisting between test runs.
+
+**Root Cause:** Tests used same email, AccountLockout ETS state persisted.
+
+**Solution:** Changed test to use unique email per test run.
+
+**File Modified:** `test/cgraph_web/controllers/api/v1/auth_controller_test.exs`
+```elixir
+test "returns 401 with invalid credentials", %{conn: conn} do
+  # Use unique email to avoid AccountLockout contamination
+  unique_email = "nonexistent_#{System.unique_integer([:positive])}@example.com"
+  # ...
+end
+```
+
+---
+
+### 11. New OAuth Test Suite
+
+**Addition:** Created comprehensive OAuth test suite with 35 tests covering:
+- Authorization URL generation for all providers
+- Token exchange and validation
+- Mobile callback handling
+- Account linking
+- Security validations (CSRF, injection prevention)
+- Edge cases (unicode, long strings)
+
+**File Created:** `test/cgraph/oauth_test.exs`
 
 ---
 

@@ -11,6 +11,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.2] - 2026-01-03
+
+### Security Fixes & Test Coverage
+
+Critical security patches and comprehensive OAuth test coverage.
+
+### Security Fixes
+
+- **Wallet Nonce Replay Attack** (CRITICAL) - Fixed replay attack vulnerability by deleting wallet challenge after successful signature verification
+- **Apple JWT Verification** (CRITICAL) - Added proper JWKS fetching and JWT signature verification for Apple Sign-In tokens
+- **Group Invite Race Condition** - Fixed concurrent invite usage with atomic increment using `Repo.update_all`
+- **Friend Request Race Condition** - Prevented duplicate friendships with upsert pattern
+
+### Performance Improvements
+
+- **Mark Messages Read N+1** - Converted individual inserts to batch `Repo.insert_all`, reducing database calls from O(n) to O(1)
+
+### Fixed
+
+- Mobile storage module missing - Created storage abstraction layer with Expo SecureStore
+- Mobile API_URL export missing - Added named export for API_URL
+- TypeScript unused imports in OAuth components
+- HTTPoison dependency replaced with hackney for Apple JWKS fetching
+- Cachex error handling in OAuth for test environment compatibility
+- Auth test AccountLockout state contamination with unique emails
+
+### Added
+
+- **OAuth Test Suite** - 35 comprehensive tests covering all OAuth providers, security validations, and edge cases
+- Test coverage increased from 585 to 620 tests (0 failures)
+
+### Changed
+
+- Updated BUGFIX_LOG.md with comprehensive documentation of all fixes
+- ReadReceipt batch insert now uses correct field precision (read_at: second, inserted_at: microsecond)
+
+---
+
 ## [0.6.1] - 2026-01-03
 
 ### OAuth Authentication & Bug Fixes

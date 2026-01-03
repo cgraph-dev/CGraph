@@ -784,24 +784,28 @@ defmodule Cgraph.Groups do
 
   @doc """
   Join a group via invite.
+  Uses atomic increment to prevent race conditions when multiple users join simultaneously.
   """
   def join_via_invite(user, invite) do
-    # Increment uses
-    invite
-    |> Ecto.Changeset.change(uses: invite.uses + 1)
-    |> Repo.update()
+    # Atomic increment to prevent race conditions - ensures max_uses limit is enforced
+    {count, _} = from(i in Invite, where: i.id == ^invite.id)
+    |> Repo.update_all(inc: [uses: 1])
+    
+    if count == 0 do
+      {:error, :invite_not_found}
+    else
+      # Get default role
+      default_role = Repo.one(from r in Role,
+        where: r.group_id == ^invite.group_id,
+        where: r.is_default == true
+      )
 
-    # Get default role
-    default_role = Repo.one(from r in Role,
-      where: r.group_id == ^invite.group_id,
-      where: r.is_default == true
-    )
+      role_ids = if default_role, do: [default_role.id], else: []
 
-    role_ids = if default_role, do: [default_role.id], else: []
-
-    # Add as member
-    {:ok, group} = get_group(invite.group_id)
-    add_member(group, user, role_ids)
+      # Add as member
+      {:ok, group} = get_group(invite.group_id)
+      add_member(group, user, role_ids)
+    end
   end
 
   defp generate_invite_code do

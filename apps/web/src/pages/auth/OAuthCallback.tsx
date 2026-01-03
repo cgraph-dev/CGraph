@@ -7,7 +7,7 @@
  * 2. Redirect mode - stores result and redirects to app
  */
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { handleOAuthCallback, OAuthProvider } from '@/lib/oauth';
 import { useAuthStore } from '@/stores/authStore';

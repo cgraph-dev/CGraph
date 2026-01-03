@@ -190,6 +190,7 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Verify a wallet signature and authenticate/register user.
+  Deletes the challenge nonce after successful verification to prevent replay attacks.
   """
   def verify_wallet_signature(wallet_address, signature) do
     normalized_address = String.downcase(wallet_address)
@@ -197,6 +198,9 @@ defmodule Cgraph.Accounts do
     with {:ok, wallet_challenge} <- get_wallet_challenge(normalized_address),
          message <- build_sign_message(wallet_challenge.nonce),
          :ok <- verify_signature(message, signature, normalized_address) do
+      # Delete the challenge to prevent replay attacks
+      Repo.delete(wallet_challenge)
+      
       # Get or create user for this wallet
       case get_user_by_wallet(normalized_address) do
         {:ok, user} -> {:ok, user}

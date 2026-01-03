@@ -65,6 +65,7 @@ defmodule Cgraph.Accounts.Friends do
 
   @doc """
   Accepts a pending friend request.
+  Uses upsert with conflict handling to prevent race conditions.
   """
   def accept_friend_request(accepting_user_id, requesting_user_id) do
     # Find the pending request where they sent to us
@@ -85,14 +86,15 @@ defmodule Cgraph.Accounts.Friends do
           |> Ecto.Changeset.change(status: :accepted)
           |> Repo.update!()
 
-          # Create the reverse relationship (for easy querying)
+          # Create the reverse relationship with conflict handling
+          # Uses on_conflict: :nothing to handle race conditions gracefully
           %Friendship{}
           |> Friendship.changeset(%{
             user_id: accepting_user_id,
             friend_id: requesting_user_id,
             status: :accepted
           })
-          |> Repo.insert!()
+          |> Repo.insert(on_conflict: :nothing, conflict_target: [:user_id, :friend_id])
 
           # Notify the requester
           Notifications.notify_friend_accepted(requesting_user_id, accepting_user_id)

@@ -421,21 +421,23 @@ defmodule Cgraph.OAuth do
     end
   end
 
-  defp fetch_user_info(:apple, _config, %{"id_token" => id_token}) when id_token != nil do
-    # Apple ID tokens are JWTs - decode without verification for user info
-    # In production, verify the signature using Apple's public keys
-    case decode_jwt(id_token) do
+  defp fetch_user_info(:apple, config, %{"id_token" => id_token}) when id_token != nil do
+    # Apple ID tokens must be verified using Apple's public keys (JWKS)
+    # This prevents token forgery attacks
+    case verify_apple_id_token(id_token, config) do
       {:ok, claims} ->
         {:ok, %{
           provider: :apple,
           uid: claims["sub"],
           email: claims["email"],
-          email_verified: claims["email_verified"] == "true",
+          email_verified: claims["email_verified"] == "true" or claims["email_verified"] == true,
           name: nil, # Apple only provides name on first login via form_post
           picture: nil,
           raw: claims
         }}
-      error -> error
+      {:error, reason} ->
+        Logger.warning("Apple ID token verification failed", reason: inspect(reason))
+        {:error, :invalid_id_token}
     end
   end
 
@@ -656,7 +658,7 @@ defmodule Cgraph.OAuth do
 
   defp decode_jwt(token) do
     # Simple JWT decode without verification (for extracting claims)
-    # In production, verify signature using provider's public keys
+    # Only use for providers where signature verification is done elsewhere
     case String.split(token, ".") do
       [_header, payload, _signature] ->
         case Base.url_decode64(payload, padding: false) do
@@ -665,6 +667,112 @@ defmodule Cgraph.OAuth do
         end
       _ ->
         {:error, :invalid_jwt_format}
+    end
+  end
+
+  # Apple ID Token Verification
+  # Fetches Apple's JWKS and verifies the ID token signature
+  @apple_jwks_url "https://appleid.apple.com/auth/keys"
+  @apple_issuer "https://appleid.apple.com"
+
+  defp verify_apple_id_token(id_token, config) do
+    with {:ok, jwks} <- fetch_apple_jwks(),
+         {:ok, claims} <- verify_jwt_with_jwks(id_token, jwks),
+         :ok <- validate_apple_claims(claims, config) do
+      {:ok, claims}
+    end
+  end
+
+  defp fetch_apple_jwks do
+    # Cache JWKS for 24 hours to reduce API calls
+    cache_key = "apple_jwks"
+    
+    cached_result = try do
+      Cachex.get(:oauth_cache, cache_key)
+    catch
+      :exit, _ -> {:ok, nil}
+    end
+    
+    case cached_result do
+      {:ok, nil} ->
+        # Use :hackney directly (available via assent dependency)
+        case :hackney.get(@apple_jwks_url, [], "", [recv_timeout: 10_000, connect_timeout: 10_000]) do
+          {:ok, 200, _headers, client_ref} ->
+            {:ok, body} = :hackney.body(client_ref)
+            jwks = Jason.decode!(body)
+            # Try to cache, but don't fail if cache unavailable
+            try do
+              Cachex.put(:oauth_cache, cache_key, jwks, ttl: :timer.hours(24))
+            catch
+              :exit, _ -> :ok
+            end
+            {:ok, jwks}
+          {:ok, status, _headers, client_ref} ->
+            :hackney.skip_body(client_ref)
+            {:error, {:jwks_fetch_failed, status}}
+          {:error, reason} ->
+            {:error, {:jwks_fetch_failed, reason}}
+        end
+      {:ok, jwks} when not is_nil(jwks) ->
+        {:ok, jwks}
+      {:error, _} ->
+        # Cache error, try to fetch directly
+        case :hackney.get(@apple_jwks_url, [], "", [recv_timeout: 10_000, connect_timeout: 10_000]) do
+          {:ok, 200, _headers, client_ref} ->
+            {:ok, body} = :hackney.body(client_ref)
+            {:ok, Jason.decode!(body)}
+          {:ok, status, _headers, client_ref} ->
+            :hackney.skip_body(client_ref)
+            {:error, {:jwks_fetch_failed, status}}
+          {:error, reason} ->
+            {:error, {:jwks_fetch_failed, reason}}
+        end
+    end
+  end
+
+  defp verify_jwt_with_jwks(token, %{"keys" => keys}) do
+    # Extract the key ID from JWT header to find matching key
+    with [header_b64 | _] <- String.split(token, "."),
+         {:ok, header_json} <- Base.url_decode64(header_b64, padding: false),
+         {:ok, header} <- Jason.decode(header_json),
+         kid when is_binary(kid) <- header["kid"] do
+      
+      # Find the matching key
+      case Enum.find(keys, fn key -> key["kid"] == kid end) do
+        nil ->
+          {:error, :key_not_found}
+        key ->
+          # Convert JWK to JOSE JWK format and verify
+          jwk = JOSE.JWK.from_map(key)
+          
+          case JOSE.JWT.verify_strict(jwk, [header["alg"]], token) do
+            {true, %JOSE.JWT{fields: claims}, _} ->
+              {:ok, claims}
+            {false, _, _} ->
+              {:error, :signature_invalid}
+          end
+      end
+    else
+      _ -> {:error, :invalid_token_format}
+    end
+  end
+
+  defp validate_apple_claims(claims, config) do
+    now = System.system_time(:second)
+    client_id = config[:client_id]
+    
+    cond do
+      claims["iss"] != @apple_issuer ->
+        {:error, :invalid_issuer}
+      claims["aud"] != client_id ->
+        {:error, :invalid_audience}
+      claims["exp"] && claims["exp"] < now ->
+        {:error, :token_expired}
+      claims["iat"] && claims["iat"] > now + 300 ->
+        # Allow 5 minutes clock skew
+        {:error, :token_not_yet_valid}
+      true ->
+        :ok
     end
   end
 

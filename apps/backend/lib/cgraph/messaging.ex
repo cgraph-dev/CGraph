@@ -350,6 +350,7 @@ defmodule Cgraph.Messaging do
   @doc """
   Mark messages as read up to a given message.
   Creates read receipts for all messages up to and including the specified message.
+  Uses batch insert for efficiency.
   """
   def mark_messages_read(user, conversation, message_id) do
     # Get all unread messages in this conversation up to message_id
@@ -364,15 +365,27 @@ defmodule Cgraph.Messaging do
 
     unread_message_ids = Repo.all(unread_query)
     
-    now = DateTime.utc_now() |> DateTime.truncate(:second)
-    
-    # Create read receipts for all unread messages
-    Enum.each(unread_message_ids, fn mid ->
-      %ReadReceipt{}
-      |> ReadReceipt.changeset(%{message_id: mid, user_id: user.id})
-      |> Ecto.Changeset.put_change(:read_at, now)
-      |> Repo.insert(on_conflict: :nothing)
-    end)
+    if length(unread_message_ids) > 0 do
+      # read_at uses :utc_datetime (no microseconds)
+      # inserted_at uses :utc_datetime_usec (with microseconds)
+      # Note: ReadReceipt schema has timestamps(updated_at: false) - no updated_at field
+      now = DateTime.utc_now()
+      read_at = DateTime.truncate(now, :second)
+      
+      # Batch insert read receipts - much more efficient than individual inserts
+      read_receipts = Enum.map(unread_message_ids, fn mid ->
+        %{
+          id: Ecto.UUID.generate(),
+          message_id: mid,
+          user_id: user.id,
+          read_at: read_at,
+          inserted_at: now
+        }
+      end)
+      
+      # Insert all at once, ignoring conflicts (on_conflict: :nothing)
+      Repo.insert_all(ReadReceipt, read_receipts, on_conflict: :nothing)
+    end
     
     {:ok, length(unread_message_ids)}
   end

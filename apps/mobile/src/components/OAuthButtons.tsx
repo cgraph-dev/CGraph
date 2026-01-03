@@ -13,7 +13,7 @@ import {
   Platform,
   Alert,
 } from 'react-native';
-import { Svg, Path, Circle, G } from 'react-native-svg';
+import { Svg, Path } from 'react-native-svg';
 import {
   OAuthProvider,
   signInWithOAuth,

@@ -8,8 +8,8 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import { Platform, Alert } from 'react-native';
-import { api, API_URL } from './api';
+import { Platform } from 'react-native';
+import api, { API_URL } from './api';
 import { storage } from './storage';
 
 // Ensure web browser redirect is completed

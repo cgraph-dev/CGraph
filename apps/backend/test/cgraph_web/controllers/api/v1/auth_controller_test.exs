@@ -1,6 +1,14 @@
 defmodule CgraphWeb.API.V1.AuthControllerTest do
   use CgraphWeb.ConnCase, async: true
 
+  alias Cgraph.Security.AccountLockout
+
+  # Clear any lockout state that might persist between test runs
+  setup do
+    # Use a unique email pattern for failed login tests to avoid cross-test contamination
+    :ok
+  end
+
   describe "POST /api/v1/auth/register" do
     test "creates user with valid data", %{conn: conn} do
       user_params = %{
@@ -74,8 +82,11 @@ defmodule CgraphWeb.API.V1.AuthControllerTest do
     end
 
     test "returns 401 with invalid credentials", %{conn: conn} do
+      # Use unique email to avoid AccountLockout contamination from other tests
+      unique_email = "nonexistent_#{System.unique_integer([:positive])}@example.com"
+      
       conn = post(conn, ~p"/api/v1/auth/login", %{
-        email: "nonexistent@example.com",
+        email: unique_email,
         password: "wrongpassword"
       })
 

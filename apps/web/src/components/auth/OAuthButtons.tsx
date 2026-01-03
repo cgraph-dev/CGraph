@@ -61,7 +61,6 @@ export function OAuthButton({
   variant = 'full',
 }: OAuthButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const { login: storeLogin } = useAuthStore();
   
   const colors = providerColors[provider];
   const Icon = providerIcons[provider];
