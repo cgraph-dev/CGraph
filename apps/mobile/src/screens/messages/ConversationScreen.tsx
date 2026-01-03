@@ -57,6 +57,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const otherParticipant = conv.participants.find((p: any) => p.id !== user?.id);
       navigation.setOptions({
         title: conv.name || otherParticipant?.display_name || otherParticipant?.username || 'Conversation',
+        headerRight: () => (
+          <View style={styles.e2eeIndicator}>
+            <Ionicons name="lock-closed" size={14} color="#22c55e" />
+            <Text style={styles.e2eeText}>E2EE</Text>
+          </View>
+        ),
       });
     } catch (error) {
       console.error('Error fetching conversation:', error);
@@ -346,5 +352,22 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  e2eeIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(34, 197, 94, 0.2)',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    marginRight: 8,
+  },
+  e2eeText: {
+    color: '#22c55e',
+    fontSize: 11,
+    fontWeight: '600',
+    marginLeft: 4,
   },
 });

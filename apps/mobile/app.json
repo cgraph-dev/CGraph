@@ -2,7 +2,7 @@
   "expo": {
     "name": "CGraph",
     "slug": "cgraph",
-    "version": "0.6.4",
+    "version": "0.6.6",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.cgraph.app",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "config": {
         "usesNonExemptEncryption": false
       },
@@ -24,9 +24,22 @@
         "UIBackgroundModes": ["remote-notification"],
         "NSCameraUsageDescription": "CGraph needs camera access to take photos for messages and profile pictures.",
         "NSPhotoLibraryUsageDescription": "CGraph needs photo library access to share images in messages.",
+        "NSPhotoLibraryAddUsageDescription": "CGraph needs permission to save images to your photo library.",
         "NSMicrophoneUsageDescription": "CGraph needs microphone access for voice messages and calls.",
+        "NSFaceIDUsageDescription": "CGraph uses Face ID to protect your account and secure messages.",
         "ITSAppUsesNonExemptEncryption": false,
-        "NSUserTrackingUsageDescription": "CGraph uses this to provide personalized content. You can opt-out in settings."
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSExceptionDomains": {
+            "localhost": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": false
+            }
+          }
+        }
+      },
+      "entitlements": {
+        "keychain-access-groups": ["$(AppIdentifierPrefix)org.cgraph.app"]
       },
       "privacyManifests": {
         "NSPrivacyAccessedAPITypes": [

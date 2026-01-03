@@ -13,6 +13,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { Avatar, EmptyState } from '../../components';
 import debounce from 'lodash.debounce';
+import { createLogger } from '../../lib/logger';
+
+const logger = createLogger('Search');
 
 type SearchCategory = 'all' | 'users' | 'groups' | 'forums';
 
@@ -143,11 +146,11 @@ export default function SearchScreen() {
       if (data) {
         // Navigate to the appropriate screen
         // This would depend on your navigation structure
-        console.log('Found:', data);
+        logger.log('Found:', data);
       }
     } catch {
       // Not found
-      console.log('Not found');
+      logger.log('Not found');
     }
   };
 

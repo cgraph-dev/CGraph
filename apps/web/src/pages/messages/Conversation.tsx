@@ -12,6 +12,8 @@ import {
   PhoneIcon,
   VideoCameraIcon,
   InformationCircleIcon,
+  LockClosedIcon,
+  ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Conversation() {
@@ -182,13 +184,21 @@ export default function Conversation() {
           </div>
           <div>
             <h2 className="font-semibold text-white">{conversationName}</h2>
-            <p className="text-xs text-gray-400">
-              {otherParticipant?.user.status === 'online' ? 'Online' : 'Offline'}
-            </p>
+            <div className="flex items-center gap-1.5">
+              <ShieldCheckIcon className="h-3 w-3 text-green-400" title="End-to-end encrypted" />
+              <p className="text-xs text-gray-400">
+                {otherParticipant?.user.status === 'online' ? 'Online' : 'Offline'}
+              </p>
+            </div>
           </div>
         </div>
 
         <div className="flex items-center gap-2">
+          {/* E2EE Indicator */}
+          <div className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-green-500/10 border border-green-500/20" title="Messages are end-to-end encrypted">
+            <LockClosedIcon className="h-4 w-4 text-green-400" />
+            <span className="text-xs text-green-400 font-medium">E2EE</span>
+          </div>
           <button className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors">
             <PhoneIcon className="h-5 w-5" />
           </button>

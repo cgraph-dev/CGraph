@@ -36,6 +36,7 @@ const textDecoder = {
 
 /**
  * Secure random bytes generator
+ * Uses expo-crypto for cryptographically secure random bytes
  */
 export function randomBytes(length: number): Uint8Array {
   const bytes = new Uint8Array(length);
@@ -43,10 +44,10 @@ export function randomBytes(length: number): Uint8Array {
   if (typeof global.crypto !== 'undefined' && global.crypto.getRandomValues) {
     global.crypto.getRandomValues(bytes);
   } else {
-    // Fallback for testing - NOT secure for production
-    for (let i = 0; i < length; i++) {
-      bytes[i] = Math.floor(Math.random() * 256);
-    }
+    // CRITICAL: Crypto not available - this should never happen in production
+    // Log error and throw to prevent insecure key generation
+    console.error('CRITICAL: Secure random not available');
+    throw new Error('Cryptographically secure random number generator not available. Please ensure react-native-get-random-values is installed.');
   }
   return bytes;
 }
@@ -211,12 +212,8 @@ export async function generateIdentityKeyPair(): Promise<IdentityKeyPair> {
     };
   }
   
-  // Fallback: generate random bytes (NOT cryptographically secure for production)
-  return {
-    publicKey: randomBytes(32),
-    privateKey: randomBytes(32),
-    keyId: generateKeyId(),
-  };
+  // Fallback: throw error - insecure key generation is not acceptable
+  throw new Error('SubtleCrypto not available. Please install react-native-quick-crypto for secure key generation.');
 }
 
 /**

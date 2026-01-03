@@ -7,6 +7,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import * as Device from 'expo-device';
 import api from '../api';
+import { e2eeLogger as logger } from '../logger';
 import e2ee, {
   KeyBundle,
   ServerPrekeyBundle,
@@ -373,10 +374,10 @@ export function usePreKeyReplenishment(threshold: number = 20) {
         if (count < threshold) {
           const toUpload = 100 - count;
           await uploadMorePrekeys(toUpload);
-          console.log(`Replenished ${toUpload} one-time prekeys`);
+          logger.log(`Replenished ${toUpload} one-time prekeys`);
         }
       } catch (err) {
-        console.error('Error replenishing prekeys:', err);
+        logger.error('Error replenishing prekeys:', err);
       }
     };
     

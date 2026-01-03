@@ -35,8 +35,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const storedUser = await SecureStore.getItemAsync(USER_KEY);
       
       if (storedToken && storedUser) {
+        // Safely parse user data with error handling
+        let parsedUser: User | null = null;
+        try {
+          parsedUser = JSON.parse(storedUser);
+        } catch (parseError) {
+          // Corrupted user data, clear auth
+          console.error('Corrupted user data in storage, clearing auth');
+          await clearAuth();
+          return;
+        }
+        
         setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        setUser(parsedUser);
         api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
         
         // Verify token is still valid
@@ -49,7 +60,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } catch (error) {
-      console.error('Error loading auth:', error);
+      // Only log in development to avoid leaking info in production
+      if (__DEV__) {
+        console.error('Error loading auth:', error);
+      }
+      await clearAuth();
     } finally {
       setIsLoading(false);
     }

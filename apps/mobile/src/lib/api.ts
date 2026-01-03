@@ -2,9 +2,28 @@ import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 
-// API URL should NOT include /api/v1 - individual endpoints will include the full path
-// This matches the web app's API configuration for consistency
-const API_URL = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:4000';
+// API URL configuration with security checks
+const getApiUrl = (): string => {
+  const configuredUrl = Constants.expoConfig?.extra?.apiUrl;
+  
+  // Development mode allows localhost HTTP
+  if (__DEV__) {
+    return configuredUrl || 'http://localhost:4000';
+  }
+  
+  // Production MUST have a configured HTTPS URL
+  if (!configuredUrl) {
+    throw new Error('API_URL must be configured for production builds');
+  }
+  
+  if (!configuredUrl.startsWith('https://')) {
+    throw new Error('Production API must use HTTPS');
+  }
+  
+  return configuredUrl;
+};
+
+const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,

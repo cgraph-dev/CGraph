@@ -464,7 +464,7 @@ export class MatrixEngine {
       this.config.theme,
       this.config.font.baseSize,
       this.config.font.family,
-      this.config.font.weight
+      String(this.config.font.weight)
     );
     this.atlasNeedsRebuild = false;
   }
@@ -1233,6 +1233,7 @@ export class MatrixEngine {
     
     // Reset alpha
     this.ctx.globalAlpha = 1;
+  }
   
   /**
    * Render a single depth layer
@@ -1250,7 +1251,7 @@ export class MatrixEngine {
     }
     
     // Legacy direct rendering (fallback only)
-    const { theme, font } = this.config;
+    const { theme, font, effects } = this.config;
     
     columns.forEach(column => {
       if (!column.active) return;

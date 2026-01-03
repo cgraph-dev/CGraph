@@ -1,6 +1,7 @@
 import { Socket, Channel } from 'phoenix';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
+import { socketLogger as logger } from './logger';
 
 const WS_URL = Constants.expoConfig?.extra?.wsUrl || 'ws://localhost:4000/socket';
 
@@ -12,7 +13,7 @@ class SocketManager {
     const token = await SecureStore.getItemAsync('cgraph_auth_token');
     
     if (!token) {
-      console.warn('No auth token available for socket connection');
+      logger.warn('No auth token available for socket connection');
       return;
     }
     
@@ -26,15 +27,15 @@ class SocketManager {
     });
     
     this.socket.onOpen(() => {
-      console.log('Socket connected');
+      logger.log('Socket connected');
     });
     
     this.socket.onError((error: unknown) => {
-      console.error('Socket error:', error);
+      logger.error('Socket error:', error);
     });
     
     this.socket.onClose(() => {
-      console.log('Socket closed');
+      logger.log('Socket closed');
     });
     
     this.socket.connect();
@@ -49,7 +50,7 @@ class SocketManager {
   
   joinChannel(topic: string, params: Record<string, unknown> = {}): Channel | null {
     if (!this.socket) {
-      console.error('Socket not connected');
+      logger.error('Socket not connected');
       return null;
     }
     
@@ -62,10 +63,10 @@ class SocketManager {
     
     channel.join()
       .receive('ok', (response: unknown) => {
-        console.log(`Joined ${topic}:`, response);
+        logger.log(`Joined ${topic}:`, response);
       })
       .receive('error', (response: unknown) => {
-        console.error(`Failed to join ${topic}:`, response);
+        logger.error(`Failed to join ${topic}:`, response);
       });
     
     this.channels.set(topic, channel);

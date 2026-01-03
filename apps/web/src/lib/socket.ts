@@ -2,6 +2,7 @@ import { Socket, Channel } from 'phoenix';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useGroupStore, ChannelMessage } from '@/stores/groupStore';
+import { socketLogger as logger } from './logger';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'ws://localhost:4000/socket';
 
@@ -13,7 +14,7 @@ class SocketManager {
   connect() {
     const token = useAuthStore.getState().token;
     if (!token) {
-      console.warn('Cannot connect to socket: no auth token');
+      logger.warn('Cannot connect to socket: no auth token');
       return;
     }
 
@@ -31,7 +32,7 @@ class SocketManager {
     });
 
     this.socket.onOpen(() => {
-      console.log('Socket connected');
+      logger.log('Socket connected');
       if (this.reconnectTimer) {
         clearTimeout(this.reconnectTimer);
         this.reconnectTimer = null;
@@ -39,11 +40,11 @@ class SocketManager {
     });
 
     this.socket.onClose(() => {
-      console.log('Socket disconnected');
+      logger.log('Socket disconnected');
     });
 
     this.socket.onError((error: unknown) => {
-      console.error('Socket error:', error);
+      logger.error('Socket error:', error);
     });
 
     this.socket.connect();
@@ -91,20 +92,20 @@ class SocketManager {
     });
 
     channel.on('presence_state', (state) => {
-      console.log('Presence state:', state);
+      logger.log('Presence state:', state);
     });
 
     channel.on('presence_diff', (diff) => {
-      console.log('Presence diff:', diff);
+      logger.log('Presence diff:', diff);
     });
 
     channel
       .join()
       .receive('ok', () => {
-        console.log(`Joined conversation ${conversationId}`);
+        logger.log(`Joined conversation ${conversationId}`);
       })
       .receive('error', (resp: unknown) => {
-        console.error(`Failed to join conversation ${conversationId}:`, resp);
+        logger.error(`Failed to join conversation ${conversationId}:`, resp);
       });
 
     this.channels.set(topic, channel);
@@ -155,20 +156,20 @@ class SocketManager {
     });
 
     channel.on('presence_state', (state) => {
-      console.log('Channel presence state:', state);
+      logger.log('Channel presence state:', state);
     });
 
     channel.on('presence_diff', (diff) => {
-      console.log('Channel presence diff:', diff);
+      logger.log('Channel presence diff:', diff);
     });
 
     channel
       .join()
       .receive('ok', () => {
-        console.log(`Joined channel ${channelId}`);
+        logger.log(`Joined channel ${channelId}`);
       })
       .receive('error', (resp: unknown) => {
-        console.error(`Failed to join channel ${channelId}:`, resp);
+        logger.error(`Failed to join channel ${channelId}:`, resp);
       });
 
     this.channels.set(topic, channel);

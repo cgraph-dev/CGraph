@@ -95,9 +95,10 @@ interface AuthState {
 }
 
 /**
- * Secure storage wrapper for auth data
- * Uses sessionStorage for tokens (cleared on browser close) 
- * and base64 encoding for obfuscation (not encryption)
+ * Session storage wrapper for auth persistence
+ * Uses sessionStorage (cleared on browser close) for improved security
+ * Note: Client-side token storage is inherently vulnerable to XSS attacks
+ * Use HttpOnly cookies for maximum security (requires backend changes)
  */
 const createSecureStorage = (): StateStorage => {
   const encode = (data: string): string => {
@@ -238,7 +239,18 @@ export const useAuthStore = create<AuthState>()(
       },
 
       logout: async () => {
-        // Clear state - no logout endpoint needed, just revoke token client-side
+        // Attempt server-side logout to invalidate tokens
+        const { token } = get();
+        if (token) {
+          try {
+            await api.post('/api/v1/auth/logout');
+          } catch {
+            // Continue with client-side cleanup even if server call fails
+            // This handles offline scenarios gracefully
+          }
+        }
+        
+        // Clear all client-side auth state
         set({
           user: null,
           token: null,

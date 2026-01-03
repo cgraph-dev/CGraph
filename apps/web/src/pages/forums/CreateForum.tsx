@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForumStore } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
+import { forumLogger as logger } from '@/lib/logger';
 import {
   SparklesIcon,
   PhotoIcon,
@@ -121,7 +122,7 @@ export default function CreateForum() {
     setError(null);
 
     try {
-      console.log('[CreateForum] Submitting:', {
+      logger.log('[CreateForum] Submitting:', {
         name: formData.name,
         description: formData.description,
         isNsfw: formData.isNsfw,
@@ -135,12 +136,12 @@ export default function CreateForum() {
         isPrivate: !formData.isPublic,
       });
 
-      console.log('[CreateForum] Success:', forum);
+      logger.log('[CreateForum] Success:', forum);
 
       // Navigate to the new forum
       navigate(`/forums/${forum.slug}`);
     } catch (err: unknown) {
-      console.error('[CreateForum] Error:', err);
+      logger.error('[CreateForum] Error:', err);
       const errorObj = err as { 
         response?: { 
           data?: { 
