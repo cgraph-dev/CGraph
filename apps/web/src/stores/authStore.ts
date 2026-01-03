@@ -94,6 +94,47 @@ interface AuthState {
   checkAuth: () => Promise<void>;
 }
 
+/**
+ * Secure storage wrapper for auth data
+ * Uses sessionStorage for tokens (cleared on browser close) 
+ * and base64 encoding for obfuscation (not encryption)
+ */
+const createSecureStorage = () => {
+  const encode = (data: string): string => {
+    try {
+      return btoa(encodeURIComponent(data));
+    } catch {
+      return data;
+    }
+  };
+
+  const decode = (data: string): string => {
+    try {
+      return decodeURIComponent(atob(data));
+    } catch {
+      return data;
+    }
+  };
+
+  return {
+    getItem: (name: string): string | null => {
+      const value = sessionStorage.getItem(name);
+      if (!value) return null;
+      try {
+        return decode(value);
+      } catch {
+        return value;
+      }
+    },
+    setItem: (name: string, value: string): void => {
+      sessionStorage.setItem(name, encode(value));
+    },
+    removeItem: (name: string): void => {
+      sessionStorage.removeItem(name);
+    },
+  };
+};
+
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -277,6 +318,7 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'cgraph-auth',
+      storage: createSecureStorage(),
       partialize: (state) => ({
         token: state.token,
         refreshToken: state.refreshToken,

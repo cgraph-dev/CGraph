@@ -7,6 +7,7 @@ defmodule CgraphWeb.ConversationChannel do
   - Typing indicators
   - Read receipts
   - Presence (online status)
+  - Rate limiting to prevent spam
   """
   use CgraphWeb, :channel
 
@@ -14,6 +15,10 @@ defmodule CgraphWeb.ConversationChannel do
   alias Cgraph.Presence
 
   @typing_timeout 3_000
+  
+  # Rate limiting: max 10 messages per 10 seconds per user
+  @rate_limit_window_ms 10_000
+  @rate_limit_max_messages 10
 
   @impl true
   def join("conversation:" <> conversation_id, _params, socket) do
@@ -26,7 +31,10 @@ defmodule CgraphWeb.ConversationChannel do
       {:ok, conversation} ->
         if Messaging.user_in_conversation?(conversation_id, user.id) do
           send(self(), :after_join)
-          {:ok, assign(socket, :conversation_id, conversation_id)}
+          socket = socket
+            |> assign(:conversation_id, conversation_id)
+            |> assign(:rate_limit_messages, [])  # Initialize rate limit tracking
+          {:ok, socket}
         else
           {:error, %{reason: "unauthorized"}}
         end
@@ -74,23 +82,30 @@ defmodule CgraphWeb.ConversationChannel do
     user = socket.assigns.current_user
     conversation_id = socket.assigns.conversation_id
 
-    case Messaging.create_message(%{
-      content: content,
-      sender_id: user.id,
-      conversation_id: conversation_id,
-      content_type: Map.get(params, "content_type", "text"),
-      reply_to_id: Map.get(params, "reply_to_id"),
-      is_encrypted: Map.get(params, "is_encrypted", false)
-    }) do
-      {:ok, message} ->
-        broadcast!(socket, "new_message", %{
-          message: message,
-          sender: %{id: user.id, username: user.username, avatar_url: user.avatar_url}
-        })
-        {:reply, {:ok, %{message_id: message.id}}, socket}
+    # Check rate limit first
+    case check_rate_limit(socket) do
+      {:error, :rate_limited, socket} ->
+        {:reply, {:error, %{reason: "rate_limited", message: "Too many messages. Please slow down."}}, socket}
+      
+      {:ok, socket} ->
+        case Messaging.create_message(%{
+          content: content,
+          sender_id: user.id,
+          conversation_id: conversation_id,
+          content_type: Map.get(params, "content_type", "text"),
+          reply_to_id: Map.get(params, "reply_to_id"),
+          is_encrypted: Map.get(params, "is_encrypted", false)
+        }) do
+          {:ok, message} ->
+            broadcast!(socket, "new_message", %{
+              message: message,
+              sender: %{id: user.id, username: user.username, avatar_url: user.avatar_url}
+            })
+            {:reply, {:ok, %{message_id: message.id}}, socket}
 
-      {:error, changeset} ->
-        {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
+          {:error, changeset} ->
+            {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
+        end
     end
   end
 
@@ -220,5 +235,25 @@ defmodule CgraphWeb.ConversationChannel do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
+  end
+
+  # Rate limiting: sliding window implementation
+  # Tracks message timestamps and enforces max messages per window
+  defp check_rate_limit(socket) do
+    now = System.monotonic_time(:millisecond)
+    window_start = now - @rate_limit_window_ms
+    
+    # Get recent message timestamps, filter out old ones
+    recent_messages = socket.assigns[:rate_limit_messages] || []
+    recent_messages = Enum.filter(recent_messages, fn ts -> ts > window_start end)
+    
+    if length(recent_messages) >= @rate_limit_max_messages do
+      # Rate limited
+      {:error, :rate_limited, assign(socket, :rate_limit_messages, recent_messages)}
+    else
+      # Add current timestamp and allow message
+      updated_messages = [now | recent_messages]
+      {:ok, assign(socket, :rate_limit_messages, updated_messages)}
+    end
   end
 end

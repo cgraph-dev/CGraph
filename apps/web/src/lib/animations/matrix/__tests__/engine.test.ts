@@ -8,9 +8,7 @@
 
 import { describe, it, expect, beforeEach, afterEach, vi, beforeAll, afterAll } from 'vitest';
 import { MatrixEngine, createMatrixEngine } from '../engine';
-import { DEFAULT_CONFIG } from '../config';
 import { MATRIX_GREEN, CYBER_BLUE } from '../themes';
-import type { MatrixConfig, DeepPartial } from '../types';
 
 // =============================================================================
 // BROWSER ENVIRONMENT MOCKS
@@ -186,12 +184,10 @@ describe('Matrix Engine Creation', () => {
 describe('Matrix Engine Initialization', () => {
   let engine: MatrixEngine;
   let canvas: ReturnType<typeof createMockCanvas>['canvas'];
-  let ctx: ReturnType<typeof createMockCanvas>['ctx'];
 
   beforeEach(() => {
     const mock = createMockCanvas();
     canvas = mock.canvas;
-    ctx = mock.ctx;
     engine = new MatrixEngine();
   });
 

@@ -57,7 +57,8 @@ export default function Settings() {
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto p-8">
-        <div className="max-w-2xl animate-fadeIn\">\n          {section === 'account' && <AccountSettings />}
+        <div className="max-w-2xl animate-fadeIn">
+          {section === 'account' && <AccountSettings />}
           {section === 'security' && <SecuritySettings />}
           {section === 'notifications' && <NotificationSettings />}
           {section === 'appearance' && <AppearanceSettings />}

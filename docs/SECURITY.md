@@ -263,6 +263,38 @@ Multi-algorithm rate limiting:
 - Leaky Bucket (constant rate)
 - Fixed Window (simple limits)
 
+#### WebSocket Rate Limiting
+
+Real-time message channels include built-in rate limiting to prevent spam and DoS attacks:
+
+| Parameter | Value | Description |
+|-----------|-------|-------------|
+| Window | 10 seconds | Sliding window duration |
+| Max Messages | 10 | Maximum messages per window |
+| Per User | Yes | Each user tracked independently |
+
+**Implementation:**
+
+```elixir
+# Sliding window rate limit check
+defp check_rate_limit(socket) do
+  now = System.monotonic_time(:millisecond)
+  window_start = now - @rate_limit_window_ms
+  recent = socket.assigns[:rate_limit_messages] || []
+  recent = Enum.filter(recent, fn ts -> ts > window_start end)
+  
+  if length(recent) >= @rate_limit_max_messages do
+    {:error, :rate_limited, socket}
+  else
+    {:ok, assign(socket, :rate_limit_messages, [now | recent])}
+  end
+end
+```
+
+**Channels Protected:**
+- `ConversationChannel` - Direct messages
+- `GroupChannel` - Group/channel messages
+
 ### 8. Audit Logging
 
 **Module:** `Cgraph.Audit`

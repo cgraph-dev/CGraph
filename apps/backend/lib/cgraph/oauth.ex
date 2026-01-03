@@ -270,9 +270,42 @@ defmodule Cgraph.OAuth do
   # Private Functions - Authorization URL Building
   # ============================================================================
 
-  defp get_provider_config(provider) do
+  @doc """
+  Get the configuration for an OAuth provider.
+  
+  ## Parameters
+  
+  - `provider` - The OAuth provider atom
+  
+  ## Returns
+  
+  The provider configuration keyword list.
+  """
+  @spec get_provider_config(provider()) :: Keyword.t()
+  def get_provider_config(provider) do
     Application.get_env(:cgraph, :oauth, [])
     |> Keyword.get(provider, [])
+  end
+
+  @doc """
+  Verify an Apple ID token using Apple's JWKS.
+  
+  This function validates the token's signature and claims
+  to ensure the token was issued by Apple for your application.
+  
+  ## Parameters
+  
+  - `id_token` - The Apple ID token (JWT)
+  - `config` - The Apple OAuth configuration
+  
+  ## Returns
+  
+  - `{:ok, claims}` - The verified token claims
+  - `{:error, reason}` - If verification failed
+  """
+  @spec verify_apple_token(String.t(), Keyword.t()) :: {:ok, map()} | {:error, term()}
+  def verify_apple_token(id_token, config) do
+    verify_apple_id_token(id_token, config)
   end
 
   defp config_valid?(:google, config) do

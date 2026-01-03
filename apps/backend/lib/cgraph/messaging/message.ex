@@ -59,6 +59,7 @@ defmodule Cgraph.Messaging.Message do
 
   @doc """
   Create a new message.
+  Includes content sanitization to prevent XSS attacks.
   """
   def changeset(message, attrs) do
     message
@@ -69,6 +70,7 @@ defmodule Cgraph.Messaging.Message do
       :thumbnail_url, :link_preview
     ])
     |> validate_required([:content, :sender_id])
+    |> sanitize_content()
     |> validate_message_target()
     |> validate_inclusion(:content_type, @content_types)
     |> validate_length(:content, max: 10_000)
@@ -85,6 +87,7 @@ defmodule Cgraph.Messaging.Message do
     message
     |> cast(attrs, [:content])
     |> validate_required([:content])
+    |> sanitize_content()
     |> validate_length(:content, max: 10_000)
     |> put_change(:is_edited, true)
     |> put_change(:edit_count, message.edit_count + 1)
@@ -112,5 +115,50 @@ defmodule Cgraph.Messaging.Message do
       {_, _} ->
         add_error(changeset, :channel_id, "message cannot belong to both conversation and channel")
     end
+  end
+
+  # Sanitize message content to prevent XSS and injection attacks
+  # Strips dangerous HTML/script tags while preserving safe formatting
+  defp sanitize_content(changeset) do
+    case get_change(changeset, :content) do
+      nil -> 
+        changeset
+      content when is_binary(content) ->
+        sanitized = content
+        |> String.trim()
+        |> sanitize_html()
+        |> limit_consecutive_newlines()
+        put_change(changeset, :content, sanitized)
+      _ -> 
+        changeset
+    end
+  end
+
+  # Remove dangerous HTML tags and script content
+  # Allows basic text formatting but strips scripts, iframes, etc.
+  defp sanitize_html(content) do
+    content
+    # Remove script tags and their content
+    |> String.replace(~r/<script[^>]*>.*?<\/script>/is, "")
+    # Remove style tags and their content
+    |> String.replace(~r/<style[^>]*>.*?<\/style>/is, "")
+    # Remove iframe tags
+    |> String.replace(~r/<iframe[^>]*>.*?<\/iframe>/is, "")
+    # Remove object/embed tags
+    |> String.replace(~r/<(object|embed|applet)[^>]*>.*?<\/\1>/is, "")
+    # Remove onclick and other event handlers
+    |> String.replace(~r/\bon\w+\s*=\s*["'][^"']*["']/i, "")
+    # Remove javascript: URLs
+    |> String.replace(~r/javascript:/i, "")
+    # Remove data: URLs in sensitive contexts
+    |> String.replace(~r/data:\s*text\/html/i, "")
+    # Escape remaining HTML entities for safe display
+    |> Phoenix.HTML.html_escape()
+    |> Phoenix.HTML.safe_to_string()
+  end
+
+  # Limit consecutive newlines to prevent message spam/flooding
+  defp limit_consecutive_newlines(content) do
+    String.replace(content, ~r/\n{4,}/, "\n\n\n")
   end
 end

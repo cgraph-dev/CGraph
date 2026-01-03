@@ -11,6 +11,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.4] - 2026-01-03
+
+### Security Hardening & Stability
+
+Comprehensive security review and bug fixes addressing critical vulnerabilities across web, mobile, and backend.
+
+### Security
+
+- **Mobile OAuth Token Persistence** - Tokens now properly saved to secure storage after authentication
+- **Token Refresh Race Condition** - Implemented mutex pattern to prevent parallel refresh attempts
+- **WebSocket Rate Limiting** - Added 10 msg/10s sliding window rate limiting to messaging channels
+- **Message Content Sanitization** - XSS protection through HTML tag stripping and encoding
+- **Apple Token Verification** - Mobile flow now uses JWKS verification instead of simple decode
+- **Session Storage Security** - Switched from localStorage to sessionStorage with encoding
+
+### Fixed
+
+- Matrix animation test suite TypeScript errors (incorrect property names)
+- Mobile config `getRandomChar` undefined array access
+- Settings.tsx and CreatePost.tsx malformed template literals
+- Tooltip.tsx setTimeout type mismatch
+- Engine.ts now accepts DeepPartial config for nested overrides
+- Missing Expo OAuth packages installed (expo-web-browser, expo-auth-session, expo-apple-authentication)
+
+### Changed
+
+- Auth store now uses sessionStorage instead of localStorage (tokens cleared on browser close)
+- OAuth module exposes public `get_provider_config/1` and `verify_apple_token/2` functions
+
+### Documentation
+
+- Updated BUGFIX_LOG.md with v0.6.4 fixes
+- Updated SECURITY.md with WebSocket rate limiting section
+- Updated SESSION_UPDATES.md with session details
+
+---
+
 ## [0.6.3] - 2026-01-04
 
 ### Matrix Cipher Background Animation

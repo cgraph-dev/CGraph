@@ -87,7 +87,7 @@ export class MatrixEngine {
   // CONSTRUCTOR
   // =========================================================================
   
-  constructor(config?: Partial<MatrixConfig>) {
+  constructor(config?: DeepPartial<MatrixConfig>) {
     this.config = createConfig(config);
     this.state = this.createInitialState();
     this.characters = this.generateCharacterSet();
@@ -925,7 +925,7 @@ export class MatrixEngine {
  * @param config - Optional configuration overrides
  * @returns New MatrixEngine instance
  */
-export function createMatrixEngine(config?: Partial<MatrixConfig>): MatrixEngine {
+export function createMatrixEngine(config?: DeepPartial<MatrixConfig>): MatrixEngine {
   return new MatrixEngine(config);
 }
 

@@ -9,7 +9,7 @@ import * as WebBrowser from 'expo-web-browser';
 import * as AuthSession from 'expo-auth-session';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import { Platform } from 'react-native';
-import api, { API_URL } from './api';
+import api from './api';
 import { storage } from './storage';
 
 // Ensure web browser redirect is completed
@@ -89,6 +89,7 @@ function getRedirectUri(): string {
 
 /**
  * Send OAuth token to backend for verification and JWT generation
+ * Stores the returned tokens in secure storage
  */
 async function verifyWithBackend(
   provider: OAuthProvider,
@@ -100,7 +101,21 @@ async function verifyWithBackend(
     id_token: idToken,
   });
   
-  return response.data;
+  const result: OAuthResult = response.data;
+  
+  // CRITICAL: Store tokens in secure storage for persistent auth
+  if (result.tokens) {
+    await storage.setItem('access_token', result.tokens.access_token);
+    await storage.setItem('refresh_token', result.tokens.refresh_token);
+    await storage.setItem('token_expiry', String(Date.now() + result.tokens.expires_in * 1000));
+  }
+  
+  // Store user data for quick access
+  if (result.user) {
+    await storage.setItem('user', JSON.stringify(result.user));
+  }
+  
+  return result;
 }
 
 /**

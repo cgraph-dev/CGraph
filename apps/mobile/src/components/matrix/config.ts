@@ -72,7 +72,8 @@ export function getCharacterSet(type: CharacterSetType): string[] {
  * Get a random character from a set
  */
 export function getRandomChar(chars: string[]): string {
-  return chars[Math.floor(Math.random() * chars.length)];
+  if (chars.length === 0) return '';
+  return chars[Math.floor(Math.random() * chars.length)] ?? '';
 }
 
 // =============================================================================

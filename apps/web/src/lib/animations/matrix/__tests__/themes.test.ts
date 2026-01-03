@@ -37,7 +37,7 @@ describe('Matrix Themes', () => {
 
     // Trail gradient should be array
     expect(Array.isArray(theme.trailGradient)).toBe(true);
-    expect(theme.trailGradient.length).toBeGreaterThan(0);
+    expect(theme.trailGradient!.length).toBeGreaterThan(0);
 
     // Glow configuration
     expect(theme.glow).toBeDefined();
@@ -48,9 +48,9 @@ describe('Matrix Themes', () => {
 
     // Depth colors
     expect(theme.depthColors).toBeDefined();
-    expect(typeof theme.depthColors.near).toBe('string');
-    expect(typeof theme.depthColors.mid).toBe('string');
-    expect(typeof theme.depthColors.far).toBe('string');
+    expect(typeof theme.depthColors!.near).toBe('string');
+    expect(typeof theme.depthColors!.mid).toBe('string');
+    expect(typeof theme.depthColors!.far).toBe('string');
 
     // Opacity
     expect(theme.opacity).toBeDefined();
@@ -82,8 +82,8 @@ describe('Matrix Themes', () => {
     });
 
     it('should have valid trail gradient', () => {
-      expect(MATRIX_GREEN.trailGradient.length).toBeGreaterThanOrEqual(3);
-      for (const stop of MATRIX_GREEN.trailGradient) {
+      expect(MATRIX_GREEN.trailGradient!.length).toBeGreaterThanOrEqual(3);
+      for (const stop of MATRIX_GREEN.trailGradient!) {
         expect(stop.position).toBeGreaterThanOrEqual(0);
         expect(stop.position).toBeLessThanOrEqual(1);
         expect(stop.alpha).toBeGreaterThanOrEqual(0);
@@ -400,7 +400,7 @@ describe('Matrix Themes', () => {
     it('all themes should have non-empty trail gradients', () => {
       const themes = Object.values(THEME_REGISTRY);
       for (const theme of themes) {
-        expect(theme.trailGradient.length).toBeGreaterThan(0);
+        expect(theme.trailGradient!.length).toBeGreaterThan(0);
       }
     });
   });

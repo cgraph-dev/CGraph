@@ -3,14 +3,138 @@
 This document details all the changes, enhancements, and bug fixes made during the development session.
 
 ## Table of Contents
-1. [Version 1.0.0 Release](#version-100-release)
-2. [Session: Security Hardening (July 2025)](#session-security-hardening-july-2025)
-3. [Session: December 31, 2025](#session-december-31-2025)
-4. [Bug Fixes](#bug-fixes)
-5. [New Features](#new-features)
-6. [UI/UX Improvements](#uiux-improvements)
-7. [Architecture Changes](#architecture-changes)
-8. [Component Library](#component-library)
+1. [Session: January 3, 2026 - v0.6.4](#session-january-3-2026---v064)
+2. [Version 1.0.0 Release](#version-100-release)
+3. [Session: Security Hardening (July 2025)](#session-security-hardening-july-2025)
+4. [Session: December 31, 2025](#session-december-31-2025)
+5. [Bug Fixes](#bug-fixes)
+6. [New Features](#new-features)
+7. [UI/UX Improvements](#uiux-improvements)
+8. [Architecture Changes](#architecture-changes)
+9. [Component Library](#component-library)
+
+---
+
+## Session: January 3, 2026 - v0.6.4
+
+### Overview
+
+Comprehensive codebase review and security hardening session. Addressed critical security vulnerabilities, fixed TypeScript errors, and improved overall system stability.
+
+### Security Fixes
+
+#### 1. Mobile OAuth Token Persistence
+
+**Problem:** OAuth tokens were not saved after successful authentication, causing users to be logged out on app restart.
+
+**Solution:** Added token storage in `verifyWithBackend` function to persist access and refresh tokens to secure storage.
+
+**Files Modified:**
+- `apps/mobile/src/lib/oauth.ts`
+
+#### 2. Token Refresh Race Condition
+
+**Problem:** Multiple concurrent 401 responses triggered parallel token refresh attempts, causing race conditions.
+
+**Solution:** Implemented refresh mutex with subscriber queue pattern - queued requests wait for a single refresh operation.
+
+**Files Modified:**
+- `apps/web/src/lib/api.ts`
+
+#### 3. WebSocket Rate Limiting
+
+**Problem:** No rate limiting on WebSocket channels allowed potential spam attacks.
+
+**Solution:** Added sliding window rate limiting (10 messages per 10 seconds) to conversation and group channels.
+
+**Files Modified:**
+- `lib/cgraph_web/channels/conversation_channel.ex`
+- `lib/cgraph_web/channels/group_channel.ex`
+
+#### 4. Message Content Sanitization
+
+**Problem:** Message content not sanitized, allowing XSS through script injection.
+
+**Solution:** Added HTML sanitization in message changeset - strips scripts, iframes, event handlers.
+
+**Files Modified:**
+- `lib/cgraph/messaging/message.ex`
+
+#### 5. Apple Token Verification (Mobile Flow)
+
+**Problem:** Mobile OAuth only decoded Apple ID tokens without cryptographic verification.
+
+**Solution:** Updated to use JWKS verification from OAuth module instead of simple base64 decode.
+
+**Files Modified:**
+- `lib/cgraph_web/controllers/api/v1/oauth_controller.ex`
+- `lib/cgraph/oauth.ex` (added public `verify_apple_token/2`)
+
+#### 6. Session Storage Security
+
+**Problem:** Tokens stored in localStorage persist indefinitely and are vulnerable to XSS.
+
+**Solution:** Switched to sessionStorage with base64 encoding for obfuscation.
+
+**Files Modified:**
+- `apps/web/src/stores/authStore.ts`
+
+### Bug Fixes
+
+#### Matrix Animation Test Suite
+
+Fixed TypeScript errors in Matrix animation test files:
+- `types.test.ts` - Corrected property names to match actual type definitions
+- `engine.test.ts` - Fixed unused imports and added missing CYBER_BLUE import
+- `themes.test.ts` - Added non-null assertions for optional properties
+
+**Files Modified:**
+- `apps/web/src/lib/animations/matrix/__tests__/types.test.ts`
+- `apps/web/src/lib/animations/matrix/__tests__/engine.test.ts`
+- `apps/web/src/lib/animations/matrix/__tests__/themes.test.ts`
+
+#### Mobile Configuration
+
+- Fixed `getRandomChar` function to handle undefined array access
+- Installed missing Expo OAuth packages: `expo-web-browser`, `expo-auth-session`, `expo-apple-authentication`
+
+**Files Modified:**
+- `apps/mobile/src/components/matrix/config.ts`
+
+#### UI Template Fixes
+
+Fixed malformed template literals in JSX components:
+- Settings.tsx - Fixed escaped quotation marks in className
+- CreatePost.tsx - Fixed same issue
+
+**Files Modified:**
+- `apps/web/src/pages/settings/Settings.tsx`
+- `apps/web/src/pages/forums/CreatePost.tsx`
+
+#### Tooltip Component
+
+Fixed TypeScript error with setTimeout return type.
+
+**Files Modified:**
+- `apps/web/src/components/ui/Tooltip.tsx`
+
+### Architecture Improvements
+
+#### Engine Type Signature Update
+
+Changed `MatrixEngine` constructor and factory to accept `DeepPartial<MatrixConfig>` instead of `Partial<MatrixConfig>` for proper nested configuration overrides.
+
+**Files Modified:**
+- `apps/web/src/lib/animations/matrix/engine.ts`
+
+### Summary
+
+| Category | Items Fixed |
+|----------|-------------|
+| Critical Security | 6 |
+| Bug Fixes | 8 |
+| TypeScript Errors | 0 (all resolved) |
+| Documentation | 3 files updated |
 
 ---
 

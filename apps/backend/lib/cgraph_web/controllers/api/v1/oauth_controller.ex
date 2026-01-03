@@ -339,10 +339,16 @@ defmodule CgraphWeb.API.V1.OAuthController do
   end
 
   defp get_user_info_from_tokens(:apple, %{"id_token" => token}) when token != nil do
-    case decode_apple_id_token(token) do
+    # Use secure verification with Apple's JWKS instead of just decoding
+    # This validates the signature and claims before trusting the token
+    config = OAuth.get_provider_config(:apple)
+    
+    case OAuth.verify_apple_token(token, config) do
       {:ok, claims} ->
         {:ok, %{uid: claims["sub"], email: claims["email"], name: nil, picture: nil}}
-      _ ->
+      {:error, reason} ->
+        Logger.warning("Apple ID token verification failed in mobile flow", 
+          reason: inspect(reason))
         {:error, :invalid_token}
     end
   end

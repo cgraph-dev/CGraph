@@ -3,6 +3,32 @@ import { useAuthStore } from '@/stores/authStore';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
+// Token refresh mutex to prevent race conditions
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+/**
+ * Subscribe to token refresh - queued requests wait for new token
+ */
+function subscribeTokenRefresh(callback: (token: string) => void): void {
+  refreshSubscribers.push(callback);
+}
+
+/**
+ * Notify all queued requests with new token
+ */
+function onTokenRefreshed(token: string): void {
+  refreshSubscribers.forEach((callback) => callback(token));
+  refreshSubscribers = [];
+}
+
+/**
+ * Reject all queued requests on refresh failure
+ */
+function onRefreshFailed(): void {
+  refreshSubscribers = [];
+}
+
 // Create axios instance
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,
@@ -24,7 +50,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor - handle errors and token refresh
+// Response interceptor - handle errors and token refresh with mutex
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -35,27 +61,52 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       const refreshToken = useAuthStore.getState().refreshToken;
-      if (refreshToken) {
-        try {
-          const response = await axios.post(`${API_URL}/api/v1/auth/refresh`, {
-            refresh_token: refreshToken,
-          });
+      if (!refreshToken) {
+        useAuthStore.getState().logout();
+        window.location.href = '/login';
+        return Promise.reject(error);
+      }
 
-          const { token, refresh_token } = response.data;
-          useAuthStore.setState({
-            token,
-            refreshToken: refresh_token,
+      // If already refreshing, queue this request
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          subscribeTokenRefresh((token: string) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            resolve(api(originalRequest));
           });
+        });
+      }
 
-          // Retry original request with new token
-          originalRequest.headers.Authorization = `Bearer ${token}`;
-          return api(originalRequest);
-        } catch (refreshError) {
-          // Refresh failed - logout
-          useAuthStore.getState().logout();
-          window.location.href = '/login';
-          return Promise.reject(refreshError);
-        }
+      // Start refresh - set mutex
+      isRefreshing = true;
+
+      try {
+        const response = await axios.post(`${API_URL}/api/v1/auth/refresh`, {
+          refresh_token: refreshToken,
+        });
+
+        const { token, refresh_token } = response.data;
+        useAuthStore.setState({
+          token,
+          refreshToken: refresh_token,
+        });
+
+        // Release mutex and notify subscribers
+        isRefreshing = false;
+        onTokenRefreshed(token);
+
+        // Retry original request with new token
+        originalRequest.headers.Authorization = `Bearer ${token}`;
+        return api(originalRequest);
+      } catch (refreshError) {
+        // Release mutex and reject subscribers
+        isRefreshing = false;
+        onRefreshFailed();
+
+        // Refresh failed - logout
+        useAuthStore.getState().logout();
+        window.location.href = '/login';
+        return Promise.reject(refreshError);
       }
     }
 

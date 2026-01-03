@@ -16,6 +16,229 @@
 
 ---
 
+## January 3, 2026 - v0.6.4 Security Hardening & Stability
+
+### 1. Mobile OAuth Token Persistence (CRITICAL)
+
+**Problem:** OAuth tokens were not saved after successful mobile authentication, causing users to be logged out on app restart.
+
+**Root Cause:** The `verifyWithBackend` function returned tokens but never stored them in secure storage.
+
+**Solution:** Added token persistence to secure storage immediately after successful OAuth verification.
+
+**File Modified:** `apps/mobile/src/lib/oauth.ts`
+```typescript
+async function verifyWithBackend(provider, accessToken, idToken) {
+  const response = await api.post(`/api/v1/auth/oauth/${provider}/mobile`, {
+    access_token: accessToken,
+    id_token: idToken,
+  });
+  
+  const result = response.data;
+  
+  // Store tokens in secure storage for persistent auth
+  if (result.tokens) {
+    await storage.setItem('access_token', result.tokens.access_token);
+    await storage.setItem('refresh_token', result.tokens.refresh_token);
+    await storage.setItem('token_expiry', String(Date.now() + result.tokens.expires_in * 1000));
+  }
+  
+  return result;
+}
+```
+
+**Impact:** User sessions now persist correctly across app restarts.
+
+---
+
+### 2. Token Refresh Race Condition
+
+**Problem:** When multiple API requests failed with 401 simultaneously, each would trigger a token refresh, causing race conditions and failed requests.
+
+**Root Cause:** No mutex to serialize refresh attempts.
+
+**Solution:** Implemented refresh token mutex with subscriber queue pattern.
+
+**File Modified:** `apps/web/src/lib/api.ts`
+```typescript
+let isRefreshing = false;
+let refreshSubscribers = [];
+
+// When 401 received:
+if (isRefreshing) {
+  // Queue this request
+  return new Promise((resolve) => {
+    subscribeTokenRefresh((token) => {
+      originalRequest.headers.Authorization = `Bearer ${token}`;
+      resolve(api(originalRequest));
+    });
+  });
+}
+
+isRefreshing = true;
+// ... refresh token ...
+isRefreshing = false;
+onTokenRefreshed(newToken);
+```
+
+**Impact:** Prevents duplicate refresh requests and ensures all pending requests receive the new token.
+
+---
+
+### 3. WebSocket Rate Limiting
+
+**Problem:** No rate limiting on WebSocket message handlers allowed potential spam/flood attacks.
+
+**Root Cause:** Channels accepted unlimited messages without throttling.
+
+**Solution:** Added sliding window rate limiting to both conversation and group channels.
+
+**Files Modified:** 
+- `lib/cgraph_web/channels/conversation_channel.ex`
+- `lib/cgraph_web/channels/group_channel.ex`
+
+```elixir
+@rate_limit_window_ms 10_000
+@rate_limit_max_messages 10
+
+defp check_rate_limit(socket) do
+  now = System.monotonic_time(:millisecond)
+  recent = socket.assigns[:rate_limit_messages] || []
+  recent = Enum.filter(recent, fn ts -> ts > now - @rate_limit_window_ms end)
+  
+  if length(recent) >= @rate_limit_max_messages do
+    {:error, :rate_limited, socket}
+  else
+    {:ok, assign(socket, :rate_limit_messages, [now | recent])}
+  end
+end
+```
+
+**Impact:** Prevents message flooding attacks (max 10 messages per 10 seconds per user).
+
+---
+
+### 4. Message Content Sanitization
+
+**Problem:** Message content was not sanitized, allowing potential XSS attacks through script injection.
+
+**Root Cause:** No HTML sanitization in message changeset.
+
+**Solution:** Added comprehensive content sanitization to message creation and editing.
+
+**File Modified:** `lib/cgraph/messaging/message.ex`
+```elixir
+defp sanitize_content(changeset) do
+  case get_change(changeset, :content) do
+    nil -> changeset
+    content ->
+      sanitized = content
+      |> String.trim()
+      |> sanitize_html()
+      |> limit_consecutive_newlines()
+      put_change(changeset, :content, sanitized)
+  end
+end
+
+defp sanitize_html(content) do
+  content
+  |> String.replace(~r/<script[^>]*>.*?<\/script>/is, "")
+  |> String.replace(~r/<style[^>]*>.*?<\/style>/is, "")
+  |> String.replace(~r/javascript:/i, "")
+  |> Phoenix.HTML.html_escape()
+  |> Phoenix.HTML.safe_to_string()
+end
+```
+
+**Impact:** Prevents XSS attacks through message content.
+
+---
+
+### 5. Apple Token Verification in Mobile Flow
+
+**Problem:** Mobile OAuth flow only decoded Apple ID tokens without verifying the cryptographic signature.
+
+**Root Cause:** Controller used `decode_apple_id_token` instead of proper JWKS verification.
+
+**Solution:** Updated to use full JWKS verification from OAuth module.
+
+**File Modified:** `lib/cgraph_web/controllers/api/v1/oauth_controller.ex`
+```elixir
+defp get_user_info_from_tokens(:apple, %{"id_token" => token}) do
+  config = OAuth.get_provider_config(:apple)
+  
+  case OAuth.verify_apple_token(token, config) do
+    {:ok, claims} ->
+      {:ok, %{uid: claims["sub"], email: claims["email"]}}
+    {:error, reason} ->
+      Logger.warning("Apple token verification failed", reason: reason)
+      {:error, :invalid_token}
+  end
+end
+```
+
+**Impact:** Prevents forged Apple authentication tokens.
+
+---
+
+### 6. Auth Store Session Security
+
+**Problem:** Authentication tokens stored in localStorage are vulnerable to XSS attacks and persist indefinitely.
+
+**Root Cause:** Using localStorage with plaintext token storage.
+
+**Solution:** Switched to sessionStorage with base64 encoding for obfuscation.
+
+**File Modified:** `apps/web/src/stores/authStore.ts`
+```typescript
+const createSecureStorage = () => ({
+  getItem: (name) => {
+    const value = sessionStorage.getItem(name);
+    if (!value) return null;
+    return decodeURIComponent(atob(value));
+  },
+  setItem: (name, value) => {
+    sessionStorage.setItem(name, btoa(encodeURIComponent(value)));
+  },
+  removeItem: (name) => sessionStorage.removeItem(name),
+});
+```
+
+**Impact:** Tokens cleared on browser close, reduced XSS exposure.
+
+---
+
+### 7. Matrix Animation Test Fixes
+
+**Problem:** Matrix animation test files had incorrect property names that didn't match actual type definitions.
+
+**Root Cause:** Tests written for a different type structure than implemented.
+
+**Solution:** Rewrote test files with correct property names (trailGradient, glow.intensity, etc.).
+
+**Files Modified:**
+- `apps/web/src/lib/animations/matrix/__tests__/types.test.ts`
+- `apps/web/src/lib/animations/matrix/__tests__/engine.test.ts`
+- `apps/web/src/lib/animations/matrix/__tests__/themes.test.ts`
+
+**Impact:** Tests now correctly validate the implemented Matrix animation system.
+
+---
+
+### 8. UI Template Literal Fixes
+
+**Problem:** Malformed template literals in Settings and CreatePost pages with escaped characters.
+
+**Root Cause:** Incorrectly escaped quotation marks in JSX className attributes.
+
+**Files Modified:**
+- `apps/web/src/pages/settings/Settings.tsx`
+- `apps/web/src/pages/forums/CreatePost.tsx`
+
+**Impact:** Fixed rendering issues in settings and post creation pages.
+
+---
+
 ## January 3, 2026 - v0.6.1 Security & Performance Fixes
 
 ### 1. Wallet Nonce Replay Attack (CRITICAL)

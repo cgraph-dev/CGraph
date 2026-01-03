@@ -7,12 +7,17 @@ defmodule CgraphWeb.GroupChannel do
   - Typing indicators
   - Presence tracking
   - Role-based permissions
+  - Rate limiting to prevent spam
   """
   use CgraphWeb, :channel
 
   alias Cgraph.Groups
   alias Cgraph.Messaging
   alias Cgraph.Presence
+
+  # Rate limiting: max 10 messages per 10 seconds per user
+  @rate_limit_window_ms 10_000
+  @rate_limit_max_messages 10
 
   @impl true
   def join("group:" <> channel_id, _params, socket) do
@@ -35,6 +40,7 @@ defmodule CgraphWeb.GroupChannel do
               |> assign(:channel_id, channel_id)
               |> assign(:group_id, channel.group_id)
               |> assign(:member, member)
+              |> assign(:rate_limit_messages, [])  # Initialize rate limit tracking
               {:ok, socket}
             else
               {:error, %{reason: "no_access"}}
@@ -69,32 +75,39 @@ defmodule CgraphWeb.GroupChannel do
     channel_id = socket.assigns.channel_id
     member = socket.assigns.member
 
-    # Check permissions
-    unless Groups.can_send_messages?(member) do
-      {:reply, {:error, %{reason: "no_permission"}}, socket}
-    else
-      case Messaging.create_message(%{
-        content: content,
-        sender_id: user.id,
-        channel_id: channel_id,
-        content_type: Map.get(params, "content_type", "text"),
-        reply_to_id: Map.get(params, "reply_to_id")
-      }) do
-        {:ok, message} ->
-          broadcast!(socket, "new_message", %{
-            message: message,
-            sender: %{
-              id: user.id,
-              username: user.username,
-              avatar_url: user.avatar_url,
-              nickname: member.nickname
-            }
-          })
-          {:reply, {:ok, %{message_id: message.id}}, socket}
+    # Check rate limit first
+    case check_rate_limit(socket) do
+      {:error, :rate_limited, socket} ->
+        {:reply, {:error, %{reason: "rate_limited", message: "Too many messages. Please slow down."}}, socket}
+      
+      {:ok, socket} ->
+        # Check permissions
+        unless Groups.can_send_messages?(member) do
+          {:reply, {:error, %{reason: "no_permission"}}, socket}
+        else
+          case Messaging.create_message(%{
+            content: content,
+            sender_id: user.id,
+            channel_id: channel_id,
+            content_type: Map.get(params, "content_type", "text"),
+            reply_to_id: Map.get(params, "reply_to_id")
+          }) do
+            {:ok, message} ->
+              broadcast!(socket, "new_message", %{
+                message: message,
+                sender: %{
+                  id: user.id,
+                  username: user.username,
+                  avatar_url: user.avatar_url,
+                  nickname: member.nickname
+                }
+              })
+              {:reply, {:ok, %{message_id: message.id}}, socket}
 
-        {:error, changeset} ->
-          {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
-      end
+            {:error, changeset} ->
+              {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
+          end
+        end
     end
   end
 
@@ -168,5 +181,25 @@ defmodule CgraphWeb.GroupChannel do
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
+  end
+
+  # Rate limiting: sliding window implementation
+  # Tracks message timestamps and enforces max messages per window
+  defp check_rate_limit(socket) do
+    now = System.monotonic_time(:millisecond)
+    window_start = now - @rate_limit_window_ms
+    
+    # Get recent message timestamps, filter out old ones
+    recent_messages = socket.assigns[:rate_limit_messages] || []
+    recent_messages = Enum.filter(recent_messages, fn ts -> ts > window_start end)
+    
+    if length(recent_messages) >= @rate_limit_max_messages do
+      # Rate limited
+      {:error, :rate_limited, assign(socket, :rate_limit_messages, recent_messages)}
+    else
+      # Add current timestamp and allow message
+      updated_messages = [now | recent_messages]
+      {:ok, assign(socket, :rate_limit_messages, updated_messages)}
+    end
   end
 end
