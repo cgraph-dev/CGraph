@@ -1,23 +1,41 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
-// API URL configuration with security checks
+/**
+ * API URL Configuration
+ * 
+ * Resolves the backend API URL based on environment:
+ * - Development: Uses configured URL or localhost with proper IP handling
+ * - Production: Requires HTTPS configuration
+ * 
+ * @returns The API base URL
+ */
 const getApiUrl = (): string => {
   const configuredUrl = Constants.expoConfig?.extra?.apiUrl;
   
-  // Development mode allows localhost HTTP
+  // Development mode - allow localhost and LAN connections
   if (__DEV__) {
-    return configuredUrl || 'http://localhost:4000';
+    if (configuredUrl) {
+      return configuredUrl;
+    }
+    
+    // Android emulator uses 10.0.2.2 to reach host machine's localhost
+    // iOS simulator can use localhost directly
+    if (Platform.OS === 'android') {
+      return 'http://10.0.2.2:4000';
+    }
+    return 'http://localhost:4000';
   }
   
   // Production MUST have a configured HTTPS URL
   if (!configuredUrl) {
-    throw new Error('API_URL must be configured for production builds');
+    throw new Error('API_URL must be configured for production builds via app.config.js');
   }
   
   if (!configuredUrl.startsWith('https://')) {
-    throw new Error('Production API must use HTTPS');
+    throw new Error('Production API must use HTTPS for security');
   }
   
   return configuredUrl;

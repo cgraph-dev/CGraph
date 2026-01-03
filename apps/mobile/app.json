@@ -2,7 +2,7 @@
   "expo": {
     "name": "CGraph",
     "slug": "cgraph",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -130,6 +130,7 @@
       ]
     ],
     "extra": {
+      "apiUrl": "http://localhost:4000",
       "eas": {
         "projectId": "your-project-id"
       }

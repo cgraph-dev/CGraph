@@ -12,13 +12,20 @@ Before anything else, install these:
 
 | Software | Version | Check Command |
 |----------|---------|---------------|
-| Node.js | 22 LTS | `node --version` |
-| pnpm | 9+ | `pnpm --version` |
+| Node.js | 22+ LTS | `node --version` |
+| pnpm | 10+ | `pnpm --version` |
 | Elixir | 1.19+ | `elixir --version` |
 | Erlang/OTP | 28+ | `erl -version` |
 | PostgreSQL | 16+ | `psql --version` |
 | Docker | 24+ | `docker --version` |
 | asdf | latest | `asdf --version` |
+
+### Platform Requirements (v0.7.1+)
+
+**Important:** As of v0.7.0, CGraph requires:
+- **Node.js 22+** (for React 19.1 and Expo SDK 54 compatibility)
+- **pnpm 10+** (npm/yarn no longer supported in monorepo)
+- **New Architecture enabled** for React Native (default in SDK 54)
 
 ### Install Guide (Ubuntu/Debian)
 
@@ -189,10 +196,32 @@ cd apps/mobile
 pnpm start
 ```
 
-This starts Expo. You can:
-- Press `i` for iOS simulator
-- Press `a` for Android emulator
+This starts Expo with Metro bundler. You have several options:
+
+**Development Modes:**
+- Press `a` for Android emulator (requires Android Studio)
+- Press `i` for iOS simulator (macOS only, requires Xcode)
+- Press `l` for LAN mode (physical device on same network)
 - Scan QR code with Expo Go app on your phone
+
+**v0.7.0+ Features (SDK 54):**
+- New Architecture enabled by default for better performance
+- Biometric authentication support (Face ID, Touch ID, Fingerprint)
+- Edge-to-edge display on Android
+
+**Physical Device Setup:**
+1. Install Expo Go from App Store/Play Store
+2. Ensure phone and computer are on same WiFi network
+3. Run `pnpm start --lan` for best connectivity
+4. Scan QR code with Expo Go
+
+**Android Emulator Setup:**
+```bash
+# Verify emulator is running
+~/Android/Sdk/platform-tools/adb devices
+
+# Should show device like: emulator-5554 device
+```
 
 ---
 
@@ -321,18 +350,46 @@ PORT=4001 mix phx.server
 
 ### Mobile app can't connect to backend
 
-In development, you need your machine's local IP (not localhost):
+The mobile app uses different URLs depending on the platform:
 
+**Android Emulator:** Uses `10.0.2.2:4000` (special IP to reach host localhost)
+**iOS Simulator:** Uses `localhost:4000` directly
+**Physical Device:** Requires your machine's LAN IP
+
+For physical device testing, update `apps/mobile/app.config.js`:
+```javascript
+// Find this line and update with your IP
+const LAN_IP = process.env.API_HOST || '192.168.1.100';
+```
+
+Or set environment variable:
 ```bash
-# Get your IP
-hostname -I   # Linux
-ipconfig getifaddr en0  # macOS
+API_HOST=192.168.1.100 pnpm start
 ```
 
-Update `apps/mobile/.env`:
+**Finding your LAN IP:**
+```bash
+# Linux
+hostname -I | awk '{print $1}'
+
+# macOS
+ipconfig getifaddr en0
+
+# Windows
+ipconfig | findstr IPv4
 ```
-API_URL=http://YOUR_IP:4000
-```
+
+### Expo tunnel offline (err_ngrok_3200)
+
+This error means the Expo tunnel can't connect. Common causes:
+
+1. **Backend not running** - Start the backend first: `mix phx.server`
+2. **Network issues** - Use LAN mode instead: `pnpm start --lan`
+3. **Stale tunnel** - Clear and restart:
+   ```bash
+   pkill -f ngrok
+   npx expo start --clear
+   ```
 
 ---
 

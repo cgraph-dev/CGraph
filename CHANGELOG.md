@@ -11,6 +11,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.1] - 2026-01-03
+
+### Mobile Development Environment Fix
+
+This release fixes critical mobile development connectivity issues and updates documentation to reflect the SDK 54 platform upgrade.
+
+### Fixed
+
+#### Mobile API Connectivity
+- **Android Emulator Localhost** - Fixed API URL resolution for Android emulator which cannot access host's `localhost` directly; automatically uses `10.0.2.2` for Android in development
+- **Platform-Specific URL Handling** - API client now properly detects iOS vs Android and applies correct localhost translation
+- **Tunnel/ngrok Errors** - Documented root cause (backend offline) and solutions for "endpoint offline err_ngrok_3200" errors
+
+#### Configuration Improvements
+- **Dynamic app.config.js** - Created new dynamic Expo configuration file for environment-based settings
+- **API URL in Extra Config** - Added `apiUrl` to app.json extra config for proper Constants access
+- **Environment Detection** - Added `IS_DEV`, `IS_PREVIEW` environment detection with app variant suffixes
+
+### Changed
+
+#### Documentation Updates
+- **MOBILE.md** - Comprehensive rewrite with SDK 54 tech stack, biometric authentication docs, and platform-specific troubleshooting
+- **02_HOW_TO_START.md** - Updated with Node 22+, pnpm 10+ requirements, mobile connectivity troubleshooting
+- **04_FRONTEND_EXPLAINED.md** - Added SDK 54 build notes, biometric API documentation, New Architecture debugging tips
+
+### Added
+
+- **Biometric Authentication Docs** - Full API documentation for `biometrics.ts` utility
+- **Mobile Troubleshooting Section** - Platform-specific API URL table, tunnel error solutions, New Architecture debugging
+- **Security Features Section** - New documentation section for biometric authentication usage
+
+### Technical Details
+
+| Environment | Android Emulator | iOS Simulator | Physical Device |
+|-------------|-----------------|---------------|-----------------|
+| Development | `10.0.2.2:4000` | `localhost:4000` | LAN IP required |
+| Production | `api.cgraph.org` | `api.cgraph.org` | `api.cgraph.org` |
+
+---
+
 ## [0.7.0] - 2026-01-03
 
 ### Major Platform Upgrade

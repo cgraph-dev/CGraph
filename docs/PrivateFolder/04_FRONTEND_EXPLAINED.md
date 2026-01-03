@@ -723,7 +723,7 @@ pnpm build
 ```bash
 cd apps/mobile
 
-# Development build
+# Development build (Expo SDK 54)
 eas build --profile development --platform ios
 eas build --profile development --platform android
 
@@ -731,16 +731,24 @@ eas build --profile development --platform android
 eas build --profile production --platform all
 ```
 
+**v0.7.0+ Build Notes:**
+- New Architecture is enabled by default (SDK 54)
+- Hermes JavaScript engine is required
+- React Native 0.81.5 with React 19.1
+- Reanimated 4.x with react-native-worklets
+
 ### Environment Variables
 
 Web uses `VITE_` prefix:
-- `VITE_API_URL`
-- `VITE_WS_URL`
-- `VITE_SENTRY_DSN`
+- `VITE_API_URL` - Backend API URL
+- `VITE_WS_URL` - WebSocket URL
+- `VITE_SENTRY_DSN` - Error tracking
 
-Mobile uses Expo config or `.env`:
-- `API_URL`
-- `WS_URL`
+Mobile uses `app.config.js` for configuration:
+- `API_HOST` - LAN IP for physical device testing
+- `API_URL` - Full API URL override
+- `APP_VARIANT` - development | preview | production
+- `EAS_PROJECT_ID` - EAS project ID for builds
 
 ---
 
@@ -749,6 +757,7 @@ Mobile uses Expo config or `.env`:
 ### React DevTools
 
 Install browser extension. Inspect component tree, props, state.
+- React 19.1 includes improved error boundaries and owner stacks
 
 ### Network Tab
 
@@ -765,14 +774,53 @@ socket.onmessage = (e) => console.log('WS:', e.data);
 ### Mobile Debugging
 
 ```bash
-# Expo DevTools
+# Expo DevTools (SDK 54)
 pnpm start
 
 # Then shake device or press 'm' for menu
 # - Debug JS Remotely (Chrome DevTools)
 # - Show Element Inspector
+# - Performance Monitor (New Architecture metrics)
 ```
+
+**v0.7.0+ Debugging:**
+- New Architecture provides better error messages
+- React 19 owner stacks show component hierarchy in errors
+- Use Flipper for advanced native debugging
 
 ---
 
-*Last updated: December 31, 2025*
+## Security Features (v0.7.0+)
+
+### Biometric Authentication
+
+The mobile app includes biometric authentication support:
+
+```typescript
+import { 
+  getBiometricStatus, 
+  authenticateWithBiometrics,
+  setBiometricLockEnabled 
+} from '@/lib/biometrics';
+
+// Check if biometrics available
+const status = await getBiometricStatus();
+// { isAvailable: true, biometricType: 'facial', securityLevel: 'strong' }
+
+// Authenticate user
+const result = await authenticateWithBiometrics('Confirm your identity');
+if (result.success) {
+  // Proceed with sensitive action
+}
+
+// Enable biometric lock for app
+await setBiometricLockEnabled(true);
+```
+
+### Supported Biometric Types
+- **iOS:** Face ID, Touch ID
+- **Android:** Fingerprint, Face Recognition, Iris
+
+---
+
+*Last updated: January 3, 2026*

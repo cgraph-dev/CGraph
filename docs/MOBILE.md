@@ -2,7 +2,7 @@
 
 > Building native experiences with React Native and Expo.
 
-This guide covers the CGraph mobile application for iOS and Android. Built with React Native and Expo, it shares type definitions and business logic with the web app while delivering a native mobile experience.
+This guide covers the CGraph mobile application for iOS and Android. Built with React Native and Expo SDK 54, it shares type definitions and business logic with the web app while delivering a native mobile experience with the New Architecture enabled by default.
 
 ---
 
@@ -19,10 +19,11 @@ This guide covers the CGraph mobile application for iOS and Android. Built with 
 9. [Push Notifications](#push-notifications)
 10. [Styling](#styling)
 11. [Device Features](#device-features)
-12. [Testing](#testing)
-13. [Building for Production](#building-for-production)
-14. [App Store Submission](#app-store-submission)
-15. [Troubleshooting](#troubleshooting)
+12. [Security Features](#security-features)
+13. [Testing](#testing)
+14. [Building for Production](#building-for-production)
+15. [App Store Submission](#app-store-submission)
+16. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -30,15 +31,17 @@ This guide covers the CGraph mobile application for iOS and Android. Built with 
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| **React Native** | 0.73 | Mobile UI framework |
-| **Expo** | 50.x | Development toolkit |
-| **TypeScript** | 5.x | Type safety |
-| **React Navigation** | 6.x | Navigation library |
-| **Zustand** | 4.x | State management |
+| **React Native** | 0.81 | Mobile UI framework (New Architecture) |
+| **Expo** | 54.x | Development toolkit |
+| **React** | 19.1 | UI library |
+| **TypeScript** | 5.9 | Type safety |
+| **React Navigation** | 7.x | Navigation library |
+| **Zustand** | 5.x | State management |
 | **React Query** | 5.x | Server state |
-| **Phoenix Channels** | 1.7 | Real-time WebSocket |
-| **Expo Notifications** | 0.27 | Push notifications |
-| **React Native Reanimated** | 3.x | Animations |
+| **Phoenix Channels** | 1.8 | Real-time WebSocket |
+| **Expo Notifications** | 0.32 | Push notifications |
+| **React Native Reanimated** | 4.x | Animations (with Worklets) |
+| **Expo Local Auth** | 17.x | Biometric authentication |
 
 ---
 
@@ -115,11 +118,13 @@ apps/mobile/
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm 8+
-- iOS: Xcode 15+ (for simulator)
-- Android: Android Studio (for emulator)
+- **Node.js 22+** (required for SDK 54)
+- **pnpm 10+** (required for workspace compatibility)
+- iOS: Xcode 16+ (for simulator)
+- Android: Android Studio Ladybug+ (for emulator)
 - Expo Go app on your device (for testing)
+
+> **Note:** SDK 54 enables the New Architecture (Fabric Renderer + TurboModules) by default for improved performance.
 
 ### Development Setup
 
@@ -130,7 +135,7 @@ cd apps/mobile
 # Install dependencies
 pnpm install
 
-# Start the development server
+# Start the development server (clears cache for clean start)
 pnpm start
 
 # Or start for specific platform
@@ -140,42 +145,69 @@ pnpm android  # Android emulator
 
 ### Environment Configuration
 
-```typescript
-// src/lib/config.ts
-import Constants from 'expo-constants';
+CGraph mobile uses `app.config.js` for dynamic environment configuration:
 
-const ENV = {
-  dev: {
-    apiUrl: 'http://localhost:4000',
-    wsUrl: 'ws://localhost:4000/socket',
-  },
-  staging: {
-    apiUrl: 'https://staging-api.cgraph.org',
-    wsUrl: 'wss://staging-api.cgraph.org/socket',
-  },
-  production: {
-    apiUrl: 'https://api.cgraph.org',
-    wsUrl: 'wss://api.cgraph.org/socket',
-  },
+```javascript
+// app.config.js
+const IS_DEV = process.env.APP_VARIANT === 'development';
+const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
+
+const getApiUrl = () => {
+  if (process.env.API_URL) return process.env.API_URL;
+  if (IS_DEV) return 'http://localhost:4000';
+  if (IS_PREVIEW) return 'https://staging-api.cgraph.org';
+  return 'https://api.cgraph.org';
 };
 
-const getEnvVars = () => {
-  const releaseChannel = Constants.expoConfig?.extra?.releaseChannel || 'dev';
-  return ENV[releaseChannel as keyof typeof ENV] || ENV.dev;
+export default {
+  expo: {
+    name: IS_DEV ? 'CGraph (Dev)' : IS_PREVIEW ? 'CGraph (Preview)' : 'CGraph',
+    extra: {
+      apiUrl: getApiUrl(),
+      isDevMode: IS_DEV,
+    },
+    // ... rest of config
+  },
 };
-
-export const config = getEnvVars();
 ```
+
+#### Platform-Specific API URLs
+
+The mobile app automatically handles localhost connections for development:
+
+```typescript
+// src/lib/api.ts
+import { Platform } from 'react-native';
+
+const getApiUrl = (): string => {
+  const configuredUrl = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:4000';
+  
+  // Android emulator can't access host's localhost directly
+  if (__DEV__ && Platform.OS === 'android' && configuredUrl.includes('localhost')) {
+    return configuredUrl.replace('localhost', '10.0.2.2');
+  }
+  
+  return configuredUrl;
+};
+```
+
+| Environment | Android Emulator | iOS Simulator | Physical Device |
+|-------------|-----------------|---------------|-----------------|
+| Development | 10.0.2.2:4000 | localhost:4000 | LAN IP:4000 |
+| Production | api.cgraph.org | api.cgraph.org | api.cgraph.org |
 
 ### Expo Configuration
 
+The app uses `app.config.js` (dynamic) extending `app.json` (static):
+
 ```json
-// app.json
+// app.json (static base config)
 {
   "expo": {
     "name": "CGraph",
     "slug": "cgraph",
     "version": "1.0.0",
+    "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -200,6 +232,7 @@ export const config = getEnvVars();
     },
     "plugins": [
       "expo-secure-store",
+      "expo-local-authentication",
       [
         "expo-notifications",
         {
@@ -221,6 +254,7 @@ export const config = getEnvVars();
       ]
     ],
     "extra": {
+      "apiUrl": "http://localhost:4000",
       "eas": {
         "projectId": "your-project-id"
       }
@@ -1216,6 +1250,129 @@ export const storage = {
 
 ---
 
+## Security Features
+
+### Biometric Authentication
+
+CGraph supports Face ID, Touch ID, and Android biometrics for app locking and secure actions:
+
+```typescript
+// src/lib/biometrics.ts
+import * as LocalAuthentication from 'expo-local-authentication';
+import * as SecureStore from 'expo-secure-store';
+
+export interface BiometricResult {
+  success: boolean;
+  error?: string;
+}
+
+export const biometrics = {
+  /**
+   * Check if biometric hardware is available
+   */
+  async isAvailable(): Promise<boolean> {
+    const compatible = await LocalAuthentication.hasHardwareAsync();
+    const enrolled = await LocalAuthentication.isEnrolledAsync();
+    return compatible && enrolled;
+  },
+
+  /**
+   * Get available authentication types
+   */
+  async getAuthTypes(): Promise<LocalAuthentication.AuthenticationType[]> {
+    return LocalAuthentication.supportedAuthenticationTypesAsync();
+  },
+
+  /**
+   * Authenticate user with biometrics
+   */
+  async authenticate(prompt?: string): Promise<BiometricResult> {
+    const available = await this.isAvailable();
+    if (!available) {
+      return { success: false, error: 'Biometrics not available' };
+    }
+
+    const result = await LocalAuthentication.authenticateAsync({
+      promptMessage: prompt || 'Authenticate to continue',
+      fallbackLabel: 'Use passcode',
+      cancelLabel: 'Cancel',
+      disableDeviceFallback: false,
+    });
+
+    return {
+      success: result.success,
+      error: result.error,
+    };
+  },
+
+  /**
+   * Check if biometric lock is enabled in settings
+   */
+  async isEnabled(): Promise<boolean> {
+    const value = await SecureStore.getItemAsync('biometric_lock_enabled');
+    return value === 'true';
+  },
+
+  /**
+   * Enable/disable biometric lock
+   */
+  async setEnabled(enabled: boolean): Promise<void> {
+    await SecureStore.setItemAsync('biometric_lock_enabled', enabled.toString());
+  },
+};
+```
+
+### Using Biometrics
+
+```tsx
+// Example: Biometric settings toggle
+import { biometrics } from '@/lib/biometrics';
+
+function SecuritySettings() {
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+
+  useEffect(() => {
+    checkBiometrics();
+  }, []);
+
+  const checkBiometrics = async () => {
+    const available = await biometrics.isAvailable();
+    const enabled = await biometrics.isEnabled();
+    setBiometricAvailable(available);
+    setBiometricEnabled(enabled);
+  };
+
+  const toggleBiometricLock = async (value: boolean) => {
+    if (value) {
+      // Verify identity before enabling
+      const { success } = await biometrics.authenticate('Verify to enable biometric lock');
+      if (success) {
+        await biometrics.setEnabled(true);
+        setBiometricEnabled(true);
+      }
+    } else {
+      await biometrics.setEnabled(false);
+      setBiometricEnabled(false);
+    }
+  };
+
+  return (
+    <View>
+      {biometricAvailable && (
+        <Switch
+          value={biometricEnabled}
+          onValueChange={toggleBiometricLock}
+          label="Biometric Lock"
+        />
+      )}
+    </View>
+  );
+}
+```
+
+---
+
 ## Testing
 
 ### Unit Tests
@@ -1432,11 +1589,31 @@ When completing the data safety form, declare:
 
 ### Common Issues
 
-**Metro bundler stuck**
+**Metro bundler stuck or stale cache**
 ```bash
-# Clear cache and restart
+# Clear all caches and restart (recommended first step)
+npx expo start --clear
+
+# Full reset for persistent issues
+rm -rf node_modules/.cache
+pnpm install
 npx expo start --clear
 ```
+
+**"The endpoint is offline" (ngrok/tunnel error)**
+```bash
+# This means Expo can't reach your backend
+# 1. Ensure backend is running
+curl http://localhost:4000/api/v1/health
+
+# 2. If using Android emulator, the app auto-converts localhost to 10.0.2.2
+# 3. For physical devices, use your LAN IP in app.config.js
+```
+
+**API calls fail on Android emulator**
+- Android emulator can't access host's `localhost` directly
+- The API client automatically uses `10.0.2.2` for Android in development
+- Make sure your backend is listening on `0.0.0.0` not just `127.0.0.1`
 
 **iOS build fails**
 ```bash
@@ -1451,26 +1628,48 @@ cd ios && pod install --repo-update
 cd android && ./gradlew clean
 ```
 
+**New Architecture issues (SDK 54+)**
+```bash
+# If experiencing crashes or rendering issues with the New Architecture:
+# 1. Check all native modules are compatible with Fabric/TurboModules
+# 2. Some third-party libraries may need updates
+
+# Temporarily disable New Architecture if needed (not recommended):
+# In app.json: "newArchEnabled": false
+```
+
+**React 19.1 / Suspense issues**
+- React 19.1 has stricter Suspense behavior
+- Ensure all data-fetching components have Suspense boundaries
+- Check React Query v5 compatibility settings
+
 **Push notifications not working**
 - Ensure physical device (not simulator)
 - Check Expo project ID matches
 - Verify notification permissions granted
+- Test with Expo's push notification tool first
 
 **WebSocket disconnecting**
 - Check network connectivity
 - Verify token is valid
 - Handle app state changes (foreground/background)
 
+**Biometric authentication not available**
+- Device must have biometric hardware (Face ID, Touch ID, fingerprint)
+- User must have enrolled at least one biometric in system settings
+- Check `biometrics.isAvailable()` before showing the option
+
 ### Debug Tools
 
 ```typescript
-// Enable network logging
+// Enable network logging in development
 if (__DEV__) {
+  // Note: May not work with New Architecture - use React DevTools instead
   XMLHttpRequest = GLOBAL.originalXMLHttpRequest ?
     GLOBAL.originalXMLHttpRequest : GLOBAL.XMLHttpRequest;
 }
 
-// React Query DevTools (via Flipper)
+// React Query focus management
 import { focusManager } from '@tanstack/react-query';
 import { AppState } from 'react-native';
 
@@ -1482,6 +1681,36 @@ focusManager.setEventListener((handleFocus) => {
 });
 ```
 
+### SDK 54 / New Architecture Debugging
+
+```bash
+# Check Reanimated worklets are compiling correctly
+npx react-native-reanimated-verifier
+
+# Verify New Architecture is active
+# In metro bundler output, you should see "Running with New Architecture"
+
+# Profile performance with Systrace (Android)
+npx react-native systrace
+
+# Check for bridge messages (should be minimal with New Architecture)
+```
+
+### Performance Profiling
+
+```typescript
+// Use React DevTools Profiler (built into Expo)
+// Press 'j' in Metro to open debugger
+
+// For production profiling, use Sentry or similar
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'your-sentry-dsn',
+  tracesSampleRate: 0.1, // 10% of transactions
+});
+```
+
 ---
 
-*Happy mobile development! Questions? Open an issue on GitHub.*
+*Happy mobile development! Built with Expo SDK 54, React Native 0.81, and the New Architecture. Questions? Open an issue on GitHub.*
