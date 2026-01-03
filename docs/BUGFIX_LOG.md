@@ -6,13 +6,15 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 |
-|--------|--------|--------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests |
-| Backend Test Count | 215 → 220 | 620 tests, 0 failures |
-| Web Build | ✅ | ✅ |
-| Mobile TypeScript | ✅ | ✅ |
-| OAuth Tests | - | 35 new tests |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 |
+|--------|--------|--------|--------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures |
+| Web Build | ✅ | ✅ | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ |
+| OAuth Tests | - | 35 new tests | 35 tests |
+| Security Fixes | - | - | 6 critical |
+| TypeScript Errors | - | - | 0 |
 
 ---
 

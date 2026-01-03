@@ -2,7 +2,7 @@
 
 This document explains everything you need to know about CGraph from scratch. Written for the solo developer who built this thing and might forget how it all works six months from now.
 
-**Current Version: 0.6.0**
+**Current Version: 0.6.4**
 
 ---
 

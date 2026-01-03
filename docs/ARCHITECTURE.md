@@ -1,6 +1,6 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.6.0  
+> Last updated: January 2026 | Version 0.6.4  
 > This doc gets outdated fast—if something looks wrong, check the CHANGELOG.
 
 ---
