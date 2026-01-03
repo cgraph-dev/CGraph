@@ -19,44 +19,47 @@ import type { MatrixTheme, ThemePreset, ColorStop } from './types';
 /**
  * Classic Matrix green theme
  * Inspired by the original Matrix movie
+ * Enhanced with authentic glow and shadow effects
  */
 export const MATRIX_GREEN: MatrixTheme = {
   id: 'matrix-green',
   name: 'Matrix Green',
   preset: 'matrix-green',
   
-  primaryColor: '#00ff41',      // Bright neon green (head)
-  secondaryColor: '#00cc33',    // Medium green (body)
-  tertiaryColor: '#008822',     // Dark green (tail)
-  backgroundColor: '#0a0a0a',   // Near black
+  primaryColor: '#39ff14',      // Bright neon green (head) - more vivid
+  secondaryColor: '#00ff41',    // Electric green (body)
+  tertiaryColor: '#00cc33',     // Medium green (tail)
+  backgroundColor: '#000000',   // Pure black for contrast
   
   trailGradient: [
-    { position: 0, color: '#00ff41', alpha: 1 },
-    { position: 0.2, color: '#00ee33', alpha: 0.9 },
-    { position: 0.5, color: '#00aa22', alpha: 0.6 },
-    { position: 0.8, color: '#005511', alpha: 0.3 },
-    { position: 1, color: '#002200', alpha: 0.1 },
+    { position: 0, color: '#39ff14', alpha: 1 },
+    { position: 0.15, color: '#00ff41', alpha: 0.95 },
+    { position: 0.35, color: '#00dd33', alpha: 0.8 },
+    { position: 0.6, color: '#00aa22', alpha: 0.5 },
+    { position: 0.85, color: '#006611', alpha: 0.25 },
+    { position: 1, color: '#003300', alpha: 0.1 },
   ],
   
   glow: {
     enabled: true,
-    radius: 4,
-    color: '#00ff41',
-    intensity: 0.8,
-    pulsate: false,
+    radius: 12,           // Increased for stronger glow
+    color: '#39ff14',
+    intensity: 1.0,       // Full intensity
+    pulsate: true,        // Subtle pulsing
+    pulseSpeed: 3000,
   },
   
   depthColors: {
-    near: '#00ff41',
-    mid: '#00aa33',
-    far: '#005522',
+    near: '#39ff14',
+    mid: '#00dd33',
+    far: '#00aa22',
   },
   
   opacity: {
     head: 1,
-    body: 0.7,
-    tail: 0.3,
-    background: 0.05,
+    body: 0.85,           // Increased for visibility
+    tail: 0.45,           // Increased for longer visible trails
+    background: 0.03,
   },
 };
 

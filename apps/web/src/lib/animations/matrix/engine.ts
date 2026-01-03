@@ -825,6 +825,7 @@ export class MatrixEngine {
   
   /**
    * Render a single depth layer
+   * Enhanced with glow, shadow, and 3D effects for authentic Matrix look
    */
   private renderLayer(columns: MatrixColumn[], layer: DepthLayer): void {
     if (!this.ctx) return;
@@ -850,41 +851,115 @@ export class MatrixEngine {
           return;
         }
         
-        // Calculate color based on position in column
+        // Calculate color and effects based on position in column
         let color: string;
         let alpha: number;
+        let glowRadius: number;
+        let glowIntensity: number;
         
         if (char.isHead) {
-          // Head character - brightest
+          // Head character - brightest with strongest glow
           color = theme.primaryColor;
           alpha = theme.opacity.head * column.opacityMod * layer.opacityMultiplier;
-        } else if (i < column.length * 0.3) {
-          // Near head - secondary color
+          glowRadius = theme.glow.radius * 1.5;
+          glowIntensity = 1.0;
+        } else if (i < column.length * 0.2) {
+          // Near head - secondary color with strong glow
+          color = theme.primaryColor;
+          alpha = theme.opacity.body * char.opacity * column.opacityMod * layer.opacityMultiplier * 0.95;
+          glowRadius = theme.glow.radius * 1.0;
+          glowIntensity = 0.8;
+        } else if (i < column.length * 0.4) {
+          // Upper body - secondary color with medium glow
           color = theme.secondaryColor;
-          alpha = theme.opacity.body * char.opacity * column.opacityMod * layer.opacityMultiplier;
+          alpha = theme.opacity.body * char.opacity * column.opacityMod * layer.opacityMultiplier * 0.85;
+          glowRadius = theme.glow.radius * 0.7;
+          glowIntensity = 0.5;
+        } else if (i < column.length * 0.7) {
+          // Lower body - transitioning
+          color = theme.secondaryColor;
+          alpha = theme.opacity.body * char.opacity * column.opacityMod * layer.opacityMultiplier * 0.7;
+          glowRadius = theme.glow.radius * 0.4;
+          glowIntensity = 0.3;
         } else {
-          // Tail - tertiary color
+          // Tail - tertiary color with subtle glow
           color = theme.tertiaryColor;
           alpha = theme.opacity.tail * char.opacity * column.opacityMod * layer.opacityMultiplier;
+          glowRadius = theme.glow.radius * 0.2;
+          glowIntensity = 0.15;
         }
         
-        // Apply glow effect for head
-        if (char.isHead && theme.glow.enabled) {
-          this.ctx!.shadowBlur = theme.glow.radius;
-          this.ctx!.shadowColor = theme.glow.color || theme.primaryColor;
-        } else {
-          this.ctx!.shadowBlur = 0;
-        }
+        // Set font with slight boldness for visibility
+        const fontSize = column.fontSize * char.scale;
+        this.ctx!.font = `${font.weight === 'normal' ? '500' : font.weight} ${fontSize}px ${font.family}`;
         
-        // Set font
-        this.ctx!.font = `${font.weight} ${column.fontSize * char.scale}px ${font.family}`;
-        
-        // Set color with alpha
         const rgb = parseColor(color);
-        this.ctx!.fillStyle = toRGBA(rgb.r, rgb.g, rgb.b, alpha);
         
-        // Draw character
+        // === 3D SHADOW EFFECT (10% darker, offset) ===
+        if (theme.glow.enabled && glowIntensity > 0.2) {
+          this.ctx!.save();
+          // Dark shadow behind (3D depth)
+          this.ctx!.shadowBlur = 0;
+          this.ctx!.shadowOffsetX = 1.5;
+          this.ctx!.shadowOffsetY = 1.5;
+          this.ctx!.shadowColor = 'rgba(0, 0, 0, 0.6)';
+          this.ctx!.fillStyle = toRGBA(
+            Math.floor(rgb.r * 0.1), 
+            Math.floor(rgb.g * 0.1), 
+            Math.floor(rgb.b * 0.1), 
+            alpha * 0.4
+          );
+          this.ctx!.fillText(char.value, column.x, y);
+          this.ctx!.restore();
+        }
+        
+        // === OUTER GLOW LAYER (large, soft) ===
+        if (theme.glow.enabled && glowRadius > 0) {
+          this.ctx!.save();
+          this.ctx!.shadowBlur = glowRadius * 2;
+          this.ctx!.shadowColor = toRGBA(rgb.r, rgb.g, rgb.b, glowIntensity * 0.6);
+          this.ctx!.shadowOffsetX = 0;
+          this.ctx!.shadowOffsetY = 0;
+          this.ctx!.fillStyle = toRGBA(rgb.r, rgb.g, rgb.b, alpha * 0.3);
+          this.ctx!.fillText(char.value, column.x, y);
+          this.ctx!.restore();
+        }
+        
+        // === INNER GLOW LAYER (focused) ===
+        if (theme.glow.enabled && glowRadius > 2) {
+          this.ctx!.save();
+          this.ctx!.shadowBlur = glowRadius;
+          this.ctx!.shadowColor = toRGBA(rgb.r, rgb.g, rgb.b, glowIntensity * 0.9);
+          this.ctx!.shadowOffsetX = 0;
+          this.ctx!.shadowOffsetY = 0;
+          this.ctx!.fillStyle = toRGBA(rgb.r, rgb.g, rgb.b, alpha * 0.6);
+          this.ctx!.fillText(char.value, column.x, y);
+          this.ctx!.restore();
+        }
+        
+        // === MAIN CHARACTER (crisp, on top) ===
+        this.ctx!.shadowBlur = char.isHead ? glowRadius * 0.5 : 0;
+        this.ctx!.shadowColor = char.isHead ? theme.glow.color || theme.primaryColor : 'transparent';
+        this.ctx!.shadowOffsetX = 0;
+        this.ctx!.shadowOffsetY = 0;
+        this.ctx!.fillStyle = toRGBA(rgb.r, rgb.g, rgb.b, alpha);
         this.ctx!.fillText(char.value, column.x, y);
+        
+        // === BRIGHT HIGHLIGHT for head (extra pop) ===
+        if (char.isHead) {
+          this.ctx!.save();
+          // White-ish highlight for intense glow
+          this.ctx!.shadowBlur = glowRadius * 0.3;
+          this.ctx!.shadowColor = '#ffffff';
+          this.ctx!.fillStyle = toRGBA(
+            Math.min(255, rgb.r + 100),
+            Math.min(255, rgb.g + 100),
+            Math.min(255, rgb.b + 100),
+            alpha * 0.4
+          );
+          this.ctx!.fillText(char.value, column.x, y);
+          this.ctx!.restore();
+        }
       });
       
       this.ctx!.restore();

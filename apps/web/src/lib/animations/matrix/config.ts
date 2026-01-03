@@ -80,35 +80,35 @@ export const DEFAULT_COLUMNS: ColumnConfig = {
 
 /**
  * Default visual effects
- * Moderate effects for good balance of aesthetics and performance
+ * Enhanced effects for authentic Matrix look with glow and depth
  */
 export const DEFAULT_EFFECTS: EffectsConfig = {
   enableDepth: true,
   depthLayers: 3,
-  trailFade: 0.92,
-  backgroundFade: 0.05,
+  trailFade: 0.88,           // Slightly faster fade for cleaner trails
+  backgroundFade: 0.04,      // Subtle background fade
   enableBloom: true,
-  bloomIntensity: 0.5,
+  bloomIntensity: 0.7,       // Increased bloom
   enableScanlines: false,
   scanlineOpacity: 0.03,
   enableCRTEffect: false,
   crtStrength: 0.1,
   enableVignette: true,
-  vignetteIntensity: 0.3,
+  vignetteIntensity: 0.25,   // Slightly reduced for clearer view
   blendMode: 'source-over',
   speedMultiplier: 1,
 };
 
 /**
  * Default font configuration
- * Monospace font for consistent character width
+ * Monospace font with medium weight for visible characters
  */
 export const DEFAULT_FONT: FontConfig = {
   family: 'JetBrains Mono, Fira Code, Consolas, Monaco, monospace',
-  baseSize: 16,
-  minSize: 10,
-  maxSize: 24,
-  weight: 'normal',
+  baseSize: 18,              // Slightly larger for visibility
+  minSize: 12,
+  maxSize: 26,
+  weight: 'bold',            // Bold weight for better visibility
   letterSpacing: 0,
   sizeVariation: true,
 };
