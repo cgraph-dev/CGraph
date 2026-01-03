@@ -61,21 +61,21 @@ export const DEFAULT_CHARACTERS: CharacterSetConfig = {
 
 /**
  * Default column behavior
- * Dense columns with smaller spacing for authentic Matrix look
+ * Fast-falling columns for authentic Matrix rain effect
  */
 export const DEFAULT_COLUMNS: ColumnConfig = {
-  minSpeed: 3,
-  maxSpeed: 10,
+  minSpeed: 4,               // Faster minimum
+  maxSpeed: 12,              // Faster maximum
   minLength: 8,
-  maxLength: 30,
-  density: 0.8,
-  spacing: 14,              // Tighter spacing for denser effect
+  maxLength: 28,
+  density: 0.75,
+  spacing: 16,               // Balanced spacing
   randomizeStart: true,
   staggerStart: true,
-  staggerDelay: 40,
-  respawnRate: 0.04,
+  staggerDelay: 30,          // Faster stagger
+  respawnRate: 0.05,         // More frequent respawns
   minRespawnDelay: 0,
-  maxRespawnDelay: 100,
+  maxRespawnDelay: 80,       // Faster respawn
 };
 
 /**
@@ -128,33 +128,40 @@ export const DEFAULT_CONFIG: MatrixConfig = {
   responsive: {
     mobile: {
       performance: {
-        targetFPS: 30,
-        maxColumns: 30,
+        targetFPS: 40,         // Smooth on mobile
+        maxColumns: 35,
       },
       columns: {
-        density: 0.5,
-        spacing: 22,
+        density: 0.55,
+        spacing: 20,
+        minSpeed: 4,
+        maxSpeed: 11,
       },
       effects: {
-        depthLayers: 2,
-        enableBloom: false,
+        depthLayers: 1,        // Single layer for performance
+        enableBloom: true,     // Keep glow!
+        bloomIntensity: 0.6,
         enableVignette: false,
       },
       font: {
-        baseSize: 12,
+        baseSize: 13,
       },
     },
     tablet: {
       performance: {
-        targetFPS: 45,
+        targetFPS: 50,
         maxColumns: 60,
       },
       columns: {
-        density: 0.6,
-        spacing: 20,
+        density: 0.65,
+        spacing: 18,
+        minSpeed: 5,
+        maxSpeed: 12,
       },
       effects: {
         depthLayers: 2,
+        enableBloom: true,
+        bloomIntensity: 0.7,
       },
       font: {
         baseSize: 14,
@@ -210,39 +217,44 @@ export const PRESET_HIGH_QUALITY: Partial<MatrixConfig> = {
 };
 
 /**
- * Low power preset - Optimized for auth pages with visible glow
+ * Low power preset - Optimized for auth pages with smooth animation
+ * Balances visual quality with performance for all devices
  */
 export const PRESET_POWER_SAVER: Partial<MatrixConfig> = {
   name: 'power-saver',
   performance: {
     ...DEFAULT_PERFORMANCE,
-    targetFPS: 30,
-    maxColumns: 40,
+    targetFPS: 45,            // Smooth animation (was 30)
+    maxColumns: 50,           // More columns
     adaptiveQuality: true,
     throttleOnBlur: true,
-    throttledFPS: 5,
+    throttledFPS: 10,
   },
   columns: {
     ...DEFAULT_COLUMNS,
-    density: 0.5,
-    spacing: 20,
-    minLength: 5,
-    maxLength: 18,
+    density: 0.6,
+    spacing: 18,
+    minSpeed: 5,              // Fast falling
+    maxSpeed: 14,             // Fast falling
+    minLength: 6,
+    maxLength: 20,
   },
   effects: {
     ...DEFAULT_EFFECTS,
     depthLayers: 2,
-    enableBloom: true,        // Keep glow enabled!
+    enableBloom: true,
+    bloomIntensity: 0.8,      // Strong bloom for visibility
     enableVignette: true,
+    vignetteIntensity: 0.2,
     enableScanlines: false,
     enableCRTEffect: false,
-    trailFade: 0.88,
+    trailFade: 0.9,           // Longer trails
   },
   font: {
     ...DEFAULT_FONT,
-    baseSize: 13,             // Smaller characters
-    minSize: 10,
-    maxSize: 16,
+    baseSize: 14,
+    minSize: 11,
+    maxSize: 17,
     sizeVariation: true,
   },
 };

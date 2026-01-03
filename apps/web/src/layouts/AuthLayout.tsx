@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import { MatrixAuthBackground } from '@/lib/animations/matrix';
+import { MatrixAuthBackground, MatrixLogo } from '@/lib/animations/matrix';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -12,12 +12,12 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       {/* Matrix Background Effect - position:fixed, renders at z-index 1 */}
       <MatrixAuthBackground 
         theme="matrix-green"
-        opacity={0.9}
+        opacity={0.95}
         zIndex={1}
       />
       
       {/* Dark overlay for content readability - sits above Matrix at z-index 2 */}
-      <div className="fixed inset-0 bg-gradient-to-br from-black/40 via-dark-950/50 to-black/60 z-[2]" />
+      <div className="fixed inset-0 bg-gradient-to-br from-black/30 via-dark-950/40 to-black/50 z-[2]" />
       
       {/* Left side - Branding */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600/80 to-primary-800/80 backdrop-blur-sm p-12 flex-col justify-between relative z-10">
@@ -38,7 +38,14 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                 />
               </svg>
             </div>
-            <span className="text-2xl font-bold text-white">CGraph</span>
+            {/* Matrix-style animated logo text */}
+            <MatrixLogo 
+              text="CGraph" 
+              className="text-2xl font-bold text-white"
+              glowColor="#ffffff"
+              animationDuration={2000}
+              loopDelay={8000}
+            />
           </Link>
         </div>
 

@@ -71,6 +71,13 @@ export {
   type IntensityPreset,
 } from './MatrixBackground';
 
+export {
+  MatrixText,
+  MatrixLogo,
+  MatrixHeading,
+  type MatrixTextProps,
+} from './MatrixText';
+
 // =============================================================================
 // HOOKS
 // =============================================================================

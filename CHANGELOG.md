@@ -11,6 +11,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.5] - 2026-01-04
+
+### Matrix Animation Enhancements & Visual Polish
+
+Improved Matrix animation visibility, performance optimization, and new text encryption animation component.
+
+### Added
+
+- **MatrixText Component** - New text encryption/decryption animation
+  - `MatrixText` - Base component for any text with cipher transformation
+  - `MatrixLogo` - CGraph-specific logo with periodic encryption cycles
+  - `useMatrixText` - Hook for programmatic animation control
+  - Katakana, numbers, symbols used for cipher effect
+  - Configurable speed, glow color, and loop settings
+
+### Changed
+
+- **Matrix Animation Speed** - Fixed slow motion issue from previous FPS reduction
+  - Power saver FPS: 30 → 50 (balanced performance/quality)
+  - Column speed: minSpeed 3→5, maxSpeed 10→15
+  - Mobile FPS: 24 → 35 for smoother experience
+- **Character Visibility** - Enhanced multi-layer glow rendering
+  - Brighter base color (#39ff14)
+  - 5-pass rendering: 3D shadow, outer glow, inner glow, main char, head highlight
+  - Glow radius increased to 15, intensity to 1.0
+- **Auth Layout** - Integrated MatrixLogo for animated CGraph branding
+- **Mobile Optimization** - Enabled bloom effect on mobile for consistent appearance
+
+### Fixed
+
+- TypeScript errors in MatrixText.tsx (string indexing)
+- Animation performance on low-end mobile devices
+
+---
+
 ## [0.6.4] - 2026-01-03
 
 ### Security Hardening & Stability

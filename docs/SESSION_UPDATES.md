@@ -3,15 +3,120 @@
 This document details all the changes, enhancements, and bug fixes made during the development session.
 
 ## Table of Contents
-1. [Session: January 3, 2026 - v0.6.4](#session-january-3-2026---v064)
-2. [Version 1.0.0 Release](#version-100-release)
-3. [Session: Security Hardening (July 2025)](#session-security-hardening-july-2025)
-4. [Session: December 31, 2025](#session-december-31-2025)
-5. [Bug Fixes](#bug-fixes)
-6. [New Features](#new-features)
-7. [UI/UX Improvements](#uiux-improvements)
-8. [Architecture Changes](#architecture-changes)
-9. [Component Library](#component-library)
+1. [Session: January 4, 2026 - v0.6.5](#session-january-4-2026---v065)
+2. [Session: January 3, 2026 - v0.6.4](#session-january-3-2026---v064)
+3. [Version 1.0.0 Release](#version-100-release)
+4. [Session: Security Hardening (July 2025)](#session-security-hardening-july-2025)
+5. [Session: December 31, 2025](#session-december-31-2025)
+6. [Bug Fixes](#bug-fixes)
+7. [New Features](#new-features)
+8. [UI/UX Improvements](#uiux-improvements)
+9. [Architecture Changes](#architecture-changes)
+10. [Component Library](#component-library)
+
+---
+
+## Session: January 4, 2026 - v0.6.5
+
+### Overview
+
+Matrix animation enhancements session. Improved character visibility, fixed slow motion issues, added text encryption animation component, and optimized for mobile performance.
+
+### Matrix Animation Improvements
+
+#### 1. Fixed Slow Motion Issue
+
+**Problem:** Matrix animation was running in slow motion after FPS was reduced to 30 for power-saver preset.
+
+**Solution:** Increased FPS and column speed settings while maintaining performance.
+
+**Changes:**
+- Power saver FPS: 30 → 50
+- Column minSpeed: 3 → 5
+- Column maxSpeed: 10 → 15
+- Mobile FPS: 24 → 35
+
+**Files Modified:**
+- `apps/web/src/lib/animations/matrix/config.ts`
+
+#### 2. Enhanced Character Visibility
+
+**Problem:** Characters looked like "plain green lines" - not visible enough.
+
+**Solution:** Implemented multi-layer glow rendering with 5 passes.
+
+**Rendering Passes:**
+1. 3D shadow layer (offset dark shadow)
+2. Outer glow (large blur radius)
+3. Inner glow (medium blur)
+4. Main character (bright color)
+5. Head highlight (brightest glow on leading chars)
+
+**Files Modified:**
+- `apps/web/src/lib/animations/matrix/engine.ts`
+- `apps/web/src/lib/animations/matrix/themes.ts`
+
+#### 3. New MatrixText Component
+
+**Problem:** User wanted animated text that transforms "CGraph" into encrypted cipher and back.
+
+**Solution:** Created comprehensive MatrixText animation system.
+
+**New Files:**
+- `apps/web/src/lib/animations/matrix/MatrixText.tsx` (345 lines)
+
+**Components Exported:**
+- `MatrixText` - Base component for text encryption animation
+- `MatrixLogo` - CGraph-specific logo with periodic encryption cycles  
+- `useMatrixText` - Hook for programmatic control
+
+**Features:**
+- Character-by-character transformation
+- Katakana, numbers, symbols for cipher effect
+- Configurable encryption/decryption duration
+- Glow color and intensity settings
+- Periodic loop with configurable delay
+- Smooth reveal animation
+
+**Usage:**
+```tsx
+<MatrixLogo 
+  text="CGraph" 
+  className="text-4xl"
+  speed={80}
+  glowColor="#00ff41"
+/>
+```
+
+#### 4. Auth Layout Integration
+
+**Problem:** Auth page logo was static text.
+
+**Solution:** Replaced static "CGraph" with animated MatrixLogo.
+
+**Files Modified:**
+- `apps/web/src/layouts/AuthLayout.tsx`
+- `apps/web/src/lib/animations/matrix/index.ts`
+
+#### 5. Mobile Performance Optimization
+
+**Problem:** Animation performance on low-end mobile devices.
+
+**Solution:** Optimized mobile configuration while enabling bloom for consistent appearance.
+
+**Changes:**
+- Mobile targetFPS: 24 → 35
+- Enabled bloom effect on mobile (was disabled)
+- Column count scaled to device width
+- Reduced character density for performance
+
+**Files Modified:**
+- `apps/web/src/lib/animations/matrix/config.ts`
+
+### TypeScript Fixes
+
+- Fixed `getRandomChar` string indexing (use `.charAt()`)
+- Fixed array access with nullish coalescing (`??`)
 
 ---
 
