@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
-import { OAuthButtonGroup, AuthDivider } from '@/components/auth/OAuthButtons';
+import { OAuthButtonGroup } from '@/components/auth/OAuthButtons';
 
 export default function Login() {
   const navigate = useNavigate();

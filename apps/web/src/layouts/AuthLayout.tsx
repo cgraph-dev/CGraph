@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
+import { MatrixAuthBackground } from '@/lib/animations/matrix';
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -7,9 +8,15 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen bg-dark-900 flex">
+    <div className="min-h-screen bg-dark-900 flex relative overflow-hidden">
+      {/* Matrix Background Effect */}
+      <MatrixAuthBackground 
+        theme="matrix-green"
+        zIndex={0}
+      />
+      
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 to-primary-800 p-12 flex-col justify-between">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600/90 to-primary-800/90 backdrop-blur-sm p-12 flex-col justify-between relative z-10">
         <div>
           <Link to="/" className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
@@ -62,8 +69,10 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
       </div>
 
       {/* Right side - Auth form */}
-      <div className="flex-1 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">{children}</div>
+      <div className="flex-1 flex items-center justify-center p-8 relative z-10">
+        <div className="w-full max-w-md bg-dark-900/80 backdrop-blur-md rounded-2xl p-8 border border-dark-700/50 shadow-2xl">
+          {children}
+        </div>
       </div>
     </div>
   );

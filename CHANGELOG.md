@@ -11,6 +11,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.3] - 2026-01-04
+
+### Matrix Cipher Background Animation
+
+A high-performance, customizable Matrix-style falling code animation for authentication screens and backgrounds.
+
+### Added
+
+#### Web Matrix Animation System (`/apps/web/src/lib/animations/matrix/`)
+- **`types.ts`** - Complete TypeScript type system with DeepPartial utility
+- **`characters.ts`** - 9 character sets (Latin, Katakana, Cyrillic, Greek, Numbers, Binary, Hex, Symbols, Code)
+- **`themes.ts`** - 8 color themes (Matrix Green, Cyber Blue, Blood Red, Golden, Purple Haze, Neon Pink, Ice, Fire)
+- **`config.ts`** - Configuration factory with 5 presets (Default, High Quality, Power Saver, Minimal, Intense)
+- **`engine.ts`** - High-performance Canvas 2D animation engine (~924 lines)
+  - 60fps target with adaptive frame skipping
+  - Multi-layer depth effects for 3D parallax
+  - Column lifecycle management with object pooling
+  - Automatic throttling on tab blur
+  - Responsive scaling for mobile/tablet/desktop
+- **`useMatrix.ts`** - React hook for lifecycle management
+- **`MatrixBackground.tsx`** - Component variants (MatrixBackground, MatrixAuthBackground)
+- **`index.ts`** - Barrel exports
+
+#### Mobile Matrix Animation System (`/apps/mobile/src/components/matrix/`)
+- **`types.ts`** - Mobile-specific type definitions
+- **`themes.ts`** - Theme definitions optimized for mobile
+- **`config.ts`** - Mobile configuration with performance presets
+- **`MatrixBackground.tsx`** - React Native component using Animated API
+- **`index.ts`** - Exports
+
+#### Integration
+- **AuthLayout.tsx** - Added MatrixAuthBackground to web authentication layout
+- **LoginScreen.tsx** - Added MatrixBackground to mobile login screen
+
+#### Documentation
+- **`/docs/MATRIX.md`** - Comprehensive documentation with API reference, examples, and troubleshooting
+
+#### Test Suite
+- **208 new tests** covering:
+  - Type definitions and DeepPartial utility (15 tests)
+  - Character set generation and utilities (46 tests)
+  - Theme validation and interpolation (53 tests)
+  - Configuration merging and validation (58 tests)
+  - Engine lifecycle and rendering (36 tests)
+
+### Technical Highlights
+
+- **Performance**: Canvas 2D rendering with 60fps target, adaptive quality, frame skipping
+- **Themes**: 8 built-in themes with interpolation support for smooth transitions
+- **Characters**: 9 character sets including Japanese Katakana for authentic Matrix look
+- **Configuration**: Deep merge system with responsive breakpoints
+- **Accessibility**: Reduced motion support, tab blur throttling
+
+---
+
 ## [0.6.2] - 2026-01-03
 
 ### Security Fixes & Test Coverage
