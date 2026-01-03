@@ -9,41 +9,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [0.6.1] - 2026-01-03
+
+### OAuth Authentication & Bug Fixes
+
+Minor release adding OAuth 2.0 authentication with four major providers and fixing authentication issues.
+
 ### Added
 
-#### Two-Factor Authentication API
-- TOTP-based 2FA with full API support
-- Setup flow with QR code generation for authenticator apps
-- Enable, verify, and disable endpoints
-- Backup code generation and regeneration
-- Compatible with Google Authenticator, Authy, and other RFC 6238 apps
+#### OAuth Authentication
+- **Google OAuth** - Sign in with Google via OAuth 2.0 + OpenID Connect
+- **Apple Sign In** - Privacy-focused authentication with email relay support
+- **Facebook OAuth** - Social login via Facebook Login SDK
+- **TikTok OAuth** - Login Kit integration for TikTok users
 
-#### E2EE API Routes
-- Safety number endpoint for identity verification
-- Key verification and revocation endpoints
-- Prekey count endpoint for monitoring key supply
+#### Backend OAuth Infrastructure
+- New `Cgraph.OAuth` module with provider abstraction
+- OAuth controller with authorize, callback, mobile, link, unlink endpoints
+- User schema extended with `oauth_provider`, `oauth_uid`, `oauth_data`, `oauth_tokens` fields
+- Secure token storage with encryption at rest
+- State parameter for CSRF protection
+- PKCE support for mobile/SPA flows
 
-#### Voice Message Routes
-- Waveform data endpoint for audio visualization
+#### Web OAuth Components
+- `OAuthButtons` component for social login buttons
+- `OAuthCallback` page for handling provider redirects
+- `oauth.ts` service for OAuth API integration
+- Updated Login and Register pages with OAuth options
 
-#### Frontend Hooks
-- `useMediaQuery` - responsive breakpoint detection
-- `useLocalStorage` - persist state with cross-tab sync
-- `useDebounce` - debounce values and callbacks
-- `useClickOutside` - detect clicks outside elements
-- `useWindowSize` - viewport dimension tracking
-- `useCopyToClipboard` - clipboard operations with feedback
+#### Mobile OAuth Components
+- React Native OAuth service with native SDK placeholders
+- `OAuthButtons` component with platform-specific styling
+- WebBrowser fallback for OAuth flow on mobile
+- Updated LoginScreen and RegisterScreen with OAuth buttons
 
-#### Voice Message Components
-- `Waveform` - canvas-based audio visualization
-- `VoiceMessagePlayer` - playback with waveform and seeking
-- `VoiceMessageRecorder` - recording with live visualization
+### Fixed
+- **Authentication failing** - Root cause was pending database migrations not applied
+- Module naming inconsistency (`CgraphWeb.Api.V1` → `CgraphWeb.API.V1`)
+- OAuth return type pattern matching in accounts functions
+- Added public `user_json` helper to AuthJSON
 
-### Security
-- Removed JWT secret fallback (now requires JWT_SECRET env var)
-- Fixed atom exhaustion risk in input validation
-- Fixed unsafe string-to-atom conversion in abuse detection
-- Safe integer parsing in friend controller
+### Changed
+- Added `assent ~> 0.2` dependency for OAuth provider support
+- Extended config with OAuth provider credentials (environment variables)
+
+### Documentation
+- Added OAuth section to API.md with complete endpoint documentation
+- Added OAuth security section to SECURITY.md
+- Added OAuth components to FRONTEND.md component library
+
+### Database Migrations
+- `20260103000001_add_oauth_fields.exs` - Adds OAuth fields to users table
 
 ---
 

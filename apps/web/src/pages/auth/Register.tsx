@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { OAuthButtonGroup } from '@/components/auth/OAuthButtons';
 
 export default function Register() {
   const navigate = useNavigate();
@@ -234,6 +235,24 @@ export default function Register() {
           )}
         </button>
       </form>
+
+      {/* Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-dark-600" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-4 bg-dark-900 text-gray-500">Or sign up with</span>
+        </div>
+      </div>
+
+      {/* OAuth Buttons */}
+      <OAuthButtonGroup
+        providers={['google', 'apple', 'facebook', 'tiktok']}
+        variant="icon"
+        onSuccess={() => navigate('/messages')}
+        onError={(err) => console.error('OAuth error:', err)}
+      />
 
       {/* Sign In Link */}
       <p className="text-center text-gray-400">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { OAuthButtonGroup, AuthDivider } from '@/components/auth/OAuthButtons';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -210,6 +211,14 @@ export default function Login() {
           <span className="px-4 bg-dark-900 text-gray-500">Or continue with</span>
         </div>
       </div>
+
+      {/* OAuth Buttons */}
+      <OAuthButtonGroup
+        providers={['google', 'apple', 'facebook', 'tiktok']}
+        variant="icon"
+        onSuccess={() => navigate('/messages')}
+        onError={(err) => console.error('OAuth error:', err)}
+      />
 
       {/* Wallet Login */}
       <button

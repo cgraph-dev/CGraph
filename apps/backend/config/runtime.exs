@@ -79,4 +79,29 @@ if config_env() == :prod do
     scheme: "https://",
     host: "#{System.get_env("R2_ACCOUNT_ID")}.r2.cloudflarestorage.com",
     region: "auto"
+
+  # OAuth configuration for production
+  config :cgraph, :oauth,
+    google: [
+      client_id: System.get_env("GOOGLE_CLIENT_ID"),
+      client_secret: System.get_env("GOOGLE_CLIENT_SECRET"),
+      redirect_uri: "https://#{host}/api/v1/auth/oauth/google/callback"
+    ],
+    apple: [
+      client_id: System.get_env("APPLE_CLIENT_ID"),
+      team_id: System.get_env("APPLE_TEAM_ID"),
+      key_id: System.get_env("APPLE_KEY_ID"),
+      private_key: System.get_env("APPLE_PRIVATE_KEY"),
+      redirect_uri: "https://#{host}/api/v1/auth/oauth/apple/callback"
+    ],
+    facebook: [
+      client_id: System.get_env("FACEBOOK_CLIENT_ID"),
+      client_secret: System.get_env("FACEBOOK_CLIENT_SECRET"),
+      redirect_uri: "https://#{host}/api/v1/auth/oauth/facebook/callback"
+    ],
+    tiktok: [
+      client_key: System.get_env("TIKTOK_CLIENT_KEY"),
+      client_secret: System.get_env("TIKTOK_CLIENT_SECRET"),
+      redirect_uri: "https://#{host}/api/v1/auth/oauth/tiktok/callback"
+    ]
 end

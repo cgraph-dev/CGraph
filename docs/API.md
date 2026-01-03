@@ -215,6 +215,109 @@ Content-Type: application/json
 }
 ```
 
+### 3. OAuth Social Login
+
+CGraph supports OAuth authentication via Google, Apple, Facebook, and TikTok.
+
+#### Available Providers
+
+**Get Available Providers:**
+```http
+GET /api/v1/auth/oauth/providers
+```
+
+**Response:**
+```json
+{
+  "providers": [
+    { "id": "google", "name": "Google", "enabled": true },
+    { "id": "apple", "name": "Apple", "enabled": true },
+    { "id": "facebook", "name": "Facebook", "enabled": true },
+    { "id": "tiktok", "name": "TikTok", "enabled": true }
+  ]
+}
+```
+
+#### Web OAuth Flow
+
+**Step 1: Get Authorization URL:**
+```http
+GET /api/v1/auth/oauth/:provider
+```
+
+**Response:**
+```json
+{
+  "authorization_url": "https://accounts.google.com/o/oauth2/v2/auth?...",
+  "state": "random-csrf-token",
+  "provider": "google"
+}
+```
+
+**Step 2: Handle Callback:**
+
+After user authorizes, the provider redirects back to:
+```http
+GET /api/v1/auth/oauth/:provider/callback?code=AUTH_CODE&state=STATE
+```
+
+**Response:**
+```json
+{
+  "user": {
+    "id": "usr_abc123",
+    "email": "user@gmail.com",
+    "username": "user123",
+    "display_name": "John Doe",
+    "avatar_url": "https://...",
+    "totp_enabled": false,
+    "is_verified": true
+  },
+  "tokens": {
+    "access_token": "eyJhbGciOiJIUzUxMiIs...",
+    "refresh_token": "eyJhbGciOiJIUzUxMiIs...",
+    "expires_in": 7200
+  }
+}
+```
+
+#### Mobile OAuth Flow
+
+Mobile apps use native SDKs and send tokens to backend for verification.
+
+**Verify Mobile OAuth Token:**
+```http
+POST /api/v1/auth/oauth/:provider/mobile
+Content-Type: application/json
+
+{
+  "access_token": "token-from-native-sdk",
+  "id_token": "id-token-for-apple-or-google"
+}
+```
+
+**Response:** Same as web callback response.
+
+#### Link/Unlink OAuth Account
+
+**Link OAuth Account (requires auth):**
+```http
+POST /api/v1/auth/oauth/:provider/link
+Authorization: Bearer <access-token>
+Content-Type: application/json
+
+{
+  "access_token": "token-from-oauth-provider",
+  "id_token": "optional-id-token"
+}
+```
+
+**Unlink OAuth Account (requires auth):**
+```http
+DELETE /api/v1/auth/oauth/:provider/link
+Authorization: Bearer <access-token>
+```
+
 ### Token Lifecycle
 
 | Token Type | Expiry | Use |

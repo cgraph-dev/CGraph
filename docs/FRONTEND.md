@@ -804,6 +804,179 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 ```
 
+### OAuth Components
+
+Social authentication buttons and callback handling for Google, Apple, Facebook, and TikTok.
+
+#### OAuthButtons
+
+```tsx
+// src/components/auth/OAuthButtons.tsx
+import { FcGoogle } from 'react-icons/fc';
+import { FaApple, FaFacebook, FaTiktok } from 'react-icons/fa';
+import { oAuthService } from '@/lib/oauth';
+
+interface OAuthButtonsProps {
+  mode: 'login' | 'register';
+  onError?: (error: string) => void;
+}
+
+export function OAuthButtons({ mode, onError }: OAuthButtonsProps) {
+  const providers = [
+    { id: 'google', name: 'Google', Icon: FcGoogle, color: 'bg-white' },
+    { id: 'apple', name: 'Apple', Icon: FaApple, color: 'bg-black' },
+    { id: 'facebook', name: 'Facebook', Icon: FaFacebook, color: 'bg-blue-600' },
+    { id: 'tiktok', name: 'TikTok', Icon: FaTiktok, color: 'bg-gray-900' },
+  ] as const;
+
+  const handleOAuth = async (provider: string) => {
+    try {
+      await oAuthService.startOAuthFlow(provider);
+    } catch (error) {
+      onError?.(error instanceof Error ? error.message : 'OAuth failed');
+    }
+  };
+
+  return (
+    <div className="space-y-3">
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-dark-600" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-dark-900 px-2 text-gray-500">
+            Or continue with
+          </span>
+        </div>
+      </div>
+      
+      <div className="grid grid-cols-4 gap-3">
+        {providers.map(({ id, name, Icon, color }) => (
+          <button
+            key={id}
+            onClick={() => handleOAuth(id)}
+            className={`${color} flex h-12 items-center justify-center rounded-lg 
+                       transition-all hover:opacity-80`}
+            aria-label={`${mode === 'login' ? 'Sign in' : 'Sign up'} with ${name}`}
+          >
+            <Icon className="h-6 w-6" />
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+#### OAuthCallback Page
+
+```tsx
+// src/pages/auth/OAuthCallback.tsx
+import { useEffect, useState } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { oAuthService } from '@/lib/oauth';
+import { useAuthStore } from '@/stores/authStore';
+import { Spinner } from '@/components/ui/Spinner';
+
+export function OAuthCallback() {
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleCallback = async () => {
+      const code = searchParams.get('code');
+      const state = searchParams.get('state');
+      const provider = searchParams.get('provider');
+
+      if (!code || !provider) {
+        setError('Missing OAuth parameters');
+        return;
+      }
+
+      try {
+        const result = await oAuthService.handleOAuthCallback(
+          provider, code, state || undefined
+        );
+        setAuth(result.user, result.token);
+        navigate('/chat', { replace: true });
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Authentication failed');
+      }
+    };
+
+    handleCallback();
+  }, [searchParams, navigate, setAuth]);
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold text-red-500">Error</h2>
+          <p className="text-gray-400">{error}</p>
+          <button onClick={() => navigate('/login')} className="mt-4 text-primary-500">
+            Back to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center">
+      <Spinner size="lg" />
+      <span className="ml-3 text-gray-400">Completing sign in...</span>
+    </div>
+  );
+}
+```
+
+#### OAuth Service
+
+```typescript
+// src/lib/oauth.ts
+import { api } from './api';
+
+class OAuthService {
+  async getProviders(): Promise<string[]> {
+    const response = await api.get('/auth/oauth');
+    return response.data.providers;
+  }
+
+  async startOAuthFlow(provider: string): Promise<void> {
+    const response = await api.post(`/auth/oauth/${provider}`, {
+      redirect_uri: `${window.location.origin}/auth/callback`,
+      platform: 'web',
+    });
+    // Redirect to provider's auth page
+    window.location.href = response.data.authorization_url;
+  }
+
+  async handleOAuthCallback(
+    provider: string,
+    code: string,
+    state?: string
+  ): Promise<{ user: User; token: string }> {
+    const response = await api.get(`/auth/oauth/${provider}/callback`, {
+      params: { code, state },
+    });
+    return response.data;
+  }
+
+  async linkProvider(provider: string): Promise<void> {
+    const response = await api.post(`/auth/oauth/${provider}/link`);
+    window.location.href = response.data.authorization_url;
+  }
+
+  async unlinkProvider(provider: string): Promise<void> {
+    await api.delete(`/auth/oauth/${provider}/link`);
+  }
+}
+
+export const oAuthService = new OAuthService();
+```
+
 ### Modal Component
 
 ```tsx

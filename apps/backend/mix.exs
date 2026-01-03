@@ -1,7 +1,7 @@
 defmodule Cgraph.MixProject do
   use Mix.Project
 
-  @version "0.6.0"
+  @version "0.6.1"
   # Using Elixir 1.19+ with OTP 28 for latest features and security
   @elixir_version "~> 1.19"
 
@@ -61,6 +61,9 @@ defmodule Cgraph.MixProject do
       # Web3 / Ethereum wallet auth
       {:ex_keccak, "~> 0.7"},
       {:ex_secp256k1, "~> 0.7"},
+
+      # OAuth 2.0 (Google, Apple, Facebook, TikTok)
+      {:assent, "~> 0.2"},
 
       # Real-time
       {:phoenix_pubsub, "~> 2.1"},

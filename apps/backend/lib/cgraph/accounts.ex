@@ -142,6 +142,14 @@ defmodule Cgraph.Accounts do
     end
   end
 
+  @doc """
+  Get user by OAuth provider and UID.
+  Returns the user if found, nil otherwise.
+  """
+  def get_user_by_oauth(provider, uid) when is_binary(provider) and is_binary(uid) do
+    Repo.get_by(User, oauth_provider: provider, oauth_uid: uid)
+  end
+
   # ============================================================================
   # Wallet Authentication
   # ============================================================================

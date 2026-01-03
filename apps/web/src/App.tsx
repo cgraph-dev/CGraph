@@ -10,6 +10,7 @@ import AuthLayout from '@/layouts/AuthLayout';
 import Login from '@/pages/auth/Login';
 import Register from '@/pages/auth/Register';
 import ForgotPassword from '@/pages/auth/ForgotPassword';
+import OAuthCallback from '@/pages/auth/OAuthCallback';
 import Messages from '@/pages/messages/Messages';
 import Conversation from '@/pages/messages/Conversation';
 import Friends from '@/pages/friends/Friends';
@@ -145,6 +146,11 @@ export default function App() {
               </AuthLayout>
             </PublicRoute>
           }
+        />
+        {/* OAuth callback - doesn't need layout */}
+        <Route
+          path="/auth/oauth/:provider/callback"
+          element={<OAuthCallback />}
         />
 
         {/* Protected routes */}

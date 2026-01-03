@@ -15,6 +15,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthStackParamList } from '../../types';
+import { OAuthButtonGroup, AuthDivider } from '../../components/OAuthButtons';
 
 type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList, 'Login'>;
@@ -124,6 +125,22 @@ export default function LoginScreen({ navigation }: Props) {
                 <Text style={styles.buttonText}>Sign In</Text>
               )}
             </TouchableOpacity>
+            
+            {/* OAuth Divider and Buttons */}
+            <AuthDivider text="or sign in with" />
+            
+            <OAuthButtonGroup
+              variant="icon"
+              providers={['google', 'apple', 'facebook', 'tiktok']}
+              onSuccess={() => {
+                // Auth context will handle navigation
+              }}
+              onError={(error) => {
+                if (!error.message.includes('cancelled')) {
+                  console.error('OAuth error:', error);
+                }
+              }}
+            />
           </View>
           
           {/* Footer */}

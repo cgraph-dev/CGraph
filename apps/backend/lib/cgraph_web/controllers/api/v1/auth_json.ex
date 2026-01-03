@@ -74,6 +74,12 @@ defmodule CgraphWeb.API.V1.AuthJSON do
     %{message: "Password has been reset successfully"}
   end
 
+  @doc """
+  Public helper to format a single user for JSON output.
+  Use this when you need to render a user outside of the standard render pipeline.
+  """
+  def user_json(%User{} = user), do: user_data(user)
+
   # Private helper to format user data consistently
   defp user_data(%User{} = user) do
     %{

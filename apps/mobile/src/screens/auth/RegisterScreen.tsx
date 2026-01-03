@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { AuthStackParamList } from '../../types';
+import { OAuthButtonGroup, AuthDivider } from '../../components/OAuthButtons';
 
 type Props = {
   navigation: NativeStackNavigationProp<AuthStackParamList, 'Register'>;
@@ -232,6 +233,22 @@ export default function RegisterScreen({ navigation }: Props) {
                   <Text style={styles.buttonText}>Create Account</Text>
                 )}
               </TouchableOpacity>
+              
+              {/* OAuth Divider and Buttons */}
+              <AuthDivider text="or sign up with" />
+              
+              <OAuthButtonGroup
+                variant="icon"
+                providers={['google', 'apple', 'facebook', 'tiktok']}
+                onSuccess={() => {
+                  // Auth context will handle navigation
+                }}
+                onError={(error) => {
+                  if (!error.message.includes('cancelled')) {
+                    console.error('OAuth error:', error);
+                  }
+                }}
+              />
             </View>
             
             {/* Footer */}

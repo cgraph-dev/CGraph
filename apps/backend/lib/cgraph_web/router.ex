@@ -77,6 +77,30 @@ defmodule CgraphWeb.Router do
     post "/auth/verify-email", AuthController, :verify_email
   end
 
+  # OAuth Authentication Routes (public - strict rate limiting)
+  scope "/api/v1/auth/oauth", CgraphWeb.API.V1 do
+    pipe_through :api_auth_strict
+
+    # Get available OAuth providers
+    get "/providers", OAuthController, :list_providers
+
+    # OAuth flow - authorization and callback
+    get "/:provider", OAuthController, :authorize
+    get "/:provider/callback", OAuthController, :callback
+    post "/:provider/callback", OAuthController, :callback  # Apple uses POST with form_post
+
+    # Mobile OAuth - verify tokens from native SDKs
+    post "/:provider/mobile", OAuthController, :mobile
+  end
+
+  # OAuth account linking (requires auth)
+  scope "/api/v1/auth/oauth", CgraphWeb.API.V1 do
+    pipe_through [:api, :api_auth]
+
+    post "/:provider/link", OAuthController, :link
+    delete "/:provider/link", OAuthController, :unlink
+  end
+
   # Anonymous Wallet Authentication (CGraph-style) - strict rate limiting
   scope "/api/v1/auth/wallet", CgraphWeb do
     pipe_through :api_auth_strict

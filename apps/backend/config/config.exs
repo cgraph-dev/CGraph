@@ -60,6 +60,31 @@ config :cgraph, Oban,
 config :cgraph, Cgraph.Mailer,
   adapter: Swoosh.Adapters.Local
 
+# OAuth configuration (override in runtime.exs for production)
+config :cgraph, :oauth,
+  google: [
+    client_id: System.get_env("GOOGLE_CLIENT_ID", ""),
+    client_secret: System.get_env("GOOGLE_CLIENT_SECRET", ""),
+    redirect_uri: System.get_env("GOOGLE_REDIRECT_URI", "http://localhost:4000/api/v1/auth/oauth/google/callback")
+  ],
+  apple: [
+    client_id: System.get_env("APPLE_CLIENT_ID", ""),
+    team_id: System.get_env("APPLE_TEAM_ID", ""),
+    key_id: System.get_env("APPLE_KEY_ID", ""),
+    private_key: System.get_env("APPLE_PRIVATE_KEY", ""),
+    redirect_uri: System.get_env("APPLE_REDIRECT_URI", "http://localhost:4000/api/v1/auth/oauth/apple/callback")
+  ],
+  facebook: [
+    client_id: System.get_env("FACEBOOK_CLIENT_ID", ""),
+    client_secret: System.get_env("FACEBOOK_CLIENT_SECRET", ""),
+    redirect_uri: System.get_env("FACEBOOK_REDIRECT_URI", "http://localhost:4000/api/v1/auth/oauth/facebook/callback")
+  ],
+  tiktok: [
+    client_key: System.get_env("TIKTOK_CLIENT_KEY", ""),
+    client_secret: System.get_env("TIKTOK_CLIENT_SECRET", ""),
+    redirect_uri: System.get_env("TIKTOK_REDIRECT_URI", "http://localhost:4000/api/v1/auth/oauth/tiktok/callback")
+  ]
+
 # ExAWS configuration for Cloudflare R2
 config :ex_aws,
   access_key_id: {:system, "R2_ACCESS_KEY_ID"},

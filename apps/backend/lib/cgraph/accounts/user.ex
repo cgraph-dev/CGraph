@@ -74,6 +74,11 @@ defmodule Cgraph.Accounts.User do
     field :totp_backup_hashes, {:array, :string}, default: []
     field :recovery_codes, {:array, :string}, default: []
 
+    # OAuth authentication
+    field :oauth_provider, :string  # Primary OAuth provider (google, apple, facebook, tiktok)
+    field :oauth_uid, :string       # User ID from the primary OAuth provider
+    field :oauth_data, :map         # JSON map of all linked OAuth accounts with metadata
+
     # Tracking
     field :last_seen_at, :utc_datetime
     field :last_active_at, :utc_datetime
@@ -101,6 +106,50 @@ defmodule Cgraph.Accounts.User do
   def totp_changeset(user, attrs) do
     user
     |> cast(attrs, [:totp_enabled, :totp_secret, :totp_backup_codes, :totp_enabled_at])
+  end
+
+  @doc """
+  Changeset for OAuth account updates.
+  Used when updating OAuth-related fields on existing users.
+  """
+  def oauth_changeset(user, attrs) do
+    user
+    |> cast(attrs, [:oauth_provider, :oauth_uid, :oauth_data, :avatar_url, :display_name, :email_verified_at])
+    |> validate_oauth_provider()
+  end
+
+  @doc """
+  Registration changeset for OAuth users.
+  Creates a new user from OAuth provider data without password.
+  """
+  def oauth_registration_changeset(user, attrs) do
+    user
+    |> cast(attrs, [
+      :email, :username, :display_name, :avatar_url,
+      :auth_type, :oauth_provider, :oauth_uid, :oauth_data,
+      :email_verified_at
+    ])
+    |> validate_required([:oauth_provider, :oauth_uid])
+    |> maybe_validate_username()
+    |> validate_email_format()
+    |> validate_oauth_provider()
+    |> unique_constraint(:email)
+    |> unique_constraint(:username)
+  end
+
+  defp validate_oauth_provider(changeset) do
+    changeset
+    |> validate_inclusion(:oauth_provider, ["google", "apple", "facebook", "tiktok", nil])
+  end
+
+  defp validate_email_format(changeset) do
+    case get_change(changeset, :email) do
+      nil -> changeset
+      _ -> 
+        changeset
+        |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must be a valid email address")
+        |> validate_length(:email, max: 160)
+    end
   end
 
   @doc """

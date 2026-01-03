@@ -191,7 +191,61 @@ RFC 6238 compliant TOTP implementation:
 - 1Password
 - Any RFC 6238 compliant app
 
-### 6. Rate Limiting
+### 6. OAuth Authentication Security
+
+**Module:** `Cgraph.OAuth`
+
+OAuth 2.0 / OpenID Connect authentication with multiple identity providers:
+
+**Supported Providers:**
+| Provider | Protocol | Features |
+|----------|----------|----------|
+| Google | OAuth 2.0 + OIDC | Email verification, profile info |
+| Apple | Sign in with Apple | Privacy-focused, email relay |
+| Facebook | OAuth 2.0 | Profile, friends (optional) |
+| TikTok | OAuth 2.0 | Login Kit integration |
+
+**Security Implementation:**
+
+```elixir
+# OAuth flow is PKCE-enabled for mobile
+{:ok, auth_url, state} = OAuth.authorize_url(:google, %{
+  redirect_uri: redirect_uri,
+  code_challenge: code_challenge,
+  code_challenge_method: "S256"
+})
+
+# State parameter prevents CSRF attacks
+{:ok, user, tokens} = OAuth.callback(:google, code, state)
+
+# Token exchange with secure storage
+OAuth.mobile_callback(:google, %{
+  access_token: token,
+  id_token: id_token  # Verified via JWKS
+})
+```
+
+**Security Features:**
+- **State Parameter**: Cryptographically random, prevents CSRF
+- **PKCE**: Proof Key for Code Exchange for mobile/SPA flows
+- **ID Token Verification**: JWTs verified against provider JWKS endpoints
+- **Token Storage**: OAuth tokens encrypted at rest using `cloak_ecto`
+- **Account Linking**: Secure linking with existing accounts requires authentication
+- **Provider Validation**: Only configured providers allowed
+
+**Data Handling:**
+- Minimal data collection (email, name, avatar only)
+- OAuth tokens stored encrypted
+- Tokens can be revoked per-provider
+- Provider-specific privacy settings respected
+
+**Apple Sign In Specifics:**
+- Supports email relay (Hide My Email)
+- User info only provided on first authorization
+- Server-to-server token validation
+- JWT signed with Apple private key
+
+### 7. Rate Limiting
 
 **Module:** `CgraphWeb.Plugs.RateLimiterV2`
 
@@ -209,7 +263,7 @@ Multi-algorithm rate limiting:
 - Leaky Bucket (constant rate)
 - Fixed Window (simple limits)
 
-### 7. Audit Logging
+### 8. Audit Logging
 
 **Module:** `Cgraph.Audit`
 
@@ -236,7 +290,7 @@ Audit.log(:auth, :login_success, %{
 - User actions: 2 years
 - General: 1 year
 
-### 8. End-to-End Encryption (E2EE)
+### 9. End-to-End Encryption (E2EE)
 
 **Module:** `Cgraph.Crypto.E2EE`
 
@@ -302,7 +356,7 @@ count = E2EE.one_time_prekey_count(user_id)
 - Message content is encrypted client-side before transmission
 - Server sees only ciphertext (opaque blobs)
 
-### 9. Voice Message Security
+### 10. Voice Message Security
 
 **Module:** `Cgraph.Messaging.VoiceMessage`
 
