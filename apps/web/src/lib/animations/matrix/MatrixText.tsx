@@ -167,7 +167,7 @@ export const MatrixText = memo(function MatrixText({
       const scramble = () => {
         if (scrambleCount >= scrambleIterations) {
           // Reveal actual character
-          setDisplayText(prev => {
+          setDisplayText((prev: string[]) => {
             const newText = [...prev];
             newText[currentIndex] = chars[currentIndex] ?? '';
             return newText;
@@ -178,7 +178,7 @@ export const MatrixText = memo(function MatrixText({
         }
         
         // Show random character
-        setDisplayText(prev => {
+        setDisplayText((prev: string[]) => {
           const newText = [...prev];
           if (chars[currentIndex] !== ' ') {
             newText[currentIndex] = getRandomChar(charsetString);
@@ -222,7 +222,7 @@ export const MatrixText = memo(function MatrixText({
       
       // Encrypt current character
       if (chars[currentIndex] !== ' ') {
-        setDisplayText(prev => {
+        setDisplayText((prev: string[]) => {
           const newText = [...prev];
           newText[currentIndex] = getRandomChar(charsetString);
           return newText;
@@ -266,7 +266,7 @@ export const MatrixText = memo(function MatrixText({
       let morphIndex = 0;
       
       ambientMorphRef.current = setInterval(() => {
-        setDisplayText(prev => {
+        setDisplayText((prev: string[]) => {
           const newText = [...prev];
           const idx = morphIndex % text.length;
           
@@ -277,7 +277,7 @@ export const MatrixText = memo(function MatrixText({
             
             // Restore after brief delay
             setTimeout(() => {
-              setDisplayText(current => {
+              setDisplayText((current: string[]) => {
                 const restored = [...current];
                 restored[idx] = originalChar ?? '';
                 return restored;
@@ -318,7 +318,7 @@ export const MatrixText = memo(function MatrixText({
       data-phase={phase}
       data-animating={isAnimating}
     >
-      {displayText.map((char, index) => {
+      {displayText.map((char: string, index: number) => {
         const isOriginal = char === text[index];
         const isMorphing = !isOriginal && phase !== 'encrypted';
         

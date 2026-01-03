@@ -11,6 +11,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.3] - 2026-01-03
+
+### Cross-Platform Feature Enhancement
+
+Comprehensive codebase review and enhancement with improved TypeScript type safety, biometric authentication integration in mobile settings, and refined animation system.
+
+### Added
+
+#### Mobile Biometric Settings Integration
+- **Account Settings Biometrics** - Added Face ID/Touch ID toggle in Account Settings screen
+- **Biometric Status Detection** - Real-time detection of device biometric capabilities
+- **User-Friendly Prompts** - Contextual alerts for biometric setup requirements
+- **Toggle State Persistence** - Biometric lock preference saved securely
+
+#### Type Safety Improvements
+- **Explicit Type Annotations** - Added explicit types to setState callbacks in matrix animation system
+- **Vite Env Types** - Extended ImportMetaEnv with DEV, PROD, MODE, SSR properties
+- **Logger Safety** - Added runtime check for import.meta availability
+
+### Changed
+
+#### Code Quality
+- **MatrixText.tsx** - Added explicit `string[]` types to all setDisplayText callback parameters
+- **useMatrix.ts** - Added `MatrixEngineState` types to all setState callbacks  
+- **useMatrix.ts** - Added `number` types to reduce callback parameters
+- **logger.ts** - Made DEV detection resilient to SSR/test environments
+
+#### Documentation
+- Updated CHANGELOG with v0.7.3 release notes
+
+### Fixed
+
+#### TypeScript Errors
+- Fixed implicit `any` type errors in MatrixText.tsx (5 occurrences)
+- Fixed implicit `any` type errors in useMatrix.ts (10 occurrences)
+- Fixed `import.meta.env.DEV` type resolution in logger.ts
+- Added missing Vite environment type declarations
+
+### Technical Details
+
+Biometric integration in AccountScreen.tsx:
+```typescript
+import { getBiometricStatus, getBiometricName, isBiometricLockEnabled, setBiometricLockEnabled } from '../../lib/biometrics';
+
+// Detects Face ID, Touch ID, Fingerprint, or Iris
+const status = await getBiometricStatus();
+// Returns: { isAvailable, isEnrolled, biometricType, securityLevel }
+```
+
+---
+
 ## [0.7.2] - 2026-01-03
 
 ### Matrix Theme UI Enhancement

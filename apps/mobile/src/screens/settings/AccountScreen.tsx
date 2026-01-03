@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   Linking,
   TextInput,
   ActivityIndicator,
+  Switch,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -16,6 +17,13 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { SettingsStackParamList } from '../../types';
 import api from '../../lib/api';
+import {
+  getBiometricStatus,
+  getBiometricName,
+  isBiometricLockEnabled,
+  setBiometricLockEnabled,
+  type BiometricStatus,
+} from '../../lib/biometrics';
 
 type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'Account'>;
@@ -28,6 +36,60 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  // Biometric authentication state
+  const [biometricStatus, setBiometricStatus] = useState<BiometricStatus | null>(null);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [isTogglingBiometric, setIsTogglingBiometric] = useState(false);
+  
+  // Load biometric status on mount
+  useEffect(() => {
+    const loadBiometricStatus = async () => {
+      const status = await getBiometricStatus();
+      setBiometricStatus(status);
+      if (status.isAvailable && status.isEnrolled) {
+        const enabled = await isBiometricLockEnabled();
+        setBiometricEnabled(enabled);
+      }
+    };
+    loadBiometricStatus();
+  }, []);
+  
+  // Handle biometric toggle
+  const handleBiometricToggle = useCallback(async (value: boolean) => {
+    if (!biometricStatus?.isAvailable) {
+      Alert.alert('Not Available', 'Biometric authentication is not available on this device.');
+      return;
+    }
+    
+    if (!biometricStatus?.isEnrolled) {
+      Alert.alert(
+        'Setup Required',
+        `Please set up ${getBiometricName(biometricStatus.biometricType)} in your device settings first.`
+      );
+      return;
+    }
+    
+    setIsTogglingBiometric(true);
+    try {
+      const success = await setBiometricLockEnabled(value);
+      if (success) {
+        setBiometricEnabled(value);
+        Alert.alert(
+          'Success',
+          value
+            ? `${getBiometricName(biometricStatus.biometricType)} lock enabled.`
+            : 'Biometric lock disabled.'
+        );
+      } else {
+        Alert.alert('Cancelled', 'Biometric authentication was cancelled.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to update biometric settings.');
+    } finally {
+      setIsTogglingBiometric(false);
+    }
+  }, [biometricStatus]);
   
   const handleChangePassword = () => {
     Alert.alert('Change Password', 'This will send a password reset link to your email.', [
@@ -146,6 +208,41 @@ export default function AccountScreen({ navigation: _navigation }: Props) {
           </TouchableOpacity>
           
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          
+          {/* Biometric Authentication */}
+          {biometricStatus && biometricStatus.isAvailable && (
+            <>
+              <View style={styles.settingsItemRow}>
+                <Ionicons 
+                  name={biometricStatus.biometricType === 'facial' ? 'scan-outline' : 'finger-print-outline'} 
+                  size={22} 
+                  color={colors.textSecondary} 
+                />
+                <View style={styles.settingsItemContent}>
+                  <Text style={[styles.settingsItemText, { color: colors.text }]}>
+                    {getBiometricName(biometricStatus.biometricType)}
+                  </Text>
+                  <Text style={[styles.settingsItemSubtext, { color: colors.textTertiary }]}>
+                    {biometricStatus.isEnrolled 
+                      ? 'Require biometric to access app'
+                      : 'Set up in device settings first'}
+                  </Text>
+                </View>
+                {isTogglingBiometric ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <Switch
+                    value={biometricEnabled}
+                    onValueChange={handleBiometricToggle}
+                    trackColor={{ false: colors.surfaceHover, true: colors.primary }}
+                    thumbColor="#fff"
+                    disabled={!biometricStatus.isEnrolled}
+                  />
+                )}
+              </View>
+              <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            </>
+          )}
           
           <TouchableOpacity style={styles.settingsItem}>
             <Ionicons name="phone-portrait-outline" size={22} color={colors.textSecondary} />
@@ -335,10 +432,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
+  settingsItemRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+  },
+  settingsItemContent: {
+    flex: 1,
+    marginLeft: 12,
+  },
   settingsItemText: {
     flex: 1,
     fontSize: 16,
     marginLeft: 12,
+  },
+  settingsItemSubtext: {
+    fontSize: 12,
+    marginTop: 2,
   },
   connectedInfo: {
     flex: 1,

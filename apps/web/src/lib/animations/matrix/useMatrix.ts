@@ -114,19 +114,19 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
     // Set event handlers
     engine.setEventHandlers({
       onStart: () => {
-        setState(prev => ({ ...prev, state: 'running', isPaused: false }));
+        setState((prev: MatrixEngineState) => ({ ...prev, state: 'running', isPaused: false }));
         events?.onStart?.();
       },
       onStop: () => {
-        setState(prev => ({ ...prev, state: 'stopped' }));
+        setState((prev: MatrixEngineState) => ({ ...prev, state: 'stopped' }));
         events?.onStop?.();
       },
       onPause: () => {
-        setState(prev => ({ ...prev, state: 'paused', isPaused: true }));
+        setState((prev: MatrixEngineState) => ({ ...prev, state: 'paused', isPaused: true }));
         events?.onPause?.();
       },
       onResume: () => {
-        setState(prev => ({ ...prev, state: 'running', isPaused: false }));
+        setState((prev: MatrixEngineState) => ({ ...prev, state: 'running', isPaused: false }));
         events?.onResume?.();
       },
       onError: (error) => {
@@ -167,10 +167,10 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
       
       if (document.hidden && currentState.state === 'running') {
         engine.pause();
-        setState(prev => ({ ...prev, isVisible: false }));
+        setState((prev: MatrixEngineState) => ({ ...prev, isVisible: false }));
       } else if (!document.hidden && currentState.isPaused && currentState.isVisible !== false) {
         engine.resume();
-        setState(prev => ({ ...prev, isVisible: true }));
+        setState((prev: MatrixEngineState) => ({ ...prev, isVisible: true }));
       }
     };
     
@@ -194,7 +194,7 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
       const engine = engineRef.current;
       if (engine) {
         const engineState = engine.getState();
-        setState(prev => {
+        setState((prev: MatrixEngineState) => {
           // Only update if metrics actually changed
           if (prev.metrics.fps === engineState.metrics.fps &&
               prev.metrics.activeColumns === engineState.metrics.activeColumns) {
@@ -270,7 +270,7 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
     } else {
       engineRef.current?.setTheme(theme);
     }
-    setState(prev => ({
+    setState((prev: MatrixEngineState) => ({
       ...prev,
       theme: typeof theme === 'string' ? getTheme(theme) : theme,
     }));
@@ -347,7 +347,7 @@ export function useMatrixPerformance(engineState: MatrixEngineState) {
       fpsHistory.current.shift();
     }
     
-    const avg = fpsHistory.current.reduce((a, b) => a + b, 0) / fpsHistory.current.length;
+    const avg = fpsHistory.current.reduce((a: number, b: number) => a + b, 0) / fpsHistory.current.length;
     setAvgFps(Math.round(avg));
   }, [engineState.metrics.fps]);
   

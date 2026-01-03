@@ -3,7 +3,8 @@
  * Only logs in development mode to prevent sensitive data leakage
  */
 
-const isDev = import.meta.env.DEV;
+// Vite provides import.meta.env.DEV - fallback to false for SSR/test environments
+const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV === true;
 
 interface Logger {
   debug: (...args: unknown[]) => void;

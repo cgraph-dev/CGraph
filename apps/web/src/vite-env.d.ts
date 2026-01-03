@@ -5,6 +5,10 @@ interface ImportMetaEnv {
   readonly VITE_WS_URL: string
   readonly VITE_SOCKET_URL: string
   readonly VITE_WALLETCONNECT_PROJECT_ID: string
+  readonly DEV: boolean
+  readonly PROD: boolean
+  readonly MODE: string
+  readonly SSR: boolean
 }
 
 interface ImportMeta {

@@ -1371,6 +1371,57 @@ function SecuritySettings() {
 }
 ```
 
+### Account Settings Integration
+
+The biometric lock feature is fully integrated into the Account Settings screen with real-time status detection:
+
+```tsx
+// screens/settings/AccountScreen.tsx
+import { getBiometricStatus, getBiometricName, setBiometricLockEnabled } from '../../lib/biometrics';
+
+export default function AccountScreen() {
+  const [biometricStatus, setBiometricStatus] = useState<BiometricStatus | null>(null);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  
+  useEffect(() => {
+    const loadStatus = async () => {
+      const status = await getBiometricStatus();
+      setBiometricStatus(status);
+      if (status.isAvailable && status.isEnrolled) {
+        const enabled = await isBiometricLockEnabled();
+        setBiometricEnabled(enabled);
+      }
+    };
+    loadStatus();
+  }, []);
+  
+  const handleToggle = async (value: boolean) => {
+    const success = await setBiometricLockEnabled(value);
+    if (success) {
+      setBiometricEnabled(value);
+    }
+  };
+  
+  return (
+    <View>
+      {biometricStatus?.isAvailable && (
+        <View style={styles.settingsRow}>
+          <Ionicons 
+            name={biometricStatus.biometricType === 'facial' ? 'scan-outline' : 'finger-print-outline'} 
+          />
+          <Text>{getBiometricName(biometricStatus.biometricType)}</Text>
+          <Switch 
+            value={biometricEnabled} 
+            onValueChange={handleToggle}
+            disabled={!biometricStatus.isEnrolled}
+          />
+        </View>
+      )}
+    </View>
+  );
+}
+```
+
 ---
 
 ## Testing
