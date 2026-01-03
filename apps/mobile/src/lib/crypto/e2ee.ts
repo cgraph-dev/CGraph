@@ -13,6 +13,24 @@
 import * as SecureStore from 'expo-secure-store';
 import { Buffer } from 'buffer';
 
+// Type declarations for React Native global crypto
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+declare const global: Record<string, any>;
+
+// TextEncoder/TextDecoder for React Native
+const textEncoder = {
+  encode: (str: string): Uint8Array => {
+    const buf = Buffer.from(str, 'utf8');
+    return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+  },
+};
+
+const textDecoder = {
+  decode: (bytes: Uint8Array): string => {
+    return Buffer.from(bytes).toString('utf8');
+  },
+};
+
 // Crypto primitives using native crypto API (React Native compatible)
 // For production, use react-native-quick-crypto or expo-crypto
 
@@ -391,7 +409,7 @@ export async function x3dhInitiate(
   
   // Derive shared secret using HKDF
   const salt = new Uint8Array(32); // Zero salt
-  const info = new TextEncoder().encode('CGraph E2EE v1');
+  const info = textEncoder.encode('CGraph E2EE v1');
   
   let sharedSecret: Uint8Array;
   try {
@@ -415,8 +433,7 @@ export async function encryptMessage(
   key: Uint8Array
 ): Promise<{ ciphertext: Uint8Array; nonce: Uint8Array }> {
   const nonce = randomBytes(12); // GCM nonce is 12 bytes
-  const encoder = new TextEncoder();
-  const plaintextBytes = encoder.encode(plaintext);
+  const plaintextBytes = textEncoder.encode(plaintext);
   
   if (typeof global.crypto?.subtle?.encrypt === 'function') {
     const cryptoKey = await global.crypto.subtle.importKey(
@@ -465,8 +482,7 @@ export async function decryptMessage(
       ciphertext
     );
     
-    const decoder = new TextDecoder();
-    return decoder.decode(plaintextBuffer);
+    return textDecoder.decode(new Uint8Array(plaintextBuffer));
   }
   
   throw new Error('AES-GCM decryption not available');
@@ -512,8 +528,8 @@ export async function generateSafetyNumber(
   theirUserId: string
 ): Promise<string> {
   // Combine identities in deterministic order
-  const ourPart = new TextEncoder().encode(ourUserId);
-  const theirPart = new TextEncoder().encode(theirUserId);
+  const ourPart = textEncoder.encode(ourUserId);
+  const theirPart = textEncoder.encode(theirUserId);
   
   let combined: Uint8Array;
   if (ourUserId < theirUserId) {
@@ -528,7 +544,9 @@ export async function generateSafetyNumber(
   // Convert to numeric representation (5 digits per 2 bytes)
   const digits: string[] = [];
   for (let i = 0; i < 12; i++) {
-    const value = (hash[i * 2] << 8) | hash[i * 2 + 1];
+    const highByte = hash[i * 2] ?? 0;
+    const lowByte = hash[i * 2 + 1] ?? 0;
+    const value = (highByte << 8) | lowByte;
     digits.push(value.toString().padStart(5, '0'));
   }
   
@@ -624,4 +642,6 @@ export default {
   getSession,
   saveSession,
   getDeviceId,
+  sha256,
+  generatePreKeyPair,
 };

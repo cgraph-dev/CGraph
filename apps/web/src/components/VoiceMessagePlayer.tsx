@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Play, Pause, Download } from 'lucide-react';
+import { PlayIcon, PauseIcon, ArrowDownTrayIcon } from '@heroicons/react/24/solid';
 import { Waveform, generatePlaceholderWaveform } from './Waveform';
 import { api } from '@/lib/api';
 
@@ -148,9 +148,9 @@ export function VoiceMessagePlayer({
         aria-label={isPlaying ? 'Pause' : 'Play'}
       >
         {isPlaying ? (
-          <Pause size={18} />
+          <PauseIcon className="h-5 w-5" />
         ) : (
-          <Play size={18} className="ml-0.5" />
+          <PlayIcon className="h-5 w-5 ml-0.5" />
         )}
       </button>
 
@@ -178,7 +178,7 @@ export function VoiceMessagePlayer({
           className="flex-shrink-0 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
           aria-label="Download voice message"
         >
-          <Download size={18} />
+          <ArrowDownTrayIcon className="h-5 w-5" />
         </button>
       )}
     </div>

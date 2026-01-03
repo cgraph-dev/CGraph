@@ -1,7 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Mic, Square, Trash2, Send, Loader2 } from 'lucide-react';
+import {
+  MicrophoneIcon,
+  StopIcon,
+  TrashIcon,
+  PaperAirplaneIcon,
+  ArrowPathIcon,
+} from '@heroicons/react/24/solid';
 import { Waveform, generatePlaceholderWaveform } from './Waveform';
-import { api } from '@/lib/api';
 
 interface VoiceMessageRecorderProps {
   /** Callback when recording is complete and ready to send */
@@ -223,7 +228,7 @@ export function VoiceMessageRecorder({
           className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
           aria-label="Record voice message"
         >
-          <Mic size={20} />
+          <MicrophoneIcon className="h-5 w-5" />
           <span className="text-sm">Voice message</span>
         </button>
         {error && (
@@ -257,7 +262,7 @@ export function VoiceMessageRecorder({
           className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
           aria-label="Stop recording"
         >
-          <Square size={16} />
+          <StopIcon className="h-4 w-4" />
         </button>
 
         <button
@@ -265,7 +270,7 @@ export function VoiceMessageRecorder({
           className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
           aria-label="Cancel recording"
         >
-          <Trash2 size={18} />
+          <TrashIcon className="h-5 w-5" />
         </button>
       </div>
     );
@@ -290,7 +295,7 @@ export function VoiceMessageRecorder({
           className="p-2 text-gray-500 hover:text-red-500 transition-colors"
           aria-label="Delete recording"
         >
-          <Trash2 size={18} />
+          <TrashIcon className="h-5 w-5" />
         </button>
 
         <button
@@ -298,7 +303,7 @@ export function VoiceMessageRecorder({
           className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-colors"
           aria-label="Send voice message"
         >
-          <Send size={16} />
+          <PaperAirplaneIcon className="h-4 w-4" />
         </button>
       </div>
     );
@@ -307,7 +312,7 @@ export function VoiceMessageRecorder({
   // Uploading state
   return (
     <div className={`flex items-center justify-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg ${className}`}>
-      <Loader2 size={18} className="animate-spin" />
+      <ArrowPathIcon className="h-5 w-5 animate-spin" />
       <span className="text-sm text-gray-600 dark:text-gray-400">Sending...</span>
     </div>
   );

@@ -188,7 +188,7 @@ export function E2EEProvider({ children }: E2EEProviderProps) {
    * Decrypt a received message
    */
   const decryptMessage = useCallback(async (
-    senderId: string,
+    _senderId: string,
     encryptedMessage: EncryptedMessage
   ): Promise<string> => {
     if (!isInitialized) {
