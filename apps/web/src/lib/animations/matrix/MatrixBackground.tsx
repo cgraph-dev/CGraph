@@ -268,16 +268,18 @@ export const MatrixBackground = memo(forwardRef<MatrixBackgroundRef, MatrixBackg
  * Optimized for login/register pages with subtle effect
  */
 export const MatrixAuthBackground = memo(function MatrixAuthBackground(
-  props: Omit<MatrixBackgroundProps, 'intensity' | 'opacity'>
+  props: Omit<MatrixBackgroundProps, 'intensity'> & { opacity?: number }
 ) {
+  const { zIndex = -10, opacity = 0.5, ...rest } = props;
+  
   return (
     <MatrixBackground
-      {...props}
+      {...rest}
       intensity="low"
-      opacity={0.4}
-      theme={props.theme || 'matrix-green'}
+      opacity={opacity}
+      theme={rest.theme || 'matrix-green'}
       fullscreen
-      zIndex={-10}
+      zIndex={zIndex}
     />
   );
 });

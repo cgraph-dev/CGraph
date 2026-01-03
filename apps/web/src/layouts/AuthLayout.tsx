@@ -8,15 +8,18 @@ interface AuthLayoutProps {
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   return (
-    <div className="min-h-screen bg-dark-900 flex relative overflow-hidden">
-      {/* Matrix Background Effect */}
+    <div className="min-h-screen flex relative overflow-hidden bg-dark-950">
+      {/* Matrix Background Effect - renders behind everything */}
       <MatrixAuthBackground 
         theme="matrix-green"
-        zIndex={0}
+        opacity={0.6}
       />
       
+      {/* Dark overlay for content readability */}
+      <div className="absolute inset-0 bg-gradient-to-br from-dark-900/70 via-dark-900/80 to-dark-950/90 z-[1]" />
+      
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600/90 to-primary-800/90 backdrop-blur-sm p-12 flex-col justify-between relative z-10">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600/80 to-primary-800/80 backdrop-blur-sm p-12 flex-col justify-between relative z-10">
         <div>
           <Link to="/" className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
