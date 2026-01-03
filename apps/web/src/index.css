@@ -174,6 +174,121 @@
     animation: pulseSubtle 2s ease-in-out infinite;
   }
 
+  /* Matrix-themed auth animations */
+  .matrix-input {
+    @apply transition-all duration-300 ease-out;
+    background: linear-gradient(135deg, rgba(17, 24, 39, 0.9) 0%, rgba(5, 46, 22, 0.2) 100%);
+  }
+
+  .matrix-input:focus {
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3), 
+                0 0 20px rgba(16, 185, 129, 0.15),
+                inset 0 0 10px rgba(16, 185, 129, 0.05);
+  }
+
+  .matrix-button {
+    @apply relative overflow-hidden;
+    background: linear-gradient(135deg, #059669 0%, #047857 50%, #065f46 100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .matrix-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease-out;
+  }
+
+  .matrix-button:hover::before {
+    left: 100%;
+  }
+
+  .matrix-button:hover {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.4), 
+                0 0 40px rgba(16, 185, 129, 0.2),
+                0 4px 15px rgba(0, 0, 0, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .matrix-button:active {
+    transform: translateY(0);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+  }
+
+  .matrix-card {
+    background: linear-gradient(145deg, rgba(17, 24, 39, 0.95) 0%, rgba(5, 46, 22, 0.15) 100%);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5),
+                inset 0 0 60px rgba(16, 185, 129, 0.03);
+  }
+
+  .matrix-card:hover {
+    border-color: rgba(16, 185, 129, 0.35);
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5),
+                0 0 20px rgba(16, 185, 129, 0.1),
+                inset 0 0 60px rgba(16, 185, 129, 0.05);
+  }
+
+  .matrix-glow {
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.5),
+                 0 0 20px rgba(16, 185, 129, 0.3),
+                 0 0 30px rgba(16, 185, 129, 0.2);
+  }
+
+  .matrix-link {
+    @apply text-primary-400 transition-all duration-200;
+  }
+
+  .matrix-link:hover {
+    @apply text-primary-300;
+    text-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  }
+
+  /* Staggered form field animations */
+  .form-field-animate {
+    opacity: 0;
+    transform: translateY(15px);
+    animation: formFieldIn 0.4s ease-out forwards;
+  }
+
+  .form-field-animate:nth-child(1) { animation-delay: 0.1s; }
+  .form-field-animate:nth-child(2) { animation-delay: 0.2s; }
+  .form-field-animate:nth-child(3) { animation-delay: 0.3s; }
+  .form-field-animate:nth-child(4) { animation-delay: 0.4s; }
+  .form-field-animate:nth-child(5) { animation-delay: 0.5s; }
+  .form-field-animate:nth-child(6) { animation-delay: 0.6s; }
+
+  @keyframes formFieldIn {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* OAuth button matrix styling */
+  .oauth-button-matrix {
+    @apply relative transition-all duration-300;
+    border: 1px solid rgba(55, 65, 81, 0.5);
+  }
+
+  .oauth-button-matrix:hover {
+    border-color: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .oauth-button-matrix:active {
+    transform: translateY(0);
+  }
+
   @keyframes slideIn {
     from {
       transform: translateX(100%);

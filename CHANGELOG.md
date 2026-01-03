@@ -11,6 +11,55 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.2] - 2026-01-03
+
+### Matrix Theme UI Enhancement
+
+Major visual overhaul of the authentication interface with matrix-inspired green color scheme and enhanced animations to better integrate with the cipher background effect.
+
+### Changed
+
+#### UI/UX Improvements
+- **Matrix Color Scheme** - Migrated primary colors from blue (#3b82f6) to matrix green (#10b981) for consistent theming with cipher background
+- **Auth Form Animations** - Implemented staggered form field animations with smooth fade-in transitions
+- **Input Focus Effects** - Added custom glow effects on form inputs with matrix-themed shadows
+- **Button Hover States** - Enhanced CTA buttons with shine animation and matrix glow on hover
+- **Card Styling** - Auth cards now feature subtle green gradient borders and improved glassmorphism
+
+#### Component Updates
+- **Login.tsx** - Complete styling refresh with matrix theme, staggered animations, improved error display
+- **Register.tsx** - Matching matrix theme with enhanced form validation visual feedback
+- **AuthLayout.tsx** - Updated branding panel with animated grid overlay and feature card hover effects
+- **OAuthButtonGroup** - Added matrix-themed hover states for social login buttons
+
+#### Tailwind Configuration
+- **Matrix Color Palette** - New `matrix` color scale with glow, dim, and bright variants
+- **Animation Keyframes** - Added `glowGreen`, `glowPulse`, `matrixFlicker`, `borderGlow`, `float` keyframes
+- **Shadow Utilities** - New `shadow-matrix`, `shadow-matrix-intense` for phosphor glow effects
+- **Form Animations** - `.form-field-animate` class for staggered field entrance animations
+
+#### Build System
+- **Turbo v2 Migration** - Updated `turbo.json` from deprecated `pipeline` field to `tasks` field
+
+### Fixed
+
+#### Authentication
+- **Registration API Format** - Verified registration endpoint correctly wraps params in `{user: {...}}` object
+- **Login Flow** - Confirmed login endpoint accepts flat params and returns proper token structure
+- **CORS Configuration** - Verified cross-origin requests from dev server to API work correctly
+
+### Technical Details
+
+New CSS utility classes added:
+- `.matrix-input` - Styled input with green gradient background and glow focus state
+- `.matrix-button` - Primary button with shine animation and glow hover effect
+- `.matrix-card` - Card with green-tinted gradient border and inner glow
+- `.matrix-glow` - Text shadow effect for headings
+- `.matrix-link` - Link styling with hover glow effect
+- `.form-field-animate` - Staggered entrance animation for form elements
+
+---
+
 ## [0.7.1] - 2026-01-03
 
 ### Mobile Development Environment Fix

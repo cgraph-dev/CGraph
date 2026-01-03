@@ -2,7 +2,7 @@
 
 > Building beautiful, fast, and accessible user interfaces with React.
 
-This guide covers the CGraph web application—a React 18 app built with Vite, TypeScript, and TailwindCSS. Whether you're fixing a bug or building a new feature, you'll find everything you need here.
+This guide covers the CGraph web application—a React 19 app built with Vite, TypeScript, and TailwindCSS. Whether you're fixing a bug or building a new feature, you'll find everything you need here.
 
 ---
 
@@ -30,17 +30,17 @@ This guide covers the CGraph web application—a React 18 app built with Vite, T
 
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| **React** | 18.2 | UI framework |
-| **TypeScript** | 5.x | Type safety |
-| **Vite** | 5.x | Build tool / dev server |
+| **React** | 19.1 | UI framework |
+| **TypeScript** | 5.9 | Type safety |
+| **Vite** | 6.3 | Build tool / dev server |
 | **TailwindCSS** | 3.4 | Utility-first styling |
-| **Zustand** | 4.5 | Global state management |
+| **Zustand** | 5.x | Global state management |
 | **React Query** | 5.x | Server state / caching |
-| **React Router** | 6.22 | Client-side routing |
+| **React Router** | 7.x | Client-side routing |
 | **Phoenix Channels** | 1.7 | WebSocket real-time |
 | **Wagmi/Viem** | 2.x | Web3 wallet integration |
 | **Radix UI** | Latest | Accessible components |
-| **Framer Motion** | 11.x | Animations |
+| **Framer Motion** | 12.x | Animations |
 
 ---
 
@@ -1712,6 +1712,66 @@ function UserSearch() {
   );
 }
 ```
+
+---
+
+## Matrix Theme System
+
+The authentication pages use a custom Matrix-inspired theme that creates a cohesive visual experience with the cipher rain background.
+
+### Color Palette
+
+```javascript
+// tailwind.config.js
+primary: {
+  500: '#10b981',  // Main matrix green
+  600: '#059669',  // Darker variant
+  700: '#047857',  // Button backgrounds
+},
+matrix: {
+  glow: '#00ff41',     // Phosphor glow
+  dim: '#003b00',      // Dark green
+  bright: '#39ff14',   // Neon green
+}
+```
+
+### CSS Utility Classes
+
+| Class | Usage |
+|-------|-------|
+| `.matrix-input` | Form inputs with green gradient and glow focus |
+| `.matrix-button` | Primary buttons with shine animation |
+| `.matrix-card` | Cards with green-tinted borders |
+| `.matrix-glow` | Text shadow for headings |
+| `.matrix-link` | Links with hover glow effect |
+| `.form-field-animate` | Staggered entrance animation |
+
+### Usage Examples
+
+```tsx
+// Matrix-styled input
+<input className="matrix-input w-full px-4 py-3 rounded-lg" />
+
+// Matrix-styled button
+<button className="matrix-button w-full py-3 px-4 rounded-lg">
+  Submit
+</button>
+
+// Staggered form animation
+<form className="space-y-6">
+  <div className="form-field-animate">Field 1</div>
+  <div className="form-field-animate">Field 2</div>
+  <div className="form-field-animate">Field 3</div>
+</form>
+```
+
+### Animation Keyframes
+
+- `glowGreen` - Pulsing green glow effect
+- `glowPulse` - Subtle inner/outer glow cycle
+- `matrixFlicker` - Screen flicker effect
+- `borderGlow` - Animated border color transition
+- `formFieldIn` - Staggered slide-up entrance
 
 ---
 

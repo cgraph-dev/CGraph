@@ -8,14 +8,15 @@
 
 1. [Design System Overview](#design-system-overview)
 2. [Theming with TailwindCSS](#theming-with-tailwindcss)
-3. [Component Architecture](#component-architecture)
-4. [Modifying Existing Components](#modifying-existing-components)
-5. [Creating New Components](#creating-new-components)
-6. [Mobile UI (React Native)](#mobile-ui-react-native)
-7. [Dark Mode & Themes](#dark-mode--themes)
-8. [Responsive Design](#responsive-design)
-9. [Animations & Transitions](#animations--transitions)
-10. [Accessibility (a11y)](#accessibility-a11y)
+3. [Matrix Theme System](#matrix-theme-system)
+4. [Component Architecture](#component-architecture)
+5. [Modifying Existing Components](#modifying-existing-components)
+6. [Creating New Components](#creating-new-components)
+7. [Mobile UI (React Native)](#mobile-ui-react-native)
+8. [Dark Mode & Themes](#dark-mode--themes)
+9. [Responsive Design](#responsive-design)
+10. [Animations & Transitions](#animations--transitions)
+11. [Accessibility (a11y)](#accessibility-a11y)
 
 ---
 
@@ -27,7 +28,7 @@ CGraph follows a consistent design language across web and mobile:
 
 | Token | Web (TailwindCSS) | Mobile (React Native) |
 |-------|-------------------|----------------------|
-| Primary Color | `bg-indigo-600` | `#4F46E5` |
+| Primary Color | `bg-primary-600` | `#059669` (Matrix Green) |
 | Secondary | `bg-gray-600` | `#4B5563` |
 | Success | `bg-green-600` | `#059669` |
 | Warning | `bg-yellow-500` | `#EAB308` |
@@ -36,6 +37,7 @@ CGraph follows a consistent design language across web and mobile:
 | Background (Dark) | `bg-gray-900` | `#111827` |
 | Text (Light mode) | `text-gray-900` | `#111827` |
 | Text (Dark mode) | `text-gray-100` | `#F3F4F6` |
+| Matrix Glow | `shadow-glow-md` | `#00ff41` |
 
 ### Typography Scale
 
@@ -182,6 +184,92 @@ Then update component usage from `indigo-*` to `brand-*`:
 
 // After (theme-aware)
 <button className="bg-brand-600 hover:bg-brand-700">
+```
+
+---
+
+## Matrix Theme System
+
+CGraph uses a Matrix-inspired green theme for authentication pages that integrates with the cipher rain background effect.
+
+### Color Palette
+
+```javascript
+// apps/web/tailwind.config.js
+colors: {
+  primary: {
+    50: '#ecfdf5',
+    100: '#d1fae5',
+    200: '#a7f3d0',
+    300: '#6ee7b7',
+    400: '#34d399',
+    500: '#10b981',  // Main matrix green
+    600: '#059669',
+    700: '#047857',
+    800: '#065f46',
+    900: '#064e3b',
+  },
+  matrix: {
+    glow: '#00ff41',      // Phosphor screen glow
+    dim: '#003b00',       // Dark terminal green
+    bright: '#39ff14',    // Neon highlight
+  },
+}
+```
+
+### Matrix CSS Classes
+
+| Class | Purpose | Usage |
+|-------|---------|-------|
+| `.matrix-input` | Form inputs with gradient background and glow focus | Text inputs, password fields |
+| `.matrix-button` | Primary CTA with shine animation | Submit buttons |
+| `.matrix-card` | Card with green-tinted border and inner glow | Auth containers |
+| `.matrix-glow` | Text shadow for headings | Titles, branding |
+| `.matrix-link` | Links with hover glow effect | Navigation, inline links |
+| `.form-field-animate` | Staggered entrance animation | Form fields |
+| `.oauth-button-matrix` | OAuth buttons with hover glow | Social login |
+
+### Form Animation Example
+
+```tsx
+// Staggered form field animations
+<form className="space-y-6">
+  <div className="form-field-animate">
+    <label>Email</label>
+    <input className="matrix-input" type="email" />
+  </div>
+  <div className="form-field-animate">
+    <label>Password</label>
+    <input className="matrix-input" type="password" />
+  </div>
+  <button className="matrix-button form-field-animate">
+    Sign In
+  </button>
+</form>
+```
+
+### Available Animations
+
+```javascript
+animation: {
+  'glow': 'glowGreen 2s ease-in-out infinite alternate',
+  'glow-pulse': 'glowPulse 3s ease-in-out infinite',
+  'matrix-flicker': 'matrixFlicker 0.15s ease-in-out infinite',
+  'border-glow': 'borderGlow 2s ease-in-out infinite alternate',
+  'float': 'float 6s ease-in-out infinite',
+}
+```
+
+### Shadow Utilities
+
+```javascript
+boxShadow: {
+  'glow-sm': '0 0 10px rgba(16, 185, 129, 0.3)',
+  'glow-md': '0 0 20px rgba(16, 185, 129, 0.4)',
+  'glow-lg': '0 0 30px rgba(16, 185, 129, 0.5)',
+  'matrix': '0 0 15px rgba(0, 255, 65, 0.3), inset 0 0 10px rgba(0, 255, 65, 0.1)',
+  'matrix-intense': '0 0 30px rgba(0, 255, 65, 0.5), 0 0 60px rgba(0, 255, 65, 0.2)',
+}
 ```
 
 ---
