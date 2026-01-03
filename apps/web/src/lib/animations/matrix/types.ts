@@ -184,6 +184,12 @@ export interface MatrixCharacter {
   changeTimer: number;
   /** Scale factor for size variation */
   scale: number;
+  /** Cipher morph animation phase (0 = stable, >0 = morphing) */
+  morphPhase: number;
+  /** Target character for morph animation */
+  morphTarget: string;
+  /** Whether currently encrypting (true) or decrypting (false) */
+  isEncrypting: boolean;
 }
 
 /**

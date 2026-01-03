@@ -1,8 +1,8 @@
 /**
  * Matrix Animation System - Engine Tests
  * 
- * @description Tests for the core animation engine
- * @version 1.0.0
+ * @description Tests for the core animation engine (v2.0.0 with atlas)
+ * @version 2.0.0
  * @since v0.6.3
  */
 
@@ -43,6 +43,19 @@ class MockResizeObserver {
   disconnect = vi.fn();
 }
 
+// Mock OffscreenCanvas for atlas
+class MockOffscreenCanvas {
+  width: number;
+  height: number;
+  
+  constructor(width: number, height: number) {
+    this.width = width;
+    this.height = height;
+  }
+  
+  getContext = () => createMockContext();
+}
+
 // Setup globals before all tests
 beforeAll(() => {
   (global as any).window = mockWindow;
@@ -50,6 +63,7 @@ beforeAll(() => {
   (global as any).requestAnimationFrame = mockWindow.requestAnimationFrame;
   (global as any).cancelAnimationFrame = mockWindow.cancelAnimationFrame;
   (global as any).ResizeObserver = MockResizeObserver;
+  (global as any).OffscreenCanvas = MockOffscreenCanvas;
 });
 
 afterAll(() => {
@@ -58,48 +72,54 @@ afterAll(() => {
   delete (global as any).requestAnimationFrame;
   delete (global as any).cancelAnimationFrame;
   delete (global as any).ResizeObserver;
+  delete (global as any).OffscreenCanvas;
 });
 
 // =============================================================================
 // MOCK CANVAS
 // =============================================================================
 
+/**
+ * Create standalone mock context for OffscreenCanvas
+ */
+const createMockContext = () => ({
+  fillStyle: '',
+  font: '',
+  textBaseline: 'top',
+  globalAlpha: 1,
+  shadowBlur: 0,
+  shadowColor: '',
+  textAlign: 'start',
+  fillRect: vi.fn(),
+  fillText: vi.fn(),
+  clearRect: vi.fn(),
+  save: vi.fn(),
+  restore: vi.fn(),
+  setTransform: vi.fn(),
+  scale: vi.fn(),
+  translate: vi.fn(),
+  rotate: vi.fn(),
+  createLinearGradient: vi.fn(() => ({
+    addColorStop: vi.fn(),
+  })),
+  createRadialGradient: vi.fn(() => ({
+    addColorStop: vi.fn(),
+  })),
+  beginPath: vi.fn(),
+  arc: vi.fn(),
+  fill: vi.fn(),
+  stroke: vi.fn(),
+  clip: vi.fn(),
+  rect: vi.fn(),
+  closePath: vi.fn(),
+  measureText: vi.fn(() => ({ width: 10 })),
+  drawImage: vi.fn(),
+  getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(4) })),
+  putImageData: vi.fn(),
+});
+
 const createMockCanvas = () => {
-  const ctx = {
-    fillStyle: '',
-    font: '',
-    textBaseline: 'top',
-    globalAlpha: 1,
-    shadowBlur: 0,
-    shadowColor: '',
-    textAlign: 'start',
-    fillRect: vi.fn(),
-    fillText: vi.fn(),
-    clearRect: vi.fn(),
-    save: vi.fn(),
-    restore: vi.fn(),
-    setTransform: vi.fn(),
-    scale: vi.fn(),
-    translate: vi.fn(),
-    rotate: vi.fn(),
-    createLinearGradient: vi.fn(() => ({
-      addColorStop: vi.fn(),
-    })),
-    createRadialGradient: vi.fn(() => ({
-      addColorStop: vi.fn(),
-    })),
-    beginPath: vi.fn(),
-    arc: vi.fn(),
-    fill: vi.fn(),
-    stroke: vi.fn(),
-    clip: vi.fn(),
-    rect: vi.fn(),
-    closePath: vi.fn(),
-    measureText: vi.fn(() => ({ width: 10 })),
-    drawImage: vi.fn(),
-    getImageData: vi.fn(() => ({ data: new Uint8ClampedArray(4) })),
-    putImageData: vi.fn(),
-  };
+  const ctx = createMockContext();
 
   const canvas = {
     width: 800,

@@ -32,50 +32,50 @@ export type DeepPartial<T> = {
 
 /**
  * Default performance settings
- * Optimized for smooth 60fps on modern devices
+ * Optimized for smooth 60fps on modern devices with adaptive quality
  */
 export const DEFAULT_PERFORMANCE: PerformanceConfig = {
   targetFPS: 60,
-  maxColumns: 100,
+  maxColumns: 180,           // Increased for denser effect
   useWebGL: false, // Canvas 2D is more reliable
   useOffscreenCanvas: false,
   adaptiveQuality: true,
   allowFrameSkip: true,
-  maxFrameSkip: 3,
+  maxFrameSkip: 2,           // Less aggressive frame skipping
   throttleOnBlur: true,
-  throttledFPS: 10,
+  throttledFPS: 15,          // Slightly higher when throttled
 };
 
 /**
  * Default character settings
- * Classic Matrix-style Katakana with periodic changes
+ * Classic Matrix-style Katakana with faster periodic changes for cipher effect
  */
 export const DEFAULT_CHARACTERS: CharacterSetConfig = {
   type: 'katakana',
   includeNumbers: true,
   includeSymbols: false,
-  changeFrequency: 0.05,
-  minChangeInterval: 3,
-  maxChangeInterval: 15,
+  changeFrequency: 0.12,     // Higher for more active cipher morphing
+  minChangeInterval: 2,      // Faster cycling
+  maxChangeInterval: 8,      // Faster max interval
 };
 
 /**
  * Default column behavior
- * Fast-falling columns for authentic Matrix rain effect
+ * Fast-falling columns for authentic Matrix rain effect with higher density
  */
 export const DEFAULT_COLUMNS: ColumnConfig = {
-  minSpeed: 4,               // Faster minimum
-  maxSpeed: 12,              // Faster maximum
-  minLength: 8,
-  maxLength: 28,
-  density: 0.75,
-  spacing: 16,               // Balanced spacing
+  minSpeed: 6,               // Faster minimum
+  maxSpeed: 18,              // Much faster maximum
+  minLength: 10,             // Longer minimum trails
+  maxLength: 35,             // Longer maximum trails
+  density: 0.85,             // Higher density
+  spacing: 14,               // Tighter spacing for more columns
   randomizeStart: true,
   staggerStart: true,
-  staggerDelay: 30,          // Faster stagger
-  respawnRate: 0.05,         // More frequent respawns
+  staggerDelay: 20,          // Faster stagger
+  respawnRate: 0.08,         // More frequent respawns
   minRespawnDelay: 0,
-  maxRespawnDelay: 80,       // Faster respawn
+  maxRespawnDelay: 40,       // Much faster respawn
 };
 
 /**
@@ -84,19 +84,19 @@ export const DEFAULT_COLUMNS: ColumnConfig = {
  */
 export const DEFAULT_EFFECTS: EffectsConfig = {
   enableDepth: true,
-  depthLayers: 3,
-  trailFade: 0.88,           // Slightly faster fade for cleaner trails
-  backgroundFade: 0.04,      // Subtle background fade
+  depthLayers: 4,            // More depth layers
+  trailFade: 0.92,           // Longer trails
+  backgroundFade: 0.035,     // Subtle background fade
   enableBloom: true,
-  bloomIntensity: 0.7,       // Increased bloom
+  bloomIntensity: 0.8,       // Strong bloom
   enableScanlines: false,
   scanlineOpacity: 0.03,
   enableCRTEffect: false,
   crtStrength: 0.1,
   enableVignette: true,
-  vignetteIntensity: 0.25,   // Slightly reduced for clearer view
+  vignetteIntensity: 0.22,
   blendMode: 'source-over',
-  speedMultiplier: 1,
+  speedMultiplier: 1.2,      // Global speed boost
 };
 
 /**
@@ -117,7 +117,7 @@ export const DEFAULT_FONT: FontConfig = {
  * Complete default configuration
  */
 export const DEFAULT_CONFIG: MatrixConfig = {
-  version: '1.0.0',
+  version: '2.0.0',
   name: 'default',
   theme: MATRIX_GREEN,
   performance: DEFAULT_PERFORMANCE,
@@ -128,47 +128,51 @@ export const DEFAULT_CONFIG: MatrixConfig = {
   responsive: {
     mobile: {
       performance: {
-        targetFPS: 40,         // Smooth on mobile
-        maxColumns: 35,
+        targetFPS: 50,         // Higher FPS for smoother mobile
+        maxColumns: 60,        // More columns on mobile
       },
       columns: {
-        density: 0.55,
-        spacing: 20,
-        minSpeed: 4,
-        maxSpeed: 11,
+        density: 0.7,
+        spacing: 16,
+        minSpeed: 5,
+        maxSpeed: 14,
+        minLength: 8,
+        maxLength: 25,
       },
       effects: {
-        depthLayers: 1,        // Single layer for performance
+        depthLayers: 2,        // Reduced layers for performance
         enableBloom: true,     // Keep glow!
-        bloomIntensity: 0.6,
-        enableVignette: false,
+        bloomIntensity: 0.7,
+        enableVignette: true,
+        speedMultiplier: 1.1,
+      },
+      font: {
+        baseSize: 12,
+      },
+    },
+    tablet: {
+      performance: {
+        targetFPS: 55,
+        maxColumns: 100,
+      },
+      columns: {
+        density: 0.75,
+        spacing: 15,
+        minSpeed: 6,
+        maxSpeed: 16,
+      },
+      effects: {
+        depthLayers: 3,
+        enableBloom: true,
+        bloomIntensity: 0.75,
+        speedMultiplier: 1.15,
       },
       font: {
         baseSize: 13,
       },
     },
-    tablet: {
-      performance: {
-        targetFPS: 50,
-        maxColumns: 60,
-      },
-      columns: {
-        density: 0.65,
-        spacing: 18,
-        minSpeed: 5,
-        maxSpeed: 12,
-      },
-      effects: {
-        depthLayers: 2,
-        enableBloom: true,
-        bloomIntensity: 0.7,
-      },
-      font: {
-        baseSize: 14,
-      },
-    },
     desktop: {
-      // Uses default configuration
+      // Uses default configuration - maximum quality
     },
   },
   debug: {
@@ -191,59 +195,62 @@ export const PRESET_HIGH_QUALITY: Partial<MatrixConfig> = {
   performance: {
     ...DEFAULT_PERFORMANCE,
     targetFPS: 60,
-    maxColumns: 150,
+    maxColumns: 220,         // Even more columns
     adaptiveQuality: false,
   },
   columns: {
     ...DEFAULT_COLUMNS,
-    density: 0.85,
-    spacing: 14,
+    density: 0.95,
+    spacing: 12,
+    minSpeed: 7,
+    maxSpeed: 20,
   },
   effects: {
     ...DEFAULT_EFFECTS,
-    depthLayers: 4,
+    depthLayers: 5,
     enableBloom: true,
-    bloomIntensity: 0.7,
+    bloomIntensity: 0.85,
     enableVignette: true,
-    vignetteIntensity: 0.4,
+    vignetteIntensity: 0.35,
     enableScanlines: true,
     scanlineOpacity: 0.02,
+    speedMultiplier: 1.3,
   },
   font: {
     ...DEFAULT_FONT,
-    baseSize: 14,
+    baseSize: 13,
     sizeVariation: true,
   },
 };
 
 /**
- * Low power preset - Optimized for auth pages with smooth animation
+ * Power saver preset - Optimized for auth pages with smooth animation
  * Balances visual quality with performance for all devices
  */
 export const PRESET_POWER_SAVER: Partial<MatrixConfig> = {
   name: 'power-saver',
   performance: {
     ...DEFAULT_PERFORMANCE,
-    targetFPS: 45,            // Smooth animation (was 30)
-    maxColumns: 50,           // More columns
+    targetFPS: 50,            // Higher for smoother animation
+    maxColumns: 80,           // More columns
     adaptiveQuality: true,
     throttleOnBlur: true,
-    throttledFPS: 10,
+    throttledFPS: 15,
   },
   columns: {
     ...DEFAULT_COLUMNS,
-    density: 0.6,
-    spacing: 18,
-    minSpeed: 5,              // Fast falling
-    maxSpeed: 14,             // Fast falling
-    minLength: 6,
-    maxLength: 20,
+    density: 0.7,
+    spacing: 16,
+    minSpeed: 6,              // Fast falling
+    maxSpeed: 16,             // Fast falling
+    minLength: 8,
+    maxLength: 25,
   },
   effects: {
     ...DEFAULT_EFFECTS,
-    depthLayers: 2,
+    depthLayers: 3,
     enableBloom: true,
-    bloomIntensity: 0.8,      // Strong bloom for visibility
+    bloomIntensity: 0.75,
     enableVignette: true,
     vignetteIntensity: 0.2,
     enableScanlines: false,
@@ -266,24 +273,26 @@ export const PRESET_MINIMAL: Partial<MatrixConfig> = {
   name: 'minimal',
   performance: {
     ...DEFAULT_PERFORMANCE,
-    targetFPS: 30,
-    maxColumns: 40,
+    targetFPS: 40,
+    maxColumns: 50,
   },
   columns: {
     ...DEFAULT_COLUMNS,
-    density: 0.4,
-    spacing: 24,
-    minSpeed: 1,
-    maxSpeed: 4,
+    density: 0.5,
+    spacing: 22,
+    minSpeed: 3,
+    maxSpeed: 8,
   },
   effects: {
     ...DEFAULT_EFFECTS,
     depthLayers: 2,
-    enableBloom: false,
+    enableBloom: true,
+    bloomIntensity: 0.5,
     enableVignette: true,
     vignetteIntensity: 0.2,
-    trailFade: 0.88,
+    trailFade: 0.9,
     backgroundFade: 0.03,
+    speedMultiplier: 0.8,
   },
   font: {
     ...DEFAULT_FONT,
@@ -292,21 +301,29 @@ export const PRESET_MINIMAL: Partial<MatrixConfig> = {
 };
 
 /**
- * Intense preset - Maximum density and effects
+ * Intense preset - Maximum density and effects with cipher animation
  */
 export const PRESET_INTENSE: Partial<MatrixConfig> = {
   name: 'intense',
   performance: {
     ...DEFAULT_PERFORMANCE,
     targetFPS: 60,
-    maxColumns: 200,
+    maxColumns: 280,          // Maximum columns
   },
   columns: {
     ...DEFAULT_COLUMNS,
     density: 1,
-    spacing: 12,
-    minSpeed: 4,
-    maxSpeed: 15,
+    spacing: 10,              // Very tight spacing
+    minSpeed: 8,
+    maxSpeed: 24,             // Very fast
+    minLength: 12,
+    maxLength: 40,
+  },
+  characters: {
+    ...DEFAULT_CHARACTERS,
+    changeFrequency: 0.18,    // Very active morphing
+    minChangeInterval: 1,
+    maxChangeInterval: 5,
   },
   effects: {
     ...DEFAULT_EFFECTS,
@@ -314,13 +331,13 @@ export const PRESET_INTENSE: Partial<MatrixConfig> = {
     enableBloom: true,
     bloomIntensity: 1,
     enableVignette: true,
-    vignetteIntensity: 0.5,
-    trailFade: 0.96,
-    speedMultiplier: 1.5,
+    vignetteIntensity: 0.4,
+    trailFade: 0.95,
+    speedMultiplier: 1.5,     // Maximum speed
   },
   font: {
     ...DEFAULT_FONT,
-    baseSize: 12,
+    baseSize: 11,
   },
 };
 

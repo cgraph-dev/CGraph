@@ -82,18 +82,18 @@ export function getRandomChar(chars: string[]): string {
 
 /**
  * Default mobile configuration
- * Balanced for visual appeal and battery life
+ * Balanced for visual appeal, smooth animation, and battery life
  */
 export const DEFAULT_CONFIG: MatrixMobileConfig = {
-  columnCount: 20,
-  fontSize: 14,
-  minSpeed: 2,
-  maxSpeed: 6,
-  minLength: 5,
-  maxLength: 15,
-  changeFrequency: 0.03,
-  trailFade: 0.9,
-  frameInterval: 50, // ~20 FPS
+  columnCount: 28,           // More columns for denser effect
+  fontSize: 13,              // Slightly smaller for more columns
+  minSpeed: 3,               // Faster minimum
+  maxSpeed: 9,               // Faster maximum
+  minLength: 8,              // Longer minimum trails
+  maxLength: 22,             // Longer maximum trails
+  changeFrequency: 0.08,     // Higher for more cipher morphing
+  trailFade: 0.92,
+  frameInterval: 16,         // ~60 FPS target (RAF handles actual timing)
   characterSet: 'katakana',
 };
 
@@ -102,48 +102,48 @@ export const DEFAULT_CONFIG: MatrixMobileConfig = {
 // =============================================================================
 
 /**
- * Low intensity - Maximum battery savings
+ * Low intensity - Maximum battery savings with cipher effect
  */
 export const LOW_INTENSITY: Partial<MatrixMobileConfig> = {
-  columnCount: 10,
-  fontSize: 16,
-  minSpeed: 1,
-  maxSpeed: 3,
-  minLength: 4,
-  maxLength: 10,
-  changeFrequency: 0.02,
-  trailFade: 0.85,
-  frameInterval: 80, // ~12 FPS
-};
-
-/**
- * Medium intensity - Balanced
- */
-export const MEDIUM_INTENSITY: Partial<MatrixMobileConfig> = {
-  columnCount: 20,
-  fontSize: 14,
+  columnCount: 15,
+  fontSize: 15,
   minSpeed: 2,
   maxSpeed: 5,
-  minLength: 5,
-  maxLength: 15,
-  changeFrequency: 0.03,
-  trailFade: 0.9,
-  frameInterval: 50, // ~20 FPS
+  minLength: 6,
+  maxLength: 14,
+  changeFrequency: 0.05,
+  trailFade: 0.88,
+  frameInterval: 33, // ~30 FPS
 };
 
 /**
- * High intensity - Best visuals
+ * Medium intensity - Balanced with good cipher animation
+ */
+export const MEDIUM_INTENSITY: Partial<MatrixMobileConfig> = {
+  columnCount: 28,
+  fontSize: 13,
+  minSpeed: 3,
+  maxSpeed: 9,
+  minLength: 8,
+  maxLength: 22,
+  changeFrequency: 0.08,
+  trailFade: 0.92,
+  frameInterval: 16, // ~60 FPS
+};
+
+/**
+ * High intensity - Best visuals with active cipher morphing
  */
 export const HIGH_INTENSITY: Partial<MatrixMobileConfig> = {
-  columnCount: 35,
-  fontSize: 12,
-  minSpeed: 3,
-  maxSpeed: 8,
-  minLength: 6,
-  maxLength: 20,
-  changeFrequency: 0.05,
-  trailFade: 0.92,
-  frameInterval: 33, // ~30 FPS
+  columnCount: 42,
+  fontSize: 11,
+  minSpeed: 4,
+  maxSpeed: 12,
+  minLength: 10,
+  maxLength: 28,
+  changeFrequency: 0.12,
+  trailFade: 0.94,
+  frameInterval: 16, // ~60 FPS
 };
 
 /**

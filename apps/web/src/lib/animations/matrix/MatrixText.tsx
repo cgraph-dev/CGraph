@@ -92,6 +92,7 @@ function encryptText(text: string, charset: string): string {
  * 
  * Displays text that morphs between encrypted cipher characters
  * and readable text with a cascading reveal effect.
+ * Now with continuous cipher morphing for ambient effect.
  */
 export const MatrixText = memo(function MatrixText({
   text,
@@ -111,6 +112,7 @@ export const MatrixText = memo(function MatrixText({
   const [phase, setPhase] = useState<'idle' | 'encrypting' | 'encrypted' | 'decrypting' | 'decrypted'>('idle');
   const animationRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const frameRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
+  const ambientMorphRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   const charsetString = CHARSETS[charset] || CHARSETS.katakana;
   
@@ -251,10 +253,54 @@ export const MatrixText = memo(function MatrixText({
       if (frameRef.current) {
         cancelAnimationFrame(frameRef.current);
       }
+      if (ambientMorphRef.current) {
+        clearInterval(ambientMorphRef.current);
+      }
     };
   }, [direction, animateDecrypt, animateEncrypt, startDelay]);
   
-  // Glow style
+  // Continuous ambient cipher morph when decrypted (subtle effect)
+  useEffect(() => {
+    if (phase === 'decrypted' && !loop) {
+      // Start ambient morphing - occasional character flickers
+      let morphIndex = 0;
+      
+      ambientMorphRef.current = setInterval(() => {
+        setDisplayText(prev => {
+          const newText = [...prev];
+          const idx = morphIndex % text.length;
+          
+          if (text[idx] !== ' ') {
+            // Briefly show cipher character then restore
+            const originalChar = text[idx];
+            newText[idx] = getRandomChar(charsetString);
+            
+            // Restore after brief delay
+            setTimeout(() => {
+              setDisplayText(current => {
+                const restored = [...current];
+                restored[idx] = originalChar ?? '';
+                return restored;
+              });
+            }, 80);
+          }
+          
+          morphIndex++;
+          return newText;
+        });
+      }, 800 + Math.random() * 400);
+      
+      return () => {
+        if (ambientMorphRef.current) {
+          clearInterval(ambientMorphRef.current);
+        }
+      };
+    }
+    
+    return undefined;
+  }, [phase, loop, text, charsetString]);
+  
+  // Glow style with enhanced animation
   const glowStyle = enableGlow ? {
     textShadow: `
       0 0 5px ${glowColor},
@@ -272,18 +318,25 @@ export const MatrixText = memo(function MatrixText({
       data-phase={phase}
       data-animating={isAnimating}
     >
-      {displayText.map((char, index) => (
-        <span
-          key={index}
-          className="inline-block transition-transform duration-75"
-          style={{
-            opacity: phase === 'decrypting' && char !== text[index] ? 0.8 : 1,
-            transform: phase === 'decrypting' && char !== text[index] ? 'scale(1.1)' : 'scale(1)',
-          }}
-        >
-          {char}
-        </span>
-      ))}
+      {displayText.map((char, index) => {
+        const isOriginal = char === text[index];
+        const isMorphing = !isOriginal && phase !== 'encrypted';
+        
+        return (
+          <span
+            key={index}
+            className="inline-block"
+            style={{
+              opacity: isMorphing ? 0.85 : 1,
+              transform: isMorphing ? 'scale(1.08)' : 'scale(1)',
+              transition: 'transform 60ms ease-out, opacity 60ms ease-out',
+              textShadow: isMorphing ? `0 0 8px ${glowColor}` : undefined,
+            }}
+          >
+            {char}
+          </span>
+        );
+      })}
     </span>
   );
 });
@@ -293,7 +346,7 @@ export const MatrixText = memo(function MatrixText({
 // =============================================================================
 
 /**
- * Logo text with Matrix decryption effect
+ * Logo text with Matrix decryption effect - Enhanced with continuous cipher morph
  */
 export const MatrixLogo = memo(function MatrixLogo({
   text = 'CGraph',
@@ -304,10 +357,10 @@ export const MatrixLogo = memo(function MatrixLogo({
     <MatrixText
       text={text}
       className={className}
-      animationDuration={2500}
-      startDelay={500}
+      animationDuration={2000}
+      startDelay={300}
       loop
-      loopDelay={5000}
+      loopDelay={4000}
       direction="both"
       charset="katakana"
       enableGlow
@@ -318,7 +371,7 @@ export const MatrixLogo = memo(function MatrixLogo({
 });
 
 /**
- * Subtle text encryption for headings
+ * Subtle text encryption for headings with ambient morph
  */
 export const MatrixHeading = memo(function MatrixHeading({
   text,
@@ -329,11 +382,36 @@ export const MatrixHeading = memo(function MatrixHeading({
     <MatrixText
       text={text}
       className={className}
-      animationDuration={1500}
-      startDelay={200}
+      animationDuration={1200}
+      startDelay={100}
       loop={false}
       direction="decrypt"
       charset="mixed"
+      enableGlow
+      glowColor="#00ff41"
+      {...props}
+    />
+  );
+});
+
+/**
+ * Continuous cipher text - never settles, always morphing
+ */
+export const MatrixCipherText = memo(function MatrixCipherText({
+  text,
+  className = 'text-lg font-mono text-green-400',
+  ...props
+}: MatrixTextProps) {
+  return (
+    <MatrixText
+      text={text}
+      className={className}
+      animationDuration={1500}
+      startDelay={0}
+      loop
+      loopDelay={2000}
+      direction="both"
+      charset="katakana"
       enableGlow
       glowColor="#00ff41"
       {...props}

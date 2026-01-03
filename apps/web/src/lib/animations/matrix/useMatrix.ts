@@ -183,21 +183,36 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
   
   /**
    * Sync state with engine periodically
+   * Reduced frequency since engine is now more efficient
    */
   useEffect(() => {
+    let isMounted = true;
+    
     const syncInterval = setInterval(() => {
+      if (!isMounted) return;
+      
       const engine = engineRef.current;
       if (engine) {
         const engineState = engine.getState();
-        setState(prev => ({
-          ...prev,
-          metrics: engineState.metrics,
-          theme: engineState.theme,
-        }));
+        setState(prev => {
+          // Only update if metrics actually changed
+          if (prev.metrics.fps === engineState.metrics.fps &&
+              prev.metrics.activeColumns === engineState.metrics.activeColumns) {
+            return prev;
+          }
+          return {
+            ...prev,
+            metrics: engineState.metrics,
+            theme: engineState.theme,
+          };
+        });
       }
-    }, 500); // Sync every 500ms
+    }, 1000); // Sync every 1000ms (reduced from 500ms)
     
-    return () => clearInterval(syncInterval);
+    return () => {
+      isMounted = false;
+      clearInterval(syncInterval);
+    };
   }, []);
   
   // =========================================================================

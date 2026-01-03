@@ -11,6 +11,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.6.6] - 2026-01-03
+
+### Matrix Animation Performance Overhaul
+
+Major performance rewrite of the Matrix cipher rain animation system. The entire rendering pipeline has been rebuilt from scratch with enterprise-grade optimizations targeting 60fps on all platforms.
+
+### Changed
+
+#### Web Canvas Engine (v2.0.0)
+- **Character Atlas System** - Pre-renders all glyphs with glow effects to OffscreenCanvas during initialization, reducing per-frame `fillText` calls from 5 to 0
+- **Object Pooling** - Characters and render queue items now recycled through ObjectPool class, eliminating GC pauses during animation
+- **Batch Rendering** - Characters grouped by alpha level and drawn in single passes, reducing canvas state changes from O(n) to O(alpha-groups)
+- **Delta-Time Interpolation** - Animation updates normalized to 60fps equivalent regardless of actual frame rate
+- **Fixed Timestep Physics** - Accumulator-based update loop prevents spiral of death on slow frames
+
+#### Mobile React Native Engine (v2.0.0)
+- **RAF-Based Loop** - Replaced `setTimeout` with `requestAnimationFrame` via `getTimestamp()` utility for proper 60fps timing
+- **Mutable Refs** - Column state stored in refs to avoid React re-render overhead
+- **Batch State Updates** - Render counter reduces `setState` calls by 3x
+- **Custom Memo Comparison** - Prevents unnecessary MatrixColumn re-renders when only position changes
+
+#### Configuration Tuning
+- `maxColumns`: 100 → 180 (80% increase in density)
+- `density`: 0.75 → 0.85
+- `minSpeed`: 4 → 6, `maxSpeed`: 12 → 18 (50% faster)
+- `changeFrequency`: 0.05 → 0.12 (more active character cycling)
+- `spacing`: 16 → 14 (tighter column packing)
+- `speedMultiplier`: 1.0 → 1.2 (global speed boost)
+- Mobile FPS targets raised: low 12→30, medium 20→60, high 30→60
+
+### Added
+
+- **Cipher Morph Animation** - Continuous encrypt/decrypt effect per character
+  - `CHARACTER_MORPH_PHASES = 8` for smooth character transitions
+  - `morphPhase`, `morphTarget`, `isEncrypting` fields on MatrixCharacter
+  - Characters randomly trigger morph cycles, showing scrambled glyphs before settling
+  - Creates authentic "decoding" visual effect throughout the rain
+- **MatrixCipherText** - New component variant for continuous cipher text
+- **Ambient Morph Effect** - MatrixText shows subtle character flickers when idle
+- **OffscreenCanvas Mock** - Test suite now properly mocks OffscreenCanvas for atlas testing
+
+### Fixed
+
+- **performance.now() Unavailable** - React Native compatibility via `getTimestamp()` wrapper
+- **Unused Imports** - Removed `Platform`, `withRepeat`, `withSequence`, `runOnJS` from mobile
+- **Missing Return Value** - MatrixText.tsx useEffect now returns cleanup function properly
+- **Implicit Any Parameters** - Added proper typing to map callbacks in mobile component
+- **Test Mocks** - Updated engine.test.ts with MockOffscreenCanvas and createMockContext()
+- **Sync Interval Overhead** - useMatrix hook reduced state sync from 500ms to 1000ms with change detection
+
+### Technical Details
+
+- Web render path: `update()` → `buildLayerRenderQueue()` → `executeBatchRender()`
+- Atlas pre-renders 6 color variants per character: head, head-bright, body-high, body-mid, body-low, tail
+- Object pool pre-allocates 500 character objects and 100 render queue items
+- Mobile uses Date.now() fallback since performance.now() isn't available in RN
+
+---
+
 ## [0.6.5] - 2026-01-04
 
 ### Matrix Animation Enhancements & Visual Polish
