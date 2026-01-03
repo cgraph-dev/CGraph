@@ -61,21 +61,21 @@ export const DEFAULT_CHARACTERS: CharacterSetConfig = {
 
 /**
  * Default column behavior
- * Balanced density and speed for visual appeal
+ * Dense columns with smaller spacing for authentic Matrix look
  */
 export const DEFAULT_COLUMNS: ColumnConfig = {
-  minSpeed: 2,
-  maxSpeed: 8,
-  minLength: 5,
-  maxLength: 25,
-  density: 0.7,
-  spacing: 18,
+  minSpeed: 3,
+  maxSpeed: 10,
+  minLength: 8,
+  maxLength: 30,
+  density: 0.8,
+  spacing: 14,              // Tighter spacing for denser effect
   randomizeStart: true,
   staggerStart: true,
-  staggerDelay: 50,
-  respawnRate: 0.03,
+  staggerDelay: 40,
+  respawnRate: 0.04,
   minRespawnDelay: 0,
-  maxRespawnDelay: 120,
+  maxRespawnDelay: 100,
 };
 
 /**
@@ -101,14 +101,14 @@ export const DEFAULT_EFFECTS: EffectsConfig = {
 
 /**
  * Default font configuration
- * Monospace font with medium weight for visible characters
+ * Monospace font with smaller characters for authentic Matrix look
  */
 export const DEFAULT_FONT: FontConfig = {
   family: 'JetBrains Mono, Fira Code, Consolas, Monaco, monospace',
-  baseSize: 18,              // Slightly larger for visibility
-  minSize: 12,
-  maxSize: 26,
-  weight: 'bold',            // Bold weight for better visibility
+  baseSize: 14,              // Smaller for dense Matrix effect
+  minSize: 10,
+  maxSize: 18,
+  weight: 'bold',            // Bold weight for better visibility with glow
   letterSpacing: 0,
   sizeVariation: true,
 };
@@ -210,38 +210,40 @@ export const PRESET_HIGH_QUALITY: Partial<MatrixConfig> = {
 };
 
 /**
- * Low power preset - Battery and resource friendly
+ * Low power preset - Optimized for auth pages with visible glow
  */
 export const PRESET_POWER_SAVER: Partial<MatrixConfig> = {
   name: 'power-saver',
   performance: {
     ...DEFAULT_PERFORMANCE,
-    targetFPS: 24,
-    maxColumns: 25,
+    targetFPS: 30,
+    maxColumns: 40,
     adaptiveQuality: true,
     throttleOnBlur: true,
     throttledFPS: 5,
   },
   columns: {
     ...DEFAULT_COLUMNS,
-    density: 0.3,
-    spacing: 28,
-    minLength: 3,
-    maxLength: 12,
+    density: 0.5,
+    spacing: 20,
+    minLength: 5,
+    maxLength: 18,
   },
   effects: {
     ...DEFAULT_EFFECTS,
-    depthLayers: 1,
-    enableBloom: false,
-    enableVignette: false,
+    depthLayers: 2,
+    enableBloom: true,        // Keep glow enabled!
+    enableVignette: true,
     enableScanlines: false,
     enableCRTEffect: false,
-    trailFade: 0.85,
+    trailFade: 0.88,
   },
   font: {
     ...DEFAULT_FONT,
-    baseSize: 18,
-    sizeVariation: false,
+    baseSize: 13,             // Smaller characters
+    minSize: 10,
+    maxSize: 16,
+    sizeVariation: true,
   },
 };
 
