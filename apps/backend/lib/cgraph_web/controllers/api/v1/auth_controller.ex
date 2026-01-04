@@ -40,10 +40,22 @@ defmodule CgraphWeb.API.V1.AuthController do
   Implements account lockout protection to prevent brute force attacks.
   """
   def login(conn, %{"email" => email, "password" => password}) do
+    # Delegate to identifier-based login for backwards compatibility
+    login(conn, %{"identifier" => email, "password" => password})
+  end
+
+  @doc """
+  Login with email OR username and password.
+  
+  Accepts either email or username in the "identifier" field.
+  Implements account lockout protection to prevent brute force attacks.
+  """
+  def login(conn, %{"identifier" => identifier, "password" => password}) do
     ip_address = get_client_ip(conn)
+    lockout_key = String.downcase(identifier)
     
     # Check if account is locked
-    case AccountLockout.check_locked(email) do
+    case AccountLockout.check_locked(lockout_key) do
       {:locked, remaining} ->
         conn
         |> put_status(:too_many_requests)
@@ -55,11 +67,11 @@ defmodule CgraphWeb.API.V1.AuthController do
         })
       
       :ok ->
-        # Proceed with authentication
-        case Accounts.authenticate_user(email, password) do
+        # Proceed with authentication (supports both email and username)
+        case Accounts.authenticate_by_identifier(identifier, password) do
           {:ok, user} ->
             # Clear failed attempts on successful login
-            AccountLockout.clear_attempts(email)
+            AccountLockout.clear_attempts(lockout_key)
             
             with {:ok, tokens} <- Guardian.generate_tokens(user),
                  {:ok, _session} <- Accounts.create_session(user, conn) do
@@ -67,9 +79,17 @@ defmodule CgraphWeb.API.V1.AuthController do
               |> render(:auth_response, user: user, tokens: tokens)
             end
           
+          {:error, :no_password_set} ->
+            conn
+            |> put_status(:unauthorized)
+            |> json(%{
+              error: "No password set",
+              message: "This account was created with OAuth or wallet. Please use that method to login."
+            })
+
           {:error, reason} when reason in [:invalid_credentials, :user_not_found] ->
             # Record failed attempt
-            case AccountLockout.record_failed_attempt(email, ip_address: ip_address) do
+            case AccountLockout.record_failed_attempt(lockout_key, ip_address: ip_address) do
               {:locked, duration} ->
                 conn
                 |> put_status(:too_many_requests)
@@ -83,7 +103,7 @@ defmodule CgraphWeb.API.V1.AuthController do
               :ok ->
                 conn
                 |> put_status(:unauthorized)
-                |> json(%{error: "Invalid email or password"})
+                |> json(%{error: "Invalid username/email or password"})
             end
         end
     end

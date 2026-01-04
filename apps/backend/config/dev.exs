@@ -12,8 +12,9 @@ config :cgraph, Cgraph.Repo,
   pool_size: 10
 
 # For development, we disable any cache and enable debugging and code reloading
+# Using 0.0.0.0 to allow connections from mobile devices on the local network
 config :cgraph, CgraphWeb.Endpoint,
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,

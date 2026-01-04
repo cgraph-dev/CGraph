@@ -4,7 +4,7 @@
  * Dynamic configuration for Expo SDK 54
  * Handles environment-specific settings and API URL resolution
  * 
- * @version 0.7.1
+ * @version 0.7.6
  * @see https://docs.expo.dev/workflow/configuration/
  */
 
@@ -20,8 +20,8 @@ const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
 const getApiUrl = () => {
   if (IS_DEV) {
     // For Expo Go on physical device, use your machine's LAN IP
-    // Update this IP to match your development machine
-    const LAN_IP = process.env.API_HOST || '192.168.1.100';
+    // Auto-detected or configured via environment variable
+    const LAN_IP = process.env.API_HOST || '192.168.1.129';
     return process.env.API_URL || `http://${LAN_IP}:4000`;
   }
   
@@ -55,7 +55,7 @@ module.exports = ({ config }) => {
     ...config,
     name: getAppName(),
     slug: 'cgraph',
-    version: '0.7.1',
+    version: '0.7.5',
     runtimeVersion: {
       policy: 'appVersion',
     },
@@ -67,7 +67,7 @@ module.exports = ({ config }) => {
     splash: {
       image: './assets/splash-icon.png',
       resizeMode: 'contain',
-      backgroundColor: '#6366f1',
+      backgroundColor: '#10b981',
     },
     assetBundlePatterns: ['**/*'],
     ios: {
@@ -121,7 +121,7 @@ module.exports = ({ config }) => {
       ...config.android,
       adaptiveIcon: {
         foregroundImage: './assets/adaptive-icon.png',
-        backgroundColor: '#6366f1',
+        backgroundColor: '#10b981',
       },
       package: `org.cgraph.app${getAppVariantSuffix().replace('.', '')}`,
       versionCode: 3,
@@ -152,7 +152,7 @@ module.exports = ({ config }) => {
         'expo-notifications',
         {
           icon: './assets/icon.png',
-          color: '#6366f1',
+          color: '#10b981',
           defaultChannel: 'default',
         },
       ],

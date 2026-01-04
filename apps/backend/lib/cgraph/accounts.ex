@@ -84,6 +84,53 @@ defmodule Cgraph.Accounts do
   end
 
   @doc """
+  Authenticate a user by email OR username and password.
+  Automatically detects if identifier is email (contains @) or username.
+  """
+  def authenticate_by_identifier(identifier, password) do
+    user = if String.contains?(identifier, "@") do
+      Repo.get_by(User, email: String.downcase(identifier))
+    else
+      Repo.get_by(User, username: identifier)
+    end
+
+    cond do
+      is_nil(user) ->
+        Argon2.no_user_verify()
+        {:error, :invalid_credentials}
+
+      is_nil(user.password_hash) ->
+        # User registered via OAuth/wallet only
+        {:error, :no_password_set}
+
+      Argon2.verify_pass(password, user.password_hash) ->
+        {:ok, user}
+
+      true ->
+        {:error, :invalid_credentials}
+    end
+  end
+
+  @doc """
+  Get user by user_id (the unique display number like #0001).
+  """
+  def get_user_by_user_id(user_id) when is_integer(user_id) do
+    case Repo.get_by(User, user_id: user_id) do
+      nil -> {:error, :not_found}
+      user -> {:ok, user}
+    end
+  end
+  
+  def get_user_by_user_id(user_id) when is_binary(user_id) do
+    # Handle formats like "#0001" or "0001" or "1"
+    cleaned = user_id |> String.replace("#", "") |> String.trim()
+    case Integer.parse(cleaned) do
+      {num, ""} -> get_user_by_user_id(num)
+      _ -> {:error, :invalid_format}
+    end
+  end
+
+  @doc """
   Create a session for user.
   
   Accepts either a Plug.Conn or a map with session metadata.

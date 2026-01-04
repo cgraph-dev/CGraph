@@ -58,7 +58,7 @@ class SocketManager {
   }
 
   // Join a conversation channel (DMs)
-  joinConversation(conversationId: string): Channel {
+  joinConversation(conversationId: string): Channel | null {
     const topic = `conversation:${conversationId}`;
 
     if (this.channels.has(topic)) {
@@ -66,7 +66,10 @@ class SocketManager {
     }
 
     if (!this.socket) {
-      throw new Error('Socket not connected');
+      logger.warn('Cannot join conversation: socket not connected');
+      // Attempt to reconnect
+      this.connect();
+      return null;
     }
 
     const channel = this.socket.channel(topic, {});
@@ -122,7 +125,7 @@ class SocketManager {
   }
 
   // Join a group channel
-  joinGroupChannel(channelId: string): Channel {
+  joinGroupChannel(channelId: string): Channel | null {
     const topic = `channel:${channelId}`;
 
     if (this.channels.has(topic)) {
@@ -130,7 +133,9 @@ class SocketManager {
     }
 
     if (!this.socket) {
-      throw new Error('Socket not connected');
+      logger.warn('Cannot join group channel: socket not connected');
+      this.connect();
+      return null;
     }
 
     const channel = this.socket.channel(topic, {});

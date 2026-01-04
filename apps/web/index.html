@@ -27,7 +27,15 @@
     <title>CGraph</title>
   </head>
   <body class="bg-dark-900 text-white antialiased">
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial loading state - replaced by React -->
+      <div id="initial-loader" style="min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #111827;">
+        <div style="height: 64px; width: 64px; border-radius: 16px; background: linear-gradient(135deg, #10b981, #047857); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);">
+          <span style="font-size: 1.5rem; font-weight: bold; color: white;">C</span>
+        </div>
+        <p style="margin-top: 24px; color: #6b7280; font-family: system-ui, sans-serif;">Loading CGraph...</p>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

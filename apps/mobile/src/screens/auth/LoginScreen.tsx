@@ -26,19 +26,19 @@ export default function LoginScreen({ navigation }: Props) {
   const { colors } = useTheme();
   const { login } = useAuth();
   
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Error', 'Please enter email and password');
+    if (!identifier.trim() || !password.trim()) {
+      Alert.alert('Error', 'Please enter email/username and password');
       return;
     }
     
     setIsLoading(true);
     try {
-      await login(email, password);
+      await login(identifier, password);
     } catch (error: unknown) {
       const err = error as { response?: { data?: { error?: string; message?: string } } };
       Alert.alert(
@@ -76,7 +76,7 @@ export default function LoginScreen({ navigation }: Props) {
             }]}>
               <View style={styles.form}>
                 <View style={styles.inputGroup}>
-                  <Text style={[styles.label, { color: colors.text }]}>Email</Text>
+                  <Text style={[styles.label, { color: colors.text }]}>Email or Username</Text>
                   <TextInput
                     style={[
                       styles.input,
@@ -86,11 +86,10 @@ export default function LoginScreen({ navigation }: Props) {
                         color: colors.text,
                       },
                     ]}
-                    placeholder="Enter your email"
+                    placeholder="Enter email or username"
                     placeholderTextColor={colors.textTertiary}
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
+                    value={identifier}
+                    onChangeText={setIdentifier}
                     autoCapitalize="none"
                     autoCorrect={false}
                   />

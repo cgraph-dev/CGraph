@@ -427,7 +427,7 @@ function PostResult({ post, onClick }: PostResultProps) {
     >
       <p className="font-medium text-white line-clamp-1">{post.title}</p>
       <p className="text-sm text-gray-400 line-clamp-2 mt-1">{post.content}</p>
-      <p className="text-xs text-gray-500 mt-2">by @{post.author.username || 'unknown'} in r/{post.forumSlug}</p>
+      <p className="text-xs text-gray-500 mt-2">by @{post.author.username || 'unknown'} in c/{post.forumSlug}</p>
     </button>
   );
 }

@@ -85,18 +85,27 @@ api.interceptors.response.use(
           refresh_token: refreshToken,
         });
 
-        const { token, refresh_token } = response.data;
+        // Handle both response formats: { token, refresh_token } and { data: { tokens: { access_token, refresh_token } } }
+        const data = response.data.data || response.data;
+        const tokens = data.tokens || data;
+        const newToken = tokens.access_token || tokens.token;
+        const newRefreshToken = tokens.refresh_token;
+        
+        if (!newToken) {
+          throw new Error('No access token in refresh response');
+        }
+        
         useAuthStore.setState({
-          token,
-          refreshToken: refresh_token,
+          token: newToken,
+          refreshToken: newRefreshToken,
         });
 
         // Release mutex and notify subscribers
         isRefreshing = false;
-        onTokenRefreshed(token);
+        onTokenRefreshed(newToken);
 
         // Retry original request with new token
-        originalRequest.headers.Authorization = `Bearer ${token}`;
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch (refreshError) {
         // Release mutex and reject subscribers

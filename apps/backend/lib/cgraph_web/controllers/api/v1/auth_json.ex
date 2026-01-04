@@ -84,6 +84,8 @@ defmodule CgraphWeb.API.V1.AuthJSON do
   defp user_data(%User{} = user) do
     %{
       id: user.id,
+      user_id: user.user_id,
+      user_id_display: User.format_user_id(user),
       username: user.username,
       display_name: user.display_name,
       email: user.email,
@@ -93,10 +95,14 @@ defmodule CgraphWeb.API.V1.AuthJSON do
       custom_status: user.custom_status,
       is_verified: user.is_verified,
       is_premium: user.is_premium,
+      is_admin: user.is_admin,
       wallet_address: user.wallet_address,
       crypto_alias: user.crypto_alias,
       auth_type: user.auth_type,
       totp_enabled: user.totp_enabled,
+      karma: user.karma || 0,
+      can_change_username: User.can_change_username?(user),
+      username_next_change_at: User.next_username_change_date(user),
       last_seen_at: user.last_seen_at,
       email_verified_at: user.email_verified_at,
       inserted_at: user.inserted_at

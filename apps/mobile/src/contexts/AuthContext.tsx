@@ -90,8 +90,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     delete api.defaults.headers.common['Authorization'];
   };
   
-  const login = async (email: string, password: string) => {
-    const response = await api.post('/api/v1/auth/login', { email, password });
+  const login = async (identifier: string, password: string) => {
+    const response = await api.post('/api/v1/auth/login', { identifier, password });
     const { user: userData, tokens } = response.data.data || response.data;
     await saveAuth(tokens.access_token, tokens.refresh_token, userData);
   };

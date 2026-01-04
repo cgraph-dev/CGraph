@@ -12,14 +12,16 @@ interface ThemeContextType {
   colors: typeof lightColors | typeof darkColors;
 }
 
+// Matrix-inspired green palette matching web theme
 const lightColors = {
   background: '#ffffff',
   surface: '#f3f4f6',
   surfaceSecondary: '#e5e7eb',
-  surfaceHover: '#e5e7eb',
-  primary: '#6366f1',
-  primaryHover: '#4f46e5',
-  secondary: '#8b5cf6',
+  surfaceHover: '#d1fae5',
+  primary: '#10b981',        // Emerald-500 - Matrix green
+  primaryHover: '#059669',   // Emerald-600
+  secondary: '#047857',      // Emerald-700
+  accent: '#00ff41',         // Matrix glow
   text: '#111827',
   textSecondary: '#6b7280',
   textTertiary: '#9ca3af',
@@ -31,16 +33,24 @@ const lightColors = {
   card: '#ffffff',
   input: '#f9fafb',
   overlay: 'rgba(0, 0, 0, 0.5)',
+  // Matrix-specific colors
+  matrix: {
+    glow: '#00ff41',
+    bright: '#39ff14',
+    dim: '#003b00',
+  },
 };
 
+// Discord-inspired dark theme with Matrix green accents
 const darkColors = {
-  background: '#111827',
-  surface: '#1f2937',
-  surfaceSecondary: '#374151',
-  surfaceHover: '#374151',
-  primary: '#6366f1',
-  primaryHover: '#818cf8',
-  secondary: '#8b5cf6',
+  background: '#111827',     // Dark-900
+  surface: '#1f2937',        // Dark-800
+  surfaceSecondary: '#374151', // Dark-700
+  surfaceHover: '#2f3136',   // Sidebar background
+  primary: '#10b981',        // Emerald-500 - Matrix green
+  primaryHover: '#34d399',   // Emerald-400
+  secondary: '#047857',      // Emerald-700
+  accent: '#00ff41',         // Matrix glow
   text: '#f9fafb',
   textSecondary: '#9ca3af',
   textTertiary: '#6b7280',
@@ -50,8 +60,26 @@ const darkColors = {
   warning: '#f59e0b',
   info: '#3b82f6',
   card: '#1f2937',
-  input: '#374151',
+  input: '#40444b',          // Chat input background
   overlay: 'rgba(0, 0, 0, 0.7)',
+  // Matrix-specific colors
+  matrix: {
+    glow: '#00ff41',
+    bright: '#39ff14',
+    dim: '#003b00',
+  },
+  // Chat colors matching web
+  chat: {
+    bg: '#36393f',
+    hover: '#32353b',
+    input: '#40444b',
+  },
+  // Sidebar colors matching web
+  sidebar: {
+    bg: '#2f3136',
+    hover: '#34373c',
+    active: '#393c43',
+  },
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);

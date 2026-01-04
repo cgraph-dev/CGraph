@@ -7,13 +7,13 @@ export default function Login() {
   const navigate = useNavigate();
   const { login, getWalletChallenge, loginWithWallet, isLoading, error, clearError } = useAuthStore();
 
-  // Auto-dismiss error after 1.5 seconds
+  // Auto-dismiss error after 5 seconds (enough time to read)
   useEffect(() => {
     if (!error) return;
     
     const timer = setTimeout(() => {
       clearError();
-    }, 1500);
+    }, 5000);
     return () => clearTimeout(timer);
   }, [error, clearError]);
 
@@ -114,20 +114,20 @@ export default function Login() {
       {/* Login Form with staggered animations */}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="form-field-animate">
-          <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-            Email address
+          <label htmlFor="identifier" className="block text-sm font-medium text-gray-300 mb-2">
+            Email or Username
           </label>
           <input
-            id="email"
-            type="email"
+            id="identifier"
+            type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            autoComplete="email"
+            autoComplete="username"
             className="w-full px-4 py-3 bg-dark-800/80 border border-dark-600 rounded-lg text-white 
                      placeholder-gray-500 matrix-input focus:outline-none focus:ring-2 
                      focus:ring-primary-500/50 focus:border-primary-500/50"
-            placeholder="you@example.com"
+            placeholder="you@example.com or username"
           />
         </div>
 

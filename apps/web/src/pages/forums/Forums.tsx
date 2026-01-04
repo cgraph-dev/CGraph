@@ -44,7 +44,7 @@ export default function Forums() {
   const {
     forums,
     posts,
-    isLoadingForums: _isLoadingForums,
+    isLoadingForums,
     isLoadingPosts,
     hasMorePosts,
     sortBy,
@@ -368,7 +368,23 @@ export default function Forums() {
         <div className="bg-dark-700 rounded-lg p-4">
           <h3 className="font-semibold text-white mb-3">Popular Communities</h3>
           <div className="space-y-2">
-            {forums.slice(0, 5).map((forum) => (
+            {isLoadingForums ? (
+              // Skeleton loading for communities
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3 p-2 -mx-2 animate-pulse">
+                  <div className="h-8 w-8 rounded-full bg-dark-600" />
+                  <div className="flex-1 min-w-0">
+                    <div className="h-4 bg-dark-600 rounded w-24 mb-1" />
+                    <div className="h-3 bg-dark-600 rounded w-16" />
+                  </div>
+                </div>
+              ))
+            ) : forums.length === 0 ? (
+              <p className="text-sm text-gray-500 text-center py-4">
+                No communities found
+              </p>
+            ) : (
+              forums.slice(0, 5).map((forum) => (
                 <Link
                 key={forum.id}
                 to={`/forums/${forum.slug}`}
@@ -399,7 +415,8 @@ export default function Forums() {
                   </p>
                 </div>
               </Link>
-            ))}
+            ))
+            )}
           </div>
         </div>
       </div>

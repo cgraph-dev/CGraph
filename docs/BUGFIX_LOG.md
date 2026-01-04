@@ -6,16 +6,182 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 |
-|--------|--------|--------|--------|--------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests |
-| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures |
-| Web Build | ✅ | ✅ | ✅ | ✅ |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ |
-| OAuth Tests | - | 35 new tests | 35 tests | 35 tests |
-| Security Fixes | - | - | 6 critical | 6 critical |
-| TypeScript Errors | - | - | 0 | 0 |
-| Matrix Engine | - | - | v1.0.0 | v2.0.0 |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.6 |
+|--------|--------|--------|--------|--------|--------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures |
+| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ |
+| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests |
+| Security Fixes | - | - | 6 critical | 6 critical | 6 critical |
+| TypeScript Errors | - | - | 0 | 0 | 0 |
+| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 |
+| Cross-Platform Auth | - | - | - | - | ✅ |
+| Username Login | - | - | - | - | ✅ |
+| Identity Search | - | - | - | - | ✅ |
+
+---
+
+## January 5, 2026 - v0.7.6 Username Login & Identity Search
+
+### 1. Login Only Accepted Email (AUTHENTICATION)
+
+**Problem:** Users could only authenticate using their email address. Username login was not supported despite usernames being a core part of user identity.
+
+**Solution:** Created unified authentication function that auto-detects credential type:
+```elixir
+# apps/backend/lib/cgraph/accounts.ex
+def authenticate_by_identifier(identifier, password) when is_binary(identifier) do
+  user = if String.contains?(identifier, "@") do
+    get_user_by_email(identifier)
+  else
+    get_user_by_username(identifier)
+  end
+  
+  case user do
+    nil -> {:error, :invalid_credentials}
+    user -> verify_password(user, password)
+  end
+end
+```
+
+**Files Modified:**
+- `apps/backend/lib/cgraph/accounts.ex`
+- `apps/backend/lib/cgraph_web/controllers/api/v1/auth_controller.ex`
+- `apps/web/src/pages/auth/Login.tsx`
+- `apps/web/src/stores/authStore.ts`
+- `apps/mobile/src/contexts/AuthContext.tsx`
+- `apps/mobile/src/screens/auth/LoginScreen.tsx`
+
+### 2. Cannot Search Users by Identity Number (SEARCH)
+
+**Problem:** Each user has a unique identity number (e.g., `#0001`) but there was no way to search for users using this identifier.
+
+**Solution:** Enhanced search function to detect and handle identity number queries:
+```elixir
+# apps/backend/lib/cgraph/search.ex
+defp parse_user_id_query(query) do
+  cleaned = query |> String.trim() |> String.trim_leading("#")
+  case Integer.parse(cleaned) do
+    {num, ""} when num > 0 -> {:user_id, num}
+    _ -> :not_user_id
+  end
+end
+```
+
+**Files Modified:**
+- `apps/backend/lib/cgraph/search.ex`
+
+### 3. Missing User Identity Fields in Auth Response (API)
+
+**Problem:** Frontend had no way to display user's identity number or username change eligibility after login.
+
+**Solution:** Extended auth JSON response with additional fields:
+```elixir
+# apps/backend/lib/cgraph_web/controllers/api/v1/auth_json.ex
+user_id: user.user_id,
+user_id_display: Cgraph.Accounts.User.format_user_id(user),
+can_change_username: can_change_username?(user),
+username_next_change_at: username_next_change_at(user)
+```
+
+**Files Modified:**
+- `apps/backend/lib/cgraph_web/controllers/api/v1/auth_json.ex`
+
+---
+
+## January 5, 2026 - v0.7.5 Mobile Sync & Auth Fix
+
+### 1. Mobile Cannot Connect to Backend API (NETWORKING)
+
+**Problem:** Mobile app running on physical iOS device could not register or login. Users who created accounts on web were unable to authenticate from the mobile app. Connection would time out or be refused.
+
+**Root Cause:** Phoenix backend was configured to bind to `127.0.0.1` (localhost only), meaning it only accepted connections from the same machine. Physical mobile devices connecting over LAN (e.g., `192.168.1.x`) were rejected at the network level.
+
+**Solution:**
+```elixir
+# config/dev.exs - Before
+config :cgraph, CgraphWeb.Endpoint,
+  http: [ip: {127, 0, 0, 1}, port: 4000],
+  # ...
+
+# config/dev.exs - After  
+config :cgraph, CgraphWeb.Endpoint,
+  http: [ip: {0, 0, 0, 0}, port: 4000],
+  # ...
+```
+
+**Additional Fix:** Updated `app.config.js` to use correct LAN IP:
+```javascript
+const LAN_IP = process.env.LAN_IP || '192.168.1.129';  // Was 192.168.1.100
+```
+
+**Files Modified:**
+- `apps/backend/config/dev.exs`
+- `apps/mobile/app.config.js`
+
+**Impact:** Mobile users can now authenticate against the development backend from any device on the local network.
+
+---
+
+### 2. React/React-DOM Version Mismatch (DEPENDENCY)
+
+**Problem:** Web app intermittently displayed white screen on page load. Console showed React hydration errors or version mismatch warnings.
+
+**Root Cause:** The `react` package was pinned to `19.1.0` but `react-dom` was using `^19.1.0` (caret range), which allowed npm/pnpm to install `19.2.3`. When React and ReactDOM have different versions, hydration and rendering can fail silently.
+
+**Solution:**
+```json
+// apps/web/package.json - Before
+"react": "19.1.0",
+"react-dom": "^19.1.0",
+
+// apps/web/package.json - After
+"react": "19.1.0",
+"react-dom": "19.1.0",
+```
+
+Additional steps required:
+1. Delete Vite cache: `rm -rf node_modules/.vite`
+2. Force reinstall: `pnpm install --force`
+3. Hard refresh browser cache (Ctrl+Shift+R)
+
+**Files Modified:**
+- `apps/web/package.json`
+
+**Impact:** Consistent React version across packages, eliminating white screen issues.
+
+---
+
+### 3. Mobile Theme Out of Sync with Web (UI)
+
+**Problem:** Mobile app was using the old Indigo (`#6366f1`) color scheme while web had been updated to Matrix-inspired green (`#10b981`). This created visual inconsistency between platforms.
+
+**Root Cause:** Mobile theme colors in `ThemeContext.tsx` and matrix animation themes were never updated when web theme was changed in earlier versions.
+
+**Solution:** Updated all mobile color references to match web:
+
+```typescript
+// ThemeContext.tsx - Primary colors
+primary: '#10b981',      // Was '#6366f1'
+primaryDark: '#059669',  // Was '#4f46e5'
+
+// Matrix theme synchronization  
+MATRIX_GREEN: {
+  primaryColor: '#39ff14',
+  glowColor: '#39ff14',
+  backgroundColor: '#000000',
+  // ...
+}
+```
+
+**Files Modified:**
+- `apps/mobile/src/contexts/ThemeContext.tsx`
+- `apps/mobile/src/components/matrix/themes.ts`
+- `apps/mobile/app.config.js` (splash, icons)
+- `apps/mobile/package.json` (version bump to 0.7.5)
+
+**Impact:** Mobile and web now share consistent Matrix-inspired green theme across all UI elements.
 
 ---
 

@@ -13,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { PostCardSkeleton, CommentSkeleton } from '../../components/Skeleton';
@@ -62,6 +63,8 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
   
   const handleVotePost = async (value: 1 | -1) => {
     if (!post) return;
+    // Haptic feedback on vote
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await api.post(`/api/v1/posts/${postId}/vote`, { value });
       setPost((prev) => {
@@ -172,7 +175,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
         {/* Post */}
         <View style={[styles.postContainer, { backgroundColor: colors.surface }]}>
           <Text style={[styles.postMeta, { color: colors.textSecondary }]}>
-            r/{post.forum.slug} • u/{post.author?.username || post.author?.display_name || 'unknown'} • {formatTime(post.inserted_at)}
+            c/{post.forum.slug} • u/{post.author?.username || post.author?.display_name || 'unknown'} • {formatTime(post.inserted_at)}
           </Text>
           
           {/* Status Badges */}

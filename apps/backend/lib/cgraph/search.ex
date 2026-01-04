@@ -14,27 +14,41 @@ defmodule Cgraph.Search do
   alias Cgraph.Groups.Group
 
   @doc """
-  Search users by username, display name, or bio.
+  Search users by username, display name, bio, or user_id (identity number).
+  Supports searching by #0001 format or plain number.
   """
   def search_users(query, opts \\ []) do
     limit = Keyword.get(opts, :limit, 20)
     offset = Keyword.get(opts, :offset, 0)
     current_user = Keyword.get(opts, :current_user)
     
-    search_term = "%#{sanitize_query(query)}%"
-    
-    base_query = from u in User,
-      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
-      where: ilike(u.username, ^search_term) or 
-             ilike(u.display_name, ^search_term) or
-             ilike(u.bio, ^search_term),
-      order_by: [
-        desc: fragment("CASE WHEN ? ILIKE ? THEN 2 WHEN ? ILIKE ? THEN 1 ELSE 0 END",
-                       u.username, ^"#{sanitize_query(query)}%",
-                       u.display_name, ^"#{sanitize_query(query)}%")
-      ],
-      limit: ^limit,
-      offset: ^offset
+    # Check if searching by user_id (identity number)
+    {base_query, is_id_search} = case parse_user_id_query(query) do
+      {:ok, user_id_num} ->
+        # Direct search by user_id number
+        q = from u in User,
+          where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+          where: u.user_id == ^user_id_num,
+          limit: 1
+        {q, true}
+      
+      :error ->
+        # Regular text search
+        search_term = "%#{sanitize_query(query)}%"
+        q = from u in User,
+          where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+          where: ilike(u.username, ^search_term) or 
+                 ilike(u.display_name, ^search_term) or
+                 ilike(u.bio, ^search_term),
+          order_by: [
+            desc: fragment("CASE WHEN ? ILIKE ? THEN 2 WHEN ? ILIKE ? THEN 1 ELSE 0 END",
+                           u.username, ^"#{sanitize_query(query)}%",
+                           u.display_name, ^"#{sanitize_query(query)}%")
+          ],
+          limit: ^limit,
+          offset: ^offset
+        {q, false}
+    end
 
     # Exclude blocked users if current_user provided
     base_query = if current_user do
@@ -51,16 +65,35 @@ defmodule Cgraph.Search do
     users = Repo.all(base_query)
     
     # Get total count
-    count_query = from u in User,
-      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
-      where: ilike(u.username, ^search_term) or 
-             ilike(u.display_name, ^search_term) or
-             ilike(u.bio, ^search_term),
-      select: count(u.id)
-
-    total = Repo.one(count_query)
+    total = if is_id_search do
+      length(users)
+    else
+      search_term = "%#{sanitize_query(query)}%"
+      count_query = from u in User,
+        where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+        where: ilike(u.username, ^search_term) or 
+               ilike(u.display_name, ^search_term) or
+               ilike(u.bio, ^search_term),
+        select: count(u.id)
+      Repo.one(count_query)
+    end
 
     {users, %{total: total, limit: limit, offset: offset}}
+  end
+
+  # Parse user_id query formats like "#0001", "#1", "0001", or just "1"
+  defp parse_user_id_query(query) do
+    cleaned = query |> String.trim() |> String.replace("#", "")
+    
+    # Only treat as ID search if it looks like a number
+    if String.match?(cleaned, ~r/^\d+$/) do
+      case Integer.parse(cleaned) do
+        {num, ""} when num > 0 -> {:ok, num}
+        _ -> :error
+      end
+    else
+      :error
+    end
   end
 
   @doc """

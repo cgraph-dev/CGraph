@@ -64,7 +64,7 @@ export default function ForumListScreen({ navigation }: Props) {
       </View>
       <View style={styles.forumInfo}>
         <Text style={[styles.forumName, { color: colors.text }]} numberOfLines={1}>
-          r/{item.slug}
+          c/{item.slug}
         </Text>
         <Text style={[styles.forumStats, { color: colors.textSecondary }]} numberOfLines={1}>
           {item.member_count} members • {item.post_count} posts

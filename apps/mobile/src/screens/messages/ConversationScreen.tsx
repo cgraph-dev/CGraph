@@ -207,6 +207,18 @@ export default function ConversationScreen({ navigation, route }: Props) {
     );
   }
   
+  const EmptyConversation = () => (
+    <View style={styles.emptyContainer}>
+      <View style={[styles.emptyIconContainer, { backgroundColor: colors.surface }]}>
+        <Ionicons name="chatbubbles-outline" size={48} color={colors.textTertiary} />
+      </View>
+      <Text style={[styles.emptyTitle, { color: colors.text }]}>No messages yet</Text>
+      <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
+        Start the conversation by sending a message below
+      </Text>
+    </View>
+  );
+  
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -218,9 +230,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.messagesList}
+        contentContainerStyle={[styles.messagesList, messages.length === 0 && styles.emptyList]}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
         inverted={false}
+        ListEmptyComponent={EmptyConversation}
       />
       
       <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
@@ -369,5 +382,35 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     marginLeft: 4,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 24,
+  },
+  emptyList: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
+  emptyIconContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });

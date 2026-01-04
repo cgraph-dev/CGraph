@@ -143,14 +143,14 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       refreshToken: null,
       isAuthenticated: false,
-      isLoading: true,
+      isLoading: false, // Start with false - checkAuth will handle loading state
       error: null,
 
       login: async (email: string, password: string) => {
         set({ isLoading: true, error: null });
         try {
           const response = await api.post('/api/v1/auth/login', {
-            email,
+            identifier: email,  // Backend accepts email or username
             password,
           });
           const { user, tokens } = response.data;
@@ -337,6 +337,48 @@ export const useAuthStore = create<AuthState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
+      // Critical: Handle rehydration to fix isLoading state
+      onRehydrateStorage: () => {
+        console.log('[AuthStore] onRehydrateStorage called');
+        return (state, error) => {
+          console.log('[AuthStore] Rehydration callback - state:', !!state, 'error:', error);
+          if (error) {
+            console.error('Auth store rehydration failed:', error);
+            // On error, reset to safe state
+            useAuthStore.setState({
+              isLoading: false,
+              isAuthenticated: false,
+              user: null,
+              token: null,
+              refreshToken: null,
+            });
+          } else if (state) {
+            // Rehydration successful - mark loading as complete
+            // If we have a token, we'll validate it in checkAuth
+            // If not, we're just not authenticated
+            console.log('[AuthStore] Rehydration complete - hasToken:', !!state.token);
+            useAuthStore.setState({
+              isLoading: state.token ? true : false, // Keep loading if we need to validate token
+            });
+          } else {
+            // No state to rehydrate
+            console.log('[AuthStore] No state to rehydrate');
+            useAuthStore.setState({ isLoading: false });
+          }
+        };
+      },
     }
   )
 );
+
+// Safety timeout: ensure isLoading is set to false within 3 seconds of module load
+// This catches any edge cases where rehydration might not complete
+if (typeof window !== 'undefined') {
+  setTimeout(() => {
+    const state = useAuthStore.getState();
+    if (state.isLoading) {
+      console.warn('[AuthStore] Safety timeout: forcing isLoading to false');
+      useAuthStore.setState({ isLoading: false });
+    }
+  }, 3000);
+}

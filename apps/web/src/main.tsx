@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -7,6 +7,13 @@ import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 import './index.css';
+
+// Development mode logging
+if (import.meta.env.DEV) {
+  console.log('[CGraph] Application initializing...');
+  console.log('[CGraph] Environment:', import.meta.env.MODE);
+  console.log('[CGraph] API URL:', import.meta.env.VITE_API_URL || 'http://localhost:4000');
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,23 +25,65 @@ const queryClient = new QueryClient({
   },
 });
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// Global loading fallback component with dark theme
+function GlobalLoadingFallback() {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-dark-900">
+      <div className="relative">
+        {/* Animated logo/spinner */}
+        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center animate-pulse shadow-lg shadow-primary-500/30">
+          <span className="text-2xl font-bold text-white">C</span>
+        </div>
+        {/* Orbital ring */}
+        <div className="absolute inset-0 -m-2 border-2 border-primary-500/30 rounded-full animate-spin" style={{ animationDuration: '3s' }} />
+      </div>
+      <p className="mt-6 text-gray-400 animate-pulse">Loading CGraph...</p>
+    </div>
+  );
+}
+
+// Root element validation
+const rootElement = document.getElementById('root');
+if (!rootElement) {
+  throw new Error('[CGraph] Root element not found. Check index.html for <div id="root"></div>');
+}
+
+// Handle uncaught errors at the window level
+window.addEventListener('error', (event) => {
+  console.error('[CGraph] Uncaught error:', event.error);
+});
+
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('[CGraph] Unhandled promise rejection:', event.reason);
+});
+
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <ErrorBoundary>
-      <ThemeProvider>
-        <QueryClientProvider client={queryClient}>
-          <BrowserRouter>
-            <App />
-            <Toaster
-              position="bottom-right"
-              toastOptions={{
-                className: 'bg-dark-800 text-white',
-                duration: 4000,
-              }}
-            />
-          </BrowserRouter>
-        </QueryClientProvider>
-      </ThemeProvider>
+      <Suspense fallback={<GlobalLoadingFallback />}>
+        <ThemeProvider>
+          <QueryClientProvider client={queryClient}>
+            <BrowserRouter>
+              <App />
+              <Toaster
+                position="bottom-right"
+                toastOptions={{
+                  className: 'bg-dark-800 text-white border border-dark-700',
+                  duration: 4000,
+                  style: {
+                    background: '#1f2937',
+                    color: '#fff',
+                  },
+                }}
+              />
+            </BrowserRouter>
+          </QueryClientProvider>
+        </ThemeProvider>
+      </Suspense>
     </ErrorBoundary>
   </React.StrictMode>
 );
+
+if (import.meta.env.DEV) {
+  console.log('[CGraph] Application mounted successfully');
+}

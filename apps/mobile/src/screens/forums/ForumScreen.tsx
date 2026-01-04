@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
+import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { ForumsStackParamList, Forum, Post } from '../../types';
@@ -39,7 +40,7 @@ export default function ForumScreen({ navigation, route }: Props) {
       const forumData = response.data.data;
       setForum(forumData);
       navigation.setOptions({
-        title: `r/${forumData.slug}`,
+        title: `c/${forumData.slug}`,
         headerRight: () => (
           <TouchableOpacity
             onPress={() => navigation.navigate('CreatePost', { forumId })}
@@ -72,6 +73,8 @@ export default function ForumScreen({ navigation, route }: Props) {
   };
   
   const handleVote = async (postId: string, value: 1 | -1) => {
+    // Haptic feedback on vote
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
       await api.post(`/posts/${postId}/vote`, { value });
       setPosts((prev) =>

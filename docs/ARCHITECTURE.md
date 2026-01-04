@@ -1,6 +1,6 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.6.4  
+> Last updated: January 2026 | Version 0.7.5  
 > This doc gets outdated fast—if something looks wrong, check the CHANGELOG.
 
 ---
@@ -21,7 +21,7 @@ Our tech stack prioritizes developer happiness and real-time performance. Elixir
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         CLIENT LAYER                                 │
 ├─────────────────────────────────────────────────────────────────────┤
-│  Web App (React 18 + Vite)     │    Mobile (React Native + Expo)   │
+│  Web App (React 19 + Vite)     │    Mobile (React Native + Expo)    │
 │  - TailwindCSS for styling     │    - React Navigation              │
 │  - Zustand for state           │    - Async Storage                 │
 │  - Socket.io-like via Phoenix  │    - Expo Push Notifications       │

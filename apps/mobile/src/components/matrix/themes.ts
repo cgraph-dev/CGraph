@@ -2,26 +2,27 @@
  * Matrix Cipher Background Animation - Mobile Themes
  * 
  * @description Color themes for mobile Matrix animation.
- * Optimized for mobile displays with vibrant colors.
+ * Synchronized with web theme for consistent brand experience.
  * 
- * @version 1.0.0
+ * @version 1.1.0
  * @since v0.6.3
+ * @updated v0.7.5
  * @author CGraph Development Team
  */
 
 import type { ThemePreset, MatrixMobileTheme } from './types';
 
 // =============================================================================
-// THEME DEFINITIONS
+// THEME DEFINITIONS (Synchronized with web tailwind.config.js)
 // =============================================================================
 
 export const MATRIX_GREEN: MatrixMobileTheme = {
   id: 'matrix-green',
-  primaryColor: '#00ff41',
-  secondaryColor: '#00cc33',
-  tertiaryColor: '#008822',
-  backgroundColor: '#0a0a0a',
-  glowColor: '#00ff41',
+  primaryColor: '#39ff14',     // Matrix bright - matches web
+  secondaryColor: '#00ff41',   // Matrix glow - matches web
+  tertiaryColor: '#003b00',    // Matrix dim - matches web
+  backgroundColor: '#000000',   // Pure black for maximum contrast
+  glowColor: '#39ff14',        // Matrix bright - matches web
 };
 
 export const CYBER_BLUE: MatrixMobileTheme = {

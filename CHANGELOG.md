@@ -11,6 +11,192 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.6] - 2026-01-05
+
+### Username Login & Identity Number Search
+
+Enhanced authentication system with dual login support and user identity number search functionality.
+
+### Added
+
+#### Authentication Enhancements
+- **Username Login Support** - Users can now login with either email or username on both web and mobile platforms
+- **Identifier Auto-Detection** - Backend automatically detects if login credential is email (contains `@`) or username
+- **Identity Number Search** - Users can search for others by unique identity number (formats: `#0001`, `0001`, or `1`)
+- **Extended Auth Response** - Login now returns `user_id`, `user_id_display`, `can_change_username`, and `username_next_change_at`
+
+#### Backend Functions
+- `Accounts.authenticate_by_identifier/2` - Unified authentication accepting email or username
+- `Accounts.get_user_by_user_id/1` - Lookup users by numeric identity number
+- `Search.parse_user_id_query/1` - Helper to detect and parse identity number searches
+
+### Changed
+
+#### Web Frontend
+- **Login Page** - Email field now accepts "Email or Username" with text input type
+- **Auth Store** - API calls use `identifier` parameter instead of `email`
+
+#### Mobile Frontend
+- **Login Screen** - Updated input label and state to support username login
+- **Auth Context** - Login function accepts `identifier` parameter
+
+#### API Response
+- Auth JSON now includes comprehensive user identity fields for frontend display
+
+### Technical Details
+
+Authentication flow:
+```elixir
+# Auto-detect email vs username
+def authenticate_by_identifier(identifier, password) do
+  user = if String.contains?(identifier, "@"),
+    do: get_user_by_email(identifier),
+    else: get_user_by_username(identifier)
+  verify_password(user, password)
+end
+```
+
+Identity number search patterns:
+```elixir
+# Supported formats for user_id search
+"#0001" -> exact match user_id: 1
+"0001"  -> exact match user_id: 1  
+"1"     -> exact match user_id: 1
+```
+
+### Files Modified
+- `apps/backend/lib/cgraph/accounts.ex`
+- `apps/backend/lib/cgraph_web/controllers/api/v1/auth_controller.ex`
+- `apps/backend/lib/cgraph_web/controllers/api/v1/auth_json.ex`
+- `apps/backend/lib/cgraph/search.ex`
+- `apps/web/src/pages/auth/Login.tsx`
+- `apps/web/src/stores/authStore.ts`
+- `apps/mobile/src/contexts/AuthContext.tsx`
+- `apps/mobile/src/screens/auth/LoginScreen.tsx`
+
+---
+
+## [0.7.5] - 2026-01-05
+
+### Mobile Theme Synchronization & Cross-Platform Auth Fix
+
+Major update bringing mobile UI into alignment with web design system and resolving cross-device authentication issues.
+
+### Fixed
+
+#### Mobile Authentication
+- **LAN Network Binding** - Backend now binds to `0.0.0.0` instead of `127.0.0.1`, enabling mobile devices to connect via local network
+- **API Host Configuration** - Updated mobile app to use correct LAN IP for development API connections
+- **Cross-Device Login** - Users can now register on web and login on mobile (and vice versa) over the local network
+
+#### React Dependency
+- **Version Pinning** - Pinned `react-dom` to exact `19.1.0` to prevent version drift from `react` package
+- **Build Consistency** - Eliminated intermittent white screen issues caused by React version mismatch in Vite cache
+
+### Changed
+
+#### Mobile Theme Overhaul
+- **Primary Color** - Changed from Indigo (`#6366f1`) to Emerald/Matrix green (`#10b981`) across all components
+- **Theme Context** - Updated `ThemeContext.tsx` with complete Matrix-inspired color palette
+- **Matrix Animations** - Synchronized `MATRIX_GREEN` theme colors with web implementation (`#39ff14` glow, `#00ff41` bright)
+- **Splash Screen** - Updated Expo splash background from purple to Matrix green
+- **App Icon Background** - Changed adaptive icon background to match new theme
+
+#### Configuration Updates
+- **app.config.js** - Version bump, color updates, development API host configuration
+- **dev.exs** - Phoenix HTTP server now accepts connections from all network interfaces
+
+### Technical Details
+
+Backend network binding change:
+```elixir
+# Before: Only localhost connections
+http: [ip: {127, 0, 0, 1}, port: 4000]
+
+# After: All network interfaces
+http: [ip: {0, 0, 0, 0}, port: 4000]
+```
+
+Mobile theme color mapping:
+```typescript
+// Primary colors updated throughout
+primary: '#10b981',        // Emerald-500 (was #6366f1 Indigo)
+primaryDark: '#059669',    // Emerald-600
+accent: '#39ff14',         // Matrix glow green
+```
+
+### Files Modified
+- `apps/mobile/src/contexts/ThemeContext.tsx`
+- `apps/mobile/src/components/matrix/themes.ts`
+- `apps/mobile/app.config.js`
+- `apps/mobile/package.json`
+- `apps/backend/config/dev.exs`
+- `apps/web/package.json`
+
+---
+
+## [0.7.4] - 2026-01-04
+
+### Comprehensive Bug Fixes & UI Polish
+
+Major codebase review with critical bug fixes for token refresh, socket handling, and cross-platform consistency improvements.
+
+### Fixed
+
+#### Critical Bug Fixes
+- **Web Token Refresh** - Fixed API token refresh to handle both nested and flat response formats (`response.data.data.tokens` or `response.data`)
+- **Socket Graceful Handling** - Socket `joinConversation` and `joinGroupChannel` now return `null` instead of throwing errors when disconnected, with automatic reconnection
+- **Error Display Duration** - Increased error message auto-dismiss timeout from 1.5s to 5s on Login and Register pages for better user readability
+- **Confirm Password Toggle** - Added missing visibility toggle button for confirm password field on web Register page
+
+#### UI/UX Fixes
+- **Terms & Privacy Links** - Fixed placeholder `#` links to actual URLs (`https://cgraph.org/terms` and `/privacy`) on web Register page
+- **Forum Prefix Consistency** - Standardized forum prefix from `r/` to `c/` across all mobile screens for consistency with web app
+- **Conversation Empty State** - Added proper empty state UI to mobile ConversationScreen when no messages exist
+
+### Added
+
+#### Mobile Enhancements
+- **MatrixAuthBackground** - Added animated matrix background to mobile RegisterScreen for consistency with LoginScreen
+- **Haptic Feedback** - Added haptic feedback (expo-haptics) to vote buttons on ForumScreen and PostScreen
+- **Empty Conversation UI** - New "No messages yet" empty state with icon and helpful text
+
+#### Web Enhancements  
+- **Forum Sidebar Skeleton** - Added skeleton loading animation to Popular Communities sidebar section during data fetch
+- **Forum Empty State** - Added "No communities found" message when forum list is empty
+
+### Changed
+
+#### Code Quality
+- **Socket Error Recovery** - Socket methods now attempt auto-reconnection on failure rather than throwing
+- **API Response Flexibility** - Token refresh interceptor handles multiple response formats gracefully
+- **Consistent Prefixes** - All forum references now use `c/` prefix (mobile was using `r/`)
+
+### Technical Details
+
+Token refresh now handles multiple response formats:
+```typescript
+// Handles both formats:
+// { data: { tokens: { access_token, refresh_token } } }
+// { access_token, refresh_token }
+const data = response.data.data || response.data;
+const tokens = data.tokens || data;
+```
+
+Socket graceful reconnection:
+```typescript
+public joinConversation(conversationId: string): Channel | null {
+  // Returns null and auto-reconnects instead of throwing
+  if (!this.socket?.isConnected()) {
+    this.connect();
+    return null;
+  }
+  // ...
+}
+```
+
+---
+
 ## [0.7.3] - 2026-01-03
 
 ### Cross-Platform Feature Enhancement

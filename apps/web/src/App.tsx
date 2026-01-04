@@ -33,14 +33,27 @@ import AdminDashboard from '@/pages/admin/AdminDashboard';
 import NotFound from '@/pages/NotFound';
 import MatrixTest from '@/pages/test/MatrixTest';
 
-// Initialize auth check on app load
+// Initialize auth check on app load - non-blocking
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const checkAuth = useAuthStore((state) => state.checkAuth);
+  const token = useAuthStore((state) => state.token);
 
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    // Run auth check in background - don't block rendering
+    if (import.meta.env.DEV) {
+      console.log('[AuthInitializer] Starting auth check, hasToken:', !!token);
+    }
+    
+    checkAuth().catch((error) => {
+      console.error('[AuthInitializer] Auth check failed:', error);
+    }).finally(() => {
+      if (import.meta.env.DEV) {
+        console.log('[AuthInitializer] Auth check complete');
+      }
+    });
+  }, [checkAuth, token]);
 
+  // Always render children immediately - no blocking
   return <>{children}</>;
 }
 
@@ -48,10 +61,17 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthStore();
 
+  if (import.meta.env.DEV) {
+    console.log('[ProtectedRoute] isLoading:', isLoading, 'isAuthenticated:', isAuthenticated);
+  }
+
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center bg-dark-900">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+        <div className="flex flex-col items-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+          <p className="mt-3 text-sm text-gray-500">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -67,12 +87,16 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuthStore();
 
+  if (import.meta.env.DEV) {
+    console.log('[PublicRoute] isLoading:', isLoading, 'isAuthenticated:', isAuthenticated);
+  }
+
+  // Don't show loading for public routes - let them render immediately
+  // The AuthInitializer handles the initial loading state
   if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-dark-900">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
-      </div>
-    );
+    // For public routes, we show the content but will redirect after auth check
+    // This prevents white screen on initial load
+    return <>{children}</>;
   }
 
   if (isAuthenticated) {
