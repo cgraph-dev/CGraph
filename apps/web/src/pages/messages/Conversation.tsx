@@ -611,7 +611,6 @@ function MessageBubble({
                 />
               </div>
             )}
-            )}
             {/* Text content */}
             {message.content && (
               <p className="whitespace-pre-wrap break-words">{message.content}</p>

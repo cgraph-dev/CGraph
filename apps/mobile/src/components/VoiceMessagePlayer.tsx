@@ -108,7 +108,7 @@ export function VoiceMessagePlayer({
     }
   }, [audioUrl]);
 
-  const onPlaybackStatusUpdate = useCallback((status: Audio.PlaybackStatus) => {
+  const onPlaybackStatusUpdate = useCallback((status: any) => {
     if (!status.isLoaded) {
       if (status.error) {
         console.error('Playback error:', status.error);
