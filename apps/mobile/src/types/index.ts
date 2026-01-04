@@ -40,12 +40,13 @@ export interface MessageMetadata {
   height?: number;
   duration?: number;
   thumbnail?: string;
+  waveform?: number[];
 }
 
 export interface Message {
   id: string;
   content: string;
-  type: 'text' | 'image' | 'file' | 'audio' | 'video' | 'system';
+  type: 'text' | 'image' | 'file' | 'audio' | 'voice' | 'video' | 'system';
   attachments: Attachment[];
   metadata?: MessageMetadata;
   sender: UserBasic;

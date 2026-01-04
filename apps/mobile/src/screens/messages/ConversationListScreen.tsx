@@ -25,9 +25,8 @@ export default function ConversationListScreen({ navigation }: Props) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   
+  // Set up navigation header
   useEffect(() => {
-    fetchConversations();
-    
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
@@ -38,7 +37,15 @@ export default function ConversationListScreen({ navigation }: Props) {
         </TouchableOpacity>
       ),
     });
-  }, []);
+  }, [colors.primary, navigation]);
+  
+  // Fetch conversations when user is available
+  // This ensures we have the user ID for proper participant filtering
+  useEffect(() => {
+    if (user?.id) {
+      fetchConversations();
+    }
+  }, [user?.id]);
   
   const fetchConversations = async () => {
     try {
@@ -75,6 +82,11 @@ export default function ConversationListScreen({ navigation }: Props) {
     // Get current user ID - if not available, we can't properly filter
     const currentUserId = user?.id;
     
+    // Debug logging at start of render
+    if (__DEV__ && !currentUserId) {
+      console.warn('[ConversationList] Rendering without user ID - will show "Unknown"');
+    }
+    
     // Find the OTHER participant (not the current user)
     // API returns camelCase: userId, user.displayName, user.avatarUrl
     const otherParticipant = currentUserId ? item.participants?.find((p: ConversationParticipant) => {
@@ -83,18 +95,18 @@ export default function ConversationListScreen({ navigation }: Props) {
       return String(participantUserId) !== String(currentUserId);
     }) : item.participants?.[0]; // Fallback to first participant if no user ID
     
-    // Debug logging (dev only)
-    if (__DEV__ && item.participants?.length) {
-      console.log('[ConversationList] FULL USER OBJECT:', JSON.stringify(user, null, 2));
-      console.log('[ConversationList] Participants for', item.id, ':', JSON.stringify(item.participants?.map(p => ({
+    // Debug logging (dev only) - always log for first item to trace issues
+    if (__DEV__) {
+      console.log('[ConversationList] Current user ID:', currentUserId);
+      console.log('[ConversationList] Conversation:', item.id);
+      console.log('[ConversationList] Participants:', JSON.stringify(item.participants?.map(p => ({
         participantId: p.id,
         userId: p.userId || p.user_id,
         userObjId: (p.user as any)?.id,
         displayName: (p.user as any)?.displayName || (p.user as any)?.display_name,
         username: (p.user as any)?.username
       })), null, 2));
-      console.log('[ConversationList] Current user ID:', currentUserId);
-      console.log('[ConversationList] Other participant:', otherParticipant ? 'found' : 'not found');
+      console.log('[ConversationList] Other participant found:', otherParticipant ? 'yes' : 'no');
     }
     
     // Extract display name - API uses camelCase (displayName, not display_name)

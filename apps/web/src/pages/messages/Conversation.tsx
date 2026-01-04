@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { socketManager } from '@/lib/socket';
+import { api } from '@/lib/api';
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import {
   PaperAirplaneIcon,
@@ -15,7 +16,10 @@ import {
   LockClosedIcon,
   ShieldCheckIcon,
   ArrowPathIcon,
+  MicrophoneIcon,
 } from '@heroicons/react/24/outline';
+import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
+import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
 
 export default function Conversation() {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -36,6 +40,7 @@ export default function Conversation() {
   const [isSending, setIsSending] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -170,6 +175,41 @@ export default function Conversation() {
       socketManager.sendTyping(`conversation:${conversationId}`, false);
     } catch (error) {
       console.error('Failed to send message:', error);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Handle voice message complete - upload and send
+  const handleVoiceComplete = async (data: { blob: Blob; duration: number; waveform: number[] }) => {
+    if (!conversationId) return;
+
+    setIsSending(true);
+    setIsVoiceMode(false);
+
+    try {
+      // Create form data for upload
+      const formData = new FormData();
+      formData.append('audio', data.blob, `voice_${Date.now()}.webm`);
+      formData.append('duration', String(Math.round(data.duration)));
+      formData.append('waveform', JSON.stringify(data.waveform));
+      formData.append('conversation_id', conversationId);
+
+      // Upload voice message
+      const response = await api.post('/api/v1/voice-messages', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      // The backend should return a message object
+      const voiceMessage = response.data.data || response.data.message || response.data;
+      
+      // Refetch messages to show the new voice message
+      // (alternatively, we could add the message directly to the store)
+      await fetchMessages(conversationId, true);
+    } catch (error) {
+      console.error('Failed to send voice message:', error);
     } finally {
       setIsSending(false);
     }
@@ -380,38 +420,61 @@ export default function Conversation() {
 
       {/* Input */}
       <div className="p-4 border-t border-dark-700 bg-dark-800">
-        <div className="flex items-end gap-2">
-          <button className="p-2.5 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors">
-            <PaperClipIcon className="h-5 w-5" />
-          </button>
+        {isVoiceMode ? (
+          /* Voice Recorder UI */
+          <VoiceMessageRecorder
+            onComplete={handleVoiceComplete}
+            onCancel={() => setIsVoiceMode(false)}
+            maxDuration={120}
+            className="w-full"
+          />
+        ) : (
+          /* Normal Input UI */
+          <div className="flex items-end gap-2">
+            <button className="p-2.5 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors">
+              <PaperClipIcon className="h-5 w-5" />
+            </button>
 
-          <div className="flex-1 bg-dark-700 rounded-xl">
-            <textarea
-              value={messageInput}
-              onChange={(e) => {
-                setMessageInput(e.target.value);
-                handleTyping();
-              }}
-              onKeyDown={handleKeyPress}
-              placeholder="Type a message..."
-              rows={1}
-              className="w-full px-4 py-3 bg-transparent text-white placeholder-gray-500 resize-none focus:outline-none max-h-32"
-              style={{ minHeight: '44px' }}
-            />
+            <div className="flex-1 bg-dark-700 rounded-xl">
+              <textarea
+                value={messageInput}
+                onChange={(e) => {
+                  setMessageInput(e.target.value);
+                  handleTyping();
+                }}
+                onKeyDown={handleKeyPress}
+                placeholder="Type a message..."
+                rows={1}
+                className="w-full px-4 py-3 bg-transparent text-white placeholder-gray-500 resize-none focus:outline-none max-h-32"
+                style={{ minHeight: '44px' }}
+              />
+            </div>
+
+            <button className="p-2.5 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors">
+              <FaceSmileIcon className="h-5 w-5" />
+            </button>
+
+            {/* Toggle between mic and send based on input text */}
+            {messageInput.trim() ? (
+              <button
+                onClick={handleSend}
+                disabled={isSending}
+                className="p-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-white transition-all duration-200"
+              >
+                <PaperAirplaneIcon className="h-5 w-5" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setIsVoiceMode(true)}
+                disabled={isSending}
+                className="p-2.5 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-primary-400 transition-colors"
+                title="Record voice message"
+              >
+                <MicrophoneIcon className="h-5 w-5" />
+              </button>
+            )}
           </div>
-
-          <button className="p-2.5 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors">
-            <FaceSmileIcon className="h-5 w-5" />
-          </button>
-
-          <button
-            onClick={handleSend}
-            disabled={!messageInput.trim() || isSending}
-            className="p-2.5 rounded-lg bg-primary-600 hover:bg-primary-700 hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-white transition-all duration-200"
-          >
-            <PaperAirplaneIcon className="h-5 w-5" />
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -535,6 +598,19 @@ function MessageBubble({
                 </svg>
                 <span className="text-sm truncate">{(message.metadata.filename as string) || 'File'}</span>
               </a>
+            )}
+            {/* Voice/Audio messages */}
+            {(message.messageType === 'voice' || message.messageType === 'audio') && message.metadata?.url && (
+              <div className="min-w-[200px]">
+                <VoiceMessagePlayer
+                  messageId={message.id}
+                  audioUrl={message.metadata.url as string}
+                  duration={message.metadata.duration as number || 0}
+                  waveformData={message.metadata.waveform as number[] | undefined}
+                  className={isOwn ? 'voice-player-own' : ''}
+                />
+              </div>
+            )}
             )}
             {/* Text content */}
             {message.content && (

@@ -42,3 +42,7 @@ export { default as Tabs } from './Tabs';
 export { default as Switch } from './Switch';
 export { default as ProgressBar } from './ProgressBar';
 export { default as Select } from './Select';
+
+// Voice Messages
+export { default as VoiceMessageRecorder } from './VoiceMessageRecorder';
+export { default as VoiceMessagePlayer } from './VoiceMessagePlayer';

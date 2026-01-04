@@ -8,7 +8,7 @@ export interface Message {
   senderId: string;
   content: string;
   encryptedContent: string | null;
-  messageType: 'text' | 'image' | 'video' | 'file' | 'audio' | 'sticker' | 'gif' | 'system';
+  messageType: 'text' | 'image' | 'video' | 'file' | 'audio' | 'voice' | 'sticker' | 'gif' | 'system';
   replyToId: string | null;
   replyTo: Message | null;
   isPinned: boolean;

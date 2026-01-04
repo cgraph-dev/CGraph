@@ -804,6 +804,88 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 ```
 
+### Voice Message Components
+
+Audio recording and playback components for voice messaging in chats.
+
+#### VoiceMessageRecorder
+
+Record voice messages with live waveform visualization:
+
+```tsx
+// src/components/VoiceMessageRecorder.tsx
+import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
+
+function ChatInput() {
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
+
+  const handleVoiceComplete = async (data: { 
+    blob: Blob; 
+    duration: number; 
+    waveform: number[] 
+  }) => {
+    // Upload the voice message
+    const formData = new FormData();
+    formData.append('audio', data.blob, 'voice.webm');
+    formData.append('duration', String(data.duration));
+    formData.append('waveform', JSON.stringify(data.waveform));
+    formData.append('conversation_id', conversationId);
+    
+    await api.post('/api/v1/voice-messages', formData);
+  };
+
+  return isVoiceMode ? (
+    <VoiceMessageRecorder
+      onComplete={handleVoiceComplete}
+      onCancel={() => setIsVoiceMode(false)}
+      maxDuration={120} // 2 minutes max
+    />
+  ) : (
+    // Normal text input...
+  );
+}
+```
+
+**Features:**
+- Browser microphone recording with permission handling
+- Live waveform visualization during recording
+- Preview before sending with playback controls
+- Automatic stop at max duration
+- Cancel/delete functionality
+- Cross-browser support (WebM/Opus)
+
+#### VoiceMessagePlayer
+
+Play voice messages with waveform progress visualization:
+
+```tsx
+// src/components/VoiceMessagePlayer.tsx
+import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
+
+function MessageBubble({ message }: { message: Message }) {
+  if (message.messageType === 'voice' && message.metadata?.url) {
+    return (
+      <VoiceMessagePlayer
+        messageId={message.id}
+        audioUrl={message.metadata.url}
+        duration={message.metadata.duration || 0}
+        waveformData={message.metadata.waveform}
+        showDownload={true}
+      />
+    );
+  }
+  // Text message rendering...
+}
+```
+
+**Features:**
+- Play/pause controls
+- Waveform visualization with progress overlay
+- Click-to-seek on waveform
+- Duration display (current/total)
+- Lazy waveform loading from API
+- Optional download button
+
 ### OAuth Components
 
 Social authentication buttons and callback handling for Google, Apple, Facebook, and TikTok.

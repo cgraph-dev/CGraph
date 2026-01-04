@@ -11,16 +11,19 @@ import {
   Platform,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
+import * as FileSystem from 'expo-file-system';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
 import { MessagesStackParamList, Message, Conversation, ConversationParticipant } from '../../types';
+import { VoiceMessageRecorder, VoiceMessagePlayer } from '../../components';
 
 type Props = {
   navigation: NativeStackNavigationProp<MessagesStackParamList, 'Conversation'>;
@@ -40,6 +43,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
   const [otherParticipantId, setOtherParticipantId] = useState<string | null>(null);
+  const [isVoiceMode, setIsVoiceMode] = useState(false);
   
   const flatListRef = useRef<FlatList>(null);
   
@@ -177,6 +181,21 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const otherUserId = otherParticipant?.userId || otherParticipant?.user_id || (otherParticipant?.user as any)?.id || otherParticipant?.id;
       if (otherUserId) {
         setOtherParticipantId(otherUserId);
+        
+        // Check online status from multiple sources:
+        // 1. Real-time presence (most accurate if available)
+        // 2. User's status field from API (fallback for initial render)
+        const presenceOnline = socketManager.isUserOnline(conversationId, otherUserId);
+        const apiStatus = (otherParticipant?.user as any)?.status;
+        const isOnline = presenceOnline || apiStatus === 'online';
+        
+        if (__DEV__) {
+          console.log(`[ConversationScreen] Other user ${otherUserId} online check:`);
+          console.log(`  - Presence: ${presenceOnline}`);
+          console.log(`  - API status: ${apiStatus}`);
+          console.log(`  - Final: ${isOnline}`);
+        }
+        setIsOtherUserOnline(isOnline);
       }
       
       // Extract display name - API uses camelCase (displayName, not display_name)
@@ -295,6 +314,51 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   };
   
+  // Handle voice message completion - upload and send as a message
+  const handleVoiceComplete = async (voiceData: { uri: string; duration: number; waveform: number[] }) => {
+    setIsSending(true);
+    setIsVoiceMode(false);
+    
+    try {
+      // Read the audio file and prepare for upload
+      const fileInfo = await FileSystem.getInfoAsync(voiceData.uri);
+      if (!fileInfo.exists) {
+        throw new Error('Voice recording file not found');
+      }
+      
+      // Create form data for upload
+      const formData = new FormData();
+      formData.append('audio', {
+        uri: voiceData.uri,
+        name: `voice_${Date.now()}.m4a`,
+        type: 'audio/m4a',
+      } as any);
+      formData.append('duration', String(Math.round(voiceData.duration)));
+      formData.append('waveform', JSON.stringify(voiceData.waveform));
+      formData.append('conversation_id', conversationId);
+      
+      // Upload voice message
+      const response = await api.post('/api/v1/voice-messages', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      
+      const rawMessage = response.data.data || response.data.message || response.data;
+      const normalized = normalizeMessage(rawMessage);
+      setMessages((prev) => [...prev, normalized]);
+      
+      // Clean up the temporary file
+      await FileSystem.deleteAsync(voiceData.uri, { idempotent: true });
+    } catch (error) {
+      console.error('Error sending voice message:', error);
+      // Alert user of failure
+      Alert.alert('Error', 'Failed to send voice message. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
+  };
+  
   const formatTime = (dateString: string) => {
     return new Date(dateString).toLocaleTimeString([], {
       hour: '2-digit',
@@ -378,6 +442,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
               </Text>
             </View>
           )}
+          {/* Voice messages */}
+          {(item.type === 'voice' || item.type === 'audio') && item.metadata?.url && (
+            <VoiceMessagePlayer
+              audioUrl={item.metadata.url}
+              duration={item.metadata.duration || 0}
+              waveformData={item.metadata.waveform}
+              isSender={isOwnMessage}
+            />
+          )}
           {/* Text content */}
           {item.content && (
             <Text
@@ -448,33 +521,58 @@ export default function ConversationScreen({ navigation, route }: Props) {
         }
       />
       
-      <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-        <TouchableOpacity style={styles.attachButton}>
-          <Ionicons name="add-circle-outline" size={28} color={colors.textSecondary} />
-        </TouchableOpacity>
-        
-        <TextInput
-          style={[styles.input, { backgroundColor: colors.input, color: colors.text }]}
-          placeholder="Message..."
-          placeholderTextColor={colors.textTertiary}
-          value={inputText}
-          onChangeText={setInputText}
-          multiline
-          maxLength={4000}
-        />
-        
-        <TouchableOpacity
-          style={[styles.sendButton, { backgroundColor: inputText.trim() ? colors.primary : colors.surfaceHover }]}
-          onPress={sendMessage}
-          disabled={!inputText.trim() || isSending}
-        >
-          {isSending ? (
-            <ActivityIndicator size="small" color="#fff" />
+      {/* Voice Recorder overlay */}
+      {isVoiceMode && (
+        <View style={[styles.voiceRecorderContainer, { backgroundColor: colors.surface }]}>
+          <VoiceMessageRecorder
+            onComplete={handleVoiceComplete}
+            onCancel={() => setIsVoiceMode(false)}
+            maxDuration={120}
+          />
+        </View>
+      )}
+      
+      {/* Normal input area */}
+      {!isVoiceMode && (
+        <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+          <TouchableOpacity style={styles.attachButton}>
+            <Ionicons name="add-circle-outline" size={28} color={colors.textSecondary} />
+          </TouchableOpacity>
+          
+          <TextInput
+            style={[styles.input, { backgroundColor: colors.input, color: colors.text }]}
+            placeholder="Message..."
+            placeholderTextColor={colors.textTertiary}
+            value={inputText}
+            onChangeText={setInputText}
+            multiline
+            maxLength={4000}
+          />
+          
+          {/* Toggle between mic and send based on input text */}
+          {inputText.trim() ? (
+            <TouchableOpacity
+              style={[styles.sendButton, { backgroundColor: colors.primary }]}
+              onPress={sendMessage}
+              disabled={isSending}
+            >
+              {isSending ? (
+                <ActivityIndicator size="small" color="#fff" />
+              ) : (
+                <Ionicons name="send" size={20} color="#fff" />
+              )}
+            </TouchableOpacity>
           ) : (
-            <Ionicons name="send" size={20} color={inputText.trim() ? '#fff' : colors.textTertiary} />
+            <TouchableOpacity
+              style={[styles.sendButton, { backgroundColor: colors.surfaceHover }]}
+              onPress={() => setIsVoiceMode(true)}
+              disabled={isSending}
+            >
+              <Ionicons name="mic" size={22} color={colors.textSecondary} />
+            </TouchableOpacity>
           )}
-        </TouchableOpacity>
-      </View>
+        </View>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -645,5 +743,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,
+  },
+  voiceRecorderContainer: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
   },
 });

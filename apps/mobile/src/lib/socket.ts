@@ -192,8 +192,22 @@ class SocketManager {
     
     const existingChannel = this.channels.get(topic);
     if (existingChannel) {
-      // Channel already exists - don't rejoin
-      return existingChannel;
+      // Channel already exists - check its state before returning
+      const state = existingChannel.state;
+      if (state === 'joined' || state === 'joining') {
+        // Already joined or joining, return existing channel
+        return existingChannel;
+      }
+      // Channel exists but is in a bad state (closed, errored, leaving)
+      // Remove it and create a new one
+      logger.warn(`Channel ${topic} in bad state: ${state}, recreating`);
+      this.channels.delete(topic);
+      this.channelHandlersSetUp.delete(topic);
+      this.presences.delete(topic);
+      if (topic.startsWith('conversation:')) {
+        const conversationId = topic.replace('conversation:', '');
+        this.onlineUsers.delete(conversationId);
+      }
     }
     
     logger.log('Creating new channel:', topic);
