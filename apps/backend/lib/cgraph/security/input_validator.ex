@@ -75,15 +75,15 @@ defmodule Cgraph.Security.InputValidator do
     ~r/%252e%252e%252f/i  # Double-encoded
   ]
   
-  # Command injection patterns
-  @command_injection_patterns [
-    ~r/[;&|`$]/,  # Shell metacharacters
-    ~r/\$\(/,  # Command substitution
-    ~r/`[^`]+`/,  # Backtick execution
-    ~r/\|\s*\w+/,  # Pipe to command
-    ~r/>\s*\//,  # Redirect to file
-    ~r/<\s*\//  # Redirect from file
-  ]
+  # Note: Command injection patterns reserved for future shell command validation
+  # @command_injection_patterns [
+  #   ~r/[;&|`$]/,  # Shell metacharacters
+  #   ~r/\$\(/,  # Command substitution
+  #   ~r/`[^`]+`/,  # Backtick execution
+  #   ~r/\|\s*\w+/,  # Pipe to command
+  #   ~r/>\s*\//,  # Redirect to file
+  #   ~r/<\s*\//  # Redirect from file
+  # ]
   
   @type validation_error :: 
     :too_long | 

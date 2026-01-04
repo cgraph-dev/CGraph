@@ -6,24 +6,345 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 |
-|--------|--------|--------|--------|--------|--------|--------|---------|---------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
-| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures |
-| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
-| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical |
-| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 |
-| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
-| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ | ✅ |
-| Username Login | - | - | - | - | ✅ | ✅ | ✅ | ✅ |
-| Identity Search | - | - | - | - | ✅ | ✅ | ✅ | ✅ |
-| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed | ✅ Stable |
-| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable |
-| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed |
-| Conversation Normalization | - | - | - | - | - | - | ✅ New | ✅ Active |
-| Channel Stability | - | - | - | - | - | - | ✅ New | ✅ Production-Ready |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 |
+|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures |
+| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
+| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical |
+| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
+| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Username Login | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Identity Search | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable |
+| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Enhanced |
+| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed |
+| Conversation Normalization | - | - | - | - | - | - | ✅ New | ✅ Active | ✅ Active | ✅ Active |
+| Channel Stability | - | - | - | - | - | - | ✅ New | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready |
+| Voice Messages | - | - | - | - | - | - | - | - | ✅ Fixed | ✅ Enhanced |
+| Media URL Resolution | - | - | - | - | - | - | - | - | - | ✅ New |
+
+---
+
+## January 7, 2026 - v0.7.19 Media URL Resolution & Presence Stability
+
+### Overview
+
+Fixed critical issues with voice message playback and presence tracking reliability. Voice messages were failing to play because relative URLs from the backend weren't being resolved to absolute URLs for mobile/web clients. Additionally, improved presence tracking with more robust ID comparison.
+
+### 1. Media URL Resolution (MOBILE & WEB)
+
+**Problem:** Voice messages and media attachments were failing to load. The VoiceMessagePlayer component received relative URLs like `/uploads/voice/uuid.opus`, but mobile clients need absolute URLs with the API hostname.
+
+**Root Cause:** Backend storage returns relative paths (e.g., `/uploads/voice/abc123.opus`), which work for same-origin web apps but fail for:
+- Mobile apps (React Native requires full URLs for Audio/Video)
+- Web apps with separate API domain (CORS / different base URL)
+
+**Solution:** Added `resolveMediaUrl()` utility in both mobile and web normalizers to convert relative URLs to absolute URLs:
+
+```typescript
+// apps/mobile/src/lib/normalizers.ts
+function resolveMediaUrl(url: string | undefined | null): string | undefined {
+  if (!url) return undefined;
+  
+  // Already an absolute URL (http:// or https://)
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // Data URLs should pass through unchanged
+  if (url.startsWith('data:')) {
+    return url;
+  }
+  
+  // Relative URL - prefix with API base URL
+  const base = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+  const path = url.startsWith('/') ? url : `/${url}`;
+  
+  return `${base}${path}`;
+}
+```
+
+**Applied to:**
+- `metadata.url` (audio/video source)
+- `metadata.thumbnailUrl` (image previews)
+- All file attachment types (voice, audio, file, image)
+
+### 2. Presence Tracking Improvements (MOBILE)
+
+**Problem:** User online status was not displaying correctly. The `isUserOnline()` function was returning false even when the user was in the presence list.
+
+**Root Cause:** Type mismatch between user IDs from different sources. Phoenix Presence uses string keys, but participant IDs extracted from API responses could potentially have different formats.
+
+**Solution:** 
+1. Enhanced `isUserOnline()` with fallback string comparison:
+
+```typescript
+// apps/mobile/src/lib/socket.ts
+isUserOnline(conversationId: string, userId: string): boolean {
+  const onlineSet = this.onlineUsers.get(conversationId);
+  if (!onlineSet || !userId) return false;
+  
+  // Direct lookup first (most common case)
+  if (onlineSet.has(userId)) return true;
+  
+  // Fallback: Convert both to strings and compare
+  const userIdStr = String(userId);
+  for (const id of onlineSet) {
+    if (String(id) === userIdStr) return true;
+  }
+  
+  return false;
+}
+```
+
+2. Improved participant ID extraction with explicit string conversion:
+
+```typescript
+// apps/mobile/src/screens/messages/ConversationScreen.tsx
+const rawOtherUserId = otherParticipant?.userId || 
+                       otherParticipant?.user_id || 
+                       (otherParticipant?.user as any)?.id;
+const otherUserId = rawOtherUserId ? String(rawOtherUserId) : null;
+```
+
+3. Removed fallback to participant ID (which is the join table ID, not user ID)
+
+### 3. Message Sender Alignment Fix (MOBILE)
+
+**Problem:** Sometimes messages from both parties would appear on the right side (sender side).
+
+**Root Cause:** The sender ID comparison used loose equality and didn't handle all edge cases with type coercion.
+
+**Solution:** Enhanced `renderMessage` callback with explicit type handling:
+
+```typescript
+// Extract IDs as explicit strings for consistent comparison
+const currentUserId = user?.id ? String(user.id) : null;
+const messageSenderId = item.sender_id 
+  ? String(item.sender_id) 
+  : (item as any).senderId 
+    ? String((item as any).senderId) 
+    : item.sender?.id 
+      ? String(item.sender.id) 
+      : null;
+
+// Determine message ownership - both IDs must exist and match
+const isOwnMessage = Boolean(
+  currentUserId && 
+  messageSenderId && 
+  currentUserId === messageSenderId
+);
+```
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `apps/mobile/src/lib/normalizers.ts` | Added `resolveMediaUrl()`, applied to all metadata URLs |
+| `apps/web/src/lib/apiUtils.ts` | Added same URL resolution for web platform |
+| `apps/mobile/src/lib/socket.ts` | Enhanced `isUserOnline()` with fallback string comparison |
+| `apps/mobile/src/screens/messages/ConversationScreen.tsx` | Improved participant ID extraction, explicit string conversion |
+
+### Media URL Resolution Flow
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       MEDIA URL RESOLUTION FLOW                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  BACKEND RESPONSE                                                            │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  {                                                                      │ │
+│  │    "metadata": {                                                        │ │
+│  │      "url": "/uploads/voice/abc123.opus"    ◄── RELATIVE PATH           │ │
+│  │    }                                                                    │ │
+│  │  }                                                                      │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  NORMALIZER (normalizeMessage)                                               │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  resolveMediaUrl("/uploads/voice/abc123.opus")                          │ │
+│  │                                                                          │ │
+│  │  Check: starts with http/https? NO                                      │ │
+│  │  Check: starts with data:? NO                                           │ │
+│  │  Action: Prefix with API_URL                                            │ │
+│  │                                                                          │ │
+│  │  Result: "http://localhost:4000/uploads/voice/abc123.opus"              │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  COMPONENT USAGE                                                             │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  <VoiceMessagePlayer                                                    │ │
+│  │    audioUrl="http://localhost:4000/uploads/voice/abc123.opus"           │ │
+│  │  />                                                                      │ │
+│  │                                                                          │ │
+│  │  Audio.Sound.createAsync({ uri: audioUrl }) ✓ WORKS                     │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## January 4, 2026 - v0.7.18 Voice Message Rendering Fix
+
+### Overview
+
+Fixed critical issue where voice messages were displaying as "[Voice Message]" text instead of playable audio components. The root cause was a mismatch between the backend message serialization format and the frontend normalizer expectations.
+
+### 1. Voice Message Metadata Extraction (MOBILE & WEB)
+
+**Problem:** Voice messages sent from mobile were appearing as plain text "[Voice Message]" instead of rendering the VoiceMessagePlayer component.
+
+**Root Cause:** The backend `message_json.ex` serializes file data in an `attachment` object with `url`, `filename`, `size` fields, but the mobile/web normalizers were looking for `file_url` or `fileUrl` at the root level of the message.
+
+**Solution:** Updated normalizers to check multiple data sources in priority order:
+1. Existing `metadata.url` (if already populated)
+2. `attachment.url` (from message_json.ex serialization)
+3. `fileUrl`/`file_url` at root level (backwards compatibility)
+
+```typescript
+// apps/mobile/src/lib/normalizers.ts - Enhanced metadata extraction
+const attachment = raw.attachment as Record<string, unknown> | null;
+
+// For voice/audio messages, ensure metadata has the required fields
+if ((messageType === 'voice' || messageType === 'audio') && !metadata.url) {
+  // Check attachment object first (from message_json.ex serialization)
+  const attachmentUrl = attachment?.url as string | undefined;
+  const attachmentFilename = attachment?.filename as string | undefined;
+  const attachmentSize = attachment?.size as number | undefined;
+  const attachmentMimeType = attachment?.mime_type as string | undefined;
+  
+  // Fallback to root-level file fields
+  const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
+  const fileName = attachmentFilename ?? raw.fileName ?? raw.file_name;
+  
+  if (fileUrl) {
+    metadata = {
+      ...metadata,
+      url: fileUrl as string,
+      filename: fileName as string,
+      size: fileSize as number,
+      mimeType: fileMimeType as string,
+    };
+  }
+}
+```
+
+### 2. Backend Message JSON Enhancement (BACKEND)
+
+**Problem:** The metadata field was always an empty object, requiring frontend to parse the attachment object separately.
+
+**Solution:** Enhanced `message_json.ex` to:
+1. Populate metadata with file info for voice/audio/file/image message types
+2. Include `fileUrl`, `fileName`, `fileSize`, `fileMimeType` at root level for backwards compatibility
+
+```elixir
+# apps/backend/lib/cgraph_web/controllers/api/v1/message_json.ex
+def message_data(%Message{} = msg) do
+  file_metadata = build_file_metadata(msg)
+  
+  %{
+    id: msg.id,
+    # ... other fields
+    metadata: file_metadata,  # Now populated with file info
+    fileUrl: msg.file_url,    # Root level for backwards compat
+    fileName: msg.file_name,
+    fileSize: msg.file_size,
+    fileMimeType: msg.file_mime_type,
+    attachment: build_attachment(msg),
+    # ... rest of fields
+  }
+end
+
+defp build_file_metadata(%Message{file_url: nil}), do: %{}
+defp build_file_metadata(%Message{content_type: content_type} = msg) 
+     when content_type in ["voice", "audio", "file", "image", "video"] do
+  %{
+    url: msg.file_url,
+    filename: msg.file_name,
+    size: msg.file_size,
+    mimeType: msg.file_mime_type,
+    thumbnailUrl: msg.thumbnail_url
+  }
+end
+defp build_file_metadata(_msg), do: %{}
+```
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `apps/mobile/src/lib/normalizers.ts` | Enhanced metadata extraction from attachment object |
+| `apps/web/src/lib/apiUtils.ts` | Same enhancement for web platform |
+| `apps/backend/lib/cgraph_web/controllers/api/v1/message_json.ex` | Added file metadata to message JSON, root-level file fields |
+
+### Message Flow After Fix
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                       VOICE MESSAGE DATA FLOW                                │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  UPLOAD                                                                      │
+│  ┌─────────────┐    POST /api/v1/voice-messages                             │
+│  │ Audio File  │ ─────────────────────────────────►  Voice Message Created  │
+│  └─────────────┘    multipart/form-data                                     │
+│                                                                              │
+│  BACKEND MESSAGE CREATION                                                    │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  Message:                                                               │ │
+│  │    content_type: "voice"                                                │ │
+│  │    content: "[Voice Message]"  (fallback text)                          │ │
+│  │    file_url: "/uploads/voice/abc123.opus"                               │ │
+│  │    file_name: "voice_message.opus"                                      │ │
+│  │    file_size: 45678                                                     │ │
+│  │    file_mime_type: "audio/opus"                                         │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  JSON SERIALIZATION (message_json.ex)                                        │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  {                                                                      │ │
+│  │    "contentType": "voice",                                              │ │
+│  │    "content": "[Voice Message]",                                        │ │
+│  │    "metadata": {                      ◄── NOW POPULATED                 │ │
+│  │      "url": "/uploads/voice/abc123.opus",                               │ │
+│  │      "filename": "voice_message.opus",                                  │ │
+│  │      "size": 45678,                                                     │ │
+│  │      "mimeType": "audio/opus"                                           │ │
+│  │    },                                                                   │ │
+│  │    "fileUrl": "/uploads/...",         ◄── BACKWARDS COMPAT              │ │
+│  │    "attachment": { "url": "...", ... }                                  │ │
+│  │  }                                                                      │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  FRONTEND NORMALIZATION                                                      │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  normalizeMessage() checks:                                             │ │
+│  │    1. metadata.url ✓                                                    │ │
+│  │    2. attachment.url ✓                                                  │ │
+│  │    3. fileUrl ✓                                                         │ │
+│  │                                                                          │ │
+│  │  Result: metadata.url = "/uploads/voice/abc123.opus"                    │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  RENDER DECISION (ConversationScreen.tsx)                                    │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │  if ((item.type === 'voice' || item.type === 'audio')                   │ │
+│  │      && item.metadata?.url) {                                           │ │
+│  │    <VoiceMessagePlayer audioUrl={item.metadata.url} />                  │ │
+│  │  }                                                                      │ │
+│  │                                                                          │ │
+│  │  // Falls through to text content ONLY if no metadata.url               │ │
+│  │  {item.content && <Text>{item.content}</Text>}                          │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 

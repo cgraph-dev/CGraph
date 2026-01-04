@@ -11,6 +11,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.18] - 2026-01-04
+
+### Fixed
+
+#### Backend - Voice Message Upload Enhancement
+- **Enhanced upload validation** - Added file existence check before processing
+- **Added Plug.Upload support** - Normalized Plug.Upload structs to map format
+- **Improved error handling** - Better error messages for invalid uploads
+- **Added debug logging** - Upload structure inspection for troubleshooting
+- **FFmpeg dependency** - Installed FFmpeg 6.1.1 for audio processing
+- **Impact** - Voice message uploads now properly validated and processed
+
+#### Frontend - Real-time Presence Tracking (CRITICAL FIX)
+- **Fixed stale online status** - Removed database status fallback that showed users online forever
+- **Mobile** - Now uses ONLY Phoenix Presence for accurate online/offline status
+- **Web** - Integrated real-time presence tracking with status change listeners
+- **Web** - Added presence state initialization for conversation list
+- **Web** - Conversation list now shows real-time online/offline updates
+- **Root Cause** - Database `users.status` field never updated on connect/disconnect
+- **Solution** - Phoenix Presence is now the single source of truth
+- **Impact** - Online status now updates immediately when users connect/disconnect
+
+#### Frontend - Friends Page
+- **Disabled "Online" filter tab** - Requires global presence tracking implementation
+- **Note** - Database status field shows stale data, tab re-enabled in future version
+
+### Documentation
+- **Added** `docs/PRESENCE_FIX_2026_01_04.md` - Comprehensive presence tracking architecture guide
+- **Updated** Architecture diagrams for Phoenix Presence flow
+
+---
+
 ## [0.7.17] - 2026-01-08
 
 ### Critical Production Fixes

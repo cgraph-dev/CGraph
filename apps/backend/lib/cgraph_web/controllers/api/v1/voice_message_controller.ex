@@ -45,6 +45,11 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
   def create(conn, %{"audio" => upload} = params) do
     user = conn.assigns.current_user
     
+    # Log upload struct for debugging
+    require Logger
+    Logger.debug("Voice message upload received: #{inspect(upload)}")
+    Logger.debug("Upload params: #{inspect(params)}")
+    
     opts = [
       transcode: true,
       extract_waveform: true
@@ -65,9 +70,18 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
       {:error, :file_too_large} ->
         {:error, :payload_too_large, "Voice message too long (max 5 minutes)"}
       
+      {:error, :invalid_upload} ->
+        Logger.warning("Invalid upload structure: #{inspect(upload)}")
+        {:error, :bad_request, "Invalid upload structure. Expected multipart file upload."}
+      
       {:error, reason} ->
+        Logger.error("Voice message processing failed: #{inspect(reason)}")
         {:error, :internal_server_error, "Failed to process voice message: #{inspect(reason)}"}
     end
+  end
+  
+  def create(_conn, _params) do
+    {:error, :bad_request, "Missing required 'audio' parameter"}
   end
   
   @doc """

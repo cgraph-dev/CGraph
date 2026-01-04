@@ -35,21 +35,18 @@ defmodule CgraphWeb.API.V1.AuthController do
   end
 
   @doc """
-  Login with email and password.
-  
-  Implements account lockout protection to prevent brute force attacks.
-  """
-  def login(conn, %{"email" => email, "password" => password}) do
-    # Delegate to identifier-based login for backwards compatibility
-    login(conn, %{"identifier" => email, "password" => password})
-  end
-
-  @doc """
   Login with email OR username and password.
   
   Accepts either email or username in the "identifier" field.
   Implements account lockout protection to prevent brute force attacks.
   """
+  def login(conn, params)
+
+  def login(conn, %{"email" => email, "password" => password}) do
+    # Delegate to identifier-based login for backwards compatibility
+    login(conn, %{"identifier" => email, "password" => password})
+  end
+
   def login(conn, %{"identifier" => identifier, "password" => password}) do
     ip_address = get_client_ip(conn)
     lockout_key = String.downcase(identifier)

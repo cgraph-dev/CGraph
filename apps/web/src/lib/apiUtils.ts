@@ -5,6 +5,39 @@
  * and ensuring consistent data extraction across the application.
  */
 
+// API base URL for resolving relative media paths
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+
+/**
+ * Resolves a potentially relative URL to an absolute URL.
+ * 
+ * Backend may return relative paths like `/uploads/voice/uuid.opus` which need
+ * to be prefixed with the API base URL for proper resource loading.
+ * 
+ * @param url - The URL to resolve (may be relative or absolute)
+ * @returns The absolute URL, or undefined if input was falsy
+ */
+function resolveMediaUrl(url: string | undefined | null): string | undefined {
+  if (!url) return undefined;
+  
+  // Already an absolute URL (http:// or https://)
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // Data URLs should pass through unchanged
+  if (url.startsWith('data:')) {
+    return url;
+  }
+  
+  // Relative URL - prefix with API base URL
+  // Ensure single slash between base and path
+  const base = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+  const path = url.startsWith('/') ? url : `/${url}`;
+  
+  return `${base}${path}`;
+}
+
 /**
  * Safely extracts an array from API response data.
  * Handles various response formats:
@@ -219,6 +252,73 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
   
   const senderId = raw.senderId ?? raw.sender_id ?? null;
   const sender = normalizeSender(raw.sender as Record<string, unknown> | null);
+  const contentType = raw.contentType ?? raw.content_type ?? 'text';
+  
+  // Build metadata - for voice/audio/file messages, extract from multiple possible sources
+  // Priority: existing metadata.url > attachment.url > fileUrl/file_url
+  let metadata = (raw.metadata as Record<string, unknown>) || {};
+  const attachment = raw.attachment as Record<string, unknown> | null;
+  
+  // If metadata already has a URL, ensure it's resolved to absolute
+  if (metadata.url) {
+    metadata = {
+      ...metadata,
+      url: resolveMediaUrl(metadata.url as string),
+      thumbnailUrl: metadata.thumbnailUrl ? resolveMediaUrl(metadata.thumbnailUrl as string) : undefined,
+    };
+  }
+  
+  // For voice/audio messages, ensure metadata has the required fields
+  if ((contentType === 'voice' || contentType === 'audio') && !metadata.url) {
+    // Check attachment object first (from message_json.ex serialization)
+    const attachmentUrl = attachment?.url as string | undefined;
+    const attachmentFilename = attachment?.filename as string | undefined;
+    const attachmentSize = attachment?.size as number | undefined;
+    const attachmentMimeType = attachment?.mime_type as string | undefined;
+    
+    // Fallback to root-level file fields
+    const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
+    const fileName = attachmentFilename ?? raw.fileName ?? raw.file_name;
+    const fileSize = attachmentSize ?? raw.fileSize ?? raw.file_size;
+    const fileMimeType = attachmentMimeType ?? raw.fileMimeType ?? raw.file_mime_type;
+    
+    if (fileUrl) {
+      metadata = {
+        ...metadata,
+        url: resolveMediaUrl(fileUrl as string),
+        filename: fileName as string,
+        size: fileSize as number,
+        mimeType: fileMimeType as string,
+        duration: metadata.duration,
+        waveform: metadata.waveform,
+      };
+    }
+  }
+  
+  // For file/image messages, ensure metadata has the required fields
+  if ((contentType === 'file' || contentType === 'image') && !metadata.url) {
+    // Check attachment object first (from message_json.ex serialization)
+    const attachmentUrl = attachment?.url as string | undefined;
+    const attachmentFilename = attachment?.filename as string | undefined;
+    const attachmentSize = attachment?.size as number | undefined;
+    const attachmentThumbnail = attachment?.thumbnail_url as string | undefined;
+    
+    // Fallback to root-level file fields
+    const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
+    const fileName = attachmentFilename ?? raw.fileName ?? raw.file_name;
+    const fileSize = attachmentSize ?? raw.fileSize ?? raw.file_size;
+    const thumbnailUrl = attachmentThumbnail ?? raw.thumbnailUrl ?? raw.thumbnail_url;
+    
+    if (fileUrl) {
+      metadata = {
+        ...metadata,
+        url: resolveMediaUrl(fileUrl as string),
+        filename: fileName as string,
+        size: fileSize as number,
+        thumbnailUrl: resolveMediaUrl(thumbnailUrl as string),
+      };
+    }
+  }
   
   return {
     id: raw.id,
@@ -226,8 +326,8 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     channelId: raw.channelId ?? raw.channel_id ?? null,
     senderId: senderId ?? sender?.id ?? null,
     content: raw.content ?? '',
-    contentType: raw.contentType ?? raw.content_type ?? 'text',
-    messageType: raw.messageType ?? raw.message_type ?? raw.contentType ?? raw.content_type ?? 'text',
+    contentType: contentType,
+    messageType: raw.messageType ?? raw.message_type ?? contentType,
     encryptedContent: raw.encryptedContent ?? raw.encrypted_content ?? null,
     isEncrypted: raw.isEncrypted ?? raw.is_encrypted ?? false,
     isEdited: raw.isEdited ?? raw.is_edited ?? false,
@@ -235,7 +335,7 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     replyToId: raw.replyToId ?? raw.reply_to_id ?? null,
     replyTo: raw.replyTo ?? raw.reply_to ?? null,
     deletedAt: raw.deletedAt ?? raw.deleted_at ?? null,
-    metadata: raw.metadata ?? {},
+    metadata: metadata,
     reactions: raw.reactions ?? [],
     sender: sender,
     createdAt: raw.createdAt ?? raw.created_at ?? raw.insertedAt ?? raw.inserted_at ?? new Date().toISOString(),

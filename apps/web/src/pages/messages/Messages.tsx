@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Outlet, useParams, NavLink, useSearchParams, useNavigate } from 'react-router-dom';
 import { useChatStore, Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
+import { socketManager } from '@/lib/socket';
 import { formatDistanceToNow } from 'date-fns';
 import {
   MagnifyingGlassIcon,
@@ -19,6 +20,44 @@ export default function Messages() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [onlineStatus, setOnlineStatus] = useState<Record<string, boolean>>({});
+
+  // Track online status changes for all conversations
+  useEffect(() => {
+    const unsubscribe = socketManager.onStatusChange((convId, userId, isOnline) => {
+      setOnlineStatus(prev => ({
+        ...prev,
+        [`${convId}-${userId}`]: isOnline
+      }));
+    });
+    
+    return unsubscribe;
+  }, []);
+
+  // Initialize presence checking for loaded conversations
+  useEffect(() => {
+    if (conversations.length > 0) {
+      // Get initial presence state from socket manager
+      const allStatuses = socketManager.getAllOnlineStatuses();
+      const statusMap: Record<string, boolean> = {};
+      
+      conversations.forEach(conv => {
+        const onlineUsers = allStatuses.get(conv.id);
+        if (onlineUsers) {
+          const otherParticipant = conv.participants.find(p => p.userId !== user?.id);
+          if (otherParticipant) {
+            statusMap[`${conv.id}-${otherParticipant.userId}`] = onlineUsers.has(otherParticipant.userId);
+          }
+        }
+      });
+      
+      setOnlineStatus(statusMap);
+      
+      // Peek at all conversations to get presence updates
+      const conversationIds = conversations.map(c => c.id);
+      socketManager.peekConversationsPresence(conversationIds);
+    }
+  }, [conversations, user?.id]);
 
   // Handle refresh
   const handleRefresh = useCallback(async () => {
@@ -76,9 +115,9 @@ export default function Messages() {
   });
 
   return (
-    <div className="flex flex-1">
+    <div className="flex flex-1 h-full max-h-screen overflow-hidden">
       {/* Conversations Sidebar */}
-      <div className="w-80 bg-dark-800 border-r border-dark-700 flex flex-col">
+      <div className="w-80 bg-dark-800 border-r border-dark-700 flex flex-col h-full">
         {/* Header */}
         <div className="p-4 border-b border-dark-700">
           <div className="flex items-center justify-between mb-4">
@@ -115,7 +154,7 @@ export default function Messages() {
         </div>
 
         {/* Conversations List */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-0">
           {isLoadingConversations && conversations.length === 0 ? (
             <div className="flex items-center justify-center py-8">
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
@@ -137,6 +176,7 @@ export default function Messages() {
                 conversation={conv}
                 isActive={conv.id === conversationId}
                 currentUserId={user?.id || ''}
+                onlineStatus={onlineStatus}
               />
             ))
           )}
@@ -144,7 +184,7 @@ export default function Messages() {
       </div>
 
       {/* Conversation Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col h-full min-w-0">
         {conversationId ? (
           <Outlet />
         ) : (
@@ -206,15 +246,18 @@ function ConversationItem({
   conversation,
   isActive,
   currentUserId,
+  onlineStatus,
 }: {
   conversation: Conversation;
   isActive: boolean;
   currentUserId: string;
+  onlineStatus: Record<string, boolean>;
 }) {
   const name = getConversationName(conversation, currentUserId);
   const avatar = getConversationAvatar(conversation, currentUserId);
   const otherParticipant = conversation.participants.find((p) => p.userId !== currentUserId);
-  const isOnline = otherParticipant?.user.status === 'online';
+  // Use Phoenix Presence for real-time online status (single source of truth)
+  const isOnline = otherParticipant ? onlineStatus[`${conversation.id}-${otherParticipant.userId}`] || false : false;
 
   return (
     <NavLink

@@ -270,9 +270,9 @@ export default function Conversation() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-dark-900">
+    <div className="flex-1 flex flex-col bg-dark-900 h-full max-h-screen overflow-hidden">
       {/* Header */}
-      <header className="h-16 px-4 border-b border-dark-700 flex items-center justify-between bg-dark-800">
+      <header className="h-16 px-4 border-b border-dark-700 flex items-center justify-between bg-dark-800 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="h-10 w-10 rounded-full overflow-hidden bg-dark-600">
@@ -332,7 +332,8 @@ export default function Conversation() {
       {/* Messages */}
       <div
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-4 space-y-4"
+        className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0"
+        style={{ scrollBehavior: 'smooth' }}
       >
         {/* Load more button */}
         {hasMoreMessages[conversationId || ''] && (
@@ -419,7 +420,7 @@ export default function Conversation() {
       )}
 
       {/* Input */}
-      <div className="p-4 border-t border-dark-700 bg-dark-800">
+      <div className="p-4 border-t border-dark-700 bg-dark-800 flex-shrink-0">
         {isVoiceMode ? (
           /* Voice Recorder UI */
           <VoiceMessageRecorder

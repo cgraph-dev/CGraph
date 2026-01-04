@@ -1,7 +1,7 @@
 defmodule Cgraph.MixProject do
   use Mix.Project
 
-  @version "0.6.4"
+  @version "0.7.18"
   # Using Elixir 1.19+ with OTP 28 for latest features and security
   @elixir_version "~> 1.19"
 
@@ -14,6 +14,7 @@ defmodule Cgraph.MixProject do
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
       deps: deps(),
+      listeners: [Phoenix.CodeReloader],
       dialyzer: dialyzer(),
       test_coverage: [tool: ExCoveralls]
     ]

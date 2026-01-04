@@ -182,6 +182,12 @@ defmodule Cgraph.Messaging.VoiceMessage do
     extract_waveform = Keyword.get(opts, :extract_waveform, true)
     context = Keyword.get(opts, :context, "voice")
     
+    # Normalize upload to map format
+    upload_map = case upload do
+      %Plug.Upload{} = u -> %{filename: u.filename, content_type: u.content_type, path: u.path, size: nil}
+      map when is_map(map) -> map
+    end
+    
     with :ok <- validate_upload(upload),
          {:ok, stored} <- store_audio(user, upload, context),
          {:ok, metadata} <- extract_metadata(stored.path),
@@ -190,8 +196,8 @@ defmodule Cgraph.Messaging.VoiceMessage do
       
       attrs = %{
         filename: stored.filename,
-        original_filename: upload.filename,
-        content_type: upload.content_type,
+        original_filename: upload_map.filename,
+        content_type: upload_map.content_type,
         size: stored.size,
         duration: metadata.duration,
         url: final_url,
@@ -290,15 +296,37 @@ defmodule Cgraph.Messaging.VoiceMessage do
   Validate an upload struct before processing.
   """
   @spec validate_upload(map()) :: :ok | {:error, atom()}
-  def validate_upload(%{filename: filename, content_type: content_type}) 
-      when is_binary(filename) and is_binary(content_type) do
-    if content_type in @supported_mime_types do
-      :ok
+  def validate_upload(%{filename: filename, content_type: content_type, path: path}) 
+      when is_binary(filename) and is_binary(content_type) and is_binary(path) do
+    # Check if file exists
+    if File.exists?(path) do
+      if content_type in @supported_mime_types do
+        :ok
+      else
+        require Logger
+        Logger.warning("Unsupported mime type: #{content_type}")
+        {:error, :unsupported_format}
+      end
     else
-      {:error, :unsupported_format}
+      require Logger
+      Logger.warning("Upload file does not exist: #{path}")
+      {:error, :invalid_upload}
     end
   end
-  def validate_upload(_), do: {:error, :invalid_upload}
+  
+  def validate_upload(%Plug.Upload{} = upload) do
+    validate_upload(%{
+      filename: upload.filename,
+      content_type: upload.content_type,
+      path: upload.path
+    })
+  end
+  
+  def validate_upload(upload) do
+    require Logger
+    Logger.warning("Invalid upload structure: #{inspect(upload)}")
+    {:error, :invalid_upload}
+  end
   
   @doc """
   Check rate limit for voice message uploads.
@@ -341,6 +369,15 @@ defmodule Cgraph.Messaging.VoiceMessage do
   # ============================================================================
   # Private Functions
   # ============================================================================
+  
+  defp store_audio(user, %Plug.Upload{} = upload, context) do
+    store_audio(user, %{
+      filename: upload.filename,
+      path: upload.path,
+      size: nil,
+      content_type: upload.content_type
+    }, context)
+  end
   
   defp store_audio(user, upload, context) do
     ext = Path.extname(upload.filename) |> String.downcase()

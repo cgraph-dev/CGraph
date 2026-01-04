@@ -174,8 +174,21 @@ class SocketManager {
   }
   
   // Check if user is online in a conversation
+  // Uses string coercion to ensure consistent comparison regardless of ID format
   isUserOnline(conversationId: string, userId: string): boolean {
-    return this.onlineUsers.get(conversationId)?.has(userId) || false;
+    const onlineSet = this.onlineUsers.get(conversationId);
+    if (!onlineSet || !userId) return false;
+    
+    // Direct lookup first (most common case)
+    if (onlineSet.has(userId)) return true;
+    
+    // Fallback: Convert both to strings and compare (handles potential type mismatches)
+    const userIdStr = String(userId);
+    for (const id of onlineSet) {
+      if (String(id) === userIdStr) return true;
+    }
+    
+    return false;
   }
   
   // Get online users for a conversation

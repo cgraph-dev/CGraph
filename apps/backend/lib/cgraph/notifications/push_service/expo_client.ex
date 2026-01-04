@@ -173,7 +173,7 @@ defmodule Cgraph.Notifications.PushService.ExpoClient do
         Process.sleep(delay)
         do_send_batch(messages, retry_count + 1)
         
-      {:ok, status, _headers, body} when status >= 500 ->
+      {:ok, status, _headers, _body} when status >= 500 ->
         # Server error - retry
         Logger.warning("Expo server error #{status} - retrying")
         Process.sleep(500 * (retry_count + 1))
@@ -519,7 +519,8 @@ defmodule Cgraph.Notifications.PushService.WebPushClient do
     
     # Derive encryption key using HKDF
     # info = "WebPush: info" || 0x00 || client_public || server_public
-    info_base = "WebPush: info" <> <<0>> <> p256dh <> server_public
+    # Note: info_base calculation currently unused - reserved for future full HKDF implementation
+    # _info_base = "WebPush: info" <> <<0>> <> p256dh <> server_public
     
     # PRK = HMAC-SHA256(auth, shared_secret)
     prk = :crypto.mac(:hmac, :sha256, auth, shared_secret)

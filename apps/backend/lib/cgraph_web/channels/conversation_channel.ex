@@ -29,7 +29,7 @@ defmodule CgraphWeb.ConversationChannel do
       {:error, :not_found} ->
         {:error, %{reason: "not_found"}}
 
-      {:ok, conversation} ->
+      {:ok, _conversation} ->
         if Messaging.user_in_conversation?(conversation_id, user.id) do
           send(self(), :after_join)
           socket = socket

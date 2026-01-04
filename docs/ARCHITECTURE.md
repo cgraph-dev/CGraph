@@ -1,17 +1,19 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.5  
-> This doc gets outdated fast—if something looks wrong, check the CHANGELOG.
+> Last updated: January 2026 | Version 0.7.18  
+> Living documentation - Updated with recent presence tracking and voice message improvements
 
 ---
 
 ## Executive Summary
 
-CGraph is a real-time communication platform that combines instant messaging with deep forum discussions. We built it because existing solutions either excel at quick conversations OR long-form discussions, but never both.
+CGraph is a production-ready communication platform that seamlessly integrates real-time messaging with persistent forum discussions. Built to address the limitations of platforms that either excel at ephemeral conversations or long-form discussions—but rarely both—CGraph provides a unified experience across web and mobile.
 
-The platform serves three core use cases: (1) instant messaging between individuals and groups with end-to-end encryption, (2) persistent forum discussions with voting, threading, and customizable communities, and (3) a friends system that ties everything together. Users can authenticate traditionally with email/password or anonymously via crypto wallets—we don't judge.
+The platform serves three primary use cases: (1) encrypted instant messaging between individuals and within group channels, (2) community-driven forum discussions with voting and moderation, and (3) a comprehensive friends system with presence tracking that connects users across all features.
 
-Our tech stack prioritizes developer happiness and real-time performance. Elixir/Phoenix handles the backend because OTP makes WebSocket connections almost embarrassingly easy to scale. React powers both web (Vite) and mobile (React Native) frontends, sharing types and utilities through a monorepo structure. PostgreSQL stores everything important, with Cachex/ETS handling the ephemeral stuff like presence and rate limiting.
+Authentication is flexible, supporting traditional email/password, OAuth social login (Google, Apple, Facebook, TikTok), and privacy-focused Web3 wallet authentication. Users choose their preferred identity model without compromise.
+
+Our technology stack prioritizes real-time performance and developer productivity. Elixir/Phoenix powers the backend, leveraging OTP's actor model for managing hundreds of thousands of concurrent WebSocket connections with minimal resource overhead. React 19 drives both web (via Vite) and mobile (via React Native/Expo) clients, sharing TypeScript types and business logic through a carefully architected monorepo. PostgreSQL 16 handles persistent data with advanced JSON operations and full-text search, while Phoenix Presence (CRDT-based) tracks online status without database writes.
 
 ---
 
@@ -69,24 +71,39 @@ Our tech stack prioritizes developer happiness and real-time performance. Elixir
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
-### Version Numbers (as of Dec 2025)
+### Version Numbers (January 2026)
 
-| Component | Version | Why This Version |
-|-----------|---------|------------------|
-| Erlang/OTP | 28.3 | Latest stable, JIT performance |
-| Elixir | 1.19.4 | Latest stable, set-theoretic types |
-| Phoenix | 1.8.3 | Latest stable, LiveView 1.x |
-| Phoenix LiveView | 1.1.19 | Major improvements |
-| Ecto SQL | 3.13.4 | Latest stable |
-| Postgrex | 0.21.1 | PostgreSQL 16 support |
-| Oban | 2.20.2 | Background job processing |
-| Cachex | 4.1.1 | In-memory caching |
-| Bandit | 1.10.0 | HTTP server (replaces Cowboy) |
-| PostgreSQL | 16 | JSONB improvements |
-| Node.js | 22 LTS | For frontend builds |
-| React | 18.2 | Concurrent features |
-| React Native | 0.73 | New architecture |
-| Expo | 50 | Stable SDK |
+| Component | Version | Rationale |
+|-----------|---------|-----------|
+| **Backend Runtime** |
+| Erlang/OTP | 28 | Latest stable with JIT compiler, 40% performance boost |
+| Elixir | 1.19.4 | Set-theoretic types, improved error messages |
+| Phoenix Framework | 1.8.3 | Stable release with LiveView 1.x support |
+| Phoenix LiveView | 1.1.3 | Real-time UI updates without JavaScript |
+| Bandit HTTP Server | 1.10.0 | Pure Elixir HTTP/2 server, replaces Cowboy |
+| **Database & Storage** |
+| PostgreSQL | 16 | Advanced JSONB operations, better indexing |
+| Ecto SQL | 3.13 | Latest ORM with streaming support |
+| Postgrex | 0.21 | Native PostgreSQL 16 compatibility |
+| **Background Processing** |
+| Oban | 2.20 | Reliable job queue with Cron scheduling |
+| Cachex | 4.1 | In-memory caching with TTL and eviction |
+| **Authentication & Security** |
+| Guardian | 2.4 | JWT token management with refresh tokens |
+| Argon2 | 4.1 | Password hashing (OWASP recommended) |
+| Assent | 0.2 | OAuth 2.0/OIDC multi-provider support |
+| **Frontend (Web)** |
+| Node.js | 22 LTS | Active LTS until April 2027 |
+| React | 19.1.0 | Latest with concurrent features |
+| Vite | 6.4.1 | Lightning-fast HMR and builds |
+| TailwindCSS | 3.5 | Utility-first styling |
+| TypeScript | 5.8.0 | Advanced type inference |
+| **Frontend (Mobile)** |
+| React Native | 0.76 | New architecture with Fabric renderer |
+| Expo SDK | 54 | Latest stable with improved performance |
+| **Infrastructure** |
+| FFmpeg | 6.1.1 | Audio/video processing for voice messages |
+| Docker | 24+ | Container runtime for deployments |
 
 ---
 

@@ -1,103 +1,128 @@
 # CGraph Quick Start Guide
 
-> Time to first running app: ~15 minutes if you're lucky, ~45 minutes if npm is being npm.
-> 
-> Maintainer: @chen | Last verified: December 2025
+> Get CGraph running locally in 15-30 minutes  
+> Version 0.7.18 | January 2026
 
 ---
 
 ## Prerequisites
 
-Before we start, make sure you have these installed. I've included the versions we've tested with—other versions might work, but no promises.
+Before starting, ensure you have these tools installed. Listed versions are tested and recommended.
 
 ### Required Software
 
-| Tool | Version | Check Command | Installation |
-|------|---------|---------------|--------------|
-| Node.js | 22.x LTS | `node --version` | [nodejs.org](https://nodejs.org) or `nvm install 22` |
-| pnpm | 9.x | `pnpm --version` | `npm install -g pnpm` |
-| Elixir | 1.19+ | `elixir --version` | Use asdf: `asdf install elixir 1.19.4-otp-28` |
-| Erlang/OTP | 28+ | `erl -version` | Use asdf: `asdf install erlang 28.3` |
-| PostgreSQL | 16+ | `psql --version` | [postgresql.org](https://www.postgresql.org/download/) |
-| Redis | 7+ | `redis-cli --version` | [redis.io](https://redis.io/download) |
-| Docker | 24+ | `docker --version` | [docker.com](https://docker.com) (optional, but makes life easier) |
-| asdf | latest | `asdf --version` | [asdf-vm.com](https://asdf-vm.com/guide/getting-started.html) (recommended) |
+| Tool | Version | Check Command | Purpose |
+|------|---------|---------------|---------|
+| **Node.js** | 22.x LTS | `node --version` | Frontend runtime |
+| **pnpm** | 10.x | `pnpm --version` | Package manager |
+| **Elixir** | 1.19+ | `elixir --version` | Backend language |
+| **Erlang/OTP** | 28+ | `erl -version` | Elixir runtime |
+| **PostgreSQL** | 16+ | `psql --version` | Primary database |
+| **FFmpeg** | 6.1+ | `ffmpeg -version` | Voice message processing |
+| **asdf** | latest | `asdf --version` | Version manager (recommended) |
 
-### Quick Install Commands
+*Redis is optional - we use ETS for caching in development*
 
-**macOS (with Homebrew):**
+### Installation Instructions
+
+**macOS (Homebrew):**
 ```bash
-# Install asdf for version management (recommended)
+# Install asdf version manager
 brew install asdf
 echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ~/.zshrc
+source ~/.zshrc
 
-# Install Erlang/OTP and Elixir via asdf
+# Install Erlang & Elixir via asdf
 asdf plugin add erlang
 asdf plugin add elixir
-asdf install erlang 28.3   # Takes ~10-15 minutes
+asdf install erlang 28.0   # ~10 minutes compile time
 asdf install elixir 1.19.4-otp-28
-asdf global erlang 28.3
+asdf global erlang 28.0
 asdf global elixir 1.19.4-otp-28
 
 # Install other dependencies
-brew install node@22 pnpm postgresql@16 redis
+brew install node@22 pnpm postgresql@16 ffmpeg
 
-# Start services
+# Start PostgreSQL
 brew services start postgresql@16
-brew services start redis
 ```
 
 **Ubuntu/Debian:**
 ```bash
-# Install asdf dependencies
+# Install build dependencies
+sudo apt update
 sudo apt install curl git build-essential autoconf m4 libncurses5-dev \
-  libwxgtk3.2-dev libwxgtk-webview3.2-dev libgl1-mesa-dev libglu1-mesa-dev \
-  libpng-dev libssh-dev unixodbc-dev xsltproc fop libxml2-utils libncurses-dev
+  libssl-dev libncurses-dev ffmpeg
 
 # Install asdf
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.15.0
+git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.16.0
 echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
 source ~/.bashrc
 
-# Install Erlang/OTP and Elixir via asdf
+# Install Erlang & Elixir
 asdf plugin add erlang
 asdf plugin add elixir
-asdf install erlang 28.3   # Takes ~10-15 minutes
+asdf install erlang 28.0
 asdf install elixir 1.19.4-otp-28
-asdf global erlang 28.3
+asdf global erlang 28.0
 asdf global elixir 1.19.4-otp-28
 
-# Node.js via nvm
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
-nvm install 22
+# Install Node.js
+asdf plugin add nodejs
+asdf install nodejs 22.11.0
+asdf global nodejs 22.11.0
 
-# PostgreSQL and Redis
-sudo apt install postgresql-16 redis-server
+# Install pnpm
+npm install -g pnpm
+
+# Install and start PostgreSQL
+sudo apt install postgresql-16 postgresql-contrib
+sudo systemctl start postgresql
 ```
 
 **Windows:**
-I'm sorry. Use WSL2 and follow the Ubuntu instructions. Trust me, it's less painful.
+Use WSL2 with Ubuntu and follow the Linux instructions above. Native Windows support is not recommended for Elixir development.
 
 ---
 
 ## Step 1: Clone and Install Dependencies
 
 ```bash
-# Clone the repo
+# Clone repository
 git clone https://github.com/cgraph-dev/CGraph.git
 cd CGraph
 
-# Install all dependencies (this takes a while, grab coffee ☕)
+# Install all workspace dependencies
 pnpm install
 
-# Also install backend dependencies
+# Install backend dependencies
 cd apps/backend
 mix deps.get
-mix deps.compile
 cd ../..
 ```
 
-### Troubleshooting: "pnpm install" fails
+### Common Issues
+
+**"pnpm install" fails:**
+```bash
+# Clear pnpm cache
+pnpm store prune
+
+# Try again
+pnpm install
+```
+
+**"mix deps.get" fails:**
+```bash
+# Update Hex package manager
+mix local.hex --force
+
+# Update Rebar (build tool)
+mix local.rebar --force
+
+# Try again
+mix deps.get
+```
 
 **Problem:** `ERESOLVE unable to resolve dependency tree`
 ```bash

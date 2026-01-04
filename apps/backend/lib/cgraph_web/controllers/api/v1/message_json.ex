@@ -25,6 +25,9 @@ defmodule CgraphWeb.API.V1.MessageJSON do
   Can be called from channels for WebSocket broadcasts.
   """
   def message_data(%Message{} = msg) do
+    # Build metadata with file info for voice/audio/file messages
+    file_metadata = build_file_metadata(msg)
+    
     %{
       id: msg.id,
       conversationId: msg.conversation_id,
@@ -40,7 +43,13 @@ defmodule CgraphWeb.API.V1.MessageJSON do
       replyToId: msg.reply_to_id,
       replyTo: reply_data(msg.reply_to),
       deletedAt: msg.deleted_at,
-      metadata: %{},
+      # Include file info in metadata for voice/audio/file message types
+      metadata: file_metadata,
+      # Also include at root level for backwards compatibility
+      fileUrl: msg.file_url,
+      fileName: msg.file_name,
+      fileSize: msg.file_size,
+      fileMimeType: msg.file_mime_type,
       sender: sender_data(msg.sender),
       attachment: build_attachment(msg),
       reactions: reaction_summary(msg.reactions),
@@ -66,7 +75,11 @@ defmodule CgraphWeb.API.V1.MessageJSON do
       replyToId: msg[:reply_to_id],
       replyTo: nil,
       deletedAt: msg[:deleted_at],
-      metadata: %{},
+      metadata: build_file_metadata_from_map(msg),
+      fileUrl: msg[:file_url],
+      fileName: msg[:file_name],
+      fileSize: msg[:file_size],
+      fileMimeType: msg[:file_mime_type],
       sender: msg[:sender],
       attachment: nil,
       reactions: [],
@@ -79,6 +92,53 @@ defmodule CgraphWeb.API.V1.MessageJSON do
   defp format_datetime(%DateTime{} = dt), do: DateTime.to_iso8601(dt)
   defp format_datetime(%NaiveDateTime{} = dt), do: NaiveDateTime.to_iso8601(dt) <> "Z"
   defp format_datetime(other), do: other
+
+  # Build file metadata for voice/audio/file messages from Message struct
+  # Populates metadata object with file info for frontend players
+  defp build_file_metadata(%Message{file_url: nil}), do: %{}
+  defp build_file_metadata(%Message{content_type: content_type} = msg) 
+       when content_type in ["voice", "audio", "file", "image", "video"] do
+    %{
+      url: msg.file_url,
+      filename: msg.file_name,
+      size: msg.file_size,
+      mimeType: msg.file_mime_type,
+      thumbnailUrl: msg.thumbnail_url
+    }
+  end
+  defp build_file_metadata(_msg), do: %{}
+  
+  # Build file metadata from map (for channel assigns)
+  defp build_file_metadata_from_map(%{file_url: nil}), do: %{}
+  defp build_file_metadata_from_map(%{content_type: content_type} = msg)
+       when content_type in ["voice", "audio", "file", "image", "video"] do
+    %{
+      url: msg[:file_url],
+      filename: msg[:file_name],
+      size: msg[:file_size],
+      mimeType: msg[:file_mime_type],
+      thumbnailUrl: msg[:thumbnail_url]
+    }
+  end
+  defp build_file_metadata_from_map(msg) do
+    # Check with atom keys for maps that might have different key format
+    case msg[:file_url] || msg["file_url"] do
+      nil -> %{}
+      url ->
+        content_type = msg[:content_type] || msg["content_type"]
+        if content_type in ["voice", "audio", "file", "image", "video"] do
+          %{
+            url: url,
+            filename: msg[:file_name] || msg["file_name"],
+            size: msg[:file_size] || msg["file_size"],
+            mimeType: msg[:file_mime_type] || msg["file_mime_type"],
+            thumbnailUrl: msg[:thumbnail_url] || msg["thumbnail_url"]
+          }
+        else
+          %{}
+        end
+    end
+  end
 
   # Build attachment data from message file fields
   defp build_attachment(%Message{file_url: nil}), do: nil

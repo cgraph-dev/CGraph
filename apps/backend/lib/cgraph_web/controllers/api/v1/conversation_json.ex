@@ -6,7 +6,6 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
   association loading guards throughout.
   """
   alias Cgraph.Messaging.{Conversation, Message}
-  alias Cgraph.Accounts.User
 
   @doc """
   Renders a list of conversations with pagination metadata.
@@ -78,9 +77,6 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
   end
   defp get_participants_with_data(_), do: []
 
-  # Legacy helper for backward compatibility
-  defp get_participants(conv), do: get_participants_with_data(conv)
-
   # Returns last message from preloaded messages, excluding deleted ones
   # Guards against NotLoaded associations
   defp get_last_message(%Conversation{messages: %Ecto.Association.NotLoaded{}}), do: nil
@@ -91,20 +87,6 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
     |> List.first()
   end
   defp get_last_message(_), do: nil
-
-  # Renders participant user data with NotLoaded guard
-  # Uses camelCase for frontend consistency
-  defp participant_data(nil), do: nil
-  defp participant_data(%Ecto.Association.NotLoaded{}), do: nil
-  defp participant_data(%User{} = user) do
-    %{
-      id: user.id,
-      username: user.username,
-      displayName: user.display_name,
-      avatarUrl: user.avatar_url,
-      status: user.status || "offline"
-    }
-  end
 
   defp last_message_data(nil), do: nil
   defp last_message_data(%Message{} = msg) do

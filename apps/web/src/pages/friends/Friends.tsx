@@ -48,7 +48,9 @@ export default function Friends() {
 
   const tabs = [
     { id: 'all' as Tab, label: 'All', count: friends.length },
-    { id: 'online' as Tab, label: 'Online', count: friends.filter((f) => f.status === 'online').length },
+    // Note: "Online" tab disabled - requires global presence tracking implementation
+    // Database status field is never updated and shows stale data
+    // { id: 'online' as Tab, label: 'Online', count: 0 },
     { id: 'pending' as Tab, label: 'Pending', count: pendingRequests.length + sentRequests.length },
     { id: 'blocked' as Tab, label: 'Blocked', count: 0 },
   ];
@@ -58,9 +60,10 @@ export default function Friends() {
       friend.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       friend.displayName?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    if (activeTab === 'online') {
-      return matchesSearch && friend.status === 'online';
-    }
+    // Online filtering disabled until global presence tracking is implemented
+    // if (activeTab === 'online') {
+    //   return matchesSearch && friend.status === 'online';
+    // }
 
     return matchesSearch;
   });

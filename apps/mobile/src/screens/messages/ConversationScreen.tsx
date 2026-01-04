@@ -16,7 +16,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import * as FileSystem from 'expo-file-system';
+import { deleteAsync } from 'expo-file-system/legacy';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
@@ -87,7 +87,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
         
         if (event === 'new_message') {
           setMessages((prev) => {
-            if (prev.some(m => m.id === normalized.id)) return prev;
+            // Check for duplicates before adding
+            const exists = prev.some(m => m.id === normalized.id);
+            if (exists) {
+              if (__DEV__) {
+                console.log('[ConversationScreen] Skipping duplicate message:', normalized.id);
+              }
+              return prev;
+            }
             return [...prev, normalized];
           });
         } else if (event === 'message_updated') {
@@ -162,24 +169,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
       }
       
       // Store other participant's user ID for presence tracking
-      const otherUserId = otherParticipant?.userId || otherParticipant?.user_id || (otherParticipant?.user as any)?.id || otherParticipant?.id;
+      // Extract from userId (API camelCase) or user.id (nested object)
+      // Explicitly convert to string to ensure consistent comparison with presence data
+      const rawOtherUserId = otherParticipant?.userId || otherParticipant?.user_id || (otherParticipant?.user as any)?.id;
+      const otherUserId = rawOtherUserId ? String(rawOtherUserId) : null;
+      
       if (otherUserId) {
         setOtherParticipantId(otherUserId);
         
-        // Check online status from multiple sources:
-        // 1. Real-time presence (most accurate if available)
-        // 2. User's status field from API (fallback for initial render)
+        // Use ONLY Phoenix Presence for online status (single source of truth)
+        // Database status field is never updated and shows stale data
         const presenceOnline = socketManager.isUserOnline(conversationId, otherUserId);
-        const apiStatus = (otherParticipant?.user as any)?.status;
-        const isOnline = presenceOnline || apiStatus === 'online';
         
         if (__DEV__) {
-          console.log(`[ConversationScreen] Other user ${otherUserId} online check:`);
-          console.log(`  - Presence: ${presenceOnline}`);
-          console.log(`  - API status: ${apiStatus}`);
-          console.log(`  - Final: ${isOnline}`);
+          console.log(`[ConversationScreen] Other user ${otherUserId} presence status: ${presenceOnline}`);
         }
-        setIsOtherUserOnline(isOnline);
+        setIsOtherUserOnline(presenceOnline);
+      }
+      
+      // Debug: Check if user is actually in presence
+      if (__DEV__) {
+        const presenceList = socketManager.getOnlineUsers(conversationId);
+        console.log(`[ConversationScreen] All online users in ${conversationId}:`, presenceList);
       }
       
       // Extract display name - API uses camelCase (displayName, not display_name)
@@ -255,7 +266,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const response = await api.get(`/api/v1/conversations/${conversationId}/messages`);
       const rawMessages = response.data.data || response.data.messages || [];
       if (isMountedRef.current) {
-        setMessages(normalizeMessages(rawMessages));
+        const normalized = normalizeMessages(rawMessages);
+        // Deduplicate messages by ID before setting
+        const uniqueMessages = normalized.reduce((acc: Message[], msg: Message) => {
+          if (!acc.some(m => m.id === msg.id)) {
+            acc.push(msg);
+          }
+          return acc;
+        }, []);
+        setMessages(uniqueMessages);
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -330,9 +349,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const normalized = normalizeMessage(rawMessage);
       setMessages((prev) => [...prev, normalized]);
       
-      // Clean up the temporary file
-      // Note: deleteAsync is still supported in current SDK
-      await FileSystem.deleteAsync(voiceData.uri, { idempotent: true });
+      // Clean up the temporary file using legacy API
+      await deleteAsync(voiceData.uri, { idempotent: true });
     } catch (error) {
       console.error('Error sending voice message:', error);
       // Alert user of failure
@@ -367,29 +385,25 @@ export default function ConversationScreen({ navigation, route }: Props) {
   };
   
   const renderMessage = useCallback(({ item }: { item: Message }) => {
-    // Get current user ID for comparison
-    const currentUserId = user?.id;
+    // Extract current user ID, ensuring string format for comparison
+    const currentUserId = user?.id ? String(user.id) : null;
     
-    // Handle both snake_case and camelCase sender_id formats
-    // Also check sender.id as fallback
-    const messageSenderId = item.sender_id || (item as any).senderId || item.sender?.id;
+    // Extract message sender ID with comprehensive fallback chain
+    // The normalizer should have already set sender_id as a string
+    const messageSenderId = item.sender_id 
+      ? String(item.sender_id) 
+      : (item as any).senderId 
+        ? String((item as any).senderId) 
+        : item.sender?.id 
+          ? String(item.sender.id) 
+          : null;
     
-    // Only compare if we have a valid current user ID
-    const isOwnMessage = currentUserId ? String(messageSenderId) === String(currentUserId) : false;
-    
-    // Debug logging (remove after confirming fix)
-    if (__DEV__ && messages.length > 0 && item.id === messages[messages.length - 1]?.id) {
-      console.log('[ConversationScreen] Message sender check:', {
-        messageSenderId,
-        userId: user?.id,
-        isOwnMessage,
-        senderIdType: typeof messageSenderId,
-        userIdType: typeof user?.id,
-        rawSenderId: item.sender_id,
-        rawCamelSenderId: (item as any).senderId,
-        senderObjectId: item.sender?.id
-      });
-    }
+    // Determine message ownership - both IDs must exist and match
+    const isOwnMessage = Boolean(
+      currentUserId && 
+      messageSenderId && 
+      currentUserId === messageSenderId
+    );
     
     // Get sender display name with fallbacks
     const senderDisplayName = item.sender?.display_name || (item.sender as any)?.displayName || item.sender?.username || 'User';

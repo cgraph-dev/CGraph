@@ -380,16 +380,4 @@ defmodule CgraphWeb.API.V1.OAuthController do
   end
 
   defp get_user_info_from_tokens(_, _), do: {:error, :invalid_token}
-
-  defp decode_apple_id_token(token) do
-    case String.split(token, ".") do
-      [_header, payload, _signature] ->
-        case Base.url_decode64(payload, padding: false) do
-          {:ok, json} -> {:ok, Jason.decode!(json)}
-          :error -> {:error, :invalid_jwt}
-        end
-      _ ->
-        {:error, :invalid_jwt}
-    end
-  end
 end

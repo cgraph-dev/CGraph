@@ -1,14 +1,52 @@
 /**
  * Data normalizers for API and WebSocket responses.
- * Handles both camelCase and snake_case field names for compatibility.
- * Mobile uses snake_case internally to match native conventions.
+ * 
+ * Handles transformation between backend camelCase format and mobile snake_case conventions.
+ * Provides robust extraction of message metadata for voice, file, and image attachments.
+ * Resolves relative media URLs to absolute URLs for proper resource loading.
  */
 
 import { Message, UserBasic } from '../types';
+import { API_URL } from './api';
+
+/**
+ * Resolves a potentially relative URL to an absolute URL.
+ * 
+ * Backend may return relative paths like `/uploads/voice/uuid.opus` which need
+ * to be prefixed with the API base URL for mobile clients to access.
+ * 
+ * @param url - The URL to resolve (may be relative or absolute)
+ * @returns The absolute URL, or undefined if input was falsy
+ */
+function resolveMediaUrl(url: string | undefined | null): string | undefined {
+  if (!url) return undefined;
+  
+  // Already an absolute URL (http:// or https://)
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  // Data URLs should pass through unchanged
+  if (url.startsWith('data:')) {
+    return url;
+  }
+  
+  // Relative URL - prefix with API base URL
+  // Ensure single slash between base and path
+  const base = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
+  const path = url.startsWith('/') ? url : `/${url}`;
+  
+  return `${base}${path}`;
+}
 
 /**
  * Normalizes a message object from various sources (HTTP API, WebSocket).
  * Converts all formats to snake_case for mobile app compatibility.
+ * 
+ * Handles three potential sources for file/attachment data:
+ * 1. metadata object (pre-populated by backend for voice/file messages)
+ * 2. attachment object (from message_json.ex build_attachment)
+ * 3. Root-level file fields (fileUrl, fileName, etc.)
  */
 export function normalizeMessage(raw: Record<string, unknown>): Message {
   if (!raw || typeof raw !== 'object') {
@@ -16,14 +54,65 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
   }
 
   const sender = normalizeSender(raw.sender as Record<string, unknown> | null);
-  const senderId = (raw.senderId ?? raw.sender_id ?? sender?.id ?? '') as string;
+  
+  // Extract sender_id with comprehensive fallback chain
+  // Ensure we always get a string for consistent comparison
+  const rawSenderId = raw.senderId ?? raw.sender_id ?? sender?.id ?? '';
+  const senderId = String(rawSenderId);
+  
+  // Determine message type from various possible field names
+  const messageType = (raw.type ?? raw.messageType ?? raw.message_type ?? raw.contentType ?? raw.content_type ?? 'text') as Message['type'];
+  
+  // Extract metadata - backend now sends populated metadata for voice/file messages
+  // We check multiple sources to ensure maximum compatibility
+  const rawMetadata = raw.metadata as Record<string, unknown> | undefined;
+  const attachment = raw.attachment as Record<string, unknown> | null;
+  
+  // Build final metadata object
+  let metadata: Message['metadata'] = {};
+  
+  // Check if backend already populated metadata with url
+  if (rawMetadata && typeof rawMetadata === 'object' && rawMetadata.url) {
+    metadata = {
+      url: resolveMediaUrl(rawMetadata.url as string),
+      filename: (rawMetadata.filename ?? rawMetadata.fileName) as string,
+      size: rawMetadata.size as number,
+      mimeType: (rawMetadata.mimeType ?? rawMetadata.mime_type) as string,
+      duration: rawMetadata.duration as number,
+      waveform: rawMetadata.waveform as number[],
+      thumbnailUrl: resolveMediaUrl(rawMetadata.thumbnailUrl as string ?? rawMetadata.thumbnail_url as string),
+    };
+  }
+  
+  // If metadata.url is still missing, try attachment and root-level fields
+  if (!metadata.url) {
+    const attachmentUrl = attachment?.url as string | undefined;
+    const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
+    
+    if (fileUrl) {
+      const attachmentFilename = attachment?.filename as string | undefined;
+      const attachmentSize = attachment?.size as number | undefined;
+      const attachmentMimeType = (attachment?.mime_type ?? attachment?.mimeType) as string | undefined;
+      const attachmentThumbnail = (attachment?.thumbnail_url ?? attachment?.thumbnailUrl) as string | undefined;
+      
+      metadata = {
+        url: resolveMediaUrl(fileUrl as string),
+        filename: (attachmentFilename ?? raw.fileName ?? raw.file_name) as string,
+        size: (attachmentSize ?? raw.fileSize ?? raw.file_size) as number,
+        mimeType: (attachmentMimeType ?? raw.fileMimeType ?? raw.file_mime_type) as string,
+        duration: rawMetadata?.duration as number,
+        waveform: rawMetadata?.waveform as number[],
+        thumbnailUrl: resolveMediaUrl(attachmentThumbnail ?? raw.thumbnailUrl as string ?? raw.thumbnail_url as string),
+      };
+    }
+  }
   
   return {
     id: raw.id as string,
     content: (raw.content ?? '') as string,
-    type: (raw.type ?? raw.messageType ?? raw.message_type ?? raw.contentType ?? raw.content_type ?? 'text') as Message['type'],
+    type: messageType,
     attachments: (raw.attachments ?? []) as Message['attachments'],
-    metadata: raw.metadata as Message['metadata'],
+    metadata: metadata,
     sender: sender,
     sender_id: senderId,
     conversation_id: (raw.conversationId ?? raw.conversation_id ?? null) as string | undefined,

@@ -152,7 +152,9 @@ defmodule Cgraph.OAuth do
   - `{:error, reason}` - Failure
   """
   @spec mobile_callback(provider(), String.t(), String.t() | nil) :: oauth_result()
-  def mobile_callback(provider, access_token, id_token \\ nil) 
+  def mobile_callback(provider, access_token, id_token \\ nil)
+
+  def mobile_callback(provider, access_token, id_token) 
       when provider in [:google, :apple, :facebook, :tiktok] do
     config = get_provider_config(provider)
     
@@ -686,20 +688,6 @@ defmodule Cgraph.OAuth do
       {:error, reason} ->
         Logger.error("OAuth HTTP request failed", reason: inspect(reason))
         {:error, {:request_failed, reason}}
-    end
-  end
-
-  defp decode_jwt(token) do
-    # Simple JWT decode without verification (for extracting claims)
-    # Only use for providers where signature verification is done elsewhere
-    case String.split(token, ".") do
-      [_header, payload, _signature] ->
-        case Base.url_decode64(payload, padding: false) do
-          {:ok, json} -> {:ok, Jason.decode!(json)}
-          :error -> {:error, :invalid_jwt_payload}
-        end
-      _ ->
-        {:error, :invalid_jwt_format}
     end
   end
 

@@ -2,47 +2,46 @@
 
 A modern, full-stack social platform combining messaging, groups, and forum communities with Web3 wallet integration and end-to-end encryption.
 
-**Version 0.7.17** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
+**Version 0.7.18** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
 
 ## 🚀 Features
 
-### Core Platform
-- **Direct Messaging** - Real-time E2EE encrypted conversations
-- **Groups** - Server-style communities with channels, roles, and permissions
-- **Forums** - Community discussion boards with voting and nested comments
-- **Forum Hosting** - Traditional forum creation with boards, threads, and customization
-- **Friends System** - Cross-platform friend requests, mutual friends, suggestions
-- **Voice Messages** - Record and send voice messages with waveform visualization
-- **Biometric Authentication** - Face ID, Touch ID, Fingerprint support on mobile
+### Core Communication
+- **Direct Messaging** - Real-time end-to-end encrypted conversations with typing indicators and presence tracking
+- **Group Channels** - Discord-style servers with role-based permissions, voice channels, and threaded discussions
+- **Forum Communities** - Reddit-style forums with upvoting, nested comments, and custom flairs
+- **Voice Messages** - Record and send audio clips with waveform visualization and playback
+- **Friends System** - Add friends, see mutual connections, get friend suggestions based on shared groups
 
 ### Security & Privacy
-- **End-to-End Encryption** - X3DH/AES-256-GCM encryption on all platforms
-- **Two-Factor Authentication** - TOTP-based 2FA with backup codes
-- **Enterprise Security** - Input validation, abuse detection, rate limiting
-- **Session Management** - Multi-device sessions with remote logout
-- **Privacy Manifests** - iOS App Store compliance for data handling
+- **End-to-End Encryption** - X3DH key agreement with AES-256-GCM encryption for all private messages
+- **Two-Factor Authentication** - TOTP-based 2FA with encrypted backup codes stored securely
+- **Web3 Wallet Login** - Sign in with Ethereum/Polygon wallets using cryptographic signatures
+- **Anonymous Mode** - Create accounts without email using generated wallet addresses and crypto aliases
+- **Biometric Authentication** - Face ID, Touch ID, and fingerprint support on mobile devices
+- **Session Management** - Track and remotely revoke sessions across all devices
 
-### Web3 Integration
-- **Wallet Login** - Authenticate with Ethereum/Polygon wallets
-- **Local Wallet Generation** - Create wallets directly in the app with PIN protection
-- **Recovery System** - Backup codes and key file recovery
+### Real-Time Features
+- **Phoenix Presence** - Accurate online/offline status using CRDT-based distributed tracking
+- **WebSocket Channels** - Low-latency message delivery and live updates
+- **Push Notifications** - APNs for iOS, FCM for Android, Expo Push for development
+- **Typing Indicators** - See when others are typing in real-time
+- **Read Receipts** - Know when messages have been read (optional per conversation)
 
-### Notifications
-- **Push Notifications** - APNs (iOS), FCM (Android), Expo Push
-- **Email Notifications** - Transactional emails via Swoosh/Resend
-- **Real-time Updates** - WebSocket-based instant updates
+### Platform & Infrastructure
+- **Monorepo Architecture** - Shared types and utilities across web, mobile, and backend
+- **React 19** - Latest features including concurrent rendering and automatic batching
+- **Elixir/Phoenix** - Battle-tested concurrency and fault tolerance for 100k+ connections
+- **PostgreSQL 16** - Advanced JSON operations, full-text search, and robust data integrity
+- **Docker Support** - Containerized deployments with docker-compose for development
+- **Fly.io Ready** - Optimized for global edge deployment with auto-scaling
 
-### Admin Dashboard
-- **System Metrics** - Real-time monitoring and statistics
-- **User Management** - Ban/unban, search, account management
-- **Content Moderation** - Report handling and resolution
-- **Audit Logging** - Complete activity audit trail
-- **Configuration** - Runtime system configuration
-
-### Cross-Platform
-- **Web App** - React + Vite + TailwindCSS
-- **Mobile App** - React Native + Expo
-- **Backend** - Elixir/Phoenix with PostgreSQL
+### Developer Experience  
+- **TypeScript Everywhere** - Full type safety across web and mobile with shared type definitions
+- **Hot Reload** - Instant updates during development on all platforms
+- **Comprehensive Tests** - 585+ backend tests ensuring reliability and correctness
+- **API Documentation** - Complete REST and WebSocket API reference with examples
+- **Error Tracking** - Sentry integration for production monitoring and debugging
 
 ## 🏗 Architecture
 
@@ -64,37 +63,69 @@ CGraph/
 ## 📦 Quick Start
 
 ### Prerequisites
-- Node.js 22+ LTS with pnpm 10+
-- Elixir 1.19+ with Erlang/OTP 28+
-- PostgreSQL 16+
-- Docker (optional)
-- asdf version manager (recommended)
+- **Node.js** 22+ LTS with **pnpm** 10+
+- **Elixir** 1.19+ with **Erlang/OTP** 28+
+- **PostgreSQL** 16+
+- **FFmpeg** 6.1+ (for voice message processing)
+- **asdf** version manager (recommended for managing runtime versions)
 
 ### Development Setup
 
+1. **Clone and Install Dependencies**
 ```bash
-# Clone repository
 git clone https://github.com/cgraph-dev/CGraph.git
 cd CGraph
-
-# Install dependencies
 pnpm install
+```
 
-# Backend setup
+2. **Backend Setup**
+```bash
 cd apps/backend
+
+# Install Elixir dependencies
 mix deps.get
+
+# Create database and run migrations
 mix ecto.setup
 
-# Start backend (port 4000)
+# Start Phoenix server (port 4000)
 mix phx.server
+```
 
-# In another terminal - Web frontend (port 3000)
+3. **Web Frontend** (separate terminal)
+```bash
 cd apps/web
-pnpm dev
 
-# In another terminal - Mobile app
+# Start Vite development server (port 3000)
+pnpm dev
+```
+
+4. **Mobile App** (separate terminal)
+```bash
 cd apps/mobile
+
+# Start Expo development server (port 8081)
 pnpm start
+
+# Scan QR code with Expo Go app on your phone
+# or press 'a' for Android emulator, 'i' for iOS simulator
+```
+
+### First Time Setup
+
+Create your first user account:
+```bash
+# Option 1: Use the web interface at http://localhost:3000/register
+
+# Option 2: Via API
+curl -X POST http://localhost:4000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "admin@example.com",
+    "username": "admin",
+    "password": "SecurePassword123!",
+    "password_confirmation": "SecurePassword123!"
+  }'
 ```
 
 ### Using Docker
@@ -147,19 +178,50 @@ api.get('/api/v1/friends');
 
 ## 🧪 Testing
 
+### Backend Tests
 ```bash
-# Backend tests (585 tests)
 cd apps/backend
+
+# Run all tests (585+ tests)
 mix test
 
-# Web TypeScript check + build
-cd apps/web
-pnpm tsc --noEmit
-pnpm build
+# Run with coverage
+mix test --cover
 
-# Mobile TypeScript check
+# Run specific test file
+mix test test/cgraph/messaging_test.exs
+
+# Run tests matching a pattern
+mix test --only presence
+```
+
+### Frontend Type Checking
+```bash
+# Web application
+cd apps/web
+pnpm typecheck
+pnpm lint
+pnpm build  # Validates production build
+
+# Mobile application
 cd apps/mobile
-npx tsc --noEmit
+pnpm typecheck
+pnpm lint
+```
+
+### Integration Testing
+```bash
+# Start all services
+pnpm dev
+
+# Backend API health check
+curl http://localhost:4000/health
+
+# Web frontend health
+curl http://localhost:3000
+
+# Check WebSocket connection
+wscat -c ws://localhost:4000/socket/websocket
 ```
 
 ## 📚 Documentation

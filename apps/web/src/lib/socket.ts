@@ -399,6 +399,28 @@ class SocketManager {
   isConnected(): boolean {
     return this.socket?.isConnected() ?? false;
   }
+
+  // Get all online statuses for display purposes (without joining)
+  getAllOnlineStatuses(): Map<string, Set<string>> {
+    return new Map(this.onlineUsers);
+  }
+
+  // Peek at conversations to get presence data (lightweight join/leave)
+  async peekConversationsPresence(conversationIds: string[]): Promise<void> {
+    if (!this.socket?.isConnected()) {
+      await this.connect();
+    }
+
+    conversationIds.forEach(convId => {
+      const topic = `conversation:${convId}`;
+      const existingChannel = this.channels.get(topic);
+      
+      // Only peek if not already joined
+      if (!existingChannel || existingChannel.state !== 'joined') {
+        this.joinConversation(convId);
+      }
+    });
+  }
 }
 
 // Export singleton instance

@@ -25,7 +25,7 @@ defmodule Cgraph.Messaging do
       where: cp.user_id == ^user.id,
       where: cp.left_at |> is_nil(),
       order_by: [desc: c.last_message_at],
-      preload: [:participants]
+      preload: [participants: :user]
 
     total = Repo.aggregate(query, :count, :id)
     
@@ -278,8 +278,9 @@ defmodule Cgraph.Messaging do
         |> Ecto.Changeset.change(last_message_at: now)
         |> Repo.update()
 
-        # Broadcast to conversation channel
-        broadcast_message(conversation, message)
+        # Note: Message broadcasting is handled by the channel layer (conversation_channel.ex)
+        # to ensure proper serialization and consistent camelCase format for WebSocket clients.
+        # Do not broadcast here to avoid duplicate messages.
         
         {:ok, Repo.preload(message, [:sender, :reactions])}
 
@@ -419,13 +420,16 @@ defmodule Cgraph.Messaging do
     :ok
   end
 
-  defp broadcast_message(conversation, message) do
-    CgraphWeb.Endpoint.broadcast(
-      "conversation:#{conversation.id}",
-      "new_message",
-      %{message: message}
-    )
-  end
+  # Note: Message broadcasting is now handled exclusively by the channel layer
+  # This function is kept for reference but should not be called
+  # Uncommented to avoid unused function warning
+  # defp broadcast_message(_conversation, _message) do
+  #   CgraphWeb.Endpoint.broadcast(
+  #     "conversation:#{conversation.id}",
+  #     "new_message",
+  #     %{message: message}
+  #   )
+  # end
 
   # ============================================================================
   # Reactions
@@ -636,8 +640,11 @@ defmodule Cgraph.Messaging do
   end
 
   @doc """
-  Delete a message by ID (only by sender).
+  Delete a message.
+  Can be called with message_id and user_id, or with message struct and user.
   """
+  def delete_message(message_id, user_id)
+
   def delete_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
     case get_message(message_id) do
       {:error, :not_found} ->
@@ -652,9 +659,6 @@ defmodule Cgraph.Messaging do
     end
   end
 
-  @doc """
-  Delete a message (only by sender or moderator).
-  """
   def delete_message(%{sender_id: sender_id} = message, %{id: user_id}) do
     if sender_id == user_id do
       delete_message(message)
