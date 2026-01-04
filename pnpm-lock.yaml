@@ -16,7 +16,7 @@ importers:
         version: 10.1.8(eslint@9.39.2(jiti@1.21.7))
       eslint-plugin-import:
         specifier: ^2.31.0
-        version: 2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.8.3))(eslint@9.39.2(jiti@1.21.7))
+        version: 2.32.0(eslint@9.39.2(jiti@1.21.7))
       eslint-plugin-react:
         specifier: ^7.37.0
         version: 7.37.5(eslint@9.39.2(jiti@1.21.7))
@@ -87,8 +87,8 @@ importers:
         specifier: ~7.0.0
         version: 7.0.10(expo@54.0.30(@babel/core@7.28.5)(bufferutil@4.1.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)(utf-8-validate@5.0.10))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)
       expo-av:
-        specifier: ~15.0.0
-        version: 15.0.2(expo@54.0.30(@babel/core@7.28.5)(bufferutil@4.1.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)(utf-8-validate@5.0.10))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)
+        specifier: ~16.0.8
+        version: 16.0.8(expo@54.0.30(@babel/core@7.28.5)(bufferutil@4.1.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)(utf-8-validate@5.0.10))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)
       expo-camera:
         specifier: ~17.0.0
         version: 17.0.10(expo@54.0.30(@babel/core@7.28.5)(bufferutil@4.1.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)(utf-8-validate@5.0.10))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)
@@ -4567,8 +4567,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  expo-av@15.0.2:
-    resolution: {integrity: sha512-AHIHXdqLgK1dfHZF0JzX3YSVySGMrWn9QtPzaVjw54FAzvXfMt4sIoq4qRL/9XWCP9+ICcCs/u3EcvmxQjrfcA==}
+  expo-av@16.0.8:
+    resolution: {integrity: sha512-cmVPftGR/ca7XBgs7R6ky36lF3OC0/MM/lpgX/yXqfv0jASTsh7AYX9JxHCwFmF+Z6JEB1vne9FDx4GiLcGreQ==}
     peerDependencies:
       expo: '*'
       react: '*'
@@ -12192,10 +12192,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/eslint-plugin@8.51.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.8.3))(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)':
+  '@typescript-eslint/eslint-plugin@8.51.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)':
     dependencies:
       '@eslint-community/regexpp': 4.12.2
-      '@typescript-eslint/parser': 8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.8.3)
+      '@typescript-eslint/parser': 8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)
       '@typescript-eslint/scope-manager': 8.51.0
       '@typescript-eslint/type-utils': 8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)
       '@typescript-eslint/utils': 8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)
@@ -14345,17 +14345,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint@9.39.2(jiti@1.21.7)):
+  eslint-module-utils@2.12.1(eslint-import-resolver-node@0.3.9)(eslint@9.39.2(jiti@1.21.7)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
-      '@typescript-eslint/parser': 8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.8.3)
       eslint: 9.39.2(jiti@1.21.7)
       eslint-import-resolver-node: 0.3.9
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.8.3))(eslint@9.39.2(jiti@1.21.7)):
+  eslint-plugin-import@2.32.0(eslint@9.39.2(jiti@1.21.7)):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9
@@ -14366,7 +14365,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.39.2(jiti@1.21.7)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.8.3))(eslint-import-resolver-node@0.3.9)(eslint@9.39.2(jiti@1.21.7))
+      eslint-module-utils: 2.12.1(eslint-import-resolver-node@0.3.9)(eslint@9.39.2(jiti@1.21.7))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -14377,8 +14376,6 @@ snapshots:
       semver: 6.3.1
       string.prototype.trimend: 1.0.9
       tsconfig-paths: 3.15.0
-    optionalDependencies:
-      '@typescript-eslint/parser': 8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.8.3)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -14614,7 +14611,7 @@ snapshots:
       - expo
       - supports-color
 
-  expo-av@15.0.2(expo@54.0.30(@babel/core@7.28.5)(bufferutil@4.1.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)(utf-8-validate@5.0.10))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0):
+  expo-av@16.0.8(expo@54.0.30(@babel/core@7.28.5)(bufferutil@4.1.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)(utf-8-validate@5.0.10))(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0):
     dependencies:
       expo: 54.0.30(@babel/core@7.28.5)(bufferutil@4.1.0)(react-native@0.81.5(@babel/core@7.28.5)(@types/react@19.1.17)(bufferutil@4.1.0)(react@19.1.0)(utf-8-validate@5.0.10))(react@19.1.0)(utf-8-validate@5.0.10)
       react: 19.1.0
@@ -18282,7 +18279,7 @@ snapshots:
 
   typescript-eslint@8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3):
     dependencies:
-      '@typescript-eslint/eslint-plugin': 8.51.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.8.3))(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)
+      '@typescript-eslint/eslint-plugin': 8.51.0(@typescript-eslint/parser@8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3))(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)
       '@typescript-eslint/parser': 8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)
       '@typescript-eslint/typescript-estree': 8.51.0(typescript@5.9.3)
       '@typescript-eslint/utils': 8.51.0(eslint@9.39.2(jiti@1.21.7))(typescript@5.9.3)

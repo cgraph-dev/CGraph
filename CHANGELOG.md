@@ -11,16 +11,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.17] - 2026-01-08
+
+### Critical Production Fixes
+
+**EMERGENCY RELEASE:** Resolved critical backend crash and persistent presence loop that made v0.7.16 ineffective.
+
+### Fixed
+
+#### Backend - Message History Crash (CRITICAL)
+- **Protocol.UndefinedError** - Fixed `conversation_channel.ex` treating tuple as list
+- **Root Cause** - `Messaging.list_messages/2` returns `{messages, meta}` tuple, not list
+- **Solution** - Proper tuple unpacking with pattern matching: `{messages, _meta} = Messaging.list_messages(...)`
+- **Impact** - Conversation loading no longer crashes backend
+
+#### Mobile - Persistent Presence Loop (CRITICAL)  
+- **Component Remounting** - React Navigation unmounts/remounts components on navigation
+- **Wrong Pattern** - `hasInitializedRef` gets reset on unmount, defeating one-time initialization
+- **Root Issue** - v0.7.16 debouncing ineffective when component constantly remounts
+- **Solution** - Remove channel cleanup on unmount, rely on socket manager's join debouncing
+- **Impact** - Join/leave events reduced from 100-200/sec to expected 1-2 events on navigation
+
+#### Mobile - Package Compatibility
+- **expo-av** - Updated from 15.0.2 to 16.0.8 for Expo SDK 54 compatibility
+- **Voice Messages** - Resolves 500 error when sending voice messages
+
+### Technical Details
+
+**Why v0.7.16 Failed:**
+1. Socket manager debouncing works correctly but can't prevent component-level remounting
+2. Refs (like `hasInitializedRef`) reset on component unmount in React Navigation
+3. Calling `leaveChannel` in useEffect cleanup causes immediate rejoin on remount
+4. Backend tuple/list mismatch caused unrelated crash on message history load
+
+**Proper Solution:**
+1. Don't leave channels on component unmount - keep them alive for session
+2. Let socket manager's built-in debouncing handle rapid join attempts
+3. Unpack backend tuple properly with Elixir pattern matching
+4. Update package versions for SDK compatibility
+
+### Changed
+- ConversationScreen now keeps channels alive across navigation
+- Backend properly handles pagination metadata from `list_messages`
+
+---
+
 ## [0.7.16] - 2026-01-08
 
 ### Presence System Architectural Overhaul
 
-**CRITICAL FIX:** Completely eliminated presence join/leave loops through comprehensive architectural improvements.
+**STATUS: INEFFECTIVE** - See v0.7.17 for proper fixes.
 
 ### Fixed
 
 #### Socket Manager (Mobile & Web)
-- **Join/Leave Loop** - Eliminated through 1-second join debouncing mechanism
+- **Join/Leave Loop** - Attempted through 1-second join debouncing mechanism
 - **Rapid Rejoin Protection** - Added `lastJoinAttempts` Map to track join timing per channel
 - **Channel State Validation** - Now checks channel health before reusing (joined/joining vs closed/errored)
 - **Handler Duplication** - Implemented `channelHandlersSetUp` Set for idempotent registration

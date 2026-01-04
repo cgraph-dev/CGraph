@@ -2,7 +2,7 @@
 
 A modern, full-stack social platform combining messaging, groups, and forum communities with Web3 wallet integration and end-to-end encryption.
 
-**Version 0.7.16** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
+**Version 0.7.17** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
 
 ## 🚀 Features
 

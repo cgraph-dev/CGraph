@@ -59,7 +59,7 @@ defmodule CgraphWeb.ConversationChannel do
     # Send recent messages (fetch the conversation struct first)
     case Messaging.get_conversation(conversation_id) do
       {:ok, conversation} ->
-        messages = Messaging.list_messages(conversation, limit: 50)
+        {messages, _meta} = Messaging.list_messages(conversation, per_page: 50)
         serialized_messages = Enum.map(messages, &MessageJSON.message_data/1)
         push(socket, "message_history", %{messages: serialized_messages})
       _ ->

@@ -66,45 +66,19 @@ export default function ConversationScreen({ navigation, route }: Props) {
   
   // Track if component is still mounted to prevent state updates after unmount
   const isMountedRef = useRef(true);
-  // Track cleanup function to prevent memory leaks
   const cleanupRef = useRef<(() => void) | null>(null);
-  // Track if we've already joined the channel for this conversation
-  const channelJoinedRef = useRef<string | null>(null);
   
   useEffect(() => {
     isMountedRef.current = true;
     const channelTopic = `conversation:${conversationId}`;
     
-    // Async initialization function
     const initializeConversation = async () => {
-      // Ensure socket is connected before joining channel
       await socketManager.connect();
-      
-      // Only proceed if still mounted
       if (!isMountedRef.current) return;
       
-      // Skip if we've already joined this specific conversation's channel
-      // This prevents rapid re-join attempts that cause presence loops
-      if (channelJoinedRef.current === channelTopic) {
-        console.log(`[ConversationScreen] Channel ${channelTopic} already joined, skipping`);
-        return;
-      }
+      // joinChannel has built-in debouncing - safe to call on every mount
+      socketManager.joinChannel(channelTopic);
       
-      // Mark this channel as joined BEFORE the actual join to prevent race conditions
-      channelJoinedRef.current = channelTopic;
-      
-      // Join channel (socket manager handles deduplication and debouncing internally)
-      // The socket manager will return immediately if channel is already joined/joining
-      const channel = socketManager.joinChannel(channelTopic);
-      
-      if (!channel) {
-        console.error(`[ConversationScreen] Failed to join channel ${channelTopic}`);
-        channelJoinedRef.current = null; // Allow retry
-        return;
-      }
-      
-      // Subscribe to message events via listener pattern
-      // This is safe to call multiple times - each call returns a unique unsubscribe function
       const unsubscribe = socketManager.onChannelMessage(channelTopic, (event, payload) => {
         if (!isMountedRef.current) return;
         
@@ -113,7 +87,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
         
         if (event === 'new_message') {
           setMessages((prev) => {
-            // Prevent duplicates
             if (prev.some(m => m.id === normalized.id)) return prev;
             return [...prev, normalized];
           });
@@ -126,7 +99,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
         }
       });
       
-      // Store cleanup function
       cleanupRef.current = unsubscribe;
     };
     
@@ -134,31 +106,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
     initializeConversation();
     
     return () => {
-      // Mark as unmounted immediately
       isMountedRef.current = false;
-      
-      // Unsubscribe from message events
       if (cleanupRef.current) {
         cleanupRef.current();
         cleanupRef.current = null;
       }
-      
-      // ARCHITECTURAL DECISION: When to leave channels
-      // 
-      // LEAVE channel on unmount (current approach):
-      // - Pros: Clean state management, prevents memory leaks, accurate presence
-      // - Cons: More server load on navigation, brief presence flicker
-      //
-      // KEEP channel alive (previous approach):
-      // - Pros: Faster re-entry, less server load, smoother UX
-      // - Cons: Can cause join/leave loops on rapid remounts, memory leaks
-      //
-      // With debouncing in place, we can now safely leave channels because:
-      // 1. Debouncing prevents rapid rejoin loops
-      // 2. Socket manager reuses existing healthy channels
-      // 3. This gives us accurate presence tracking
-      socketManager.leaveChannel(channelTopic);
-      channelJoinedRef.current = null;
+      // Don't leave channel - socket manager keeps channel alive for session
+      // The join debouncing will prevent duplicate joins on remount
     };
   }, [conversationId]);
   
