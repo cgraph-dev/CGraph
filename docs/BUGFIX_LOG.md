@@ -6,21 +6,210 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 |
-|--------|--------|--------|--------|--------|--------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests |
-| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures |
-| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ |
-| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests |
-| Security Fixes | - | - | 6 critical | 6 critical | 6 critical |
-| TypeScript Errors | - | - | 0 | 0 | 0 |
-| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 |
-| Cross-Platform Auth | - | - | - | - | ✅ |
-| Username Login | - | - | - | - | ✅ |
-| Identity Search | - | - | - | - | ✅ |
-| WebSocket Messaging | - | - | - | - | ✅ |
-| Presence Tracking | - | - | - | - | ✅ |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 |
+|--------|--------|--------|--------|--------|--------|--------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures |
+| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests |
+| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical |
+| TypeScript Errors | - | - | 0 | 0 | 0 | 0 |
+| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
+| Cross-Platform Auth | - | - | - | - | ✅ | ✅ |
+| Username Login | - | - | - | - | ✅ | ✅ |
+| Identity Search | - | - | - | - | ✅ | ✅ |
+| WebSocket Messaging | - | - | - | - | ✅ | ✅ |
+| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed |
+| Message Alignment | - | - | - | - | - | ✅ Fixed |
+
+---
+
+## January 6, 2026 - v0.7.9 Message Alignment & Presence Stability
+
+### Overview
+
+This release addresses critical issues with message display alignment (all messages appearing on the left side) and bidirectional presence tracking (web not seeing mobile online status).
+
+### 1. HTTP Messages Not Normalized (WEB)
+
+**Problem:** Messages fetched via HTTP API were not being normalized, causing `senderId` to be missing or in wrong format.
+
+**Root Cause:** `chatStore.fetchMessages` stored raw API responses directly without calling `normalizeMessage()`. The backend returns `senderId` in camelCase, but the raw response wasn't being processed.
+
+**Solution:**
+```typescript
+// apps/web/src/stores/chatStore.ts - Before
+const rawMessages = ensureArray<Message>(response.data, 'messages');
+set((state) => ({ messages: { [conversationId]: rawMessages } }));
+
+// After - Apply normalization
+import { normalizeMessage } from '@/lib/apiUtils';
+const rawMessages = ensureArray<Record<string, unknown>>(response.data, 'messages');
+const newMessages = rawMessages.map(m => normalizeMessage(m)) as unknown as Message[];
+```
+
+**Files Modified:**
+- `apps/web/src/stores/chatStore.ts` (lines 1, 124-125)
+
+### 2. SendMessage Not Normalized (WEB)
+
+**Problem:** Messages sent via `sendMessage` were added to state without normalization.
+
+**Root Cause:** `sendMessage` and `editMessage` used `ensureObject<Message>` directly without normalizing.
+
+**Solution:**
+```typescript
+// Before
+const message = ensureObject<Message>(response.data, 'message');
+if (message) {
+  get().addMessage(message);
+}
+
+// After
+const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
+if (rawMessage) {
+  const message = normalizeMessage(rawMessage) as unknown as Message;
+  get().addMessage(message);
+}
+```
+
+**Files Modified:**
+- `apps/web/src/stores/chatStore.ts` (lines 155-171)
+
+### 3. Socket Connection Not Awaited (WEB)
+
+**Problem:** Web socket `connect()` is async but wasn't being awaited, causing `joinConversation()` to fail silently.
+
+**Root Cause:** `AppLayout.tsx` called `socketManager.connect()` without awaiting. `Conversation.tsx` also called `joinConversation()` before socket was fully connected.
+
+**Solution:**
+```typescript
+// apps/web/src/pages/messages/Conversation.tsx - Before
+useEffect(() => {
+  socketManager.joinConversation(conversationId);
+  // ...
+}, [conversationId]);
+
+// After - Await socket connection with mount guard
+useEffect(() => {
+  let mounted = true;
+  
+  const initializeChannel = async () => {
+    await socketManager.connect();
+    if (mounted) {
+      socketManager.joinConversation(conversationId);
+    }
+  };
+  
+  initializeChannel();
+  // ...
+  
+  return () => { mounted = false; /* cleanup */ };
+}, [conversationId]);
+```
+
+**Files Modified:**
+- `apps/web/src/pages/messages/Conversation.tsx` (lines 87-108)
+- `apps/web/src/lib/socket.ts` (connection promise handling already in place)
+
+### 4. Participant ID Extraction Incomplete (WEB)
+
+**Problem:** Participant matching failed for some data formats, causing "Unknown" usernames.
+
+**Root Cause:** Only checked `p.userId !== user?.id` without fallbacks for `user_id`, `user.id`, etc.
+
+**Solution:**
+```typescript
+// Before
+const otherParticipant = conversation?.participants.find(
+  (p: any) => p.userId !== user?.id
+);
+
+// After - Comprehensive fallback chain
+const otherParticipant = conversation?.participants.find((p: any) => {
+  const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
+  return participantUserId !== user?.id;
+});
+
+const otherParticipantUserId = 
+  (otherParticipant as any)?.userId || 
+  (otherParticipant as any)?.user_id || 
+  otherParticipant?.user?.id ||
+  (otherParticipant as any)?.id;
+
+const conversationName =
+  conversation?.name ||
+  otherParticipant?.nickname ||
+  otherParticipant?.user?.displayName ||
+  (otherParticipant?.user as any)?.display_name ||
+  otherParticipant?.user?.username ||
+  (otherParticipant as any)?.displayName ||
+  (otherParticipant as any)?.display_name ||
+  (otherParticipant as any)?.username ||
+  'Unknown';
+```
+
+**Files Modified:**
+- `apps/web/src/pages/messages/Conversation.tsx` (lines 46-68)
+
+### 5. Rapid Join/Leave Loop (MOBILE)
+
+**Problem:** Mobile was rapidly joining and leaving conversation channels, causing presence tracking instability.
+
+**Root Cause:** React effect cleanup called `leaveChannel()` immediately on unmount. With React StrictMode or quick re-renders, this caused rapid leave/rejoin cycles.
+
+**Solution:**
+```typescript
+// Before
+useEffect(() => {
+  joinChannel();
+  return () => {
+    socketManager.leaveChannel(`conversation:${conversationId}`);
+  };
+}, [conversationId]);
+
+// After - Debounced leave with mount guard
+const isMountedRef = useRef(true);
+
+useEffect(() => {
+  isMountedRef.current = true;
+  joinChannel();
+  
+  return () => {
+    isMountedRef.current = false;
+    const channelTopic = `conversation:${conversationId}`;
+    setTimeout(() => {
+      if (!isMountedRef.current) {
+        socketManager.leaveChannel(channelTopic);
+      }
+    }, 100);
+  };
+}, [conversationId]);
+```
+
+**Files Modified:**
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx` (lines 60-84)
+
+### Impact
+
+| Issue | Before | After |
+|-------|--------|-------|
+| Message alignment | All messages on left | Own messages on right, others on left |
+| Web presence tracking | Web not visible to mobile | Bidirectional presence works |
+| Mobile presence loop | Rapid join/leave | Stable single connection |
+| Username display | Sometimes "Unknown" | Consistent display names |
+| Socket timing | Race condition | Properly sequenced |
+
+### Technical Notes
+
+1. **Normalization Pattern**: All message data (HTTP API, WebSocket, user-sent) now flows through `normalizeMessage()` to ensure consistent field naming.
+
+2. **Async Socket Pattern**: Socket connection now uses Promise-based flow with mount guards to prevent operations on unmounted components.
+
+3. **Debounced Cleanup**: Mobile uses 100ms debounce on channel leave to prevent React StrictMode double-mounting issues.
+
+4. **Fallback Chains**: All participant/user data extraction uses comprehensive fallback chains to handle both camelCase and snake_case formats.
 
 ---
 

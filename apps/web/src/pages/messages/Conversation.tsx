@@ -42,14 +42,30 @@ export default function Conversation() {
   const conversationMessages = conversationId ? messages[conversationId] || [] : [];
   const typing = conversationId ? typingUsers[conversationId] || [] : [];
 
-  // Get other participant for DM
-  const otherParticipant = conversation?.participants.find((p) => p.userId !== user?.id);
-  const otherParticipantUserId = otherParticipant?.userId || otherParticipant?.user?.id;
+  // Get other participant for DM - handle multiple data formats
+  // Backend returns participants with userId and nested user object
+  const otherParticipant = conversation?.participants.find((p: any) => {
+    const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
+    return participantUserId !== user?.id;
+  });
+  
+  // Extract userId with fallbacks for matching
+  const otherParticipantUserId = 
+    (otherParticipant as any)?.userId || 
+    (otherParticipant as any)?.user_id || 
+    otherParticipant?.user?.id ||
+    (otherParticipant as any)?.id;
+    
+  // Extract display name with fallbacks for both nested and flat formats  
   const conversationName =
     conversation?.name ||
     otherParticipant?.nickname ||
     otherParticipant?.user?.displayName ||
+    (otherParticipant?.user as any)?.display_name ||
     otherParticipant?.user?.username ||
+    (otherParticipant as any)?.displayName ||
+    (otherParticipant as any)?.display_name ||
+    (otherParticipant as any)?.username ||
     'Unknown';
 
   // Track online status of the other participant
@@ -75,13 +91,25 @@ export default function Conversation() {
   // Join channel and fetch messages
   useEffect(() => {
     if (!conversationId) return;
+    
+    let mounted = true;
 
     setActiveConversation(conversationId);
-    socketManager.joinConversation(conversationId);
+    
+    // Ensure socket is connected before joining conversation
+    const initializeChannel = async () => {
+      await socketManager.connect();
+      if (mounted) {
+        socketManager.joinConversation(conversationId);
+      }
+    };
+    
+    initializeChannel();
     fetchMessages(conversationId);
     markAsRead(conversationId);
 
     return () => {
+      mounted = false;
       setActiveConversation(null);
       socketManager.leaveConversation(conversationId);
     };

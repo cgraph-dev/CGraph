@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
-import { ensureArray, ensureObject } from '@/lib/apiUtils';
+import { ensureArray, ensureObject, normalizeMessage } from '@/lib/apiUtils';
 
 export interface Message {
   id: string;
@@ -120,7 +120,8 @@ export const useChatStore = create<ChatState>((set, get) => ({
       const response = await api.get(`/api/v1/conversations/${conversationId}/messages`, {
         params,
       });
-      const newMessages = ensureArray<Message>(response.data, 'messages');
+      const rawMessages = ensureArray<Record<string, unknown>>(response.data, 'messages');
+      const newMessages = rawMessages.map(m => normalizeMessage(m)) as unknown as Message[];
       const hasMore = newMessages.length === 50;
 
       set((state) => ({
@@ -151,8 +152,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
         `/api/v1/conversations/${conversationId}/messages`,
         payload
       );
-      const message = ensureObject<Message>(response.data, 'message');
-      if (message) {
+      const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
+      if (rawMessage) {
+        const message = normalizeMessage(rawMessage) as unknown as Message;
         get().addMessage(message);
       }
     } catch (error) {
@@ -163,8 +165,9 @@ export const useChatStore = create<ChatState>((set, get) => ({
   editMessage: async (messageId: string, content: string) => {
     try {
       const response = await api.patch(`/api/v1/messages/${messageId}`, { content });
-      const message = ensureObject<Message>(response.data, 'message');
-      if (message) {
+      const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
+      if (rawMessage) {
+        const message = normalizeMessage(rawMessage) as unknown as Message;
         get().updateMessage(message);
       }
     } catch (error) {

@@ -11,6 +11,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.9] - 2026-01-06
+
+### Message Alignment & Presence Stability Fix
+
+Comprehensive fix for message alignment (all messages appearing on left side) and bidirectional presence tracking issues.
+
+### Fixed
+
+#### Message Alignment
+- **HTTP Messages Not Normalized** - `chatStore.fetchMessages` now normalizes all API responses through `normalizeMessage()`
+- **SendMessage Not Normalized** - `sendMessage` and `editMessage` now normalize responses before adding to state
+- **Consistent isOwn Detection** - All messages now have properly formatted `senderId` for accurate left/right positioning
+
+#### Presence System Stability
+- **Socket Connection Timing** - Web `Conversation.tsx` now awaits socket connection before joining channels
+- **Mount Guard Pattern** - Added `mounted` flag to prevent operations on unmounted components
+- **Mobile Rapid Join/Leave** - Added debounced channel leave (100ms) to prevent React StrictMode double-mount issues
+
+#### Participant Identification
+- **Comprehensive ID Extraction** - Added fallback chain: `userId || user_id || user.id || id`
+- **Display Name Resolution** - Enhanced fallback chain with 8+ sources for name display
+- **Cross-format Compatibility** - Handles both camelCase and snake_case participant data
+
+### Changed
+
+#### Web Frontend
+- **chatStore.ts** - Import `normalizeMessage`, apply to `fetchMessages`, `sendMessage`, `editMessage`
+- **Conversation.tsx** - Async socket connection with mount guard, enhanced participant extraction
+- **socket.ts** - Connection promise handling for proper async flow
+
+#### Mobile Frontend
+- **ConversationScreen.tsx** - `useRef` mount guard with debounced channel cleanup
+
+### Technical Details
+
+| Fix | Root Cause | Solution |
+|-----|------------|----------|
+| Message alignment | Raw API stored without normalization | All paths through `normalizeMessage()` |
+| Web presence invisible | `joinConversation` before socket ready | Await `connect()` with mount guard |
+| Mobile join loop | Immediate `leaveChannel` on unmount | 100ms debounce with mount check |
+| Unknown username | Incomplete participant ID matching | 4-source ID + 8-source name fallback |
+
+### Files Modified
+- `apps/web/src/stores/chatStore.ts`
+- `apps/web/src/pages/messages/Conversation.tsx`
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+- `docs/BUGFIX_LOG.md`
+
+---
+
 ## [0.7.8] - 2026-01-05
 
 ### Messaging Display & Presence System Fix

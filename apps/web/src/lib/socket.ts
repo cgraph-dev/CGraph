@@ -26,44 +26,59 @@ class SocketManager {
   private onlineUsers: Map<string, Set<string>> = new Map(); // conversationId -> Set<userId>
   private reconnectTimer: number | null = null;
   private statusListeners: Set<(conversationId: string, userId: string, isOnline: boolean) => void> = new Set();
+  private connectionPromise: Promise<void> | null = null;
 
-  connect() {
+  connect(): Promise<void> {
+    // Return existing promise if connection is in progress
+    if (this.connectionPromise) {
+      return this.connectionPromise;
+    }
+    
     const token = useAuthStore.getState().token;
     if (!token) {
       logger.warn('Cannot connect to socket: no auth token');
-      return;
+      return Promise.resolve();
     }
 
     if (this.socket?.isConnected()) {
-      return;
+      return Promise.resolve();
     }
 
-    this.socket = new Socket(SOCKET_URL, {
-      params: { token },
-      reconnectAfterMs: (tries: number) => {
-        // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
-        return Math.min(1000 * Math.pow(2, tries - 1), 30000);
-      },
-      heartbeatIntervalMs: 30000,
-    });
+    this.connectionPromise = new Promise((resolve) => {
+      this.socket = new Socket(SOCKET_URL, {
+        params: { token },
+        reconnectAfterMs: (tries: number) => {
+          // Exponential backoff: 1s, 2s, 4s, 8s, max 30s
+          return Math.min(1000 * Math.pow(2, tries - 1), 30000);
+        },
+        heartbeatIntervalMs: 30000,
+      });
 
-    this.socket.onOpen(() => {
-      logger.log('Socket connected');
-      if (this.reconnectTimer) {
-        clearTimeout(this.reconnectTimer);
-        this.reconnectTimer = null;
-      }
-    });
+      this.socket.onOpen(() => {
+        logger.log('Socket connected');
+        if (this.reconnectTimer) {
+          clearTimeout(this.reconnectTimer);
+          this.reconnectTimer = null;
+        }
+        this.connectionPromise = null;
+        resolve();
+      });
 
-    this.socket.onClose(() => {
-      logger.log('Socket disconnected');
-    });
+      this.socket.onClose(() => {
+        logger.log('Socket disconnected');
+        this.connectionPromise = null;
+      });
 
-    this.socket.onError((error: unknown) => {
-      logger.error('Socket error:', error);
-    });
+      this.socket.onError((error: unknown) => {
+        logger.error('Socket error:', error);
+        this.connectionPromise = null;
+        resolve(); // Resolve anyway to not block
+      });
 
-    this.socket.connect();
+      this.socket.connect();
+    });
+    
+    return this.connectionPromise;
   }
 
   disconnect() {
@@ -105,9 +120,20 @@ class SocketManager {
     }
 
     if (!this.socket) {
-      logger.warn('Cannot join conversation: socket not connected');
-      // Attempt to reconnect
-      this.connect();
+      logger.warn('Cannot join conversation: socket not connected, attempting to connect');
+      // Attempt to reconnect - this is async but we return null for now
+      // Caller should wait for socket to be ready
+      this.connect().then(() => {
+        if (this.socket && !this.channels.has(topic)) {
+          this.joinConversation(conversationId);
+        }
+      });
+      return null;
+    }
+    
+    // Check if socket is actually connected
+    if (!this.socket.isConnected()) {
+      logger.warn('Socket exists but not connected, waiting...');
       return null;
     }
 

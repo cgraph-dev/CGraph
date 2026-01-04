@@ -58,13 +58,26 @@ export default function ConversationScreen({ navigation, route }: Props) {
     return () => unsubscribe();
   }, [conversationId, otherParticipantId]);
   
+  // Track if component is actually being unmounted for real (navigation away)
+  const isMountedRef = useRef(true);
+  
   useEffect(() => {
+    isMountedRef.current = true;
+    
     fetchConversation();
     fetchMessages();
     joinChannel();
     
     return () => {
-      socketManager.leaveChannel(`conversation:${conversationId}`);
+      // Delay leave to prevent rapid leave/rejoin during React strict mode
+      // or quick re-renders. Only actually leave if still unmounted after delay.
+      isMountedRef.current = false;
+      const channelTopic = `conversation:${conversationId}`;
+      setTimeout(() => {
+        if (!isMountedRef.current) {
+          socketManager.leaveChannel(channelTopic);
+        }
+      }, 100);
     };
   }, [conversationId]);
   
