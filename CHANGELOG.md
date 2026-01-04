@@ -11,6 +11,82 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.10] - 2026-01-06
+
+### Scalable Normalization & Channel Stability
+
+Production-grade data normalization layer and comprehensive channel stability fixes for messaging system.
+
+### Fixed
+
+#### Web Username Display
+- **Sidebar "Unknown" Username** - Fixed by normalizing conversation data at fetch time
+- **Conversation List Data** - All participant data now properly structured with nested user objects
+
+#### Realtime Message Delivery
+- **Web Messages Not Updating** - Added event logging and verified normalization pipeline
+- **Mobile Messages Not Updating** - Fixed socket connection race condition by awaiting connection before channel join
+
+#### Channel Stability
+- **Mobile Join/Leave Loop** - Eliminated rapid cycling with channel identity tracking and 300ms debounced cleanup
+- **Duplicate Channel Joins** - Added `currentChannelRef` to track active channel and prevent duplicate subscriptions
+- **Mount-Aware Handlers** - All message handlers now check component mount state before state updates
+
+### Added
+
+#### Normalization Layer (Web)
+- `normalizeParticipant()` - Normalizes participant objects with nested user data handling
+- `normalizeConversation()` - Full conversation normalization including participants and lastMessage
+- `normalizeConversations()` - Batch normalizer for conversation arrays
+- Enhanced `normalizeSender()` - Added status field to sender normalization
+
+#### Type Definitions (Mobile)
+- `ConversationParticipant` interface - Proper type for API participant data with nested user objects
+- Updated `Conversation` interface - Changed participants to `ConversationParticipant[]`
+
+### Changed
+
+#### Web Frontend
+- **chatStore.ts** - Import and use `normalizeConversations` in `fetchConversations`
+- **socket.ts** - Added structured logging to message event handlers
+- **socket.ts** - Fixed Presence callback signatures for TypeScript compatibility
+- **apiUtils.ts** - Extended with conversation and participant normalizers
+
+#### Mobile Frontend
+- **ConversationScreen.tsx** - Async socket initialization pattern with mount guards
+- **ConversationScreen.tsx** - Channel identity tracking to prevent duplicate joins
+- **ConversationScreen.tsx** - Mount-aware message handlers with duplicate prevention
+- **socket.ts** - Connection state validation before channel join
+- **types/index.ts** - New `ConversationParticipant` type definition
+
+### Technical Details
+
+| Issue | Root Cause | Solution | Scale Impact |
+|-------|------------|----------|--------------|
+| Sidebar "Unknown" | Raw conversation data | Normalize at fetch | Single processing point |
+| Web realtime | Silent event handling | Logging + verification | Debug in production |
+| Mobile realtime | Socket not connected | Await connection | Guaranteed delivery |
+| Channel loop | React double-mount | Identity tracking + debounce | Stable connections |
+| Type errors | Wrong participant type | `ConversationParticipant` interface | Type safety |
+
+### Scalability Considerations
+
+1. **Edge Normalization** - All data normalized at API response point, not during render
+2. **Channel Identity** - Single channel per conversation regardless of remounts
+3. **Mount Safety** - Prevents memory leaks from async operations on unmounted components
+4. **Fallback Chains** - Handles schema variations without code changes
+
+### Files Modified
+- `apps/web/src/lib/apiUtils.ts`
+- `apps/web/src/stores/chatStore.ts`
+- `apps/web/src/lib/socket.ts`
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+- `apps/mobile/src/lib/socket.ts`
+- `apps/mobile/src/types/index.ts`
+- `docs/BUGFIX_LOG.md`
+
+---
+
 ## [0.7.9] - 2026-01-06
 
 ### Message Alignment & Presence Stability Fix

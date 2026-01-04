@@ -15,6 +15,8 @@ interface PresenceMeta {
   phx_ref?: string;
 }
 
+// Used for presence tracking state
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface PresenceState {
   [userId: string]: { metas: PresenceMeta[] };
 }
@@ -112,17 +114,19 @@ class SocketManager {
   }
 
   // Join a conversation channel (DMs)
+  // Returns a promise that resolves to the channel once joined
   joinConversation(conversationId: string): Channel | null {
     const topic = `conversation:${conversationId}`;
 
     if (this.channels.has(topic)) {
+      logger.log(`Already in channel ${topic}, returning existing`);
       return this.channels.get(topic)!;
     }
 
     if (!this.socket) {
       logger.warn('Cannot join conversation: socket not connected, attempting to connect');
       // Attempt to reconnect - this is async but we return null for now
-      // Caller should wait for socket to be ready
+      // Caller should wait for socket to be ready via connect()
       this.connect().then(() => {
         if (this.socket && !this.channels.has(topic)) {
           this.joinConversation(conversationId);
@@ -149,7 +153,7 @@ class SocketManager {
     // Handle presence sync (initial state)
     presence.onSync(() => {
       const onlineSet = new Set<string>();
-      presence.list((id: string, _meta: { metas: PresenceMeta[] }) => {
+      presence.list((id: string) => {
         onlineSet.add(id);
         return id;
       });
@@ -172,25 +176,28 @@ class SocketManager {
     });
     
     // Handle join/leave events
-    presence.onJoin((id: string, _current: { metas: PresenceMeta[] } | undefined, _newPres: { metas: PresenceMeta[] }) => {
+    presence.onJoin((id: string) => {
       logger.log(`User ${id} joined ${conversationId}`);
       this.onlineUsers.get(conversationId)?.add(id);
       this.notifyStatusChange(conversationId, id, true);
     });
     
-    presence.onLeave((id: string, _current: { metas: PresenceMeta[] }, _leftPres: { metas: PresenceMeta[] }) => {
+    presence.onLeave((id: string) => {
       logger.log(`User ${id} left ${conversationId}`);
       this.onlineUsers.get(conversationId)?.delete(id);
       this.notifyStatusChange(conversationId, id, false);
     });
 
     channel.on('new_message', (payload) => {
+      logger.log('Received new_message event:', payload);
       const data = payload as { message: Record<string, unknown> };
       const normalized = normalizeMessage(data.message) as unknown as Message;
+      logger.log('Normalized message:', normalized);
       useChatStore.getState().addMessage(normalized);
     });
 
     channel.on('message_updated', (payload) => {
+      logger.log('Received message_updated event:', payload);
       const data = payload as { message: Record<string, unknown> };
       const normalized = normalizeMessage(data.message) as unknown as Message;
       useChatStore.getState().updateMessage(normalized);

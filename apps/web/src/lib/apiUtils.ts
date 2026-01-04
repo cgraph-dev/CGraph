@@ -256,5 +256,77 @@ function normalizeSender(sender: Record<string, unknown> | null | undefined): Re
     username: sender.username,
     displayName: sender.displayName ?? sender.display_name ?? null,
     avatarUrl: sender.avatarUrl ?? sender.avatar_url ?? null,
+    status: sender.status ?? 'offline',
   };
 }
+
+/**
+ * Normalizes a conversation participant from API response.
+ * Handles both nested user objects and flat structures.
+ */
+export function normalizeParticipant(raw: Record<string, unknown>): Record<string, unknown> {
+  if (!raw || typeof raw !== 'object') {
+    return raw;
+  }
+  
+  const userObj = raw.user as Record<string, unknown> | null;
+  const userId = raw.userId ?? raw.user_id ?? userObj?.id ?? raw.id;
+  
+  return {
+    id: raw.id,
+    participantId: raw.id,
+    userId: userId,
+    nickname: raw.nickname ?? null,
+    isMuted: raw.isMuted ?? raw.is_muted ?? false,
+    mutedUntil: raw.mutedUntil ?? raw.muted_until ?? null,
+    joinedAt: raw.joinedAt ?? raw.joined_at ?? raw.insertedAt ?? raw.inserted_at,
+    user: userObj ? {
+      id: userObj.id,
+      username: userObj.username,
+      displayName: userObj.displayName ?? userObj.display_name ?? null,
+      avatarUrl: userObj.avatarUrl ?? userObj.avatar_url ?? null,
+      status: userObj.status ?? 'offline',
+    } : null,
+  };
+}
+
+/**
+ * Normalizes a conversation object from API response.
+ * Ensures all participant data is properly structured.
+ */
+export function normalizeConversation(raw: Record<string, unknown>): Record<string, unknown> {
+  if (!raw || typeof raw !== 'object') {
+    return raw;
+  }
+  
+  const participants = raw.participants as Record<string, unknown>[] | null;
+  const lastMessage = raw.lastMessage ?? raw.last_message;
+  
+  return {
+    id: raw.id,
+    type: raw.type ?? 'direct',
+    name: raw.name ?? null,
+    avatarUrl: raw.avatarUrl ?? raw.avatar_url ?? null,
+    participants: Array.isArray(participants) 
+      ? participants.map(p => normalizeParticipant(p))
+      : [],
+    lastMessage: lastMessage ? normalizeMessage(lastMessage as Record<string, unknown>) : null,
+    lastMessageAt: raw.lastMessageAt ?? raw.last_message_at ?? null,
+    unreadCount: raw.unreadCount ?? raw.unread_count ?? 0,
+    muted: raw.muted ?? false,
+    pinned: raw.pinned ?? false,
+    createdAt: raw.createdAt ?? raw.created_at ?? raw.insertedAt ?? raw.inserted_at,
+    updatedAt: raw.updatedAt ?? raw.updated_at,
+  };
+}
+
+/**
+ * Normalizes an array of conversations.
+ */
+export function normalizeConversations(conversations: unknown[]): Record<string, unknown>[] {
+  if (!Array.isArray(conversations)) {
+    return [];
+  }
+  return conversations.map((c) => normalizeConversation(c as Record<string, unknown>));
+}
+

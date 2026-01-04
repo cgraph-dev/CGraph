@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
-import { ensureArray, ensureObject, normalizeMessage } from '@/lib/apiUtils';
+import { ensureArray, ensureObject, normalizeMessage, normalizeConversations } from '@/lib/apiUtils';
 
 export interface Message {
   id: string;
@@ -103,8 +103,10 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set({ isLoadingConversations: true });
     try {
       const response = await api.get('/api/v1/conversations');
+      const rawConversations = ensureArray<Record<string, unknown>>(response.data, 'conversations');
+      const normalizedConversations = normalizeConversations(rawConversations) as unknown as Conversation[];
       set({
-        conversations: ensureArray<Conversation>(response.data, 'conversations'),
+        conversations: normalizedConversations,
         isLoadingConversations: false,
       });
     } catch (error) {

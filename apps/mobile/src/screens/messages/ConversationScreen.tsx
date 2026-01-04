@@ -19,7 +19,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
-import { MessagesStackParamList, Message, Conversation } from '../../types';
+import { MessagesStackParamList, Message, Conversation, ConversationParticipant } from '../../types';
 
 type Props = {
   navigation: NativeStackNavigationProp<MessagesStackParamList, 'Conversation'>;
@@ -58,26 +58,44 @@ export default function ConversationScreen({ navigation, route }: Props) {
     return () => unsubscribe();
   }, [conversationId, otherParticipantId]);
   
-  // Track if component is actually being unmounted for real (navigation away)
+  // Track if component is still mounted to prevent state updates after unmount
   const isMountedRef = useRef(true);
+  // Track the current channel to prevent duplicate joins
+  const currentChannelRef = useRef<string | null>(null);
   
   useEffect(() => {
     isMountedRef.current = true;
+    const channelTopic = `conversation:${conversationId}`;
+    
+    // Async initialization function
+    const initializeConversation = async () => {
+      // Ensure socket is connected before joining channel
+      await socketManager.connect();
+      
+      // Only join if still mounted and not already in this channel
+      if (isMountedRef.current && currentChannelRef.current !== channelTopic) {
+        currentChannelRef.current = channelTopic;
+        joinChannel();
+      }
+    };
     
     fetchConversation();
     fetchMessages();
-    joinChannel();
+    initializeConversation();
     
     return () => {
-      // Delay leave to prevent rapid leave/rejoin during React strict mode
-      // or quick re-renders. Only actually leave if still unmounted after delay.
+      // Mark as unmounted immediately
       isMountedRef.current = false;
-      const channelTopic = `conversation:${conversationId}`;
+      
+      // Delay channel leave to prevent rapid rejoin during navigation transitions
+      // or React StrictMode double-mount cycles
       setTimeout(() => {
-        if (!isMountedRef.current) {
+        // Only leave if still unmounted after delay
+        if (!isMountedRef.current && currentChannelRef.current === channelTopic) {
           socketManager.leaveChannel(channelTopic);
+          currentChannelRef.current = null;
         }
-      }, 100);
+      }, 300);
     };
   }, [conversationId]);
   
@@ -89,7 +107,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       
       // Find other participant - handle both camelCase and snake_case formats
       // Participants can be nested (with user object) or flat (direct user data)
-      const otherParticipant = conv.participants?.find((p: any) => {
+      const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
         const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
         return participantUserId !== user?.id;
       });
@@ -104,10 +122,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const displayName = 
         conv.name ||
         otherParticipant?.nickname ||
-        otherParticipant?.user?.displayName ||
         otherParticipant?.user?.display_name ||
-        otherParticipant?.displayName ||
         otherParticipant?.display_name ||
+        otherParticipant?.displayName ||
         otherParticipant?.user?.username ||
         otherParticipant?.username ||
         'Conversation';
@@ -145,18 +162,18 @@ export default function ConversationScreen({ navigation, route }: Props) {
   useEffect(() => {
     if (_conversation) {
       const conv = _conversation;
-      const otherParticipant = conv.participants?.find((p: any) => {
+      const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
         const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
         return participantUserId !== user?.id;
       });
       
+      // Extract display name with comprehensive fallbacks for nested/flat structures
       const displayName = 
         conv.name ||
         otherParticipant?.nickname ||
-        otherParticipant?.user?.displayName ||
         otherParticipant?.user?.display_name ||
-        otherParticipant?.displayName ||
         otherParticipant?.display_name ||
+        otherParticipant?.displayName ||
         otherParticipant?.user?.username ||
         otherParticipant?.username ||
         'Conversation';
@@ -169,31 +186,46 @@ export default function ConversationScreen({ navigation, route }: Props) {
     try {
       const response = await api.get(`/api/v1/conversations/${conversationId}/messages`);
       const rawMessages = response.data.data || response.data.messages || [];
-      setMessages(normalizeMessages(rawMessages));
+      if (isMountedRef.current) {
+        setMessages(normalizeMessages(rawMessages));
+      }
     } catch (error) {
       console.error('Error fetching messages:', error);
     } finally {
-      setIsLoading(false);
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
     }
   };
   
   const joinChannel = () => {
-    const existingChannel = socketManager.getChannel(`conversation:${conversationId}`);
+    const channelTopic = `conversation:${conversationId}`;
     
-    // Only set up handlers if this is a new join (channel didn't exist)
-    if (existingChannel) {
-      return; // Already joined, don't add duplicate handlers
+    // Check if channel already exists - if so, we need to ensure handlers are set up
+    // but avoid duplicate handlers
+    const existingChannel = socketManager.getChannel(channelTopic);
+    
+    // If channel exists and we've already set up handlers, skip
+    if (existingChannel && currentChannelRef.current === channelTopic) {
+      return;
     }
     
-    const channel = socketManager.joinChannel(`conversation:${conversationId}`);
+    const channel = existingChannel || socketManager.joinChannel(channelTopic);
     if (channel) {
+      // Set up message handlers - these will be cleaned up when channel leaves
       channel.on('new_message', (payload: unknown) => {
+        if (!isMountedRef.current) return;
         const data = payload as { message: Record<string, unknown> };
         const normalized = normalizeMessage(data.message);
-        setMessages((prev) => [...prev, normalized]);
+        setMessages((prev) => {
+          // Prevent duplicates
+          if (prev.some(m => m.id === normalized.id)) return prev;
+          return [...prev, normalized];
+        });
       });
       
       channel.on('message_updated', (payload: unknown) => {
+        if (!isMountedRef.current) return;
         const data = payload as { message: Record<string, unknown> };
         const normalized = normalizeMessage(data.message);
         setMessages((prev) =>

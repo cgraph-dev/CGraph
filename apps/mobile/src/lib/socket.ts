@@ -80,12 +80,12 @@ class SocketManager {
       logger.log('Socket connected');
     });
     
-    this.socket.onError((error: unknown) => {
+    this.socket.onError((error) => {
       logger.error('Socket error:', error);
     });
     
-    this.socket.onClose((event: unknown) => {
-      logger.log('Socket closed:', event);
+    this.socket.onClose(() => {
+      logger.log('Socket closed');
     });
     
     this.socket.connect();
@@ -123,12 +123,19 @@ class SocketManager {
   
   joinChannel(topic: string, params: Record<string, unknown> = {}): Channel | null {
     if (!this.socket) {
-      logger.error('Socket not connected');
+      logger.error('Socket not connected, cannot join channel:', topic);
+      return null;
+    }
+    
+    // Check if socket is actually connected
+    if (!this.socket.isConnected()) {
+      logger.warn('Socket exists but not connected, waiting for connection:', topic);
       return null;
     }
     
     const existingChannel = this.channels.get(topic);
     if (existingChannel) {
+      logger.log('Already joined channel:', topic);
       return existingChannel;
     }
     

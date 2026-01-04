@@ -78,12 +78,31 @@ export interface Reaction {
   hasReacted: boolean;
 }
 
+// Conversation participant type (includes nested user object)
+export interface ConversationParticipant {
+  id: string;
+  userId?: string;
+  user_id?: string;
+  nickname?: string | null;
+  isMuted?: boolean;
+  is_muted?: boolean;
+  joinedAt?: string;
+  joined_at?: string;
+  user?: UserBasic;
+  // Fallback flat fields when user data is flattened
+  username?: string | null;
+  display_name?: string | null;
+  displayName?: string | null;
+  avatar_url?: string | null;
+  avatarUrl?: string | null;
+}
+
 // Conversation types
 export interface Conversation {
   id: string;
   type: 'direct' | 'group';
   name?: string;
-  participants: UserBasic[];
+  participants: ConversationParticipant[];
   last_message?: Message;
   unread_count: number;
   inserted_at: string;
