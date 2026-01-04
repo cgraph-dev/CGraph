@@ -257,8 +257,23 @@ export default function ConversationScreen({ navigation, route }: Props) {
   
   const renderMessage = useCallback(({ item }: { item: Message }) => {
     // Handle both snake_case and camelCase sender_id formats
-    const messageSenderId = item.sender_id || (item as any).senderId;
-    const isOwnMessage = messageSenderId === user?.id;
+    // Also check sender.id as fallback
+    const messageSenderId = item.sender_id || (item as any).senderId || item.sender?.id;
+    const isOwnMessage = String(messageSenderId) === String(user?.id);
+    
+    // Debug logging (remove after confirming fix)
+    if (__DEV__ && messages.length > 0 && item.id === messages[messages.length - 1]?.id) {
+      console.log('[ConversationScreen] Message sender check:', {
+        messageSenderId,
+        userId: user?.id,
+        isOwnMessage,
+        senderIdType: typeof messageSenderId,
+        userIdType: typeof user?.id,
+        rawSenderId: item.sender_id,
+        rawCamelSenderId: (item as any).senderId,
+        senderObjectId: item.sender?.id
+      });
+    }
     
     // Get sender display name with fallbacks
     const senderDisplayName = item.sender?.display_name || (item.sender as any)?.displayName || item.sender?.username || 'User';

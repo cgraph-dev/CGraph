@@ -11,8 +11,9 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
-import { MessagesStackParamList, Conversation } from '../../types';
+import { MessagesStackParamList, Conversation, ConversationParticipant } from '../../types';
 
 type Props = {
   navigation: NativeStackNavigationProp<MessagesStackParamList, 'ConversationList'>;
@@ -20,6 +21,7 @@ type Props = {
 
 export default function ConversationListScreen({ navigation }: Props) {
   const { colors } = useTheme();
+  const { user } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   
@@ -70,8 +72,27 @@ export default function ConversationListScreen({ navigation }: Props) {
   };
   
   const renderConversation = ({ item }: { item: Conversation }) => {
-    const otherParticipant = item.participants[0];
-    const displayName = item.name || otherParticipant?.display_name || otherParticipant?.username || 'Unknown';
+    // Find the OTHER participant (not the current user)
+    // Handle both nested (with user object) and flat participant structures
+    const otherParticipant = item.participants?.find((p: ConversationParticipant) => {
+      const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
+      return participantUserId !== user?.id;
+    });
+    
+    // Extract display name with comprehensive fallbacks for nested/flat structures
+    const displayName = item.name ||
+      otherParticipant?.nickname ||
+      otherParticipant?.user?.display_name ||
+      otherParticipant?.display_name ||
+      otherParticipant?.displayName ||
+      otherParticipant?.user?.username ||
+      otherParticipant?.username ||
+      'Unknown';
+    
+    // Extract avatar URL with fallbacks
+    const avatarUrl = otherParticipant?.user?.avatar_url || 
+      otherParticipant?.avatar_url || 
+      otherParticipant?.avatarUrl;
     
     return (
       <TouchableOpacity
@@ -79,8 +100,8 @@ export default function ConversationListScreen({ navigation }: Props) {
         onPress={() => navigation.navigate('Conversation', { conversationId: item.id })}
       >
         <View style={styles.avatarContainer}>
-          {otherParticipant?.avatar_url ? (
-            <Image source={{ uri: otherParticipant.avatar_url }} style={styles.avatar} />
+          {avatarUrl ? (
+            <Image source={{ uri: avatarUrl }} style={styles.avatar} />
           ) : (
             <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
               <Text style={styles.avatarText}>
