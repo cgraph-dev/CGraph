@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Solution** - Proper tuple unpacking with pattern matching: `{messages, _meta} = Messaging.list_messages(...)`
 - **Impact** - Conversation loading no longer crashes backend
 
+#### Backend - Voice Message 500 Error
+- **UndefinedFunctionError** - Router calling `:upload` but controller defines `:create`
+- **Root Cause** - Mismatch between router action name and controller function name
+- **Solution** - Changed router.ex POST route from `:upload` to `:create`
+- **Impact** - Voice message uploads now work correctly
+
 #### Mobile - Persistent Presence Loop (CRITICAL)  
 - **Component Remounting** - React Navigation unmounts/remounts components on navigation
 - **Wrong Pattern** - `hasInitializedRef` gets reset on unmount, defeating one-time initialization
@@ -34,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### Mobile - Package Compatibility
 - **expo-av** - Updated from 15.0.2 to 16.0.8 for Expo SDK 54 compatibility
-- **Voice Messages** - Resolves 500 error when sending voice messages
+- **Note** - expo-av deprecated in SDK 54, will need migration to expo-audio/expo-video
 
 ### Technical Details
 

@@ -275,7 +275,7 @@ defmodule CgraphWeb.Router do
     get "/files/:id", UploadController, :show
 
     # Voice Messages
-    post "/voice-messages", VoiceMessageController, :upload
+    post "/voice-messages", VoiceMessageController, :create
     get "/voice-messages/:id", VoiceMessageController, :show
     get "/voice-messages/:id/waveform", VoiceMessageController, :waveform
     delete "/voice-messages/:id", VoiceMessageController, :delete
