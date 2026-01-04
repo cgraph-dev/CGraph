@@ -217,11 +217,14 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     return raw;
   }
   
+  const senderId = raw.senderId ?? raw.sender_id ?? null;
+  const sender = normalizeSender(raw.sender as Record<string, unknown> | null);
+  
   return {
     id: raw.id,
     conversationId: raw.conversationId ?? raw.conversation_id ?? null,
     channelId: raw.channelId ?? raw.channel_id ?? null,
-    senderId: raw.senderId ?? raw.sender_id ?? null,
+    senderId: senderId ?? sender?.id ?? null,
     content: raw.content ?? '',
     contentType: raw.contentType ?? raw.content_type ?? 'text',
     messageType: raw.messageType ?? raw.message_type ?? raw.contentType ?? raw.content_type ?? 'text',
@@ -234,8 +237,8 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     deletedAt: raw.deletedAt ?? raw.deleted_at ?? null,
     metadata: raw.metadata ?? {},
     reactions: raw.reactions ?? [],
-    sender: normalizeSender(raw.sender as Record<string, unknown> | null),
-    createdAt: raw.createdAt ?? raw.created_at ?? raw.inserted_at ?? new Date().toISOString(),
+    sender: sender,
+    createdAt: raw.createdAt ?? raw.created_at ?? raw.insertedAt ?? raw.inserted_at ?? new Date().toISOString(),
     updatedAt: raw.updatedAt ?? raw.updated_at ?? raw.createdAt ?? raw.created_at ?? new Date().toISOString(),
   };
 }

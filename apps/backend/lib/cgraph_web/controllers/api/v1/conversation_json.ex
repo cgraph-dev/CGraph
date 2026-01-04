@@ -26,39 +26,60 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
   end
 
   # Renders complete conversation data including participants list
-  # Currently only supports 1:1 direct conversations (schema limitation)
+  # Uses camelCase for all fields for frontend consistency
+  # Participants include nested user data with userId for matching
   defp conversation_data(%Conversation{} = conv, _current_user) do
-    participants = get_participants(conv)
+    participants = get_participants_with_data(conv)
     last_msg = get_last_message(conv)
     
     %{
       id: conv.id,
-      participants: Enum.map(participants, &participant_data/1),
-      last_message: last_message_data(last_msg),
-      last_message_at: conv.last_message_at,
-      unread_count: Map.get(conv, :unread_count) || 0,
+      type: if(length(participants) > 2, do: "group", else: "direct"),
+      name: Map.get(conv, :name),
+      avatarUrl: Map.get(conv, :avatar_url),
+      participants: participants,
+      lastMessage: last_message_data(last_msg),
+      lastMessageAt: conv.last_message_at,
+      unreadCount: Map.get(conv, :unread_count) || 0,
       muted: Map.get(conv, :muted) || false,
       pinned: Map.get(conv, :pinned) || false,
-      updated_at: conv.updated_at,
-      created_at: conv.inserted_at
+      updatedAt: conv.updated_at,
+      createdAt: conv.inserted_at
     }
-    # Note: Group conversations with `name` field require schema update
   end
 
-  # Extracts all participant users from conversation
+  # Extracts all participant users from conversation with proper structure
+  # Returns list of participant objects with user data nested
   # Guards against NotLoaded associations
-  defp get_participants(%Conversation{participants: %Ecto.Association.NotLoaded{}}), do: []
-  defp get_participants(%Conversation{participants: participants}) when is_list(participants) do
+  defp get_participants_with_data(%Conversation{participants: %Ecto.Association.NotLoaded{}}), do: []
+  defp get_participants_with_data(%Conversation{participants: participants}) when is_list(participants) do
     participants
     |> Enum.map(fn p -> 
       case p.user do
         %Ecto.Association.NotLoaded{} -> nil
-        user -> user
+        user -> %{
+          id: p.id,
+          userId: user.id,
+          nickname: Map.get(p, :nickname),
+          isMuted: Map.get(p, :is_muted, false),
+          mutedUntil: Map.get(p, :muted_until),
+          joinedAt: p.inserted_at,
+          user: %{
+            id: user.id,
+            username: user.username,
+            displayName: user.display_name,
+            avatarUrl: user.avatar_url,
+            status: user.status || "offline"
+          }
+        }
       end
     end)
     |> Enum.reject(&is_nil/1)
   end
-  defp get_participants(_), do: []
+  defp get_participants_with_data(_), do: []
+
+  # Legacy helper for backward compatibility
+  defp get_participants(conv), do: get_participants_with_data(conv)
 
   # Returns last message from preloaded messages, excluding deleted ones
   # Guards against NotLoaded associations
@@ -72,15 +93,16 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
   defp get_last_message(_), do: nil
 
   # Renders participant user data with NotLoaded guard
+  # Uses camelCase for frontend consistency
   defp participant_data(nil), do: nil
   defp participant_data(%Ecto.Association.NotLoaded{}), do: nil
   defp participant_data(%User{} = user) do
     %{
       id: user.id,
       username: user.username,
-      display_name: user.display_name,
-      avatar_url: user.avatar_url,
-      status: user.status
+      displayName: user.display_name,
+      avatarUrl: user.avatar_url,
+      status: user.status || "offline"
     }
   end
 
@@ -89,8 +111,8 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
     %{
       id: msg.id,
       content: truncate(msg.content, 100),
-      sender_id: msg.sender_id,
-      created_at: msg.inserted_at
+      senderId: msg.sender_id,
+      createdAt: msg.inserted_at
     }
   end
 

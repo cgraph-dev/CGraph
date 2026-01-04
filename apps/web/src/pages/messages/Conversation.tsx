@@ -44,12 +44,33 @@ export default function Conversation() {
 
   // Get other participant for DM
   const otherParticipant = conversation?.participants.find((p) => p.userId !== user?.id);
+  const otherParticipantUserId = otherParticipant?.userId || otherParticipant?.user?.id;
   const conversationName =
     conversation?.name ||
     otherParticipant?.nickname ||
-    otherParticipant?.user.displayName ||
-    otherParticipant?.user.username ||
+    otherParticipant?.user?.displayName ||
+    otherParticipant?.user?.username ||
     'Unknown';
+
+  // Track online status of the other participant
+  const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
+  
+  // Subscribe to presence changes
+  useEffect(() => {
+    if (!conversationId || !otherParticipantUserId) return;
+    
+    // Initial check
+    setIsOtherUserOnline(socketManager.isUserOnline(conversationId, otherParticipantUserId));
+    
+    // Subscribe to status changes
+    const unsubscribe = socketManager.onStatusChange((convId, userId, isOnline) => {
+      if (convId === conversationId && userId === otherParticipantUserId) {
+        setIsOtherUserOnline(isOnline);
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [conversationId, otherParticipantUserId]);
 
   // Join channel and fetch messages
   useEffect(() => {
@@ -174,7 +195,7 @@ export default function Conversation() {
         <div className="flex items-center gap-3">
           <div className="relative">
             <div className="h-10 w-10 rounded-full overflow-hidden bg-dark-600">
-              {otherParticipant?.user.avatarUrl ? (
+              {otherParticipant?.user?.avatarUrl ? (
                 <img
                   src={otherParticipant.user.avatarUrl}
                   alt={conversationName}
@@ -186,7 +207,7 @@ export default function Conversation() {
                 </div>
               )}
             </div>
-            {otherParticipant?.user.status === 'online' && (
+            {isOtherUserOnline && (
               <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-dark-800" />
             )}
           </div>
@@ -195,7 +216,7 @@ export default function Conversation() {
             <div className="flex items-center gap-1.5">
               <ShieldCheckIcon className="h-3 w-3 text-green-400" title="End-to-end encrypted" />
               <p className="text-xs text-gray-400">
-                {otherParticipant?.user.status === 'online' ? 'Online' : 'Offline'}
+                {isOtherUserOnline ? 'Online' : 'Offline'}
               </p>
             </div>
           </div>
@@ -384,15 +405,15 @@ function MessageBubble({
         <div className="w-8 flex-shrink-0">
           {showAvatar && (
             <div className="h-8 w-8 rounded-full overflow-hidden bg-dark-600">
-              {message.sender.avatarUrl ? (
+              {message.sender?.avatarUrl ? (
                 <img
                   src={message.sender.avatarUrl}
-                  alt={message.sender.username}
+                  alt={message.sender?.displayName || message.sender?.username || 'User'}
                   className="h-full w-full object-cover"
                 />
               ) : (
                 <div className="h-full w-full flex items-center justify-center text-sm font-bold text-gray-400">
-                  {message.sender.username.charAt(0).toUpperCase()}
+                  {(message.sender?.displayName || message.sender?.username || 'U').charAt(0).toUpperCase()}
                 </div>
               )}
             </div>

@@ -6,7 +6,7 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.7 |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 |
 |--------|--------|--------|--------|--------|--------|
 | Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests |
 | Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures |
@@ -20,6 +20,157 @@
 | Username Login | - | - | - | - | ✅ |
 | Identity Search | - | - | - | - | ✅ |
 | WebSocket Messaging | - | - | - | - | ✅ |
+| Presence Tracking | - | - | - | - | ✅ |
+
+---
+
+## January 5, 2026 - v0.7.8 Message Display & Presence Fix
+
+### 1. "Unknown" Sender Name (WEB)
+
+**Problem:** Messages displayed "Unknown" as sender name on web, while mobile showed correct name "Tricker".
+
+**Root Cause:** Backend `sender_data` function in `message_json.ex` returned snake_case fields (`display_name`, `avatar_url`) but web frontend expected camelCase (`displayName`, `avatarUrl`).
+
+**Solution:**
+```elixir
+# Before
+defp sender_data(%User{} = user) do
+  %{
+    id: user.id,
+    username: user.username,
+    display_name: user.display_name,  # snake_case
+    avatar_url: user.avatar_url       # snake_case
+  }
+end
+
+# After
+defp sender_data(%User{} = user) do
+  %{
+    id: user.id,
+    username: user.username,
+    displayName: user.display_name,   # camelCase
+    avatarUrl: user.avatar_url,       # camelCase
+    status: user.status || "offline"  # Added status field
+  }
+end
+```
+
+**Files Modified:**
+- `apps/backend/lib/cgraph_web/controllers/api/v1/message_json.ex`
+- `apps/backend/lib/cgraph_web/controllers/api/v1/conversation_json.ex`
+
+### 2. All Messages on Left Side (BOTH PLATFORMS)
+
+**Problem:** All messages appeared on left side for both users - the isOwn detection was broken.
+
+**Root Cause:** The `senderId` field was not being properly normalized. Mobile uses `sender_id` (snake_case) while web uses `senderId` (camelCase). The comparison `item.sender_id === user?.id` failed when message had `senderId` format.
+
+**Solution:**
+```typescript
+// Mobile: Handle both formats
+const messageSenderId = item.sender_id || (item as any).senderId;
+const isOwnMessage = messageSenderId === user?.id;
+
+// Web apiUtils normalizer: Extract senderId from multiple sources
+const senderId = raw.senderId ?? raw.sender_id ?? null;
+const sender = normalizeSender(raw.sender);
+return {
+  ...
+  senderId: senderId ?? sender?.id ?? null,  // Fallback chain
+  ...
+};
+```
+
+**Files Modified:**
+- `apps/web/src/lib/apiUtils.ts`
+- `apps/mobile/src/lib/normalizers.ts`
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+
+### 3. Both Users Show "Offline" (PRESENCE)
+
+**Problem:** Header showed "Offline" for both users even when both were actively in the conversation.
+
+**Root Cause:** Presence state was only being read from initial conversation participant data (which could be stale) rather than from Phoenix Presence real-time tracking.
+
+**Solution:** Implemented full Phoenix Presence integration:
+
+```typescript
+// Web socket.ts - Added presence tracking
+const presence = new Presence(channel);
+this.presences.set(topic, presence);
+this.onlineUsers.set(conversationId, new Set());
+
+presence.onSync(() => {
+  const onlineSet = new Set<string>();
+  presence.list((id) => { onlineSet.add(id); return id; });
+  // Notify status changes
+  this.onlineUsers.set(conversationId, onlineSet);
+});
+
+presence.onJoin((id) => {
+  this.onlineUsers.get(conversationId)?.add(id);
+  this.notifyStatusChange(conversationId, id, true);
+});
+
+presence.onLeave((id) => {
+  this.onlineUsers.get(conversationId)?.delete(id);
+  this.notifyStatusChange(conversationId, id, false);
+});
+```
+
+**Files Modified:**
+- `apps/web/src/lib/socket.ts`
+- `apps/web/src/pages/messages/Conversation.tsx`
+- `apps/mobile/src/lib/socket.ts`
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+
+### 4. Mobile Participant Matching (MOBILE)
+
+**Problem:** Other participant not found, causing navigation title to show "Conversation" instead of username.
+
+**Root Cause:** Code was using `p.id !== user?.id` but participants have nested structure with `p.userId` or `p.user.id`, not direct `p.id` as user ID.
+
+**Solution:**
+```typescript
+// Before
+const otherParticipant = conv.participants.find((p: any) => p.id !== user?.id);
+
+// After - Handle all possible formats
+const otherParticipant = conv.participants?.find((p: any) => {
+  const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
+  return participantUserId !== user?.id;
+});
+```
+
+**Files Modified:**
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+
+### 5. conversation_json.ex camelCase Consistency
+
+**Problem:** Conversation API returned snake_case fields while frontend expected camelCase.
+
+**Solution:** Updated all field names to camelCase and enhanced participant structure:
+```elixir
+# participant now includes userId for matching
+%{
+  id: p.id,
+  userId: user.id,           # For matching
+  nickname: Map.get(p, :nickname),
+  isMuted: Map.get(p, :is_muted, false),
+  joinedAt: p.inserted_at,
+  user: %{
+    id: user.id,
+    username: user.username,
+    displayName: user.display_name,
+    avatarUrl: user.avatar_url,
+    status: user.status || "offline"
+  }
+}
+```
+
+**Files Modified:**
+- `apps/backend/lib/cgraph_web/controllers/api/v1/conversation_json.ex`
 
 ---
 

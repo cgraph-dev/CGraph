@@ -93,14 +93,16 @@ defmodule CgraphWeb.API.V1.MessageJSON do
   end
 
   # Handle sender associations that may not be loaded
+  # Uses camelCase for all fields to match frontend expectations
   defp sender_data(nil), do: nil
   defp sender_data(%Ecto.Association.NotLoaded{}), do: nil
   defp sender_data(%User{} = user) do
     %{
       id: user.id,
       username: user.username,
-      display_name: user.display_name,
-      avatar_url: user.avatar_url
+      displayName: user.display_name,
+      avatarUrl: user.avatar_url,
+      status: user.status || "offline"
     }
   end
 

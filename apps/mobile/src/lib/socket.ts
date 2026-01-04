@@ -1,4 +1,4 @@
-import { Socket, Channel } from 'phoenix';
+import { Socket, Channel, Presence } from 'phoenix';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import { socketLogger as logger } from './logger';
@@ -15,10 +15,27 @@ const getWsUrl = (): string => {
 
 const WS_URL = getWsUrl();
 
+// Types for presence tracking
+interface PresenceMeta {
+  online_at: string;
+  typing: boolean;
+  status: string;
+  phx_ref?: string;
+}
+
+interface PresenceState {
+  [userId: string]: { metas: PresenceMeta[] };
+}
+
+type StatusChangeCallback = (conversationId: string, userId: string, isOnline: boolean) => void;
+
 class SocketManager {
   private socket: Socket | null = null;
   private channels: Map<string, Channel> = new Map();
+  private presences: Map<string, Presence> = new Map();
+  private onlineUsers: Map<string, Set<string>> = new Map();
   private connectionPromise: Promise<void> | null = null;
+  private statusListeners: Set<StatusChangeCallback> = new Set();
   
   async connect(): Promise<void> {
     // Prevent concurrent connection attempts
@@ -77,8 +94,31 @@ class SocketManager {
   disconnect(): void {
     this.channels.forEach((channel) => channel.leave());
     this.channels.clear();
+    this.presences.clear();
+    this.onlineUsers.clear();
     this.socket?.disconnect();
     this.socket = null;
+  }
+  
+  // Subscribe to user status changes
+  onStatusChange(callback: StatusChangeCallback): () => void {
+    this.statusListeners.add(callback);
+    return () => this.statusListeners.delete(callback);
+  }
+  
+  // Notify status change listeners
+  private notifyStatusChange(conversationId: string, userId: string, isOnline: boolean): void {
+    this.statusListeners.forEach(callback => callback(conversationId, userId, isOnline));
+  }
+  
+  // Check if user is online in a conversation
+  isUserOnline(conversationId: string, userId: string): boolean {
+    return this.onlineUsers.get(conversationId)?.has(userId) || false;
+  }
+  
+  // Get online users for a conversation
+  getOnlineUsers(conversationId: string): string[] {
+    return Array.from(this.onlineUsers.get(conversationId) || []);
   }
   
   joinChannel(topic: string, params: Record<string, unknown> = {}): Channel | null {
@@ -93,6 +133,50 @@ class SocketManager {
     }
     
     const channel = this.socket.channel(topic, params);
+    
+    // Set up presence tracking for conversation channels
+    if (topic.startsWith('conversation:')) {
+      const conversationId = topic.replace('conversation:', '');
+      const presence = new Presence(channel);
+      this.presences.set(topic, presence);
+      this.onlineUsers.set(conversationId, new Set());
+      
+      presence.onSync(() => {
+        const onlineSet = new Set<string>();
+        presence.list((id: string) => {
+          onlineSet.add(id);
+          return id;
+        });
+        
+        // Notify changes
+        const previousSet = this.onlineUsers.get(conversationId) || new Set();
+        onlineSet.forEach(userId => {
+          if (!previousSet.has(userId)) {
+            this.notifyStatusChange(conversationId, userId, true);
+          }
+        });
+        previousSet.forEach(userId => {
+          if (!onlineSet.has(userId)) {
+            this.notifyStatusChange(conversationId, userId, false);
+          }
+        });
+        
+        this.onlineUsers.set(conversationId, onlineSet);
+        logger.log(`Presence sync for ${conversationId}:`, Array.from(onlineSet));
+      });
+      
+      presence.onJoin((id: string) => {
+        logger.log(`User ${id} joined ${conversationId}`);
+        this.onlineUsers.get(conversationId)?.add(id);
+        this.notifyStatusChange(conversationId, id, true);
+      });
+      
+      presence.onLeave((id: string) => {
+        logger.log(`User ${id} left ${conversationId}`);
+        this.onlineUsers.get(conversationId)?.delete(id);
+        this.notifyStatusChange(conversationId, id, false);
+      });
+    }
     
     channel.join()
       .receive('ok', (response: unknown) => {
@@ -111,6 +195,13 @@ class SocketManager {
     if (channel) {
       channel.leave();
       this.channels.delete(topic);
+      this.presences.delete(topic);
+      
+      // Clean up presence tracking for conversations
+      if (topic.startsWith('conversation:')) {
+        const conversationId = topic.replace('conversation:', '');
+        this.onlineUsers.delete(conversationId);
+      }
     }
   }
   

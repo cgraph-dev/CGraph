@@ -1,13 +1,14 @@
 /**
  * Data normalizers for API and WebSocket responses.
  * Handles both camelCase and snake_case field names for compatibility.
+ * Mobile uses snake_case internally to match native conventions.
  */
 
 import { Message, UserBasic } from '../types';
 
 /**
  * Normalizes a message object from various sources (HTTP API, WebSocket).
- * Converts camelCase to snake_case for mobile app compatibility.
+ * Converts all formats to snake_case for mobile app compatibility.
  */
 export function normalizeMessage(raw: Record<string, unknown>): Message {
   if (!raw || typeof raw !== 'object') {
@@ -15,6 +16,7 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
   }
 
   const sender = normalizeSender(raw.sender as Record<string, unknown> | null);
+  const senderId = (raw.senderId ?? raw.sender_id ?? sender?.id ?? '') as string;
   
   return {
     id: raw.id as string,
@@ -23,7 +25,7 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
     attachments: (raw.attachments ?? []) as Message['attachments'],
     metadata: raw.metadata as Message['metadata'],
     sender: sender,
-    sender_id: (raw.senderId ?? raw.sender_id ?? sender?.id ?? '') as string,
+    sender_id: senderId,
     conversation_id: (raw.conversationId ?? raw.conversation_id ?? null) as string | undefined,
     channel_id: (raw.channelId ?? raw.channel_id ?? null) as string | undefined,
     reply_to_id: (raw.replyToId ?? raw.reply_to_id ?? null) as string | undefined,
@@ -38,6 +40,7 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
 
 /**
  * Normalizes sender data from various formats.
+ * Handles both camelCase (from WebSocket) and snake_case (from HTTP API).
  */
 function normalizeSender(sender: Record<string, unknown> | null | undefined): UserBasic {
   if (!sender || typeof sender !== 'object') {

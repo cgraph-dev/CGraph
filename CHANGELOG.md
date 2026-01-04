@@ -11,6 +11,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.8] - 2026-01-05
+
+### Messaging Display & Presence System Fix
+
+Comprehensive fix for message display issues, sender identification, and real-time presence tracking.
+
+### Fixed
+
+#### Message Display Issues
+- **"Unknown" Sender Name** - Fixed sender data serialization to use camelCase (displayName, avatarUrl) matching frontend expectations
+- **Messages on Wrong Side** - Fixed isOwn detection by properly normalizing senderId across both camelCase and snake_case formats
+- **Offline Status Always Shown** - Implemented real-time presence tracking with Phoenix Presence integration
+
+#### Participant Matching
+- **Mobile Participant Detection** - Fixed participant matching to handle both nested (p.userId, p.user.id) and flat (p.id) formats
+- **Conversation Name Display** - Added comprehensive fallback chain for display name resolution
+
+### Added
+
+#### Real-Time Presence System
+- **Web Presence Tracking** - Full Phoenix Presence integration with onSync, onJoin, onLeave handlers
+- **Mobile Presence Tracking** - Equivalent presence system for React Native
+- **Dynamic Online Status** - Header updates in real-time when other user joins/leaves conversation
+- **Status Change Callbacks** - `onStatusChange()` subscription API for presence updates
+
+#### Enhanced Header Display
+- **Mobile Custom Header** - Shows user name with dynamic online/offline status indicator
+- **Status Dot Indicator** - Green dot when online, gray when offline
+- **Real-time Updates** - Status changes reflect immediately in UI
+
+#### camelCase Consistency (Backend)
+- **conversation_json.ex** - All fields now use camelCase (participants, lastMessage, createdAt, etc.)
+- **Participant Structure** - Returns proper nested structure with userId and user object
+- **message_json.ex sender_data** - Uses displayName and avatarUrl instead of snake_case
+
+### Changed
+
+#### Web Frontend
+- **Conversation.tsx** - Added isOtherUserOnline state with presence subscription
+- **socket.ts** - Added Presence class import, presence tracking maps, status change listeners
+
+#### Mobile Frontend  
+- **ConversationScreen.tsx** - Added presence tracking, custom header with status
+- **socket.ts** - Added Presence support with onSync/onJoin/onLeave handlers
+- **normalizers.ts** - Improved sender_id extraction with fallback to sender.id
+
+### Files Modified
+- `apps/backend/lib/cgraph_web/controllers/api/v1/message_json.ex`
+- `apps/backend/lib/cgraph_web/controllers/api/v1/conversation_json.ex`
+- `apps/web/src/lib/apiUtils.ts`
+- `apps/web/src/lib/socket.ts`
+- `apps/web/src/pages/messages/Conversation.tsx`
+- `apps/mobile/src/lib/socket.ts`
+- `apps/mobile/src/lib/normalizers.ts`
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+
+---
+
 ## [0.7.7] - 2026-01-05
 
 ### Critical Messaging Fix

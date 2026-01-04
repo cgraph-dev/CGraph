@@ -36,8 +36,27 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
+  const [otherParticipantId, setOtherParticipantId] = useState<string | null>(null);
   
   const flatListRef = useRef<FlatList>(null);
+  
+  // Subscribe to presence changes
+  useEffect(() => {
+    if (!conversationId || !otherParticipantId) return;
+    
+    // Initial check
+    setIsOtherUserOnline(socketManager.isUserOnline(conversationId, otherParticipantId));
+    
+    // Subscribe to status changes
+    const unsubscribe = socketManager.onStatusChange((convId, participantId, isOnline) => {
+      if (convId === conversationId && participantId === otherParticipantId) {
+        setIsOtherUserOnline(isOnline);
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [conversationId, otherParticipantId]);
   
   useEffect(() => {
     fetchConversation();
@@ -52,23 +71,86 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const fetchConversation = async () => {
     try {
       const response = await api.get(`/api/v1/conversations/${conversationId}`);
-      const conv = response.data.data;
+      const conv = response.data.data || response.data;
       setConversation(conv);
       
-      const otherParticipant = conv.participants.find((p: any) => p.id !== user?.id);
-      navigation.setOptions({
-        title: conv.name || otherParticipant?.display_name || otherParticipant?.username || 'Conversation',
-        headerRight: () => (
-          <View style={styles.e2eeIndicator}>
-            <Ionicons name="lock-closed" size={14} color="#22c55e" />
-            <Text style={styles.e2eeText}>E2EE</Text>
-          </View>
-        ),
+      // Find other participant - handle both camelCase and snake_case formats
+      // Participants can be nested (with user object) or flat (direct user data)
+      const otherParticipant = conv.participants?.find((p: any) => {
+        const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
+        return participantUserId !== user?.id;
       });
+      
+      // Store other participant's user ID for presence tracking
+      const otherUserId = otherParticipant?.userId || otherParticipant?.user_id || otherParticipant?.user?.id || otherParticipant?.id;
+      if (otherUserId) {
+        setOtherParticipantId(otherUserId);
+      }
+      
+      // Extract display name with fallbacks for both nested and flat formats
+      const displayName = 
+        conv.name ||
+        otherParticipant?.nickname ||
+        otherParticipant?.user?.displayName ||
+        otherParticipant?.user?.display_name ||
+        otherParticipant?.displayName ||
+        otherParticipant?.display_name ||
+        otherParticipant?.user?.username ||
+        otherParticipant?.username ||
+        'Conversation';
+      
+      updateHeader(displayName);
     } catch (error) {
       console.error('Error fetching conversation:', error);
     }
   };
+  
+  // Update header with current online status
+  const updateHeader = useCallback((displayName: string) => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <View style={styles.headerTitleContainer}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{displayName}</Text>
+          <View style={styles.headerStatusRow}>
+            <View style={[styles.statusDot, { backgroundColor: isOtherUserOnline ? '#22c55e' : '#6b7280' }]} />
+            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
+              {isOtherUserOnline ? 'Online' : 'Offline'}
+            </Text>
+          </View>
+        </View>
+      ),
+      headerRight: () => (
+        <View style={styles.e2eeIndicator}>
+          <Ionicons name="lock-closed" size={14} color="#22c55e" />
+          <Text style={styles.e2eeText}>E2EE</Text>
+        </View>
+      ),
+    });
+  }, [colors, isOtherUserOnline, navigation]);
+  
+  // Update header when online status changes
+  useEffect(() => {
+    if (_conversation) {
+      const conv = _conversation;
+      const otherParticipant = conv.participants?.find((p: any) => {
+        const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
+        return participantUserId !== user?.id;
+      });
+      
+      const displayName = 
+        conv.name ||
+        otherParticipant?.nickname ||
+        otherParticipant?.user?.displayName ||
+        otherParticipant?.user?.display_name ||
+        otherParticipant?.displayName ||
+        otherParticipant?.display_name ||
+        otherParticipant?.user?.username ||
+        otherParticipant?.username ||
+        'Conversation';
+      
+      updateHeader(displayName);
+    }
+  }, [isOtherUserOnline, _conversation, updateHeader, user?.id]);
   
   const fetchMessages = async () => {
     try {
@@ -83,6 +165,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
   };
   
   const joinChannel = () => {
+    const existingChannel = socketManager.getChannel(`conversation:${conversationId}`);
+    
+    // Only set up handlers if this is a new join (channel didn't exist)
+    if (existingChannel) {
+      return; // Already joined, don't add duplicate handlers
+    }
+    
     const channel = socketManager.joinChannel(`conversation:${conversationId}`);
     if (channel) {
       channel.on('new_message', (payload: unknown) => {
@@ -131,7 +220,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
   };
   
   const renderMessage = useCallback(({ item }: { item: Message }) => {
-    const isOwnMessage = item.sender_id === user?.id;
+    // Handle both snake_case and camelCase sender_id formats
+    const messageSenderId = item.sender_id || (item as any).senderId;
+    const isOwnMessage = messageSenderId === user?.id;
+    
+    // Get sender display name with fallbacks
+    const senderDisplayName = item.sender?.display_name || (item.sender as any)?.displayName || item.sender?.username || 'User';
+    const senderAvatarUrl = item.sender?.avatar_url || (item.sender as any)?.avatarUrl;
     
     return (
       <View
@@ -142,12 +237,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
       >
         {!isOwnMessage && (
           <View style={styles.avatarSmall}>
-            {item.sender.avatar_url ? (
-              <Image source={{ uri: item.sender.avatar_url }} style={styles.avatarImage} />
+            {senderAvatarUrl ? (
+              <Image source={{ uri: senderAvatarUrl }} style={styles.avatarImage} />
             ) : (
               <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
                 <Text style={styles.avatarText}>
-                  {item.sender.username?.charAt(0).toUpperCase()}
+                  {senderDisplayName.charAt(0).toUpperCase()}
                 </Text>
               </View>
             )}
@@ -388,6 +483,27 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     marginLeft: 4,
+  },
+  headerTitleContainer: {
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  headerStatusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 2,
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    marginLeft: 4,
+  },
+  statusDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   emptyContainer: {
     flex: 1,
