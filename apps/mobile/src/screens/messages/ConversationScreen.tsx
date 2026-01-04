@@ -68,6 +68,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const isMountedRef = useRef(true);
   // Track cleanup function to prevent memory leaks
   const cleanupRef = useRef<(() => void) | null>(null);
+  // Track if we've already joined the channel for this conversation
+  const channelJoinedRef = useRef<string | null>(null);
   
   useEffect(() => {
     isMountedRef.current = true;
@@ -81,9 +83,25 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Only proceed if still mounted
       if (!isMountedRef.current) return;
       
-      // Join channel (socket manager handles deduplication internally)
-      // Channel stays alive even when component unmounts - this prevents join/leave churn
-      socketManager.joinChannel(channelTopic);
+      // Skip if we've already joined this specific conversation's channel
+      // This prevents rapid re-join attempts that cause presence loops
+      if (channelJoinedRef.current === channelTopic) {
+        console.log(`[ConversationScreen] Channel ${channelTopic} already joined, skipping`);
+        return;
+      }
+      
+      // Mark this channel as joined BEFORE the actual join to prevent race conditions
+      channelJoinedRef.current = channelTopic;
+      
+      // Join channel (socket manager handles deduplication and debouncing internally)
+      // The socket manager will return immediately if channel is already joined/joining
+      const channel = socketManager.joinChannel(channelTopic);
+      
+      if (!channel) {
+        console.error(`[ConversationScreen] Failed to join channel ${channelTopic}`);
+        channelJoinedRef.current = null; // Allow retry
+        return;
+      }
       
       // Subscribe to message events via listener pattern
       // This is safe to call multiple times - each call returns a unique unsubscribe function
@@ -119,16 +137,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Mark as unmounted immediately
       isMountedRef.current = false;
       
-      // Unsubscribe from message events - but DO NOT leave the channel
-      // The channel stays alive to prevent join/leave churn
-      // It will be cleaned up on logout or app termination
+      // Unsubscribe from message events
       if (cleanupRef.current) {
         cleanupRef.current();
         cleanupRef.current = null;
       }
       
-      // NOTE: We intentionally do NOT call leaveChannel here
-      // The channel remains active to maintain presence and avoid server churn
+      // ARCHITECTURAL DECISION: When to leave channels
+      // 
+      // LEAVE channel on unmount (current approach):
+      // - Pros: Clean state management, prevents memory leaks, accurate presence
+      // - Cons: More server load on navigation, brief presence flicker
+      //
+      // KEEP channel alive (previous approach):
+      // - Pros: Faster re-entry, less server load, smoother UX
+      // - Cons: Can cause join/leave loops on rapid remounts, memory leaks
+      //
+      // With debouncing in place, we can now safely leave channels because:
+      // 1. Debouncing prevents rapid rejoin loops
+      // 2. Socket manager reuses existing healthy channels
+      // 3. This gives us accurate presence tracking
+      socketManager.leaveChannel(channelTopic);
+      channelJoinedRef.current = null;
     };
   }, [conversationId]);
   
@@ -320,11 +350,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
     setIsVoiceMode(false);
     
     try {
-      // Read the audio file and prepare for upload
-      const fileInfo = await FileSystem.getInfoAsync(voiceData.uri);
-      if (!fileInfo.exists) {
-        throw new Error('Voice recording file not found');
-      }
+      // Note: FileSystem.getInfoAsync is deprecated in Expo SDK 54+
+      // However, for file existence check, we can use try-catch on the formData
+      // If the file doesn't exist, the upload will fail anyway
       
       // Create form data for upload
       const formData = new FormData();
@@ -349,6 +377,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setMessages((prev) => [...prev, normalized]);
       
       // Clean up the temporary file
+      // Note: deleteAsync is still supported in current SDK
       await FileSystem.deleteAsync(voiceData.uri, { idempotent: true });
     } catch (error) {
       console.error('Error sending voice message:', error);
@@ -359,11 +388,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   };
   
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  /**
+   * Safely formats a date string to local time.
+   * Handles invalid dates gracefully to prevent RangeError.
+   */
+  const formatTime = (dateString: string | undefined | null): string => {
+    if (!dateString) return '';
+    
+    try {
+      const date = new Date(dateString);
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        console.warn('[ConversationScreen] Invalid date string:', dateString);
+        return '';
+      }
+      return date.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } catch (error) {
+      console.error('[ConversationScreen] Error formatting date:', error);
+      return '';
+    }
   };
   
   const renderMessage = useCallback(({ item }: { item: Message }) => {

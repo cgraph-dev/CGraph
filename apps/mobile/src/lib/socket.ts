@@ -41,6 +41,10 @@ class SocketManager {
   private channelHandlersSetUp: Set<string> = new Set();
   // Per-channel message listeners (components can subscribe/unsubscribe)
   private messageListeners: Map<string, Set<MessageCallback>> = new Map();
+  // Track last join attempt timestamp per channel to prevent rapid rejoins
+  private lastJoinAttempts: Map<string, number> = new Map();
+  // Minimum time between join attempts (ms) - prevents join/leave loops
+  private readonly JOIN_DEBOUNCE_MS = 1000;
   
   async connect(): Promise<void> {
     // Prevent concurrent connection attempts
@@ -142,6 +146,7 @@ class SocketManager {
     this.onlineUsers.clear();
     this.channelHandlersSetUp.clear();
     this.messageListeners.clear();
+    this.lastJoinAttempts.clear();
     this.socket?.disconnect();
     this.socket = null;
   }
@@ -178,6 +183,21 @@ class SocketManager {
     return Array.from(this.onlineUsers.get(conversationId) || []);
   }
   
+  /**
+   * Join a Phoenix channel with comprehensive lifecycle management.
+   * 
+   * Architectural improvements:
+   * - Debounces rapid join attempts to prevent join/leave loops
+   * - Validates socket connection state before attempting join
+   * - Reuses existing healthy channels to minimize reconnection overhead
+   * - Cleans up stale channels in bad states (closed/errored)
+   * - Sets up presence tracking once per channel to prevent duplicate handlers
+   * - Implements idempotent handler registration
+   * 
+   * @param topic - Channel topic (e.g., "conversation:123")
+   * @param params - Optional parameters for channel join
+   * @returns Channel instance or null if unable to join
+   */
   joinChannel(topic: string, params: Record<string, unknown> = {}): Channel | null {
     if (!this.socket) {
       logger.error('Socket not connected, cannot join channel:', topic);
@@ -190,12 +210,26 @@ class SocketManager {
       return null;
     }
     
+    // Debouncing: Prevent rapid join attempts (fixes join/leave loops)
+    const now = Date.now();
+    const lastAttempt = this.lastJoinAttempts.get(topic) || 0;
+    const timeSinceLastAttempt = now - lastAttempt;
+    
+    if (timeSinceLastAttempt < this.JOIN_DEBOUNCE_MS) {
+      logger.log(
+        `Debouncing join attempt for ${topic}, last attempt was ${timeSinceLastAttempt}ms ago`
+      );
+      // Return existing channel if it exists, otherwise null
+      return this.channels.get(topic) || null;
+    }
+    
     const existingChannel = this.channels.get(topic);
     if (existingChannel) {
       // Channel already exists - check its state before returning
       const state = existingChannel.state;
       if (state === 'joined' || state === 'joining') {
-        // Already joined or joining, return existing channel
+        // Already joined or joining, return existing channel without updating timestamp
+        logger.log(`Reusing existing channel ${topic} in state: ${state}`);
         return existingChannel;
       }
       // Channel exists but is in a bad state (closed, errored, leaving)
@@ -209,6 +243,9 @@ class SocketManager {
         this.onlineUsers.delete(conversationId);
       }
     }
+    
+    // Update join attempt timestamp BEFORE creating channel
+    this.lastJoinAttempts.set(topic, now);
     
     logger.log('Creating new channel:', topic);
     const channel = this.socket.channel(topic, params);
@@ -280,19 +317,35 @@ class SocketManager {
         // Clean up on failure
         this.channels.delete(topic);
         this.channelHandlersSetUp.delete(topic);
+        this.lastJoinAttempts.delete(topic); // Allow retry after error
       });
     
     return channel;
   }
   
+  /**
+   * Leave a channel and clean up all associated state.
+   * 
+   * Properly cleans up:
+   * - Channel connection
+   * - Presence tracking
+   * - Handler registration state
+   * - Message listeners
+   * - Online user tracking
+   * - Join attempt tracking
+   * 
+   * @param topic - Channel topic to leave
+   */
   leaveChannel(topic: string): void {
     const channel = this.channels.get(topic);
     if (channel) {
+      logger.log(`Leaving channel: ${topic}`);
       channel.leave();
       this.channels.delete(topic);
       this.presences.delete(topic);
       this.channelHandlersSetUp.delete(topic);
       this.messageListeners.delete(topic);
+      this.lastJoinAttempts.delete(topic);
       
       // Clean up presence tracking for conversations
       if (topic.startsWith('conversation:')) {

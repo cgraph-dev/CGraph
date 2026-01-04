@@ -29,6 +29,12 @@ class SocketManager {
   private reconnectTimer: number | null = null;
   private statusListeners: Set<(conversationId: string, userId: string, isOnline: boolean) => void> = new Set();
   private connectionPromise: Promise<void> | null = null;
+  // Track last join attempt timestamp per channel to prevent rapid rejoins
+  private lastJoinAttempts: Map<string, number> = new Map();
+  // Track which channels have handlers set up
+  private channelHandlersSetUp: Set<string> = new Set();
+  // Minimum time between join attempts (ms) - prevents join/leave loops
+  private readonly JOIN_DEBOUNCE_MS = 1000;
 
   connect(): Promise<void> {
     // Return existing promise if connection is in progress
@@ -113,14 +119,50 @@ class SocketManager {
     return this.onlineUsers.get(conversationId)?.has(userId) || false;
   }
 
-  // Join a conversation channel (DMs)
-  // Returns a promise that resolves to the channel once joined
+  /**
+   * Join a conversation channel (DMs) with comprehensive lifecycle management.
+   * 
+   * Architectural improvements:
+   * - Debounces rapid join attempts to prevent join/leave loops
+   * - Validates socket connection state before attempting join
+   * - Reuses existing healthy channels to minimize reconnection overhead
+   * - Cleans up stale channels in bad states (closed/errored)
+   * - Sets up presence tracking once per channel to prevent duplicate handlers
+   * - Implements idempotent handler registration
+   * 
+   * @param conversationId - Conversation ID to join
+   * @returns Channel instance or null if unable to join
+   */
   joinConversation(conversationId: string): Channel | null {
     const topic = `conversation:${conversationId}`;
+    
+    // Debouncing: Prevent rapid join attempts (fixes join/leave loops)
+    const now = Date.now();
+    const lastAttempt = this.lastJoinAttempts.get(topic) || 0;
+    const timeSinceLastAttempt = now - lastAttempt;
+    
+    if (timeSinceLastAttempt < this.JOIN_DEBOUNCE_MS) {
+      logger.log(
+        `Debouncing join attempt for ${topic}, last attempt was ${timeSinceLastAttempt}ms ago`
+      );
+      // Return existing channel if it exists, otherwise null
+      return this.channels.get(topic) || null;
+    }
 
-    if (this.channels.has(topic)) {
-      logger.log(`Already in channel ${topic}, returning existing`);
-      return this.channels.get(topic)!;
+    const existingChannel = this.channels.get(topic);
+    if (existingChannel) {
+      // Channel already exists - check its state before returning
+      const state = existingChannel.state;
+      if (state === 'joined' || state === 'joining') {
+        logger.log(`Reusing existing channel ${topic} in state: ${state}`);
+        return existingChannel;
+      }
+      // Channel exists but is in a bad state (closed, errored, leaving)
+      logger.warn(`Channel ${topic} in bad state: ${state}, recreating`);
+      this.channels.delete(topic);
+      this.channelHandlersSetUp.delete(topic);
+      this.presences.delete(topic);
+      this.onlineUsers.delete(conversationId);
     }
 
     if (!this.socket) {
@@ -141,85 +183,94 @@ class SocketManager {
       return null;
     }
 
+    // Update join attempt timestamp BEFORE creating channel
+    this.lastJoinAttempts.set(topic, now);
+
     const channel = this.socket.channel(topic, {});
+    this.channels.set(topic, channel);
     
-    // Set up presence tracking for this channel
-    const presence = new Presence(channel);
-    this.presences.set(topic, presence);
-    
-    // Initialize online users set for this conversation
-    this.onlineUsers.set(conversationId, new Set());
-    
-    // Handle presence sync (initial state)
-    presence.onSync(() => {
-      const onlineSet = new Set<string>();
-      presence.list((id: string) => {
-        onlineSet.add(id);
-        return id;
+    // Set up handlers only once per channel
+    if (!this.channelHandlersSetUp.has(topic)) {
+      this.channelHandlersSetUp.add(topic);
+      
+      // Set up presence tracking for this channel
+      const presence = new Presence(channel);
+      this.presences.set(topic, presence);
+      
+      // Initialize online users set for this conversation
+      this.onlineUsers.set(conversationId, new Set());
+      
+      // Handle presence sync (initial state)
+      presence.onSync(() => {
+        const onlineSet = new Set<string>();
+        presence.list((id: string) => {
+          onlineSet.add(id);
+          return id;
+        });
+        
+        // Compare with previous state and notify changes
+        const previousSet = this.onlineUsers.get(conversationId) || new Set();
+        onlineSet.forEach(userId => {
+          if (!previousSet.has(userId)) {
+            this.notifyStatusChange(conversationId, userId, true);
+          }
+        });
+        previousSet.forEach(userId => {
+          if (!onlineSet.has(userId)) {
+            this.notifyStatusChange(conversationId, userId, false);
+          }
+        });
+        
+        this.onlineUsers.set(conversationId, onlineSet);
+        logger.log(`Presence sync for ${conversationId}:`, Array.from(onlineSet));
       });
       
-      // Compare with previous state and notify changes
-      const previousSet = this.onlineUsers.get(conversationId) || new Set();
-      onlineSet.forEach(userId => {
-        if (!previousSet.has(userId)) {
-          this.notifyStatusChange(conversationId, userId, true);
-        }
-      });
-      previousSet.forEach(userId => {
-        if (!onlineSet.has(userId)) {
-          this.notifyStatusChange(conversationId, userId, false);
-        }
+      // Handle join/leave events
+      presence.onJoin((id: string) => {
+        logger.log(`User ${id} joined ${conversationId}`);
+        this.onlineUsers.get(conversationId)?.add(id);
+        this.notifyStatusChange(conversationId, id, true);
       });
       
-      this.onlineUsers.set(conversationId, onlineSet);
-      logger.log(`Presence sync for ${conversationId}:`, Array.from(onlineSet));
-    });
-    
-    // Handle join/leave events
-    presence.onJoin((id: string) => {
-      logger.log(`User ${id} joined ${conversationId}`);
-      this.onlineUsers.get(conversationId)?.add(id);
-      this.notifyStatusChange(conversationId, id, true);
-    });
-    
-    presence.onLeave((id: string) => {
-      logger.log(`User ${id} left ${conversationId}`);
-      this.onlineUsers.get(conversationId)?.delete(id);
-      this.notifyStatusChange(conversationId, id, false);
-    });
+      presence.onLeave((id: string) => {
+        logger.log(`User ${id} left ${conversationId}`);
+        this.onlineUsers.get(conversationId)?.delete(id);
+        this.notifyStatusChange(conversationId, id, false);
+      });
 
-    channel.on('new_message', (payload) => {
-      logger.log('Received new_message event:', payload);
-      const data = payload as { message: Record<string, unknown> };
-      const normalized = normalizeMessage(data.message) as unknown as Message;
-      logger.log('Normalized message:', normalized);
-      useChatStore.getState().addMessage(normalized);
-    });
+      channel.on('new_message', (payload) => {
+        logger.log('Received new_message event:', payload);
+        const data = payload as { message: Record<string, unknown> };
+        const normalized = normalizeMessage(data.message) as unknown as Message;
+        logger.log('Normalized message:', normalized);
+        useChatStore.getState().addMessage(normalized);
+      });
 
-    channel.on('message_updated', (payload) => {
-      logger.log('Received message_updated event:', payload);
-      const data = payload as { message: Record<string, unknown> };
-      const normalized = normalizeMessage(data.message) as unknown as Message;
-      useChatStore.getState().updateMessage(normalized);
-    });
+      channel.on('message_updated', (payload) => {
+        logger.log('Received message_updated event:', payload);
+        const data = payload as { message: Record<string, unknown> };
+        const normalized = normalizeMessage(data.message) as unknown as Message;
+        useChatStore.getState().updateMessage(normalized);
+      });
 
-    channel.on('message_deleted', (payload) => {
-      const data = payload as { message_id: string };
-      useChatStore.getState().removeMessage(data.message_id, conversationId);
-    });
+      channel.on('message_deleted', (payload) => {
+        const data = payload as { message_id: string };
+        useChatStore.getState().removeMessage(data.message_id, conversationId);
+      });
 
-    channel.on('typing', (payload) => {
-      const data = payload as { user_id: string; is_typing: boolean };
-      useChatStore.getState().setTypingUser(conversationId, data.user_id, data.is_typing);
-    });
+      channel.on('typing', (payload) => {
+        const data = payload as { user_id: string; is_typing: boolean };
+        useChatStore.getState().setTypingUser(conversationId, data.user_id, data.is_typing);
+      });
 
-    channel.on('presence_state', (state) => {
-      logger.log('Presence state:', state);
-    });
+      channel.on('presence_state', (state) => {
+        logger.log('Presence state:', state);
+      });
 
-    channel.on('presence_diff', (diff) => {
-      logger.log('Presence diff:', diff);
-    });
+      channel.on('presence_diff', (diff) => {
+        logger.log('Presence diff:', diff);
+      });
+    }
 
     channel
       .join()
@@ -228,20 +279,38 @@ class SocketManager {
       })
       .receive('error', (resp: unknown) => {
         logger.error(`Failed to join conversation ${conversationId}:`, resp);
+        // Clean up on failure
+        this.channels.delete(topic);
+        this.channelHandlersSetUp.delete(topic);
+        this.lastJoinAttempts.delete(topic); // Allow retry after error
       });
 
-    this.channels.set(topic, channel);
     return channel;
   }
 
+  /**
+   * Leave a conversation channel and clean up all associated state.
+   * 
+   * Properly cleans up:
+   * - Channel connection
+   * - Presence tracking
+   * - Handler registration state
+   * - Online user tracking
+   * - Join attempt tracking
+   * 
+   * @param conversationId - Conversation ID to leave
+   */
   leaveConversation(conversationId: string) {
     const topic = `conversation:${conversationId}`;
     const channel = this.channels.get(topic);
     if (channel) {
+      logger.log(`Leaving conversation: ${topic}`);
       channel.leave();
       this.channels.delete(topic);
+      this.channelHandlersSetUp.delete(topic);
       this.presences.delete(topic);
       this.onlineUsers.delete(conversationId);
+      this.lastJoinAttempts.delete(topic);
     }
   }
 
