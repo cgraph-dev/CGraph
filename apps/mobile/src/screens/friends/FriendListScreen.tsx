@@ -49,12 +49,20 @@ export default function FriendListScreen() {
 
   const fetchPendingCount = useCallback(async () => {
     try {
-      const response = await api.get('/api/v1/friends/pending');
-      const requests = response.data.requests || response.data || [];
-      const incoming = requests.filter((r: { type: string }) => r.type === 'incoming');
+      const response = await api.get('/api/v1/friends/requests');
+      // API returns { data: [...], meta: {...} }
+      const requests = response.data?.data || response.data?.requests || [];
+      // Ensure requests is an array before filtering
+      if (!Array.isArray(requests)) {
+        setPendingCount(0);
+        return;
+      }
+      // Count incoming requests (requests where current user is the recipient)
+      const incoming = requests.filter((r: { type?: string }) => r.type === 'incoming');
       setPendingCount(incoming.length);
     } catch (error) {
       console.error('Failed to fetch pending count:', error);
+      setPendingCount(0);
     }
   }, []);
 
