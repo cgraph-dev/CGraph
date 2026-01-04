@@ -14,6 +14,7 @@ defmodule CgraphWeb.GroupChannel do
   alias Cgraph.Groups
   alias Cgraph.Messaging
   alias Cgraph.Presence
+  alias CgraphWeb.API.V1.MessageJSON
 
   # Rate limiting: max 10 messages per 10 seconds per user
   @rate_limit_window_ms 10_000
@@ -62,9 +63,10 @@ defmodule CgraphWeb.GroupChannel do
 
     push(socket, "presence_state", Presence.list(socket))
 
-    # Send recent messages
+    # Send recent messages with proper serialization
     {messages, _total} = Groups.list_channel_messages(channel_id, limit: 50)
-    push(socket, "message_history", %{messages: messages})
+    serialized_messages = Enum.map(messages, &MessageJSON.message_data/1)
+    push(socket, "message_history", %{messages: serialized_messages})
 
     {:noreply, socket}
   end
@@ -93,15 +95,13 @@ defmodule CgraphWeb.GroupChannel do
             reply_to_id: Map.get(params, "reply_to_id")
           }) do
             {:ok, message} ->
-              broadcast!(socket, "new_message", %{
-                message: message,
-                sender: %{
-                  id: user.id,
-                  username: user.username,
-                  avatar_url: user.avatar_url,
-                  nickname: member.nickname
-                }
-              })
+              # Preload associations for serialization
+              message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+              serialized = MessageJSON.message_data(message)
+              # Add nickname from member for group context
+              serialized = Map.put(serialized, :senderNickname, member.nickname)
+              
+              broadcast!(socket, "new_message", %{message: serialized})
               {:reply, {:ok, %{message_id: message.id}}, socket}
 
             {:error, changeset} ->

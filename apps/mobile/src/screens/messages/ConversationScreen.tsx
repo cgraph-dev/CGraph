@@ -18,6 +18,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
+import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
 import { MessagesStackParamList, Message, Conversation } from '../../types';
 
 type Props = {
@@ -72,7 +73,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const fetchMessages = async () => {
     try {
       const response = await api.get(`/api/v1/conversations/${conversationId}/messages`);
-      setMessages(response.data.data || []);
+      const rawMessages = response.data.data || response.data.messages || [];
+      setMessages(normalizeMessages(rawMessages));
     } catch (error) {
       console.error('Error fetching messages:', error);
     } finally {
@@ -84,14 +86,16 @@ export default function ConversationScreen({ navigation, route }: Props) {
     const channel = socketManager.joinChannel(`conversation:${conversationId}`);
     if (channel) {
       channel.on('new_message', (payload: unknown) => {
-        const data = payload as { message: Message };
-        setMessages((prev) => [...prev, data.message]);
+        const data = payload as { message: Record<string, unknown> };
+        const normalized = normalizeMessage(data.message);
+        setMessages((prev) => [...prev, normalized]);
       });
       
       channel.on('message_updated', (payload: unknown) => {
-        const data = payload as { message: Message };
+        const data = payload as { message: Record<string, unknown> };
+        const normalized = normalizeMessage(data.message);
         setMessages((prev) =>
-          prev.map((m) => (m.id === data.message.id ? data.message : m))
+          prev.map((m) => (m.id === normalized.id ? normalized : m))
         );
       });
     }
@@ -108,7 +112,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
         content,
       });
-      setMessages((prev) => [...prev, response.data.data]);
+      const rawMessage = response.data.data || response.data.message || response.data;
+      const normalized = normalizeMessage(rawMessage);
+      setMessages((prev) => [...prev, normalized]);
     } catch (error) {
       console.error('Error sending message:', error);
       setInputText(content);

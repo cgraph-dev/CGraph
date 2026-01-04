@@ -132,9 +132,17 @@ export default function Conversation() {
 
   // Format date header
   const formatDateHeader = (date: Date) => {
+    if (!date || isNaN(date.getTime())) return 'Unknown';
     if (isToday(date)) return 'Today';
     if (isYesterday(date)) return 'Yesterday';
     return format(date, 'MMMM d, yyyy');
+  };
+
+  // Safe date parser that handles various formats and invalid dates
+  const parseMessageDate = (dateStr: string | undefined | null): Date => {
+    if (!dateStr) return new Date();
+    const parsed = new Date(dateStr);
+    return isNaN(parsed.getTime()) ? new Date() : parsed;
   };
 
   // Group messages by date
@@ -142,7 +150,7 @@ export default function Conversation() {
   let currentGroup: { date: Date; messages: Message[] } | null = null;
 
   conversationMessages.forEach((msg) => {
-    const msgDate = new Date(msg.createdAt);
+    const msgDate = parseMessageDate(msg.createdAt);
     if (!currentGroup || !isSameDay(currentGroup.date, msgDate)) {
       currentGroup = { date: msgDate, messages: [msg] };
       groupedMessages.push(currentGroup);
@@ -353,6 +361,18 @@ function MessageBubble({
 }) {
   const [showActions, setShowActions] = useState(false);
 
+  // Safe time formatter that handles invalid dates
+  const formatMessageTime = (dateStr: string | undefined | null): string => {
+    if (!dateStr) return '';
+    try {
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return '';
+      return format(date, 'h:mm a');
+    } catch {
+      return '';
+    }
+  };
+
   return (
     <div
       className={`flex items-end gap-2 group animate-fade-in ${isOwn ? 'flex-row-reverse' : ''}`}
@@ -451,7 +471,7 @@ function MessageBubble({
               <p className="whitespace-pre-wrap break-words">{message.content}</p>
             )}
             <div className={`flex items-center gap-1 mt-1 text-xs ${isOwn ? 'text-primary-200' : 'text-gray-500'}`}>
-              <span>{format(new Date(message.createdAt), 'h:mm a')}</span>
+              <span>{formatMessageTime(message.createdAt)}</span>
               {message.isEdited && <span>(edited)</span>}
             </div>
           </div>

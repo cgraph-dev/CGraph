@@ -13,6 +13,7 @@ defmodule CgraphWeb.ConversationChannel do
 
   alias Cgraph.Messaging
   alias Cgraph.Presence
+  alias CgraphWeb.API.V1.MessageJSON
 
   @typing_timeout 3_000
   
@@ -59,7 +60,8 @@ defmodule CgraphWeb.ConversationChannel do
     case Messaging.get_conversation(conversation_id) do
       {:ok, conversation} ->
         messages = Messaging.list_messages(conversation, limit: 50)
-        push(socket, "message_history", %{messages: messages})
+        serialized_messages = Enum.map(messages, &MessageJSON.message_data/1)
+        push(socket, "message_history", %{messages: serialized_messages})
       _ ->
         push(socket, "message_history", %{messages: []})
     end
@@ -97,10 +99,11 @@ defmodule CgraphWeb.ConversationChannel do
           is_encrypted: Map.get(params, "is_encrypted", false)
         }) do
           {:ok, message} ->
-            broadcast!(socket, "new_message", %{
-              message: message,
-              sender: %{id: user.id, username: user.username, avatar_url: user.avatar_url}
-            })
+            # Preload sender for serialization
+            message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+            serialized = MessageJSON.message_data(message)
+            
+            broadcast!(socket, "new_message", %{message: serialized})
             {:reply, {:ok, %{message_id: message.id}}, socket}
 
           {:error, changeset} ->
@@ -157,12 +160,9 @@ defmodule CgraphWeb.ConversationChannel do
 
     case Messaging.edit_message(message_id, user.id, content) do
       {:ok, message} ->
-        broadcast!(socket, "message_updated", %{
-          id: message.id,
-          content: message.content,
-          is_edited: true,
-          edited_at: DateTime.utc_now()
-        })
+        message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+        serialized = MessageJSON.message_data(message)
+        broadcast!(socket, "message_updated", %{message: serialized})
         {:reply, {:ok, %{message_id: message.id}}, socket}
 
       {:error, reason} when is_atom(reason) ->

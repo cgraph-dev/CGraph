@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import api from '../lib/api';
+import socketManager from '../lib/socket';
 import { User } from '../types';
 
 interface AuthContextType {
@@ -53,7 +54,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Verify token is still valid
         try {
           const response = await api.get('/api/v1/me');
-          setUser(response.data.data?.user || response.data.user || response.data);
+          const verifiedUser = response.data.data?.user || response.data.user || response.data;
+          setUser(verifiedUser);
+          
+          // Connect socket after verifying auth
+          socketManager.connect().catch((err) => {
+            if (__DEV__) console.error('Socket connection failed:', err);
+          });
         } catch {
           // Token invalid, clear auth
           await clearAuth();
@@ -78,9 +85,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(authToken);
     setUser(userData);
     api.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
+    
+    // Connect socket after saving token
+    socketManager.connect().catch((err) => {
+      if (__DEV__) console.error('Socket connection failed:', err);
+    });
   };
   
   const clearAuth = async () => {
+    // Disconnect socket before clearing auth
+    socketManager.disconnect();
+    
     await SecureStore.deleteItemAsync(TOKEN_KEY);
     await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
     await SecureStore.deleteItemAsync(USER_KEY);

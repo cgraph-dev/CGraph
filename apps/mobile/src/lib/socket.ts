@@ -3,13 +3,38 @@ import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 import { socketLogger as logger } from './logger';
 
-const WS_URL = Constants.expoConfig?.extra?.wsUrl || 'ws://localhost:4000/socket';
+// Use configured WebSocket URL, falling back to API URL with ws scheme
+const getWsUrl = (): string => {
+  const wsUrl = Constants.expoConfig?.extra?.wsUrl;
+  if (wsUrl) return wsUrl;
+  
+  // Fallback: derive from API URL
+  const apiUrl = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:4000';
+  return apiUrl.replace(/^http/, 'ws') + '/socket';
+};
+
+const WS_URL = getWsUrl();
 
 class SocketManager {
   private socket: Socket | null = null;
   private channels: Map<string, Channel> = new Map();
+  private connectionPromise: Promise<void> | null = null;
   
   async connect(): Promise<void> {
+    // Prevent concurrent connection attempts
+    if (this.connectionPromise) {
+      return this.connectionPromise;
+    }
+    
+    this.connectionPromise = this.doConnect();
+    try {
+      await this.connectionPromise;
+    } finally {
+      this.connectionPromise = null;
+    }
+  }
+  
+  private async doConnect(): Promise<void> {
     const token = await SecureStore.getItemAsync('cgraph_auth_token');
     
     if (!token) {
@@ -21,9 +46,17 @@ class SocketManager {
       return;
     }
     
+    // Disconnect existing socket if any
+    if (this.socket) {
+      this.socket.disconnect();
+    }
+    
+    logger.log('Connecting to WebSocket:', WS_URL);
+    
     this.socket = new Socket(WS_URL, {
       params: { token },
       reconnectAfterMs: (tries: number) => Math.min(tries * 1000, 10000),
+      heartbeatIntervalMs: 30000,
     });
     
     this.socket.onOpen(() => {
@@ -34,8 +67,8 @@ class SocketManager {
       logger.error('Socket error:', error);
     });
     
-    this.socket.onClose(() => {
-      logger.log('Socket closed');
+    this.socket.onClose((event: unknown) => {
+      logger.log('Socket closed:', event);
     });
     
     this.socket.connect();

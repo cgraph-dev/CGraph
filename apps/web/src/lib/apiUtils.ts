@@ -206,3 +206,52 @@ export function extractErrorMessage(
 
   return defaultMessage;
 }
+
+/**
+ * Normalizes a message object from various sources (HTTP API, WebSocket).
+ * Converts snake_case to camelCase and ensures all required fields exist.
+ * Handles both camelCase and snake_case input for maximum compatibility.
+ */
+export function normalizeMessage(raw: Record<string, unknown>): Record<string, unknown> {
+  if (!raw || typeof raw !== 'object') {
+    return raw;
+  }
+  
+  return {
+    id: raw.id,
+    conversationId: raw.conversationId ?? raw.conversation_id ?? null,
+    channelId: raw.channelId ?? raw.channel_id ?? null,
+    senderId: raw.senderId ?? raw.sender_id ?? null,
+    content: raw.content ?? '',
+    contentType: raw.contentType ?? raw.content_type ?? 'text',
+    messageType: raw.messageType ?? raw.message_type ?? raw.contentType ?? raw.content_type ?? 'text',
+    encryptedContent: raw.encryptedContent ?? raw.encrypted_content ?? null,
+    isEncrypted: raw.isEncrypted ?? raw.is_encrypted ?? false,
+    isEdited: raw.isEdited ?? raw.is_edited ?? false,
+    isPinned: raw.isPinned ?? raw.is_pinned ?? false,
+    replyToId: raw.replyToId ?? raw.reply_to_id ?? null,
+    replyTo: raw.replyTo ?? raw.reply_to ?? null,
+    deletedAt: raw.deletedAt ?? raw.deleted_at ?? null,
+    metadata: raw.metadata ?? {},
+    reactions: raw.reactions ?? [],
+    sender: normalizeSender(raw.sender as Record<string, unknown> | null),
+    createdAt: raw.createdAt ?? raw.created_at ?? raw.inserted_at ?? new Date().toISOString(),
+    updatedAt: raw.updatedAt ?? raw.updated_at ?? raw.createdAt ?? raw.created_at ?? new Date().toISOString(),
+  };
+}
+
+/**
+ * Normalizes sender data from various formats.
+ */
+function normalizeSender(sender: Record<string, unknown> | null | undefined): Record<string, unknown> | null {
+  if (!sender || typeof sender !== 'object') {
+    return null;
+  }
+  
+  return {
+    id: sender.id,
+    username: sender.username,
+    displayName: sender.displayName ?? sender.display_name ?? null,
+    avatarUrl: sender.avatarUrl ?? sender.avatar_url ?? null,
+  };
+}

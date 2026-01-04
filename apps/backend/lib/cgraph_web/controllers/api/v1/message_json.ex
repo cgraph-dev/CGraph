@@ -1,6 +1,9 @@
 defmodule CgraphWeb.API.V1.MessageJSON do
   @moduledoc """
   JSON rendering for message responses.
+  
+  All field names use camelCase for frontend consistency.
+  This module is also used by WebSocket channels for message serialization.
   """
   alias Cgraph.Messaging.Message
   alias Cgraph.Accounts.User
@@ -16,19 +19,66 @@ defmodule CgraphWeb.API.V1.MessageJSON do
     %{data: message_data(message)}
   end
 
+  @doc """
+  Serialize a message to a consistent JSON-compatible map.
+  Uses camelCase field names for frontend compatibility.
+  Can be called from channels for WebSocket broadcasts.
+  """
   def message_data(%Message{} = msg) do
     %{
       id: msg.id,
+      conversationId: msg.conversation_id,
+      channelId: msg.channel_id,
+      senderId: msg.sender_id,
       content: msg.content,
-      content_type: msg.content_type,
+      contentType: msg.content_type || "text",
+      messageType: msg.content_type || "text",
+      encryptedContent: if(msg.is_encrypted, do: msg.content, else: nil),
+      isEncrypted: msg.is_encrypted || false,
+      isEdited: msg.is_edited || false,
+      isPinned: false,
+      replyToId: msg.reply_to_id,
+      replyTo: reply_data(msg.reply_to),
+      deletedAt: msg.deleted_at,
+      metadata: %{},
       sender: sender_data(msg.sender),
       attachment: build_attachment(msg),
       reactions: reaction_summary(msg.reactions),
-      reply_to: reply_data(msg.reply_to),
-      is_edited: msg.is_edited || false,
-      created_at: msg.inserted_at
+      createdAt: format_datetime(msg.inserted_at),
+      updatedAt: format_datetime(msg.updated_at)
     }
   end
+  
+  # Fallback for when message is a map (from channel assigns)
+  def message_data(%{id: _} = msg) do
+    %{
+      id: msg[:id],
+      conversationId: msg[:conversation_id],
+      channelId: msg[:channel_id],
+      senderId: msg[:sender_id],
+      content: msg[:content],
+      contentType: msg[:content_type] || "text",
+      messageType: msg[:content_type] || "text",
+      encryptedContent: if(msg[:is_encrypted], do: msg[:content], else: nil),
+      isEncrypted: msg[:is_encrypted] || false,
+      isEdited: msg[:is_edited] || false,
+      isPinned: false,
+      replyToId: msg[:reply_to_id],
+      replyTo: nil,
+      deletedAt: msg[:deleted_at],
+      metadata: %{},
+      sender: msg[:sender],
+      attachment: nil,
+      reactions: [],
+      createdAt: format_datetime(msg[:inserted_at]),
+      updatedAt: format_datetime(msg[:updated_at])
+    }
+  end
+
+  defp format_datetime(nil), do: nil
+  defp format_datetime(%DateTime{} = dt), do: DateTime.to_iso8601(dt)
+  defp format_datetime(%NaiveDateTime{} = dt), do: NaiveDateTime.to_iso8601(dt) <> "Z"
+  defp format_datetime(other), do: other
 
   # Build attachment data from message file fields
   defp build_attachment(%Message{file_url: nil}), do: nil

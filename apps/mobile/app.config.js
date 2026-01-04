@@ -33,6 +33,22 @@ const getApiUrl = () => {
 };
 
 /**
+ * Get WebSocket URL based on environment
+ */
+const getWsUrl = () => {
+  if (IS_DEV) {
+    const LAN_IP = process.env.API_HOST || '192.168.1.129';
+    return process.env.WS_URL || `ws://${LAN_IP}:4000/socket`;
+  }
+  
+  if (IS_PREVIEW) {
+    return process.env.WS_URL || 'wss://staging-api.cgraph.app/socket';
+  }
+  
+  return process.env.WS_URL || 'wss://api.cgraph.app/socket';
+};
+
+/**
  * Get app variant suffix for bundle IDs
  */
 const getAppVariantSuffix = () => {
@@ -186,6 +202,7 @@ module.exports = ({ config }) => {
     ],
     extra: {
       apiUrl: getApiUrl(),
+      wsUrl: getWsUrl(),
       environment: IS_DEV ? 'development' : IS_PREVIEW ? 'preview' : 'production',
       eas: {
         projectId: process.env.EAS_PROJECT_ID || 'your-project-id',

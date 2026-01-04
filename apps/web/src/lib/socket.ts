@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useGroupStore, ChannelMessage } from '@/stores/groupStore';
 import { socketLogger as logger } from './logger';
+import { normalizeMessage } from './apiUtils';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'ws://localhost:4000/socket';
 
@@ -75,13 +76,15 @@ class SocketManager {
     const channel = this.socket.channel(topic, {});
 
     channel.on('new_message', (payload) => {
-      const data = payload as { message: Message };
-      useChatStore.getState().addMessage(data.message);
+      const data = payload as { message: Record<string, unknown> };
+      const normalized = normalizeMessage(data.message) as unknown as Message;
+      useChatStore.getState().addMessage(normalized);
     });
 
     channel.on('message_updated', (payload) => {
-      const data = payload as { message: Message };
-      useChatStore.getState().updateMessage(data.message);
+      const data = payload as { message: Record<string, unknown> };
+      const normalized = normalizeMessage(data.message) as unknown as Message;
+      useChatStore.getState().updateMessage(normalized);
     });
 
     channel.on('message_deleted', (payload) => {
@@ -141,13 +144,15 @@ class SocketManager {
     const channel = this.socket.channel(topic, {});
 
     channel.on('new_message', (payload) => {
-      const data = payload as { message: ChannelMessage };
-      useGroupStore.getState().addChannelMessage(data.message);
+      const data = payload as { message: Record<string, unknown> };
+      const normalized = normalizeMessage(data.message) as unknown as ChannelMessage;
+      useGroupStore.getState().addChannelMessage(normalized);
     });
 
     channel.on('message_updated', (payload) => {
-      const data = payload as { message: ChannelMessage };
-      useGroupStore.getState().updateChannelMessage(data.message);
+      const data = payload as { message: Record<string, unknown> };
+      const normalized = normalizeMessage(data.message) as unknown as ChannelMessage;
+      useGroupStore.getState().updateChannelMessage(normalized);
     });
 
     channel.on('message_deleted', (payload) => {
