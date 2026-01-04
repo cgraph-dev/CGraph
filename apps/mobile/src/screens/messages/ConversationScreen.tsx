@@ -60,8 +60,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
   
   // Track if component is still mounted to prevent state updates after unmount
   const isMountedRef = useRef(true);
-  // Track the current channel to prevent duplicate joins
-  const currentChannelRef = useRef<string | null>(null);
+  // Track cleanup function to prevent memory leaks
+  const cleanupRef = useRef<(() => void) | null>(null);
   
   useEffect(() => {
     isMountedRef.current = true;
@@ -72,11 +72,38 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Ensure socket is connected before joining channel
       await socketManager.connect();
       
-      // Only join if still mounted and not already in this channel
-      if (isMountedRef.current && currentChannelRef.current !== channelTopic) {
-        currentChannelRef.current = channelTopic;
-        joinChannel();
-      }
+      // Only proceed if still mounted
+      if (!isMountedRef.current) return;
+      
+      // Join channel (socket manager handles deduplication internally)
+      // Channel stays alive even when component unmounts - this prevents join/leave churn
+      socketManager.joinChannel(channelTopic);
+      
+      // Subscribe to message events via listener pattern
+      // This is safe to call multiple times - each call returns a unique unsubscribe function
+      const unsubscribe = socketManager.onChannelMessage(channelTopic, (event, payload) => {
+        if (!isMountedRef.current) return;
+        
+        const data = payload as { message: Record<string, unknown> };
+        const normalized = normalizeMessage(data.message);
+        
+        if (event === 'new_message') {
+          setMessages((prev) => {
+            // Prevent duplicates
+            if (prev.some(m => m.id === normalized.id)) return prev;
+            return [...prev, normalized];
+          });
+        } else if (event === 'message_updated') {
+          setMessages((prev) =>
+            prev.map((m) => (m.id === normalized.id ? normalized : m))
+          );
+        } else if (event === 'message_deleted') {
+          setMessages((prev) => prev.filter((m) => m.id !== normalized.id));
+        }
+      });
+      
+      // Store cleanup function
+      cleanupRef.current = unsubscribe;
     };
     
     fetchConversation();
@@ -87,15 +114,16 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Mark as unmounted immediately
       isMountedRef.current = false;
       
-      // Delay channel leave to prevent rapid rejoin during navigation transitions
-      // or React StrictMode double-mount cycles
-      setTimeout(() => {
-        // Only leave if still unmounted after delay
-        if (!isMountedRef.current && currentChannelRef.current === channelTopic) {
-          socketManager.leaveChannel(channelTopic);
-          currentChannelRef.current = null;
-        }
-      }, 300);
+      // Unsubscribe from message events - but DO NOT leave the channel
+      // The channel stays alive to prevent join/leave churn
+      // It will be cleaned up on logout or app termination
+      if (cleanupRef.current) {
+        cleanupRef.current();
+        cleanupRef.current = null;
+      }
+      
+      // NOTE: We intentionally do NOT call leaveChannel here
+      // The channel remains active to maintain presence and avoid server churn
     };
   }, [conversationId]);
   
@@ -195,43 +223,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
       if (isMountedRef.current) {
         setIsLoading(false);
       }
-    }
-  };
-  
-  const joinChannel = () => {
-    const channelTopic = `conversation:${conversationId}`;
-    
-    // Check if channel already exists - if so, we need to ensure handlers are set up
-    // but avoid duplicate handlers
-    const existingChannel = socketManager.getChannel(channelTopic);
-    
-    // If channel exists and we've already set up handlers, skip
-    if (existingChannel && currentChannelRef.current === channelTopic) {
-      return;
-    }
-    
-    const channel = existingChannel || socketManager.joinChannel(channelTopic);
-    if (channel) {
-      // Set up message handlers - these will be cleaned up when channel leaves
-      channel.on('new_message', (payload: unknown) => {
-        if (!isMountedRef.current) return;
-        const data = payload as { message: Record<string, unknown> };
-        const normalized = normalizeMessage(data.message);
-        setMessages((prev) => {
-          // Prevent duplicates
-          if (prev.some(m => m.id === normalized.id)) return prev;
-          return [...prev, normalized];
-        });
-      });
-      
-      channel.on('message_updated', (payload: unknown) => {
-        if (!isMountedRef.current) return;
-        const data = payload as { message: Record<string, unknown> };
-        const normalized = normalizeMessage(data.message);
-        setMessages((prev) =>
-          prev.map((m) => (m.id === normalized.id ? normalized : m))
-        );
-      });
     }
   };
   

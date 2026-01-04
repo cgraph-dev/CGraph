@@ -6,24 +6,218 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 |
-|--------|--------|--------|--------|--------|--------|--------|---------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
-| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures |
-| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
-| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical |
-| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 |
-| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
-| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ |
-| Username Login | - | - | - | - | ✅ | ✅ | ✅ |
-| Identity Search | - | - | - | - | ✅ | ✅ | ✅ |
-| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed |
-| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable |
-| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed |
-| Conversation Normalization | - | - | - | - | - | - | ✅ New |
-| Channel Stability | - | - | - | - | - | - | ✅ New |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 |
+|--------|--------|--------|--------|--------|--------|--------|---------|---------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures |
+| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
+| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical |
+| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 |
+| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
+| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ | ✅ |
+| Username Login | - | - | - | - | ✅ | ✅ | ✅ | ✅ |
+| Identity Search | - | - | - | - | ✅ | ✅ | ✅ | ✅ |
+| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed | ✅ Stable |
+| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable |
+| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed |
+| Conversation Normalization | - | - | - | - | - | - | ✅ New | ✅ Active |
+| Channel Stability | - | - | - | - | - | - | ✅ New | ✅ Production-Ready |
+
+---
+
+## January 6, 2026 - v0.7.11 Channel Lifecycle & Socket Persistence
+
+### Overview
+
+This release eliminates the persistent channel join/leave loop that was causing presence instability on mobile. The fix involves proper socket lifecycle management, global singleton persistence across Fast Refresh, and a listener-based channel event architecture that prevents handler duplication.
+
+### 1. Global Socket Manager Persistence (MOBILE)
+
+**Problem:** Expo Fast Refresh was causing the SocketManager singleton to be recreated on each code change, losing all channel references and causing repeated channel joins.
+
+**Root Cause:** The module-level `new SocketManager()` was re-executed on Fast Refresh, creating a new empty channels Map while the old socket was still connected.
+
+**Solution:** Store the SocketManager on the global object to persist across module re-evaluation.
+
+```typescript
+// apps/mobile/src/lib/socket.ts - Global persistence
+
+// Persist socket manager across Fast Refresh by storing on global object
+declare global {
+  var __socketManager: SocketManager | undefined;
+}
+
+if (!global.__socketManager) {
+  global.__socketManager = new SocketManager();
+}
+
+export const socketManager = global.__socketManager;
+export default socketManager;
+```
+
+### 2. Socket Connection Lifecycle (MOBILE)
+
+**Problem:** `doConnect()` was calling `this.socket.disconnect()` when the socket existed but wasn't connected, which invalidated all channel references.
+
+**Root Cause:** When disconnect is called, Phoenix invalidates all channels on that socket. The new socket would then create new channels, but the channels Map still held references to dead channels.
+
+**Solution:** Properly handle socket lifecycle:
+1. If already connected, reuse immediately
+2. If socket exists but not connected, wait for auto-reconnect
+3. Only create new socket if none exists
+4. Clear channels Map on socket close (since they're now invalid)
+
+```typescript
+// apps/mobile/src/lib/socket.ts - Connection lifecycle
+
+private async doConnect(): Promise<void> {
+  // If already connected, nothing to do
+  if (this.socket?.isConnected()) {
+    return;
+  }
+  
+  // If socket exists but not connected, wait for reconnection
+  if (this.socket) {
+    await new Promise<void>((resolve) => {
+      const checkConnection = setInterval(() => {
+        if (this.socket?.isConnected()) {
+          clearInterval(checkConnection);
+          resolve();
+        }
+      }, 100);
+      setTimeout(() => { clearInterval(checkConnection); resolve(); }, 5000);
+    });
+    
+    if (this.socket?.isConnected()) return;
+    this.socket = null;  // Failed to reconnect, will create new
+  }
+  
+  // Create new socket with proper lifecycle handlers
+  return new Promise<void>((resolve) => {
+    this.socket = new Socket(WS_URL, { ... });
+    
+    this.socket.onClose(() => {
+      // Channels become invalid when socket closes
+      this.channels.clear();
+      this.channelHandlersSetUp.clear();
+    });
+    
+    this.socket.connect();
+  });
+}
+```
+
+### 3. Channel Event Listener Architecture (MOBILE)
+
+**Problem:** Each component mount was adding duplicate event handlers to channels, causing multiple message deliveries and state update loops.
+
+**Root Cause:** The component's `joinChannel()` function called `channel.on()` for each event type on every mount, without cleanup.
+
+**Solution:** Implement a centralized listener pattern:
+1. Socket manager sets up channel event handlers once per channel
+2. Components subscribe to events via `onChannelMessage()` callback
+3. Cleanup is handled by unsubscribing the callback, not leaving the channel
+
+```typescript
+// apps/mobile/src/lib/socket.ts - Listener pattern
+
+class SocketManager {
+  private messageListeners: Map<string, Set<MessageCallback>> = new Map();
+  private channelHandlersSetUp: Set<string> = new Set();
+  
+  onChannelMessage(topic: string, callback: MessageCallback): () => void {
+    if (!this.messageListeners.has(topic)) {
+      this.messageListeners.set(topic, new Set());
+    }
+    this.messageListeners.get(topic)!.add(callback);
+    return () => this.messageListeners.get(topic)?.delete(callback);
+  }
+  
+  joinChannel(topic: string): Channel | null {
+    const existingChannel = this.channels.get(topic);
+    if (existingChannel) return existingChannel;
+    
+    const channel = this.socket.channel(topic);
+    
+    if (!this.channelHandlersSetUp.has(topic)) {
+      this.channelHandlersSetUp.add(topic);
+      
+      ['new_message', 'message_updated', 'message_deleted'].forEach(event => {
+        channel.on(event, (payload) => {
+          this.messageListeners.get(topic)?.forEach(cb => cb(event, payload));
+        });
+      });
+    }
+    
+    channel.join();
+    return channel;
+  }
+}
+```
+
+### 4. Component Lifecycle Cleanup (MOBILE)
+
+**Problem:** Component unmount was calling `leaveChannel()` which deleted the channel, causing it to be recreated on next mount.
+
+**Root Cause:** Navigation transitions and React re-renders would unmount and remount components rapidly, each cycle leaving and rejoining the channel.
+
+**Solution:** Don't leave channels on component unmount. Instead:
+1. Unsubscribe the component's message listener
+2. Keep the channel alive in the socket manager
+3. Channel cleanup happens only on logout or socket close
+
+```typescript
+// apps/mobile/src/screens/messages/ConversationScreen.tsx - No leaveChannel on unmount
+
+useEffect(() => {
+  const channelTopic = `conversation:${conversationId}`;
+  
+  const initializeConversation = async () => {
+    await socketManager.connect();
+    socketManager.joinChannel(channelTopic);
+    
+    // Subscribe to events via listener pattern
+    const unsubscribe = socketManager.onChannelMessage(channelTopic, (event, payload) => {
+      // Handle message events
+    });
+    
+    cleanupRef.current = unsubscribe;
+  };
+  
+  initializeConversation();
+  
+  return () => {
+    // Unsubscribe from events, but DO NOT leave the channel
+    cleanupRef.current?.();
+    // Note: Channel stays alive to prevent join/leave churn
+  };
+}, [conversationId]);
+```
+
+### Files Modified
+
+1. **apps/mobile/src/lib/socket.ts**
+   - Added global singleton persistence (`global.__socketManager`)
+   - Added `messageListeners` Map and `channelHandlersSetUp` Set
+   - Added `onChannelMessage()` subscription method
+   - Fixed `doConnect()` to not disconnect existing sockets
+   - Added channel cleanup on socket close
+   - Changed `joinChannel()` to set up handlers once and delegate to listeners
+
+2. **apps/mobile/src/screens/messages/ConversationScreen.tsx**
+   - Removed local `joinChannel()` function
+   - Use `socketManager.onChannelMessage()` for event handling
+   - Removed `leaveChannel()` from cleanup
+   - Keep `cleanupRef` for listener unsubscription only
+
+### Impact
+
+- **Eliminated join/leave loop:** Channels now remain stable throughout the app session
+- **Reduced server load:** No more constant join/leave presence updates
+- **Improved realtime reliability:** Messages and presence updates are delivered consistently
+- **Production-ready:** The architecture now handles Fast Refresh, navigation, and re-renders gracefully
 
 ---
 

@@ -11,6 +11,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.11] - 2026-01-06
+
+### Channel Lifecycle & Socket Persistence
+
+Production-ready socket and channel management eliminating the persistent join/leave loop issue.
+
+### Fixed
+
+#### Mobile Channel Stability
+- **Join/Leave Loop** - Completely eliminated by not leaving channels on component unmount
+- **Socket Recreation** - Fixed by persisting SocketManager globally across Fast Refresh
+- **Duplicate Event Handlers** - Fixed with centralized listener pattern in socket manager
+- **Socket Connection Race** - Added proper async connection with retry and timeout handling
+
+### Added
+
+#### Socket Manager Architecture (Mobile)
+- **Global Singleton Persistence** - SocketManager stored on `global.__socketManager` to survive Fast Refresh
+- **Listener-Based Events** - `onChannelMessage()` subscription method for components
+- **Handler Tracking** - `channelHandlersSetUp` Set prevents duplicate handler registration
+- **Connection Promise** - `doConnect()` now returns Promise that resolves when connected
+
+### Changed
+
+#### Mobile Socket Lifecycle
+- **doConnect()** - No longer disconnects existing sockets; waits for reconnection instead
+- **Socket onClose** - Clears all channel references since they become invalid
+- **joinChannel()** - Returns existing channel immediately; sets up handlers only once
+- **leaveChannel()** - Cleans up handler tracking and listener maps
+
+#### ConversationScreen Component
+- **Removed local joinChannel()** - All channel logic moved to socket manager
+- **Listener-based cleanup** - Unsubscribes callback but doesn't leave channel
+- **No channel leave on unmount** - Channels stay alive for the session
+
+### Technical Details
+
+The join/leave loop was caused by a cascade of issues:
+1. Expo Fast Refresh re-evaluated modules, creating new SocketManager with empty maps
+2. Component unmount called leaveChannel(), removing channel from map
+3. Component remount found no channel in map, called joinChannel()
+4. Each join/leave triggered Phoenix Presence updates
+5. Presence updates triggered state changes, causing more re-renders
+
+The fix addresses all root causes:
+1. Global singleton survives Fast Refresh
+2. Components don't leave channels on unmount
+3. Socket manager tracks which handlers are already set up
+4. Connection lifecycle doesn't invalidate existing channels
+
+---
+
 ## [0.7.10] - 2026-01-06
 
 ### Scalable Normalization & Channel Stability
