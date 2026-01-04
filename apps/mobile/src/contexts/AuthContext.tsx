@@ -54,7 +54,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Verify token is still valid
         try {
           const response = await api.get('/api/v1/me');
-          const verifiedUser = response.data.data?.user || response.data.user || response.data;
+          // API returns {data: {id, username, ...}} - the user object is in data
+          const verifiedUser = response.data.data || response.data.user || response.data;
+          
+          // Debug: log what we received
+          if (__DEV__) {
+            console.log('[AuthContext] /me response:', JSON.stringify(response.data, null, 2));
+            console.log('[AuthContext] Verified user:', JSON.stringify(verifiedUser, null, 2));
+            console.log('[AuthContext] User ID:', verifiedUser?.id);
+          }
+          
           setUser(verifiedUser);
           
           // Connect socket after verifying auth

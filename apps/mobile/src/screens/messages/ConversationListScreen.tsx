@@ -72,17 +72,20 @@ export default function ConversationListScreen({ navigation }: Props) {
   };
   
   const renderConversation = ({ item }: { item: Conversation }) => {
+    // Get current user ID - if not available, we can't properly filter
+    const currentUserId = user?.id;
+    
     // Find the OTHER participant (not the current user)
     // API returns camelCase: userId, user.displayName, user.avatarUrl
-    const otherParticipant = item.participants?.find((p: ConversationParticipant) => {
+    const otherParticipant = currentUserId ? item.participants?.find((p: ConversationParticipant) => {
       // Check all possible user ID locations
       const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
-      const currentUserId = user?.id;
       return String(participantUserId) !== String(currentUserId);
-    });
+    }) : item.participants?.[0]; // Fallback to first participant if no user ID
     
     // Debug logging (dev only)
     if (__DEV__ && item.participants?.length) {
+      console.log('[ConversationList] FULL USER OBJECT:', JSON.stringify(user, null, 2));
       console.log('[ConversationList] Participants for', item.id, ':', JSON.stringify(item.participants?.map(p => ({
         participantId: p.id,
         userId: p.userId || p.user_id,
@@ -90,7 +93,7 @@ export default function ConversationListScreen({ navigation }: Props) {
         displayName: (p.user as any)?.displayName || (p.user as any)?.display_name,
         username: (p.user as any)?.username
       })), null, 2));
-      console.log('[ConversationList] Current user ID:', user?.id);
+      console.log('[ConversationList] Current user ID:', currentUserId);
       console.log('[ConversationList] Other participant:', otherParticipant ? 'found' : 'not found');
     }
     

@@ -108,7 +108,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
       cleanupRef.current = unsubscribe;
     };
     
-    fetchConversation();
     fetchMessages();
     initializeConversation();
     
@@ -129,7 +128,27 @@ export default function ConversationScreen({ navigation, route }: Props) {
     };
   }, [conversationId]);
   
+  // Fetch conversation when user is available - separate effect to handle auth loading
+  useEffect(() => {
+    if (user?.id) {
+      fetchConversation();
+    }
+  }, [conversationId, user?.id]);
+  
   const fetchConversation = async () => {
+    // Get current user ID from auth context
+    const currentUserId = user?.id;
+    
+    // Debug: log full user object to understand structure
+    if (__DEV__) {
+      console.log('[ConversationScreen] FULL USER OBJECT:', JSON.stringify(user, null, 2));
+    }
+    
+    if (!currentUserId) {
+      if (__DEV__) console.log('[ConversationScreen] Waiting for user to be loaded...');
+      return; // Don't proceed without a valid user
+    }
+    
     try {
       const response = await api.get(`/api/v1/conversations/${conversationId}`);
       const conv = response.data.data || response.data;
@@ -138,7 +157,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Find other participant - API returns camelCase (userId, user.displayName)
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
         const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
-        return String(participantUserId) !== String(user?.id);
+        return String(participantUserId) !== String(currentUserId);
       });
       
       // Debug logging
@@ -150,7 +169,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           displayName: p.user?.displayName || p.user?.display_name,
           username: p.user?.username
         })), null, 2));
-        console.log('[ConversationScreen] Current user ID:', user?.id);
+        console.log('[ConversationScreen] Current user ID:', currentUserId);
         console.log('[ConversationScreen] Other participant found:', !!otherParticipant);
       }
       
@@ -284,10 +303,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
   };
   
   const renderMessage = useCallback(({ item }: { item: Message }) => {
+    // Get current user ID for comparison
+    const currentUserId = user?.id;
+    
     // Handle both snake_case and camelCase sender_id formats
     // Also check sender.id as fallback
     const messageSenderId = item.sender_id || (item as any).senderId || item.sender?.id;
-    const isOwnMessage = String(messageSenderId) === String(user?.id);
+    
+    // Only compare if we have a valid current user ID
+    const isOwnMessage = currentUserId ? String(messageSenderId) === String(currentUserId) : false;
     
     // Debug logging (remove after confirming fix)
     if (__DEV__ && messages.length > 0 && item.id === messages[messages.length - 1]?.id) {
