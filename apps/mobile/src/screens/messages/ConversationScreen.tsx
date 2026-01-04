@@ -133,27 +133,40 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const conv = response.data.data || response.data;
       setConversation(conv);
       
-      // Find other participant - handle both camelCase and snake_case formats
-      // Participants can be nested (with user object) or flat (direct user data)
+      // Find other participant - API returns camelCase (userId, user.displayName)
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
-        const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
-        return participantUserId !== user?.id;
+        const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
+        return String(participantUserId) !== String(user?.id);
       });
       
+      // Debug logging
+      if (__DEV__) {
+        console.log('[ConversationScreen] Participants:', JSON.stringify(conv.participants?.map((p: any) => ({
+          participantId: p.id,
+          userId: p.userId || p.user_id,
+          userObjId: p.user?.id,
+          displayName: p.user?.displayName || p.user?.display_name,
+          username: p.user?.username
+        })), null, 2));
+        console.log('[ConversationScreen] Current user ID:', user?.id);
+        console.log('[ConversationScreen] Other participant found:', !!otherParticipant);
+      }
+      
       // Store other participant's user ID for presence tracking
-      const otherUserId = otherParticipant?.userId || otherParticipant?.user_id || otherParticipant?.user?.id || otherParticipant?.id;
+      const otherUserId = otherParticipant?.userId || otherParticipant?.user_id || (otherParticipant?.user as any)?.id || otherParticipant?.id;
       if (otherUserId) {
         setOtherParticipantId(otherUserId);
       }
       
-      // Extract display name with fallbacks for both nested and flat formats
+      // Extract display name - API uses camelCase (displayName, not display_name)
       const displayName = 
         conv.name ||
         otherParticipant?.nickname ||
-        otherParticipant?.user?.display_name ||
-        otherParticipant?.display_name ||
+        (otherParticipant?.user as any)?.displayName ||
+        (otherParticipant?.user as any)?.display_name ||
         otherParticipant?.displayName ||
-        otherParticipant?.user?.username ||
+        otherParticipant?.display_name ||
+        (otherParticipant?.user as any)?.username ||
         otherParticipant?.username ||
         'Conversation';
       

@@ -73,26 +73,43 @@ export default function ConversationListScreen({ navigation }: Props) {
   
   const renderConversation = ({ item }: { item: Conversation }) => {
     // Find the OTHER participant (not the current user)
-    // Handle both nested (with user object) and flat participant structures
+    // API returns camelCase: userId, user.displayName, user.avatarUrl
     const otherParticipant = item.participants?.find((p: ConversationParticipant) => {
-      const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
-      return participantUserId !== user?.id;
+      // Check all possible user ID locations
+      const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
+      const currentUserId = user?.id;
+      return String(participantUserId) !== String(currentUserId);
     });
     
-    // Extract display name with comprehensive fallbacks for nested/flat structures
+    // Debug logging (dev only)
+    if (__DEV__ && item.participants?.length) {
+      console.log('[ConversationList] Participants for', item.id, ':', JSON.stringify(item.participants?.map(p => ({
+        participantId: p.id,
+        userId: p.userId || p.user_id,
+        userObjId: (p.user as any)?.id,
+        displayName: (p.user as any)?.displayName || (p.user as any)?.display_name,
+        username: (p.user as any)?.username
+      })), null, 2));
+      console.log('[ConversationList] Current user ID:', user?.id);
+      console.log('[ConversationList] Other participant:', otherParticipant ? 'found' : 'not found');
+    }
+    
+    // Extract display name - API uses camelCase (displayName, not display_name)
     const displayName = item.name ||
       otherParticipant?.nickname ||
-      otherParticipant?.user?.display_name ||
-      otherParticipant?.display_name ||
+      (otherParticipant?.user as any)?.displayName ||
+      (otherParticipant?.user as any)?.display_name ||
       otherParticipant?.displayName ||
-      otherParticipant?.user?.username ||
+      otherParticipant?.display_name ||
+      (otherParticipant?.user as any)?.username ||
       otherParticipant?.username ||
       'Unknown';
     
-    // Extract avatar URL with fallbacks
-    const avatarUrl = otherParticipant?.user?.avatar_url || 
-      otherParticipant?.avatar_url || 
-      otherParticipant?.avatarUrl;
+    // Extract avatar URL - API uses camelCase (avatarUrl, not avatar_url)
+    const avatarUrl = (otherParticipant?.user as any)?.avatarUrl || 
+      (otherParticipant?.user as any)?.avatar_url ||
+      otherParticipant?.avatarUrl ||
+      otherParticipant?.avatar_url;
     
     return (
       <TouchableOpacity
