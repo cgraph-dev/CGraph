@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -36,6 +37,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
   const [otherParticipantId, setOtherParticipantId] = useState<string | null>(null);
   
@@ -204,19 +206,22 @@ export default function ConversationScreen({ navigation, route }: Props) {
     if (_conversation) {
       const conv = _conversation;
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
-        const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
-        return participantUserId !== user?.id;
+        const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
+        return String(participantUserId) !== String(user?.id);
       });
       
       // Extract display name with comprehensive fallbacks for nested/flat structures
+      // API returns camelCase: user.displayName, user.avatarUrl
       const displayName = 
         conv.name ||
         otherParticipant?.nickname ||
+        (otherParticipant?.user as any)?.displayName ||
         otherParticipant?.user?.display_name ||
+        (otherParticipant as any)?.displayName ||
         otherParticipant?.display_name ||
-        otherParticipant?.displayName ||
+        (otherParticipant?.user as any)?.username ||
         otherParticipant?.user?.username ||
-        otherParticipant?.username ||
+        (otherParticipant as any)?.username ||
         'Conversation';
       
       updateHeader(displayName);
@@ -236,6 +241,16 @@ export default function ConversationScreen({ navigation, route }: Props) {
       if (isMountedRef.current) {
         setIsLoading(false);
       }
+    }
+  };
+  
+  const onRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchMessages();
+      await fetchConversation();
+    } finally {
+      setIsRefreshing(false);
     }
   };
   
@@ -399,6 +414,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
         onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
         inverted={false}
         ListEmptyComponent={EmptyConversation}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.primary}
+            colors={[colors.primary]}
+          />
+        }
       />
       
       <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>

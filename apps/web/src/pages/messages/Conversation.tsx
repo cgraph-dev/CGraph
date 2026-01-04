@@ -14,6 +14,7 @@ import {
   InformationCircleIcon,
   LockClosedIcon,
   ShieldCheckIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Conversation() {
@@ -34,9 +35,21 @@ export default function Conversation() {
   const [messageInput, setMessageInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  // Refresh handler
+  const handleRefresh = useCallback(async () => {
+    if (!conversationId || isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      await fetchMessages(conversationId, true);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [conversationId, isRefreshing, fetchMessages]);
 
   const conversation = conversations.find((c) => c.id === conversationId);
   const conversationMessages = conversationId ? messages[conversationId] || [] : [];
@@ -256,6 +269,14 @@ export default function Conversation() {
             <LockClosedIcon className="h-4 w-4 text-green-400" />
             <span className="text-xs text-green-400 font-medium">E2EE</span>
           </div>
+          <button
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+            title="Refresh messages"
+          >
+            <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </button>
           <button className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors">
             <PhoneIcon className="h-5 w-5" />
           </button>

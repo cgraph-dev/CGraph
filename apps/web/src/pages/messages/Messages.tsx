@@ -7,6 +7,7 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   UserIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Messages() {
@@ -17,6 +18,17 @@ export default function Messages() {
   const { conversations, isLoadingConversations, fetchConversations, createConversation } = useChatStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Handle refresh
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    try {
+      await fetchConversations();
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [fetchConversations]);
 
   // Fetch conversations on mount
   useEffect(() => {
@@ -71,12 +83,22 @@ export default function Messages() {
         <div className="p-4 border-b border-dark-700">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-white">Messages</h2>
-            <button
-              className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors"
-              title="New conversation"
-            >
-              <PlusIcon className="h-5 w-5" />
-            </button>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+                title="Refresh conversations"
+              >
+                <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </button>
+              <button
+                className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors"
+                title="New conversation"
+              >
+                <PlusIcon className="h-5 w-5" />
+              </button>
+            </div>
           </div>
 
           {/* Search */}
