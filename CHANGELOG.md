@@ -11,6 +11,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.7] - 2026-01-05
+
+### Critical Messaging Fix
+
+Fixed WebSocket message serialization causing "Invalid time value" errors and mobile socket connection failures.
+
+### Fixed
+
+#### WebSocket Serialization
+- **Consistent camelCase** - All WebSocket broadcasts now use MessageJSON serializer for consistent field names
+- **Date Parsing** - Added safe date parsing with fallback to prevent RangeError on invalid dates
+- **Message History** - Channel join now sends properly serialized message history
+
+#### Mobile Socket Connection  
+- **WebSocket URL** - Fixed WS_URL derivation from API config (was hardcoded to localhost)
+- **Auto-Connect** - Socket now connects automatically on successful login
+- **Auto-Disconnect** - Socket disconnects on logout to prevent stale connections
+- **Connection Dedup** - Prevent concurrent connection attempts
+
+### Added
+
+- `normalizeMessage()` utility for snake_case/camelCase compatibility
+- `parseMessageDate()` safe date parser with fallback
+- `formatMessageTime()` error-tolerant time formatter
+- `wsUrl` config option in app.config.js
+
+### Files Modified
+- `apps/backend/lib/cgraph_web/controllers/api/v1/message_json.ex`
+- `apps/backend/lib/cgraph_web/channels/conversation_channel.ex`
+- `apps/backend/lib/cgraph_web/channels/group_channel.ex`
+- `apps/web/src/lib/apiUtils.ts`
+- `apps/web/src/lib/socket.ts`
+- `apps/web/src/pages/messages/Conversation.tsx`
+- `apps/mobile/src/lib/socket.ts`
+- `apps/mobile/src/lib/normalizers.ts` (new)
+- `apps/mobile/src/contexts/AuthContext.tsx`
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+- `apps/mobile/app.config.js`
+
+---
+
 ## [0.7.6] - 2026-01-05
 
 ### Username Login & Identity Number Search

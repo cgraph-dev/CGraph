@@ -6,7 +6,7 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.6 |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.7 |
 |--------|--------|--------|--------|--------|--------|
 | Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests |
 | Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures |
@@ -19,6 +19,116 @@
 | Cross-Platform Auth | - | - | - | - | ✅ |
 | Username Login | - | - | - | - | ✅ |
 | Identity Search | - | - | - | - | ✅ |
+| WebSocket Messaging | - | - | - | - | ✅ |
+
+---
+
+## January 5, 2026 - v0.7.7 Critical Messaging Fix
+
+### 1. RangeError: Invalid time value (WEB CRASH)
+
+**Problem:** Opening a conversation on web caused "RangeError: Invalid time value" crash. Error occurred at `Conversation.tsx:31:32` when parsing message dates.
+
+**Root Cause:** WebSocket broadcasts sent raw Elixir structs with `inserted_at` (snake_case) but frontend expected `createdAt` (camelCase). The `new Date(undefined)` call caused the RangeError.
+
+**Solution:**
+1. Updated backend to use MessageJSON serializer for WebSocket broadcasts
+2. Added safe date parsing with fallback on frontend:
+```typescript
+const parseMessageDate = (dateStr: string | undefined | null): Date => {
+  if (!dateStr) return new Date();
+  const parsed = new Date(dateStr);
+  return isNaN(parsed.getTime()) ? new Date() : parsed;
+};
+```
+
+**Files Modified:**
+- `apps/backend/lib/cgraph_web/channels/conversation_channel.ex`
+- `apps/backend/lib/cgraph_web/controllers/api/v1/message_json.ex`
+- `apps/web/src/pages/messages/Conversation.tsx`
+
+### 2. Mobile WebSocket Connection Failure (MOBILE)
+
+**Problem:** Mobile app failed to connect to WebSocket with error "Socket not connected". Messages couldn't be sent or received.
+
+**Root Cause:** WebSocket URL was hardcoded to `ws://localhost:4000/socket` which doesn't work on physical devices. The URL should derive from the configured API URL.
+
+**Solution:**
+```typescript
+// Before
+const WS_URL = 'ws://localhost:4000/socket';
+
+// After  
+const getWsUrl = (): string => {
+  const wsUrl = Constants.expoConfig?.extra?.wsUrl;
+  if (wsUrl) return wsUrl;
+  const apiUrl = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:4000';
+  return apiUrl.replace(/^http/, 'ws') + '/socket';
+};
+```
+
+Also added `wsUrl` to app.config.js:
+```javascript
+extra: {
+  apiUrl: getApiUrl(),
+  wsUrl: getWsUrl(), // NEW
+}
+```
+
+**Files Modified:**
+- `apps/mobile/src/lib/socket.ts`
+- `apps/mobile/app.config.js`
+
+### 3. Socket Not Auto-Connecting After Login (MOBILE)
+
+**Problem:** After successful login, socket wasn't connecting automatically, causing real-time features to fail until app restart.
+
+**Solution:** Connect socket after saving auth tokens:
+```typescript
+const saveAuth = async (authToken: string, refreshToken: string, userData: User) => {
+  // ... save to secure store ...
+  
+  // Connect socket after saving token
+  socketManager.connect().catch((err) => {
+    if (__DEV__) console.error('Socket connection failed:', err);
+  });
+};
+```
+
+Also disconnect on logout:
+```typescript
+const clearAuth = async () => {
+  socketManager.disconnect();  // NEW
+  // ... clear secure store ...
+};
+```
+
+**Files Modified:**
+- `apps/mobile/src/contexts/AuthContext.tsx`
+
+### 4. Inconsistent Message Format Between API and WebSocket (DATA)
+
+**Problem:** HTTP API returned camelCase fields but WebSocket returned snake_case, causing message display issues.
+
+**Solution:** Created unified normalizer:
+```typescript
+// apps/mobile/src/lib/normalizers.ts
+export function normalizeMessage(raw: Record<string, unknown>): Message {
+  return {
+    id: raw.id as string,
+    content: raw.content ?? '',
+    sender_id: raw.senderId ?? raw.sender_id ?? null,
+    inserted_at: raw.createdAt ?? raw.created_at ?? raw.inserted_at ?? new Date().toISOString(),
+    // ... handle all field variations
+  };
+}
+```
+
+**Files Modified:**
+- `apps/mobile/src/lib/normalizers.ts` (new file)
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+- `apps/web/src/lib/apiUtils.ts`
+- `apps/web/src/lib/socket.ts`
 
 ---
 
