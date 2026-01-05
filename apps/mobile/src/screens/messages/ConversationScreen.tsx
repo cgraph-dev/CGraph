@@ -44,8 +44,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
   const [otherParticipantId, setOtherParticipantId] = useState<string | null>(null);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
   
   const flatListRef = useRef<FlatList>(null);
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Subscribe to presence changes
   useEffect(() => {
@@ -63,6 +65,56 @@ export default function ConversationScreen({ navigation, route }: Props) {
     
     return () => unsubscribe();
   }, [conversationId, otherParticipantId]);
+  
+  // Subscribe to typing indicator changes
+  useEffect(() => {
+    if (!conversationId || !otherParticipantId) return;
+    
+    // Initial check for any typing users
+    const typingUsers = socketManager.getTypingUsers(conversationId);
+    const otherTyping = typingUsers.some(t => String(t.userId) === String(otherParticipantId));
+    setIsOtherUserTyping(otherTyping);
+    
+    // Subscribe to typing changes
+    const unsubscribe = socketManager.onTypingChange((convId, userId, isTyping) => {
+      if (convId === conversationId && String(userId) === String(otherParticipantId)) {
+        setIsOtherUserTyping(isTyping);
+      }
+    });
+    
+    return () => unsubscribe();
+  }, [conversationId, otherParticipantId]);
+  
+  // Handle input text changes with typing indicator
+  const handleTextChange = useCallback((text: string) => {
+    setInputText(text);
+    
+    const channelTopic = `conversation:${conversationId}`;
+    
+    // Send typing indicator when user starts typing
+    if (text.length > 0) {
+      socketManager.sendTyping(channelTopic, true);
+      
+      // Clear existing timeout
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      
+      // Set timeout to stop typing indicator after pause (aligned with backend)
+      typingTimeoutRef.current = setTimeout(() => {
+        socketManager.sendTyping(channelTopic, false);
+      }, 5000);
+    }
+  }, [conversationId]);
+  
+  // Stop typing indicator when sending message or unmounting
+  const stopTypingIndicator = useCallback(() => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+    socketManager.sendTyping(`conversation:${conversationId}`, false);
+  }, [conversationId]);
   
   // Track if component is still mounted to prevent state updates after unmount
   const isMountedRef = useRef(true);
@@ -118,6 +170,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
         cleanupRef.current();
         cleanupRef.current = null;
       }
+      // Stop typing indicator on unmount
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+        typingTimeoutRef.current = null;
+      }
+      socketManager.sendTyping(`conversation:${conversationId}`, false);
       // Don't leave channel - socket manager keeps channel alive for session
       // The join debouncing will prevent duplicate joins on remount
     };
@@ -211,16 +269,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   };
   
-  // Update header with current online status
+  // Update header with current online and typing status
   const updateHeader = useCallback((displayName: string) => {
+    // Determine status text with priority: typing > online > offline
+    let statusText = 'Offline';
+    let statusColor = '#6b7280';
+    
+    if (isOtherUserTyping) {
+      statusText = 'Typing...';
+      statusColor = '#3b82f6';
+    } else if (isOtherUserOnline) {
+      statusText = 'Online';
+      statusColor = '#22c55e';
+    }
+    
     navigation.setOptions({
       headerTitle: () => (
         <View style={styles.headerTitleContainer}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{displayName}</Text>
           <View style={styles.headerStatusRow}>
-            <View style={[styles.statusDot, { backgroundColor: isOtherUserOnline ? '#22c55e' : '#6b7280' }]} />
+            <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
             <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-              {isOtherUserOnline ? 'Online' : 'Offline'}
+              {statusText}
             </Text>
           </View>
         </View>
@@ -232,9 +302,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
         </View>
       ),
     });
-  }, [colors, isOtherUserOnline, navigation]);
+  }, [colors, isOtherUserOnline, isOtherUserTyping, navigation]);
   
-  // Update header when online status changes
+  // Update header when online or typing status changes
   useEffect(() => {
     if (_conversation) {
       const conv = _conversation;
@@ -259,7 +329,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       
       updateHeader(displayName);
     }
-  }, [isOtherUserOnline, _conversation, updateHeader, user?.id]);
+  }, [isOtherUserOnline, isOtherUserTyping, _conversation, updateHeader, user?.id]);
   
   const fetchMessages = async () => {
     try {
@@ -301,6 +371,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
     
     setIsSending(true);
     setInputText('');
+    
+    // Stop typing indicator when sending
+    stopTypingIndicator();
     
     try {
       const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
@@ -558,7 +631,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             placeholder="Message..."
             placeholderTextColor={colors.textTertiary}
             value={inputText}
-            onChangeText={setInputText}
+            onChangeText={handleTextChange}
             multiline
             maxLength={4000}
           />

@@ -441,7 +441,8 @@ defmodule Cgraph.Cache do
     case Cgraph.Redis.command(["GET", redis_key]) do
       {:ok, nil} -> {:error, :not_found}
       {:ok, data} -> 
-        {:ok, :erlang.binary_to_term(data)}
+        # Use :safe option to prevent arbitrary atom creation and code execution
+        {:ok, :erlang.binary_to_term(data, [:safe])}
       {:error, _} = error -> error
     end
   rescue

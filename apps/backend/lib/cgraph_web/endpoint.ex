@@ -12,7 +12,8 @@ defmodule CgraphWeb.Endpoint do
     store: :cookie,
     key: "_cgraph_key",
     signing_salt: "cgraph_auth",
-    same_site: "Lax"
+    same_site: "Lax",
+    secure: Mix.env() == :prod
   ]
 
   # CORS origins based on environment

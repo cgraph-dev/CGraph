@@ -180,6 +180,8 @@ defmodule CgraphWeb.Router do
     get "/users/leaderboard", UserController, :leaderboard
     resources "/users", UserController, only: [:index, :show]
     get "/users/:username/profile", UserController, :profile
+    get "/users/:id/presence", UserController, :presence
+    post "/users/presence/bulk", UserController, :bulk_presence
 
     # Direct Messages (1:1)
     resources "/conversations", ConversationController, only: [:index, :show, :create] do

@@ -115,8 +115,21 @@ class SocketManager {
   }
 
   // Check if user is online in any conversation
+  // Uses string coercion to ensure consistent comparison regardless of ID format
   isUserOnline(conversationId: string, userId: string): boolean {
-    return this.onlineUsers.get(conversationId)?.has(userId) || false;
+    const onlineSet = this.onlineUsers.get(conversationId);
+    if (!onlineSet || !userId) return false;
+    
+    // Direct lookup first (most common case)
+    if (onlineSet.has(userId)) return true;
+    
+    // Fallback: Convert both to strings and compare (handles potential type mismatches)
+    const userIdStr = String(userId);
+    for (const id of onlineSet) {
+      if (String(id) === userIdStr) return true;
+    }
+    
+    return false;
   }
 
   /**
@@ -386,7 +399,8 @@ class SocketManager {
   sendTyping(topic: string, isTyping: boolean) {
     const channel = this.channels.get(topic);
     if (channel) {
-      channel.push('typing', { is_typing: isTyping });
+      // Send both key formats for backend compatibility
+      channel.push('typing', { typing: isTyping, is_typing: isTyping });
     }
   }
 

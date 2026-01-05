@@ -155,7 +155,7 @@ export default function Conversation() {
     // Set timeout to stop typing indicator
     typingTimeoutRef.current = setTimeout(() => {
       socketManager.sendTyping(topic, false);
-    }, 3000);
+    }, 5000);
   }, [conversationId]);
 
   // Send message

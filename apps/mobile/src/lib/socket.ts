@@ -27,7 +27,15 @@ interface PresenceState {
   [userId: string]: { metas: PresenceMeta[] };
 }
 
+// Types for typing indicators
+interface TypingUser {
+  userId: string;
+  username?: string;
+  startedAt: number;
+}
+
 type StatusChangeCallback = (conversationId: string, userId: string, isOnline: boolean) => void;
+type TypingChangeCallback = (conversationId: string, userId: string, isTyping: boolean) => void;
 type MessageCallback = (event: string, payload: unknown) => void;
 
 class SocketManager {
@@ -35,8 +43,13 @@ class SocketManager {
   private channels: Map<string, Channel> = new Map();
   private presences: Map<string, Presence> = new Map();
   private onlineUsers: Map<string, Set<string>> = new Map();
+  // Track users currently typing per conversation
+  private typingUsers: Map<string, Map<string, TypingUser>> = new Map();
+  // Timeout refs for auto-clearing typing state
+  private typingTimeouts: Map<string, NodeJS.Timeout> = new Map();
   private connectionPromise: Promise<void> | null = null;
   private statusListeners: Set<StatusChangeCallback> = new Set();
+  private typingListeners: Set<TypingChangeCallback> = new Set();
   // Track which channels have their core handlers set up (prevents duplicate handlers)
   private channelHandlersSetUp: Set<string> = new Set();
   // Per-channel message listeners (components can subscribe/unsubscribe)
@@ -45,6 +58,8 @@ class SocketManager {
   private lastJoinAttempts: Map<string, number> = new Map();
   // Minimum time between join attempts (ms) - prevents join/leave loops
   private readonly JOIN_DEBOUNCE_MS = 1000;
+  // Auto-clear typing after this duration (aligned with backend)
+  private readonly TYPING_TIMEOUT_MS = 5000;
   
   async connect(): Promise<void> {
     // Prevent concurrent connection attempts
@@ -155,6 +170,68 @@ class SocketManager {
   onStatusChange(callback: StatusChangeCallback): () => void {
     this.statusListeners.add(callback);
     return () => this.statusListeners.delete(callback);
+  }
+  
+  // Subscribe to typing indicator changes
+  onTypingChange(callback: TypingChangeCallback): () => void {
+    this.typingListeners.add(callback);
+    return () => this.typingListeners.delete(callback);
+  }
+  
+  // Notify typing change listeners
+  private notifyTypingChange(conversationId: string, userId: string, isTyping: boolean): void {
+    this.typingListeners.forEach(callback => callback(conversationId, userId, isTyping));
+  }
+  
+  // Update typing user state for a conversation
+  private updateTypingState(conversationId: string, userId: string, isTyping: boolean, username?: string): void {
+    if (!this.typingUsers.has(conversationId)) {
+      this.typingUsers.set(conversationId, new Map());
+    }
+    
+    const conversationTyping = this.typingUsers.get(conversationId)!;
+    const timeoutKey = `${conversationId}:${userId}`;
+    
+    // Clear any existing timeout for this user
+    const existingTimeout = this.typingTimeouts.get(timeoutKey);
+    if (existingTimeout) {
+      clearTimeout(existingTimeout);
+      this.typingTimeouts.delete(timeoutKey);
+    }
+    
+    if (isTyping) {
+      conversationTyping.set(userId, {
+        userId,
+        username,
+        startedAt: Date.now()
+      });
+      
+      // Auto-clear after timeout (failsafe if stop event missed)
+      const timeout = setTimeout(() => {
+        this.updateTypingState(conversationId, userId, false);
+      }, this.TYPING_TIMEOUT_MS);
+      this.typingTimeouts.set(timeoutKey, timeout);
+    } else {
+      conversationTyping.delete(userId);
+    }
+    
+    this.notifyTypingChange(conversationId, userId, isTyping);
+  }
+  
+  // Get list of users currently typing in a conversation
+  getTypingUsers(conversationId: string): TypingUser[] {
+    const conversationTyping = this.typingUsers.get(conversationId);
+    if (!conversationTyping) return [];
+    return Array.from(conversationTyping.values());
+  }
+  
+  // Send typing indicator to backend
+  sendTyping(topic: string, isTyping: boolean): void {
+    const channel = this.channels.get(topic);
+    if (channel) {
+      // Send both key formats for backend compatibility
+      channel.push('typing', { typing: isTyping, is_typing: isTyping });
+    }
   }
   
   // Subscribe to messages on a channel
@@ -319,6 +396,20 @@ class SocketManager {
           this.messageListeners.get(topic)?.forEach(cb => cb(event, payload));
         });
       });
+      
+      // Set up typing indicator listener for conversation channels
+      if (topic.startsWith('conversation:')) {
+        const conversationId = topic.replace('conversation:', '');
+        
+        channel.on('typing', (payload: { user_id: string; username?: string; is_typing?: boolean; typing?: boolean }) => {
+          // Handle both key formats from backend
+          const isTyping = payload.is_typing ?? payload.typing ?? false;
+          const userId = payload.user_id;
+          
+          logger.log(`[${topic}] Typing indicator:`, { userId, isTyping });
+          this.updateTypingState(conversationId, userId, isTyping, payload.username);
+        });
+      }
     }
     
     channel.join()
@@ -345,6 +436,7 @@ class SocketManager {
    * - Handler registration state
    * - Message listeners
    * - Online user tracking
+   * - Typing state and timeouts
    * - Join attempt tracking
    * 
    * @param topic - Channel topic to leave
@@ -360,10 +452,24 @@ class SocketManager {
       this.messageListeners.delete(topic);
       this.lastJoinAttempts.delete(topic);
       
-      // Clean up presence tracking for conversations
+      // Clean up presence and typing tracking for conversations
       if (topic.startsWith('conversation:')) {
         const conversationId = topic.replace('conversation:', '');
         this.onlineUsers.delete(conversationId);
+        
+        // Clear typing state and timeouts for this conversation
+        const conversationTyping = this.typingUsers.get(conversationId);
+        if (conversationTyping) {
+          conversationTyping.forEach((_, userId) => {
+            const timeoutKey = `${conversationId}:${userId}`;
+            const timeout = this.typingTimeouts.get(timeoutKey);
+            if (timeout) {
+              clearTimeout(timeout);
+              this.typingTimeouts.delete(timeoutKey);
+            }
+          });
+          this.typingUsers.delete(conversationId);
+        }
       }
     }
   }

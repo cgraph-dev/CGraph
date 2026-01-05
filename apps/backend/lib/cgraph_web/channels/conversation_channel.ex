@@ -15,7 +15,7 @@ defmodule CgraphWeb.ConversationChannel do
   alias Cgraph.Presence
   alias CgraphWeb.API.V1.MessageJSON
 
-  @typing_timeout 3_000
+  @typing_timeout 5_000
   
   # Rate limiting: max 10 messages per 10 seconds per user
   @rate_limit_window_ms 10_000
@@ -113,18 +113,27 @@ defmodule CgraphWeb.ConversationChannel do
   end
 
   @impl true
-  def handle_in("typing", %{"typing" => is_typing}, socket) do
+  def handle_in("typing", params, socket) do
     user = socket.assigns.current_user
+
+    # Support both payload formats: {"typing": bool} (old) and {"is_typing": bool} (web/mobile)
+    is_typing = case params do
+      %{"typing" => val} -> val
+      %{"is_typing" => val} -> val
+      _ -> false
+    end
 
     # Update presence with typing status
     Presence.update(socket, user.id, fn meta ->
       Map.put(meta, :typing, is_typing)
     end)
 
-    # Broadcast typing indicator
-    broadcast_from!(socket, "user_typing", %{
+    # Broadcast typing indicator - use "typing" event name for frontend compatibility
+    # Include both key formats for backward compatibility
+    broadcast_from!(socket, "typing", %{
       user_id: user.id,
       username: user.username,
+      is_typing: is_typing,
       typing: is_typing
     })
 

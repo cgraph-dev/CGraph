@@ -112,18 +112,27 @@ defmodule CgraphWeb.GroupChannel do
   end
 
   @impl true
-  def handle_in("typing", %{"typing" => is_typing}, socket) do
+  def handle_in("typing", params, socket) do
     user = socket.assigns.current_user
     member = socket.assigns.member
+
+    # Support both payload formats: {"typing": bool} (old) and {"is_typing": bool} (web/mobile)
+    is_typing = case params do
+      %{"typing" => val} -> val
+      %{"is_typing" => val} -> val
+      _ -> false
+    end
 
     Presence.update(socket, user.id, fn meta ->
       Map.put(meta, :typing, is_typing)
     end)
 
-    broadcast_from!(socket, "user_typing", %{
+    # Broadcast typing indicator - use "typing" event name for frontend compatibility
+    broadcast_from!(socket, "typing", %{
       user_id: user.id,
       username: user.username,
       nickname: member.nickname,
+      is_typing: is_typing,
       typing: is_typing
     })
 

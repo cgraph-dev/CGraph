@@ -613,7 +613,8 @@ defmodule Cgraph.Cache.Distributed do
   defp decompress(data) do
     data
     |> :zlib.uncompress()
-    |> :erlang.binary_to_term()
+    # Use :safe option to prevent arbitrary atom creation and code execution
+    |> :erlang.binary_to_term([:safe])
   end
   
   defp byte_size_estimate(value) do

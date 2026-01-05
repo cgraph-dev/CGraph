@@ -80,7 +80,7 @@ export default function GroupChannel() {
 
     typingTimeoutRef.current = setTimeout(() => {
       socketManager.sendTyping(topic, false);
-    }, 3000);
+    }, 5000);
   }, [channelId]);
 
   // Send message
