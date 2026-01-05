@@ -1076,7 +1076,7 @@ defmodule Cgraph.Groups do
 
   defp member_has_permission?(member, permission) do
     Enum.any?(member.roles, fn role ->
-      Cgraph.Groups.Role.has_permission?(role, permission)
+      Role.has_permission?(role, permission)
     end)
   end
 end

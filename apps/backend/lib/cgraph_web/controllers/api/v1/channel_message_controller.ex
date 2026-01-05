@@ -5,6 +5,7 @@ defmodule CgraphWeb.API.V1.ChannelMessageController do
   use CgraphWeb, :controller
 
   alias Cgraph.Groups
+  alias CgraphWeb.API.V1.MessageJSON
 
   action_fallback CgraphWeb.FallbackController
 
@@ -51,7 +52,7 @@ defmodule CgraphWeb.API.V1.ChannelMessageController do
       CgraphWeb.Endpoint.broadcast!(
         "channel:#{channel_id}",
         "new_message",
-        %{message: CgraphWeb.API.V1.MessageJSON.message_data(message)}
+        %{message: MessageJSON.message_data(message)}
       )
 
       conn

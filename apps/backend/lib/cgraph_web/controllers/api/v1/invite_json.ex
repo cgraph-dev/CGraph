@@ -3,7 +3,7 @@ defmodule CgraphWeb.API.V1.InviteJSON do
   JSON rendering for invite responses.
   """
 
-  alias CgraphWeb.API.V1.{GroupJSON, UserJSON}
+  alias CgraphWeb.API.V1.{GroupJSON, GroupMemberJSON, UserJSON}
 
   def index(%{invites: invites}) do
     %{data: Enum.map(invites, &invite_data/1)}
@@ -16,7 +16,7 @@ defmodule CgraphWeb.API.V1.InviteJSON do
   def joined(%{member: member, group: group}) do
     %{
       data: %{
-        member: CgraphWeb.API.V1.GroupMemberJSON.member_data(member),
+        member: GroupMemberJSON.member_data(member),
         group: GroupJSON.group_data(group)
       }
     }

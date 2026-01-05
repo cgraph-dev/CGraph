@@ -51,6 +51,7 @@ defmodule CgraphWeb.Plugs.RequestId do
   """
 
   import Plug.Conn
+
   require Logger
 
   @behaviour Plug
@@ -360,6 +361,8 @@ defmodule CgraphWeb.Plugs.HealthCheck do
 
   import Plug.Conn
 
+  alias Ecto.Adapters.SQL
+
   @behaviour Plug
 
   @impl true
@@ -401,7 +404,7 @@ defmodule CgraphWeb.Plugs.HealthCheck do
   end
 
   defp check_database do
-    case Ecto.Adapters.SQL.query(Cgraph.Repo, "SELECT 1", []) do
+    case SQL.query(Cgraph.Repo, "SELECT 1", []) do
       {:ok, _} -> :ok
       {:error, _} -> :error
     end

@@ -9,7 +9,7 @@ defmodule Cgraph.Accounts.Settings do
   - Reset to defaults
   """
 
-  alias Cgraph.Accounts.{User, UserSettings}
+  alias Cgraph.Accounts.{Friends, User, UserSettings}
   alias Cgraph.Repo
 
   @doc """
@@ -167,7 +167,7 @@ defmodule Cgraph.Accounts.Settings do
   def can_message?(%User{} = sender, %User{} = recipient) do
     {:ok, settings} = get_settings(recipient)
 
-    settings.allow_message_requests || Cgraph.Accounts.Friends.are_friends?(sender, recipient)
+    settings.allow_message_requests || Friends.are_friends?(sender, recipient)
   end
 
   @doc """
@@ -202,7 +202,7 @@ defmodule Cgraph.Accounts.Settings do
 
     case settings.profile_visibility do
       :public -> true
-      :friends -> Cgraph.Accounts.Friends.are_friends?(profile_owner, viewer)
+      :friends -> Friends.are_friends?(profile_owner, viewer)
       :private -> profile_owner.id == viewer.id
     end
   end

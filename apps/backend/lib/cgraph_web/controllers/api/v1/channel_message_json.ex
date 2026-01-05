@@ -4,14 +4,16 @@ defmodule CgraphWeb.API.V1.ChannelMessageJSON do
   Reuses MessageJSON for consistency.
   """
 
+  alias CgraphWeb.API.V1.MessageJSON
+
   def index(%{messages: messages, meta: meta}) do
     %{
-      data: Enum.map(messages, &CgraphWeb.API.V1.MessageJSON.message_data/1),
+      data: Enum.map(messages, &MessageJSON.message_data/1),
       meta: meta
     }
   end
 
   def show(%{message: message}) do
-    %{data: CgraphWeb.API.V1.MessageJSON.message_data(message)}
+    %{data: MessageJSON.message_data(message)}
   end
 end

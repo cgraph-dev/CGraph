@@ -16,6 +16,7 @@ defmodule Cgraph.SecurityTest do
   alias Cgraph.Accounts
   alias Cgraph.Guardian
   alias Cgraph.Security.{AccountLockout, PasswordBreachCheck, TokenBlacklist, TOTP}
+  alias SecurityHeaders
 
   # ============================================================================
   # Token Blacklist Tests
@@ -373,8 +374,8 @@ defmodule Cgraph.SecurityTest do
   describe "SecurityHeaders plug" do
     test "applies security headers to API responses" do
       conn = Phoenix.ConnTest.build_conn()
-      opts = CgraphWeb.Plugs.SecurityHeaders.init(mode: :api)
-      conn = CgraphWeb.Plugs.SecurityHeaders.call(conn, opts)
+      opts = SecurityHeaders.init(mode: :api)
+      conn = SecurityHeaders.call(conn, opts)
 
       # Check essential security headers exist
       assert get_header(conn, "content-security-policy") != nil
@@ -386,8 +387,8 @@ defmodule Cgraph.SecurityTest do
 
     test "CSP includes frame-ancestors restriction" do
       conn = Phoenix.ConnTest.build_conn()
-      opts = CgraphWeb.Plugs.SecurityHeaders.init(mode: :api)
-      conn = CgraphWeb.Plugs.SecurityHeaders.call(conn, opts)
+      opts = SecurityHeaders.init(mode: :api)
+      conn = SecurityHeaders.call(conn, opts)
 
       csp = get_header(conn, "content-security-policy")
       # Frame-ancestors 'none' or 'self' both acceptable for security
@@ -396,8 +397,8 @@ defmodule Cgraph.SecurityTest do
 
     test "permissions policy restricts browser features" do
       conn = Phoenix.ConnTest.build_conn()
-      opts = CgraphWeb.Plugs.SecurityHeaders.init(mode: :api)
-      conn = CgraphWeb.Plugs.SecurityHeaders.call(conn, opts)
+      opts = SecurityHeaders.init(mode: :api)
+      conn = SecurityHeaders.call(conn, opts)
 
       policy = get_header(conn, "permissions-policy")
       assert policy =~ "camera=()"
@@ -409,10 +410,10 @@ defmodule Cgraph.SecurityTest do
       # Verify the apply_cross_origin_policies function is defined
       # The actual header setting is tested via integration tests
       conn = Phoenix.ConnTest.build_conn()
-      opts = CgraphWeb.Plugs.SecurityHeaders.init(mode: :api)
+      opts = SecurityHeaders.init(mode: :api)
 
       # call/2 should not raise
-      result = CgraphWeb.Plugs.SecurityHeaders.call(conn, opts)
+      result = SecurityHeaders.call(conn, opts)
       assert %Plug.Conn{} = result
     end
   end

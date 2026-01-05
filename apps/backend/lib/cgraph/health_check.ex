@@ -80,6 +80,8 @@ defmodule Cgraph.HealthCheck do
   use GenServer
   require Logger
 
+  alias Ecto.Adapters.SQL
+
   @check_interval :timer.seconds(30)
   @component_timeout :timer.seconds(5)
 
@@ -335,7 +337,7 @@ defmodule Cgraph.HealthCheck do
 
     try do
       # Simple connectivity check
-      Ecto.Adapters.SQL.query!(Cgraph.Repo, "SELECT 1", [])
+      SQL.query!(Cgraph.Repo, "SELECT 1", [])
 
       # Check connection pool
       pool_status = check_pool_status()
@@ -520,7 +522,7 @@ defmodule Cgraph.HealthCheck do
   end
 
   defp database_ready? do
-    Ecto.Adapters.SQL.query!(Cgraph.Repo, "SELECT 1", [])
+    SQL.query!(Cgraph.Repo, "SELECT 1", [])
     true
   rescue
     _ -> false

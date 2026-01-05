@@ -11,6 +11,7 @@ defmodule Cgraph.Notifications do
   alias Cgraph.Accounts.{Settings, User}
   alias Cgraph.Notifications.Notification
   alias Cgraph.Repo
+  alias Cgraph.Workers.{SendEmailNotification, SendPushNotification}
 
   @doc """
   Creates and delivers a notification to a user.
@@ -145,7 +146,7 @@ defmodule Cgraph.Notifications do
     if settings.push_notifications do
       # Queue push notification job
       %{user_id: user.id, notification_id: notification.id}
-      |> Cgraph.Workers.SendPushNotification.new()
+      |> SendPushNotification.new()
       |> Oban.insert()
 
       notification
@@ -162,7 +163,7 @@ defmodule Cgraph.Notifications do
 
     if settings.email_notifications && email_worthy do
       %{user_id: user.id, notification_id: notification.id}
-      |> Cgraph.Workers.SendEmailNotification.new(schedule_in: 300)  # 5 minute delay to batch
+      |> SendEmailNotification.new(schedule_in: 300)  # 5 minute delay to batch
       |> Oban.insert()
     end
   end

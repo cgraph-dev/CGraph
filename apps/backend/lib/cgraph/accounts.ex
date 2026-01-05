@@ -10,6 +10,7 @@ defmodule Cgraph.Accounts do
   alias Cgraph.Accounts.{Friendship, Session, User, UserSettings, WalletChallenge}
   alias Cgraph.Repo
   alias Cgraph.Security.PasswordBreachCheck
+  alias Cgraph.Workers.{Orchestrator, SendEmailNotification}
 
   # ============================================================================
   # Registration & Authentication
@@ -1240,8 +1241,8 @@ defmodule Cgraph.Accounts do
     token = generate_email_verification_token(user)
 
     # Queue email sending via Oban worker
-    Cgraph.Workers.Orchestrator.enqueue(
-      Cgraph.Workers.SendEmailNotification,
+    Orchestrator.enqueue(
+      SendEmailNotification,
       %{
         user_id: user.id,
         notification_id: nil,
