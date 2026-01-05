@@ -1,8 +1,16 @@
 # CGraph
 
+[![CI](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml/badge.svg)](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml)
+[![Deploy](https://github.com/cgraph-dev/CGraph/actions/workflows/deploy.yml/badge.svg)](https://github.com/cgraph-dev/CGraph/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.7.20-green.svg)](CHANGELOG.md)
+[![Elixir](https://img.shields.io/badge/elixir-1.19.4-purple.svg)](https://elixir-lang.org)
+[![React](https://img.shields.io/badge/react-19.1.0-61DAFB.svg)](https://react.dev)
+[![Tests](https://img.shields.io/badge/tests-620%20passing-brightgreen.svg)](apps/backend/test)
+
 A modern, full-stack social platform combining messaging, groups, and forum communities with Web3 wallet integration and end-to-end encryption.
 
-**Version 0.7.19** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
+**Version 0.7.20** | [Changelog](CHANGELOG.md) | [Documentation](docs/) | [API Reference](docs/API.md)
 
 ## 🚀 Features
 
@@ -137,7 +145,7 @@ docker-compose up -d
 
 ## 🔗 API Endpoints
 
-All endpoints use the `/api/v1` prefix. See [API Reference](docs/API_REFERENCE.md) for complete documentation.
+All endpoints use the `/api/v1` prefix. See the detailed [API reference](docs/API.md) and the machine-readable [OpenAPI spec](docs/openapi.yaml) for complete documentation.
 
 ### Key Endpoints
 

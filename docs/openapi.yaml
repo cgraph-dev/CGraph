@@ -1,0 +1,1122 @@
+openapi: 3.1.0
+info:
+  title: CGraph API
+  description: |
+    CGraph is a modern communication platform combining messaging, groups, and forums
+    with end-to-end encryption and Web3 wallet integration.
+    
+    ## Authentication
+    
+    Most endpoints require authentication via JWT Bearer token:
+    ```
+    Authorization: Bearer <your-token>
+    ```
+    
+    Obtain tokens via `/api/v1/auth/login` or `/api/v1/auth/register`.
+    
+    ## Rate Limiting
+    
+    - Default: 100 requests/minute per IP
+    - Authenticated: 300 requests/minute per user
+    - Upload endpoints: 10 requests/minute
+    
+    Rate limit headers are included in all responses:
+    - `X-RateLimit-Limit`
+    - `X-RateLimit-Remaining`
+    - `X-RateLimit-Reset`
+    
+  version: 0.7.20
+  contact:
+    name: CGraph Support
+    email: support@cgraph.org
+    url: https://cgraph.org
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://api.cgraph.org/api/v1
+    description: Production server
+  - url: https://staging-api.cgraph.org/api/v1
+    description: Staging server
+  - url: http://localhost:4000/api/v1
+    description: Local development
+
+tags:
+  - name: Authentication
+    description: User registration, login, and session management
+  - name: Users
+    description: User profiles and settings
+  - name: Friends
+    description: Friend requests and relationships
+  - name: Conversations
+    description: Direct messaging between users
+  - name: Messages
+    description: Message operations within conversations
+  - name: Groups
+    description: Group creation and management
+  - name: Channels
+    description: Channels within groups
+  - name: Forums
+    description: Forum communities
+  - name: Threads
+    description: Forum threads and posts
+
+paths:
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new user
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, username, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                username:
+                  type: string
+                  minLength: 3
+                  maxLength: 32
+                  pattern: '^[a-zA-Z0-9_]+$'
+                  example: johndoe
+                password:
+                  type: string
+                  minLength: 8
+                  example: SecurePass123!
+                display_name:
+                  type: string
+                  maxLength: 64
+                  example: John Doe
+      responses:
+        '201':
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login with email and password
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh access token
+      operationId: refreshToken
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token:
+                  type: string
+      responses:
+        '200':
+          description: Token refreshed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid or expired refresh token
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout and invalidate tokens
+      operationId: logoutUser
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Logged out successfully
+
+  /auth/wallet/challenge:
+    post:
+      tags: [Authentication]
+      summary: Request Web3 wallet authentication challenge
+      operationId: walletChallenge
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [wallet_address]
+              properties:
+                wallet_address:
+                  type: string
+                  pattern: '^0x[a-fA-F0-9]{40}$'
+                  example: '0x742d35Cc6634C0532925a3b844Bc9e7595f1Bd00'
+      responses:
+        '200':
+          description: Challenge created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  challenge:
+                    type: string
+                  expires_at:
+                    type: string
+                    format: date-time
+
+  /auth/wallet/verify:
+    post:
+      tags: [Authentication]
+      summary: Verify Web3 wallet signature
+      operationId: walletVerify
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [wallet_address, signature, challenge]
+              properties:
+                wallet_address:
+                  type: string
+                signature:
+                  type: string
+                challenge:
+                  type: string
+      responses:
+        '200':
+          description: Wallet verified, user authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      operationId: getCurrentUser
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+    patch:
+      tags: [Users]
+      summary: Update current user profile
+      operationId: updateCurrentUser
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name:
+                  type: string
+                bio:
+                  type: string
+                avatar_url:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{user_id}:
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      operationId: getUserById
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: User not found
+
+  /friends:
+    get:
+      tags: [Friends]
+      summary: List friends
+      operationId: listFriends
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: List of friends
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Friend'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+
+  /friends/requests:
+    get:
+      tags: [Friends]
+      summary: List pending friend requests
+      operationId: listFriendRequests
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Pending requests
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FriendRequest'
+    post:
+      tags: [Friends]
+      summary: Send friend request
+      operationId: sendFriendRequest
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user_id]
+              properties:
+                user_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Request sent
+
+  /friends/requests/{request_id}/accept:
+    post:
+      tags: [Friends]
+      summary: Accept friend request
+      operationId: acceptFriendRequest
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: request_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Request accepted
+
+  /conversations:
+    get:
+      tags: [Conversations]
+      summary: List conversations
+      operationId: listConversations
+      security:
+        - BearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Conversation'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    post:
+      tags: [Conversations]
+      summary: Create or get existing conversation
+      operationId: createConversation
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [participant_ids]
+              properties:
+                participant_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  minItems: 1
+      responses:
+        '201':
+          description: Conversation created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Conversation'
+
+  /conversations/{conversation_id}/messages:
+    get:
+      tags: [Messages]
+      summary: Get messages in conversation
+      operationId: getConversationMessages
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: before
+          in: query
+          description: Get messages before this message ID
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Message'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    post:
+      tags: [Messages]
+      summary: Send message
+      operationId: sendMessage
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  maxLength: 4000
+                encrypted_content:
+                  type: string
+                  description: E2EE encrypted content
+                message_type:
+                  type: string
+                  enum: [text, image, file, voice, video]
+                  default: text
+                metadata:
+                  type: object
+      responses:
+        '201':
+          description: Message sent
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Message'
+
+  /groups:
+    get:
+      tags: [Groups]
+      summary: List user's groups
+      operationId: listGroups
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of groups
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Group'
+    post:
+      tags: [Groups]
+      summary: Create a new group
+      operationId: createGroup
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                description:
+                  type: string
+                  maxLength: 1000
+                icon_url:
+                  type: string
+                  format: uri
+                is_public:
+                  type: boolean
+                  default: false
+      responses:
+        '201':
+          description: Group created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+
+  /groups/{group_id}/channels:
+    get:
+      tags: [Channels]
+      summary: List channels in group
+      operationId: listGroupChannels
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of channels
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Channel'
+    post:
+      tags: [Channels]
+      summary: Create channel in group
+      operationId: createChannel
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: group_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, type]
+              properties:
+                name:
+                  type: string
+                type:
+                  type: string
+                  enum: [text, voice, announcement]
+                category_id:
+                  type: string
+                  format: uuid
+      responses:
+        '201':
+          description: Channel created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Channel'
+
+  /forums:
+    get:
+      tags: [Forums]
+      summary: List forums
+      operationId: listForums
+      parameters:
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of forums
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Forum'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    post:
+      tags: [Forums]
+      summary: Create a forum
+      operationId: createForum
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, slug]
+              properties:
+                name:
+                  type: string
+                slug:
+                  type: string
+                  pattern: '^[a-z0-9-]+$'
+                description:
+                  type: string
+                category_id:
+                  type: string
+                  format: uuid
+                is_public:
+                  type: boolean
+                  default: true
+      responses:
+        '201':
+          description: Forum created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Forum'
+
+  /forums/{forum_id}/threads:
+    get:
+      tags: [Threads]
+      summary: List threads in forum
+      operationId: listForumThreads
+      parameters:
+        - name: forum_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [hot, new, top, controversial]
+            default: hot
+      responses:
+        '200':
+          description: List of threads
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Thread'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+    post:
+      tags: [Threads]
+      summary: Create thread in forum
+      operationId: createThread
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: forum_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, content]
+              properties:
+                title:
+                  type: string
+                  minLength: 5
+                  maxLength: 300
+                content:
+                  type: string
+                  minLength: 10
+                flair:
+                  type: string
+      responses:
+        '201':
+          description: Thread created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Thread'
+
+  /upload:
+    post:
+      tags: [Uploads]
+      summary: Upload a file
+      operationId: uploadFile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                type:
+                  type: string
+                  enum: [avatar, attachment, voice]
+      responses:
+        '201':
+          description: File uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    format: uri
+                  filename:
+                    type: string
+                  size:
+                    type: integer
+                  content_type:
+                    type: string
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    PageParam:
+      name: page
+      in: query
+      description: Page number (1-indexed)
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PerPageParam:
+      name: per_page
+      in: query
+      description: Items per page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  schemas:
+    AuthResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            token:
+              type: string
+              description: JWT access token
+            refresh_token:
+              type: string
+              description: Refresh token for obtaining new access tokens
+            expires_at:
+              type: string
+              format: date-time
+            user:
+              $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        display_name:
+          type: string
+        email:
+          type: string
+          format: email
+        avatar_url:
+          type: string
+          format: uri
+        bio:
+          type: string
+        status:
+          type: string
+          enum: [online, away, busy, offline]
+        last_seen_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        has_2fa_enabled:
+          type: boolean
+        wallet_address:
+          type: string
+
+    Friend:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user:
+          $ref: '#/components/schemas/User'
+        status:
+          type: string
+          enum: [online, away, busy, offline]
+        created_at:
+          type: string
+          format: date-time
+
+    FriendRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        sender:
+          $ref: '#/components/schemas/User'
+        receiver:
+          $ref: '#/components/schemas/User'
+        status:
+          type: string
+          enum: [pending, accepted, rejected]
+        created_at:
+          type: string
+          format: date-time
+
+    Conversation:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        is_group:
+          type: boolean
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        last_message:
+          $ref: '#/components/schemas/Message'
+        unread_count:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        conversation_id:
+          type: string
+          format: uuid
+        sender:
+          $ref: '#/components/schemas/User'
+        content:
+          type: string
+        encrypted_content:
+          type: string
+        message_type:
+          type: string
+          enum: [text, image, file, voice, video]
+        metadata:
+          type: object
+          properties:
+            file_url:
+              type: string
+            file_name:
+              type: string
+            file_size:
+              type: integer
+            duration:
+              type: number
+              description: Duration in seconds for voice/video
+            thumbnail:
+              type: string
+            width:
+              type: integer
+            height:
+              type: integer
+        is_edited:
+          type: boolean
+        read_by:
+          type: array
+          items:
+            type: string
+            format: uuid
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    Group:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        icon_url:
+          type: string
+          format: uri
+        owner_id:
+          type: string
+          format: uuid
+        member_count:
+          type: integer
+        is_public:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    Channel:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        group_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum: [text, voice, announcement]
+        category_id:
+          type: string
+          format: uuid
+        position:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+
+    Forum:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        slug:
+          type: string
+        description:
+          type: string
+        icon_url:
+          type: string
+          format: uri
+        member_count:
+          type: integer
+        thread_count:
+          type: integer
+        is_public:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+
+    Thread:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        forum_id:
+          type: string
+          format: uuid
+        author:
+          $ref: '#/components/schemas/User'
+        title:
+          type: string
+        content:
+          type: string
+        flair:
+          type: string
+        upvotes:
+          type: integer
+        downvotes:
+          type: integer
+        score:
+          type: integer
+        comment_count:
+          type: integer
+        is_pinned:
+          type: boolean
+        is_locked:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    PaginationMeta:
+      type: object
+      properties:
+        page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+        total_pages:
+          type: integer
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            details:
+              type: object
+              additionalProperties:
+                type: array
+                items:
+                  type: string
+
+security:
+  - BearerAuth: []
