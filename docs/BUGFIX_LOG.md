@@ -6,29 +6,112 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 |
-|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
-| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures |
-| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
-| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical |
-| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
-| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Username Login | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Identity Search | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable |
-| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Enhanced | ✅ WhatsApp-style | ✅ WhatsApp-style |
-| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Robust |
-| Conversation Normalization | - | - | - | - | - | - | ✅ New | ✅ Active | ✅ Active | ✅ Active | ✅ Active | ✅ Active |
-| Channel Stability | - | - | - | - | - | - | ✅ New | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready |
-| Voice Messages | - | - | - | - | - | - | - | - | ✅ Fixed | ✅ Enhanced | ✅ Enhanced | ✅ Static Serving |
-| Media URL Resolution | - | - | - | - | - | - | - | - | - | ✅ New | ✅ Stable | ✅ Stable |
-| Typing Indicators | - | - | - | - | - | - | - | - | - | - | ✅ WhatsApp-style | ✅ With Timestamps |
-| Last Seen | - | - | - | - | - | - | - | - | - | - | ✅ New API | ✅ New API |
-| Static File Serving | - | - | - | - | - | - | - | - | - | - | - | ✅ Fixed /uploads |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 | v0.7.22 |
+|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|---------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 warnings |
+| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
+| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical |
+| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
+| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Username Login | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Identity Search | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable |
+| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Enhanced | ✅ WhatsApp-style | ✅ WhatsApp-style | ✅ Optimized |
+| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Robust | ✅ Cross-platform |
+| Conversation Normalization | - | - | - | - | - | - | ✅ New | ✅ Active | ✅ Active | ✅ Active | ✅ Active | ✅ Active | ✅ Active |
+| Channel Stability | - | - | - | - | - | - | ✅ New | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready |
+| Voice Messages | - | - | - | - | - | - | - | - | ✅ Fixed | ✅ Enhanced | ✅ Enhanced | ✅ Static Serving | ✅ Static Serving |
+| Media URL Resolution | - | - | - | - | - | - | - | - | - | ✅ New | ✅ Stable | ✅ Stable | ✅ Stable |
+| Typing Indicators | - | - | - | - | - | - | - | - | - | - | ✅ WhatsApp-style | ✅ With Timestamps | ✅ Stop Fixed |
+| Last Seen | - | - | - | - | - | - | - | - | - | - | ✅ New API | ✅ New API | ✅ New API |
+| Static File Serving | - | - | - | - | - | - | - | - | - | - | - | ✅ Fixed /uploads | ✅ Fixed /uploads |
+| Backend Warnings | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Zero warnings |
+
+---
+
+## January 5, 2026 - v0.7.22 Backend Warnings, Message Alignment, Presence & Duplicates
+
+### Overview
+
+Comprehensive fix for backend compilation warnings, cross-platform message alignment, duplicate message prevention, and optimized presence handling. This update eliminates all backend warnings and resolves multiple UI issues on both web and mobile platforms.
+
+### Critical Issues Fixed
+
+1. **Backend compilation warnings (10+ undefined functions)**
+   - **Root Cause**: Multiple function calls in channel modules referencing non-existent or renamed functions
+   - **Impact**: Console spam with warnings, potential runtime errors
+   - **Files Fixed**: 
+     - `user_channel.ex` - Fixed 6 undefined function calls
+     - `presence_channel.ex` - Fixed 3 function arity mismatches
+     - `presence.ex` - Made helper function public
+
+2. **Message alignment broken on both platforms**
+   - **Web Issue**: All messages showing on LEFT (isOwn always false)
+   - **Mobile Issue**: All messages showing on RIGHT (isOwnMessage always true)
+   - **Root Cause**: Brittle sender ID comparison, snake_case vs camelCase field names, empty string edge cases
+   - **Solution**: Comprehensive fallback chain for sender ID extraction with explicit length checks
+
+3. **Typing indicator not stopping**
+   - **Root Cause**: `handle_info({:clear_typing, user_id})` only updated presence metadata, didn't broadcast
+   - **Impact**: Typing indicator stayed visible indefinitely on other clients
+   - **Solution**: Added `broadcast_from!` to send `is_typing: false` event
+
+4. **Duplicate message key errors**
+   - **Root Cause**: Messages added via API response AND socket event without deduplication
+   - **Impact**: React warning "Encountered two children with the same key"
+   - **Solution**: Added duplicate check before adding messages from API responses
+
+5. **Excessive presence log noise**
+   - **Root Cause**: Every typing indicator update triggers Presence.update(), which fires onJoin/onLeave
+   - **Impact**: Console flooded with "User joined/left" logs, excessive re-renders
+   - **Solution**: Moved status change notifications to onSync only, reduced logging
+
+### Files Changed
+
+| File | Change Summary |
+|------|----------------|
+| `user_channel.ex` | Fix 6 function calls: `upsert_push_token` → `register_push_token`, `mark_read(user_id, id)` → `mark_as_read(id)`, rewrote `get_contact_ids` and `can_view_presence?` |
+| `presence_channel.ex` | Fix arity: `track_user/3` → `track_user/4`, `heartbeat/2` → `heartbeat/3`, `update_status/3` → `update_status/4` |
+| `presence.ex` | Made `merge_multi_device_presence/1` public for external use |
+| `conversation_channel.ex` | Added `broadcast_from!` in `handle_info({:clear_typing, _})` |
+| `Conversation.tsx` (web) | Enhanced sender ID extraction with fallbacks and trim() |
+| `ConversationScreen.tsx` (mobile) | Same robust ID comparison + duplicate check on send |
+| `socket.ts` (web) | Optimized presence handlers, reduced log noise |
+| `socket.ts` (mobile) | Same presence optimizations |
+
+### Technical Details
+
+**Sender ID Extraction (both platforms):**
+```typescript
+const rawSenderId = message.senderId 
+  || (message as any).sender_id 
+  || message.sender?.id 
+  || (message.sender as any)?.user_id 
+  || '';
+const messageSenderId = rawSenderId ? String(rawSenderId).trim() : '';
+const isOwn = messageSenderId.length > 0 && currentUserId.length > 0 && messageSenderId === currentUserId;
+```
+
+**Typing Stop Broadcast (backend):**
+```elixir
+def handle_info({:clear_typing, user_id}, socket) do
+  # ... update presence ...
+  broadcast_from!(socket, "typing", %{
+    user_id: user_id,
+    is_typing: false,
+    typing: false
+  })
+end
+```
+
+**Presence Optimization (frontend):**
+- Removed logging from onJoin/onLeave handlers
+- Status changes only notified from onSync callback
+- Prevents notification spam from typing-related presence updates
 
 ---
 
