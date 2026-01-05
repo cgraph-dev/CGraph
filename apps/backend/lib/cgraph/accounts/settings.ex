@@ -163,13 +163,9 @@ defmodule Cgraph.Accounts.Settings do
   def can_message?(%User{} = sender, %User{} = recipient) do
     {:ok, settings} = get_settings(recipient)
     
-    cond do
-      settings.allow_message_requests -> true
-      Cgraph.Accounts.Friends.are_friends?(sender, recipient) -> true
-      true -> false
-    end
+    settings.allow_message_requests || Cgraph.Accounts.Friends.are_friends?(sender, recipient)
   end
-  
+
   @doc """
   Checks if a user is visible in search results.
   """

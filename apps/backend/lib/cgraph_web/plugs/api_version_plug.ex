@@ -202,18 +202,16 @@ defmodule CgraphWeb.Plugs.ApiVersion do
     # Handle both "2" and "v2" formats
     str = String.trim(str)
     
-    cond do
-      String.starts_with?(str, "v") ->
-        case Integer.parse(String.slice(str, 1..-1//1)) do
-          {version, ""} -> version
-          _ -> nil
-        end
-        
-      true ->
-        case Integer.parse(str) do
-          {version, ""} -> version
-          _ -> nil
-        end
+    if String.starts_with?(str, "v") do
+      case Integer.parse(String.slice(str, 1..-1//1)) do
+        {version, ""} -> version
+        _ -> nil
+      end
+    else
+      case Integer.parse(str) do
+        {version, ""} -> version
+        _ -> nil
+      end
     end
   end
   
