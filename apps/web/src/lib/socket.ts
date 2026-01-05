@@ -272,8 +272,8 @@ class SocketManager {
       });
 
       channel.on('typing', (payload) => {
-        const data = payload as { user_id: string; is_typing: boolean };
-        useChatStore.getState().setTypingUser(conversationId, data.user_id, data.is_typing);
+        const data = payload as { user_id: string; is_typing: boolean; started_at?: string };
+        useChatStore.getState().setTypingUser(conversationId, data.user_id, data.is_typing, data.started_at);
       });
 
       channel.on('presence_state', (state) => {

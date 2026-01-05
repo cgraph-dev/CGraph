@@ -6,32 +6,156 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 |
-|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
-| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures |
-| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
-| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical |
-| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
-| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Username Login | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Identity Search | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable |
-| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Enhanced | ✅ WhatsApp-style |
-| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed |
-| Conversation Normalization | - | - | - | - | - | - | ✅ New | ✅ Active | ✅ Active | ✅ Active | ✅ Active |
-| Channel Stability | - | - | - | - | - | - | ✅ New | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready |
-| Voice Messages | - | - | - | - | - | - | - | - | ✅ Fixed | ✅ Enhanced | ✅ Enhanced |
-| Media URL Resolution | - | - | - | - | - | - | - | - | - | ✅ New | ✅ Stable |
-| Typing Indicators | - | - | - | - | - | - | - | - | - | - | ✅ WhatsApp-style |
-| Last Seen | - | - | - | - | - | - | - | - | - | - | ✅ New API |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 |
+|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures |
+| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
+| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical |
+| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
+| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Username Login | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Identity Search | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable |
+| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Enhanced | ✅ WhatsApp-style | ✅ WhatsApp-style |
+| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Robust |
+| Conversation Normalization | - | - | - | - | - | - | ✅ New | ✅ Active | ✅ Active | ✅ Active | ✅ Active | ✅ Active |
+| Channel Stability | - | - | - | - | - | - | ✅ New | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready |
+| Voice Messages | - | - | - | - | - | - | - | - | ✅ Fixed | ✅ Enhanced | ✅ Enhanced | ✅ Static Serving |
+| Media URL Resolution | - | - | - | - | - | - | - | - | - | ✅ New | ✅ Stable | ✅ Stable |
+| Typing Indicators | - | - | - | - | - | - | - | - | - | - | ✅ WhatsApp-style | ✅ With Timestamps |
+| Last Seen | - | - | - | - | - | - | - | - | - | - | ✅ New API | ✅ New API |
+| Static File Serving | - | - | - | - | - | - | - | - | - | - | - | ✅ Fixed /uploads |
 
 ---
 
-## January 7, 2026 - v0.7.20 WhatsApp-Style Presence System Overhaul
+## January 5, 2026 - v0.7.21 Voice Messages, Alignment & Typing Timestamps
+
+### Overview
+
+Critical fixes for voice message playback, message alignment on web, and typing indicator timestamps. This update resolves the NSURLErrorDomain -1100 audio loading error on mobile and ensures proper message ownership detection across all platforms.
+
+### Critical Issues Fixed
+
+1. **Voice message audio not loading (NSURLErrorDomain -1100)**
+   - **Root Cause**: `Plug.Static` was configured with `static_paths()` returning `~w(assets fonts images favicon.ico robots.txt)` but NOT `uploads`
+   - **Impact**: Voice/audio files at `/uploads/voice/*.opus` returned 404, causing iOS AVPlayerItem error -1100
+   - **Solution**: Added `uploads` to `static_paths()` in `cgraph_web.ex`
+
+2. **All messages showing on right (web alignment issue)**
+   - **Root Cause**: Strict `===` comparison between `message.senderId` and `user?.id` was failing when IDs had different formats or were undefined
+   - **Impact**: When mobile user wrote to web user, web showed all messages on the right side
+   - **Solution**: Use string coercion with fallback to `sender.id` for robust comparison
+
+3. **Missing typing timestamps**
+   - **Root Cause**: Typing broadcasts didn't include when user started typing
+   - **Impact**: No way to know how long someone has been typing
+   - **Solution**: Added `started_at` timestamp to typing broadcasts and presence meta
+
+### 1. Fixed Static File Serving for Uploads (BACKEND)
+
+The critical issue was that uploaded files (voice messages, attachments) were not being served:
+
+**Before:**
+```elixir
+# apps/backend/lib/cgraph_web.ex
+def static_paths, do: ~w(assets fonts images favicon.ico robots.txt)
+```
+
+**After:**
+```elixir
+# apps/backend/lib/cgraph_web.ex  
+def static_paths, do: ~w(assets fonts images uploads favicon.ico robots.txt)
+```
+
+This enables `Plug.Static` to serve files from `/uploads/*` including:
+- `/uploads/voice/*.opus` - Voice messages
+- `/uploads/attachments/*` - File attachments
+- `/uploads/message/*` - Message media
+
+### 2. Fixed Message Alignment (WEB)
+
+Robust message ownership detection with string coercion and fallbacks:
+
+**Before:**
+```tsx
+// apps/web/src/pages/messages/Conversation.tsx
+const isOwn = message.senderId === user?.id;
+```
+
+**After:**
+```tsx
+// apps/web/src/pages/messages/Conversation.tsx
+// Use string coercion for robust comparison across different ID formats
+const messageSenderId = String(message.senderId || message.sender?.id || '');
+const currentUserId = String(user?.id || '');
+const isOwn = messageSenderId !== '' && messageSenderId === currentUserId;
+```
+
+### 3. Added Typing Timestamps (BACKEND + WEB)
+
+**Backend - Conversation Channel:**
+```elixir
+# apps/backend/lib/cgraph_web/channels/conversation_channel.ex
+def handle_in("typing", params, socket) do
+  typing_started_at = if is_typing, do: DateTime.utc_now(), else: nil
+
+  Presence.update(socket, user.id, fn meta ->
+    meta
+    |> Map.put(:typing, is_typing)
+    |> Map.put(:typing_started_at, typing_started_at)
+  end)
+
+  broadcast_from!(socket, "typing", %{
+    user_id: user.id,
+    username: user.username,
+    is_typing: is_typing,
+    typing: is_typing,
+    started_at: typing_started_at && DateTime.to_iso8601(typing_started_at)
+  })
+end
+```
+
+**Web - Chat Store:**
+```typescript
+// apps/web/src/stores/chatStore.ts
+export interface TypingUserInfo {
+  userId: string;
+  startedAt?: string;
+}
+
+typingUsersInfo: Record<string, TypingUserInfo[]>;
+
+setTypingUser: (conversationId, userId, isTyping, startedAt?) => {
+  // Track both user IDs and detailed info with timestamps
+}
+```
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `apps/backend/lib/cgraph_web.ex` | Added `uploads` to static_paths |
+| `apps/backend/lib/cgraph_web/channels/conversation_channel.ex` | Added typing timestamps |
+| `apps/backend/lib/cgraph_web/channels/group_channel.ex` | Added typing timestamps |
+| `apps/web/src/pages/messages/Conversation.tsx` | Fixed senderId comparison |
+| `apps/web/src/stores/chatStore.ts` | Added TypingUserInfo with timestamps |
+| `apps/web/src/lib/socket.ts` | Pass started_at to setTypingUser |
+
+### Testing Voice Message Playback
+
+After fix, voice files are served correctly:
+```bash
+$ curl -I http://localhost:4000/uploads/voice/11356e0a-35b3-438c-ab80-a9cbd2d82c2d.opus
+HTTP/1.1 200 OK
+content-length: 13800
+cache-control: public
+```
+
+---
 
 ### Overview
 

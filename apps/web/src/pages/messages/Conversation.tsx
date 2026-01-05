@@ -361,11 +361,16 @@ export default function Conversation() {
             {/* Messages */}
             <div className="space-y-1">
               {group.messages.map((message, msgIndex) => {
-                const isOwn = message.senderId === user?.id;
+                // Use string coercion for robust comparison across different ID formats
+                // Backend may send sender_id while frontend uses senderId - normalizer handles both
+                const messageSenderId = String(message.senderId || message.sender?.id || '');
+                const currentUserId = String(user?.id || '');
+                const isOwn = messageSenderId !== '' && messageSenderId === currentUserId;
+                const prevMessage = group.messages[msgIndex - 1];
+                const prevSenderId = prevMessage ? String(prevMessage.senderId || prevMessage.sender?.id || '') : '';
                 const showAvatar =
                   !isOwn &&
-                  (msgIndex === 0 ||
-                    group.messages[msgIndex - 1]?.senderId !== message.senderId);
+                  (msgIndex === 0 || prevSenderId !== messageSenderId);
 
                 return (
                   <MessageBubble

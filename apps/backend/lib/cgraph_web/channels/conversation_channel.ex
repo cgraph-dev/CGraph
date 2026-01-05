@@ -123,18 +123,24 @@ defmodule CgraphWeb.ConversationChannel do
       _ -> false
     end
 
-    # Update presence with typing status
+    # Current timestamp for typing indicator
+    typing_started_at = if is_typing, do: DateTime.utc_now(), else: nil
+
+    # Update presence with typing status and timestamp
     Presence.update(socket, user.id, fn meta ->
-      Map.put(meta, :typing, is_typing)
+      meta
+      |> Map.put(:typing, is_typing)
+      |> Map.put(:typing_started_at, typing_started_at)
     end)
 
-    # Broadcast typing indicator - use "typing" event name for frontend compatibility
+    # Broadcast typing indicator with timestamp
     # Include both key formats for backward compatibility
     broadcast_from!(socket, "typing", %{
       user_id: user.id,
       username: user.username,
       is_typing: is_typing,
-      typing: is_typing
+      typing: is_typing,
+      started_at: typing_started_at && DateTime.to_iso8601(typing_started_at)
     })
 
     # Auto-clear typing after timeout

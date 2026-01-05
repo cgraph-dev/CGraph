@@ -64,6 +64,12 @@ export interface ConversationParticipant {
   joinedAt: string;
 }
 
+// Typing user with timestamp for accurate display
+export interface TypingUserInfo {
+  userId: string;
+  startedAt?: string;
+}
+
 interface ChatState {
   conversations: Conversation[];
   activeConversationId: string | null;
@@ -71,6 +77,7 @@ interface ChatState {
   isLoadingConversations: boolean;
   isLoadingMessages: boolean;
   typingUsers: Record<string, string[]>;
+  typingUsersInfo: Record<string, TypingUserInfo[]>;
   hasMoreMessages: Record<string, boolean>;
 
   // Actions
@@ -85,7 +92,7 @@ interface ChatState {
   addMessage: (message: Message) => void;
   updateMessage: (message: Message) => void;
   removeMessage: (messageId: string, conversationId: string) => void;
-  setTypingUser: (conversationId: string, userId: string, isTyping: boolean) => void;
+  setTypingUser: (conversationId: string, userId: string, isTyping: boolean, startedAt?: string) => void;
   markAsRead: (conversationId: string) => Promise<void>;
   createConversation: (userIds: string[]) => Promise<Conversation>;
 }
@@ -97,6 +104,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   isLoadingConversations: false,
   isLoadingMessages: false,
   typingUsers: {},
+  typingUsersInfo: {},
   hasMoreMessages: {},
 
   fetchConversations: async () => {
@@ -252,16 +260,27 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }));
   },
 
-  setTypingUser: (conversationId: string, userId: string, isTyping: boolean) => {
+  setTypingUser: (conversationId: string, userId: string, isTyping: boolean, startedAt?: string) => {
     set((state) => {
-      const current = state.typingUsers[conversationId] || [];
-      const updated = isTyping
-        ? [...new Set([...current, userId])]
-        : current.filter((id) => id !== userId);
+      const currentIds = state.typingUsers[conversationId] || [];
+      const currentInfo = state.typingUsersInfo[conversationId] || [];
+      
+      const updatedIds = isTyping
+        ? [...new Set([...currentIds, userId])]
+        : currentIds.filter((id) => id !== userId);
+      
+      const updatedInfo = isTyping
+        ? [...currentInfo.filter(u => u.userId !== userId), { userId, startedAt }]
+        : currentInfo.filter(u => u.userId !== userId);
+      
       return {
         typingUsers: {
           ...state.typingUsers,
-          [conversationId]: updated,
+          [conversationId]: updatedIds,
+        },
+        typingUsersInfo: {
+          ...state.typingUsersInfo,
+          [conversationId]: updatedInfo,
         },
       };
     });
