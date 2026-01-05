@@ -178,13 +178,11 @@ defmodule CgraphWeb.ErrorTracker do
   """
   @spec rescue_and_track((() -> term()), keyword()) :: term()
   def rescue_and_track(func, opts \\ []) when is_function(func, 0) do
-    try do
-      func.()
-    rescue
-      e ->
-        track(e, Keyword.put(opts, :stacktrace, __STACKTRACE__))
-        reraise e, __STACKTRACE__
-    end
+    func.()
+  rescue
+    e ->
+      track(e, Keyword.put(opts, :stacktrace, __STACKTRACE__))
+      reraise e, __STACKTRACE__
   end
 
   # ---------------------------------------------------------------------------

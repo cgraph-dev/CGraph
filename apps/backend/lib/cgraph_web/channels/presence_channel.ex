@@ -192,14 +192,14 @@ defmodule CgraphWeb.PresenceChannel do
 
     :ok
   end
-  
+
   defp schedule_offline_check(user_id) do
     spawn(fn ->
       Process.sleep(@offline_grace_period_ms)
       broadcast_offline_if_disconnected(user_id)
     end)
   end
-  
+
   defp broadcast_offline_if_disconnected(user_id) do
     unless Presence.user_online?(user_id) do
       Phoenix.PubSub.broadcast(

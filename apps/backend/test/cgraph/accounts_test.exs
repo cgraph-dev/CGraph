@@ -201,12 +201,12 @@ defmodule Cgraph.AccountsTest do
       assert {:ok, _} = Accounts.unblock_user(user1, user2)
     end
 
-    test "is_blocked?/2 returns block status", %{user1: user1, user2: user2} do
-      assert Accounts.is_blocked?(user1, user2) == false
+    test "blocked?/2 returns block status", %{user1: user1, user2: user2} do
+      assert Accounts.blocked?(user1, user2) == false
 
       {:ok, _} = Accounts.block_user(user1, user2)
 
-      assert Accounts.is_blocked?(user1, user2) == true
+      assert Accounts.blocked?(user1, user2) == true
     end
   end
 end

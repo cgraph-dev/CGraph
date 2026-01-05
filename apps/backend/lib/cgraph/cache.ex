@@ -230,11 +230,9 @@ defmodule Cgraph.Cache do
   Fetch with a fallback value on error.
   """
   def fetch_or_default(key, default, compute_fn, opts \\ []) do
-    try do
-      fetch(key, compute_fn, opts)
-    rescue
-      _ -> default
-    end
+    fetch(key, compute_fn, opts)
+  rescue
+    _ -> default
   end
 
   @doc """

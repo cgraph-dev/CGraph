@@ -392,10 +392,10 @@ defmodule Cgraph.ConnectionPool do
     pool = metrics[:pool] || %{}
     health = metrics[:health] || %{}
     slow = metrics[:slow_queries] || %{}
-    
+
     generate_prometheus_output(pool_name, pool, health, slow)
   end
-  
+
   defp generate_prometheus_output(pool_name, pool, health, slow) do
     [
       pool_metrics(pool_name, pool),
@@ -404,7 +404,7 @@ defmodule Cgraph.ConnectionPool do
     ]
     |> Enum.join("\n")
   end
-  
+
   defp pool_metrics(pool_name, pool) do
     """
     # HELP db_pool_size Total number of connections in the pool
@@ -432,7 +432,7 @@ defmodule Cgraph.ConnectionPool do
     db_pool_checkout_time_avg{pool="#{pool_name}"} #{pool[:avg_checkout_time_ms] || 0}
     """
   end
-  
+
   defp health_metrics(pool_name, health) do
     """
     # HELP db_health_latency_ms Database health check latency
@@ -444,7 +444,7 @@ defmodule Cgraph.ConnectionPool do
     db_health_status{pool="#{pool_name}"} #{health_to_number(health[:status])}
     """
   end
-  
+
   defp slow_query_metrics(pool_name, slow) do
     """
     # HELP db_slow_queries_total Total number of slow queries
@@ -556,37 +556,35 @@ defmodule Cgraph.ConnectionPool do
   # ---------------------------------------------------------------------------
 
   defp fetch_pool_status(pool_name, state) do
-    try do
-      # Get pool stats from DBConnection if available
-      pool_size = get_pool_config(pool_name, :pool_size) || 10
+    # Get pool stats from DBConnection if available
+    pool_size = get_pool_config(pool_name, :pool_size) || 10
 
-      # Get checkout metrics from state
-      checkout_times = state.checkout_times
-      avg_checkout = if checkout_times == [], do: 0.0, else: Enum.sum(checkout_times) / length(checkout_times)
-      max_checkout = if checkout_times == [], do: 0.0, else: Enum.max(checkout_times)
+    # Get checkout metrics from state
+    checkout_times = state.checkout_times
+    avg_checkout = if checkout_times == [], do: 0.0, else: Enum.sum(checkout_times) / length(checkout_times)
+    max_checkout = if checkout_times == [], do: 0.0, else: Enum.max(checkout_times)
 
-      # Try to get actual pool stats (implementation depends on pool adapter)
-      {active, idle, waiting} = get_pool_counts(pool_name)
+    # Try to get actual pool stats (implementation depends on pool adapter)
+    {active, idle, waiting} = get_pool_counts(pool_name)
 
-      status = %{
-        pool_name: pool_name,
-        pool_size: pool_size,
-        active_connections: active,
-        idle_connections: idle,
-        waiting_queue: waiting,
-        saturation: if(pool_size > 0, do: active / pool_size, else: 0.0),
-        avg_checkout_time_ms: Float.round(avg_checkout, 2),
-        max_checkout_time_ms: Float.round(max_checkout, 2),
-        total_checkouts: length(checkout_times),
-        total_timeouts: get_counter(:timeouts)
-      }
+    status = %{
+      pool_name: pool_name,
+      pool_size: pool_size,
+      active_connections: active,
+      idle_connections: idle,
+      waiting_queue: waiting,
+      saturation: if(pool_size > 0, do: active / pool_size, else: 0.0),
+      avg_checkout_time_ms: Float.round(avg_checkout, 2),
+      max_checkout_time_ms: Float.round(max_checkout, 2),
+      total_checkouts: length(checkout_times),
+      total_timeouts: get_counter(:timeouts)
+    }
 
-      {:ok, status}
-    rescue
-      e ->
-        Logger.error("[ConnectionPool] Failed to get status: #{inspect(e)}")
-        {:error, :status_unavailable}
-    end
+    {:ok, status}
+  rescue
+    e ->
+      Logger.error("[ConnectionPool] Failed to get status: #{inspect(e)}")
+      {:error, :status_unavailable}
   end
 
   defp get_pool_config(pool_name, key) do
@@ -671,18 +669,18 @@ defmodule Cgraph.ConnectionPool do
   defp maybe_auto_scale(state) do
     if can_scale?(state), do: attempt_auto_scale(), else: :ok
   end
-  
+
   defp attempt_auto_scale do
     case get_status(Cgraph.Repo) do
       {:ok, status} -> apply_scaling_decision(status)
       _ -> :ok
     end
   end
-  
+
   defp apply_scaling_decision(status) do
     scale_up_threshold = get_config(:scale_up_threshold)
     scale_down_threshold = get_config(:scale_down_threshold)
-    
+
     cond do
       status.saturation >= scale_up_threshold -> scale_up(status)
       status.saturation <= scale_down_threshold -> scale_down(status)

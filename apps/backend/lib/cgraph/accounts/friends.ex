@@ -6,9 +6,10 @@ defmodule Cgraph.Accounts.Friends do
   """
 
   import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Accounts.{User, Friendship}
+
+  alias Cgraph.Accounts.{Friendship, User}
   alias Cgraph.Notifications
+  alias Cgraph.Repo
 
   # =============================================================================
   # Friend Requests
@@ -327,7 +328,7 @@ defmodule Cgraph.Accounts.Friends do
   @doc """
   Checks if a user has blocked another user.
   """
-  def is_blocked?(blocker_id, blocked_id) do
+  def blocked?(blocker_id, blocked_id) do
     Repo.exists?(
       from f in Friendship,
         where: f.user_id == ^blocker_id,

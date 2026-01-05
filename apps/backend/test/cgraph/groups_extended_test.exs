@@ -5,8 +5,8 @@ defmodule Cgraph.GroupsExtendedTest do
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Groups
   alias Cgraph.Accounts
+  alias Cgraph.Groups
 
   defp create_user(attrs \\ %{}) do
     unique_id = System.unique_integer([:positive])

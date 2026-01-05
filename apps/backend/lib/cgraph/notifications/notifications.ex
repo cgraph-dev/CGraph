@@ -7,9 +7,10 @@ defmodule Cgraph.Notifications do
   """
 
   import Ecto.Query
-  alias Cgraph.Repo
-  alias Cgraph.Accounts.{User, Settings}
+
+  alias Cgraph.Accounts.{Settings, User}
   alias Cgraph.Notifications.Notification
+  alias Cgraph.Repo
 
   @doc """
   Creates and delivers a notification to a user.

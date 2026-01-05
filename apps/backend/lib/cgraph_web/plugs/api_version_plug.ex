@@ -228,22 +228,22 @@ defmodule CgraphWeb.Plugs.ApiVersion do
   end
 
   defp validate_version(_version, _conn, _opts), do: {:error, :invalid}
-  
+
   defp check_version_range(version, opts) do
     min_v = opts[:min_version]
     max_v = opts[:max_version]
-    
+
     cond do
       min_v && version < min_v -> {:error, :out_of_range, min_v, max_v || get_current_version()}
       max_v && version > max_v -> {:error, :out_of_range, min_v || get_min_version(), max_v}
       true -> :ok
     end
   end
-  
+
   defp check_version_sunset(version) do
     if version_sunset?(version), do: {:error, :sunset}, else: :ok
   end
-  
+
   defp check_version_supported(version) do
     if ApiVersioning.version_supported?(version), do: :ok, else: {:error, :not_supported}
   end

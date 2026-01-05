@@ -9,9 +9,8 @@ defmodule Cgraph.Accounts.Settings do
   - Reset to defaults
   """
 
-  # Ecto.Query import available if needed
-  alias Cgraph.Repo
   alias Cgraph.Accounts.{User, UserSettings}
+  alias Cgraph.Repo
 
   @doc """
   Gets settings for a user, creating defaults if they don't exist.

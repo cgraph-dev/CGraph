@@ -7,9 +7,10 @@ defmodule Cgraph.Groups do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
-  alias Cgraph.Groups.{Group, Channel, Member, Role, Invite, AuditLog}
+
+  alias Cgraph.Groups.{AuditLog, Channel, Group, Invite, Member, Role}
   alias Cgraph.Messaging.Message
+  alias Cgraph.Repo
 
   # Helper to convert atom keys to string keys
   defp stringify_keys(map) when is_map(map) do
@@ -71,7 +72,7 @@ defmodule Cgraph.Groups do
   """
   def get_user_group(user, group_id) do
     with {:ok, group} <- get_group(group_id),
-         true <- is_member?(user, group) do
+         true <- member?(user, group) do
       {:ok, group}
     else
       false -> {:error, :not_found}
@@ -87,7 +88,7 @@ defmodule Cgraph.Groups do
   @doc """
   Check if user is a member of a group.
   """
-  def is_member?(user, group) do
+  def member?(user, group) do
     query = from m in Member,
       where: m.group_id == ^group.id,
       where: m.user_id == ^user.id
@@ -651,7 +652,7 @@ defmodule Cgraph.Groups do
   defp role_permissions(%{is_admin: true}), do: all_permissions()
   defp role_permissions(role) do
     base_permissions = ["view", "view_members"]
-    
+
     Enum.reduce(@permission_fields, base_permissions, fn {field, perm, default}, acc ->
       if Map.get(role, field, default), do: [perm | acc], else: acc
     end)
@@ -932,7 +933,7 @@ defmodule Cgraph.Groups do
       |> offset(^((page - 1) * per_page))
       |> Repo.all()
       |> Enum.map(fn g ->
-        is_member = if user, do: is_member?(user, g), else: false
+        is_member = if user, do: member?(user, g), else: false
         Map.put(g, :is_member, is_member)
       end)
 

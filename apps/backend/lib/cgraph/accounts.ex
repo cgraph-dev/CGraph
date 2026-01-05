@@ -6,8 +6,9 @@ defmodule Cgraph.Accounts do
   """
 
   import Ecto.Query, warn: false
+
+  alias Cgraph.Accounts.{Friendship, Session, User, UserSettings, WalletChallenge}
   alias Cgraph.Repo
-  alias Cgraph.Accounts.{User, Session, UserSettings, Friendship, WalletChallenge}
   alias Cgraph.Security.PasswordBreachCheck
 
   # ============================================================================
@@ -33,10 +34,10 @@ defmodule Cgraph.Accounts do
       error -> error
     end
   end
-  
+
   defp maybe_apply_breach_check(changeset, true), do: apply_breach_check(changeset)
   defp maybe_apply_breach_check(changeset, false), do: changeset
-  
+
   defp maybe_async_breach_check(_attrs, true, _user_id), do: :ok
   defp maybe_async_breach_check(attrs, false, user_id) do
     password = Map.get(attrs, "password") || Map.get(attrs, :password)
@@ -210,16 +211,16 @@ defmodule Cgraph.Accounts do
       wallet_challenge -> refresh_wallet_challenge_if_needed(wallet_challenge)
     end
   end
-  
+
   defp create_new_wallet_challenge(normalized_address) do
     nonce = generate_nonce()
-    
+
     %WalletChallenge{}
     |> WalletChallenge.changeset(%{wallet_address: normalized_address, nonce: nonce})
     |> Repo.insert()
     |> extract_nonce_from_result("Failed to create challenge")
   end
-  
+
   defp refresh_wallet_challenge_if_needed(wallet_challenge) do
     if expired?(wallet_challenge.updated_at, 5 * 60) do
       regenerate_wallet_nonce(wallet_challenge)
@@ -227,16 +228,16 @@ defmodule Cgraph.Accounts do
       {:ok, wallet_challenge.nonce}
     end
   end
-  
+
   defp regenerate_wallet_nonce(wallet_challenge) do
     nonce = generate_nonce()
-    
+
     wallet_challenge
     |> WalletChallenge.changeset(%{nonce: nonce})
     |> Repo.update()
     |> extract_nonce_from_result("Failed to update challenge")
   end
-  
+
   defp extract_nonce_from_result({:ok, record}, _error_msg), do: {:ok, record.nonce}
   defp extract_nonce_from_result({:error, _}, error_msg), do: {:error, error_msg}
 
@@ -868,7 +869,7 @@ defmodule Cgraph.Accounts do
   @doc """
   Check if a user has blocked another user.
   """
-  def is_blocked?(blocker, blocked) do
+  def blocked?(blocker, blocked) do
     # Use atom :blocked for Ecto.Enum type
     query = from f in Friendship,
       where: f.user_id == ^blocker.id,
@@ -1263,7 +1264,7 @@ defmodule Cgraph.Accounts do
       {:ok, user}
     end
   end
-  
+
   defp mark_email_verified(user) do
     user
     |> Ecto.Changeset.change(email_verified_at: DateTime.utc_now())

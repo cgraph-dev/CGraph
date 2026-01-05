@@ -215,19 +215,17 @@ defmodule Cgraph.Repo.Healthcheck do
   defp pool_stats do
     # Get DBConnection pool stats
     # This is implementation-specific to the pool being used
-    try do
-      checkin_count = :ets.info(:cgraph_repo_pool, :size) || 0
+    checkin_count = :ets.info(:cgraph_repo_pool, :size) || 0
 
-      %{
-        pool_size: Application.get_env(:cgraph, Cgraph.Repo)[:pool_size] || 10,
-        idle: max(checkin_count, 0),
-        busy: 0,
-        queue_length: 0
-      }
-    rescue
-      _ ->
-        %{pool_size: 10, idle: 0, busy: 0, queue_length: 0}
-    end
+    %{
+      pool_size: Application.get_env(:cgraph, Cgraph.Repo)[:pool_size] || 10,
+      idle: max(checkin_count, 0),
+      busy: 0,
+      queue_length: 0
+    }
+  rescue
+    _ ->
+      %{pool_size: 10, idle: 0, busy: 0, queue_length: 0}
   end
 
   # ---------------------------------------------------------------------------

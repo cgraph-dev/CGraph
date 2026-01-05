@@ -172,18 +172,18 @@ defmodule Cgraph.Cache.Unified do
       :error -> execute_fallback(namespace, key, fallback, opts)
     end
   end
-  
+
   defp execute_fallback(namespace, key, fallback, opts) do
     case fallback.() do
-      {:ok, value} -> 
+      {:ok, value} ->
         put(namespace, key, value, opts)
         {:ok, value}
-      error -> 
+      error ->
         maybe_cache_error(namespace, key, error, opts)
         error
     end
   end
-  
+
   defp maybe_cache_error(namespace, key, error, opts) do
     if Keyword.get(opts, :cache_errors, false) do
       fallback_ttl = Keyword.get(opts, :fallback_ttl, :timer.seconds(10))

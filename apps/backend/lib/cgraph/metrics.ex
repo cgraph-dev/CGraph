@@ -476,25 +476,25 @@ defmodule Cgraph.Metrics do
     |> Enum.group_by(fn {{name, _labels}, _histogram} -> name end)
     |> Enum.flat_map(&format_histogram_group(&1, state.definitions))
   end
-  
+
   defp format_histogram_group({name, entries}, definitions) do
     definition = Map.get(definitions, name, %{help: ""})
     header = ["# HELP #{name} #{definition.help}", "# TYPE #{name} histogram"]
     bucket_lines = Enum.flat_map(entries, &format_histogram_entry(name, &1))
     header ++ bucket_lines
   end
-  
+
   defp format_histogram_entry(name, {{_name, labels}, histogram}) do
     base_labels = format_labels_map(labels)
     bucket_entries = format_bucket_entries(name, histogram.buckets, base_labels)
     label_str = format_labels(labels)
-    
+
     bucket_entries ++ [
       "#{name}_sum#{label_str} #{histogram.sum}",
       "#{name}_count#{label_str} #{histogram.count}"
     ]
   end
-  
+
   defp format_bucket_entries(name, buckets, base_labels) do
     Enum.map(buckets, fn {bound, count} ->
       le = if bound == :inf, do: "+Inf", else: to_string(bound)

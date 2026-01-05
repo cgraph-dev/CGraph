@@ -14,8 +14,8 @@ defmodule CgraphWeb.API.V1.TwoFactorController do
   """
   use CgraphWeb, :controller
 
-  alias Cgraph.Security.TOTP
   alias Cgraph.Accounts.User
+  alias Cgraph.Security.TOTP
 
   action_fallback CgraphWeb.FallbackController
 

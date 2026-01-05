@@ -5,9 +5,9 @@ defmodule Cgraph.MessagingExtendedTest do
   """
   use Cgraph.DataCase, async: true
 
+  alias Cgraph.Accounts
   alias Cgraph.Messaging
   alias Cgraph.Messaging.{Conversation, Message}
-  alias Cgraph.Accounts
 
   defp create_user(attrs \\ %{}) do
     unique_id = System.unique_integer([:positive])

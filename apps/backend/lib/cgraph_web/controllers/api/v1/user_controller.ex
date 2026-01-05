@@ -46,15 +46,15 @@ defmodule CgraphWeb.API.V1.UserController do
       {:error, %Ecto.Changeset{} = changeset} -> respond_changeset_error(conn, changeset)
     end
   end
-  
+
   defp respond_changeset_error(conn, changeset) do
     errors = traverse_changeset_errors(changeset)
-    
+
     conn
     |> put_status(:unprocessable_entity)
     |> json(%{error: %{message: format_changeset_error(errors)}})
   end
-  
+
   defp traverse_changeset_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Regex.replace(~r"%{(\w+)}", msg, fn _, key ->

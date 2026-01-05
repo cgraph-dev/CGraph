@@ -77,7 +77,15 @@ defmodule Cgraph.Security.TokenBlacklist do
   @bloom_table :token_blacklist_bloom
 
   # Revocation reasons for audit
-  @revocation_reasons [:logout, :password_change, :security_breach, :admin_action, :session_revoked, :account_deleted, :token_refresh]
+  @revocation_reasons [
+    :logout,
+    :password_change,
+    :security_breach,
+    :admin_action,
+    :session_revoked,
+    :account_deleted,
+    :token_refresh
+  ]
 
   # ---------------------------------------------------------------------------
   # Types
@@ -406,7 +414,7 @@ defmodule Cgraph.Security.TokenBlacklist do
 
     result
   end
-  
+
   defp check_token_revocation_cascade(jti, token, check_user) do
     cond do
       check_in_ets(jti) -> true
@@ -416,20 +424,20 @@ defmodule Cgraph.Security.TokenBlacklist do
       true -> false
     end
   end
-  
+
   defp ets_cachex_check(jti) do
     case check_in_cachex(jti) do
       {:ok, _} -> :found
       _ -> :not_found
     end
   end
-  
+
   defp redis_check_with_promotion(jti) do
     case check_in_redis(jti) do
-      {:ok, _} -> 
+      {:ok, _} ->
         store_in_ets(jti)
         :found
-      _ -> 
+      _ ->
         :not_found
     end
   end

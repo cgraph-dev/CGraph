@@ -9,14 +9,16 @@ defmodule Cgraph.Forums do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
-  alias Cgraph.Forums.{Forum, Post, Comment, Category, Vote, ForumVote, Moderator, Subscription}
-  alias Cgraph.Forums.{Board, Thread, ThreadPost, ForumMember, ForumUserGroup}
-  alias Cgraph.Forums.{ThreadVote, PostVote, ThreadPoll, PollVote, ForumPlugin}
-  # Reserved for future features - these schemas exist but are not yet fully integrated
-  alias Cgraph.Forums.ForumTheme, warn: false
+
+  alias Cgraph.Forums.{Board, Category, Comment, Forum, ForumMember, ForumPlugin}
+  alias Cgraph.Forums.{ForumUserGroup, ForumVote, Moderator, PollVote, Post, PostVote}
+  alias Cgraph.Forums.{Subscription, Thread, ThreadPoll, ThreadPost, ThreadVote, Vote}
+  # Reserved for future features
   alias Cgraph.Forums.ForumAnnouncement, warn: false
+  alias Cgraph.Forums.ForumTheme, warn: false
+  alias Cgraph.Forums.Poll, warn: false
   alias Cgraph.Forums.ThreadAttachment, warn: false
+  alias Cgraph.Repo
 
   # ============================================================================
   # Forums
@@ -80,8 +82,8 @@ defmodule Cgraph.Forums do
   end
 
   def add_membership_status(forum, user) do
-    is_member = is_forum_member(user, forum)
-    is_subscribed = is_forum_subscribed(user, forum)
+    is_member = forum_member?(user, forum)
+    is_subscribed = forum_subscribed?(user, forum)
 
     forum
     |> Map.put(:is_member, is_member)
@@ -91,8 +93,8 @@ defmodule Cgraph.Forums do
   @doc """
   Check if a user is subscribed to a forum.
   """
-  def is_forum_subscribed(nil, _forum), do: false
-  def is_forum_subscribed(user, forum) do
+  def forum_subscribed?(nil, _forum), do: false
+  def forum_subscribed?(user, forum) do
     from(s in Subscription,
       where: s.user_id == ^user.id and s.forum_id == ^forum.id,
       select: count(s.id)
@@ -104,8 +106,8 @@ defmodule Cgraph.Forums do
   @doc """
   Check if a user is a member of a forum.
   """
-  def is_forum_member(nil, _forum), do: false
-  def is_forum_member(user, forum) do
+  def forum_member?(nil, _forum), do: false
+  def forum_member?(user, forum) do
     # Check if user is owner, moderator, or has a membership
     if forum.owner_id == user.id do
       true
@@ -179,7 +181,7 @@ defmodule Cgraph.Forums do
   end
 
   defp authorize_non_owner_action(user, forum, action) do
-    is_mod = is_moderator?(forum, user)
+    is_mod = moderator?(forum, user)
 
     cond do
       is_mod && action in [:view, :vote, :comment, :create_post, :moderate] -> :ok
@@ -192,17 +194,17 @@ defmodule Cgraph.Forums do
 
   defp authorize_view(_user, %{is_public: true}), do: :ok
   defp authorize_view(user, forum) do
-    if is_member?(forum.id, user.id), do: :ok, else: {:error, :not_a_member}
+    if member?(forum.id, user.id), do: :ok, else: {:error, :not_a_member}
   end
 
   defp authorize_member_action(user, forum) do
-    if is_member?(forum.id, user.id), do: :ok, else: {:error, :must_join_first}
+    if member?(forum.id, user.id), do: :ok, else: {:error, :must_join_first}
   end
 
   @doc """
   Check if a user is a member of a forum.
   """
-  def is_member?(forum_id, user_id) do
+  def member?(forum_id, user_id) do
     query = from fm in ForumMember,
       where: fm.forum_id == ^forum_id,
       where: fm.user_id == ^user_id,
@@ -217,12 +219,12 @@ defmodule Cgraph.Forums do
   - The forum owner
   - Listed as a moderator
   """
-  def is_moderator?(forum, user) do
+  def moderator?(forum, user) do
     # Check if user is forum owner or in moderators list
-    forum.owner_id == user.id || is_in_moderators?(forum, user)
+    forum.owner_id == user.id || in_moderators?(forum, user)
   end
 
-  defp is_in_moderators?(forum, user) do
+  defp in_moderators?(forum, user) do
     # Check moderators association if loaded
     case forum.moderators do
       %Ecto.Association.NotLoaded{} ->
@@ -361,20 +363,20 @@ defmodule Cgraph.Forums do
       finalize_subscription(subscription_result)
     end)
   end
-  
+
   defp create_subscription(user_id, forum_id) do
     %Subscription{}
     |> Subscription.changeset(%{forum_id: forum_id, user_id: user_id})
     |> Repo.insert(on_conflict: :nothing, conflict_target: [:forum_id, :user_id])
   end
-  
+
   defp ensure_forum_membership(user_id, forum_id) do
     case Repo.get_by(ForumMember, forum_id: forum_id, user_id: user_id) do
       nil -> create_forum_member(user_id, forum_id)
       _member -> false
     end
   end
-  
+
   defp create_forum_member(user_id, forum_id) do
     result = %ForumMember{}
     |> ForumMember.changeset(%{
@@ -383,16 +385,16 @@ defmodule Cgraph.Forums do
       joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
     })
     |> Repo.insert()
-    
+
     match?({:ok, _}, result)
   end
-  
+
   defp increment_member_count_if_new(_forum_id, false), do: :ok
   defp increment_member_count_if_new(forum_id, true) do
     from(f in Forum, where: f.id == ^forum_id)
     |> Repo.update_all(inc: [member_count: 1])
   end
-  
+
   defp finalize_subscription({:ok, subscription}), do: subscription
   defp finalize_subscription({:error, changeset}), do: Repo.rollback(changeset)
 
@@ -413,25 +415,25 @@ defmodule Cgraph.Forums do
       Repo.transaction(fn -> perform_unsubscribe(user.id, forum.id) end)
     end
   end
-  
+
   defp perform_unsubscribe(user_id, forum_id) do
     subscription_deleted = delete_subscription(user_id, forum_id)
     delete_membership(user_id, forum_id)
     decrement_member_count_if_deleted(forum_id, subscription_deleted)
     :unsubscribed
   end
-  
+
   defp delete_subscription(user_id, forum_id) do
     query = from s in Subscription, where: s.forum_id == ^forum_id, where: s.user_id == ^user_id
     {count, _} = Repo.delete_all(query)
     count > 0
   end
-  
+
   defp delete_membership(user_id, forum_id) do
     query = from m in ForumMember, where: m.forum_id == ^forum_id, where: m.user_id == ^user_id
     Repo.delete_all(query)
   end
-  
+
   defp decrement_member_count_if_deleted(_forum_id, false), do: :ok
   defp decrement_member_count_if_deleted(forum_id, true) do
     from(f in Forum, where: f.id == ^forum_id)
@@ -446,7 +448,7 @@ defmodule Cgraph.Forums do
   @doc """
   Check if user is subscribed to forum.
   """
-  def is_subscribed?(forum, user) do
+  def subscribed?(forum, user) do
     query = from s in Subscription,
       where: s.forum_id == ^forum.id,
       where: s.user_id == ^user.id
@@ -512,7 +514,12 @@ defmodule Cgraph.Forums do
       |> maybe_apply_time_filter(sort, time_range)
       |> apply_feed_sort(sort)
 
-    total = Repo.aggregate(from(p in Post, join: f in Forum, on: p.forum_id == f.id, where: f.is_public == true), :count, :id)
+    total_query =
+      from p in Post,
+        join: f in Forum, on: p.forum_id == f.id,
+        where: f.is_public == true
+
+    total = Repo.aggregate(total_query, :count, :id)
 
     posts = query
       |> limit(^per_page)
@@ -1289,7 +1296,7 @@ defmodule Cgraph.Forums do
         # Also check if user is a moderator (owners are excluded above)
         # Load forum with preloads for moderator check
         forum = Repo.preload(forum, :moderators)
-        case is_moderator?(forum, user) do
+        case moderator?(forum, user) do
           true -> {:error, :moderators_cannot_vote}
           false -> :ok
         end
@@ -1317,7 +1324,7 @@ defmodule Cgraph.Forums do
       apply_vote_action(user.id, forum_id, value, get_user_forum_vote(user.id, forum_id))
     end)
   end
-  
+
   defp apply_vote_action(user_id, forum_id, value, nil) do
     create_forum_vote(user_id, forum_id, value)
     update_forum_scores(forum_id, value, 0)
@@ -1334,7 +1341,7 @@ defmodule Cgraph.Forums do
     update_forum_scores(forum_id, value, old_value)
     vote_result(value)
   end
-  
+
   defp vote_result(1), do: :upvoted
   defp vote_result(-1), do: :downvoted
 

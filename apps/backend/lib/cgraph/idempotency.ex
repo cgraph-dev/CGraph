@@ -466,19 +466,19 @@ defmodule Cgraph.Idempotency do
       [] -> :ok
     end
   end
-  
+
   defp release_lock_for_key(lock, key) do
     update_locked_record(lock, key)
     :ets.delete(@locks_table, lock)
   end
-  
+
   defp update_locked_record(lock, key) do
     case :ets.lookup(@table, key) do
       [{^key, record}] when record.locked_by == lock -> clear_or_delete_record(key, record)
       _ -> :ok
     end
   end
-  
+
   defp clear_or_delete_record(key, %{response: nil}), do: :ets.delete(@table, key)
   defp clear_or_delete_record(key, record) do
     updated = %{record | locked_at: nil, locked_by: nil}

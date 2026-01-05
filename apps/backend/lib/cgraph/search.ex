@@ -7,11 +7,12 @@ defmodule Cgraph.Search do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
+
   alias Cgraph.Accounts.User
-  alias Cgraph.Messaging.Message
   alias Cgraph.Forums.Post
   alias Cgraph.Groups.Group
+  alias Cgraph.Messaging.Message
+  alias Cgraph.Repo
 
   @doc """
   Search users by username, display name, bio, or user_id (identity number).

@@ -136,7 +136,7 @@ defmodule CgraphWeb.API.InputValidation do
       {:error, _} = error -> error
     end
   end
-  
+
   defp validate_strict_mode(params, schema, true) do
     unknown = Map.keys(params) -- Map.keys(schema)
     if unknown == [] do

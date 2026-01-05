@@ -260,10 +260,10 @@ defmodule CgraphWeb.API.V1.FriendController do
 
   defp validate_not_blocked(user, target_user) do
     cond do
-      Accounts.is_blocked?(user, target_user) ->
+      Accounts.blocked?(user, target_user) ->
         {:error, :user_blocked}
 
-      Accounts.is_blocked?(target_user, user) ->
+      Accounts.blocked?(target_user, user) ->
         {:error, :blocked_by_user}
 
       true ->

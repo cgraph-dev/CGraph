@@ -6,9 +6,9 @@ defmodule Cgraph.ForumsExtendedTest do
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Forums
-  alias Cgraph.Forums.{Forum, Post, Comment, Category, Board, Thread}
   alias Cgraph.Accounts
+  alias Cgraph.Forums
+  alias Cgraph.Forums.{Board, Category, Comment, Forum, Post, Thread}
 
   # ============================================================================
   # Test Helpers
@@ -196,7 +196,7 @@ defmodule Cgraph.ForumsExtendedTest do
       result = Forums.subscribe_to_forum(user, forum)
 
       assert match?({:ok, _}, result)
-      assert Forums.is_forum_subscribed(user, forum)
+      assert Forums.forum_subscribed?(user, forum)
     end
 
     test "unsubscribes user from forum" do
@@ -205,10 +205,10 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
 
       {:ok, _} = Forums.subscribe_to_forum(user, forum)
-      assert Forums.is_forum_subscribed(user, forum)
+      assert Forums.forum_subscribed?(user, forum)
 
       {:ok, _} = Forums.unsubscribe_from_forum(user, forum)
-      refute Forums.is_forum_subscribed(user, forum)
+      refute Forums.forum_subscribed?(user, forum)
     end
   end
 
@@ -221,7 +221,7 @@ defmodule Cgraph.ForumsExtendedTest do
       result = Forums.add_moderator(forum, moderator)
 
       assert match?({:ok, _}, result)
-      assert Forums.is_moderator?(forum, moderator)
+      assert Forums.moderator?(forum, moderator)
     end
 
     test "removes moderator from forum" do
@@ -232,14 +232,14 @@ defmodule Cgraph.ForumsExtendedTest do
       {:ok, _} = Forums.add_moderator(forum, moderator)
       {:ok, _} = Forums.remove_moderator(forum, moderator)
 
-      refute Forums.is_moderator?(forum, moderator)
+      refute Forums.moderator?(forum, moderator)
     end
 
     test "owner is always considered moderator" do
       owner = create_user()
       forum = create_forum(owner)
 
-      assert Forums.is_moderator?(forum, owner)
+      assert Forums.moderator?(forum, owner)
     end
   end
 
@@ -627,12 +627,12 @@ defmodule Cgraph.ForumsExtendedTest do
     end
   end
 
-  describe "is_forum_member/2" do
+  describe "forum_member?/2" do
     test "returns true for owner" do
       owner = create_user()
       forum = create_forum(owner)
 
-      assert Forums.is_forum_member(owner, forum)
+      assert Forums.forum_member?(owner, forum)
     end
 
     test "returns true for subscribed user" do
@@ -641,7 +641,7 @@ defmodule Cgraph.ForumsExtendedTest do
       member = create_user()
       Forums.subscribe_to_forum(member, forum)
 
-      assert Forums.is_forum_member(member, forum)
+      assert Forums.forum_member?(member, forum)
     end
 
     test "returns false for non-member" do
@@ -649,14 +649,14 @@ defmodule Cgraph.ForumsExtendedTest do
       forum = create_forum(owner)
       outsider = create_user()
 
-      refute Forums.is_forum_member(outsider, forum)
+      refute Forums.forum_member?(outsider, forum)
     end
 
     test "returns false for nil user" do
       owner = create_user()
       forum = create_forum(owner)
 
-      refute Forums.is_forum_member(nil, forum)
+      refute Forums.forum_member?(nil, forum)
     end
   end
 

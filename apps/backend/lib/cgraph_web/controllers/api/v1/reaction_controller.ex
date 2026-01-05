@@ -5,8 +5,8 @@ defmodule CgraphWeb.API.V1.ReactionController do
   """
   use CgraphWeb, :controller
 
-  alias Cgraph.Messaging
   alias Cgraph.Groups
+  alias Cgraph.Messaging
 
   action_fallback CgraphWeb.FallbackController
 

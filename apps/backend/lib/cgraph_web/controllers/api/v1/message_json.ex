@@ -5,8 +5,9 @@ defmodule CgraphWeb.API.V1.MessageJSON do
   All field names use camelCase for frontend consistency.
   This module is also used by WebSocket channels for message serialization.
   """
-  alias Cgraph.Messaging.Message
+
   alias Cgraph.Accounts.User
+  alias Cgraph.Messaging.Message
 
   def index(%{messages: messages, meta: meta}) do
     %{
@@ -119,7 +120,7 @@ defmodule CgraphWeb.API.V1.MessageJSON do
     content_type = msg[:content_type] || msg["content_type"]
     maybe_extract_file_metadata(url, content_type, msg)
   end
-  
+
   defp maybe_extract_file_metadata(nil, _content_type, _msg), do: %{}
   defp maybe_extract_file_metadata(url, content_type, msg) when content_type in ["voice", "audio", "file", "image", "video"] do
     %{
@@ -131,7 +132,7 @@ defmodule CgraphWeb.API.V1.MessageJSON do
     }
   end
   defp maybe_extract_file_metadata(_url, _content_type, _msg), do: %{}
-  
+
   defp extract_file_metadata(msg) do
     %{
       url: msg[:file_url],

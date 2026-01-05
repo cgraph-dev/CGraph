@@ -116,7 +116,7 @@ defmodule Cgraph.Guardian do
       generate_tokens(user)
     end
   end
-  
+
   defp revoke_old_token(claims, user) do
     case Map.get(claims, "jti") do
       nil -> :ok
@@ -170,29 +170,25 @@ defmodule Cgraph.Guardian do
   end
 
   defp token_revoked_by_jti?(jti) do
-    try do
-      TokenBlacklist.revoked_by_jti?(jti)
-    rescue
-      _ -> false
-    end
+    TokenBlacklist.revoked_by_jti?(jti)
+  rescue
+    _ -> false
   end
 
   defp token_revoked_for_user?(claims, user_id) do
-    try do
-      case TokenBlacklist.user_tokens_revoked_before?(user_id) do
-        {:ok, revoked_before} ->
-          iat = Map.get(claims, "iat")
-          if iat do
-            token_time = DateTime.from_unix!(iat)
-            DateTime.compare(token_time, revoked_before) == :lt
-          else
-            false
-          end
-        :not_revoked ->
+    case TokenBlacklist.user_tokens_revoked_before?(user_id) do
+      {:ok, revoked_before} ->
+        iat = Map.get(claims, "iat")
+        if iat do
+          token_time = DateTime.from_unix!(iat)
+          DateTime.compare(token_time, revoked_before) == :lt
+        else
           false
-      end
-    rescue
-      _ -> false
+        end
+      :not_revoked ->
+        false
     end
+  rescue
+    _ -> false
   end
 end

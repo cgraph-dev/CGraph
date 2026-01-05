@@ -77,8 +77,8 @@ defmodule Cgraph.Auth.TokenManager do
   use GenServer
   require Logger
 
-  alias Cgraph.Guardian
   alias Cgraph.Accounts.User
+  alias Cgraph.Guardian
 
   @access_token_ttl {15, :minutes}
   @refresh_token_ttl {7, :days}

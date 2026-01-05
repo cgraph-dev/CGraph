@@ -504,17 +504,15 @@ defmodule Cgraph.BatchProcessor do
   end
 
   defp process_item_with_retry(item, processor, on_error, max_retries, attempt \\ 1) do
-    try do
-      case processor.(item) do
-        {:ok, result} -> {:ok, result}
-        {:error, error} -> handle_item_error(item, processor, on_error, max_retries, attempt, error)
-        :ok -> {:ok, nil}
-        result -> {:ok, result}
-      end
-    rescue
-      e ->
-        handle_item_error(item, processor, on_error, max_retries, attempt, Exception.message(e))
+    case processor.(item) do
+      {:ok, result} -> {:ok, result}
+      {:error, error} -> handle_item_error(item, processor, on_error, max_retries, attempt, error)
+      :ok -> {:ok, nil}
+      result -> {:ok, result}
     end
+  rescue
+    e ->
+      handle_item_error(item, processor, on_error, max_retries, attempt, Exception.message(e))
   end
 
   defp handle_item_error(item, processor, on_error, max_retries, attempt, error) do

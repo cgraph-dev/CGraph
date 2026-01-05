@@ -66,8 +66,9 @@ defmodule Cgraph.Security.TOTP do
   require Logger
   import Bitwise
 
-  alias Cgraph.{Repo, Audit}
   alias Cgraph.Accounts.User
+  alias Cgraph.Audit
+  alias Cgraph.Repo
   alias Cgraph.Security.TokenBlacklist
 
   # TOTP configuration

@@ -5,8 +5,8 @@ defmodule Cgraph.AdminExtendedTest do
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Admin
   alias Cgraph.Accounts
+  alias Cgraph.Admin
 
   defp create_user(attrs \\ %{}) do
     unique_id = System.unique_integer([:positive])

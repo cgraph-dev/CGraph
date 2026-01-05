@@ -3,7 +3,7 @@ defmodule CgraphWeb.API.V1.SearchJSON do
   JSON rendering for search responses.
   """
 
-  alias CgraphWeb.API.V1.{UserJSON, MessageJSON, PostJSON, GroupJSON}
+  alias CgraphWeb.API.V1.{GroupJSON, MessageJSON, PostJSON, UserJSON}
 
   def index(%{results: results, query: query}) do
     %{

@@ -13,8 +13,9 @@ defmodule Cgraph.Accounts.WalletAuth do
   """
 
   import Ecto.Query
+
+  alias Cgraph.Accounts.{RecoveryCode, User}
   alias Cgraph.Repo
-  alias Cgraph.Accounts.{User, RecoveryCode}
 
   @wallet_prefix "0x"
   @wallet_hex_length 24
@@ -256,21 +257,19 @@ defmodule Cgraph.Accounts.WalletAuth do
   Decrypts a recovery file using the PIN.
   """
   def decrypt_recovery_file(encrypted_content, pin) do
-    try do
-      combined = Base.decode64!(encrypted_content)
-      <<iv::binary-size(16), encrypted::binary>> = combined
+    combined = Base.decode64!(encrypted_content)
+    <<iv::binary-size(16), encrypted::binary>> = combined
 
-      key = derive_key_from_pin(pin)
-      decrypted = :crypto.crypto_one_time(:aes_256_cbc, key, iv, encrypted, false)
-      json = pkcs7_unpad(decrypted)
+    key = derive_key_from_pin(pin)
+    decrypted = :crypto.crypto_one_time(:aes_256_cbc, key, iv, encrypted, false)
+    json = pkcs7_unpad(decrypted)
 
-      case Jason.decode(json) do
-        {:ok, data} -> {:ok, data}
-        {:error, _} -> {:error, :invalid_format}
-      end
-    rescue
-      _ -> {:error, :decryption_failed}
+    case Jason.decode(json) do
+      {:ok, data} -> {:ok, data}
+      {:error, _} -> {:error, :invalid_format}
     end
+  rescue
+    _ -> {:error, :decryption_failed}
   end
 
   defp derive_key_from_pin(pin) do
@@ -326,7 +325,7 @@ defmodule Cgraph.Accounts.WalletAuth do
       :ok
     end
   end
-  
+
   defp validate_wallet_address(wallet_address) do
     if valid_wallet_address?(wallet_address), do: :ok, else: {:error, :invalid_wallet_address}
   end

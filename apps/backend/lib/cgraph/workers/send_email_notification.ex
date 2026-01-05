@@ -48,13 +48,14 @@ defmodule Cgraph.Workers.SendEmailNotification do
     priority: 2,
     unique: [period: 300, keys: [:user_id, :email_type]]  # Dedupe emails within 5 minutes
 
-  alias Cgraph.Repo
-  alias Cgraph.Accounts.User
-  alias Cgraph.Notifications.Notification
-  alias Cgraph.Mailer
-
   import Ecto.Query
+
   require Logger
+
+  alias Cgraph.Accounts.User
+  alias Cgraph.Mailer
+  alias Cgraph.Notifications.Notification
+  alias Cgraph.Repo
 
   @impl Oban.Worker
   # Handle verification emails

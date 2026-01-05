@@ -3,7 +3,7 @@ defmodule CgraphWeb.API.V1.InviteJSON do
   JSON rendering for invite responses.
   """
 
-  alias CgraphWeb.API.V1.{UserJSON, GroupJSON}
+  alias CgraphWeb.API.V1.{GroupJSON, UserJSON}
 
   def index(%{invites: invites}) do
     %{data: Enum.map(invites, &invite_data/1)}
@@ -45,10 +45,19 @@ defmodule CgraphWeb.API.V1.InviteJSON do
   # Get inviter handling both :inviter and :created_by associations
   defp get_inviter(invite) do
     cond do
-      Map.has_key?(invite, :inviter) && !match?(%Ecto.Association.NotLoaded{}, invite.inviter) -> invite.inviter
-      Map.has_key?(invite, :created_by) && !match?(%Ecto.Association.NotLoaded{}, invite.created_by) -> invite.created_by
-      true -> nil
+      has_loaded_assoc?(invite, :inviter) ->
+        invite.inviter
+
+      has_loaded_assoc?(invite, :created_by) ->
+        invite.created_by
+
+      true ->
+        nil
     end
+  end
+
+  defp has_loaded_assoc?(struct, key) do
+    Map.has_key?(struct, key) && !match?(%Ecto.Association.NotLoaded{}, Map.get(struct, key))
   end
 
   # Get group handling NotLoaded

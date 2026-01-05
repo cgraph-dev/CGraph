@@ -105,13 +105,13 @@ defmodule Cgraph.Notifications.PushService.ExpoClient do
       send_chunked_batch(messages)
     end
   end
-  
+
   defp send_chunked_batch(messages) do
     messages
     |> Enum.chunk_every(@batch_size)
     |> Enum.reduce({:ok, %{"data" => []}}, &merge_batch_result/2)
   end
-  
+
   defp merge_batch_result(_chunk, {:error, _} = error), do: error
   defp merge_batch_result(chunk, {:ok, acc}) do
     case do_send_batch(chunk, 0) do

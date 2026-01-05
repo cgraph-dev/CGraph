@@ -1,9 +1,9 @@
 defmodule Cgraph.GroupsTest do
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Groups
-  alias Cgraph.Groups.{Group, Channel, Member, Role}
   alias Cgraph.Accounts
+  alias Cgraph.Groups
+  alias Cgraph.Groups.{Channel, Group, Member, Role}
 
   setup do
     {:ok, owner} = Accounts.create_user(%{
@@ -29,7 +29,7 @@ defmodule Cgraph.GroupsTest do
     test "create_group/2 adds owner as member", %{owner: owner} do
       {:ok, group} = Groups.create_group(owner, %{name: "Test Group"})
 
-      assert Groups.is_member?(owner, group)
+      assert Groups.member?(owner, group)
     end
 
     test "create_group/2 creates default channels", %{owner: owner} do
@@ -138,11 +138,11 @@ defmodule Cgraph.GroupsTest do
     end
 
     test "is_member?/2 returns membership status", %{group: group, user: user} do
-      assert Groups.is_member?(user, group) == false
+      assert Groups.member?(user, group) == false
 
       {:ok, _} = Groups.add_member(group, user)
 
-      assert Groups.is_member?(user, group) == true
+      assert Groups.member?(user, group) == true
     end
 
     test "list_group_members/1 returns group members", %{owner: owner, group: group, user: user} do
@@ -157,7 +157,7 @@ defmodule Cgraph.GroupsTest do
       {:ok, member} = Groups.add_member(group, user)
 
       assert {:ok, _} = Groups.remove_member(member)
-      assert Groups.is_member?(user, group) == false
+      assert Groups.member?(user, group) == false
     end
 
     test "mute_member/2 mutes member for duration", %{group: group, user: user} do

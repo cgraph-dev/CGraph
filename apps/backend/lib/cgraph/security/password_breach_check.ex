@@ -118,14 +118,14 @@ defmodule Cgraph.Security.PasswordBreachCheck do
     Task.start(fn -> handle_async_check(password, user_id, on_breached) end)
     :ok
   end
-  
+
   defp handle_async_check(password, user_id, on_breached) do
     case check(password) do
       {:ok, {:breached, count}} -> handle_breach_detected(password, count, user_id, on_breached)
       _ -> :ok
     end
   end
-  
+
   defp handle_breach_detected(password, count, user_id, on_breached) do
     log_breach_detected(password, count, user_id)
     if on_breached, do: on_breached.({:breached, count})
@@ -253,14 +253,14 @@ defmodule Cgraph.Security.PasswordBreachCheck do
     |> String.split("\r\n")
     |> Enum.find_value(:safe, &match_suffix_line(&1, suffix_upper))
   end
-  
+
   defp match_suffix_line(line, suffix_upper) do
     case String.split(line, ":") do
       [hash_suffix, count_str] -> check_suffix_match(hash_suffix, count_str, suffix_upper)
       _ -> nil
     end
   end
-  
+
   defp check_suffix_match(hash_suffix, count_str, suffix_upper) do
     if String.upcase(hash_suffix) == suffix_upper do
       count = String.to_integer(String.trim(count_str))

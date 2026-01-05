@@ -224,7 +224,8 @@ defmodule Cgraph.Security.InputValidator do
   @doc """
   Validate integer within range.
   """
-  @spec validate_integer(String.t() | integer(), integer(), integer()) :: {:ok, integer()} | {:error, validation_error()}
+  @spec validate_integer(String.t() | integer(), integer(), integer()) ::
+          {:ok, integer()} | {:error, validation_error()}
   def validate_integer(value, min, max) when is_binary(value) do
     case Integer.parse(value) do
       {int, ""} -> validate_integer(int, min, max)

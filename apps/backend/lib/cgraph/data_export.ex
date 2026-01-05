@@ -534,70 +534,64 @@ defmodule Cgraph.DataExport do
   end
 
   defp process_user_export(export, data_sources, opts, delivery) do
-    try do
-      # Collect data from all sources
-      data = Enum.reduce(data_sources, %{}, fn source, acc ->
-        case collect_source_data(source, export.user_id) do
-          {:ok, source_data} -> Map.put(acc, source, source_data)
-          {:error, _} -> acc
-        end
-      end)
+    # Collect data from all sources
+    data = Enum.reduce(data_sources, %{}, fn source, acc ->
+      case collect_source_data(source, export.user_id) do
+        {:ok, source_data} -> Map.put(acc, source, source_data)
+        {:error, _} -> acc
+      end
+    end)
 
-      # Add metadata
-      export_data = %{
-        export_id: export.id,
-        user_id: export.user_id,
-        exported_at: DateTime.utc_now(),
-        format_version: "1.0",
-        data: data
-      }
+    # Add metadata
+    export_data = %{
+      export_id: export.id,
+      user_id: export.user_id,
+      exported_at: DateTime.utc_now(),
+      format_version: "1.0",
+      data: data
+    }
 
-      # Format and write file
-      {file_path, file_size} = write_export_file(export, export_data, opts)
+    # Format and write file
+    {file_path, file_size} = write_export_file(export, export_data, opts)
 
-      # Finalize export
-      finalize_export(export, file_path, file_size, delivery, opts)
-
-    rescue
-      e ->
-        Logger.error("[DataExport] Export #{export.id} failed: #{inspect(e)}")
-        mark_export_failed(export, Exception.message(e))
-    end
+    # Finalize export
+    finalize_export(export, file_path, file_size, delivery, opts)
+  rescue
+    e ->
+      Logger.error("[DataExport] Export #{export.id} failed: #{inspect(e)}")
+      mark_export_failed(export, Exception.message(e))
   end
 
   defp process_query_export(export, query, opts) do
-    try do
-      columns = Keyword.get(opts, :columns)
-      chunk_size = Keyword.get(opts, :chunk_size, get_config(:chunk_size))
+    columns = Keyword.get(opts, :columns)
+    chunk_size = Keyword.get(opts, :chunk_size, get_config(:chunk_size))
 
-      file_path = export_file_path(export)
-      file = File.open!(file_path, [:write, :utf8])
+    file_path = export_file_path(export)
+    file = File.open!(file_path, [:write, :utf8])
 
-      # Write header for CSV
-      if export.format == :csv and columns do
-        header = Enum.join(columns, ",") <> "\n"
-        IO.write(file, header)
-      end
-
-      # Stream query results
-      total_size =
-        query
-        |> Repo.stream(max_rows: chunk_size)
-        |> Enum.reduce(0, fn record, size ->
-          line = format_record(record, export.format, columns)
-          IO.write(file, line)
-          size + byte_size(line)
-        end)
-
-      File.close(file)
-
-      finalize_export(export, file_path, total_size, :download, opts)
-
-    rescue
-      e ->
-        Logger.error("[DataExport] Query export #{export.id} failed: #{inspect(e)}")
-        mark_export_failed(export, Exception.message(e))
+    # Write header for CSV
+    if export.format == :csv and columns do
+      header = Enum.join(columns, ",") <> "\n"
+      IO.write(file, header)
     end
+
+    # Stream query results
+    total_size =
+      query
+      |> Repo.stream(max_rows: chunk_size)
+      |> Enum.reduce(0, fn record, size ->
+        line = format_record(record, export.format, columns)
+        IO.write(file, line)
+        size + byte_size(line)
+      end)
+
+    File.close(file)
+
+    finalize_export(export, file_path, total_size, :download, opts)
+  rescue
+    e ->
+      Logger.error("[DataExport] Query export #{export.id} failed: #{inspect(e)}")
+      mark_export_failed(export, Exception.message(e))
   end
 
   defp collect_source_data(source, user_id) do

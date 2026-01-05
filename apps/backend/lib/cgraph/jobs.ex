@@ -944,14 +944,14 @@ defmodule Cgraph.Jobs do
     jobs = enqueue_ready_steps(workflow_state, ready_steps)
     build_updated_workflow(workflow_state, jobs)
   end
-  
+
   defp get_completed_step_ids(steps) do
     steps
     |> Enum.filter(&(&1.status == :completed))
     |> Enum.map(& &1.id)
     |> MapSet.new()
   end
-  
+
   defp find_ready_steps(workflow_state, completed_ids) do
     Enum.filter(workflow_state.steps, fn step ->
       step.status == :pending and
@@ -959,7 +959,7 @@ defmodule Cgraph.Jobs do
       check_condition(step, workflow_state)
     end)
   end
-  
+
   defp enqueue_ready_steps(workflow_state, ready_steps) do
     Enum.map(ready_steps, fn step ->
       args = Map.merge(step.args, %{
@@ -971,32 +971,30 @@ defmodule Cgraph.Jobs do
       {step.id, job}
     end)
   end
-  
+
   defp build_updated_workflow(workflow_state, jobs) do
     job_map = Map.new(jobs)
-    
+
     updated_steps = Enum.map(workflow_state.steps, fn step ->
       case Map.get(job_map, step.id) do
         nil -> step
         job -> %{step | status: :running, job_id: job.id}
       end
     end)
-    
+
     step_jobs = jobs
       |> Enum.map(fn {step_id, job} -> {step_id, job.id} end)
       |> Map.new()
       |> Map.merge(workflow_state.step_jobs)
-    
+
     {%{workflow_state | steps: updated_steps, step_jobs: step_jobs}, jobs}
   end
 
   defp check_condition(%{condition: nil}, _workflow_state), do: true
   defp check_condition(%{condition: condition}, workflow_state) when is_function(condition, 1) do
-    try do
-      condition.(workflow_state.results)
-    rescue
-      _ -> false
-    end
+    condition.(workflow_state.results)
+  rescue
+    _ -> false
   end
   defp check_condition(_, _), do: true
 
@@ -1006,23 +1004,23 @@ defmodule Cgraph.Jobs do
       [] -> Logger.warning("[Jobs] Received completion for unknown workflow: #{workflow_id}")
     end
   end
-  
+
   defp apply_step_completion(workflow_id, workflow_state, step_id, result) do
     updated_steps = update_step_status(workflow_state.steps, step_id, :completed, result)
     updated_results = Map.put(workflow_state.results, step_id, result)
-    
+
     updated_workflow = %{workflow_state | steps: updated_steps, results: updated_results}
     maybe_finalize_or_continue(workflow_id, updated_workflow)
   end
-  
+
   defp update_step_status(steps, step_id, status, result_or_error) do
     Enum.map(steps, &maybe_update_step(&1, step_id, status, result_or_error))
   end
-  
+
   defp maybe_update_step(%{id: id} = step, step_id, _status, _result) when id != step_id, do: step
   defp maybe_update_step(step, _step_id, :completed, result), do: %{step | status: :completed, result: result}
   defp maybe_update_step(step, _step_id, :failed, error), do: %{step | status: :failed, error: error}
-  
+
   defp maybe_finalize_or_continue(workflow_id, workflow) do
     if Enum.all?(workflow.steps, &(&1.status in [:completed, :skipped])) do
       finalize_workflow(workflow, :completed)
@@ -1038,11 +1036,11 @@ defmodule Cgraph.Jobs do
       [] -> Logger.warning("[Jobs] Received failure for unknown workflow: #{workflow_id}")
     end
   end
-  
+
   defp apply_step_failure(workflow_state, step_id, error) do
     updated_steps = update_step_status(workflow_state.steps, step_id, :failed, error)
     updated_errors = [%{step_id: step_id, error: error} | workflow_state.errors]
-    
+
     updated_workflow = %{workflow_state | steps: updated_steps, errors: updated_errors}
     finalize_workflow(updated_workflow, :failed)
   end

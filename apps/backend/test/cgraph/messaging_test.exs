@@ -1,9 +1,9 @@
 defmodule Cgraph.MessagingTest do
   use Cgraph.DataCase, async: false
 
+  alias Cgraph.Accounts
   alias Cgraph.Messaging
   alias Cgraph.Messaging.{Conversation, Message}
-  alias Cgraph.Accounts
 
   setup do
     {:ok, user1} = Accounts.create_user(%{

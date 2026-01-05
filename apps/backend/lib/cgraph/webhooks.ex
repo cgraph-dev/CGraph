@@ -285,7 +285,7 @@ defmodule Cgraph.Webhooks do
       end
     end
   end
-  
+
   defp validate_timestamp(timestamp) do
     if timestamp_valid?(timestamp), do: :ok, else: {:error, :timestamp_expired}
   end
@@ -598,7 +598,7 @@ defmodule Cgraph.Webhooks do
         process_pending_queue(new_queue, new_deliveries, endpoints)
     end
   end
-  
+
   defp process_delivery_item(endpoint, delivery, rest, endpoints) do
     case Map.get(endpoints, endpoint.id) do
       nil ->
@@ -607,11 +607,11 @@ defmodule Cgraph.Webhooks do
         deliver_to_endpoint(current_endpoint, delivery, rest)
     end
   end
-  
+
   defp deliver_to_endpoint(%{active: false} = _endpoint, delivery, rest) do
     {%{delivery | status: :failed, error: "Endpoint disabled"}, rest}
   end
-  
+
   defp deliver_to_endpoint(endpoint, delivery, rest) do
     updated = attempt_delivery(endpoint, delivery)
     new_queue = if should_retry?(updated), do: :queue.in({endpoint, updated}, rest), else: rest

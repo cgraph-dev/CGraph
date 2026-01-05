@@ -13,9 +13,9 @@ defmodule Cgraph.SecurityTest do
 
   import Bitwise
 
-  alias Cgraph.Security.{TokenBlacklist, AccountLockout, PasswordBreachCheck, TOTP}
   alias Cgraph.Accounts
   alias Cgraph.Guardian
+  alias Cgraph.Security.{AccountLockout, PasswordBreachCheck, TokenBlacklist, TOTP}
 
   # ============================================================================
   # Token Blacklist Tests

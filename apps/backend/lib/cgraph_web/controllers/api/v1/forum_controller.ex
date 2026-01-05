@@ -43,14 +43,14 @@ defmodule CgraphWeb.API.V1.ForumController do
   # Helper to get forum by ID or slug
   defp get_forum_by_id_or_slug(id_or_slug) do
     # Check if it looks like a UUID (36 chars with hyphens or 32 chars alphanumeric)
-    if is_uuid?(id_or_slug) do
+    if uuid?(id_or_slug) do
       Forums.get_forum(id_or_slug)
     else
       Forums.get_forum_by_slug(id_or_slug)
     end
   end
 
-  defp is_uuid?(string) do
+  defp uuid?(string) do
     case Ecto.UUID.cast(string) do
       {:ok, _} -> true
       :error -> false
@@ -318,7 +318,7 @@ defmodule CgraphWeb.API.V1.ForumController do
     forums_with_votes = enrich_forums_with_votes(forums, user)
     render(conn, :leaderboard, forums: forums_with_votes, meta: meta)
   end
-  
+
   defp enrich_forums_with_votes(forums, nil) do
     Enum.map(forums, fn forum -> Map.put(forum, :user_vote, 0) end)
   end

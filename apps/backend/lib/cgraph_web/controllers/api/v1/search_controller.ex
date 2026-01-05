@@ -5,7 +5,10 @@ defmodule CgraphWeb.API.V1.SearchController do
   """
   use CgraphWeb, :controller
 
-  alias Cgraph.{Accounts, Messaging, Forums, Groups}
+  alias Cgraph.Accounts
+  alias Cgraph.Forums
+  alias Cgraph.Groups
+  alias Cgraph.Messaging
 
   action_fallback CgraphWeb.FallbackController
 

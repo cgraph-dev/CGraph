@@ -46,12 +46,13 @@ defmodule Cgraph.Workers.SendPushNotification do
     priority: 1,
     tags: ["push", "notification"]
 
-  alias Cgraph.Repo
+  import Ecto.Query
+
+  require Logger
+
   alias Cgraph.Accounts.User
   alias Cgraph.Notifications.{Notification, PushService}
-
-  import Ecto.Query
-  require Logger
+  alias Cgraph.Repo
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: args, attempt: attempt}) do

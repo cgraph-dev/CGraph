@@ -83,8 +83,8 @@ defmodule Cgraph.Crypto.E2EE do
 
   require Logger
 
-  alias Cgraph.Repo
   alias Cgraph.Accounts.User
+  alias Cgraph.Repo
 
   # ============================================================================
   # Schemas
@@ -334,7 +334,7 @@ defmodule Cgraph.Crypto.E2EE do
       perform_x3dh_encryption(bundle, keys, plaintext)
     end
   end
-  
+
   defp decode_bundle_keys(bundle) do
     with {:ok, signed_prekey_raw} <- Base.decode64(bundle.signed_prekey),
          {:ok, identity_key_raw} <- Base.decode64(bundle.identity_key) do
@@ -344,7 +344,7 @@ defmodule Cgraph.Crypto.E2EE do
       _ -> {:error, :invalid_key_format}
     end
   end
-  
+
   defp decode_optional_prekey(nil), do: nil
   defp decode_optional_prekey(otpk_b64) do
     case Base.decode64(otpk_b64) do
@@ -352,17 +352,17 @@ defmodule Cgraph.Crypto.E2EE do
       _ -> nil
     end
   end
-  
+
   defp perform_x3dh_encryption(bundle, keys, plaintext) do
     {ephemeral_public, ephemeral_private} = :crypto.generate_key(:ecdh, :x25519)
-    
+
     shared_secret = compute_x3dh_secret(
       ephemeral_private,
       keys.identity_key,
       keys.signed_prekey,
       keys.one_time_prekey
     )
-    
+
     key = :crypto.hash(:sha256, shared_secret)
     iv = :crypto.strong_rand_bytes(12)
     {ciphertext, tag} = :crypto.crypto_one_time_aead(:aes_256_gcm, key, iv, plaintext, <<>>, true)
@@ -618,26 +618,26 @@ defmodule Cgraph.Crypto.E2EE do
       upsert_identity_key_record(user_id, device_id, public_key, attrs)
     end
   end
-  
+
   defp upsert_identity_key_record(user_id, device_id, public_key, attrs) do
     case get_identity_key_by_device(user_id, device_id) do
       nil -> create_identity_key(attrs)
       existing -> update_identity_key_if_changed(existing, public_key, attrs)
     end
   end
-  
+
   defp create_identity_key(attrs) do
     %IdentityKey{}
     |> IdentityKey.changeset(attrs)
     |> Repo.insert()
   end
-  
+
   defp update_identity_key_if_changed(existing, public_key, _attrs) when existing.public_key == public_key do
     {:ok, existing}
   end
   defp update_identity_key_if_changed(existing, _public_key, attrs) do
     Logger.warning("Identity key changed for user #{attrs.user_id} device #{attrs.device_id}")
-    
+
     existing
     |> IdentityKey.changeset(Map.put(attrs, :is_verified, false))
     |> Repo.update()
@@ -647,29 +647,29 @@ defmodule Cgraph.Crypto.E2EE do
     {public_key_b64, signature_b64, prekey_id} = extract_signed_prekey_fields(keys)
     insert_signed_prekey_if_valid(user_id, identity_key, public_key_b64, signature_b64, prekey_id)
   end
-  
+
   defp extract_signed_prekey_fields(keys) do
     signed_prekey = get_signed_prekey_map(keys)
-    
+
     public_key_b64 = get_field(signed_prekey, keys, ["public_key"], :signed_prekey)
     signature_b64 = get_field(signed_prekey, keys, ["signature"], :prekey_signature)
     prekey_id = get_prekey_id(signed_prekey, keys)
-    
+
     {public_key_b64, signature_b64, prekey_id}
   end
-  
+
   defp get_signed_prekey_map(keys), do: keys["signed_prekey"] || keys[:signed_prekey] || %{}
-  
+
   defp get_field(signed_prekey, keys, str_keys, fallback_atom) do
     Enum.find_value(str_keys, fn k -> signed_prekey[k] end) ||
     signed_prekey[hd(str_keys) |> String.to_atom()] ||
     keys[fallback_atom]
   end
-  
+
   defp get_prekey_id(signed_prekey, keys) do
     signed_prekey["key_id"] || signed_prekey[:key_id] || keys[:prekey_id] || :erlang.unique_integer([:positive])
   end
-  
+
   defp insert_signed_prekey_if_valid(_user_id, _identity_key, nil, _sig, _prekey_id), do: {:ok, nil}
   defp insert_signed_prekey_if_valid(_user_id, _identity_key, _pk, nil, _prekey_id), do: {:ok, nil}
   defp insert_signed_prekey_if_valid(user_id, identity_key, pk_b64, sig_b64, prekey_id) do
@@ -679,12 +679,12 @@ defmodule Cgraph.Crypto.E2EE do
       create_signed_prekey(user_id, identity_key, public_key, signature, prekey_id)
     end
   end
-  
+
   defp expire_current_prekeys(user_id) do
     from(k in SignedPrekey, where: k.user_id == ^user_id, where: k.is_current == true)
     |> Repo.update_all(set: [is_current: false])
   end
-  
+
   defp create_signed_prekey(user_id, identity_key, public_key, signature, prekey_id) do
     attrs = %{
       user_id: user_id,

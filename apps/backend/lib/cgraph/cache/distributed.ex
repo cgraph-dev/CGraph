@@ -519,7 +519,7 @@ defmodule Cgraph.Cache.Distributed do
       value
     end
   end
-  
+
   defp compute_with_held_lock(lock_key, key, fallback, opts) do
     try do
       value = fallback.()
@@ -529,7 +529,7 @@ defmodule Cgraph.Cache.Distributed do
       release_lock(lock_key)
     end
   end
-  
+
   defp compute_after_lock_wait(key, fallback, opts) do
     Process.sleep(50)
     case get(key, opts) do

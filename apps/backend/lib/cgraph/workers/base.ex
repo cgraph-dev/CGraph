@@ -365,7 +365,8 @@ defmodule Cgraph.Workers.SyncExternalData do
     :ok
   end
 
-  @spec fetch_external_data(String.t(), String.t()) :: {:ok, map()} | {:error, atom()} | {:error, :rate_limited, non_neg_integer()}
+  @spec fetch_external_data(String.t(), String.t()) ::
+          {:ok, map()} | {:error, atom()} | {:error, :rate_limited, non_neg_integer()}
   defp fetch_external_data(_source, _id) do
     {:ok, %{}}
   end

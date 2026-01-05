@@ -218,7 +218,7 @@ defmodule Cgraph.Workers.Orchestrator do
         continue_remaining_steps(pipeline_id, index, remaining)
     end
   end
-  
+
   defp handle_atom_keys_remaining(pipeline_id, _index, []) do
     complete_pipeline(pipeline_id, :success)
   end
@@ -231,7 +231,7 @@ defmodule Cgraph.Workers.Orchestrator do
     rest_tuples = convert_remaining_to_tuples(rest)
     enqueue_pipeline_job(worker, next_args, pipeline_id, index + 1, rest_tuples, [])
   end
-  
+
   defp convert_remaining_to_tuples(rest) do
     rest
     |> Enum.map(fn
@@ -240,7 +240,7 @@ defmodule Cgraph.Workers.Orchestrator do
     end)
     |> Enum.map(fn %{worker: w, args: a} -> {String.to_existing_atom(w), a} end)
   end
-  
+
   defp continue_remaining_steps(pipeline_id, _index, []) do
     complete_pipeline(pipeline_id, :success)
   end
@@ -249,7 +249,7 @@ defmodule Cgraph.Workers.Orchestrator do
     rest_tuples = Enum.map(rest, &parse_worker_tuple/1)
     enqueue_pipeline_job(worker, next_args, pipeline_id, index + 1, rest_tuples, [])
   end
-  
+
   defp parse_worker_tuple(%{"worker" => w, "args" => a}) do
     {String.to_existing_atom(w), a}
   end

@@ -37,8 +37,8 @@ defmodule Cgraph.Admin do
   require Logger
   import Ecto.Query
 
-  alias Cgraph.Repo
   alias Cgraph.Accounts.User
+  alias Cgraph.Repo
   # Schemas to be implemented:
   # alias Cgraph.Admin.{AuditEntry, Report, SystemConfig}
 

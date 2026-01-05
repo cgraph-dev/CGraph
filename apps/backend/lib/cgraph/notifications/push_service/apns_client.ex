@@ -150,18 +150,23 @@ defmodule Cgraph.Notifications.PushService.ApnsClient do
 
   defp do_send(device_token, payload, opts, state, retry_count) when retry_count < @max_retries do
     {host, path, headers, body} = build_apns_request(device_token, payload, opts, state)
-    
+
     case http2_request(:post, host, path, headers, body) do
-      {:ok, 200, response_headers, _body} -> handle_apns_success(response_headers, state)
-      {:ok, status, headers, body} -> handle_apns_error(status, headers, body, device_token, payload, opts, state, retry_count)
-      {:error, reason} -> handle_apns_connection_error(reason, device_token, payload, opts, state, retry_count)
+      {:ok, 200, response_headers, _body} ->
+        handle_apns_success(response_headers, state)
+
+      {:ok, status, resp_headers, resp_body} ->
+        handle_apns_error(status, resp_headers, resp_body, device_token, payload, opts, state, retry_count)
+
+      {:error, reason} ->
+        handle_apns_connection_error(reason, device_token, payload, opts, state, retry_count)
     end
   end
   defp do_send(_device_token, _payload, _opts, state, _retry_count) do
     state = update_stats(state, :failed, :max_retries)
     {{:error, :max_retries}, state}
   end
-  
+
   defp build_apns_request(device_token, payload, opts, state) do
     host = get_host(state.environment)
     path = "/3/device/#{device_token}"
@@ -169,14 +174,14 @@ defmodule Cgraph.Notifications.PushService.ApnsClient do
     body = Jason.encode!(payload)
     {host, path, headers, body}
   end
-  
+
   defp build_apns_headers(opts, state) do
     topic = Keyword.get(opts, :topic, state.config[:bundle_id])
     priority = Keyword.get(opts, :priority, 10)
     push_type = Keyword.get(opts, :push_type, "alert")
     expiration = Keyword.get(opts, :expiration, 0)
     collapse_id = Keyword.get(opts, :collapse_id)
-    
+
     base_headers = [
       {"authorization", "bearer #{state.jwt_token}"},
       {"apns-topic", topic},
@@ -184,16 +189,16 @@ defmodule Cgraph.Notifications.PushService.ApnsClient do
       {"apns-priority", to_string(priority)},
       {"apns-expiration", to_string(expiration)}
     ]
-    
+
     if collapse_id, do: [{"apns-collapse-id", collapse_id} | base_headers], else: base_headers
   end
-  
+
   defp handle_apns_success(response_headers, state) do
     apns_id = get_header(response_headers, "apns-id")
     state = update_stats(state, :sent)
     {{:ok, apns_id}, state}
   end
-  
+
   defp handle_apns_error(400, _headers, body, _device_token, _payload, _opts, state, _retry_count) do
     error = parse_error_response(body)
     Logger.warning("APNs bad request: #{inspect(error)}")
@@ -224,7 +229,7 @@ defmodule Cgraph.Notifications.PushService.ApnsClient do
     state = update_stats(state, :failed, error)
     {{:error, error}, state}
   end
-  
+
   defp handle_apns_connection_error(reason, device_token, payload, opts, state, retry_count) do
     Logger.error("APNs connection error: #{inspect(reason)}")
     Process.sleep(500 * (retry_count + 1))
@@ -320,15 +325,13 @@ defmodule Cgraph.Notifications.PushService.ApnsClient do
 
   defp sign_jwt(header, claims, private_key) do
     # Use JOSE library for JWT signing
-    try do
-      jwk = JOSE.JWK.from_pem(private_key)
-      jws = %{"alg" => "ES256", "kid" => header["kid"]}
+    jwk = JOSE.JWK.from_pem(private_key)
+    jws = %{"alg" => "ES256", "kid" => header["kid"]}
 
-      {_, token} = JOSE.JWT.sign(jwk, jws, claims) |> JOSE.JWS.compact()
-      {:ok, token}
-    rescue
-      e -> {:error, e}
-    end
+    {_, token} = JOSE.JWT.sign(jwk, jws, claims) |> JOSE.JWS.compact()
+    {:ok, token}
+  rescue
+    e -> {:error, e}
   end
 
   # ============================================================================

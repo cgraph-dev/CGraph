@@ -55,7 +55,7 @@ defmodule CgraphWeb.API.V1.BoardController do
     user = conn.assigns.current_user
 
     with {:ok, forum} <- Forums.get_forum(forum_id),
-         true <- Forums.is_moderator?(forum, user),
+         true <- Forums.moderator?(forum, user),
          {:ok, board} <- Forums.create_board(Map.put(board_params, "forum_id", forum_id)) do
       conn
       |> put_status(:created)
@@ -74,7 +74,7 @@ defmodule CgraphWeb.API.V1.BoardController do
     user = conn.assigns.current_user
 
     with {:ok, forum} <- Forums.get_forum(forum_id),
-         true <- Forums.is_moderator?(forum, user),
+         true <- Forums.moderator?(forum, user),
          {:ok, board} <- Forums.get_board(id),
          true <- board.forum_id == forum_id,
          {:ok, updated_board} <- Forums.update_board(board, board_params) do
@@ -93,7 +93,7 @@ defmodule CgraphWeb.API.V1.BoardController do
     user = conn.assigns.current_user
 
     with {:ok, forum} <- Forums.get_forum(forum_id),
-         true <- Forums.is_moderator?(forum, user),
+         true <- Forums.moderator?(forum, user),
          {:ok, board} <- Forums.get_board(id),
          true <- board.forum_id == forum_id,
          {:ok, _deleted} <- Forums.delete_board(board) do

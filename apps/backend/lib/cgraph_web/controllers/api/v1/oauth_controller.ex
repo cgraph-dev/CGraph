@@ -25,11 +25,11 @@ defmodule CgraphWeb.API.V1.OAuthController do
 
   use CgraphWeb, :controller
 
-  alias Cgraph.OAuth
-  alias Cgraph.Crypto
-  alias CgraphWeb.API.V1.AuthJSON
-
   require Logger
+
+  alias Cgraph.Crypto
+  alias Cgraph.OAuth
+  alias CgraphWeb.API.V1.AuthJSON
 
   @valid_providers ~w(google apple facebook tiktok)
 

@@ -18,8 +18,9 @@ defmodule Cgraph.Forums.RankingEngine do
   """
 
   import Ecto.Query
-  alias Cgraph.Repo
+
   alias Cgraph.Forums.{Forum, ForumVote}
+  alias Cgraph.Repo
 
   @doc """
   Recalculate all ranking scores for all forums.

@@ -218,28 +218,26 @@ defmodule Cgraph.Mailer do
   # ============================================================================
 
   defp build_email(user, email_type, data, opts) do
-    try do
-      sender = get_sender(email_type)
-      subject = Templates.subject(email_type, data)
-      {html_body, text_body} = Templates.render(email_type, data)
+    sender = get_sender(email_type)
+    subject = Templates.subject(email_type, data)
+    {html_body, text_body} = Templates.render(email_type, data)
 
-      email =
-        new()
-        |> from(sender)
-        |> to({user.display_name || user.username, user.email})
-        |> subject(subject)
-        |> html_body(html_body)
-        |> text_body(text_body)
-        |> put_provider_options(email_type, opts)
-        |> add_tracking_headers(user, email_type, opts)
-        |> add_unsubscribe_header(user, email_type)
+    email =
+      new()
+      |> from(sender)
+      |> to({user.display_name || user.username, user.email})
+      |> subject(subject)
+      |> html_body(html_body)
+      |> text_body(text_body)
+      |> put_provider_options(email_type, opts)
+      |> add_tracking_headers(user, email_type, opts)
+      |> add_unsubscribe_header(user, email_type)
 
-      {:ok, email}
-    rescue
-      e ->
-        Logger.error("Failed to build #{email_type} email: #{inspect(e)}")
-        {:error, {:template_error, e}}
-    end
+    {:ok, email}
+  rescue
+    e ->
+      Logger.error("Failed to build #{email_type} email: #{inspect(e)}")
+      {:error, {:template_error, e}}
   end
 
   defp get_sender(:security_alert), do: @security_sender

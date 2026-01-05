@@ -161,26 +161,26 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
     identifier = generate_identifier(conn, opts.by)
     "#{opts.key_prefix}:#{opts.tier}:#{identifier}"
   end
-  
+
   defp generate_identifier(conn, :ip), do: extract_client_ip(conn)
   defp generate_identifier(conn, :user), do: extract_user_or_ip(conn)
   defp generate_identifier(conn, :ip_and_path), do: build_ip_path_identifier(conn)
   defp generate_identifier(conn, :user_and_action), do: build_user_action_identifier(conn)
   defp generate_identifier(conn, custom) when is_function(custom, 1), do: custom.(conn)
-  
+
   defp extract_user_or_ip(conn) do
     case conn.assigns[:current_user] do
       %{id: user_id} -> "user:#{user_id}"
       _ -> extract_client_ip(conn)
     end
   end
-  
+
   defp build_ip_path_identifier(conn) do
     ip = extract_client_ip(conn)
     path = conn.request_path |> String.replace(~r/[^a-zA-Z0-9]/, "_")
     "#{ip}:#{path}"
   end
-  
+
   defp build_user_action_identifier(conn) do
     user_part = extract_user_or_ip(conn)
     action = conn.private[:phoenix_action] || "unknown"
@@ -256,7 +256,7 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
 
     handle_rate_limit_result(result, opts)
   end
-  
+
   defp calculate_rate_limit_decision(current_count, active_requests, opts, now_ms, cache, key) do
     if current_count < opts.limit do
       allow_request(active_requests, opts, now_ms, cache, key)
@@ -264,7 +264,7 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
       deny_request(active_requests, opts, now_ms)
     end
   end
-  
+
   defp allow_request(active_requests, opts, now_ms, cache, key) do
     new_log = [now_ms | active_requests]
     Cachex.put(cache, key, new_log, ttl: opts.window_ms + 1000)
@@ -272,14 +272,14 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
     reset_at = now_ms + opts.window_ms
     {:allow, remaining, reset_at}
   end
-  
+
   defp deny_request(active_requests, opts, now_ms) do
     oldest_in_window = Enum.min(active_requests, fn -> now_ms end)
     retry_after = oldest_in_window + opts.window_ms - now_ms
     reset_at = oldest_in_window + opts.window_ms
     {:deny, max(retry_after, 1000), reset_at}
   end
-  
+
   defp handle_rate_limit_result({:ok, rate_result}, _opts), do: rate_result
   defp handle_rate_limit_result({:error, _}, opts) do
     Logger.warning("Rate limiter cache failure, allowing request")

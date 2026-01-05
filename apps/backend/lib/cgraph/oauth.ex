@@ -537,7 +537,7 @@ defmodule Cgraph.OAuth do
       nil -> find_or_create_by_email(user_info)
     end
   end
-  
+
   defp find_or_create_by_email(%{email: nil} = user_info), do: create_oauth_user(user_info)
   defp find_or_create_by_email(%{email_verified: false} = user_info), do: create_oauth_user(user_info)
   defp find_or_create_by_email(user_info) do

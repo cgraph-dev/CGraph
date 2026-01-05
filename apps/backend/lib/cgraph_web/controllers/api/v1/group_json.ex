@@ -12,8 +12,9 @@ defmodule CgraphWeb.API.V1.GroupJSON do
   | true      | false           | "unlisted"  |
   | false     | false           | "private"   |
   """
-  alias Cgraph.Groups.{Group, Channel, Member, Role, AuditLog}
+
   alias Cgraph.Accounts.User
+  alias Cgraph.Groups.{AuditLog, Channel, Group, Member, Role}
 
   def index(%{groups: groups, meta: meta}) do
     %{

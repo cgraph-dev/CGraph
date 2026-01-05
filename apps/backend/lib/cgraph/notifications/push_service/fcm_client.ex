@@ -273,7 +273,7 @@ defmodule Cgraph.Notifications.PushService.FcmClient do
     {url, headers, body} = build_fcm_request(message, state, dry_run)
     handle_fcm_response(http_post(url, headers, body))
   end
-  
+
   defp build_fcm_request(message, state, dry_run) do
     project_id = state.config[:project_id]
     url = "#{@fcm_base_url}/#{project_id}/#{@fcm_send_endpoint}"
@@ -284,7 +284,7 @@ defmodule Cgraph.Notifications.PushService.FcmClient do
     ]
     {url, headers, Jason.encode!(body)}
   end
-  
+
   defp handle_fcm_response({:ok, 200, _headers, response_body}) do
     parse_success_response(response_body)
   end
@@ -305,7 +305,7 @@ defmodule Cgraph.Notifications.PushService.FcmClient do
     Logger.error("FCM connection error: #{inspect(reason)}")
     {:error, :connection_failed}
   end
-  
+
   defp parse_success_response(response_body) do
     case Jason.decode(response_body) do
       {:ok, %{"name" => name}} -> {:ok, name |> String.split("/") |> List.last()}

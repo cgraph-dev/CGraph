@@ -215,12 +215,12 @@ defmodule Cgraph.Pagination do
     operator = determine_cursor_operator(direction, opts.sort_direction)
     build_cursor_query(query, cursor_data, opts.sort_field, operator)
   end
-  
+
   defp determine_cursor_operator(:after, :asc), do: :gt
   defp determine_cursor_operator(:after, :desc), do: :lt
   defp determine_cursor_operator(:before, :asc), do: :lt
   defp determine_cursor_operator(:before, :desc), do: :gt
-  
+
   defp build_cursor_query(query, cursor_data, sort_field, :gt) do
     from r in query,
       where: field(r, ^sort_field) > ^cursor_data.sort_value or

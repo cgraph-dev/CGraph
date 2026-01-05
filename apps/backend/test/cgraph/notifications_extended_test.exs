@@ -5,8 +5,8 @@ defmodule Cgraph.NotificationsExtendedTest do
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Notifications
   alias Cgraph.Accounts
+  alias Cgraph.Notifications
 
   defp create_user(attrs \\ %{}) do
     unique_id = System.unique_integer([:positive])

@@ -57,7 +57,7 @@ defmodule CgraphWeb.API.V1.AuthController do
       :ok -> attempt_authentication(conn, identifier, password, lockout_key, ip_address)
     end
   end
-  
+
   defp respond_locked(conn, remaining) do
     conn
     |> put_status(:too_many_requests)
@@ -68,25 +68,25 @@ defmodule CgraphWeb.API.V1.AuthController do
       retry_after: remaining
     })
   end
-  
+
   defp attempt_authentication(conn, identifier, password, lockout_key, ip_address) do
     case Accounts.authenticate_by_identifier(identifier, password) do
       {:ok, user} -> handle_successful_login(conn, user, lockout_key)
       {:error, :no_password_set} -> respond_no_password(conn)
-      {:error, reason} when reason in [:invalid_credentials, :user_not_found] -> 
+      {:error, reason} when reason in [:invalid_credentials, :user_not_found] ->
         handle_failed_login(conn, lockout_key, ip_address)
     end
   end
-  
+
   defp handle_successful_login(conn, user, lockout_key) do
     AccountLockout.clear_attempts(lockout_key)
-    
+
     with {:ok, tokens} <- Guardian.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn |> render(:auth_response, user: user, tokens: tokens)
     end
   end
-  
+
   defp respond_no_password(conn) do
     conn
     |> put_status(:unauthorized)
@@ -95,21 +95,21 @@ defmodule CgraphWeb.API.V1.AuthController do
       message: "This account was created with OAuth or wallet. Please use that method to login."
     })
   end
-  
+
   defp handle_failed_login(conn, lockout_key, ip_address) do
     case AccountLockout.record_failed_attempt(lockout_key, ip_address: ip_address) do
       {:locked, duration} -> respond_account_locked(conn, duration)
       :ok -> respond_invalid_credentials(conn)
     end
   end
-  
+
   defp respond_account_locked(conn, duration) do
     conn
     |> put_status(:too_many_requests)
     |> put_resp_header("retry-after", Integer.to_string(duration))
     |> json(%{error: "Account locked", message: "Too many failed login attempts. Account has been locked.", retry_after: duration})
   end
-  
+
   defp respond_invalid_credentials(conn) do
     conn
     |> put_status(:unauthorized)

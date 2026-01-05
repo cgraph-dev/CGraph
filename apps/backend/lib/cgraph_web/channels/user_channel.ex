@@ -15,8 +15,8 @@ defmodule CgraphWeb.UserChannel do
   """
   use CgraphWeb, :channel
 
-  alias Cgraph.Presence
   alias Cgraph.Accounts
+  alias Cgraph.Presence
 
   @max_contact_batch 200
 

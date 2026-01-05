@@ -221,18 +221,18 @@ defmodule Cgraph.AccountsExtendedTest do
     end
   end
 
-  describe "is_blocked?/2" do
+  describe "blocked?/2" do
     test "returns true if blocked" do
       user1 = create_user()
       user2 = create_user()
       {:ok, _} = Accounts.block_user(user1, user2)
-      assert Accounts.is_blocked?(user1, user2)
+      assert Accounts.blocked?(user1, user2)
     end
 
     test "returns false if not blocked" do
       user1 = create_user()
       user2 = create_user()
-      refute Accounts.is_blocked?(user1, user2)
+      refute Accounts.blocked?(user1, user2)
     end
   end
 

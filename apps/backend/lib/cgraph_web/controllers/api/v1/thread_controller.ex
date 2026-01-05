@@ -79,7 +79,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
     with {:ok, thread} <- Forums.get_thread(id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
-         true <- thread.author_id == user.id or Forums.is_moderator?(forum, user),
+         true <- thread.author_id == user.id or Forums.moderator?(forum, user),
          {:ok, updated_thread} <- Forums.update_thread(thread, thread_params) do
       render(conn, :show, thread: updated_thread)
     else
@@ -98,7 +98,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
     with {:ok, thread} <- Forums.get_thread(id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
-         true <- thread.author_id == user.id or Forums.is_moderator?(forum, user),
+         true <- thread.author_id == user.id or Forums.moderator?(forum, user),
          {:ok, _deleted} <- Forums.delete_thread(thread) do
       send_resp(conn, :no_content, "")
     else
@@ -117,7 +117,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
     with {:ok, thread} <- Forums.get_thread(id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
-         true <- Forums.is_moderator?(forum, user),
+         true <- Forums.moderator?(forum, user),
          {1, nil} <- Forums.toggle_thread_pin(id, pinned) do
       {:ok, updated} = Forums.get_thread(id)
       render(conn, :show, thread: updated)
@@ -138,7 +138,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
     with {:ok, thread} <- Forums.get_thread(id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
-         true <- Forums.is_moderator?(forum, user),
+         true <- Forums.moderator?(forum, user),
          {1, nil} <- Forums.toggle_thread_lock(id, locked) do
       {:ok, updated} = Forums.get_thread(id)
       render(conn, :show, thread: updated)

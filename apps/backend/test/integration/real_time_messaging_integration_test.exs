@@ -10,10 +10,10 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
   """
   use CgraphWeb.ChannelCase, async: false
 
-  alias Cgraph.Messaging
   alias Cgraph.Accounts
-  alias CgraphWeb.UserSocket
+  alias Cgraph.Messaging
   alias CgraphWeb.ConversationChannel
+  alias CgraphWeb.UserSocket
 
   @moduletag :channel
 

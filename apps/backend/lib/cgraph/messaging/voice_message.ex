@@ -67,8 +67,8 @@ defmodule Cgraph.Messaging.VoiceMessage do
 
   require Logger
 
-  alias Cgraph.Repo
   alias Cgraph.Accounts.User
+  alias Cgraph.Repo
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -485,7 +485,7 @@ defmodule Cgraph.Messaging.VoiceMessage do
     process_samples_to_waveform(samples, num_samples)
   end
   defp calculate_waveform(_, num_samples), do: List.duplicate(0.5, num_samples)
-  
+
   defp process_samples_to_waveform([], num_samples), do: List.duplicate(0.5, num_samples)
   defp process_samples_to_waveform(samples, num_samples) do
     chunk_size = max(1, div(length(samples), num_samples))
@@ -496,7 +496,7 @@ defmodule Cgraph.Messaging.VoiceMessage do
     |> Enum.map(&calculate_chunk_rms/1)
     |> pad_waveform(num_samples)
   end
-  
+
   defp calculate_chunk_rms(chunk) do
     sum_squares = Enum.reduce(chunk, 0, fn sample, acc -> acc + sample * sample end)
     rms = :math.sqrt(sum_squares / length(chunk))

@@ -281,24 +281,24 @@ defmodule Cgraph.Security.AccountLockout do
 
   defp do_check_locked(identifier, _config) do
     key = lockout_key(identifier)
-    
+
     case get_from_redis(key) do
       {:ok, nil} -> :ok
       {:ok, data} -> evaluate_lockout_status(key, data)
       {:error, _} -> :ok
     end
   end
-  
+
   defp evaluate_lockout_status(key, data) do
     case parse_lockout_data(data) do
       %{locked: true, locked_until: until} -> check_lockout_expiry(key, until)
       _ -> :ok
     end
   end
-  
+
   defp check_lockout_expiry(key, until) do
     remaining = DateTime.diff(until, DateTime.utc_now())
-    
+
     if remaining > 0 do
       {:locked, remaining}
     else
@@ -314,10 +314,10 @@ defmodule Cgraph.Security.AccountLockout do
       check_ip_lockout_status(ip)
     end
   end
-  
+
   defp check_ip_lockout_status(ip) do
     key = ip_lockout_key(ip)
-    
+
     case get_from_redis(key) do
       {:ok, nil} -> :ok
       {:ok, data} -> evaluate_lockout_status(key, data)

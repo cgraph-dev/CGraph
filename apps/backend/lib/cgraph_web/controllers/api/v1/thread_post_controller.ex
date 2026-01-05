@@ -69,7 +69,7 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
          {:ok, thread} <- Forums.get_thread(post.thread_id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
-         true <- post.author_id == user.id or Forums.is_moderator?(forum, user),
+         true <- post.author_id == user.id or Forums.moderator?(forum, user),
          {:ok, updated_post} <- Forums.update_thread_post(post, post_params, user.id) do
       render(conn, :show, post: updated_post)
     else
@@ -89,7 +89,7 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
          {:ok, thread} <- Forums.get_thread(post.thread_id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
-         true <- post.author_id == user.id or Forums.is_moderator?(forum, user),
+         true <- post.author_id == user.id or Forums.moderator?(forum, user),
          {:ok, _deleted} <- Forums.delete_thread_post(post) do
       send_resp(conn, :no_content, "")
     else

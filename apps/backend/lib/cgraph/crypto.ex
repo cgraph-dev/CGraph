@@ -282,24 +282,22 @@ defmodule Cgraph.Crypto do
   """
   @spec derive_key(binary(), binary()) :: {:ok, key()} | {:error, term()}
   def derive_key(password, salt) when is_binary(password) and byte_size(salt) >= @salt_bytes do
-    try do
-      # Use Argon2id (preferred for key derivation)
-      key = Argon2.Base.hash_password(
-        password,
-        salt,
-        t_cost: @argon2_time_cost,
-        m_cost: @argon2_memory_cost,
-        parallelism: @argon2_parallelism,
-        hashlen: @aes_key_bytes,
-        argon2_type: 2  # Argon2id
-      )
+    # Use Argon2id (preferred for key derivation)
+    key = Argon2.Base.hash_password(
+      password,
+      salt,
+      t_cost: @argon2_time_cost,
+      m_cost: @argon2_memory_cost,
+      parallelism: @argon2_parallelism,
+      hashlen: @aes_key_bytes,
+      argon2_type: 2  # Argon2id
+    )
 
-      {:ok, key}
-    rescue
-      e ->
-        Logger.error("Key derivation failed: #{inspect(e)}")
-        {:error, :key_derivation_failed}
-    end
+    {:ok, key}
+  rescue
+    e ->
+      Logger.error("Key derivation failed: #{inspect(e)}")
+      {:error, :key_derivation_failed}
   end
 
   @doc """

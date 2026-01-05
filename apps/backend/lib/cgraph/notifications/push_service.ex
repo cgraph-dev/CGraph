@@ -44,12 +44,13 @@ defmodule Cgraph.Notifications.PushService do
 
   use GenServer
 
-  alias Cgraph.Repo
-  alias Cgraph.Accounts.{User, PushToken}
-  alias Cgraph.Notifications.PushService.{ApnsClient, FcmClient, ExpoClient, WebPushClient}
-
   import Ecto.Query
+
   require Logger
+
+  alias Cgraph.Accounts.{PushToken, User}
+  alias Cgraph.Notifications.PushService.{ApnsClient, ExpoClient, FcmClient, WebPushClient}
+  alias Cgraph.Repo
 
   @type notification :: %{
     required(:title) => String.t(),

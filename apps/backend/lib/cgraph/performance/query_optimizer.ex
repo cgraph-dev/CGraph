@@ -267,14 +267,14 @@ defmodule Cgraph.Performance.QueryOptimizer do
       parse_cursor_value(value)
     end
   end
-  
+
   defp parse_cursor_value(value) do
     case DateTime.from_iso8601(value) do
       {:ok, datetime, _} -> {:ok, datetime}
       _ -> parse_naive_or_string(value)
     end
   end
-  
+
   defp parse_naive_or_string(value) do
     case NaiveDateTime.from_iso8601(value) do
       {:ok, naive} -> {:ok, naive}

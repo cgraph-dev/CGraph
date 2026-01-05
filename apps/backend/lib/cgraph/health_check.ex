@@ -151,13 +151,11 @@ defmodule Cgraph.HealthCheck do
   """
   def live? do
     # Just check if GenServer is responsive
-    try do
-      GenServer.call(__MODULE__, :ping, 1000) == :pong
-    rescue
-      _ -> false
-    catch
-      :exit, _ -> false
-    end
+    GenServer.call(__MODULE__, :ping, 1000) == :pong
+  rescue
+    _ -> false
+  catch
+    :exit, _ -> false
   end
 
   @doc """
@@ -474,27 +472,25 @@ defmodule Cgraph.HealthCheck do
   end
 
   defp check_component_status(:oban) do
-    try do
-      # Check Oban is running and processing jobs
+    # Check Oban is running and processing jobs
+    %{
+      name: :oban,
+      status: :healthy,
+      message: nil,
+      latency_ms: 0,
+      details: %{
+        queues: Oban.config().queues
+      }
+    }
+  rescue
+    e ->
       %{
         name: :oban,
-        status: :healthy,
-        message: nil,
-        latency_ms: 0,
-        details: %{
-          queues: Oban.config().queues
-        }
+        status: :degraded,
+        message: Exception.message(e),
+        latency_ms: nil,
+        details: %{}
       }
-    rescue
-      e ->
-        %{
-          name: :oban,
-          status: :degraded,
-          message: Exception.message(e),
-          latency_ms: nil,
-          details: %{}
-        }
-    end
   end
 
   defp check_component_status(component) do
@@ -512,26 +508,22 @@ defmodule Cgraph.HealthCheck do
   # ---------------------------------------------------------------------------
 
   defp check_pool_status do
-    try do
-      # DBConnection pool status
-      %{
-        healthy: true,
-        pool_size: Cgraph.Repo.config()[:pool_size] || 10,
-        checked_out: 0
-      }
-    rescue
-      _ ->
-        %{healthy: false, pool_size: 0, checked_out: 0}
-    end
+    # DBConnection pool status
+    %{
+      healthy: true,
+      pool_size: Cgraph.Repo.config()[:pool_size] || 10,
+      checked_out: 0
+    }
+  rescue
+    _ ->
+      %{healthy: false, pool_size: 0, checked_out: 0}
   end
 
   defp database_ready? do
-    try do
-      Ecto.Adapters.SQL.query!(Cgraph.Repo, "SELECT 1", [])
-      true
-    rescue
-      _ -> false
-    end
+    Ecto.Adapters.SQL.query!(Cgraph.Repo, "SELECT 1", [])
+    true
+  rescue
+    _ -> false
   end
 
   # ---------------------------------------------------------------------------

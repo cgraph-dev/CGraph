@@ -239,17 +239,17 @@ defmodule Cgraph.Performance.CircuitBreaker do
     schedule_cleanup()
     {:noreply, state}
   end
-  
+
   defp maybe_transition_to_half_open(service, now) do
     case :ets.lookup(@table, service) do
       [{^service, %{state: :open} = circuit}] -> check_recovery_time(service, circuit, now)
       _ -> :ok
     end
   end
-  
+
   defp check_recovery_time(service, %{opened_at: opened_at, config: config} = circuit, now) do
     recovery_time = Map.get(config, :recovery_time, @default_recovery_time)
-    
+
     if DateTime.diff(now, opened_at, :millisecond) >= recovery_time do
       half_open_circuit = %{circuit | state: :half_open, successes: 0}
       :ets.insert(@table, {service, half_open_circuit})

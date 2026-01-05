@@ -328,8 +328,9 @@ defmodule CgraphWeb.WalletAuthController do
 
   defp count_remaining_codes(user_id) do
     import Ecto.Query
-    alias Cgraph.Repo
+
     alias Cgraph.Accounts.RecoveryCode
+    alias Cgraph.Repo
 
     Repo.one(
       from rc in RecoveryCode,

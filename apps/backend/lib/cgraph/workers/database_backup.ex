@@ -138,26 +138,26 @@ defmodule Cgraph.Workers.DatabaseBackup do
       {:error, reason} -> log_list_failure(reason)
     end
   end
-  
+
   defp delete_old_objects(objects, cutoff) do
     objects
     |> Enum.filter(&object_older_than?(&1, cutoff))
     |> Enum.each(&delete_backup_object/1)
     :ok
   end
-  
+
   defp object_older_than?(obj, cutoff) do
     case DateTime.from_iso8601(obj.last_modified) do
       {:ok, last_modified, _} -> DateTime.compare(last_modified, cutoff) == :lt
       _ -> false
     end
   end
-  
+
   defp delete_backup_object(obj) do
     ExAws.S3.delete_object(@backup_bucket, obj.key) |> ExAws.request()
     Logger.info("Deleted old backup: #{obj.key}")
   end
-  
+
   defp log_list_failure(reason) do
     Logger.warning("Failed to list old backups: #{inspect(reason)}")
     :ok

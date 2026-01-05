@@ -6,8 +6,9 @@ defmodule Cgraph.Messaging do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
+
   alias Cgraph.Messaging.{Conversation, ConversationParticipant, Message, Reaction, ReadReceipt}
+  alias Cgraph.Repo
 
   # ============================================================================
   # Conversations
@@ -70,10 +71,10 @@ defmodule Cgraph.Messaging do
   def create_or_get_conversation(user, recipient_id) when is_binary(recipient_id) do
     create_or_get_conversation(user, [recipient_id])
   end
-  
+
   defp check_existing_dm([_, _] = all_ids), do: find_dm_conversation(all_ids)
   defp check_existing_dm(_all_ids), do: :not_dm
-  
+
   defp create_new_conversation(user, participant_ids) do
     case create_conversation(user, %{"participant_ids" => participant_ids}) do
       {:ok, conversation} -> {:ok, conversation, :created}
@@ -146,7 +147,7 @@ defmodule Cgraph.Messaging do
       get_or_create_conversation_for_participants(user, all_participant_ids)
     end)
   end
-  
+
   defp get_or_create_conversation_for_participants(user, [_, _] = all_ids) do
     case find_dm_conversation(all_ids) do
       {:ok, existing} -> existing

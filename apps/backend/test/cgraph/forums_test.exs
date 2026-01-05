@@ -1,11 +1,11 @@
 defmodule Cgraph.ForumsTest do
   use Cgraph.DataCase, async: true
 
+  alias Cgraph.Accounts
   alias Cgraph.Forums
+  alias Cgraph.Forums.Comment
   alias Cgraph.Forums.Forum
   alias Cgraph.Forums.Post
-  alias Cgraph.Forums.Comment
-  alias Cgraph.Accounts
 
   setup do
     {:ok, user} = Accounts.create_user(%{
@@ -279,9 +279,9 @@ defmodule Cgraph.ForumsTest do
       assert report.id != nil
     end
 
-    test "is_moderator?/2 checks moderator status", %{user: user, forum: forum} do
+    test "moderator?/2 checks moderator status", %{user: user, forum: forum} do
       # Forum creator is automatically a moderator
-      assert Forums.is_moderator?(forum, user) == true
+      assert Forums.moderator?(forum, user) == true
 
       # Create a different user who is not a moderator
       {:ok, other_user} = Accounts.create_user(%{
@@ -290,11 +290,11 @@ defmodule Cgraph.ForumsTest do
         password: "ValidPassword123!",
         password_confirmation: "ValidPassword123!"
       })
-      assert Forums.is_moderator?(forum, other_user) == false
+      assert Forums.moderator?(forum, other_user) == false
 
       # After granting mod status to other user
       {:ok, _} = Forums.add_moderator(forum, other_user)
-      assert Forums.is_moderator?(forum, other_user) == true
+      assert Forums.moderator?(forum, other_user) == true
     end
   end
 
