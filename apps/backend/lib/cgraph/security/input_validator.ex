@@ -194,9 +194,9 @@ defmodule Cgraph.Security.InputValidator do
     
     errors = if String.length(password) < 8, do: ["Password must be at least 8 characters" | errors], else: errors
     errors = if String.length(password) > 128, do: ["Password must be at most 128 characters" | errors], else: errors
-    errors = unless Regex.match?(~r/[a-z]/, password), do: ["Password must contain a lowercase letter" | errors], else: errors
-    errors = unless Regex.match?(~r/[A-Z]/, password), do: ["Password must contain an uppercase letter" | errors], else: errors
-    errors = unless Regex.match?(~r/[0-9]/, password), do: ["Password must contain a number" | errors], else: errors
+    errors = if Regex.match?(~r/[a-z]/, password), do: errors, else: ["Password must contain a lowercase letter" | errors]
+    errors = if Regex.match?(~r/[A-Z]/, password), do: errors, else: ["Password must contain an uppercase letter" | errors]
+    errors = if Regex.match?(~r/[0-9]/, password), do: errors, else: ["Password must contain a number" | errors]
     
     # Check for common patterns
     errors = if Regex.match?(~r/^(.)\1+$/, password), do: ["Password cannot be all the same character" | errors], else: errors
