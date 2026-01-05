@@ -481,4 +481,4 @@ Once everything is running:
 
 ---
 
-*Last updated: December 31, 2025*
+*Last updated: January 5, 2026*

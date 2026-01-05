@@ -76,8 +76,9 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
         "conversation_id" => conversation.id
       })
 
-      # Bob should receive the message (channel broadcasts %{message: message, sender: sender})
-      assert_broadcast("new_message", %{message: %{content: ^message_content}, sender: _})
+      # Bob should receive the message (channel broadcasts %{message: serialized_message})
+      # where serialized_message has content as a direct field
+      assert_broadcast("new_message", %{message: %{content: ^message_content}})
     end
 
     test "typing indicator is broadcast to other participants", %{
@@ -102,9 +103,9 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
       # Alice starts typing
       push(alice_channel, "typing", %{"typing" => true})
 
-      # Bob should see Alice is typing (channel broadcasts "user_typing")
+      # Bob should see Alice is typing (channel broadcasts "typing" with username)
       alice_username = alice.username
-      assert_broadcast("user_typing", %{username: ^alice_username, typing: true})
+      assert_broadcast("typing", %{username: ^alice_username})
     end
 
     test "presence tracks online users in conversation", %{
@@ -166,8 +167,8 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
         "content" => "Edited message"
       })
 
-      # Bob should see the edit
-      assert_broadcast("message_updated", %{id: _, content: "Edited message"})
+      # Bob should see the edit (channel broadcasts %{message: serialized})
+      assert_broadcast("message_updated", %{message: %{content: "Edited message"}})
     end
 
     test "message deletion is broadcast in real-time", %{
@@ -291,8 +292,8 @@ defmodule Cgraph.Integration.RealTimeMessagingIntegrationTest do
       # Owner sends a message
       push(owner_channel, "new_message", %{"content" => "Welcome everyone!"})
 
-      # Member should receive it (channel broadcasts %{message: message, sender: sender})
-      assert_broadcast("new_message", %{message: %{content: "Welcome everyone!"}, sender: _})
+      # Member should receive it (channel broadcasts %{message: serialized})
+      assert_broadcast("new_message", %{message: %{content: "Welcome everyone!"}})
     end
   end
 

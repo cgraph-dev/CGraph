@@ -257,13 +257,20 @@ defmodule Cgraph.Messaging.VoiceMessageTest do
 
   describe "validate_upload/1" do
     test "accepts valid upload" do
+      # Create an actual temp file for validation
+      path = Path.join(System.tmp_dir!(), "test_recording_#{:rand.uniform(100_000)}.webm")
+      File.write!(path, "fake audio data")
+
       upload = %{
         filename: "recording.webm",
         content_type: "audio/webm",
-        path: "/tmp/upload.webm"
+        path: path
       }
 
-      assert :ok = VoiceMessage.validate_upload(upload)
+      result = VoiceMessage.validate_upload(upload)
+      File.rm(path)
+
+      assert :ok = result
     end
 
     test "rejects missing filename" do
@@ -276,13 +283,20 @@ defmodule Cgraph.Messaging.VoiceMessageTest do
     end
 
     test "rejects unsupported content type" do
+      # Create an actual temp file for validation
+      path = Path.join(System.tmp_dir!(), "test_document_#{:rand.uniform(100_000)}.pdf")
+      File.write!(path, "fake pdf data")
+
       upload = %{
         filename: "document.pdf",
         content_type: "application/pdf",
-        path: "/tmp/upload.pdf"
+        path: path
       }
 
-      assert {:error, :unsupported_format} = VoiceMessage.validate_upload(upload)
+      result = VoiceMessage.validate_upload(upload)
+      File.rm(path)
+
+      assert {:error, :unsupported_format} = result
     end
   end
 

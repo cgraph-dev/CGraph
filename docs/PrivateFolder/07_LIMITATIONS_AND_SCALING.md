@@ -352,4 +352,4 @@ fly scale vm dedicated-cpu-4x --memory 8192
 
 ---
 
-*Last updated: December 31, 2025*
+*Last updated: January 5, 2026*

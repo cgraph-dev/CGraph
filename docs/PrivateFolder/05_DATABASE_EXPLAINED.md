@@ -691,4 +691,4 @@ Look for:
 
 ---
 
-*Last updated: December 31, 2025*
+*Last updated: January 5, 2026*
