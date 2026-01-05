@@ -1216,7 +1216,7 @@ defmodule Cgraph.Jobs do
     
     Enum.each(expired, &:ets.delete(@progress_table, &1))
     
-    if length(expired) > 0 do
+    unless Enum.empty?(expired) do
       Logger.debug("[Jobs] Cleaned up #{length(expired)} expired progress records")
     end
   end
@@ -1236,7 +1236,7 @@ defmodule Cgraph.Jobs do
     
     Enum.each(expired, &:ets.delete(@workflow_table, &1))
     
-    if length(expired) > 0 do
+    unless Enum.empty?(expired) do
       Logger.debug("[Jobs] Cleaned up #{length(expired)} expired workflows")
     end
   end

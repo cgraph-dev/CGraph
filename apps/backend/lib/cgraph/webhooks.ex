@@ -867,11 +867,13 @@ defmodule Cgraph.Webhooks do
   defp calculate_success_rate([]), do: 0.0
   defp calculate_success_rate(deliveries) do
     completed = Enum.filter(deliveries, &(&1.status in [:success, :failed]))
-    if length(completed) > 0 do
-      success_count = Enum.count(completed, &(&1.status == :success))
-      Float.round(success_count / length(completed) * 100, 2)
-    else
-      0.0
+    case completed do
+      [] ->
+        0.0
+      _ ->
+        total = length(completed)
+        success_count = Enum.count(completed, &(&1.status == :success))
+        Float.round(success_count / total * 100, 2)
     end
   end
   
@@ -880,10 +882,11 @@ defmodule Cgraph.Webhooks do
     |> Enum.map(& &1.latency_ms)
     |> Enum.reject(&is_nil/1)
     
-    if length(latencies) > 0 do
-      Float.round(Enum.sum(latencies) / length(latencies), 2)
-    else
-      nil
+    case latencies do
+      [] ->
+        nil
+      _ ->
+        Float.round(Enum.sum(latencies) / length(latencies), 2)
     end
   end
   
