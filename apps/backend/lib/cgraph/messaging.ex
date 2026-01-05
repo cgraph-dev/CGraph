@@ -366,7 +366,7 @@ defmodule Cgraph.Messaging do
 
     unread_message_ids = Repo.all(unread_query)
     
-    if length(unread_message_ids) > 0 do
+    unless Enum.empty?(unread_message_ids) do
       # read_at uses :utc_datetime (no microseconds)
       # inserted_at uses :utc_datetime_usec (with microseconds)
       # Note: ReadReceipt schema has timestamps(updated_at: false) - no updated_at field

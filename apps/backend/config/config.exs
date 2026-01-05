@@ -40,7 +40,40 @@ config :tailwind,
 # Configures Elixir's Logger
 config :logger, :console,
   format: "$time $metadata[$level] $message\n",
-  metadata: [:request_id]
+  metadata: [
+    :request_id,
+    # Request/Response
+    :method, :path, :status, :duration_ms, :status_category, :slow,
+    # User context
+    :user_id, :trace_id, :tenant_id, :user_agent, :remote_ip, :span_id,
+    # Workers/Jobs
+    :worker, :queue, :job_id, :attempt, :args, :error, :errors,
+    :duration_ms, :snooze_seconds, :name, :cron,
+    # Database
+    :query, :total_time_ms, :source,
+    # Rate limiting
+    :tier, :retry_after_seconds, :retry_after_ms, :ip, :duration_seconds,
+    # OAuth/Auth
+    :provider, :reason, :email, :expected, :received,
+    # Notifications
+    :email_type, :to, :notification_id, :sent, :failed, :count,
+    # Media
+    :upload_id,
+    # Feature flags
+    :flag, :config, :changes,
+    # Audit
+    :category, :event_type, :actor_id, :target_id, :ip_address, :metadata,
+    :admin_id, :action, :details, :cutoff,
+    # Channels
+    :channel_id, :latency_ms,
+    # Services
+    :service, :failure_count, :threshold, :success_count,
+    # Errors
+    :kind, :stacktrace, :error_type, :fingerprint, :context, :severity,
+    :issues, :data, :body,
+    # Workers specific
+    :deleted_count, :tags, :state, :resource_id
+  ]
 
 # Use Jason for JSON parsing
 config :phoenix, :json_library, Jason

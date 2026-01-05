@@ -1010,7 +1010,7 @@ defmodule Cgraph.DataExport do
       :ets.delete(@export_table, id)
     end)
     
-    if length(expired) > 0 do
+    unless Enum.empty?(expired) do
       Logger.info("[DataExport] Cleaned up #{length(expired)} expired exports")
     end
   end

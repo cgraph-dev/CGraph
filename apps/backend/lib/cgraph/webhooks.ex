@@ -765,10 +765,11 @@ defmodule Cgraph.Webhooks do
       end
     end)
     
-    if timestamp && length(signatures) > 0 do
-      {:ok, timestamp, signatures}
-    else
-      {:error, :invalid_header_format}
+    case {timestamp, signatures} do
+      {ts, [_ | _]} when not is_nil(ts) ->
+        {:ok, timestamp, signatures}
+      _ ->
+        {:error, :invalid_header_format}
     end
   end
   

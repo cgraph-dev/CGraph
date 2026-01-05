@@ -526,7 +526,7 @@ defmodule Cgraph.Idempotency do
       :ets.delete(@table, key)
     end)
     
-    if length(expired) > 0 do
+    unless Enum.empty?(expired) do
       Logger.debug("[Idempotency] Cleaned up #{length(expired)} expired records")
     end
   end
