@@ -311,7 +311,8 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           const response = await api.get('/api/v1/me');
-          const userData = response.data.user || response.data;
+          // Backend returns { data: { id, email, ... } }
+          const userData = response.data.data || response.data.user || response.data;
           set({
             user: mapUserFromApi(userData),
             isAuthenticated: true,
