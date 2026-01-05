@@ -325,12 +325,12 @@ defmodule Cgraph.ForumsTest do
       assert {:ok, _} = Forums.unsubscribe(forum, subscriber)
     end
 
-    test "is_subscribed?/2 checks subscription status", %{subscriber: subscriber, forum: forum} do
-      assert Forums.is_subscribed?(forum, subscriber) == false
+    test "subscribed?/2 checks subscription status", %{subscriber: subscriber, forum: forum} do
+      assert Forums.subscribed?(forum, subscriber) == false
 
       {:ok, _} = Forums.subscribe(forum, subscriber)
 
-      assert Forums.is_subscribed?(forum, subscriber) == true
+      assert Forums.subscribed?(forum, subscriber) == true
     end
   end
 

@@ -16,7 +16,7 @@ defmodule Cgraph.SecurityTest do
   alias Cgraph.Accounts
   alias Cgraph.Guardian
   alias Cgraph.Security.{AccountLockout, PasswordBreachCheck, TokenBlacklist, TOTP}
-  alias SecurityHeaders
+  alias CgraphWeb.Plugs.SecurityHeaders
 
   # ============================================================================
   # Token Blacklist Tests
