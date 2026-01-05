@@ -27,11 +27,11 @@ defmodule CgraphWeb.PresenceChannel do
   def join("presence:lobby", _params, socket) do
     user = socket.assigns.current_user
     
-    unless user do
-      {:error, %{reason: "authentication_required"}}
-    else
+    if user do
       send(self(), :after_join)
       {:ok, assign(socket, :tracked, false)}
+    else
+      {:error, %{reason: "authentication_required"}}
     end
   end
 

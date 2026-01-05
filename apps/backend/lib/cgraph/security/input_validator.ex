@@ -123,9 +123,8 @@ defmodule Cgraph.Security.InputValidator do
          :ok <- check_length(text, min_length, max_length),
          :ok <- check_sql_injection(text),
          :ok <- check_xss(text, allow_html),
-         :ok <- check_path_traversal(text),
-         {:ok, cleaned} <- sanitize_text(text, strip_whitespace, normalize_unicode) do
-      {:ok, cleaned}
+         :ok <- check_path_traversal(text) do
+      sanitize_text(text, strip_whitespace, normalize_unicode)
     end
   end
   
@@ -195,9 +194,9 @@ defmodule Cgraph.Security.InputValidator do
     
     errors = if String.length(password) < 8, do: ["Password must be at least 8 characters" | errors], else: errors
     errors = if String.length(password) > 128, do: ["Password must be at most 128 characters" | errors], else: errors
-    errors = if not Regex.match?(~r/[a-z]/, password), do: ["Password must contain a lowercase letter" | errors], else: errors
-    errors = if not Regex.match?(~r/[A-Z]/, password), do: ["Password must contain an uppercase letter" | errors], else: errors
-    errors = if not Regex.match?(~r/[0-9]/, password), do: ["Password must contain a number" | errors], else: errors
+    errors = unless Regex.match?(~r/[a-z]/, password), do: ["Password must contain a lowercase letter" | errors], else: errors
+    errors = unless Regex.match?(~r/[A-Z]/, password), do: ["Password must contain an uppercase letter" | errors], else: errors
+    errors = unless Regex.match?(~r/[0-9]/, password), do: ["Password must contain a number" | errors], else: errors
     
     # Check for common patterns
     errors = if Regex.match?(~r/^(.)\1+$/, password), do: ["Password cannot be all the same character" | errors], else: errors

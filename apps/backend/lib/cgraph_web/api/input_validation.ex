@@ -195,9 +195,8 @@ defmodule CgraphWeb.API.InputValidation do
              {:ok, v} <- check_inclusion(v, Keyword.get(rules, :in)),
              {:ok, v} <- check_exclusion(v, Keyword.get(rules, :not_in)),
              {:ok, v} <- check_custom(v, Keyword.get(rules, :custom)),
-             {:ok, v} <- check_security(v),
-             {:ok, v} <- apply_sanitizers(v, Keyword.get(rules, :sanitize)) do
-          {:ok, v}
+             {:ok, v} <- check_security(v) do
+          apply_sanitizers(v, Keyword.get(rules, :sanitize))
         end
     end
   end

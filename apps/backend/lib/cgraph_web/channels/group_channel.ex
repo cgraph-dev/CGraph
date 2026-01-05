@@ -84,9 +84,7 @@ defmodule CgraphWeb.GroupChannel do
       
       {:ok, socket} ->
         # Check permissions
-        unless Groups.can_send_messages?(member) do
-          {:reply, {:error, %{reason: "no_permission"}}, socket}
-        else
+        if Groups.can_send_messages?(member) do
           case Messaging.create_message(%{
             content: content,
             sender_id: user.id,
@@ -107,6 +105,8 @@ defmodule CgraphWeb.GroupChannel do
             {:error, changeset} ->
               {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
           end
+        else
+          {:reply, {:error, %{reason: "no_permission"}}, socket}
         end
     end
   end

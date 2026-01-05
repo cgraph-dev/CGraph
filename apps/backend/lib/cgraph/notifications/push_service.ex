@@ -544,10 +544,10 @@ defmodule Cgraph.Notifications.PushService do
       query
     end
     
-    query = if not Enum.empty?(exclude_device_ids) do
-      where(query, [pt], pt.device_id not in ^exclude_device_ids)
-    else
+    query = if Enum.empty?(exclude_device_ids) do
       query
+    else
+      where(query, [pt], pt.device_id not in ^exclude_device_ids)
     end
     
     Repo.all(query)

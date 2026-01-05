@@ -502,9 +502,8 @@ defmodule Cgraph.Crypto do
   """
   @spec envelope_decrypt(map(), key()) :: {:ok, binary()} | {:error, term()}
   def envelope_decrypt(envelope, kek) when byte_size(kek) == @aes_key_bytes do
-    with {:ok, dek} <- decrypt_compact(envelope.encrypted_dek, kek),
-         {:ok, plaintext} <- decrypt_compact(envelope.encrypted_data, dek) do
-      {:ok, plaintext}
+    with {:ok, dek} <- decrypt_compact(envelope.encrypted_dek, kek) do
+      decrypt_compact(envelope.encrypted_data, dek)
     end
   end
   

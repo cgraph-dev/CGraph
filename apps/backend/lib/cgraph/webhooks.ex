@@ -329,25 +329,26 @@ defmodule Cgraph.Webhooks do
   
   @impl true
   def handle_call({:create_endpoint, params}, _from, state) do
-    with :ok <- validate_endpoint_params(params) do
-      endpoint = %{
-        id: generate_endpoint_id(),
-        url: params.url,
-        events: params.events || ["*"],
-        secret: params[:secret] || generate_secret(),
-        active: Map.get(params, :active, true),
-        metadata: Map.get(params, :metadata, %{}),
-        failure_count: 0,
-        created_at: DateTime.utc_now(),
-        updated_at: DateTime.utc_now()
-      }
-      
-      new_endpoints = Map.put(state.endpoints, endpoint.id, endpoint)
-      
-      Logger.info("Created webhook endpoint: #{endpoint.id} for #{endpoint.url}")
-      
-      {:reply, {:ok, sanitize_endpoint(endpoint)}, %{state | endpoints: new_endpoints}}
-    else
+    case validate_endpoint_params(params) do
+      :ok ->
+        endpoint = %{
+          id: generate_endpoint_id(),
+          url: params.url,
+          events: params.events || ["*"],
+          secret: params[:secret] || generate_secret(),
+          active: Map.get(params, :active, true),
+          metadata: Map.get(params, :metadata, %{}),
+          failure_count: 0,
+          created_at: DateTime.utc_now(),
+          updated_at: DateTime.utc_now()
+        }
+        
+        new_endpoints = Map.put(state.endpoints, endpoint.id, endpoint)
+        
+        Logger.info("Created webhook endpoint: #{endpoint.id} for #{endpoint.url}")
+        
+        {:reply, {:ok, sanitize_endpoint(endpoint)}, %{state | endpoints: new_endpoints}}
+
       {:error, reason} ->
         {:reply, {:error, reason}, state}
     end
