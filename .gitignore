@@ -100,3 +100,5 @@ tmp/
 temp/
 *.bak
 *.tmp
+# Private documentation (developer only)
+docs/PrivateFolder/
