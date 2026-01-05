@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -63,10 +63,22 @@ export function VoiceMessageRecorder({
   const previewPlayer = useAudioPlayer(recordingUri || undefined);
   const previewStatus = useAudioPlayerStatus(previewPlayer);
   const isPlaying = previewStatus?.playing || false;
+  const playbackFinished = previewStatus && !previewStatus.playing && 
+    previewStatus.currentTime > 0 && 
+    previewStatus.duration > 0 && 
+    previewStatus.currentTime >= previewStatus.duration - 0.1;
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const meteringIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  
+  // Animated values for recording waveform bars (30 bars)
+  const waveformAnims = useRef<Animated.Value[]>(
+    Array.from({ length: 30 }, () => new Animated.Value(0.1))
+  ).current;
+  
+  // Current metering level for animations
+  const currentMeteringRef = useRef(0);
 
   // Request permissions on mount
   useEffect(() => {
@@ -136,6 +148,9 @@ export function VoiceMessageRecorder({
       setState('recording');
       setDuration(0);
       setWaveformData([]);
+      
+      // Reset all waveform animations
+      waveformAnims.forEach(anim => anim.setValue(0.1));
 
       // Start duration timer
       const startTime = Date.now();
@@ -150,13 +165,36 @@ export function VoiceMessageRecorder({
 
       // Start metering for waveform visualization
       // Note: expo-audio provides metering through recorderState
+      let barIndex = 0;
       meteringIntervalRef.current = setInterval(() => {
         if (recorderState.isRecording && recorderState.metering !== undefined) {
           // Convert dB to 0-1 range (metering is in dB, typically -160 to 0)
-          const normalizedLevel = Math.max(0, Math.min(1, (recorderState.metering + 60) / 60));
+          const normalizedLevel = Math.max(0.1, Math.min(1, (recorderState.metering + 60) / 60));
+          currentMeteringRef.current = normalizedLevel;
           setWaveformData(prev => [...prev, normalizedLevel].slice(-50));
+          
+          // Animate the current bar with smooth spring animation
+          Animated.spring(waveformAnims[barIndex % 30], {
+            toValue: normalizedLevel,
+            friction: 3,
+            tension: 100,
+            useNativeDriver: false,
+          }).start();
+          
+          // Move to next bar
+          barIndex++;
+          
+          // Also add some random variation to nearby bars for organic feel
+          const nearbyIndex = (barIndex + 1) % 30;
+          const variation = normalizedLevel * (0.5 + Math.random() * 0.5);
+          Animated.spring(waveformAnims[nearbyIndex], {
+            toValue: variation,
+            friction: 4,
+            tension: 80,
+            useNativeDriver: false,
+          }).start();
         }
-      }, 100);
+      }, 80);
 
     } catch (err) {
       console.error('Failed to start recording:', err);
@@ -166,6 +204,9 @@ export function VoiceMessageRecorder({
   }, [maxDuration, cleanup, audioRecorder, recorderState]);
 
   const stopRecording = useCallback(async () => {
+    // Guard: only stop if we're actually recording
+    if (state !== 'recording') return;
+
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
     if (timerRef.current) {
@@ -178,7 +219,10 @@ export function VoiceMessageRecorder({
     }
 
     try {
-      await audioRecorder.stop();
+      // Check recorder state before stopping
+      if (recorderState.isRecording) {
+        await audioRecorder.stop();
+      }
       const uri = audioRecorder.uri;
       if (uri) {
         setRecordingUri(uri);
@@ -188,7 +232,7 @@ export function VoiceMessageRecorder({
       console.error('Failed to stop recording:', err);
       setError('Failed to save recording. Please try again.');
     }
-  }, [audioRecorder]);
+  }, [audioRecorder, recorderState.isRecording, state]);
 
   const handleCancel = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -216,12 +260,21 @@ export function VoiceMessageRecorder({
       if (isPlaying) {
         previewPlayer.pause();
       } else {
-        previewPlayer.play();
+        // If playback finished (at the end), seek to beginning first
+        if (playbackFinished) {
+          previewPlayer.seekTo(0);
+          // Small delay to let seek complete before playing
+          setTimeout(() => {
+            previewPlayer.play();
+          }, 50);
+        } else {
+          previewPlayer.play();
+        }
       }
     } catch (err) {
       console.error('Failed to play recording:', err);
     }
-  }, [recordingUri, isPlaying, previewPlayer]);
+  }, [recordingUri, isPlaying, previewPlayer, playbackFinished]);
 
   // Update playback position from preview player status
   useEffect(() => {
@@ -251,27 +304,75 @@ export function VoiceMessageRecorder({
 
   // Render waveform visualization
   const renderWaveform = () => {
-    const bars = waveformData.length > 0 ? waveformData : Array(20).fill(0.1);
     const barWidth = 3;
     const barGap = 2;
     const maxHeight = 40;
+    
+    // During recording, use animated values for smooth real-time visualization
+    if (state === 'recording') {
+      return (
+        <View style={styles.waveformContainer}>
+          {waveformAnims.map((animValue, index) => (
+            <Animated.View
+              key={index}
+              style={[
+                styles.waveformBar,
+                {
+                  height: animValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [4, maxHeight],
+                  }),
+                  backgroundColor: colors.error,
+                  width: barWidth,
+                  marginHorizontal: barGap / 2,
+                },
+              ]}
+            />
+          ))}
+        </View>
+      );
+    }
+    
+    // For preview/other states, use static waveform data
+    const bars = waveformData.length > 0 ? waveformData : Array(30).fill(0.1);
+    const displayBars = bars.slice(-30);
+    
+    // Pad to 30 bars if needed
+    while (displayBars.length < 30) {
+      displayBars.unshift(0.1);
+    }
+    
+    // Calculate progress for preview mode waveform animation
+    let progressRatio = 0;
+    if (state === 'preview' && previewStatus?.duration && previewStatus.duration > 0) {
+      progressRatio = (previewStatus.currentTime || 0) / previewStatus.duration;
+    }
+    const progressIndex = Math.floor(progressRatio * displayBars.length);
 
     return (
       <View style={styles.waveformContainer}>
-        {bars.slice(-30).map((amplitude, index) => (
-          <View
-            key={index}
-            style={[
-              styles.waveformBar,
-              {
-                height: Math.max(4, amplitude * maxHeight),
-                backgroundColor: state === 'recording' ? colors.error : colors.primary,
-                width: barWidth,
-                marginHorizontal: barGap / 2,
-              },
-            ]}
-          />
-        ))}
+        {displayBars.map((amplitude, index) => {
+          // In preview mode, color bars based on playback progress
+          let barColor = colors.primary;
+          if (state === 'preview') {
+            barColor = index <= progressIndex ? colors.primary : colors.textSecondary;
+          }
+          
+          return (
+            <View
+              key={index}
+              style={[
+                styles.waveformBar,
+                {
+                  height: Math.max(4, amplitude * maxHeight),
+                  backgroundColor: barColor,
+                  width: barWidth,
+                  marginHorizontal: barGap / 2,
+                },
+              ]}
+            />
+          );
+        })}
       </View>
     );
   };
