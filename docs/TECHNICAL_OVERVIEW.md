@@ -807,16 +807,23 @@ end)
 
 **Prerequisites:**
 ```bash
-# Install asdf (version manager)
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf
-echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
+# Install asdf version manager (0.18+)
+# Linux: download binary release
+curl -fsSL https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-amd64.tar.gz | \
+  tar xz -C ~/.local/bin
+echo 'export PATH="$HOME/.local/bin:$HOME/.asdf/shims:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+
+# macOS: use Homebrew
+# brew install asdf
+# echo 'export PATH="$(brew --prefix)/opt/asdf/libexec/bin:$HOME/.asdf/shims:$PATH"' >> ~/.zshrc
 
 # Install runtimes
 asdf plugin add erlang
 asdf plugin add elixir
 asdf plugin add nodejs
 
-asdf install erlang 28.0
+asdf install erlang 28.3
 asdf install elixir 1.19.4-otp-28
 asdf install nodejs 22.11.0
 

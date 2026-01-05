@@ -63,13 +63,15 @@ cd apps/mobile && npx expo start    # Mobile: Expo DevTools
 
 | Tool | Version | Installation |
 |------|---------|--------------|
-| **Node.js** | 18+ | `nvm install 18` |
-| **pnpm** | 8+ | `npm install -g pnpm` |
-| **Elixir** | 1.14+ | `asdf install elixir 1.14.5` |
-| **Erlang** | 25+ | `asdf install erlang 25.3` |
-| **PostgreSQL** | 15+ | `docker-compose up -d postgres` or local install |
+| **Node.js** | 22+ | `asdf install nodejs 22.11.0` |
+| **pnpm** | 10+ | `npm install -g pnpm` |
+| **Elixir** | 1.19+ | `asdf install elixir 1.19.4-otp-28` |
+| **Erlang** | 28+ | `asdf install erlang 28.3` |
+| **PostgreSQL** | 16+ | `docker-compose up -d postgres` or local install |
 | **Redis** | 7+ | `docker-compose up -d redis` or local install |
 | **Docker** | Latest | [Docker Install](https://docs.docker.com/get-docker/) |
+
+> **Note:** We recommend using [asdf](https://asdf-vm.com/) v0.18+ for managing Erlang, Elixir, and Node.js versions. See the [Quickstart Guide](docs/QUICKSTART.md) for installation instructions.
 
 ### Initial Setup
 

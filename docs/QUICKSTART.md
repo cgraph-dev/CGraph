@@ -27,17 +27,19 @@ Before starting, ensure you have these tools installed. Listed versions are test
 
 **macOS (Homebrew):**
 ```bash
-# Install asdf version manager
+# Install asdf version manager (0.18+)
 brew install asdf
-echo -e "\n. $(brew --prefix asdf)/libexec/asdf.sh" >> ~/.zshrc
+
+# Add asdf to your shell (zsh)
+echo 'export PATH="$(brew --prefix)/opt/asdf/libexec/bin:$HOME/.asdf/shims:$PATH"' >> ~/.zshrc
 source ~/.zshrc
 
 # Install Erlang & Elixir via asdf
 asdf plugin add erlang
 asdf plugin add elixir
-asdf install erlang 28.0   # ~10 minutes compile time
+asdf install erlang 28.3        # OTP 28 - compile time ~10 min
 asdf install elixir 1.19.4-otp-28
-asdf global erlang 28.0
+asdf global erlang 28.3
 asdf global elixir 1.19.4-otp-28
 
 # Install other dependencies
@@ -54,17 +56,21 @@ sudo apt update
 sudo apt install curl git build-essential autoconf m4 libncurses5-dev \
   libssl-dev libncurses-dev ffmpeg
 
-# Install asdf
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.16.0
-echo '. "$HOME/.asdf/asdf.sh"' >> ~/.bashrc
+# Install asdf version manager (0.18+)
+# Download and extract the Go binary release
+curl -fsSL https://github.com/asdf-vm/asdf/releases/download/v0.18.0/asdf-v0.18.0-linux-amd64.tar.gz | \
+  tar xz -C ~/.local/bin
+
+# Add asdf and shims to your PATH
+echo 'export PATH="$HOME/.local/bin:$HOME/.asdf/shims:$PATH"' >> ~/.bashrc
 source ~/.bashrc
 
 # Install Erlang & Elixir
 asdf plugin add erlang
 asdf plugin add elixir
-asdf install erlang 28.0
+asdf install erlang 28.3
 asdf install elixir 1.19.4-otp-28
-asdf global erlang 28.0
+asdf global erlang 28.3
 asdf global elixir 1.19.4-otp-28
 
 # Install Node.js
