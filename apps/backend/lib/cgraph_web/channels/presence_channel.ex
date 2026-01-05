@@ -18,7 +18,6 @@ defmodule CgraphWeb.PresenceChannel do
   use CgraphWeb, :channel
   
   alias Cgraph.Presence
-  alias CgraphWeb.UserSocket
   
   @heartbeat_interval_ms 15_000
   @offline_grace_period_ms 8_000
@@ -41,7 +40,8 @@ defmodule CgraphWeb.PresenceChannel do
     user = socket.assigns.current_user
     
     # Track user in global presence with device metadata
-    Presence.track_user(socket, user.id, %{
+    # Using "lobby" as the room_id for the global presence channel
+    Presence.track_user(socket, user.id, "lobby", %{
       device_type: socket.assigns[:device_type] || "unknown",
       platform: socket.assigns[:platform] || "web",
       app_state: "foreground"
@@ -62,7 +62,7 @@ defmodule CgraphWeb.PresenceChannel do
     user = socket.assigns.current_user
     
     if socket.assigns[:tracked] do
-      Presence.heartbeat(socket, user.id)
+      Presence.heartbeat(socket, user.id, "lobby")
     end
     
     {:noreply, socket}
@@ -71,7 +71,7 @@ defmodule CgraphWeb.PresenceChannel do
   @impl true
   def handle_in("heartbeat", _params, socket) do
     user = socket.assigns.current_user
-    Presence.heartbeat(socket, user.id)
+    Presence.heartbeat(socket, user.id, "lobby")
     {:reply, :ok, socket}
   end
 
@@ -79,7 +79,7 @@ defmodule CgraphWeb.PresenceChannel do
   def handle_in("set_status", %{"status" => status} = params, socket) do
     user = socket.assigns.current_user
     
-    case Presence.update_status(socket, user.id, status) do
+    case Presence.update_status(socket, user.id, "lobby", status) do
       {:ok, _} ->
         # Broadcast status change to all connected clients
         broadcast_from(socket, "user_status_changed", %{

@@ -235,20 +235,24 @@ class SocketManager {
         });
         
         this.onlineUsers.set(conversationId, onlineSet);
-        logger.log(`Presence sync for ${conversationId}:`, Array.from(onlineSet));
+        // Only log if there's a meaningful change
+        if (import.meta.env.DEV && (previousSet.size !== onlineSet.size || 
+            Array.from(previousSet).some(u => !onlineSet.has(u)))) {
+          logger.log(`Presence sync for ${conversationId}:`, Array.from(onlineSet));
+        }
       });
       
-      // Handle join/leave events
+      // Note: onJoin/onLeave are called for every presence update (including typing changes)
+      // We rely primarily on onSync for the authoritative state
       presence.onJoin((id: string) => {
-        logger.log(`User ${id} joined ${conversationId}`);
+        // Don't log - too noisy due to presence updates
         this.onlineUsers.get(conversationId)?.add(id);
-        this.notifyStatusChange(conversationId, id, true);
+        // Status changes are handled by onSync
       });
       
       presence.onLeave((id: string) => {
-        logger.log(`User ${id} left ${conversationId}`);
-        this.onlineUsers.get(conversationId)?.delete(id);
-        this.notifyStatusChange(conversationId, id, false);
+        // Status changes are handled by onSync
+        // onLeave fires for every presence update, not just when user truly leaves
       });
 
       channel.on('new_message', (payload) => {

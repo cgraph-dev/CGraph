@@ -381,7 +381,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
       });
       const rawMessage = response.data.data || response.data.message || response.data;
       const normalized = normalizeMessage(rawMessage);
-      setMessages((prev) => [...prev, normalized]);
+      // Add with deduplication - socket may also deliver this message
+      setMessages((prev) => {
+        const exists = prev.some(m => m.id === normalized.id);
+        if (exists) return prev;
+        return [...prev, normalized];
+      });
     } catch (error) {
       console.error('Error sending message:', error);
       setInputText(content);
@@ -420,7 +425,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
       
       const rawMessage = response.data.data || response.data.message || response.data;
       const normalized = normalizeMessage(rawMessage);
-      setMessages((prev) => [...prev, normalized]);
+      // Add with deduplication - socket may also deliver this message
+      setMessages((prev) => {
+        const exists = prev.some(m => m.id === normalized.id);
+        if (exists) return prev;
+        return [...prev, normalized];
+      });
       
       // Clean up the temporary file using legacy API
       await deleteAsync(voiceData.uri, { idempotent: true });
@@ -458,25 +468,25 @@ export default function ConversationScreen({ navigation, route }: Props) {
   };
   
   const renderMessage = useCallback(({ item }: { item: Message }) => {
-    // Extract current user ID, ensuring string format for comparison
-    const currentUserId = user?.id ? String(user.id) : null;
+    // Extract current user ID with robust handling
+    // Ensure it's a trimmed non-empty string for accurate comparison
+    const rawUserId = user?.id;
+    const currentUserId = rawUserId ? String(rawUserId).trim() : '';
     
     // Extract message sender ID with comprehensive fallback chain
-    // The normalizer should have already set sender_id as a string
-    const messageSenderId = item.sender_id 
-      ? String(item.sender_id) 
-      : (item as any).senderId 
-        ? String((item as any).senderId) 
-        : item.sender?.id 
-          ? String(item.sender.id) 
-          : null;
+    // Check snake_case first (from normalizer), then camelCase, then nested sender.id
+    const rawSenderId = item.sender_id 
+      || (item as any).senderId 
+      || item.sender?.id 
+      || '';
+    const messageSenderId = rawSenderId ? String(rawSenderId).trim() : '';
     
-    // Determine message ownership - both IDs must exist and match
-    const isOwnMessage = Boolean(
-      currentUserId && 
-      messageSenderId && 
-      currentUserId === messageSenderId
-    );
+    // Determine message ownership - both IDs must be non-empty and match exactly
+    // This prevents false positives from empty strings or null values
+    const isOwnMessage = 
+      currentUserId.length > 0 && 
+      messageSenderId.length > 0 && 
+      currentUserId === messageSenderId;
     
     // Get sender display name with fallbacks
     const senderDisplayName = item.sender?.display_name || (item.sender as any)?.displayName || item.sender?.username || 'User';

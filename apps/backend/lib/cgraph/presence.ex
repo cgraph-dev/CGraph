@@ -462,7 +462,10 @@ defmodule Cgraph.Presence do
     end)
   end
   
-  defp merge_multi_device_presence(metas) when is_list(metas) do
+  @doc """
+  Merge presence metadata across multiple devices into a single unified view.
+  """
+  def merge_multi_device_presence(metas) when is_list(metas) do
     base = %{
       devices: [],
       status: "offline",

@@ -71,10 +71,24 @@ defmodule CgraphWeb.ConversationChannel do
 
   @impl true
   def handle_info({:clear_typing, user_id}, socket) do
-    if socket.assigns.current_user.id == user_id do
+    user = socket.assigns.current_user
+    
+    if user.id == user_id do
+      # Update presence to clear typing status
       Presence.update(socket, user_id, fn meta ->
-        Map.put(meta, :typing, false)
+        meta
+        |> Map.put(:typing, false)
+        |> Map.put(:typing_started_at, nil)
       end)
+      
+      # Broadcast typing stopped to other clients
+      broadcast_from!(socket, "typing", %{
+        user_id: user_id,
+        username: user.username,
+        is_typing: false,
+        typing: false,
+        started_at: nil
+      })
     end
     {:noreply, socket}
   end

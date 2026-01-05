@@ -17,7 +17,6 @@ defmodule CgraphWeb.UserChannel do
   
   alias Cgraph.Presence
   alias Cgraph.Accounts
-  alias Cgraph.Relationships
   
   @max_contact_batch 200
 
@@ -134,7 +133,7 @@ defmodule CgraphWeb.UserChannel do
   def handle_in("update_push_token", %{"token" => token, "platform" => platform}, socket) do
     user = socket.assigns.current_user
     
-    case Accounts.upsert_push_token(user.id, token, platform) do
+    case Accounts.register_push_token(user, token, platform) do
       {:ok, _} -> {:reply, :ok, socket}
       {:error, _} -> {:reply, {:error, %{reason: "save_failed"}}, socket}
     end
@@ -142,13 +141,10 @@ defmodule CgraphWeb.UserChannel do
 
   @impl true
   def handle_in("mark_notifications_read", %{"notification_ids" => ids}, socket) when is_list(ids) do
-    user = socket.assigns.current_user
-    
-    # Mark notifications as read (implementation depends on notification system)
+    # Mark notifications as read
     _updated = Enum.each(ids, fn id ->
-      # Assuming a notification context exists
       try do
-        Cgraph.Notifications.mark_read(user.id, id)
+        Cgraph.Notifications.mark_as_read(id)
       rescue
         _ -> :ok
       end
@@ -184,21 +180,37 @@ defmodule CgraphWeb.UserChannel do
   end
 
   defp get_contact_ids(user_id) do
-    # Try to use the Relationships context if it exists
+    # Query conversations for unique participant IDs
+    # The Relationships module is not implemented yet
+    import Ecto.Query
+    
     try do
-      Relationships.list_friend_ids(user_id)
+      alias Cgraph.Messaging.ConversationParticipant
+      alias Cgraph.Repo
+      
+      # Get all conversations the user is in
+      conversation_ids = ConversationParticipant
+        |> where([cp], cp.user_id == ^user_id)
+        |> select([cp], cp.conversation_id)
+        |> Repo.all()
+      
+      # Get all other participants in those conversations
+      ConversationParticipant
+        |> where([cp], cp.conversation_id in ^conversation_ids)
+        |> where([cp], cp.user_id != ^user_id)
+        |> select([cp], cp.user_id)
+        |> distinct(true)
+        |> Repo.all()
     rescue
-      _ ->
-        # Fallback: query conversations for unique participant IDs
-        Cgraph.Messaging.list_conversation_participant_ids(user_id)
+      _ -> []
     end
   end
 
   defp get_user_status(user_id) do
     case Presence.user_online?(user_id) do
       true ->
-        presence = Presence.get_user_presence("users:online", user_id)
-        merged = if presence, do: Presence.merge_multi_device_presence(presence), else: %{}
+        # get_user_presence/1 returns already merged presence
+        merged = Presence.get_user_presence(user_id) || %{}
         
         %{
           online: true,
@@ -218,13 +230,29 @@ defmodule CgraphWeb.UserChannel do
   end
 
   defp can_view_presence?(viewer_id, target_id) do
-    # Check if users are friends or in a conversation together
+    # Check if users share a conversation together
+    import Ecto.Query
+    
     try do
-      Relationships.are_friends?(viewer_id, target_id) ||
-      Cgraph.Messaging.share_conversation?(viewer_id, target_id)
+      alias Cgraph.Messaging.ConversationParticipant
+      alias Cgraph.Repo
+      
+      # Get conversations viewer is in
+      viewer_conversations = ConversationParticipant
+        |> where([cp], cp.user_id == ^viewer_id)
+        |> select([cp], cp.conversation_id)
+        |> Repo.all()
+        |> MapSet.new()
+      
+      # Check if target is in any of those conversations
+      target_in_shared = ConversationParticipant
+        |> where([cp], cp.user_id == ^target_id)
+        |> where([cp], cp.conversation_id in ^MapSet.to_list(viewer_conversations))
+        |> Repo.exists?()
+      
+      target_in_shared
     rescue
       error ->
-        # Fail closed for security - deny access on error
         require Logger
         Logger.warning("Presence authorization check failed: #{inspect(error)}")
         false

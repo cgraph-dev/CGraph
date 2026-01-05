@@ -373,19 +373,33 @@ class SocketManager {
           });
           
           this.onlineUsers.set(conversationId, onlineSet);
-          logger.log(`Presence sync for ${conversationId}:`, Array.from(onlineSet));
+          // Only log if there's a meaningful change to reduce noise
+          if (__DEV__ && (previousSet.size !== onlineSet.size || 
+              Array.from(previousSet).some(u => !onlineSet.has(u)))) {
+            logger.log(`Presence sync for ${conversationId}:`, Array.from(onlineSet));
+          }
         });
         
+        // Note: onJoin/onLeave are called for every presence update (including typing changes)
+        // We rely on onSync for the authoritative state to avoid notification spam
         presence.onJoin((id: string) => {
-          logger.log(`User ${id} joined ${conversationId}`);
+          // Only log in dev mode and avoid excessive logging
+          if (__DEV__) {
+            // Don't log - onSync handles state already
+          }
           this.onlineUsers.get(conversationId)?.add(id);
-          this.notifyStatusChange(conversationId, id, true);
         });
         
-        presence.onLeave((id: string) => {
-          logger.log(`User ${id} left ${conversationId}`);
-          this.onlineUsers.get(conversationId)?.delete(id);
-          this.notifyStatusChange(conversationId, id, false);
+        presence.onLeave((id: string, _current: unknown, leftPresences: unknown) => {
+          // Only notify offline if ALL presences for this user have left
+          const stillOnline = presence.list((uid: string) => uid === id).length > 0;
+          if (!stillOnline) {
+            if (__DEV__) {
+              logger.log(`User ${id} fully left ${conversationId}`);
+            }
+            this.onlineUsers.get(conversationId)?.delete(id);
+            this.notifyStatusChange(conversationId, id, false);
+          }
         });
       }
       

@@ -361,13 +361,28 @@ export default function Conversation() {
             {/* Messages */}
             <div className="space-y-1">
               {group.messages.map((message, msgIndex) => {
-                // Use string coercion for robust comparison across different ID formats
-                // Backend may send sender_id while frontend uses senderId - normalizer handles both
-                const messageSenderId = String(message.senderId || message.sender?.id || '');
-                const currentUserId = String(user?.id || '');
-                const isOwn = messageSenderId !== '' && messageSenderId === currentUserId;
+                // Extract sender ID with comprehensive fallback chain
+                // Check both camelCase and snake_case, plus nested sender.id
+                const rawSenderId = message.senderId 
+                  || (message as any).sender_id 
+                  || message.sender?.id 
+                  || (message.sender as any)?.user_id 
+                  || '';
+                const messageSenderId = rawSenderId ? String(rawSenderId).trim() : '';
+                
+                // Extract current user ID with same robust handling
+                const rawUserId = user?.id || (user as any)?.userId || '';
+                const currentUserId = rawUserId ? String(rawUserId).trim() : '';
+                
+                // Message is own if both IDs exist and match exactly
+                const isOwn = messageSenderId.length > 0 
+                  && currentUserId.length > 0 
+                  && messageSenderId === currentUserId;
+                
                 const prevMessage = group.messages[msgIndex - 1];
-                const prevSenderId = prevMessage ? String(prevMessage.senderId || prevMessage.sender?.id || '') : '';
+                const prevSenderId = prevMessage 
+                  ? String(prevMessage.senderId || (prevMessage as any).sender_id || prevMessage.sender?.id || '').trim() 
+                  : '';
                 const showAvatar =
                   !isOwn &&
                   (msgIndex === 0 || prevSenderId !== messageSenderId);
