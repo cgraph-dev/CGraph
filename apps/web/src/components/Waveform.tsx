@@ -5,6 +5,8 @@ interface WaveformProps {
   data: number[];
   /** Current playback progress (0-1) */
   progress?: number;
+  /** Whether audio is currently playing */
+  isPlaying?: boolean;
   /** Color for played portion */
   playedColor?: string;
   /** Color for unplayed portion */
@@ -28,10 +30,12 @@ interface WaveformProps {
  * 
  * Renders a canvas-based waveform that shows playback progress
  * and supports click-to-seek functionality.
+ * Includes animated bars during playback.
  */
 export const Waveform = memo(function Waveform({
   data,
   progress = 0,
+  isPlaying = false,
   playedColor = '#3b82f6',
   unplayedColor = '#d1d5db',
   height = 40,
@@ -43,8 +47,10 @@ export const Waveform = memo(function Waveform({
 }: WaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const timeRef = useRef<number>(0);
 
-  // Draw waveform on canvas
+  // Draw waveform on canvas with optional animation
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !data.length) return;
@@ -57,33 +63,80 @@ export const Waveform = memo(function Waveform({
     const barCount = data.length;
     const canvasWidth = barCount * totalBarWidth;
 
-    // Set canvas dimensions
+    // Set canvas dimensions once
     canvas.width = canvasWidth * dpr;
     canvas.height = height * dpr;
     canvas.style.width = `${canvasWidth}px`;
     canvas.style.height = `${height}px`;
     ctx.scale(dpr, dpr);
 
-    // Clear canvas
-    ctx.clearRect(0, 0, canvasWidth, height);
+    const draw = (timestamp?: number) => {
+      // Clear canvas
+      ctx.clearRect(0, 0, canvasWidth, height);
 
-    // Calculate which bar marks the progress boundary
-    const progressBarIndex = Math.floor(progress * barCount);
+      // Calculate which bar marks the progress boundary
+      const progressBarIndex = Math.floor(progress * barCount);
 
-    // Draw bars
-    data.forEach((value, index) => {
-      const normalizedValue = Math.max(0.05, Math.min(1, value));
-      const barHeight = normalizedValue * height;
-      const x = index * totalBarWidth;
-      const y = (height - barHeight) / 2;
+      // Animation time for wave effect
+      const time = timestamp ? timestamp / 1000 : 0;
+      timeRef.current = time;
 
-      // Choose color based on progress
-      ctx.fillStyle = index <= progressBarIndex ? playedColor : unplayedColor;
+      // Draw bars
+      data.forEach((value, index) => {
+        let normalizedValue = Math.max(0.05, Math.min(1, value));
+        
+        // Apply wave animation when playing
+        if (isPlaying) {
+          // Create a wave effect that ripples through bars near the playhead
+          const distanceFromPlayhead = Math.abs(index - progressBarIndex);
+          const waveInfluence = Math.max(0, 1 - distanceFromPlayhead / 8);
+          
+          // Multiple sine waves for organic feel
+          const wave1 = Math.sin(time * 6 + index * 0.4) * 0.15;
+          const wave2 = Math.sin(time * 8 + index * 0.6) * 0.1;
+          const wave3 = Math.cos(time * 4 + index * 0.3) * 0.08;
+          
+          // Bars near playhead animate more
+          const playheadBoost = waveInfluence * (wave1 + wave2);
+          // All played bars have subtle animation
+          const playedAnimation = index <= progressBarIndex ? (wave2 + wave3) : 0;
+          
+          normalizedValue = Math.max(0.1, Math.min(1, normalizedValue + playheadBoost + playedAnimation));
+        }
 
-      // Draw rounded rectangle
-      roundedRect(ctx, x, y, barWidth, barHeight, barRadius);
-    });
-  }, [data, progress, playedColor, unplayedColor, height, barWidth, barGap, barRadius]);
+        const barHeight = normalizedValue * height;
+        const x = index * totalBarWidth;
+        const y = (height - barHeight) / 2;
+
+        // Choose color based on progress
+        ctx.fillStyle = index <= progressBarIndex ? playedColor : unplayedColor;
+
+        // Draw rounded rectangle
+        roundedRect(ctx, x, y, barWidth, barHeight, barRadius);
+      });
+
+      // Continue animation loop if playing
+      if (isPlaying) {
+        animationRef.current = requestAnimationFrame(draw);
+      }
+    };
+
+    // Initial draw
+    draw();
+
+    // Start animation loop if playing
+    if (isPlaying) {
+      animationRef.current = requestAnimationFrame(draw);
+    }
+
+    // Cleanup animation on unmount or when deps change
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+    };
+  }, [data, progress, isPlaying, playedColor, unplayedColor, height, barWidth, barGap, barRadius]);
 
   // Handle click for seeking
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {

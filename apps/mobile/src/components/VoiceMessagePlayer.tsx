@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
+import { useAudioPlayer, useAudioPlayerStatus, AudioStatus, setAudioModeAsync } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -34,37 +34,124 @@ interface VoiceMessagePlayerProps {
  * - Duration display with current position
  * - Loading state handling
  * - Error handling with retry
+ * 
+ * Uses expo-audio (SDK 54+) for modern audio playback.
  */
 export function VoiceMessagePlayer({
   audioUrl,
-  duration,
+  duration: initialDuration,
   waveformData,
   isSender = false,
   style,
 }: VoiceMessagePlayerProps) {
   const { colors } = useTheme();
-  const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(initialDuration || 0);
+  const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [waveform, setWaveform] = useState<number[]>(
     waveformData || generatePlaceholderWaveform(30)
   );
-
-  const soundRef = useRef<Audio.Sound | null>(null);
+  const waveformContainerRef = useRef<View>(null);
   const progressAnim = useRef(new Animated.Value(0)).current;
+  
+  // Create audio player with expo-audio hook
+  const player = useAudioPlayer(audioUrl);
+  const status = useAudioPlayerStatus(player);
+  
+  // Derive playing state from player status
+  const isPlaying = status.playing;
+  
+  // Create animated values for each waveform bar
+  const barAnimations = useMemo(() => 
+    waveform.map(() => new Animated.Value(1)), 
+    [waveform.length]
+  );
 
-  // Cleanup on unmount
+  // Configure audio mode on mount
   useEffect(() => {
-    return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync();
-        soundRef.current = null;
-      }
-    };
+    setAudioModeAsync({
+      playsInSilentMode: true,
+    });
   }, []);
+
+  // Handle status updates from expo-audio
+  useEffect(() => {
+    if (!status) return;
+    
+    const { currentTime: positionSec, duration: durationSec, playing } = status;
+    
+    // Update duration if we got it from the audio
+    if (durationSec && durationSec > 0) {
+      setAudioDuration(durationSec);
+    }
+    
+    // Update current time and progress
+    setCurrentTime(positionSec || 0);
+    const effectiveDuration = durationSec || audioDuration;
+    if (effectiveDuration > 0 && positionSec !== undefined) {
+      setProgress(positionSec / effectiveDuration);
+    }
+    
+    // Handle playback finished - reset to beginning
+    if (!playing && positionSec !== undefined && audioDuration > 0) {
+      const duration = durationSec || audioDuration;
+      // If we're at the end (within 100ms), reset for replay
+      if (positionSec >= duration - 0.1) {
+        setProgress(0);
+        setCurrentTime(0);
+        player.seekTo(0);
+      }
+    }
+    
+    setIsLoading(false);
+  }, [status, audioDuration, player]);
+
+  // Animate waveform bars when playing
+  useEffect(() => {
+    if (isPlaying) {
+      const animations = barAnimations.map((anim, index) => {
+        const delay = index * 30; // Staggered start
+        return Animated.loop(
+          Animated.sequence([
+            Animated.delay(delay % 300),
+            Animated.timing(anim, {
+              toValue: 1.3,
+              duration: 200 + (index % 3) * 50,
+              useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+              toValue: 0.85,
+              duration: 200 + ((index + 1) % 3) * 50,
+              useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+              toValue: 1,
+              duration: 150,
+              useNativeDriver: true,
+            }),
+          ])
+        );
+      });
+      
+      animations.forEach(anim => anim.start());
+      
+      return () => {
+        animations.forEach(anim => anim.stop());
+        barAnimations.forEach(anim => anim.setValue(1));
+      };
+    } else {
+      // Reset all animations when not playing
+      barAnimations.forEach(anim => {
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 100,
+          useNativeDriver: true,
+        }).start();
+      });
+    }
+  }, [isPlaying, barAnimations]);
 
   // Update progress animation
   useEffect(() => {
@@ -75,92 +162,32 @@ export function VoiceMessagePlayer({
     }).start();
   }, [progress, progressAnim]);
 
-  const loadSound = useCallback(async () => {
-    if (soundRef.current) return true;
-    
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Configure audio session for playback
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: false,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
-      });
-
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: audioUrl },
-        { shouldPlay: false },
-        onPlaybackStatusUpdate
-      );
-
-      soundRef.current = sound;
-      setIsLoaded(true);
-      setIsLoading(false);
-      return true;
-    } catch (err) {
-      console.error('Failed to load audio:', err);
-      setError('Failed to load audio');
-      setIsLoading(false);
-      return false;
-    }
-  }, [audioUrl]);
-
-  const onPlaybackStatusUpdate = useCallback((status: any) => {
-    if (!status.isLoaded) {
-      if (status.error) {
-        console.error('Playback error:', status.error);
-        setError('Playback error');
-        setIsPlaying(false);
-      }
-      return;
-    }
-
-    const positionSec = status.positionMillis / 1000;
-    const durationSec = status.durationMillis ? status.durationMillis / 1000 : duration;
-    
-    setCurrentTime(positionSec);
-    setProgress(durationSec > 0 ? positionSec / durationSec : 0);
-
-    if (status.didJustFinish) {
-      setIsPlaying(false);
-      setProgress(0);
-      setCurrentTime(0);
-      // Reset position to start
-      soundRef.current?.setPositionAsync(0);
-    }
-  }, [duration]);
-
   const handlePlayPause = useCallback(async () => {
     await Haptics.selectionAsync();
 
     if (error) {
-      // Retry loading
       setError(null);
-      if (soundRef.current) {
-        await soundRef.current.unloadAsync();
-        soundRef.current = null;
-        setIsLoaded(false);
+    }
+
+    try {
+      if (isPlaying) {
+        player.pause();
+      } else {
+        // Check if at end and reset first
+        const duration = status.duration || audioDuration;
+        const position = status.currentTime || 0;
+        if (duration > 0 && position >= duration - 0.1) {
+          player.seekTo(0);
+          setProgress(0);
+          setCurrentTime(0);
+        }
+        player.play();
       }
+    } catch (err) {
+      console.error('Play/pause error:', err);
+      setError('Playback error');
     }
-
-    if (!isLoaded) {
-      const loaded = await loadSound();
-      if (!loaded) return;
-    }
-
-    if (!soundRef.current) return;
-
-    if (isPlaying) {
-      await soundRef.current.pauseAsync();
-      setIsPlaying(false);
-    } else {
-      await soundRef.current.playAsync();
-      setIsPlaying(true);
-    }
-  }, [isPlaying, isLoaded, error, loadSound]);
+  }, [isPlaying, player, status, audioDuration, error]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -168,37 +195,66 @@ export function VoiceMessagePlayer({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Render waveform with progress overlay
+  // Handle seek when user taps on waveform
+  const handleSeek = useCallback(async (event: any) => {
+    const { locationX } = event.nativeEvent;
+    
+    // Measure the waveform container width
+    if (waveformContainerRef.current) {
+      waveformContainerRef.current.measure((_x: number, _y: number, width: number) => {
+        if (width > 0 && audioDuration > 0) {
+          const newProgress = Math.max(0, Math.min(1, locationX / width));
+          const newPosition = newProgress * audioDuration;
+          
+          setProgress(newProgress);
+          setCurrentTime(newPosition);
+          
+          player.seekTo(newPosition);
+        }
+      });
+    }
+  }, [audioDuration, player]);
+
+  // Waveform rendering constants
+  const barWidth = 2;
+  const barGap = 1.5;
+  const maxHeight = 24;
+
+  // Render waveform with progress overlay and animation
   const renderWaveform = () => {
-    const barWidth = 2;
-    const barGap = 1.5;
-    const maxHeight = 24;
-
     return (
-      <View style={styles.waveformContainer}>
-        {waveform.map((amplitude, index) => {
-          // Calculate if this bar should be "played" based on progress
-          const barProgress = index / waveform.length;
-          const isPlayed = barProgress <= progress;
-
-          return (
-            <View
-              key={index}
-              style={[
-                styles.waveformBar,
-                {
-                  height: Math.max(4, amplitude * maxHeight),
-                  width: barWidth,
-                  marginHorizontal: barGap / 2,
-                  backgroundColor: isPlayed
-                    ? (isSender ? '#fff' : colors.primary)
-                    : (isSender ? 'rgba(255,255,255,0.4)' : colors.border),
-                },
-              ]}
-            />
-          );
-        })}
-      </View>
+      <TouchableOpacity 
+        activeOpacity={0.8}
+        onPress={handleSeek}
+      >
+        <View 
+          ref={waveformContainerRef}
+          style={styles.waveformContainer}
+        >
+          {waveform.map((amplitude, index) => {
+            const barProgress = index / waveform.length;
+            const isPlayed = barProgress <= progress;
+            
+            return (
+              <Animated.View
+                key={index}
+                style={[
+                  styles.waveformBar,
+                  {
+                    height: Math.max(4, amplitude * maxHeight),
+                    width: barWidth,
+                    marginHorizontal: barGap / 2,
+                    backgroundColor: isPlayed
+                      ? (isSender ? '#fff' : colors.primary)
+                      : (isSender ? 'rgba(255,255,255,0.4)' : colors.border),
+                    transform: [{ scaleY: barAnimations[index] || 1 }],
+                  },
+                ]}
+              />
+            );
+          })}
+        </View>
+      </TouchableOpacity>
     );
   };
 
@@ -242,7 +298,7 @@ export function VoiceMessagePlayer({
           </Text>
           <Text style={[styles.separator, { color: secondaryColor }]}> / </Text>
           <Text style={[styles.duration, { color: secondaryColor }]}>
-            {formatTime(duration)}
+            {formatTime(audioDuration)}
           </Text>
         </View>
       </View>

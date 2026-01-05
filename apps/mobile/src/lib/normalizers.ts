@@ -79,12 +79,12 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
       mimeType: (rawMetadata.mimeType ?? rawMetadata.mime_type) as string,
       duration: rawMetadata.duration as number,
       waveform: rawMetadata.waveform as number[],
-      thumbnailUrl: resolveMediaUrl(rawMetadata.thumbnailUrl as string ?? rawMetadata.thumbnail_url as string),
+      thumbnail: resolveMediaUrl(rawMetadata.thumbnailUrl as string ?? rawMetadata.thumbnail_url as string ?? rawMetadata.thumbnail as string),
     };
   }
   
   // If metadata.url is still missing, try attachment and root-level fields
-  if (!metadata.url) {
+  if (!metadata || !metadata.url) {
     const attachmentUrl = attachment?.url as string | undefined;
     const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
     
@@ -101,7 +101,7 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
         mimeType: (attachmentMimeType ?? raw.fileMimeType ?? raw.file_mime_type) as string,
         duration: rawMetadata?.duration as number,
         waveform: rawMetadata?.waveform as number[],
-        thumbnailUrl: resolveMediaUrl(attachmentThumbnail ?? raw.thumbnailUrl as string ?? raw.thumbnail_url as string),
+        thumbnail: resolveMediaUrl(attachmentThumbnail ?? raw.thumbnailUrl as string ?? raw.thumbnail_url as string ?? raw.thumbnail as string),
       };
     }
   }

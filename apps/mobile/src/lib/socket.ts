@@ -210,7 +210,7 @@ class SocketManager {
       const timeout = setTimeout(() => {
         this.updateTypingState(conversationId, userId, false);
       }, this.TYPING_TIMEOUT_MS);
-      this.typingTimeouts.set(timeoutKey, timeout);
+      this.typingTimeouts.set(timeoutKey, timeout as unknown as NodeJS.Timeout);
     } else {
       conversationTyping.delete(userId);
     }
@@ -415,13 +415,14 @@ class SocketManager {
       if (topic.startsWith('conversation:')) {
         const conversationId = topic.replace('conversation:', '');
         
-        channel.on('typing', (payload: { user_id: string; username?: string; is_typing?: boolean; typing?: boolean }) => {
+        channel.on('typing', (payload: unknown) => {
           // Handle both key formats from backend
-          const isTyping = payload.is_typing ?? payload.typing ?? false;
-          const userId = payload.user_id;
+          const typedPayload = payload as { user_id: string; username?: string; is_typing?: boolean; typing?: boolean };
+          const isTyping = typedPayload.is_typing ?? typedPayload.typing ?? false;
+          const userId = typedPayload.user_id;
           
           logger.log(`[${topic}] Typing indicator:`, { userId, isTyping });
-          this.updateTypingState(conversationId, userId, isTyping, payload.username);
+          this.updateTypingState(conversationId, userId, isTyping, typedPayload.username);
         });
       }
     }

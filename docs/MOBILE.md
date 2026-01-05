@@ -1228,6 +1228,92 @@ async function takePhoto() {
 }
 ```
 
+### Audio Recording and Playback
+
+CGraph uses `expo-audio` for voice message recording and playback. The library provides modern React hooks for managing audio lifecycle.
+
+```tsx
+// Voice Message Playback
+import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
+
+function VoicePlayer({ audioUrl }: { audioUrl: string }) {
+  const player = useAudioPlayer(audioUrl);
+  const status = useAudioPlayerStatus(player);
+  
+  useEffect(() => {
+    // Configure audio for playback
+    setAudioModeAsync({
+      playsInSilentMode: true,
+    });
+  }, []);
+  
+  const handlePlayPause = () => {
+    if (status.playing) {
+      player.pause();
+    } else {
+      player.play();
+    }
+  };
+  
+  return (
+    <TouchableOpacity onPress={handlePlayPause}>
+      <Text>{status.playing ? 'Pause' : 'Play'}</Text>
+      <Text>{Math.floor(status.currentTime)}s / {Math.floor(status.duration)}s</Text>
+    </TouchableOpacity>
+  );
+}
+```
+
+```tsx
+// Voice Message Recording
+import { 
+  useAudioRecorder, 
+  useAudioRecorderState, 
+  RecordingPresets, 
+  AudioModule,
+  setAudioModeAsync,
+} from 'expo-audio';
+
+function VoiceRecorder() {
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorderState = useAudioRecorderState(recorder);
+  
+  const startRecording = async () => {
+    // Request permissions
+    const { granted } = await AudioModule.requestRecordingPermissionsAsync();
+    if (!granted) return;
+    
+    // Configure audio for recording
+    await setAudioModeAsync({
+      allowsRecording: true,
+      playsInSilentMode: true,
+    });
+    
+    await recorder.prepareToRecordAsync();
+    recorder.record();
+  };
+  
+  const stopRecording = async () => {
+    await recorder.stop();
+    const uri = recorder.uri; // Path to recorded file
+    // Upload or play the recording
+  };
+  
+  return (
+    <View>
+      <Text>Recording: {recorderState.isRecording ? 'Yes' : 'No'}</Text>
+      <Text>Duration: {recorderState.durationMillis}ms</Text>
+      <Button 
+        title={recorderState.isRecording ? 'Stop' : 'Record'} 
+        onPress={recorderState.isRecording ? stopRecording : startRecording}
+      />
+    </View>
+  );
+}
+```
+
+> **Note**: expo-audio replaced the deprecated expo-av library as of SDK 54. The old Audio.Sound and Audio.Recording APIs are no longer available.
+
 ### Secure Storage
 
 ```typescript

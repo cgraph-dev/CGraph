@@ -8,7 +8,15 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Audio } from 'expo-av';
+import {
+  useAudioRecorder,
+  useAudioPlayer,
+  useAudioPlayerStatus,
+  useAudioRecorderState,
+  RecordingPresets,
+  AudioModule,
+  setAudioModeAsync,
+} from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -45,11 +53,17 @@ export function VoiceMessageRecorder({
   const [waveformData, setWaveformData] = useState<number[]>([]);
   const [recordingUri, setRecordingUri] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [playbackPosition, setPlaybackPosition] = useState(0);
 
-  const recordingRef = useRef<Audio.Recording | null>(null);
-  const soundRef = useRef<Audio.Sound | null>(null);
+  // expo-audio hooks for recording
+  const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorderState = useAudioRecorderState(audioRecorder);
+  
+  // Player for preview - will be set when we have a recording URI
+  const previewPlayer = useAudioPlayer(recordingUri || undefined);
+  const previewStatus = useAudioPlayerStatus(previewPlayer);
+  const isPlaying = previewStatus?.playing || false;
+
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const meteringIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const pulseAnim = useRef(new Animated.Value(1)).current;
@@ -57,8 +71,8 @@ export function VoiceMessageRecorder({
   // Request permissions on mount
   useEffect(() => {
     (async () => {
-      const { status } = await Audio.requestPermissionsAsync();
-      if (status !== 'granted') {
+      const permissionStatus = await AudioModule.requestRecordingPermissionsAsync();
+      if (!permissionStatus.granted) {
         setError('Microphone permission is required to record voice messages');
       }
     })();
@@ -101,22 +115,7 @@ export function VoiceMessageRecorder({
       clearInterval(meteringIntervalRef.current);
       meteringIntervalRef.current = null;
     }
-    if (recordingRef.current) {
-      try {
-        await recordingRef.current.stopAndUnloadAsync();
-      } catch (e) {
-        // Ignore errors during cleanup
-      }
-      recordingRef.current = null;
-    }
-    if (soundRef.current) {
-      try {
-        await soundRef.current.unloadAsync();
-      } catch (e) {
-        // Ignore errors during cleanup
-      }
-      soundRef.current = null;
-    }
+    // expo-audio handles cleanup automatically via hooks
   }, []);
 
   const startRecording = useCallback(async () => {
@@ -124,43 +123,16 @@ export function VoiceMessageRecorder({
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
-      // Configure audio session
-      await Audio.setAudioModeAsync({
-        allowsRecordingIOS: true,
-        playsInSilentModeIOS: true,
-        staysActiveInBackground: false,
-        shouldDuckAndroid: true,
+      // Configure audio session for recording
+      await setAudioModeAsync({
+        allowsRecording: true,
+        playsInSilentMode: true,
       });
 
-      // Create and prepare recording
-      const { recording } = await Audio.Recording.createAsync(
-        {
-          android: {
-            extension: '.m4a',
-            outputFormat: Audio.AndroidOutputFormat.MPEG_4,
-            audioEncoder: Audio.AndroidAudioEncoder.AAC,
-            sampleRate: 44100,
-            numberOfChannels: 1,
-            bitRate: 128000,
-          },
-          ios: {
-            extension: '.m4a',
-            outputFormat: Audio.IOSOutputFormat.MPEG4AAC,
-            audioQuality: Audio.IOSAudioQuality.HIGH,
-            sampleRate: 44100,
-            numberOfChannels: 1,
-            bitRate: 128000,
-          },
-          web: {
-            mimeType: 'audio/webm',
-            bitsPerSecond: 128000,
-          },
-        },
-        undefined, // No status update callback, we use metering
-        100 // 100ms metering interval
-      );
+      // Prepare and start recording with expo-audio
+      await audioRecorder.prepareToRecordAsync();
+      audioRecorder.record();
 
-      recordingRef.current = recording;
       setState('recording');
       setDuration(0);
       setWaveformData([]);
@@ -177,18 +149,12 @@ export function VoiceMessageRecorder({
       }, 1000);
 
       // Start metering for waveform visualization
-      meteringIntervalRef.current = setInterval(async () => {
-        if (recordingRef.current) {
-          try {
-            const status = await recordingRef.current.getStatusAsync();
-            if (status.isRecording && status.metering !== undefined) {
-              // Convert dB to 0-1 range (metering is in dB, typically -160 to 0)
-              const normalizedLevel = Math.max(0, Math.min(1, (status.metering + 60) / 60));
-              setWaveformData(prev => [...prev, normalizedLevel].slice(-50));
-            }
-          } catch (e) {
-            // Ignore metering errors
-          }
+      // Note: expo-audio provides metering through recorderState
+      meteringIntervalRef.current = setInterval(() => {
+        if (recorderState.isRecording && recorderState.metering !== undefined) {
+          // Convert dB to 0-1 range (metering is in dB, typically -160 to 0)
+          const normalizedLevel = Math.max(0, Math.min(1, (recorderState.metering + 60) / 60));
+          setWaveformData(prev => [...prev, normalizedLevel].slice(-50));
         }
       }, 100);
 
@@ -197,7 +163,7 @@ export function VoiceMessageRecorder({
       setError('Failed to start recording. Please try again.');
       cleanup();
     }
-  }, [maxDuration, cleanup]);
+  }, [maxDuration, cleanup, audioRecorder, recorderState]);
 
   const stopRecording = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -211,20 +177,18 @@ export function VoiceMessageRecorder({
       meteringIntervalRef.current = null;
     }
 
-    if (recordingRef.current) {
-      try {
-        await recordingRef.current.stopAndUnloadAsync();
-        const uri = recordingRef.current.getURI();
-        if (uri) {
-          setRecordingUri(uri);
-          setState('preview');
-        }
-      } catch (err) {
-        console.error('Failed to stop recording:', err);
-        setError('Failed to save recording. Please try again.');
+    try {
+      await audioRecorder.stop();
+      const uri = audioRecorder.uri;
+      if (uri) {
+        setRecordingUri(uri);
+        setState('preview');
       }
+    } catch (err) {
+      console.error('Failed to stop recording:', err);
+      setError('Failed to save recording. Please try again.');
     }
-  }, []);
+  }, [audioRecorder]);
 
   const handleCancel = useCallback(async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -233,7 +197,6 @@ export function VoiceMessageRecorder({
     setWaveformData([]);
     setDuration(0);
     setPlaybackPosition(0);
-    setIsPlaying(false);
     setState('idle');
     onCancel?.();
   }, [cleanup, onCancel]);
@@ -243,57 +206,35 @@ export function VoiceMessageRecorder({
 
     await Haptics.selectionAsync();
 
-    if (isPlaying) {
-      // Pause
-      if (soundRef.current) {
-        await soundRef.current.pauseAsync();
-        setIsPlaying(false);
-      }
-    } else {
-      // Play
-      try {
-        if (soundRef.current) {
-          await soundRef.current.playAsync();
-        } else {
-          // Reset audio mode for playback
-          await Audio.setAudioModeAsync({
-            allowsRecordingIOS: false,
-            playsInSilentModeIOS: true,
-          });
+    try {
+      // Reset audio mode for playback
+      await setAudioModeAsync({
+        allowsRecording: false,
+        playsInSilentMode: true,
+      });
 
-          const { sound } = await Audio.Sound.createAsync(
-            { uri: recordingUri },
-            { shouldPlay: true },
-            (status: { isLoaded: boolean; positionMillis?: number; didJustFinish?: boolean }) => {
-              if (status.isLoaded) {
-                setPlaybackPosition((status.positionMillis || 0) / 1000);
-                if (status.didJustFinish) {
-                  setIsPlaying(false);
-                  setPlaybackPosition(0);
-                }
-              }
-            }
-          );
-          soundRef.current = sound;
-        }
-        setIsPlaying(true);
-      } catch (err) {
-        console.error('Failed to play recording:', err);
+      if (isPlaying) {
+        previewPlayer.pause();
+      } else {
+        previewPlayer.play();
       }
+    } catch (err) {
+      console.error('Failed to play recording:', err);
     }
-  }, [recordingUri, isPlaying]);
+  }, [recordingUri, isPlaying, previewPlayer]);
+
+  // Update playback position from preview player status
+  useEffect(() => {
+    if (previewStatus) {
+      setPlaybackPosition(previewStatus.currentTime || 0);
+    }
+  }, [previewStatus]);
 
   const handleSend = useCallback(async () => {
     if (!recordingUri) return;
     
     await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     setState('uploading');
-
-    // Cleanup sound if playing
-    if (soundRef.current) {
-      await soundRef.current.unloadAsync();
-      soundRef.current = null;
-    }
 
     onComplete({
       uri: recordingUri,

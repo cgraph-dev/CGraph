@@ -7,7 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [Unreleased]
+## [0.7.20] - 2026-01-06
+
+### Changed
+
+#### Mobile - Audio System Modernization
+- **Migrated VoiceMessagePlayer** - Replaced deprecated expo-av with expo-audio hooks
+  - Uses `useAudioPlayer` and `useAudioPlayerStatus` for modern audio playback
+  - Simplified state management with reactive status updates
+  - Maintained waveform animation and seek functionality
+- **Migrated VoiceMessageRecorder** - Updated recording to use expo-audio
+  - Uses `useAudioRecorder` with `RecordingPresets.HIGH_QUALITY`
+  - Uses `AudioModule.requestRecordingPermissionsAsync()` for permissions
+  - Preview playback via `useAudioPlayer` hook
+- **Removed expo-av dependency** - Package fully removed from project
+- **Added expo-audio plugin** - Configured in app.config.js with microphone permission
+- **Added expo-asset dependency** - Required peer dependency for expo-audio
+
+### Fixed
+
+#### Mobile - TypeScript Type Safety
+- **Fixed MessageMetadata typing** - Corrected `thumbnailUrl` to `thumbnail` property
+- **Fixed socket typing** - Resolved Phoenix channel event handler type issues
+- **Fixed typing timeout** - Proper NodeJS.Timeout type handling for Map storage
+
+#### Mobile - Dependency Health
+- **All expo-doctor checks pass** - 17/17 checks passing
+- **TypeScript strict mode** - Zero compilation errors
+- **SDK 54 compatibility verified** - Ready for production deployment
 
 ---
 

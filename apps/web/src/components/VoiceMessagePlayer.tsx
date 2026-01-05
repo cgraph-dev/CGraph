@@ -31,7 +31,7 @@ interface VoiceMessagePlayerProps {
 export function VoiceMessagePlayer({
   messageId,
   audioUrl,
-  duration,
+  duration: initialDuration,
   waveformData,
   showDownload = false,
   className = '',
@@ -40,6 +40,8 @@ export function VoiceMessagePlayer({
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
+  const [audioDuration, setAudioDuration] = useState(initialDuration || 0);
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false);
   const [waveform, setWaveform] = useState<number[]>(
     waveformData || generatePlaceholderWaveform(50)
   );
@@ -76,27 +78,65 @@ export function VoiceMessagePlayer({
     if (!audio) return;
 
     const handleTimeUpdate = () => {
-      const newProgress = audio.duration ? audio.currentTime / audio.duration : 0;
-      setProgress(newProgress);
-      setCurrentTime(audio.currentTime);
+      if (audio.duration && !isNaN(audio.duration)) {
+        const newProgress = audio.currentTime / audio.duration;
+        setProgress(newProgress);
+        setCurrentTime(audio.currentTime);
+      }
+    };
+
+    const handleLoadedMetadata = () => {
+      if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+        setAudioDuration(audio.duration);
+        setIsAudioLoaded(true);
+      }
+    };
+
+    const handleDurationChange = () => {
+      if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+        setAudioDuration(audio.duration);
+        setIsAudioLoaded(true);
+      }
     };
 
     const handleEnded = () => {
       setIsPlaying(false);
       setProgress(0);
       setCurrentTime(0);
+      // Reset audio position to beginning
+      if (audio) {
+        audio.currentTime = 0;
+      }
     };
 
     const handlePlay = () => setIsPlaying(true);
     const handlePause = () => setIsPlaying(false);
+    const handleCanPlay = () => {
+      if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+        setAudioDuration(audio.duration);
+        setIsAudioLoaded(true);
+      }
+    };
 
     audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('durationchange', handleDurationChange);
+    audio.addEventListener('canplay', handleCanPlay);
     audio.addEventListener('ended', handleEnded);
     audio.addEventListener('play', handlePlay);
     audio.addEventListener('pause', handlePause);
 
+    // Check if audio is already loaded
+    if (audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)) {
+      setAudioDuration(audio.duration);
+      setIsAudioLoaded(true);
+    }
+
     return () => {
       audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('durationchange', handleDurationChange);
+      audio.removeEventListener('canplay', handleCanPlay);
       audio.removeEventListener('ended', handleEnded);
       audio.removeEventListener('play', handlePlay);
       audio.removeEventListener('pause', handlePause);
@@ -116,11 +156,20 @@ export function VoiceMessagePlayer({
 
   const handleSeek = useCallback((newProgress: number) => {
     const audio = audioRef.current;
-    if (!audio || !audio.duration) return;
+    if (!audio) return;
 
-    audio.currentTime = newProgress * audio.duration;
-    setProgress(newProgress);
-  }, []);
+    // Use actual audio duration or fall back to state
+    const duration = audio.duration && !isNaN(audio.duration) && isFinite(audio.duration) 
+      ? audio.duration 
+      : audioDuration;
+    
+    if (duration > 0) {
+      const newTime = newProgress * duration;
+      audio.currentTime = newTime;
+      setProgress(newProgress);
+      setCurrentTime(newTime);
+    }
+  }, [audioDuration]);
 
   const handleDownload = useCallback(() => {
     const link = document.createElement('a');
@@ -159,6 +208,7 @@ export function VoiceMessagePlayer({
         <Waveform
           data={waveform}
           progress={progress}
+          isPlaying={isPlaying}
           onSeek={handleSeek}
           height={32}
           barWidth={2}
@@ -167,7 +217,7 @@ export function VoiceMessagePlayer({
         />
         <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
           <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(duration)}</span>
+          <span>{formatTime(audioDuration)}</span>
         </div>
       </div>
 

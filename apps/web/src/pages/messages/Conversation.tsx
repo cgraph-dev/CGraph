@@ -674,8 +674,8 @@ function MessageBubble({
                 />
               </div>
             )}
-            {/* Text content */}
-            {message.content && (
+            {/* Text content - hide for voice messages */}
+            {message.content && message.messageType !== 'voice' && message.messageType !== 'audio' && (
               <p className="whitespace-pre-wrap break-words">{message.content}</p>
             )}
             <div className={`flex items-center gap-1 mt-1 text-xs ${isOwn ? 'text-primary-200' : 'text-gray-500'}`}>

@@ -4,7 +4,7 @@
  * Dynamic configuration for Expo SDK 54
  * Handles environment-specific settings and API URL resolution
  * 
- * @version 0.7.6
+ * @version 0.7.20
  * @see https://docs.expo.dev/workflow/configuration/
  */
 
@@ -71,7 +71,7 @@ module.exports = ({ config }) => {
     ...config,
     name: getAppName(),
     slug: 'cgraph',
-    version: '0.7.5',
+    version: '0.7.20',
     runtimeVersion: {
       policy: 'appVersion',
     },
@@ -199,6 +199,13 @@ module.exports = ({ config }) => {
           faceIDPermission: 'CGraph uses Face ID to protect your account and secure messages.',
         },
       ],
+      [
+        'expo-audio',
+        {
+          microphonePermission: 'CGraph needs microphone access for voice messages.',
+        },
+      ],
+      'expo-asset',
     ],
     extra: {
       apiUrl: getApiUrl(),

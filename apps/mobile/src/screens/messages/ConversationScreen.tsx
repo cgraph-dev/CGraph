@@ -531,8 +531,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
               isSender={isOwnMessage}
             />
           )}
-          {/* Text content */}
-          {item.content && (
+          {/* Text content - hide for voice messages */}
+          {item.content && item.type !== 'voice' && item.type !== 'audio' && (
             <Text
               style={[
                 styles.messageText,
