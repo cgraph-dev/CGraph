@@ -752,7 +752,7 @@ defmodule Cgraph.Groups do
   defp create_invite_impl(group, user, opts) do
     max_uses = Keyword.get(opts, :max_uses)
     expires_at = Keyword.get(opts, :expires_at)
-    expires_in = Keyword.get(opts, :expires_in, 86400)
+    expires_in = Keyword.get(opts, :expires_in, 86_400)
     
     # Use explicit expires_at if provided, otherwise calculate from expires_in
     final_expires_at = cond do

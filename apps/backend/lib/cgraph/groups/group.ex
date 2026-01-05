@@ -63,7 +63,7 @@ defmodule Cgraph.Groups.Group do
     |> validate_required([:name, :owner_id])
     |> validate_length(:name, min: 2, max: 100)
     |> validate_length(:description, max: 1000)
-    |> validate_number(:slow_mode_seconds, greater_than_or_equal_to: 0, less_than_or_equal_to: 21600)
+    |> validate_number(:slow_mode_seconds, greater_than_or_equal_to: 0, less_than_or_equal_to: 21_600)
     |> generate_slug()
     |> unique_constraint(:slug)
     |> foreign_key_constraint(:owner_id)

@@ -279,15 +279,15 @@ defmodule CgraphWeb.API.V1.AdminJSON do
     "#{minutes}m #{secs}s"
   end
   
-  defp format_uptime(seconds) when seconds < 86400 do
+  defp format_uptime(seconds) when seconds < 86_400 do
     hours = div(seconds, 3600)
     minutes = div(rem(seconds, 3600), 60)
     "#{hours}h #{minutes}m"
   end
   
   defp format_uptime(seconds) do
-    days = div(seconds, 86400)
-    hours = div(rem(seconds, 86400), 3600)
+    days = div(seconds, 86_400)
+    hours = div(rem(seconds, 86_400), 3600)
     "#{days}d #{hours}h"
   end
   

@@ -195,6 +195,6 @@ defmodule Cgraph.Forums.Post do
     order = :math.log10(max(abs(score), 1))
     sign = if score > 0, do: 1, else: if(score < 0, do: -1, else: 0)
 
-    sign * order + seconds / 45000
+    sign * order + seconds / 45_000
   end
 end

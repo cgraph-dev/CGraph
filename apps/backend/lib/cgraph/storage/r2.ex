@@ -181,7 +181,7 @@ defmodule Cgraph.Storage.R2 do
     case Keyword.get(config, :public_url) do
       nil ->
         # Fallback to signed URL if no public URL configured
-        {:ok, url} = signed_url(key, expires_in: 86400)
+        {:ok, url} = signed_url(key, expires_in: 86_400)
         url
       
       public_url ->

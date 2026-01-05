@@ -805,7 +805,7 @@ defmodule Cgraph.OAuth do
     claims = %{
       "iss" => config[:team_id],
       "iat" => now,
-      "exp" => now + 86400 * 180, # 180 days
+      "exp" => now + 86_400 * 180, # 180 days
       "aud" => "https://appleid.apple.com",
       "sub" => config[:client_id]
     }

@@ -263,7 +263,7 @@ defmodule Cgraph.Accounts.User do
         now = DateTime.utc_now()
         
         if DateTime.compare(now, cooldown_end) == :lt do
-          days_remaining = div(DateTime.diff(cooldown_end, now, :second), 86400) + 1
+          days_remaining = div(DateTime.diff(cooldown_end, now, :second), 86_400) + 1
           add_error(changeset, :username, "can only be changed every 14 days. #{days_remaining} day(s) remaining")
         else
           changeset

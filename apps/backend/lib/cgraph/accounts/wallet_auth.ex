@@ -51,10 +51,9 @@ defmodule Cgraph.Accounts.WalletAuth do
   defp do_generate_address do
     hex_chars = "0123456789ABCDEF"
 
-    random_hex =
-      1..@wallet_hex_length
-      |> Enum.map(fn _ -> String.at(hex_chars, :rand.uniform(16) - 1) end)
-      |> Enum.join()
+    random_hex = Enum.map_join(1..@wallet_hex_length, "", fn _ ->
+      String.at(hex_chars, :rand.uniform(16) - 1)
+    end)
 
     @wallet_prefix <> random_hex
   end
@@ -108,9 +107,9 @@ defmodule Cgraph.Accounts.WalletAuth do
   defp generate_alphanumeric_suffix(length) do
     chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-    1..length
-    |> Enum.map(fn _ -> String.at(chars, :rand.uniform(36) - 1) end)
-    |> Enum.join()
+    Enum.map_join(1..length, "", fn _ ->
+      String.at(chars, :rand.uniform(36) - 1)
+    end)
   end
 
   defp crypto_alias_exists?(alias_str) do
@@ -187,15 +186,11 @@ defmodule Cgraph.Accounts.WalletAuth do
   defp generate_single_recovery_code do
     chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"  # Excluding confusing chars (0, O, 1, I)
 
-    segments =
-      1..4
-      |> Enum.map(fn _ ->
-        1..4
-        |> Enum.map(fn _ -> String.at(chars, :rand.uniform(32) - 1) end)
-        |> Enum.join()
+    Enum.map_join(1..4, "-", fn _ ->
+      Enum.map_join(1..4, "", fn _ ->
+        String.at(chars, :rand.uniform(32) - 1)
       end)
-
-    Enum.join(segments, "-")
+    end)
   end
 
   @doc """

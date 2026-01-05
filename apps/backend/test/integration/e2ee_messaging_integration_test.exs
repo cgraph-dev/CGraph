@@ -254,7 +254,10 @@ defmodule Cgraph.Integration.E2EEMessagingIntegrationTest do
       results = Task.await_many(tasks, 30_000)
       
       # All registrations should succeed
-      assert Enum.all?(results, fn {:ok, _} -> true; _ -> false end)
+      assert Enum.all?(results, fn
+        {:ok, _} -> true
+        _ -> false
+      end)
     end
     
     test "handles concurrent prekey bundle requests" do
@@ -272,7 +275,10 @@ defmodule Cgraph.Integration.E2EEMessagingIntegrationTest do
       results = Task.await_many(tasks, 10_000)
       
       # All should succeed (though one-time prekeys may run out)
-      successful = Enum.count(results, fn {:ok, _} -> true; _ -> false end)
+      successful = Enum.count(results, fn
+        {:ok, _} -> true
+        _ -> false
+      end)
       assert successful >= 1
     end
   end

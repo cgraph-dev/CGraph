@@ -225,7 +225,7 @@ defmodule Cgraph.GroupsTest do
     end
 
     test "create_invite/3 supports expiration", %{owner: owner, group: group} do
-      expires = DateTime.add(DateTime.utc_now(), 86400, :second) # 1 day
+      expires = DateTime.add(DateTime.utc_now(), 86_400, :second) # 1 day
       
       assert {:ok, invite} = Groups.create_invite(group, owner, %{expires_at: expires})
       assert invite.expires_at != nil

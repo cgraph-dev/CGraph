@@ -317,12 +317,11 @@ defmodule Cgraph.ErrorReporter do
     # Create a fingerprint based on exception type and top stack frames
     frames = stacktrace
     |> Enum.take(3)
-    |> Enum.map(fn
+    |> Enum.map_join("|", fn
       {mod, fun, arity, _} when is_integer(arity) -> "#{mod}.#{fun}/#{arity}"
       {mod, fun, args, _} when is_list(args) -> "#{mod}.#{fun}/#{length(args)}"
       _ -> "unknown"
     end)
-    |> Enum.join("|")
     
     data = "#{exception_type(exception)}|#{frames}"
     

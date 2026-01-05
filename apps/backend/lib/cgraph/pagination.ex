@@ -383,8 +383,8 @@ defmodule Cgraph.Pagination.JSON do
       links
     end
     
-    links
-    |> Enum.map(fn {rel, url} -> "<#{url}>; rel=\"#{rel}\"" end)
-    |> Enum.join(", ")
+    Enum.map_join(links, ", ", fn {rel, url} ->
+      "<#{url}>; rel=\"#{rel}\""
+    end)
   end
 end

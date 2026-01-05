@@ -406,7 +406,7 @@ defmodule Cgraph.Notifications.PushService.WebPushClient do
       case encrypt_payload(payload_bytes, p256dh, auth) do
         {:ok, encrypted, salt, server_public_key} ->
           # Build request
-          ttl = Keyword.get(opts, :ttl, 86400)
+          ttl = Keyword.get(opts, :ttl, 86_400)
           urgency = Keyword.get(opts, :urgency, "normal")
           topic = Keyword.get(opts, :topic)
           
@@ -479,7 +479,7 @@ defmodule Cgraph.Notifications.PushService.WebPushClient do
     
     claims = %{
       "aud" => audience,
-      "exp" => now + 86400,
+      "exp" => now + 86_400,
       "sub" => config[:vapid_subject]
     }
     

@@ -745,8 +745,7 @@ defmodule Cgraph.DataExport do
     |> Enum.flat_map(fn {_source, records} ->
       List.wrap(records)
     end)
-    |> Enum.map(&(Jason.encode!(&1) <> "\n"))
-    |> Enum.join()
+    |> Enum.map_join("", &(Jason.encode!(&1) <> "\n"))
   end
   
   defp format_csv(%{data: data}) do
@@ -754,16 +753,11 @@ defmodule Cgraph.DataExport do
     |> Enum.flat_map(fn {_source, records} ->
       List.wrap(records)
     end)
-    |> Enum.map(&format_csv_row/1)
-    |> Enum.join()
+    |> Enum.map_join("", &format_csv_row/1)
   end
   
   defp format_csv_row(record) when is_map(record) do
-    record
-    |> Map.values()
-    |> Enum.map(&csv_escape/1)
-    |> Enum.join(",")
-    |> Kernel.<>("\n")
+    Enum.map_join(Map.values(record), ",", &csv_escape/1) <> "\n"
   end
   
   defp csv_escape(nil), do: ""
@@ -793,17 +787,15 @@ defmodule Cgraph.DataExport do
   end
   
   defp format_xml_data(data) when is_map(data) do
-    data
-    |> Enum.map(fn {key, value} ->
+    Enum.map_join(data, "\n", fn {key, value} ->
       "    <#{key}>#{format_xml_value(value)}</#{key}>"
     end)
-    |> Enum.join("\n")
   end
   
   defp format_xml_value(value) when is_list(value) do
-    value
-    |> Enum.map(fn item -> "<item>#{format_xml_value(item)}</item>" end)
-    |> Enum.join("\n")
+    Enum.map_join(value, "\n", fn item ->
+      "<item>#{format_xml_value(item)}</item>"
+    end)
   end
   defp format_xml_value(value) when is_map(value), do: Jason.encode!(value)
   defp format_xml_value(value), do: to_string(value)

@@ -598,12 +598,11 @@ defmodule Cgraph.Crypto.E2EE do
       |> :binary.bin_to_list()
       |> Enum.chunk_every(2)
       |> Enum.take(6)
-      |> Enum.map(fn [a, b] ->
+      |> Enum.map_join(" ", fn [a, b] ->
         # Combine bytes and take last 5 digits
         n = a * 256 + b
-        String.pad_leading(Integer.to_string(rem(n, 100000)), 5, "0")
+        String.pad_leading(Integer.to_string(rem(n, 100_000)), 5, "0")
       end)
-      |> Enum.join(" ")
       
       {:ok, number}
     end

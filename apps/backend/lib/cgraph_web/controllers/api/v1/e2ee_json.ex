@@ -132,8 +132,7 @@ defmodule CgraphWeb.API.V1.E2EEJSON do
     number
     |> String.graphemes()
     |> Enum.chunk_every(5)
-    |> Enum.map(&Enum.join/1)
-    |> Enum.join(" ")
+    |> Enum.map_join(" ", &Enum.join/1)
   end
   defp format_safety_number(number) when is_integer(number) do
     number

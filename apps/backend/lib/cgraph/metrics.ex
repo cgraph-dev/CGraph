@@ -68,7 +68,7 @@ defmodule Cgraph.Metrics do
   @type labels :: map()
   @type metric_name :: atom()
   
-  @histogram_buckets [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10000]
+  @histogram_buckets [5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000, 10_000]
   
   # ---------------------------------------------------------------------------
   # Public API
@@ -505,9 +505,9 @@ defmodule Cgraph.Metrics do
   
   defp format_labels([]), do: ""
   defp format_labels(labels) do
-    inner = labels
-    |> Enum.map(fn {k, v} -> "#{k}=\"#{escape_label_value(v)}\"" end)
-    |> Enum.join(",")
+    inner = Enum.map_join(labels, ",", fn {k, v} ->
+      "#{k}=\"#{escape_label_value(v)}\""
+    end)
     
     "{#{inner}}"
   end
@@ -518,9 +518,9 @@ defmodule Cgraph.Metrics do
   
   defp format_labels_from_map(map) when map == %{}, do: ""
   defp format_labels_from_map(map) do
-    inner = map
-    |> Enum.map(fn {k, v} -> "#{k}=\"#{escape_label_value(v)}\"" end)
-    |> Enum.join(",")
+    inner = Enum.map_join(map, ",", fn {k, v} ->
+      "#{k}=\"#{escape_label_value(v)}\""
+    end)
     
     "{#{inner}}"
   end

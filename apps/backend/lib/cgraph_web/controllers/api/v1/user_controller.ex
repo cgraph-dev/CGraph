@@ -59,9 +59,9 @@ defmodule CgraphWeb.API.V1.UserController do
   end
 
   defp format_changeset_error(errors) do
-    errors
-    |> Enum.map(fn {field, messages} -> "#{field}: #{Enum.join(messages, ", ")}" end)
-    |> Enum.join("; ")
+    Enum.map_join(errors, "; ", fn {field, messages} ->
+      "#{field}: #{Enum.join(messages, ", ")}"
+    end)
   end
 
   @doc """

@@ -418,9 +418,9 @@ defmodule Cgraph.Messaging.VoiceMessage do
         # Return defaults if ffprobe fails
         {:ok, %{
           duration: 0.0,
-          sample_rate: 48000,
+          sample_rate: 48_000,
           channels: 1,
-          bitrate: 128000,
+          bitrate: 128_000,
           codec: "unknown"
         }}
     end
@@ -434,14 +434,14 @@ defmodule Cgraph.Messaging.VoiceMessage do
         
         {:ok, %{
           duration: parse_float(format["duration"], 0.0),
-          sample_rate: parse_int(stream["sample_rate"], 48000),
+          sample_rate: parse_int(stream["sample_rate"], 48_000),
           channels: parse_int(stream["channels"], 1),
-          bitrate: parse_int(format["bit_rate"], 128000),
+          bitrate: parse_int(format["bit_rate"], 128_000),
           codec: stream["codec_name"] || "unknown"
         }}
       
       {:error, _} ->
-        {:ok, %{duration: 0.0, sample_rate: 48000, channels: 1, bitrate: 128000, codec: "unknown"}}
+        {:ok, %{duration: 0.0, sample_rate: 48_000, channels: 1, bitrate: 128_000, codec: "unknown"}}
     end
   end
   
@@ -500,8 +500,8 @@ defmodule Cgraph.Messaging.VoiceMessage do
         end)
         rms = :math.sqrt(sum_squares / length(chunk))
         
-        # Normalize to 0.0-1.0 range (max 16-bit value is 32767)
-        min(1.0, rms / 32767.0)
+        # Normalize to 0.0-1.0 range (max 16-bit value is 32_767)
+        min(1.0, rms / 32_767.0)
       end)
       |> pad_waveform(num_samples)
     end

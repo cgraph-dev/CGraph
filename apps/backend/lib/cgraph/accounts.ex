@@ -1303,7 +1303,7 @@ defmodule Cgraph.Accounts do
 
   defp generate_email_verification_token(user) do
     token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
-    expires_at = DateTime.utc_now() |> DateTime.add(86400, :second)  # 24 hours
+    expires_at = DateTime.utc_now() |> DateTime.add(86_400, :second)  # 24 hours
     
     Cachex.put(:cgraph_cache, "email_verification:#{token}", %{
       user_id: user.id,

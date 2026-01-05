@@ -59,7 +59,7 @@ defmodule Cgraph.Groups.Channel do
     |> validate_length(:name, min: 1, max: 100)
     |> validate_length(:topic, max: 1024)
     |> validate_inclusion(:channel_type, @channel_types)
-    |> validate_number(:slow_mode_seconds, greater_than_or_equal_to: 0, less_than_or_equal_to: 21600)
+    |> validate_number(:slow_mode_seconds, greater_than_or_equal_to: 0, less_than_or_equal_to: 21_600)
     |> format_channel_name()
     |> foreign_key_constraint(:group_id)
     |> foreign_key_constraint(:category_id)

@@ -61,7 +61,7 @@ defmodule Cgraph.Crypto do
   
   # Argon2 parameters (OWASP recommended)
   @argon2_time_cost 3
-  @argon2_memory_cost 65536  # 64 MiB
+  @argon2_memory_cost 65_536  # 64 MiB
   @argon2_parallelism 4
   
   @type key :: binary()

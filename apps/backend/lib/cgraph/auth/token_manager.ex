@@ -391,7 +391,7 @@ defmodule Cgraph.Auth.TokenManager do
   end
   
   defp compute_expiration({amount, :days}) do
-    DateTime.utc_now() |> DateTime.add(amount * 86400, :second)
+    DateTime.utc_now() |> DateTime.add(amount * 86_400, :second)
   end
   
   defp store_refresh_token(token_data) do

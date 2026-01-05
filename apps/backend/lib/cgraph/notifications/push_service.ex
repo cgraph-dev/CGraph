@@ -497,7 +497,7 @@ defmodule Cgraph.Notifications.PushService do
       "badge" => Map.get(notification, :badge, 1),
       "data" => Map.get(notification, :data, %{}),
       "priority" => priority_to_expo(Map.get(notification, :priority, :high)),
-      "ttl" => Map.get(notification, :ttl, 86400)
+      "ttl" => Map.get(notification, :ttl, 86_400)
     }
     
     if silent do

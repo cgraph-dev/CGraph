@@ -44,9 +44,9 @@ defmodule Cgraph.Integration.VoiceMessageStorageIntegrationTest do
         duration: 15.5,
         url: storage_result.url,
         waveform: generate_waveform(100),
-        sample_rate: 48000,
+        sample_rate: 48_000,
         channels: 1,
-        bitrate: 64000,
+        bitrate: 64_000,
         codec: "opus",
         is_processed: true,
         user_id: user.id
@@ -265,7 +265,10 @@ defmodule Cgraph.Integration.VoiceMessageStorageIntegrationTest do
       results = Task.await_many(tasks, 10_000)
       
       # All should succeed
-      assert Enum.all?(results, fn {:ok, _} -> true; _ -> false end)
+      assert Enum.all?(results, fn
+        {:ok, _} -> true
+        _ -> false
+      end)
     end
     
     test "handles concurrent uploads from multiple users" do
@@ -289,7 +292,10 @@ defmodule Cgraph.Integration.VoiceMessageStorageIntegrationTest do
       
       results = Task.await_many(tasks, 30_000)
       
-      successes = Enum.count(results, fn {:ok, _} -> true; _ -> false end)
+      successes = Enum.count(results, fn
+        {:ok, _} -> true
+        _ -> false
+      end)
       assert successes == 15
     end
   end

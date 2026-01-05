@@ -45,7 +45,7 @@ defmodule CgraphWeb.API.V1.InviteController do
     
     # Default options
     max_uses = Map.get(invite_params, "max_uses")
-    expires_in = Map.get(invite_params, "expires_in", 86400) # Default 24 hours
+    expires_in = Map.get(invite_params, "expires_in", 86_400) # Default 24 hours
     
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :create_invites),

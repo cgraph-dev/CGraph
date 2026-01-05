@@ -67,7 +67,7 @@ defmodule Cgraph.Forums.RankingEngine do
     # Time factor: seconds since epoch / 45000 (roughly 12.5 hours per point)
     seconds = DateTime.to_unix(forum.inserted_at)
     
-    sign * order + (seconds / 45000)
+    sign * order + (seconds / 45_000)
   end
 
   @doc """
@@ -162,8 +162,8 @@ defmodule Cgraph.Forums.RankingEngine do
       z = 1.96  # 95% confidence
       phat = upvotes / n
       
-      (phat + z*z/(2*n) - z * :math.sqrt((phat*(1-phat)+z*z/(4*n))/n)) /
-        (1 + z*z/n)
+      (phat + z * z / (2 * n) - z * :math.sqrt((phat * (1 - phat) + z * z / (4 * n)) / n)) /
+        (1 + z * z / n)
     end
   end
 

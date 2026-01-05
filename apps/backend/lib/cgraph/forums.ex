@@ -1386,9 +1386,9 @@ defmodule Cgraph.Forums do
     sign = if score >= 0, do: 1, else: -1
     order = :math.log10(max(abs(score), 1))
     
-    # Time factor: seconds since epoch, divided by 45000 (roughly 12.5 hours)
+    # Time factor: seconds since epoch, divided by 45_000 (roughly 12.5 hours)
     seconds = DateTime.to_unix(forum.inserted_at)
-    hot = sign * order + (seconds / 45000)
+    hot = sign * order + (seconds / 45_000)
 
     from(f in Forum, where: f.id == ^forum_id)
     |> Repo.update_all(set: [hot_score: hot])
@@ -2312,7 +2312,7 @@ defmodule Cgraph.Forums do
         author_url: "https://cgraph.io",
         category: "content",
         icon: "code",
-        download_count: 15420,
+        download_count: 15_420,
         rating: 4.8,
         is_official: true
       },
@@ -2325,7 +2325,7 @@ defmodule Cgraph.Forums do
         author_url: "https://cgraph.io",
         category: "engagement",
         icon: "chart-bar",
-        download_count: 12350,
+        download_count: 12_350,
         rating: 4.7,
         is_official: true
       },
@@ -2351,7 +2351,7 @@ defmodule Cgraph.Forums do
         author_url: "https://cgraph.io",
         category: "gamification",
         icon: "trophy",
-        download_count: 10230,
+        download_count: 10_230,
         rating: 4.6,
         is_official: true
       },
@@ -2364,7 +2364,7 @@ defmodule Cgraph.Forums do
         author_url: "https://cgraph.io",
         category: "moderation",
         icon: "shield-check",
-        download_count: 18750,
+        download_count: 18_750,
         rating: 4.5,
         is_official: true
       },
@@ -2377,7 +2377,7 @@ defmodule Cgraph.Forums do
         author_url: "https://cgraph.io",
         category: "integration",
         icon: "chat-bubble",
-        download_count: 22100,
+        download_count: 22_100,
         rating: 4.7,
         is_official: true
       },
@@ -2390,7 +2390,7 @@ defmodule Cgraph.Forums do
         author_url: "https://cgraph.io",
         category: "content",
         icon: "play",
-        download_count: 16890,
+        download_count: 16_890,
         rating: 4.8,
         is_official: true
       },

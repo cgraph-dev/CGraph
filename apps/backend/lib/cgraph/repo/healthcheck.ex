@@ -273,7 +273,7 @@ defmodule Cgraph.Repo.Healthcheck do
     LIMIT 10
     """
     
-    case Repo.query(query, [], timeout: 10000) do
+    case Repo.query(query, [], timeout: 10_000) do
       {:ok, %{rows: rows, columns: columns}} ->
         Enum.map(rows, fn row ->
           Enum.zip(columns, row) |> Enum.into(%{})
@@ -303,7 +303,7 @@ defmodule Cgraph.Repo.Healthcheck do
     LIMIT 20
     """
     
-    case Repo.query(query, [], timeout: 10000) do
+    case Repo.query(query, [], timeout: 10_000) do
       {:ok, %{rows: rows}} ->
         Enum.map(rows, fn [name, size, bytes, rows] ->
           %{table: name, size: size, bytes: bytes, rows: rows}
@@ -334,7 +334,7 @@ defmodule Cgraph.Repo.Healthcheck do
     LIMIT 10
     """
     
-    case Repo.query(query, [], timeout: 10000) do
+    case Repo.query(query, [], timeout: 10_000) do
       {:ok, %{rows: rows}} ->
         %{
           unused_indexes: Enum.map(rows, fn [table, index, size, _, _] ->
