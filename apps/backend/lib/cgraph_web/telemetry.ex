@@ -1,17 +1,17 @@
 defmodule CgraphWeb.Telemetry do
   @moduledoc """
   Telemetry supervisor for CgraphWeb.
-  
+
   ## Overview
-  
+
   This module is started by the application supervisor and is responsible for:
-  
+
   1. **Attaching telemetry handlers** - Sets up event listeners for Phoenix, Ecto, Oban
   2. **Defining metrics** - Configures metrics for dashboards and monitoring
   3. **Managing lifecycle** - Ensures handlers are properly attached/detached
-  
+
   ## Architecture
-  
+
   ```
   ┌─────────────────────────────────────────────────────────────────┐
   │                    Telemetry Pipeline                           │
@@ -31,9 +31,9 @@ defmodule CgraphWeb.Telemetry do
   │  └─────────────┘                                                │
   └─────────────────────────────────────────────────────────────────┘
   ```
-  
+
   ## Metrics Categories
-  
+
   | Category    | Description                           | Example Metric                |
   |-------------|---------------------------------------|-------------------------------|
   | HTTP        | Request latency, throughput, errors   | `phoenix.endpoint.duration`   |
@@ -41,9 +41,9 @@ defmodule CgraphWeb.Telemetry do
   | Cache       | Hit rate, evictions, memory           | `cgraph.cache.hit_rate`       |
   | Business    | Messages, users, groups               | `cgraph.messaging.sent.count` |
   | System      | Memory, process count, uptime         | `vm.memory.total`             |
-  
+
   ## Metric Types
-  
+
   - **Counter**: Cumulative values (total requests)
   - **Distribution**: Histograms for latency/timing
   - **Summary**: Statistical aggregations
@@ -61,7 +61,7 @@ defmodule CgraphWeb.Telemetry do
   def init(_init_arg) do
     # Attach telemetry handlers on init
     attach_handlers()
-    
+
     children = [
       # Add metric reporters here if using Prometheus/StatsD
       # {TelemetryMetricsPrometheus, metrics: metrics()}
@@ -72,7 +72,7 @@ defmodule CgraphWeb.Telemetry do
 
   @doc """
   Attach all telemetry event handlers.
-  
+
   This function is called during application startup and sets up listeners
   for all relevant telemetry events from Phoenix, Ecto, Oban, and custom events.
   """
@@ -135,7 +135,7 @@ defmodule CgraphWeb.Telemetry do
 
   @doc """
   Define metrics for export to monitoring systems.
-  
+
   Returns a list of Telemetry.Metrics definitions that can be used by
   metric exporters like Prometheus or StatsD.
   """
@@ -237,7 +237,7 @@ defmodule CgraphWeb.Telemetry do
 
     # Extract conn safely - Plug.Conn doesn't implement Access protocol
     conn = Map.get(metadata, :conn)
-    
+
     status = if conn, do: Map.get(conn, :status, 0), else: 0
     method = if conn, do: Map.get(conn, :method, "UNKNOWN"), else: "UNKNOWN"
     path = if conn, do: Map.get(conn, :request_path, "/"), else: "/"
@@ -255,7 +255,7 @@ defmodule CgraphWeb.Telemetry do
   def handle_phoenix_event([:phoenix, :router_dispatch, :exception], _measurements, metadata, _config) do
     conn = Map.get(metadata, :conn)
     path = if conn, do: Map.get(conn, :request_path, "/"), else: "/"
-    
+
     Logger.error("Phoenix router exception",
       kind: metadata[:kind],
       reason: inspect(metadata[:reason]),
@@ -351,11 +351,11 @@ defmodule CgraphWeb.Telemetry do
 
   @doc """
   Emit a custom business event.
-  
+
   Convenience function for emitting telemetry events with standard metadata.
-  
+
   ## Examples
-  
+
       CgraphWeb.Telemetry.emit(:messaging, :message, :sent, %{latency_ms: 45}, %{channel_id: 1})
   """
   def emit(domain, resource, action, measurements, metadata \\ %{}) do
@@ -368,7 +368,7 @@ defmodule CgraphWeb.Telemetry do
 
   @doc """
   Get current telemetry statistics.
-  
+
   Returns aggregated metrics for monitoring dashboards.
   """
   def stats do

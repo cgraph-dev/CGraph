@@ -15,7 +15,7 @@ defmodule Cgraph.Groups.PinnedMessage do
     belongs_to :pinned_by, Cgraph.Accounts.User
 
     field :position, :integer
-    
+
     timestamps()
   end
 

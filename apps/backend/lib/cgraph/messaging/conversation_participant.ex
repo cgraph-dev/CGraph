@@ -1,7 +1,7 @@
 defmodule Cgraph.Messaging.ConversationParticipant do
   @moduledoc """
   Tracks user participation in conversations with per-user settings.
-  
+
   Stores mute preferences, unread counts, and encryption keys.
   """
   use Ecto.Schema

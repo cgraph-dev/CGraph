@@ -18,7 +18,7 @@ defmodule CgraphWeb.API.V1.SearchController do
     query = Map.get(params, "q", "")
     types = Map.get(params, "types", "all") |> parse_types()
     limit = Map.get(params, "limit", "20") |> String.to_integer() |> min(50)
-    
+
     if String.length(query) < 2 do
       conn
       |> put_status(:bad_request)
@@ -38,7 +38,7 @@ defmodule CgraphWeb.API.V1.SearchController do
     query = Map.get(params, "q", "")
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
-    
+
     if String.length(query) < 2 do
       conn
       |> put_status(:bad_request)
@@ -67,7 +67,7 @@ defmodule CgraphWeb.API.V1.SearchController do
     after_date = Map.get(params, "after")
     from_user_id = Map.get(params, "from")
     has_attachment = Map.get(params, "has_attachment")
-    
+
     if String.length(query) < 2 do
       conn
       |> put_status(:bad_request)
@@ -98,7 +98,7 @@ defmodule CgraphWeb.API.V1.SearchController do
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
     sort = Map.get(params, "sort", "relevance") # relevance, new, top
-    
+
     if String.length(query) < 2 do
       conn
       |> put_status(:bad_request)
@@ -125,7 +125,7 @@ defmodule CgraphWeb.API.V1.SearchController do
     query = Map.get(params, "q", "")
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
-    
+
     if String.length(query) < 2 do
       conn
       |> put_status(:bad_request)
@@ -149,7 +149,7 @@ defmodule CgraphWeb.API.V1.SearchController do
     query = Map.get(params, "q", "")
     types = Map.get(params, "types", "users,groups") |> parse_types()
     limit = Map.get(params, "limit", "10") |> String.to_integer() |> min(20)
-    
+
     if String.length(query) < 1 do
       render(conn, :suggestions, suggestions: [])
     else
@@ -164,7 +164,7 @@ defmodule CgraphWeb.API.V1.SearchController do
   """
   def recent(conn, _params) do
     user = conn.assigns.current_user
-    
+
     recent_searches = Accounts.get_recent_searches(user, limit: 10)
     render(conn, :recent, searches: recent_searches)
   end
@@ -175,7 +175,7 @@ defmodule CgraphWeb.API.V1.SearchController do
   """
   def clear_history(conn, _params) do
     user = conn.assigns.current_user
-    
+
     Accounts.clear_search_history(user)
     send_resp(conn, :no_content, "")
   end
@@ -194,26 +194,26 @@ defmodule CgraphWeb.API.V1.SearchController do
 
   defp perform_search(user, query, types, limit) do
     limit_per_type = div(limit, length(types)) |> max(5)
-    
+
     Enum.reduce(types, %{}, fn type, acc ->
       results = case type do
         :users ->
           {users, _} = Accounts.search_users(query, current_user: user, per_page: limit_per_type)
           users
-        
+
         :messages ->
           {messages, _} = Messaging.search_messages(user, query, per_page: limit_per_type)
           messages
-        
+
         :posts ->
           {posts, _} = Forums.search_posts(query, user: user, per_page: limit_per_type)
           posts
-        
+
         :groups ->
           {groups, _} = Groups.search_groups(query, user: user, per_page: limit_per_type)
           groups
       end
-      
+
       Map.put(acc, type, results)
     end)
   end
@@ -224,11 +224,11 @@ defmodule CgraphWeb.API.V1.SearchController do
         :users ->
           Accounts.get_user_suggestions(query, current_user: user, limit: div(limit, 2))
           |> Enum.map(&%{type: :user, id: &1.id, name: &1.username, avatar: &1.avatar_url})
-        
+
         :groups ->
           Groups.get_group_suggestions(query, user: user, limit: div(limit, 2))
           |> Enum.map(&%{type: :group, id: &1.id, name: &1.name, icon: &1.icon})
-        
+
         _ -> []
       end
     end)

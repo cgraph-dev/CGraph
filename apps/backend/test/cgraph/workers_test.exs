@@ -1,18 +1,18 @@
 defmodule Cgraph.Workers.DatabaseBackupTest do
   use Cgraph.DataCase, async: false
-  
+
   alias Cgraph.Workers.DatabaseBackup
 
   describe "schedule_now/1" do
     test "schedules a backup job" do
       result = DatabaseBackup.schedule_now("test")
-      
+
       assert {:ok, %Oban.Job{}} = result
     end
 
     test "schedules backup with default type" do
       {:ok, job} = DatabaseBackup.schedule_now()
-      
+
       assert job.args["type"] == "manual"
     end
   end
@@ -30,7 +30,7 @@ end
 
 defmodule Cgraph.Workers.SendEmailNotificationTest do
   use Cgraph.DataCase, async: true
-  
+
   alias Cgraph.Workers.SendEmailNotification
 
   import CgraphWeb.UserFixtures
@@ -57,7 +57,7 @@ defmodule Cgraph.Workers.SendEmailNotificationTest do
           "notification_id" => Ecto.UUID.generate()
         }
       }
-      
+
       # Should return :ok (don't retry for missing users)
       result = SendEmailNotification.perform(job)
       assert result == :ok
@@ -65,14 +65,14 @@ defmodule Cgraph.Workers.SendEmailNotificationTest do
 
     test "succeeds when notification not found" do
       user = user_fixture()
-      
+
       job = %Oban.Job{
         args: %{
           "user_id" => user.id,
           "notification_id" => Ecto.UUID.generate()
         }
       }
-      
+
       result = SendEmailNotification.perform(job)
       assert result == :ok
     end
@@ -81,7 +81,7 @@ end
 
 defmodule Cgraph.Workers.SendPushNotificationTest do
   use Cgraph.DataCase, async: true
-  
+
   alias Cgraph.Workers.SendPushNotification
 
   import CgraphWeb.UserFixtures
@@ -104,21 +104,21 @@ defmodule Cgraph.Workers.SendPushNotificationTest do
           "notification_id" => Ecto.UUID.generate()
         }
       }
-      
+
       result = SendPushNotification.perform(job)
       assert result == :ok
     end
 
     test "succeeds when notification not found" do
       user = user_fixture()
-      
+
       job = %Oban.Job{
         args: %{
           "user_id" => user.id,
           "notification_id" => Ecto.UUID.generate()
         }
       }
-      
+
       result = SendPushNotification.perform(job)
       assert result == :ok
     end
@@ -126,14 +126,14 @@ defmodule Cgraph.Workers.SendPushNotificationTest do
     test "succeeds when user has no push tokens" do
       user = user_fixture()
       {:ok, notification} = Cgraph.Notifications.notify(user, :new_message, "Test")
-      
+
       job = %Oban.Job{
         args: %{
           "user_id" => user.id,
           "notification_id" => notification.id
         }
       }
-      
+
       result = SendPushNotification.perform(job)
       assert result == :ok
     end
@@ -142,7 +142,7 @@ end
 
 defmodule Cgraph.Workers.OrchestratorTest do
   use Cgraph.DataCase, async: true
-  
+
   alias Cgraph.Workers.Orchestrator
 
   describe "enqueue/3" do
@@ -152,18 +152,18 @@ defmodule Cgraph.Workers.OrchestratorTest do
         user_id: Ecto.UUID.generate(),
         notification_id: Ecto.UUID.generate()
       })
-      
+
       assert {:ok, %Oban.Job{}} = result
     end
 
     test "enqueues with scheduling" do
       future_time = DateTime.add(DateTime.utc_now(), 3600, :second)
-      
+
       result = Orchestrator.enqueue(Cgraph.Workers.SendEmailNotification, %{
         user_id: Ecto.UUID.generate(),
         notification_id: Ecto.UUID.generate()
       }, scheduled_at: future_time)
-      
+
       # Just verify the job was created - scheduling behavior depends on Oban config
       assert {:ok, %Oban.Job{}} = result
     end
@@ -173,14 +173,14 @@ defmodule Cgraph.Workers.OrchestratorTest do
     test "creates a job pipeline" do
       user_id = Ecto.UUID.generate()
       notification_id = Ecto.UUID.generate()
-      
+
       pipeline = [
         {Cgraph.Workers.SendEmailNotification, %{user_id: user_id, notification_id: notification_id}},
         {Cgraph.Workers.SendPushNotification, %{user_id: user_id, notification_id: notification_id}}
       ]
-      
+
       result = Orchestrator.pipeline(pipeline)
-      
+
       # pipeline/1 returns {:ok, pipeline_id} not a list of jobs
       assert {:ok, pipeline_id} = result
       assert is_binary(pipeline_id)

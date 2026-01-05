@@ -1,7 +1,7 @@
 defmodule CgraphWeb.API.V1.VoiceMessageJSON do
   @moduledoc """
   JSON rendering for voice message responses.
-  
+
   Provides serialization for voice message data including audio metadata,
   waveform visualization data, and playback URLs.
   """

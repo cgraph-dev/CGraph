@@ -198,13 +198,13 @@ defmodule Cgraph.Security.AccountLockout do
   @impl true
   def init(_opts) do
     config = load_config()
-    
+
     state = %{
       config: config,
       locks_issued: 0,
       started_at: DateTime.utc_now()
     }
-    
+
     Logger.info("AccountLockout started with max_attempts=#{config.max_attempts}")
     {:ok, state}
   end
@@ -224,12 +224,12 @@ defmodule Cgraph.Security.AccountLockout do
   @impl true
   def handle_call({:record_failure, identifier, ip, opts}, _from, state) do
     result = do_record_failure(identifier, ip, opts, state.config)
-    
+
     new_state = case result do
       {:locked, _} -> %{state | locks_issued: state.locks_issued + 1}
       _ -> state
     end
-    
+
     {:reply, result, new_state}
   end
 
@@ -268,7 +268,7 @@ defmodule Cgraph.Security.AccountLockout do
 
   defp load_config do
     app_config = Application.get_env(:cgraph, __MODULE__, [])
-    
+
     %{
       max_attempts: Keyword.get(app_config, :max_attempts, @default_max_attempts),
       lockout_duration: Keyword.get(app_config, :lockout_duration, @default_lockout_duration),
@@ -284,20 +284,26 @@ defmodule Cgraph.Security.AccountLockout do
     
     case get_from_redis(key) do
       {:ok, nil} -> :ok
-      {:ok, data} ->
-        case parse_lockout_data(data) do
-          %{locked: true, locked_until: until} ->
-            remaining = DateTime.diff(until, DateTime.utc_now())
-            if remaining > 0 do
-              {:locked, remaining}
-            else
-              # Lock expired, clear it
-              delete_from_redis(key)
-              :ok
-            end
-          _ -> :ok
-        end
-      {:error, _} -> :ok  # Fail open if Redis is down
+      {:ok, data} -> evaluate_lockout_status(key, data)
+      {:error, _} -> :ok
+    end
+  end
+  
+  defp evaluate_lockout_status(key, data) do
+    case parse_lockout_data(data) do
+      %{locked: true, locked_until: until} -> check_lockout_expiry(key, until)
+      _ -> :ok
+    end
+  end
+  
+  defp check_lockout_expiry(key, until) do
+    remaining = DateTime.diff(until, DateTime.utc_now())
+    
+    if remaining > 0 do
+      {:locked, remaining}
+    else
+      delete_from_redis(key)
+      :ok
     end
   end
 
@@ -305,45 +311,38 @@ defmodule Cgraph.Security.AccountLockout do
     if ip in config.whitelist_ips do
       :ok
     else
-      key = ip_lockout_key(ip)
-      
-      case get_from_redis(key) do
-        {:ok, nil} -> :ok
-        {:ok, data} ->
-          case parse_lockout_data(data) do
-            %{locked: true, locked_until: until} ->
-              remaining = DateTime.diff(until, DateTime.utc_now())
-              if remaining > 0 do
-                {:locked, remaining}
-              else
-                delete_from_redis(key)
-                :ok
-              end
-            _ -> :ok
-          end
-        {:error, _} -> :ok
-      end
+      check_ip_lockout_status(ip)
+    end
+  end
+  
+  defp check_ip_lockout_status(ip) do
+    key = ip_lockout_key(ip)
+    
+    case get_from_redis(key) do
+      {:ok, nil} -> :ok
+      {:ok, data} -> evaluate_lockout_status(key, data)
+      {:error, _} -> :ok
     end
   end
 
   defp do_record_failure(identifier, ip, opts, config) do
     attempts_key = attempts_key(identifier)
     lockout_key = lockout_key(identifier)
-    
+
     # Increment attempt counter
     attempts = increment_attempts(attempts_key, config.attempt_window)
-    
+
     # Log the failed attempt
     log_failed_attempt(identifier, ip, attempts, opts)
-    
+
     if attempts >= config.max_attempts do
       # Calculate lockout duration (progressive)
       lock_count = get_lock_count(identifier)
       duration = calculate_lockout_duration(lock_count, config)
-      
+
       # Set the lockout
       locked_until = DateTime.utc_now() |> DateTime.add(duration, :second)
-      
+
       lockout_data = %{
         locked: true,
         locked_until: DateTime.to_iso8601(locked_until),
@@ -352,18 +351,18 @@ defmodule Cgraph.Security.AccountLockout do
         locked_at: DateTime.to_iso8601(DateTime.utc_now()),
         ip_address: ip
       }
-      
+
       set_in_redis(lockout_key, Jason.encode!(lockout_data), duration)
       increment_lock_count(identifier)
-      
+
       # Also lock the IP if provided (prevents account enumeration)
       if ip do
         lock_ip(ip, duration, config)
       end
-      
+
       # Emit telemetry and audit log
       emit_account_locked(identifier, duration, attempts, ip)
-      
+
       {:locked, duration}
     else
       :ok
@@ -379,20 +378,20 @@ defmodule Cgraph.Security.AccountLockout do
   defp do_admin_unlock(identifier, admin_id) do
     lockout_key = lockout_key(identifier)
     attempts_key = attempts_key(identifier)
-    
+
     # Clear both lockout and attempts
     delete_from_redis(lockout_key)
     delete_from_redis(attempts_key)
-    
+
     # Audit log
     Audit.log(:admin, :account_unlocked, %{
       target_user: identifier,
       admin_id: admin_id,
       reason: "manual_unlock"
     })
-    
+
     emit_account_unlocked(identifier, admin_id)
-    
+
     Logger.info("Account #{identifier} unlocked by admin #{admin_id}")
     :ok
   rescue
@@ -402,19 +401,19 @@ defmodule Cgraph.Security.AccountLockout do
   defp do_get_info(identifier) do
     lockout_key = lockout_key(identifier)
     attempts_key = attempts_key(identifier)
-    
+
     lockout_data = case get_from_redis(lockout_key) do
       {:ok, nil} -> nil
       {:ok, data} -> parse_lockout_data(data)
       _ -> nil
     end
-    
+
     attempts = case get_from_redis(attempts_key) do
       {:ok, nil} -> 0
       {:ok, count} -> String.to_integer(count)
       _ -> 0
     end
-    
+
     if lockout_data && lockout_data.locked do
       remaining = DateTime.diff(lockout_data.locked_until, DateTime.utc_now())
       %{
@@ -478,7 +477,7 @@ defmodule Cgraph.Security.AccountLockout do
     base = config.lockout_duration
     multiplier = config.progressive_multiplier
     max_duration = config.max_lockout_duration
-    
+
     # Progressive duration: base * multiplier^lock_count
     duration = base * :math.pow(multiplier, lock_count) |> round()
     min(duration, max_duration)
@@ -521,7 +520,7 @@ defmodule Cgraph.Security.AccountLockout do
 
   defp log_failed_attempt(identifier, ip, attempts, opts) do
     metadata = Keyword.get(opts, :metadata, %{})
-    
+
     Audit.log(:auth, :login_failed, %{
       identifier: identifier,
       ip_address: ip,
@@ -538,14 +537,14 @@ defmodule Cgraph.Security.AccountLockout do
       %{duration: duration, attempts: attempts},
       %{identifier: identifier, ip_address: ip}
     )
-    
+
     Audit.log(:security, :account_locked, %{
       identifier: identifier,
       duration_seconds: duration,
       attempts: attempts,
       ip_address: ip
     })
-    
+
     Logger.warning("Account locked: #{identifier} after #{attempts} failed attempts")
   rescue
     _ -> :ok

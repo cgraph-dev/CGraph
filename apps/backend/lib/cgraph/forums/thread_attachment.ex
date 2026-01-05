@@ -20,19 +20,19 @@ defmodule Cgraph.Forums.ThreadAttachment do
     field :file_size, :integer
     field :file_path, :string  # S3 path or local storage path
     field :file_url, :string   # public URL
-    
+
     # Image-specific
     field :is_image, :boolean, default: false
     field :width, :integer
     field :height, :integer
     field :thumbnail_url, :string
-    
+
     # Stats
     field :download_count, :integer, default: 0
-    
+
     # Inline display in post
     field :is_inline, :boolean, default: false
-    
+
     belongs_to :thread, Cgraph.Forums.Thread
     belongs_to :post, Cgraph.Forums.ThreadPost
     belongs_to :uploader, Cgraph.Accounts.User

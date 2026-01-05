@@ -1,37 +1,37 @@
 defmodule CgraphWeb.API.V1.VoiceMessageController do
   @moduledoc """
   API controller for voice message operations.
-  
+
   ## Endpoints
-  
+
   - `POST /api/v1/voice-messages` - Upload a voice message
   - `GET /api/v1/voice-messages/:id` - Get voice message details
   - `DELETE /api/v1/voice-messages/:id` - Delete a voice message
   - `GET /api/v1/voice-messages/:id/waveform` - Get waveform data
   """
-  
+
   use CgraphWeb, :controller
-  
+
   alias Cgraph.Messaging.VoiceMessage
   alias Cgraph.Repo
-  
+
   action_fallback CgraphWeb.FallbackController
-  
+
   plug :ensure_authenticated
-  
+
   @doc """
   Upload a voice message.
-  
+
   ## Request
-  
+
   Content-Type: multipart/form-data
-  
+
   - `audio` - Audio file (webm, m4a, mp3, ogg, wav)
   - `conversation_id` - (optional) Conversation to attach to
   - `channel_id` - (optional) Channel to attach to
-  
+
   ## Response
-  
+
       {
         "data": {
           "id": "uuid",
@@ -44,56 +44,56 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
   """
   def create(conn, %{"audio" => upload} = params) do
     user = conn.assigns.current_user
-    
+
     # Log upload struct for debugging
     require Logger
     Logger.debug("Voice message upload received: #{inspect(upload)}")
     Logger.debug("Upload params: #{inspect(params)}")
-    
+
     opts = [
       transcode: true,
       extract_waveform: true
     ]
-    
+
     case VoiceMessage.process(user, upload, opts) do
       {:ok, voice_message} ->
         # If conversation or channel specified, create message with voice attachment
         voice_message = maybe_attach_to_message(voice_message, user, params)
-        
+
         conn
         |> put_status(:created)
         |> render(:show, voice_message: voice_message)
-      
+
       {:error, :unsupported_format} ->
         {:error, :unprocessable_entity, "Unsupported audio format"}
-      
+
       {:error, :file_too_large} ->
         {:error, :payload_too_large, "Voice message too long (max 5 minutes)"}
-      
+
       {:error, :invalid_upload} ->
         Logger.warning("Invalid upload structure: #{inspect(upload)}")
         {:error, :bad_request, "Invalid upload structure. Expected multipart file upload."}
-      
+
       {:error, reason} ->
         Logger.error("Voice message processing failed: #{inspect(reason)}")
         {:error, :internal_server_error, "Failed to process voice message: #{inspect(reason)}"}
     end
   end
-  
+
   def create(_conn, _params) do
     {:error, :bad_request, "Missing required 'audio' parameter"}
   end
-  
+
   @doc """
   Get voice message details.
   """
   def show(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    
+
     case Repo.get(VoiceMessage, id) do
       nil ->
         {:error, :not_found}
-      
+
       voice_message ->
         if can_access?(user, voice_message) do
           render(conn, :show, voice_message: voice_message)
@@ -102,17 +102,17 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
         end
     end
   end
-  
+
   @doc """
   Delete a voice message.
   """
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    
+
     case Repo.get(VoiceMessage, id) do
       nil ->
         {:error, :not_found}
-      
+
       voice_message ->
         if voice_message.user_id == user.id do
           :ok = VoiceMessage.delete(voice_message)
@@ -122,17 +122,17 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
         end
     end
   end
-  
+
   @doc """
   Get waveform data for audio visualization.
   """
   def waveform(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    
+
     case Repo.get(VoiceMessage, id) do
       nil ->
         {:error, :not_found}
-      
+
       voice_message ->
         if can_access?(user, voice_message) do
           json(conn, %{data: %{waveform: VoiceMessage.waveform(voice_message)}})
@@ -141,11 +141,11 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
         end
     end
   end
-  
+
   # ============================================================================
   # Private Functions
   # ============================================================================
-  
+
   defp ensure_authenticated(conn, _opts) do
     case conn.assigns[:current_user] do
       nil ->
@@ -153,36 +153,36 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
         |> put_status(:unauthorized)
         |> json(%{error: "Authentication required"})
         |> halt()
-      
+
       _user ->
         conn
     end
   end
-  
+
   defp maybe_attach_to_message(voice_message, user, params) do
     conversation_id = params["conversation_id"]
     channel_id = params["channel_id"]
-    
+
     cond do
       conversation_id ->
         create_voice_message_in_conversation(voice_message, user, conversation_id)
-      
+
       channel_id ->
         create_voice_message_in_channel(voice_message, user, channel_id)
-      
+
       true ->
         voice_message
     end
   end
-  
+
   defp create_voice_message_in_conversation(voice_message, user, conversation_id) do
     alias Cgraph.Messaging
     alias Cgraph.Messaging.Conversation
-    
+
     case Repo.get(Conversation, conversation_id) do
       nil ->
         voice_message
-      
+
       conversation ->
         message_attrs = %{
           "content" => "[Voice Message]",
@@ -192,23 +192,23 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
           "file_size" => voice_message.size,
           "file_mime_type" => voice_message.content_type
         }
-        
+
         case Messaging.send_message(conversation, user, message_attrs) do
           {:ok, message} ->
             # Update voice message with message reference
             voice_message
             |> Ecto.Changeset.change(message_id: message.id)
             |> Repo.update!()
-          
+
           {:error, _} ->
             voice_message
         end
     end
   end
-  
+
   defp create_voice_message_in_channel(voice_message, user, channel_id) do
     alias Cgraph.Groups
-    
+
     message_attrs = %{
       content: "[Voice Message]",
       content_type: "voice",
@@ -219,18 +219,18 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
       file_size: voice_message.size,
       file_mime_type: voice_message.content_type
     }
-    
+
     case Groups.send_channel_message(channel_id, user.id, message_attrs) do
       {:ok, message} ->
         voice_message
         |> Ecto.Changeset.change(message_id: message.id)
         |> Repo.update!()
-      
+
       {:error, _} ->
         voice_message
     end
   end
-  
+
   defp can_access?(user, voice_message) do
     # Owner can always access
     if voice_message.user_id == user.id do
@@ -243,11 +243,11 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
       end
     end
   end
-  
+
   defp can_access_message?(user, message_id) do
     alias Cgraph.Messaging.Message
     import Ecto.Query
-    
+
     case Repo.get(Message, message_id) do
       nil -> false
       message ->
@@ -259,7 +259,7 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
               where: cp.conversation_id == ^message.conversation_id,
               where: cp.user_id == ^user.id
             )
-          
+
           message.channel_id ->
             # Check channel/group membership
             Repo.exists?(
@@ -268,7 +268,7 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
               where: c.id == ^message.channel_id,
               where: m.user_id == ^user.id
             )
-          
+
           true ->
             false
         end

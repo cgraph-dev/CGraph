@@ -1,7 +1,7 @@
 defmodule Cgraph.Groups.PermissionOverwrite do
   @moduledoc """
   Schema for channel permission overwrites.
-  
+
   Allows fine-grained permission control per role or member in a channel.
   """
   use Ecto.Schema
@@ -22,7 +22,7 @@ defmodule Cgraph.Groups.PermissionOverwrite do
     field :deny, :integer, default: 0
     # Type of overwrite: "role" or "member"
     field :type, :string
-    
+
     timestamps()
   end
 

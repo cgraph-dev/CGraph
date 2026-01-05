@@ -17,7 +17,7 @@ defmodule CgraphWeb.API.V1.ForumController do
     user = Map.get(conn.assigns, :current_user)
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
-    
+
     {forums, meta} = Forums.list_forums_for_user(user, page: page, per_page: per_page)
     render(conn, :index, forums: forums, meta: meta)
   end
@@ -25,12 +25,12 @@ defmodule CgraphWeb.API.V1.ForumController do
   @doc """
   Get a specific forum by ID or slug.
   GET /api/v1/forums/:id
-  
+
   The :id parameter can be either a UUID or a slug.
   """
   def show(conn, %{"id" => forum_id_or_slug}) do
     user = Map.get(conn.assigns, :current_user)
-    
+
     # Try to get forum by ID first, then by slug
     with {:ok, forum} <- get_forum_by_id_or_slug(forum_id_or_slug),
          :ok <- Forums.authorize_action(user, forum, :view) do
@@ -39,7 +39,7 @@ defmodule CgraphWeb.API.V1.ForumController do
       render(conn, :show, forum: forum_with_status)
     end
   end
-  
+
   # Helper to get forum by ID or slug
   defp get_forum_by_id_or_slug(id_or_slug) do
     # Check if it looks like a UUID (36 chars with hyphens or 32 chars alphanumeric)
@@ -49,7 +49,7 @@ defmodule CgraphWeb.API.V1.ForumController do
       Forums.get_forum_by_slug(id_or_slug)
     end
   end
-  
+
   defp is_uuid?(string) do
     case Ecto.UUID.cast(string) do
       {:ok, _} -> true
@@ -60,18 +60,18 @@ defmodule CgraphWeb.API.V1.ForumController do
   @doc """
   Create a new forum.
   POST /api/v1/forums
-  
+
   Any authenticated user can create forums, subject to their subscription tier limits:
   - Free: 1 forum
   - Starter ($5/mo): 3 forums
-  - Pro ($15/mo): 10 forums  
+  - Pro ($15/mo): 10 forums
   - Business ($50/mo): Unlimited
   """
   def create(conn, params) do
     user = conn.assigns.current_user
     # Accept params either nested under "forum" key or directly
     forum_params = Map.get(params, "forum") || extract_forum_params(params)
-    
+
     with :ok <- authorize_forum_creation(user),
          {:ok, forum} <- Forums.create_forum(user, forum_params) do
       conn
@@ -95,7 +95,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   def update(conn, %{"id" => forum_id} = params) do
     user = conn.assigns.current_user
     forum_params = Map.get(params, "forum", %{})
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
          {:ok, updated_forum} <- Forums.update_forum(forum, forum_params) do
@@ -109,7 +109,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def delete(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :delete),
          {:ok, _} <- Forums.delete_forum(forum) do
@@ -126,7 +126,7 @@ defmodule CgraphWeb.API.V1.ForumController do
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
     filter = Map.get(params, "filter", "all") # all, reported, pending_approval
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :moderate) do
       {items, meta} = Forums.get_mod_queue(forum,
@@ -144,7 +144,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def stats(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view) do
       stats = Forums.get_forum_stats(forum)
@@ -158,7 +158,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def subscribe(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view),
          {:ok, subscription} <- Forums.subscribe_to_forum(user, forum) do
@@ -172,7 +172,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def unsubscribe(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          {:ok, _} <- Forums.unsubscribe_from_forum(user, forum) do
       send_resp(conn, :no_content, "")
@@ -187,17 +187,17 @@ defmodule CgraphWeb.API.V1.ForumController do
   Vote on a forum.
   POST /api/v1/forums/:id/vote
   Body: { "value": 1 } for upvote, { "value": -1 } for downvote
-  
+
   Security measures:
   - Account must be at least 1 day old
-  - Downvoting requires 10+ karma  
+  - Downvoting requires 10+ karma
   - Vote changes have 60s cooldown
   - Cannot vote on own forums or forums you moderate
   """
   def vote(conn, %{"id" => forum_id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
     vote_value = if is_binary(value), do: String.to_integer(value), else: value
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :vote) do
       case Forums.vote_forum(user, forum_id, vote_value) do
@@ -215,32 +215,32 @@ defmodule CgraphWeb.API.V1.ForumController do
               user_vote: updated_forum.user_vote
             }
           })
-        
+
         {:error, :account_too_new} ->
           conn
           |> put_status(:forbidden)
           |> json(%{error: "Your account must be at least 1 day old to vote"})
-        
+
         {:error, :insufficient_karma_for_downvote} ->
           conn
           |> put_status(:forbidden)
           |> json(%{error: "You need at least 10 karma to downvote forums"})
-        
+
         {:error, :cannot_vote_own_forum} ->
           conn
           |> put_status(:forbidden)
           |> json(%{error: "You cannot vote on your own forums"})
-        
+
         {:error, :moderators_cannot_vote} ->
           conn
           |> put_status(:forbidden)
           |> json(%{error: "Moderators cannot vote on forums they moderate"})
-        
+
         {:error, {:vote_cooldown, remaining}} ->
           conn
           |> put_status(:too_many_requests)
           |> json(%{error: "Please wait #{remaining} seconds before changing your vote"})
-        
+
         {:error, reason} ->
           conn
           |> put_status(:unprocessable_entity)
@@ -261,10 +261,10 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def get_vote(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
-    
+
     vote = Forums.get_user_forum_vote(user.id, forum_id)
     user_vote = if vote, do: vote.value, else: 0
-    
+
     conn
     |> put_status(:ok)
     |> json(%{user_vote: user_vote})
@@ -276,13 +276,13 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def remove_vote(conn, %{"id" => forum_id}) do
     user = conn.assigns.current_user
-    
+
     case Forums.get_user_forum_vote(user.id, forum_id) do
       nil ->
         conn
         |> put_status(:ok)
         |> json(%{result: :no_vote})
-      
+
       vote ->
         with {:ok, _} <- Forums.vote_forum(user, forum_id, vote.value) do
           conn
@@ -315,17 +315,18 @@ defmodule CgraphWeb.API.V1.ForumController do
       featured_only: featured_only
     )
 
-    # Add user votes if authenticated
-    forums_with_votes = if user do
-      Enum.map(forums, fn forum ->
-        vote = Forums.get_user_forum_vote(user.id, forum.id)
-        Map.put(forum, :user_vote, if(vote, do: vote.value, else: 0))
-      end)
-    else
-      Enum.map(forums, fn forum -> Map.put(forum, :user_vote, 0) end)
-    end
-
+    forums_with_votes = enrich_forums_with_votes(forums, user)
     render(conn, :leaderboard, forums: forums_with_votes, meta: meta)
+  end
+  
+  defp enrich_forums_with_votes(forums, nil) do
+    Enum.map(forums, fn forum -> Map.put(forum, :user_vote, 0) end)
+  end
+  defp enrich_forums_with_votes(forums, user) do
+    Enum.map(forums, fn forum ->
+      vote = Forums.get_user_forum_vote(user.id, forum.id)
+      Map.put(forum, :user_vote, if(vote, do: vote.value, else: 0))
+    end)
   end
 
   @doc """
@@ -335,7 +336,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   def top(conn, params) do
     limit = Map.get(params, "limit", "10") |> String.to_integer() |> min(25)
     sort = Map.get(params, "sort", "hot")
-    
+
     forums = Forums.get_top_forums(limit, sort)
     render(conn, :top, forums: forums)
   end
@@ -343,7 +344,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   @doc """
   Get top contributors within a specific forum.
   GET /api/v1/forums/:id/contributors
-  
+
   Query params:
   - page: Page number (default: 1)
   - per_page: Items per page (default: 10, max: 50)
@@ -391,18 +392,18 @@ defmodule CgraphWeb.API.V1.ForumController do
     # - business: unlimited
     user_tier = Map.get(user, :subscription_tier) || "free"
     owned_forums_count = Forums.count_user_forums(user.id)
-    
+
     max_forums = case user_tier do
       "business" -> :infinity
       "pro" -> 10
       "starter" -> 3
       _ -> 1  # free tier
     end
-    
+
     cond do
       max_forums == :infinity -> :ok
       owned_forums_count < max_forums -> :ok
-      true -> 
+      true ->
         {:error, %{
           code: :forum_limit_reached,
           message: "You've reached your forum limit (#{max_forums}). Upgrade your subscription to create more forums.",

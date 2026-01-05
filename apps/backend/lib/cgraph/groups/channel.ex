@@ -1,7 +1,7 @@
 defmodule Cgraph.Groups.Channel do
   @moduledoc """
   Channel within a group.
-  
+
   Supports:
   - Text channels
   - Voice channels (WebRTC)

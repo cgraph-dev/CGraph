@@ -19,7 +19,7 @@ defmodule CgraphWeb.API.V1.PostController do
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
     sort = Map.get(params, "sort", "hot") # hot, new, top, controversial
     category_id = Map.get(params, "category_id")
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view) do
       user_id = if user, do: user.id, else: nil
@@ -40,7 +40,7 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def show(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = Map.get(conn.assigns, :current_user)
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view) do
       user_id = if user, do: user.id, else: nil
@@ -55,7 +55,7 @@ defmodule CgraphWeb.API.V1.PostController do
   @doc """
   Create a new post.
   POST /api/v1/forums/:forum_id/posts
-  
+
   Params:
   - title: Post title (required)
   - content: Post content (required for text posts)
@@ -65,7 +65,7 @@ defmodule CgraphWeb.API.V1.PostController do
     user = conn.assigns.current_user
     # Accept params either nested under "post" key or directly
     post_params = Map.get(params, "post") || extract_post_params(params)
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :create_post),
          :ok <- validate_post_rate_limit(user),
@@ -82,14 +82,14 @@ defmodule CgraphWeb.API.V1.PostController do
     |> Map.take(["title", "content", "body", "type", "link", "url", "flair", "is_nsfw", "tags"])
     |> normalize_post_fields()
   end
-  
+
   # Normalize field names for compatibility
   defp normalize_post_fields(params) do
     params
     |> maybe_rename_field("body", "content")
     |> maybe_rename_field("url", "link")
   end
-  
+
   defp maybe_rename_field(params, from, to) do
     if Map.has_key?(params, from) && !Map.has_key?(params, to) do
       params
@@ -107,7 +107,7 @@ defmodule CgraphWeb.API.V1.PostController do
   def update(conn, %{"forum_id" => forum_id, "id" => post_id} = params) do
     user = conn.assigns.current_user
     post_params = Map.get(params, "post") || extract_post_params(params)
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          {:ok, post} <- Forums.get_post(forum, post_id),
          :ok <- authorize_post_edit(user, post, forum),
@@ -122,7 +122,7 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def delete(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          {:ok, post} <- Forums.get_post(forum, post_id),
          :ok <- authorize_post_delete(user, post, forum),
@@ -134,13 +134,13 @@ defmodule CgraphWeb.API.V1.PostController do
   @doc """
   Vote on a post.
   POST /api/v1/forums/:forum_id/posts/:id/vote
-  
+
   Accepts `direction` param: "up" or "down"
   """
   def vote(conn, %{"forum_id" => forum_id, "post_id" => post_id, "direction" => direction}) do
     user = conn.assigns.current_user
     vote_direction = if direction == "up", do: :up, else: :down
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :vote),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -155,7 +155,7 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def upvote(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :vote),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -170,7 +170,7 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def downvote(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :vote),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -185,7 +185,7 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def unvote(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          {:ok, post} <- Forums.get_post(forum, post_id),
          {:ok, _} <- Forums.remove_vote(user, post) do
@@ -199,7 +199,7 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def pin(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :moderate),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -214,7 +214,7 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def unpin(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :moderate),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -229,7 +229,7 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def lock(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :moderate),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -244,7 +244,7 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def unlock(conn, %{"forum_id" => forum_id, "id" => post_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :moderate),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -260,7 +260,7 @@ defmodule CgraphWeb.API.V1.PostController do
   def report(conn, %{"forum_id" => forum_id, "id" => post_id} = params) do
     user = conn.assigns.current_user
     reason = Map.get(params, "reason", "")
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          {:ok, post} <- Forums.get_post(forum, post_id),
          {:ok, report} <- Forums.report_post(user, post, reason) do
@@ -280,7 +280,7 @@ defmodule CgraphWeb.API.V1.PostController do
     per_page = Map.get(params, "per_page", "25") |> String.to_integer() |> min(50)
     sort = Map.get(params, "sort", "hot")
     time = Map.get(params, "time", "day")
-    
+
     user_id = if user, do: user.id, else: nil
     {posts, meta} = Forums.list_public_feed(
       page: page,

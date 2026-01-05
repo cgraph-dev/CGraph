@@ -1,7 +1,7 @@
 defmodule Cgraph.Forums.ThreadPoll do
   @moduledoc """
   Poll schema for thread polls (MyBB-style).
-  
+
   Polls can be attached to threads and support:
   - Multiple choice (select multiple options)
   - Public/private voting

@@ -16,19 +16,19 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
   """
   def index(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :view_members) do
       page = Map.get(params, "page", "1") |> String.to_integer()
       per_page = Map.get(params, "per_page", "50") |> String.to_integer() |> min(100)
       role_filter = Map.get(params, "role")
-      
-      {members, meta} = Groups.list_group_members(group, 
-        page: page, 
+
+      {members, meta} = Groups.list_group_members(group,
+        page: page,
         per_page: per_page,
         role: role_filter
       )
-      
+
       render(conn, :index, members: members, meta: meta)
     end
   end
@@ -39,7 +39,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
   """
   def show(conn, %{"group_id" => group_id, "id" => member_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :view_members),
          {:ok, member} <- Groups.get_member(group, member_id) do
@@ -54,7 +54,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
   def update(conn, %{"group_id" => group_id, "id" => member_id} = params) do
     user = conn.assigns.current_user
     member_params = Map.get(params, "member", %{})
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :manage_members),
          {:ok, member} <- Groups.get_member(group, member_id),
@@ -63,7 +63,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
         target_user_id: member.user_id,
         changes: member_params
       })
-      
+
       render(conn, :show, member: updated_member)
     end
   end
@@ -75,7 +75,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
   def delete(conn, %{"group_id" => group_id, "id" => member_id} = params) do
     user = conn.assigns.current_user
     reason = Map.get(params, "reason", "")
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :kick_members),
          {:ok, member} <- Groups.get_member(group, member_id),
@@ -86,7 +86,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
         target_user_id: member.user_id,
         reason: reason
       })
-      
+
       send_resp(conn, :no_content, "")
     end
   end
@@ -99,7 +99,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
     user = conn.assigns.current_user
     reason = Map.get(params, "reason", "")
     duration = Map.get(params, "duration") # nil = permanent, or seconds
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :ban_members),
          {:ok, member} <- Groups.get_member(group, member_id),
@@ -111,7 +111,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
         reason: reason,
         duration: duration
       })
-      
+
       render(conn, :ban, ban: ban)
     end
   end
@@ -122,14 +122,14 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
   """
   def unban(conn, %{"group_id" => group_id, "user_id" => user_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :ban_members),
          {:ok, _} <- Groups.unban_user(group, user_id) do
       Groups.log_audit_event(group, user, :member_unbanned, %{
         target_user_id: user_id
       })
-      
+
       send_resp(conn, :no_content, "")
     end
   end
@@ -140,7 +140,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
   """
   def list_bans(conn, %{"group_id" => group_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :view_bans) do
       bans = Groups.list_bans(group)
@@ -156,7 +156,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
     user = conn.assigns.current_user
     duration = Map.get(params, "duration", 600) # Default 10 minutes
     reason = Map.get(params, "reason", "")
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :mute_members),
          {:ok, member} <- Groups.get_member(group, member_id),
@@ -168,7 +168,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
         duration: duration,
         reason: reason
       })
-      
+
       render(conn, :show, member: updated_member)
     end
   end
@@ -179,7 +179,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
   """
   def unmute(conn, %{"group_id" => group_id, "id" => member_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :mute_members),
          {:ok, member} <- Groups.get_member(group, member_id),
@@ -187,7 +187,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
       Groups.log_audit_event(group, user, :member_unmuted, %{
         target_user_id: member.user_id
       })
-      
+
       render(conn, :show, member: updated_member)
     end
   end
@@ -198,7 +198,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
   """
   def update_roles(conn, %{"group_id" => group_id, "id" => member_id, "role_ids" => role_ids}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :manage_roles),
          {:ok, member} <- Groups.get_member(group, member_id),
@@ -207,7 +207,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
         target_user_id: member.user_id,
         role_ids: role_ids
       })
-      
+
       render(conn, :show, member: updated_member)
     end
   end
@@ -218,7 +218,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
   """
   def transfer_ownership(conn, %{"group_id" => group_id, "new_owner_id" => new_owner_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- validate_is_owner(user, group),
          {:ok, new_owner_member} <- Groups.get_member(group, new_owner_id),
@@ -226,7 +226,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
       Groups.log_audit_event(updated_group, user, :ownership_transferred, %{
         new_owner_id: new_owner_id
       })
-      
+
       render(conn, :transfer, group: updated_group)
     end
   end
@@ -243,7 +243,7 @@ defmodule CgraphWeb.API.V1.GroupMemberController do
 
   defp validate_can_moderate(actor, target_member, group) do
     actor_member = Groups.get_member_by_user(group, actor.id)
-    
+
     case Groups.compare_hierarchy(actor_member, target_member) do
       :higher -> :ok
       _ -> {:error, :insufficient_permissions}

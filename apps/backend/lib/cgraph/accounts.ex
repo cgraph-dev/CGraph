@@ -1,7 +1,7 @@
 defmodule Cgraph.Accounts do
   @moduledoc """
   The Accounts context.
-  
+
   Handles user management, authentication, sessions, friendships, and settings.
   """
 
@@ -16,41 +16,36 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Register a new user with email/password credentials.
-  
+
   Optionally checks password against HaveIBeenPwned database.
   """
   def register_user(attrs, opts \\ []) do
     check_breach = Keyword.get(opts, :check_breach, true)
-    
+
     changeset = %User{}
     |> User.registration_changeset(attrs)
-    
-    # Apply password breach check if enabled
-    changeset = if check_breach do
-      apply_breach_check(changeset)
-    else
-      changeset
-    end
-    
+    |> maybe_apply_breach_check(check_breach)
+
     case Repo.insert(changeset) do
       {:ok, user} = result ->
-        # Async breach check for logging (if sync check was skipped)
-        if !check_breach do
-          password = Map.get(attrs, "password") || Map.get(attrs, :password)
-          if password do
-            PasswordBreachCheck.check_async(password, user_id: user.id)
-          end
-        end
+        maybe_async_breach_check(attrs, check_breach, user.id)
         result
-      
-      error ->
-        error
+      error -> error
     end
   end
   
+  defp maybe_apply_breach_check(changeset, true), do: apply_breach_check(changeset)
+  defp maybe_apply_breach_check(changeset, false), do: changeset
+  
+  defp maybe_async_breach_check(_attrs, true, _user_id), do: :ok
+  defp maybe_async_breach_check(attrs, false, user_id) do
+    password = Map.get(attrs, "password") || Map.get(attrs, :password)
+    if password, do: PasswordBreachCheck.check_async(password, user_id: user_id)
+  end
+
   defp apply_breach_check(changeset) do
     password = Ecto.Changeset.get_change(changeset, :password)
-    
+
     if password do
       PasswordBreachCheck.validate_changeset(changeset, :password)
     else
@@ -123,7 +118,7 @@ defmodule Cgraph.Accounts do
       user -> {:ok, user}
     end
   end
-  
+
   def get_user_by_user_id(user_id) when is_binary(user_id) do
     # Handle formats like "#0001" or "0001" or "1"
     cleaned = user_id |> String.replace("#", "") |> String.trim()
@@ -135,7 +130,7 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Create a session for user.
-  
+
   Accepts either a Plug.Conn or a map with session metadata.
   """
   def create_session(user, conn_or_attrs) do
@@ -209,34 +204,41 @@ defmodule Cgraph.Accounts do
   """
   def get_or_create_wallet_challenge(wallet_address) do
     normalized_address = String.downcase(wallet_address)
-    
-    case Repo.get_by(WalletChallenge, wallet_address: normalized_address) do
-      nil ->
-        nonce = generate_nonce()
-        %WalletChallenge{}
-        |> WalletChallenge.changeset(%{wallet_address: normalized_address, nonce: nonce})
-        |> Repo.insert()
-        |> case do
-          {:ok, wallet_challenge} -> {:ok, wallet_challenge.nonce}
-          {:error, _} -> {:error, "Failed to create challenge"}
-        end
 
-      wallet_challenge ->
-        # Regenerate nonce if expired
-        if expired?(wallet_challenge.updated_at, 5 * 60) do
-          nonce = generate_nonce()
-          wallet_challenge
-          |> WalletChallenge.changeset(%{nonce: nonce})
-          |> Repo.update()
-          |> case do
-            {:ok, updated} -> {:ok, updated.nonce}
-            {:error, _} -> {:error, "Failed to update challenge"}
-          end
-        else
-          {:ok, wallet_challenge.nonce}
-        end
+    case Repo.get_by(WalletChallenge, wallet_address: normalized_address) do
+      nil -> create_new_wallet_challenge(normalized_address)
+      wallet_challenge -> refresh_wallet_challenge_if_needed(wallet_challenge)
     end
   end
+  
+  defp create_new_wallet_challenge(normalized_address) do
+    nonce = generate_nonce()
+    
+    %WalletChallenge{}
+    |> WalletChallenge.changeset(%{wallet_address: normalized_address, nonce: nonce})
+    |> Repo.insert()
+    |> extract_nonce_from_result("Failed to create challenge")
+  end
+  
+  defp refresh_wallet_challenge_if_needed(wallet_challenge) do
+    if expired?(wallet_challenge.updated_at, 5 * 60) do
+      regenerate_wallet_nonce(wallet_challenge)
+    else
+      {:ok, wallet_challenge.nonce}
+    end
+  end
+  
+  defp regenerate_wallet_nonce(wallet_challenge) do
+    nonce = generate_nonce()
+    
+    wallet_challenge
+    |> WalletChallenge.changeset(%{nonce: nonce})
+    |> Repo.update()
+    |> extract_nonce_from_result("Failed to update challenge")
+  end
+  
+  defp extract_nonce_from_result({:ok, record}, _error_msg), do: {:ok, record.nonce}
+  defp extract_nonce_from_result({:error, _}, error_msg), do: {:error, error_msg}
 
   @doc """
   Verify a wallet signature and authenticate/register user.
@@ -244,13 +246,13 @@ defmodule Cgraph.Accounts do
   """
   def verify_wallet_signature(wallet_address, signature) do
     normalized_address = String.downcase(wallet_address)
-    
+
     with {:ok, wallet_challenge} <- get_wallet_challenge(normalized_address),
          message <- build_sign_message(wallet_challenge.nonce),
          :ok <- verify_signature(message, signature, normalized_address) do
       # Delete the challenge to prevent replay attacks
       Repo.delete(wallet_challenge)
-      
+
       # Get or create user for this wallet
       case get_user_by_wallet(normalized_address) do
         {:ok, user} -> {:ok, user}
@@ -275,7 +277,7 @@ defmodule Cgraph.Accounts do
     prefix = "\x19Ethereum Signed Message:\n#{byte_size(message)}"
     full_message = prefix <> message
     {:ok, hash} = ExKeccak.hash_256(full_message)
-    
+
     # Decode signature
     with {:ok, sig_bytes} <- decode_signature(signature),
          {:ok, recovered_pubkey} <- recover_public_key(hash, sig_bytes),
@@ -297,7 +299,7 @@ defmodule Cgraph.Accounts do
   defp recover_public_key(hash, sig_bytes) do
     <<r::binary-size(32), s::binary-size(32), v::integer>> = sig_bytes
     recovery_id = if v >= 27, do: v - 27, else: v
-    
+
     case ExSecp256k1.recover_compact(hash, r <> s, recovery_id) do
       {:ok, pubkey} -> {:ok, pubkey}
       _ -> {:error, :invalid_signature}
@@ -322,7 +324,7 @@ defmodule Cgraph.Accounts do
 
   defp create_wallet_user(wallet_address) do
     username = "wallet_" <> String.slice(wallet_address, 2, 8)
-    
+
     %User{}
     |> User.wallet_registration_changeset(%{
       wallet_address: wallet_address,
@@ -363,12 +365,12 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Deactivate (soft delete) a user account.
-  
+
   Sets deleted_at timestamp but preserves the record for data integrity.
   """
   def deactivate_user(user) do
     deleted_at = DateTime.utc_now() |> DateTime.truncate(:second)
-    
+
     user
     |> Ecto.Changeset.change(deleted_at: deleted_at)
     |> Repo.update()
@@ -391,7 +393,7 @@ defmodule Cgraph.Accounts do
     query = from u in User,
       where: u.id == ^user_id,
       preload: [:settings]
-    
+
     case Repo.one(query) do
       nil -> {:error, :not_found}
       user -> {:ok, user}
@@ -409,7 +411,7 @@ defmodule Cgraph.Accounts do
       order_by: [asc: u.username]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     users = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -437,7 +439,7 @@ defmodule Cgraph.Accounts do
       order_by: [desc: u.karma, asc: u.username]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     users = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -464,7 +466,7 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Change a user's username with 14-day cooldown enforcement.
-  
+
   Returns {:error, changeset} if within cooldown period.
   """
   def change_username(user, new_username) do
@@ -513,7 +515,7 @@ defmodule Cgraph.Accounts do
   def generate_session_token(user) do
     token = :crypto.strong_rand_bytes(32)
     token_hash = :crypto.hash(:sha256, token) |> Base.encode64()
-    
+
     %Session{}
     |> Session.changeset(%{
       user_id: user.id,
@@ -521,7 +523,7 @@ defmodule Cgraph.Accounts do
       expires_at: DateTime.utc_now() |> DateTime.add(30 * 24 * 60 * 60, :second)
     })
     |> Repo.insert!()
-    
+
     token
   end
 
@@ -530,7 +532,7 @@ defmodule Cgraph.Accounts do
   """
   def get_user_by_session_token(token) when is_binary(token) do
     token_hash = :crypto.hash(:sha256, token) |> Base.encode64()
-    
+
     query = from s in Session,
       where: s.token_hash == ^token_hash,
       where: is_nil(s.revoked_at),
@@ -549,10 +551,10 @@ defmodule Cgraph.Accounts do
   """
   def delete_session_token(token) when is_binary(token) do
     token_hash = :crypto.hash(:sha256, token) |> Base.encode64()
-    
+
     from(s in Session, where: s.token_hash == ^token_hash)
     |> Repo.update_all(set: [revoked_at: DateTime.utc_now()])
-    
+
     :ok
   end
 
@@ -564,7 +566,7 @@ defmodule Cgraph.Accounts do
       where: s.user_id == ^user.id,
       where: is_nil(s.revoked_at),
       order_by: [desc: s.last_active_at]
-    
+
     Repo.all(query)
   end
 
@@ -655,7 +657,7 @@ defmodule Cgraph.Accounts do
       preload: [:user, :friend]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     friendships = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -692,7 +694,7 @@ defmodule Cgraph.Accounts do
       preload: [:user]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     requests = query
       |> order_by([f], desc: f.inserted_at)
       |> limit(^per_page)
@@ -716,7 +718,7 @@ defmodule Cgraph.Accounts do
       preload: [:friend]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     requests = query
       |> order_by([f], desc: f.inserted_at)
       |> limit(^per_page)
@@ -742,7 +744,7 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Accept a friend request.
-  
+
   Can be called with either:
   - A friendship struct directly
   - Two users (addressee, requester) to find and accept the pending request
@@ -750,7 +752,7 @@ defmodule Cgraph.Accounts do
   def accept_friend_request(%Friendship{} = friendship) do
     # Truncate to seconds for :utc_datetime field (not _usec)
     accepted_time = DateTime.utc_now() |> DateTime.truncate(:second)
-    
+
     friendship
     |> Ecto.Changeset.change(status: :accepted, accepted_at: accepted_time)
     |> Repo.update()
@@ -772,7 +774,7 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Decline a friend request.
-  
+
   Can be called with either:
   - A friendship struct directly
   - Two users (addressee, requester) to find and decline the pending request
@@ -927,7 +929,7 @@ defmodule Cgraph.Accounts do
       preload: [:friend]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     # Return the friendship records with friend preloaded
     blocks = query
       |> limit(^per_page)
@@ -944,9 +946,9 @@ defmodule Cgraph.Accounts do
   def get_mutual_friends(user, target_user) do
     user_friends = get_friend_ids(user)
     target_friends = get_friend_ids(target_user)
-    
+
     mutual_ids = MapSet.intersection(MapSet.new(user_friends), MapSet.new(target_friends))
-    
+
     Repo.all(from u in User, where: u.id in ^MapSet.to_list(mutual_ids))
   end
 
@@ -955,16 +957,16 @@ defmodule Cgraph.Accounts do
     sent_friends = from f in Friendship,
       where: f.user_id == ^user.id and f.status == :accepted,
       select: f.friend_id
-    
+
     # Get IDs where user is the recipient (friend_id)
     received_friends = from f in Friendship,
       where: f.friend_id == ^user.id and f.status == :accepted,
       select: f.user_id
-    
+
     # Combine both queries
     sent = Repo.all(sent_friends)
     received = Repo.all(received_friends)
-    
+
     sent ++ received
   end
 
@@ -974,9 +976,9 @@ defmodule Cgraph.Accounts do
   def get_online_friends(user) do
     friend_ids = get_friend_ids(user)
     online_user_ids = Cgraph.Presence.list_online_users()
-    
+
     online_friend_ids = MapSet.intersection(MapSet.new(friend_ids), MapSet.new(online_user_ids))
-    
+
     Repo.all(from u in User, where: u.id in ^MapSet.to_list(online_friend_ids))
     |> Enum.map(fn u ->
       status = Cgraph.Presence.get_user_status(u.id)
@@ -991,10 +993,10 @@ defmodule Cgraph.Accounts do
   """
   def get_friend_suggestions(user, opts \\ []) do
     limit = Keyword.get(opts, :limit, 10)
-    
+
     # Get friends of friends who aren't already friends
     friend_ids = get_friend_ids(user)
-    
+
     query = from f in Friendship,
       where: f.user_id in ^friend_ids,
       where: f.status == :accepted,
@@ -1007,7 +1009,7 @@ defmodule Cgraph.Accounts do
 
     suggestions = Repo.all(query)
     user_ids = Enum.map(suggestions, & &1.user_id)
-    
+
     users = Repo.all(from u in User, where: u.id in ^user_ids)
     |> Map.new(& {&1.id, &1})
 
@@ -1022,7 +1024,7 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Notify user of friend request.
-  
+
   Fetches the recipient and sender users to properly call the Notifications API.
   """
   def notify_friend_request(friendship) do
@@ -1036,7 +1038,7 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Notify user friend request was accepted.
-  
+
   Fetches the original requester and accepter to properly call the Notifications API.
   """
   def notify_friend_accepted(friendship) do
@@ -1065,7 +1067,7 @@ defmodule Cgraph.Accounts do
       order_by: [asc: u.username]
 
     total = Repo.aggregate(db_query, :count, :id)
-    
+
     users = db_query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -1112,11 +1114,11 @@ defmodule Cgraph.Accounts do
   """
   def schedule_user_deletion(user) do
     # Truncate microseconds to match :utc_datetime schema type
-    deletion_time = 
-      DateTime.utc_now() 
+    deletion_time =
+      DateTime.utc_now()
       |> DateTime.add(30 * 24 * 60 * 60, :second)
       |> DateTime.truncate(:second)
-    
+
     user
     |> Ecto.Changeset.change(deleted_at: deletion_time)
     |> Repo.update()
@@ -1136,7 +1138,7 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Request a password reset for a user by email.
-  
+
   Generates a reset token and sends an email with reset instructions.
   Returns :ok regardless of whether email exists to prevent enumeration.
   """
@@ -1145,7 +1147,7 @@ defmodule Cgraph.Accounts do
       {:error, :not_found} ->
         # Uniform response to prevent email enumeration
         :ok
-        
+
       {:ok, user} ->
         _token = generate_password_reset_token(user)
         # Token stored in cache for later verification
@@ -1161,7 +1163,7 @@ defmodule Cgraph.Accounts do
     with {:ok, user_id} <- verify_password_reset_token(token),
          {:ok, user} <- get_user(user_id),
          true <- new_password == new_password_confirmation do
-      
+
       user
       |> User.password_changeset(%{password: new_password})
       |> Repo.update()
@@ -1184,28 +1186,28 @@ defmodule Cgraph.Accounts do
   defp generate_password_reset_token(user) do
     token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
     expires_at = DateTime.utc_now() |> DateTime.add(3600, :second)  # 1 hour
-    
+
     # Store token in cache or database
     Cachex.put(:cgraph_cache, "password_reset:#{token}", %{
       user_id: user.id,
       expires_at: expires_at
     }, ttl: :timer.hours(1))
-    
+
     token
   end
 
   defp verify_password_reset_token(token) do
     case Cachex.get(:cgraph_cache, "password_reset:#{token}") do
-      {:ok, nil} -> 
+      {:ok, nil} ->
         {:error, :invalid_token}
-        
+
       {:ok, %{user_id: user_id, expires_at: expires_at}} ->
         if DateTime.compare(DateTime.utc_now(), expires_at) == :lt do
           {:ok, user_id}
         else
           {:error, :expired_token}
         end
-        
+
       _ ->
         {:error, :invalid_token}
     end
@@ -1230,12 +1232,12 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Generate and send an email verification token.
-  
+
   The token is stored in cache with a 24-hour expiry.
   """
   def send_verification_email(user) do
     token = generate_email_verification_token(user)
-    
+
     # Queue email sending via Oban worker
     Cgraph.Workers.Orchestrator.enqueue(
       Cgraph.Workers.SendEmailNotification,
@@ -1246,7 +1248,7 @@ defmodule Cgraph.Accounts do
         verification_token: token
       }
     )
-    
+
     {:ok, token}
   end
 
@@ -1254,23 +1256,18 @@ defmodule Cgraph.Accounts do
   Verify an email using the verification token.
   """
   def verify_email(token) do
-    case verify_email_token(token) do
-      {:ok, user_id} ->
-        case get_user(user_id) do
-          {:ok, user} ->
-            user
-            |> Ecto.Changeset.change(email_verified_at: DateTime.utc_now())
-            |> Repo.update()
-            |> case do
-              {:ok, user} ->
-                invalidate_email_token(token)
-                {:ok, user}
-              error -> error
-            end
-          error -> error
-        end
-      error -> error
+    with {:ok, user_id} <- verify_email_token(token),
+         {:ok, user} <- get_user(user_id),
+         {:ok, user} <- mark_email_verified(user) do
+      invalidate_email_token(token)
+      {:ok, user}
     end
+  end
+  
+  defp mark_email_verified(user) do
+    user
+    |> Ecto.Changeset.change(email_verified_at: DateTime.utc_now())
+    |> Repo.update()
   end
 
   @doc """
@@ -1285,17 +1282,17 @@ defmodule Cgraph.Accounts do
   """
   def resend_verification_email(user) do
     cache_key = "email_verification_sent:#{user.id}"
-    
+
     case Cachex.get(:cgraph_cache, cache_key) do
       {:ok, nil} ->
         result = send_verification_email(user)
         # Rate limit: 5 minutes
         Cachex.put(:cgraph_cache, cache_key, true, ttl: :timer.minutes(5))
         result
-      
+
       {:ok, true} ->
         {:error, :rate_limited}
-      
+
       _ ->
         send_verification_email(user)
     end
@@ -1304,27 +1301,27 @@ defmodule Cgraph.Accounts do
   defp generate_email_verification_token(user) do
     token = :crypto.strong_rand_bytes(32) |> Base.url_encode64(padding: false)
     expires_at = DateTime.utc_now() |> DateTime.add(86_400, :second)  # 24 hours
-    
+
     Cachex.put(:cgraph_cache, "email_verification:#{token}", %{
       user_id: user.id,
       expires_at: expires_at
     }, ttl: :timer.hours(24))
-    
+
     token
   end
 
   defp verify_email_token(token) do
     case Cachex.get(:cgraph_cache, "email_verification:#{token}") do
-      {:ok, nil} -> 
+      {:ok, nil} ->
         {:error, :invalid_token}
-        
+
       {:ok, %{user_id: user_id, expires_at: expires_at}} ->
         if DateTime.compare(DateTime.utc_now(), expires_at) == :lt do
           {:ok, user_id}
         else
           {:error, :expired_token}
         end
-        
+
       _ ->
         {:error, :invalid_token}
     end
@@ -1342,18 +1339,18 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Register a push notification token for a user.
-  
+
   ## Parameters
-  
+
     - user: The user struct
     - token: The push token string (e.g., "ExponentPushToken[xxx]")
     - platform: The platform ("ios", "android", "web")
-  
+
   ## Examples
-  
+
       iex> register_push_token(user, "ExponentPushToken[abc123]", "ios")
       {:ok, %PushToken{}}
-  
+
   """
   def register_push_token(user, token, platform) do
     # Map user-facing platform names to internal schema values
@@ -1362,21 +1359,21 @@ defmodule Cgraph.Accounts do
       "android" -> "fcm"
       other -> other
     end
-    
+
     attrs = %{
       user_id: user.id,
       token: token,
       platform: mapped_platform,
       last_used_at: DateTime.utc_now()
     }
-    
+
     # Upsert: update if exists, insert if not
     case Repo.get_by(PushToken, user_id: user.id, token: token) do
       nil ->
         %PushToken{}
         |> PushToken.changeset(attrs)
         |> Repo.insert()
-      
+
       existing ->
         existing
         |> PushToken.changeset(%{last_used_at: DateTime.utc_now(), platform: mapped_platform})
@@ -1386,23 +1383,23 @@ defmodule Cgraph.Accounts do
 
   @doc """
   Delete a push token for a user.
-  
+
   ## Parameters
-  
+
     - user: The user struct
     - token: The push token string to delete
-  
+
   ## Examples
-  
+
       iex> delete_push_token(user, "ExponentPushToken[abc123]")
       {:ok, %PushToken{}}
-  
+
   """
   def delete_push_token(user, token) do
     case Repo.get_by(PushToken, user_id: user.id, token: token) do
       nil ->
         {:error, :not_found}
-      
+
       push_token ->
         Repo.delete(push_token)
     end

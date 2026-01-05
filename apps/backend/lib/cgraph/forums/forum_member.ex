@@ -1,7 +1,7 @@
 defmodule Cgraph.Forums.ForumMember do
   @moduledoc """
   ForumMember schema representing a user's membership in a specific forum.
-  
+
   Each forum maintains its own member list with forum-specific data like:
   - Display name (can differ from platform username)
   - Custom title
@@ -10,7 +10,7 @@ defmodule Cgraph.Forums.ForumMember do
   - Post/thread counts for this forum
   - Reputation within this forum
   - Ban status
-  
+
   This allows users to have different identities/personas in different forums.
   """
   use Ecto.Schema
@@ -34,7 +34,7 @@ defmodule Cgraph.Forums.ForumMember do
     field :signature, :string
     field :signature_html, :string
     field :avatar_url, :string
-    
+
     # Stats
     field :post_count, :integer, default: 0
     field :thread_count, :integer, default: 0
@@ -43,19 +43,19 @@ defmodule Cgraph.Forums.ForumMember do
     field :reputation_negative, :integer, default: 0
     field :warnings, :integer, default: 0
     field :warning_points, :integer, default: 0
-    
+
     # Role and status
     field :role, :string, default: "member"
     field :is_banned, :boolean, default: false
     field :ban_reason, :string
     field :ban_expires_at, :utc_datetime
     field :banned_by_id, :binary_id
-    
+
     # Activity
     field :last_visit_at, :utc_datetime
     field :last_post_at, :utc_datetime
     field :joined_at, :utc_datetime
-    
+
     # Settings
     field :receive_notifications, :boolean, default: true
     field :show_signature, :boolean, default: true
@@ -73,7 +73,7 @@ defmodule Cgraph.Forums.ForumMember do
   """
   def changeset(member, attrs) do
     now = DateTime.utc_now() |> DateTime.truncate(:second)
-    
+
     member
     |> cast(attrs, [
       :display_name, :title, :signature, :avatar_url,
@@ -110,7 +110,7 @@ defmodule Cgraph.Forums.ForumMember do
   def stats_changeset(member, attrs) do
     member
     |> cast(attrs, [
-      :post_count, :thread_count, :reputation, 
+      :post_count, :thread_count, :reputation,
       :reputation_positive, :reputation_negative,
       :warnings, :warning_points, :last_post_at, :last_visit_at
     ])
@@ -132,7 +132,7 @@ defmodule Cgraph.Forums.ForumMember do
   Check if user is banned.
   """
   def banned?(member) do
-    member.is_banned && 
+    member.is_banned &&
       (is_nil(member.ban_expires_at) || DateTime.compare(member.ban_expires_at, DateTime.utc_now()) == :gt)
   end
 

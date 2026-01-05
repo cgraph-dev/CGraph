@@ -1,15 +1,15 @@
 defmodule Cgraph.Workers.SendEmailNotification do
   @moduledoc """
   Oban worker for sending email notifications.
-  
+
   Handles batched email delivery with configurable delays
   to prevent notification spam.
-  
+
   This worker integrates with `Cgraph.Mailer` for actual email delivery
   and supports multiple email types with proper template rendering.
-  
+
   ## Supported Email Types
-  
+
   - `notification` - Regular notification emails (requires notification_id)
   - `verification` - Email verification emails (requires verification_token)
   - `password_reset` - Password reset emails (requires reset_token)
@@ -18,9 +18,9 @@ defmodule Cgraph.Workers.SendEmailNotification do
   - `two_factor` - 2FA verification codes
   - `account_locked` - Account lockout notifications
   - `export_ready` - Data export download notifications
-  
+
   ## Usage
-  
+
       # Send verification email
       %{
         user_id: user.id,
@@ -29,7 +29,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
       }
       |> Cgraph.Workers.SendEmailNotification.new()
       |> Oban.insert()
-      
+
       # Send notification email
       %{
         user_id: user.id,
@@ -37,9 +37,9 @@ defmodule Cgraph.Workers.SendEmailNotification do
       }
       |> Cgraph.Workers.SendEmailNotification.new()
       |> Oban.insert()
-  
+
   ## Deduplication
-  
+
   Emails are deduplicated within a 5-minute window to prevent spam.
   """
   use Oban.Worker,
@@ -62,16 +62,16 @@ defmodule Cgraph.Workers.SendEmailNotification do
     case get_user(user_id) do
       {:ok, user} ->
         token = Map.get(args, "verification_token", "")
-        
+
         case Mailer.deliver_verification_email(user, token) do
           {:ok, _email} ->
             Logger.info("Verification email sent to user #{user_id}")
             :ok
-            
+
           {:error, :no_email} ->
             Logger.debug("User #{user_id} has no email address")
             :ok  # Don't retry
-            
+
           {:error, reason} ->
             Logger.error("Verification email failed: #{inspect(reason)}")
             {:error, reason}
@@ -88,16 +88,16 @@ defmodule Cgraph.Workers.SendEmailNotification do
     case get_user(user_id) do
       {:ok, user} ->
         token = Map.get(args, "reset_token", "")
-        
+
         case Mailer.deliver_password_reset_email(user, token) do
           {:ok, _email} ->
             Logger.info("Password reset email sent to user #{user_id}")
             :ok
-            
+
           {:error, :no_email} ->
             Logger.debug("User #{user_id} has no email address")
             :ok
-            
+
           {:error, reason} ->
             Logger.error("Password reset email failed: #{inspect(reason)}")
             {:error, reason}
@@ -108,7 +108,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
         :ok
     end
   end
-  
+
   # Handle welcome emails
   def perform(%Oban.Job{args: %{"user_id" => user_id, "email_type" => "welcome"}}) do
     case get_user(user_id) do
@@ -117,11 +117,11 @@ defmodule Cgraph.Workers.SendEmailNotification do
           {:ok, _email} ->
             Logger.info("Welcome email sent to user #{user_id}")
             :ok
-            
+
           {:error, :no_email} ->
             Logger.debug("User #{user_id} has no email address")
             :ok
-            
+
           {:error, reason} ->
             Logger.error("Welcome email failed: #{inspect(reason)}")
             {:error, reason}
@@ -132,23 +132,23 @@ defmodule Cgraph.Workers.SendEmailNotification do
         :ok
     end
   end
-  
+
   # Handle security alert emails
   def perform(%Oban.Job{args: %{"user_id" => user_id, "email_type" => "security_alert"} = args}) do
     case get_user(user_id) do
       {:ok, user} ->
         alert_type = args["alert_type"] |> String.to_existing_atom()
         details = Map.get(args, "details", %{})
-        
+
         case Mailer.deliver_security_alert(user, alert_type, details) do
           {:ok, _email} ->
             Logger.info("Security alert email sent to user #{user_id}")
             :ok
-            
+
           {:error, :no_email} ->
             Logger.debug("User #{user_id} has no email address")
             :ok
-            
+
           {:error, reason} ->
             Logger.error("Security alert email failed: #{inspect(reason)}")
             {:error, reason}
@@ -163,22 +163,22 @@ defmodule Cgraph.Workers.SendEmailNotification do
       Logger.warning("Invalid alert_type: #{args["alert_type"]}")
       :ok
   end
-  
+
   # Handle two-factor code emails
   def perform(%Oban.Job{args: %{"user_id" => user_id, "email_type" => "two_factor"} = args}) do
     case get_user(user_id) do
       {:ok, user} ->
         code = Map.get(args, "code", "")
-        
+
         case Mailer.deliver_two_factor_email(user, code) do
           {:ok, _email} ->
             Logger.info("2FA code email sent to user #{user_id}")
             :ok
-            
+
           {:error, :no_email} ->
             Logger.debug("User #{user_id} has no email address")
             :ok
-            
+
           {:error, reason} ->
             Logger.error("2FA code email failed: #{inspect(reason)}")
             {:error, reason}
@@ -189,7 +189,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
         :ok
     end
   end
-  
+
   # Handle account locked emails
   def perform(%Oban.Job{args: %{"user_id" => user_id, "email_type" => "account_locked"} = args}) do
     case get_user(user_id) do
@@ -198,16 +198,16 @@ defmodule Cgraph.Workers.SendEmailNotification do
           reason: Map.get(args, "reason", "Too many failed login attempts"),
           unlock_time: Map.get(args, "unlock_time")
         }
-        
+
         case Mailer.deliver_account_locked_email(user, details) do
           {:ok, _email} ->
             Logger.info("Account locked email sent to user #{user_id}")
             :ok
-            
+
           {:error, :no_email} ->
             Logger.debug("User #{user_id} has no email address")
             :ok
-            
+
           {:error, reason} ->
             Logger.error("Account locked email failed: #{inspect(reason)}")
             {:error, reason}
@@ -218,22 +218,22 @@ defmodule Cgraph.Workers.SendEmailNotification do
         :ok
     end
   end
-  
+
   # Handle export ready emails
   def perform(%Oban.Job{args: %{"user_id" => user_id, "email_type" => "export_ready"} = args}) do
     case get_user(user_id) do
       {:ok, user} ->
         download_url = Map.get(args, "download_url", "")
-        
+
         case Mailer.deliver_export_ready_email(user, download_url) do
           {:ok, _email} ->
             Logger.info("Export ready email sent to user #{user_id}")
             :ok
-            
+
           {:error, :no_email} ->
             Logger.debug("User #{user_id} has no email address")
             :ok
-            
+
           {:error, reason} ->
             Logger.error("Export ready email failed: #{inspect(reason)}")
             {:error, reason}
@@ -250,20 +250,20 @@ defmodule Cgraph.Workers.SendEmailNotification do
     with {:ok, user} <- get_user(user_id),
          {:ok, notification} <- get_notification(notification_id),
          :ok <- validate_email(user) do
-      
+
       notification_data = %{
         title: notification.title,
         body: notification.body,
         action_url: build_action_url(notification),
         action_text: "View in CGraph"
       }
-      
+
       case Mailer.deliver_notification_email(user, notification_data) do
         {:ok, _email} ->
           update_notification_email_status(notification_id, :sent)
           Logger.info("Notification email sent to user #{user_id}")
           :ok
-          
+
         {:error, reason} ->
           update_notification_email_status(notification_id, :failed)
           Logger.error("Notification email failed: #{inspect(reason)}")
@@ -273,19 +273,19 @@ defmodule Cgraph.Workers.SendEmailNotification do
       {:error, :user_not_found} ->
         Logger.warning("Email notification failed: user #{user_id} not found")
         :ok
-        
+
       {:error, :notification_not_found} ->
         Logger.warning("Email notification failed: notification #{notification_id} not found")
         :ok
-        
+
       {:error, :no_email} ->
         Logger.debug("User #{user_id} has no email address")
         :ok
-        
+
       {:error, :email_not_verified} ->
         Logger.debug("User #{user_id} email not verified")
         :ok
-        
+
       error ->
         Logger.error("Email notification failed: #{inspect(error)}")
         error
@@ -297,11 +297,11 @@ defmodule Cgraph.Workers.SendEmailNotification do
     Logger.warning("Unknown email notification type: #{inspect(args)}")
     :ok
   end
-  
+
   # ============================================================================
   # Convenience Functions
   # ============================================================================
-  
+
   @doc """
   Enqueues a verification email for a user.
   """
@@ -311,7 +311,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
     |> new()
     |> Oban.insert()
   end
-  
+
   @doc """
   Enqueues a password reset email for a user.
   """
@@ -321,7 +321,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
     |> new(priority: 0)  # High priority
     |> Oban.insert()
   end
-  
+
   @doc """
   Enqueues a welcome email for a new user.
   """
@@ -331,7 +331,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
     |> new()
     |> Oban.insert()
   end
-  
+
   @doc """
   Enqueues a security alert email.
   """
@@ -346,7 +346,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
     |> new(priority: 0)  # High priority for security emails
     |> Oban.insert()
   end
-  
+
   @doc """
   Enqueues a 2FA code email.
   """
@@ -356,7 +356,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
     |> new(priority: 0)  # High priority
     |> Oban.insert()
   end
-  
+
   @doc """
   Enqueues an account locked notification.
   """
@@ -364,12 +364,12 @@ defmodule Cgraph.Workers.SendEmailNotification do
   def enqueue_account_locked(user_id, reason, unlock_time \\ nil) do
     args = %{user_id: user_id, email_type: "account_locked", reason: reason}
     args = if unlock_time, do: Map.put(args, :unlock_time, DateTime.to_iso8601(unlock_time)), else: args
-    
+
     args
     |> new(priority: 0)
     |> Oban.insert()
   end
-  
+
   @doc """
   Enqueues a data export ready notification.
   """
@@ -379,7 +379,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
     |> new()
     |> Oban.insert()
   end
-  
+
   # ============================================================================
   # Private Functions
   # ============================================================================
@@ -406,10 +406,10 @@ defmodule Cgraph.Workers.SendEmailNotification do
       true -> :ok
     end
   end
-  
+
   defp build_action_url(notification) do
     base_url = Application.get_env(:cgraph, :base_url, "https://cgraph.app")
-    
+
     case notification.type do
       "message" -> "#{base_url}/messages/#{notification.reference_id}"
       "mention" -> "#{base_url}/posts/#{notification.reference_id}"
@@ -419,15 +419,15 @@ defmodule Cgraph.Workers.SendEmailNotification do
       _ -> base_url
     end
   end
-  
+
   defp update_notification_email_status(notification_id, status) do
     now = DateTime.utc_now()
-    
+
     status_field = case status do
       :sent -> [email_sent_at: now, email_status: "sent"]
       :failed -> [email_status: "failed"]
     end
-    
+
     from(n in Notification, where: n.id == ^notification_id)
     |> Repo.update_all(set: status_field)
   rescue

@@ -1,7 +1,7 @@
 defmodule Cgraph.Forums.Comment do
   @moduledoc """
   Comment schema for forum posts.
-  
+
   Supports nested threading with parent references.
   """
   use Ecto.Schema

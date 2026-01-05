@@ -1,7 +1,7 @@
 defmodule CgraphWeb.Endpoint do
   @moduledoc """
   Phoenix endpoint for CGraph web application.
-  
+
   Handles HTTP requests, WebSocket connections, and static assets.
   """
   use Phoenix.Endpoint, otp_app: :cgraph

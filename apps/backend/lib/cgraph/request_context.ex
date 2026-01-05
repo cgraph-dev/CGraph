@@ -1,16 +1,16 @@
 defmodule Cgraph.RequestContext do
   @moduledoc """
   Cgraph.RequestContext - Request Context Propagation System
-  
+
   ## Overview
-  
+
   This module provides comprehensive request context management for distributed
   tracing, multi-tenancy, user context propagation, and cross-service request
   correlation. It ensures context flows seamlessly through async operations,
   background jobs, and external service calls.
-  
+
   ## Architecture
-  
+
   ```
   ┌─────────────────────────────────────────────────────────────────┐
   │                     Request Lifecycle                           │
@@ -39,86 +39,86 @@ defmodule Cgraph.RequestContext do
   │                                                                 │
   └─────────────────────────────────────────────────────────────────┘
   ```
-  
+
   ## Features
-  
+
   1. **Request ID Tracking**: Unique identifier for each request, propagated
      through all operations for end-to-end tracing.
-  
+
   2. **Distributed Tracing**: W3C Trace Context compatible trace and span IDs
      for integration with distributed tracing systems.
-  
+
   3. **Multi-Tenancy**: Tenant context isolation with automatic scoping for
      database queries and external service calls.
-  
+
   4. **User Context**: Current user information available throughout the
      request lifecycle without explicit parameter passing.
-  
+
   5. **Async Propagation**: Context automatically flows to spawned processes,
      tasks, and background jobs.
-  
+
   ## Usage Examples
-  
+
   ### In Plug Pipeline
-  
+
       plug CgraphWeb.Plugs.RequestContext
-  
+
   ### Accessing Context
-  
+
       # Get current request ID
       request_id = Cgraph.RequestContext.get_request_id()
-      
+
       # Get current user
       user = Cgraph.RequestContext.get_current_user()
-      
+
       # Get tenant
       tenant_id = Cgraph.RequestContext.get_tenant_id()
-  
+
   ### Spawning with Context
-  
+
       # Context automatically propagates to spawned tasks
       Cgraph.RequestContext.spawn_with_context(fn ->
         # Context available here
         Logger.info("Request: \#{Cgraph.RequestContext.get_request_id()}")
       end)
-  
+
   ### HTTP Client Headers
-  
+
       # Get headers to propagate to external services
       headers = Cgraph.RequestContext.propagation_headers()
       HTTPClient.get(url, headers)
-  
+
   ## Configuration
-  
+
   Configure in `config/config.exs`:
-  
+
       config :cgraph, Cgraph.RequestContext,
         enabled: true,
         generate_request_id: true,
         trace_header: "traceparent",
         request_id_header: "x-request-id",
         tenant_header: "x-tenant-id"
-  
+
   ## Implementation Notes
-  
+
   - Uses process dictionary for zero-overhead context access
   - Compatible with W3C Trace Context specification
   - Integrates with Logger metadata for automatic log correlation
   - Thread-safe for concurrent request processing
   """
-  
+
   require Logger
-  
+
   # ---------------------------------------------------------------------------
   # Type Definitions
   # ---------------------------------------------------------------------------
-  
+
   @type request_id :: String.t()
   @type trace_id :: String.t()
   @type span_id :: String.t()
   @type user_id :: String.t()
   @type tenant_id :: String.t()
-  
+
   @type context :: %{
     request_id: request_id(),
     trace_id: trace_id() | nil,
@@ -130,13 +130,13 @@ defmodule Cgraph.RequestContext do
     started_at: DateTime.t(),
     metadata: map()
   }
-  
+
   # ---------------------------------------------------------------------------
   # Configuration
   # ---------------------------------------------------------------------------
-  
+
   @context_key :cgraph_request_context
-  
+
   @default_config %{
     enabled: true,
     generate_request_id: true,
@@ -146,20 +146,20 @@ defmodule Cgraph.RequestContext do
     tenant_header: "x-tenant-id",
     user_header: "x-user-id"
   }
-  
+
   # ---------------------------------------------------------------------------
   # Context Initialization
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Initialize a new request context.
-  
+
   This is typically called by the RequestContext plug at the start of
   each request. It extracts context from headers and initializes the
   process dictionary.
-  
+
   ## Examples
-  
+
       Cgraph.RequestContext.init()
       Cgraph.RequestContext.init(%{
         request_id: "req_abc123",
@@ -180,16 +180,16 @@ defmodule Cgraph.RequestContext do
       started_at: DateTime.utc_now(),
       metadata: opts[:metadata] || %{}
     }
-    
+
     put_context(context)
     update_logger_metadata(context)
-    
+
     context
   end
-  
+
   @doc """
   Initialize context from a Plug connection.
-  
+
   Extracts trace context, request ID, and other context from request headers.
   """
   @spec init_from_conn(Plug.Conn.t()) :: {context(), Plug.Conn.t()}
@@ -199,10 +199,10 @@ defmodule Cgraph.RequestContext do
     correlation_id = get_header(conn, get_config(:correlation_id_header))
     tenant_id = get_header(conn, get_config(:tenant_header))
     user_id = get_header(conn, get_config(:user_header))
-    
+
     # Parse W3C Trace Context
     {trace_id, parent_span_id} = parse_traceparent(conn)
-    
+
     context = init(%{
       request_id: request_id,
       trace_id: trace_id,
@@ -211,18 +211,18 @@ defmodule Cgraph.RequestContext do
       tenant_id: tenant_id,
       user_id: user_id
     })
-    
+
     # Add context to conn for access in controllers
     conn = Plug.Conn.put_private(conn, @context_key, context)
-    
+
     # Add response headers
     conn = conn
     |> Plug.Conn.put_resp_header("x-request-id", context.request_id)
     |> maybe_add_trace_header(context)
-    
+
     {context, conn}
   end
-  
+
   @doc """
   Clean up context at the end of a request.
   """
@@ -232,11 +232,11 @@ defmodule Cgraph.RequestContext do
     Logger.metadata([])
     :ok
   end
-  
+
   # ---------------------------------------------------------------------------
   # Context Access
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Get the full request context.
   """
@@ -244,7 +244,7 @@ defmodule Cgraph.RequestContext do
   def get do
     Process.get(@context_key)
   end
-  
+
   @doc """
   Get the current request ID.
   """
@@ -255,7 +255,7 @@ defmodule Cgraph.RequestContext do
       _ -> nil
     end
   end
-  
+
   @doc """
   Get the current trace ID.
   """
@@ -266,7 +266,7 @@ defmodule Cgraph.RequestContext do
       _ -> nil
     end
   end
-  
+
   @doc """
   Get the current span ID.
   """
@@ -277,7 +277,7 @@ defmodule Cgraph.RequestContext do
       _ -> nil
     end
   end
-  
+
   @doc """
   Get the current user ID.
   """
@@ -288,7 +288,7 @@ defmodule Cgraph.RequestContext do
       _ -> nil
     end
   end
-  
+
   @doc """
   Get the current user (full user struct if set).
   """
@@ -299,7 +299,7 @@ defmodule Cgraph.RequestContext do
       _ -> nil
     end
   end
-  
+
   @doc """
   Get the current tenant ID.
   """
@@ -310,7 +310,7 @@ defmodule Cgraph.RequestContext do
       _ -> nil
     end
   end
-  
+
   @doc """
   Get the correlation ID.
   """
@@ -321,7 +321,7 @@ defmodule Cgraph.RequestContext do
       _ -> nil
     end
   end
-  
+
   @doc """
   Get custom metadata value.
   """
@@ -332,7 +332,7 @@ defmodule Cgraph.RequestContext do
       _ -> nil
     end
   end
-  
+
   @doc """
   Get request duration in milliseconds.
   """
@@ -345,14 +345,14 @@ defmodule Cgraph.RequestContext do
         nil
     end
   end
-  
+
   # ---------------------------------------------------------------------------
   # Context Modification
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Set the current user.
-  
+
   Called after authentication to associate a user with the request context.
   """
   @spec set_user(map()) :: :ok
@@ -364,7 +364,7 @@ defmodule Cgraph.RequestContext do
       }
     end)
   end
-  
+
   @doc """
   Set the tenant ID.
   """
@@ -374,7 +374,7 @@ defmodule Cgraph.RequestContext do
       %{context | tenant_id: tenant_id}
     end)
   end
-  
+
   @doc """
   Add custom metadata to the context.
   """
@@ -384,7 +384,7 @@ defmodule Cgraph.RequestContext do
       %{context | metadata: Map.put(context.metadata, key, value)}
     end)
   end
-  
+
   @doc """
   Merge multiple metadata values.
   """
@@ -394,12 +394,12 @@ defmodule Cgraph.RequestContext do
       %{context | metadata: Map.merge(context.metadata, metadata)}
     end)
   end
-  
+
   defp update(fun) do
     case get() do
       nil ->
         :ok
-        
+
       context ->
         new_context = fun.(context)
         put_context(new_context)
@@ -407,14 +407,14 @@ defmodule Cgraph.RequestContext do
         :ok
     end
   end
-  
+
   # ---------------------------------------------------------------------------
   # Context Propagation
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Create a new child span within the current trace.
-  
+
   Used when you want to track a sub-operation within the same request.
   """
   @spec create_child_span() :: context() | nil
@@ -422,7 +422,7 @@ defmodule Cgraph.RequestContext do
     case get() do
       nil ->
         nil
-        
+
       context ->
         %{context |
           parent_span_id: context.span_id,
@@ -430,14 +430,14 @@ defmodule Cgraph.RequestContext do
         }
     end
   end
-  
+
   @doc """
   Get headers for propagating context to external HTTP services.
-  
+
   Returns headers compatible with W3C Trace Context and common correlation headers.
-  
+
   ## Examples
-  
+
       headers = Cgraph.RequestContext.propagation_headers()
       Finch.build(:get, url, headers, nil)
       |> Finch.request(Cgraph.Finch)
@@ -445,35 +445,35 @@ defmodule Cgraph.RequestContext do
   @spec propagation_headers() :: [{String.t(), String.t()}]
   def propagation_headers do
     context = get()
-    
+
     headers = [
       {"x-request-id", context && context.request_id},
       {"x-correlation-id", context && (context.correlation_id || context.request_id)},
       {"x-tenant-id", context && context.tenant_id},
       {"x-user-id", context && context.user_id}
     ]
-    
+
     headers = if context && context.trace_id do
       traceparent = format_traceparent(context)
       [{"traceparent", traceparent} | headers]
     else
       headers
     end
-    
+
     headers
     |> Enum.reject(fn {_k, v} -> is_nil(v) end)
   end
-  
+
   @doc """
   Execute a function with the current context.
-  
+
   Captures the current context and ensures it's available in the function,
   even if executed in a different process.
   """
   @spec with_context((-> result)) :: result when result: term()
   def with_context(fun) do
     context = get()
-    
+
     try do
       if context, do: put_context(context)
       if context, do: update_logger_metadata(context)
@@ -482,54 +482,54 @@ defmodule Cgraph.RequestContext do
       cleanup()
     end
   end
-  
+
   @doc """
   Spawn a new process with the current context.
-  
+
   The spawned process will have access to the same request context.
   """
   @spec spawn_with_context((-> any())) :: pid()
   def spawn_with_context(fun) do
     context = get()
-    
+
     spawn(fn ->
       if context, do: put_context(context)
       if context, do: update_logger_metadata(context)
       fun.()
     end)
   end
-  
+
   @doc """
   Spawn a linked process with the current context.
   """
   @spec spawn_link_with_context((-> any())) :: pid()
   def spawn_link_with_context(fun) do
     context = get()
-    
+
     spawn_link(fn ->
       if context, do: put_context(context)
       if context, do: update_logger_metadata(context)
       fun.()
     end)
   end
-  
+
   @doc """
   Start a Task with the current context.
   """
   @spec async_with_context((-> result)) :: Task.t() when result: term()
   def async_with_context(fun) do
     context = get()
-    
+
     Task.async(fn ->
       if context, do: put_context(context)
       if context, do: update_logger_metadata(context)
       fun.()
     end)
   end
-  
+
   @doc """
   Get context suitable for passing to a background job.
-  
+
   Returns a map that can be serialized and passed as job arguments.
   """
   @spec job_context() :: map()
@@ -537,7 +537,7 @@ defmodule Cgraph.RequestContext do
     case get() do
       nil ->
         %{}
-        
+
       context ->
         %{
           request_id: context.request_id,
@@ -551,10 +551,10 @@ defmodule Cgraph.RequestContext do
         |> Map.new()
     end
   end
-  
+
   @doc """
   Restore context from job arguments.
-  
+
   Used in background job workers to restore the request context.
   """
   @spec restore_from_job(map()) :: context()
@@ -569,14 +569,14 @@ defmodule Cgraph.RequestContext do
       correlation_id: args["correlation_id"] || args[:correlation_id]
     })
   end
-  
+
   # ---------------------------------------------------------------------------
   # W3C Trace Context
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Parse W3C Trace Context traceparent header.
-  
+
   Format: version-trace_id-span_id-trace_flags
   Example: 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
   """
@@ -585,18 +585,18 @@ defmodule Cgraph.RequestContext do
     header = get_header(conn, get_config(:trace_header))
     parse_traceparent(header)
   end
-  
+
   def parse_traceparent(nil), do: {nil, nil}
   def parse_traceparent(traceparent) when is_binary(traceparent) do
     case String.split(traceparent, "-") do
       [_version, trace_id, parent_id, _flags] when byte_size(trace_id) == 32 and byte_size(parent_id) == 16 ->
         {trace_id, parent_id}
-        
+
       _ ->
         {nil, nil}
     end
   end
-  
+
   @doc """
   Format context as W3C traceparent header value.
   """
@@ -605,15 +605,15 @@ defmodule Cgraph.RequestContext do
     "00-#{trace_id}-#{span_id}-01"
   end
   def format_traceparent(_), do: nil
-  
+
   # ---------------------------------------------------------------------------
   # Private Functions
   # ---------------------------------------------------------------------------
-  
+
   defp put_context(context) do
     Process.put(@context_key, context)
   end
-  
+
   defp update_logger_metadata(context) do
     Logger.metadata(
       request_id: context.request_id,
@@ -623,14 +623,14 @@ defmodule Cgraph.RequestContext do
       tenant_id: context.tenant_id
     )
   end
-  
+
   defp get_header(conn, header_name) do
     case Plug.Conn.get_req_header(conn, String.downcase(header_name)) do
       [value | _] -> value
       [] -> nil
     end
   end
-  
+
   defp maybe_add_trace_header(conn, %{trace_id: nil}), do: conn
   defp maybe_add_trace_header(conn, context) do
     case format_traceparent(context) do
@@ -638,15 +638,15 @@ defmodule Cgraph.RequestContext do
       traceparent -> Plug.Conn.put_resp_header(conn, "traceparent", traceparent)
     end
   end
-  
+
   defp generate_request_id do
     "req_" <> Base.encode16(:crypto.strong_rand_bytes(12), case: :lower)
   end
-  
+
   defp generate_span_id do
     Base.encode16(:crypto.strong_rand_bytes(8), case: :lower)
   end
-  
+
   defp get_config(key) do
     app_config = Application.get_env(:cgraph, __MODULE__, [])
     Keyword.get(app_config, key, Map.get(@default_config, key))

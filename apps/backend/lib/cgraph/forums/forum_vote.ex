@@ -1,7 +1,7 @@
 defmodule Cgraph.Forums.ForumVote do
   @moduledoc """
   Vote schema for forum-level voting.
-  
+
   Each user can upvote or downvote a forum once.
   Used for Reddit-style forum popularity competition.
   """

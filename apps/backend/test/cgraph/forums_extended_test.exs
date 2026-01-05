@@ -1,7 +1,7 @@
 defmodule Cgraph.ForumsExtendedTest do
   @moduledoc """
   Extended test suite for Cgraph.Forums context.
-  
+
   Tests additional functions not covered in the base test suite.
   """
   use Cgraph.DataCase, async: true
@@ -62,9 +62,9 @@ defmodule Cgraph.ForumsExtendedTest do
     test "returns public forums for anonymous users" do
       user = create_user()
       _forum = create_forum(user, %{is_public: true})
-      
+
       {forums, meta} = Forums.list_forums_for_user(nil, [])
-      
+
       assert is_list(forums)
       assert is_map(meta)
       assert Map.has_key?(meta, :total)
@@ -73,26 +73,26 @@ defmodule Cgraph.ForumsExtendedTest do
     test "shows forums member is subscribed to" do
       owner = create_user()
       member = create_user()
-      
+
       public_forum = create_forum(owner, %{is_public: true})
-      
+
       # Subscribe member to public forum
       Forums.subscribe_to_forum(member, public_forum)
-      
+
       # Query public forums (avoids distinct + count issue with private)
       {forums, _} = Forums.list_forums_for_user(nil, [])
-      
-      assert length(forums) >= 1
+
+      assert forums != []
       assert Enum.any?(forums, &(&1.id == public_forum.id))
     end
 
     test "paginates results" do
       user = create_user()
       Enum.each(1..5, fn _ -> create_forum(user, %{is_public: true}) end)
-      
+
       {page1, meta1} = Forums.list_forums_for_user(nil, page: 1, per_page: 2)
       {page2, _meta2} = Forums.list_forums_for_user(nil, page: 2, per_page: 2)
-      
+
       assert length(page1) == 2
       assert length(page2) == 2
       assert meta1.per_page == 2
@@ -103,25 +103,25 @@ defmodule Cgraph.ForumsExtendedTest do
     test "returns forum by ID" do
       user = create_user()
       forum = create_forum(user)
-      
+
       {:ok, found} = Forums.get_forum(forum.id)
-      
+
       assert found.id == forum.id
       assert found.name == forum.name
     end
 
     test "returns error for non-existent forum" do
       result = Forums.get_forum(Ecto.UUID.generate())
-      
+
       assert result == {:error, :not_found}
     end
 
     test "preloads associations" do
       user = create_user()
       forum = create_forum(user)
-      
+
       {:ok, found} = Forums.get_forum(forum.id)
-      
+
       assert Ecto.assoc_loaded?(found.categories)
       assert Ecto.assoc_loaded?(found.owner)
     end
@@ -131,16 +131,16 @@ defmodule Cgraph.ForumsExtendedTest do
     test "returns forum by slug" do
       user = create_user()
       forum = create_forum(user)
-      
+
       {:ok, found} = Forums.get_forum_by_slug(forum.slug)
-      
+
       assert found.id == forum.id
       assert found.slug == forum.slug
     end
 
     test "returns error for non-existent slug" do
       result = Forums.get_forum_by_slug("non-existent-slug")
-      
+
       assert result == {:error, :not_found}
     end
   end
@@ -151,7 +151,7 @@ defmodule Cgraph.ForumsExtendedTest do
       forum = create_forum(owner, %{is_public: true})
       member = create_user()
       Forums.subscribe_to_forum(member, forum)
-      
+
       %{owner: owner, forum: forum, member: member}
     end
 
@@ -182,7 +182,7 @@ defmodule Cgraph.ForumsExtendedTest do
       owner = create_user()
       private_forum = create_forum(owner, %{is_public: false})
       outsider = create_user()
-      
+
       assert {:error, :not_a_member} = Forums.authorize_action(outsider, private_forum, :view)
     end
   end
@@ -192,9 +192,9 @@ defmodule Cgraph.ForumsExtendedTest do
       owner = create_user()
       forum = create_forum(owner, %{is_public: true})
       user = create_user()
-      
+
       result = Forums.subscribe_to_forum(user, forum)
-      
+
       assert match?({:ok, _}, result)
       assert Forums.is_forum_subscribed(user, forum)
     end
@@ -203,10 +203,10 @@ defmodule Cgraph.ForumsExtendedTest do
       owner = create_user()
       forum = create_forum(owner, %{is_public: true})
       user = create_user()
-      
+
       {:ok, _} = Forums.subscribe_to_forum(user, forum)
       assert Forums.is_forum_subscribed(user, forum)
-      
+
       {:ok, _} = Forums.unsubscribe_from_forum(user, forum)
       refute Forums.is_forum_subscribed(user, forum)
     end
@@ -217,9 +217,9 @@ defmodule Cgraph.ForumsExtendedTest do
       owner = create_user()
       forum = create_forum(owner)
       moderator = create_user()
-      
+
       result = Forums.add_moderator(forum, moderator)
-      
+
       assert match?({:ok, _}, result)
       assert Forums.is_moderator?(forum, moderator)
     end
@@ -228,17 +228,17 @@ defmodule Cgraph.ForumsExtendedTest do
       owner = create_user()
       forum = create_forum(owner)
       moderator = create_user()
-      
+
       {:ok, _} = Forums.add_moderator(forum, moderator)
       {:ok, _} = Forums.remove_moderator(forum, moderator)
-      
+
       refute Forums.is_moderator?(forum, moderator)
     end
 
     test "owner is always considered moderator" do
       owner = create_user()
       forum = create_forum(owner)
-      
+
       assert Forums.is_moderator?(forum, owner)
     end
   end
@@ -247,18 +247,18 @@ defmodule Cgraph.ForumsExtendedTest do
     test "updates forum attributes" do
       user = create_user()
       forum = create_forum(user)
-      
+
       {:ok, updated} = Forums.update_forum(forum, %{description: "Updated description"})
-      
+
       assert updated.description == "Updated description"
     end
 
     test "rejects invalid updates" do
       user = create_user()
       forum = create_forum(user)
-      
+
       result = Forums.update_forum(forum, %{name: ""})
-      
+
       assert match?({:error, %Ecto.Changeset{}}, result)
     end
   end
@@ -268,9 +268,9 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user)
       _post = create_post(forum, user)
-      
+
       stats = Forums.get_forum_stats(forum)
-      
+
       assert is_map(stats)
     end
   end
@@ -285,9 +285,9 @@ defmodule Cgraph.ForumsExtendedTest do
       forum = create_forum(user)
       _post1 = create_post(forum, user, %{title: "First post"})
       _post2 = create_post(forum, user, %{title: "Second post"})
-      
+
       {posts, meta} = Forums.list_posts(forum, [])
-      
+
       assert length(posts) >= 2
       assert is_map(meta)
     end
@@ -296,9 +296,9 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user)
       Enum.each(1..5, fn i -> create_post(forum, user, %{title: "Post #{i}"}) end)
-      
+
       {page1, _} = Forums.list_posts(forum, page: 1, per_page: 2)
-      
+
       assert length(page1) == 2
     end
 
@@ -307,12 +307,12 @@ defmodule Cgraph.ForumsExtendedTest do
       forum = create_forum(user)
       _post1 = create_post(forum, user, %{title: "First"})
       post2 = create_post(forum, user, %{title: "Second"})
-      
+
       # Vote on second post to change hot score
       Forums.vote_on_post(user, post2, :up)
-      
+
       {posts, _} = Forums.list_posts(forum, sort: "hot")
-      
+
       assert is_list(posts)
     end
   end
@@ -322,18 +322,18 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user)
       post = create_post(forum, user)
-      
+
       {:ok, found} = Forums.get_post(forum, post.id, [])
-      
+
       assert found.id == post.id
     end
 
     test "returns error for non-existent post" do
       user = create_user()
       forum = create_forum(user)
-      
+
       result = Forums.get_post(forum, Ecto.UUID.generate(), [])
-      
+
       assert match?({:error, _}, result)
     end
   end
@@ -343,9 +343,9 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user)
       post = create_post(forum, user)
-      
+
       {:ok, updated} = Forums.update_post(post, %{content: "Updated content"})
-      
+
       assert updated.content == "Updated content"
     end
   end
@@ -357,9 +357,9 @@ defmodule Cgraph.ForumsExtendedTest do
       post = create_post(forum, user)
       voter = create_user()
       Forums.subscribe_to_forum(voter, forum)
-      
+
       result = Forums.vote_on_post(voter, post, :up)
-      
+
       # Vote was recorded - returns vote record or updated post
       assert match?({:ok, _}, result)
     end
@@ -370,9 +370,9 @@ defmodule Cgraph.ForumsExtendedTest do
       post = create_post(forum, user)
       voter = create_user()
       Forums.subscribe_to_forum(voter, forum)
-      
+
       result = Forums.vote_on_post(voter, post, :down)
-      
+
       # Vote was recorded
       assert match?({:ok, _}, result)
     end
@@ -383,10 +383,10 @@ defmodule Cgraph.ForumsExtendedTest do
       post = create_post(forum, user)
       voter = create_user()
       Forums.subscribe_to_forum(voter, forum)
-      
+
       {:ok, _} = Forums.vote_on_post(voter, post, :up)
       result = Forums.vote_on_post(voter, post, :up)
-      
+
       # Either returns same or error
       assert match?({:ok, _}, result) or match?({:error, _}, result)
     end
@@ -399,10 +399,10 @@ defmodule Cgraph.ForumsExtendedTest do
       post = create_post(forum, user)
       voter = create_user()
       Forums.subscribe_to_forum(voter, forum)
-      
+
       {:ok, _} = Forums.vote_on_post(voter, post, :up)
       {:ok, unvoted} = Forums.remove_vote(voter, post)
-      
+
       # Vote was removed successfully
       assert is_struct(unvoted)
     end
@@ -413,10 +413,10 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user)
       post = create_post(forum, user)
-      
+
       {:ok, pinned} = Forums.pin_post(post)
       assert pinned.is_pinned == true
-      
+
       {:ok, unpinned} = Forums.unpin_post(pinned)
       assert unpinned.is_pinned == false
     end
@@ -427,10 +427,10 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user)
       post = create_post(forum, user)
-      
+
       {:ok, locked} = Forums.lock_post(post)
       assert locked.is_locked == true
-      
+
       {:ok, unlocked} = Forums.unlock_post(locked)
       assert unlocked.is_locked == false
     end
@@ -441,9 +441,9 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user)
       post = create_post(forum, user)
-      
+
       result = Forums.increment_post_views(post)
-      
+
       # Function returns {rows_updated, nil} or {:ok, post}
       assert match?({:ok, _}, result) or match?({_, nil}, result)
     end
@@ -460,9 +460,9 @@ defmodule Cgraph.ForumsExtendedTest do
       post = create_post(forum, user)
       _comment1 = create_comment(post, user, %{content: "First comment"})
       _comment2 = create_comment(post, user, %{content: "Second comment"})
-      
+
       {comments, _meta} = Forums.list_comments(post, [])
-      
+
       assert length(comments) >= 2
     end
   end
@@ -473,9 +473,9 @@ defmodule Cgraph.ForumsExtendedTest do
       forum = create_forum(user)
       post = create_post(forum, user)
       comment = create_comment(post, user)
-      
+
       {:ok, found} = Forums.get_comment(post, comment.id, [])
-      
+
       assert found.id == comment.id
     end
   end
@@ -486,9 +486,9 @@ defmodule Cgraph.ForumsExtendedTest do
       forum = create_forum(user)
       post = create_post(forum, user)
       comment = create_comment(post, user)
-      
+
       {:ok, updated} = Forums.update_comment(comment, %{content: "Updated comment"})
-      
+
       assert updated.content == "Updated comment"
     end
   end
@@ -501,7 +501,7 @@ defmodule Cgraph.ForumsExtendedTest do
       comment = create_comment(post, user)
       voter = create_user()
       Forums.subscribe_to_forum(voter, forum)
-      
+
       # Test that the function exists and is callable
       # Note: May return error due to vote value mapping - covered in integration tests
       try do
@@ -519,9 +519,9 @@ defmodule Cgraph.ForumsExtendedTest do
       forum = create_forum(user)
       post = create_post(forum, user)
       comment = create_comment(post, user)
-      
+
       {:ok, deleted} = Forums.delete_comment(comment)
-      
+
       assert deleted.deleted_at != nil or deleted.content == "[deleted]"
     end
   end
@@ -536,9 +536,9 @@ defmodule Cgraph.ForumsExtendedTest do
       forum = create_forum(user)
       {:ok, _cat1} = Forums.create_category(forum, %{"name" => "General"})
       {:ok, _cat2} = Forums.create_category(forum, %{"name" => "Off-topic"})
-      
+
       categories = Forums.list_categories(forum)
-      
+
       assert length(categories) >= 2
     end
   end
@@ -547,9 +547,9 @@ defmodule Cgraph.ForumsExtendedTest do
     test "creates a category" do
       user = create_user()
       forum = create_forum(user)
-      
+
       {:ok, category} = Forums.create_category(forum, %{"name" => "New Category", "description" => "Description"})
-      
+
       assert category.name == "New Category"
     end
   end
@@ -559,9 +559,9 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user)
       {:ok, category} = Forums.create_category(forum, %{"name" => "Original"})
-      
+
       {:ok, updated} = Forums.update_category(category, %{"name" => "Updated"})
-      
+
       assert updated.name == "Updated"
     end
   end
@@ -571,9 +571,9 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user)
       {:ok, category} = Forums.create_category(forum, %{"name" => "To Delete"})
-      
+
       {:ok, _} = Forums.delete_category(category)
-      
+
       categories = Forums.list_categories(forum)
       refute Enum.any?(categories, &(&1.id == category.id))
     end
@@ -588,9 +588,9 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user, %{is_public: true})
       _post = create_post(forum, user)
-      
+
       {posts, _meta} = Forums.list_public_feed([])
-      
+
       assert is_list(posts)
     end
 
@@ -598,9 +598,9 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       forum = create_forum(user, %{is_public: true})
       Enum.each(1..5, fn i -> create_post(forum, user, %{title: "Feed post #{i}"}) end)
-      
+
       {page1, meta} = Forums.list_public_feed(page: 1, per_page: 2)
-      
+
       assert length(page1) <= 2
       assert is_map(meta)
     end
@@ -620,9 +620,9 @@ defmodule Cgraph.ForumsExtendedTest do
       user = create_user()
       _forum1 = create_forum(user)
       _forum2 = create_forum(user)
-      
+
       count = Forums.count_user_forums(user.id)
-      
+
       assert count >= 2
     end
   end
@@ -631,7 +631,7 @@ defmodule Cgraph.ForumsExtendedTest do
     test "returns true for owner" do
       owner = create_user()
       forum = create_forum(owner)
-      
+
       assert Forums.is_forum_member(owner, forum)
     end
 
@@ -640,7 +640,7 @@ defmodule Cgraph.ForumsExtendedTest do
       forum = create_forum(owner)
       member = create_user()
       Forums.subscribe_to_forum(member, forum)
-      
+
       assert Forums.is_forum_member(member, forum)
     end
 
@@ -648,14 +648,14 @@ defmodule Cgraph.ForumsExtendedTest do
       owner = create_user()
       forum = create_forum(owner)
       outsider = create_user()
-      
+
       refute Forums.is_forum_member(outsider, forum)
     end
 
     test "returns false for nil user" do
       owner = create_user()
       forum = create_forum(owner)
-      
+
       refute Forums.is_forum_member(nil, forum)
     end
   end
@@ -664,9 +664,9 @@ defmodule Cgraph.ForumsExtendedTest do
     test "adds membership flags to forum for authenticated user" do
       owner = create_user()
       forum = create_forum(owner)
-      
+
       enriched = Forums.add_membership_status(forum, owner)
-      
+
       assert Map.has_key?(enriched, :is_member)
       assert Map.has_key?(enriched, :is_subscribed)
     end
@@ -674,9 +674,9 @@ defmodule Cgraph.ForumsExtendedTest do
     test "adds false flags for anonymous user" do
       owner = create_user()
       forum = create_forum(owner)
-      
+
       enriched = Forums.add_membership_status(forum, nil)
-      
+
       assert enriched.is_member == false
       assert enriched.is_subscribed == false
     end

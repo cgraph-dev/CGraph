@@ -19,7 +19,7 @@ defmodule CgraphWeb.API.V1.CommentController do
     per_page = Map.get(params, "per_page", "50") |> String.to_integer() |> min(100)
     sort = Map.get(params, "sort", "best") # best, new, old, controversial
     parent_id = Map.get(params, "parent_id") # For loading replies to a specific comment
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view),
          {:ok, post} <- Forums.get_post(forum, post_id) do
@@ -40,7 +40,7 @@ defmodule CgraphWeb.API.V1.CommentController do
   """
   def show(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -52,7 +52,7 @@ defmodule CgraphWeb.API.V1.CommentController do
   @doc """
   Create a new comment.
   POST /api/v1/forums/:forum_id/posts/:post_id/comments
-  
+
   Params:
   - content: Comment text (required)
   - parent_id: ID of parent comment for replies (optional)
@@ -61,7 +61,7 @@ defmodule CgraphWeb.API.V1.CommentController do
     user = conn.assigns.current_user
     # Accept params either nested under "comment" key or directly
     comment_params = Map.get(params, "comment") || extract_comment_params(params)
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :comment),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -70,7 +70,7 @@ defmodule CgraphWeb.API.V1.CommentController do
          {:ok, comment} <- Forums.create_comment(post, user, comment_params) do
       # Notify post author and parent comment author
       Forums.notify_comment(comment)
-      
+
       conn
       |> put_status(:created)
       |> render(:show, comment: comment)
@@ -83,7 +83,7 @@ defmodule CgraphWeb.API.V1.CommentController do
     |> Map.take(["content", "parent_id", "body"])
     |> normalize_content_field()
   end
-  
+
   # Support both "body" and "content" field names
   defp normalize_content_field(params) do
     if Map.has_key?(params, "body") && !Map.has_key?(params, "content") do
@@ -100,7 +100,7 @@ defmodule CgraphWeb.API.V1.CommentController do
   def update(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id} = params) do
     user = conn.assigns.current_user
     comment_params = Map.get(params, "comment", %{})
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          {:ok, post} <- Forums.get_post(forum, post_id),
          {:ok, comment} <- Forums.get_comment(post, comment_id),
@@ -116,7 +116,7 @@ defmodule CgraphWeb.API.V1.CommentController do
   """
   def delete(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          {:ok, post} <- Forums.get_post(forum, post_id),
          {:ok, comment} <- Forums.get_comment(post, comment_id),
@@ -132,7 +132,7 @@ defmodule CgraphWeb.API.V1.CommentController do
   """
   def upvote(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :vote),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -148,7 +148,7 @@ defmodule CgraphWeb.API.V1.CommentController do
   """
   def downvote(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :vote),
          {:ok, post} <- Forums.get_post(forum, post_id),
@@ -164,7 +164,7 @@ defmodule CgraphWeb.API.V1.CommentController do
   """
   def unvote(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          {:ok, post} <- Forums.get_post(forum, post_id),
          {:ok, comment} <- Forums.get_comment(post, comment_id),
@@ -180,7 +180,7 @@ defmodule CgraphWeb.API.V1.CommentController do
   def report(conn, %{"forum_id" => forum_id, "post_id" => post_id, "id" => comment_id} = params) do
     user = conn.assigns.current_user
     reason = Map.get(params, "reason", "")
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          {:ok, post} <- Forums.get_post(forum, post_id),
          {:ok, comment} <- Forums.get_comment(post, comment_id),

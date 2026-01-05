@@ -1,7 +1,7 @@
 defmodule CgraphWeb.API.V1.PluginController do
   @moduledoc """
   Controller for forum plugin management.
-  
+
   Handles plugin marketplace browsing, installation, configuration,
   and management for MyBB-style forum hosting.
   """
@@ -17,20 +17,20 @@ defmodule CgraphWeb.API.V1.PluginController do
   """
   def marketplace(conn, params) do
     plugins = Forums.list_available_plugins()
-    
+
     # Optional filtering by category
     plugins = case params["category"] do
       nil -> plugins
       category -> Enum.filter(plugins, &(&1.category == category))
     end
-    
+
     # Optional filtering by is_official
     plugins = case params["official"] do
       "true" -> Enum.filter(plugins, &(&1.is_official == true))
       "false" -> Enum.filter(plugins, &(&1.is_official == false))
       _ -> plugins
     end
-    
+
     # Optional search
     plugins = case params["search"] do
       nil -> plugins
@@ -41,7 +41,7 @@ defmodule CgraphWeb.API.V1.PluginController do
           String.contains?(String.downcase(p.description), search)
         end)
     end
-    
+
     render(conn, :marketplace, plugins: plugins)
   end
 
@@ -84,7 +84,7 @@ defmodule CgraphWeb.API.V1.PluginController do
   def create(conn, %{"forum_id" => forum_id} = params) do
     user = conn.assigns.current_user
     plugin_data = Map.get(params, "plugin") || extract_plugin_params(params)
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
          {:ok, marketplace_plugin} <- Forums.get_available_plugin(plugin_data["plugin_id"]),
@@ -101,7 +101,7 @@ defmodule CgraphWeb.API.V1.PluginController do
   """
   def toggle(conn, %{"forum_id" => forum_id, "id" => id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
          {:ok, plugin} <- Forums.get_plugin(id),
@@ -117,7 +117,7 @@ defmodule CgraphWeb.API.V1.PluginController do
   def update(conn, %{"forum_id" => forum_id, "id" => id} = params) do
     user = conn.assigns.current_user
     settings = params["settings"] || %{}
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
          {:ok, plugin} <- Forums.get_plugin(id),
@@ -132,7 +132,7 @@ defmodule CgraphWeb.API.V1.PluginController do
   """
   def delete(conn, %{"forum_id" => forum_id, "id" => id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
          {:ok, plugin} <- Forums.get_plugin(id),
@@ -161,7 +161,7 @@ defmodule CgraphWeb.API.V1.PluginController do
       "is_active" => true,
       "settings" => user_settings["settings"] || %{}
     }
-    
+
     Forums.install_plugin(forum_id, user_id, attrs)
   end
 end

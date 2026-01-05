@@ -1,7 +1,7 @@
 defmodule Cgraph.Accounts.PushToken do
   @moduledoc """
   Push notification tokens for mobile and web push.
-  
+
   Supports:
   - Expo Push (React Native)
   - Firebase Cloud Messaging (Android)

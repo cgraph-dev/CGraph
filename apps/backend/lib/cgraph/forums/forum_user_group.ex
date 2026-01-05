@@ -1,11 +1,11 @@
 defmodule Cgraph.Forums.ForumUserGroup do
   @moduledoc """
   ForumUserGroup schema for MyBB-style permission groups.
-  
+
   User groups define granular permissions for forum members. Each forum can have
   multiple user groups (e.g., Members, VIP, Moderators, Admins) with different
   permission sets.
-  
+
   ## Permission Categories
   - View: What users can see
   - Posting: Creating threads, replies, editing
@@ -13,7 +13,7 @@ defmodule Cgraph.Forums.ForumUserGroup do
   - Social: Reputation, private messages
   - Moderation: Moderator actions
   - Admin: Administrative actions
-  
+
   ## Limits
   - Attachment sizes and counts
   - Signature length
@@ -38,12 +38,12 @@ defmodule Cgraph.Forums.ForumUserGroup do
     field :is_staff, :boolean, default: false
     field :is_default, :boolean, default: false
     field :position, :integer, default: 0
-    
+
     # View permissions
     field :can_view_boards, :boolean, default: true
     field :can_view_profiles, :boolean, default: true
     field :can_view_hidden_boards, :boolean, default: false
-    
+
     # Posting permissions
     field :can_create_threads, :boolean, default: true
     field :can_reply, :boolean, default: true
@@ -51,7 +51,7 @@ defmodule Cgraph.Forums.ForumUserGroup do
     field :can_delete_own_posts, :boolean, default: false
     field :can_edit_own_threads, :boolean, default: true
     field :can_delete_own_threads, :boolean, default: false
-    
+
     # Feature permissions
     field :can_upload_attachments, :boolean, default: true
     field :can_use_signature, :boolean, default: true
@@ -59,13 +59,13 @@ defmodule Cgraph.Forums.ForumUserGroup do
     field :can_use_images, :boolean, default: true
     field :can_create_polls, :boolean, default: true
     field :can_vote_polls, :boolean, default: true
-    
+
     # Social permissions
     field :can_give_reputation, :boolean, default: true
     field :can_receive_reputation, :boolean, default: true
     field :can_send_pm, :boolean, default: true
     field :can_receive_pm, :boolean, default: true
-    
+
     # Moderation permissions
     field :can_moderate, :boolean, default: false
     field :can_edit_posts, :boolean, default: false
@@ -77,7 +77,7 @@ defmodule Cgraph.Forums.ForumUserGroup do
     field :can_pin_threads, :boolean, default: false
     field :can_hide_posts, :boolean, default: false
     field :can_approve_posts, :boolean, default: false
-    
+
     # Admin permissions
     field :can_manage_users, :boolean, default: false
     field :can_ban_users, :boolean, default: false
@@ -88,7 +88,7 @@ defmodule Cgraph.Forums.ForumUserGroup do
     field :can_manage_themes, :boolean, default: false
     field :can_manage_plugins, :boolean, default: false
     field :is_admin, :boolean, default: false
-    
+
     # Limits
     field :max_attachments_per_post, :integer, default: 5
     field :max_attachment_size_kb, :integer, default: 2048

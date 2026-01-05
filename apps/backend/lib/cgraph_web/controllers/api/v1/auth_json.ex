@@ -1,7 +1,7 @@
 defmodule CgraphWeb.API.V1.AuthJSON do
   @moduledoc """
   JSON rendering for authentication responses.
-  
+
   Provides consistent JSON output format for all auth-related endpoints.
   """
 

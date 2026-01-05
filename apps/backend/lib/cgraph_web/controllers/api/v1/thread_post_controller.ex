@@ -4,10 +4,10 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
   Part of the MyBB-style forum hosting platform.
   """
   use CgraphWeb, :controller
-  
+
   alias Cgraph.Forums
   import CgraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
-  
+
   action_fallback CgraphWeb.FallbackController
 
   @doc """
@@ -16,10 +16,10 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
   """
   def index(conn, %{"thread_id" => thread_id} = params) do
     pagination = extract_pagination_params(params)
-    
+
     opts = pagination
     {posts, meta} = Forums.list_thread_posts(thread_id, opts)
-    
+
     render(conn, :index, posts: posts, meta: meta)
   end
 
@@ -39,7 +39,7 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
   """
   def create(conn, %{"thread_id" => thread_id, "post" => post_params}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, thread} <- Forums.get_thread(thread_id),
          false <- thread.is_locked,
          {:ok, board} <- Forums.get_board(thread.board_id),
@@ -64,7 +64,7 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
   """
   def update(conn, %{"id" => id, "post" => post_params}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, post} <- Forums.get_thread_post(id),
          {:ok, thread} <- Forums.get_thread(post.thread_id),
          {:ok, board} <- Forums.get_board(thread.board_id),
@@ -84,7 +84,7 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
   """
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, post} <- Forums.get_thread_post(id),
          {:ok, thread} <- Forums.get_thread(post.thread_id),
          {:ok, board} <- Forums.get_board(thread.board_id),
@@ -105,7 +105,7 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
   def vote(conn, %{"id" => id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
     value = if is_binary(value), do: String.to_integer(value), else: value
-    
+
     case Forums.vote_post(user.id, id, value) do
       {:ok, :removed} ->
         json(conn, %{data: %{voted: false, value: 0}})

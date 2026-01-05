@@ -1,21 +1,21 @@
 defmodule Cgraph.Guardian do
   @moduledoc """
   Guardian implementation for JWT authentication.
-  
+
   Handles token generation and verification for access and refresh tokens.
   Integrates with TokenBlacklist for secure token revocation.
-  
+
   ## Token Structure
-  
+
   Tokens include:
   - `sub`: User ID
   - `jti`: Unique token identifier for revocation
   - `typ`: Token type (access/refresh)
   - `iat`: Issued at timestamp
   - `exp`: Expiration timestamp
-  
+
   ## Security Features
-  
+
   - JTI-based token revocation
   - User-level mass revocation
   - Configurable TTL via environment
@@ -53,35 +53,35 @@ defmodule Cgraph.Guardian do
 
   @doc """
   Build claims with JTI for revocation support.
-  
+
   Called by Guardian before token generation.
   """
   def build_claims(claims, _resource, _opts) do
     claims = claims
     |> Map.put("jti", generate_jti())
     |> Map.put("iat", System.system_time(:second))
-    
+
     {:ok, claims}
   end
 
   @doc """
   Verify claims including revocation check.
-  
+
   Called by Guardian during token verification.
   """
   def verify_claims(claims, _opts) do
     jti = Map.get(claims, "jti")
     user_id = Map.get(claims, "sub")
-    
+
     cond do
       # Check JTI-based revocation
       jti && token_revoked_by_jti?(jti) ->
         {:error, :token_revoked}
-      
+
       # Check user-level revocation
       user_id && token_revoked_for_user?(claims, user_id) ->
         {:error, :token_revoked}
-      
+
       true ->
         {:ok, claims}
     end
@@ -106,29 +106,21 @@ defmodule Cgraph.Guardian do
 
   @doc """
   Refresh an access token using a refresh token.
-  
+
   The old refresh token is revoked after successful refresh.
   """
   def refresh_tokens(refresh_token) do
-    case decode_and_verify(refresh_token, %{"typ" => "refresh"}) do
-      {:ok, claims} ->
-        case resource_from_claims(claims) do
-          {:ok, user} -> 
-            # Generate new tokens
-            result = generate_tokens(user)
-            
-            # Revoke old refresh token (optional, adds security)
-            if jti = Map.get(claims, "jti") do
-              TokenBlacklist.revoke_by_jti(jti, reason: :token_refresh, user_id: user.id)
-            end
-            
-            result
-            
-          error -> error
-        end
-
-      {:error, reason} ->
-        {:error, reason}
+    with {:ok, claims} <- decode_and_verify(refresh_token, %{"typ" => "refresh"}),
+         {:ok, user} <- resource_from_claims(claims) do
+      revoke_old_token(claims, user)
+      generate_tokens(user)
+    end
+  end
+  
+  defp revoke_old_token(claims, user) do
+    case Map.get(claims, "jti") do
+      nil -> :ok
+      jti -> TokenBlacklist.revoke_by_jti(jti, reason: :token_refresh, user_id: user.id)
     end
   end
 
@@ -148,13 +140,13 @@ defmodule Cgraph.Guardian do
         jti = Map.get(claims, "jti")
         user_id = Map.get(claims, "sub")
         reason = Keyword.get(opts, :reason, :logout)
-        
+
         if jti do
           TokenBlacklist.revoke_by_jti(jti, reason: reason, user_id: user_id)
         else
           TokenBlacklist.revoke(token, reason: reason, user_id: user_id)
         end
-        
+
       {:error, _} ->
         # Token is already invalid, try to revoke by hash anyway
         TokenBlacklist.revoke(token, Keyword.merge(opts, [reason: :logout]))
@@ -163,7 +155,7 @@ defmodule Cgraph.Guardian do
 
   @doc """
   Revoke all tokens for a user.
-  
+
   Useful for password changes, security incidents, or account deletion.
   """
   def revoke_all_user_tokens(user_id, reason \\ :security_breach) do

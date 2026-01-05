@@ -69,10 +69,10 @@ defmodule Cgraph.Security.TokenBlacklist do
   @cache_name :cgraph_cache
   @redis_prefix "token_blacklist:"
   @user_revocation_prefix "user_token_revocation:"
-  
+
   # Default TTL matches refresh token (30 days)
   @default_ttl_seconds 30 * 24 * 60 * 60
-  
+
   # ETS table for bloom filter simulation
   @bloom_table :token_blacklist_bloom
 
@@ -117,7 +117,7 @@ defmodule Cgraph.Security.TokenBlacklist do
   @spec revoke(token(), keyword()) :: :ok | {:error, term()}
   def revoke(token, opts \\ []) when is_binary(token) do
     reason = Keyword.get(opts, :reason, :logout)
-    
+
     unless reason in @revocation_reasons do
       raise ArgumentError, "Invalid revocation reason: #{inspect(reason)}. Must be one of #{inspect(@revocation_reasons)}"
     end
@@ -133,7 +133,7 @@ defmodule Cgraph.Security.TokenBlacklist do
   @spec revoke_by_jti(jti(), keyword()) :: :ok | {:error, term()}
   def revoke_by_jti(jti, opts \\ []) when is_binary(jti) do
     reason = Keyword.get(opts, :reason, :logout)
-    
+
     unless reason in @revocation_reasons do
       raise ArgumentError, "Invalid revocation reason: #{inspect(reason)}. Must be one of #{inspect(@revocation_reasons)}"
     end
@@ -220,16 +220,16 @@ defmodule Cgraph.Security.TokenBlacklist do
   def init(_opts) do
     # Create ETS table for bloom filter simulation
     :ets.new(@bloom_table, [:set, :public, :named_table, read_concurrency: true])
-    
+
     # Schedule periodic cleanup
     schedule_cleanup()
-    
+
     state = %{
       revocation_count: 0,
       last_cleanup: DateTime.utc_now(),
       started_at: DateTime.utc_now()
     }
-    
+
     Logger.info("TokenBlacklist started")
     {:ok, state}
   end
@@ -309,30 +309,30 @@ defmodule Cgraph.Security.TokenBlacklist do
     ttl = Keyword.get(opts, :ttl, @default_ttl_seconds)
     reason = Keyword.get(opts, :reason, :logout)
     user_id = Keyword.get(opts, :user_id)
-    
+
     revocation_data = %{
       revoked_at: DateTime.utc_now() |> DateTime.to_iso8601(),
       reason: reason,
       user_id: user_id
     }
-    
+
     # Store in all tiers
     with :ok <- store_in_cachex(jti, revocation_data, ttl),
          :ok <- store_in_ets(jti),
          :ok <- store_in_redis(jti, revocation_data, ttl) do
-      
+
       # Emit telemetry
       :telemetry.execute(
         [:cgraph, :security, :token_revoked],
         %{count: 1},
         %{reason: reason, user_id: user_id}
       )
-      
+
       # Audit log if user_id provided
       if user_id do
         log_revocation_audit(user_id, reason, opts)
       end
-      
+
       :ok
     end
   end
@@ -341,23 +341,23 @@ defmodule Cgraph.Security.TokenBlacklist do
     ttl = Keyword.get(opts, :ttl, @default_ttl_seconds)
     reason = Keyword.get(opts, :reason, :logout)
     user_id = Keyword.get(opts, :user_id)
-    
+
     revocation_data = %{
       revoked_at: DateTime.utc_now() |> DateTime.to_iso8601(),
       reason: reason,
       user_id: user_id
     }
-    
+
     with :ok <- store_in_cachex(jti, revocation_data, ttl),
          :ok <- store_in_ets(jti),
          :ok <- store_in_redis(jti, revocation_data, ttl) do
-      
+
       :telemetry.execute(
         [:cgraph, :security, :token_revoked],
         %{count: 1},
         %{reason: reason, user_id: user_id, by_jti: true}
       )
-      
+
       :ok
     end
   end
@@ -365,26 +365,26 @@ defmodule Cgraph.Security.TokenBlacklist do
   defp do_revoke_all_for_user(user_id, opts) do
     reason = Keyword.get(opts, :reason, :security_breach)
     revocation_time = DateTime.utc_now()
-    
+
     revocation_data = %{
       revoked_before: DateTime.to_iso8601(revocation_time),
       reason: reason
     }
-    
+
     key = "#{@user_revocation_prefix}#{user_id}"
-    
+
     # Store user-level revocation with long TTL (matches refresh token)
     with :ok <- store_in_cachex(key, revocation_data, @default_ttl_seconds),
          :ok <- store_in_redis(key, revocation_data, @default_ttl_seconds) do
-      
+
       :telemetry.execute(
         [:cgraph, :security, :mass_revocation],
         %{count: 1},
         %{reason: reason, user_id: user_id}
       )
-      
+
       log_mass_revocation_audit(user_id, reason, opts)
-      
+
       Logger.info("Revoked all tokens for user #{user_id}: #{reason}")
       :ok
     end
@@ -393,67 +393,62 @@ defmodule Cgraph.Security.TokenBlacklist do
   defp do_check_revoked(token, opts) do
     jti = extract_jti(token) || hash_token(token)
     check_user = Keyword.get(opts, :check_user_revocation, true)
-    
-    # Start telemetry span
     start_time = System.monotonic_time()
-    
-    result = case check_in_ets(jti) do
-      true -> 
-        true
-      false -> 
-        case check_in_cachex(jti) do
-          {:ok, _} -> true
-          _ -> 
-            case check_in_redis(jti) do
-              {:ok, _} -> 
-                # Promote to faster tiers
-                store_in_ets(jti)
-                true
-              _ -> 
-                # Check user-level revocation if enabled
-                if check_user do
-                  check_user_level_revocation(token)
-                else
-                  false
-                end
-            end
-        end
-    end
-    
-    # Emit telemetry
+
+    result = check_token_revocation_cascade(jti, token, check_user)
+
     duration = System.monotonic_time() - start_time
     :telemetry.execute(
       [:cgraph, :security, :token_check],
       %{duration: duration},
       %{revoked: result}
     )
-    
+
     result
+  end
+  
+  defp check_token_revocation_cascade(jti, token, check_user) do
+    cond do
+      check_in_ets(jti) -> true
+      ets_cachex_check(jti) == :found -> true
+      redis_check_with_promotion(jti) == :found -> true
+      check_user -> check_user_level_revocation(token)
+      true -> false
+    end
+  end
+  
+  defp ets_cachex_check(jti) do
+    case check_in_cachex(jti) do
+      {:ok, _} -> :found
+      _ -> :not_found
+    end
+  end
+  
+  defp redis_check_with_promotion(jti) do
+    case check_in_redis(jti) do
+      {:ok, _} -> 
+        store_in_ets(jti)
+        :found
+      _ -> 
+        :not_found
+    end
   end
 
   defp do_check_revoked_jti(jti, _opts) do
-    case check_in_ets(jti) do
-      true -> true
-      false -> 
-        case check_in_cachex(jti) do
-          {:ok, _} -> true
-          _ -> 
-            case check_in_redis(jti) do
-              {:ok, _} -> 
-                store_in_ets(jti)
-                true
-              _ -> false
-            end
-        end
+    cond do
+      check_in_ets(jti) -> true
+      ets_cachex_check(jti) == :found -> true
+      redis_check_with_promotion(jti) == :found -> true
+      true -> false
     end
   end
 
   defp do_get_user_revocation_time(user_id) do
     key = "#{@user_revocation_prefix}#{user_id}"
-    
+
     case check_in_cachex(key) do
       {:ok, data} -> {:ok, parse_revocation_time(data)}
-      _ -> 
+      _ ->
         case check_in_redis(key) do
           {:ok, data} -> {:ok, parse_revocation_time(data)}
           _ -> :not_revoked
@@ -466,7 +461,7 @@ defmodule Cgraph.Security.TokenBlacklist do
     with {:ok, claims} <- decode_token_claims(token),
          user_id when is_binary(user_id) <- Map.get(claims, "sub"),
          iat when is_integer(iat) <- Map.get(claims, "iat") do
-      
+
       case do_get_user_revocation_time(user_id) do
         {:ok, revoked_before} ->
           token_issued_at = DateTime.from_unix!(iat)
@@ -486,7 +481,7 @@ defmodule Cgraph.Security.TokenBlacklist do
     case Cachex.put(@cache_name, "blacklist:#{key}", data, ttl: ttl_ms) do
       {:ok, true} -> :ok
       {:ok, false} -> :ok
-      error -> 
+      error ->
         Logger.warning("Failed to store in Cachex: #{inspect(error)}")
         :ok  # Non-fatal, continue with other tiers
     end
@@ -501,7 +496,7 @@ defmodule Cgraph.Security.TokenBlacklist do
   defp store_in_redis(key, data, ttl_seconds) do
     redis_key = "#{@redis_prefix}#{key}"
     encoded_data = Jason.encode!(data)
-    
+
     case Redix.command(:redix, ["SETEX", redis_key, ttl_seconds, encoded_data]) do
       {:ok, _} -> :ok
       {:error, reason} ->
@@ -512,7 +507,7 @@ defmodule Cgraph.Security.TokenBlacklist do
 
   defp check_in_ets(key) do
     case :ets.lookup(@bloom_table, key) do
-      [{^key, expiry}] -> 
+      [{^key, expiry}] ->
         if System.system_time(:second) < expiry do
           true
         else
@@ -533,7 +528,7 @@ defmodule Cgraph.Security.TokenBlacklist do
 
   defp check_in_redis(key) do
     redis_key = "#{@redis_prefix}#{key}"
-    
+
     case Redix.command(:redix, ["GET", redis_key]) do
       {:ok, nil} -> {:error, :not_found}
       {:ok, data} -> {:ok, Jason.decode!(data)}
@@ -554,7 +549,7 @@ defmodule Cgraph.Security.TokenBlacklist do
     # Decode without verification to extract claims
     case Cgraph.Guardian.decode_and_verify(token, %{}) do
       {:ok, claims} -> {:ok, claims}
-      {:error, _} -> 
+      {:error, _} ->
         # Try base64 decode for expired tokens
         try do
           [_, payload, _] = String.split(token, ".")
@@ -588,21 +583,21 @@ defmodule Cgraph.Security.TokenBlacklist do
 
   defp do_cleanup do
     now = System.system_time(:second)
-    
+
     # Clean expired entries from ETS
     expired = :ets.select(@bloom_table, [{{:"$1", :"$2"}, [{:<, :"$2", now}], [:"$1"]}])
-    
+
     Enum.each(expired, fn key ->
       :ets.delete(@bloom_table, key)
     end)
-    
+
     Logger.debug("TokenBlacklist cleanup: removed #{length(expired)} expired entries")
     :ok
   end
 
   defp log_revocation_audit(user_id, reason, opts) do
     metadata = Keyword.get(opts, :metadata, %{})
-    
+
     Audit.log(:security, :token_revoked, %{
       user_id: user_id,
       reason: reason,
@@ -614,7 +609,7 @@ defmodule Cgraph.Security.TokenBlacklist do
 
   defp log_mass_revocation_audit(user_id, reason, opts) do
     metadata = Keyword.get(opts, :metadata, %{})
-    
+
     Audit.log(:security, :mass_token_revocation, %{
       user_id: user_id,
       reason: reason,

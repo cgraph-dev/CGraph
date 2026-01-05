@@ -1,7 +1,7 @@
 defmodule Cgraph.Application do
   @moduledoc """
   Main application supervisor for CGraph backend.
-  
+
   Starts all required services including:
   - Ecto repository
   - Phoenix endpoint
@@ -64,7 +64,7 @@ defmodule Cgraph.Application do
 
   defp redis_config do
     redis_url = System.get_env("REDIS_URL", "redis://localhost:6379")
-    
+
     [
       name: :redix,
       host: redis_host(redis_url),

@@ -1,7 +1,7 @@
 defmodule CgraphWeb.API.V1.MessageJSON do
   @moduledoc """
   JSON rendering for message responses.
-  
+
   All field names use camelCase for frontend consistency.
   This module is also used by WebSocket channels for message serialization.
   """
@@ -27,7 +27,7 @@ defmodule CgraphWeb.API.V1.MessageJSON do
   def message_data(%Message{} = msg) do
     # Build metadata with file info for voice/audio/file messages
     file_metadata = build_file_metadata(msg)
-    
+
     %{
       id: msg.id,
       conversationId: msg.conversation_id,
@@ -57,7 +57,7 @@ defmodule CgraphWeb.API.V1.MessageJSON do
       updatedAt: format_datetime(msg.updated_at)
     }
   end
-  
+
   # Fallback for when message is a map (from channel assigns)
   def message_data(%{id: _} = msg) do
     %{
@@ -96,7 +96,7 @@ defmodule CgraphWeb.API.V1.MessageJSON do
   # Build file metadata for voice/audio/file messages from Message struct
   # Populates metadata object with file info for frontend players
   defp build_file_metadata(%Message{file_url: nil}), do: %{}
-  defp build_file_metadata(%Message{content_type: content_type} = msg) 
+  defp build_file_metadata(%Message{content_type: content_type} = msg)
        when content_type in ["voice", "audio", "file", "image", "video"] do
     %{
       url: msg.file_url,
@@ -107,11 +107,32 @@ defmodule CgraphWeb.API.V1.MessageJSON do
     }
   end
   defp build_file_metadata(_msg), do: %{}
-  
+
   # Build file metadata from map (for channel assigns)
   defp build_file_metadata_from_map(%{file_url: nil}), do: %{}
   defp build_file_metadata_from_map(%{content_type: content_type} = msg)
        when content_type in ["voice", "audio", "file", "image", "video"] do
+    extract_file_metadata(msg)
+  end
+  defp build_file_metadata_from_map(msg) do
+    url = msg[:file_url] || msg["file_url"]
+    content_type = msg[:content_type] || msg["content_type"]
+    maybe_extract_file_metadata(url, content_type, msg)
+  end
+  
+  defp maybe_extract_file_metadata(nil, _content_type, _msg), do: %{}
+  defp maybe_extract_file_metadata(url, content_type, msg) when content_type in ["voice", "audio", "file", "image", "video"] do
+    %{
+      url: url,
+      filename: msg[:file_name] || msg["file_name"],
+      size: msg[:file_size] || msg["file_size"],
+      mimeType: msg[:file_mime_type] || msg["file_mime_type"],
+      thumbnailUrl: msg[:thumbnail_url] || msg["thumbnail_url"]
+    }
+  end
+  defp maybe_extract_file_metadata(_url, _content_type, _msg), do: %{}
+  
+  defp extract_file_metadata(msg) do
     %{
       url: msg[:file_url],
       filename: msg[:file_name],
@@ -119,25 +140,6 @@ defmodule CgraphWeb.API.V1.MessageJSON do
       mimeType: msg[:file_mime_type],
       thumbnailUrl: msg[:thumbnail_url]
     }
-  end
-  defp build_file_metadata_from_map(msg) do
-    # Check with atom keys for maps that might have different key format
-    case msg[:file_url] || msg["file_url"] do
-      nil -> %{}
-      url ->
-        content_type = msg[:content_type] || msg["content_type"]
-        if content_type in ["voice", "audio", "file", "image", "video"] do
-          %{
-            url: url,
-            filename: msg[:file_name] || msg["file_name"],
-            size: msg[:file_size] || msg["file_size"],
-            mimeType: msg[:file_mime_type] || msg["file_mime_type"],
-            thumbnailUrl: msg[:thumbnail_url] || msg["thumbnail_url"]
-          }
-        else
-          %{}
-        end
-    end
   end
 
   # Build attachment data from message file fields

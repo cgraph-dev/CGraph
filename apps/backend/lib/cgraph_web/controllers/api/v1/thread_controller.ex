@@ -4,10 +4,10 @@ defmodule CgraphWeb.API.V1.ThreadController do
   Part of the MyBB-style forum hosting platform.
   """
   use CgraphWeb, :controller
-  
+
   alias Cgraph.Forums
   import CgraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
-  
+
   action_fallback CgraphWeb.FallbackController
 
   @doc """
@@ -19,10 +19,10 @@ defmodule CgraphWeb.API.V1.ThreadController do
     page = Keyword.get(pagination, :page)
     per_page = Keyword.get(pagination, :per_page)
     sort = Map.get(params, "sort", "latest")
-    
+
     opts = [page: page, per_page: per_page, sort: sort]
     {threads, meta} = Forums.list_threads(board_id, opts)
-    
+
     render(conn, :index, threads: threads, meta: meta)
   end
 
@@ -55,7 +55,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
   """
   def create(conn, %{"board_id" => board_id, "thread" => thread_params}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, board} <- Forums.get_board(board_id),
          {:ok, _member} <- Forums.get_or_create_member(board.forum_id, user.id),
          thread_attrs <- Map.merge(thread_params, %{
@@ -75,7 +75,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
   """
   def update(conn, %{"id" => id, "thread" => thread_params}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, thread} <- Forums.get_thread(id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
@@ -94,7 +94,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
   """
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, thread} <- Forums.get_thread(id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
@@ -113,7 +113,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
   """
   def pin(conn, %{"id" => id, "pinned" => pinned}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, thread} <- Forums.get_thread(id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
@@ -134,7 +134,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
   """
   def lock(conn, %{"id" => id, "locked" => locked}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, thread} <- Forums.get_thread(id),
          {:ok, board} <- Forums.get_board(thread.board_id),
          {:ok, forum} <- Forums.get_forum(board.forum_id),
@@ -156,7 +156,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
   def vote(conn, %{"id" => id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
     value = if is_binary(value), do: String.to_integer(value), else: value
-    
+
     case Forums.vote_thread(user.id, id, value) do
       {:ok, :removed} ->
         json(conn, %{data: %{voted: false, value: 0}})
@@ -175,9 +175,9 @@ defmodule CgraphWeb.API.V1.ThreadController do
   def forum_threads(conn, %{"forum_id" => forum_id} = params) do
     limit = String.to_integer(Map.get(params, "limit", "20"))
     sort = Map.get(params, "sort", "latest")
-    
+
     threads = Forums.list_forum_threads(forum_id, limit: limit, sort: sort)
-    
+
     render(conn, :index, threads: threads, meta: %{total: length(threads)})
   end
 end

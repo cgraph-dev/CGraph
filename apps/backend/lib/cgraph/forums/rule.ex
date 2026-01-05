@@ -15,7 +15,7 @@ defmodule Cgraph.Forums.Rule do
     field :position, :integer
     field :title, :string
     field :description, :string
-    
+
     timestamps()
   end
 

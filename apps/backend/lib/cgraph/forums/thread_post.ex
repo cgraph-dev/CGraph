@@ -1,10 +1,10 @@
 defmodule Cgraph.Forums.ThreadPost do
   @moduledoc """
   ThreadPost schema representing a reply within a thread.
-  
+
   Posts are the individual replies within a thread. The first post in a thread
   is typically the thread content itself, with subsequent posts being replies.
-  
+
   ## Features
   - BBCode/Markdown content with HTML rendering
   - Edit tracking (count, reason, timestamp)
@@ -32,23 +32,23 @@ defmodule Cgraph.Forums.ThreadPost do
     field :edit_count, :integer, default: 0
     field :edit_reason, :string
     field :edited_at, :utc_datetime
-    
+
     # Moderation
     field :is_hidden, :boolean, default: false
     field :is_approved, :boolean, default: true
     field :reported_count, :integer, default: 0
-    
+
     # Attachments (JSON array)
     field :attachments, {:array, :map}, default: []
-    
+
     # Voting
     field :score, :integer, default: 0
     field :upvotes, :integer, default: 0
     field :downvotes, :integer, default: 0
-    
+
     # Position in thread
     field :position, :integer, default: 0
-    
+
     # Soft delete
     field :deleted_at, :utc_datetime
 

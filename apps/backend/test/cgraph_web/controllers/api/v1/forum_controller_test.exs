@@ -11,13 +11,13 @@ defmodule CgraphWeb.API.V1.ForumControllerTest do
       forum1 = forum_fixture(user, %{name: "forum_one", slug: "forum-one"})
       forum2 = forum_fixture(user, %{name: "forum_two", slug: "forum-two"})
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, forums: [forum1, forum2]}
     end
 
     test "lists all forums", %{conn: conn} do
       conn = get(conn, ~p"/api/v1/forums")
-      
+
       assert %{"data" => forums} = json_response(conn, 200)
       assert is_list(forums)
       assert length(forums) >= 2
@@ -25,12 +25,12 @@ defmodule CgraphWeb.API.V1.ForumControllerTest do
 
     test "supports pagination", %{conn: conn} do
       conn = get(conn, ~p"/api/v1/forums", %{page: 1, per_page: 1})
-      
+
       assert %{
         "data" => forums,
         "meta" => %{"per_page" => 1}
       } = json_response(conn, 200)
-      
+
       assert length(forums) == 1
     end
 
@@ -45,13 +45,13 @@ defmodule CgraphWeb.API.V1.ForumControllerTest do
       user = user_fixture()
       forum = forum_fixture()
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, forum: forum}
     end
 
     test "returns forum details", %{conn: conn, forum: forum} do
       conn = get(conn, ~p"/api/v1/forums/#{forum.id}")
-      
+
       assert %{
         "data" => %{
           "id" => id,
@@ -59,7 +59,7 @@ defmodule CgraphWeb.API.V1.ForumControllerTest do
           "description" => _description
         }
       } = json_response(conn, 200)
-      
+
       assert id == forum.id
       assert name == forum.name
     end
@@ -83,7 +83,7 @@ defmodule CgraphWeb.API.V1.ForumControllerTest do
         slug: "new-forum",
         description: "A new forum"
       })
-      
+
       assert %{
         "data" => %{
           "name" => "NewForum",
@@ -105,7 +105,7 @@ defmodule CgraphWeb.API.V1.ForumControllerTest do
         name: "NewForum",
         slug: "new-forum"
       })
-      
+
       # Any authenticated user can now create forums (up to tier limit)
       response = json_response(conn, 201)
       assert response["data"]["name"] == "NewForum"
@@ -128,10 +128,10 @@ defmodule CgraphWeb.API.V1.ForumControllerTest do
           name: "SecondForum",
           slug: "second-forum"
         })
-      
+
       # Should return error about forum limit
       response = json_response(conn, 422)
-      assert response["error"]["code"] == "forum_limit_reached" or 
+      assert response["error"]["code"] == "forum_limit_reached" or
              String.contains?(response["error"]["message"] || "", "limit")
     end
   end
@@ -150,13 +150,13 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
       %{post: post1} = post_fixture(forum, user, %{title: "First Post"})
       %{post: post2} = post_fixture(forum, user, %{title: "Second Post"})
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, forum: forum, posts: [post1, post2]}
     end
 
     test "lists posts in forum", %{conn: conn, forum: forum} do
       conn = get(conn, ~p"/api/v1/forums/#{forum.id}/posts")
-      
+
       assert %{"data" => posts} = json_response(conn, 200)
       assert is_list(posts)
       assert length(posts) >= 2
@@ -165,7 +165,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
     test "supports sorting by hot/new/top", %{conn: conn, forum: forum} do
       conn = get(conn, ~p"/api/v1/forums/#{forum.id}/posts", %{sort: "new"})
       assert %{"data" => posts} = json_response(conn, 200)
-      
+
       # Verify posts are sorted by date descending
       dates = Enum.map(posts, & &1["created_at"])
       assert dates == Enum.sort(dates, :desc)
@@ -177,7 +177,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
       user = user_fixture()
       forum = forum_fixture(user)  # Pass user to make them the owner/member
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, forum: forum}
     end
 
@@ -186,7 +186,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
         title: "My New Post",
         content: "This is the content of my post."
       })
-      
+
       assert %{
         "data" => %{
           "id" => id,
@@ -194,7 +194,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
           "author" => %{"id" => author_id}
         }
       } = json_response(conn, 201)
-      
+
       assert is_binary(id)
       assert author_id == user.id
     end
@@ -203,7 +203,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
       conn = post(conn, ~p"/api/v1/forums/#{forum.id}/posts", %{
         content: "No title here"
       })
-      
+
       # Error format: {"error": {"details": {"title": [...]}, "message": "..."}}
       assert json_response(conn, 422)["error"]["details"]["title"]
     end
@@ -215,7 +215,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
       forum = forum_fixture(user)  # Pass user to make them the owner/member
       %{post: post} = post_fixture(forum)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, forum: forum, post: post}
     end
 
@@ -223,14 +223,14 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
       conn = post(conn, ~p"/api/v1/forums/#{forum.id}/posts/#{post.id}/vote", %{
         direction: "up"
       })
-      
+
       assert %{
         "data" => %{
           "vote_type" => "up",
           "score" => score
         }
       } = json_response(conn, 200)
-      
+
       assert score > 0
     end
 
@@ -238,7 +238,7 @@ defmodule CgraphWeb.API.V1.PostControllerTest do
       conn = post(conn, ~p"/api/v1/forums/#{forum.id}/posts/#{post.id}/vote", %{
         direction: "down"
       })
-      
+
       assert %{
         "data" => %{
           "vote_type" => "down"
@@ -262,13 +262,13 @@ defmodule CgraphWeb.API.V1.CommentControllerTest do
       %{comment: comment1} = comment_fixture(post, user)
       %{comment: comment2} = comment_fixture(post, user)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, forum: forum, post: post, comments: [comment1, comment2]}
     end
 
     test "lists comments on post", %{conn: conn, forum: forum, post: post} do
       conn = get(conn, ~p"/api/v1/forums/#{forum.id}/posts/#{post.id}/comments")
-      
+
       assert %{"data" => comments} = json_response(conn, 200)
       assert is_list(comments)
       assert length(comments) >= 2
@@ -281,7 +281,7 @@ defmodule CgraphWeb.API.V1.CommentControllerTest do
       forum = forum_fixture(user)  # Pass user to make them the owner/member
       %{post: post} = post_fixture(forum)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, forum: forum, post: post}
     end
 
@@ -289,7 +289,7 @@ defmodule CgraphWeb.API.V1.CommentControllerTest do
       conn = post(conn, ~p"/api/v1/forums/#{forum.id}/posts/#{post.id}/comments", %{
         content: "This is my comment"
       })
-      
+
       assert %{
         "data" => %{
           "id" => id,
@@ -297,7 +297,7 @@ defmodule CgraphWeb.API.V1.CommentControllerTest do
           "author" => %{"id" => author_id}
         }
       } = json_response(conn, 201)
-      
+
       assert is_binary(id)
       assert author_id == user.id
     end
@@ -305,18 +305,18 @@ defmodule CgraphWeb.API.V1.CommentControllerTest do
     test "creates a reply to another comment", %{conn: conn, forum: forum, post: post} do
       # First create a parent comment
       %{comment: parent} = comment_fixture(post)
-      
+
       conn = post(conn, ~p"/api/v1/forums/#{forum.id}/posts/#{post.id}/comments", %{
         content: "This is a reply",
         parent_id: parent.id
       })
-      
+
       assert %{
         "data" => %{
           "parent_id" => parent_id
         }
       } = json_response(conn, 201)
-      
+
       assert parent_id == parent.id
     end
   end

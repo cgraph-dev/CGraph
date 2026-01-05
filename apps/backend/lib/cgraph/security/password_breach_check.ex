@@ -27,14 +27,14 @@ defmodule Cgraph.Security.PasswordBreachCheck do
   ## Usage
 
       case PasswordBreachCheck.check(password) do
-        {:ok, :safe} -> 
+        {:ok, :safe} ->
           # Password not found in breaches
           proceed_with_registration()
-        
+
         {:ok, {:breached, count}} ->
           # Password found in `count` breaches
           warn_user_or_reject()
-        
+
         {:error, reason} ->
           # API error, consider allowing (fail open)
           proceed_with_caution()
@@ -114,19 +114,21 @@ defmodule Cgraph.Security.PasswordBreachCheck do
   def check_async(password, opts \\ []) do
     user_id = Keyword.get(opts, :user_id)
     on_breached = Keyword.get(opts, :on_breached)
-    
-    Task.start(fn ->
-      case check(password) do
-        {:ok, {:breached, count}} ->
-          log_breach_detected(password, count, user_id)
-          if on_breached, do: on_breached.({:breached, count})
-        
-        _ ->
-          :ok
-      end
-    end)
-    
+
+    Task.start(fn -> handle_async_check(password, user_id, on_breached) end)
     :ok
+  end
+  
+  defp handle_async_check(password, user_id, on_breached) do
+    case check(password) do
+      {:ok, {:breached, count}} -> handle_breach_detected(password, count, user_id, on_breached)
+      _ -> :ok
+    end
+  end
+  
+  defp handle_breach_detected(password, count, user_id, on_breached) do
+    log_breach_detected(password, count, user_id)
+    if on_breached, do: on_breached.({:breached, count})
   end
 
   @doc """
@@ -141,17 +143,17 @@ defmodule Cgraph.Security.PasswordBreachCheck do
   @spec validate(password(), keyword()) :: :ok | {:error, String.t()}
   def validate(password, opts \\ []) do
     threshold = Keyword.get(opts, :threshold, get_reject_threshold())
-    
+
     case check(password) do
-      {:ok, :safe} -> 
+      {:ok, :safe} ->
         :ok
-      
+
       {:ok, {:breached, count}} when count >= threshold ->
         {:error, "This password has appeared in #{count} data breach(es) and cannot be used"}
-      
+
       {:ok, {:breached, _count}} ->
         :ok  # Below threshold
-      
+
       {:error, _reason} ->
         # Fail open - allow password if API is unavailable
         :ok
@@ -183,12 +185,12 @@ defmodule Cgraph.Security.PasswordBreachCheck do
   defp do_check(password, opts) do
     use_cache = Keyword.get(opts, :use_cache, true)
     timeout = Keyword.get(opts, :timeout, @default_timeout)
-    
+
     # Generate SHA-1 hash of the password
     hash = hash_password(password)
     prefix = String.slice(hash, 0, 5)
     suffix = String.slice(hash, 5..-1//1)
-    
+
     # Check cache first
     if use_cache do
       case check_cache(hash) do
@@ -202,20 +204,20 @@ defmodule Cgraph.Security.PasswordBreachCheck do
 
   defp fetch_and_check(prefix, suffix, timeout, full_hash) do
     start_time = System.monotonic_time()
-    
+
     case fetch_range(prefix, timeout) do
       {:ok, response_body} ->
         result = find_suffix_in_response(suffix, response_body)
-        
+
         # Cache the result
         cache_result(full_hash, result)
-        
+
         # Emit telemetry
         duration = System.monotonic_time() - start_time
         emit_check_telemetry(result, duration)
-        
+
         {:ok, result}
-      
+
       {:error, reason} ->
         Logger.warning("HIBP API error: #{inspect(reason)}")
         {:error, reason}
@@ -228,17 +230,17 @@ defmodule Cgraph.Security.PasswordBreachCheck do
       {"user-agent", @user_agent},
       {"accept", "text/plain"}
     ]
-    
+
     # Use Finch for HTTP requests
     request = Finch.build(:get, url, headers)
-    
+
     case Finch.request(request, Cgraph.Finch, receive_timeout: timeout) do
       {:ok, %Finch.Response{status: 200, body: body}} ->
         {:ok, body}
-      
+
       {:ok, %Finch.Response{status: status}} ->
         {:error, {:http_error, status}}
-      
+
       {:error, reason} ->
         {:error, reason}
     end
@@ -246,22 +248,26 @@ defmodule Cgraph.Security.PasswordBreachCheck do
 
   defp find_suffix_in_response(suffix, response_body) do
     suffix_upper = String.upcase(suffix)
-    
+
     response_body
     |> String.split("\r\n")
-    |> Enum.find_value(:safe, fn line ->
-      case String.split(line, ":") do
-        [hash_suffix, count_str] ->
-          if String.upcase(hash_suffix) == suffix_upper do
-            count = String.to_integer(String.trim(count_str))
-            {:breached, count}
-          else
-            nil
-          end
-        _ ->
-          nil
-      end
-    end)
+    |> Enum.find_value(:safe, &match_suffix_line(&1, suffix_upper))
+  end
+  
+  defp match_suffix_line(line, suffix_upper) do
+    case String.split(line, ":") do
+      [hash_suffix, count_str] -> check_suffix_match(hash_suffix, count_str, suffix_upper)
+      _ -> nil
+    end
+  end
+  
+  defp check_suffix_match(hash_suffix, count_str, suffix_upper) do
+    if String.upcase(hash_suffix) == suffix_upper do
+      count = String.to_integer(String.trim(count_str))
+      {:breached, count}
+    else
+      nil
+    end
   end
 
   defp hash_password(password) do
@@ -273,7 +279,7 @@ defmodule Cgraph.Security.PasswordBreachCheck do
 
   defp check_cache(hash) do
     key = "#{@cache_prefix}#{hash}"
-    
+
     case Cachex.get(:cgraph_cache, key) do
       {:ok, nil} -> :miss
       {:ok, :safe} -> {:ok, :safe}
@@ -285,7 +291,7 @@ defmodule Cgraph.Security.PasswordBreachCheck do
   defp cache_result(hash, result) do
     key = "#{@cache_prefix}#{hash}"
     ttl = get_cache_ttl()
-    
+
     Cachex.put(:cgraph_cache, key, result, ttl: ttl * 1000)
   rescue
     _ -> :ok
@@ -314,14 +320,14 @@ defmodule Cgraph.Security.PasswordBreachCheck do
   defp log_breach_detected(_password, count, user_id) do
     # Note: Never log the actual password!
     Logger.warning("Breached password detected: found in #{count} breaches, user_id: #{inspect(user_id)}")
-    
+
     if user_id do
       Cgraph.Audit.log(:security, :breached_password_used, %{
         user_id: user_id,
         breach_count: count
       })
     end
-    
+
     :telemetry.execute(
       [:cgraph, :security, :password_breached],
       %{breach_count: count},
@@ -336,7 +342,7 @@ defmodule Cgraph.Security.PasswordBreachCheck do
       {:breached, _} -> true
       _ -> false
     end
-    
+
     :telemetry.execute(
       [:cgraph, :security, :password_breach_check],
       %{duration: duration},

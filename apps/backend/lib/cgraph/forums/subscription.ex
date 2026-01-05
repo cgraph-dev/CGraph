@@ -1,7 +1,7 @@
 defmodule Cgraph.Forums.Subscription do
   @moduledoc """
   Schema for forum subscriptions.
-  
+
   Tracks user subscriptions to forums for personalized feeds
   and notification preferences.
   """

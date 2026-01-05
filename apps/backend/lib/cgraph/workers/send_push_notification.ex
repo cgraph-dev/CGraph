@@ -1,21 +1,21 @@
 defmodule Cgraph.Workers.SendPushNotification do
   @moduledoc """
   Oban worker for sending push notifications.
-  
+
   Handles delivery of push notifications to mobile devices
   via Firebase Cloud Messaging, APNs, Expo, or Web Push.
-  
+
   This worker is responsible for:
   - Fetching notification details from the database
   - Determining target devices for a user
   - Routing to appropriate push service based on platform
   - Handling delivery failures and retries
   - Updating notification delivery status
-  
+
   ## Usage
-  
+
   Enqueue a push notification job:
-  
+
       %{
         user_id: user.id,
         notification_id: notification.id,
@@ -26,9 +26,9 @@ defmodule Cgraph.Workers.SendPushNotification do
       }
       |> Cgraph.Workers.SendPushNotification.new()
       |> Oban.insert()
-  
+
   ## Job Arguments
-  
+
   - `user_id` (required) - The user to send notification to
   - `notification_id` (optional) - Notification record to use for content
   - `title` (optional) - Override notification title
@@ -57,19 +57,19 @@ defmodule Cgraph.Workers.SendPushNotification do
   def perform(%Oban.Job{args: args, attempt: attempt}) do
     user_id = args["user_id"]
     notification_id = args["notification_id"]
-    
+
     with {:ok, user} <- get_user(user_id),
          {:ok, notification_content} <- get_notification_content(notification_id, args) do
-      
+
       # Build push notification payload
       push_notification = build_push_notification(notification_content, args)
-      
+
       # Build options
       opts = build_opts(args)
-      
+
       # Send via PushService (with fallback for test environment)
       result = send_via_push_service(user, push_notification, opts)
-      
+
       case result do
         {:ok, %{sent: sent, failed: failed}} ->
           Logger.info(
@@ -79,19 +79,19 @@ defmodule Cgraph.Workers.SendPushNotification do
             sent: sent,
             failed: failed
           )
-          
+
           # Update notification delivery status if we have a notification record
           if notification_id do
             update_delivery_status(notification_id, sent, failed)
           end
-          
+
           :ok
-        
+
         :ok ->
           # Test environment or service not running
           Logger.debug("Push notification skipped (service not running)")
           :ok
-          
+
         {:error, reason} when attempt < 5 ->
           Logger.warning(
             "Push notification failed, will retry",
@@ -100,7 +100,7 @@ defmodule Cgraph.Workers.SendPushNotification do
             attempt: attempt
           )
           {:error, reason}
-          
+
         {:error, reason} ->
           Logger.error(
             "Push notification failed permanently",
@@ -113,17 +113,17 @@ defmodule Cgraph.Workers.SendPushNotification do
       {:error, :user_not_found} ->
         Logger.warning("Push notification skipped: user #{user_id} not found")
         :ok  # Don't retry
-        
+
       {:error, :notification_not_found} ->
         Logger.warning("Push notification skipped: notification #{notification_id} not found")
         :ok  # Don't retry
-        
+
       {:error, reason} ->
         Logger.error("Push notification preparation failed: #{inspect(reason)}")
         {:error, reason}
     end
   end
-  
+
   # Send via PushService with graceful fallback for test environment
   defp send_via_push_service(user, push_notification, opts) do
     if push_service_running?() do
@@ -133,7 +133,7 @@ defmodule Cgraph.Workers.SendPushNotification do
       :ok
     end
   end
-  
+
   # Check if PushService GenServer is running
   defp push_service_running? do
     case Process.whereis(PushService) do
@@ -141,10 +141,10 @@ defmodule Cgraph.Workers.SendPushNotification do
       pid -> Process.alive?(pid)
     end
   end
-  
+
   @doc """
   Creates a job for sending push notification to a user.
-  
+
   This is a convenience function for common use cases.
   """
   @spec enqueue(String.t(), String.t(), String.t(), map()) :: {:ok, Oban.Job.t()} | {:error, term()}
@@ -158,7 +158,7 @@ defmodule Cgraph.Workers.SendPushNotification do
     |> new()
     |> Oban.insert()
   end
-  
+
   @doc """
   Creates a job for sending push notification from a notification record.
   """
@@ -171,7 +171,7 @@ defmodule Cgraph.Workers.SendPushNotification do
     |> new()
     |> Oban.insert()
   end
-  
+
   @doc """
   Creates high-priority job for time-sensitive notifications (calls, urgent messages).
   """
@@ -187,7 +187,7 @@ defmodule Cgraph.Workers.SendPushNotification do
     |> new(priority: 0)  # Highest Oban priority
     |> Oban.insert()
   end
-  
+
   # ============================================================================
   # Private Functions
   # ============================================================================
@@ -203,14 +203,14 @@ defmodule Cgraph.Workers.SendPushNotification do
     # No notification_id provided, use args directly
     title = args["title"]
     body = args["body"]
-    
+
     if title && body do
       {:ok, %{title: title, body: body}}
     else
       {:error, :missing_content}
     end
   end
-  
+
   defp get_notification_content(notification_id, _args) do
     case Repo.get(Notification, notification_id) do
       nil -> {:error, :notification_not_found}
@@ -221,7 +221,7 @@ defmodule Cgraph.Workers.SendPushNotification do
       }}
     end
   end
-  
+
   defp build_push_notification(content, args) do
     %{
       title: args["title"] || content.title,
@@ -237,55 +237,55 @@ defmodule Cgraph.Workers.SendPushNotification do
     |> Enum.reject(fn {_k, v} -> is_nil(v) end)
     |> Map.new()
   end
-  
+
   defp build_data_payload(content, args) do
     base_data = %{
       "notification_type" => Map.get(content, :notification_type, "general"),
       "timestamp" => DateTime.utc_now() |> DateTime.to_iso8601()
     }
-    
+
     custom_data = args["data"] || %{}
-    
+
     Map.merge(base_data, stringify_keys(custom_data))
   end
-  
+
   defp stringify_keys(map) when is_map(map) do
     Map.new(map, fn {k, v} -> {to_string(k), v} end)
   end
   defp stringify_keys(other), do: other
-  
+
   defp build_opts(args) do
     opts = []
-    
+
     opts = if exclude = args["exclude_device_ids"] do
       [{:exclude_device_ids, exclude} | opts]
     else
       opts
     end
-    
+
     opts = if platforms = args["platforms"] do
       [{:platforms, platforms} | opts]
     else
       opts
     end
-    
+
     opts
   end
-  
+
   defp priority_atom("high"), do: :high
   defp priority_atom("normal"), do: :normal
   defp priority_atom("low"), do: :low
   defp priority_atom(_), do: :high
-  
+
   defp update_delivery_status(notification_id, sent, failed) do
     now = DateTime.utc_now()
-    
+
     status = cond do
       sent > 0 && failed == 0 -> "delivered"
       sent > 0 && failed > 0 -> "partial"
       true -> "failed"
     end
-    
+
     from(n in Notification, where: n.id == ^notification_id)
     |> Repo.update_all(set: [
       push_delivered_at: now,

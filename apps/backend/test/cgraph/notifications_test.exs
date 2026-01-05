@@ -35,9 +35,9 @@ defmodule Cgraph.NotificationsTest do
 
     test "with body and data", %{user: user} do
       data = %{"post_id" => "123", "forum_id" => "456"}
-      
+
       assert {:ok, %Notification{} = notification} =
-        Notifications.notify(user, :post_reply, "New comment", 
+        Notifications.notify(user, :post_reply, "New comment",
           body: "Someone commented on your post",
           data: data
         )
@@ -59,7 +59,7 @@ defmodule Cgraph.NotificationsTest do
       {:ok, _} = Notifications.notify(user, :friend_request, "Friend request", actor: actor)
 
       {notifications, meta} = Notifications.list_notifications(user)
-      
+
       assert length(notifications) >= 2
       assert Enum.all?(notifications, &(&1.user_id == user.id))
       assert is_map(meta)
@@ -72,10 +72,10 @@ defmodule Cgraph.NotificationsTest do
       {:ok, second} = Notifications.notify(user, :security_alert, "Second")
 
       {[latest | rest], _meta} = Notifications.list_notifications(user)
-      
+
       # Latest should be either second (by time) or the list is sorted descending by inserted_at
       # Just verify we got both back and they're ordered correctly
-      assert length(rest) >= 1
+      assert rest != []
       assert latest.inserted_at >= List.last([latest | rest]).inserted_at
     end
 
@@ -86,7 +86,7 @@ defmodule Cgraph.NotificationsTest do
       end
 
       {notifications, _meta} = Notifications.list_notifications(user, limit: 3)
-      
+
       assert length(notifications) == 3
     end
   end
@@ -95,7 +95,7 @@ defmodule Cgraph.NotificationsTest do
     test "returns count of unread notifications" do
       user = user_fixture()
       actor = user_fixture()
-      
+
       {:ok, _} = Notifications.notify(user, :new_message, "Message 1", actor: actor)
       {:ok, _} = Notifications.notify(user, :new_message, "Message 2", actor: actor)
       {:ok, notif} = Notifications.notify(user, :new_message, "Message 3", actor: actor)
@@ -112,11 +112,11 @@ defmodule Cgraph.NotificationsTest do
     test "marks notification as read" do
       user = user_fixture()
       {:ok, notification} = Notifications.notify(user, :welcome, "Test")
-      
+
       assert notification.read_at == nil
-      
+
       {:ok, marked} = Notifications.mark_as_read(notification)
-      
+
       assert marked.read_at != nil
     end
   end
@@ -124,7 +124,7 @@ defmodule Cgraph.NotificationsTest do
   describe "mark_all_read/1" do
     test "marks all user notifications as read" do
       user = user_fixture()
-      
+
       {:ok, _} = Notifications.notify(user, :new_message, "Test 1")
       {:ok, _} = Notifications.notify(user, :new_message, "Test 2")
       {:ok, _} = Notifications.notify(user, :new_message, "Test 3")
@@ -142,9 +142,9 @@ defmodule Cgraph.NotificationsTest do
     test "removes notification" do
       user = user_fixture()
       {:ok, notification} = Notifications.notify(user, :welcome, "To delete")
-      
+
       {:ok, _} = Notifications.delete_notification(notification)
-      
+
       assert {:error, :not_found} = Notifications.get_notification(notification.id)
     end
   end
@@ -153,9 +153,9 @@ defmodule Cgraph.NotificationsTest do
     test "returns notification by id" do
       user = user_fixture()
       {:ok, notification} = Notifications.notify(user, :welcome, "Test")
-      
+
       {:ok, found} = Notifications.get_notification(notification.id)
-      
+
       assert found.id == notification.id
     end
 
@@ -169,21 +169,21 @@ defmodule Cgraph.NotificationsTest do
       user = user_fixture()
       actor = user_fixture()
       group_key = "likes:post:123"
-      
+
       # First notification creates new
-      {:ok, first} = Notifications.notify(user, :post_vote, "1 like", 
-        actor: actor, 
+      {:ok, first} = Notifications.notify(user, :post_vote, "1 like",
+        actor: actor,
         group_key: group_key
       )
-      
+
       assert first.count == 1
-      
+
       # Second notification should update existing
-      {:ok, second} = Notifications.notify(user, :post_vote, "2 likes", 
-        actor: actor, 
+      {:ok, second} = Notifications.notify(user, :post_vote, "2 likes",
+        actor: actor,
         group_key: group_key
       )
-      
+
       assert second.id == first.id
       assert second.count == 2
     end

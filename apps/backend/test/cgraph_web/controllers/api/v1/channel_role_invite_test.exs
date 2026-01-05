@@ -11,13 +11,13 @@ defmodule CgraphWeb.API.V1.ChannelControllerTest do
       channel1 = channel_fixture(group, %{name: "general"})
       channel2 = channel_fixture(group, %{name: "random"})
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group, channels: [channel1, channel2]}
     end
 
     test "lists channels in group", %{conn: conn, group: group} do
       conn = get(conn, ~p"/api/v1/groups/#{group.id}/channels")
-      
+
       assert %{"data" => channels} = json_response(conn, 200)
       assert is_list(channels)
       assert length(channels) >= 2
@@ -29,7 +29,7 @@ defmodule CgraphWeb.API.V1.ChannelControllerTest do
       user = user_fixture()
       %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group}
     end
 
@@ -38,7 +38,7 @@ defmodule CgraphWeb.API.V1.ChannelControllerTest do
         name: "new-channel",
         type: "text"
       })
-      
+
       assert %{
         "data" => %{
           "name" => "new-channel",
@@ -52,7 +52,7 @@ defmodule CgraphWeb.API.V1.ChannelControllerTest do
         name: "voice-chat",
         type: "voice"
       })
-      
+
       assert %{
         "data" => %{
           "type" => "voice"
@@ -67,7 +67,7 @@ defmodule CgraphWeb.API.V1.ChannelControllerTest do
       %{group: group} = group_fixture(user)
       channel = channel_fixture(group)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group, channel: channel}
     end
 
@@ -76,7 +76,7 @@ defmodule CgraphWeb.API.V1.ChannelControllerTest do
         name: "updated-name",
         topic: "New topic"
       })
-      
+
       assert %{
         "data" => %{
           "name" => "updated-name",
@@ -92,7 +92,7 @@ defmodule CgraphWeb.API.V1.ChannelControllerTest do
       %{group: group} = group_fixture(user)
       channel = channel_fixture(group)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group, channel: channel}
     end
 
@@ -115,13 +115,13 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
       %{group: group} = group_fixture(user)
       role = role_fixture(group, %{name: "Moderator"})
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group, role: role}
     end
 
     test "lists roles in group", %{conn: conn, group: group} do
       conn = get(conn, ~p"/api/v1/groups/#{group.id}/roles")
-      
+
       assert %{"data" => roles} = json_response(conn, 200)
       assert is_list(roles)
     end
@@ -132,7 +132,7 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
       user = user_fixture()
       %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group}
     end
 
@@ -141,7 +141,7 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
         name: "VIP",
         color: "#FFD700"
       })
-      
+
       assert %{
         "data" => %{
           "name" => "VIP",
@@ -157,7 +157,7 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
       %{group: group} = group_fixture(user)
       role = role_fixture(group)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group, role: role}
     end
 
@@ -166,7 +166,7 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
         name: "Super VIP",
         color: "#FF0000"
       })
-      
+
       assert %{
         "data" => %{
           "name" => "Super VIP"
@@ -181,7 +181,7 @@ defmodule CgraphWeb.API.V1.RoleControllerTest do
       %{group: group} = group_fixture(user)
       role = role_fixture(group)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group, role: role}
     end
 
@@ -204,13 +204,13 @@ defmodule CgraphWeb.API.V1.InviteControllerTest do
       %{group: group} = group_fixture(user)
       {:ok, invite} = Cgraph.Groups.create_invite(group, user, %{})
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group, invite: invite}
     end
 
     test "lists invites for group", %{conn: conn, group: group} do
       conn = get(conn, ~p"/api/v1/groups/#{group.id}/invites")
-      
+
       assert %{"data" => invites} = json_response(conn, 200)
       assert is_list(invites)
     end
@@ -221,19 +221,19 @@ defmodule CgraphWeb.API.V1.InviteControllerTest do
       user = user_fixture()
       %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, group: group}
     end
 
     test "creates a new invite", %{conn: conn, group: group} do
       conn = post(conn, ~p"/api/v1/groups/#{group.id}/invites", %{})
-      
+
       assert %{
         "data" => %{
           "code" => code
         }
       } = json_response(conn, 201)
-      
+
       assert is_binary(code)
     end
 
@@ -241,7 +241,7 @@ defmodule CgraphWeb.API.V1.InviteControllerTest do
       conn = post(conn, ~p"/api/v1/groups/#{group.id}/invites", %{
         max_uses: 10
       })
-      
+
       assert %{
         "data" => %{
           "max_uses" => 10
@@ -255,16 +255,16 @@ defmodule CgraphWeb.API.V1.InviteControllerTest do
       owner = user_fixture()
       %{group: group} = group_fixture(owner)
       {:ok, invite} = Cgraph.Groups.create_invite(group, owner, %{})
-      
+
       joiner = user_fixture()
       conn = log_in_user(conn, joiner)
-      
+
       %{conn: conn, group: group, invite: invite, joiner: joiner}
     end
 
     test "joins group via invite", %{conn: conn, invite: invite} do
       conn = post(conn, ~p"/api/v1/invites/#{invite.code}/join")
-      
+
       # 201 Created is returned when successfully joining a group
       # as a new membership resource is created
       assert %{
@@ -273,7 +273,7 @@ defmodule CgraphWeb.API.V1.InviteControllerTest do
           "group" => group
         }
       } = json_response(conn, 201)
-      
+
       assert is_map(member)
       assert is_map(group)
     end

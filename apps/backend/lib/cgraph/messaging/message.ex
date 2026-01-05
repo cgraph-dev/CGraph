@@ -1,7 +1,7 @@
 defmodule Cgraph.Messaging.Message do
   @moduledoc """
   Message schema for direct messages and channel messages.
-  
+
   Supports:
   - Text messages (encrypted for DMs)
   - File attachments
@@ -121,7 +121,7 @@ defmodule Cgraph.Messaging.Message do
   # Strips dangerous HTML/script tags while preserving safe formatting
   defp sanitize_content(changeset) do
     case get_change(changeset, :content) do
-      nil -> 
+      nil ->
         changeset
       content when is_binary(content) ->
         sanitized = content
@@ -129,7 +129,7 @@ defmodule Cgraph.Messaging.Message do
         |> sanitize_html()
         |> limit_consecutive_newlines()
         put_change(changeset, :content, sanitized)
-      _ -> 
+      _ ->
         changeset
     end
   end

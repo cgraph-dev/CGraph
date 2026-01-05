@@ -33,7 +33,7 @@ defmodule CgraphWeb.API.V1.UploadController do
   def create(conn, %{"file" => upload} = params) do
     user = conn.assigns.current_user
     context = Map.get(params, "context", "message") # message, avatar, banner, post, etc.
-    
+
     with :ok <- validate_upload(upload, context),
          :ok <- check_upload_quota(user),
          {:ok, file} <- Uploads.store_file(user, upload, context: context) do
@@ -57,7 +57,7 @@ defmodule CgraphWeb.API.V1.UploadController do
   def batch_create(conn, %{"files" => uploads} = params) when is_list(uploads) do
     user = conn.assigns.current_user
     context = Map.get(params, "context", "message")
-    
+
     # Limit batch size
     if length(uploads) > 10 do
       conn
@@ -72,10 +72,10 @@ defmodule CgraphWeb.API.V1.UploadController do
           {:error, reason} -> {:error, upload.filename, reason}
         end
       end)
-      
+
       successful = Enum.filter(results, &match?({:ok, _}, &1)) |> Enum.map(fn {:ok, f} -> f end)
       failed = Enum.filter(results, &match?({:error, _, _}, &1))
-      
+
       conn
       |> put_status(:created)
       |> render(:batch, files: successful, errors: failed)
@@ -88,7 +88,7 @@ defmodule CgraphWeb.API.V1.UploadController do
   """
   def show(conn, %{"id" => file_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, file} <- Uploads.get_file(file_id),
          :ok <- authorize_access(user, file) do
       render(conn, :show, file: file)
@@ -101,7 +101,7 @@ defmodule CgraphWeb.API.V1.UploadController do
   """
   def delete(conn, %{"id" => file_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, file} <- Uploads.get_file(file_id),
          :ok <- authorize_delete(user, file),
          {:ok, _} <- Uploads.delete_file(file) do
@@ -119,10 +119,10 @@ defmodule CgraphWeb.API.V1.UploadController do
     content_type = Map.get(params, "content_type")
     size = Map.get(params, "size", 0)
     context = Map.get(params, "context", "message")
-    
+
     with :ok <- validate_presign_request(filename, content_type, size, context),
          :ok <- check_upload_quota(user),
-         {:ok, presign_data} <- Uploads.generate_presigned_url(user, 
+         {:ok, presign_data} <- Uploads.generate_presigned_url(user,
            filename: filename,
            content_type: content_type,
            size: size,
@@ -138,7 +138,7 @@ defmodule CgraphWeb.API.V1.UploadController do
   """
   def confirm(conn, %{"upload_id" => upload_id, "key" => key}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, file} <- Uploads.confirm_presigned_upload(user, upload_id, key) do
       render(conn, :show, file: file)
     end
@@ -150,7 +150,7 @@ defmodule CgraphWeb.API.V1.UploadController do
   """
   def usage(conn, _params) do
     user = conn.assigns.current_user
-    
+
     usage = Uploads.get_user_usage(user)
     render(conn, :usage, usage: usage)
   end
@@ -160,25 +160,25 @@ defmodule CgraphWeb.API.V1.UploadController do
   defp validate_upload(upload, context) do
     content_type = upload.content_type
     size = get_file_size(upload)
-    
+
     cond do
       content_type in @allowed_image_types ->
         validate_size(size, @max_image_size, "image")
-      
+
       content_type in @allowed_video_types ->
         if context in ["message", "post"] do
           validate_size(size, @max_video_size, "video")
         else
           {:error, :video_not_allowed_in_context}
         end
-      
+
       content_type in @allowed_document_types ->
         if context == "message" do
           validate_size(size, @max_file_size, "document")
         else
           {:error, :documents_not_allowed_in_context}
         end
-      
+
       true ->
         {:error, :unsupported_file_type}
     end
@@ -196,16 +196,16 @@ defmodule CgraphWeb.API.V1.UploadController do
     cond do
       is_nil(filename) or String.length(filename) == 0 ->
         {:error, :filename_required}
-      
+
       is_nil(content_type) ->
         {:error, :content_type_required}
-      
+
       content_type not in (@allowed_image_types ++ @allowed_video_types ++ @allowed_document_types) ->
         {:error, :unsupported_file_type}
-      
+
       size > @max_video_size ->
         {:error, {:file_too_large, "file", @max_video_size}}
-      
+
       true ->
         :ok
     end

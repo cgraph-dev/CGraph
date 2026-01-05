@@ -1,10 +1,10 @@
 defmodule Cgraph.Forums do
   @moduledoc """
   The Forums context.
-  
+
   Handles forums, posts, comments, categories, and voting.
   Reddit-style discussion functionality with forum competition.
-  
+
   Also handles MyBB-style forum hosting with boards, threads, and posts.
   """
 
@@ -15,7 +15,7 @@ defmodule Cgraph.Forums do
   alias Cgraph.Forums.{ThreadVote, PostVote, ThreadPoll, PollVote, ForumPlugin}
   # Reserved for future features - these schemas exist but are not yet fully integrated
   alias Cgraph.Forums.ForumTheme, warn: false
-  alias Cgraph.Forums.ForumAnnouncement, warn: false  
+  alias Cgraph.Forums.ForumAnnouncement, warn: false
   alias Cgraph.Forums.ThreadAttachment, warn: false
 
   # ============================================================================
@@ -49,7 +49,7 @@ defmodule Cgraph.Forums do
       nil ->
         # Anonymous users only see public forums
         from f in base_query, where: f.is_public == true
-      
+
       %{id: user_id} ->
         # Authenticated users see public forums + private forums they're members of
         from f in base_query,
@@ -59,7 +59,7 @@ defmodule Cgraph.Forums do
     end
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     forums = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -82,7 +82,7 @@ defmodule Cgraph.Forums do
   def add_membership_status(forum, user) do
     is_member = is_forum_member(user, forum)
     is_subscribed = is_forum_subscribed(user, forum)
-    
+
     forum
     |> Map.put(:is_member, is_member)
     |> Map.put(:is_subscribed, is_subscribed)
@@ -107,15 +107,15 @@ defmodule Cgraph.Forums do
   def is_forum_member(nil, _forum), do: false
   def is_forum_member(user, forum) do
     # Check if user is owner, moderator, or has a membership
-    cond do
-      forum.owner_id == user.id -> true
-      true ->
-        from(m in ForumMember,
-          where: m.user_id == ^user.id and m.forum_id == ^forum.id,
-          select: count(m.id)
-        )
-        |> Repo.one()
-        |> Kernel.>(0)
+    if forum.owner_id == user.id do
+      true
+    else
+      from(m in ForumMember,
+        where: m.user_id == ^user.id and m.forum_id == ^forum.id,
+        select: count(m.id)
+      )
+      |> Repo.one()
+      |> Kernel.>(0)
     end
   end
 
@@ -150,7 +150,7 @@ defmodule Cgraph.Forums do
   @doc """
   Authorize an action on a forum.
   Actions: :view, :vote, :comment, :create_post, :moderate, :delete
-  
+
   Authorization rules:
   - Anonymous users can only view public forums
   - Forum owners and moderators can do everything
@@ -165,38 +165,40 @@ defmodule Cgraph.Forums do
       {:error, :unauthorized}
     end
   end
-  
+
+  @owner_only_actions [:manage, :delete]
+  @member_required_actions [:vote, :comment, :create_post]
+  @moderator_actions [:moderate]
+
   def authorize_action(user, forum, action) do
     cond do
-      # Owners can do anything
       forum.owner_id == user.id -> :ok
-      
-      # Moderators can moderate but not manage (settings)
-      is_moderator?(forum, user) && action in [:view, :vote, :comment, :create_post, :moderate] -> :ok
-      
-      # Manage/delete are owner-only (already handled above, this returns error for non-owners)
-      action in [:manage, :delete] ->
-        {:error, :owner_only}
-      
-      # Public forums: anyone can view
-      action == :view && forum.is_public -> :ok
-      
-      # Private forums: only members can view
-      action == :view && !forum.is_public ->
-        if is_member?(forum.id, user.id), do: :ok, else: {:error, :not_a_member}
-      
-      # Interactive actions (post, vote, comment) require membership
-      action in [:vote, :comment, :create_post] ->
-        if is_member?(forum.id, user.id), do: :ok, else: {:error, :must_join_first}
-      
-      # Moderation actions require moderator status
-      action == :moderate ->
-        {:error, :insufficient_permissions}
-      
+      action in @owner_only_actions -> {:error, :owner_only}
+      true -> authorize_non_owner_action(user, forum, action)
+    end
+  end
+
+  defp authorize_non_owner_action(user, forum, action) do
+    is_mod = is_moderator?(forum, user)
+
+    cond do
+      is_mod && action in [:view, :vote, :comment, :create_post, :moderate] -> :ok
+      action == :view -> authorize_view(user, forum)
+      action in @member_required_actions -> authorize_member_action(user, forum)
+      action in @moderator_actions -> {:error, :insufficient_permissions}
       true -> {:error, :insufficient_permissions}
     end
   end
-  
+
+  defp authorize_view(_user, %{is_public: true}), do: :ok
+  defp authorize_view(user, forum) do
+    if is_member?(forum.id, user.id), do: :ok, else: {:error, :not_a_member}
+  end
+
+  defp authorize_member_action(user, forum) do
+    if is_member?(forum.id, user.id), do: :ok, else: {:error, :must_join_first}
+  end
+
   @doc """
   Check if a user is a member of a forum.
   """
@@ -210,7 +212,7 @@ defmodule Cgraph.Forums do
 
   @doc """
   Check if user is a moderator of a forum.
-  
+
   Returns true if the user is either:
   - The forum owner
   - Listed as a moderator
@@ -219,7 +221,7 @@ defmodule Cgraph.Forums do
     # Check if user is forum owner or in moderators list
     forum.owner_id == user.id || is_in_moderators?(forum, user)
   end
-  
+
   defp is_in_moderators?(forum, user) do
     # Check moderators association if loaded
     case forum.moderators do
@@ -242,7 +244,7 @@ defmodule Cgraph.Forums do
     permissions = Keyword.get(opts, :permissions, [])
     added_by_id = Keyword.get(opts, :added_by_id)
     notes = Keyword.get(opts, :notes)
-    
+
     %Moderator{}
     |> Moderator.changeset(%{
       forum_id: forum.id,
@@ -261,7 +263,7 @@ defmodule Cgraph.Forums do
     query = from m in Moderator,
       where: m.forum_id == ^forum.id,
       where: m.user_id == ^user.id
-    
+
     case Repo.one(query) do
       nil -> {:error, :not_found}
       moderator -> Repo.delete(moderator)
@@ -286,7 +288,7 @@ defmodule Cgraph.Forums do
   def create_forum(user, attrs) do
     # Convert to string keys for consistency
     attrs = attrs |> stringify_keys() |> Map.put("owner_id", user.id)
-    
+
     %Forum{}
     |> Forum.changeset(attrs)
     |> Repo.insert()
@@ -353,45 +355,46 @@ defmodule Cgraph.Forums do
   """
   def subscribe_to_forum(user, forum) do
     Repo.transaction(fn ->
-      # Create subscription
-      subscription_result = %Subscription{}
-      |> Subscription.changeset(%{
-        forum_id: forum.id,
-        user_id: user.id
-      })
-      |> Repo.insert(on_conflict: :nothing, conflict_target: [:forum_id, :user_id])
-
-      # Create membership if not exists
-      member_created = case Repo.get_by(ForumMember, forum_id: forum.id, user_id: user.id) do
-        nil ->
-          result = %ForumMember{}
-          |> ForumMember.changeset(%{
-            forum_id: forum.id,
-            user_id: user.id,
-            joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
-          })
-          |> Repo.insert()
-          
-          case result do
-            {:ok, _member} -> true
-            {:error, _} -> false
-          end
-        
-        _member -> false
-      end
-
-      # Only increment member count if a new membership was created
-      if member_created do
-        from(f in Forum, where: f.id == ^forum.id)
-        |> Repo.update_all(inc: [member_count: 1])
-      end
-
-      case subscription_result do
-        {:ok, subscription} -> subscription
-        {:error, changeset} -> Repo.rollback(changeset)
-      end
+      subscription_result = create_subscription(user.id, forum.id)
+      member_created = ensure_forum_membership(user.id, forum.id)
+      increment_member_count_if_new(forum.id, member_created)
+      finalize_subscription(subscription_result)
     end)
   end
+  
+  defp create_subscription(user_id, forum_id) do
+    %Subscription{}
+    |> Subscription.changeset(%{forum_id: forum_id, user_id: user_id})
+    |> Repo.insert(on_conflict: :nothing, conflict_target: [:forum_id, :user_id])
+  end
+  
+  defp ensure_forum_membership(user_id, forum_id) do
+    case Repo.get_by(ForumMember, forum_id: forum_id, user_id: user_id) do
+      nil -> create_forum_member(user_id, forum_id)
+      _member -> false
+    end
+  end
+  
+  defp create_forum_member(user_id, forum_id) do
+    result = %ForumMember{}
+    |> ForumMember.changeset(%{
+      forum_id: forum_id,
+      user_id: user_id,
+      joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
+    })
+    |> Repo.insert()
+    
+    match?({:ok, _}, result)
+  end
+  
+  defp increment_member_count_if_new(_forum_id, false), do: :ok
+  defp increment_member_count_if_new(forum_id, true) do
+    from(f in Forum, where: f.id == ^forum_id)
+    |> Repo.update_all(inc: [member_count: 1])
+  end
+  
+  defp finalize_subscription({:ok, subscription}), do: subscription
+  defp finalize_subscription({:error, changeset}), do: Repo.rollback(changeset)
 
   @doc """
   Subscribe to forum (alias).
@@ -404,37 +407,35 @@ defmodule Cgraph.Forums do
   Note: Forum owners cannot unsubscribe from their own forum.
   """
   def unsubscribe_from_forum(user, forum) do
-    # Prevent owner from leaving their own forum
     if forum.owner_id == user.id do
       {:error, :cannot_leave_own_forum}
     else
-      Repo.transaction(fn ->
-        # Remove subscription
-        subscription_query = from s in Subscription,
-          where: s.forum_id == ^forum.id,
-          where: s.user_id == ^user.id
-        
-        subscription_deleted = case Repo.delete_all(subscription_query) do
-          {count, _} when count > 0 -> true
-          {0, _} -> false
-        end
-
-        # Remove membership
-        member_query = from m in ForumMember,
-          where: m.forum_id == ^forum.id,
-          where: m.user_id == ^user.id
-        
-        Repo.delete_all(member_query)
-
-        # Decrement member count if subscription was deleted
-        if subscription_deleted do
-          from(f in Forum, where: f.id == ^forum.id)
-          |> Repo.update_all(inc: [member_count: -1])
-        end
-
-        :unsubscribed
-      end)
+      Repo.transaction(fn -> perform_unsubscribe(user.id, forum.id) end)
     end
+  end
+  
+  defp perform_unsubscribe(user_id, forum_id) do
+    subscription_deleted = delete_subscription(user_id, forum_id)
+    delete_membership(user_id, forum_id)
+    decrement_member_count_if_deleted(forum_id, subscription_deleted)
+    :unsubscribed
+  end
+  
+  defp delete_subscription(user_id, forum_id) do
+    query = from s in Subscription, where: s.forum_id == ^forum_id, where: s.user_id == ^user_id
+    {count, _} = Repo.delete_all(query)
+    count > 0
+  end
+  
+  defp delete_membership(user_id, forum_id) do
+    query = from m in ForumMember, where: m.forum_id == ^forum_id, where: m.user_id == ^user_id
+    Repo.delete_all(query)
+  end
+  
+  defp decrement_member_count_if_deleted(_forum_id, false), do: :ok
+  defp decrement_member_count_if_deleted(forum_id, true) do
+    from(f in Forum, where: f.id == ^forum_id)
+    |> Repo.update_all(inc: [member_count: -1])
   end
 
   @doc """
@@ -485,7 +486,7 @@ defmodule Cgraph.Forums do
     end
 
     total = Repo.aggregate(from(p in Post, where: p.forum_id == ^forum.id), :count, :id)
-    
+
     posts = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -507,42 +508,12 @@ defmodule Cgraph.Forums do
     time_range = Keyword.get(opts, :time_range, "day")
     user_id = Keyword.get(opts, :user_id)
 
-    # Only posts from public forums
-    query = from p in Post,
-      join: f in Forum, on: p.forum_id == f.id,
-      where: f.is_public == true,
-      where: is_nil(f.deleted_at),
-      preload: [:author, :category, forum: []]
-
-    # Apply time filter for "top" sort
-    query = if sort == "top" do
-      time_filter = case time_range do
-        "hour" -> DateTime.add(DateTime.utc_now(), -1, :hour)
-        "day" -> DateTime.add(DateTime.utc_now(), -1, :day)
-        "week" -> DateTime.add(DateTime.utc_now(), -7, :day)
-        "month" -> DateTime.add(DateTime.utc_now(), -30, :day)
-        "year" -> DateTime.add(DateTime.utc_now(), -365, :day)
-        _ -> nil
-      end
-      if time_filter do
-        from p in query, where: p.inserted_at >= ^time_filter
-      else
-        query
-      end
-    else
-      query
-    end
-
-    # Apply sort
-    query = case sort do
-      "new" -> from p in query, order_by: [desc: p.inserted_at]
-      "top" -> from p in query, order_by: [desc: p.score]
-      "controversial" -> from p in query, order_by: [desc: fragment("? + ?", p.upvotes, p.downvotes)]
-      _ -> from p in query, order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at)]
-    end
+    query = base_public_feed_query()
+      |> maybe_apply_time_filter(sort, time_range)
+      |> apply_feed_sort(sort)
 
     total = Repo.aggregate(from(p in Post, join: f in Forum, on: p.forum_id == f.id, where: f.is_public == true), :count, :id)
-    
+
     posts = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -552,6 +523,34 @@ defmodule Cgraph.Forums do
     meta = %{page: page, per_page: per_page, total: total}
     {posts, meta}
   end
+
+  defp base_public_feed_query do
+    from p in Post,
+      join: f in Forum, on: p.forum_id == f.id,
+      where: f.is_public == true,
+      where: is_nil(f.deleted_at),
+      preload: [:author, :category, forum: []]
+  end
+
+  defp maybe_apply_time_filter(query, "top", time_range) do
+    case time_range_to_filter(time_range) do
+      nil -> query
+      time_filter -> from p in query, where: p.inserted_at >= ^time_filter
+    end
+  end
+  defp maybe_apply_time_filter(query, _sort, _time_range), do: query
+
+  defp time_range_to_filter("hour"), do: DateTime.add(DateTime.utc_now(), -1, :hour)
+  defp time_range_to_filter("day"), do: DateTime.add(DateTime.utc_now(), -1, :day)
+  defp time_range_to_filter("week"), do: DateTime.add(DateTime.utc_now(), -7, :day)
+  defp time_range_to_filter("month"), do: DateTime.add(DateTime.utc_now(), -30, :day)
+  defp time_range_to_filter("year"), do: DateTime.add(DateTime.utc_now(), -365, :day)
+  defp time_range_to_filter(_all), do: nil
+
+  defp apply_feed_sort(query, "new"), do: from(p in query, order_by: [desc: p.inserted_at])
+  defp apply_feed_sort(query, "top"), do: from(p in query, order_by: [desc: p.score])
+  defp apply_feed_sort(query, "controversial"), do: from(p in query, order_by: [desc: fragment("? + ?", p.upvotes, p.downvotes)])
+  defp apply_feed_sort(query, _hot), do: from(p in query, order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at)])
 
   @doc """
   Get a post by ID.
@@ -572,7 +571,7 @@ defmodule Cgraph.Forums do
 
   @doc """
   Create a post.
-  
+
   The post is created with score=0, then the author automatically upvotes it,
   resulting in score=1. This ensures the vote record exists for the author.
   """
@@ -602,7 +601,7 @@ defmodule Cgraph.Forums do
 
   @doc """
   Update a post.
-  
+
   Uses Post.edit_changeset/2 which:
   - Allows updating content, is_nsfw, is_spoiler, flair_text, flair_color
   - Automatically sets is_edited to true
@@ -638,7 +637,7 @@ defmodule Cgraph.Forums do
 
   @doc """
   Vote on a post.
-  
+
   Vote types: :up or :down
   Internally stored as value: 1 (upvote) or -1 (downvote)
   """
@@ -664,7 +663,7 @@ defmodule Cgraph.Forums do
   defp create_vote(user, post, vote_type) do
     # Vote schema expects 'value' field with 1 (upvote) or -1 (downvote)
     vote_value = if vote_type == :up, do: 1, else: -1
-    
+
     result = %Vote{}
       |> Vote.changeset(%{
         user_id: user.id,
@@ -672,7 +671,7 @@ defmodule Cgraph.Forums do
         value: vote_value
       })
       |> Repo.insert()
-      
+
     case result do
       {:ok, vote} ->
         # Update post score
@@ -688,7 +687,7 @@ defmodule Cgraph.Forums do
         end
 
         {:ok, vote}
-        
+
       error -> error
     end
   end
@@ -697,7 +696,7 @@ defmodule Cgraph.Forums do
     # Vote schema uses 'value' field (1 or -1), not 'vote_type'
     old_value = existing.value
     new_value = if new_type == :up, do: 1, else: -1
-    
+
     {:ok, vote} = existing
       |> Ecto.Changeset.change(value: new_value)
       |> Repo.update()
@@ -806,21 +805,21 @@ defmodule Cgraph.Forums do
 
   @doc """
   Vote on a post.
-  
+
   Accepts flexible argument order for compatibility:
   - vote_post(user, post, vote_type)
   - vote_post(post, user, vote_type)
-  
+
   Vote type can be :up, :down, "up", or "down"
   """
   def vote_post(%Cgraph.Accounts.User{} = user, %Post{} = post, vote_type) do
     vote_on_post(user, post, normalize_vote_type(vote_type))
   end
-  
+
   def vote_post(%Post{} = post, %Cgraph.Accounts.User{} = user, vote_type) do
     vote_on_post(user, post, normalize_vote_type(vote_type))
   end
-  
+
   defp normalize_vote_type("up"), do: :up
   defp normalize_vote_type("down"), do: :down
   defp normalize_vote_type(:up), do: :up
@@ -843,13 +842,13 @@ defmodule Cgraph.Forums do
   defp maybe_add_user_votes(posts, nil), do: posts
   defp maybe_add_user_votes(posts, user_id) do
     post_ids = Enum.map(posts, & &1.id)
-    
+
     votes = from(v in Vote,
       where: v.user_id == ^user_id,
       where: v.post_id in ^post_ids
     )
     |> Repo.all()
-    |> Map.new(fn v -> 
+    |> Map.new(fn v ->
       vote_type = if v.value == 1, do: :up, else: :down
       {v.post_id, vote_type}
     end)
@@ -902,7 +901,7 @@ defmodule Cgraph.Forums do
     end
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     comments = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -916,7 +915,7 @@ defmodule Cgraph.Forums do
 
   defp load_replies(comments, user_id) do
     comment_ids = Enum.map(comments, & &1.id)
-    
+
     replies_query = from c in Comment,
       where: c.parent_id in ^comment_ids,
       order_by: [desc: c.score],
@@ -971,7 +970,7 @@ defmodule Cgraph.Forums do
         # Update post comment count
         from(p in Post, where: p.id == ^post.id)
         |> Repo.update_all(inc: [comment_count: 1])
-        
+
         {:ok, Repo.preload(comment, [:author])}
       error -> error
     end
@@ -979,7 +978,7 @@ defmodule Cgraph.Forums do
 
   @doc """
   Update a comment.
-  
+
   Uses Comment.edit_changeset/2 which:
   - Allows updating content only
   - Automatically sets is_edited to true
@@ -992,7 +991,7 @@ defmodule Cgraph.Forums do
 
   @doc """
   Delete a comment (soft delete).
-  
+
   Sets deleted_at timestamp and replaces content with [deleted].
   Uses DateTime.truncate(:second) for :utc_datetime field compatibility.
   """
@@ -1010,50 +1009,53 @@ defmodule Cgraph.Forums do
     existing = Repo.get_by(Vote, user_id: user.id, comment_id: comment.id)
     vote_value = if vote_type == :up, do: 1, else: -1
 
-    case existing do
-      nil ->
-        {:ok, vote} = %Vote{}
-          |> Vote.changeset(%{
-            user_id: user.id,
-            comment_id: comment.id,
-            vote_type: to_string(vote_type)
-          })
-          |> Repo.insert()
+    case {existing, vote_type_matches?(existing, vote_type)} do
+      {nil, _} -> create_comment_vote(user, comment, vote_type, vote_value)
+      {existing, true} -> {:ok, existing}
+      {existing, false} -> change_comment_vote(existing, comment, vote_type, vote_value)
+    end
+  end
 
-        {inc_up, inc_down} = if vote_type == :up, do: {1, 0}, else: {0, 1}
-        from(c in Comment, where: c.id == ^comment.id)
-        |> Repo.update_all(inc: [upvotes: inc_up, downvotes: inc_down, score: vote_value])
+  defp vote_type_matches?(nil, _vote_type), do: false
+  defp vote_type_matches?(existing, vote_type), do: existing.vote_type == to_string(vote_type)
 
-        # Update comment author's karma
-        if comment.author_id && comment.author_id != user.id do
-          from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
-          |> Repo.update_all(inc: [karma: vote_value])
-        end
+  defp create_comment_vote(user, comment, vote_type, vote_value) do
+    {:ok, vote} = %Vote{}
+      |> Vote.changeset(%{user_id: user.id, comment_id: comment.id, vote_type: to_string(vote_type)})
+      |> Repo.insert()
 
-        {:ok, vote}
+    {inc_up, inc_down} = if vote_type == :up, do: {1, 0}, else: {0, 1}
+    from(c in Comment, where: c.id == ^comment.id)
+    |> Repo.update_all(inc: [upvotes: inc_up, downvotes: inc_down, score: vote_value])
 
-      %{vote_type: ^vote_type} ->
-        {:ok, existing}
+    update_comment_author_karma(comment, vote_value, user.id)
+    {:ok, vote}
+  end
 
-      _ ->
-        old_vote_type = existing.vote_type
-        {:ok, vote} = existing
-          |> Ecto.Changeset.change(vote_type: to_string(vote_type))
-          |> Repo.update()
+  defp change_comment_vote(existing, comment, vote_type, vote_value) do
+    old_vote_type = existing.vote_type
+    {:ok, vote} = existing
+      |> Ecto.Changeset.change(vote_type: to_string(vote_type))
+      |> Repo.update()
 
-        score_change = if vote_type == :up, do: 2, else: -2
-        from(c in Comment, where: c.id == ^comment.id)
-        |> Repo.update_all(inc: [score: score_change])
+    score_change = if vote_type == :up, do: 2, else: -2
+    from(c in Comment, where: c.id == ^comment.id)
+    |> Repo.update_all(inc: [score: score_change])
 
-        # Update comment author's karma (swing from old to new)
-        if comment.author_id do
-          old_value = if old_vote_type == "up", do: 1, else: -1
-          karma_change = vote_value - old_value
-          from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
-          |> Repo.update_all(inc: [karma: karma_change])
-        end
+    if comment.author_id do
+      old_value = if old_vote_type == "up", do: 1, else: -1
+      karma_change = vote_value - old_value
+      from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
+      |> Repo.update_all(inc: [karma: karma_change])
+    end
 
-        {:ok, vote}
+    {:ok, vote}
+  end
+
+  defp update_comment_author_karma(comment, vote_value, voter_id) do
+    if comment.author_id && comment.author_id != voter_id do
+      from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
+      |> Repo.update_all(inc: [karma: vote_value])
     end
   end
 
@@ -1103,7 +1105,7 @@ defmodule Cgraph.Forums do
   defp maybe_add_comment_votes(comments, nil), do: comments
   defp maybe_add_comment_votes(comments, user_id) do
     comment_ids = Enum.map(comments, & &1.id)
-    
+
     votes = from(v in Vote,
       where: v.user_id == ^user_id,
       where: v.comment_id in ^comment_ids
@@ -1222,7 +1224,7 @@ defmodule Cgraph.Forums do
     end
 
     total = Repo.aggregate(db_query, :count, :id)
-    
+
     posts = db_query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -1245,13 +1247,13 @@ defmodule Cgraph.Forums do
 
   @doc """
   Vote on a forum with anti-abuse protection.
-  
+
   Security measures:
   - Account must be at least #{@vote_min_account_age_days} day(s) old
   - Downvoting requires #{@downvote_min_karma}+ karma
   - Vote changes have #{@vote_change_cooldown_seconds}s cooldown
   - Users cannot vote on forums they own/moderate
-  
+
   Returns {:ok, :upvoted | :downvoted | :removed} or {:error, reason}
   """
   def vote_forum(user, forum_id, value) when value in [1, -1] do
@@ -1265,14 +1267,14 @@ defmodule Cgraph.Forums do
   # Check if user account is old enough and has enough karma for downvotes
   defp validate_vote_eligibility(user, value) do
     account_age_days = DateTime.diff(DateTime.utc_now(), user.inserted_at, :day)
-    
+
     cond do
       account_age_days < @vote_min_account_age_days ->
         {:error, :account_too_new}
-      
+
       value == -1 and (user.karma || 0) < @downvote_min_karma ->
         {:error, :insufficient_karma_for_downvote}
-      
+
       true ->
         :ok
     end
@@ -1283,7 +1285,7 @@ defmodule Cgraph.Forums do
     case Repo.get(Forum, forum_id) do
       nil -> {:error, :forum_not_found}
       %Forum{owner_id: owner_id} when owner_id == user.id -> {:error, :cannot_vote_own_forum}
-      forum -> 
+      forum ->
         # Also check if user is a moderator (owners are excluded above)
         # Load forum with preloads for moderator check
         forum = Repo.preload(forum, :moderators)
@@ -1312,30 +1314,29 @@ defmodule Cgraph.Forums do
   # Execute the actual vote after all validations pass
   defp execute_forum_vote(user, forum_id, value) do
     Repo.transaction(fn ->
-      case get_user_forum_vote(user.id, forum_id) do
-        nil ->
-          # New vote
-          create_forum_vote(user.id, forum_id, value)
-          update_forum_scores(forum_id, value, 0)
-          if value == 1, do: :upvoted, else: :downvoted
-
-        %ForumVote{value: ^value} = existing ->
-          # Same vote - remove it
-          Repo.delete!(existing)
-          update_forum_scores(forum_id, 0, value)
-          :removed
-
-        existing ->
-          # Different vote - change it
-          old_value = existing.value
-          existing
-          |> ForumVote.changeset(%{value: value})
-          |> Repo.update!()
-          update_forum_scores(forum_id, value, old_value)
-          if value == 1, do: :upvoted, else: :downvoted
-      end
+      apply_vote_action(user.id, forum_id, value, get_user_forum_vote(user.id, forum_id))
     end)
   end
+  
+  defp apply_vote_action(user_id, forum_id, value, nil) do
+    create_forum_vote(user_id, forum_id, value)
+    update_forum_scores(forum_id, value, 0)
+    vote_result(value)
+  end
+  defp apply_vote_action(_user_id, forum_id, value, %ForumVote{value: existing_value} = existing) when value == existing_value do
+    Repo.delete!(existing)
+    update_forum_scores(forum_id, 0, value)
+    :removed
+  end
+  defp apply_vote_action(_user_id, forum_id, value, existing) do
+    old_value = existing.value
+    existing |> ForumVote.changeset(%{value: value}) |> Repo.update!()
+    update_forum_scores(forum_id, value, old_value)
+    vote_result(value)
+  end
+  
+  defp vote_result(1), do: :upvoted
+  defp vote_result(-1), do: :downvoted
 
   @doc """
   Get user's vote on a forum.
@@ -1379,13 +1380,13 @@ defmodule Cgraph.Forums do
   """
   def update_forum_hot_score(forum_id) do
     forum = Repo.get!(Forum, forum_id)
-    
+
     # Reddit-style hot ranking
     # score = sign(score) * log10(max(abs(score), 1)) + (created_at / 45000)
     score = forum.score
     sign = if score >= 0, do: 1, else: -1
     order = :math.log10(max(abs(score), 1))
-    
+
     # Time factor: seconds since epoch, divided by 45_000 (roughly 12.5 hours)
     seconds = DateTime.to_unix(forum.inserted_at)
     hot = sign * order + (seconds / 45_000)
@@ -1400,7 +1401,7 @@ defmodule Cgraph.Forums do
 
   @doc """
   Get forum leaderboard sorted by various criteria.
-  
+
   Options:
   - sort: "hot" (default), "top", "new", "rising", "weekly"
   - page, per_page: pagination
@@ -1412,25 +1413,12 @@ defmodule Cgraph.Forums do
     sort = Keyword.get(opts, :sort, "hot")
     featured_only = Keyword.get(opts, :featured_only, false)
 
-    query = from f in Forum,
+    query = from(f in Forum,
       where: is_nil(f.deleted_at) and f.is_public == true,
       preload: [:owner]
-
-    query = if featured_only do
-      from f in query, where: f.featured == true
-    else
-      query
-    end
-
-    query = case sort do
-      "hot" -> from f in query, order_by: [desc: f.hot_score]
-      "top" -> from f in query, order_by: [desc: f.score]
-      "new" -> from f in query, order_by: [desc: f.inserted_at]
-      "rising" -> from f in query, order_by: [desc: f.weekly_score, desc: f.inserted_at]
-      "weekly" -> from f in query, order_by: [desc: f.weekly_score]
-      "members" -> from f in query, order_by: [desc: f.member_count]
-      _ -> from f in query, order_by: [desc: f.hot_score]
-    end
+    )
+    |> maybe_filter_featured(featured_only)
+    |> apply_forum_sort(sort)
 
     total = Repo.aggregate(query, :count, :id)
 
@@ -1443,23 +1431,30 @@ defmodule Cgraph.Forums do
     {forums, meta}
   end
 
+  defp maybe_filter_featured(query, false), do: query
+  defp maybe_filter_featured(query, true) do
+    from f in query, where: f.featured == true
+  end
+
+  defp apply_forum_sort(query, "hot"), do: from(f in query, order_by: [desc: f.hot_score])
+  defp apply_forum_sort(query, "top"), do: from(f in query, order_by: [desc: f.score])
+  defp apply_forum_sort(query, "new"), do: from(f in query, order_by: [desc: f.inserted_at])
+  defp apply_forum_sort(query, "rising"), do: from(f in query, order_by: [desc: f.weekly_score, desc: f.inserted_at])
+  defp apply_forum_sort(query, "weekly"), do: from(f in query, order_by: [desc: f.weekly_score])
+  defp apply_forum_sort(query, "members"), do: from(f in query, order_by: [desc: f.member_count])
+  defp apply_forum_sort(query, _unknown), do: from(f in query, order_by: [desc: f.hot_score])
+
   @doc """
   Get top N forums for a quick leaderboard display.
   """
   def get_top_forums(limit \\ 10, sort \\ "hot") do
-    query = from f in Forum,
+    from(f in Forum,
       where: is_nil(f.deleted_at) and f.is_public == true,
       preload: [:owner],
       limit: ^limit
-
-    query = case sort do
-      "hot" -> from f in query, order_by: [desc: f.hot_score]
-      "top" -> from f in query, order_by: [desc: f.score]
-      "weekly" -> from f in query, order_by: [desc: f.weekly_score]
-      _ -> from f in query, order_by: [desc: f.hot_score]
-    end
-
-    Repo.all(query)
+    )
+    |> apply_forum_sort(sort)
+    |> Repo.all()
   end
 
   @doc """
@@ -1471,7 +1466,7 @@ defmodule Cgraph.Forums do
         vote = if user_id, do: get_user_forum_vote(user_id, forum_id), else: nil
         user_vote = if vote, do: vote.value, else: 0
         {:ok, Map.put(forum, :user_vote, user_vote)}
-      
+
       error -> error
     end
   end
@@ -1603,7 +1598,7 @@ defmodule Cgraph.Forums do
     end
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     threads = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -1678,20 +1673,20 @@ defmodule Cgraph.Forums do
       result = %Thread{}
         |> Thread.changeset(attrs)
         |> Repo.insert()
-      
+
       case result do
         {:ok, thread} ->
           # Update board stats
           from(b in Board, where: b.id == ^thread.board_id)
           |> Repo.update_all(inc: [thread_count: 1])
-          
+
           # Update forum stats
           board = Repo.get!(Board, thread.board_id)
           from(f in Forum, where: f.id == ^board.forum_id)
           |> Repo.update_all(inc: [thread_count: 1])
-          
+
           Repo.preload(thread, [:author, :board])
-        
+
         {:error, changeset} ->
           Repo.rollback(changeset)
       end
@@ -1757,7 +1752,7 @@ defmodule Cgraph.Forums do
       preload: [:author]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     posts = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -1783,19 +1778,19 @@ defmodule Cgraph.Forums do
   def create_thread_post(attrs \\ %{}) do
     Repo.transaction(fn ->
       thread_id = attrs[:thread_id] || attrs["thread_id"]
-      
+
       # Get position for new post
-      last_position = from(p in ThreadPost, 
-        where: p.thread_id == ^thread_id, 
+      last_position = from(p in ThreadPost,
+        where: p.thread_id == ^thread_id,
         select: max(p.position))
         |> Repo.one() || 0
 
       attrs = Map.put(attrs, :position, last_position + 1)
-      
+
       result = %ThreadPost{}
         |> ThreadPost.changeset(attrs)
         |> Repo.insert()
-      
+
       case result do
         {:ok, post} ->
           # Update thread stats
@@ -1805,7 +1800,7 @@ defmodule Cgraph.Forums do
             inc: [reply_count: 1],
             set: [last_post_at: now, last_post_id: post.id, last_poster_id: post.author_id]
           )
-          
+
           # Update board stats
           thread = Repo.get!(Thread, thread_id)
           from(b in Board, where: b.id == ^thread.board_id)
@@ -1813,19 +1808,19 @@ defmodule Cgraph.Forums do
             inc: [post_count: 1],
             set: [last_post_at: now, last_post_id: post.id, last_thread_id: thread_id]
           )
-          
+
           # Update forum stats
           board = Repo.get!(Board, thread.board_id)
           from(f in Forum, where: f.id == ^board.forum_id)
           |> Repo.update_all(inc: [post_count: 1])
-          
+
           # Update member post count
-          from(m in ForumMember, 
+          from(m in ForumMember,
             where: m.forum_id == ^board.forum_id and m.user_id == ^post.author_id)
           |> Repo.update_all(inc: [post_count: 1], set: [last_post_at: now])
-          
+
           Repo.preload(post, [:author])
-        
+
         {:error, changeset} ->
           Repo.rollback(changeset)
       end
@@ -1874,7 +1869,7 @@ defmodule Cgraph.Forums do
           joined_at: DateTime.utc_now() |> DateTime.truncate(:second)
         })
         |> Repo.insert()
-      
+
       member ->
         {:ok, member}
     end
@@ -1907,7 +1902,7 @@ defmodule Cgraph.Forums do
     end
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     members = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -1980,27 +1975,27 @@ defmodule Cgraph.Forums do
         result = %ThreadVote{}
           |> ThreadVote.changeset(%{user_id: user_id, thread_id: thread_id, value: value})
           |> Repo.insert()
-        
+
         case result do
           {:ok, vote} ->
             update_thread_score(thread_id, value)
             {:ok, vote}
           error -> error
         end
-      
+
       existing_vote when existing_vote.value == value ->
         # Same vote - remove it
         Repo.delete(existing_vote)
         update_thread_score(thread_id, -value)
         {:ok, :removed}
-      
+
       existing_vote ->
         # Change vote
         old_value = existing_vote.value
         result = existing_vote
           |> ThreadVote.changeset(%{value: value})
           |> Repo.update()
-        
+
         case result do
           {:ok, vote} ->
             update_thread_score(thread_id, value - old_value)
@@ -2012,10 +2007,10 @@ defmodule Cgraph.Forums do
 
   defp update_thread_score(thread_id, delta) do
     _thread = Repo.get!(Thread, thread_id)
-    
+
     upvotes = if delta > 0, do: 1, else: 0
     downvotes = if delta < 0, do: 1, else: 0
-    
+
     from(t in Thread, where: t.id == ^thread_id)
     |> Repo.update_all(
       inc: [score: delta, upvotes: upvotes, downvotes: downvotes]
@@ -2036,25 +2031,25 @@ defmodule Cgraph.Forums do
         result = %PostVote{}
           |> PostVote.changeset(%{user_id: user_id, post_id: post_id, value: value})
           |> Repo.insert()
-        
+
         case result do
           {:ok, vote} ->
             update_post_score(post_id, value)
             {:ok, vote}
           error -> error
         end
-      
+
       existing_vote when existing_vote.value == value ->
         Repo.delete(existing_vote)
         update_post_score(post_id, -value)
         {:ok, :removed}
-      
+
       existing_vote ->
         old_value = existing_vote.value
         result = existing_vote
           |> PostVote.changeset(%{value: value})
           |> Repo.update()
-        
+
         case result do
           {:ok, vote} ->
             update_post_score(post_id, value - old_value)
@@ -2067,7 +2062,7 @@ defmodule Cgraph.Forums do
   defp update_post_score(post_id, delta) do
     upvotes = if delta > 0, do: 1, else: 0
     downvotes = if delta < 0, do: 1, else: 0
-    
+
     from(p in ThreadPost, where: p.id == ^post_id)
     |> Repo.update_all(
       inc: [score: delta, upvotes: upvotes, downvotes: downvotes]
@@ -2099,34 +2094,49 @@ defmodule Cgraph.Forums do
   """
   def vote_poll(poll_id, user_id, option_ids) when is_list(option_ids) do
     poll = Repo.get!(ThreadPoll, poll_id)
-    
-    # Check if poll is closed
+
+    with :ok <- validate_poll_open(poll),
+         :ok <- validate_not_already_voted(poll_id, user_id),
+         :ok <- validate_option_count(poll, option_ids) do
+      insert_poll_vote(poll_id, user_id, option_ids)
+    end
+  end
+
+  defp validate_poll_open(poll) do
     if poll.close_date && DateTime.compare(DateTime.utc_now(), poll.close_date) == :gt do
       {:error, :poll_closed}
     else
-      case Repo.get_by(PollVote, poll_id: poll_id, user_id: user_id) do
-        nil ->
-          # Validate options count
-          if !poll.multiple_choice && length(option_ids) > 1 do
-            {:error, :single_choice_only}
-          else
-            result = %PollVote{}
-              |> PollVote.changeset(%{poll_id: poll_id, user_id: user_id, option_ids: option_ids})
-              |> Repo.insert()
-            
-            case result do
-              {:ok, vote} ->
-                # Update poll totals
-                from(p in ThreadPoll, where: p.id == ^poll_id)
-                |> Repo.update_all(inc: [total_votes: 1])
-                {:ok, vote}
-              error -> error
-            end
-          end
-        
-        _existing ->
-          {:error, :already_voted}
-      end
+      :ok
+    end
+  end
+
+  defp validate_not_already_voted(poll_id, user_id) do
+    case Repo.get_by(PollVote, poll_id: poll_id, user_id: user_id) do
+      nil -> :ok
+      _existing -> {:error, :already_voted}
+    end
+  end
+
+  defp validate_option_count(poll, option_ids) do
+    if !poll.multiple_choice && length(option_ids) > 1 do
+      {:error, :single_choice_only}
+    else
+      :ok
+    end
+  end
+
+  defp insert_poll_vote(poll_id, user_id, option_ids) do
+    result = %PollVote{}
+      |> PollVote.changeset(%{poll_id: poll_id, user_id: user_id, option_ids: option_ids})
+      |> Repo.insert()
+
+    case result do
+      {:ok, vote} ->
+        from(p in ThreadPoll, where: p.id == ^poll_id)
+        |> Repo.update_all(inc: [total_votes: 1])
+        {:ok, vote}
+      error ->
+        error
     end
   end
 
@@ -2138,7 +2148,7 @@ defmodule Cgraph.Forums do
   List user groups for a forum.
   """
   def list_user_groups(forum_id) do
-    from(g in ForumUserGroup, 
+    from(g in ForumUserGroup,
       where: g.forum_id == ^forum_id,
       order_by: [asc: g.position, asc: g.name])
     |> Repo.all()
@@ -2464,10 +2474,10 @@ defmodule Cgraph.Forums do
 
   @doc """
   Get top contributors for a specific forum based on their post/comment scores.
-  
+
   This calculates a forum-specific karma score by summing the scores of all
   posts and comments a user has made within that forum.
-  
+
   ## Options
   - `:page` - Page number (default: 1)
   - `:per_page` - Items per page (default: 10, max: 50)
@@ -2478,73 +2488,17 @@ defmodule Cgraph.Forums do
     per_page = min(Keyword.get(opts, :per_page, 10), 50)
     time_range = Keyword.get(opts, :time_range, :all)
 
-    # Build time filter
-    time_filter = case time_range do
-      :week -> DateTime.add(DateTime.utc_now(), -7, :day)
-      :month -> DateTime.add(DateTime.utc_now(), -30, :day)
-      :year -> DateTime.add(DateTime.utc_now(), -365, :day)
-      _ -> nil
-    end
+    time_filter = build_time_filter(time_range)
 
-    # Calculate karma from posts
-    post_karma_query = from p in Post,
-      where: p.forum_id == ^forum_id and is_nil(p.deleted_at),
-      group_by: p.author_id,
-      select: %{user_id: p.author_id, karma: sum(p.score)}
+    post_scores = forum_id |> build_post_karma_query(time_filter) |> Repo.all()
+    comment_scores = forum_id |> build_comment_karma_query(time_filter) |> Repo.all()
 
-    post_karma_query = if time_filter do
-      from p in post_karma_query, where: p.inserted_at >= ^time_filter
-    else
-      post_karma_query
-    end
-
-    # Calculate karma from comments (need to join through posts)
-    comment_karma_query = from c in Comment,
-      join: p in Post, on: c.post_id == p.id,
-      where: p.forum_id == ^forum_id and is_nil(c.deleted_at),
-      group_by: c.author_id,
-      select: %{user_id: c.author_id, karma: sum(c.score)}
-
-    comment_karma_query = if time_filter do
-      from c in comment_karma_query, where: c.inserted_at >= ^time_filter
-    else
-      comment_karma_query
-    end
-
-    # Union and aggregate total karma per user
-    # Using raw SQL for efficiency with CTEs
-    post_scores = Repo.all(post_karma_query)
-    comment_scores = Repo.all(comment_karma_query)
-
-    # Combine scores
-    combined_scores = 
-      (post_scores ++ comment_scores)
-      |> Enum.group_by(& &1.user_id)
-      |> Enum.map(fn {user_id, scores} ->
-        total_karma = Enum.reduce(scores, 0, fn %{karma: k}, acc -> 
-          acc + (k || 0) 
-        end)
-        %{user_id: user_id, forum_karma: total_karma}
-      end)
-      |> Enum.filter(& &1.user_id != nil)
-      |> Enum.sort_by(& -(&1.forum_karma))
-
+    combined_scores = combine_karma_scores(post_scores, comment_scores)
     total = length(combined_scores)
-    
-    # Paginate
+
     users_with_karma = combined_scores
-      |> Enum.drop((page - 1) * per_page)
-      |> Enum.take(per_page)
-      |> Enum.with_index(((page - 1) * per_page) + 1)
-      |> Enum.map(fn {%{user_id: user_id, forum_karma: forum_karma}, rank} ->
-        user = Repo.get(Cgraph.Accounts.User, user_id)
-        %{
-          rank: rank,
-          user: user,
-          forum_karma: forum_karma
-        }
-      end)
-      |> Enum.filter(& &1.user != nil)
+      |> paginate_scores(page, per_page)
+      |> hydrate_users()
 
     meta = %{
       page: page,
@@ -2556,6 +2510,66 @@ defmodule Cgraph.Forums do
     }
 
     {users_with_karma, meta}
+  end
+
+  defp build_time_filter(:week), do: DateTime.add(DateTime.utc_now(), -7, :day)
+  defp build_time_filter(:month), do: DateTime.add(DateTime.utc_now(), -30, :day)
+  defp build_time_filter(:year), do: DateTime.add(DateTime.utc_now(), -365, :day)
+  defp build_time_filter(_all), do: nil
+
+  defp build_post_karma_query(forum_id, nil) do
+    from p in Post,
+      where: p.forum_id == ^forum_id and is_nil(p.deleted_at),
+      group_by: p.author_id,
+      select: %{user_id: p.author_id, karma: sum(p.score)}
+  end
+  defp build_post_karma_query(forum_id, time_filter) do
+    from p in Post,
+      where: p.forum_id == ^forum_id and is_nil(p.deleted_at) and p.inserted_at >= ^time_filter,
+      group_by: p.author_id,
+      select: %{user_id: p.author_id, karma: sum(p.score)}
+  end
+
+  defp build_comment_karma_query(forum_id, nil) do
+    from c in Comment,
+      join: p in Post, on: c.post_id == p.id,
+      where: p.forum_id == ^forum_id and is_nil(c.deleted_at),
+      group_by: c.author_id,
+      select: %{user_id: c.author_id, karma: sum(c.score)}
+  end
+  defp build_comment_karma_query(forum_id, time_filter) do
+    from c in Comment,
+      join: p in Post, on: c.post_id == p.id,
+      where: p.forum_id == ^forum_id and is_nil(c.deleted_at) and c.inserted_at >= ^time_filter,
+      group_by: c.author_id,
+      select: %{user_id: c.author_id, karma: sum(c.score)}
+  end
+
+  defp combine_karma_scores(post_scores, comment_scores) do
+    (post_scores ++ comment_scores)
+    |> Enum.group_by(& &1.user_id)
+    |> Enum.map(fn {user_id, scores} ->
+      total_karma = Enum.reduce(scores, 0, fn %{karma: k}, acc -> acc + (k || 0) end)
+      %{user_id: user_id, forum_karma: total_karma}
+    end)
+    |> Enum.filter(& &1.user_id != nil)
+    |> Enum.sort_by(& -(&1.forum_karma))
+  end
+
+  defp paginate_scores(scores, page, per_page) do
+    scores
+    |> Enum.drop((page - 1) * per_page)
+    |> Enum.take(per_page)
+    |> Enum.with_index(((page - 1) * per_page) + 1)
+  end
+
+  defp hydrate_users(paginated_scores) do
+    paginated_scores
+    |> Enum.map(fn {%{user_id: user_id, forum_karma: forum_karma}, rank} ->
+      user = Repo.get(Cgraph.Accounts.User, user_id)
+      %{rank: rank, user: user, forum_karma: forum_karma}
+    end)
+    |> Enum.filter(& &1.user != nil)
   end
 
   @doc """

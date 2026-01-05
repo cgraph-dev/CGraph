@@ -14,23 +14,23 @@ defmodule CgraphWeb.UserChannel do
   - UserChannel = private delivery for user-specific events
   """
   use CgraphWeb, :channel
-  
+
   alias Cgraph.Presence
   alias Cgraph.Accounts
-  
+
   @max_contact_batch 200
 
   @impl true
   def join("user:" <> requested_user_id, params, socket) do
     user = socket.assigns.current_user
-    
+
     cond do
       is_nil(user) ->
         {:error, %{reason: "authentication_required"}}
-        
+
       to_string(user.id) != requested_user_id ->
         {:error, %{reason: "unauthorized"}}
-        
+
       true ->
         send(self(), {:after_join, params})
         {:ok, socket}
@@ -40,11 +40,11 @@ defmodule CgraphWeb.UserChannel do
   @impl true
   def handle_info({:after_join, params}, socket) do
     user = socket.assigns.current_user
-    
+
     # Subscribe to user-specific pubsub topics
     Phoenix.PubSub.subscribe(Cgraph.PubSub, "user:#{user.id}:notifications")
     Phoenix.PubSub.subscribe(Cgraph.PubSub, "user:#{user.id}:presence_updates")
-    
+
     # If client requested initial contact presence, send it
     if params["include_contact_presence"] do
       spawn_link(fn ->
@@ -52,7 +52,7 @@ defmodule CgraphWeb.UserChannel do
         Phoenix.Channel.push(socket, "contact_presence", %{contacts: contact_presence})
       end)
     end
-    
+
     {:noreply, socket}
   end
 
@@ -110,11 +110,11 @@ defmodule CgraphWeb.UserChannel do
   @impl true
   def handle_in("subscribe_to_user", %{"user_id" => target_user_id}, socket) do
     user = socket.assigns.current_user
-    
+
     # Verify target is a friend/contact before allowing subscription
     if can_view_presence?(user.id, target_user_id) do
       Phoenix.PubSub.subscribe(Cgraph.PubSub, "user:#{target_user_id}:status")
-      
+
       # Send immediate status
       status = get_user_status(target_user_id)
       {:reply, {:ok, status}, socket}
@@ -132,7 +132,7 @@ defmodule CgraphWeb.UserChannel do
   @impl true
   def handle_in("update_push_token", %{"token" => token, "platform" => platform}, socket) do
     user = socket.assigns.current_user
-    
+
     case Accounts.register_push_token(user, token, platform) do
       {:ok, _} -> {:reply, :ok, socket}
       {:error, _} -> {:reply, {:error, %{reason: "save_failed"}}, socket}
@@ -149,7 +149,7 @@ defmodule CgraphWeb.UserChannel do
         _ -> :ok
       end
     end)
-    
+
     {:reply, :ok, socket}
   end
 
@@ -163,7 +163,7 @@ defmodule CgraphWeb.UserChannel do
     # Get user's friends/contacts
     contact_ids = get_contact_ids(user_id)
     |> Enum.take(@max_contact_batch)
-    
+
     # Bulk fetch presence status
     Presence.bulk_status(contact_ids)
     |> Enum.map(fn {contact_id, status} ->
@@ -173,7 +173,7 @@ defmodule CgraphWeb.UserChannel do
         last_seen = Presence.last_seen(contact_id)
         Map.put(status, :last_seen, last_seen && DateTime.to_iso8601(last_seen))
       end
-      
+
       {contact_id, enriched}
     end)
     |> Map.new()
@@ -183,17 +183,17 @@ defmodule CgraphWeb.UserChannel do
     # Query conversations for unique participant IDs
     # The Relationships module is not implemented yet
     import Ecto.Query
-    
+
     try do
       alias Cgraph.Messaging.ConversationParticipant
       alias Cgraph.Repo
-      
+
       # Get all conversations the user is in
       conversation_ids = ConversationParticipant
         |> where([cp], cp.user_id == ^user_id)
         |> select([cp], cp.conversation_id)
         |> Repo.all()
-      
+
       # Get all other participants in those conversations
       ConversationParticipant
         |> where([cp], cp.conversation_id in ^conversation_ids)
@@ -211,14 +211,14 @@ defmodule CgraphWeb.UserChannel do
       true ->
         # get_user_presence/1 returns already merged presence
         merged = Presence.get_user_presence(user_id) || %{}
-        
+
         %{
           online: true,
           status: merged[:status] || "online",
           status_message: merged[:status_message],
           last_active: merged[:last_active]
         }
-        
+
       false ->
         last_seen = Presence.last_seen(user_id)
         %{
@@ -232,24 +232,24 @@ defmodule CgraphWeb.UserChannel do
   defp can_view_presence?(viewer_id, target_id) do
     # Check if users share a conversation together
     import Ecto.Query
-    
+
     try do
       alias Cgraph.Messaging.ConversationParticipant
       alias Cgraph.Repo
-      
+
       # Get conversations viewer is in
       viewer_conversations = ConversationParticipant
         |> where([cp], cp.user_id == ^viewer_id)
         |> select([cp], cp.conversation_id)
         |> Repo.all()
         |> MapSet.new()
-      
+
       # Check if target is in any of those conversations
       target_in_shared = ConversationParticipant
         |> where([cp], cp.user_id == ^target_id)
         |> where([cp], cp.conversation_id in ^MapSet.to_list(viewer_conversations))
         |> Repo.exists?()
-      
+
       target_in_shared
     rescue
       error ->

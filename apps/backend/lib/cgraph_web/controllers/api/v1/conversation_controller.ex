@@ -1,7 +1,7 @@
 defmodule CgraphWeb.API.V1.ConversationController do
   @moduledoc """
   Controller for direct message conversations.
-  
+
   Supports both 1:1 direct conversations and group conversations.
   Creating a conversation with existing participants returns the
   existing conversation (idempotent).
@@ -14,7 +14,7 @@ defmodule CgraphWeb.API.V1.ConversationController do
 
   @doc """
   List all conversations for the current user with pagination.
-  
+
   Query params:
   - page: Page number (default: 1)
   - per_page: Items per page (default: 20, max: 100)
@@ -60,10 +60,10 @@ defmodule CgraphWeb.API.V1.ConversationController do
 
   @doc """
   Start a new conversation with one or more users.
-  
+
   For 1:1 conversations: returns existing conversation if one exists (200)
   For group conversations: creates new group with optional name
-  
+
   Params:
   - participant_ids: List of user IDs to include (required)
   - message: Optional initial message content
@@ -78,7 +78,7 @@ defmodule CgraphWeb.API.V1.ConversationController do
       [recipient_id] ->
         # Single recipient: direct conversation (may return existing)
         create_direct_conversation(conn, user, recipient_id, message_content)
-      
+
       _ ->
         # Multiple recipients: group conversation
         create_group_conversation(conn, user, participant_ids, name, message_content)
@@ -100,14 +100,14 @@ defmodule CgraphWeb.API.V1.ConversationController do
         conn
         |> put_status(:ok)
         |> render(:show, conversation: conversation, current_user: user)
-      
+
       {:ok, conversation, :created} ->
         with {:ok, _} <- maybe_send_message(conversation, user, message_content) do
           conn
           |> put_status(:created)
           |> render(:show, conversation: conversation, current_user: user)
         end
-      
+
       # Handle legacy tuple format (without created/existing indicator)
       {:ok, conversation} ->
         with {:ok, _} <- maybe_send_message(conversation, user, message_content) do
@@ -115,7 +115,7 @@ defmodule CgraphWeb.API.V1.ConversationController do
           |> put_status(:created)
           |> render(:show, conversation: conversation, current_user: user)
         end
-      
+
       {:error, _} = error -> error
     end
   end

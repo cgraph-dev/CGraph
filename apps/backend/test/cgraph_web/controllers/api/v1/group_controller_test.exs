@@ -16,16 +16,16 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
       user = user_fixture()
       %{group: group, owner: _owner} = group_fixture(user)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, group: group}
     end
 
     test "lists user's groups", %{conn: conn, group: group} do
       conn = get(conn, ~p"/api/v1/groups")
-      
+
       assert %{"data" => groups} = json_response(conn, 200)
       assert is_list(groups)
-      
+
       ids = Enum.map(groups, & &1["id"])
       assert group.id in ids
     end
@@ -43,7 +43,7 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
         name: "My New Group",
         description: "A test group"
       })
-      
+
       assert %{
         "data" => %{
           "id" => id,
@@ -51,13 +51,13 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
           "description" => "A test group"
         }
       } = json_response(conn, 201)
-      
+
       assert is_binary(id)
     end
 
     test "returns error for missing name", %{conn: conn} do
       conn = post(conn, ~p"/api/v1/groups", %{description: "No name"})
-      
+
       response = json_response(conn, 422)
       # Error format is either errors.name or error.details.name
       assert response["error"]["details"]["name"] || response["errors"]["name"]
@@ -69,13 +69,13 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
       user = user_fixture()
       %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, group: group}
     end
 
     test "returns group details", %{conn: conn, group: group} do
       conn = get(conn, ~p"/api/v1/groups/#{group.id}")
-      
+
       assert %{
         "data" => %{
           "id" => id,
@@ -84,7 +84,7 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
           "roles" => roles
         }
       } = json_response(conn, 200)
-      
+
       assert id == group.id
       assert is_binary(name)
       assert is_list(channels)
@@ -102,7 +102,7 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
       user = user_fixture()
       %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, group: group}
     end
 
@@ -111,7 +111,7 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
         name: "Updated Name",
         description: "Updated description"
       })
-      
+
       assert %{
         "data" => %{
           "name" => "Updated Name",
@@ -123,7 +123,7 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
     test "returns error for non-owner", %{conn: conn, group: group} do
       other_user = user_fixture()
       conn = log_in_user(conn, other_user)
-      
+
       conn = put(conn, ~p"/api/v1/groups/#{group.id}", %{name: "Hacked"})
       # Non-member gets 404, member without permission would get 403
       assert json_response(conn, 404)
@@ -135,7 +135,7 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
       user = user_fixture()
       %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, group: group}
     end
 
@@ -147,7 +147,7 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
     test "returns error for non-owner", %{conn: conn, group: group} do
       other_user = user_fixture()
       conn = log_in_user(conn, other_user)
-      
+
       conn = delete(conn, ~p"/api/v1/groups/#{group.id}")
       # Non-member gets 404, member without permission would get 403
       assert json_response(conn, 404)
@@ -159,13 +159,13 @@ defmodule CgraphWeb.API.V1.GroupControllerTest do
       user = user_fixture()
       %{group: group} = group_fixture(user)
       conn = log_in_user(conn, user)
-      
+
       %{conn: conn, user: user, group: group}
     end
 
     test "returns audit log for authorized users", %{conn: conn, group: group} do
       conn = get(conn, ~p"/api/v1/groups/#{group.id}/audit-log")
-      
+
       assert %{"data" => entries} = json_response(conn, 200)
       assert is_list(entries)
     end

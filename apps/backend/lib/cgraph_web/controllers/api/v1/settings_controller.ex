@@ -13,7 +13,7 @@ defmodule CgraphWeb.API.V1.SettingsController do
   """
   def show(conn, _params) do
     user = conn.assigns.current_user
-    
+
     with {:ok, settings} <- Settings.get_user_settings(user) do
       render(conn, :show, settings: settings)
     end

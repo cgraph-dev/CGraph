@@ -1,11 +1,11 @@
 defmodule CgraphWeb.API.V1.GroupJSON do
   @moduledoc """
   JSON rendering for group responses.
-  
+
   ## Visibility Mapping
-  
+
   The API returns a `visibility` field derived from `is_public` and `is_discoverable`:
-  
+
   | is_public | is_discoverable | visibility  |
   |-----------|-----------------|-------------|
   | true      | true            | "public"    |
@@ -76,7 +76,7 @@ defmodule CgraphWeb.API.V1.GroupJSON do
   """
   def group_data(%Group{} = group, current_user) do
     member = find_member(group.members, current_user)
-    
+
     %{
       id: group.id,
       name: group.name,

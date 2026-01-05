@@ -1,7 +1,7 @@
 defmodule CgraphWeb.Plugs.RateLimiter do
   @moduledoc """
   Rate limiting plug using Redis or ETS.
-  
+
   Limits requests per IP or user within a time window.
   """
   import Plug.Conn

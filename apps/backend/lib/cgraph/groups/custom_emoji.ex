@@ -17,7 +17,7 @@ defmodule Cgraph.Groups.CustomEmoji do
     field :image_url, :string
     field :is_animated, :boolean, default: false
     field :is_available, :boolean, default: true
-    
+
     timestamps()
   end
 

@@ -18,7 +18,7 @@ defmodule Cgraph.Forums.Poll do
     field :is_multiple_choice, :boolean, default: false
     field :ends_at, :utc_datetime
     field :is_closed, :boolean, default: false
-    
+
     timestamps()
   end
 

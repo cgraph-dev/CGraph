@@ -1,7 +1,7 @@
 defmodule Cgraph.OAuthTest do
   @moduledoc """
   Comprehensive tests for OAuth 2.0 authentication module.
-  
+
   Tests cover:
   - Authorization URL generation for all providers
   - Token exchange and validation
@@ -35,7 +35,7 @@ defmodule Cgraph.OAuthTest do
       # Without configuration, should return error
       # This depends on runtime config - if not configured, returns :provider_not_configured
       result = OAuth.authorize_url(:google, "state123")
-      
+
       case result do
         {:ok, url} ->
           # If configured, URL should be valid
@@ -50,7 +50,7 @@ defmodule Cgraph.OAuthTest do
     test "generates different URLs for different states" do
       state1 = "state_#{:rand.uniform(100_000)}"
       state2 = "state_#{:rand.uniform(100_000)}"
-      
+
       case {OAuth.authorize_url(:google, state1), OAuth.authorize_url(:google, state2)} do
         {{:ok, url1}, {:ok, url2}} ->
           assert url1 != url2
@@ -65,7 +65,7 @@ defmodule Cgraph.OAuthTest do
     for provider <- @valid_providers do
       test "accepts #{provider} as valid provider" do
         result = OAuth.authorize_url(unquote(provider), "test_state")
-        
+
         case result do
           {:ok, url} ->
             assert is_binary(url)
@@ -82,7 +82,7 @@ defmodule Cgraph.OAuthTest do
 
   describe "callback/3" do
     test "returns error for invalid provider" do
-      assert {:error, {:invalid_provider, :invalid}} = 
+      assert {:error, {:invalid_provider, :invalid}} =
         OAuth.callback(:invalid, "code123", "state123")
     end
 
@@ -100,7 +100,7 @@ defmodule Cgraph.OAuthTest do
     for provider <- @valid_providers do
       test "handles #{provider} callback with invalid code" do
         result = OAuth.callback(unquote(provider), "invalid_code", "test_state")
-        
+
         # Should return an error - either provider not configured or invalid token
         assert match?({:error, _}, result)
       end
@@ -113,7 +113,7 @@ defmodule Cgraph.OAuthTest do
 
   describe "mobile_callback/3" do
     test "returns error for invalid provider" do
-      assert {:error, {:invalid_provider, :invalid}} = 
+      assert {:error, {:invalid_provider, :invalid}} =
         OAuth.mobile_callback(:invalid, "token123", nil)
     end
 
@@ -125,7 +125,7 @@ defmodule Cgraph.OAuthTest do
     for provider <- @valid_providers do
       test "handles #{provider} mobile callback with invalid token" do
         result = OAuth.mobile_callback(unquote(provider), "invalid_token", nil)
-        
+
         # Should return an error - either provider not configured or invalid token
         assert match?({:error, _}, result)
       end
@@ -156,7 +156,7 @@ defmodule Cgraph.OAuthTest do
         password: "ValidPassword123!",
         password_confirmation: "ValidPassword123!"
       })
-      
+
       {:ok, user: user}
     end
 
@@ -167,9 +167,9 @@ defmodule Cgraph.OAuthTest do
         "name" => "Google User",
         "picture" => "https://example.com/photo.jpg"
       }
-      
+
       result = OAuth.link_account(user, :google, provider_uid, provider_data)
-      
+
       assert match?({:ok, %User{}}, result) or match?({:error, _}, result)
     end
 
@@ -179,9 +179,9 @@ defmodule Cgraph.OAuthTest do
         "email" => "apple@privaterelay.appleid.com",
         "name" => "Apple User"
       }
-      
+
       result = OAuth.link_account(user, :apple, provider_uid, provider_data)
-      
+
       assert match?({:ok, %User{}}, result) or match?({:error, _}, result)
     end
 
@@ -191,9 +191,9 @@ defmodule Cgraph.OAuthTest do
         "email" => "fb@example.com",
         "name" => "Facebook User"
       }
-      
+
       result = OAuth.link_account(user, :facebook, provider_uid, provider_data)
-      
+
       assert match?({:ok, %User{}}, result) or match?({:error, _}, result)
     end
 
@@ -203,9 +203,9 @@ defmodule Cgraph.OAuthTest do
         "display_name" => "TikTok User",
         "avatar_url" => "https://example.com/avatar.jpg"
       }
-      
+
       result = OAuth.link_account(user, :tiktok, provider_uid, provider_data)
-      
+
       assert match?({:ok, %User{}}, result) or match?({:error, _}, result)
     end
   end
@@ -236,7 +236,7 @@ defmodule Cgraph.OAuthTest do
   describe "security validations" do
     test "state parameter is included in authorization URL" do
       state = "csrf_protection_token_#{:rand.uniform(100_000)}"
-      
+
       case OAuth.authorize_url(:google, state) do
         {:ok, url} ->
           # State should be URL encoded in the query string
@@ -249,9 +249,9 @@ defmodule Cgraph.OAuthTest do
     test "rejects malicious state parameters" do
       # State with potential injection attempt
       malicious_state = "<script>alert('xss')</script>"
-      
+
       result = OAuth.authorize_url(:google, malicious_state)
-      
+
       case result do
         {:ok, url} ->
           # Malicious content should be URL encoded
@@ -274,7 +274,7 @@ defmodule Cgraph.OAuthTest do
   describe "edge cases" do
     test "handles unicode in state parameter" do
       unicode_state = "状态_émoji_🎉"
-      
+
       case OAuth.authorize_url(:google, unicode_state) do
         {:ok, url} ->
           assert is_binary(url)
@@ -285,7 +285,7 @@ defmodule Cgraph.OAuthTest do
 
     test "handles very long state parameter" do
       long_state = String.duplicate("a", 1000)
-      
+
       case OAuth.authorize_url(:google, long_state) do
         {:ok, url} ->
           assert is_binary(url)

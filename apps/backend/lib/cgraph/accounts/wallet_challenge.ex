@@ -1,7 +1,7 @@
 defmodule Cgraph.Accounts.WalletChallenge do
   @moduledoc """
   Schema for storing wallet authentication challenge nonces.
-  
+
   Used during the wallet login flow to store the nonce that users
   must sign to prove ownership of their wallet address.
   """

@@ -1,7 +1,7 @@
 defmodule Cgraph.Groups.Group do
   @moduledoc """
   Group schema for Discord-style server/community.
-  
+
   Groups contain channels, members with roles, and moderation features.
   """
   use Ecto.Schema

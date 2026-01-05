@@ -1,7 +1,7 @@
 defmodule Cgraph.Uploads do
   @moduledoc """
   The Uploads context.
-  
+
   Handles file uploads, storage, and quota management.
   """
 
@@ -52,26 +52,26 @@ defmodule Cgraph.Uploads do
   """
   def store_file(user, upload, opts \\ []) do
     context = Keyword.get(opts, :context, "message")
-    
+
     # Generate unique filename
     ext = Path.extname(upload.filename)
     filename = "#{Ecto.UUID.generate()}#{ext}"
-    
+
     # Ensure upload directory exists
     upload_path = Path.join([@upload_dir, context])
     File.mkdir_p!(upload_path)
-    
+
     # Copy file
     dest_path = Path.join(upload_path, filename)
     File.cp!(upload.path, dest_path)
-    
+
     # Get file info
     {:ok, stat} = File.stat(dest_path)
     checksum = :crypto.hash(:sha256, File.read!(dest_path)) |> Base.encode16(case: :lower)
-    
+
     # Generate URL
     url = "/uploads/#{context}/#{filename}"
-    
+
     # Create file record
     file_attrs = %{
       filename: filename,
@@ -83,7 +83,7 @@ defmodule Cgraph.Uploads do
       context: context,
       user_id: user.id
     }
-    
+
     # Add image dimensions if applicable
     file_attrs = if String.starts_with?(upload.content_type, "image/") do
       case get_image_dimensions(dest_path) do
@@ -93,7 +93,7 @@ defmodule Cgraph.Uploads do
     else
       file_attrs
     end
-    
+
     %UploadedFile{}
     |> UploadedFile.changeset(file_attrs)
     |> Repo.insert()
@@ -116,7 +116,7 @@ defmodule Cgraph.Uploads do
     # Delete physical file
     file_path = Path.join(["priv/static", file.url])
     File.rm(file_path)
-    
+
     # Delete record
     Repo.delete(file)
   end
@@ -126,7 +126,7 @@ defmodule Cgraph.Uploads do
   """
   def check_quota(user) do
     usage = get_user_usage(user)
-    
+
     if usage.used_bytes < @max_quota do
       :ok
     else
@@ -144,30 +144,30 @@ defmodule Cgraph.Uploads do
         total_size: sum(f.size),
         count: count(f.id)
       }
-    
+
     result = Repo.one(query) || %{total_size: 0, count: 0}
-    
+
     # Get breakdown by type
     images_query = from f in UploadedFile,
       where: f.user_id == ^user.id,
       where: like(f.content_type, "image/%"),
       select: sum(f.size)
-    
+
     videos_query = from f in UploadedFile,
       where: f.user_id == ^user.id,
       where: like(f.content_type, "video/%"),
       select: sum(f.size)
-    
+
     documents_query = from f in UploadedFile,
       where: f.user_id == ^user.id,
       where: not like(f.content_type, "image/%") and not like(f.content_type, "video/%"),
       select: sum(f.size)
-    
+
     images_bytes = Repo.one(images_query) || 0
     videos_bytes = Repo.one(videos_query) || 0
     documents_bytes = Repo.one(documents_query) || 0
     used_bytes = result.total_size || 0
-    
+
     %{
       used_bytes: used_bytes,
       total_bytes: @max_quota,
@@ -186,9 +186,9 @@ defmodule Cgraph.Uploads do
     filename = Keyword.get(opts, :filename)
     content_type = Keyword.get(opts, :content_type)
     context = Keyword.get(opts, :context, "message")
-    
+
     upload_id = Ecto.UUID.generate()
-    
+
     {:ok, %{
       upload_id: upload_id,
       url: "/api/v1/uploads/#{upload_id}",

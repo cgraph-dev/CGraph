@@ -4,9 +4,9 @@ defmodule CgraphWeb.API.V1.BoardController do
   Part of the MyBB-style forum hosting platform.
   """
   use CgraphWeb, :controller
-  
+
   alias Cgraph.Forums
-  
+
   action_fallback CgraphWeb.FallbackController
 
   @doc """
@@ -16,10 +16,10 @@ defmodule CgraphWeb.API.V1.BoardController do
   def index(conn, %{"forum_id" => forum_id} = params) do
     include_hidden = Map.get(params, "include_hidden", "false") == "true"
     parent_id = Map.get(params, "parent_id")
-    
+
     opts = [include_hidden: include_hidden, parent_id: parent_id]
     boards = Forums.list_boards(forum_id, opts)
-    
+
     render(conn, :index, boards: boards)
   end
 
@@ -53,7 +53,7 @@ defmodule CgraphWeb.API.V1.BoardController do
   """
   def create(conn, %{"forum_id" => forum_id, "board" => board_params}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          true <- Forums.is_moderator?(forum, user),
          {:ok, board} <- Forums.create_board(Map.put(board_params, "forum_id", forum_id)) do
@@ -72,7 +72,7 @@ defmodule CgraphWeb.API.V1.BoardController do
   """
   def update(conn, %{"forum_id" => forum_id, "id" => id, "board" => board_params}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          true <- Forums.is_moderator?(forum, user),
          {:ok, board} <- Forums.get_board(id),
@@ -91,7 +91,7 @@ defmodule CgraphWeb.API.V1.BoardController do
   """
   def delete(conn, %{"forum_id" => forum_id, "id" => id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          true <- Forums.is_moderator?(forum, user),
          {:ok, board} <- Forums.get_board(id),

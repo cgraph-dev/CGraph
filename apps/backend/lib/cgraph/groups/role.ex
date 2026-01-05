@@ -1,7 +1,7 @@
 defmodule Cgraph.Groups.Role do
   @moduledoc """
   Roles for group permission management.
-  
+
   Each group has a default @everyone role, plus custom roles.
   Roles have a permission bitmask for granular access control.
   """

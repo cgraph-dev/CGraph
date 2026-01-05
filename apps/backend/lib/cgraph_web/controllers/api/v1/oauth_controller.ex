@@ -1,23 +1,23 @@
 defmodule CgraphWeb.API.V1.OAuthController do
   @moduledoc """
   OAuth 2.0 authentication controller for external providers.
-  
+
   Supports:
   - Google (Gmail)
   - Apple (Sign in with Apple / iTunes)
   - Facebook
   - TikTok
-  
+
   ## Web Flow
-  
+
   1. Client calls GET /api/v1/auth/oauth/:provider
   2. Server returns authorization URL
   3. Client redirects user to authorization URL
   4. Provider redirects back to GET /api/v1/auth/oauth/:provider/callback
   5. Server exchanges code for tokens and returns JWT
-  
+
   ## Mobile Flow
-  
+
   1. Mobile app uses native SDK to authenticate
   2. Mobile app calls POST /api/v1/auth/oauth/:provider/mobile
   3. Server verifies token and returns JWT
@@ -37,9 +37,9 @@ defmodule CgraphWeb.API.V1.OAuthController do
 
   @doc """
   Get the authorization URL for a provider.
-  
+
   GET /api/v1/auth/oauth/:provider
-  
+
   Returns:
   - `authorization_url` - URL to redirect user to
   - `state` - State parameter to verify on callback
@@ -47,7 +47,7 @@ defmodule CgraphWeb.API.V1.OAuthController do
   def authorize(conn, %{"provider" => provider}) do
     state = generate_state()
     provider_atom = String.to_existing_atom(provider)
-    
+
     case OAuth.authorize_url(provider_atom, state) do
       {:ok, url} ->
         # Store state in session for verification
@@ -59,12 +59,12 @@ defmodule CgraphWeb.API.V1.OAuthController do
           state: state,
           provider: provider
         })
-        
+
       {:error, :provider_not_configured} ->
         conn
         |> put_status(:service_unavailable)
         |> json(%{error: "#{provider} authentication is not configured"})
-        
+
       {:error, reason} ->
         Logger.error("OAuth authorize failed", provider: provider, reason: inspect(reason))
         conn
@@ -75,52 +75,52 @@ defmodule CgraphWeb.API.V1.OAuthController do
 
   @doc """
   Handle the OAuth callback from the provider.
-  
+
   GET /api/v1/auth/oauth/:provider/callback
-  
+
   Query parameters:
   - `code` - Authorization code from provider
   - `state` - State parameter for CSRF verification
-  
+
   For Apple (form_post):
   - Also accepts POST with form data
   """
   def callback(conn, %{"provider" => provider, "code" => code, "state" => state}) do
     stored_state = get_session(conn, :oauth_state)
-    
+
     # Verify state to prevent CSRF
     if state != stored_state do
       Logger.warning("OAuth state mismatch", expected: stored_state, received: state)
-      
+
       conn
       |> clear_oauth_session()
       |> put_status(:bad_request)
       |> json(%{error: "Invalid state parameter"})
     else
       provider_atom = String.to_existing_atom(provider)
-      
+
       case OAuth.callback(provider_atom, code, state) do
         {:ok, %{user: user, tokens: tokens}} ->
           conn
           |> clear_oauth_session()
           |> put_status(:ok)
           |> render(:auth_response, user: user, tokens: tokens)
-          
+
         {:error, :user_banned} ->
           conn
           |> clear_oauth_session()
           |> put_status(:forbidden)
           |> json(%{error: "Account has been banned"})
-          
+
         {:error, :user_suspended} ->
           conn
           |> clear_oauth_session()
           |> put_status(:forbidden)
           |> json(%{error: "Account is suspended"})
-          
+
         {:error, reason} ->
           Logger.error("OAuth callback failed", provider: provider, reason: inspect(reason))
-          
+
           conn
           |> clear_oauth_session()
           |> put_status(:unauthorized)
@@ -132,9 +132,9 @@ defmodule CgraphWeb.API.V1.OAuthController do
   def callback(conn, %{"provider" => provider, "error" => error}) do
     # Handle OAuth errors (user denied, etc.)
     Logger.info("OAuth authorization denied", provider: provider, error: error)
-    
+
     error_description = conn.params["error_description"] || "Authorization was denied"
-    
+
     conn
     |> clear_oauth_session()
     |> put_status(:unauthorized)
@@ -150,9 +150,9 @@ defmodule CgraphWeb.API.V1.OAuthController do
 
   @doc """
   Mobile OAuth authentication.
-  
+
   POST /api/v1/auth/oauth/:provider/mobile
-  
+
   Body:
   - `access_token` - Access token from native SDK
   - `id_token` - ID token (required for Apple, optional for others)
@@ -161,26 +161,26 @@ defmodule CgraphWeb.API.V1.OAuthController do
   def mobile(conn, %{"provider" => provider, "access_token" => access_token} = params) do
     provider_atom = String.to_existing_atom(provider)
     id_token = params["id_token"]
-    
+
     case OAuth.mobile_callback(provider_atom, access_token, id_token) do
       {:ok, %{user: user, tokens: tokens}} ->
         conn
         |> put_status(:ok)
         |> render(:auth_response, user: user, tokens: tokens)
-        
+
       {:error, :user_banned} ->
         conn
         |> put_status(:forbidden)
         |> json(%{error: "Account has been banned"})
-        
+
       {:error, :user_suspended} ->
         conn
         |> put_status(:forbidden)
         |> json(%{error: "Account is suspended"})
-        
+
       {:error, reason} ->
         Logger.error("Mobile OAuth failed", provider: provider, reason: inspect(reason))
-        
+
         conn
         |> put_status(:unauthorized)
         |> json(%{error: "Authentication failed", details: format_error(reason)})
@@ -195,7 +195,7 @@ defmodule CgraphWeb.API.V1.OAuthController do
 
   @doc """
   List available OAuth providers.
-  
+
   GET /api/v1/auth/oauth/providers
   """
   def list_providers(conn, _params) do
@@ -207,25 +207,25 @@ defmodule CgraphWeb.API.V1.OAuthController do
         enabled: true
       }
     end)
-    
+
     json(conn, %{providers: providers})
   end
 
   @doc """
   Link an OAuth account to the current user.
-  
+
   POST /api/v1/auth/oauth/:provider/link
-  
+
   Requires authentication.
   """
   def link(conn, %{"provider" => provider, "access_token" => access_token} = params) do
     user = conn.assigns.current_user
     provider_atom = String.to_existing_atom(provider)
     id_token = params["id_token"]
-    
+
     # First verify the token and get user info
     tokens = %{"access_token" => access_token, "id_token" => id_token}
-    
+
     with {:ok, user_info} <- get_user_info_from_tokens(provider_atom, tokens),
          {:ok, updated_user} <- OAuth.link_account(user, provider_atom, user_info.uid, user_info) do
       conn
@@ -239,7 +239,7 @@ defmodule CgraphWeb.API.V1.OAuthController do
         conn
         |> put_status(:conflict)
         |> json(%{error: "This #{provider_display_name(provider_atom)} account is already linked to another user"})
-        
+
       {:error, reason} ->
         Logger.error("OAuth link failed", provider: provider, reason: inspect(reason))
         conn
@@ -250,26 +250,26 @@ defmodule CgraphWeb.API.V1.OAuthController do
 
   @doc """
   Unlink an OAuth account from the current user.
-  
+
   DELETE /api/v1/auth/oauth/:provider/link
-  
+
   Requires authentication.
   """
   def unlink(conn, %{"provider" => provider}) do
     user = conn.assigns.current_user
     provider_atom = String.to_existing_atom(provider)
-    
+
     case OAuth.unlink_account(user, provider_atom) do
       {:ok, _user} ->
         conn
         |> put_status(:ok)
         |> json(%{message: "#{provider_display_name(provider_atom)} account unlinked successfully"})
-        
+
       {:error, :cannot_unlink_only_auth_method} ->
         conn
         |> put_status(:bad_request)
         |> json(%{error: "Cannot unlink your only authentication method. Add a password or link another account first."})
-        
+
       {:error, reason} ->
         Logger.error("OAuth unlink failed", provider: provider, reason: inspect(reason))
         conn
@@ -284,14 +284,14 @@ defmodule CgraphWeb.API.V1.OAuthController do
 
   defp validate_provider(conn, _opts) do
     provider = conn.params["provider"]
-    
+
     cond do
       provider == nil ->
         conn
-        
+
       provider in @valid_providers ->
         conn
-        
+
       true ->
         conn
         |> put_status(:bad_request)
@@ -328,7 +328,7 @@ defmodule CgraphWeb.API.V1.OAuthController do
   defp get_user_info_from_tokens(:google, %{"access_token" => token}) do
     url = "https://www.googleapis.com/oauth2/v3/userinfo"
     headers = [{~c"Authorization", String.to_charlist("Bearer #{token}")}]
-    
+
     case :httpc.request(:get, {String.to_charlist(url), headers}, [], []) do
       {:ok, {{_, 200, _}, _, body}} ->
         data = Jason.decode!(to_string(body))
@@ -342,12 +342,12 @@ defmodule CgraphWeb.API.V1.OAuthController do
     # Use secure verification with Apple's JWKS instead of just decoding
     # This validates the signature and claims before trusting the token
     config = OAuth.get_provider_config(:apple)
-    
+
     case OAuth.verify_apple_token(token, config) do
       {:ok, claims} ->
         {:ok, %{uid: claims["sub"], email: claims["email"], name: nil, picture: nil}}
       {:error, reason} ->
-        Logger.warning("Apple ID token verification failed in mobile flow", 
+        Logger.warning("Apple ID token verification failed in mobile flow",
           reason: inspect(reason))
         {:error, :invalid_token}
     end
@@ -355,7 +355,7 @@ defmodule CgraphWeb.API.V1.OAuthController do
 
   defp get_user_info_from_tokens(:facebook, %{"access_token" => token}) do
     url = "https://graph.facebook.com/v18.0/me?fields=id,name,email,picture&access_token=#{token}"
-    
+
     case :httpc.request(:get, {String.to_charlist(url), []}, [], []) do
       {:ok, {{_, 200, _}, _, body}} ->
         data = Jason.decode!(to_string(body))
@@ -368,7 +368,7 @@ defmodule CgraphWeb.API.V1.OAuthController do
   defp get_user_info_from_tokens(:tiktok, %{"access_token" => token}) do
     url = "https://open.tiktokapis.com/v2/user/info/?fields=open_id,avatar_url,display_name"
     headers = [{"Authorization", "Bearer #{token}"}]
-    
+
     case :httpc.request(:get, {String.to_charlist(url), headers}, [], []) do
       {:ok, {{_, 200, _}, _, body}} ->
         data = Jason.decode!(to_string(body))

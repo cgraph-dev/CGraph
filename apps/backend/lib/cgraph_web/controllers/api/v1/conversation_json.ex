@@ -1,7 +1,7 @@
 defmodule CgraphWeb.API.V1.ConversationJSON do
   @moduledoc """
   JSON rendering for conversation responses.
-  
+
   Handles both direct (1:1) and group conversations with proper
   association loading guards throughout.
   """
@@ -30,7 +30,7 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
   defp conversation_data(%Conversation{} = conv, _current_user) do
     participants = get_participants_with_data(conv)
     last_msg = get_last_message(conv)
-    
+
     %{
       id: conv.id,
       type: if(length(participants) > 2, do: "group", else: "direct"),
@@ -53,7 +53,7 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
   defp get_participants_with_data(%Conversation{participants: %Ecto.Association.NotLoaded{}}), do: []
   defp get_participants_with_data(%Conversation{participants: participants}) when is_list(participants) do
     participants
-    |> Enum.map(fn p -> 
+    |> Enum.map(fn p ->
       case p.user do
         %Ecto.Association.NotLoaded{} -> nil
         user -> %{

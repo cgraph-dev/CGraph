@@ -42,20 +42,25 @@ defmodule CgraphWeb.API.V1.UserController do
     user = conn.assigns.current_user
 
     case Accounts.change_username(user, username) do
-      {:ok, updated_user} ->
-        render(conn, :show, user: updated_user)
-      
-      {:error, %Ecto.Changeset{} = changeset} ->
-        errors = Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
-          Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
-            opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
-          end)
-        end)
-        
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: %{message: format_changeset_error(errors)}})
+      {:ok, updated_user} -> render(conn, :show, user: updated_user)
+      {:error, %Ecto.Changeset{} = changeset} -> respond_changeset_error(conn, changeset)
     end
+  end
+  
+  defp respond_changeset_error(conn, changeset) do
+    errors = traverse_changeset_errors(changeset)
+    
+    conn
+    |> put_status(:unprocessable_entity)
+    |> json(%{error: %{message: format_changeset_error(errors)}})
+  end
+  
+  defp traverse_changeset_errors(changeset) do
+    Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
+      Regex.replace(~r"%{(\w+)}", msg, fn _, key ->
+        opts |> Keyword.get(String.to_existing_atom(key), key) |> to_string()
+      end)
+    end)
   end
 
   defp format_changeset_error(errors) do
@@ -98,7 +103,7 @@ defmodule CgraphWeb.API.V1.UserController do
   def sessions(conn, _params) do
     user = conn.assigns.current_user
     sessions = Accounts.list_user_sessions(user)
-    
+
     current_token = get_req_header(conn, "authorization")
     |> List.first()
     |> case do
@@ -177,7 +182,7 @@ defmodule CgraphWeb.API.V1.UserController do
 
   @doc """
   Request a data export for the current user (GDPR compliance).
-  
+
   The export will be generated asynchronously and the user will be notified
   when it's ready to download.
   """
@@ -201,12 +206,12 @@ defmodule CgraphWeb.API.V1.UserController do
           export_id: export.id,
           status: export.status
         })
-      
+
       {:error, :rate_limited} ->
         conn
         |> put_status(:too_many_requests)
         |> json(%{error: "You can only request one data export per day. Please try again later."})
-      
+
       {:error, reason} ->
         conn
         |> put_status(:internal_server_error)
@@ -216,7 +221,7 @@ defmodule CgraphWeb.API.V1.UserController do
 
   @doc """
   Get presence status for a specific user (WhatsApp-style).
-  
+
   Returns:
   - `online: true/false` - whether user is currently connected
   - `last_seen` - ISO8601 timestamp of last activity (if offline)
@@ -228,24 +233,24 @@ defmodule CgraphWeb.API.V1.UserController do
       true ->
         # get_user_presence returns already-merged presence data
         merged = Presence.get_user_presence(user_id) || %{}
-        
+
         %{
           online: true,
           status: merged[:status] || "online",
           status_message: merged[:status_message],
           last_active: merged[:last_active] && DateTime.to_iso8601(merged[:last_active])
         }
-        
+
       false ->
         last_seen = Presence.last_seen(user_id)
-        
+
         %{
           online: false,
           status: "offline",
           last_seen: last_seen && DateTime.to_iso8601(last_seen)
         }
     end
-    
+
     conn
     |> put_status(:ok)
     |> json(%{data: presence_data})
@@ -253,38 +258,38 @@ defmodule CgraphWeb.API.V1.UserController do
 
   @doc """
   Get presence status for multiple users (bulk endpoint).
-  
+
   Accepts up to 100 user IDs per request.
   Useful for contact lists and conversation views.
   """
   def bulk_presence(conn, %{"user_ids" => user_ids}) when is_list(user_ids) do
     # Limit to prevent abuse
     limited_ids = Enum.take(user_ids, 100)
-    
+
     # bulk_status returns {user_id, status_string} map
     status_map = Presence.bulk_status(limited_ids)
-    
+
     # Enrich offline users with last_seen and convert to proper format
     enriched = Enum.map(limited_ids, fn user_id ->
       status = Map.get(status_map, user_id, "offline")
       is_online = status != "offline"
-      
+
       base_data = %{
         online: is_online,
         status: status
       }
-      
+
       data = if is_online do
         base_data
       else
         last_seen = Presence.last_seen(user_id)
         Map.put(base_data, :last_seen, last_seen && DateTime.to_iso8601(last_seen))
       end
-      
+
       {user_id, data}
     end)
     |> Map.new()
-    
+
     conn
     |> put_status(:ok)
     |> json(%{data: enriched})

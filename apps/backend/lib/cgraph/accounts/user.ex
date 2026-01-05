@@ -1,7 +1,7 @@
 defmodule Cgraph.Accounts.User do
   @moduledoc """
   User schema for CGraph accounts.
-  
+
   Supports both email/password and Ethereum wallet authentication.
   Uses UUIDs for primary keys and soft deletes.
   """
@@ -145,7 +145,7 @@ defmodule Cgraph.Accounts.User do
   defp validate_email_format(changeset) do
     case get_change(changeset, :email) do
       nil -> changeset
-      _ -> 
+      _ ->
         changeset
         |> validate_format(:email, ~r/^[^\s]+@[^\s]+$/, message: "must be a valid email address")
         |> validate_length(:email, max: 160)
@@ -252,16 +252,16 @@ defmodule Cgraph.Accounts.User do
 
   defp validate_username_cooldown(changeset) do
     user = changeset.data
-    
+
     case user.username_changed_at do
       nil ->
         # First time setting username, no cooldown
         changeset
-      
+
       last_changed ->
         cooldown_end = DateTime.add(last_changed, @username_change_cooldown_days * 24 * 60 * 60, :second)
         now = DateTime.utc_now()
-        
+
         if DateTime.compare(now, cooldown_end) == :lt do
           days_remaining = div(DateTime.diff(cooldown_end, now, :second), 86_400) + 1
           add_error(changeset, :username, "can only be changed every 14 days. #{days_remaining} day(s) remaining")
@@ -325,7 +325,7 @@ defmodule Cgraph.Accounts.User do
   def update_changeset(user, attrs) do
     user
     |> cast(attrs, [
-      :username, :display_name, :bio, :avatar_url, :banner_url, 
+      :username, :display_name, :bio, :avatar_url, :banner_url,
       :custom_status, :status, :is_admin, :is_verified, :is_premium
     ])
     |> validate_length(:bio, max: 500)

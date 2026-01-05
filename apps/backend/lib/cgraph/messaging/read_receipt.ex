@@ -1,7 +1,7 @@
 defmodule Cgraph.Messaging.ReadReceipt do
   @moduledoc """
   Read receipts for messages.
-  
+
   Tracks when users read messages for delivery confirmation.
   """
   use Ecto.Schema

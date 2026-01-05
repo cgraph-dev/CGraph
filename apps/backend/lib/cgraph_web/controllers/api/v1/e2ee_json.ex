@@ -1,7 +1,7 @@
 defmodule CgraphWeb.API.V1.E2EEJSON do
   @moduledoc """
   JSON rendering for E2EE key management responses.
-  
+
   Provides serialization for E2EE public keys, prekey bundles,
   and key verification data. Private keys are never rendered
   as they should never leave the client device.
@@ -22,7 +22,7 @@ defmodule CgraphWeb.API.V1.E2EEJSON do
 
   @doc """
   Render a prekey bundle for session establishment.
-  
+
   This contains the public keys needed for X3DH key exchange.
   """
   def bundle(%{bundle: bundle}) do
@@ -68,7 +68,7 @@ defmodule CgraphWeb.API.V1.E2EEJSON do
 
   @doc """
   Render safety number for key verification.
-  
+
   The safety number is derived from both users' identity keys
   and should be compared out-of-band (phone call, in person)
   to verify key authenticity.

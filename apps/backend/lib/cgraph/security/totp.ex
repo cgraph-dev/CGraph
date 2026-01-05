@@ -115,7 +115,7 @@ defmodule Cgraph.Security.TOTP do
     else
       secret = generate_secret()
       backup_codes = generate_backup_codes()
-      
+
       {:ok, %{
         secret: Base.encode64(secret),
         secret_base32: Base.encode32(secret, padding: false),
@@ -138,16 +138,16 @@ defmodule Cgraph.Security.TOTP do
   - `secret` - The secret from `setup_2fa/1` (base64 encoded)
   - `backup_codes` - The backup codes from `setup_2fa/1`
   """
-  @spec verify_and_enable(User.t(), totp_code(), String.t(), [backup_code()]) :: 
+  @spec verify_and_enable(User.t(), totp_code(), String.t(), [backup_code()]) ::
     {:ok, User.t()} | {:error, :invalid_code}
   def verify_and_enable(%User{} = user, code, secret_base64, backup_codes) do
     secret = Base.decode64!(secret_base64)
-    
+
     if valid_totp?(secret, code) do
       # Encrypt secret for storage
       encrypted_secret = encrypt_secret(secret)
       hashed_backup_codes = hash_backup_codes(backup_codes)
-      
+
       # Update user with 2FA data
       user
       |> User.totp_changeset(%{
@@ -161,7 +161,7 @@ defmodule Cgraph.Security.TOTP do
         {:ok, updated_user} ->
           audit_2fa_enabled(user)
           {:ok, updated_user}
-        
+
         error ->
           error
       end
@@ -183,7 +183,7 @@ defmodule Cgraph.Security.TOTP do
   def verify(%User{} = user, code) do
     if totp_enabled?(user) do
       secret = decrypt_secret(user.totp_secret)
-      
+
       if valid_totp?(secret, code) do
         :ok
       else
@@ -200,7 +200,7 @@ defmodule Cgraph.Security.TOTP do
   Backup codes can only be used once. Each successful use removes
   that code from the user's available backup codes.
   """
-  @spec use_backup_code(User.t(), backup_code()) :: 
+  @spec use_backup_code(User.t(), backup_code()) ::
     {:ok, non_neg_integer()} | {:error, :invalid_code | :no_backup_codes}
   def use_backup_code(%User{} = user, code) do
     if is_nil(user.totp_backup_codes) or user.totp_backup_codes == [] do
@@ -208,20 +208,20 @@ defmodule Cgraph.Security.TOTP do
     else
       normalized_code = normalize_backup_code(code)
       code_hash = hash_backup_code(normalized_code)
-      
+
       case find_and_remove_backup_code(user.totp_backup_codes, code_hash) do
         {:ok, remaining_codes} ->
           # Update user with remaining codes
           user
           |> User.totp_changeset(%{totp_backup_codes: remaining_codes})
           |> Repo.update()
-          
+
           remaining_count = length(remaining_codes)
-          
+
           audit_backup_code_used(user, remaining_count)
-          
+
           {:ok, remaining_count}
-        
+
         :not_found ->
           {:error, :invalid_code}
       end
@@ -244,7 +244,7 @@ defmodule Cgraph.Security.TOTP do
 
   Requires either a valid TOTP code or backup code for security.
   """
-  @spec disable_2fa(User.t(), totp_code() | backup_code()) :: 
+  @spec disable_2fa(User.t(), totp_code() | backup_code()) ::
     {:ok, User.t()} | {:error, :invalid_code}
   def disable_2fa(%User{} = user, code) do
     # Try TOTP code first, then backup code
@@ -257,7 +257,7 @@ defmodule Cgraph.Security.TOTP do
         end
       _ -> false
     end
-    
+
     if valid do
       user
       |> User.totp_changeset(%{
@@ -273,7 +273,7 @@ defmodule Cgraph.Security.TOTP do
           TokenBlacklist.revoke_all_for_user(user.id, reason: :totp_disabled)
           audit_2fa_disabled(user)
           {:ok, updated_user}
-        
+
         error ->
           error
       end
@@ -287,14 +287,14 @@ defmodule Cgraph.Security.TOTP do
 
   Requires valid TOTP code. Replaces all existing backup codes.
   """
-  @spec regenerate_backup_codes(User.t(), totp_code()) :: 
+  @spec regenerate_backup_codes(User.t(), totp_code()) ::
     {:ok, [backup_code()]} | {:error, :invalid_code}
   def regenerate_backup_codes(%User{} = user, code) do
     case verify(user, code) do
       :ok ->
         new_codes = generate_backup_codes()
         hashed_codes = hash_backup_codes(new_codes)
-        
+
         user
         |> User.totp_changeset(%{totp_backup_codes: hashed_codes})
         |> Repo.update()
@@ -302,11 +302,11 @@ defmodule Cgraph.Security.TOTP do
           {:ok, _} ->
             audit_backup_codes_regenerated(user)
             {:ok, new_codes}
-          
+
           error ->
             error
         end
-      
+
       error ->
         error
     end
@@ -323,11 +323,11 @@ defmodule Cgraph.Security.TOTP do
   defp valid_totp?(secret, code) when is_binary(code) do
     # Clean the code (remove spaces/dashes)
     clean_code = code |> String.replace(~r/[\s-]/, "") |> String.trim()
-    
+
     # Get current time window
     current_window = div(System.system_time(:second), period())
     drift = drift_windows()
-    
+
     # Check current window and drift windows
     Enum.any?(-drift..drift, fn offset ->
       expected = generate_totp(secret, current_window + offset)
@@ -338,17 +338,17 @@ defmodule Cgraph.Security.TOTP do
   defp generate_totp(secret, counter) do
     # HOTP algorithm (RFC 4226)
     counter_bytes = <<counter::unsigned-big-integer-size(64)>>
-    
+
     hmac = :crypto.mac(:hmac, :sha, secret, counter_bytes)
-    
+
     # Dynamic truncation
     offset = :binary.at(hmac, 19) &&& 0x0F
-    
+
     <<_::binary-size(offset), code::unsigned-big-integer-size(32), _::binary>> = hmac
-    
+
     # Mask to get 31-bit value and take modulo for digit count
     truncated = (code &&& 0x7FFFFFFF) |> rem(power_of_10(digits()))
-    
+
     # Pad with zeros
     truncated
     |> Integer.to_string()
@@ -418,7 +418,7 @@ defmodule Cgraph.Security.TOTP do
   defp encrypt_secret(secret) do
     key = get_encryption_key()
     iv = :crypto.strong_rand_bytes(16)
-    
+
     {ciphertext, tag} = :crypto.crypto_one_time_aead(
       :aes_256_gcm,
       key,
@@ -427,7 +427,7 @@ defmodule Cgraph.Security.TOTP do
       "",
       true
     )
-    
+
     # Combine IV + tag + ciphertext for storage
     Base.encode64(iv <> tag <> ciphertext)
   end
@@ -435,9 +435,9 @@ defmodule Cgraph.Security.TOTP do
   defp decrypt_secret(encrypted_base64) do
     key = get_encryption_key()
     data = Base.decode64!(encrypted_base64)
-    
+
     <<iv::binary-size(16), tag::binary-size(16), ciphertext::binary>> = data
-    
+
     :crypto.crypto_one_time_aead(
       :aes_256_gcm,
       key,
@@ -452,7 +452,7 @@ defmodule Cgraph.Security.TOTP do
   defp get_encryption_key do
     # Derive from application secret
     secret = Application.get_env(:cgraph, CgraphWeb.Endpoint)[:secret_key_base]
-    
+
     :crypto.hash(:sha256, "totp_encryption:" <> secret)
   end
 
@@ -464,7 +464,7 @@ defmodule Cgraph.Security.TOTP do
     issuer = config()[:issuer] || @default_issuer
     label = "#{issuer}:#{user.email}"
     secret_base32 = Base.encode32(secret, padding: false)
-    
+
     params = URI.encode_query(%{
       "secret" => secret_base32,
       "issuer" => issuer,
@@ -472,7 +472,7 @@ defmodule Cgraph.Security.TOTP do
       "digits" => digits(),
       "period" => period()
     })
-    
+
     "otpauth://totp/#{URI.encode(label)}?#{params}"
   end
 

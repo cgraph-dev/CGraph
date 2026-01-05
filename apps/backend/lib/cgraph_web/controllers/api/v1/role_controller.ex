@@ -15,7 +15,7 @@ defmodule CgraphWeb.API.V1.RoleController do
   """
   def index(conn, %{"group_id" => group_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :view) do
       roles = Groups.list_roles(group)
@@ -29,7 +29,7 @@ defmodule CgraphWeb.API.V1.RoleController do
   """
   def show(conn, %{"group_id" => group_id, "id" => role_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :view),
          {:ok, role} <- Groups.get_role(group, role_id) do
@@ -40,7 +40,7 @@ defmodule CgraphWeb.API.V1.RoleController do
   @doc """
   Create a new role.
   POST /api/v1/groups/:group_id/roles
-  
+
   Params:
   - name: Role name (required)
   - color: Hex color code (optional)
@@ -50,7 +50,7 @@ defmodule CgraphWeb.API.V1.RoleController do
     user = conn.assigns.current_user
     # Accept params either nested under "role" key or directly
     role_params = Map.get(params, "role") || extract_role_params(params)
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :manage_roles),
          {:ok, role} <- Groups.create_role(group, role_params) do
@@ -58,7 +58,7 @@ defmodule CgraphWeb.API.V1.RoleController do
         role_id: role.id,
         name: role.name
       })
-      
+
       conn
       |> put_status(:created)
       |> render(:show, role: role)
@@ -73,7 +73,7 @@ defmodule CgraphWeb.API.V1.RoleController do
     user = conn.assigns.current_user
     # Support both nested {"role" => attrs} and flat {name, color, ...} params
     role_params = extract_role_params(params)
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :manage_roles),
          {:ok, role} <- Groups.get_role(group, role_id),
@@ -83,7 +83,7 @@ defmodule CgraphWeb.API.V1.RoleController do
         role_id: role.id,
         changes: role_params
       })
-      
+
       render(conn, :show, role: updated_role)
     end
   end
@@ -102,7 +102,7 @@ defmodule CgraphWeb.API.V1.RoleController do
   """
   def delete(conn, %{"group_id" => group_id, "id" => role_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :manage_roles),
          {:ok, role} <- Groups.get_role(group, role_id),
@@ -112,7 +112,7 @@ defmodule CgraphWeb.API.V1.RoleController do
         role_id: role.id,
         name: role.name
       })
-      
+
       send_resp(conn, :no_content, "")
     end
   end
@@ -123,14 +123,14 @@ defmodule CgraphWeb.API.V1.RoleController do
   """
   def reorder(conn, %{"group_id" => group_id, "role_ids" => role_ids}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :manage_roles),
          {:ok, roles} <- Groups.reorder_roles(group, role_ids) do
       Groups.log_audit_event(group, user, :roles_reordered, %{
         role_ids: role_ids
       })
-      
+
       render(conn, :index, roles: roles)
     end
   end

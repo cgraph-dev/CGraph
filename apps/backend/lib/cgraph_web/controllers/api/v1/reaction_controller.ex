@@ -17,7 +17,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
   def index(conn, %{"conversation_id" => conversation_id, "message_id" => message_id} = params) do
     user = conn.assigns.current_user
     emoji = Map.get(params, "emoji") # Optional filter by specific emoji
-    
+
     with {:ok, conversation} <- Messaging.get_conversation(conversation_id),
          :ok <- Messaging.authorize_access(user, conversation),
          {:ok, message} <- Messaging.get_message(conversation, message_id) do
@@ -33,7 +33,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
   """
   def create(conn, %{"conversation_id" => conversation_id, "message_id" => message_id, "emoji" => emoji}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, conversation} <- Messaging.get_conversation(conversation_id),
          :ok <- Messaging.authorize_access(user, conversation),
          {:ok, message} <- Messaging.get_message(conversation, message_id),
@@ -41,7 +41,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
          {:ok, reaction} <- Messaging.add_reaction(user, message, emoji) do
       # Broadcast reaction to other participants
       Messaging.broadcast_reaction_added(conversation, message, reaction)
-      
+
       conn
       |> put_status(:created)
       |> render(:show, reaction: reaction)
@@ -51,14 +51,14 @@ defmodule CgraphWeb.API.V1.ReactionController do
   # Simplified route: POST /api/v1/messages/:id/reactions
   def create(conn, %{"id" => message_id, "emoji" => emoji}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, message} <- Messaging.get_message(message_id),
          {:ok, conversation} <- Messaging.get_conversation(message.conversation_id),
          :ok <- Messaging.authorize_access(user, conversation),
          :ok <- validate_emoji(emoji),
          {:ok, reaction} <- Messaging.add_reaction(user, message, emoji) do
       Messaging.broadcast_reaction_added(conversation, message, reaction)
-      
+
       conn
       |> put_status(:created)
       |> render(:show, reaction: reaction)
@@ -72,14 +72,14 @@ defmodule CgraphWeb.API.V1.ReactionController do
   """
   def delete(conn, %{"conversation_id" => conversation_id, "message_id" => message_id, "emoji" => emoji}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, conversation} <- Messaging.get_conversation(conversation_id),
          :ok <- Messaging.authorize_access(user, conversation),
          {:ok, message} <- Messaging.get_message(conversation, message_id),
          {:ok, _} <- Messaging.remove_reaction(user, message, emoji) do
       # Broadcast reaction removal
       Messaging.broadcast_reaction_removed(conversation, message, user, emoji)
-      
+
       send_resp(conn, :no_content, "")
     end
   end
@@ -87,13 +87,13 @@ defmodule CgraphWeb.API.V1.ReactionController do
   # Simplified route: DELETE /api/v1/messages/:id/reactions/:emoji
   def delete(conn, %{"id" => message_id, "emoji" => emoji}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, message} <- Messaging.get_message(message_id),
          {:ok, conversation} <- Messaging.get_conversation(message.conversation_id),
          :ok <- Messaging.authorize_access(user, conversation),
          {:ok, _} <- Messaging.remove_reaction(user, message, emoji) do
       Messaging.broadcast_reaction_removed(conversation, message, user, emoji)
-      
+
       send_resp(conn, :no_content, "")
     end
   end
@@ -105,7 +105,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
   def channel_index(conn, %{"group_id" => group_id, "channel_id" => channel_id, "message_id" => message_id} = params) do
     user = conn.assigns.current_user
     emoji = Map.get(params, "emoji")
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :view),
          {:ok, channel} <- Groups.get_channel(group, channel_id),
@@ -126,7 +126,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
     "emoji" => emoji
   }) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :add_reactions),
          {:ok, channel} <- Groups.get_channel(group, channel_id),
@@ -135,7 +135,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
          {:ok, reaction} <- Groups.add_message_reaction(user, message, emoji) do
       # Broadcast reaction
       Groups.broadcast_reaction_added(channel, message, reaction)
-      
+
       conn
       |> put_status(:created)
       |> render(:show, reaction: reaction)
@@ -153,7 +153,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
     "emoji" => emoji
   }) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :view),
          {:ok, channel} <- Groups.get_channel(group, channel_id),
@@ -161,7 +161,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
          {:ok, _} <- Groups.remove_message_reaction(user, message, emoji) do
       # Broadcast removal
       Groups.broadcast_reaction_removed(channel, message, user, emoji)
-      
+
       send_resp(conn, :no_content, "")
     end
   end
@@ -173,7 +173,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
   def users(conn, %{"conversation_id" => conversation_id, "message_id" => message_id, "emoji" => emoji} = params) do
     user = conn.assigns.current_user
     limit = Map.get(params, "limit", "50") |> String.to_integer() |> min(100)
-    
+
     with {:ok, conversation} <- Messaging.get_conversation(conversation_id),
          :ok <- Messaging.authorize_access(user, conversation),
          {:ok, message} <- Messaging.get_message(conversation, message_id) do
@@ -190,10 +190,10 @@ defmodule CgraphWeb.API.V1.ReactionController do
     cond do
       String.length(emoji) == 0 ->
         {:error, :invalid_emoji}
-      
+
       String.length(emoji) > 32 ->
         {:error, :emoji_too_long}
-      
+
       true ->
         :ok
     end

@@ -1,7 +1,7 @@
 defmodule Cgraph.Forums.Post do
   @moduledoc """
   Forum post schema.
-  
+
   Supports multiple post types:
   - Text posts
   - Link posts (with preview)

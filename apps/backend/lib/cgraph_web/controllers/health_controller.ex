@@ -1,17 +1,17 @@
 defmodule CgraphWeb.HealthController do
   @moduledoc """
   Health check endpoints for monitoring and load balancer probes.
-  
+
   ## Endpoints
-  
+
   | Endpoint      | Purpose                     | Response Codes     |
   |---------------|-----------------------------|--------------------|
   | `GET /health` | Liveness probe             | 200 always         |
   | `GET /ready`  | Readiness probe            | 200 OK, 503 unready|
   | `GET /status` | Detailed health (internal) | 200/503            |
-  
+
   ## Load Balancer Integration
-  
+
   Configure your load balancer to:
   1. Use `/health` for liveness checks (restart if failing)
   2. Use `/ready` for readiness checks (remove from pool if failing)
@@ -23,7 +23,7 @@ defmodule CgraphWeb.HealthController do
 
   @doc """
   Basic liveness check - returns OK if the service is running.
-  
+
   This endpoint should always return 200 if the Erlang VM is running.
   Used by Kubernetes/Docker for liveness probes.
   """
@@ -38,13 +38,13 @@ defmodule CgraphWeb.HealthController do
 
   @doc """
   Readiness check - verifies all dependencies are available.
-  
+
   Returns 503 if any critical dependency is unavailable.
   Used by load balancers to route traffic only to healthy instances.
   """
   def ready(conn, _params) do
     start_time = System.monotonic_time(:millisecond)
-    
+
     checks = %{
       database: check_database(),
       cache: check_cache(),
@@ -52,12 +52,12 @@ defmodule CgraphWeb.HealthController do
     }
 
     duration_ms = System.monotonic_time(:millisecond) - start_time
-    
+
     # Determine overall status
     critical_checks = [:database]
     critical_ok = Enum.all?(critical_checks, fn k -> checks[k] == "ok" end)
     all_ok = Enum.all?(checks, fn {_k, v} -> v in ["ok", "not_configured"] end)
-    
+
     {status, http_status} = cond do
       critical_ok and all_ok -> {"ready", 200}
       critical_ok -> {"degraded", 200}
@@ -73,10 +73,10 @@ defmodule CgraphWeb.HealthController do
       timestamp: DateTime.utc_now() |> DateTime.to_iso8601()
     })
   end
-  
+
   @doc """
   Detailed health status for internal monitoring.
-  
+
   Returns comprehensive diagnostics including:
   - Database pool stats
   - Query performance
@@ -91,7 +91,7 @@ defmodule CgraphWeb.HealthController do
         else
           %{}
         end
-        
+
         response = %{
           status: Atom.to_string(health.status),
           latency_ms: health.latency_ms,
@@ -100,17 +100,17 @@ defmodule CgraphWeb.HealthController do
           system: system_info(),
           timestamp: DateTime.to_iso8601(health.timestamp)
         }
-        
+
         http_status = case health.status do
           :healthy -> 200
           :degraded -> 200
           :unhealthy -> 503
         end
-        
+
         conn
         |> put_status(http_status)
         |> json(response)
-        
+
       {:error, reason} ->
         conn
         |> put_status(503)
@@ -134,7 +134,7 @@ defmodule CgraphWeb.HealthController do
   rescue
     _ -> "error"
   end
-  
+
   defp check_cache do
     case Cachex.get(:cgraph_cache, "__health_check__") do
       {:ok, _} -> "ok"
@@ -156,7 +156,7 @@ defmodule CgraphWeb.HealthController do
   rescue
     _ -> "not_configured"
   end
-  
+
   defp format_issues(issues) do
     Enum.map(issues, fn issue ->
       %{
@@ -166,10 +166,10 @@ defmodule CgraphWeb.HealthController do
       }
     end)
   end
-  
+
   defp system_info do
     memory = :erlang.memory()
-    
+
     %{
       memory: %{
         total_mb: div(memory[:total], 1_048_576),

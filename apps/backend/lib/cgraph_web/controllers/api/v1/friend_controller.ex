@@ -18,13 +18,13 @@ defmodule CgraphWeb.API.V1.FriendController do
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "50") |> String.to_integer() |> min(100)
     status = Map.get(params, "status", "accepted") # accepted, pending, blocked
-    
+
     {friends, meta} = Accounts.list_friends(user,
       page: page,
       per_page: per_page,
       status: status
     )
-    
+
     render(conn, :index, friends: friends, meta: meta)
   end
 
@@ -36,12 +36,12 @@ defmodule CgraphWeb.API.V1.FriendController do
     user = conn.assigns.current_user
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
-    
+
     {requests, meta} = Accounts.list_friend_requests(user,
       page: page,
       per_page: per_page
     )
-    
+
     render(conn, :requests, requests: requests, meta: meta)
   end
 
@@ -53,12 +53,12 @@ defmodule CgraphWeb.API.V1.FriendController do
     user = conn.assigns.current_user
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
-    
+
     {requests, meta} = Accounts.list_sent_friend_requests(user,
       page: page,
       per_page: per_page
     )
-    
+
     render(conn, :sent, requests: requests, meta: meta)
   end
 
@@ -69,7 +69,7 @@ defmodule CgraphWeb.API.V1.FriendController do
   """
   def create(conn, %{"user_id" => target_user_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, target_user} <- Accounts.get_user(target_user_id),
          :ok <- validate_not_self(user, target_user),
          :ok <- validate_not_blocked(user, target_user),
@@ -77,7 +77,7 @@ defmodule CgraphWeb.API.V1.FriendController do
          {:ok, friendship} <- Accounts.send_friend_request(user, target_user) do
       # Notify target user
       Accounts.notify_friend_request(friendship)
-      
+
       conn
       |> put_status(:created)
       |> render(:show, friendship: friendship)
@@ -86,7 +86,7 @@ defmodule CgraphWeb.API.V1.FriendController do
 
   def create(conn, %{"username" => username}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, target_user} <- Accounts.get_user_by_username(username),
          :ok <- validate_not_self(user, target_user),
          :ok <- validate_not_blocked(user, target_user),
@@ -94,7 +94,7 @@ defmodule CgraphWeb.API.V1.FriendController do
          {:ok, friendship} <- Accounts.send_friend_request(user, target_user) do
       # Notify target user
       Accounts.notify_friend_request(friendship)
-      
+
       conn
       |> put_status(:created)
       |> render(:show, friendship: friendship)
@@ -107,13 +107,13 @@ defmodule CgraphWeb.API.V1.FriendController do
   """
   def accept(conn, %{"id" => friendship_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, friendship} <- Accounts.get_friend_request(user, friendship_id),
          :ok <- validate_is_recipient(user, friendship),
          {:ok, updated_friendship} <- Accounts.accept_friend_request(friendship) do
       # Notify requester
       Accounts.notify_friend_accepted(updated_friendship)
-      
+
       render(conn, :show, friendship: updated_friendship)
     end
   end
@@ -124,7 +124,7 @@ defmodule CgraphWeb.API.V1.FriendController do
   """
   def decline(conn, %{"id" => friendship_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, friendship} <- Accounts.get_friend_request(user, friendship_id),
          :ok <- validate_is_recipient(user, friendship),
          {:ok, _} <- Accounts.decline_friend_request(friendship) do
@@ -138,7 +138,7 @@ defmodule CgraphWeb.API.V1.FriendController do
   """
   def delete(conn, %{"id" => friendship_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, friendship} <- Accounts.get_friendship(user, friendship_id),
          {:ok, _} <- Accounts.remove_friendship(user, friendship) do
       send_resp(conn, :no_content, "")
@@ -151,7 +151,7 @@ defmodule CgraphWeb.API.V1.FriendController do
   """
   def unfriend(conn, %{"user_id" => target_user_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, target_user} <- Accounts.get_user(target_user_id),
          {:ok, _} <- Accounts.unfriend(user, target_user) do
       send_resp(conn, :no_content, "")
@@ -164,7 +164,7 @@ defmodule CgraphWeb.API.V1.FriendController do
   """
   def block(conn, %{"id" => target_user_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, target_user} <- Accounts.get_user(target_user_id),
          :ok <- validate_not_self(user, target_user),
          {:ok, block} <- Accounts.block_user(user, target_user) do
@@ -180,7 +180,7 @@ defmodule CgraphWeb.API.V1.FriendController do
   """
   def unblock(conn, %{"id" => target_user_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, target_user} <- Accounts.get_user(target_user_id),
          {:ok, _} <- Accounts.unblock_user(user, target_user) do
       send_resp(conn, :no_content, "")
@@ -195,12 +195,12 @@ defmodule CgraphWeb.API.V1.FriendController do
     user = conn.assigns.current_user
     page = Map.get(params, "page", "1") |> String.to_integer()
     per_page = Map.get(params, "per_page", "50") |> String.to_integer() |> min(100)
-    
+
     {blocked_users, meta} = Accounts.list_blocked_users(user,
       page: page,
       per_page: per_page
     )
-    
+
     render(conn, :blocked, users: blocked_users, meta: meta)
   end
 
@@ -210,7 +210,7 @@ defmodule CgraphWeb.API.V1.FriendController do
   """
   def mutual(conn, %{"id" => target_user_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, target_user} <- Accounts.get_user(target_user_id) do
       mutual_friends = Accounts.get_mutual_friends(user, target_user)
       render(conn, :mutual, friends: mutual_friends)
@@ -223,7 +223,7 @@ defmodule CgraphWeb.API.V1.FriendController do
   """
   def online(conn, _params) do
     user = conn.assigns.current_user
-    
+
     online_friends = Accounts.get_online_friends(user)
     render(conn, :online, friends: online_friends)
   end
@@ -243,7 +243,7 @@ defmodule CgraphWeb.API.V1.FriendController do
   def suggestions(conn, params) do
     user = conn.assigns.current_user
     limit = Map.get(params, "limit", "10") |> String.to_integer() |> min(20)
-    
+
     suggestions = Accounts.get_friend_suggestions(user, limit: limit)
     render(conn, :suggestions, suggestions: suggestions)
   end
@@ -262,10 +262,10 @@ defmodule CgraphWeb.API.V1.FriendController do
     cond do
       Accounts.is_blocked?(user, target_user) ->
         {:error, :user_blocked}
-      
+
       Accounts.is_blocked?(target_user, user) ->
         {:error, :blocked_by_user}
-      
+
       true ->
         :ok
     end

@@ -313,7 +313,7 @@ defmodule CgraphWeb.FallbackController do
   # Handle generic atom errors
   def call(conn, {:error, reason}) when is_atom(reason) do
     message = reason |> Atom.to_string() |> String.replace("_", " ") |> String.capitalize()
-    
+
     conn
     |> put_status(:unprocessable_entity)
     |> put_view(json: CgraphWeb.ErrorJSON)

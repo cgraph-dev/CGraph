@@ -1,10 +1,10 @@
 defmodule Cgraph.Forums.Board do
   @moduledoc """
   Board schema representing a section/category within a forum.
-  
+
   Boards are the organizational structure inside a forum (like MyBB's "Forums").
   They can be nested to create sub-boards for better organization.
-  
+
   ## Features
   - Hierarchical structure (parent/child boards)
   - Custom permissions per board
@@ -29,20 +29,20 @@ defmodule Cgraph.Forums.Board do
     field :description, :string
     field :icon, :string
     field :position, :integer, default: 0
-    
+
     # Permissions
     field :is_locked, :boolean, default: false
     field :is_hidden, :boolean, default: false
     field :min_posts_to_post, :integer, default: 0
     field :min_reputation_to_post, :integer, default: 0
-    
+
     # Stats (denormalized)
     field :thread_count, :integer, default: 0
     field :post_count, :integer, default: 0
     field :last_post_at, :utc_datetime
     field :last_post_id, :binary_id
     field :last_thread_id, :binary_id
-    
+
     # Soft delete
     field :deleted_at, :utc_datetime
 

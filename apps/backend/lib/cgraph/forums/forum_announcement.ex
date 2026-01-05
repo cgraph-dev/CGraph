@@ -16,23 +16,23 @@ defmodule Cgraph.Forums.ForumAnnouncement do
     field :is_global, :boolean, default: false  # shown on all boards
     field :is_active, :boolean, default: true
     field :priority, :integer, default: 0  # higher = shown first
-    
+
     # Display settings
     field :style, :string, default: "info"  # info, warning, success, danger
     field :dismissible, :boolean, default: true
     field :show_icon, :boolean, default: true
-    
+
     # Scheduling
     field :start_date, :utc_datetime_usec
     field :end_date, :utc_datetime_usec
-    
+
     # Targeting
     field :target_groups, {:array, :string}, default: []  # empty = all groups
-    
+
     # Stats
     field :view_count, :integer, default: 0
     field :dismiss_count, :integer, default: 0
-    
+
     belongs_to :forum, Cgraph.Forums.Forum
     belongs_to :board, Cgraph.Forums.Board  # nil if global or forum-wide
     belongs_to :author, Cgraph.Accounts.User
@@ -79,10 +79,10 @@ defmodule Cgraph.Forums.ForumAnnouncement do
   def active?(%__MODULE__{start_date: nil, end_date: nil, is_active: true}), do: true
   def active?(%__MODULE__{start_date: start_date, end_date: end_date, is_active: true}) do
     now = DateTime.utc_now()
-    
+
     after_start = is_nil(start_date) or DateTime.compare(now, start_date) in [:gt, :eq]
     before_end = is_nil(end_date) or DateTime.compare(now, end_date) in [:lt, :eq]
-    
+
     after_start and before_end
   end
 end

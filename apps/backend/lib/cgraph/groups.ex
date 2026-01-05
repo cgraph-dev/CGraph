@@ -1,7 +1,7 @@
 defmodule Cgraph.Groups do
   @moduledoc """
   The Groups context.
-  
+
   Handles group (server) management, channels, members, roles, and invites.
   Discord-style server functionality.
   """
@@ -37,7 +37,7 @@ defmodule Cgraph.Groups do
       preload: [:channels]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     groups = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -100,7 +100,7 @@ defmodule Cgraph.Groups do
   """
   def authorize_action(user, group, action) do
     member = get_member_by_user(group, user.id)
-    
+
     cond do
       is_nil(member) -> {:error, :not_found}
       group.owner_id == user.id -> :ok
@@ -115,12 +115,12 @@ defmodule Cgraph.Groups do
   def create_group(user, attrs) do
     # Convert to string keys for consistency
     attrs = stringify_keys(attrs) |> Map.put("owner_id", user.id)
-    
+
     # Create the group first, handle validation errors
     case %Group{} |> Group.changeset(attrs) |> Repo.insert() do
       {:error, changeset} ->
         {:error, changeset}
-      
+
       {:ok, group} ->
         # Wrap the rest in a transaction
         Repo.transaction(fn ->
@@ -166,7 +166,7 @@ defmodule Cgraph.Groups do
 
   @doc """
   Delete a group (soft delete).
-  
+
   Sets deleted_at timestamp rather than removing the record.
   """
   def delete_group(group) do
@@ -215,7 +215,7 @@ defmodule Cgraph.Groups do
 
   @doc """
   Create a channel.
-  
+
   Accepts both :type and :channel_type for the channel type field.
   """
   def create_channel(group, attrs) do
@@ -223,12 +223,12 @@ defmodule Cgraph.Groups do
       |> stringify_keys()
       |> Map.put("group_id", group.id)
       |> normalize_channel_type()
-    
+
     %Channel{}
     |> Channel.changeset(channel_attrs)
     |> Repo.insert()
   end
-  
+
   # Normalize "type" to "channel_type" for API consistency
   defp normalize_channel_type(attrs) do
     case Map.pop(attrs, "type") do
@@ -273,7 +273,7 @@ defmodule Cgraph.Groups do
       preload: [:sender, :reactions]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     messages = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -353,7 +353,7 @@ defmodule Cgraph.Groups do
     end
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     members = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -422,7 +422,7 @@ defmodule Cgraph.Groups do
   """
   def update_member_roles(member, role_ids) do
     roles = Repo.all(from r in Role, where: r.id in ^role_ids)
-    
+
     member
     |> Repo.preload(:roles)
     |> Ecto.Changeset.change()
@@ -445,7 +445,7 @@ defmodule Cgraph.Groups do
     muted_until = DateTime.utc_now()
       |> DateTime.add(duration_seconds, :second)
       |> DateTime.truncate(:second)
-    
+
     member
     |> Ecto.Changeset.change(muted_until: muted_until)
     |> Repo.update()
@@ -491,7 +491,7 @@ defmodule Cgraph.Groups do
   def ban_member(group, member, opts \\ []) do
     reason = Keyword.get(opts, :reason, "")
     duration = Keyword.get(opts, :duration)
-    
+
     expires_at = if duration do
       DateTime.add(DateTime.utc_now(), duration, :second)
     else
@@ -608,12 +608,12 @@ defmodule Cgraph.Groups do
 
   @doc """
   Calculate the effective permissions for a member based on their roles.
-  
+
   Returns a list of permission strings the member has.
   """
   def calculate_permissions(%Member{} = member, %Group{} = group) do
     roles = member.roles || []
-    
+
     # Owner has all permissions
     if group.owner_id == member.user_id do
       all_permissions()
@@ -627,30 +627,34 @@ defmodule Cgraph.Groups do
   defp all_permissions do
     [
       "view", "view_members", "send_messages", "manage_messages",
-      "manage_channels", "manage_roles", "manage_members", 
+      "manage_channels", "manage_roles", "manage_members",
       "kick_members", "ban_members", "mute_members", "view_audit_log",
       "create_invites", "manage_invites", "add_reactions", "administrator"
     ]
   end
 
+  @permission_fields [
+    {:can_send_messages, "send_messages", true},
+    {:can_manage_messages, "manage_messages", false},
+    {:can_manage_channels, "manage_channels", false},
+    {:can_manage_roles, "manage_roles", false},
+    {:can_manage_members, "manage_members", false},
+    {:can_kick_members, "kick_members", false},
+    {:can_ban_members, "ban_members", false},
+    {:can_mute_members, "mute_members", false},
+    {:can_view_audit_log, "view_audit_log", false},
+    {:can_create_invites, "create_invites", true},
+    {:can_manage_invites, "manage_invites", false},
+    {:can_add_reactions, "add_reactions", true}
+  ]
+
+  defp role_permissions(%{is_admin: true}), do: all_permissions()
   defp role_permissions(role) do
-    permissions = ["view", "view_members"]
+    base_permissions = ["view", "view_members"]
     
-    permissions = if role.is_admin, do: all_permissions(), else: permissions
-    permissions = if Map.get(role, :can_send_messages, true), do: ["send_messages" | permissions], else: permissions
-    permissions = if Map.get(role, :can_manage_messages, false), do: ["manage_messages" | permissions], else: permissions
-    permissions = if Map.get(role, :can_manage_channels, false), do: ["manage_channels" | permissions], else: permissions
-    permissions = if Map.get(role, :can_manage_roles, false), do: ["manage_roles" | permissions], else: permissions
-    permissions = if Map.get(role, :can_manage_members, false), do: ["manage_members" | permissions], else: permissions
-    permissions = if Map.get(role, :can_kick_members, false), do: ["kick_members" | permissions], else: permissions
-    permissions = if Map.get(role, :can_ban_members, false), do: ["ban_members" | permissions], else: permissions
-    permissions = if Map.get(role, :can_mute_members, false), do: ["mute_members" | permissions], else: permissions
-    permissions = if Map.get(role, :can_view_audit_log, false), do: ["view_audit_log" | permissions], else: permissions
-    permissions = if Map.get(role, :can_create_invites, true), do: ["create_invites" | permissions], else: permissions
-    permissions = if Map.get(role, :can_manage_invites, false), do: ["manage_invites" | permissions], else: permissions
-    permissions = if Map.get(role, :can_add_reactions, true), do: ["add_reactions" | permissions], else: permissions
-    
-    permissions
+    Enum.reduce(@permission_fields, base_permissions, fn {field, perm, default}, acc ->
+      if Map.get(role, field, default), do: [perm | acc], else: acc
+    end)
   end
 
   defp has_permission?(member, action) do
@@ -659,24 +663,30 @@ defmodule Cgraph.Groups do
     end)
   end
 
+  # Permission mapping: action -> {field_name, default_value}
+  @role_permissions %{
+    view: {:always, true},
+    view_members: {:always, true},
+    send_messages: {:can_send_messages, true},
+    manage_messages: {:can_manage_messages, false},
+    manage_channels: {:can_manage_channels, false},
+    manage_roles: {:can_manage_roles, false},
+    manage_members: {:can_manage_members, false},
+    kick_members: {:can_kick_members, false},
+    ban_members: {:can_ban_members, false},
+    mute_members: {:can_mute_members, false},
+    view_audit_log: {:can_view_audit_log, false},
+    create_invites: {:can_create_invites, true},
+    view_invites: {:can_create_invites, true},
+    manage_invites: {:can_manage_invites, false},
+    add_reactions: {:can_add_reactions, true}
+  }
+
   defp check_role_permission(role, action) do
-    case action do
-      :view -> true
-      :view_members -> true
-      :send_messages -> Map.get(role, :can_send_messages, true)
-      :manage_messages -> Map.get(role, :can_manage_messages, false)
-      :manage_channels -> Map.get(role, :can_manage_channels, false)
-      :manage_roles -> Map.get(role, :can_manage_roles, false)
-      :manage_members -> Map.get(role, :can_manage_members, false)
-      :kick_members -> Map.get(role, :can_kick_members, false)
-      :ban_members -> Map.get(role, :can_ban_members, false)
-      :mute_members -> Map.get(role, :can_mute_members, false)
-      :view_audit_log -> Map.get(role, :can_view_audit_log, false)
-      :create_invites -> Map.get(role, :can_create_invites, true)
-      :view_invites -> Map.get(role, :can_create_invites, true)
-      :manage_invites -> Map.get(role, :can_manage_invites, false)
-      :add_reactions -> Map.get(role, :can_add_reactions, true)
-      _ -> false
+    case Map.get(@role_permissions, action) do
+      {:always, value} -> value
+      {field, default} -> Map.get(role, field, default)
+      nil -> false
     end
   end
 
@@ -728,7 +738,7 @@ defmodule Cgraph.Groups do
 
   @doc """
   Create an invite.
-  
+
   Accepts either a keyword list or map for options:
     - max_uses: Maximum number of times the invite can be used
     - expires_in: Seconds until expiration (default: 86400 = 24 hours)
@@ -753,7 +763,7 @@ defmodule Cgraph.Groups do
     max_uses = Keyword.get(opts, :max_uses)
     expires_at = Keyword.get(opts, :expires_at)
     expires_in = Keyword.get(opts, :expires_in, 86_400)
-    
+
     # Use explicit expires_at if provided, otherwise calculate from expires_in
     final_expires_at = cond do
       expires_at != nil -> expires_at
@@ -790,7 +800,7 @@ defmodule Cgraph.Groups do
     # Atomic increment to prevent race conditions - ensures max_uses limit is enforced
     {count, _} = from(i in Invite, where: i.id == ^invite.id)
     |> Repo.update_all(inc: [uses: 1])
-    
+
     if count == 0 do
       {:error, :invite_not_found}
     else
@@ -860,7 +870,7 @@ defmodule Cgraph.Groups do
     end
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     entries = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -916,7 +926,7 @@ defmodule Cgraph.Groups do
       order_by: [desc: g.member_count]
 
     total = Repo.aggregate(db_query, :count, :id)
-    
+
     groups = db_query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -1028,7 +1038,7 @@ defmodule Cgraph.Groups do
   def can_view_channel?(%Member{} = member, %Channel{} = channel) do
     # Load group if not already loaded
     channel = if Ecto.assoc_loaded?(channel.group), do: channel, else: Repo.preload(channel, :group)
-    
+
     # Group owner can view all channels
     # Otherwise all members can view (channel privacy via PermissionOverwrites later)
     member.user_id == channel.group.owner_id || true

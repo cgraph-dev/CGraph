@@ -91,7 +91,7 @@ defmodule CgraphWeb.API.V1.FriendJSON do
   def friend_data(friendship) do
     # The friend is the other user in the friendship
     friend = friendship.friend || friendship.user
-    
+
     %{
       id: friendship.id,
       user: UserJSON.user_data(friend),

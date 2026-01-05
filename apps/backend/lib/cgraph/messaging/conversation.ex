@@ -1,7 +1,7 @@
 defmodule Cgraph.Messaging.Conversation do
   @moduledoc """
   Direct message conversation between two users.
-  
+
   Conversations are unique per user pair and persist across sessions.
   Supports E2E encryption with client-managed keys.
   """

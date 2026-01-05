@@ -1,7 +1,7 @@
 defmodule CgraphWeb.GroupChannel do
   @moduledoc """
   Channel for group/channel messaging (Discord-style).
-  
+
   Handles:
   - Channel messages
   - Typing indicators
@@ -24,29 +24,20 @@ defmodule CgraphWeb.GroupChannel do
   def join("group:" <> channel_id, _params, socket) do
     user = socket.assigns.current_user
 
-    case Groups.get_channel(channel_id) do
-      {:error, :not_found} ->
-        {:error, %{reason: "not_found"}}
-
-      {:ok, channel} ->
-        # get_member_by_user returns member or nil
-        case Groups.get_member_by_user(channel.group, user.id) do
-          nil ->
-            {:error, %{reason: "unauthorized"}}
-
-          member ->
-            if Groups.can_view_channel?(member, channel) do
-              send(self(), :after_join)
-              socket = socket
-              |> assign(:channel_id, channel_id)
-              |> assign(:group_id, channel.group_id)
-              |> assign(:member, member)
-              |> assign(:rate_limit_messages, [])  # Initialize rate limit tracking
-              {:ok, socket}
-            else
-              {:error, %{reason: "no_access"}}
-            end
-        end
+    with {:ok, channel} <- Groups.get_channel(channel_id),
+         {:ok, member} <- get_channel_member(channel, user.id),
+         :ok <- verify_channel_access(member, channel) do
+      socket = socket
+        |> assign(:channel_id, channel_id)
+        |> assign(:group_id, channel.group_id)
+        |> assign(:member, member)
+        |> assign(:rate_limit_messages, [])
+      send(self(), :after_join)
+      {:ok, socket}
+    else
+      {:error, :not_found} -> {:error, %{reason: "not_found"}}
+      {:error, :not_member} -> {:error, %{reason: "unauthorized"}}
+      {:error, :no_access} -> {:error, %{reason: "no_access"}}
     end
   end
 
@@ -71,43 +62,24 @@ defmodule CgraphWeb.GroupChannel do
     {:noreply, socket}
   end
 
+  # ============================================================================
+  # handle_in/3 Callbacks - All grouped together
+  # ============================================================================
+
   @impl true
   def handle_in("new_message", %{"content" => content} = params, socket) do
     user = socket.assigns.current_user
     channel_id = socket.assigns.channel_id
     member = socket.assigns.member
 
-    # Check rate limit first
-    case check_rate_limit(socket) do
+    with {:ok, socket} <- check_rate_limit(socket),
+         :ok <- verify_send_permission(member) do
+      handle_message_creation(socket, user, channel_id, member, params, content)
+    else
       {:error, :rate_limited, socket} ->
         {:reply, {:error, %{reason: "rate_limited", message: "Too many messages. Please slow down."}}, socket}
-      
-      {:ok, socket} ->
-        # Check permissions
-        if Groups.can_send_messages?(member) do
-          case Messaging.create_message(%{
-            content: content,
-            sender_id: user.id,
-            channel_id: channel_id,
-            content_type: Map.get(params, "content_type", "text"),
-            reply_to_id: Map.get(params, "reply_to_id")
-          }) do
-            {:ok, message} ->
-              # Preload associations for serialization
-              message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
-              serialized = MessageJSON.message_data(message)
-              # Add nickname from member for group context
-              serialized = Map.put(serialized, :senderNickname, member.nickname)
-              
-              broadcast!(socket, "new_message", %{message: serialized})
-              {:reply, {:ok, %{message_id: message.id}}, socket}
-
-            {:error, changeset} ->
-              {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
-          end
-        else
-          {:reply, {:error, %{reason: "no_permission"}}, socket}
-        end
+      {:error, :no_permission} ->
+        {:reply, {:error, %{reason: "no_permission"}}, socket}
     end
   end
 
@@ -150,25 +122,12 @@ defmodule CgraphWeb.GroupChannel do
     user = socket.assigns.current_user
     member = socket.assigns.member
 
-    case Messaging.get_message(message_id) do
-      {:error, :not_found} ->
-        {:reply, {:error, %{reason: "not_found"}}, socket}
-
-      {:ok, message} ->
-        can_delete = message.sender_id == user.id or Groups.can_manage_messages?(member)
-
-        if can_delete do
-          case Messaging.delete_message(message, for_everyone: true) do
-            {:ok, _} ->
-              broadcast!(socket, "message_deleted", %{message_id: message_id})
-              {:reply, :ok, socket}
-
-            {:error, _} ->
-              {:reply, {:error, %{reason: "failed"}}, socket}
-          end
-        else
-          {:reply, {:error, %{reason: "no_permission"}}, socket}
-        end
+    with {:ok, message} <- Messaging.get_message(message_id),
+         :ok <- verify_delete_permission(message, user, member) do
+      execute_message_deletion(socket, message, message_id)
+    else
+      {:error, :not_found} -> {:reply, {:error, %{reason: "not_found"}}, socket}
+      {:error, :no_permission} -> {:reply, {:error, %{reason: "no_permission"}}, socket}
     end
   end
 
@@ -190,6 +149,60 @@ defmodule CgraphWeb.GroupChannel do
     end
   end
 
+  # ============================================================================
+  # Private Helper Functions
+  # ============================================================================
+
+  defp get_channel_member(channel, user_id) do
+    case Groups.get_member_by_user(channel.group, user_id) do
+      nil -> {:error, :not_member}
+      member -> {:ok, member}
+    end
+  end
+
+  defp verify_channel_access(member, channel) do
+    if Groups.can_view_channel?(member, channel), do: :ok, else: {:error, :no_access}
+  end
+
+  defp verify_send_permission(member) do
+    if Groups.can_send_messages?(member), do: :ok, else: {:error, :no_permission}
+  end
+
+  defp verify_delete_permission(message, user, member) do
+    can_delete = message.sender_id == user.id or Groups.can_manage_messages?(member)
+    if can_delete, do: :ok, else: {:error, :no_permission}
+  end
+
+  defp handle_message_creation(socket, user, channel_id, member, params, content) do
+    message_attrs = %{
+      content: content,
+      sender_id: user.id,
+      channel_id: channel_id,
+      content_type: Map.get(params, "content_type", "text"),
+      reply_to_id: Map.get(params, "reply_to_id")
+    }
+
+    case Messaging.create_message(message_attrs) do
+      {:ok, message} ->
+        message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+        serialized = message |> MessageJSON.message_data() |> Map.put(:senderNickname, member.nickname)
+        broadcast!(socket, "new_message", %{message: serialized})
+        {:reply, {:ok, %{message_id: message.id}}, socket}
+      {:error, changeset} ->
+        {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
+    end
+  end
+
+  defp execute_message_deletion(socket, message, message_id) do
+    case Messaging.delete_message(message, for_everyone: true) do
+      {:ok, _} ->
+        broadcast!(socket, "message_deleted", %{message_id: message_id})
+        {:reply, :ok, socket}
+      {:error, _} ->
+        {:reply, {:error, %{reason: "failed"}}, socket}
+    end
+  end
+
   defp format_errors(changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->
@@ -203,11 +216,11 @@ defmodule CgraphWeb.GroupChannel do
   defp check_rate_limit(socket) do
     now = System.monotonic_time(:millisecond)
     window_start = now - @rate_limit_window_ms
-    
+
     # Get recent message timestamps, filter out old ones
     recent_messages = socket.assigns[:rate_limit_messages] || []
     recent_messages = Enum.filter(recent_messages, fn ts -> ts > window_start end)
-    
+
     if length(recent_messages) >= @rate_limit_max_messages do
       # Rate limited
       {:error, :rate_limited, assign(socket, :rate_limit_messages, recent_messages)}

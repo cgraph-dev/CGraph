@@ -1,23 +1,23 @@
 defmodule Cgraph.OAuth do
   @moduledoc """
   OAuth 2.0 authentication module supporting Google, Apple, Facebook, and TikTok.
-  
+
   This module handles:
   - Authorization URL generation for OAuth flows
   - Token exchange and user info retrieval
   - User creation/linking based on OAuth provider data
-  
+
   ## Supported Providers
-  
+
   - `:google` - Google OAuth 2.0 (Gmail)
   - `:apple` - Sign in with Apple (iTunes)
   - `:facebook` - Facebook Login
   - `:tiktok` - TikTok Login
-  
+
   ## Configuration
-  
+
   OAuth credentials are configured in config/runtime.exs:
-  
+
       config :cgraph, :oauth,
         google: [
           client_id: "your-client-id",
@@ -58,28 +58,28 @@ defmodule Cgraph.OAuth do
 
   @doc """
   Generate an authorization URL for the given OAuth provider.
-  
+
   Returns a URL that the client should redirect to for OAuth authorization.
   The state parameter should be stored and verified when handling the callback.
-  
+
   ## Parameters
-  
+
   - `provider` - The OAuth provider (`:google`, `:apple`, `:facebook`, `:tiktok`)
   - `state` - A unique state string for CSRF protection
-  
+
   ## Returns
-  
+
   - `{:ok, url}` - The authorization URL
   - `{:error, reason}` - If the provider is not configured
-  
+
   ## Example
-  
+
       {:ok, url} = Cgraph.OAuth.authorize_url(:google, "random-state-string")
   """
   @spec authorize_url(provider(), String.t()) :: {:ok, String.t()} | {:error, term()}
   def authorize_url(provider, state) when provider in [:google, :apple, :facebook, :tiktok] do
     config = get_provider_config(provider)
-    
+
     if config_valid?(provider, config) do
       url = build_authorize_url(provider, config, state)
       {:ok, url}
@@ -92,35 +92,35 @@ defmodule Cgraph.OAuth do
 
   @doc """
   Exchange an authorization code for tokens and user info.
-  
+
   This function:
   1. Exchanges the authorization code for access/refresh tokens
   2. Fetches user info from the provider
   3. Creates or updates a user in the database
   4. Returns JWT tokens for the authenticated user
-  
+
   ## Parameters
-  
+
   - `provider` - The OAuth provider
   - `code` - The authorization code from the OAuth callback
   - `state` - The state parameter (should be verified by caller)
-  
+
   ## Returns
-  
+
   - `{:ok, %{user: user, tokens: tokens}}` - Success
   - `{:error, reason}` - Failure
   """
   @spec callback(provider(), String.t(), String.t()) :: oauth_result()
   def callback(provider, code, _state) when provider in [:google, :apple, :facebook, :tiktok] do
     config = get_provider_config(provider)
-    
+
     with {:ok, tokens} <- exchange_code_for_tokens(provider, config, code),
          {:ok, user_info} <- fetch_user_info(provider, config, tokens),
          {:ok, user} <- find_or_create_user(provider, user_info),
          {:ok, jwt_tokens} <- Guardian.generate_tokens(user) do
-      
+
       Logger.info("OAuth login successful", provider: provider, user_id: user.id)
-      
+
       {:ok, %{
         user: user,
         tokens: jwt_tokens
@@ -136,39 +136,39 @@ defmodule Cgraph.OAuth do
 
   @doc """
   Get a mobile-friendly token for OAuth providers.
-  
+
   Mobile apps typically handle OAuth differently - they get tokens directly
   from the native SDK and send them to the backend for verification.
-  
+
   ## Parameters
-  
+
   - `provider` - The OAuth provider
   - `access_token` - The access token from the mobile SDK
   - `id_token` - (Optional) The ID token for providers that support it (Apple, Google)
-  
+
   ## Returns
-  
+
   - `{:ok, %{user: user, tokens: tokens}}` - Success
   - `{:error, reason}` - Failure
   """
   @spec mobile_callback(provider(), String.t(), String.t() | nil) :: oauth_result()
   def mobile_callback(provider, access_token, id_token \\ nil)
 
-  def mobile_callback(provider, access_token, id_token) 
+  def mobile_callback(provider, access_token, id_token)
       when provider in [:google, :apple, :facebook, :tiktok] do
     config = get_provider_config(provider)
-    
+
     tokens = %{
       "access_token" => access_token,
       "id_token" => id_token
     }
-    
+
     with {:ok, user_info} <- fetch_user_info(provider, config, tokens),
          {:ok, user} <- find_or_create_user(provider, user_info),
          {:ok, jwt_tokens} <- Guardian.generate_tokens(user) do
-      
+
       Logger.info("Mobile OAuth login successful", provider: provider, user_id: user.id)
-      
+
       {:ok, %{
         user: user,
         tokens: jwt_tokens
@@ -180,14 +180,14 @@ defmodule Cgraph.OAuth do
     end
   end
 
-  def mobile_callback(provider, _access_token, _id_token), 
+  def mobile_callback(provider, _access_token, _id_token),
     do: {:error, {:invalid_provider, provider}}
 
   @doc """
   Link an OAuth account to an existing user.
-  
+
   ## Parameters
-  
+
   - `user` - The existing user
   - `provider` - The OAuth provider
   - `provider_uid` - The unique ID from the provider
@@ -206,7 +206,7 @@ defmodule Cgraph.OAuth do
         }
       })
     }
-    
+
     user
     |> User.oauth_changeset(attrs)
     |> Repo.update()
@@ -214,28 +214,28 @@ defmodule Cgraph.OAuth do
 
   @doc """
   Unlink an OAuth account from an existing user.
-  
+
   Only allows unlinking if the user has another authentication method.
   """
   @spec unlink_account(User.t(), provider()) :: {:ok, User.t()} | {:error, term()}
   def unlink_account(%User{} = user, provider) do
     provider_key = to_string(provider)
-    
+
     # Check if user has another auth method
     has_password = user.password_hash != nil
     has_other_oauth = user.oauth_data && Map.keys(user.oauth_data) -- [provider_key] != []
     has_wallet = user.wallet_address != nil
-    
+
     if has_password or has_other_oauth or has_wallet do
       new_oauth_data = Map.delete(user.oauth_data || %{}, provider_key)
-      
+
       attrs = if user.oauth_provider == provider_key do
         # If this was the primary OAuth provider, clear it
         %{oauth_provider: nil, oauth_uid: nil, oauth_data: new_oauth_data}
       else
         %{oauth_data: new_oauth_data}
       end
-      
+
       user
       |> User.oauth_changeset(attrs)
       |> Repo.update()
@@ -274,13 +274,13 @@ defmodule Cgraph.OAuth do
 
   @doc """
   Get the configuration for an OAuth provider.
-  
+
   ## Parameters
-  
+
   - `provider` - The OAuth provider atom
-  
+
   ## Returns
-  
+
   The provider configuration keyword list.
   """
   @spec get_provider_config(provider()) :: Keyword.t()
@@ -291,17 +291,17 @@ defmodule Cgraph.OAuth do
 
   @doc """
   Verify an Apple ID token using Apple's JWKS.
-  
+
   This function validates the token's signature and claims
   to ensure the token was issued by Apple for your application.
-  
+
   ## Parameters
-  
+
   - `id_token` - The Apple ID token (JWT)
   - `config` - The Apple OAuth configuration
-  
+
   ## Returns
-  
+
   - `{:ok, claims}` - The verified token claims
   - `{:error, reason}` - If verification failed
   """
@@ -311,23 +311,23 @@ defmodule Cgraph.OAuth do
   end
 
   defp config_valid?(:google, config) do
-    config[:client_id] not in [nil, ""] and 
+    config[:client_id] not in [nil, ""] and
     config[:client_secret] not in [nil, ""]
   end
 
   defp config_valid?(:apple, config) do
-    config[:client_id] not in [nil, ""] and 
+    config[:client_id] not in [nil, ""] and
     config[:team_id] not in [nil, ""] and
     config[:key_id] not in [nil, ""]
   end
 
   defp config_valid?(:facebook, config) do
-    config[:client_id] not in [nil, ""] and 
+    config[:client_id] not in [nil, ""] and
     config[:client_secret] not in [nil, ""]
   end
 
   defp config_valid?(:tiktok, config) do
-    config[:client_key] not in [nil, ""] and 
+    config[:client_key] not in [nil, ""] and
     config[:client_secret] not in [nil, ""]
   end
 
@@ -341,7 +341,7 @@ defmodule Cgraph.OAuth do
       access_type: "offline",
       prompt: "consent"
     }
-    
+
     @google_authorize_url <> "?" <> URI.encode_query(params)
   end
 
@@ -354,7 +354,7 @@ defmodule Cgraph.OAuth do
       state: state,
       response_mode: "form_post"
     }
-    
+
     @apple_authorize_url <> "?" <> URI.encode_query(params)
   end
 
@@ -366,7 +366,7 @@ defmodule Cgraph.OAuth do
       scope: "email,public_profile",
       state: state
     }
-    
+
     @facebook_authorize_url <> "?" <> URI.encode_query(params)
   end
 
@@ -378,7 +378,7 @@ defmodule Cgraph.OAuth do
       scope: "user.info.basic",
       state: state
     }
-    
+
     @tiktok_authorize_url <> "?" <> URI.encode_query(params)
   end
 
@@ -394,13 +394,13 @@ defmodule Cgraph.OAuth do
       redirect_uri: config[:redirect_uri],
       grant_type: "authorization_code"
     }
-    
+
     post_request(@google_token_url, body)
   end
 
   defp exchange_code_for_tokens(:apple, config, code) do
     client_secret = generate_apple_client_secret(config)
-    
+
     body = %{
       code: code,
       client_id: config[:client_id],
@@ -408,7 +408,7 @@ defmodule Cgraph.OAuth do
       redirect_uri: config[:redirect_uri],
       grant_type: "authorization_code"
     }
-    
+
     post_request(@apple_token_url, body)
   end
 
@@ -419,7 +419,7 @@ defmodule Cgraph.OAuth do
       client_secret: config[:client_secret],
       redirect_uri: config[:redirect_uri]
     }
-    
+
     post_request(@facebook_token_url, body)
   end
 
@@ -430,7 +430,7 @@ defmodule Cgraph.OAuth do
       client_secret: config[:client_secret],
       grant_type: "authorization_code"
     }
-    
+
     post_request(@tiktok_token_url, body)
   end
 
@@ -440,7 +440,7 @@ defmodule Cgraph.OAuth do
 
   defp fetch_user_info(:google, _config, %{"access_token" => access_token}) do
     headers = [{"Authorization", "Bearer #{access_token}"}]
-    
+
     case get_request(@google_userinfo_url, headers) do
       {:ok, data} ->
         {:ok, %{
@@ -482,7 +482,7 @@ defmodule Cgraph.OAuth do
 
   defp fetch_user_info(:facebook, _config, %{"access_token" => access_token}) do
     url = "#{@facebook_userinfo_url}?fields=id,name,email,picture&access_token=#{access_token}"
-    
+
     case get_request(url, []) do
       {:ok, data} ->
         {:ok, %{
@@ -503,9 +503,9 @@ defmodule Cgraph.OAuth do
       {"Authorization", "Bearer #{access_token}"},
       {"Content-Type", "application/json"}
     ]
-    
+
     url = "#{@tiktok_userinfo_url}?fields=open_id,avatar_url,display_name,union_id"
-    
+
     case get_request(url, headers) do
       {:ok, %{"data" => %{"user" => user}}} ->
         {:ok, %{
@@ -531,35 +531,25 @@ defmodule Cgraph.OAuth do
   defp find_or_create_user(provider, user_info) do
     provider_str = to_string(provider)
     uid = user_info.uid
-    
-    # First try to find by OAuth provider and UID
+
     case Accounts.get_user_by_oauth(provider_str, uid) do
-      %User{} = user ->
-        # Update OAuth data on each login
-        update_oauth_data(user, user_info)
-        
-      nil ->
-        # Check if user exists by email (for linking)
-        if user_info.email && user_info.email_verified do
-          case Accounts.get_user_by_email(user_info.email) do
-            {:ok, user} ->
-              # Link OAuth to existing account
-              link_oauth_to_user(user, user_info)
-              
-            {:error, :not_found} ->
-              # Create new user
-              create_oauth_user(user_info)
-          end
-        else
-          # No email or unverified - create new user
-          create_oauth_user(user_info)
-        end
+      %User{} = user -> update_oauth_data(user, user_info)
+      nil -> find_or_create_by_email(user_info)
+    end
+  end
+  
+  defp find_or_create_by_email(%{email: nil} = user_info), do: create_oauth_user(user_info)
+  defp find_or_create_by_email(%{email_verified: false} = user_info), do: create_oauth_user(user_info)
+  defp find_or_create_by_email(user_info) do
+    case Accounts.get_user_by_email(user_info.email) do
+      {:ok, user} -> link_oauth_to_user(user, user_info)
+      {:error, :not_found} -> create_oauth_user(user_info)
     end
   end
 
   defp update_oauth_data(user, user_info) do
     provider_str = to_string(user_info.provider)
-    
+
     oauth_data = Map.merge(user.oauth_data || %{}, %{
       provider_str => %{
         "uid" => user_info.uid,
@@ -568,7 +558,7 @@ defmodule Cgraph.OAuth do
         "picture" => user_info.picture
       }
     })
-    
+
     user
     |> User.oauth_changeset(%{
       oauth_data: oauth_data,
@@ -580,7 +570,7 @@ defmodule Cgraph.OAuth do
 
   defp link_oauth_to_user(user, user_info) do
     provider_str = to_string(user_info.provider)
-    
+
     oauth_data = Map.merge(user.oauth_data || %{}, %{
       provider_str => %{
         "uid" => user_info.uid,
@@ -589,13 +579,13 @@ defmodule Cgraph.OAuth do
         "picture" => user_info.picture
       }
     })
-    
+
     attrs = %{
       oauth_provider: user.oauth_provider || provider_str,
       oauth_uid: user.oauth_uid || user_info.uid,
       oauth_data: oauth_data
     }
-    
+
     user
     |> User.oauth_changeset(attrs)
     |> Repo.update()
@@ -603,7 +593,7 @@ defmodule Cgraph.OAuth do
 
   defp create_oauth_user(user_info) do
     provider_str = to_string(user_info.provider)
-    
+
     # Generate a unique username from the name or provider
     base_username = if user_info.name do
       user_info.name
@@ -613,9 +603,9 @@ defmodule Cgraph.OAuth do
     else
       "#{provider_str}user"
     end
-    
+
     username = generate_unique_username(base_username)
-    
+
     oauth_data = %{
       provider_str => %{
         "uid" => user_info.uid,
@@ -624,7 +614,7 @@ defmodule Cgraph.OAuth do
         "picture" => user_info.picture
       }
     }
-    
+
     attrs = %{
       email: user_info.email,
       username: username,
@@ -636,7 +626,7 @@ defmodule Cgraph.OAuth do
       oauth_data: oauth_data,
       email_verified_at: if(user_info.email_verified, do: DateTime.utc_now())
     }
-    
+
     %User{}
     |> User.oauth_registration_changeset(attrs)
     |> Repo.insert()
@@ -648,7 +638,7 @@ defmodule Cgraph.OAuth do
     else
       "#{base}#{:rand.uniform(9999)}"
     end
-    
+
     case Accounts.get_user_by_username(username) do
       {:error, :not_found} -> username
       {:ok, _user} when attempt < 10 -> generate_unique_username(base, attempt + 1)
@@ -663,7 +653,7 @@ defmodule Cgraph.OAuth do
   defp post_request(url, body) do
     headers = [{"Content-Type", "application/x-www-form-urlencoded"}]
     encoded_body = URI.encode_query(body)
-    
+
     case :httpc.request(:post, {url, headers, ~c"application/x-www-form-urlencoded", encoded_body}, [], []) do
       {:ok, {{_, 200, _}, _, response_body}} ->
         {:ok, Jason.decode!(to_string(response_body))}
@@ -678,7 +668,7 @@ defmodule Cgraph.OAuth do
 
   defp get_request(url, extra_headers) do
     headers = extra_headers |> Enum.map(fn {k, v} -> {String.to_charlist(k), String.to_charlist(v)} end)
-    
+
     case :httpc.request(:get, {url, headers}, [], []) do
       {:ok, {{_, 200, _}, _, response_body}} ->
         {:ok, Jason.decode!(to_string(response_body))}
@@ -705,49 +695,50 @@ defmodule Cgraph.OAuth do
   end
 
   defp fetch_apple_jwks do
-    # Cache JWKS for 24 hours to reduce API calls
     cache_key = "apple_jwks"
-    
-    cached_result = try do
+
+    case get_cached_jwks(cache_key) do
+      {:ok, nil} -> fetch_and_cache_jwks(cache_key)
+      {:ok, jwks} when not is_nil(jwks) -> {:ok, jwks}
+      {:error, _} -> fetch_jwks_directly()
+    end
+  end
+
+  defp get_cached_jwks(cache_key) do
+    try do
       Cachex.get(:oauth_cache, cache_key)
     catch
       :exit, _ -> {:ok, nil}
     end
-    
-    case cached_result do
-      {:ok, nil} ->
-        # Use :hackney directly (available via assent dependency)
-        case :hackney.get(@apple_jwks_url, [], "", [recv_timeout: 10_000, connect_timeout: 10_000]) do
-          {:ok, 200, _headers, client_ref} ->
-            {:ok, body} = :hackney.body(client_ref)
-            jwks = Jason.decode!(body)
-            # Try to cache, but don't fail if cache unavailable
-            try do
-              Cachex.put(:oauth_cache, cache_key, jwks, ttl: :timer.hours(24))
-            catch
-              :exit, _ -> :ok
-            end
-            {:ok, jwks}
-          {:ok, status, _headers, client_ref} ->
-            :hackney.skip_body(client_ref)
-            {:error, {:jwks_fetch_failed, status}}
-          {:error, reason} ->
-            {:error, {:jwks_fetch_failed, reason}}
+  end
+
+  defp fetch_and_cache_jwks(cache_key) do
+    case fetch_jwks_from_apple() do
+      {:ok, jwks} ->
+        try do
+          Cachex.put(:oauth_cache, cache_key, jwks, ttl: :timer.hours(24))
+        catch
+          :exit, _ -> :ok
         end
-      {:ok, jwks} when not is_nil(jwks) ->
         {:ok, jwks}
-      {:error, _} ->
-        # Cache error, try to fetch directly
-        case :hackney.get(@apple_jwks_url, [], "", [recv_timeout: 10_000, connect_timeout: 10_000]) do
-          {:ok, 200, _headers, client_ref} ->
-            {:ok, body} = :hackney.body(client_ref)
-            {:ok, Jason.decode!(body)}
-          {:ok, status, _headers, client_ref} ->
-            :hackney.skip_body(client_ref)
-            {:error, {:jwks_fetch_failed, status}}
-          {:error, reason} ->
-            {:error, {:jwks_fetch_failed, reason}}
-        end
+      error -> error
+    end
+  end
+
+  defp fetch_jwks_directly do
+    fetch_jwks_from_apple()
+  end
+
+  defp fetch_jwks_from_apple do
+    case :hackney.get(@apple_jwks_url, [], "", [recv_timeout: 10_000, connect_timeout: 10_000]) do
+      {:ok, 200, _headers, client_ref} ->
+        {:ok, body} = :hackney.body(client_ref)
+        {:ok, Jason.decode!(body)}
+      {:ok, status, _headers, client_ref} ->
+        :hackney.skip_body(client_ref)
+        {:error, {:jwks_fetch_failed, status}}
+      {:error, reason} ->
+        {:error, {:jwks_fetch_failed, reason}}
     end
   end
 
@@ -757,31 +748,35 @@ defmodule Cgraph.OAuth do
          {:ok, header_json} <- Base.url_decode64(header_b64, padding: false),
          {:ok, header} <- Jason.decode(header_json),
          kid when is_binary(kid) <- header["kid"] do
-      
-      # Find the matching key
-      case Enum.find(keys, fn key -> key["kid"] == kid end) do
-        nil ->
-          {:error, :key_not_found}
-        key ->
-          # Convert JWK to JOSE JWK format and verify
-          jwk = JOSE.JWK.from_map(key)
-          
-          case JOSE.JWT.verify_strict(jwk, [header["alg"]], token) do
-            {true, %JOSE.JWT{fields: claims}, _} ->
-              {:ok, claims}
-            {false, _, _} ->
-              {:error, :signature_invalid}
-          end
-      end
+
+      find_and_verify_key(keys, kid, header["alg"], token)
     else
       _ -> {:error, :invalid_token_format}
+    end
+  end
+
+  defp find_and_verify_key(keys, kid, alg, token) do
+    case Enum.find(keys, fn key -> key["kid"] == kid end) do
+      nil ->
+        {:error, :key_not_found}
+      key ->
+        verify_token_with_key(key, alg, token)
+    end
+  end
+
+  defp verify_token_with_key(key, alg, token) do
+    jwk = JOSE.JWK.from_map(key)
+
+    case JOSE.JWT.verify_strict(jwk, [alg], token) do
+      {true, %JOSE.JWT{fields: claims}, _} -> {:ok, claims}
+      {false, _, _} -> {:error, :signature_invalid}
     end
   end
 
   defp validate_apple_claims(claims, config) do
     now = System.system_time(:second)
     client_id = config[:client_id]
-    
+
     cond do
       claims["iss"] != @apple_issuer ->
         {:error, :invalid_issuer}
@@ -801,7 +796,7 @@ defmodule Cgraph.OAuth do
     # Apple requires a JWT signed with your private key as the client_secret
     # This JWT is valid for up to 6 months
     now = System.system_time(:second)
-    
+
     claims = %{
       "iss" => config[:team_id],
       "iat" => now,
@@ -809,21 +804,21 @@ defmodule Cgraph.OAuth do
       "aud" => "https://appleid.apple.com",
       "sub" => config[:client_id]
     }
-    
+
     # Note: This requires the private key to be in PEM format
     case config[:private_key] do
       key when is_binary(key) and key != "" ->
         # Use JOSE to sign the JWT with ES256
         signer = JOSE.JWK.from_pem(key)
-        
+
         header = %{
           "alg" => "ES256",
           "kid" => config[:key_id]
         }
-        
+
         {_, jwt} = JOSE.JWT.sign(signer, header, claims) |> JOSE.JWS.compact()
         jwt
-        
+
       _ ->
         Logger.error("Apple private key not configured")
         ""

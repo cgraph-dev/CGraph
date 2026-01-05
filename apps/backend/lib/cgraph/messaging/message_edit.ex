@@ -1,7 +1,7 @@
 defmodule Cgraph.Messaging.MessageEdit do
   @moduledoc """
   Edit history for messages.
-  
+
   Stores previous versions of edited messages for transparency.
   """
   use Ecto.Schema

@@ -5,9 +5,9 @@ defmodule CgraphWeb.API.V1.AuthController do
   - Ethereum wallet authentication
   - Token refresh
   - Password reset
-  
+
   ## Security Features
-  
+
   - Account lockout after failed attempts
   - JWT token revocation on logout
   - Progressive lockout duration
@@ -36,7 +36,7 @@ defmodule CgraphWeb.API.V1.AuthController do
 
   @doc """
   Login with email OR username and password.
-  
+
   Accepts either email or username in the "identifier" field.
   Implements account lockout protection to prevent brute force attacks.
   """
@@ -50,60 +50,70 @@ defmodule CgraphWeb.API.V1.AuthController do
   def login(conn, %{"identifier" => identifier, "password" => password}) do
     ip_address = get_client_ip(conn)
     lockout_key = String.downcase(identifier)
-    
+
     # Check if account is locked
     case AccountLockout.check_locked(lockout_key) do
-      {:locked, remaining} ->
-        conn
-        |> put_status(:too_many_requests)
-        |> put_resp_header("retry-after", Integer.to_string(remaining))
-        |> json(%{
-          error: "Account temporarily locked",
-          message: "Too many failed login attempts. Please try again later.",
-          retry_after: remaining
-        })
-      
-      :ok ->
-        # Proceed with authentication (supports both email and username)
-        case Accounts.authenticate_by_identifier(identifier, password) do
-          {:ok, user} ->
-            # Clear failed attempts on successful login
-            AccountLockout.clear_attempts(lockout_key)
-            
-            with {:ok, tokens} <- Guardian.generate_tokens(user),
-                 {:ok, _session} <- Accounts.create_session(user, conn) do
-              conn
-              |> render(:auth_response, user: user, tokens: tokens)
-            end
-          
-          {:error, :no_password_set} ->
-            conn
-            |> put_status(:unauthorized)
-            |> json(%{
-              error: "No password set",
-              message: "This account was created with OAuth or wallet. Please use that method to login."
-            })
-
-          {:error, reason} when reason in [:invalid_credentials, :user_not_found] ->
-            # Record failed attempt
-            case AccountLockout.record_failed_attempt(lockout_key, ip_address: ip_address) do
-              {:locked, duration} ->
-                conn
-                |> put_status(:too_many_requests)
-                |> put_resp_header("retry-after", Integer.to_string(duration))
-                |> json(%{
-                  error: "Account locked",
-                  message: "Too many failed login attempts. Account has been locked.",
-                  retry_after: duration
-                })
-              
-              :ok ->
-                conn
-                |> put_status(:unauthorized)
-                |> json(%{error: "Invalid username/email or password"})
-            end
-        end
+      {:locked, remaining} -> respond_locked(conn, remaining)
+      :ok -> attempt_authentication(conn, identifier, password, lockout_key, ip_address)
     end
+  end
+  
+  defp respond_locked(conn, remaining) do
+    conn
+    |> put_status(:too_many_requests)
+    |> put_resp_header("retry-after", Integer.to_string(remaining))
+    |> json(%{
+      error: "Account temporarily locked",
+      message: "Too many failed login attempts. Please try again later.",
+      retry_after: remaining
+    })
+  end
+  
+  defp attempt_authentication(conn, identifier, password, lockout_key, ip_address) do
+    case Accounts.authenticate_by_identifier(identifier, password) do
+      {:ok, user} -> handle_successful_login(conn, user, lockout_key)
+      {:error, :no_password_set} -> respond_no_password(conn)
+      {:error, reason} when reason in [:invalid_credentials, :user_not_found] -> 
+        handle_failed_login(conn, lockout_key, ip_address)
+    end
+  end
+  
+  defp handle_successful_login(conn, user, lockout_key) do
+    AccountLockout.clear_attempts(lockout_key)
+    
+    with {:ok, tokens} <- Guardian.generate_tokens(user),
+         {:ok, _session} <- Accounts.create_session(user, conn) do
+      conn |> render(:auth_response, user: user, tokens: tokens)
+    end
+  end
+  
+  defp respond_no_password(conn) do
+    conn
+    |> put_status(:unauthorized)
+    |> json(%{
+      error: "No password set",
+      message: "This account was created with OAuth or wallet. Please use that method to login."
+    })
+  end
+  
+  defp handle_failed_login(conn, lockout_key, ip_address) do
+    case AccountLockout.record_failed_attempt(lockout_key, ip_address: ip_address) do
+      {:locked, duration} -> respond_account_locked(conn, duration)
+      :ok -> respond_invalid_credentials(conn)
+    end
+  end
+  
+  defp respond_account_locked(conn, duration) do
+    conn
+    |> put_status(:too_many_requests)
+    |> put_resp_header("retry-after", Integer.to_string(duration))
+    |> json(%{error: "Account locked", message: "Too many failed login attempts. Account has been locked.", retry_after: duration})
+  end
+  
+  defp respond_invalid_credentials(conn) do
+    conn
+    |> put_status(:unauthorized)
+    |> json(%{error: "Invalid username/email or password"})
   end
 
   @doc """
@@ -192,7 +202,7 @@ defmodule CgraphWeb.API.V1.AuthController do
 
   @doc """
   Logout and revoke the current session and JWT token.
-  
+
   This ensures both the session record is deleted and the JWT
   is added to the blacklist to prevent reuse.
   """
@@ -203,15 +213,15 @@ defmodule CgraphWeb.API.V1.AuthController do
         # Get user for audit logging
         user = Guardian.Plug.current_resource(conn)
         user_id = if user, do: user.id, else: nil
-        
+
         # Delete session record from database
         Accounts.delete_session_token(token)
-        
+
         # Add token to blacklist for remaining validity period
         Guardian.revoke_token(token, reason: :logout, user_id: user_id)
-        
+
         json(conn, %{message: "Logged out successfully"})
-      
+
       _ ->
         json(conn, %{message: "Logged out successfully"})
     end
@@ -252,7 +262,7 @@ defmodule CgraphWeb.API.V1.AuthController do
         conn
         |> put_status(:unauthorized)
         |> json(%{error: "Authentication required"})
-      
+
       user ->
         case Accounts.resend_verification_email(user) do
           {:ok, _token} ->
@@ -277,7 +287,7 @@ defmodule CgraphWeb.API.V1.AuthController do
     # Check for forwarded headers (when behind proxy/load balancer)
     forwarded_for = get_req_header(conn, "x-forwarded-for")
     real_ip = get_req_header(conn, "x-real-ip")
-    
+
     cond do
       forwarded_for != [] ->
         # X-Forwarded-For can contain multiple IPs, take the first (client)
@@ -286,10 +296,10 @@ defmodule CgraphWeb.API.V1.AuthController do
         |> String.split(",")
         |> List.first()
         |> String.trim()
-      
+
       real_ip != [] ->
         List.first(real_ip)
-      
+
       true ->
         # Fall back to remote_ip from conn
         conn.remote_ip

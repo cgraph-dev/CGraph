@@ -1,51 +1,51 @@
 defmodule Cgraph.Notifications do
   @moduledoc """
   Context for managing notifications.
-  
+
   Handles creation, delivery, and management of user notifications.
   Integrates with push notification services and email.
   """
-  
+
   import Ecto.Query
   alias Cgraph.Repo
   alias Cgraph.Accounts.{User, Settings}
   alias Cgraph.Notifications.Notification
-  
+
   @doc """
   Creates and delivers a notification to a user.
-  
+
   Automatically checks user preferences before sending push/email.
-  
+
   ## Examples
-  
+
       iex> notify(user, :friend_request, "New friend request", actor: sender)
       {:ok, %Notification{}}
-  
+
   """
   def notify(%User{} = user, type, title, opts \\ []) do
     actor = Keyword.get(opts, :actor)
     body = Keyword.get(opts, :body)
     data = Keyword.get(opts, :data, %{})
     group_key = Keyword.get(opts, :group_key)
-    
+
     # Check if we should group with existing notification
     notification = if group_key do
       maybe_group_notification(user, type, group_key, title, body, data, actor)
     else
       create_notification(user, type, title, body, data, actor)
     end
-    
+
     case notification do
       {:ok, notif} ->
         # Deliver through appropriate channels
         deliver_notification(user, notif, type)
         {:ok, notif}
-        
+
       error ->
         error
     end
   end
-  
+
   defp create_notification(user, type, title, body, data, actor) do
     %Notification{}
     |> Notification.changeset(%{
@@ -58,7 +58,7 @@ defmodule Cgraph.Notifications do
     })
     |> Repo.insert()
   end
-  
+
   defp maybe_group_notification(user, type, group_key, title, body, data, actor) do
     # Look for existing unread notification with same group key
     case get_unread_by_group_key(user, group_key) do
@@ -75,7 +75,7 @@ defmodule Cgraph.Notifications do
           count: 1
         })
         |> Repo.insert()
-        
+
       existing ->
         # Increment count instead of creating new notification
         existing
@@ -87,13 +87,13 @@ defmodule Cgraph.Notifications do
         |> Repo.update()
     end
   end
-  
+
   defp update_grouped_title(base_title, count) do
     # Remove any existing count from title
     base = Regex.replace(~r/ \(\d+\)$/, base_title, "")
     "#{base} (#{count})"
   end
-  
+
   defp get_unread_by_group_key(user, group_key) do
     Notification
     |> where([n], n.user_id == ^user.id)
@@ -103,22 +103,22 @@ defmodule Cgraph.Notifications do
     |> where([n], n.inserted_at > ago(1, "hour"))
     |> Repo.one()
   end
-  
+
   defp deliver_notification(user, notification, type) do
     notification_type = type_to_setting(type)
-    
+
     if Settings.should_notify?(user, notification_type) do
       # Broadcast via Phoenix PubSub for real-time
       broadcast_notification(user, notification)
-      
+
       # Queue push notification
       maybe_send_push(user, notification)
-      
+
       # Queue email (for important notifications only)
       maybe_send_email(user, notification, type)
     end
   end
-  
+
   defp type_to_setting(type) do
     case type do
       t when t in [:new_message, :message_mention, :message_reaction] -> :message
@@ -129,7 +129,7 @@ defmodule Cgraph.Notifications do
       _ -> :message
     end
   end
-  
+
   defp broadcast_notification(user, notification) do
     CgraphWeb.Endpoint.broadcast(
       "user:#{user.id}",
@@ -137,40 +137,40 @@ defmodule Cgraph.Notifications do
       serialize(notification)
     )
   end
-  
+
   defp maybe_send_push(user, notification) do
     {:ok, settings} = Settings.get_settings(user)
-    
+
     if settings.push_notifications do
       # Queue push notification job
       %{user_id: user.id, notification_id: notification.id}
       |> Cgraph.Workers.SendPushNotification.new()
       |> Oban.insert()
-      
+
       notification
       |> Notification.changeset(%{push_sent: true})
       |> Repo.update()
     end
   end
-  
+
   defp maybe_send_email(user, notification, type) do
     {:ok, settings} = Settings.get_settings(user)
-    
+
     # Only send emails for important notifications
     email_worthy = type in [:friend_request, :group_invite, :security_alert, :account_update]
-    
+
     if settings.email_notifications && email_worthy do
       %{user_id: user.id, notification_id: notification.id}
       |> Cgraph.Workers.SendEmailNotification.new(schedule_in: 300)  # 5 minute delay to batch
       |> Oban.insert()
     end
   end
-  
+
   @doc """
   Lists notifications for a user.
-  
+
   ## Options
-  
+
     * `:unread_only` - Only return unread notifications (default: false)
     * `:limit` - Maximum number to return (default: 50)
     * `:offset` - Offset for pagination (default: 0)
@@ -179,7 +179,7 @@ defmodule Cgraph.Notifications do
     * `:per_page` - Items per page (default: 20)
     * `:filter` - Filter mode: "all" or "unread" (default: "all")
     * `:type` - Filter by single notification type
-  
+
   Returns `{notifications, meta}` tuple with pagination info.
   """
   def list_notifications(%User{} = user, opts \\ []) do
@@ -188,44 +188,44 @@ defmodule Cgraph.Notifications do
     per_page = Keyword.get(opts, :per_page, 20)
     limit = Keyword.get(opts, :limit, per_page)
     offset = Keyword.get(opts, :offset, (page - 1) * per_page)
-    
+
     # Support both filter modes and unread_only boolean
     filter = Keyword.get(opts, :filter, "all")
     unread_only = Keyword.get(opts, :unread_only, filter == "unread")
-    
+
     # Support both types list and single type
     types = Keyword.get(opts, :types, [])
     type = Keyword.get(opts, :type)
     types = if type && types == [], do: [type], else: types
-    
+
     query = Notification
     |> where([n], n.user_id == ^user.id)
     |> order_by([n], desc: n.inserted_at)
     |> preload(:actor)
-    
+
     query = if unread_only do
       where(query, [n], is_nil(n.read_at))
     else
       query
     end
-    
+
     query = if types != [] do
       where(query, [n], n.type in ^types)
     else
       query
     end
-    
+
     total = Repo.aggregate(query, :count, :id)
-    
+
     notifications = query
       |> limit(^limit)
       |> offset(^offset)
       |> Repo.all()
-    
+
     meta = %{page: page, per_page: per_page, total: total}
     {notifications, meta}
   end
-  
+
   @doc """
   Gets the count of unread notifications for a user.
   """
@@ -235,7 +235,7 @@ defmodule Cgraph.Notifications do
     |> where([n], is_nil(n.read_at))
     |> Repo.aggregate(:count)
   end
-  
+
   @doc """
   Marks a single notification as read.
   """
@@ -289,7 +289,7 @@ defmodule Cgraph.Notifications do
 
   def mark_as_unread(notification_id) when is_binary(notification_id) do
     case Repo.get(Notification, notification_id) do
-      nil -> 
+      nil ->
         {:error, :not_found}
       notification ->
         notification
@@ -297,7 +297,7 @@ defmodule Cgraph.Notifications do
         |> Repo.update()
     end
   end
-  
+
   @doc """
   Marks all notifications as read for a user.
   """
@@ -307,7 +307,7 @@ defmodule Cgraph.Notifications do
     |> where([n], is_nil(n.read_at))
     |> Repo.update_all(set: [read_at: DateTime.utc_now()])
   end
-  
+
   @doc """
   Marks notifications as read up to a certain notification ID.
   Useful for "mark all above as read" functionality.
@@ -316,7 +316,7 @@ defmodule Cgraph.Notifications do
     case Repo.get(Notification, notification_id) do
       nil ->
         {:error, :not_found}
-        
+
       notification ->
         Notification
         |> where([n], n.user_id == ^user.id)
@@ -328,7 +328,7 @@ defmodule Cgraph.Notifications do
 
   @doc """
   Update notification settings for a user.
-  
+
   Settings are stored in user preferences or a separate settings table.
   """
   def update_notification_settings(%User{} = user, settings) do
@@ -352,11 +352,11 @@ defmodule Cgraph.Notifications do
       mention_notifications: true,
       group_notifications: true
     }
-    
+
     # Would merge with user's saved preferences
     defaults
   end
-  
+
   @doc """
   Marks a notification as clicked (for analytics).
   """
@@ -365,14 +365,14 @@ defmodule Cgraph.Notifications do
     |> Notification.mark_clicked_changeset()
     |> Repo.update()
   end
-  
+
   @doc """
   Deletes a notification.
   """
   def delete_notification(%Notification{} = notification) do
     Repo.delete(notification)
   end
-  
+
   @doc """
   Deletes all notifications for a user.
   """
@@ -381,20 +381,20 @@ defmodule Cgraph.Notifications do
     |> where([n], n.user_id == ^user.id)
     |> Repo.delete_all()
   end
-  
+
   @doc """
   Cleans up old notifications (older than specified days).
   Should be run as a scheduled job.
   """
   def cleanup_old_notifications(days \\ 30) do
     cutoff = DateTime.utc_now() |> DateTime.add(-days * 24 * 60 * 60, :second)
-    
+
     Notification
     |> where([n], n.inserted_at < ^cutoff)
     |> where([n], not is_nil(n.read_at))  # Only delete read notifications
     |> Repo.delete_all()
   end
-  
+
   @doc """
   Gets a single notification by ID.
   """
@@ -404,11 +404,11 @@ defmodule Cgraph.Notifications do
       notification -> {:ok, Repo.preload(notification, :actor)}
     end
   end
-  
+
   @doc """
   Gets a notification by ID, ensuring it belongs to the user.
 
-  Returns `{:ok, notification}` if found and belongs to user, 
+  Returns `{:ok, notification}` if found and belongs to user,
   `{:error, :not_found}` otherwise.
   """
   def get_notification(%User{} = user, id) do
@@ -433,17 +433,17 @@ defmodule Cgraph.Notifications do
     alias Cgraph.Accounts.PushToken
 
     attrs = Map.merge(token_params, %{"user_id" => user.id})
-    
+
     # Check if token already exists for this user
     existing = Repo.get_by(PushToken, user_id: user.id, token: attrs["token"])
-    
+
     case existing do
       nil ->
         # Create new token
         %PushToken{}
         |> PushToken.changeset(attrs)
         |> Repo.insert()
-      
+
       token ->
         # Update existing token
         token
@@ -642,7 +642,7 @@ defmodule Cgraph.Notifications do
     {count, _} = Repo.update_all(query, set: [read_at: DateTime.utc_now()])
     {:ok, count}
   end
-  
+
   @doc """
   Notify a user about a friend request.
   """
@@ -653,7 +653,7 @@ defmodule Cgraph.Notifications do
       data: %{sender_id: sender.id}
     )
   end
-  
+
   @doc """
   Notify a user that their friend request was accepted.
   """
@@ -664,16 +664,16 @@ defmodule Cgraph.Notifications do
       data: %{accepter_id: accepter.id}
     )
   end
-  
+
   @doc """
   Creates a notification directly (simple form).
   """
   def create_notification(%User{} = user, type) when is_atom(type) do
     create_notification(user, type, to_string(type), nil, %{}, nil)
   end
-  
+
   # Serialization
-  
+
   def serialize(%Notification{} = n) do
     %{
       id: n.id,

@@ -71,35 +71,35 @@ defmodule CgraphWeb.API.V1.NotificationJSON do
           screen: "conversation",
           params: %{conversation_id: notification.data["conversation_id"]}
         }
-      
+
       "mention" ->
         %{
           type: "navigate",
           screen: notification.data["screen"],
           params: notification.data["params"]
         }
-      
+
       "friend_request" ->
         %{
           type: "navigate",
           screen: "friend_requests",
           params: %{}
         }
-      
+
       "friend_accepted" ->
         %{
           type: "navigate",
           screen: "profile",
           params: %{user_id: notification.data["user_id"]}
         }
-      
+
       "group_invite" ->
         %{
           type: "navigate",
           screen: "group",
           params: %{group_id: notification.data["group_id"]}
         }
-      
+
       "post_reply" ->
         %{
           type: "navigate",
@@ -109,7 +109,7 @@ defmodule CgraphWeb.API.V1.NotificationJSON do
             post_id: notification.data["post_id"]
           }
         }
-      
+
       "comment_reply" ->
         %{
           type: "navigate",
@@ -120,7 +120,7 @@ defmodule CgraphWeb.API.V1.NotificationJSON do
             comment_id: notification.data["comment_id"]
           }
         }
-      
+
       _ ->
         nil
     end

@@ -13,7 +13,7 @@ defmodule CgraphWeb.API.V1.MessageController do
   """
   def index(conn, %{"conversation_id" => conversation_id} = params) do
     user = conn.assigns.current_user
-    
+
     opts = [
       page: Map.get(params, "page", "1") |> String.to_integer(),
       per_page: Map.get(params, "per_page", "50") |> String.to_integer() |> min(100),
@@ -35,7 +35,7 @@ defmodule CgraphWeb.API.V1.MessageController do
   """
   def create(conn, %{"conversation_id" => conversation_id} = params) do
     user = conn.assigns.current_user
-    
+
     message_params = %{
       content: Map.get(params, "content"),
       attachments: Map.get(params, "attachments", []),

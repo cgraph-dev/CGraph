@@ -1,7 +1,7 @@
 defmodule Cgraph.Accounts.UserSettings do
   @moduledoc """
   User settings and preferences schema.
-  
+
   Stores all user-configurable settings including:
   - Notification preferences
   - Privacy settings
@@ -10,13 +10,13 @@ defmodule Cgraph.Accounts.UserSettings do
   """
   use Ecto.Schema
   import Ecto.Changeset
-  
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  
+
   schema "user_settings" do
     belongs_to :user, Cgraph.Accounts.User
-    
+
     # Notification preferences
     field :email_notifications, :boolean, default: true
     field :push_notifications, :boolean, default: true
@@ -29,7 +29,7 @@ defmodule Cgraph.Accounts.UserSettings do
     field :quiet_hours_enabled, :boolean, default: false
     field :quiet_hours_start, :time
     field :quiet_hours_end, :time
-    
+
     # Privacy settings
     field :show_online_status, :boolean, default: true
     field :show_read_receipts, :boolean, default: true
@@ -39,7 +39,7 @@ defmodule Cgraph.Accounts.UserSettings do
     field :allow_message_requests, :boolean, default: true
     field :show_in_search, :boolean, default: true
     field :allow_group_invites, Ecto.Enum, values: [:anyone, :friends, :nobody], default: :anyone
-    
+
     # Appearance preferences
     field :theme, Ecto.Enum, values: [:light, :dark, :system], default: :system
     field :compact_mode, :boolean, default: false
@@ -47,25 +47,25 @@ defmodule Cgraph.Accounts.UserSettings do
     field :message_density, Ecto.Enum, values: [:comfortable, :compact], default: :comfortable
     field :show_avatars, :boolean, default: true
     field :animate_emojis, :boolean, default: true
-    
+
     # Accessibility
     field :reduce_motion, :boolean, default: false
     field :high_contrast, :boolean, default: false
     field :screen_reader_optimized, :boolean, default: false
-    
+
     # Language and locale
     field :language, :string, default: "en"
     field :timezone, :string, default: "UTC"
     field :date_format, Ecto.Enum, values: [:mdy, :dmy, :ymd], default: :mdy
     field :time_format, Ecto.Enum, values: [:twelve_hour, :twenty_four_hour], default: :twelve_hour
-    
+
     # Keyboard shortcuts
     field :keyboard_shortcuts_enabled, :boolean, default: true
     field :custom_shortcuts, :map, default: %{}
-    
+
     timestamps()
   end
-  
+
   @doc """
   Creates a changeset for user settings.
   """
@@ -110,7 +110,7 @@ defmodule Cgraph.Accounts.UserSettings do
     |> validate_timezone()
     |> validate_quiet_hours()
   end
-  
+
   defp validate_timezone(changeset) do
     case get_change(changeset, :timezone) do
       nil -> changeset
@@ -122,7 +122,7 @@ defmodule Cgraph.Accounts.UserSettings do
         end
     end
   end
-  
+
   defp validate_quiet_hours(changeset) do
     if get_field(changeset, :quiet_hours_enabled) do
       changeset

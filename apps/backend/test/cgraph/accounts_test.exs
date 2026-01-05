@@ -25,21 +25,21 @@ defmodule Cgraph.AccountsTest do
 
     test "create_user/1 requires unique username" do
       {:ok, _} = Accounts.create_user(@valid_attrs)
-      
+
       assert {:error, changeset} = Accounts.create_user(%{
         @valid_attrs | email: "other@example.com"
       })
-      
+
       assert "has already been taken" in errors_on(changeset).username
     end
 
     test "create_user/1 requires unique email" do
       {:ok, _} = Accounts.create_user(@valid_attrs)
-      
+
       assert {:error, changeset} = Accounts.create_user(%{
         @valid_attrs | username: "otheruser"
       })
-      
+
       assert "has already been taken" in errors_on(changeset).email
     end
 
@@ -47,7 +47,7 @@ defmodule Cgraph.AccountsTest do
       assert {:error, changeset} = Accounts.create_user(%{
         @valid_attrs | password: "weak"
       })
-      
+
       assert errors_on(changeset).password != nil
     end
 
@@ -70,16 +70,16 @@ defmodule Cgraph.AccountsTest do
 
     test "update_user/2 updates user attributes" do
       {:ok, user} = Accounts.create_user(@valid_attrs)
-      
+
       assert {:ok, updated} = Accounts.update_user(user, %{display_name: "New Name"})
       assert updated.display_name == "New Name"
     end
 
     test "authenticate_user/2 with valid credentials returns user" do
       {:ok, user} = Accounts.create_user(@valid_attrs)
-      
+
       assert {:ok, authenticated} = Accounts.authenticate_user(
-        @valid_attrs.email, 
+        @valid_attrs.email,
         @valid_attrs.password
       )
       assert authenticated.id == user.id
@@ -87,7 +87,7 @@ defmodule Cgraph.AccountsTest do
 
     test "authenticate_user/2 with invalid password returns error" do
       {:ok, _} = Accounts.create_user(@valid_attrs)
-      
+
       assert {:error, :invalid_credentials} = Accounts.authenticate_user(
         @valid_attrs.email,
         "wrongpassword"
@@ -96,7 +96,7 @@ defmodule Cgraph.AccountsTest do
 
     test "deactivate_user/1 soft deletes user" do
       {:ok, user} = Accounts.create_user(@valid_attrs)
-      
+
       assert {:ok, deactivated} = Accounts.deactivate_user(user)
       # User is deactivated when deleted_at is set
       assert not is_nil(deactivated.deleted_at)
@@ -111,33 +111,33 @@ defmodule Cgraph.AccountsTest do
         password: "ValidPassword123!",
         password_confirmation: "ValidPassword123!"
       })
-      
+
       # Create a mock Plug.Conn for session tests
       conn = %Plug.Conn{
         req_headers: [{"user-agent", "Test Agent"}],
         remote_ip: {127, 0, 0, 1}
       }
-      
+
       %{user: user, conn: conn}
     end
 
     test "create_session/2 creates a new session", %{user: user, conn: conn} do
       assert {:ok, session} = Accounts.create_session(user, conn)
-      
+
       assert session.user_id == user.id
     end
 
     test "list_sessions/1 returns user's sessions", %{user: user, conn: conn} do
       {:ok, _} = Accounts.create_session(user, conn)
       {:ok, _} = Accounts.create_session(user, conn)
-      
+
       sessions = Accounts.list_sessions(user)
       assert length(sessions) == 2
     end
 
     test "revoke_session/1 invalidates session", %{user: user, conn: conn} do
       {:ok, session} = Accounts.create_session(user, conn)
-      
+
       assert {:ok, revoked} = Accounts.revoke_session(session)
       assert revoked.revoked_at != nil
     end
@@ -151,14 +151,14 @@ defmodule Cgraph.AccountsTest do
         password: "ValidPassword123!",
         password_confirmation: "ValidPassword123!"
       })
-      
+
       {:ok, user2} = Accounts.create_user(%{
         username: "user2",
         email: "user2@example.com",
         password: "ValidPassword123!",
         password_confirmation: "ValidPassword123!"
       })
-      
+
       %{user1: user1, user2: user2}
     end
 
@@ -171,21 +171,21 @@ defmodule Cgraph.AccountsTest do
 
     test "accept_friend_request/2 accepts pending request", %{user1: user1, user2: user2} do
       {:ok, _} = Accounts.send_friend_request(user1, user2)
-      
+
       assert {:ok, friendship} = Accounts.accept_friend_request(user2, user1)
       assert friendship.status == :accepted
     end
 
     test "decline_friend_request/2 declines pending request", %{user1: user1, user2: user2} do
       {:ok, _} = Accounts.send_friend_request(user1, user2)
-      
+
       assert {:ok, _} = Accounts.decline_friend_request(user2, user1)
     end
 
     test "list_friends/1 returns accepted friendships", %{user1: user1, user2: user2} do
       {:ok, _} = Accounts.send_friend_request(user1, user2)
       {:ok, _} = Accounts.accept_friend_request(user2, user1)
-      
+
       {friends, _meta} = Accounts.list_friends(user1)
       assert length(friends) == 1
     end
@@ -197,15 +197,15 @@ defmodule Cgraph.AccountsTest do
 
     test "unblock_user/2 removes block", %{user1: user1, user2: user2} do
       {:ok, _} = Accounts.block_user(user1, user2)
-      
+
       assert {:ok, _} = Accounts.unblock_user(user1, user2)
     end
 
     test "is_blocked?/2 returns block status", %{user1: user1, user2: user2} do
       assert Accounts.is_blocked?(user1, user2) == false
-      
+
       {:ok, _} = Accounts.block_user(user1, user2)
-      
+
       assert Accounts.is_blocked?(user1, user2) == true
     end
   end

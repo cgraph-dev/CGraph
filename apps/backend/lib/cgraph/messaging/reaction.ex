@@ -1,7 +1,7 @@
 defmodule Cgraph.Messaging.Reaction do
   @moduledoc """
   Message reactions (emoji).
-  
+
   Users can react to messages with standard emoji.
   Each user can only have one of each emoji per message.
   """

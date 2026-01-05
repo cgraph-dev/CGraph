@@ -1,7 +1,7 @@
 defmodule CgraphWeb.ConversationChannel do
   @moduledoc """
   Channel for 1:1 direct message conversations.
-  
+
   Handles:
   - Real-time message delivery
   - Typing indicators
@@ -16,7 +16,7 @@ defmodule CgraphWeb.ConversationChannel do
   alias CgraphWeb.API.V1.MessageJSON
 
   @typing_timeout 5_000
-  
+
   # Rate limiting: max 10 messages per 10 seconds per user
   @rate_limit_window_ms 10_000
   @rate_limit_max_messages 10
@@ -72,7 +72,7 @@ defmodule CgraphWeb.ConversationChannel do
   @impl true
   def handle_info({:clear_typing, user_id}, socket) do
     user = socket.assigns.current_user
-    
+
     if user.id == user_id do
       # Update presence to clear typing status
       Presence.update(socket, user_id, fn meta ->
@@ -80,7 +80,7 @@ defmodule CgraphWeb.ConversationChannel do
         |> Map.put(:typing, false)
         |> Map.put(:typing_started_at, nil)
       end)
-      
+
       # Broadcast typing stopped to other clients
       broadcast_from!(socket, "typing", %{
         user_id: user_id,
@@ -102,7 +102,7 @@ defmodule CgraphWeb.ConversationChannel do
     case check_rate_limit(socket) do
       {:error, :rate_limited, socket} ->
         {:reply, {:error, %{reason: "rate_limited", message: "Too many messages. Please slow down."}}, socket}
-      
+
       {:ok, socket} ->
         case Messaging.create_message(%{
           content: content,
@@ -116,7 +116,7 @@ defmodule CgraphWeb.ConversationChannel do
             # Preload sender for serialization
             message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
             serialized = MessageJSON.message_data(message)
-            
+
             broadcast!(socket, "new_message", %{message: serialized})
             {:reply, {:ok, %{message_id: message.id}}, socket}
 
@@ -271,11 +271,11 @@ defmodule CgraphWeb.ConversationChannel do
   defp check_rate_limit(socket) do
     now = System.monotonic_time(:millisecond)
     window_start = now - @rate_limit_window_ms
-    
+
     # Get recent message timestamps, filter out old ones
     recent_messages = socket.assigns[:rate_limit_messages] || []
     recent_messages = Enum.filter(recent_messages, fn ts -> ts > window_start end)
-    
+
     if length(recent_messages) >= @rate_limit_max_messages do
       # Rate limited
       {:error, :rate_limited, assign(socket, :rate_limit_messages, recent_messages)}

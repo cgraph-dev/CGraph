@@ -1,7 +1,7 @@
 defmodule CgraphWeb.UserAuth do
   @moduledoc """
   User authentication helper functions for routers and controllers.
-  
+
   Provides plugs and helpers for managing user sessions and authentication.
   """
 

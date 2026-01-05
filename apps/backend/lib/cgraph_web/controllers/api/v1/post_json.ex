@@ -27,7 +27,7 @@ defmodule CgraphWeb.API.V1.PostJSON do
       -1 -> :down
       _ -> nil
     end
-    
+
     %{
       data: %{
         vote_type: vote_type,

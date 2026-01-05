@@ -1,26 +1,26 @@
 defmodule CgraphWeb.API.V1.AdminJSON do
   @moduledoc """
   JSON rendering for Admin API responses.
-  
+
   ## Response Formats
-  
+
   All responses follow consistent structure with:
-  
+
   - Timestamps in ISO 8601 format
   - Pagination metadata for list endpoints
   - Nested objects flattened appropriately
-  
+
   ## Usage
-  
+
       AdminJSON.metrics(metrics)
       AdminJSON.users(users_result)
       AdminJSON.user(user)
   """
-  
+
   # ---------------------------------------------------------------------------
   # System Metrics
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Render comprehensive system metrics.
   """
@@ -64,7 +64,7 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       collected_at: DateTime.to_iso8601(metrics.collected_at)
     }
   end
-  
+
   @doc """
   Render real-time stats.
   """
@@ -80,11 +80,11 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       timestamp: DateTime.to_iso8601(stats.timestamp)
     }
   end
-  
+
   # ---------------------------------------------------------------------------
   # User Management
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Render paginated users list.
   """
@@ -99,7 +99,7 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       }
     }
   end
-  
+
   @doc """
   Render single user for admin view.
   """
@@ -121,7 +121,7 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       created_at: format_datetime(user.inserted_at)
     }
   end
-  
+
   @doc """
   Render detailed user information.
   """
@@ -155,11 +155,11 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       }
     }
   end
-  
+
   # ---------------------------------------------------------------------------
   # Content Moderation
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Render paginated reports list.
   """
@@ -174,7 +174,7 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       }
     }
   end
-  
+
   @doc """
   Render single report.
   """
@@ -199,11 +199,11 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       resolved_at: format_datetime(report.resolved_at)
     }
   end
-  
+
   # ---------------------------------------------------------------------------
   # Audit Log
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Render paginated audit log.
   """
@@ -218,7 +218,7 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       }
     }
   end
-  
+
   @doc """
   Render single audit log entry.
   """
@@ -236,11 +236,11 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       created_at: format_datetime(entry.inserted_at)
     }
   end
-  
+
   # ---------------------------------------------------------------------------
   # System Configuration
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Render system configuration.
   """
@@ -256,11 +256,11 @@ defmodule CgraphWeb.API.V1.AdminJSON do
       }
     }
   end
-  
+
   # ---------------------------------------------------------------------------
   # Helper Functions
   # ---------------------------------------------------------------------------
-  
+
   defp format_datetime(nil), do: nil
   defp format_datetime(%DateTime{} = dt), do: DateTime.to_iso8601(dt)
   defp format_datetime(%NaiveDateTime{} = ndt) do
@@ -268,29 +268,29 @@ defmodule CgraphWeb.API.V1.AdminJSON do
     |> DateTime.from_naive!("Etc/UTC")
     |> DateTime.to_iso8601()
   end
-  
+
   defp format_uptime(seconds) when seconds < 60 do
     "#{seconds}s"
   end
-  
+
   defp format_uptime(seconds) when seconds < 3600 do
     minutes = div(seconds, 60)
     secs = rem(seconds, 60)
     "#{minutes}m #{secs}s"
   end
-  
+
   defp format_uptime(seconds) when seconds < 86_400 do
     hours = div(seconds, 3600)
     minutes = div(rem(seconds, 3600), 60)
     "#{hours}h #{minutes}m"
   end
-  
+
   defp format_uptime(seconds) do
     days = div(seconds, 86_400)
     hours = div(rem(seconds, 86_400), 3600)
     "#{days}d #{hours}h"
   end
-  
+
   defp determine_user_status(user) do
     cond do
       Map.get(user, :deleted_at) != nil -> "deleted"

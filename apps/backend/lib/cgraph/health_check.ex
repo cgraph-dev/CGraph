@@ -1,18 +1,18 @@
 defmodule Cgraph.HealthCheck do
   @moduledoc """
   Comprehensive system health checking with detailed diagnostics.
-  
+
   ## Overview
-  
+
   Provides health status for all system components:
-  
+
   - **Database**: Connection pool, replication lag, query performance
   - **Cache**: Hit rates, memory usage, eviction rates
   - **External Services**: API dependencies, third-party integrations
   - **System Resources**: Memory, CPU, disk, file descriptors
-  
+
   ## Architecture
-  
+
   ```
   ┌─────────────────────────────────────────────────────────────────┐
   │                    HEALTH CHECK SYSTEM                          │
@@ -35,25 +35,25 @@ defmodule Cgraph.HealthCheck do
   │                                                                  │
   └─────────────────────────────────────────────────────────────────┘
   ```
-  
+
   ## Usage
-  
+
       # Quick health check
       {:ok, :healthy} = HealthCheck.check()
-      
+
       # Detailed health report
       {:ok, report} = HealthCheck.report()
-      
+
       # Check specific component
       {:ok, status} = HealthCheck.check_component(:database)
-      
+
       # Kubernetes probe endpoints
       HealthCheck.live?()      # Liveness probe
       HealthCheck.ready?()     # Readiness probe
       HealthCheck.startup?()   # Startup probe
-  
+
   ## Kubernetes Integration
-  
+
   ```yaml
   livenessProbe:
     httpGet:
@@ -61,7 +61,7 @@ defmodule Cgraph.HealthCheck do
       port: 4000
     initialDelaySeconds: 10
     periodSeconds: 10
-    
+
   readinessProbe:
     httpGet:
       path: /health/ready
@@ -69,32 +69,32 @@ defmodule Cgraph.HealthCheck do
     initialDelaySeconds: 5
     periodSeconds: 5
   ```
-  
+
   ## Telemetry Events
-  
+
   - `[:cgraph, :health, :check]` - Health check performed
   - `[:cgraph, :health, :degraded]` - System degraded
   - `[:cgraph, :health, :unhealthy]` - System unhealthy
   """
-  
+
   use GenServer
   require Logger
-  
+
   @check_interval :timer.seconds(30)
   @component_timeout :timer.seconds(5)
-  
+
   @healthy_memory_threshold 0.85
   @degraded_memory_threshold 0.95
-  
+
   # ---------------------------------------------------------------------------
   # Types
   # ---------------------------------------------------------------------------
-  
+
   @type status :: :healthy | :degraded | :unhealthy
-  
-  @type component :: 
+
+  @type component ::
     :database | :redis | :cache | :oban | :memory | :disk | :external
-  
+
   @type component_status :: %{
     name: component(),
     status: status(),
@@ -102,7 +102,7 @@ defmodule Cgraph.HealthCheck do
     latency_ms: non_neg_integer() | nil,
     details: map()
   }
-  
+
   @type health_report :: %{
     status: status(),
     timestamp: DateTime.t(),
@@ -110,14 +110,14 @@ defmodule Cgraph.HealthCheck do
     uptime_seconds: non_neg_integer(),
     components: [component_status()]
   }
-  
+
   # ---------------------------------------------------------------------------
   # Client API
   # ---------------------------------------------------------------------------
-  
+
   @doc """
   Perform a quick health check.
-  
+
   Returns overall status without component details.
   """
   def check do
@@ -126,26 +126,26 @@ defmodule Cgraph.HealthCheck do
       error -> error
     end
   end
-  
+
   @doc """
   Generate a detailed health report.
-  
+
   Includes status of all components.
   """
   def report do
     GenServer.call(__MODULE__, :report, @component_timeout * 2)
   end
-  
+
   @doc """
   Check a specific component.
   """
   def check_component(component) do
     GenServer.call(__MODULE__, {:check_component, component}, @component_timeout)
   end
-  
+
   @doc """
   Kubernetes liveness probe.
-  
+
   Returns true if the application is running (not deadlocked).
   Should be cheap and fast.
   """
@@ -159,10 +159,10 @@ defmodule Cgraph.HealthCheck do
       :exit, _ -> false
     end
   end
-  
+
   @doc """
   Kubernetes readiness probe.
-  
+
   Returns true if the application can serve traffic.
   Checks critical dependencies.
   """
@@ -173,41 +173,41 @@ defmodule Cgraph.HealthCheck do
       _ -> false
     end
   end
-  
+
   @doc """
   Kubernetes startup probe.
-  
+
   Returns true when application has completed initialization.
   """
   def startup? do
     # Check if critical components are initialized
     database_ready?() && cache_ready?()
   end
-  
+
   @doc """
   Get cached last known status.
-  
+
   Useful when you need status but can't wait for full check.
   """
   def last_status do
     GenServer.call(__MODULE__, :last_status)
   end
-  
+
   @doc """
   Get system uptime in seconds.
   """
   def uptime do
     GenServer.call(__MODULE__, :uptime)
   end
-  
+
   # ---------------------------------------------------------------------------
   # GenServer Callbacks
   # ---------------------------------------------------------------------------
-  
+
   def start_link(opts \\ []) do
     GenServer.start_link(__MODULE__, opts, name: __MODULE__)
   end
-  
+
   @impl true
   def init(_opts) do
     state = %{
@@ -216,78 +216,78 @@ defmodule Cgraph.HealthCheck do
       last_status: :unknown,
       component_statuses: %{}
     }
-    
+
     # Schedule periodic health checks
     schedule_check()
-    
+
     {:ok, state}
   end
-  
+
   @impl true
   def handle_call(:ping, _from, state) do
     {:reply, :pong, state}
   end
-  
+
   @impl true
   def handle_call(:report, _from, state) do
     report = generate_report()
-    
+
     new_state = %{state |
       last_check: DateTime.utc_now(),
       last_status: report.status,
       component_statuses: Map.new(report.components, &{&1.name, &1})
     }
-    
+
     {:reply, {:ok, report}, new_state}
   end
-  
+
   @impl true
   def handle_call({:check_component, component}, _from, state) do
     status = check_component_status(component)
     {:reply, {:ok, status}, state}
   end
-  
+
   @impl true
   def handle_call(:last_status, _from, state) do
     {:reply, state.last_status, state}
   end
-  
+
   @impl true
   def handle_call(:uptime, _from, state) do
     uptime = System.monotonic_time(:second) - state.started_at
     {:reply, uptime, state}
   end
-  
+
   @impl true
   def handle_info(:periodic_check, state) do
     # Run periodic health check
     report = generate_report()
-    
+
     # Emit telemetry for status changes
     if report.status != state.last_status do
       emit_status_change_telemetry(state.last_status, report.status)
     end
-    
+
     new_state = %{state |
       last_check: DateTime.utc_now(),
       last_status: report.status,
       component_statuses: Map.new(report.components, &{&1.name, &1})
     }
-    
+
     schedule_check()
-    
+
     {:noreply, new_state}
   end
-  
+
   @impl true
   def handle_info(_msg, state) do
     {:noreply, state}
   end
-  
+
   # ---------------------------------------------------------------------------
   # Report Generation
   # ---------------------------------------------------------------------------
-  
+
   defp generate_report do
     components = [
       check_component_status(:database),
@@ -297,9 +297,9 @@ defmodule Cgraph.HealthCheck do
     ]
     # Add Redis if configured
     |> maybe_add_redis_check()
-    
+
     overall_status = determine_overall_status(components)
-    
+
     %{
       status: overall_status,
       timestamp: DateTime.utc_now(),
@@ -309,7 +309,7 @@ defmodule Cgraph.HealthCheck do
       components: components
     }
   end
-  
+
   defp maybe_add_redis_check(components) do
     if redis_configured?() do
       components ++ [check_component_status(:redis)]
@@ -317,33 +317,33 @@ defmodule Cgraph.HealthCheck do
       components
     end
   end
-  
+
   defp determine_overall_status(components) do
     statuses = Enum.map(components, & &1.status)
-    
+
     cond do
       :unhealthy in statuses -> :unhealthy
       :degraded in statuses -> :degraded
       true -> :healthy
     end
   end
-  
+
   # ---------------------------------------------------------------------------
   # Component Checks
   # ---------------------------------------------------------------------------
-  
+
   defp check_component_status(:database) do
     start_time = System.monotonic_time(:millisecond)
-    
+
     try do
       # Simple connectivity check
       Ecto.Adapters.SQL.query!(Cgraph.Repo, "SELECT 1", [])
-      
+
       # Check connection pool
       pool_status = check_pool_status()
-      
+
       latency = System.monotonic_time(:millisecond) - start_time
-      
+
       %{
         name: :database,
         status: if(pool_status.healthy, do: :healthy, else: :degraded),
@@ -362,28 +362,28 @@ defmodule Cgraph.HealthCheck do
         }
     end
   end
-  
+
   defp check_component_status(:cache) do
     start_time = System.monotonic_time(:millisecond)
-    
+
     try do
       # Test cache read/write
       test_key = "health_check:#{System.unique_integer()}"
       Cachex.put(:cgraph_cache, test_key, "test")
       {:ok, "test"} = Cachex.get(:cgraph_cache, test_key)
       Cachex.del(:cgraph_cache, test_key)
-      
+
       # Get cache stats
       {:ok, stats} = Cachex.stats(:cgraph_cache)
-      
+
       latency = System.monotonic_time(:millisecond) - start_time
-      
+
       hit_rate = if stats.hits + stats.misses > 0 do
         stats.hits / (stats.hits + stats.misses) * 100
       else
         100.0
       end
-      
+
       %{
         name: :cache,
         status: :healthy,
@@ -407,15 +407,15 @@ defmodule Cgraph.HealthCheck do
         }
     end
   end
-  
+
   defp check_component_status(:redis) do
     start_time = System.monotonic_time(:millisecond)
-    
+
     try do
       case Cgraph.Redis.ping() do
         :ok ->
           latency = System.monotonic_time(:millisecond) - start_time
-          
+
           %{
             name: :redis,
             status: :healthy,
@@ -423,7 +423,7 @@ defmodule Cgraph.HealthCheck do
             latency_ms: latency,
             details: %{}
           }
-        
+
         _error ->
           %{
             name: :redis,
@@ -444,20 +444,20 @@ defmodule Cgraph.HealthCheck do
         }
     end
   end
-  
+
   defp check_component_status(:memory) do
     memory = :erlang.memory()
     total = memory[:total]
     system_limit = :erlang.system_info(:atom_limit) * 8
-    
+
     usage_ratio = total / max(system_limit, 1)
-    
+
     status = cond do
       usage_ratio > @degraded_memory_threshold -> :unhealthy
       usage_ratio > @healthy_memory_threshold -> :degraded
       true -> :healthy
     end
-    
+
     %{
       name: :memory,
       status: status,
@@ -472,7 +472,7 @@ defmodule Cgraph.HealthCheck do
       }
     }
   end
-  
+
   defp check_component_status(:oban) do
     try do
       # Check Oban is running and processing jobs
@@ -496,7 +496,7 @@ defmodule Cgraph.HealthCheck do
         }
     end
   end
-  
+
   defp check_component_status(component) do
     %{
       name: component,
@@ -506,11 +506,11 @@ defmodule Cgraph.HealthCheck do
       details: %{}
     }
   end
-  
+
   # ---------------------------------------------------------------------------
   # Database Helpers
   # ---------------------------------------------------------------------------
-  
+
   defp check_pool_status do
     try do
       # DBConnection pool status
@@ -524,7 +524,7 @@ defmodule Cgraph.HealthCheck do
         %{healthy: false, pool_size: 0, checked_out: 0}
     end
   end
-  
+
   defp database_ready? do
     try do
       Ecto.Adapters.SQL.query!(Cgraph.Repo, "SELECT 1", [])
@@ -533,30 +533,30 @@ defmodule Cgraph.HealthCheck do
       _ -> false
     end
   end
-  
+
   # ---------------------------------------------------------------------------
   # Cache Helpers
   # ---------------------------------------------------------------------------
-  
+
   defp cache_ready? do
     case Cachex.stats(:cgraph_cache) do
       {:ok, _} -> true
       _ -> false
     end
   end
-  
+
   # ---------------------------------------------------------------------------
   # Redis Helpers
   # ---------------------------------------------------------------------------
-  
+
   defp redis_configured? do
     Code.ensure_loaded?(Cgraph.Redis)
   end
-  
+
   # ---------------------------------------------------------------------------
   # Helpers
   # ---------------------------------------------------------------------------
-  
+
   defp uptime_seconds do
     case Process.whereis(__MODULE__) do
       nil -> 0
@@ -570,15 +570,15 @@ defmodule Cgraph.HealthCheck do
         end
     end
   end
-  
+
   defp schedule_check do
     Process.send_after(self(), :periodic_check, @check_interval)
   end
-  
+
   # ---------------------------------------------------------------------------
   # Telemetry
   # ---------------------------------------------------------------------------
-  
+
   defp emit_status_change_telemetry(old_status, new_status) do
     event = case new_status do
       :healthy -> [:cgraph, :health, :check]
@@ -586,13 +586,13 @@ defmodule Cgraph.HealthCheck do
       :unhealthy -> [:cgraph, :health, :unhealthy]
       _ -> [:cgraph, :health, :check]
     end
-    
+
     :telemetry.execute(event, %{count: 1}, %{
       old_status: old_status,
       new_status: new_status,
       timestamp: DateTime.utc_now()
     })
-    
+
     if new_status != :healthy do
       Logger.warning("Health status changed: #{old_status} -> #{new_status}")
     end

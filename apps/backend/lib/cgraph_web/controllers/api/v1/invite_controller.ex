@@ -15,7 +15,7 @@ defmodule CgraphWeb.API.V1.InviteController do
   """
   def index(conn, %{"group_id" => group_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :view_invites) do
       invites = Groups.list_invites(group)
@@ -42,14 +42,14 @@ defmodule CgraphWeb.API.V1.InviteController do
     user = conn.assigns.current_user
     # Support both nested {"invite" => attrs} and flat params
     invite_params = extract_invite_params(params)
-    
+
     # Default options
     max_uses = Map.get(invite_params, "max_uses")
     expires_in = Map.get(invite_params, "expires_in", 86_400) # Default 24 hours
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :create_invites),
-         {:ok, invite} <- Groups.create_invite(group, user, 
+         {:ok, invite} <- Groups.create_invite(group, user,
            max_uses: max_uses,
            expires_in: expires_in
          ) do
@@ -57,7 +57,7 @@ defmodule CgraphWeb.API.V1.InviteController do
         invite_id: invite.id,
         code: invite.code
       })
-      
+
       conn
       |> put_status(:created)
       |> render(:show, invite: invite)
@@ -78,7 +78,7 @@ defmodule CgraphWeb.API.V1.InviteController do
   """
   def delete(conn, %{"group_id" => group_id, "id" => invite_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, group} <- Groups.get_group(group_id),
          :ok <- Groups.authorize_action(user, group, :manage_invites),
          {:ok, invite} <- Groups.get_invite(group, invite_id),
@@ -87,7 +87,7 @@ defmodule CgraphWeb.API.V1.InviteController do
         invite_id: invite.id,
         code: invite.code
       })
-      
+
       send_resp(conn, :no_content, "")
     end
   end
@@ -98,7 +98,7 @@ defmodule CgraphWeb.API.V1.InviteController do
   """
   def join(conn, %{"code" => code}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, invite} <- Groups.get_invite_by_code(code),
          :ok <- validate_invite_usable(invite),
          :ok <- validate_not_member(user, invite.group),
@@ -108,7 +108,7 @@ defmodule CgraphWeb.API.V1.InviteController do
         invite_id: invite.id,
         code: invite.code
       })
-      
+
       conn
       |> put_status(:created)
       |> render(:joined, member: member, group: invite.group)
@@ -121,13 +121,13 @@ defmodule CgraphWeb.API.V1.InviteController do
     cond do
       invite.is_revoked ->
         {:error, :invite_revoked}
-      
+
       invite.expires_at && DateTime.compare(invite.expires_at, DateTime.utc_now()) == :lt ->
         {:error, :invite_expired}
-      
+
       invite.max_uses && invite.uses >= invite.max_uses ->
         {:error, :invite_max_uses_reached}
-      
+
       true ->
         :ok
     end

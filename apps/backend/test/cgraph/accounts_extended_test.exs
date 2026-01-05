@@ -93,9 +93,9 @@ defmodule Cgraph.AccountsExtendedTest do
     test "returns paginated users" do
       _user1 = create_user()
       _user2 = create_user()
-      
+
       {users, meta} = Accounts.list_users([])
-      
+
       assert is_list(users)
       assert is_map(meta)
       assert Map.has_key?(meta, :total)
@@ -103,9 +103,9 @@ defmodule Cgraph.AccountsExtendedTest do
 
     test "paginates results" do
       Enum.each(1..5, fn _ -> create_user() end)
-      
+
       {page1, _} = Accounts.list_users(page: 1, per_page: 2)
-      
+
       assert length(page1) == 2
     end
   end
@@ -114,20 +114,20 @@ defmodule Cgraph.AccountsExtendedTest do
     test "returns users ordered by karma" do
       user1 = create_user()
       user2 = create_user()
-      
+
       Accounts.update_user(user1, %{karma: 100})
       Accounts.update_user(user2, %{karma: 50})
-      
+
       {top_users, _meta} = Accounts.list_top_users_by_karma([])
-      
+
       assert is_list(top_users)
     end
 
     test "respects per_page option" do
       Enum.each(1..5, fn _ -> create_user() end)
-      
+
       {top_users, _meta} = Accounts.list_top_users_by_karma(per_page: 3)
-      
+
       assert length(top_users) <= 3
     end
   end
@@ -152,7 +152,7 @@ defmodule Cgraph.AccountsExtendedTest do
   end
 
   # ============================================================================
-  # Friendships 
+  # Friendships
   # ============================================================================
 
   describe "send_friend_request/2" do

@@ -1,7 +1,7 @@
 defmodule Cgraph.Repo do
   @moduledoc """
   Ecto repository for CGraph database operations.
-  
+
   Uses PostgreSQL with UUID primary keys throughout the application.
   Implements soft deletes and audit logging patterns.
   """

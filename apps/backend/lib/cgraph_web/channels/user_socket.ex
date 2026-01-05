@@ -1,7 +1,7 @@
 defmodule CgraphWeb.UserSocket do
   @moduledoc """
   WebSocket handler for real-time features.
-  
+
   Authenticates connections using JWT tokens and routes to channels.
   """
   use Phoenix.Socket

@@ -1,12 +1,12 @@
 defmodule CgraphWeb.Router do
   @moduledoc """
   Main router for CGraph API.
-  
+
   Defines all API routes organized by feature domain.
   Uses pipeline-based middleware for authentication and authorization.
-  
+
   ## Security Features
-  
+
   - Rate limiting on all pipelines (strict for auth, relaxed for reads)
   - Security headers (HSTS, CSP, X-Frame-Options, etc.)
   - JWT authentication with token revocation support
@@ -131,11 +131,11 @@ defmodule CgraphWeb.Router do
     get "/forums/top", ForumController, :top
     get "/forums/:id", ForumController, :show
     get "/forums/:id/contributors", ForumController, :contributors
-    
+
     # Public posts browsing
     get "/forums/:forum_id/posts", PostController, :index
     get "/forums/:forum_id/posts/:id", PostController, :show
-    
+
     # Public post feed (aggregated from all public forums)
     get "/posts/feed", PostController, :feed
   end
@@ -196,12 +196,12 @@ defmodule CgraphWeb.Router do
         resources "/messages", ChannelMessageController, only: [:index, :create]
         post "/typing", ChannelMessageController, :typing
       end
-      
+
       resources "/members", GroupMemberController, only: [:index, :create, :update, :delete]
       post "/members/:id/kick", GroupMemberController, :kick
       post "/members/:id/ban", GroupMemberController, :ban
       post "/members/:id/mute", GroupMemberController, :mute
-      
+
       resources "/roles", RoleController
       resources "/invites", InviteController, only: [:index, :create, :delete]
       get "/audit-log", GroupController, :audit_log
@@ -216,10 +216,10 @@ defmodule CgraphWeb.Router do
 
     # Forums (Reddit-style discovery + MyBB-style hosting)
     # Note: GET /forums, /forums/:id, /forums/leaderboard, /forums/top are public (no auth required)
-    
+
     # Vote eligibility check
     get "/forums/vote-eligibility", ForumController, :vote_eligibility
-    
+
     resources "/forums", ForumController, except: [:index, :show] do
       resources "/posts", PostController do
         post "/vote", PostController, :vote
@@ -228,23 +228,23 @@ defmodule CgraphWeb.Router do
           post "/vote", CommentController, :vote
         end
       end
-      
+
       resources "/categories", CategoryController
       get "/modqueue", ForumController, :mod_queue
-      
+
       # Forum voting (competition)
       post "/vote", ForumController, :vote
       get "/vote", ForumController, :get_vote
       delete "/vote", ForumController, :remove_vote
-      
+
       # MyBB-style boards
       resources "/boards", BoardController, except: [:new, :edit] do
         get "/by-slug/:slug", BoardController, :show_by_slug
       end
-      
+
       # Forum threads (all threads across all boards for a forum)
       get "/threads", ThreadController, :forum_threads
-      
+
       # Forum plugins
       resources "/plugins", PluginController, except: [:new, :edit] do
         post "/toggle", PluginController, :toggle

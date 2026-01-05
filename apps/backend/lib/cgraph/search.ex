@@ -1,7 +1,7 @@
 defmodule Cgraph.Search do
   @moduledoc """
   The Search context.
-  
+
   Provides unified search functionality across users, messages, posts, and groups.
   Supports full-text search, filtering, and relevance ranking.
   """
@@ -21,70 +21,75 @@ defmodule Cgraph.Search do
     limit = Keyword.get(opts, :limit, 20)
     offset = Keyword.get(opts, :offset, 0)
     current_user = Keyword.get(opts, :current_user)
-    
-    # Check if searching by user_id (identity number)
-    {base_query, is_id_search} = case parse_user_id_query(query) do
-      {:ok, user_id_num} ->
-        # Direct search by user_id number
-        q = from u in User,
-          where: is_nil(u.deleted_at) and is_nil(u.banned_at),
-          where: u.user_id == ^user_id_num,
-          limit: 1
-        {q, true}
-      
-      :error ->
-        # Regular text search
-        search_term = "%#{sanitize_query(query)}%"
-        q = from u in User,
-          where: is_nil(u.deleted_at) and is_nil(u.banned_at),
-          where: ilike(u.username, ^search_term) or 
-                 ilike(u.display_name, ^search_term) or
-                 ilike(u.bio, ^search_term),
-          order_by: [
-            desc: fragment("CASE WHEN ? ILIKE ? THEN 2 WHEN ? ILIKE ? THEN 1 ELSE 0 END",
-                           u.username, ^"#{sanitize_query(query)}%",
-                           u.display_name, ^"#{sanitize_query(query)}%")
-          ],
-          limit: ^limit,
-          offset: ^offset
-        {q, false}
-    end
 
-    # Exclude blocked users if current_user provided
-    base_query = if current_user do
-      from u in base_query,
-        where: u.id not in subquery(
-          from b in "blocks",
-          where: b.blocker_id == ^current_user.id,
-          select: b.blocked_id
-        )
-    else
-      base_query
-    end
+    {base_query, is_id_search} = build_user_search_query(query, limit, offset)
 
+    base_query = maybe_exclude_blocked(base_query, current_user)
     users = Repo.all(base_query)
-    
-    # Get total count
-    total = if is_id_search do
-      length(users)
-    else
-      search_term = "%#{sanitize_query(query)}%"
-      count_query = from u in User,
-        where: is_nil(u.deleted_at) and is_nil(u.banned_at),
-        where: ilike(u.username, ^search_term) or 
-               ilike(u.display_name, ^search_term) or
-               ilike(u.bio, ^search_term),
-        select: count(u.id)
-      Repo.one(count_query)
-    end
+    total = count_user_results(is_id_search, users, query)
 
     {users, %{total: total, limit: limit, offset: offset}}
+  end
+
+  defp build_user_search_query(query, limit, offset) do
+    case parse_user_id_query(query) do
+      {:ok, user_id_num} -> {build_user_id_query(user_id_num), true}
+      :error -> {build_text_search_query(query, limit, offset), false}
+    end
+  end
+
+  defp build_user_id_query(user_id_num) do
+    from u in User,
+      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+      where: u.user_id == ^user_id_num,
+      limit: 1
+  end
+
+  defp build_text_search_query(query, limit, offset) do
+    search_term = "%#{sanitize_query(query)}%"
+    prefix_term = "#{sanitize_query(query)}%"
+
+    from u in User,
+      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+      where: ilike(u.username, ^search_term) or
+             ilike(u.display_name, ^search_term) or
+             ilike(u.bio, ^search_term),
+      order_by: [
+        desc: fragment("CASE WHEN ? ILIKE ? THEN 2 WHEN ? ILIKE ? THEN 1 ELSE 0 END",
+                       u.username, ^prefix_term,
+                       u.display_name, ^prefix_term)
+      ],
+      limit: ^limit,
+      offset: ^offset
+  end
+
+  defp maybe_exclude_blocked(query, nil), do: query
+  defp maybe_exclude_blocked(query, current_user) do
+    from u in query,
+      where: u.id not in subquery(
+        from b in "blocks",
+        where: b.blocker_id == ^current_user.id,
+        select: b.blocked_id
+      )
+  end
+
+  defp count_user_results(true, users, _query), do: length(users)
+  defp count_user_results(false, _users, query) do
+    search_term = "%#{sanitize_query(query)}%"
+    from(u in User,
+      where: is_nil(u.deleted_at) and is_nil(u.banned_at),
+      where: ilike(u.username, ^search_term) or
+             ilike(u.display_name, ^search_term) or
+             ilike(u.bio, ^search_term),
+      select: count(u.id)
+    )
+    |> Repo.one()
   end
 
   # Parse user_id query formats like "#0001", "#1", "0001", or just "1"
   defp parse_user_id_query(query) do
     cleaned = query |> String.trim() |> String.replace("#", "")
-    
+
     # Only treat as ID search if it looks like a number
     if String.match?(cleaned, ~r/^\d+$/) do
       case Integer.parse(cleaned) do
@@ -106,9 +111,9 @@ defmodule Cgraph.Search do
     before_date = Keyword.get(opts, :before)
     after_date = Keyword.get(opts, :after)
     from_user_id = Keyword.get(opts, :from)
-    
+
     search_term = "%#{sanitize_query(query)}%"
-    
+
     # Get user's conversations
     user_conversations = from cp in "conversation_participants",
       where: cp.user_id == ^user.id,
@@ -148,7 +153,7 @@ defmodule Cgraph.Search do
     end
 
     messages = Repo.all(base_query)
-    
+
     {messages, %{limit: limit, offset: offset}}
   end
 
@@ -161,60 +166,58 @@ defmodule Cgraph.Search do
     forum_id = Keyword.get(opts, :forum_id)
     sort = Keyword.get(opts, :sort, "relevance")
     time_range = Keyword.get(opts, :time_range, "all")
-    
+
     search_term = "%#{sanitize_query(query)}%"
-    
-    base_query = from p in Post,
+
+    base_query = from(p in Post,
       where: ilike(p.title, ^search_term) or ilike(p.content, ^search_term),
       limit: ^limit,
       offset: ^offset,
       preload: [:user, :forum]
-
-    # Apply forum filter
-    base_query = if forum_id do
-      from p in base_query, where: p.forum_id == ^forum_id
-    else
-      base_query
-    end
-
-    # Apply time range
-    base_query = apply_time_range(base_query, time_range)
-
-    # Apply sorting
-    base_query = case sort do
-      "relevance" ->
-        from p in base_query,
-          order_by: [
-            desc: fragment("CASE WHEN ? ILIKE ? THEN 2 ELSE 0 END + CASE WHEN ? ILIKE ? THEN 1 ELSE 0 END",
-                          p.title, ^search_term, p.content, ^search_term),
-            desc: p.score
-          ]
-      "new" ->
-        from p in base_query, order_by: [desc: p.inserted_at]
-      "top" ->
-        from p in base_query, order_by: [desc: p.score]
-      "comments" ->
-        from p in base_query, order_by: [desc: p.comment_count]
-      _ ->
-        from p in base_query, order_by: [desc: p.inserted_at]
-    end
+    )
+    |> maybe_filter_by_forum(forum_id)
+    |> apply_time_range(time_range)
+    |> apply_post_sort(sort, search_term)
 
     posts = Repo.all(base_query)
-    
-    # Get total count
-    count_query = from p in Post,
-      where: ilike(p.title, ^search_term) or ilike(p.content, ^search_term),
-      select: count(p.id)
-
-    count_query = if forum_id do
-      from p in count_query, where: p.forum_id == ^forum_id
-    else
-      count_query
-    end
-
-    total = Repo.one(count_query)
+    total = count_post_results(search_term, forum_id)
 
     {posts, %{total: total, limit: limit, offset: offset}}
+  end
+
+  defp maybe_filter_by_forum(query, nil), do: query
+  defp maybe_filter_by_forum(query, forum_id) do
+    from p in query, where: p.forum_id == ^forum_id
+  end
+
+  defp apply_post_sort(query, "relevance", search_term) do
+    from p in query,
+      order_by: [
+        desc: fragment("CASE WHEN ? ILIKE ? THEN 2 ELSE 0 END + CASE WHEN ? ILIKE ? THEN 1 ELSE 0 END",
+                      p.title, ^search_term, p.content, ^search_term),
+        desc: p.score
+      ]
+  end
+  defp apply_post_sort(query, "new", _search_term) do
+    from p in query, order_by: [desc: p.inserted_at]
+  end
+  defp apply_post_sort(query, "top", _search_term) do
+    from p in query, order_by: [desc: p.score]
+  end
+  defp apply_post_sort(query, "comments", _search_term) do
+    from p in query, order_by: [desc: p.comment_count]
+  end
+  defp apply_post_sort(query, _unknown, _search_term) do
+    from p in query, order_by: [desc: p.inserted_at]
+  end
+
+  defp count_post_results(search_term, forum_id) do
+    from(p in Post,
+      where: ilike(p.title, ^search_term) or ilike(p.content, ^search_term),
+      select: count(p.id)
+    )
+    |> maybe_filter_by_forum(forum_id)
+    |> Repo.one()
   end
 
   @doc """
@@ -223,9 +226,9 @@ defmodule Cgraph.Search do
   def search_groups(query, opts \\ []) do
     limit = Keyword.get(opts, :limit, 20)
     offset = Keyword.get(opts, :offset, 0)
-    
+
     search_term = "%#{sanitize_query(query)}%"
-    
+
     base_query = from g in Group,
       where: g.is_public == true,
       where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term),
@@ -238,7 +241,7 @@ defmodule Cgraph.Search do
       offset: ^offset
 
     groups = Repo.all(base_query)
-    
+
     count_query = from g in Group,
       where: g.is_public == true,
       where: ilike(g.name, ^search_term) or ilike(g.description, ^search_term),
@@ -254,7 +257,7 @@ defmodule Cgraph.Search do
   """
   def search_all(query, opts \\ []) do
     current_user = Keyword.get(opts, :current_user)
-    
+
     # Search in parallel
     tasks = [
       Task.async(fn -> search_users(query, limit: 5, current_user: current_user) end),
@@ -284,11 +287,11 @@ defmodule Cgraph.Search do
   """
   def get_suggestions(query, opts \\ []) do
     limit = Keyword.get(opts, :limit, 10)
-    
+
     search_term = "#{sanitize_query(query)}%"
-    
+
     # Get username suggestions
-    users = 
+    users =
       from(u in User,
         where: u.is_active == true,
         where: ilike(u.username, ^search_term),
@@ -297,7 +300,7 @@ defmodule Cgraph.Search do
       |> Repo.all()
 
     # Get forum name suggestions
-    forums = 
+    forums =
       from(f in Cgraph.Forums.Forum,
         where: ilike(f.name, ^search_term),
         select: %{type: "forum", text: f.name, id: f.id},
@@ -305,7 +308,7 @@ defmodule Cgraph.Search do
       |> Repo.all()
 
     # Get group name suggestions
-    groups = 
+    groups =
       from(g in Group,
         where: g.is_public == true,
         where: ilike(g.name, ^search_term),

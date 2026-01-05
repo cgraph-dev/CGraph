@@ -15,7 +15,7 @@ defmodule CgraphWeb.API.V1.CategoryController do
   """
   def index(conn, %{"forum_id" => forum_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view) do
       categories = Forums.list_categories(forum)
@@ -29,7 +29,7 @@ defmodule CgraphWeb.API.V1.CategoryController do
   """
   def show(conn, %{"forum_id" => forum_id, "id" => category_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :view),
          {:ok, category} <- Forums.get_category(forum, category_id) do
@@ -44,7 +44,7 @@ defmodule CgraphWeb.API.V1.CategoryController do
   def create(conn, %{"forum_id" => forum_id} = params) do
     user = conn.assigns.current_user
     category_params = Map.get(params, "category", %{})
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
          {:ok, category} <- Forums.create_category(forum, category_params) do
@@ -61,7 +61,7 @@ defmodule CgraphWeb.API.V1.CategoryController do
   def update(conn, %{"forum_id" => forum_id, "id" => category_id} = params) do
     user = conn.assigns.current_user
     category_params = Map.get(params, "category", %{})
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
          {:ok, category} <- Forums.get_category(forum, category_id),
@@ -76,7 +76,7 @@ defmodule CgraphWeb.API.V1.CategoryController do
   """
   def delete(conn, %{"forum_id" => forum_id, "id" => category_id}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
          {:ok, category} <- Forums.get_category(forum, category_id),
@@ -91,7 +91,7 @@ defmodule CgraphWeb.API.V1.CategoryController do
   """
   def reorder(conn, %{"forum_id" => forum_id, "category_ids" => category_ids}) do
     user = conn.assigns.current_user
-    
+
     with {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
          {:ok, categories} <- Forums.reorder_categories(forum, category_ids) do

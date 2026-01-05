@@ -310,58 +310,63 @@ defmodule Cgraph.Accounts.WalletAuth do
   """
   def create_wallet_user(wallet_address, crypto_alias, pin, recovery_method \\ :backup_codes) do
     Repo.transaction(fn ->
-      # Validate inputs
-      unless valid_wallet_address?(wallet_address) do
-        Repo.rollback(:invalid_wallet_address)
-      end
-
-      case validate_pin_strength(pin) do
+      with :ok <- validate_wallet_inputs(wallet_address, pin),
+           {:ok, user} <- insert_wallet_user(wallet_address, crypto_alias, pin),
+           {:ok, recovery_data} <- setup_recovery(user, wallet_address, crypto_alias, pin, recovery_method) do
+        %{user: user, recovery_data: recovery_data}
+      else
         {:error, reason} -> Repo.rollback(reason)
-        {:ok, _} -> :ok
       end
-
-      # Hash the PIN
-      pin_hash = hash_pin(pin)
-
-      # Create user
-      user_attrs = %{
-        wallet_address: wallet_address,
-        crypto_alias: crypto_alias,
-        pin_hash: pin_hash,
-        auth_type: :wallet,
-        display_name: crypto_alias,
-        username: String.replace(crypto_alias, "-", "_")
-      }
-
-      user =
-        %User{}
-        |> User.wallet_registration_changeset(user_attrs)
-        |> Repo.insert!()
-
-      # Generate recovery data based on method
-      recovery_data =
-        case recovery_method do
-          :backup_codes ->
-            {:ok, codes} = generate_recovery_codes(8)
-            hashed_codes = hash_recovery_codes(codes)
-
-            # Store hashed codes
-            Enum.each(hashed_codes, fn hash ->
-              %RecoveryCode{}
-              |> RecoveryCode.changeset(%{user_id: user.id, code_hash: hash, used: false})
-              |> Repo.insert!()
-            end)
-
-            %{type: :backup_codes, codes: codes}
-
-          :file ->
-            {:ok, file_content} = generate_recovery_file(wallet_address, crypto_alias, pin)
-            filename = "cgraph-wallet-#{crypto_alias}.cgraph"
-            %{type: :file, content: file_content, filename: filename}
-        end
-
-      %{user: user, recovery_data: recovery_data}
     end)
+  end
+
+  defp validate_wallet_inputs(wallet_address, pin) do
+    with :ok <- validate_wallet_address(wallet_address),
+         {:ok, _} <- validate_pin_strength(pin) do
+      :ok
+    end
+  end
+  
+  defp validate_wallet_address(wallet_address) do
+    if valid_wallet_address?(wallet_address), do: :ok, else: {:error, :invalid_wallet_address}
+  end
+
+  defp insert_wallet_user(wallet_address, crypto_alias, pin) do
+    pin_hash = hash_pin(pin)
+
+    user_attrs = %{
+      wallet_address: wallet_address,
+      crypto_alias: crypto_alias,
+      pin_hash: pin_hash,
+      auth_type: :wallet,
+      display_name: crypto_alias,
+      username: String.replace(crypto_alias, "-", "_")
+    }
+
+    user = %User{}
+      |> User.wallet_registration_changeset(user_attrs)
+      |> Repo.insert!()
+
+    {:ok, user}
+  end
+
+  defp setup_recovery(user, _wallet_address, _crypto_alias, _pin, :backup_codes) do
+    {:ok, codes} = generate_recovery_codes(8)
+    hashed_codes = hash_recovery_codes(codes)
+
+    Enum.each(hashed_codes, fn hash ->
+      %RecoveryCode{}
+      |> RecoveryCode.changeset(%{user_id: user.id, code_hash: hash, used: false})
+      |> Repo.insert!()
+    end)
+
+    {:ok, %{type: :backup_codes, codes: codes}}
+  end
+
+  defp setup_recovery(_user, wallet_address, crypto_alias, pin, :file) do
+    {:ok, file_content} = generate_recovery_file(wallet_address, crypto_alias, pin)
+    filename = "cgraph-wallet-#{crypto_alias}.cgraph"
+    {:ok, %{type: :file, content: file_content, filename: filename}}
   end
 
   # =============================================================================

@@ -19,27 +19,27 @@ defmodule Cgraph.Forums.ForumPlugin do
     field :author_url, :string
     field :is_active, :boolean, default: true
     field :is_core, :boolean, default: false  # core plugins can't be uninstalled
-    
+
     # Plugin configuration (JSON)
     field :settings, :map, default: %{}
-    
+
     # Plugin hooks - which events this plugin listens to
     field :hooks, {:array, :string}, default: []
-    
+
     # Plugin assets (CSS/JS files to load)
     field :css_files, {:array, :string}, default: []
     field :js_files, {:array, :string}, default: []
-    
+
     # Permissions - which user groups can use this plugin
     field :allowed_groups, {:array, :string}, default: []  # empty = all groups
-    
+
     # Display order in plugin list
     field :position, :integer, default: 0
-    
+
     # Installation metadata
     field :installed_at, :utc_datetime_usec
     field :updated_at_version, :string  # version when last updated
-    
+
     belongs_to :forum, Cgraph.Forums.Forum
     belongs_to :installed_by, Cgraph.Accounts.User
 

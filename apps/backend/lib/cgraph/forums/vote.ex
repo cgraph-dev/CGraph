@@ -1,7 +1,7 @@
 defmodule Cgraph.Forums.Vote do
   @moduledoc """
   Vote schema for posts and comments.
-  
+
   Each user can have one vote per post/comment.
   Vote value is 1 (upvote) or -1 (downvote).
   """

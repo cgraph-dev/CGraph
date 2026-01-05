@@ -19,7 +19,7 @@ defmodule Cgraph.Forums.Ban do
     field :is_permanent, :boolean, default: false
     field :revoked_at, :utc_datetime
     field :revoked_by_id, :binary_id
-    
+
     timestamps()
   end
 

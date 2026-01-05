@@ -58,7 +58,7 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
 
   # HSTS max age: 1 year in seconds
   @default_hsts_max_age 31_536_000
-  
+
   # Preload HSTS to submit to browser preload lists
   @hsts_preload true
 
@@ -66,7 +66,7 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
   def init(opts) do
     mode = Keyword.get(opts, :mode, :api)
     config = Application.get_env(:cgraph, __MODULE__, [])
-    
+
     %{
       mode: mode,
       hsts_enabled: Keyword.get(config, :hsts, true),
@@ -110,13 +110,13 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
   # Content Security Policy
   defp apply_csp(conn, %{mode: mode, csp_mode: csp_mode, csp_report_uri: report_uri, report_only: report_only}) do
     csp_value = build_csp(mode, csp_mode, report_uri)
-    
+
     header_name = if report_only do
       "content-security-policy-report-only"
     else
       "content-security-policy"
     end
-    
+
     put_resp_header(conn, header_name, csp_value)
   end
 
@@ -128,13 +128,13 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
       "base-uri 'none'",
       "upgrade-insecure-requests"
     ]
-    
+
     directives = if report_uri do
       directives ++ ["report-uri #{report_uri}"]
     else
       directives
     end
-    
+
     Enum.join(directives, "; ")
   end
 
@@ -153,13 +153,13 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
       "base-uri 'self'",
       "upgrade-insecure-requests"
     ]
-    
+
     directives = if report_uri do
       directives ++ ["report-uri #{report_uri}"]
     else
       directives
     end
-    
+
     Enum.join(directives, "; ")
   end
 
@@ -177,13 +177,13 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
       "form-action 'self'",
       "base-uri 'self'"
     ]
-    
+
     directives = if report_uri do
       directives ++ ["report-uri #{report_uri}"]
     else
       directives
     end
-    
+
     Enum.join(directives, "; ")
   end
 
@@ -242,7 +242,7 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
       "interest-cohort=()"  # Opt out of FLoC
     ]
     |> Enum.join(", ")
-    
+
     put_resp_header(conn, "permissions-policy", policy)
   end
 
@@ -259,7 +259,7 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
       "interest-cohort=()"  # Opt out of FLoC
     ]
     |> Enum.join(", ")
-    
+
     put_resp_header(conn, "permissions-policy", policy)
   end
 
@@ -278,7 +278,7 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
       %{count: 1},
       %{mode: opts.mode, path: conn.request_path}
     )
-    
+
     conn
   end
 end

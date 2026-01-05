@@ -1,7 +1,7 @@
 defmodule Cgraph.Accounts.Session do
   @moduledoc """
   User session tracking for multi-device support.
-  
+
   Stores JWT refresh tokens and device information
   to allow users to manage and revoke sessions.
   """

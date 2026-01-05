@@ -16,7 +16,7 @@ defmodule Cgraph.Forums.ForumTheme do
     field :description, :string
     field :is_default, :boolean, default: false
     field :is_active, :boolean, default: true
-    
+
     # Color scheme
     field :primary_color, :string, default: "#3B82F6"
     field :secondary_color, :string, default: "#1E40AF"
@@ -24,28 +24,28 @@ defmodule Cgraph.Forums.ForumTheme do
     field :background_color, :string, default: "#FFFFFF"
     field :text_color, :string, default: "#1F2937"
     field :link_color, :string, default: "#2563EB"
-    
+
     # Custom CSS
     field :custom_css, :string
-    
+
     # Header customization
     field :header_logo_url, :string
     field :header_background_url, :string
     field :header_height, :integer, default: 80
-    
+
     # Template overrides (JSON map of template_name -> custom_html)
     field :template_overrides, :map, default: %{}
-    
+
     # Font settings
     field :font_family, :string, default: "Inter, system-ui, sans-serif"
     field :font_size_base, :string, default: "16px"
-    
+
     # Layout settings
     field :sidebar_position, :string, default: "right"  # left, right, none
     field :content_width, :string, default: "1200px"
     field :show_breadcrumbs, :boolean, default: true
     field :show_forum_stats, :boolean, default: true
-    
+
     belongs_to :forum, Cgraph.Forums.Forum
     belongs_to :created_by, Cgraph.Accounts.User
 
@@ -87,7 +87,7 @@ defmodule Cgraph.Forums.ForumTheme do
         |> String.replace(~r/[^a-z0-9\s-]/, "")
         |> String.replace(~r/\s+/, "-")
         |> String.trim("-")
-        
+
         put_change(changeset, :slug, slug)
     end
   end

@@ -1,7 +1,7 @@
 defmodule Cgraph.Messaging do
   @moduledoc """
   The Messaging context.
-  
+
   Handles direct messages, conversations, reactions, and read receipts.
   """
 
@@ -28,7 +28,7 @@ defmodule Cgraph.Messaging do
       preload: [participants: :user]
 
     total = Repo.aggregate(query, :count, :id)
-    
+
     conversations = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -53,39 +53,37 @@ defmodule Cgraph.Messaging do
 
   @doc """
   Create or get an existing conversation between users.
-  
+
   For DMs (2 participants), returns existing if one exists.
   Returns `{:ok, conversation, :existing}` or `{:ok, conversation, :created}`.
   """
   def create_or_get_conversation(user, participant_ids) when is_list(participant_ids) do
     all_ids = [user.id | participant_ids] |> Enum.uniq()
-    
-    # For DMs (2 participants), check for existing
-    if length(all_ids) == 2 do
-      case find_dm_conversation(all_ids) do
-        {:ok, conversation} -> {:ok, conversation, :existing}
-        :not_found -> 
-          case create_conversation(user, %{"participant_ids" => participant_ids}) do
-            {:ok, conversation} -> {:ok, conversation, :created}
-            error -> error
-          end
-      end
-    else
-      case create_conversation(user, %{"participant_ids" => participant_ids}) do
-        {:ok, conversation} -> {:ok, conversation, :created}
-        error -> error
-      end
+
+    case check_existing_dm(all_ids) do
+      {:ok, conversation} -> {:ok, conversation, :existing}
+      :not_dm -> create_new_conversation(user, participant_ids)
+      :not_found -> create_new_conversation(user, participant_ids)
     end
   end
-
   # Legacy wrapper for single recipient_id
   def create_or_get_conversation(user, recipient_id) when is_binary(recipient_id) do
     create_or_get_conversation(user, [recipient_id])
   end
+  
+  defp check_existing_dm([_, _] = all_ids), do: find_dm_conversation(all_ids)
+  defp check_existing_dm(_all_ids), do: :not_dm
+  
+  defp create_new_conversation(user, participant_ids) do
+    case create_conversation(user, %{"participant_ids" => participant_ids}) do
+      {:ok, conversation} -> {:ok, conversation, :created}
+      error -> error
+    end
+  end
 
   @doc """
   Create a group conversation with multiple participants.
-  
+
   Attrs:
   - participant_ids: List of all user IDs to include (including creator)
   - name: Optional group name
@@ -94,7 +92,7 @@ defmodule Cgraph.Messaging do
   def create_group_conversation(creator, attrs) do
     participant_ids = Map.get(attrs, :participant_ids, [])
     name = Map.get(attrs, :name)
-    
+
     case create_conversation(creator, %{"participant_ids" => participant_ids, "name" => name}) do
       {:ok, conversation} -> {:ok, conversation}
       error -> error
@@ -145,23 +143,25 @@ defmodule Cgraph.Messaging do
     all_participant_ids = [user.id | participant_ids] |> Enum.uniq()
 
     Repo.transaction(fn ->
-      # Check for existing DM between these users
-      if length(all_participant_ids) == 2 do
-        case find_dm_conversation(all_participant_ids) do
-          {:ok, existing} -> existing
-          :not_found -> do_create_conversation(user, all_participant_ids)
-        end
-      else
-        do_create_conversation(user, all_participant_ids)
-      end
+      get_or_create_conversation_for_participants(user, all_participant_ids)
     end)
+  end
+  
+  defp get_or_create_conversation_for_participants(user, [_, _] = all_ids) do
+    case find_dm_conversation(all_ids) do
+      {:ok, existing} -> existing
+      :not_found -> do_create_conversation(user, all_ids)
+    end
+  end
+  defp get_or_create_conversation_for_participants(user, all_ids) do
+    do_create_conversation(user, all_ids)
   end
 
   defp find_dm_conversation([user1_id, user2_id]) do
     # DM conversations use user_one_id and user_two_id ordered consistently
     # Sort IDs to ensure consistent ordering
     [lower_id, higher_id] = Enum.sort([user1_id, user2_id])
-    
+
     query = from c in Conversation,
       where: c.user_one_id == ^lower_id,
       where: c.user_two_id == ^higher_id,
@@ -178,7 +178,7 @@ defmodule Cgraph.Messaging do
     if length(participant_ids) == 2 do
       [user1_id, user2_id] = participant_ids
       [lower_id, higher_id] = Enum.sort([user1_id, user2_id])
-      
+
       {:ok, conversation} = %Conversation{}
         |> Conversation.changeset(%{user_one_id: lower_id, user_two_id: higher_id})
         |> Repo.insert()
@@ -228,7 +228,7 @@ defmodule Cgraph.Messaging do
     end
 
     total = Repo.aggregate(from(m in Message, where: m.conversation_id == ^conversation.id), :count, :id)
-    
+
     messages = query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -281,7 +281,7 @@ defmodule Cgraph.Messaging do
         # Note: Message broadcasting is handled by the channel layer (conversation_channel.ex)
         # to ensure proper serialization and consistent camelCase format for WebSocket clients.
         # Do not broadcast here to avoid duplicate messages.
-        
+
         {:ok, Repo.preload(message, [:sender, :reactions])}
 
       error -> error
@@ -297,7 +297,7 @@ defmodule Cgraph.Messaging do
 
   @doc """
   Mark a message as read.
-  
+
   Supports multiple argument patterns:
   - `mark_message_read(message_id, user_id)` - binary IDs for WebSocket channels
   - `mark_message_read(message, user)` - Message struct and user struct
@@ -365,14 +365,14 @@ defmodule Cgraph.Messaging do
       select: m.id
 
     unread_message_ids = Repo.all(unread_query)
-    
+
     unless Enum.empty?(unread_message_ids) do
       # read_at uses :utc_datetime (no microseconds)
       # inserted_at uses :utc_datetime_usec (with microseconds)
       # Note: ReadReceipt schema has timestamps(updated_at: false) - no updated_at field
       now = DateTime.utc_now()
       read_at = DateTime.truncate(now, :second)
-      
+
       # Batch insert read receipts - much more efficient than individual inserts
       read_receipts = Enum.map(unread_message_ids, fn mid ->
         %{
@@ -383,11 +383,11 @@ defmodule Cgraph.Messaging do
           inserted_at: now
         }
       end)
-      
+
       # Insert all at once, ignoring conflicts (on_conflict: :nothing)
       Repo.insert_all(ReadReceipt, read_receipts, on_conflict: :nothing)
     end
-    
+
     {:ok, length(unread_message_ids)}
   end
 
@@ -565,7 +565,7 @@ defmodule Cgraph.Messaging do
     end
 
     total = Repo.aggregate(db_query, :count, :id)
-    
+
     messages = db_query
       |> limit(^per_page)
       |> offset(^((page - 1) * per_page))
@@ -685,7 +685,7 @@ defmodule Cgraph.Messaging do
         order_by: [desc: m.inserted_at],
         limit: 1
     )
-    
+
     if latest_message do
       mark_messages_read(user, conversation, latest_message.id)
     else

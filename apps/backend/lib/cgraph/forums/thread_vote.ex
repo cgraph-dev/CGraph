@@ -1,7 +1,7 @@
 defmodule Cgraph.Forums.ThreadVote do
   @moduledoc """
   Vote schema for thread voting.
-  
+
   Each user can have one vote per thread.
   Vote value is 1 (upvote) or -1 (downvote).
   """

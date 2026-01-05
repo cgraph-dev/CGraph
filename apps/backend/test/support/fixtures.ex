@@ -84,7 +84,7 @@ defmodule CgraphWeb.MessagingFixtures do
   def message_fixture(conversation, user, attrs \\ %{}) do
     # Ensure the user exists in the database by re-fetching
     {:ok, msg_user} = Cgraph.Accounts.get_user(user.id)
-    
+
     {:ok, message} =
       attrs
       |> Enum.into(%{content: "Test message #{System.unique_integer()}"})
@@ -163,7 +163,7 @@ end
 defmodule CgraphWeb.ForumFixtures do
   @moduledoc """
   Test fixtures for forums.
-  
+
   Note: Forum names must be 3-21 characters, alphanumeric + underscores only.
   """
 
@@ -189,21 +189,21 @@ defmodule CgraphWeb.ForumFixtures do
 
   @doc """
   Create a forum fixture.
-  
+
   ## Examples
-  
+
       # Create with default attributes
       forum_fixture()
-      
+
       # Create with specific user
       forum_fixture(user)
-      
+
       # Create with specific attributes
       forum_fixture(user, %{name: "my_forum"})
   """
   def forum_fixture(user \\ nil, attrs \\ %{}) do
     user = user || UserFixtures.user_fixture()
-    
+
     {:ok, forum} =
       attrs
       |> Enum.into(%{
