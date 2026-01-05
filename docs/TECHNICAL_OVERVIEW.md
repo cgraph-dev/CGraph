@@ -1,7 +1,7 @@
 # CGraph Technical Overview
 
 > Comprehensive technical reference for the CGraph platform  
-> Version 0.7.18 | January 2026
+> Version 0.7.19 | January 2026
 
 ---
 

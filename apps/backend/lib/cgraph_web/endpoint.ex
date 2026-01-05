@@ -17,12 +17,16 @@ defmodule CgraphWeb.Endpoint do
   ]
 
   # CORS origins based on environment
+  # In prod, reads CORS_ORIGINS env (comma-separated) or defaults to cgraph.org
   @cors_origins (if Mix.env() == :prod do
-    [
-      "https://cgraph.io",
-      "https://www.cgraph.io",
-      "https://app.cgraph.io"
-    ]
+    case System.get_env("CORS_ORIGINS") do
+      nil -> [
+        "https://cgraph.org",
+        "https://www.cgraph.org",
+        "https://app.cgraph.org"
+      ]
+      origins -> String.split(origins, ",", trim: true)
+    end
   else
     "*"
   end)

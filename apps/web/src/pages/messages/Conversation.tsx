@@ -58,7 +58,10 @@ export default function Conversation() {
 
   const conversation = conversations.find((c) => c.id === conversationId);
   const conversationMessages = conversationId ? messages[conversationId] || [] : [];
-  const typing = conversationId ? typingUsers[conversationId] || [] : [];
+  // Filter out current user from typing list - only show when OTHER users are typing
+  const typing = conversationId 
+    ? (typingUsers[conversationId] || []).filter(userId => userId !== user?.id) 
+    : [];
 
   // Get other participant for DM - handle multiple data formats
   // Backend returns participants with userId and nested user object
@@ -240,6 +243,27 @@ export default function Conversation() {
     return format(date, 'MMMM d, yyyy');
   };
 
+  // Format last seen timestamp into human-readable text
+  const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
+    if (!lastSeenAt) return 'Offline';
+    
+    const lastSeen = new Date(lastSeenAt);
+    if (isNaN(lastSeen.getTime())) return 'Offline';
+    
+    const now = new Date();
+    const diffMs = now.getTime() - lastSeen.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Last seen just now';
+    if (diffMins < 60) return `Last seen ${diffMins}m ago`;
+    if (diffHours < 24) return `Last seen ${diffHours}h ago`;
+    if (diffDays === 1) return 'Last seen yesterday';
+    if (diffDays < 7) return `Last seen ${diffDays}d ago`;
+    return `Last seen ${format(lastSeen, 'MMM d')}`;
+  };
+
   // Safe date parser that handles various formats and invalid dates
   const parseMessageDate = (dateStr: string | undefined | null): Date => {
     if (!dateStr) return new Date();
@@ -297,7 +321,13 @@ export default function Conversation() {
             <div className="flex items-center gap-1.5">
               <ShieldCheckIcon className="h-3 w-3 text-green-400" title="End-to-end encrypted" />
               <p className="text-xs text-gray-400">
-                {isOtherUserOnline ? 'Online' : 'Offline'}
+                {typing.length > 0 ? (
+                  <span className="text-primary-400">typing...</span>
+                ) : isOtherUserOnline ? (
+                  'Online'
+                ) : (
+                  formatLastSeen(otherParticipant?.user?.lastSeenAt)
+                )}
               </p>
             </div>
           </div>
@@ -373,6 +403,18 @@ export default function Conversation() {
                 // Extract current user ID with same robust handling
                 const rawUserId = user?.id || (user as any)?.userId || '';
                 const currentUserId = rawUserId ? String(rawUserId).trim() : '';
+                
+                // Debug logging for alignment issues
+                if (import.meta.env.DEV && msgIndex === 0) {
+                  console.log('[Conversation Web] First message debug:', {
+                    messageId: message.id,
+                    rawSenderId,
+                    messageSenderId,
+                    rawUserId,
+                    currentUserId,
+                    isEqual: messageSenderId === currentUserId
+                  });
+                }
                 
                 // Message is own if both IDs exist and match exactly
                 const isOwn = messageSenderId.length > 0 

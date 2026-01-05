@@ -43,11 +43,32 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
   const [otherParticipantId, setOtherParticipantId] = useState<string | null>(null);
+  const [otherParticipantLastSeen, setOtherParticipantLastSeen] = useState<string | null>(null);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
   
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  
+  // Format last seen timestamp for display
+  const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
+    if (!lastSeenAt) return 'Offline';
+    
+    const lastSeen = new Date(lastSeenAt);
+    const now = new Date();
+    const diffMs = now.getTime() - lastSeen.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+    
+    if (diffMins < 1) return 'Last seen just now';
+    if (diffMins < 60) return `Last seen ${diffMins}m ago`;
+    if (diffHours < 24) return `Last seen ${diffHours}h ago`;
+    if (diffDays === 1) return 'Last seen yesterday';
+    if (diffDays < 7) return `Last seen ${diffDays} days ago`;
+    
+    return `Last seen ${lastSeen.toLocaleDateString()}`;
+  };
   
   // Subscribe to presence changes
   useEffect(() => {
@@ -120,6 +141,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const isMountedRef = useRef(true);
   const cleanupRef = useRef<(() => void) | null>(null);
   
+
+  
   useEffect(() => {
     isMountedRef.current = true;
     const channelTopic = `conversation:${conversationId}`;
@@ -189,18 +212,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
   }, [conversationId, user?.id]);
   
   const fetchConversation = async () => {
-    // Get current user ID from auth context
     const currentUserId = user?.id;
-    
-    // Debug: log full user object to understand structure
-    if (__DEV__) {
-      console.log('[ConversationScreen] FULL USER OBJECT:', JSON.stringify(user, null, 2));
-    }
-    
-    if (!currentUserId) {
-      if (__DEV__) console.log('[ConversationScreen] Waiting for user to be loaded...');
-      return; // Don't proceed without a valid user
-    }
+    if (!currentUserId) return;
     
     try {
       const response = await api.get(`/api/v1/conversations/${conversationId}`);
@@ -213,42 +226,20 @@ export default function ConversationScreen({ navigation, route }: Props) {
         return String(participantUserId) !== String(currentUserId);
       });
       
-      // Debug logging
-      if (__DEV__) {
-        console.log('[ConversationScreen] Participants:', JSON.stringify(conv.participants?.map((p: any) => ({
-          participantId: p.id,
-          userId: p.userId || p.user_id,
-          userObjId: p.user?.id,
-          displayName: p.user?.displayName || p.user?.display_name,
-          username: p.user?.username
-        })), null, 2));
-        console.log('[ConversationScreen] Current user ID:', currentUserId);
-        console.log('[ConversationScreen] Other participant found:', !!otherParticipant);
-      }
-      
       // Store other participant's user ID for presence tracking
-      // Extract from userId (API camelCase) or user.id (nested object)
-      // Explicitly convert to string to ensure consistent comparison with presence data
       const rawOtherUserId = otherParticipant?.userId || otherParticipant?.user_id || (otherParticipant?.user as any)?.id;
       const otherUserId = rawOtherUserId ? String(rawOtherUserId) : null;
       
       if (otherUserId) {
         setOtherParticipantId(otherUserId);
         
-        // Use ONLY Phoenix Presence for online status (single source of truth)
-        // Database status field is never updated and shows stale data
-        const presenceOnline = socketManager.isUserOnline(conversationId, otherUserId);
+        // Extract last seen from participant's user data
+        const lastSeen = (otherParticipant?.user as any)?.lastSeenAt || null;
+        setOtherParticipantLastSeen(lastSeen);
         
-        if (__DEV__) {
-          console.log(`[ConversationScreen] Other user ${otherUserId} presence status: ${presenceOnline}`);
-        }
+        // Use Phoenix Presence for online status (single source of truth)
+        const presenceOnline = socketManager.isUserOnline(conversationId, otherUserId);
         setIsOtherUserOnline(presenceOnline);
-      }
-      
-      // Debug: Check if user is actually in presence
-      if (__DEV__) {
-        const presenceList = socketManager.getOnlineUsers(conversationId);
-        console.log(`[ConversationScreen] All online users in ${conversationId}:`, presenceList);
       }
       
       // Extract display name - API uses camelCase (displayName, not display_name)
@@ -271,8 +262,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
   
   // Update header with current online and typing status
   const updateHeader = useCallback((displayName: string) => {
-    // Determine status text with priority: typing > online > offline
-    let statusText = 'Offline';
+    // Determine status text with priority: typing > online > last seen > offline
+    let statusText = formatLastSeen(otherParticipantLastSeen);
     let statusColor = '#6b7280';
     
     if (isOtherUserTyping) {
@@ -302,7 +293,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         </View>
       ),
     });
-  }, [colors, isOtherUserOnline, isOtherUserTyping, navigation]);
+  }, [colors, isOtherUserOnline, isOtherUserTyping, otherParticipantLastSeen, navigation]);
   
   // Update header when online or typing status changes
   useEffect(() => {
@@ -329,7 +320,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       
       updateHeader(displayName);
     }
-  }, [isOtherUserOnline, isOtherUserTyping, _conversation, updateHeader, user?.id]);
+  }, [isOtherUserOnline, isOtherUserTyping, otherParticipantLastSeen, _conversation, updateHeader, user?.id]);
   
   const fetchMessages = async () => {
     try {
@@ -468,25 +459,17 @@ export default function ConversationScreen({ navigation, route }: Props) {
   };
   
   const renderMessage = useCallback(({ item }: { item: Message }) => {
-    // Extract current user ID with robust handling
-    // Ensure it's a trimmed non-empty string for accurate comparison
-    const rawUserId = user?.id;
-    const currentUserId = rawUserId ? String(rawUserId).trim() : '';
+    // Get current user ID - ensure string comparison
+    const currentUserId = user?.id ? String(user.id) : '';
     
-    // Extract message sender ID with comprehensive fallback chain
-    // Check snake_case first (from normalizer), then camelCase, then nested sender.id
-    const rawSenderId = item.sender_id 
-      || (item as any).senderId 
-      || item.sender?.id 
-      || '';
-    const messageSenderId = rawSenderId ? String(rawSenderId).trim() : '';
+    // Get message sender ID - normalizer sets sender_id (snake_case)
+    // Fallback to sender.id for backwards compatibility
+    const messageSenderId = item.sender_id 
+      ? String(item.sender_id) 
+      : (item.sender?.id ? String(item.sender.id) : '');
     
-    // Determine message ownership - both IDs must be non-empty and match exactly
-    // This prevents false positives from empty strings or null values
-    const isOwnMessage = 
-      currentUserId.length > 0 && 
-      messageSenderId.length > 0 && 
-      currentUserId === messageSenderId;
+    // Message is from current user if IDs match
+    const isOwnMessage = currentUserId !== '' && currentUserId === messageSenderId;
     
     // Get sender display name with fallbacks
     const senderDisplayName = item.sender?.display_name || (item.sender as any)?.displayName || item.sender?.username || 'User';

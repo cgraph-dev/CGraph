@@ -3,16 +3,209 @@
 This document details all the changes, enhancements, and bug fixes made during the development session.
 
 ## Table of Contents
-1. [Session: January 4, 2026 - v0.6.5](#session-january-4-2026---v065)
-2. [Session: January 3, 2026 - v0.6.4](#session-january-3-2026---v064)
-3. [Version 1.0.0 Release](#version-100-release)
-4. [Session: Security Hardening (July 2025)](#session-security-hardening-july-2025)
-5. [Session: December 31, 2025](#session-december-31-2025)
-6. [Bug Fixes](#bug-fixes)
-7. [New Features](#new-features)
-8. [UI/UX Improvements](#uiux-improvements)
-9. [Architecture Changes](#architecture-changes)
-10. [Component Library](#component-library)
+1. [Session: January 5, 2026 - v0.7.19](#session-january-5-2026---v0719)
+2. [Session: January 4, 2026 - v0.6.5](#session-january-4-2026---v065)
+3. [Session: January 3, 2026 - v0.6.4](#session-january-3-2026---v064)
+4. [Version 1.0.0 Release](#version-100-release)
+5. [Session: Security Hardening (July 2025)](#session-security-hardening-july-2025)
+6. [Session: December 31, 2025](#session-december-31-2025)
+7. [Bug Fixes](#bug-fixes)
+8. [New Features](#new-features)
+9. [UI/UX Improvements](#uiux-improvements)
+10. [Architecture Changes](#architecture-changes)
+11. [Component Library](#component-library)
+
+---
+
+## Session: January 5, 2026 - v0.7.19
+
+### Overview
+
+This session focused on real-time presence improvements, voice message fixes, and production deployment preparations. Key accomplishments include real-time voice message delivery, enhanced last seen functionality, and domain configuration updates from cgraph.io to cgraph.org.
+
+### Real-Time Voice Messages
+
+#### Problem
+Voice messages sent via REST API were not appearing in real-time for other participants. Users had to refresh the chat to see new voice messages.
+
+#### Solution
+Added WebSocket broadcast after voice message creation in conversation context.
+
+**File Modified:** `apps/backend/lib/cgraph_web/controllers/api/v1/voice_message_controller.ex`
+
+```elixir
+# After creating message in conversation:
+serialized = MessageJSON.message_data(message)
+CgraphWeb.Endpoint.broadcast(
+  "conversation:#{conversation_id}",
+  "new_message",
+  %{message: serialized}
+)
+```
+
+### Enhanced Last Seen Functionality
+
+#### Backend Changes
+Added `lastSeenAt` to conversation participant data from Phoenix Presence cache.
+
+**File Modified:** `apps/backend/lib/cgraph_web/controllers/api/v1/conversation_json.ex`
+
+```elixir
+alias Cgraph.Presence
+
+# In participant user object:
+user: %{
+  id: user.id,
+  username: user.username,
+  displayName: user.display_name,
+  avatarUrl: user.avatar_url,
+  status: user.status || "offline",
+  lastSeenAt: Presence.last_seen(user.id)  # NEW
+}
+```
+
+#### Web Frontend Changes
+Added `formatLastSeen()` helper function for human-readable timestamps.
+
+**File Modified:** `apps/web/src/pages/messages/Conversation.tsx`
+
+```typescript
+const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
+  if (!lastSeenAt) return 'Offline';
+  
+  const lastSeen = new Date(lastSeenAt);
+  const diffMins = Math.floor((now - lastSeen) / 60000);
+  
+  if (diffMins < 1) return 'Last seen just now';
+  if (diffMins < 60) return `Last seen ${diffMins}m ago`;
+  // ... etc
+};
+```
+
+**Features:**
+- Shows "Last seen just now" for < 1 minute
+- Shows "Last seen Xm ago" for < 1 hour
+- Shows "Last seen Xh ago" for < 24 hours
+- Shows "Last seen yesterday" for 1 day
+- Shows "Last seen X days ago" for < 7 days
+- Shows "Last seen [date]" for older
+
+#### Mobile Frontend Changes
+Identical `formatLastSeen()` function added to mobile.
+
+**File Modified:** `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+
+**Changes:**
+- Added `otherParticipantLastSeen` state variable
+- Added `formatLastSeen()` helper function
+- Updated `updateHeader` to show last seen instead of "Offline"
+- Extracts `lastSeenAt` from participant user data in `fetchConversation`
+
+### Typing Indicator Filter
+
+#### Problem
+Users were seeing their own name in the typing indicator list.
+
+#### Solution
+Filter out current user from typing users array on web.
+
+**File Modified:** `apps/web/src/pages/messages/Conversation.tsx`
+
+```typescript
+// Before:
+const typing = conversationId ? typingUsers[conversationId] || [] : [];
+
+// After:
+const typing = conversationId 
+  ? (typingUsers[conversationId] || []).filter(userId => userId !== user?.id) 
+  : [];
+```
+
+Also added "typing..." status display priority in header (typing > online > last seen).
+
+### Mobile Code Cleanup
+
+Removed verbose debug logging from message handling for cleaner console output.
+
+**Files Modified:**
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+- `apps/mobile/src/lib/normalizers.ts`
+
+**Removed:**
+- `[ConversationScreen] FULL USER OBJECT` debug logs
+- Participant ID debug logs  
+- Presence list debug logs
+- Normalizer debug logs
+
+### Domain Configuration Updates
+
+Updated from cgraph.io to cgraph.org across all configuration files.
+
+**Files Modified:**
+| File | Change |
+|------|--------|
+| `apps/backend/config/runtime.exs` | PHX_HOST default: cgraph.io → cgraph.org |
+| `apps/backend/lib/cgraph_web/endpoint.ex` | CORS origins: cgraph.io → cgraph.org |
+| `docker-compose.yml` | PHX_HOST default: localhost → cgraph.org |
+| `infrastructure/docker/nginx.conf` | server_name: _ → cgraph.org www.cgraph.org |
+
+### Production Environment Files
+
+Created production environment configuration files.
+
+**New Files:**
+| File | Purpose |
+|------|---------|
+| `.env.production.example` | Template for production environment variables |
+| `apps/web/.env.production` | Web frontend production config |
+| `apps/web/.env.example` | Updated with development/production comments |
+
+### Version Bump
+
+Bumped all package versions from 0.7.18 to 0.7.19:
+
+| Package | Version |
+|---------|---------|
+| Root package.json | 0.7.19 |
+| apps/backend/mix.exs | 0.7.19 |
+| apps/web/package.json | 0.7.19 |
+| apps/mobile/package.json | 0.7.19 |
+| docs/ARCHITECTURE.md | 0.7.19 |
+| docs/QUICKSTART.md | 0.7.19 |
+| docs/TECHNICAL_OVERVIEW.md | 0.7.19 |
+
+### Files Changed Summary
+
+```
+# Backend
+apps/backend/config/runtime.exs               # Domain update
+apps/backend/lib/cgraph_web/endpoint.ex        # CORS domain update
+apps/backend/lib/cgraph_web/controllers/api/v1/conversation_json.ex  # lastSeenAt
+apps/backend/lib/cgraph_web/controllers/api/v1/voice_message_controller.ex  # WebSocket broadcast
+apps/backend/mix.exs                          # Version bump
+
+# Web Frontend
+apps/web/package.json                         # Version bump
+apps/web/.env.example                         # Updated comments
+apps/web/.env.production                      # NEW - Production config
+apps/web/src/pages/messages/Conversation.tsx  # Last seen, typing filter
+
+# Mobile
+apps/mobile/package.json                      # Version bump
+apps/mobile/src/screens/messages/ConversationScreen.tsx  # Last seen, cleanup
+apps/mobile/src/lib/normalizers.ts            # Debug log removal
+
+# Infrastructure
+docker-compose.yml                            # Domain/env updates
+infrastructure/docker/nginx.conf              # Server name update
+.env.production.example                       # NEW - Production template
+
+# Documentation
+docs/ARCHITECTURE.md                          # Version update
+docs/QUICKSTART.md                            # Version update
+docs/TECHNICAL_OVERVIEW.md                    # Version update
+docs/SESSION_UPDATES.md                       # This update
+```
 
 ---
 

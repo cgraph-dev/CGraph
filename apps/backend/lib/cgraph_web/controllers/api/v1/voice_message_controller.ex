@@ -178,6 +178,7 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
   defp create_voice_message_in_conversation(voice_message, user, conversation_id) do
     alias Cgraph.Messaging
     alias Cgraph.Messaging.Conversation
+    alias CgraphWeb.API.V1.MessageJSON
 
     case Repo.get(Conversation, conversation_id) do
       nil ->
@@ -196,9 +197,19 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
         case Messaging.send_message(conversation, user, message_attrs) do
           {:ok, message} ->
             # Update voice message with message reference
-            voice_message
+            updated_voice_message = voice_message
             |> Ecto.Changeset.change(message_id: message.id)
             |> Repo.update!()
+
+            # Broadcast the new message to all channel subscribers (for real-time updates)
+            serialized = MessageJSON.message_data(message)
+            CgraphWeb.Endpoint.broadcast(
+              "conversation:#{conversation_id}",
+              "new_message",
+              %{message: serialized}
+            )
+
+            updated_voice_message
 
           {:error, _} ->
             voice_message

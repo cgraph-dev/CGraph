@@ -6,6 +6,7 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
   association loading guards throughout.
   """
   alias Cgraph.Messaging.{Conversation, Message}
+  alias Cgraph.Presence
 
   @doc """
   Renders a list of conversations with pagination metadata.
@@ -56,21 +57,26 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
     |> Enum.map(fn p ->
       case p.user do
         %Ecto.Association.NotLoaded{} -> nil
-        user -> %{
-          id: p.id,
-          userId: user.id,
-          nickname: Map.get(p, :nickname),
-          isMuted: Map.get(p, :is_muted, false),
-          mutedUntil: Map.get(p, :muted_until),
-          joinedAt: p.inserted_at,
-          user: %{
-            id: user.id,
-            username: user.username,
-            displayName: user.display_name,
-            avatarUrl: user.avatar_url,
-            status: user.status || "offline"
+        user -> 
+          # Get last seen from presence cache
+          last_seen = Presence.last_seen(user.id)
+          
+          %{
+            id: p.id,
+            userId: user.id,
+            nickname: Map.get(p, :nickname),
+            isMuted: Map.get(p, :is_muted, false),
+            mutedUntil: Map.get(p, :muted_until),
+            joinedAt: p.inserted_at,
+            user: %{
+              id: user.id,
+              username: user.username,
+              displayName: user.display_name,
+              avatarUrl: user.avatar_url,
+              status: user.status || "offline",
+              lastSeenAt: last_seen
+            }
           }
-        }
       end
     end)
     |> Enum.reject(&is_nil/1)

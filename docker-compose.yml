@@ -54,12 +54,12 @@ services:
     environment:
       MIX_ENV: ${MIX_ENV:-prod}
       PHX_SERVER: "true"
-      PHX_HOST: ${PHX_HOST:-localhost}
+      PHX_HOST: ${PHX_HOST:-cgraph.org}
       PORT: 4000
       DATABASE_URL: ecto://${POSTGRES_USER:-cgraph}:${POSTGRES_PASSWORD:-cgraph_dev_password}@postgres:5432/${POSTGRES_DB:-cgraph_dev}
       REDIS_URL: redis://redis:6379/0
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:-generate_with_mix_phx_gen_secret}
-      GUARDIAN_SECRET: ${GUARDIAN_SECRET:-generate_your_guardian_secret}
+      JWT_SECRET: ${JWT_SECRET:-generate_your_jwt_secret}
     ports:
       - "${BACKEND_PORT:-4000}:4000"
     depends_on:

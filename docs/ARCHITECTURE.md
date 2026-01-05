@@ -1,6 +1,6 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.18  
+> Last updated: January 2026 | Version 0.7.19  
 > Living documentation - Updated with recent presence tracking and voice message improvements
 
 ---
@@ -55,7 +55,7 @@ Our technology stack prioritizes real-time performance and developer productivit
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         DATA LAYER                                   │
 ├─────────────────────────────────────────────────────────────────────┤
-│  PostgreSQL 15              │  Redis 7                              │
+│  PostgreSQL 16              │  Redis 7                              │
 │  - Primary data store       │  - Session cache                      │
 │  - Full-text search         │  - Presence tracking                  │
 │  - Ecto for ORM             │  - Rate limiting                      │
@@ -99,8 +99,9 @@ Our technology stack prioritizes real-time performance and developer productivit
 | TailwindCSS | 3.5 | Utility-first styling |
 | TypeScript | 5.8.0 | Advanced type inference |
 | **Frontend (Mobile)** |
-| React Native | 0.76 | New architecture with Fabric renderer |
+| React Native | 0.81.5 | Latest stable with Fabric renderer |
 | Expo SDK | 54 | Latest stable with improved performance |
+| TypeScript | 5.9.x | Matches React Native toolchain |
 | **Infrastructure** |
 | FFmpeg | 6.1.1 | Audio/video processing for voice messages |
 | Docker | 24+ | Container runtime for deployments |

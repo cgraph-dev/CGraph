@@ -55,10 +55,9 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
 
   const sender = normalizeSender(raw.sender as Record<string, unknown> | null);
   
-  // Extract sender_id with comprehensive fallback chain
-  // Ensure we always get a string for consistent comparison
-  const rawSenderId = raw.senderId ?? raw.sender_id ?? sender?.id ?? '';
-  const senderId = String(rawSenderId);
+  // Extract sender_id - API returns camelCase (senderId), normalize to snake_case
+  // Fallback chain: senderId -> sender_id -> sender.id
+  const senderId = String(raw.senderId ?? raw.sender_id ?? sender?.id ?? '');
   
   // Determine message type from various possible field names
   const messageType = (raw.type ?? raw.messageType ?? raw.message_type ?? raw.contentType ?? raw.content_type ?? 'text') as Message['type'];
