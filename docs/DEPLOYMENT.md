@@ -884,4 +884,4 @@ Before every production deploy:
 
 ---
 
-*Last updated: December 2024. If you find something wrong, please fix it and open a PR!*
+*Last updated: January 2026. If you find something wrong, please fix it and open a PR!*

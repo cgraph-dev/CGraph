@@ -873,4 +873,4 @@ Common issues:
 
 ---
 
-*Last major update: December 2024. If the ERD looks wrong, someone forgot to update this doc.*
+*Last major update: January 2026. If the ERD looks wrong, someone forgot to update this doc.*

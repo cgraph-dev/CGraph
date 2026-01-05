@@ -2026,4 +2026,4 @@ Official client libraries:
 
 ---
 
-*API Version: 1.0.0 | Last Updated: January 2024*
+*API Version: 1.0.0 | Last Updated: January 2026*

@@ -442,7 +442,7 @@ console.log(response.data); // { pong: true, ... }
 ### Running Tests
 
 ```bash
-# Backend tests (220 tests)
+# Backend tests (620 tests)
 cd apps/backend
 mix test
 

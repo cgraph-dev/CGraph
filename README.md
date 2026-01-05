@@ -2,7 +2,7 @@
 
 A modern, full-stack social platform combining messaging, groups, and forum communities with Web3 wallet integration and end-to-end encryption.
 
-**Version 0.7.18** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
+**Version 0.7.19** | [Changelog](CHANGELOG.md) | [Documentation](docs/)
 
 ## 🚀 Features
 
@@ -39,7 +39,8 @@ A modern, full-stack social platform combining messaging, groups, and forum comm
 ### Developer Experience  
 - **TypeScript Everywhere** - Full type safety across web and mobile with shared type definitions
 - **Hot Reload** - Instant updates during development on all platforms
-- **Comprehensive Tests** - 585+ backend tests ensuring reliability and correctness
+- **Comprehensive Tests** - 620 backend tests ensuring reliability and correctness
+- **Strict Code Quality** - Credo static analysis with strict mode passing
 - **API Documentation** - Complete REST and WebSocket API reference with examples
 - **Error Tracking** - Sentry integration for production monitoring and debugging
 
