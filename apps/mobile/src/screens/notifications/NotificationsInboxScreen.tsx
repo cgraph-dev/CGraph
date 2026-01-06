@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -323,7 +324,7 @@ export default function NotificationsInboxScreen({ navigation }: Props) {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <Text style={[styles.title, { color: colors.text }]}>Notifications</Text>
@@ -391,7 +392,7 @@ export default function NotificationsInboxScreen({ navigation }: Props) {
         }
         contentContainerStyle={filteredNotifications.length === 0 ? styles.emptyList : undefined}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

@@ -8,6 +8,7 @@ import {
   Text,
   TextInput,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -110,7 +111,7 @@ export default function FriendListScreen() {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <View
@@ -194,7 +195,7 @@ export default function FriendListScreen() {
           />
         }
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

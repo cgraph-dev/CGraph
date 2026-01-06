@@ -8,6 +8,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
@@ -218,7 +219,7 @@ export default function SearchScreen() {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
       {/* Search Input */}
       <View style={styles.header}>
         <View style={[styles.searchInput, { backgroundColor: colors.surfaceSecondary }]}>
@@ -416,7 +417,7 @@ export default function SearchScreen() {
           </>
         )}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 
