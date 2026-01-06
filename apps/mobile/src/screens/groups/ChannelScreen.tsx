@@ -17,6 +17,7 @@ import { RouteProp } from '@react-navigation/native';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
+import { safeFormatTime } from '../../lib/dateUtils';
 import socketManager from '../../lib/socket';
 import { GroupsStackParamList, Message, Channel } from '../../types';
 
@@ -100,13 +101,6 @@ export default function ChannelScreen({ navigation, route }: Props) {
     }
   };
   
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-  
   const renderMessage = useCallback(({ item, index }: { item: Message; index: number }) => {
     const prevMessage = index > 0 ? messages[index - 1] : null;
     const isGrouped = prevMessage?.sender_id === item.sender_id;
@@ -130,7 +124,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
               {item.sender.display_name || item.sender.username}
             </Text>
             <Text style={[styles.messageTime, { color: colors.textTertiary }]}>
-              {formatTime(item.inserted_at)}
+              {safeFormatTime(item.inserted_at)}
             </Text>
           </View>
         )}

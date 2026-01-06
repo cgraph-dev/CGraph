@@ -12,24 +12,8 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Ionicons } from '@expo/vector-icons';
-import { formatDistanceToNow } from 'date-fns';
 import api from '../../lib/api';
-
-/**
- * Safely format a date string as relative time (e.g., "2 hours ago")
- * Returns empty string for invalid dates
- */
-const safeFormatDistanceToNow = (dateString: string | undefined | null): string => {
-  if (!dateString) return '';
-  try {
-    const date = new Date(dateString);
-    // Check if date is valid
-    if (isNaN(date.getTime())) return '';
-    return formatDistanceToNow(date, { addSuffix: true });
-  } catch {
-    return '';
-  }
-};
+import { safeFormatDistanceToNow } from '../../lib/dateUtils';
 
 type NotificationType = 'message' | 'friend_request' | 'friend_accepted' | 'mention' | 'group_invite' | 'forum_reply' | 'system';
 

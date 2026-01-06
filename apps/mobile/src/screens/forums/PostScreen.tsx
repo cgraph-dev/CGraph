@@ -18,6 +18,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { PostCardSkeleton, CommentSkeleton } from '../../components/Skeleton';
 import api from '../../lib/api';
+import { safeFormatMessageTime } from '../../lib/dateUtils';
 import { ForumsStackParamList, Post, Comment } from '../../types';
 
 type Props = {
@@ -99,17 +100,6 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
     }
   };
   
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffHours < 1) return 'just now';
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffHours < 168) return `${Math.floor(diffHours / 24)}d ago`;
-    return `${Math.floor(diffHours / 168)}w ago`;
-  };
-  
   const renderComment = useCallback((comment: Comment, depth: number = 0) => {
     const authorName = comment.author?.username || comment.author?.display_name || 'unknown';
     return (
@@ -117,7 +107,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
         <View style={[styles.commentLine, { backgroundColor: colors.border }]} />
         <View style={styles.commentContent}>
           <Text style={[styles.commentMeta, { color: colors.textSecondary }]}>
-            u/{authorName} • {formatTime(comment.inserted_at)}
+            u/{authorName} • {safeFormatMessageTime(comment.inserted_at)}
           </Text>
           <Text style={[styles.commentText, { color: colors.text }]}>
             {comment.content}
@@ -175,7 +165,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
         {/* Post */}
         <View style={[styles.postContainer, { backgroundColor: colors.surface }]}>
           <Text style={[styles.postMeta, { color: colors.textSecondary }]}>
-            c/{post.forum.slug} • u/{post.author?.username || post.author?.display_name || 'unknown'} • {formatTime(post.inserted_at)}
+            c/{post.forum.slug} • u/{post.author?.username || post.author?.display_name || 'unknown'} • {safeFormatMessageTime(post.inserted_at)}
           </Text>
           
           {/* Status Badges */}

@@ -14,6 +14,7 @@ import { RouteProp } from '@react-navigation/native';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
+import { safeFormatMessageTime } from '../../lib/dateUtils';
 import { ForumsStackParamList, Forum, Post } from '../../types';
 
 type Props = {
@@ -96,17 +97,6 @@ export default function ForumScreen({ navigation, route }: Props) {
     }
   };
   
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffHours < 1) return 'just now';
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffHours < 168) return `${Math.floor(diffHours / 24)}d ago`;
-    return `${Math.floor(diffHours / 168)}w ago`;
-  };
-  
   const renderPost = ({ item }: { item: Post }) => (
     <TouchableOpacity
       style={[styles.postItem, { backgroundColor: colors.surface }]}
@@ -137,7 +127,7 @@ export default function ForumScreen({ navigation, route }: Props) {
       <View style={styles.postContent}>
         <View style={styles.postMeta}>
           <Text style={[styles.author, { color: colors.textSecondary }]}>
-            u/{item.author?.username || item.author?.display_name || 'unknown'} • {formatTime(item.inserted_at)}
+            u/{item.author?.username || item.author?.display_name || 'unknown'} • {safeFormatMessageTime(item.inserted_at)}
           </Text>
           {item.flair && (
             <View style={[styles.flair, { backgroundColor: item.flair.color }]}>

@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
+import { safeFormatConversationTime } from '../../lib/dateUtils';
 import { MessagesStackParamList, Conversation, ConversationParticipant } from '../../types';
 
 type Props = {
@@ -60,22 +61,6 @@ export default function ConversationListScreen({ navigation }: Props) {
     setRefreshing(true);
     await fetchConversations();
     setRefreshing(false);
-  };
-  
-  const formatTime = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } else if (diffDays === 1) {
-      return 'Yesterday';
-    } else if (diffDays < 7) {
-      return date.toLocaleDateString([], { weekday: 'short' });
-    } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-    }
   };
   
   const renderConversation = ({ item }: { item: Conversation }) => {
@@ -164,7 +149,7 @@ export default function ConversationListScreen({ navigation }: Props) {
             </Text>
             {item.last_message && (
               <Text style={[styles.time, { color: colors.textTertiary }]}>
-                {formatTime(item.last_message.inserted_at)}
+                {safeFormatConversationTime(item.last_message.inserted_at)}
               </Text>
             )}
           </View>
