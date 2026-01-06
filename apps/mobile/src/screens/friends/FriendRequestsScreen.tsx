@@ -30,7 +30,9 @@ export default function FriendRequestsScreen() {
   const fetchRequests = useCallback(async () => {
     try {
       const response = await api.get('/api/v1/friends/pending');
-      const requests = response.data.requests || response.data || [];
+      // Handle various API response formats
+      const data = response.data?.data || response.data?.requests || response.data || [];
+      const requests = Array.isArray(data) ? data : [];
       setIncomingRequests(requests.filter((r: FriendRequest) => r.type === 'incoming'));
       setOutgoingRequests(requests.filter((r: FriendRequest) => r.type === 'outgoing'));
     } catch (error) {
