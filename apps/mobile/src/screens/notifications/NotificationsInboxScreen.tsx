@@ -15,6 +15,22 @@ import { Ionicons } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
 import api from '../../lib/api';
 
+/**
+ * Safely format a date string as relative time (e.g., "2 hours ago")
+ * Returns empty string for invalid dates
+ */
+const safeFormatDistanceToNow = (dateString: string | undefined | null): string => {
+  if (!dateString) return '';
+  try {
+    const date = new Date(dateString);
+    // Check if date is valid
+    if (isNaN(date.getTime())) return '';
+    return formatDistanceToNow(date, { addSuffix: true });
+  } catch {
+    return '';
+  }
+};
+
 type NotificationType = 'message' | 'friend_request' | 'friend_accepted' | 'mention' | 'group_invite' | 'forum_reply' | 'system';
 
 interface Notification {
@@ -160,7 +176,7 @@ export default function NotificationsInboxScreen({ navigation }: Props) {
         style: 'destructive',
         onPress: async () => {
           try {
-            await api.delete(`/notifications/${notificationId}`);
+            await api.delete(`/api/v1/notifications/${notificationId}`);
             setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
           } catch (error) {
             console.error('Failed to delete notification:', error);
@@ -270,7 +286,7 @@ export default function NotificationsInboxScreen({ navigation }: Props) {
         </Text>
 
         <Text style={[styles.notificationTime, { color: colors.textSecondary }]}>
-          {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
+          {safeFormatDistanceToNow(item.createdAt)}
         </Text>
       </View>
 

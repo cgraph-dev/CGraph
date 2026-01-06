@@ -486,6 +486,19 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const renderMessage = useCallback(({ item }: { item: Message }) => {
     // Skip rendering messages without proper ID or that appear empty/invalid
     if (!item.id) {
+      if (__DEV__) {
+        console.log('[renderMessage] Skipping message without ID');
+      }
+      return null;
+    }
+    
+    // Skip messages that have no content, no type, and no metadata (empty/ghost messages)
+    const hasContent = item.content && item.content.trim().length > 0;
+    const hasMedia = item.metadata?.url || (item.type && item.type !== 'text');
+    if (!hasContent && !hasMedia) {
+      if (__DEV__) {
+        console.log('[renderMessage] Skipping empty message:', item.id);
+      }
       return null;
     }
     

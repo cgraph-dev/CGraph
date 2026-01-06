@@ -36,7 +36,7 @@ export default function ForumScreen({ navigation, route }: Props) {
   
   const fetchForum = async () => {
     try {
-      const response = await api.get(`/forums/${forumId}`);
+      const response = await api.get(`/api/v1/forums/${forumId}`);
       const forumData = response.data.data;
       setForum(forumData);
       navigation.setOptions({
@@ -57,7 +57,7 @@ export default function ForumScreen({ navigation, route }: Props) {
   
   const fetchPosts = async () => {
     try {
-      const response = await api.get(`/forums/${forumId}/posts`);
+      const response = await api.get(`/api/v1/forums/${forumId}/posts`);
       setPosts(response.data.data || []);
     } catch (error) {
       console.error('Error fetching posts:', error);
@@ -76,7 +76,7 @@ export default function ForumScreen({ navigation, route }: Props) {
     // Haptic feedback on vote
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     try {
-      await api.post(`/posts/${postId}/vote`, { value });
+      await api.post(`/api/v1/posts/${postId}/vote`, { value });
       setPosts((prev) =>
         prev.map((p) => {
           if (p.id === postId) {
