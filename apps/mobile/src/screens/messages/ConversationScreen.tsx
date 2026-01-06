@@ -158,7 +158,24 @@ export default function ConversationScreen({ navigation, route }: Props) {
         if (!isMountedRef.current) return;
         
         const data = payload as { message: Record<string, unknown> };
+        
+        // Validate message data before normalizing
+        if (!data.message || !data.message.id) {
+          if (__DEV__) {
+            console.log('[ConversationScreen] Skipping invalid message payload:', data);
+          }
+          return;
+        }
+        
         const normalized = normalizeMessage(data.message);
+        
+        // Additional validation - skip messages without sender info
+        if (!normalized.sender_id && !normalized.sender?.id) {
+          if (__DEV__) {
+            console.log('[ConversationScreen] Skipping message without sender:', normalized.id);
+          }
+          return;
+        }
         
         if (event === 'new_message') {
           setMessages((prev) => {
@@ -415,7 +432,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
       });
       
       const rawMessage = response.data.data || response.data.message || response.data;
+      
+      // Validate message has required fields before adding
+      if (!rawMessage || !rawMessage.id) {
+        console.warn('[handleVoiceComplete] Invalid message response:', rawMessage);
+        return;
+      }
+      
       const normalized = normalizeMessage(rawMessage);
+      
       // Add with deduplication - socket may also deliver this message
       setMessages((prev) => {
         const exists = prev.some(m => m.id === normalized.id);
@@ -459,6 +484,11 @@ export default function ConversationScreen({ navigation, route }: Props) {
   };
   
   const renderMessage = useCallback(({ item }: { item: Message }) => {
+    // Skip rendering messages without proper ID or that appear empty/invalid
+    if (!item.id) {
+      return null;
+    }
+    
     // Get current user ID - ensure string comparison
     const currentUserId = user?.id ? String(user.id) : '';
     

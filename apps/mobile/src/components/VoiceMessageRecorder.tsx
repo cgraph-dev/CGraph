@@ -175,36 +175,53 @@ export function VoiceMessageRecorder({
       }, 1000);
 
       // Start metering for waveform visualization
-      // Use refs to get latest values in interval callback
+      // expo-audio's metering may not update continuously via hooks
+      // So we use a combination of real metering (when available) and simulation
       let barIndex = 0;
+      let lastMeteringValue = 0.3;
+      
       meteringIntervalRef.current = setInterval(() => {
-        if (isRecordingRef.current && meteringRef.current !== undefined) {
-          // Convert dB to 0-1 range (metering is in dB, typically -160 to 0)
-          const normalizedLevel = Math.max(0.1, Math.min(1, (meteringRef.current + 60) / 60));
-          currentMeteringRef.current = normalizedLevel;
-          setWaveformData(prev => [...prev, normalizedLevel].slice(-50));
-          
-          // Animate the current bar with smooth spring animation
-          Animated.spring(waveformAnims[barIndex % 30], {
-            toValue: normalizedLevel,
-            friction: 3,
-            tension: 100,
-            useNativeDriver: false,
-          }).start();
-          
-          // Move to next bar
-          barIndex++;
-          
-          // Also add some random variation to nearby bars for organic feel
-          const nearbyIndex = (barIndex + 1) % 30;
-          const variation = normalizedLevel * (0.5 + Math.random() * 0.5);
-          Animated.spring(waveformAnims[nearbyIndex], {
-            toValue: variation,
-            friction: 4,
-            tension: 80,
-            useNativeDriver: false,
-          }).start();
+        // Check if we have real metering data from expo-audio
+        const hasRealMetering = meteringRef.current !== undefined && meteringRef.current !== null;
+        
+        let normalizedLevel: number;
+        
+        if (hasRealMetering && isRecordingRef.current) {
+          // Use real metering data - convert dB to 0-1 range
+          normalizedLevel = Math.max(0.15, Math.min(1, (meteringRef.current! + 60) / 60));
+          lastMeteringValue = normalizedLevel;
+        } else {
+          // Simulate organic waveform when real metering isn't available
+          // Create smooth transitions with some randomness
+          const targetLevel = 0.2 + Math.random() * 0.6; // Random between 0.2 and 0.8
+          normalizedLevel = lastMeteringValue + (targetLevel - lastMeteringValue) * 0.3;
+          normalizedLevel = Math.max(0.15, Math.min(0.85, normalizedLevel));
+          lastMeteringValue = normalizedLevel;
         }
+        
+        currentMeteringRef.current = normalizedLevel;
+        setWaveformData(prev => [...prev, normalizedLevel].slice(-50));
+        
+        // Animate the current bar with smooth spring animation
+        Animated.spring(waveformAnims[barIndex % 30], {
+          toValue: normalizedLevel,
+          friction: 3,
+          tension: 100,
+          useNativeDriver: false,
+        }).start();
+        
+        // Move to next bar
+        barIndex++;
+        
+        // Also add some random variation to nearby bars for organic feel
+        const nearbyIndex = (barIndex + 1) % 30;
+        const variation = normalizedLevel * (0.5 + Math.random() * 0.5);
+        Animated.spring(waveformAnims[nearbyIndex], {
+          toValue: variation,
+          friction: 4,
+          tension: 80,
+          useNativeDriver: false,
+        }).start();
       }, 80);
 
     } catch (err) {
