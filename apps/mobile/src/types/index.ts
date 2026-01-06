@@ -60,6 +60,13 @@ export interface Message {
   is_deleted: boolean;
   inserted_at: string;
   updated_at: string;
+  // Message delivery status
+  status?: 'sending' | 'sent' | 'delivered' | 'read' | 'failed';
+  delivered_at?: string;
+  read_at?: string;
+  // For optimistic updates
+  is_optimistic?: boolean;
+  file_url?: string;
 }
 
 export interface Attachment {

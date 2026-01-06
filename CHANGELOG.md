@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.21] - 2026-01-07
+
+### Added
+
+#### Mobile - Conversation Screen Enhancements
+- **Attachment Menu** - Tap the + button to share photos, take camera shots, or send documents
+  - Beautiful animated slide-up menu with colorful icons
+  - Photo picker and camera integration via expo-image-picker
+  - Document sharing via expo-document-picker
+- **Call Buttons** - Header now includes voice and video call icons for future calling features
+- **Profile Navigation** - Tap the contact name in header to visit their profile
+- **Message Status Indicators** - See when messages are sent, delivered, and read
+  - Single checkmark for sent
+  - Double checkmark for delivered
+  - Blue checkmarks when read
+- **Beautiful Empty State** - New conversations show a welcoming UI
+  - Large avatar of your chat partner
+  - "Wave to [name]" button sends a friendly emoji
+  - "Say Hi" pre-fills a greeting message
+  - Quick starter chips for conversation openers
+  - Animated waving hand for personality
+
+### Changed
+- **+ Button Animation** - Rotates 45° when menu is open
+- **Header Layout** - Reorganized with action buttons and E2EE badge
+
+### Fixed
+- **FriendRequestsScreen** - Fixed "filter is not a function" error by properly handling API response
+- **LeaderboardScreen** - Added null safety for username/display_name charAt calls
+- **NotificationsInboxScreen** - Fixed "Invalid time value" errors with safe date parsing
+- **ForumScreen** - Fixed 404 errors by adding correct /api/v1 prefix
+- **FriendListScreen** - Fixed 500 errors by using correct pending friends endpoint
+- **Ghost Messages** - Enhanced validation filters out messages without valid sender info
+- **Header Heights** - Consistent SafeAreaView padding across screens
+
+---
+
 ## [0.7.20] - 2026-01-06
 
 ### Changed

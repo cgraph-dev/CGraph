@@ -1175,6 +1175,40 @@ import { AnimatedCard } from '@/components';
 </AnimatedCard>
 ```
 
+### Conversation Screen Features
+
+The conversation screen delivers a polished messaging experience with thoughtful interactions:
+
+**Header Actions:**
+- Tap the contact name to view their profile
+- Quick access to voice and video call buttons (planned feature)
+- Visual encryption indicator showing E2EE protection status
+
+**Attachment Menu:**  
+Tap the + button to reveal a beautiful slide-up menu with options to:
+- Share photos from your library
+- Capture photos with camera
+- Send documents and files
+- Share your location (planned)
+
+**Message Status:**  
+Every outgoing message shows delivery status with intuitive icons:
+- Single checkmark = sent to server
+- Double checkmark = delivered to recipient
+- Blue double checkmark = message was read
+- Clock icon = sending in progress
+
+**Empty Conversation Experience:**  
+New conversations greet you with:
+- Large profile avatar of your contact
+- "Wave to [name]" button that sends a random friendly emoji
+- "Say Hi" button pre-fills a greeting
+- Quick starter chips for conversation openers
+- Animated waving hand for that personal touch
+
+**Voice Messages:**  
+Hold the microphone to record, slide to cancel, or release to send. Visual waveform displays during recording with real-time duration counter.
+
 ---
 
 ## Device Features
