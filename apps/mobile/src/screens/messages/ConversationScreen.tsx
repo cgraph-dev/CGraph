@@ -177,6 +177,16 @@ export default function ConversationScreen({ navigation, route }: Props) {
           return;
         }
         
+        // Validate message has actual content or media
+        const hasRealContent = normalized.content && normalized.content.trim().length > 0 && normalized.content !== '[Voice Message]';
+        const hasMediaUrl = normalized.metadata?.url || normalized.file_url;
+        if (!hasRealContent && !hasMediaUrl) {
+          if (__DEV__) {
+            console.log('[ConversationScreen] Skipping empty WebSocket message:', normalized.id);
+          }
+          return;
+        }
+        
         if (event === 'new_message') {
           setMessages((prev) => {
             // Check for duplicates before adding
@@ -492,12 +502,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
       return null;
     }
     
-    // Skip messages that have no content, no type, and no metadata (empty/ghost messages)
-    const hasContent = item.content && item.content.trim().length > 0;
-    const hasMedia = item.metadata?.url || (item.type && item.type !== 'text');
-    if (!hasContent && !hasMedia) {
+    // Skip messages without valid sender info (ghost messages)
+    const hasSender = item.sender_id || item.sender?.id;
+    if (!hasSender) {
       if (__DEV__) {
-        console.log('[renderMessage] Skipping empty message:', item.id);
+        console.log('[renderMessage] Skipping message without sender:', item.id);
+      }
+      return null;
+    }
+    
+    // Skip messages that have no actual content
+    const hasTextContent = item.content && item.content.trim().length > 0 && item.content !== '[Voice Message]';
+    const hasMediaUrl = item.metadata?.url || item.file_url;
+    const isVoiceWithUrl = item.type === 'voice' && hasMediaUrl;
+    const isFileWithUrl = (item.type === 'file' || item.type === 'image') && hasMediaUrl;
+    
+    if (!hasTextContent && !isVoiceWithUrl && !isFileWithUrl) {
+      if (__DEV__) {
+        console.log('[renderMessage] Skipping empty/invalid message:', item.id, { 
+          type: item.type, 
+          content: item.content?.substring(0, 20),
+          hasUrl: !!hasMediaUrl 
+        });
       }
       return null;
     }
