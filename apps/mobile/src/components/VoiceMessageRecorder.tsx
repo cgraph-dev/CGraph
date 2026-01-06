@@ -3,6 +3,7 @@ import {
   View,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   StyleSheet,
   Animated,
   Platform,
@@ -79,6 +80,16 @@ export function VoiceMessageRecorder({
   
   // Current metering level for animations
   const currentMeteringRef = useRef(0);
+  
+  // Refs to track latest recorder state for interval callbacks
+  const isRecordingRef = useRef(false);
+  const meteringRef = useRef<number | undefined>(undefined);
+  
+  // Update refs when recorder state changes
+  useEffect(() => {
+    isRecordingRef.current = recorderState.isRecording;
+    meteringRef.current = recorderState.metering;
+  }, [recorderState.isRecording, recorderState.metering]);
 
   // Request permissions on mount
   useEffect(() => {
@@ -164,12 +175,12 @@ export function VoiceMessageRecorder({
       }, 1000);
 
       // Start metering for waveform visualization
-      // Note: expo-audio provides metering through recorderState
+      // Use refs to get latest values in interval callback
       let barIndex = 0;
       meteringIntervalRef.current = setInterval(() => {
-        if (recorderState.isRecording && recorderState.metering !== undefined) {
+        if (isRecordingRef.current && meteringRef.current !== undefined) {
           // Convert dB to 0-1 range (metering is in dB, typically -160 to 0)
-          const normalizedLevel = Math.max(0.1, Math.min(1, (recorderState.metering + 60) / 60));
+          const normalizedLevel = Math.max(0.1, Math.min(1, (meteringRef.current + 60) / 60));
           currentMeteringRef.current = normalizedLevel;
           setWaveformData(prev => [...prev, normalizedLevel].slice(-50));
           
@@ -379,10 +390,33 @@ export function VoiceMessageRecorder({
 
   if (error) {
     return (
+      <TouchableWithoutFeedback onPress={handleCancel}>
+        <View style={[styles.container, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
+          <TouchableOpacity onPress={handleCancel}>
+            <Text style={[styles.retryText, { color: colors.primary }]}>Dismiss</Text>
+          </TouchableOpacity>
+        </View>
+      </TouchableWithoutFeedback>
+    );
+  }
+
+  // In idle state, wrap with TouchableWithoutFeedback to allow dismiss on tap outside
+  if (state === 'idle') {
+    return (
       <View style={[styles.container, { backgroundColor: colors.surface }]}>
-        <Text style={[styles.errorText, { color: colors.error }]}>{error}</Text>
-        <TouchableOpacity onPress={handleCancel}>
-          <Text style={[styles.retryText, { color: colors.primary }]}>Dismiss</Text>
+        <TouchableOpacity
+          style={[styles.recordButton, { backgroundColor: colors.primary }]}
+          onPress={startRecording}
+        >
+          <Ionicons name="mic" size={24} color="#fff" />
+          <Text style={styles.recordButtonText}>Tap to Record</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.dismissButton}
+          onPress={handleCancel}
+        >
+          <Text style={[styles.dismissText, { color: colors.textSecondary }]}>Cancel</Text>
         </TouchableOpacity>
       </View>
     );
@@ -390,16 +424,6 @@ export function VoiceMessageRecorder({
 
   return (
     <View style={[styles.container, { backgroundColor: colors.surface }]}>
-      {state === 'idle' && (
-        <TouchableOpacity
-          style={[styles.recordButton, { backgroundColor: colors.primary }]}
-          onPress={startRecording}
-        >
-          <Ionicons name="mic" size={24} color="#fff" />
-          <Text style={styles.recordButtonText}>Hold to Record</Text>
-        </TouchableOpacity>
-      )}
-
       {state === 'recording' && (
         <View style={styles.recordingContainer}>
           <View style={styles.recordingHeader}>
@@ -519,6 +543,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  dismissButton: {
+    marginTop: 12,
+    alignItems: 'center',
+  },
+  dismissText: {
+    fontSize: 14,
   },
   recordingContainer: {
     gap: 16,
