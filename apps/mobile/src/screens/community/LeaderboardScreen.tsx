@@ -143,7 +143,7 @@ export default function LeaderboardScreen({ navigation }: Props) {
         ) : (
           <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
             <Text style={styles.avatarText}>
-              {(item.display_name || item.username).charAt(0).toUpperCase()}
+              {(item.display_name || item.username || '?').charAt(0).toUpperCase()}
             </Text>
           </View>
         )}
@@ -151,7 +151,7 @@ export default function LeaderboardScreen({ navigation }: Props) {
         <View style={styles.userInfo}>
           <View style={styles.nameRow}>
             <Text style={[styles.displayName, { color: colors.text }]} numberOfLines={1}>
-              {item.display_name || item.username}
+              {item.display_name || item.username || 'Anonymous'}
             </Text>
             {item.is_verified && (
               <Ionicons name="checkmark-circle" size={16} color={colors.primary} />
