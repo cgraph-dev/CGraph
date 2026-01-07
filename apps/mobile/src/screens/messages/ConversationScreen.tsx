@@ -280,6 +280,17 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [reactionPickerMessage, setReactionPickerMessage] = useState<Message | null>(null);
   const [selectedEmojiCategory, setSelectedEmojiCategory] = useState<keyof typeof EMOJI_CATEGORIES>('Smileys');
   
+  // Attachment preview state
+  const [pendingAttachments, setPendingAttachments] = useState<Array<{
+    uri: string;
+    type: 'image' | 'file';
+    name?: string;
+    mimeType?: string;
+  }>>([]);
+  const [showAttachmentPreview, setShowAttachmentPreview] = useState(false);
+  const [attachmentCaption, setAttachmentCaption] = useState('');
+  const attachmentPreviewAnim = useRef(new Animated.Value(0)).current;
+  
   // Track newly added messages for entrance animations
   const [newMessageIds, setNewMessageIds] = useState<Set<string>>(new Set());
   
@@ -1569,12 +1580,21 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         quality: 0.8,
-        allowsMultipleSelection: false,
+        allowsMultipleSelection: true,
+        selectionLimit: 10,
       });
-      console.log('[handlePickImage] Result:', result.canceled ? 'canceled' : 'selected');
+      console.log('[handlePickImage] Result:', result.canceled ? 'canceled' : `${result.assets?.length} selected`);
       
-      if (!result.canceled && result.assets[0]) {
-        await uploadAndSendFile(result.assets[0].uri, 'image');
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        // Add to pending attachments and show preview
+        const newAttachments = result.assets.map(asset => ({
+          uri: asset.uri,
+          type: 'image' as const,
+          name: asset.fileName || `photo_${Date.now()}.jpg`,
+          mimeType: asset.mimeType || 'image/jpeg',
+        }));
+        setPendingAttachments(prev => [...prev, ...newAttachments]);
+        openAttachmentPreview();
       }
     } catch (error) {
       console.error('[handlePickImage] Error:', error);
@@ -1615,7 +1635,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
       console.log('[handleTakePhoto] Result:', result.canceled ? 'canceled' : 'selected');
       
       if (!result.canceled && result.assets[0]) {
-        await uploadAndSendFile(result.assets[0].uri, 'image');
+        // Add to pending attachments and show preview
+        const asset = result.assets[0];
+        setPendingAttachments(prev => [...prev, {
+          uri: asset.uri,
+          type: 'image' as const,
+          name: asset.fileName || `camera_${Date.now()}.jpg`,
+          mimeType: asset.mimeType || 'image/jpeg',
+        }]);
+        openAttachmentPreview();
       }
     } catch (error) {
       console.error('[handleTakePhoto] Error:', error);
@@ -1642,14 +1670,30 @@ export default function ConversationScreen({ navigation, route }: Props) {
     
     try {
       console.log('[handlePickDocument] Launching document picker...');
+      // Note: multiple selection disabled - causes issues with bundle files on iOS
       const result = await DocumentPicker.getDocumentAsync({
-        type: '*/*',
+        type: ['application/pdf', 'text/*', 'application/msword', 'application/vnd.openxmlformats-officedocument.*', 'application/vnd.ms-excel', 'image/*', 'audio/*', 'video/*'],
         copyToCacheDirectory: true,
+        multiple: false,
       });
       console.log('[handlePickDocument] Result:', result.canceled ? 'canceled' : 'selected');
       
-      if (!result.canceled && result.assets?.[0]) {
-        await uploadAndSendFile(result.assets[0].uri, 'file', result.assets[0].name);
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const asset = result.assets[0];
+        // Filter out directory bundles (like .band files)
+        if (asset.name?.endsWith('.band') || asset.mimeType === 'application/octet-stream') {
+          // Check if it might be a bundle/directory
+          Alert.alert('Unsupported File', 'This file type is not supported. Please choose a different file.');
+          return;
+        }
+        // Add single file to pending attachments
+        setPendingAttachments(prev => [...prev, {
+          uri: asset.uri,
+          type: 'file' as const,
+          name: asset.name || `file_${Date.now()}`,
+          mimeType: asset.mimeType || 'application/octet-stream',
+        }]);
+        openAttachmentPreview();
       }
     } catch (error) {
       console.error('[handlePickDocument] Error:', error);
@@ -1659,8 +1703,131 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   };
   
+  // Open attachment preview modal
+  const openAttachmentPreview = () => {
+    setShowAttachmentPreview(true);
+    Animated.spring(attachmentPreviewAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 65,
+      friction: 10,
+    }).start();
+  };
+  
+  // Close attachment preview modal
+  const closeAttachmentPreview = () => {
+    Animated.timing(attachmentPreviewAnim, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowAttachmentPreview(false);
+      setPendingAttachments([]);
+      setAttachmentCaption('');
+    });
+  };
+  
+  // Remove a specific attachment from pending list
+  const removeAttachment = (index: number) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setPendingAttachments(prev => {
+      const newList = prev.filter((_, i) => i !== index);
+      if (newList.length === 0) {
+        closeAttachmentPreview();
+      }
+      return newList;
+    });
+  };
+  
+  // Send all pending attachments
+  const sendPendingAttachments = async () => {
+    if (pendingAttachments.length === 0) return;
+    
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    const caption = attachmentCaption.trim();
+    const attachmentsToSend = [...pendingAttachments];
+    closeAttachmentPreview();
+    setIsSending(true);
+    
+    try {
+      // Separate images and files
+      const images = attachmentsToSend.filter(a => a.type === 'image');
+      const files = attachmentsToSend.filter(a => a.type === 'file');
+      
+      // Upload all images and collect URLs for grid message
+      if (images.length > 0) {
+        const uploadedUrls: string[] = [];
+        
+        for (const image of images) {
+          const formData = new FormData();
+          const name = image.name || `photo_${Date.now()}.jpg`;
+          
+          formData.append('file', {
+            uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,
+            name,
+            type: image.mimeType || 'image/jpeg',
+          } as any);
+          formData.append('context', 'message');
+          
+          const response = await api.post('/api/v1/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+            timeout: 60000,
+          });
+          
+          const fileUrl = response.data?.data?.url || response.data?.url || response.data?.file?.url;
+          if (fileUrl) {
+            uploadedUrls.push(fileUrl);
+          }
+        }
+        
+        // Send all images as a single message with grid metadata
+        if (uploadedUrls.length > 0) {
+          const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
+            content: caption || `📷 ${uploadedUrls.length} photo${uploadedUrls.length > 1 ? 's' : ''}`,
+            content_type: 'image_grid',
+            file_url: uploadedUrls[0], // Primary image
+            metadata: {
+              grid_images: uploadedUrls,
+              image_count: uploadedUrls.length,
+            },
+          });
+          
+          const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
+          if (rawMessage?.id) {
+            const normalized = normalizeMessage(rawMessage);
+            setMessages(prev => [normalized, ...prev]);
+            flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+          }
+        }
+      }
+      
+      // Send files individually (each as separate message)
+      for (const file of files) {
+        await uploadAndSendFile(file.uri, file.type, file.name, files.indexOf(file) === 0 ? caption : undefined);
+      }
+    } catch (error) {
+      console.error('[sendPendingAttachments] Error:', error);
+      Alert.alert('Error', 'Failed to send attachments. Please try again.');
+    } finally {
+      setIsSending(false);
+    }
+  };
+  
+  // Add more attachments to pending list
+  const addMoreAttachments = async () => {
+    // Close preview temporarily
+    Animated.timing(attachmentPreviewAnim, {
+      toValue: 0,
+      duration: 150,
+      useNativeDriver: true,
+    }).start(async () => {
+      setShowAttachmentPreview(false);
+      await handlePickImage();
+    });
+  };
+  
   // Upload and send file as message
-  const uploadAndSendFile = async (uri: string, type: 'image' | 'file', filename?: string) => {
+  const uploadAndSendFile = async (uri: string, type: 'image' | 'file', filename?: string, caption?: string) => {
     setIsSending(true);
     
     try {
@@ -1703,8 +1870,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
       
       if (fileUrl) {
         // Send message with file attachment
+        // Use caption if provided, otherwise default content
+        const messageContent = caption || (type === 'image' ? '📷 Photo' : `📎 ${name}`);
         const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
-          content: type === 'image' ? '📷 Photo' : `📎 ${name}`,
+          content: messageContent,
           content_type: type,
           file_url: fileUrl,
           file_name: name,
@@ -1854,6 +2023,58 @@ export default function ConversationScreen({ navigation, route }: Props) {
               <Ionicons name="expand-outline" size={16} color="rgba(255,255,255,0.9)" />
             </View>
           </TouchableOpacity>
+        )}
+        {/* Image Grid messages - multiple photos in one message */}
+        {(item.type === 'image_grid' || (item.type === 'image' && item.metadata?.grid_images)) && item.metadata?.grid_images && (
+          <View style={styles.imageGrid}>
+            {(() => {
+              const images = item.metadata.grid_images as string[];
+              const count = images.length;
+              
+              // Calculate grid layout based on image count
+              const gridStyle = count === 1 ? styles.imageGridSingle :
+                               count === 2 ? styles.imageGridTwo :
+                               count === 3 ? styles.imageGridThree :
+                               count === 4 ? styles.imageGridFour :
+                               styles.imageGridMany;
+              
+              return (
+                <View style={gridStyle}>
+                  {images.slice(0, 4).map((imgUrl, idx) => (
+                    <TouchableOpacity
+                      key={idx}
+                      activeOpacity={0.9}
+                      onPress={() => handleImagePress(imgUrl)}
+                      style={[
+                        styles.gridImageContainer,
+                        count === 1 && styles.gridImageFull,
+                        count === 2 && styles.gridImageHalf,
+                        count === 3 && (idx === 0 ? styles.gridImageThreeMain : styles.gridImageThreeSide),
+                        count >= 4 && styles.gridImageQuarter,
+                      ]}
+                    >
+                      <Image
+                        source={{ uri: imgUrl }}
+                        style={styles.gridImage}
+                        resizeMode="cover"
+                      />
+                      {/* Show "+X more" overlay on 4th image if more than 4 */}
+                      {idx === 3 && count > 4 && (
+                        <View style={styles.gridMoreOverlay}>
+                          <Text style={styles.gridMoreText}>+{count - 4}</Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              );
+            })()}
+            {/* Photo count badge */}
+            <View style={styles.imageGridBadge}>
+              <Ionicons name="images" size={12} color="#fff" />
+              <Text style={styles.imageGridBadgeText}>{(item.metadata.grid_images as string[]).length}</Text>
+            </View>
+          </View>
         )}
         {/* File messages */}
         {item.type === 'file' && item.metadata?.url && (
@@ -2649,6 +2870,143 @@ export default function ConversationScreen({ navigation, route }: Props) {
       <MessageActionsMenu />
       <ReactionPickerModal />
       
+      {/* Attachment Preview Modal */}
+      <Modal
+        visible={showAttachmentPreview}
+        transparent
+        animationType="none"
+        onRequestClose={closeAttachmentPreview}
+        statusBarTranslucent
+      >
+        <KeyboardAvoidingView 
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        >
+          <Animated.View 
+            style={[
+              styles.attachmentPreviewContainer,
+              { 
+                opacity: attachmentPreviewAnim,
+                backgroundColor: 'rgba(0,0,0,0.95)'
+              }
+            ]}
+          >
+            {/* Header */}
+            <View style={styles.attachmentPreviewHeader}>
+              <TouchableOpacity 
+                onPress={closeAttachmentPreview}
+                style={styles.attachmentPreviewCloseBtn}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="close" size={28} color="#fff" />
+              </TouchableOpacity>
+              <Text style={styles.attachmentPreviewTitle}>
+                {pendingAttachments.length} {pendingAttachments.length === 1 ? 'item' : 'items'} selected
+              </Text>
+              <TouchableOpacity 
+                onPress={addMoreAttachments}
+                style={styles.attachmentPreviewAddBtn}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="add" size={28} color="#fff" />
+              </TouchableOpacity>
+            </View>
+            
+            {/* Preview Area */}
+            <ScrollView 
+              style={styles.attachmentPreviewScroll}
+              contentContainerStyle={styles.attachmentPreviewContent}
+              horizontal={pendingAttachments.length > 1}
+              pagingEnabled={pendingAttachments.length > 1}
+              showsHorizontalScrollIndicator={pendingAttachments.length > 1}
+            >
+              {pendingAttachments.map((attachment, index) => (
+                <Animated.View 
+                  key={index}
+                  style={[
+                    styles.attachmentPreviewItem,
+                    pendingAttachments.length > 1 && { width: SCREEN_WIDTH - 40 },
+                    { transform: [{ scale: attachmentPreviewAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.8, 1]
+                    })}]}
+                  ]}
+                >
+                  {/* Remove button */}
+                  <TouchableOpacity 
+                    style={styles.attachmentRemoveBtn}
+                    onPress={() => removeAttachment(index)}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <View style={styles.attachmentRemoveBtnInner}>
+                      <Ionicons name="close" size={18} color="#fff" />
+                    </View>
+                  </TouchableOpacity>
+                  
+                  {attachment.type === 'image' ? (
+                    <Image 
+                      source={{ uri: attachment.uri }}
+                      style={styles.attachmentPreviewImage}
+                      resizeMode="contain"
+                    />
+                  ) : (
+                    <View style={styles.attachmentPreviewFile}>
+                      <View style={[styles.attachmentPreviewFileIcon, { backgroundColor: colors.primary }]}>
+                        <Ionicons 
+                          name={
+                            attachment.mimeType?.includes('pdf') ? 'document-text' :
+                            attachment.mimeType?.includes('word') ? 'document' :
+                            attachment.mimeType?.includes('sheet') || attachment.mimeType?.includes('excel') ? 'grid' :
+                            'document-attach'
+                          } 
+                          size={48} 
+                          color="#fff" 
+                        />
+                      </View>
+                      <Text style={styles.attachmentPreviewFileName} numberOfLines={2}>
+                        {attachment.name}
+                      </Text>
+                      <Text style={styles.attachmentPreviewFileType}>
+                        {attachment.mimeType?.split('/').pop()?.toUpperCase() || 'FILE'}
+                      </Text>
+                    </View>
+                  )}
+                  
+                  {/* Index indicator for multiple attachments */}
+                  {pendingAttachments.length > 1 && (
+                    <View style={styles.attachmentIndexBadge}>
+                      <Text style={styles.attachmentIndexText}>{index + 1}/{pendingAttachments.length}</Text>
+                    </View>
+                  )}
+                </Animated.View>
+              ))}
+            </ScrollView>
+            
+            {/* Bottom: Caption input + Send button */}
+            <View style={[styles.attachmentPreviewFooter, { backgroundColor: colors.surface }]}>
+              <View style={[styles.attachmentCaptionContainer, { backgroundColor: colors.background }]}>
+                <TextInput
+                  style={[styles.attachmentCaptionInput, { color: colors.text }]}
+                  placeholder="Add a caption..."
+                  placeholderTextColor={colors.textSecondary}
+                  value={attachmentCaption}
+                  onChangeText={setAttachmentCaption}
+                  multiline
+                  maxLength={500}
+                />
+              </View>
+              <TouchableOpacity 
+                style={[styles.attachmentSendBtn, { backgroundColor: colors.primary }]}
+                onPress={sendPendingAttachments}
+                activeOpacity={0.8}
+              >
+                <Ionicons name="send" size={22} color="#fff" />
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </KeyboardAvoidingView>
+      </Modal>
+      
       {/* Full-screen Image Viewer Modal */}
       <Modal
         visible={showImageViewer}
@@ -2969,6 +3327,101 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 16,
     marginBottom: 6,
+  },
+  // Image grid styles for multi-photo messages
+  imageGrid: {
+    marginBottom: 6,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  imageGridSingle: {
+    width: 240,
+    height: 180,
+  },
+  imageGridTwo: {
+    width: 240,
+    height: 120,
+    flexDirection: 'row',
+    gap: 2,
+  },
+  imageGridThree: {
+    width: 240,
+    height: 160,
+    flexDirection: 'row',
+    gap: 2,
+  },
+  imageGridFour: {
+    width: 240,
+    height: 160,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 2,
+  },
+  imageGridMany: {
+    width: 240,
+    height: 160,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 2,
+  },
+  gridImageContainer: {
+    overflow: 'hidden',
+  },
+  gridImageFull: {
+    width: '100%',
+    height: '100%',
+  },
+  gridImageHalf: {
+    width: 119,
+    height: '100%',
+  },
+  gridImageThreeMain: {
+    width: 159,
+    height: '100%',
+  },
+  gridImageThreeSide: {
+    width: 79,
+    height: 79,
+  },
+  gridImageQuarter: {
+    width: 119,
+    height: 79,
+  },
+  gridImage: {
+    width: '100%',
+    height: '100%',
+  },
+  gridMoreOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  gridMoreText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: '700',
+  },
+  imageGridBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  imageGridBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
   },
   imageOverlay: {
     position: 'absolute',
@@ -3864,5 +4317,127 @@ const styles = StyleSheet.create({
   },
   pinnedBarNavBtn: {
     padding: 2,
+  },
+  // Attachment preview styles
+  attachmentPreviewContainer: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+  attachmentPreviewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 50,
+    paddingBottom: 16,
+  },
+  attachmentPreviewCloseBtn: {
+    padding: 8,
+  },
+  attachmentPreviewTitle: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '600',
+  },
+  attachmentPreviewAddBtn: {
+    padding: 8,
+  },
+  attachmentPreviewScroll: {
+    flex: 1,
+  },
+  attachmentPreviewContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    minHeight: '100%',
+  },
+  attachmentPreviewItem: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 10,
+  },
+  attachmentRemoveBtn: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 10,
+  },
+  attachmentRemoveBtnInner: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  attachmentPreviewImage: {
+    width: SCREEN_WIDTH - 60,
+    height: SCREEN_HEIGHT * 0.5,
+    borderRadius: 12,
+  },
+  attachmentPreviewFile: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 32,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 16,
+    width: SCREEN_WIDTH - 80,
+  },
+  attachmentPreviewFileIcon: {
+    width: 100,
+    height: 100,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+  },
+  attachmentPreviewFileName: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  attachmentPreviewFileType: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 14,
+  },
+  attachmentIndexBadge: {
+    position: 'absolute',
+    bottom: 20,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  attachmentIndexText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  attachmentPreviewFooter: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    padding: 12,
+    paddingBottom: 34,
+    gap: 12,
+  },
+  attachmentCaptionContainer: {
+    flex: 1,
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    maxHeight: 100,
+  },
+  attachmentCaptionInput: {
+    fontSize: 16,
+    maxHeight: 76,
+  },
+  attachmentSendBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
