@@ -121,6 +121,9 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
     reactions: (raw.reactions ?? []) as Message['reactions'],
     is_edited: (raw.isEdited ?? raw.is_edited ?? false) as boolean,
     is_deleted: Boolean(raw.isDeleted ?? raw.is_deleted ?? raw.deletedAt ?? raw.deleted_at ?? false),
+    is_pinned: (raw.isPinned ?? raw.is_pinned ?? false) as boolean,
+    pinned_at: (raw.pinnedAt ?? raw.pinned_at) as string | undefined,
+    pinned_by_id: (raw.pinnedById ?? raw.pinned_by_id) as string | undefined,
     inserted_at: (raw.createdAt ?? raw.created_at ?? raw.insertedAt ?? raw.inserted_at ?? new Date().toISOString()) as string,
     updated_at: (raw.updatedAt ?? raw.updated_at ?? raw.createdAt ?? raw.created_at ?? new Date().toISOString()) as string,
   };

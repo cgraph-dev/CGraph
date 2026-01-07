@@ -123,20 +123,27 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
+    padding: 14,
+    borderRadius: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
   },
   content: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 14,
   },
   name: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
+    letterSpacing: 0.2,
   },
   subtitle: {
     fontSize: 14,
-    marginTop: 2,
+    marginTop: 3,
+    letterSpacing: 0.1,
   },
   rightContent: {
     marginLeft: 12,

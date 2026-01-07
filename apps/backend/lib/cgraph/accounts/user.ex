@@ -53,6 +53,7 @@ defmodule Cgraph.Accounts.User do
     field :is_premium, :boolean, default: false
     field :is_admin, :boolean, default: false
     field :is_suspended, :boolean, default: false
+    field :is_profile_private, :boolean, default: false  # When true, non-friends see limited info
     field :karma, :integer, default: 0
 
     # Ban management
@@ -326,7 +327,7 @@ defmodule Cgraph.Accounts.User do
     user
     |> cast(attrs, [
       :username, :display_name, :bio, :avatar_url, :banner_url,
-      :custom_status, :status, :is_admin, :is_verified, :is_premium
+      :custom_status, :status, :is_admin, :is_verified, :is_premium, :is_profile_private
     ])
     |> validate_length(:bio, max: 500)
     |> validate_length(:custom_status, max: 100)

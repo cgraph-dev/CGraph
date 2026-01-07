@@ -86,7 +86,7 @@ export default function AddFriendScreen() {
           {success && (
             <View style={styles.successContainer}>
               <Text style={styles.successText}>
-                Friend request sent successfully!
+                ✅ Friend request sent successfully!
               </Text>
             </View>
           )}
@@ -97,7 +97,7 @@ export default function AddFriendScreen() {
             disabled={!username.trim()}
             fullWidth
           >
-            Send Friend Request
+            📨 Send Friend Request
           </Button>
         </View>
 

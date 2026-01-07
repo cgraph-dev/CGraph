@@ -3,21 +3,24 @@ defmodule CgraphWeb.PresenceChannel do
   Global presence channel for WhatsApp-style real-time user status tracking.
 
   Handles:
-  - User online/offline state broadcasting
+  - User online/offline state broadcasting (friends only)
   - Last seen timestamp tracking
   - Custom status messages (away, busy, etc.)
   - Multi-device presence aggregation
   - Bulk presence queries for contact lists
+  - Friend-filtered presence (non-friends won't see each other's status)
 
   Architecture follows WhatsApp patterns:
   - Immediate online status on app foreground
   - Grace period before marking offline (handles brief disconnects)
   - Last seen persisted to cache with 7-day TTL
   - Typing indicators delegated to room-specific channels
+  - Presence only visible to friends
   """
   use CgraphWeb, :channel
 
   alias Cgraph.Presence
+  alias Cgraph.Accounts.Friends
 
   @heartbeat_interval_ms 15_000
   @offline_grace_period_ms 8_000
@@ -39,6 +42,9 @@ defmodule CgraphWeb.PresenceChannel do
   def handle_info(:after_join, socket) do
     user = socket.assigns.current_user
 
+    # Get user's friend IDs for presence filtering
+    friend_ids = get_friend_ids(user.id)
+
     # Track user in global presence with device metadata
     # Using "lobby" as the room_id for the global presence channel
     Presence.track_user(socket, user.id, "lobby", %{
@@ -47,14 +53,21 @@ defmodule CgraphWeb.PresenceChannel do
       app_state: "foreground"
     })
 
-    # Push current presence list to joining user
-    presence_list = build_presence_map(Presence.list("users:online"))
+    # Push presence list filtered by friends to joining user
+    presence_list = build_presence_map(Presence.list("users:online"), friend_ids)
     push(socket, "presence_state", %{users: presence_list})
+
+    # Notify friends that this user is now online
+    broadcast_to_friends(user.id, friend_ids, "friend_online", %{
+      user_id: user.id,
+      status: "online",
+      online_at: DateTime.utc_now() |> DateTime.to_iso8601()
+    })
 
     # Schedule periodic heartbeat
     :timer.send_interval(@heartbeat_interval_ms, self(), :heartbeat_tick)
 
-    {:noreply, assign(socket, :tracked, true)}
+    {:noreply, assign(socket, tracked: true, friend_ids: friend_ids)}
   end
 
   @impl true
@@ -78,11 +91,12 @@ defmodule CgraphWeb.PresenceChannel do
   @impl true
   def handle_in("set_status", %{"status" => status} = params, socket) do
     user = socket.assigns.current_user
+    friend_ids = socket.assigns[:friend_ids] || get_friend_ids(user.id)
 
     case Presence.update_status(socket, user.id, "lobby", status) do
       {:ok, _} ->
-        # Broadcast status change to all connected clients
-        broadcast_from(socket, "user_status_changed", %{
+        # Broadcast status change only to friends
+        broadcast_to_friends(user.id, friend_ids, "friend_status_changed", %{
           user_id: user.id,
           status: status,
           status_message: params["status_message"],
@@ -122,55 +136,74 @@ defmodule CgraphWeb.PresenceChannel do
 
   @impl true
   def handle_in("get_user_status", %{"user_id" => target_user_id}, socket) do
-    presence_data = case Presence.get_user_presence(target_user_id) do
-      nil ->
-        # User offline - check last seen
-        last_seen = Presence.last_seen(target_user_id)
-        %{
-          online: false,
-          last_seen: last_seen && DateTime.to_iso8601(last_seen),
-          status: "offline"
-        }
+    user = socket.assigns.current_user
+    
+    # Only return presence if they are friends
+    unless Friends.are_friends?(user.id, target_user_id) do
+      {:reply, {:ok, %{online: false, status: "unknown", hidden: true}}, socket}
+    else
+      presence_data = case Presence.get_user_presence(target_user_id) do
+        nil ->
+          # User offline - check last seen
+          last_seen = Presence.last_seen(target_user_id)
+          %{
+            online: false,
+            last_seen: last_seen && DateTime.to_iso8601(last_seen),
+            status: "offline"
+          }
 
-      merged when is_map(merged) ->
-        # get_user_presence returns already merged presence
-        %{
-          online: true,
-          status: merged[:status] || "online",
-          status_message: merged[:status_message],
-          last_active: merged[:last_active] && DateTime.to_iso8601(merged[:last_active])
-        }
+        merged when is_map(merged) ->
+          # get_user_presence returns already merged presence
+          %{
+            online: true,
+            status: merged[:status] || "online",
+            status_message: merged[:status_message],
+            last_active: merged[:last_active] && DateTime.to_iso8601(merged[:last_active])
+          }
+      end
+
+      {:reply, {:ok, presence_data}, socket}
     end
-
-    {:reply, {:ok, presence_data}, socket}
   end
 
   @impl true
   def handle_in("get_bulk_status", %{"user_ids" => user_ids}, socket) when is_list(user_ids) do
+    user = socket.assigns.current_user
+    friend_ids = socket.assigns[:friend_ids] || get_friend_ids(user.id)
+    friend_ids_set = MapSet.new(friend_ids)
+    
     # Limit batch size to prevent abuse
     limited_ids = Enum.take(user_ids, @bulk_presence_batch_size)
+    
+    # Only return status for friends
+    friend_limited_ids = Enum.filter(limited_ids, &MapSet.member?(friend_ids_set, &1))
 
     # bulk_status returns {user_id, status_string} map
-    status_map = Presence.bulk_status(limited_ids)
+    status_map = Presence.bulk_status(friend_limited_ids)
 
     # Enrich with last_seen for offline users and convert to proper format
     enriched = Enum.map(limited_ids, fn user_id ->
-      status = Map.get(status_map, user_id, "offline")
-      is_online = status != "offline"
+      if MapSet.member?(friend_ids_set, user_id) do
+        status = Map.get(status_map, user_id, "offline")
+        is_online = status != "offline"
 
-      base_data = %{
-        online: is_online,
-        status: status
-      }
+        base_data = %{
+          online: is_online,
+          status: status
+        }
 
-      data = if is_online do
-        base_data
+        data = if is_online do
+          base_data
+        else
+          last_seen = Presence.last_seen(user_id)
+          Map.put(base_data, :last_seen, last_seen && DateTime.to_iso8601(last_seen))
+        end
+
+        {user_id, data}
       else
-        last_seen = Presence.last_seen(user_id)
-        Map.put(base_data, :last_seen, last_seen && DateTime.to_iso8601(last_seen))
+        # Non-friend: return hidden status
+        {user_id, %{online: false, status: "unknown", hidden: true}}
       end
-
-      {user_id, data}
     end)
     |> Map.new()
 
@@ -180,6 +213,20 @@ defmodule CgraphWeb.PresenceChannel do
   def handle_in("get_bulk_status", _params, socket) do
     {:reply, {:error, %{reason: "user_ids_required"}}, socket}
   end
+  
+  @impl true
+  def handle_in("refresh_friends", _params, socket) do
+    user = socket.assigns.current_user
+    
+    # Refresh friend list (useful after adding/removing friends)
+    friend_ids = get_friend_ids(user.id)
+    
+    # Push updated presence list filtered by new friends
+    presence_list = build_presence_map(Presence.list("users:online"), friend_ids)
+    push(socket, "presence_state", %{users: presence_list})
+    
+    {:reply, :ok, assign(socket, :friend_ids, friend_ids)}
+  end
 
   @impl true
   def terminate(_reason, socket) do
@@ -187,6 +234,14 @@ defmodule CgraphWeb.PresenceChannel do
 
     if user && socket.assigns[:tracked] do
       Presence.record_last_seen(user.id)
+      
+      # Notify friends that this user is going offline
+      friend_ids = socket.assigns[:friend_ids] || get_friend_ids(user.id)
+      broadcast_to_friends(user.id, friend_ids, "friend_offline", %{
+        user_id: user.id,
+        last_seen: DateTime.utc_now() |> DateTime.to_iso8601()
+      })
+      
       schedule_offline_check(user.id)
     end
 
@@ -209,11 +264,36 @@ defmodule CgraphWeb.PresenceChannel do
       )
     end
   end
+  
+  # Get list of friend user IDs for the given user
+  defp get_friend_ids(user_id) do
+    Friends.list_friends(user_id)
+    |> Enum.map(& &1.friend_id)
+  end
+  
+  # Broadcast a message to all friends of a user
+  defp broadcast_to_friends(user_id, friend_ids, event, payload) do
+    # Broadcast to each friend's personal channel
+    Enum.each(friend_ids, fn friend_id ->
+      Phoenix.PubSub.broadcast(
+        Cgraph.PubSub,
+        "user:#{friend_id}",
+        {event, Map.put(payload, :from_user_id, user_id)}
+      )
+    end)
+    
+    # Also broadcast on the presence lobby for friends who are connected
+    CgraphWeb.Endpoint.broadcast("presence:lobby", event, payload)
+  end
 
   # Private helpers
 
-  defp build_presence_map(presence_list) when is_map(presence_list) do
-    Enum.map(presence_list, fn {user_id, %{metas: metas}} ->
+  defp build_presence_map(presence_list, friend_ids) when is_map(presence_list) do
+    friend_ids_set = MapSet.new(friend_ids)
+    
+    presence_list
+    |> Enum.filter(fn {user_id, _} -> MapSet.member?(friend_ids_set, user_id) end)
+    |> Enum.map(fn {user_id, %{metas: metas}} ->
       merged = Presence.merge_multi_device_presence(metas)
       {user_id, %{
         online: true,
@@ -225,5 +305,5 @@ defmodule CgraphWeb.PresenceChannel do
     |> Map.new()
   end
 
-  defp build_presence_map(_), do: %{}
+  defp build_presence_map(_, _), do: %{}
 end

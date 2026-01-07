@@ -19,6 +19,10 @@ defmodule CgraphWeb.API.V1.UserJSON do
     %{data: public_profile(user)}
   end
 
+  def private_profile(%{user: user}) do
+    %{data: hidden_profile(user)}
+  end
+
   def leaderboard(%{users: users, meta: meta}) do
     %{
       data: Enum.with_index(users, 1) |> Enum.map(fn {user, rank} -> leaderboard_entry(user, rank) end),
@@ -64,6 +68,7 @@ defmodule CgraphWeb.API.V1.UserJSON do
       karma: user.karma || 0,
       is_verified: user.is_verified || false,
       is_premium: user.is_premium || false,
+      is_profile_private: user.is_profile_private || false,
       can_change_username: User.can_change_username?(user),
       username_next_change_at: User.next_username_change_date(user),
       created_at: user.inserted_at
@@ -86,7 +91,26 @@ defmodule CgraphWeb.API.V1.UserJSON do
       karma: user.karma || 0,
       is_verified: user.is_verified || false,
       is_premium: user.is_premium || false,
+      is_profile_private: user.is_profile_private || false,
       created_at: user.inserted_at
+    }
+  end
+
+  defp hidden_profile(%User{} = user) do
+    %{
+      id: user.id,
+      username: "Unknown",
+      display_name: "Unknown",
+      avatar_url: nil,
+      banner_url: nil,
+      bio: "This profile is private",
+      status: "offline",
+      status_message: nil,
+      karma: 0,
+      is_verified: false,
+      is_premium: false,
+      is_profile_private: true,
+      created_at: nil
     }
   end
 

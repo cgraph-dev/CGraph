@@ -12,8 +12,22 @@ defmodule Cgraph.Messaging.Reaction do
   @foreign_key_type :binary_id
   @timestamps_opts [type: :utc_datetime_usec]
 
-  # Common reaction emoji
-  @allowed_emoji ["👍", "❤️", "😂", "😮", "😢", "😡", "🎉", "🔥", "👀", "💯"]
+  # Extended emoji set - allow common reaction emojis
+  # Quick reactions + additional popular emojis
+  @allowed_emoji [
+    # Quick reactions
+    "❤️", "👍", "😂", "😮", "😢", "🔥",
+    # Smileys
+    "😀", "😃", "😄", "😁", "😅", "🤣", "😊", "😇", "🙂", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚", "😋", "😛", "😜", "🤪", "😝", "🤗", "🤭", "🤫", "🤔", "🤐", "🤨", "😐", "😑", "😶", "😏", "😒", "🙄", "😬", "🤥",
+    # Gestures
+    "👎", "👏", "🙌", "👐", "🤲", "🤝", "🙏", "✌️", "🤞", "🤟", "🤘", "👌", "🤌", "🤏", "👈", "👉", "👆", "👇", "☝️", "✋", "🤚", "🖐️", "🖖", "👋", "🤙", "💪", "🦾", "🖕", "✍️",
+    # Hearts
+    "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍", "🤎", "💔", "❣️", "💕", "💞", "💓", "💗", "💖", "💘", "💝", "💟", "♥️",
+    # Symbols
+    "✨", "⭐", "🌟", "💫", "💯", "💢", "💥", "💦", "💨", "🕳️", "💣", "💬", "👁️‍🗨️", "🗨️", "🗯️", "💭", "💤", "🎵", "🎶",
+    # Additional common reactions
+    "😡", "🎉", "👀", "🥲", "🥺", "😭", "🤯", "🥳", "😎", "🤩", "😱", "🤮", "🤢", "💀", "☠️", "🤡", "👽", "👻", "💩", "🙈", "🙉", "🙊"
+  ]
 
   schema "reactions" do
     field :emoji, :string
@@ -31,7 +45,7 @@ defmodule Cgraph.Messaging.Reaction do
     reaction
     |> cast(attrs, [:emoji, :message_id, :user_id])
     |> validate_required([:emoji, :message_id, :user_id])
-    |> validate_inclusion(:emoji, @allowed_emoji)
+    |> validate_length(:emoji, min: 1, max: 32)
     |> unique_constraint([:message_id, :user_id, :emoji])
     |> foreign_key_constraint(:message_id)
     |> foreign_key_constraint(:user_id)

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import api from '../../lib/api';
+import socketManager from '../../lib/socket';
 import { safeFormatConversationTime } from '../../lib/dateUtils';
 import { MessagesStackParamList, Conversation, ConversationParticipant } from '../../types';
 
@@ -25,6 +26,8 @@ export default function ConversationListScreen({ navigation }: Props) {
   const { user } = useAuth();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  // Track online status for all conversation participants
+  const [onlineUsers, setOnlineUsers] = useState<Set<string>>(new Set());
   
   // Set up navigation header
   useEffect(() => {
@@ -48,10 +51,65 @@ export default function ConversationListScreen({ navigation }: Props) {
     }
   }, [user?.id]);
   
+  // Subscribe to global friend presence changes
+  useEffect(() => {
+    // Initialize with current online friends
+    setOnlineUsers(new Set(socketManager.getOnlineFriends()));
+    
+    // Subscribe to status changes
+    const unsubscribe = socketManager.onGlobalStatusChange((userId, isOnline) => {
+      setOnlineUsers(prev => {
+        const next = new Set(prev);
+        if (isOnline) {
+          next.add(userId);
+        } else {
+          next.delete(userId);
+        }
+        return next;
+      });
+    });
+    
+    return () => unsubscribe();
+  }, []);
+  
+  // Fetch bulk presence for all conversation participants
+  const fetchBulkPresence = useCallback(async (participantIds: string[]) => {
+    if (participantIds.length === 0) return;
+    
+    try {
+      const presenceData = await socketManager.getBulkFriendStatus(participantIds);
+      const online = new Set<string>();
+      Object.entries(presenceData).forEach(([id, data]) => {
+        if (data.online && !data.hidden) {
+          online.add(id);
+        }
+      });
+      setOnlineUsers(online);
+    } catch (error) {
+      // Ignore errors, will use socket subscription for updates
+    }
+  }, []);
+  
   const fetchConversations = async () => {
     try {
       const response = await api.get('/api/v1/conversations');
-      setConversations(response.data.data || []);
+      const convos = response.data.data || [];
+      setConversations(convos);
+      
+      // Fetch presence for all other participants
+      const participantIds = convos
+        .map((conv: Conversation) => {
+          const other = conv.participants?.find((p: ConversationParticipant) => {
+            const pUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
+            return String(pUserId) !== String(user?.id);
+          });
+          return other?.userId || other?.user_id || (other?.user as any)?.id;
+        })
+        .filter(Boolean) as string[];
+      
+      if (participantIds.length > 0) {
+        fetchBulkPresence(participantIds);
+      }
     } catch (error) {
       console.error('Error fetching conversations:', error);
     }
@@ -111,6 +169,13 @@ export default function ConversationListScreen({ navigation }: Props) {
       otherParticipant?.avatarUrl ||
       otherParticipant?.avatar_url;
     
+    // Check if the other user is online
+    const otherUserId = otherParticipant?.userId || 
+      otherParticipant?.user_id || 
+      (otherParticipant?.user as any)?.id ||
+      '';
+    const isOnline = onlineUsers.has(String(otherUserId));
+    
     return (
       <TouchableOpacity
         style={[styles.conversationItem, { borderBottomColor: colors.border }]}
@@ -125,6 +190,10 @@ export default function ConversationListScreen({ navigation }: Props) {
                 {displayName.charAt(0).toUpperCase()}
               </Text>
             </View>
+          )}
+          {/* Online indicator */}
+          {isOnline && (
+            <View style={[styles.onlineIndicator, { borderColor: colors.background }]} />
           )}
           {item.unread_count > 0 && (
             <View style={[styles.unreadBadge, { backgroundColor: colors.primary }]}>
@@ -208,21 +277,26 @@ const styles = StyleSheet.create({
   conversationItem: {
     flexDirection: 'row',
     padding: 16,
-    borderBottomWidth: 1,
+    borderBottomWidth: StyleSheet.hairlineWidth,
   },
   avatarContainer: {
     position: 'relative',
-    marginRight: 12,
+    marginRight: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 3,
   },
   avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
   },
   avatarPlaceholder: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 52,
+    height: 52,
+    borderRadius: 26,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -241,11 +315,31 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 6,
+    shadowColor: '#ef4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.35,
+    shadowRadius: 4,
+    elevation: 4,
   },
   unreadText: {
     color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  onlineIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#22c55e',
+    borderWidth: 2.5,
+    shadowColor: '#22c55e',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 2,
   },
   conversationContent: {
     flex: 1,
@@ -255,22 +349,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 5,
   },
   conversationName: {
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
     flex: 1,
     marginRight: 8,
+    letterSpacing: 0.2,
   },
   unreadName: {
     fontWeight: '700',
   },
   time: {
     fontSize: 12,
+    fontWeight: '500',
+    letterSpacing: 0.3,
   },
   lastMessage: {
     fontSize: 14,
+    lineHeight: 20,
+    letterSpacing: 0.1,
   },
   emptyContainer: {
     flex: 1,
@@ -282,24 +381,32 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   emptyTitle: {
-    fontSize: 20,
-    fontWeight: '600',
+    fontSize: 22,
+    fontWeight: '700',
     marginTop: 16,
     marginBottom: 8,
+    letterSpacing: 0.3,
   },
   emptySubtitle: {
-    fontSize: 14,
+    fontSize: 15,
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 28,
+    lineHeight: 22,
   },
   emptyButton: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    paddingHorizontal: 28,
+    paddingVertical: 14,
+    borderRadius: 24,
+    shadowColor: '#22c55e',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 6,
   },
   emptyButtonText: {
     color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });

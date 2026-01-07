@@ -214,7 +214,7 @@ defmodule Cgraph.Messaging do
     query = from m in Message,
       where: m.conversation_id == ^conversation.id,
       order_by: [desc: m.inserted_at],
-      preload: [:sender, :reactions]
+      preload: [:sender, [reactions: :user], [reply_to: :sender]]
 
     query = if before_id do
       from m in query, where: m.id < ^before_id
@@ -247,7 +247,7 @@ defmodule Cgraph.Messaging do
     query = from m in Message,
       where: m.id == ^message_id,
       where: m.conversation_id == ^conversation.id,
-      preload: [:sender, :reactions]
+      preload: [:sender, [reactions: :user], [reply_to: :sender]]
 
     case Repo.one(query) do
       nil -> {:error, :not_found}
@@ -283,7 +283,7 @@ defmodule Cgraph.Messaging do
         # to ensure proper serialization and consistent camelCase format for WebSocket clients.
         # Do not broadcast here to avoid duplicate messages.
 
-        {:ok, Repo.preload(message, [:sender, :reactions])}
+        {:ok, Repo.preload(message, [:sender, :reactions, [reply_to: :sender]])}
 
       error -> error
     end
@@ -457,26 +457,48 @@ defmodule Cgraph.Messaging do
 
   @doc """
   Add a reaction to a message.
-  Returns {:error, :already_exists} if the user already reacted with this emoji.
+  Limit: 1 reaction per user per message. If user already has a different reaction,
+  it will be replaced with the new one.
+  Returns {:ok, reaction, replaced_emoji} on success, {:error, :already_exists} if same emoji.
+  replaced_emoji is nil if no reaction was replaced.
   """
   def add_reaction(user, message, emoji) do
-    # Check if already reacted with this emoji
-    existing = Repo.get_by(Reaction,
+    # Check if already reacted with this exact emoji
+    existing_same = Repo.get_by(Reaction,
       user_id: user.id,
       message_id: message.id,
       emoji: emoji
     )
 
-    if existing do
+    if existing_same do
       {:error, :already_exists}
     else
-      %Reaction{}
-      |> Reaction.changeset(%{
+      # Check if user has any other reaction on this message (limit 1 per user)
+      existing_other = Repo.get_by(Reaction,
         user_id: user.id,
-        message_id: message.id,
-        emoji: emoji
-      })
-      |> Repo.insert()
+        message_id: message.id
+      )
+
+      # If user has a different reaction, remove it first
+      replaced_emoji = if existing_other do
+        old_emoji = existing_other.emoji
+        Repo.delete(existing_other)
+        old_emoji
+      else
+        nil
+      end
+
+      # Add the new reaction
+      case %Reaction{}
+        |> Reaction.changeset(%{
+          user_id: user.id,
+          message_id: message.id,
+          emoji: emoji
+        })
+        |> Repo.insert() do
+        {:ok, reaction} -> {:ok, reaction, replaced_emoji}
+        {:error, changeset} -> {:error, changeset}
+      end
     end
   end
 
@@ -498,11 +520,28 @@ defmodule Cgraph.Messaging do
   @doc """
   Broadcast reaction added event.
   """
-  def broadcast_reaction_added(conversation, message, reaction) do
+  def broadcast_reaction_added(conversation, message, reaction, user \\ nil) do
+    # Use provided user or try to get from reaction
+    user_data = user || reaction.user
+    
     CgraphWeb.Endpoint.broadcast(
       "conversation:#{conversation.id}",
       "reaction_added",
-      %{message_id: message.id, reaction: reaction}
+      %{
+        message_id: message.id,
+        emoji: reaction.emoji,
+        user_id: reaction.user_id,
+        user: if user_data do
+          %{
+            id: user_data.id,
+            username: user_data.username,
+            display_name: user_data.display_name,
+            avatar_url: user_data.avatar_url
+          }
+        else
+          %{id: reaction.user_id}
+        end
+      }
     )
   end
 
@@ -610,6 +649,65 @@ defmodule Cgraph.Messaging do
     message
     |> Message.edit_changeset(stringify_keys(attrs))
     |> Repo.update()
+  end
+
+  @doc """
+  Pin a message in a conversation.
+  Only participants can pin messages.
+  Each user can pin up to 3 messages per conversation.
+  """
+  @max_pins_per_user 3
+  
+  def pin_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
+    case get_message(message_id) do
+      {:error, :not_found} -> {:error, :not_found}
+      {:ok, message} ->
+        cond do
+          !message.conversation_id || !user_in_conversation?(message.conversation_id, user_id) ->
+            {:error, :unauthorized}
+          
+          message.is_pinned ->
+            {:error, :already_pinned}
+          
+          count_user_pins(message.conversation_id, user_id) >= @max_pins_per_user ->
+            {:error, :pin_limit_reached}
+          
+          true ->
+            message
+            |> Ecto.Changeset.change(is_pinned: true, pinned_at: DateTime.utc_now() |> DateTime.truncate(:second), pinned_by_id: user_id)
+            |> Repo.update()
+        end
+    end
+  end
+
+  @doc """
+  Count how many messages a user has pinned in a conversation.
+  """
+  def count_user_pins(conversation_id, user_id) do
+    from(m in Message,
+      where: m.conversation_id == ^conversation_id,
+      where: m.pinned_by_id == ^user_id,
+      where: m.is_pinned == true,
+      select: count(m.id)
+    )
+    |> Repo.one() || 0
+  end
+
+  @doc """
+  Unpin a message in a conversation.
+  """
+  def unpin_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
+    case get_message(message_id) do
+      {:error, :not_found} -> {:error, :not_found}
+      {:ok, message} ->
+        if message.conversation_id && user_in_conversation?(message.conversation_id, user_id) do
+          message
+          |> Ecto.Changeset.change(is_pinned: false, pinned_at: nil, pinned_by_id: nil)
+          |> Repo.update()
+        else
+          {:error, :unauthorized}
+        end
+    end
   end
 
   @doc """

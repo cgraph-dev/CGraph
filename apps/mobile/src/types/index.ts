@@ -13,9 +13,10 @@ export interface User {
   karma?: number;
   is_verified?: boolean;
   is_premium?: boolean;
+  is_profile_private?: boolean;
   username_changed_at?: string;
   can_change_username: boolean;
-  next_username_change_at?: string;
+  username_next_change_at?: string;
   inserted_at: string;
   updated_at: string;
 }
@@ -58,6 +59,9 @@ export interface Message {
   reactions: Reaction[];
   is_edited: boolean;
   is_deleted: boolean;
+  is_pinned?: boolean;
+  pinned_at?: string;
+  pinned_by_id?: string;
   inserted_at: string;
   updated_at: string;
   // Message delivery status

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, ReactNode } from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -7,6 +7,7 @@ import {
   ViewStyle,
   TextStyle,
   Animated,
+  View,
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -29,6 +30,8 @@ interface ButtonProps {
   style?: ViewStyle;
   /** Additional text styles */
   textStyle?: TextStyle;
+  /** Icon element to show before text */
+  icon?: ReactNode;
 }
 
 export default function Button({
@@ -41,6 +44,7 @@ export default function Button({
   onPress,
   style,
   textStyle,
+  icon,
 }: ButtonProps) {
   const { colors } = useTheme();
   const scaleValue = useRef(new Animated.Value(1)).current;
@@ -149,15 +153,18 @@ export default function Button({
         {loading ? (
           <ActivityIndicator color={getTextColor()} size="small" />
         ) : (
-          <Text
-            style={[
-              styles.text,
-              { color: getTextColor(), fontSize: getTextSize() },
-              textStyle,
-            ]}
-          >
-            {children}
-          </Text>
+          <View style={styles.content}>
+            {icon}
+            <Text
+              style={[
+                styles.text,
+                { color: getTextColor(), fontSize: getTextSize() },
+                textStyle,
+              ]}
+            >
+              {children}
+            </Text>
+          </View>
         )}
       </TouchableOpacity>
     </Animated.View>
@@ -170,6 +177,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
+  },
+  content: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   fullWidth: {
     width: '100%',

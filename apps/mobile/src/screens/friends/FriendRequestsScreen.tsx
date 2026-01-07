@@ -205,7 +205,7 @@ export default function FriendRequestsScreen() {
             description={
               activeTab === 'incoming'
                 ? 'Friend requests you receive will appear here'
-                : 'Friend requests you send will appear here'
+                : '📨 Friend requests you send will appear here'
             }
           />
         }

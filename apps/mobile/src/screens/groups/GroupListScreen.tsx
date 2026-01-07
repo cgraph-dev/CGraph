@@ -73,7 +73,7 @@ export default function GroupListScreen({ navigation }: Props) {
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <Ionicons name="people-outline" size={64} color={colors.textTertiary} />
-      <Text style={[styles.emptyTitle, { color: colors.text }]}>No Groups</Text>
+      <Text style={[styles.emptyTitle, { color: colors.text }]}>👥 No Groups</Text>
       <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
         Join a group or create your own
       </Text>

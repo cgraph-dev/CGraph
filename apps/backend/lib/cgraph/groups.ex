@@ -1000,11 +1000,28 @@ defmodule Cgraph.Groups do
   @doc """
   Broadcast reaction added in channel.
   """
-  def broadcast_reaction_added(channel, message, reaction) do
+  def broadcast_reaction_added(channel, message, reaction, user \\ nil) do
+    # Use provided user or try to get from reaction
+    user_data = user || reaction.user
+    
     CgraphWeb.Endpoint.broadcast(
       "channel:#{channel.id}",
       "reaction_added",
-      %{message_id: message.id, reaction: reaction}
+      %{
+        message_id: message.id,
+        emoji: reaction.emoji,
+        user_id: reaction.user_id,
+        user: if user_data do
+          %{
+            id: user_data.id,
+            username: user_data.username,
+            display_name: user_data.display_name,
+            avatar_url: user_data.avatar_url
+          }
+        else
+          %{id: reaction.user_id}
+        end
+      }
     )
   end
 

@@ -1,6 +1,6 @@
 # CGraph Database Documentation
 
-> Maintainer: @marcus | Last updated: January 2025  
+> Maintainer: @marcus | Last updated: January 2026  
 > If you're modifying the schema, PLEASE update this doc. Future you will thank present you.
 
 ---

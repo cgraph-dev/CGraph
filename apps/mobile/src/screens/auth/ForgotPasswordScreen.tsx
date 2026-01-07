@@ -57,7 +57,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
           </View>
           <Text style={[styles.title, { color: colors.text }]}>Check your email</Text>
           <Text style={[styles.description, { color: colors.textSecondary }]}>
-            We've sent a password reset link to {email}
+            📨 We've sent a password reset link to {email}
           </Text>
           <TouchableOpacity
             style={[styles.button, { backgroundColor: colors.primary }]}
@@ -126,7 +126,7 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
               {isLoading ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={styles.buttonText}>Send Reset Link</Text>
+                <Text style={styles.buttonText}>📩 Send Reset Link</Text>
               )}
             </TouchableOpacity>
           </View>

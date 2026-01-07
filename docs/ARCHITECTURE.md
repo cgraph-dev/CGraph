@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.19  
-> Living documentation - Updated with recent presence tracking and voice message improvements
+> Last updated: January 2026 | Version 0.7.22  
+> Living documentation - Updated with inverted FlatList pattern and picker improvements
 
 ---
 

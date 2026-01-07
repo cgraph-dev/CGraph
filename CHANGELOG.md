@@ -7,6 +7,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.22] - 2026-01-07
+
+### Added
+
+#### Mobile - Chat UX Improvements
+- **Inverted FlatList Pattern** - Implemented industry-standard inverted list for chat
+  - Messages now display with newest at bottom reliably
+  - Automatic scroll to latest message on entering conversation
+  - New messages appear at bottom without scroll jumps
+- **Picker Concurrency Lock** - Prevented simultaneous picker operations causing crashes
+  - Added `isPickerActiveRef` to track active picker state
+  - 500ms delay between picker operations
+  - Proper cleanup in finally blocks
+
+#### Mobile - Message Management
+- **Deleted Message Tracking** - Messages unsent/deleted no longer reappear
+  - `deletedMessageIdsRef` tracks deleted message IDs for session
+  - Prevents WebSocket from re-adding deleted messages
+  - Filters deleted messages from all fetch operations
+
+### Changed
+
+#### Mobile - Message Handling Architecture
+- **Message Sort Order** - Changed from oldest-first to newest-first for inverted list
+- **Scroll Behavior** - All `scrollToEnd` calls replaced with `scrollToOffset({ offset: 0 })`
+- **Message Prepend** - New messages prepend `[normalized, ...prev]` instead of append
+
+#### Project-Wide Version Bump
+- Root package: 0.7.20 → 0.7.22
+- Mobile app: 0.7.20 → 0.7.22
+- Web app: 0.7.19 → 0.7.22
+- Backend: 0.7.19 → 0.7.22
+
+### Fixed
+
+#### Mobile - Critical Bug Fixes
+- **Chat Scroll to Last Message** - Fixed scroll always going to first messages instead of latest
+  - Root cause: Non-inverted FlatList requires manual scroll management that was failing
+  - Solution: Standard inverted FlatList pattern used by WhatsApp, iMessage, Telegram
+- **Photo/Camera/File Pickers** - Fixed concurrent picker error crashing the app
+  - Root cause: Multiple pickers opening simultaneously
+  - Solution: Mutex-style lock with isPickerActiveRef and finally blocks
+- **Pinned Messages Reappearing** - Fixed deleted pinned messages coming back after 2 seconds
+  - Root cause: WebSocket reconnect re-delivering deleted messages
+  - Solution: Track deleted IDs and filter from all message sources
+
+### Technical Details
+
+**Inverted FlatList Pattern:**
+```tsx
+// Messages sorted newest-first in array
+const sortedMessages = messages.sort((a, b) => dateB - dateA);
+
+// FlatList with inverted={true} displays first item at BOTTOM
+<FlatList
+  inverted={true}
+  data={sortedMessages}
+/>
+
+// New messages prepend to array (appear at bottom due to inversion)
+setMessages(prev => [newMessage, ...prev]);
+
+// Scroll to newest = scroll to offset 0
+flatListRef.current?.scrollToOffset({ offset: 0 });
+```
+
+**Picker Lock Mechanism:**
+```tsx
+const isPickerActiveRef = useRef(false);
+
+const handlePhotoSelect = async () => {
+  if (isPickerActiveRef.current) return;
+  isPickerActiveRef.current = true;
+  try {
+    await new Promise(r => setTimeout(r, 500));
+    const result = await ImagePicker.launchImageLibraryAsync(...);
+    // ... handle result
+  } finally {
+    isPickerActiveRef.current = false;
+  }
+};
+```
+
+---
+
 ## [0.7.21] - 2026-01-07
 
 ### Added

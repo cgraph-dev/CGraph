@@ -14,6 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
+import socketManager from '../../lib/socket';
 import { UserBasic, FriendsStackParamList } from '../../types';
 import { EmptyState, LoadingSpinner, UserListItem } from '../../components';
 
@@ -33,6 +34,8 @@ export default function FriendListScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [pendingCount, setPendingCount] = useState(0);
+  // Track online friends for real-time status
+  const [onlineFriends, setOnlineFriends] = useState<Set<string>>(new Set());
 
   const fetchFriends = useCallback(async () => {
     try {
@@ -71,6 +74,45 @@ export default function FriendListScreen() {
     fetchFriends();
     fetchPendingCount();
   }, [fetchFriends, fetchPendingCount]);
+  
+  // Subscribe to global friend presence updates
+  useEffect(() => {
+    // Initialize with current online friends
+    setOnlineFriends(new Set(socketManager.getOnlineFriends()));
+    
+    // Subscribe to status changes
+    const unsubscribe = socketManager.onGlobalStatusChange((userId, isOnline) => {
+      setOnlineFriends(prev => {
+        const next = new Set(prev);
+        if (isOnline) {
+          next.add(userId);
+        } else {
+          next.delete(userId);
+        }
+        return next;
+      });
+    });
+    
+    return () => unsubscribe();
+  }, []);
+  
+  // Fetch presence for all friends when friend list changes
+  useEffect(() => {
+    if (friends.length > 0) {
+      const friendUserIds = friends.map(f => f.user.id).filter(Boolean);
+      if (friendUserIds.length > 0) {
+        socketManager.getBulkFriendStatus(friendUserIds).then(presenceMap => {
+          const online = new Set<string>();
+          Object.entries(presenceMap).forEach(([userId, data]) => {
+            if (data.online && !data.hidden) {
+              online.add(userId);
+            }
+          });
+          setOnlineFriends(online);
+        });
+      }
+    }
+  }, [friends]);
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
@@ -97,14 +139,24 @@ export default function FriendListScreen() {
     navigation.navigate('UserProfile', { userId });
   };
 
-  const renderFriend = ({ item }: { item: FriendItem }) => (
-    <UserListItem
-      user={item.user}
-      subtitle={`@${item.user.username || item.user.id?.slice(0, 8) || 'unknown'}`}
-      onPress={() => handleFriendPress(item.user.id)}
-      style={styles.friendItem}
-    />
-  );
+  const renderFriend = ({ item }: { item: FriendItem }) => {
+    // Determine online status from presence
+    const isOnline = onlineFriends.has(item.user.id);
+    const userWithStatus = {
+      ...item.user,
+      status: isOnline ? 'online' : (item.user.status || 'offline')
+    };
+    
+    return (
+      <UserListItem
+        user={userWithStatus}
+        subtitle={`@${item.user.username || item.user.id?.slice(0, 8) || 'unknown'}`}
+        onPress={() => handleFriendPress(item.user.id)}
+        showStatus={true}
+        style={styles.friendItem}
+      />
+    );
+  };
 
   if (loading) {
     return <LoadingSpinner fullScreen />;
@@ -210,14 +262,20 @@ const styles = StyleSheet.create({
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
   },
   searchInput: {
     flex: 1,
-    marginLeft: 8,
+    marginLeft: 10,
     fontSize: 16,
+    letterSpacing: 0.2,
   },
   actions: {
     flexDirection: 'row',
@@ -230,14 +288,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 10,
+    paddingVertical: 14,
+    borderRadius: 14,
     gap: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 3,
   },
   actionButtonText: {
     color: '#fff',
-    fontWeight: '600',
+    fontWeight: '700',
     fontSize: 14,
+    letterSpacing: 0.3,
   },
   badge: {
     backgroundColor: '#ef4444',
@@ -247,17 +311,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 6,
+    shadowColor: '#ef4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 4,
+    elevation: 3,
   },
   badgeText: {
     color: '#fff',
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
   },
   listContent: {
     flexGrow: 1,
     paddingHorizontal: 16,
   },
   friendItem: {
-    marginBottom: 8,
+    marginBottom: 10,
   },
 });

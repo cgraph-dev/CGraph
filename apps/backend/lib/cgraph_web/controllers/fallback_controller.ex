@@ -198,6 +198,22 @@ defmodule CgraphWeb.FallbackController do
     |> render(:error, message: "You cannot leave a forum you own. Transfer ownership first.")
   end
 
+  # Handle already pinned
+  def call(conn, {:error, :already_pinned}) do
+    conn
+    |> put_status(:conflict)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: "This message is already pinned.")
+  end
+
+  # Handle pin limit reached
+  def call(conn, {:error, :pin_limit_reached}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: "You have reached the maximum number of pinned messages (3).")
+  end
+
   # Handle vote cooldown
   def call(conn, {:error, {:vote_cooldown, seconds_remaining}}) do
     conn

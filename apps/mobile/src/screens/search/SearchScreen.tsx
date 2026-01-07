@@ -351,7 +351,7 @@ export default function SearchScreen() {
         {!loading && hasSearched && totalResults === 0 && (
           <EmptyState
             icon="search"
-            title="No results found"
+            title="😕 No results found"
             description="Try different keywords or search in a specific category"
           />
         )}

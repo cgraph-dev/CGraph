@@ -38,9 +38,14 @@ defmodule CgraphWeb.API.V1.ReactionController do
          :ok <- Messaging.authorize_access(user, conversation),
          {:ok, message} <- Messaging.get_message(conversation, message_id),
          :ok <- validate_emoji(emoji),
-         {:ok, reaction} <- Messaging.add_reaction(user, message, emoji) do
-      # Broadcast reaction to other participants
-      Messaging.broadcast_reaction_added(conversation, message, reaction)
+         {:ok, reaction, replaced_emoji} <- Messaging.add_reaction(user, message, emoji) do
+      # If we replaced an old reaction, broadcast its removal first
+      if replaced_emoji do
+        Messaging.broadcast_reaction_removed(conversation, message, user, replaced_emoji)
+      end
+      
+      # Broadcast reaction to other participants (pass user for complete data)
+      Messaging.broadcast_reaction_added(conversation, message, reaction, user)
 
       conn
       |> put_status(:created)
@@ -56,8 +61,14 @@ defmodule CgraphWeb.API.V1.ReactionController do
          {:ok, conversation} <- Messaging.get_conversation(message.conversation_id),
          :ok <- Messaging.authorize_access(user, conversation),
          :ok <- validate_emoji(emoji),
-         {:ok, reaction} <- Messaging.add_reaction(user, message, emoji) do
-      Messaging.broadcast_reaction_added(conversation, message, reaction)
+         {:ok, reaction, replaced_emoji} <- Messaging.add_reaction(user, message, emoji) do
+      # If we replaced an old reaction, broadcast its removal first
+      if replaced_emoji do
+        Messaging.broadcast_reaction_removed(conversation, message, user, replaced_emoji)
+      end
+      
+      # Broadcast reaction to other participants (pass user for complete data)
+      Messaging.broadcast_reaction_added(conversation, message, reaction, user)
 
       conn
       |> put_status(:created)
@@ -132,9 +143,14 @@ defmodule CgraphWeb.API.V1.ReactionController do
          {:ok, channel} <- Groups.get_channel(group, channel_id),
          {:ok, message} <- Groups.get_channel_message(channel, message_id),
          :ok <- validate_emoji(emoji),
-         {:ok, reaction} <- Groups.add_message_reaction(user, message, emoji) do
+         {:ok, reaction, replaced_emoji} <- Groups.add_message_reaction(user, message, emoji) do
+      # If we replaced an old reaction, broadcast its removal first
+      if replaced_emoji do
+        Groups.broadcast_reaction_removed(channel, message, user, replaced_emoji)
+      end
+      
       # Broadcast reaction
-      Groups.broadcast_reaction_added(channel, message, reaction)
+      Groups.broadcast_reaction_added(channel, message, reaction, user)
 
       conn
       |> put_status(:created)

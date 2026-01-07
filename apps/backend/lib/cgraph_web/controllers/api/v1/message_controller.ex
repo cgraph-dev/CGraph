@@ -37,11 +37,23 @@ defmodule CgraphWeb.API.V1.MessageController do
   def create(conn, %{"conversation_id" => conversation_id} = params) do
     user = conn.assigns.current_user
 
+    # Build message params, including file attachment fields
     message_params = %{
       content: Map.get(params, "content"),
+      content_type: Map.get(params, "content_type", "text"),
       attachments: Map.get(params, "attachments", []),
-      reply_to_id: Map.get(params, "reply_to_id")
+      reply_to_id: Map.get(params, "reply_to_id"),
+      # File attachment fields
+      file_url: Map.get(params, "file_url"),
+      file_name: Map.get(params, "file_name"),
+      file_size: Map.get(params, "file_size"),
+      file_mime_type: Map.get(params, "file_mime_type"),
+      thumbnail_url: Map.get(params, "thumbnail_url"),
+      is_encrypted: Map.get(params, "is_encrypted", false)
     }
+    # Remove nil values to avoid overwriting with nils
+    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+    |> Map.new()
 
     with {:ok, conversation} <- Messaging.get_user_conversation(user, conversation_id),
          {:ok, message} <- Messaging.send_message(conversation, user, message_params) do

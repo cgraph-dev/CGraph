@@ -179,7 +179,13 @@ defmodule CgraphWeb.GroupChannel do
       sender_id: user.id,
       channel_id: channel_id,
       content_type: Map.get(params, "content_type", "text"),
-      reply_to_id: Map.get(params, "reply_to_id")
+      reply_to_id: Map.get(params, "reply_to_id"),
+      # File attachment fields
+      file_url: Map.get(params, "file_url"),
+      file_name: Map.get(params, "file_name"),
+      file_size: Map.get(params, "file_size"),
+      file_mime_type: Map.get(params, "file_mime_type"),
+      thumbnail_url: Map.get(params, "thumbnail_url")
     }
 
     case Messaging.create_message(message_attrs) do

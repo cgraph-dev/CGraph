@@ -34,7 +34,7 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
   
   const notificationSettings = [
     {
-      title: 'Push Notifications',
+      title: '📲 Push Notifications',
       key: 'pushEnabled' as const,
       description: 'Receive push notifications on this device',
     },
@@ -47,7 +47,7 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
       description: 'When someone sends you a direct message',
     },
     {
-      title: 'Mentions',
+      title: '@ Mentions',
       key: 'mentions' as const,
       description: 'When someone mentions you in a message',
     },
@@ -104,7 +104,7 @@ export default function NotificationsScreen({ navigation: _navigation }: Props) 
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>General</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>⚡ General</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
           {notificationSettings.map(renderSwitch)}
         </View>

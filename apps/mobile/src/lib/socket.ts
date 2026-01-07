@@ -27,6 +27,16 @@ interface PresenceState {
   [userId: string]: { metas: PresenceMeta[] };
 }
 
+// Types for global friend presence
+interface FriendPresenceData {
+  online: boolean;
+  status: string;
+  lastSeen?: string;
+  lastActive?: string;
+  deviceCount?: number;
+  hidden?: boolean;
+}
+
 // Types for typing indicators
 interface TypingUser {
   userId: string;
@@ -35,6 +45,7 @@ interface TypingUser {
 }
 
 type StatusChangeCallback = (conversationId: string, userId: string, isOnline: boolean) => void;
+type GlobalStatusChangeCallback = (userId: string, isOnline: boolean, status?: string) => void;
 type TypingChangeCallback = (conversationId: string, userId: string, isTyping: boolean) => void;
 type MessageCallback = (event: string, payload: unknown) => void;
 
@@ -60,6 +71,14 @@ class SocketManager {
   private readonly JOIN_DEBOUNCE_MS = 1000;
   // Auto-clear typing after this duration (aligned with backend)
   private readonly TYPING_TIMEOUT_MS = 5000;
+  
+  // Global presence tracking for friends
+  private presenceChannel: Channel | null = null;
+  private globalOnlineFriends: Map<string, FriendPresenceData> = new Map();
+  private globalStatusListeners: Set<GlobalStatusChangeCallback> = new Set();
+  private presenceChannelSetUp = false;
+  // Track our own friend IDs for filtering incoming broadcasts
+  private myFriendIds: Set<string> = new Set();
   
   async connect(): Promise<void> {
     // Prevent concurrent connection attempts
@@ -130,6 +149,8 @@ class SocketManager {
       
       this.socket.onOpen(() => {
         logger.log('Socket connected');
+        // Auto-join global presence channel for friend status tracking
+        this.joinPresenceChannel();
         resolve();
       });
       
@@ -145,6 +166,10 @@ class SocketManager {
         this.channelHandlersSetUp.clear();
         this.presences.clear();
         this.onlineUsers.clear();
+        // Clear global presence state
+        this.presenceChannel = null;
+        this.presenceChannelSetUp = false;
+        this.globalOnlineFriends.clear();
       });
       
       this.socket.connect();
@@ -162,8 +187,247 @@ class SocketManager {
     this.channelHandlersSetUp.clear();
     this.messageListeners.clear();
     this.lastJoinAttempts.clear();
+    // Clean up global presence
+    this.presenceChannel?.leave();
+    this.presenceChannel = null;
+    this.presenceChannelSetUp = false;
+    this.globalOnlineFriends.clear();
+    this.myFriendIds.clear();
     this.socket?.disconnect();
     this.socket = null;
+  }
+  
+  /**
+   * Join the global presence:lobby channel for friend status tracking.
+   * This is called automatically when socket connects.
+   */
+  private joinPresenceChannel(): void {
+    if (!this.socket || this.presenceChannel) return;
+    
+    logger.log('Joining global presence channel');
+    this.presenceChannel = this.socket.channel('presence:lobby', {});
+    
+    if (!this.presenceChannelSetUp) {
+      this.presenceChannelSetUp = true;
+      
+      // Handle initial presence state (filtered by friends from backend)
+      this.presenceChannel.on('presence_state', (rawPayload: unknown) => {
+        const payload = rawPayload as { users: Record<string, FriendPresenceData> };
+        logger.log('Received friend presence state:', Object.keys(payload.users || {}).length, 'friends');
+        this.globalOnlineFriends.clear();
+        this.myFriendIds.clear();
+        
+        if (payload.users) {
+          Object.entries(payload.users).forEach(([userId, data]) => {
+            // Track all friend IDs we receive (these are our friends)
+            this.myFriendIds.add(userId);
+            if (!data.hidden) {
+              this.globalOnlineFriends.set(userId, data);
+              this.notifyGlobalStatusChange(userId, data.online, data.status);
+            }
+          });
+        }
+        logger.log('My friend IDs:', Array.from(this.myFriendIds));
+      });
+      
+      // Handle friend coming online - filter to only our friends
+      this.presenceChannel.on('friend_online', (rawPayload: unknown) => {
+        const payload = rawPayload as { user_id: string; status: string; online_at: string };
+        // Only process if this is one of our friends
+        if (!this.myFriendIds.has(String(payload.user_id))) {
+          return;
+        }
+        logger.log('Friend came online:', payload.user_id);
+        const data: FriendPresenceData = {
+          online: true,
+          status: payload.status || 'online',
+          lastActive: payload.online_at
+        };
+        this.globalOnlineFriends.set(String(payload.user_id), data);
+        this.notifyGlobalStatusChange(String(payload.user_id), true, payload.status);
+      });
+      
+      // Handle friend going offline - filter to only our friends
+      this.presenceChannel.on('friend_offline', (rawPayload: unknown) => {
+        const payload = rawPayload as { user_id: string; last_seen: string };
+        // Only process if this is one of our friends
+        if (!this.myFriendIds.has(String(payload.user_id))) {
+          return;
+        }
+        logger.log('Friend went offline:', payload.user_id);
+        const existing = this.globalOnlineFriends.get(String(payload.user_id));
+        this.globalOnlineFriends.set(String(payload.user_id), {
+          ...existing,
+          online: false,
+          status: 'offline',
+          lastSeen: payload.last_seen
+        });
+        this.notifyGlobalStatusChange(String(payload.user_id), false, 'offline');
+      });
+      
+      // Handle friend status change - filter to only our friends
+      this.presenceChannel.on('friend_status_changed', (rawPayload: unknown) => {
+        const payload = rawPayload as { user_id: string; status: string; status_message?: string; updated_at: string };
+        // Only process if this is one of our friends
+        if (!this.myFriendIds.has(String(payload.user_id))) {
+          return;
+        }
+        logger.log('Friend status changed:', payload.user_id, payload.status);
+        const existing = this.globalOnlineFriends.get(String(payload.user_id));
+        if (existing) {
+          existing.status = payload.status;
+          this.globalOnlineFriends.set(String(payload.user_id), existing);
+        } else {
+          this.globalOnlineFriends.set(String(payload.user_id), {
+            online: true,
+            status: payload.status
+          });
+        }
+        this.notifyGlobalStatusChange(String(payload.user_id), true, payload.status);
+      });
+    }
+    
+    this.presenceChannel.join()
+      .receive('ok', (response: unknown) => {
+        logger.log('Joined global presence channel:', response);
+      })
+      .receive('error', (response: unknown) => {
+        logger.error('Failed to join presence channel:', response);
+        this.presenceChannel = null;
+        this.presenceChannelSetUp = false;
+      });
+  }
+  
+  /**
+   * Refresh friend list and presence data.
+   * Call this after adding/removing friends.
+   */
+  refreshFriendPresence(): void {
+    if (this.presenceChannel) {
+      // Clear friend IDs so they get rebuilt from the new presence_state
+      this.myFriendIds.clear();
+      this.presenceChannel.push('refresh_friends', {});
+    }
+  }
+  
+  /**
+   * Add a friend ID to track (useful when accepting friend request)
+   */
+  addFriendToTrack(friendId: string): void {
+    this.myFriendIds.add(String(friendId));
+  }
+  
+  /**
+   * Subscribe to global friend status changes.
+   * Unlike onStatusChange which is per-conversation, this tracks global friend presence.
+   */
+  onGlobalStatusChange(callback: GlobalStatusChangeCallback): () => void {
+    this.globalStatusListeners.add(callback);
+    return () => this.globalStatusListeners.delete(callback);
+  }
+  
+  /**
+   * Notify global status change listeners.
+   */
+  private notifyGlobalStatusChange(userId: string, isOnline: boolean, status?: string): void {
+    this.globalStatusListeners.forEach(callback => callback(userId, isOnline, status));
+  }
+  
+  /**
+   * Check if a friend is online globally.
+   * Returns false if user is not a friend (presence is hidden).
+   */
+  isFriendOnline(userId: string): boolean {
+    const presence = this.globalOnlineFriends.get(userId);
+    return presence?.online === true && !presence?.hidden;
+  }
+  
+  /**
+   * Get friend's presence data.
+   * Returns null if user is not a friend.
+   */
+  getFriendPresence(userId: string): FriendPresenceData | null {
+    const presence = this.globalOnlineFriends.get(userId);
+    if (presence?.hidden) return null;
+    return presence || null;
+  }
+  
+  /**
+   * Get all online friends.
+   */
+  getOnlineFriends(): string[] {
+    const onlineFriends: string[] = [];
+    this.globalOnlineFriends.forEach((data, id) => {
+      if (data.online && !data.hidden) {
+        onlineFriends.push(id);
+      }
+    });
+    return onlineFriends;
+  }
+  
+  /**
+   * Query bulk presence status for a list of user IDs.
+   * Only returns presence for friends; non-friends will show as hidden/offline.
+   */
+  async getBulkFriendStatus(userIds: string[]): Promise<Record<string, FriendPresenceData>> {
+    return new Promise((resolve) => {
+      if (!this.presenceChannel) {
+        // Return offline for all if not connected
+        const result: Record<string, FriendPresenceData> = {};
+        userIds.forEach(id => {
+          result[id] = { online: false, status: 'unknown', hidden: true };
+        });
+        resolve(result);
+        return;
+      }
+      
+      this.presenceChannel.push('get_bulk_status', { user_ids: userIds })
+        .receive('ok', (rawResponse: unknown) => {
+          const response = rawResponse as { users: Record<string, FriendPresenceData> };
+          // Update local cache
+          if (response.users) {
+            Object.entries(response.users).forEach(([userId, data]) => {
+              this.globalOnlineFriends.set(userId, data);
+            });
+          }
+          resolve(response.users || {});
+        })
+        .receive('error', () => {
+          const result: Record<string, FriendPresenceData> = {};
+          userIds.forEach(id => {
+            result[id] = { online: false, status: 'unknown', hidden: true };
+          });
+          resolve(result);
+        })
+        .receive('timeout', () => {
+          const result: Record<string, FriendPresenceData> = {};
+          userIds.forEach(id => {
+            result[id] = { online: false, status: 'unknown', hidden: true };
+          });
+          resolve(result);
+        });
+    });
+  }
+  
+  /**
+   * Set current user's online status.
+   */
+  setStatus(status: string, statusMessage?: string): void {
+    if (this.presenceChannel) {
+      this.presenceChannel.push('set_status', { 
+        status, 
+        status_message: statusMessage 
+      });
+    }
+  }
+  
+  /**
+   * Set app state (foreground/background).
+   */
+  setAppState(state: 'foreground' | 'background'): void {
+    if (this.presenceChannel) {
+      this.presenceChannel.push('set_app_state', { state });
+    }
   }
   
   // Subscribe to user status changes
@@ -251,8 +515,15 @@ class SocketManager {
   }
   
   // Check if user is online in a conversation
+  // First checks global friend presence, then falls back to conversation presence
   // Uses string coercion to ensure consistent comparison regardless of ID format
   isUserOnline(conversationId: string, userId: string): boolean {
+    // First, check global friend presence (preferred)
+    if (this.isFriendOnline(userId)) {
+      return true;
+    }
+    
+    // Fallback to conversation-specific presence
     const onlineSet = this.onlineUsers.get(conversationId);
     if (!onlineSet || !userId) return false;
     
@@ -404,7 +675,7 @@ class SocketManager {
       }
       
       // Set up message event handlers that delegate to listeners
-      ['new_message', 'message_updated', 'message_deleted'].forEach(event => {
+      ['new_message', 'message_updated', 'message_deleted', 'message_pinned', 'message_unpinned', 'reaction_added', 'reaction_removed'].forEach(event => {
         channel.on(event, (payload: unknown) => {
           logger.log(`[${topic}] Received ${event}:`, payload);
           this.messageListeners.get(topic)?.forEach(cb => cb(event, payload));

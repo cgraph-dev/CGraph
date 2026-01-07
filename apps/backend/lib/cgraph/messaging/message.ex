@@ -34,6 +34,11 @@ defmodule Cgraph.Messaging.Message do
     field :deleted_at, :utc_datetime
     field :deleted_for_everyone, :boolean, default: false
 
+    # Pinned message fields
+    field :is_pinned, :boolean, default: false
+    field :pinned_at, :utc_datetime
+    belongs_to :pinned_by, Cgraph.Accounts.User
+
     # For file attachments
     field :file_url, :string
     field :file_name, :string

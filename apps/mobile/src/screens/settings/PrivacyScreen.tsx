@@ -1,14 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   Switch,
   StyleSheet,
+  Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { SettingsStackParamList } from '../../types';
+import api from '../../lib/api';
 
 type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'Privacy'>;
@@ -16,6 +19,7 @@ type Props = {
 
 export default function PrivacyScreen({ navigation: _navigation }: Props) {
   const { colors } = useTheme();
+  const { user, refreshUser } = useAuth();
   
   const [settings, setSettings] = useState({
     showOnlineStatus: true,
@@ -23,11 +27,49 @@ export default function PrivacyScreen({ navigation: _navigation }: Props) {
     readReceipts: true,
     allowDMs: true,
     allowGroupInvites: true,
-    profileVisibility: true,
+    profileVisibility: !(user?.is_profile_private ?? false),
   });
   
-  const toggleSetting = (key: keyof typeof settings) => {
-    setSettings((prev) => ({ ...prev, [key]: !prev[key] }));
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // Sync profile visibility when user data changes
+  useEffect(() => {
+    if (user) {
+      setSettings(prev => ({
+        ...prev,
+        profileVisibility: !(user.is_profile_private ?? false),
+      }));
+    }
+  }, [user?.is_profile_private]);
+  
+  const toggleSetting = async (key: keyof typeof settings) => {
+    const newValue = !settings[key];
+    setSettings((prev) => ({ ...prev, [key]: newValue }));
+    
+    // If it's the profile visibility setting, persist to backend
+    if (key === 'profileVisibility') {
+      setIsUpdating(true);
+      try {
+        // profileVisibility=true means NOT private, so invert the value
+        await api.put('/api/v1/users/me', {
+          is_profile_private: !newValue,
+        });
+        // Refresh user data to sync the new state
+        if (refreshUser) {
+          await refreshUser();
+        }
+      } catch (error) {
+        console.error('Failed to update privacy setting:', error);
+        // Revert the local state on error
+        setSettings((prev) => ({ ...prev, [key]: !newValue }));
+        Alert.alert(
+          'Error',
+          'Failed to update privacy setting. Please try again.'
+        );
+      } finally {
+        setIsUpdating(false);
+      }
+    }
   };
   
   const privacySettings = [
@@ -65,7 +107,7 @@ export default function PrivacyScreen({ navigation: _navigation }: Props) {
     {
       title: 'Public Profile',
       key: 'profileVisibility' as const,
-      description: 'Let anyone view your profile',
+      description: 'When off, only friends can see your profile info. Non-friends will see "Unknown".',
     },
   ];
   

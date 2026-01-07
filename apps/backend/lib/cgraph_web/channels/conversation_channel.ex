@@ -110,11 +110,17 @@ defmodule CgraphWeb.ConversationChannel do
           conversation_id: conversation_id,
           content_type: Map.get(params, "content_type", "text"),
           reply_to_id: Map.get(params, "reply_to_id"),
-          is_encrypted: Map.get(params, "is_encrypted", false)
+          is_encrypted: Map.get(params, "is_encrypted", false),
+          # File attachment fields
+          file_url: Map.get(params, "file_url"),
+          file_name: Map.get(params, "file_name"),
+          file_size: Map.get(params, "file_size"),
+          file_mime_type: Map.get(params, "file_mime_type"),
+          thumbnail_url: Map.get(params, "thumbnail_url")
         }) do
           {:ok, message} ->
-            # Preload sender for serialization
-            message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+            # Preload sender for serialization (including reply_to sender)
+            message = Cgraph.Repo.preload(message, [:sender, :reactions, [reply_to: :sender]])
             serialized = MessageJSON.message_data(message)
 
             broadcast!(socket, "new_message", %{message: serialized})
@@ -223,18 +229,73 @@ defmodule CgraphWeb.ConversationChannel do
   end
 
   @impl true
-  def handle_in("add_reaction", %{"message_id" => message_id, "emoji" => emoji}, socket) do
+  def handle_in("pin_message", %{"message_id" => message_id}, socket) do
     user = socket.assigns.current_user
 
-    case Messaging.add_reaction(message_id, user.id, emoji) do
-      {:ok, _reaction} ->
-        broadcast!(socket, "reaction_added", %{
+    case Messaging.pin_message(message_id, user.id) do
+      {:ok, message} ->
+        message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+        serialized = MessageJSON.message_data(message)
+        broadcast!(socket, "message_pinned", %{message: serialized})
+        {:reply, {:ok, %{message_id: message.id}}, socket}
+
+      {:error, reason} when is_atom(reason) ->
+        {:reply, {:error, %{reason: to_string(reason)}}, socket}
+
+      {:error, _} ->
+        {:reply, {:error, %{reason: "failed"}}, socket}
+    end
+  end
+
+  @impl true
+  def handle_in("unpin_message", %{"message_id" => message_id}, socket) do
+    user = socket.assigns.current_user
+
+    case Messaging.unpin_message(message_id, user.id) do
+      {:ok, message} ->
+        broadcast!(socket, "message_unpinned", %{message_id: message.id})
+        {:reply, {:ok, %{message_id: message.id}}, socket}
+
+      {:error, reason} when is_atom(reason) ->
+        {:reply, {:error, %{reason: to_string(reason)}}, socket}
+
+      {:error, _} ->
+        {:reply, {:error, %{reason: "failed"}}, socket}
+    end
+  end
+
+  @impl true
+  def handle_in("add_reaction", %{"message_id" => message_id, "emoji" => emoji}, socket) do
+    user = socket.assigns.current_user
+    conversation_id = socket.assigns.conversation_id
+
+    with {:ok, message} <- Messaging.get_message(message_id),
+         {:ok, _conversation} <- Messaging.get_conversation(conversation_id),
+         {:ok, _reaction, replaced_emoji} <- Messaging.add_reaction(user, message, emoji) do
+      # If we replaced an old reaction, broadcast its removal first
+      if replaced_emoji do
+        broadcast!(socket, "reaction_removed", %{
           message_id: message_id,
           user_id: user.id,
-          emoji: emoji
+          emoji: replaced_emoji
         })
-        {:reply, :ok, socket}
-
+      end
+      
+      broadcast!(socket, "reaction_added", %{
+        message_id: message_id,
+        user_id: user.id,
+        emoji: emoji,
+        user: %{
+          id: user.id,
+          username: user.username,
+          display_name: user.display_name,
+          avatar_url: user.avatar_url
+        }
+      })
+      {:reply, :ok, socket}
+    else
+      {:error, :already_exists} ->
+        {:reply, {:error, %{reason: "already_exists"}}, socket}
       {:error, _reason} ->
         {:reply, {:error, %{reason: "failed"}}, socket}
     end
@@ -244,15 +305,15 @@ defmodule CgraphWeb.ConversationChannel do
   def handle_in("remove_reaction", %{"message_id" => message_id, "emoji" => emoji}, socket) do
     user = socket.assigns.current_user
 
-    case Messaging.remove_reaction(message_id, user.id, emoji) do
-      :ok ->
-        broadcast!(socket, "reaction_removed", %{
-          message_id: message_id,
-          user_id: user.id,
-          emoji: emoji
-        })
-        {:reply, :ok, socket}
-
+    with {:ok, message} <- Messaging.get_message(message_id),
+         {:ok, _} <- Messaging.remove_reaction(user, message, emoji) do
+      broadcast!(socket, "reaction_removed", %{
+        message_id: message_id,
+        user_id: user.id,
+        emoji: emoji
+      })
+      {:reply, :ok, socket}
+    else
       {:error, _reason} ->
         {:reply, {:error, %{reason: "failed"}}, socket}
     end

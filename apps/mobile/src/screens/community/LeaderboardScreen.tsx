@@ -218,7 +218,7 @@ export default function LeaderboardScreen({ navigation }: Props) {
           <View style={styles.emptyState}>
             <Ionicons name="trophy-outline" size={64} color={colors.textTertiary} />
             <Text style={[styles.emptyTitle, { color: colors.text }]}>
-              No users yet
+              👥 No users yet
             </Text>
             <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
               Be the first to earn karma!

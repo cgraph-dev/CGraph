@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import api from '../lib/api';
 import socketManager from '../lib/socket';
@@ -13,6 +14,7 @@ interface AuthContextType {
   register: (email: string, username: string | null, password: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: User) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,10 +27,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const appState = useRef(AppState.currentState);
   
   useEffect(() => {
     loadStoredAuth();
   }, []);
+  
+  // Track app state changes and update presence
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState: AppStateStatus) => {
+      if (token) {
+        if (nextAppState === 'active' && appState.current.match(/inactive|background/)) {
+          // App came to foreground
+          socketManager.setAppState('foreground');
+        } else if (nextAppState.match(/inactive|background/) && appState.current === 'active') {
+          // App went to background
+          socketManager.setAppState('background');
+        }
+      }
+      appState.current = nextAppState;
+    };
+    
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
+  }, [token]);
   
   const loadStoredAuth = async () => {
     try {
@@ -147,6 +169,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(updatedUser);
     SecureStore.setItemAsync(USER_KEY, JSON.stringify(updatedUser));
   };
+
+  const refreshUser = async () => {
+    try {
+      const response = await api.get('/api/v1/me');
+      const userData = response.data.data || response.data.user || response.data;
+      setUser(userData);
+      await SecureStore.setItemAsync(USER_KEY, JSON.stringify(userData));
+    } catch (error) {
+      if (__DEV__) {
+        console.error('Failed to refresh user:', error);
+      }
+    }
+  };
   
   return (
     <AuthContext.Provider
@@ -159,6 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         updateUser,
+        refreshUser,
       }}
     >
       {children}

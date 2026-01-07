@@ -126,8 +126,12 @@ defmodule Cgraph.Uploads do
   """
   def check_quota(user) do
     usage = get_user_usage(user)
+    used = usage.used_bytes || 0
+    
+    # Ensure used_bytes is a number before comparison
+    used_bytes = if is_number(used), do: used, else: 0
 
-    if usage.used_bytes < @max_quota do
+    if used_bytes < @max_quota do
       :ok
     else
       {:error, :quota_exceeded}
@@ -167,12 +171,21 @@ defmodule Cgraph.Uploads do
     videos_bytes = Repo.one(videos_query) || 0
     documents_bytes = Repo.one(documents_query) || 0
     used_bytes = result.total_size || 0
+    file_count = result.count || 0
+
+    # Calculate percentage safely, avoiding division by zero or nil issues
+    used_percentage = 
+      if is_number(used_bytes) and used_bytes > 0 do
+        Float.round(used_bytes / @max_quota * 100, 1)
+      else
+        0.0
+      end
 
     %{
       used_bytes: used_bytes,
       total_bytes: @max_quota,
-      used_percentage: Float.round(used_bytes / @max_quota * 100, 1),
-      file_count: result.count,
+      used_percentage: used_percentage,
+      file_count: file_count,
       images_bytes: images_bytes,
       videos_bytes: videos_bytes,
       documents_bytes: documents_bytes

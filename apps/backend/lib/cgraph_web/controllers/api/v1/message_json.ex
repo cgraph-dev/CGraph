@@ -40,7 +40,9 @@ defmodule CgraphWeb.API.V1.MessageJSON do
       encryptedContent: if(msg.is_encrypted, do: msg.content, else: nil),
       isEncrypted: msg.is_encrypted || false,
       isEdited: msg.is_edited || false,
-      isPinned: false,
+      isPinned: msg.is_pinned || false,
+      pinnedAt: format_datetime(msg.pinned_at),
+      pinnedById: msg.pinned_by_id,
       replyToId: msg.reply_to_id,
       replyTo: reply_data(msg.reply_to),
       deletedAt: msg.deleted_at,
@@ -179,7 +181,19 @@ defmodule CgraphWeb.API.V1.MessageJSON do
       %{
         emoji: emoji,
         count: length(list),
-        users: Enum.take(list, 3) |> Enum.map(& &1.user_id)
+        users: Enum.take(list, 3) |> Enum.map(fn r ->
+          # Return full user object if preloaded, otherwise just user_id
+          case r.user do
+            %Ecto.Association.NotLoaded{} -> %{id: r.user_id}
+            nil -> %{id: r.user_id}
+            user -> %{
+              id: user.id,
+              username: user.username,
+              display_name: user.display_name,
+              avatar_url: user.avatar_url
+            }
+          end
+        end)
       }
     end)
   end

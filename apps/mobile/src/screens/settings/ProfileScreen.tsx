@@ -27,8 +27,15 @@ export default function ProfileScreen({ navigation }: Props) {
   const { user, updateUser } = useAuth();
   
   const [displayName, setDisplayName] = useState(user?.display_name || '');
+  const [username, setUsername] = useState(user?.username || '');
   const [bio, setBio] = useState(user?.bio || '');
   const [isSaving, setIsSaving] = useState(false);
+  const [isChangingUsername, setIsChangingUsername] = useState(false);
+
+  const canChangeUsername = user?.can_change_username ?? true;
+  const nextChangeDate = user?.username_next_change_at 
+    ? new Date(user.username_next_change_at).toLocaleDateString()
+    : null;
   
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -74,6 +81,36 @@ export default function ProfileScreen({ navigation }: Props) {
       Alert.alert('Error', 'Failed to save profile');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleChangeUsername = async () => {
+    if (!username.trim() || username === user?.username) return;
+    
+    // Validate username format
+    if (!/^[a-zA-Z0-9_]{3,30}$/.test(username)) {
+      Alert.alert('Invalid Username', 'Username must be 3-30 characters and contain only letters, numbers, and underscores.');
+      return;
+    }
+
+    setIsChangingUsername(true);
+    try {
+      const response = await api.put('/api/v1/me/username', { username });
+      updateUser({
+        ...user!,
+        username: response.data.data.username,
+        can_change_username: false,
+        username_next_change_at: response.data.data.username_next_change_at,
+      });
+      Alert.alert('Success', 'Username changed successfully');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: { message?: string }; message?: string } } };
+      const errorMessage = error.response?.data?.error?.message 
+        || error.response?.data?.message 
+        || 'Failed to change username';
+      Alert.alert('Error', errorMessage);
+    } finally {
+      setIsChangingUsername(false);
     }
   };
   
@@ -122,21 +159,52 @@ export default function ProfileScreen({ navigation }: Props) {
         </View>
         
         <View style={styles.inputGroup}>
-          <Text style={[styles.label, { color: colors.text }]}>Username</Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: colors.surfaceHover,
-                borderColor: colors.border,
-                color: colors.textSecondary,
-              },
-            ]}
-            value={`@${user?.username}`}
-            editable={false}
-          />
+          <View style={styles.labelRow}>
+            <Text style={[styles.label, { color: colors.text }]}>Username</Text>
+            {!canChangeUsername && nextChangeDate && (
+              <Text style={[styles.cooldownBadge, { color: colors.warning || '#F59E0B' }]}>
+                Can change after {nextChangeDate}
+              </Text>
+            )}
+          </View>
+          <View style={styles.usernameRow}>
+            <TextInput
+              style={[
+                styles.input,
+                styles.usernameInput,
+                {
+                  backgroundColor: canChangeUsername ? colors.input : colors.surfaceHover,
+                  borderColor: colors.border,
+                  color: canChangeUsername ? colors.text : colors.textSecondary,
+                },
+              ]}
+              value={username}
+              onChangeText={(text) => setUsername(text.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+              editable={canChangeUsername}
+              placeholder="Username"
+              placeholderTextColor={colors.textTertiary}
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+            {canChangeUsername && username !== user?.username && username.length >= 3 && (
+              <TouchableOpacity
+                style={[styles.changeButton, { backgroundColor: colors.primary }]}
+                onPress={handleChangeUsername}
+                disabled={isChangingUsername}
+              >
+                {isChangingUsername ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.changeButtonText}>Change</Text>
+                )}
+              </TouchableOpacity>
+            )}
+          </View>
           <Text style={[styles.hint, { color: colors.textTertiary }]}>
-            Username cannot be changed
+            {canChangeUsername 
+              ? 'Username can be changed every 14 days. Letters, numbers, and underscores only.'
+              : `You changed your username recently. Next change available on ${nextChangeDate}.`
+            }
           </Text>
         </View>
         
@@ -238,9 +306,38 @@ const styles = StyleSheet.create({
   inputGroup: {
     gap: 6,
   },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cooldownBadge: {
+    fontSize: 11,
+    fontWeight: '500',
+  },
   label: {
     fontSize: 14,
     fontWeight: '500',
+  },
+  usernameRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  usernameInput: {
+    flex: 1,
+  },
+  changeButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    minWidth: 80,
+  },
+  changeButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   input: {
     borderWidth: 1,

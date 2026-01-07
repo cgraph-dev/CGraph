@@ -77,7 +77,7 @@ export default function ForumListScreen({ navigation }: Props) {
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
       <Ionicons name="newspaper-outline" size={64} color={colors.textTertiary} />
-      <Text style={[styles.emptyTitle, { color: colors.text }]}>No Forums</Text>
+      <Text style={[styles.emptyTitle, { color: colors.text }]}>📰 No Forums</Text>
       <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>
         Join a forum or create your own
       </Text>

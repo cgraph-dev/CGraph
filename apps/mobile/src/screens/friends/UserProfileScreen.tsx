@@ -5,6 +5,9 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  Modal,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp, CommonActions } from '@react-navigation/native';
@@ -21,6 +24,7 @@ interface UserProfile extends UserBasic {
   karma?: number;
   is_verified?: boolean;
   is_friend?: boolean;
+  is_profile_private?: boolean;
   friend_request_sent?: boolean;
   friend_request_received?: boolean;
 }
@@ -40,11 +44,20 @@ export default function UserProfileScreen() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
+  const [showFriendMenu, setShowFriendMenu] = useState(false);
 
   const fetchUser = useCallback(async () => {
     try {
       const response = await api.get(`/api/v1/users/${userId}`);
-      setUser(response.data.user || response.data);
+      // API returns { data: { id, username, display_name, ... } }
+      const userData = response.data?.data || response.data?.user || response.data;
+      console.log('[UserProfileScreen] Fetched user data:', userData);
+      
+      if (!userData || !userData.id) {
+        throw new Error('Invalid user data received');
+      }
+      
+      setUser(userData);
     } catch (error) {
       console.error('Failed to fetch user:', error);
       Alert.alert('Error', 'Failed to load user profile');
@@ -57,6 +70,27 @@ export default function UserProfileScreen() {
   useEffect(() => {
     fetchUser();
   }, [fetchUser]);
+
+  const handleSendMessage = async () => {
+    if (!user) return;
+    try {
+      const response = await api.post('/api/v1/conversations', {
+        participant_ids: [user.id],
+      });
+      const conversationId = response.data.data?.id || response.data.id;
+      navigation.dispatch(
+        CommonActions.navigate({
+          name: 'MessagesTab',
+          params: {
+            screen: 'Conversation',
+            params: { conversationId },
+          },
+        })
+      );
+    } catch (error) {
+      Alert.alert('Error', 'Could not start conversation');
+    }
+  };
 
   const handleSendRequest = async () => {
     if (!user) return;
@@ -73,8 +107,39 @@ export default function UserProfileScreen() {
     }
   };
 
+  const handleCancelRequest = async () => {
+    if (!user) return;
+    setActionLoading(true);
+    try {
+      await api.delete(`/api/v1/friends/requests/${user.id}`);
+      setUser({ ...user, friend_request_sent: false });
+      Alert.alert('Cancelled', 'Friend request cancelled');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string; message?: string } } };
+      Alert.alert('Error', error.response?.data?.message || error.response?.data?.error || 'Failed to cancel request');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleAcceptRequest = async () => {
+    if (!user) return;
+    setActionLoading(true);
+    try {
+      await api.post(`/api/v1/friends/requests/${user.id}/accept`);
+      setUser({ ...user, is_friend: true, friend_request_received: false });
+      Alert.alert('Success', 'Friend request accepted!');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string } } };
+      Alert.alert('Error', error.response?.data?.error || 'Failed to accept request');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const handleRemoveFriend = async () => {
     if (!user) return;
+    setShowFriendMenu(false);
     Alert.alert(
       'Remove Friend',
       `Are you sure you want to remove ${user.display_name || user.username} from your friends?`,
@@ -101,6 +166,7 @@ export default function UserProfileScreen() {
 
   const handleBlockUser = async () => {
     if (!user) return;
+    setShowFriendMenu(false);
     Alert.alert(
       'Block User',
       `Are you sure you want to block ${user.display_name || user.username}? They won't be able to message you or send friend requests.`,
@@ -124,6 +190,18 @@ export default function UserProfileScreen() {
         },
       ]
     );
+  };
+
+  const handleMuteUser = async () => {
+    if (!user) return;
+    setShowFriendMenu(false);
+    Alert.alert('Muted', `${user.display_name || user.username} has been muted. You won't receive notifications from them.`);
+  };
+
+  const handleInviteToForum = () => {
+    if (!user) return;
+    setShowFriendMenu(false);
+    Alert.alert('Invite to Forum', 'This feature is coming soon!');
   };
 
   if (loading) {
@@ -181,82 +259,158 @@ export default function UserProfileScreen() {
               {user.bio}
             </Text>
           )}
+
+          {/* Private Profile Notice */}
+          {user.is_profile_private && user.username === 'Unknown' && (
+            <View style={[styles.privateNotice, { backgroundColor: colors.surfaceHover }]}>
+              <Ionicons name="lock-closed" size={18} color={colors.textSecondary} />
+              <Text style={[styles.privateNoticeText, { color: colors.textSecondary }]}>
+                This profile is private. Send a friend request to see more info.
+              </Text>
+            </View>
+          )}
         </View>
 
         {/* Actions */}
         <View style={[styles.actionsCard, { backgroundColor: colors.surface }]}>
+          {/* Message Button - Always show */}
+          <Button
+            variant="primary"
+            fullWidth
+            onPress={handleSendMessage}
+            icon={<Ionicons name="chatbubble" size={18} color="#fff" style={{ marginRight: 8 }} />}
+          >
+            Send Message
+          </Button>
+
+          {/* Friend Status Actions */}
           {user.is_friend ? (
-            <>
+            // Already friends - show "Friend" button with options menu
+            <TouchableOpacity
+              style={[styles.friendButton, { backgroundColor: colors.success + '20', borderColor: colors.success }]}
+              onPress={() => setShowFriendMenu(true)}
+            >
+              <Ionicons name="checkmark-circle" size={20} color={colors.success} />
+              <Text style={[styles.friendButtonText, { color: colors.success }]}>Friend</Text>
+              <Ionicons name="chevron-down" size={18} color={colors.success} />
+            </TouchableOpacity>
+          ) : user.friend_request_sent ? (
+            // Request sent - show cancel option
+            <Button
+              variant="secondary"
+              fullWidth
+              onPress={handleCancelRequest}
+              loading={actionLoading}
+              style={{ marginTop: 12 }}
+            >
+              Cancel Friend Request
+            </Button>
+          ) : user.friend_request_received ? (
+            // Request received - show accept/decline options
+            <View style={styles.requestActions}>
               <Button
                 variant="primary"
                 fullWidth
-                onPress={async () => {
-                  // Create or get existing conversation and navigate
-                  try {
-                    const response = await api.post('/api/v1/conversations', {
-                      participant_ids: [user.id],
-                    });
-                    const conversationId = response.data.data?.id || response.data.id;
-                    navigation.dispatch(
-                      CommonActions.navigate({
-                        name: 'MessagesTab',
-                        params: {
-                          screen: 'Conversation',
-                          params: { conversationId },
-                        },
-                      })
-                    );
-                  } catch (error) {
-                    Alert.alert('Error', 'Could not start conversation');
-                  }
-                }}
+                onPress={handleAcceptRequest}
+                loading={actionLoading}
+                style={{ flex: 1 }}
               >
-                Send Message
+                Accept Request
               </Button>
               <Button
                 variant="outline"
                 fullWidth
-                onPress={handleRemoveFriend}
+                onPress={handleCancelRequest}
                 loading={actionLoading}
-                style={{ marginTop: 12 }}
+                style={{ flex: 1 }}
               >
-                Remove Friend
+                Decline
               </Button>
-            </>
-          ) : user.friend_request_sent ? (
-            <Button variant="secondary" fullWidth disabled>
-              Friend Request Sent
-            </Button>
-          ) : user.friend_request_received ? (
-            <Button
-              variant="primary"
-              fullWidth
-              onPress={handleSendRequest}
-              loading={actionLoading}
-            >
-              Accept Friend Request
-            </Button>
+            </View>
           ) : (
+            // Not friends - show add friend button
             <Button
-              variant="primary"
+              variant="outline"
               fullWidth
               onPress={handleSendRequest}
               loading={actionLoading}
+              style={{ marginTop: 12 }}
+              icon={<Ionicons name="person-add" size={18} color={colors.primary} style={{ marginRight: 8 }} />}
             >
               Send Friend Request
             </Button>
           )}
 
-          <Button
-            variant="danger"
-            fullWidth
-            onPress={handleBlockUser}
-            style={{ marginTop: 12 }}
-          >
-            Block User
-          </Button>
+          {/* Block button - only show if not friends */}
+          {!user.is_friend && (
+            <Button
+              variant="danger"
+              fullWidth
+              onPress={handleBlockUser}
+              style={{ marginTop: 12 }}
+            >
+              Block User
+            </Button>
+          )}
         </View>
       </ScrollView>
+
+      {/* Friend Options Menu Modal */}
+      <Modal
+        visible={showFriendMenu}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowFriendMenu(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setShowFriendMenu(false)}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={[styles.menuContainer, { backgroundColor: colors.surface }]}>
+                <Text style={[styles.menuTitle, { color: colors.text }]}>Friend Options</Text>
+                
+                <TouchableOpacity
+                  style={[styles.menuItem, { borderBottomColor: colors.border }]}
+                  onPress={handleInviteToForum}
+                >
+                  <Ionicons name="people" size={22} color={colors.text} />
+                  <Text style={[styles.menuItemText, { color: colors.text }]}>Invite to Forum</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.menuItem, { borderBottomColor: colors.border }]}
+                  onPress={handleMuteUser}
+                >
+                  <Ionicons name="notifications-off" size={22} color={colors.text} />
+                  <Text style={[styles.menuItemText, { color: colors.text }]}>Mute</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.menuItem, { borderBottomColor: colors.border }]}
+                  onPress={handleRemoveFriend}
+                >
+                  <Ionicons name="person-remove" size={22} color={colors.error} />
+                  <Text style={[styles.menuItemText, { color: colors.error }]}>Remove Friend</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={handleBlockUser}
+                >
+                  <Ionicons name="ban" size={22} color={colors.error} />
+                  <Text style={[styles.menuItemText, { color: colors.error }]}>Block</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[styles.cancelButton, { backgroundColor: colors.surfaceHover }]}
+                  onPress={() => setShowFriendMenu(false)}
+                >
+                  <Text style={[styles.cancelButtonText, { color: colors.text }]}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 }
@@ -321,8 +475,78 @@ const styles = StyleSheet.create({
     marginTop: 16,
     lineHeight: 20,
   },
+  privateNotice: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 16,
+    padding: 12,
+    borderRadius: 12,
+  },
+  privateNoticeText: {
+    flex: 1,
+    fontSize: 13,
+    lineHeight: 18,
+  },
   actionsCard: {
     padding: 16,
     borderRadius: 16,
+  },
+  friendButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginTop: 12,
+  },
+  friendButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  requestActions: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 12,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  menuContainer: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    paddingBottom: 34,
+  },
+  menuTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  menuItemText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  cancelButton: {
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

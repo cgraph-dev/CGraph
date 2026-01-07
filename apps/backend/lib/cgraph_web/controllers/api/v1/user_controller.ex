@@ -149,19 +149,43 @@ defmodule CgraphWeb.API.V1.UserController do
 
   @doc """
   Get a specific user by ID.
+  Respects privacy settings - private profiles show limited info to non-friends.
   """
   def show(conn, %{"id" => id}) do
+    current_user = conn.assigns[:current_user]
+    
     with {:ok, user} <- Accounts.get_user(id) do
-      render(conn, :show, user: user)
+      # Check if the profile should be private for this viewer
+      is_own_profile = current_user && current_user.id == user.id
+      is_friend = current_user && Cgraph.Accounts.Friends.are_friends?(current_user.id, user.id)
+      show_full_profile = is_own_profile || is_friend || !user.is_profile_private
+      
+      if show_full_profile do
+        render(conn, :show, user: user)
+      else
+        render(conn, :private_profile, user: user)
+      end
     end
   end
 
   @doc """
   Get a user's public profile by username.
+  Respects privacy settings - private profiles show limited info to non-friends.
   """
   def profile(conn, %{"username" => username}) do
+    current_user = conn.assigns[:current_user]
+    
     with {:ok, user} <- Accounts.get_user_by_username(username) do
-      render(conn, :profile, user: user)
+      # Check if the profile should be private for this viewer
+      is_own_profile = current_user && current_user.id == user.id
+      is_friend = current_user && Cgraph.Accounts.Friends.are_friends?(current_user.id, user.id)
+      show_full_profile = is_own_profile || is_friend || !user.is_profile_private
+      
+      if show_full_profile do
+        render(conn, :profile, user: user)
+      else
+        render(conn, :private_profile, user: user)
+      end
     end
   end
 

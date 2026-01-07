@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import {
   View,
   Text,
@@ -16,11 +16,17 @@ import {
   Animated,
   Dimensions,
   Linking,
+  Pressable,
+  ScrollView,
+  Easing,
 } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
-import { deleteAsync } from 'expo-file-system/legacy';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Haptics from 'expo-haptics';
@@ -32,15 +38,213 @@ import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
 import { MessagesStackParamList, Message, Conversation, ConversationParticipant, UserBasic } from '../../types';
 import { VoiceMessageRecorder, VoiceMessagePlayer } from '../../components';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+// Helper to process reactions and set hasReacted based on current user
+const processMessagesWithReactions = (messages: Message[], currentUserId: string | undefined): Message[] => {
+  if (!currentUserId) return messages;
+  
+  return messages.map(msg => {
+    if (!msg.reactions || msg.reactions.length === 0) return msg;
+    
+    const processedReactions = msg.reactions.map(reaction => {
+      // Check if current user is in the users array for this reaction
+      // Handle multiple formats:
+      // 1. Array of user objects: [{ id: "...", username: "..." }, ...]
+      // 2. Array of user IDs: ["user-id-1", "user-id-2", ...]
+      // 3. Mixed formats from different backend responses
+      const hasReacted = reaction.users?.some(u => {
+        // If u is a string (just user ID), compare directly
+        if (typeof u === 'string') {
+          return String(u) === String(currentUserId);
+        }
+        // If u is an object, check various ID fields
+        const uAny = u as any;
+        return String(u.id) === String(currentUserId) || 
+               String(uAny.user_id) === String(currentUserId);
+      }) || false;
+      
+      // Normalize users array to always be objects with id field
+      const normalizedUsers = reaction.users?.map(u => {
+        if (typeof u === 'string') {
+          return { id: u, username: null, display_name: null, avatar_url: null, status: 'offline' as const };
+        }
+        return u;
+      }) || [];
+      
+      return {
+        ...reaction,
+        users: normalizedUsers,
+        hasReacted,
+      };
+    });
+    
+    return { ...msg, reactions: processedReactions };
+  });
+};
+
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // Fun waving emojis for empty conversation
 const WAVE_EMOJIS = ['👋', '✨', '💬', '🎉', '🌟'];
+
+// Quick reaction emojis - most commonly used
+const QUICK_REACTIONS = ['❤️', '👍', '😂', '😮', '😢', '🔥'];
+
+// Full emoji picker categories
+const EMOJI_CATEGORIES = {
+  'Smileys': ['😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😊', '😇', '🙂', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😜', '🤪', '😝', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥'],
+  'Gestures': ['👍', '👎', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✌️', '🤞', '🤟', '🤘', '👌', '🤌', '🤏', '👈', '👉', '👆', '👇', '☝️', '✋', '🤚', '🖐️', '🖖', '👋', '🤙', '💪', '🦾', '🖕', '✍️'],
+  'Hearts': ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '♥️'],
+  'Symbols': ['✨', '⭐', '🌟', '💫', '🔥', '💯', '💢', '💥', '💦', '💨', '🕳️', '💣', '💬', '👁️‍🗨️', '🗨️', '🗯️', '💭', '💤', '🎵', '🎶'],
+};
+
+// Animated Message Wrapper Component for smooth entrance animations
+interface AnimatedMessageProps {
+  children: React.ReactNode;
+  isOwnMessage: boolean;
+  index: number;
+  isNew?: boolean;
+}
+
+const AnimatedMessageWrapper = memo(({ children, isOwnMessage, index, isNew }: AnimatedMessageProps) => {
+  const slideAnim = useRef(new Animated.Value(isNew ? 30 : 0)).current;
+  const fadeAnim = useRef(new Animated.Value(isNew ? 0 : 1)).current;
+  const scaleAnim = useRef(new Animated.Value(isNew ? 0.9 : 1)).current;
+  
+  useEffect(() => {
+    if (isNew) {
+      Animated.parallel([
+        Animated.spring(slideAnim, {
+          toValue: 0,
+          useNativeDriver: true,
+          tension: 100,
+          friction: 12,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 120,
+          friction: 8,
+        }),
+      ]).start();
+    }
+  }, [isNew, slideAnim, fadeAnim, scaleAnim]);
+  
+  return (
+    <Animated.View
+      style={{
+        opacity: fadeAnim,
+        transform: [
+          { translateX: isOwnMessage ? slideAnim : Animated.multiply(slideAnim, -1) },
+          { scale: scaleAnim },
+        ],
+      }}
+    >
+      {children}
+    </Animated.View>
+  );
+});
+
+// Animated Reaction Bubble Component
+const AnimatedReactionBubble = memo(({ 
+  reaction, 
+  isOwnMessage, 
+  onPress, 
+  colors 
+}: { 
+  reaction: { emoji: string; count: number; hasReacted: boolean };
+  isOwnMessage: boolean;
+  onPress: () => void;
+  colors: any;
+}) => {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const bounceAnim = useRef(new Animated.Value(0)).current;
+  
+  const handlePress = () => {
+    // Bounce animation on tap
+    Animated.sequence([
+      Animated.spring(scaleAnim, {
+        toValue: 1.3,
+        useNativeDriver: true,
+        tension: 300,
+        friction: 5,
+      }),
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 200,
+        friction: 10,
+      }),
+    ]).start();
+    
+    // Also trigger the emoji bounce
+    Animated.sequence([
+      Animated.timing(bounceAnim, {
+        toValue: -8,
+        duration: 100,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.quad),
+      }),
+      Animated.spring(bounceAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 300,
+        friction: 8,
+      }),
+    ]).start();
+    
+    onPress();
+  };
+  
+  return (
+    <TouchableOpacity
+      style={[
+        styles.reactionBubble,
+        { 
+          backgroundColor: reaction.hasReacted 
+            ? (isOwnMessage ? 'rgba(255,255,255,0.25)' : colors.primary + '25')
+            : (isOwnMessage ? 'rgba(255,255,255,0.12)' : colors.surface),
+          borderColor: reaction.hasReacted ? colors.primary : 'transparent',
+          borderWidth: reaction.hasReacted ? 1.5 : 0,
+        }
+      ]}
+      onPress={handlePress}
+      activeOpacity={0.7}
+    >
+      <Animated.Text 
+        style={[
+          styles.reactionEmoji,
+          { 
+            transform: [
+              { scale: scaleAnim },
+              { translateY: bounceAnim },
+            ] 
+          }
+        ]}
+      >
+        {reaction.emoji}
+      </Animated.Text>
+      {reaction.count > 1 && (
+        <Text style={[
+          styles.reactionCount,
+          { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.text }
+        ]}>
+          {reaction.count}
+        </Text>
+      )}
+    </TouchableOpacity>
+  );
+});
 
 type Props = {
   navigation: NativeStackNavigationProp<MessagesStackParamList, 'Conversation'>;
   route: RouteProp<MessagesStackParamList, 'Conversation'>;
 };
+
 
 export default function ConversationScreen({ navigation, route }: Props) {
   const { conversationId } = route.params;
@@ -62,48 +266,156 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [otherUser, setOtherUser] = useState<UserBasic | null>(null);
   
+  // Image viewer state
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [showImageViewer, setShowImageViewer] = useState(false);
+  
+  // Message action menu state
+  const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [showMessageActions, setShowMessageActions] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null);
+  
+  // Reaction picker state
+  const [showReactionPicker, setShowReactionPicker] = useState(false);
+  const [reactionPickerMessage, setReactionPickerMessage] = useState<Message | null>(null);
+  const [selectedEmojiCategory, setSelectedEmojiCategory] = useState<keyof typeof EMOJI_CATEGORIES>('Smileys');
+  
+  // Track newly added messages for entrance animations
+  const [newMessageIds, setNewMessageIds] = useState<Set<string>>(new Set());
+  
+  // Picker lock to prevent concurrent picker operations
+  const isPickerActiveRef = useRef(false);
+  
+  // Track deleted message IDs to prevent re-adding them
+  const deletedMessageIdsRef = useRef<Set<string>>(new Set());
+  
+  // Track if we should scroll to bottom on next content size change
+  const shouldScrollToBottomRef = useRef(true);
+  const contentHeightRef = useRef(0);
+  
   // Animation refs
   const attachMenuAnim = useRef(new Animated.Value(0)).current;
   const waveAnim = useRef(new Animated.Value(0)).current;
+  const imageViewerAnim = useRef(new Animated.Value(0)).current;
+  const imageScaleAnim = useRef(new Animated.Value(0.8)).current;
+  const messageActionsAnim = useRef(new Animated.Value(0)).current;
+  const backdropAnim = useRef(new Animated.Value(0)).current;
+  const menuScaleAnim = useRef(new Animated.Value(0.9)).current;
+  const sendButtonAnim = useRef(new Animated.Value(1)).current;
+  const inputFocusAnim = useRef(new Animated.Value(0)).current;
+  const actionItemAnims = useRef([
+    new Animated.Value(0),
+    new Animated.Value(0),
+    new Animated.Value(0),
+    new Animated.Value(0),
+  ]).current;
   
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputRef = useRef<TextInput>(null);
+  
+  // Pinned messages - get all pinned, sorted by pin date (most recent first)
+  const pinnedMessages = useMemo(() => {
+    return messages
+      .filter(m => m.is_pinned)
+      .sort((a, b) => {
+        const aDate = a.pinned_at ? new Date(a.pinned_at).getTime() : 0;
+        const bDate = b.pinned_at ? new Date(b.pinned_at).getTime() : 0;
+        return bDate - aDate;
+      });
+  }, [messages]);
+  
+  // Current pinned message index for navigation
+  const [currentPinnedIndex, setCurrentPinnedIndex] = useState(0);
+  
+  // Reset pinned index when pinned messages change (e.g., when unpinning)
+  useEffect(() => {
+    if (pinnedMessages.length === 0) {
+      setCurrentPinnedIndex(0);
+    } else if (currentPinnedIndex >= pinnedMessages.length) {
+      // If current index is out of bounds, reset to last valid index
+      setCurrentPinnedIndex(pinnedMessages.length - 1);
+    }
+  }, [pinnedMessages.length, currentPinnedIndex]);
+  
+  // Get the current pinned message to display
+  const currentPinnedMessage = pinnedMessages.length > 0 ? pinnedMessages[Math.min(currentPinnedIndex, pinnedMessages.length - 1)] : null;
+  
+  // Scroll to a specific message by ID
+  const scrollToMessage = useCallback((messageId: string) => {
+    const index = messages.findIndex(m => m.id === messageId);
+    if (index !== -1 && flatListRef.current) {
+      flatListRef.current.scrollToIndex({
+        index,
+        animated: true,
+        viewPosition: 0.3, // Show message in upper third of screen
+      });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
+  }, [messages]);
+  
+  // Navigate to next/prev pinned message
+  const navigatePinnedMessages = useCallback((direction: 'next' | 'prev') => {
+    if (pinnedMessages.length <= 1) return;
+    
+    if (direction === 'next') {
+      setCurrentPinnedIndex(prev => (prev + 1) % pinnedMessages.length);
+    } else {
+      setCurrentPinnedIndex(prev => (prev - 1 + pinnedMessages.length) % pinnedMessages.length);
+    }
+    Haptics.selectionAsync();
+  }, [pinnedMessages.length]);
   
   // Format last seen timestamp for display
   const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
-    if (!lastSeenAt) return 'Offline';
+    if (!lastSeenAt) return '';
     
     const lastSeen = new Date(lastSeenAt);
+    // Check if it's a valid date
+    if (isNaN(lastSeen.getTime())) return '';
+    
     const now = new Date();
     const diffMs = now.getTime() - lastSeen.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
     
-    if (diffMins < 1) return 'Last seen just now';
-    if (diffMins < 60) return `Last seen ${diffMins}m ago`;
-    if (diffHours < 24) return `Last seen ${diffHours}h ago`;
-    if (diffDays === 1) return 'Last seen yesterday';
-    if (diffDays < 7) return `Last seen ${diffDays} days ago`;
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays === 1) return 'yesterday';
+    if (diffDays < 7) return `${diffDays}d ago`;
     
-    return `Last seen ${lastSeen.toLocaleDateString()}`;
+    return lastSeen.toLocaleDateString();
   };
   
-  // Subscribe to presence changes
+  // Subscribe to presence changes (both conversation and global friend presence)
   useEffect(() => {
     if (!conversationId || !otherParticipantId) return;
     
-    // Initial check
-    setIsOtherUserOnline(socketManager.isUserOnline(conversationId, otherParticipantId));
+    // Initial check - first try global friend presence, then conversation presence
+    const isOnline = socketManager.isFriendOnline(otherParticipantId) || 
+                     socketManager.isUserOnline(conversationId, otherParticipantId);
+    setIsOtherUserOnline(isOnline);
     
-    // Subscribe to status changes
-    const unsubscribe = socketManager.onStatusChange((convId, participantId, isOnline) => {
+    // Subscribe to conversation-level status changes
+    const unsubscribeConv = socketManager.onStatusChange((convId, participantId, isOnline) => {
       if (convId === conversationId && participantId === otherParticipantId) {
         setIsOtherUserOnline(isOnline);
       }
     });
     
-    return () => unsubscribe();
+    // Subscribe to global friend status changes
+    const unsubscribeGlobal = socketManager.onGlobalStatusChange((userId, isOnline) => {
+      if (userId === otherParticipantId) {
+        setIsOtherUserOnline(isOnline);
+      }
+    });
+    
+    return () => {
+      unsubscribeConv();
+      unsubscribeGlobal();
+    };
   }, [conversationId, otherParticipantId]);
   
   // Subscribe to typing indicator changes
@@ -176,6 +488,122 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const unsubscribe = socketManager.onChannelMessage(channelTopic, (event, payload) => {
         if (!isMountedRef.current) return;
         
+        // Handle events with message_id only (delete, unpin, reactions)
+        if (event === 'message_deleted') {
+          const deleteData = payload as { message_id?: string; message?: { id: string } };
+          const messageId = deleteData.message_id || deleteData.message?.id;
+          if (messageId) {
+            // Track deleted message to prevent re-adding
+            deletedMessageIdsRef.current.add(messageId);
+            setMessages((prev) => prev.filter((m) => m.id !== messageId));
+          }
+          return;
+        }
+        
+        if (event === 'message_unpinned') {
+          const unpinData = payload as { message_id?: string; message?: { id: string } };
+          const messageId = unpinData.message_id || unpinData.message?.id;
+          if (messageId) {
+            setMessages((prev) =>
+              prev.map((m) => (m.id === messageId ? { ...m, is_pinned: false, pinned_at: undefined, pinned_by_id: undefined } : m))
+            );
+          }
+          return;
+        }
+        
+        // Handle reaction added
+        if (event === 'reaction_added') {
+          const reactionData = payload as { 
+            message_id: string; 
+            emoji: string; 
+            user_id: string;
+            user?: { id: string; username?: string; display_name?: string; avatar_url?: string };
+          };
+          if (reactionData.message_id && reactionData.emoji) {
+            const reactingUserId = String(reactionData.user_id);
+            const currentUserId = String(user?.id || '');
+            
+            setMessages((prev) =>
+              prev.map((m) => {
+                if (m.id !== reactionData.message_id) return m;
+                const reactions = [...(m.reactions || [])];
+                const existingIdx = reactions.findIndex(r => r.emoji === reactionData.emoji);
+                
+                if (existingIdx >= 0) {
+                  // Add user to existing reaction
+                  const existing = reactions[existingIdx];
+                  const userAlreadyReacted = existing.users.some(u => String(u.id) === reactingUserId);
+                  if (!userAlreadyReacted) {
+                    reactions[existingIdx] = {
+                      ...existing,
+                      count: existing.count + 1,
+                      users: [...existing.users, {
+                        id: reactionData.user_id,
+                        username: reactionData.user?.username || null,
+                        display_name: reactionData.user?.display_name,
+                        avatar_url: reactionData.user?.avatar_url,
+                        status: 'online',
+                      }],
+                      hasReacted: existing.hasReacted || reactingUserId === currentUserId,
+                    };
+                  }
+                } else {
+                  // Create new reaction
+                  reactions.push({
+                    emoji: reactionData.emoji,
+                    count: 1,
+                    users: [{
+                      id: reactionData.user_id,
+                      username: reactionData.user?.username || null,
+                      display_name: reactionData.user?.display_name,
+                      avatar_url: reactionData.user?.avatar_url,
+                      status: 'online',
+                    }],
+                    hasReacted: reactingUserId === currentUserId,
+                  });
+                }
+                return { ...m, reactions };
+              })
+            );
+          }
+          return;
+        }
+        
+        // Handle reaction removed
+        if (event === 'reaction_removed') {
+          const reactionData = payload as { message_id: string; emoji: string; user_id: string };
+          if (reactionData.message_id && reactionData.emoji) {
+            const removedUserId = String(reactionData.user_id);
+            const currentUserId = String(user?.id || '');
+            
+            setMessages((prev) =>
+              prev.map((m) => {
+                if (m.id !== reactionData.message_id) return m;
+                const reactions = [...(m.reactions || [])];
+                const existingIdx = reactions.findIndex(r => r.emoji === reactionData.emoji);
+                
+                if (existingIdx >= 0) {
+                  const existing = reactions[existingIdx];
+                  const newUsers = existing.users.filter(u => String(u.id) !== removedUserId);
+                  if (newUsers.length === 0) {
+                    // Remove reaction entirely
+                    reactions.splice(existingIdx, 1);
+                  } else {
+                    reactions[existingIdx] = {
+                      ...existing,
+                      count: newUsers.length,
+                      users: newUsers,
+                      hasReacted: newUsers.some(u => String(u.id) === currentUserId),
+                    };
+                  }
+                }
+                return { ...m, reactions };
+              })
+            );
+          }
+          return;
+        }
+        
         const data = payload as { message: Record<string, unknown> };
         
         // Validate message data before normalizing
@@ -188,25 +616,35 @@ export default function ConversationScreen({ navigation, route }: Props) {
         
         const normalized = normalizeMessage(data.message);
         
-        // Additional validation - skip messages without sender info
-        if (!normalized.sender_id && !normalized.sender?.id) {
+        // Additional validation - skip messages without sender info (except for pin events)
+        if (event !== 'message_pinned' && !normalized.sender_id && !normalized.sender?.id) {
           if (__DEV__) {
             console.log('[ConversationScreen] Skipping message without sender:', normalized.id);
           }
           return;
         }
         
-        // Validate message has actual content or media
-        const hasRealContent = normalized.content && normalized.content.trim().length > 0 && normalized.content !== '[Voice Message]';
-        const hasMediaUrl = normalized.metadata?.url || normalized.file_url;
-        if (!hasRealContent && !hasMediaUrl) {
-          if (__DEV__) {
-            console.log('[ConversationScreen] Skipping empty WebSocket message:', normalized.id);
+        // Validate message has actual content or media (except for pin events)
+        if (event !== 'message_pinned') {
+          const hasRealContent = normalized.content && normalized.content.trim().length > 0 && normalized.content !== '[Voice Message]';
+          const hasMediaUrl = normalized.metadata?.url || normalized.file_url;
+          if (!hasRealContent && !hasMediaUrl) {
+            if (__DEV__) {
+              console.log('[ConversationScreen] Skipping empty WebSocket message:', normalized.id);
+            }
+            return;
           }
-          return;
         }
         
         if (event === 'new_message') {
+          // Skip if message was deleted
+          if (deletedMessageIdsRef.current.has(normalized.id)) {
+            if (__DEV__) {
+              console.log('[ConversationScreen] Skipping deleted message:', normalized.id);
+            }
+            return;
+          }
+          
           setMessages((prev) => {
             // Check for duplicates before adding
             const exists = prev.some(m => m.id === normalized.id);
@@ -216,14 +654,27 @@ export default function ConversationScreen({ navigation, route }: Props) {
               }
               return prev;
             }
-            return [...prev, normalized];
+            // Prepend for inverted list (newest first)
+            return [normalized, ...prev];
           });
+          
+          // Scroll to top (visually bottom in inverted list) when receiving new message
+          setTimeout(() => {
+            flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+          }, 100);
         } else if (event === 'message_updated') {
+          // Skip if message was deleted
+          if (deletedMessageIdsRef.current.has(normalized.id)) {
+            return;
+          }
           setMessages((prev) =>
             prev.map((m) => (m.id === normalized.id ? normalized : m))
           );
-        } else if (event === 'message_deleted') {
-          setMessages((prev) => prev.filter((m) => m.id !== normalized.id));
+        } else if (event === 'message_pinned') {
+          // Update message to show as pinned
+          setMessages((prev) =>
+            prev.map((m) => (m.id === normalized.id ? { ...m, is_pinned: true, pinned_at: normalized.pinned_at, pinned_by_id: normalized.pinned_by_id } : m))
+          );
         }
       });
       
@@ -293,8 +744,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
         const lastSeen = (otherParticipant?.user as any)?.lastSeenAt || null;
         setOtherParticipantLastSeen(lastSeen);
         
-        // Use Phoenix Presence for online status (single source of truth)
-        const presenceOnline = socketManager.isUserOnline(conversationId, otherUserId);
+        // Use global friend presence first, then fall back to conversation presence
+        const presenceOnline = socketManager.isFriendOnline(otherUserId) ||
+                               socketManager.isUserOnline(conversationId, otherUserId);
         setIsOtherUserOnline(presenceOnline);
       }
       
@@ -319,55 +771,91 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Update header with current online and typing status
   const updateHeader = useCallback((displayName: string) => {
     // Determine status text with priority: typing > online > last seen > offline
-    let statusText = formatLastSeen(otherParticipantLastSeen);
+    const lastSeenText = formatLastSeen(otherParticipantLastSeen);
+    let statusText = lastSeenText ? `Last seen ${lastSeenText}` : 'Offline';
     let statusColor = '#6b7280';
+    let showPulse = false;
     
     if (isOtherUserTyping) {
       statusText = 'Typing...';
       statusColor = '#3b82f6';
+      showPulse = true;
     } else if (isOtherUserOnline) {
       statusText = 'Online';
       statusColor = '#22c55e';
+      showPulse = true;
     }
     
     navigation.setOptions({
       headerTitle: () => (
         <TouchableOpacity 
           style={styles.headerTitleContainer}
-          onPress={() => otherParticipantId && navigation.navigate('UserProfile' as any, { userId: otherParticipantId })}
+          onPress={() => {
+            if (otherParticipantId) {
+              // Navigate to FriendsTab and then to UserProfile screen
+              (navigation as any).navigate('FriendsTab', {
+                screen: 'UserProfile',
+                params: { userId: otherParticipantId }
+              });
+            }
+          }}
           activeOpacity={0.7}
         >
-          <Text style={[styles.headerTitle, { color: colors.text }]}>{displayName}</Text>
-          <View style={styles.headerStatusRow}>
-            <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
-            <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-              {statusText}
-            </Text>
+          <View style={[styles.headerAvatar, { backgroundColor: colors.surfaceHover }]}>
+            {otherUser?.avatar_url ? (
+              <Image source={{ uri: otherUser.avatar_url }} style={styles.headerAvatarImage} />
+            ) : (
+              <Ionicons name="person" size={20} color={colors.textSecondary} />
+            )}
           </View>
+          <View style={styles.headerTextContainer}>
+            <Text style={[styles.headerTitle, { color: colors.text }]}>{displayName}</Text>
+            <View style={styles.headerStatusRow}>
+              {(isOtherUserOnline || isOtherUserTyping) && (
+                <View style={[
+                  styles.statusDot, 
+                  { backgroundColor: statusColor },
+                  showPulse && styles.statusDotPulse
+                ]} />
+              )}
+              <Text style={[
+                styles.headerSubtitle, 
+                { color: isOtherUserOnline || isOtherUserTyping ? statusColor : colors.textSecondary },
+                (isOtherUserOnline || isOtherUserTyping) && { fontWeight: '500' }
+              ]}>
+                {statusText}
+              </Text>
+            </View>
+          </View>
+        </TouchableOpacity>
+      ),
+      headerLeft: () => (
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => navigation.goBack()}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="chevron-back" size={28} color={colors.text} />
         </TouchableOpacity>
       ),
       headerRight: () => (
         <View style={styles.headerActions}>
           <TouchableOpacity 
-            style={styles.headerActionBtn}
+            style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
             onPress={() => handleStartCall('audio')}
           >
-            <Ionicons name="call-outline" size={22} color={colors.text} />
+            <Ionicons name="call-outline" size={20} color={colors.text} />
           </TouchableOpacity>
           <TouchableOpacity 
-            style={styles.headerActionBtn}
+            style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
             onPress={() => handleStartCall('video')}
           >
-            <Ionicons name="videocam-outline" size={24} color={colors.text} />
+            <Ionicons name="videocam-outline" size={22} color={colors.text} />
           </TouchableOpacity>
-          <View style={styles.e2eeIndicator}>
-            <Ionicons name="lock-closed" size={14} color="#22c55e" />
-            <Text style={styles.e2eeText}>E2EE</Text>
-          </View>
         </View>
       ),
     });
-  }, [colors, isOtherUserOnline, isOtherUserTyping, otherParticipantLastSeen, otherParticipantId, navigation]);
+  }, [colors, isOtherUserOnline, isOtherUserTyping, otherParticipantLastSeen, otherParticipantId, otherUser, navigation]);
   
   // Update header when online or typing status changes
   useEffect(() => {
@@ -402,14 +890,29 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const rawMessages = response.data.data || response.data.messages || [];
       if (isMountedRef.current) {
         const normalized = normalizeMessages(rawMessages);
-        // Deduplicate messages by ID before setting
-        const uniqueMessages = normalized.reduce((acc: Message[], msg: Message) => {
+        // Process reactions to set hasReacted based on current user
+        const withReactions = processMessagesWithReactions(normalized, user?.id);
+        // Deduplicate and filter out deleted messages
+        const uniqueMessages = withReactions.reduce((acc: Message[], msg: Message) => {
+          // Skip messages that were deleted in this session
+          if (deletedMessageIdsRef.current.has(msg.id)) {
+            return acc;
+          }
           if (!acc.some(m => m.id === msg.id)) {
             acc.push(msg);
           }
           return acc;
         }, []);
-        setMessages(uniqueMessages);
+        
+        // Sort messages reverse chronologically (newest first) for inverted list
+        // Inverted FlatList displays from bottom, so newest appears at bottom visually
+        const sortedMessages = uniqueMessages.sort((a, b) => {
+          const dateA = new Date(a.inserted_at).getTime();
+          const dateB = new Date(b.inserted_at).getTime();
+          return dateB - dateA; // Newest first
+        });
+        
+        setMessages(sortedMessages);
       }
     } catch (error) {
       console.error('Error fetching messages:', error);
@@ -425,36 +928,84 @@ export default function ConversationScreen({ navigation, route }: Props) {
     try {
       await fetchMessages();
       await fetchConversation();
+      // fetchMessages already handles scrolling to bottom
     } finally {
       setIsRefreshing(false);
     }
+  };
+  
+  // Animated send button press effect
+  const animateSendButton = () => {
+    Animated.sequence([
+      Animated.timing(sendButtonAnim, {
+        toValue: 0.85,
+        duration: 100,
+        useNativeDriver: true,
+        easing: Easing.out(Easing.quad),
+      }),
+      Animated.spring(sendButtonAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 200,
+        friction: 10,
+      }),
+    ]).start();
   };
   
   const sendMessage = async () => {
     const content = inputText.trim();
     if (!content || isSending) return;
     
+    // Trigger send button animation
+    animateSendButton();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    
     setIsSending(true);
     setInputText('');
+    const currentReplyTo = replyingTo;
+    setReplyingTo(null); // Clear reply after capturing
     
     // Stop typing indicator when sending
     stopTypingIndicator();
     
     try {
-      const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
-        content,
-      });
+      const messagePayload: Record<string, unknown> = { content };
+      if (currentReplyTo) {
+        messagePayload.reply_to_id = currentReplyTo.id;
+      }
+      
+      const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, messagePayload);
       const rawMessage = response.data.data || response.data.message || response.data;
       const normalized = normalizeMessage(rawMessage);
+      
+      // Mark as new message for entrance animation
+      setNewMessageIds(prev => new Set(prev).add(normalized.id));
+      
       // Add with deduplication - socket may also deliver this message
+      // Prepend for inverted list (newest first)
       setMessages((prev) => {
         const exists = prev.some(m => m.id === normalized.id);
         if (exists) return prev;
-        return [...prev, normalized];
+        return [normalized, ...prev];
       });
+      
+      // Scroll to the new message (offset 0 for inverted list)
+      setTimeout(() => {
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+      }, 100);
+      
+      // Clear new message flag after animation completes
+      setTimeout(() => {
+        setNewMessageIds(prev => {
+          const next = new Set(prev);
+          next.delete(normalized.id);
+          return next;
+        });
+      }, 500);
     } catch (error) {
       console.error('Error sending message:', error);
       setInputText(content);
+      if (currentReplyTo) setReplyingTo(currentReplyTo); // Restore reply on error
     } finally {
       setIsSending(false);
     }
@@ -499,14 +1050,20 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const normalized = normalizeMessage(rawMessage);
       
       // Add with deduplication - socket may also deliver this message
+      // Prepend for inverted list (newest first)
       setMessages((prev) => {
         const exists = prev.some(m => m.id === normalized.id);
         if (exists) return prev;
-        return [...prev, normalized];
+        return [normalized, ...prev];
       });
       
-      // Clean up the temporary file using legacy API
-      await deleteAsync(voiceData.uri, { idempotent: true });
+      // Scroll to the new voice message (offset 0 for inverted list)
+      setTimeout(() => {
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
+      }, 100);
+      
+      // Clean up the temporary file
+      await FileSystem.deleteAsync(voiceData.uri, { idempotent: true });
     } catch (error) {
       console.error('Error sending voice message:', error);
       // Alert user of failure
@@ -527,74 +1084,578 @@ export default function ConversationScreen({ navigation, route }: Props) {
     );
   };
   
-  // Toggle attachment menu with animation
-  const toggleAttachMenu = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const toValue = showAttachMenu ? 0 : 1;
-    setShowAttachMenu(!showAttachMenu);
+  // Close attachment menu with animation - always animate to closed state
+  const closeAttachMenu = useCallback(() => {
+    setShowAttachMenu(false);
     Animated.spring(attachMenuAnim, {
-      toValue,
+      toValue: 0,
       useNativeDriver: true,
       tension: 100,
       friction: 8,
     }).start();
+  }, [attachMenuAnim]);
+  
+  // Open attachment menu with animation
+  const openAttachMenu = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setShowAttachMenu(true);
+    Animated.spring(attachMenuAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 100,
+      friction: 8,
+    }).start();
+  }, [attachMenuAnim]);
+  
+  // Toggle attachment menu with animation
+  const toggleAttachMenu = useCallback(() => {
+    if (showAttachMenu) {
+      closeAttachMenu();
+    } else {
+      openAttachMenu();
+    }
+  }, [showAttachMenu, closeAttachMenu, openAttachMenu]);
+  
+  // Handle image press - open fullscreen viewer with animation
+  const handleImagePress = useCallback((imageUrl: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedImage(imageUrl);
+    setShowImageViewer(true);
+    
+    // Animate in
+    Animated.parallel([
+      Animated.timing(imageViewerAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      Animated.spring(imageScaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 80,
+        friction: 8,
+      }),
+    ]).start();
+  }, [imageViewerAnim, imageScaleAnim]);
+  
+  // Close image viewer with animation
+  const closeImageViewer = useCallback(() => {
+    Animated.parallel([
+      Animated.timing(imageViewerAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(imageScaleAnim, {
+        toValue: 0.8,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setShowImageViewer(false);
+      setSelectedImage(null);
+    });
+  }, [imageViewerAnim, imageScaleAnim]);
+  
+  // Handle file press - open/download file
+  const handleFilePress = useCallback(async (fileUrl: string, filename?: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    try {
+      const canOpen = await Linking.canOpenURL(fileUrl);
+      if (canOpen) {
+        await Linking.openURL(fileUrl);
+      } else {
+        Alert.alert(
+          'Open File',
+          `Would you like to open "${filename || 'this file'}"?`,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Open', onPress: () => Linking.openURL(fileUrl) },
+          ]
+        );
+      }
+    } catch (error) {
+      console.error('Error opening file:', error);
+      Alert.alert('Error', 'Could not open file. Please try again.');
+    }
+  }, []);
+  
+  // Get appropriate icon for file type
+  const getFileIcon = (filename?: string): keyof typeof Ionicons.glyphMap => {
+    if (!filename) return 'document-outline';
+    const ext = filename.toLowerCase().split('.').pop();
+    switch (ext) {
+      case 'pdf': return 'document-text-outline';
+      case 'doc': case 'docx': return 'document-text-outline';
+      case 'xls': case 'xlsx': return 'grid-outline';
+      case 'ppt': case 'pptx': return 'easel-outline';
+      case 'zip': case 'rar': case '7z': return 'archive-outline';
+      case 'mp3': case 'wav': case 'aac': return 'musical-notes-outline';
+      case 'mp4': case 'mov': case 'avi': return 'videocam-outline';
+      case 'txt': return 'document-outline';
+      default: return 'document-outline';
+    }
   };
   
-  // Handle image picker
-  const handlePickImage = async () => {
-    setShowAttachMenu(false);
+  // Format file size for display
+  const formatFileSize = (bytes: number): string => {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+  
+  // Handle long press on message to show actions
+  const handleMessageLongPress = useCallback((message: Message) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    setSelectedMessage(message);
+    setShowMessageActions(true);
     
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert('Permission needed', 'Please allow access to your photos to send images.');
+    // Reset all animations
+    backdropAnim.setValue(0);
+    menuScaleAnim.setValue(0.9);
+    messageActionsAnim.setValue(0);
+    actionItemAnims.forEach(anim => anim.setValue(0));
+    
+    // Staggered entrance animation
+    Animated.parallel([
+      // Backdrop fade in
+      Animated.timing(backdropAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }),
+      // Menu slide up with spring
+      Animated.spring(messageActionsAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 65,
+        friction: 9,
+      }),
+      // Menu scale up
+      Animated.spring(menuScaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+        tension: 100,
+        friction: 10,
+      }),
+    ]).start(() => {
+      // Stagger action items
+      const staggerDelay = 50;
+      actionItemAnims.forEach((anim, index) => {
+        setTimeout(() => {
+          Animated.spring(anim, {
+            toValue: 1,
+            useNativeDriver: true,
+            tension: 120,
+            friction: 8,
+          }).start();
+        }, index * staggerDelay);
+      });
+    });
+  }, [messageActionsAnim, backdropAnim, menuScaleAnim, actionItemAnims]);
+  
+  // Close message actions menu
+  const closeMessageActions = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    
+    Animated.parallel([
+      Animated.timing(backdropAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(messageActionsAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(menuScaleAnim, {
+        toValue: 0.9,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setShowMessageActions(false);
+      setSelectedMessage(null);
+    });
+  }, [messageActionsAnim, backdropAnim, menuScaleAnim]);
+  
+  // Handle reply to message
+  const handleReply = useCallback(() => {
+    if (selectedMessage) {
+      setReplyingTo(selectedMessage);
+      closeMessageActions();
+      // Focus the input
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [selectedMessage, closeMessageActions]);
+  
+  // Cancel reply
+  const cancelReply = useCallback(() => {
+    setReplyingTo(null);
+  }, []);
+  
+  // Handle adding a reaction to a message
+  // Limit: 1 reaction per user per message - will replace existing reaction
+  const handleAddReaction = useCallback(async (messageId: string, emoji: string) => {
+    try {
+      await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      
+      // Optimistic update - add reaction locally (replacing any existing user reaction)
+      setMessages(prev => prev.map(m => {
+        if (m.id !== messageId) return m;
+        let reactions = [...(m.reactions || [])];
+        const currentUserId = user?.id;
+        
+        // First, remove user's previous reaction if any (1 reaction per user limit)
+        reactions = reactions.map(r => {
+          if (r.hasReacted && r.emoji !== emoji) {
+            const newUsers = r.users.filter(u => u.id !== currentUserId);
+            if (newUsers.length === 0) {
+              return null; // Mark for removal
+            }
+            return {
+              ...r,
+              count: newUsers.length,
+              hasReacted: false,
+              users: newUsers,
+            };
+          }
+          return r;
+        }).filter(Boolean) as typeof reactions;
+        
+        // Now add the new reaction
+        const existingIdx = reactions.findIndex(r => r.emoji === emoji);
+        
+        if (existingIdx >= 0) {
+          const existing = reactions[existingIdx];
+          if (!existing.hasReacted) {
+            reactions[existingIdx] = {
+              ...existing,
+              count: existing.count + 1,
+              hasReacted: true,
+              users: [...existing.users, {
+                id: currentUserId || '',
+                username: user?.username || null,
+                display_name: user?.display_name,
+                avatar_url: user?.avatar_url,
+                status: 'online',
+              }],
+            };
+          }
+        } else {
+          reactions.push({
+            emoji,
+            count: 1,
+            hasReacted: true,
+            users: [{
+              id: currentUserId || '',
+              username: user?.username || null,
+              display_name: user?.display_name,
+              avatar_url: user?.avatar_url,
+              status: 'online',
+            }],
+          });
+        }
+        return { ...m, reactions };
+      }));
+    } catch (error: any) {
+      // 409 means user already has this exact reaction - silently ignore
+      if (error?.response?.status !== 409) {
+        console.warn('Error adding reaction:', error?.message || error);
+      }
+    }
+  }, [user]);
+  
+  // Handle removing a reaction from a message
+  const handleRemoveReaction = useCallback(async (messageId: string, emoji: string) => {
+    try {
+      await api.delete(`/api/v1/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      
+      // Optimistic update - remove reaction locally
+      setMessages(prev => prev.map(m => {
+        if (m.id !== messageId) return m;
+        const reactions = [...(m.reactions || [])];
+        const existingIdx = reactions.findIndex(r => r.emoji === emoji);
+        
+        if (existingIdx >= 0) {
+          const existing = reactions[existingIdx];
+          const newUsers = existing.users.filter(u => u.id !== user?.id);
+          if (newUsers.length === 0) {
+            reactions.splice(existingIdx, 1);
+          } else {
+            reactions[existingIdx] = {
+              ...existing,
+              count: newUsers.length,
+              hasReacted: false,
+              users: newUsers,
+            };
+          }
+        }
+        return { ...m, reactions };
+      }));
+    } catch (error) {
+      console.error('Error removing reaction:', error);
+      Alert.alert('Error', 'Failed to remove reaction');
+    }
+  }, [user?.id]);
+  
+  // Handle quick reaction from message actions menu
+  const handleQuickReaction = useCallback((emoji: string) => {
+    if (selectedMessage) {
+      const hasReacted = selectedMessage.reactions?.some(
+        r => r.emoji === emoji && r.hasReacted
+      );
+      if (hasReacted) {
+        handleRemoveReaction(selectedMessage.id, emoji);
+      } else {
+        handleAddReaction(selectedMessage.id, emoji);
+      }
+      closeMessageActions();
+    }
+  }, [selectedMessage, handleAddReaction, handleRemoveReaction, closeMessageActions]);
+  
+  // Handle reaction tap on message bubble
+  const handleReactionTap = useCallback((messageId: string, emoji: string, hasReacted: boolean) => {
+    if (hasReacted) {
+      handleRemoveReaction(messageId, emoji);
+    } else {
+      handleAddReaction(messageId, emoji);
+    }
+  }, [handleAddReaction, handleRemoveReaction]);
+  
+  // Open full reaction picker
+  const openReactionPicker = useCallback(() => {
+    if (selectedMessage) {
+      setReactionPickerMessage(selectedMessage);
+      closeMessageActions();
+      setTimeout(() => setShowReactionPicker(true), 200);
+    }
+  }, [selectedMessage, closeMessageActions]);
+  
+  // Close reaction picker
+  const closeReactionPicker = useCallback(() => {
+    setShowReactionPicker(false);
+    setReactionPickerMessage(null);
+  }, []);
+  
+  // Handle pin/unpin message
+  const handleTogglePin = useCallback(async () => {
+    if (!selectedMessage) return;
+    
+    const channelTopic = `conversation:${conversationId}`;
+    const channel = socketManager.getChannel(channelTopic);
+    if (!channel) {
+      Alert.alert('Error', 'Not connected to conversation');
+      closeMessageActions();
       return;
     }
     
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      quality: 0.8,
-      allowsMultipleSelection: false,
-    });
+    const isPinned = selectedMessage.is_pinned;
+    const event = isPinned ? 'unpin_message' : 'pin_message';
     
-    if (!result.canceled && result.assets[0]) {
-      await uploadAndSendFile(result.assets[0].uri, 'image');
+    channel.push(event, { message_id: selectedMessage.id })
+      .receive('ok', (response: any) => {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        // Update local state with proper pin timestamp from server
+        setMessages(prev => prev.map(m => 
+          m.id === selectedMessage.id 
+            ? { 
+                ...m, 
+                is_pinned: !isPinned,
+                pinned_at: !isPinned ? (response?.pinned_at || new Date().toISOString()) : undefined,
+                pinned_by_id: !isPinned ? (response?.pinned_by_id || user?.id) : undefined,
+              }
+            : m
+        ));
+      })
+      .receive('error', (err: any) => {
+        // Extract reason from various error formats
+        const reason = typeof err === 'string' ? err : (err?.reason || err?.error || '');
+        console.warn('[Pin] Error:', reason);
+        
+        let errorMsg = `Failed to ${isPinned ? 'unpin' : 'pin'} message`;
+        
+        if (reason === 'pin_limit_reached' || reason.includes('limit')) {
+          errorMsg = 'You can only pin up to 3 messages. Unpin a message first.';
+        } else if (reason === 'already_pinned') {
+          errorMsg = 'This message is already pinned.';
+        } else if (reason === 'unauthorized' || reason === 'not_authorized') {
+          errorMsg = 'You do not have permission to pin messages.';
+        } else if (reason === 'not_found') {
+          errorMsg = 'Message not found.';
+        }
+        
+        Alert.alert('Pin Error', errorMsg);
+      });
+    
+    closeMessageActions();
+  }, [selectedMessage, conversationId, closeMessageActions]);
+  
+  // Handle unsend/delete message (for everyone)
+  const handleUnsend = useCallback(async () => {
+    if (!selectedMessage) return;
+    
+    const isOwnMessage = String(user?.id) === String(selectedMessage.sender_id);
+    if (!isOwnMessage) {
+      Alert.alert('Error', 'You can only unsend your own messages');
+      closeMessageActions();
+      return;
+    }
+    
+    Alert.alert(
+      'Unsend Message',
+      'This message will be deleted for everyone in this conversation. This cannot be undone.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Unsend',
+          style: 'destructive',
+          onPress: () => {
+            const channelTopic = `conversation:${conversationId}`;
+            const channel = socketManager.getChannel(channelTopic);
+            if (!channel) {
+              Alert.alert('Error', 'Not connected to conversation');
+              return;
+            }
+            
+            channel.push('delete_message', { message_id: selectedMessage.id })
+              .receive('ok', () => {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                // Track deleted message ID to prevent re-adding
+                deletedMessageIdsRef.current.add(selectedMessage.id);
+                // Remove from local state
+                setMessages(prev => prev.filter(m => m.id !== selectedMessage.id));
+              })
+              .receive('error', (err: any) => {
+                console.error('Failed to unsend message:', err);
+                Alert.alert('Error', 'Failed to unsend message');
+              });
+          }
+        }
+      ]
+    );
+    
+    closeMessageActions();
+  }, [selectedMessage, user?.id, conversationId, closeMessageActions]);
+  
+  // Handle image picker
+  const handlePickImage = async () => {
+    // Prevent concurrent picker operations
+    if (isPickerActiveRef.current) {
+      console.log('[handlePickImage] Picker already active, ignoring');
+      return;
+    }
+    
+    isPickerActiveRef.current = true;
+    console.log('[handlePickImage] Starting...');
+    closeAttachMenu();
+    
+    // Longer delay to ensure modal is fully closed
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    try {
+      console.log('[handlePickImage] Requesting permission...');
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      console.log('[handlePickImage] Permission result:', permission.granted);
+      if (!permission.granted) {
+        Alert.alert('Permission needed', 'Please allow access to your photos to send images.');
+        return;
+      }
+      
+      console.log('[handlePickImage] Launching image library...');
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        quality: 0.8,
+        allowsMultipleSelection: false,
+      });
+      console.log('[handlePickImage] Result:', result.canceled ? 'canceled' : 'selected');
+      
+      if (!result.canceled && result.assets[0]) {
+        await uploadAndSendFile(result.assets[0].uri, 'image');
+      }
+    } catch (error) {
+      console.error('[handlePickImage] Error:', error);
+      Alert.alert('Error', 'Failed to open photo library');
+    } finally {
+      isPickerActiveRef.current = false;
     }
   };
   
   // Handle camera capture
   const handleTakePhoto = async () => {
-    setShowAttachMenu(false);
-    
-    const permission = await ImagePicker.requestCameraPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert('Permission needed', 'Please allow camera access to take photos.');
+    // Prevent concurrent picker operations
+    if (isPickerActiveRef.current) {
+      console.log('[handleTakePhoto] Picker already active, ignoring');
       return;
     }
     
-    const result = await ImagePicker.launchCameraAsync({
-      quality: 0.8,
-    });
+    isPickerActiveRef.current = true;
+    console.log('[handleTakePhoto] Starting...');
+    closeAttachMenu();
     
-    if (!result.canceled && result.assets[0]) {
-      await uploadAndSendFile(result.assets[0].uri, 'image');
+    // Longer delay to ensure modal is fully closed
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    try {
+      console.log('[handleTakePhoto] Requesting permission...');
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      console.log('[handleTakePhoto] Permission result:', permission.granted);
+      if (!permission.granted) {
+        Alert.alert('Permission needed', 'Please allow camera access to take photos.');
+        return;
+      }
+      
+      console.log('[handleTakePhoto] Launching camera...');
+      const result = await ImagePicker.launchCameraAsync({
+        quality: 0.8,
+      });
+      console.log('[handleTakePhoto] Result:', result.canceled ? 'canceled' : 'selected');
+      
+      if (!result.canceled && result.assets[0]) {
+        await uploadAndSendFile(result.assets[0].uri, 'image');
+      }
+    } catch (error) {
+      console.error('[handleTakePhoto] Error:', error);
+      Alert.alert('Error', 'Failed to open camera');
+    } finally {
+      isPickerActiveRef.current = false;
     }
   };
   
   // Handle document picker
   const handlePickDocument = async () => {
-    setShowAttachMenu(false);
+    // Prevent concurrent picker operations
+    if (isPickerActiveRef.current) {
+      console.log('[handlePickDocument] Picker already active, ignoring');
+      return;
+    }
+    
+    isPickerActiveRef.current = true;
+    console.log('[handlePickDocument] Starting...');
+    closeAttachMenu();
+    
+    // Longer delay to ensure modal is fully closed
+    await new Promise(resolve => setTimeout(resolve, 500));
     
     try {
+      console.log('[handlePickDocument] Launching document picker...');
       const result = await DocumentPicker.getDocumentAsync({
         type: '*/*',
         copyToCacheDirectory: true,
       });
+      console.log('[handlePickDocument] Result:', result.canceled ? 'canceled' : 'selected');
       
       if (!result.canceled && result.assets?.[0]) {
         await uploadAndSendFile(result.assets[0].uri, 'file', result.assets[0].name);
       }
     } catch (error) {
-      console.error('Document picker error:', error);
+      console.error('[handlePickDocument] Error:', error);
+      Alert.alert('Error', 'Failed to open file picker');
+    } finally {
+      isPickerActiveRef.current = false;
     }
   };
   
@@ -606,41 +1667,69 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const formData = new FormData();
       const name = filename || `${type}_${Date.now()}.${type === 'image' ? 'jpg' : 'bin'}`;
       
+      // Determine mime type based on file extension for better accuracy
+      let mimeType = type === 'image' ? 'image/jpeg' : 'application/octet-stream';
+      if (filename) {
+        const ext = filename.toLowerCase().split('.').pop();
+        if (ext === 'png') mimeType = 'image/png';
+        else if (ext === 'gif') mimeType = 'image/gif';
+        else if (ext === 'webp') mimeType = 'image/webp';
+        else if (ext === 'pdf') mimeType = 'application/pdf';
+        else if (ext === 'doc' || ext === 'docx') mimeType = 'application/msword';
+        else if (ext === 'xls' || ext === 'xlsx') mimeType = 'application/vnd.ms-excel';
+        else if (ext === 'txt') mimeType = 'text/plain';
+      }
+      
       formData.append('file', {
-        uri,
+        uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
         name,
-        type: type === 'image' ? 'image/jpeg' : 'application/octet-stream',
+        type: mimeType,
       } as any);
-      formData.append('conversation_id', conversationId);
-      formData.append('type', type);
+      formData.append('context', 'message');
+      
+      console.log('[uploadAndSendFile] Uploading file:', { name, type: mimeType, uri: uri.substring(0, 50) });
       
       const response = await api.post('/api/v1/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+        },
+        timeout: 60000, // 60 second timeout for uploads
       });
       
-      const fileUrl = response.data.url || response.data.data?.url;
+      console.log('[uploadAndSendFile] Upload response:', JSON.stringify(response.data));
+      
+      // Extract URL from various response formats
+      const fileUrl = response.data?.data?.url || response.data?.url || response.data?.file?.url;
       
       if (fileUrl) {
         // Send message with file attachment
         const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
           content: type === 'image' ? '📷 Photo' : `📎 ${name}`,
-          type,
+          content_type: type,
           file_url: fileUrl,
+          file_name: name,
+          file_mime_type: mimeType,
         });
         
         const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
         if (rawMessage?.id) {
           const normalized = normalizeMessage(rawMessage);
+          // Prepend for inverted list (newest first)
           setMessages((prev) => {
             const exists = prev.some(m => m.id === normalized.id);
             if (exists) return prev;
-            return [...prev, normalized];
+            return [normalized, ...prev];
           });
+          flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
         }
+      } else {
+        console.error('[uploadAndSendFile] No file URL in response:', response.data);
+        Alert.alert('Error', 'Upload failed - no file URL returned.');
       }
-    } catch (error) {
-      console.error('Error uploading file:', error);
-      Alert.alert('Error', 'Failed to send file. Please try again.');
+    } catch (error: any) {
+      console.error('[uploadAndSendFile] Error uploading file:', error?.response?.data || error?.message || error);
+      const errorMessage = error?.response?.data?.error?.message || error?.message || 'Failed to send file. Please try again.';
+      Alert.alert('Upload Error', errorMessage);
     } finally {
       setIsSending(false);
     }
@@ -667,12 +1756,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const rawMessage = response.data.data || response.data.message || response.data;
       if (rawMessage?.id) {
         const normalized = normalizeMessage(rawMessage);
+        // Prepend for inverted list (newest first)
         setMessages((prev) => {
           const exists = prev.some(m => m.id === normalized.id);
           if (exists) return prev;
-          return [...prev, normalized];
+          return [normalized, ...prev];
         });
-        flatListRef.current?.scrollToEnd({ animated: true });
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       }
     } catch (error) {
       console.error('Error sending wave:', error);
@@ -725,6 +1815,134 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   };
   
+  // Extracted message content renderer - must be defined before renderMessage
+  const renderMessageContent = useCallback((item: Message, isOwnMessage: boolean, senderDisplayName: string) => {
+    return (
+      <>
+        {/* Reply preview if this message is a reply */}
+        {item.reply_to && (
+          <View style={[
+            styles.replyContainer,
+            { 
+              backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.05)',
+              borderLeftColor: isOwnMessage ? 'rgba(255,255,255,0.5)' : colors.primary
+            }
+          ]}>
+            <Text style={[styles.replyAuthor, { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.primary }]} numberOfLines={1}>
+              {item.reply_to.sender?.display_name || item.reply_to.sender?.username || 'Unknown'}
+            </Text>
+            <Text 
+              style={[styles.replyText, { color: isOwnMessage ? 'rgba(255,255,255,0.75)' : colors.textSecondary }]} 
+              numberOfLines={2}
+            >
+              {item.reply_to.content || (item.reply_to.type === 'image' ? '📷 Photo' : item.reply_to.type === 'file' ? '📎 File' : 'Message')}
+            </Text>
+          </View>
+        )}
+        {/* Image messages */}
+        {item.type === 'image' && item.metadata?.url && (
+          <TouchableOpacity 
+            activeOpacity={0.9}
+            onPress={() => handleImagePress(item.metadata!.url!)}
+          >
+            <Image
+              source={{ uri: item.metadata.url }}
+              style={styles.messageImage}
+              resizeMode="cover"
+            />
+            <View style={styles.imageOverlay}>
+              <Ionicons name="expand-outline" size={16} color="rgba(255,255,255,0.9)" />
+            </View>
+          </TouchableOpacity>
+        )}
+        {/* File messages */}
+        {item.type === 'file' && item.metadata?.url && (
+          <TouchableOpacity 
+            style={[styles.fileAttachment, { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.15)' : colors.input }]}
+            onPress={() => handleFilePress(item.metadata!.url!, item.metadata?.filename)}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.fileIconContainer, { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.2)' : colors.primary + '20' }]}>
+              <Ionicons name={getFileIcon(item.metadata?.filename)} size={20} color={isOwnMessage ? '#fff' : colors.primary} />
+            </View>
+            <View style={styles.fileInfo}>
+              <Text style={{ color: isOwnMessage ? '#fff' : colors.text, fontWeight: '600' }} numberOfLines={1}>
+                {item.metadata.filename || 'File'}
+              </Text>
+              {item.metadata.size && (
+                <Text style={{ color: isOwnMessage ? 'rgba(255,255,255,0.7)' : colors.textSecondary, fontSize: 12, marginTop: 2 }}>
+                  {formatFileSize(item.metadata.size)}
+                </Text>
+              )}
+            </View>
+            <Ionicons name="download-outline" size={20} color={isOwnMessage ? 'rgba(255,255,255,0.8)' : colors.textSecondary} />
+          </TouchableOpacity>
+        )}
+        {/* Voice messages */}
+        {(item.type === 'voice' || item.type === 'audio') && item.metadata?.url && (
+          <VoiceMessagePlayer
+            audioUrl={item.metadata.url}
+            duration={item.metadata.duration || 0}
+            waveformData={item.metadata.waveform}
+            isSender={isOwnMessage}
+          />
+        )}
+        {/* Text content - hide for voice messages */}
+        {item.content && item.type !== 'voice' && item.type !== 'audio' && (
+          <Text
+            style={[
+              styles.messageText,
+              { color: isOwnMessage ? '#fff' : colors.text },
+            ]}
+          >
+            {item.content}
+          </Text>
+        )}
+        <View style={styles.messageFooter}>
+          <Text
+            style={[
+              styles.messageTime,
+              { color: isOwnMessage ? 'rgba(255,255,255,0.75)' : colors.textTertiary },
+            ]}
+          >
+            {formatTime(item.inserted_at)}
+            {item.is_edited && ' • edited'}
+          </Text>
+          {/* Message status indicator for own messages */}
+          {isOwnMessage && (() => {
+            const statusInfo = getMessageStatus(item, isOwnMessage);
+            if (!statusInfo) return null;
+            return (
+              <Ionicons
+                name={statusInfo.icon}
+                size={14}
+                color="rgba(255,255,255,0.75)"
+                style={styles.messageStatusIcon}
+              />
+            );
+          })()}
+        </View>
+        {/* Reactions display with animations */}
+        {item.reactions && item.reactions.length > 0 && (
+          <View style={[
+            styles.reactionsContainer,
+            isOwnMessage ? styles.reactionsOwn : styles.reactionsOther
+          ]}>
+            {item.reactions.map((reaction, index) => (
+              <AnimatedReactionBubble
+                key={`${reaction.emoji}-${index}`}
+                reaction={reaction}
+                isOwnMessage={isOwnMessage}
+                onPress={() => handleReactionTap(item.id, reaction.emoji, reaction.hasReacted)}
+                colors={colors}
+              />
+            ))}
+          </View>
+        )}
+      </>
+    );
+  }, [colors, handleImagePress, handleFilePress, getFileIcon, formatFileSize, formatTime, getMessageStatus, handleReactionTap]);
+  
   const renderMessage = useCallback(({ item }: { item: Message }) => {
     // Skip rendering messages without proper ID or that appear empty/invalid
     if (!item.id) {
@@ -776,101 +1994,75 @@ export default function ConversationScreen({ navigation, route }: Props) {
     const senderDisplayName = item.sender?.display_name || (item.sender as any)?.displayName || item.sender?.username || 'User';
     const senderAvatarUrl = item.sender?.avatar_url || (item.sender as any)?.avatarUrl;
     
+    // Check if this is a new message for entrance animation
+    const isNewMessage = newMessageIds.has(item.id);
+    
     return (
-      <View
-        style={[
-          styles.messageContainer,
-          isOwnMessage ? styles.ownMessage : styles.otherMessage,
-        ]}
+      <AnimatedMessageWrapper 
+        isOwnMessage={isOwnMessage} 
+        index={0}
+        isNew={isNewMessage}
       >
-        {!isOwnMessage && (
-          <View style={styles.avatarSmall}>
-            {senderAvatarUrl ? (
-              <Image source={{ uri: senderAvatarUrl }} style={styles.avatarImage} />
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onLongPress={() => handleMessageLongPress(item)}
+          delayLongPress={400}
+        >
+          <View
+            style={[
+              styles.messageContainer,
+              isOwnMessage ? styles.ownMessage : styles.otherMessage,
+            ]}
+          >
+            {!isOwnMessage && (
+              <View style={styles.avatarSmall}>
+                {senderAvatarUrl ? (
+                  <Image source={{ uri: senderAvatarUrl }} style={styles.avatarImage} />
+                ) : (
+                  <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
+                    <Text style={styles.avatarText}>
+                      {senderDisplayName.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+            {/* Pin indicator */}
+            {item.is_pinned && (
+              <View style={styles.pinnedIndicator}>
+                <Ionicons name="pin" size={12} color={colors.primary} />
+              </View>
+            )}
+            {isOwnMessage ? (
+              <LinearGradient
+                colors={['#22c55e', '#16a34a']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={[
+                  styles.messageBubble,
+                  styles.ownMessageBubble,
+                  item.is_pinned && styles.pinnedBubble,
+                ]}
+              >
+                {renderMessageContent(item, isOwnMessage, senderDisplayName)}
+              </LinearGradient>
             ) : (
-              <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
-                <Text style={styles.avatarText}>
-                  {senderDisplayName.charAt(0).toUpperCase()}
-                </Text>
+              <View
+                style={[
+                  styles.messageBubble,
+                  styles.otherMessageBubble,
+                  { backgroundColor: colors.surface },
+                  item.is_pinned && styles.pinnedBubble,
+                ]}
+              >
+                {renderMessageContent(item, isOwnMessage, senderDisplayName)}
               </View>
             )}
           </View>
-        )}
-        <View
-          style={[
-            styles.messageBubble,
-            isOwnMessage
-              ? { backgroundColor: colors.primary }
-              : { backgroundColor: colors.surface },
-          ]}
-        >
-          {/* Image messages */}
-          {item.type === 'image' && item.metadata?.url && (
-            <TouchableOpacity activeOpacity={0.9}>
-              <Image
-                source={{ uri: item.metadata.url }}
-                style={styles.messageImage}
-                resizeMode="cover"
-              />
-            </TouchableOpacity>
-          )}
-          {/* File messages */}
-          {item.type === 'file' && item.metadata?.url && (
-            <View style={[styles.fileAttachment, { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.1)' : colors.input }]}>
-              <Ionicons name="document-outline" size={20} color={isOwnMessage ? '#fff' : colors.textSecondary} />
-              <Text style={{ color: isOwnMessage ? '#fff' : colors.text, marginLeft: 8, flex: 1 }} numberOfLines={1}>
-                {item.metadata.filename || 'File'}
-              </Text>
-            </View>
-          )}
-          {/* Voice messages */}
-          {(item.type === 'voice' || item.type === 'audio') && item.metadata?.url && (
-            <VoiceMessagePlayer
-              audioUrl={item.metadata.url}
-              duration={item.metadata.duration || 0}
-              waveformData={item.metadata.waveform}
-              isSender={isOwnMessage}
-            />
-          )}
-          {/* Text content - hide for voice messages */}
-          {item.content && item.type !== 'voice' && item.type !== 'audio' && (
-            <Text
-              style={[
-                styles.messageText,
-                { color: isOwnMessage ? '#fff' : colors.text },
-              ]}
-            >
-              {item.content}
-            </Text>
-          )}
-          <View style={styles.messageFooter}>
-            <Text
-              style={[
-                styles.messageTime,
-                { color: isOwnMessage ? 'rgba(255,255,255,0.7)' : colors.textTertiary },
-              ]}
-            >
-              {formatTime(item.inserted_at)}
-              {item.is_edited && ' • edited'}
-            </Text>
-            {/* Message status indicator for own messages */}
-            {isOwnMessage && (() => {
-              const statusInfo = getMessageStatus(item, isOwnMessage);
-              if (!statusInfo) return null;
-              return (
-                <Ionicons
-                  name={statusInfo.icon}
-                  size={14}
-                  color={statusInfo.color}
-                  style={styles.messageStatusIcon}
-                />
-              );
-            })()}
-          </View>
-        </View>
-      </View>
+        </TouchableOpacity>
+      </AnimatedMessageWrapper>
     );
-  }, [user?.id, colors]);
+  }, [user?.id, colors, handleMessageLongPress, renderMessageContent, newMessageIds]);
   
   if (isLoading) {
     return (
@@ -973,7 +2165,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       { icon: 'camera-outline', label: 'Camera', color: '#3b82f6', onPress: handleTakePhoto },
       { icon: 'document-outline', label: 'File', color: '#8b5cf6', onPress: handlePickDocument },
       { icon: 'location-outline', label: 'Location', color: '#f59e0b', onPress: () => {
-        setShowAttachMenu(false);
+        closeAttachMenu();
         Alert.alert('Location Sharing', 'Location sharing is coming soon!');
       }},
     ];
@@ -985,17 +2177,25 @@ export default function ConversationScreen({ navigation, route }: Props) {
         visible={showAttachMenu}
         transparent
         animationType="none"
-        onRequestClose={() => setShowAttachMenu(false)}
+        onRequestClose={closeAttachMenu}
       >
-        <TouchableOpacity 
-          style={styles.attachMenuOverlay}
-          activeOpacity={1}
-          onPress={() => setShowAttachMenu(false)}
-        >
+        <View style={styles.attachMenuOverlay}>
+          <TouchableOpacity 
+            style={styles.attachMenuBackdrop}
+            activeOpacity={1}
+            onPress={closeAttachMenu}
+          />
           <Animated.View style={[
             styles.attachMenuContainer,
             { backgroundColor: colors.surface, transform: [{ translateY: slideUp }] }
           ]}>
+            <TouchableOpacity 
+              style={styles.attachMenuCloseButton}
+              onPress={closeAttachMenu}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons name="close" size={24} color={colors.textSecondary} />
+            </TouchableOpacity>
             <View style={[styles.attachMenuHandle, { backgroundColor: colors.border }]} />
             <Text style={[styles.attachMenuTitle, { color: colors.text }]}>Share</Text>
             
@@ -1015,7 +2215,426 @@ export default function ConversationScreen({ navigation, route }: Props) {
               ))}
             </View>
           </Animated.View>
-        </TouchableOpacity>
+        </View>
+      </Modal>
+    );
+  };
+
+  // Message Actions Menu Component - Modern Discord/Telegram style
+  const MessageActionsMenu = () => {
+    if (!showMessageActions || !selectedMessage) return null;
+    
+    const isOwnMessage = String(user?.id) === String(selectedMessage.sender_id);
+    const isPinned = selectedMessage.is_pinned;
+    
+    // Check which quick reactions the user has already used on this message
+    const getReactionState = (emoji: string) => {
+      return selectedMessage.reactions?.some(r => r.emoji === emoji && r.hasReacted) || false;
+    };
+    
+    // Define action items
+    const actionItems = [
+      {
+        id: 'reply',
+        icon: 'arrow-undo',
+        label: 'Reply',
+        color: '#3b82f6',
+        gradient: ['#3b82f6', '#60a5fa'],
+        onPress: handleReply,
+        visible: true,
+      },
+      {
+        id: 'copy',
+        icon: 'copy-outline',
+        label: 'Copy',
+        color: '#8b5cf6',
+        gradient: ['#8b5cf6', '#a78bfa'],
+        onPress: async () => {
+          // Copy message content to clipboard
+          if (selectedMessage.content) {
+            await Clipboard.setStringAsync(selectedMessage.content);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          }
+          closeMessageActions();
+        },
+        visible: !!selectedMessage.content,
+      },
+      {
+        id: 'pin',
+        icon: isPinned ? 'pin-outline' : 'pin',
+        label: isPinned ? 'Unpin' : 'Pin',
+        color: isPinned ? '#f59e0b' : '#10b981',
+        gradient: isPinned ? ['#f59e0b', '#fbbf24'] : ['#10b981', '#34d399'],
+        onPress: handleTogglePin,
+        visible: true,
+      },
+      {
+        id: 'delete',
+        icon: 'trash-outline',
+        label: 'Unsend',
+        color: '#ef4444',
+        gradient: ['#ef4444', '#f87171'],
+        onPress: handleUnsend,
+        visible: isOwnMessage,
+        danger: true,
+      },
+    ].filter(item => item.visible);
+    
+    const slideUp = messageActionsAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [400, 0],
+    });
+    
+    const backdropOpacity = backdropAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+    });
+    
+    // Render a pressable action item with animation
+    const renderActionItem = (item: typeof actionItems[0], index: number) => {
+      const itemAnim = actionItemAnims[index] || new Animated.Value(1);
+      const translateY = itemAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [30, 0],
+      });
+      const itemOpacity = itemAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+      });
+      
+      return (
+        <Animated.View
+          key={item.id}
+          style={{
+            transform: [{ translateY }],
+            opacity: itemOpacity,
+          }}
+        >
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              item.onPress();
+            }}
+            style={({ pressed }) => [
+              styles.modernActionItem,
+              { 
+                backgroundColor: pressed 
+                  ? (item.danger ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.08)')
+                  : 'rgba(255, 255, 255, 0.04)',
+                transform: [{ scale: pressed ? 0.97 : 1 }],
+              },
+            ]}
+          >
+            <View style={[
+              styles.modernActionIconWrap,
+              { backgroundColor: `${item.color}18` }
+            ]}>
+              <Ionicons name={item.icon as any} size={20} color={item.color} />
+            </View>
+            <Text style={[
+              styles.modernActionLabel,
+              { color: item.danger ? item.color : colors.text }
+            ]}>
+              {item.label}
+            </Text>
+            <View style={styles.modernActionArrow}>
+              <Ionicons name="chevron-forward" size={16} color={colors.textSecondary} />
+            </View>
+          </Pressable>
+        </Animated.View>
+      );
+    };
+    
+    return (
+      <Modal
+        visible={showMessageActions}
+        transparent
+        animationType="none"
+        onRequestClose={closeMessageActions}
+        statusBarTranslucent
+      >
+        <View style={styles.modernActionsOverlay}>
+          {/* Animated blur backdrop */}
+          <Animated.View style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}>
+            <BlurView 
+              intensity={Platform.OS === 'ios' ? 40 : 100} 
+              tint={isDark ? 'dark' : 'light'}
+              style={StyleSheet.absoluteFill}
+            />
+            <Pressable 
+              style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.4)' }]}
+              onPress={closeMessageActions}
+            />
+          </Animated.View>
+          
+          {/* Centered content area */}
+          <View style={styles.modernActionsContent}>
+            {/* Message Preview Card */}
+            <Animated.View style={[
+              styles.modernMessagePreview,
+              { 
+                backgroundColor: isDark ? 'rgba(30, 30, 35, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                transform: [
+                  { translateY: slideUp },
+                  { scale: menuScaleAnim }
+                ],
+                opacity: backdropOpacity,
+              }
+            ]}>
+              <View style={styles.modernPreviewHeader}>
+                <View style={[styles.modernPreviewAvatar, { backgroundColor: colors.primary }]}>
+                  <Text style={styles.modernPreviewAvatarText}>
+                    {(selectedMessage.sender?.display_name || selectedMessage.sender?.username || 'U').charAt(0).toUpperCase()}
+                  </Text>
+                </View>
+                <View style={styles.modernPreviewMeta}>
+                  <Text style={[styles.modernPreviewName, { color: colors.text }]} numberOfLines={1}>
+                    {selectedMessage.sender?.display_name || selectedMessage.sender?.username || 'Unknown'}
+                  </Text>
+                  <Text style={[styles.modernPreviewTime, { color: colors.textSecondary }]}>
+                    {new Date(selectedMessage.inserted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                </View>
+                {isPinned && (
+                  <View style={[styles.modernPinnedBadge, { backgroundColor: '#f59e0b20' }]}>
+                    <Ionicons name="pin" size={12} color="#f59e0b" />
+                  </View>
+                )}
+              </View>
+              
+              {/* Message content preview */}
+              <View style={styles.modernPreviewBody}>
+                {selectedMessage.type === 'image' && selectedMessage.metadata?.url ? (
+                  <View style={styles.modernPreviewImageWrap}>
+                    <Image 
+                      source={{ uri: selectedMessage.metadata.url }}
+                      style={styles.modernPreviewImage}
+                      resizeMode="cover"
+                    />
+                    <View style={styles.modernPreviewImageOverlay}>
+                      <Ionicons name="image" size={16} color="#fff" />
+                      <Text style={styles.modernPreviewImageText}>Photo</Text>
+                    </View>
+                  </View>
+                ) : selectedMessage.type === 'file' ? (
+                  <View style={[styles.modernPreviewFile, { backgroundColor: colors.surfaceHover }]}>
+                    <Ionicons name="document-outline" size={20} color={colors.primary} />
+                    <Text style={[styles.modernPreviewFileText, { color: colors.text }]} numberOfLines={1}>
+                      {selectedMessage.metadata?.filename || 'File'}
+                    </Text>
+                  </View>
+                ) : (
+                  <Text style={[styles.modernPreviewText, { color: colors.text }]} numberOfLines={3}>
+                    {selectedMessage.content || 'Message'}
+                  </Text>
+                )}
+              </View>
+              
+              {/* Quick Reactions Bar */}
+              <View style={styles.quickReactionsBar}>
+                {QUICK_REACTIONS.map((emoji) => {
+                  const hasReacted = getReactionState(emoji);
+                  return (
+                    <TouchableOpacity
+                      key={emoji}
+                      style={[
+                        styles.quickReactionBtn,
+                        { 
+                          backgroundColor: hasReacted 
+                            ? colors.primary + '25' 
+                            : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'),
+                          borderColor: hasReacted ? colors.primary : 'transparent',
+                          borderWidth: hasReacted ? 1.5 : 0,
+                        }
+                      ]}
+                      onPress={() => handleQuickReaction(emoji)}
+                      activeOpacity={0.7}
+                    >
+                      <Text style={styles.quickReactionEmoji}>{emoji}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+                <TouchableOpacity
+                  style={[
+                    styles.quickReactionBtn,
+                    styles.quickReactionMore,
+                    { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }
+                  ]}
+                  onPress={openReactionPicker}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="add" size={20} color={colors.textSecondary} />
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+            
+            {/* Action Menu Card */}
+            <Animated.View style={[
+              styles.modernActionsCard,
+              { 
+                backgroundColor: isDark ? 'rgba(30, 30, 35, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                transform: [
+                  { translateY: slideUp },
+                  { scale: menuScaleAnim }
+                ],
+                opacity: backdropOpacity,
+              }
+            ]}>
+              <View style={styles.modernActionsHeader}>
+                <View style={[styles.modernActionsHandle, { backgroundColor: colors.border }]} />
+                <Text style={[styles.modernActionsTitle, { color: colors.textSecondary }]}>
+                  MESSAGE OPTIONS
+                </Text>
+              </View>
+              
+              <View style={styles.modernActionsList}>
+                {actionItems.map((item, index) => renderActionItem(item, index))}
+              </View>
+            </Animated.View>
+            
+            {/* Cancel Button */}
+            <Animated.View style={[
+              { 
+                transform: [
+                  { translateY: slideUp },
+                  { scale: menuScaleAnim }
+                ],
+                opacity: backdropOpacity,
+              }
+            ]}>
+              <Pressable
+                onPress={closeMessageActions}
+                style={({ pressed }) => [
+                  styles.modernCancelButton,
+                  { 
+                    backgroundColor: isDark 
+                      ? (pressed ? 'rgba(50, 50, 55, 0.98)' : 'rgba(40, 40, 45, 0.95)')
+                      : (pressed ? 'rgba(240, 240, 245, 0.98)' : 'rgba(255, 255, 255, 0.95)'),
+                    transform: [{ scale: pressed ? 0.98 : 1 }],
+                  }
+                ]}
+              >
+                <Text style={[styles.modernCancelText, { color: colors.primary }]}>
+                  Cancel
+                </Text>
+              </Pressable>
+            </Animated.View>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+  // Full Emoji Reaction Picker Modal
+  const ReactionPickerModal = () => {
+    if (!showReactionPicker || !reactionPickerMessage) return null;
+    
+    const categoryKeys = Object.keys(EMOJI_CATEGORIES) as (keyof typeof EMOJI_CATEGORIES)[];
+    const emojis = EMOJI_CATEGORIES[selectedEmojiCategory];
+    
+    // Check if user has already reacted with an emoji
+    const hasReacted = (emoji: string) => {
+      return reactionPickerMessage.reactions?.some(r => r.emoji === emoji && r.hasReacted) || false;
+    };
+    
+    return (
+      <Modal
+        visible={showReactionPicker}
+        transparent
+        animationType="slide"
+        onRequestClose={closeReactionPicker}
+        statusBarTranslucent
+      >
+        <View style={styles.reactionPickerOverlay}>
+          <Pressable 
+            style={styles.reactionPickerBackdrop}
+            onPress={closeReactionPicker}
+          />
+          <View style={[
+            styles.reactionPickerContainer,
+            { backgroundColor: isDark ? '#1a1a2e' : '#ffffff' }
+          ]}>
+            {/* Header */}
+            <View style={styles.reactionPickerHeader}>
+              <View style={[styles.reactionPickerHandle, { backgroundColor: colors.border }]} />
+              <Text style={[styles.reactionPickerTitle, { color: colors.text }]}>
+                😊 Add Reaction
+              </Text>
+              <TouchableOpacity
+                style={styles.reactionPickerClose}
+                onPress={closeReactionPicker}
+              >
+                <Ionicons name="close" size={24} color={colors.textSecondary} />
+              </TouchableOpacity>
+            </View>
+            
+            {/* Category tabs */}
+            <View style={styles.emojiCategoryTabs}>
+              <FlatList
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                data={categoryKeys}
+                keyExtractor={(item) => item}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.emojiCategoryTab,
+                      selectedEmojiCategory === item && {
+                        backgroundColor: colors.primary + '20',
+                        borderColor: colors.primary,
+                      }
+                    ]}
+                    onPress={() => setSelectedEmojiCategory(item)}
+                  >
+                    <Text style={[
+                      styles.emojiCategoryLabel,
+                      { color: selectedEmojiCategory === item ? colors.primary : colors.textSecondary }
+                    ]}>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+                contentContainerStyle={styles.emojiCategoryTabsContent}
+              />
+            </View>
+            
+            {/* Emoji grid */}
+            <ScrollView 
+              style={styles.emojiScrollView}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.emojiGrid}>
+                {emojis.map((emoji, index) => {
+                  const reacted = hasReacted(emoji);
+                  return (
+                    <TouchableOpacity
+                      key={`${emoji}-${index}`}
+                      style={[
+                        styles.emojiGridItem,
+                        reacted && {
+                          backgroundColor: colors.primary + '20',
+                          borderColor: colors.primary,
+                          borderWidth: 1,
+                        }
+                      ]}
+                      onPress={() => {
+                        if (reacted) {
+                          handleRemoveReaction(reactionPickerMessage.id, emoji);
+                        } else {
+                          handleAddReaction(reactionPickerMessage.id, emoji);
+                        }
+                        closeReactionPicker();
+                      }}
+                      activeOpacity={0.6}
+                    >
+                      <Text style={styles.emojiGridEmoji}>{emoji}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </View>
+        </View>
       </Modal>
     );
   };
@@ -1027,15 +2646,153 @@ export default function ConversationScreen({ navigation, route }: Props) {
       keyboardVerticalOffset={90}
     >
       <AttachmentMenu />
+      <MessageActionsMenu />
+      <ReactionPickerModal />
+      
+      {/* Full-screen Image Viewer Modal */}
+      <Modal
+        visible={showImageViewer}
+        transparent
+        animationType="none"
+        onRequestClose={closeImageViewer}
+        statusBarTranslucent
+      >
+        <Animated.View 
+          style={[
+            styles.imageViewerContainer,
+            { opacity: imageViewerAnim }
+          ]}
+        >
+          <TouchableOpacity 
+            style={styles.imageViewerBackdrop}
+            activeOpacity={1}
+            onPress={closeImageViewer}
+          />
+          <Animated.View 
+            style={[
+              styles.imageViewerContent,
+              { 
+                transform: [{ scale: imageScaleAnim }],
+                opacity: imageViewerAnim 
+              }
+            ]}
+          >
+            {selectedImage && (
+              <Image
+                source={{ uri: selectedImage }}
+                style={styles.fullscreenImage}
+                resizeMode="contain"
+              />
+            )}
+          </Animated.View>
+          
+          {/* Close button */}
+          <TouchableOpacity 
+            style={styles.imageViewerCloseBtn}
+            onPress={closeImageViewer}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          >
+            <View style={styles.imageViewerCloseBtnInner}>
+              <Ionicons name="close" size={24} color="#fff" />
+            </View>
+          </TouchableOpacity>
+          
+          {/* Action buttons */}
+          <Animated.View 
+            style={[
+              styles.imageViewerActions,
+              { opacity: imageViewerAnim }
+            ]}
+          >
+            <TouchableOpacity 
+              style={styles.imageViewerActionBtn}
+              onPress={() => {
+                if (selectedImage) {
+                  Linking.openURL(selectedImage);
+                }
+              }}
+            >
+              <Ionicons name="download-outline" size={22} color="#fff" />
+              <Text style={styles.imageViewerActionText}>Save</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.imageViewerActionBtn}
+              onPress={() => {
+                if (selectedImage) {
+                  // Share functionality could be added here
+                  Alert.alert('Share', 'Sharing will be available soon!');
+                }
+              }}
+            >
+              <Ionicons name="share-outline" size={22} color="#fff" />
+              <Text style={styles.imageViewerActionText}>Share</Text>
+            </TouchableOpacity>
+          </Animated.View>
+        </Animated.View>
+      </Modal>
+      
+      {/* Pinned Messages Bar */}
+      {currentPinnedMessage && (
+        <TouchableOpacity
+          style={[styles.pinnedBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}
+          onPress={() => scrollToMessage(currentPinnedMessage.id)}
+          activeOpacity={0.7}
+        >
+          <View style={[styles.pinnedBarIndicator, { backgroundColor: colors.primary }]} />
+          <Ionicons name="pin" size={16} color={colors.primary} style={styles.pinnedBarIcon} />
+          <View style={styles.pinnedBarContent}>
+            <View style={styles.pinnedBarHeader}>
+              <Text style={[styles.pinnedBarLabel, { color: colors.primary }]}>
+                Pinned Message
+                {pinnedMessages.length > 1 && ` (${currentPinnedIndex + 1}/${pinnedMessages.length})`}
+              </Text>
+            </View>
+            <Text 
+              style={[styles.pinnedBarText, { color: colors.textSecondary }]} 
+              numberOfLines={1}
+            >
+              {currentPinnedMessage.content || 
+                (currentPinnedMessage.type === 'image' ? 'Photo' : 
+                 currentPinnedMessage.type === 'voice' ? 'Voice message' : 
+                 currentPinnedMessage.type === 'file' ? 'File' : 'Message')}
+            </Text>
+          </View>
+          {pinnedMessages.length > 1 && (
+            <View style={styles.pinnedBarNav}>
+              <TouchableOpacity
+                onPress={() => navigatePinnedMessages('prev')}
+                style={styles.pinnedBarNavBtn}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="chevron-up" size={18} color={colors.textSecondary} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigatePinnedMessages('next')}
+                style={styles.pinnedBarNavBtn}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="chevron-down" size={18} color={colors.textSecondary} />
+              </TouchableOpacity>
+            </View>
+          )}
+        </TouchableOpacity>
+      )}
+      
       <FlatList
         ref={flatListRef}
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
         contentContainerStyle={[styles.messagesList, messages.length === 0 && styles.emptyList]}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
-        inverted={false}
+        inverted={true}
         ListEmptyComponent={EmptyConversation}
+        onScrollToIndexFailed={(info) => {
+          // Handle scroll to index failure by scrolling to approximate offset
+          flatListRef.current?.scrollToOffset({
+            offset: info.averageItemLength * info.index,
+            animated: true,
+          });
+        }}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -1057,6 +2814,24 @@ export default function ConversationScreen({ navigation, route }: Props) {
         </View>
       )}
       
+      {/* Reply preview bar */}
+      {replyingTo && (
+        <View style={[styles.replyPreviewBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+          <View style={[styles.replyPreviewLine, { backgroundColor: colors.primary }]} />
+          <View style={styles.replyPreviewContent}>
+            <Text style={[styles.replyPreviewLabel, { color: colors.primary }]}>
+              Replying to {replyingTo.sender?.display_name || replyingTo.sender?.username || 'User'}
+            </Text>
+            <Text style={[styles.replyPreviewText, { color: colors.textSecondary }]} numberOfLines={1}>
+              {replyingTo.content || (replyingTo.type === 'image' ? '📷 Photo' : replyingTo.type === 'voice' ? '🎤 Voice message' : '📎 File')}
+            </Text>
+          </View>
+          <TouchableOpacity onPress={cancelReply} style={styles.replyPreviewClose}>
+            <Ionicons name="close" size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+      )}
+      
       {/* Normal input area */}
       {!isVoiceMode && (
         <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
@@ -1074,8 +2849,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
           </TouchableOpacity>
           
           <TextInput
+            ref={inputRef}
             style={[styles.input, { backgroundColor: colors.input, color: colors.text }]}
-            placeholder="Message..."
+            placeholder={replyingTo ? "Reply..." : "Message..."}
             placeholderTextColor={colors.textTertiary}
             value={inputText}
             onChangeText={handleTextChange}
@@ -1085,17 +2861,20 @@ export default function ConversationScreen({ navigation, route }: Props) {
           
           {/* Toggle between mic and send based on input text */}
           {inputText.trim() ? (
-            <TouchableOpacity
-              style={[styles.sendButton, { backgroundColor: colors.primary }]}
-              onPress={sendMessage}
-              disabled={isSending}
-            >
-              {isSending ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Ionicons name="send" size={20} color="#fff" />
-              )}
-            </TouchableOpacity>
+            <Animated.View style={{ transform: [{ scale: sendButtonAnim }] }}>
+              <TouchableOpacity
+                style={[styles.sendButton, { backgroundColor: colors.primary }]}
+                onPress={sendMessage}
+                disabled={isSending}
+                activeOpacity={0.8}
+              >
+                {isSending ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Ionicons name="send" size={20} color="#fff" />
+                )}
+              </TouchableOpacity>
+            </Animated.View>
           ) : (
             <TouchableOpacity
               style={[styles.sendButton, { backgroundColor: colors.surfaceHover }]}
@@ -1122,12 +2901,13 @@ const styles = StyleSheet.create({
   },
   messagesList: {
     padding: 16,
-    paddingBottom: 8,
+    paddingBottom: 100,
   },
   messageContainer: {
     flexDirection: 'row',
-    marginBottom: 12,
-    maxWidth: '80%',
+    marginBottom: 16,
+    maxWidth: '82%',
+    paddingHorizontal: 4,
   },
   ownMessage: {
     alignSelf: 'flex-end',
@@ -1136,127 +2916,226 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   avatarSmall: {
-    width: 32,
-    height: 32,
-    marginRight: 8,
+    width: 34,
+    height: 34,
+    marginRight: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
   avatarImage: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
   },
   avatarPlaceholder: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     justifyContent: 'center',
     alignItems: 'center',
   },
   avatarText: {
     color: '#fff',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   messageBubble: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 20,
     maxWidth: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  ownMessageBubble: {
+    borderBottomRightRadius: 6,
+  },
+  otherMessageBubble: {
+    borderBottomLeftRadius: 6,
   },
   messageText: {
     fontSize: 15,
-    lineHeight: 20,
+    lineHeight: 21,
+    letterSpacing: 0.2,
   },
   messageImage: {
-    width: 200,
-    height: 150,
-    borderRadius: 8,
-    marginBottom: 4,
+    width: 240,
+    height: 180,
+    borderRadius: 16,
+    marginBottom: 6,
+  },
+  imageOverlay: {
+    position: 'absolute',
+    bottom: 14,
+    right: 10,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: 14,
+    padding: 6,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
   },
   fileAttachment: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
-    borderRadius: 8,
-    marginBottom: 4,
+    padding: 12,
+    borderRadius: 14,
+    marginBottom: 6,
+    minWidth: 220,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  fileIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  fileInfo: {
+    flex: 1,
+    marginRight: 10,
   },
   messageTime: {
     fontSize: 11,
     marginTop: 4,
     alignSelf: 'flex-end',
+    letterSpacing: 0.3,
   },
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    padding: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderTopWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 8,
   },
   attachButton: {
-    padding: 8,
-  },
-  input: {
-    flex: 1,
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    maxHeight: 120,
-    fontSize: 16,
-    marginHorizontal: 8,
-  },
-  sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+    width: 42,
+    height: 42,
+    borderRadius: 21,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  e2eeIndicator: {
+  input: {
+    flex: 1,
+    borderRadius: 22,
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    maxHeight: 120,
+    fontSize: 16,
+    marginHorizontal: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  sendButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#22c55e',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  headerLeftContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(34, 197, 94, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(34, 197, 94, 0.2)',
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    marginRight: 8,
+    gap: 8,
   },
-  e2eeText: {
-    color: '#22c55e',
-    fontSize: 11,
-    fontWeight: '600',
-    marginLeft: 4,
+  backButton: {
+    padding: 4,
+    marginLeft: -8,
+  },
+  headerAvatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    marginRight: 10,
+  },
+  headerAvatarImage: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
   },
   headerTitleContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerTextContainer: {
+    alignItems: 'flex-start',
+    justifyContent: 'center',
   },
   headerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: '700',
+    letterSpacing: 0.3,
   },
   headerStatusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 2,
+    justifyContent: 'center',
+    marginTop: 3,
+    gap: 5,
   },
   headerSubtitle: {
     fontSize: 12,
-    marginLeft: 4,
+    letterSpacing: 0.2,
   },
   statusDot: {
-    width: 8,
-    height: 8,
+    width: 7,
+    height: 7,
     borderRadius: 4,
+  },
+  statusDotPulse: {
+    shadowColor: '#22c55e',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+    elevation: 4,
   },
   // Header action buttons
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 8,
   },
   headerActionBtn: {
-    padding: 8,
-    borderRadius: 20,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   // Message footer with status
   messageFooter: {
@@ -1384,8 +3263,11 @@ const styles = StyleSheet.create({
   // Attachment menu styles
   attachMenuOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
+  },
+  attachMenuBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   attachMenuContainer: {
     borderTopLeftRadius: 24,
@@ -1393,6 +3275,14 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 40,
     paddingHorizontal: 20,
+    position: 'relative',
+  },
+  attachMenuCloseButton: {
+    position: 'absolute',
+    top: 12,
+    right: 16,
+    zIndex: 10,
+    padding: 4,
   },
   attachMenuHandle: {
     width: 40,
@@ -1463,5 +3353,516 @@ const styles = StyleSheet.create({
   voiceRecorderContainer: {
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  // Image Viewer Modal styles
+  imageViewerContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageViewerBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  imageViewerContent: {
+    width: SCREEN_WIDTH,
+    height: '80%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullscreenImage: {
+    width: SCREEN_WIDTH - 20,
+    height: '100%',
+    borderRadius: 8,
+  },
+  imageViewerCloseBtn: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 60 : 40,
+    right: 20,
+    zIndex: 10,
+  },
+  imageViewerCloseBtnInner: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageViewerActions: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 50 : 30,
+    flexDirection: 'row',
+    gap: 40,
+  },
+  imageViewerActionBtn: {
+    alignItems: 'center',
+    padding: 12,
+  },
+  imageViewerActionText: {
+    color: '#fff',
+    fontSize: 12,
+    marginTop: 6,
+    fontWeight: '500',
+  },
+  // Modern Message Actions Menu styles
+  modernActionsOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  modernActionsContent: {
+    paddingHorizontal: 12,
+    paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    gap: 10,
+  },
+  modernMessagePreview: {
+    borderRadius: 16,
+    padding: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 12,
+  },
+  modernPreviewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  modernPreviewAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modernPreviewAvatarText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  modernPreviewMeta: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  modernPreviewName: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  modernPreviewTime: {
+    fontSize: 11,
+    marginTop: 1,
+  },
+  modernPinnedBadge: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modernPreviewBody: {
+    marginTop: 2,
+  },
+  modernPreviewText: {
+    fontSize: 15,
+    lineHeight: 21,
+  },
+  modernPreviewImageWrap: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    height: 120,
+    position: 'relative',
+  },
+  modernPreviewImage: {
+    width: '100%',
+    height: '100%',
+  },
+  modernPreviewImageOverlay: {
+    position: 'absolute',
+    bottom: 8,
+    left: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    gap: 4,
+  },
+  modernPreviewImageText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  modernPreviewFile: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderRadius: 10,
+    gap: 10,
+  },
+  modernPreviewFileText: {
+    flex: 1,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  modernActionsCard: {
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 24,
+    elevation: 12,
+  },
+  modernActionsHeader: {
+    alignItems: 'center',
+    paddingTop: 12,
+    paddingBottom: 8,
+    paddingHorizontal: 16,
+  },
+  modernActionsHandle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    marginBottom: 12,
+  },
+  modernActionsTitle: {
+    fontSize: 11,
+    fontWeight: '600',
+    letterSpacing: 1,
+  },
+  modernActionsList: {
+    paddingHorizontal: 8,
+    paddingBottom: 8,
+  },
+  modernActionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    marginBottom: 2,
+  },
+  modernActionIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modernActionLabel: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    marginLeft: 12,
+  },
+  modernActionArrow: {
+    opacity: 0.4,
+  },
+  modernCancelButton: {
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 6,
+  },
+  modernCancelText: {
+    fontSize: 17,
+    fontWeight: '600',
+  },
+  // Legacy Message Actions styles (keep for compatibility)
+  messageActionsContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  messageActionsList: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    paddingTop: 12,
+    paddingBottom: 30,
+    paddingHorizontal: 16,
+  },
+  messageActionsHandle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    alignSelf: 'center',
+    marginBottom: 16,
+  },
+  messageActionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+    marginBottom: 4,
+  },
+  messageActionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 14,
+  },
+  messageActionLabel: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  messageActionCancel: {
+    marginTop: 8,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  messageActionCancelText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  // Pinned message indicator
+  pinnedIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+    gap: 4,
+  },
+  pinnedIndicatorText: {
+    fontSize: 10,
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  pinnedBubble: {
+    borderWidth: 1,
+    borderStyle: 'dashed',
+  },
+  // Reply preview bar styles
+  replyPreviewBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+  },
+  replyPreviewLine: {
+    width: 3,
+    height: '100%',
+    minHeight: 36,
+    borderRadius: 2,
+    marginRight: 10,
+  },
+  replyPreviewContent: {
+    flex: 1,
+  },
+  replyPreviewLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  replyPreviewText: {
+    fontSize: 13,
+    opacity: 0.8,
+  },
+  replyPreviewClose: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  // Reply display in message bubble
+  replyContainer: {
+    padding: 8,
+    borderRadius: 8,
+    marginBottom: 6,
+    borderLeftWidth: 3,
+  },
+  replyAuthor: {
+    fontSize: 11,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  replyText: {
+    fontSize: 12,
+    opacity: 0.8,
+  },
+  // Reactions display styles
+  reactionsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+    gap: 6,
+  },
+  reactionsOwn: {
+    justifyContent: 'flex-end',
+  },
+  reactionsOther: {
+    justifyContent: 'flex-start',
+  },
+  reactionBubble: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    gap: 4,
+  },
+  reactionEmoji: {
+    fontSize: 14,
+  },
+  reactionCount: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  // Quick reactions bar in message actions
+  quickReactionsBar: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: 14,
+    paddingBottom: 4,
+    gap: 8,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(128, 128, 128, 0.2)',
+    marginTop: 12,
+  },
+  quickReactionBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quickReactionEmoji: {
+    fontSize: 22,
+  },
+  quickReactionMore: {
+    borderWidth: 1,
+    borderColor: 'rgba(128, 128, 128, 0.3)',
+    borderStyle: 'dashed',
+  },
+  // Full reaction picker modal styles
+  reactionPickerOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  reactionPickerBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  reactionPickerContainer: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+    maxHeight: SCREEN_HEIGHT * 0.6,
+  },
+  reactionPickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+  },
+  reactionPickerHandle: {
+    position: 'absolute',
+    top: 8,
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+  },
+  reactionPickerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 12,
+  },
+  reactionPickerClose: {
+    position: 'absolute',
+    top: 12,
+    right: 16,
+    padding: 4,
+  },
+  emojiCategoryTabs: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(128, 128, 128, 0.2)',
+  },
+  emojiCategoryTabsContent: {
+    paddingHorizontal: 12,
+    paddingBottom: 12,
+    gap: 8,
+  },
+  emojiCategoryTab: {
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  emojiCategoryLabel: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  emojiScrollView: {
+    maxHeight: SCREEN_HEIGHT * 0.35,
+  },
+  emojiGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    padding: 12,
+    justifyContent: 'flex-start',
+  },
+  emojiGridItem: {
+    width: '12.5%',
+    aspectRatio: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  emojiGridEmoji: {
+    fontSize: 26,
+  },
+  // Pinned message bar styles
+  pinnedBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  pinnedBarIndicator: {
+    width: 3,
+    height: '100%',
+    borderRadius: 2,
+    marginRight: 10,
+    minHeight: 32,
+  },
+  pinnedBarIcon: {
+    marginRight: 8,
+  },
+  pinnedBarContent: {
+    flex: 1,
+    marginRight: 8,
+  },
+  pinnedBarHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  pinnedBarLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  pinnedBarText: {
+    fontSize: 14,
+    marginTop: 2,
+  },
+  pinnedBarNav: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 2,
+  },
+  pinnedBarNavBtn: {
+    padding: 2,
   },
 });
