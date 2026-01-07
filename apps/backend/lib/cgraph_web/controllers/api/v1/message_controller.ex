@@ -49,7 +49,9 @@ defmodule CgraphWeb.API.V1.MessageController do
       file_size: Map.get(params, "file_size"),
       file_mime_type: Map.get(params, "file_mime_type"),
       thumbnail_url: Map.get(params, "thumbnail_url"),
-      is_encrypted: Map.get(params, "is_encrypted", false)
+      is_encrypted: Map.get(params, "is_encrypted", false),
+      # Custom metadata (grid_images for multi-photo, link previews, etc.)
+      link_preview: Map.get(params, "link_preview") || Map.get(params, "metadata")
     }
     # Remove nil values to avoid overwriting with nils
     |> Enum.reject(fn {_k, v} -> is_nil(v) end)

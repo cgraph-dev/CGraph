@@ -268,7 +268,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
   
   // Image viewer state
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageGallery, setImageGallery] = useState<string[]>([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showImageViewer, setShowImageViewer] = useState(false);
+  const imageGalleryRef = useRef<FlatList>(null);
   
   // Message action menu state
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
@@ -1129,9 +1132,21 @@ export default function ConversationScreen({ navigation, route }: Props) {
   }, [showAttachMenu, closeAttachMenu, openAttachMenu]);
   
   // Handle image press - open fullscreen viewer with animation
-  const handleImagePress = useCallback((imageUrl: string) => {
+  // Can open a single image or a gallery of images with swipe support
+  const handleImagePress = useCallback((imageUrl: string, allImages?: string[], startIndex?: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setSelectedImage(imageUrl);
+    
+    // Set up gallery if multiple images provided
+    if (allImages && allImages.length > 1) {
+      setImageGallery(allImages);
+      setCurrentImageIndex(startIndex ?? 0);
+      setSelectedImage(allImages[startIndex ?? 0]);
+    } else {
+      setImageGallery([imageUrl]);
+      setCurrentImageIndex(0);
+      setSelectedImage(imageUrl);
+    }
+    
     setShowImageViewer(true);
     
     // Animate in
@@ -1147,7 +1162,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
         tension: 80,
         friction: 8,
       }),
-    ]).start();
+    ]).start(() => {
+      // Scroll to the correct image after modal opens
+      if (allImages && allImages.length > 1 && startIndex && startIndex > 0) {
+        setTimeout(() => {
+          imageGalleryRef.current?.scrollToIndex({ index: startIndex, animated: false });
+        }, 50);
+      }
+    });
   }, [imageViewerAnim, imageScaleAnim]);
   
   // Close image viewer with animation
@@ -1166,6 +1188,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
     ]).start(() => {
       setShowImageViewer(false);
       setSelectedImage(null);
+      setImageGallery([]);
+      setCurrentImageIndex(0);
     });
   }, [imageViewerAnim, imageScaleAnim]);
   
@@ -1629,9 +1653,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
         return;
       }
       
-      // Request microphone permission for video recording
-      const micPermission = await ImagePicker.requestMicrophonePermissionsAsync();
-      console.log('[handleTakePhoto] Mic permission:', micPermission.granted);
+      // Note: Microphone permission is automatically requested by the camera when recording video
+      // No need to request it separately for expo-image-picker
       
       console.log('[handleTakePhoto] Launching camera with photo/video support...');
       // Open native camera with BOTH photo and video options - user can switch in camera UI
@@ -1810,17 +1833,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
           const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, msgPayload);
           
           const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
+          if (__DEV__) {
+            console.log('[sendPendingAttachments] Server response metadata:', JSON.stringify(rawMessage?.metadata));
+            console.log('[sendPendingAttachments] Message ID:', rawMessage?.id);
+          }
+          // Don't add message here - let WebSocket handler add it to avoid duplicates
+          // The WebSocket broadcast happens server-side before we get the API response
+          // So by this point, the message is already added via WebSocket
           if (rawMessage?.id) {
-            const normalized = normalizeMessage(rawMessage);
-            // Backend stores grid_images in link_preview, so merge it into metadata
-            if (uploadedUrls.length > 1) {
-              normalized.metadata = {
-                ...normalized.metadata,
-                grid_images: uploadedUrls,
-                image_count: uploadedUrls.length,
-              };
-            }
-            setMessages(prev => [normalized, ...prev]);
+            // Just scroll to show the new message that WebSocket already added
             flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
           }
         }
@@ -2071,7 +2092,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
                     <TouchableOpacity
                       key={idx}
                       activeOpacity={0.9}
-                      onPress={() => handleImagePress(imgUrl)}
+                      onPress={() => handleImagePress(imgUrl, images, idx)}
                       style={[
                         styles.gridImageContainer,
                         count === 1 && styles.gridImageFull,
@@ -2141,7 +2162,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
                     <TouchableOpacity
                       key={idx}
                       activeOpacity={0.9}
-                      onPress={() => handleImagePress(imgUrl)}
+                      onPress={() => handleImagePress(imgUrl, images, idx)}
                       style={[
                         styles.gridImageContainer,
                         count === 1 && styles.gridImageFull,
@@ -3154,7 +3175,42 @@ export default function ConversationScreen({ navigation, route }: Props) {
               }
             ]}
           >
-            {selectedImage && (
+            {imageGallery.length > 1 ? (
+              /* Swipeable gallery for multiple images */
+              <FlatList
+                ref={imageGalleryRef}
+                data={imageGallery}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                initialScrollIndex={currentImageIndex}
+                getItemLayout={(_, index) => ({
+                  length: SCREEN_WIDTH,
+                  offset: SCREEN_WIDTH * index,
+                  index,
+                })}
+                onScroll={(e) => {
+                  // Update page number in real-time during scroll
+                  const newIndex = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
+                  if (newIndex !== currentImageIndex && newIndex >= 0 && newIndex < imageGallery.length) {
+                    setCurrentImageIndex(newIndex);
+                    setSelectedImage(imageGallery[newIndex]);
+                  }
+                }}
+                scrollEventThrottle={16}
+                keyExtractor={(item, index) => `gallery-${index}-${item}`}
+                renderItem={({ item }) => (
+                  <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT, justifyContent: 'center', alignItems: 'center' }}>
+                    <Image
+                      source={{ uri: item }}
+                      style={styles.fullscreenImage}
+                      resizeMode="contain"
+                    />
+                  </View>
+                )}
+              />
+            ) : selectedImage && (
+              /* Single image view */
               <Image
                 source={{ uri: selectedImage }}
                 style={styles.fullscreenImage}
@@ -3162,6 +3218,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
               />
             )}
           </Animated.View>
+          
+          {/* Image counter for gallery */}
+          {imageGallery.length > 1 && (
+            <View style={styles.imageCounterContainer}>
+              <Text style={styles.imageCounterText}>
+                {currentImageIndex + 1} / {imageGallery.length}
+              </Text>
+            </View>
+          )}
           
           {/* Close button */}
           <TouchableOpacity 
@@ -3946,6 +4011,21 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH - 20,
     height: '100%',
     borderRadius: 8,
+  },
+  imageCounterContainer: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 60 : 40,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    zIndex: 10,
+  },
+  imageCounterText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
   },
   imageViewerCloseBtn: {
     position: 'absolute',
