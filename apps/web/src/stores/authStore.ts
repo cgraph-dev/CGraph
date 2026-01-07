@@ -96,9 +96,21 @@ interface AuthState {
 
 /**
  * Session storage wrapper for auth persistence
- * Uses sessionStorage (cleared on browser close) for improved security
- * Note: Client-side token storage is inherently vulnerable to XSS attacks
- * Use HttpOnly cookies for maximum security (requires backend changes)
+ * 
+ * SECURITY MODEL:
+ * - Primary auth: HTTP-only cookies (set by backend, immune to XSS)
+ * - Fallback: Token in sessionStorage (for WebSocket connections)
+ * 
+ * The backend sets HTTP-only cookies on login/register/refresh.
+ * These cookies are automatically sent with every request (withCredentials: true).
+ * JavaScript cannot access HTTP-only cookies, preventing XSS token theft.
+ * 
+ * We still store tokens in sessionStorage for:
+ * 1. WebSocket Phoenix channel authentication (requires token in params)
+ * 2. Backwards compatibility during migration
+ * 3. Display of auth state in UI
+ * 
+ * Session storage is cleared on browser close for additional security.
  */
 const createSecureStorage = (): StateStorage => {
   const encode = (data: string): string => {

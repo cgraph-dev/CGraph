@@ -29,16 +29,21 @@ function onRefreshFailed(): void {
   refreshSubscribers = [];
 }
 
-// Create axios instance
+// Create axios instance with credentials (cookies) enabled
 export const api: AxiosInstance = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 30000,
+  // Enable sending cookies with cross-origin requests
+  // This allows HTTP-only cookie authentication (XSS-safe)
+  withCredentials: true,
 });
 
-// Request interceptor - add auth token
+// Request interceptor - add auth token as fallback
+// Primary auth is via HTTP-only cookies, but we keep token in header
+// for backwards compatibility and WebSocket connections
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = useAuthStore.getState().token;
@@ -81,9 +86,13 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const response = await axios.post(`${API_URL}/api/v1/auth/refresh`, {
-          refresh_token: refreshToken,
-        });
+        // Refresh endpoint will use HTTP-only cookie if available
+        // Fall back to sending refresh token in body
+        const response = await axios.post(
+          `${API_URL}/api/v1/auth/refresh`, 
+          { refresh_token: refreshToken },
+          { withCredentials: true }
+        );
 
         // Handle both response formats: { token, refresh_token } and { data: { tokens: { access_token, refresh_token } } }
         const data = response.data.data || response.data;

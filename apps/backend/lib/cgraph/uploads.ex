@@ -3,13 +3,30 @@ defmodule Cgraph.Uploads do
   The Uploads context.
 
   Handles file uploads, storage, and quota management.
-  Includes magic byte validation for security.
+  Includes magic byte validation for security and image optimization for performance.
+  
+  ## Image Optimization
+  
+  When an image is uploaded, we generate multiple sizes:
+  - Thumbnail (150x150) - For lists and previews
+  - Preview (800x800) - For chat views
+  - Original - For full-screen viewing
+  
+  This prevents users from downloading massive 10MB photos just to see a small chat bubble.
   """
 
   import Ecto.Query, warn: false
   alias Cgraph.Repo
 
   require Logger
+
+  # Image optimization settings
+  @thumbnail_size {150, 150}
+  @preview_size {800, 800}
+  @jpeg_quality 85
+  
+  # Size thresholds for optimization (in bytes)
+  @optimize_threshold 100_000  # 100KB - optimize images larger than this
 
   # Magic byte signatures for file type validation
   # These are the first bytes of valid files for each supported type
@@ -83,22 +100,28 @@ defmodule Cgraph.Uploads do
   @max_quota 5 * 1024 * 1024 * 1024 # 5 GB default quota
 
   @doc """
-  Store a file upload with magic byte validation.
+  Store a file upload with magic byte validation and image optimization.
   
   Validates the file's actual content against its claimed MIME type
   to prevent malicious file uploads (e.g., PHP files disguised as images).
+  
+  For images larger than 100KB, generates:
+  - Thumbnail (150x150) for lists
+  - Preview (800x800) for chat view
+  - Optimized original
   """
   def store_file(user, upload, opts \\ []) do
     context = Keyword.get(opts, :context, "message")
     skip_validation = Keyword.get(opts, :skip_validation, false)
+    skip_optimization = Keyword.get(opts, :skip_optimization, false)
 
     # Validate file content matches claimed MIME type
     with :ok <- validate_mime_type(upload.path, upload.content_type, skip_validation) do
-      do_store_file(user, upload, context)
+      do_store_file(user, upload, context, skip_optimization)
     end
   end
 
-  defp do_store_file(user, upload, context) do
+  defp do_store_file(user, upload, context, skip_optimization) do
     # Generate unique filename
     ext = Path.extname(upload.filename)
     filename = "#{Ecto.UUID.generate()}#{ext}"
@@ -117,6 +140,24 @@ defmodule Cgraph.Uploads do
 
     # Generate URL
     url = "/uploads/#{context}/#{filename}"
+    
+    # Optimize images if applicable (preview_url reserved for future use)
+    {thumbnail_url, _preview_url, final_url, dimensions} = 
+      if should_optimize_image?(upload.content_type, stat.size, skip_optimization) do
+        base_id = Path.rootname(filename)
+        optimize_image(dest_path, base_id, context, upload.content_type)
+      else
+        # No optimization - just get dimensions if it's an image
+        dims = if String.starts_with?(upload.content_type, "image/") do
+          case get_image_dimensions(dest_path) do
+            {:ok, w, h} -> %{width: w, height: h}
+            _ -> %{}
+          end
+        else
+          %{}
+        end
+        {nil, nil, url, dims}
+      end
 
     # Create file record
     file_attrs = %{
@@ -124,25 +165,135 @@ defmodule Cgraph.Uploads do
       original_filename: upload.filename,
       content_type: upload.content_type,
       size: stat.size,
-      url: url,
+      url: final_url,
+      thumbnail_url: thumbnail_url,
       checksum: checksum,
       context: context,
       user_id: user.id
     }
-
-    # Add image dimensions if applicable
-    file_attrs = if String.starts_with?(upload.content_type, "image/") do
-      case get_image_dimensions(dest_path) do
-        {:ok, width, height} -> Map.merge(file_attrs, %{width: width, height: height})
-        _ -> file_attrs
-      end
-    else
-      file_attrs
-    end
+    |> Map.merge(dimensions)
 
     %UploadedFile{}
     |> UploadedFile.changeset(file_attrs)
     |> Repo.insert()
+  end
+  
+  defp should_optimize_image?(content_type, size, skip_optimization) do
+    not skip_optimization and
+    String.starts_with?(content_type, "image/") and
+    content_type not in ["image/gif", "image/svg+xml"] and
+    size > @optimize_threshold
+  end
+  
+  @doc """
+  Optimize an image by creating thumbnail, preview, and optimized original.
+  
+  Uses ImageMagick (via System.cmd) for image processing.
+  Returns {thumbnail_url, preview_url, original_url, dimensions}.
+  """
+  def optimize_image(source_path, base_id, context, _content_type) do
+    upload_path = Path.join([@upload_dir, context])
+    
+    # Determine output format (prefer WebP for better compression)
+    output_ext = if supports_webp?(), do: ".webp", else: Path.extname(source_path)
+    
+    # Generate file paths
+    thumb_filename = "#{base_id}_thumb#{output_ext}"
+    preview_filename = "#{base_id}_preview#{output_ext}"
+    optimized_filename = "#{base_id}_opt#{output_ext}"
+    
+    thumb_path = Path.join(upload_path, thumb_filename)
+    preview_path = Path.join(upload_path, preview_filename)
+    optimized_path = Path.join(upload_path, optimized_filename)
+    
+    # Get original dimensions
+    dimensions = case get_image_dimensions(source_path) do
+      {:ok, w, h} -> %{width: w, height: h}
+      _ -> %{}
+    end
+    
+    # Generate thumbnail (150x150)
+    thumb_result = generate_resized_image(source_path, thumb_path, @thumbnail_size)
+    
+    # Generate preview (800x800)
+    preview_result = generate_resized_image(source_path, preview_path, @preview_size)
+    
+    # Generate optimized original (strip metadata, optimize)
+    opt_result = optimize_original(source_path, optimized_path)
+    
+    # Build URLs (only if generation succeeded)
+    thumb_url = if thumb_result == :ok, do: "/uploads/#{context}/#{thumb_filename}", else: nil
+    preview_url = if preview_result == :ok, do: "/uploads/#{context}/#{preview_filename}", else: nil
+    original_url = if opt_result == :ok do
+      "/uploads/#{context}/#{optimized_filename}"
+    else
+      # Fall back to original if optimization failed
+      "/uploads/#{context}/#{base_id}#{Path.extname(source_path)}"
+    end
+    
+    Logger.info("Image optimization complete",
+      base_id: base_id,
+      thumb: thumb_result == :ok,
+      preview: preview_result == :ok,
+      optimized: opt_result == :ok
+    )
+    
+    {thumb_url, preview_url, original_url, dimensions}
+  end
+  
+  defp generate_resized_image(source, dest, {max_width, max_height}) do
+    # Use ImageMagick convert command
+    # -thumbnail preserves aspect ratio and is faster than -resize
+    # -strip removes EXIF metadata
+    args = [
+      source,
+      "-thumbnail", "#{max_width}x#{max_height}>",
+      "-strip",
+      "-quality", "#{@jpeg_quality}",
+      dest
+    ]
+    
+    case System.cmd("convert", args, stderr_to_stdout: true) do
+      {_, 0} -> :ok
+      {error, _} -> 
+        Logger.warning("Image resize failed: #{error}")
+        :error
+    end
+  rescue
+    e ->
+      Logger.warning("Image resize error: #{inspect(e)}")
+      :error
+  end
+  
+  defp optimize_original(source, dest) do
+    # Optimize without resizing
+    args = [
+      source,
+      "-strip",
+      "-auto-orient",
+      "-quality", "#{@jpeg_quality}",
+      dest
+    ]
+    
+    case System.cmd("convert", args, stderr_to_stdout: true) do
+      {_, 0} -> :ok
+      {error, _} -> 
+        Logger.warning("Image optimization failed: #{error}")
+        :error
+    end
+  rescue
+    e ->
+      Logger.warning("Image optimization error: #{inspect(e)}")
+      :error
+  end
+  
+  defp supports_webp? do
+    case System.cmd("convert", ["-list", "format"], stderr_to_stdout: true) do
+      {output, 0} -> String.contains?(output, "WEBP")
+      _ -> false
+    end
+  rescue
+    _ -> false
   end
 
   @doc """

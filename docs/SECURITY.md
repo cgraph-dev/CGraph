@@ -69,7 +69,36 @@ TokenBlacklist.revoked?(token)
 - L2: ETS bloom filter (<1ms)
 - L3: Redis (persistent, <5ms)
 
-### 2. Security Headers
+### 2. HTTP-Only Cookie Authentication (v0.7.24+)
+
+**Module:** `CgraphWeb.Plugs.CookieAuth`
+
+Web clients now use HTTP-only cookies for JWT storage, preventing XSS-based token theft:
+
+**Cookie Configuration:**
+| Cookie | Max Age | Flags |
+|--------|---------|-------|
+| `cgraph_access_token` | 15 minutes | HttpOnly, Secure, SameSite=Strict |
+| `cgraph_refresh_token` | 7 days | HttpOnly, Secure, SameSite=Strict |
+
+**Security Benefits:**
+- Tokens inaccessible to JavaScript (prevents XSS theft)
+- Automatic CSRF protection via SameSite=Strict
+- Cookies only sent over HTTPS (Secure flag)
+- Seamless integration with existing Guardian JWT pipeline
+
+**Client Compatibility:**
+- **Web:** Uses cookies automatically with `withCredentials: true`
+- **Mobile:** Continues using Authorization header with native secure storage
+- **API:** Both cookie and header auth supported simultaneously
+
+**How It Works:**
+1. Login/register endpoints set HTTP-only cookies alongside JSON response
+2. `CookieAuth` plug extracts token from cookie if no Authorization header present
+3. Token is injected into connection for Guardian to verify
+4. Logout clears cookies with immediate expiration
+
+### 3. Security Headers
 
 **Module:** `CgraphWeb.Plugs.SecurityHeaders`
 

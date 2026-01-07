@@ -50,6 +50,8 @@ defmodule CgraphWeb.Router do
   end
 
   pipeline :api_auth do
+    # Check for JWT in HTTP-only cookies (XSS-safe) before checking Authorization header
+    plug CgraphWeb.Plugs.CookieAuth
     plug CgraphWeb.Plugs.AuthPipeline
     plug CgraphWeb.Plugs.CurrentUser
   end

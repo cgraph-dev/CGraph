@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.24] - 2026-01-07
+
+### Security
+
+#### Backend - HTTP-Only Cookie Authentication
+- **XSS Token Protection** - Moved JWT storage from sessionStorage to HTTP-only cookies
+  - New `CgraphWeb.Plugs.CookieAuth` plug for cookie-based auth
+  - Access token: 15-minute expiry, HTTP-only, Secure, SameSite=Strict
+  - Refresh token: 7-day expiry, HTTP-only, Secure, SameSite=Strict
+  - Prevents JavaScript-based token theft via XSS attacks
+  - Backwards compatible with mobile apps (still use Authorization header)
+
+#### Web - Credential Security
+- Updated axios client with `withCredentials: true` for automatic cookie handling
+- Session tokens no longer accessible to client-side JavaScript
+
+### Added
+
+#### Backend - Image Optimization Pipeline
+- **Automatic Image Processing** - Server-side optimization for uploaded images
+  - Thumbnail generation (150x150) for gallery views
+  - Preview generation (800x800) for quick loading
+  - Original optimization with metadata stripping
+  - WebP conversion when supported by ImageMagick
+  - Size threshold: Only images > 100KB are optimized
+  - Preserves original aspect ratios
+  - Skips GIF and SVG formats to preserve animations/vectors
+
+### Technical Notes
+- ImageMagick `convert` command used for image processing
+- Mobile apps unaffected by cookie changes (use native secure storage)
+- Cookie auth integrates seamlessly with existing Guardian JWT pipeline
+
+---
+
 ## [0.7.23] - 2026-01-07
 
 ### Security

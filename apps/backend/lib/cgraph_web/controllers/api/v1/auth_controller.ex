@@ -12,23 +12,27 @@ defmodule CgraphWeb.API.V1.AuthController do
   - JWT token revocation on logout
   - Progressive lockout duration
   - IP-based rate limiting
+  - HTTP-only cookie authentication (XSS-safe)
   """
   use CgraphWeb, :controller
 
   alias Cgraph.Accounts
   alias Cgraph.Guardian
   alias Cgraph.Security.AccountLockout
+  alias CgraphWeb.Plugs.CookieAuth
 
   action_fallback CgraphWeb.FallbackController
 
   @doc """
   Register a new user with email and password.
+  Sets HTTP-only cookies for web clients.
   """
   def register(conn, %{"user" => user_params}) do
     with {:ok, user} <- Accounts.register_user(user_params),
          {:ok, tokens} <- Guardian.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn
+      |> maybe_set_cookies(tokens)
       |> put_status(:created)
       |> render(:auth_response, user: user, tokens: tokens)
     end
@@ -83,7 +87,9 @@ defmodule CgraphWeb.API.V1.AuthController do
 
     with {:ok, tokens} <- Guardian.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
-      conn |> render(:auth_response, user: user, tokens: tokens)
+      conn
+      |> maybe_set_cookies(tokens)
+      |> render(:auth_response, user: user, tokens: tokens)
     end
   end
 
@@ -118,16 +124,31 @@ defmodule CgraphWeb.API.V1.AuthController do
 
   @doc """
   Refresh access token using refresh token.
+  Accepts token from body or HTTP-only cookie.
   """
-  def refresh(conn, %{"refresh_token" => refresh_token}) do
-    case Guardian.refresh_tokens(refresh_token) do
-      {:ok, tokens} ->
-        json(conn, %{tokens: tokens})
-
-      {:error, _reason} ->
+  def refresh(conn, params) do
+    # Check for refresh token in body first, then cookie
+    refresh_token = params["refresh_token"] || CookieAuth.get_refresh_token(conn)
+    
+    case refresh_token do
+      nil ->
         conn
         |> put_status(:unauthorized)
-        |> json(%{error: "Invalid or expired refresh token"})
+        |> json(%{error: "No refresh token provided"})
+        
+      token ->
+        case Guardian.refresh_tokens(token) do
+          {:ok, tokens} ->
+            conn
+            |> maybe_set_cookies(tokens)
+            |> json(%{tokens: tokens})
+
+          {:error, _reason} ->
+            conn
+            |> CookieAuth.clear_auth_cookies()
+            |> put_status(:unauthorized)
+            |> json(%{error: "Invalid or expired refresh token"})
+        end
     end
   end
 
@@ -150,12 +171,14 @@ defmodule CgraphWeb.API.V1.AuthController do
 
   @doc """
   Verify wallet signature and authenticate.
+  Sets HTTP-only cookies for web clients.
   """
   def wallet_verify(conn, %{"wallet_address" => address, "signature" => signature}) do
     with {:ok, user} <- Accounts.verify_wallet_signature(address, signature),
          {:ok, tokens} <- Guardian.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn
+      |> maybe_set_cookies(tokens)
       |> render(:auth_response, user: user, tokens: tokens)
     else
       {:error, :invalid_signature} ->
@@ -205,11 +228,22 @@ defmodule CgraphWeb.API.V1.AuthController do
 
   This ensures both the session record is deleted and the JWT
   is added to the blacklist to prevent reuse.
+  Also clears HTTP-only auth cookies.
   """
   def logout(conn, _params) do
-    # Get the token from Authorization header
-    case get_req_header(conn, "authorization") do
-      ["Bearer " <> token] ->
+    # Get the token from Authorization header or cookie
+    token = case get_req_header(conn, "authorization") do
+      ["Bearer " <> t] -> t
+      _ -> CookieAuth.get_access_token(conn)
+    end
+    
+    case token do
+      nil ->
+        conn
+        |> CookieAuth.clear_auth_cookies()
+        |> json(%{message: "Logged out successfully"})
+        
+      token ->
         # Get user for audit logging
         user = Guardian.Plug.current_resource(conn)
         user_id = if user, do: user.id, else: nil
@@ -220,10 +254,9 @@ defmodule CgraphWeb.API.V1.AuthController do
         # Add token to blacklist for remaining validity period
         Guardian.revoke_token(token, reason: :logout, user_id: user_id)
 
-        json(conn, %{message: "Logged out successfully"})
-
-      _ ->
-        json(conn, %{message: "Logged out successfully"})
+        conn
+        |> CookieAuth.clear_auth_cookies()
+        |> json(%{message: "Logged out successfully"})
     end
   end
 
@@ -305,6 +338,21 @@ defmodule CgraphWeb.API.V1.AuthController do
         conn.remote_ip
         |> :inet.ntoa()
         |> List.to_string()
+    end
+  end
+  
+  # Set HTTP-only cookies for web clients
+  # Mobile clients use the tokens from the JSON response directly
+  defp maybe_set_cookies(conn, tokens) do
+    # Check if request indicates web client (has Origin header or specific User-Agent)
+    # This allows mobile clients to continue using token-based auth
+    case get_req_header(conn, "x-auth-mode") do
+      ["cookie"] ->
+        CookieAuth.set_auth_cookies(conn, tokens.access_token, tokens.refresh_token)
+      _ ->
+        # Default: set cookies for all requests (backwards compatible)
+        # Mobile clients will ignore cookies and use token from response
+        CookieAuth.set_auth_cookies(conn, tokens.access_token, tokens.refresh_token)
     end
   end
 end

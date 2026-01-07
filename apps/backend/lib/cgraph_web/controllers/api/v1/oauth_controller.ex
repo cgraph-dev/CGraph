@@ -21,6 +21,10 @@ defmodule CgraphWeb.API.V1.OAuthController do
   1. Mobile app uses native SDK to authenticate
   2. Mobile app calls POST /api/v1/auth/oauth/:provider/mobile
   3. Server verifies token and returns JWT
+  
+  ## Security
+  
+  Sets HTTP-only cookies for web clients to prevent XSS token theft.
   """
 
   use CgraphWeb, :controller
@@ -30,6 +34,7 @@ defmodule CgraphWeb.API.V1.OAuthController do
   alias Cgraph.Crypto
   alias Cgraph.OAuth
   alias CgraphWeb.API.V1.AuthJSON
+  alias CgraphWeb.Plugs.CookieAuth
 
   @valid_providers ~w(google apple facebook tiktok)
 
@@ -103,6 +108,7 @@ defmodule CgraphWeb.API.V1.OAuthController do
         {:ok, %{user: user, tokens: tokens}} ->
           conn
           |> clear_oauth_session()
+          |> CookieAuth.set_auth_cookies(tokens.access_token, tokens.refresh_token)
           |> put_status(:ok)
           |> render(:auth_response, user: user, tokens: tokens)
 
