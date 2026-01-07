@@ -77,7 +77,44 @@ All responses follow this structure:
 
 ## Authentication
 
-CGraph supports two authentication methods:
+CGraph supports multiple authentication methods:
+
+### Authentication Methods
+
+| Method | Use Case | Security |
+|--------|----------|----------|
+| HTTP-only Cookies | Web browsers | XSS-immune (recommended for web) |
+| Bearer Token | Mobile apps, APIs | Use with secure storage |
+| Wallet Auth | Anonymous/privacy-focused | No email required |
+
+### HTTP-only Cookie Authentication (v0.7.24+)
+
+For web clients, authentication tokens are automatically set as HTTP-only cookies. This provides protection against XSS attacks since JavaScript cannot access these cookies.
+
+**How it works:**
+1. Login/register endpoints set `cgraph_access_token` and `cgraph_refresh_token` cookies
+2. Subsequent requests automatically include cookies (with `credentials: 'include'`)
+3. No need to manually manage Authorization headers
+
+**Cookie Configuration:**
+| Cookie | Max Age | Flags |
+|--------|---------|-------|
+| `cgraph_access_token` | 15 min | HttpOnly, Secure, SameSite=Lax |
+| `cgraph_refresh_token` | 7 days | HttpOnly, Secure, SameSite=Lax |
+
+**JavaScript Example:**
+```javascript
+// Using fetch
+const response = await fetch('/api/v1/me', {
+  credentials: 'include'  // Include cookies
+});
+
+// Using axios
+axios.defaults.withCredentials = true;
+const response = await axios.get('/api/v1/me');
+```
+
+> **Note:** Mobile apps should continue using Bearer tokens stored in secure native storage (Keychain/Keystore).
 
 ### 1. Email/Password Authentication
 
@@ -1279,12 +1316,35 @@ type: attachment
   "data": {
     "id": "file_abc123",
     "url": "https://cdn.cgraph.org/files/abc123.jpg",
+    "thumbnail_url": "https://cdn.cgraph.org/files/abc123_thumb.webp",
     "filename": "photo.jpg",
     "size": 102400,
-    "mime_type": "image/jpeg"
+    "mime_type": "image/jpeg",
+    "width": 1920,
+    "height": 1080
   }
 }
 ```
+
+#### Image Optimization (v0.7.24+)
+
+Images larger than 100KB are automatically optimized server-side:
+
+| Version | Size | Use Case |
+|---------|------|----------|
+| `thumbnail_url` | 150×150 | Gallery thumbnails, previews |
+| `url` | Original (optimized) | Full viewing, stripped metadata |
+
+**Optimization includes:**
+- Automatic thumbnail generation (150×150)
+- Metadata stripping (EXIF, GPS data removed for privacy)
+- WebP conversion when supported (better compression)
+- Aspect ratio preservation
+
+**Excluded from optimization:**
+- GIF files (to preserve animations)
+- SVG files (vector format)
+- Files under 100KB (already small enough)
 
 #### `GET /files/:id`
 
