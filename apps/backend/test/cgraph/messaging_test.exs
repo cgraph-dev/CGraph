@@ -125,25 +125,25 @@ defmodule Cgraph.MessagingTest do
     end
 
     test "add_reaction/3 adds reaction to message", %{user2: user2, message: message} do
-      assert {:ok, reaction} = Messaging.add_reaction(user2, message, "👍")
+      assert {:ok, reaction, _replaced} = Messaging.add_reaction(user2, message, "👍")
       assert reaction.emoji == "👍"
     end
 
     test "add_reaction/3 prevents duplicate reactions", %{user2: user2, message: message} do
-      {:ok, _} = Messaging.add_reaction(user2, message, "👍")
+      {:ok, _, _} = Messaging.add_reaction(user2, message, "👍")
 
       assert {:error, _} = Messaging.add_reaction(user2, message, "👍")
     end
 
     test "remove_reaction/3 removes reaction", %{user2: user2, message: message} do
-      {:ok, _} = Messaging.add_reaction(user2, message, "👍")
+      {:ok, _, _} = Messaging.add_reaction(user2, message, "👍")
 
       assert {:ok, _} = Messaging.remove_reaction(user2, message, "👍")
     end
 
     test "list_reactions/1 returns message reactions", %{user1: user1, user2: user2, message: message} do
-      {:ok, _} = Messaging.add_reaction(user1, message, "❤️")
-      {:ok, _} = Messaging.add_reaction(user2, message, "👍")
+      {:ok, _, _} = Messaging.add_reaction(user1, message, "❤️")
+      {:ok, _, _} = Messaging.add_reaction(user2, message, "👍")
 
       reactions = Messaging.list_reactions(message)
       assert length(reactions) == 2

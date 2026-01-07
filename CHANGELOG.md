@@ -42,6 +42,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+#### Backend - Test Suite Fixes
+- **Reaction API Tests** - Fixed 6 failing tests due to `add_reaction/3` return format change
+  - Function now returns `{:ok, reaction, replaced_emoji}` (3-tuple)
+  - Updated `messaging_test.exs` pattern matches for new format
+  - Updated `messaging_extended_test.exs` pattern matches for new format
+  - All 620 tests now pass
+
 #### Mobile - Critical Bug Fixes
 - **Chat Scroll to Last Message** - Fixed scroll always going to first messages instead of latest
   - Root cause: Non-inverted FlatList requires manual scroll management that was failing

@@ -283,7 +283,7 @@ defmodule Cgraph.MessagingExtendedTest do
 
       result = Messaging.add_reaction(user2, msg, "👍")
 
-      assert match?({:ok, _}, result)
+      assert match?({:ok, _, _}, result)
     end
   end
 
@@ -294,7 +294,7 @@ defmodule Cgraph.MessagingExtendedTest do
       conv = create_conversation(user1, user2)
       msg = send_message(conv, user1)
 
-      {:ok, _} = Messaging.add_reaction(user2, msg, "👍")
+      {:ok, _, _} = Messaging.add_reaction(user2, msg, "👍")
       result = Messaging.remove_reaction(user2, msg, "👍")
 
       assert match?({:ok, _}, result) or result == :ok
