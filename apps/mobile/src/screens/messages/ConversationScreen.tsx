@@ -283,9 +283,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Attachment preview state
   const [pendingAttachments, setPendingAttachments] = useState<Array<{
     uri: string;
-    type: 'image' | 'file';
+    type: 'image' | 'file' | 'video';
     name?: string;
     mimeType?: string;
+    duration?: number;
   }>>([]);
   const [showAttachmentPreview, setShowAttachmentPreview] = useState(false);
   const [attachmentCaption, setAttachmentCaption] = useState('');
@@ -1604,8 +1605,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   };
   
-  // Handle camera capture
-  const handleTakePhoto = async () => {
+  // Handle camera capture - with video option like Telegram
+  const handleTakePhoto = async (mediaType: 'photo' | 'video' = 'photo') => {
     // Prevent concurrent picker operations
     if (isPickerActiveRef.current) {
       console.log('[handleTakePhoto] Picker already active, ignoring');
@@ -1613,7 +1614,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
     
     isPickerActiveRef.current = true;
-    console.log('[handleTakePhoto] Starting...');
+    console.log(`[handleTakePhoto] Starting... mode: ${mediaType}`);
     closeAttachMenu();
     
     // Longer delay to ensure modal is fully closed
@@ -1624,24 +1625,35 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const permission = await ImagePicker.requestCameraPermissionsAsync();
       console.log('[handleTakePhoto] Permission result:', permission.granted);
       if (!permission.granted) {
-        Alert.alert('Permission needed', 'Please allow camera access to take photos.');
+        Alert.alert('Permission needed', 'Please allow camera access.');
         return;
       }
       
-      console.log('[handleTakePhoto] Launching camera...');
+      // For video, also request microphone permission
+      if (mediaType === 'video') {
+        const micPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        console.log('[handleTakePhoto] Mic permission:', micPermission.granted);
+      }
+      
+      console.log(`[handleTakePhoto] Launching camera for ${mediaType}...`);
       const result = await ImagePicker.launchCameraAsync({
-        quality: 0.8,
+        mediaTypes: mediaType === 'video' ? ['videos'] : ['images'],
+        quality: mediaType === 'video' ? 0.7 : 0.8,
+        videoMaxDuration: 60, // 1 minute max for videos
+        allowsEditing: mediaType === 'video',
       });
       console.log('[handleTakePhoto] Result:', result.canceled ? 'canceled' : 'selected');
       
       if (!result.canceled && result.assets[0]) {
         // Add to pending attachments and show preview
         const asset = result.assets[0];
+        const isVideo = asset.type === 'video' || asset.mimeType?.startsWith('video/');
         setPendingAttachments(prev => [...prev, {
           uri: asset.uri,
-          type: 'image' as const,
-          name: asset.fileName || `camera_${Date.now()}.jpg`,
-          mimeType: asset.mimeType || 'image/jpeg',
+          type: isVideo ? 'video' as const : 'image' as const,
+          name: asset.fileName || `camera_${Date.now()}.${isVideo ? 'mp4' : 'jpg'}`,
+          mimeType: asset.mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
+          duration: asset.duration,
         }]);
         openAttachmentPreview();
       }
@@ -1651,6 +1663,21 @@ export default function ConversationScreen({ navigation, route }: Props) {
     } finally {
       isPickerActiveRef.current = false;
     }
+  };
+  
+  // Show camera mode picker (photo/video)
+  const showCameraPicker = () => {
+    closeAttachMenu();
+    Alert.alert(
+      'Camera',
+      'Choose what to capture',
+      [
+        { text: 'Photo', onPress: () => handleTakePhoto('photo') },
+        { text: 'Video', onPress: () => handleTakePhoto('video') },
+        { text: 'Cancel', style: 'cancel' },
+      ],
+      { cancelable: true }
+    );
   };
   
   // Handle document picker
@@ -1750,8 +1777,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
     setIsSending(true);
     
     try {
-      // Separate images and files
+      // Separate images, videos, and files
       const images = attachmentsToSend.filter(a => a.type === 'image');
+      const videos = attachmentsToSend.filter(a => a.type === 'video');
       const files = attachmentsToSend.filter(a => a.type === 'file');
       
       // Upload all images and collect URLs for grid message
@@ -1782,15 +1810,18 @@ export default function ConversationScreen({ navigation, route }: Props) {
         
         // Send all images as a single message with grid metadata
         if (uploadedUrls.length > 0) {
-          const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
+          // Use 'image' content_type for backend compatibility, store grid info in metadata
+          const msgPayload = {
             content: caption || `📷 ${uploadedUrls.length} photo${uploadedUrls.length > 1 ? 's' : ''}`,
-            content_type: 'image_grid',
+            content_type: 'image', // Use standard 'image' type for backend compatibility
             file_url: uploadedUrls[0], // Primary image
-            metadata: {
+            metadata: uploadedUrls.length > 1 ? {
               grid_images: uploadedUrls,
               image_count: uploadedUrls.length,
-            },
-          });
+            } : undefined,
+          };
+          console.log('[sendPendingAttachments] Sending message:', JSON.stringify(msgPayload));
+          const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, msgPayload);
           
           const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
           if (rawMessage?.id) {
@@ -1805,9 +1836,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
       for (const file of files) {
         await uploadAndSendFile(file.uri, file.type, file.name, files.indexOf(file) === 0 ? caption : undefined);
       }
-    } catch (error) {
+      
+      // Send videos individually (each as separate message)
+      for (const video of videos) {
+        await uploadAndSendFile(video.uri, 'video', video.name, videos.indexOf(video) === 0 && !files.length ? caption : undefined, video.duration);
+      }
+    } catch (error: any) {
       console.error('[sendPendingAttachments] Error:', error);
-      Alert.alert('Error', 'Failed to send attachments. Please try again.');
+      console.error('[sendPendingAttachments] Response:', error?.response?.data);
+      Alert.alert('Error', error?.response?.data?.error || 'Failed to send attachments. Please try again.');
     } finally {
       setIsSending(false);
     }
@@ -1827,15 +1864,16 @@ export default function ConversationScreen({ navigation, route }: Props) {
   };
   
   // Upload and send file as message
-  const uploadAndSendFile = async (uri: string, type: 'image' | 'file', filename?: string, caption?: string) => {
+  const uploadAndSendFile = async (uri: string, type: 'image' | 'file' | 'video', filename?: string, caption?: string, duration?: number) => {
     setIsSending(true);
     
     try {
       const formData = new FormData();
-      const name = filename || `${type}_${Date.now()}.${type === 'image' ? 'jpg' : 'bin'}`;
+      const defaultExt = type === 'image' ? 'jpg' : type === 'video' ? 'mp4' : 'bin';
+      const name = filename || `${type}_${Date.now()}.${defaultExt}`;
       
       // Determine mime type based on file extension for better accuracy
-      let mimeType = type === 'image' ? 'image/jpeg' : 'application/octet-stream';
+      let mimeType = type === 'image' ? 'image/jpeg' : type === 'video' ? 'video/mp4' : 'application/octet-stream';
       if (filename) {
         const ext = filename.toLowerCase().split('.').pop();
         if (ext === 'png') mimeType = 'image/png';
@@ -1845,6 +1883,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
         else if (ext === 'doc' || ext === 'docx') mimeType = 'application/msword';
         else if (ext === 'xls' || ext === 'xlsx') mimeType = 'application/vnd.ms-excel';
         else if (ext === 'txt') mimeType = 'text/plain';
+        else if (ext === 'mp4') mimeType = 'video/mp4';
+        else if (ext === 'mov') mimeType = 'video/quicktime';
+        else if (ext === 'avi') mimeType = 'video/x-msvideo';
+        else if (ext === 'webm') mimeType = 'video/webm';
       }
       
       formData.append('file', {
@@ -1860,7 +1902,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         headers: { 
           'Content-Type': 'multipart/form-data',
         },
-        timeout: 60000, // 60 second timeout for uploads
+        timeout: 120000, // 2 minute timeout for video uploads
       });
       
       console.log('[uploadAndSendFile] Upload response:', JSON.stringify(response.data));
@@ -1871,14 +1913,21 @@ export default function ConversationScreen({ navigation, route }: Props) {
       if (fileUrl) {
         // Send message with file attachment
         // Use caption if provided, otherwise default content
-        const messageContent = caption || (type === 'image' ? '📷 Photo' : `📎 ${name}`);
-        const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
+        const messageContent = caption || (type === 'image' ? '📷 Photo' : type === 'video' ? '🎥 Video' : `📎 ${name}`);
+        const msgPayload: any = {
           content: messageContent,
           content_type: type,
           file_url: fileUrl,
           file_name: name,
           file_mime_type: mimeType,
-        });
+        };
+        
+        // Add duration for videos
+        if (type === 'video' && duration) {
+          msgPayload.metadata = { duration };
+        }
+        
+        const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, msgPayload);
         
         const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
         if (rawMessage?.id) {
@@ -2383,7 +2432,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     
     const attachOptions = [
       { icon: 'image-outline', label: 'Photo', color: '#10b981', onPress: handlePickImage },
-      { icon: 'camera-outline', label: 'Camera', color: '#3b82f6', onPress: handleTakePhoto },
+      { icon: 'camera-outline', label: 'Camera', color: '#3b82f6', onPress: showCameraPicker },
       { icon: 'document-outline', label: 'File', color: '#8b5cf6', onPress: handlePickDocument },
       { icon: 'location-outline', label: 'Location', color: '#f59e0b', onPress: () => {
         closeAttachMenu();
@@ -2949,6 +2998,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
                       style={styles.attachmentPreviewImage}
                       resizeMode="contain"
                     />
+                  ) : attachment.type === 'video' ? (
+                    <View style={styles.attachmentPreviewVideoContainer}>
+                      <Image 
+                        source={{ uri: attachment.uri }}
+                        style={styles.attachmentPreviewImage}
+                        resizeMode="contain"
+                      />
+                      {/* Video play icon overlay */}
+                      <View style={styles.videoPlayOverlay}>
+                        <View style={styles.videoPlayButton}>
+                          <Ionicons name="play" size={40} color="#fff" />
+                        </View>
+                      </View>
+                      {/* Duration badge */}
+                      {attachment.duration && (
+                        <View style={styles.videoDurationBadge}>
+                          <Text style={styles.videoDurationText}>
+                            {Math.floor(attachment.duration / 60)}:{String(Math.floor(attachment.duration % 60)).padStart(2, '0')}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
                   ) : (
                     <View style={styles.attachmentPreviewFile}>
                       <View style={[styles.attachmentPreviewFileIcon, { backgroundColor: colors.primary }]}>
@@ -4374,6 +4445,43 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH - 60,
     height: SCREEN_HEIGHT * 0.5,
     borderRadius: 12,
+  },
+  attachmentPreviewVideoContainer: {
+    position: 'relative',
+    width: SCREEN_WIDTH - 60,
+    height: SCREEN_HEIGHT * 0.5,
+  },
+  videoPlayOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoPlayButton: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 6,
+  },
+  videoDurationBadge: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  videoDurationText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
   },
   attachmentPreviewFile: {
     alignItems: 'center',
