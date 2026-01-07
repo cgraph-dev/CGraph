@@ -326,7 +326,26 @@ Audit.log(:auth, :login_success, %{
 
 **Module:** `Cgraph.Crypto.E2EE`
 
-Industry-standard E2EE implementation for private messaging:
+**Current Status: Infrastructure Ready, Client Integration In Progress**
+
+The server-side E2EE infrastructure is fully implemented, providing:
+- Key management APIs for identity keys, signed prekeys, and one-time prekeys
+- X3DH key exchange protocol support
+- Prekey bundle distribution for session establishment
+
+**Implementation Status:**
+
+| Component | Status | Notes |
+|-----------|--------|-------|
+| Server Key Storage | ✅ Complete | Full X3DH key hierarchy support |
+| Key Registration API | ✅ Complete | `/api/v1/e2ee/keys` endpoint |
+| Prekey Bundle API | ✅ Complete | `/api/v1/e2ee/bundle/:user_id` |
+| Web Crypto Module | ✅ Complete | `lib/crypto/e2ee.ts` |
+| Mobile Crypto Module | ✅ Complete | `lib/crypto/e2ee.ts` |
+| Message Encryption Flow | 🔄 In Progress | Client-side integration needed |
+| Key Verification UI | 📋 Planned | Safety number display |
+
+**Architecture:**
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -344,7 +363,14 @@ Industry-standard E2EE implementation for private messaging:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**Usage:**
+**Current Transport Security:**
+
+Until full E2EE client integration is complete, messages are protected by:
+- TLS 1.3 encryption in transit (all connections are HTTPS/WSS)
+- Database encryption at rest
+- Access control (only conversation participants can read messages)
+
+**Server-Side API Usage:**
 
 ```elixir
 # Client registers their public keys
@@ -366,7 +392,7 @@ count = E2EE.one_time_prekey_count(user_id)
 {:ok, safety_number} = E2EE.safety_number(user1_id, user2_id)
 ```
 
-**Security Properties:**
+**Target Security Properties (When Fully Integrated):**
 
 | Property | Implementation |
 |----------|----------------|
@@ -378,14 +404,14 @@ count = E2EE.one_time_prekey_count(user_id)
 
 **Key Lifecycle:**
 
-1. **Identity Key**: Generated once per device, stored permanently
+1. **Identity Key**: Generated once per device, stored in SecureStore (mobile) or IndexedDB (web)
 2. **Signed Prekey**: Rotated monthly, signed by identity key
 3. **One-Time Prekeys**: Consumed once, replenished in batches of 100
 
-**Privacy Guarantee:**
+**Privacy Guarantee (Target State):**
 - Private keys NEVER leave the client device
 - Server stores only public keys
-- Message content is encrypted client-side before transmission
+- Message content encrypted client-side before transmission
 - Server sees only ciphertext (opaque blobs)
 
 ### 10. Voice Message Security
@@ -448,8 +474,10 @@ Tokens include:
 - [x] SQL injection prevention (Ecto)
 - [x] XSS prevention (CSP)
 - [x] CSRF protection (SameSite cookies)
-- [x] End-to-End Encryption (E2EE)
+- [x] End-to-End Encryption (E2EE) - Server infrastructure ready
 - [x] Voice message security controls
+- [x] Magic byte file validation (v0.7.23+)
+- [x] Message idempotency (v0.7.23+)
 
 ## Security Telemetry Events
 

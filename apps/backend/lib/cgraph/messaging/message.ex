@@ -34,6 +34,9 @@ defmodule Cgraph.Messaging.Message do
     field :deleted_at, :utc_datetime
     field :deleted_for_everyone, :boolean, default: false
 
+    # Client-generated UUID for idempotency (prevents duplicate messages on retry)
+    field :client_message_id, :string
+
     # Pinned message fields
     field :is_pinned, :boolean, default: false
     field :pinned_at, :utc_datetime
@@ -72,17 +75,21 @@ defmodule Cgraph.Messaging.Message do
       :content, :content_type, :is_encrypted, :sender_id,
       :conversation_id, :channel_id, :reply_to_id,
       :file_url, :file_name, :file_size, :file_mime_type,
-      :thumbnail_url, :link_preview
+      :thumbnail_url, :link_preview, :client_message_id
     ])
     |> validate_required([:content, :sender_id])
     |> sanitize_content()
     |> validate_message_target()
     |> validate_inclusion(:content_type, @content_types)
     |> validate_length(:content, max: 10_000)
+    |> validate_length(:client_message_id, max: 64)
     |> foreign_key_constraint(:sender_id)
     |> foreign_key_constraint(:conversation_id)
     |> foreign_key_constraint(:channel_id)
     |> foreign_key_constraint(:reply_to_id)
+    |> unique_constraint([:conversation_id, :client_message_id],
+        name: :messages_conversation_idempotency_idx,
+        message: "message already sent")
   end
 
   @doc """

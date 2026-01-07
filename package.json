@@ -1,6 +1,6 @@
 {
   "name": "cgraph",
-  "version": "0.7.22",
+  "version": "0.7.23",
   "private": true,
   "description": "CGraph - Enterprise messaging platform with E2EE messaging, group channels, and public forums",
   "author": "CGraph Team",

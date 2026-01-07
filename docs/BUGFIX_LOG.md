@@ -6,30 +6,88 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 | v0.7.22 |
-|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|---------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests |
-| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 warnings |
-| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
-| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical |
-| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
-| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Username Login | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Identity Search | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable |
-| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Enhanced | ✅ WhatsApp-style | ✅ WhatsApp-style | ✅ Optimized |
-| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Robust | ✅ Cross-platform |
-| Conversation Normalization | - | - | - | - | - | - | ✅ New | ✅ Active | ✅ Active | ✅ Active | ✅ Active | ✅ Active | ✅ Active |
-| Channel Stability | - | - | - | - | - | - | ✅ New | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready |
-| Voice Messages | - | - | - | - | - | - | - | - | ✅ Fixed | ✅ Enhanced | ✅ Enhanced | ✅ Static Serving | ✅ Static Serving |
-| Media URL Resolution | - | - | - | - | - | - | - | - | - | ✅ New | ✅ Stable | ✅ Stable | ✅ Stable |
-| Typing Indicators | - | - | - | - | - | - | - | - | - | - | ✅ WhatsApp-style | ✅ With Timestamps | ✅ Stop Fixed |
-| Last Seen | - | - | - | - | - | - | - | - | - | - | ✅ New API | ✅ New API | ✅ New API |
-| Static File Serving | - | - | - | - | - | - | - | - | - | - | - | ✅ Fixed /uploads | ✅ Fixed /uploads |
-| Backend Warnings | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Zero warnings |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 | v0.7.22 | v0.7.23 |
+|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|---------|---------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 638 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 warnings | 0 warnings |
+| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
+| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 10 critical |
+| TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| Matrix Engine | - | - | v1.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 | v2.0.0 |
+| Cross-Platform Auth | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Username Login | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Identity Search | - | - | - | - | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| WebSocket Messaging | - | - | - | - | ✅ | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Idempotent |
+| Presence Tracking | - | - | - | - | ✅ | ✅ Fixed | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Enhanced | ✅ WhatsApp-style | ✅ WhatsApp-style | ✅ Optimized | ✅ Optimized |
+| Message Alignment | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Fixed | ✅ Robust | ✅ Cross-platform | ✅ Cross-platform |
+| Conversation Normalization | - | - | - | - | - | - | ✅ New | ✅ Active | ✅ Active | ✅ Active | ✅ Active | ✅ Active | ✅ Active | ✅ Active |
+| Channel Stability | - | - | - | - | - | - | ✅ New | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready | ✅ Production-Ready |
+| Voice Messages | - | - | - | - | - | - | - | - | ✅ Fixed | ✅ Enhanced | ✅ Enhanced | ✅ Static Serving | ✅ Static Serving | ✅ Static Serving |
+| Media URL Resolution | - | - | - | - | - | - | - | - | - | ✅ New | ✅ Stable | ✅ Stable | ✅ Stable | ✅ Stable |
+| Typing Indicators | - | - | - | - | - | - | - | - | - | - | ✅ WhatsApp-style | ✅ With Timestamps | ✅ Stop Fixed | ✅ Stop Fixed |
+| Last Seen | - | - | - | - | - | - | - | - | - | - | ✅ New API | ✅ New API | ✅ New API | ✅ New API |
+| Static File Serving | - | - | - | - | - | - | - | - | - | - | - | ✅ Fixed /uploads | ✅ Fixed /uploads | ✅ Fixed /uploads |
+| Backend Warnings | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Zero warnings | ✅ Zero warnings |
+| File Upload Security | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Magic bytes |
+| Message Idempotency | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ New |
+| FK Constraints | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Fixed |
+
+---
+
+## January 7, 2026 - v0.7.23 Security Hardening & Database Integrity
+
+### Overview
+
+Comprehensive security audit and hardening pass addressing critical vulnerabilities discovered during architecture review. This release fixes database integrity issues that prevented user deletion, adds defense-in-depth file upload validation, implements message idempotency, and updates documentation to accurately reflect system capabilities.
+
+### Critical Issues Fixed
+
+1. **Users undeletable due to FK constraint conflict (P0 - Critical)**
+   - **Root Cause**: `on_delete: :nilify_all` combined with `null: false` on foreign key columns creates impossible state
+   - **Impact**: Cascade delete fails, user accounts cannot be removed from system
+   - **Solution**: Migration to change affected FKs to `on_delete: :delete_all`
+   - **Tables Fixed**: conversations, messages, groups, group_members, audit_logs
+
+2. **Malicious file upload bypass (P1 - High)**
+   - **Root Cause**: MIME type validation relied solely on Content-Type header (attacker-controlled)
+   - **Impact**: Malicious files could be uploaded by spoofing Content-Type
+   - **Solution**: Magic byte validation reading first 16 bytes of file content
+   - **Coverage**: JPEG, PNG, GIF, WebP, SVG, PDF, MP4, WebM, MOV, HEIC, MP3, WAV, OGG
+
+3. **Message duplication from network retries (Logic Error)**
+   - **Root Cause**: No idempotency check on message creation
+   - **Impact**: Same message could appear multiple times after network retry
+   - **Solution**: Client-generated UUID (`client_message_id`) with unique constraint per conversation
+
+4. **E2EE documentation accuracy (Documentation)**
+   - **Root Cause**: SECURITY.md claimed full E2E encryption when only infrastructure was complete
+   - **Impact**: Misleading security claims to users
+   - **Solution**: Updated documentation to show "Infrastructure Ready, Client Integration In Progress"
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `lib/cgraph/uploads.ex` | Added `@magic_signatures` map and `validate_mime_type/3` function |
+| `lib/cgraph/messaging.ex` | Added `check_idempotency/2` helper in `create_message/3` |
+| `lib/cgraph/messaging/message.ex` | Added `client_message_id` field |
+| `docs/SECURITY.md` | Accurate E2EE status documentation |
+
+### New Files
+
+| File | Purpose |
+|------|---------|
+| `priv/repo/migrations/20260107105635_fix_foreign_key_constraints.exs` | Fix FK cascade conflicts |
+| `priv/repo/migrations/20260107105636_add_message_idempotency.exs` | Add client_message_id column |
+| `test/cgraph/uploads_security_test.exs` | 12 tests for magic byte validation |
+| `test/cgraph/messaging_idempotency_test.exs` | 6 tests for idempotency behavior |
+
+### Test Coverage
+
+- 18 new tests added for security features
+- Total backend tests: 620 → 638
 
 ---
 

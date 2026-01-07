@@ -257,6 +257,10 @@ defmodule Cgraph.Messaging do
 
   @doc """
   Create a message in a conversation.
+  
+  Supports idempotency via `client_message_id` parameter. If a message with
+  the same client_message_id already exists in the conversation, returns
+  the existing message instead of creating a duplicate.
   """
   def create_message(user, conversation, attrs) do
     # Ensure consistent string keys
@@ -266,6 +270,30 @@ defmodule Cgraph.Messaging do
       |> Map.put("sender_id", user.id)
       |> Map.put("conversation_id", conversation.id)
 
+    # Check for idempotency - if client_message_id exists, return existing message
+    case check_idempotency(conversation.id, message_attrs) do
+      {:ok, existing_message} ->
+        {:ok, existing_message}
+      
+      :not_found ->
+        do_create_message(conversation, message_attrs)
+    end
+  end
+
+  defp check_idempotency(conversation_id, attrs) do
+    client_id = Map.get(attrs, "client_message_id") || Map.get(attrs, :client_message_id)
+    
+    if client_id do
+      case Repo.get_by(Message, conversation_id: conversation_id, client_message_id: client_id) do
+        nil -> :not_found
+        message -> {:ok, Repo.preload(message, [:sender, :reactions, [reply_to: :sender]])}
+      end
+    else
+      :not_found
+    end
+  end
+
+  defp do_create_message(conversation, message_attrs) do
     result = %Message{}
       |> Message.changeset(message_attrs)
       |> Repo.insert()

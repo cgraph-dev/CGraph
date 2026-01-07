@@ -3,10 +3,45 @@ defmodule Cgraph.Uploads do
   The Uploads context.
 
   Handles file uploads, storage, and quota management.
+  Includes magic byte validation for security.
   """
 
   import Ecto.Query, warn: false
   alias Cgraph.Repo
+
+  require Logger
+
+  # Magic byte signatures for file type validation
+  # These are the first bytes of valid files for each supported type
+  @magic_signatures %{
+    # Images
+    "image/jpeg" => [<<0xFF, 0xD8, 0xFF>>],
+    "image/png" => [<<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>>],
+    "image/gif" => [<<0x47, 0x49, 0x46, 0x38, 0x37, 0x61>>, <<0x47, 0x49, 0x46, 0x38, 0x39, 0x61>>],
+    "image/webp" => [<<0x52, 0x49, 0x46, 0x46>>],  # RIFF header (need to check WEBP at offset 8)
+    "image/bmp" => [<<0x42, 0x4D>>],
+    "image/heic" => [<<0x00, 0x00, 0x00>>],  # ftyp box (need additional validation)
+    "image/heif" => [<<0x00, 0x00, 0x00>>],
+    # Videos
+    "video/mp4" => [<<0x00, 0x00, 0x00>>],  # ftyp box
+    "video/quicktime" => [<<0x00, 0x00, 0x00>>],
+    "video/webm" => [<<0x1A, 0x45, 0xDF, 0xA3>>],
+    "video/x-matroska" => [<<0x1A, 0x45, 0xDF, 0xA3>>],
+    # Audio
+    "audio/mpeg" => [<<0xFF, 0xFB>>, <<0xFF, 0xFA>>, <<0x49, 0x44, 0x33>>],  # MP3 with ID3
+    "audio/wav" => [<<0x52, 0x49, 0x46, 0x46>>],  # RIFF header
+    "audio/ogg" => [<<0x4F, 0x67, 0x67, 0x53>>],
+    "audio/webm" => [<<0x1A, 0x45, 0xDF, 0xA3>>],
+    "audio/m4a" => [<<0x00, 0x00, 0x00>>],  # ftyp box
+    "audio/aac" => [<<0xFF, 0xF1>>, <<0xFF, 0xF9>>],
+    # Documents
+    "application/pdf" => [<<0x25, 0x50, 0x44, 0x46>>],  # %PDF
+    "application/zip" => [<<0x50, 0x4B, 0x03, 0x04>>],
+    "text/plain" => []  # No magic bytes for text, allow all
+  }
+
+  # Maximum bytes to read for magic number validation
+  @magic_read_bytes 16
 
   # Rename inner module to avoid shadowing Elixir's File module
   defmodule UploadedFile do
@@ -48,11 +83,22 @@ defmodule Cgraph.Uploads do
   @max_quota 5 * 1024 * 1024 * 1024 # 5 GB default quota
 
   @doc """
-  Store a file upload.
+  Store a file upload with magic byte validation.
+  
+  Validates the file's actual content against its claimed MIME type
+  to prevent malicious file uploads (e.g., PHP files disguised as images).
   """
   def store_file(user, upload, opts \\ []) do
     context = Keyword.get(opts, :context, "message")
+    skip_validation = Keyword.get(opts, :skip_validation, false)
 
+    # Validate file content matches claimed MIME type
+    with :ok <- validate_mime_type(upload.path, upload.content_type, skip_validation) do
+      do_store_file(user, upload, context)
+    end
+  end
+
+  defp do_store_file(user, upload, context) do
     # Generate unique filename
     ext = Path.extname(upload.filename)
     filename = "#{Ecto.UUID.generate()}#{ext}"
@@ -238,5 +284,132 @@ defmodule Cgraph.Uploads do
       _ ->
         {:error, :command_failed}
     end
+  end
+
+  @doc """
+  Validate that file content matches the claimed MIME type using magic bytes.
+  
+  This prevents attacks where malicious files (e.g., PHP scripts) are uploaded
+  with fake extensions or MIME types (e.g., .jpg, image/jpeg).
+  
+  ## Security
+  
+  - Reads the first few bytes of the file
+  - Compares against known magic byte signatures
+  - Rejects files where content doesn't match claimed type
+  """
+  @spec validate_mime_type(String.t(), String.t(), boolean()) :: :ok | {:error, :invalid_file_type}
+  def validate_mime_type(_path, _content_type, true), do: :ok
+  
+  def validate_mime_type(path, content_type, _skip) do
+    # Normalize MIME type
+    base_type = content_type |> String.split(";") |> List.first() |> String.trim() |> String.downcase()
+    
+    case Map.get(@magic_signatures, base_type) do
+      nil ->
+        # Unknown MIME type - check if it's in our allowlist
+        if allowed_unknown_type?(base_type) do
+          :ok
+        else
+          Logger.warning("Upload rejected: unknown MIME type #{base_type}")
+          {:error, :invalid_file_type}
+        end
+      
+      [] ->
+        # No magic bytes to check (e.g., text/plain)
+        :ok
+      
+      signatures ->
+        validate_file_signature(path, signatures, base_type)
+    end
+  end
+
+  defp validate_file_signature(path, signatures, content_type) do
+    case File.open(path, [:read, :binary]) do
+      {:ok, file} ->
+        result = 
+          case IO.binread(file, @magic_read_bytes) do
+            {:error, _} -> 
+              {:error, :invalid_file_type}
+            :eof -> 
+              {:error, :invalid_file_type}
+            bytes when is_binary(bytes) ->
+              if matches_any_signature?(bytes, signatures, content_type) do
+                :ok
+              else
+                Logger.warning("Upload rejected: #{content_type} magic bytes mismatch")
+                {:error, :invalid_file_type}
+              end
+          end
+        File.close(file)
+        result
+      
+      {:error, reason} ->
+        Logger.error("Failed to open file for validation: #{inspect(reason)}")
+        {:error, :invalid_file_type}
+    end
+  end
+
+  defp matches_any_signature?(bytes, signatures, content_type) do
+    Enum.any?(signatures, fn sig ->
+      sig_len = byte_size(sig)
+      case bytes do
+        <<prefix::binary-size(sig_len), _rest::binary>> ->
+          matches = prefix == sig
+          # Special handling for container formats (MP4, WEBP, etc.)
+          matches or check_container_format(bytes, content_type)
+        _ ->
+          false
+      end
+    end)
+  end
+
+  # Container formats like MP4, M4A, HEIC use ftyp boxes
+  # The actual format identifier is at offset 4-8
+  defp check_container_format(bytes, content_type) when byte_size(bytes) >= 12 do
+    case content_type do
+      "video/mp4" ->
+        <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
+        ftyp == "ftyp"
+      
+      "video/quicktime" ->
+        <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
+        ftyp == "ftyp"
+      
+      "audio/m4a" ->
+        <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
+        ftyp == "ftyp"
+      
+      "image/webp" ->
+        # RIFF....WEBP
+        <<riff::binary-size(4), _size::32, webp::binary-size(4), _::binary>> = bytes
+        riff == "RIFF" and webp == "WEBP"
+      
+      "image/heic" ->
+        <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
+        ftyp == "ftyp"
+      
+      "image/heif" ->
+        <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
+        ftyp == "ftyp"
+      
+      _ ->
+        false
+    end
+  end
+  
+  defp check_container_format(_bytes, _content_type), do: false
+
+  # Allow certain generic types that don't have magic bytes
+  defp allowed_unknown_type?(type) do
+    type in [
+      "text/plain",
+      "text/html",
+      "text/css",
+      "text/javascript",
+      "application/json",
+      "application/xml",
+      "text/xml"
+    ]
   end
 end

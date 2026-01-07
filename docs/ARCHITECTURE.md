@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.22  
-> Living documentation - Updated with inverted FlatList pattern and picker improvements
+> Last updated: January 2026 | Version 0.7.23  
+> Living documentation - Updated with security hardening and idempotency
 
 ---
 

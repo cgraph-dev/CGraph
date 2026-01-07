@@ -7,6 +7,105 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.23] - 2026-01-07
+
+### Security
+
+#### Backend - Upload Security Hardening
+- **Magic Byte Validation** - Added content-based file type verification
+  - Validates actual file content against claimed MIME type
+  - Prevents malicious scripts disguised as images (e.g., `hack.php.png`)
+  - Supports all common image, video, audio, and document formats
+  - Container format validation (MP4, WebM, HEIC) with ftyp box checks
+
+#### Database - Foreign Key Constraint Fixes
+- **Cascade Delete Consistency** - Fixed critical constraint conflicts
+  - Resolved `nilify_all` + `null: false` conflicts that crashed user deletion
+  - Affected tables: conversations, messages, groups, group_members, audit_logs
+  - All user-related data now properly cascades on user deletion
+
+#### Documentation - Security Transparency
+- **E2EE Status Clarification** - Updated SECURITY.md to accurately reflect:
+  - Server-side E2EE infrastructure: Complete
+  - Client-side integration: In progress
+  - Current protection: TLS 1.3 + database encryption
+
+### Added
+
+#### Backend - Message Reliability
+- **Message Idempotency** - Prevent duplicate messages on network retry
+  - New `client_message_id` field for client-generated UUIDs
+  - Server returns existing message if same ID sent twice
+  - Unique constraint per conversation (same ID allowed in different conversations)
+  - Backwards compatible (field is optional)
+
+#### Backend - New Tests
+- `uploads_security_test.exs` - Magic byte validation test coverage
+- `messaging_idempotency_test.exs` - Idempotency behavior tests
+
+#### Web - Component Utilities
+- **cn() Utility** - Added Tailwind class merging utility
+  - Located at `src/lib/utils.ts`
+  - Enables shadcn/ui and 21st.dev component compatibility
+  - Uses `clsx` + `tailwind-merge` for optimal class handling
+
+### Changed
+
+#### Mobile - Multi-Photo Gallery
+- **Swipeable Image Viewer** - Enhanced gallery experience
+  - Horizontal FlatList with paging for multi-image messages
+  - Real-time page counter during swipe
+  - Smooth scroll-to-index on gallery open
+
+#### Mobile - Camera Improvements
+- **Permission Handling** - Removed redundant microphone permission request
+  - Native camera handles audio permissions automatically
+  - Prevents TypeError crash on permission denied
+
+### Fixed
+
+#### Mobile - Duplicate Message Prevention
+- **WebSocket Echo Handling** - Fixed duplicate key warnings
+  - `sentMessageIdsRef` tracks locally-sent messages
+  - WebSocket handler skips messages already in list
+  - Prevents React key collision errors
+
+#### Backend - Message Controller
+- **Link Preview Persistence** - Fixed grid_images not saving
+  - Controller now extracts `link_preview` from params
+  - Supports both `link_preview` and `metadata` field names
+
+### Migrations
+
+```
+20260107105635_fix_foreign_key_constraints.exs
+20260107105636_add_message_idempotency.exs
+```
+
+### Technical Details
+
+**Magic Byte Validation:**
+```elixir
+# Validates file content against MIME type
+case Uploads.validate_mime_type(path, "image/jpeg", false) do
+  :ok -> # File is genuinely a JPEG
+  {:error, :invalid_file_type} -> # Content doesn't match claimed type
+end
+```
+
+**Message Idempotency:**
+```typescript
+// Client sends unique ID with message
+const response = await api.post('/messages', {
+  content: 'Hello!',
+  client_message_id: crypto.randomUUID()
+});
+
+// On retry, server returns existing message instead of duplicate
+```
+
+---
+
 ## [0.7.22] - 2026-01-07
 
 ### Added
