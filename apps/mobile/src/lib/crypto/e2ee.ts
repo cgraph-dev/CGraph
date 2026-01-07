@@ -12,8 +12,9 @@
 
 import * as SecureStore from 'expo-secure-store';
 import { Buffer } from 'buffer';
+import { createLogger } from '../logger';
 
-// Type declarations for React Native global crypto
+const logger = createLogger('E2EE');
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 declare const global: Record<string, any>;
 
@@ -46,7 +47,7 @@ export function randomBytes(length: number): Uint8Array {
   } else {
     // CRITICAL: Crypto not available - this should never happen in production
     // Log error and throw to prevent insecure key generation
-    console.error('CRITICAL: Secure random not available');
+    logger.error('CRITICAL: Secure random not available');
     throw new Error('Cryptographically secure random number generator not available. Please ensure react-native-get-random-values is installed.');
   }
   return bytes;

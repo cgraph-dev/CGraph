@@ -4,6 +4,9 @@ import * as SecureStore from 'expo-secure-store';
 import api from '../lib/api';
 import socketManager from '../lib/socket';
 import { User } from '../types';
+import { createLogger } from '../lib/logger';
+
+const logger = createLogger('Auth');
 
 interface AuthContextType {
   user: User | null;
@@ -64,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           parsedUser = JSON.parse(storedUser);
         } catch (parseError) {
           // Corrupted user data, clear auth
-          console.error('Corrupted user data in storage, clearing auth');
+          logger.error('Corrupted user data in storage, clearing auth');
           await clearAuth();
           return;
         }
@@ -81,16 +84,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           
           // Debug: log what we received
           if (__DEV__) {
-            console.log('[AuthContext] /me response:', JSON.stringify(response.data, null, 2));
-            console.log('[AuthContext] Verified user:', JSON.stringify(verifiedUser, null, 2));
-            console.log('[AuthContext] User ID:', verifiedUser?.id);
+            logger.log('/me response:', JSON.stringify(response.data, null, 2));
+            logger.log('Verified user:', JSON.stringify(verifiedUser, null, 2));
+            logger.log('User ID:', verifiedUser?.id);
           }
           
           setUser(verifiedUser);
           
           // Connect socket after verifying auth
           socketManager.connect().catch((err) => {
-            if (__DEV__) console.error('Socket connection failed:', err);
+            if (__DEV__) logger.error('Socket connection failed:', err);
           });
         } catch {
           // Token invalid, clear auth
@@ -100,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       // Only log in development to avoid leaking info in production
       if (__DEV__) {
-        console.error('Error loading auth:', error);
+        logger.error('Error loading auth:', error);
       }
       await clearAuth();
     } finally {
@@ -119,7 +122,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     
     // Connect socket after saving token
     socketManager.connect().catch((err) => {
-      if (__DEV__) console.error('Socket connection failed:', err);
+      if (__DEV__) logger.error('Socket connection failed:', err);
     });
   };
   
@@ -178,7 +181,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await SecureStore.setItemAsync(USER_KEY, JSON.stringify(userData));
     } catch (error) {
       if (__DEV__) {
-        console.error('Failed to refresh user:', error);
+        logger.error('Failed to refresh user:', error);
       }
     }
   };

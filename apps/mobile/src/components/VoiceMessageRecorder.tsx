@@ -20,6 +20,9 @@ import {
 } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../contexts/ThemeContext';
+import { createLogger } from '../lib/logger';
+
+const logger = createLogger('VoiceRecorder');
 
 interface VoiceMessageRecorderProps {
   /** Callback when recording is complete and ready to send */
@@ -225,7 +228,7 @@ export function VoiceMessageRecorder({
       }, 80);
 
     } catch (err) {
-      console.error('Failed to start recording:', err);
+      logger.error('Failed to start recording:', err);
       setError('Failed to start recording. Please try again.');
       cleanup();
     }
@@ -257,7 +260,7 @@ export function VoiceMessageRecorder({
         setState('preview');
       }
     } catch (err) {
-      console.error('Failed to stop recording:', err);
+      logger.error('Failed to stop recording:', err);
       setError('Failed to save recording. Please try again.');
     }
   }, [audioRecorder, recorderState.isRecording, state]);
@@ -300,7 +303,7 @@ export function VoiceMessageRecorder({
         }
       }
     } catch (err) {
-      console.error('Failed to play recording:', err);
+      logger.error('Failed to play recording:', err);
     }
   }, [recordingUri, isPlaying, previewPlayer, playbackFinished]);
 

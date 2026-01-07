@@ -77,7 +77,7 @@ export function E2EEProvider({ children }: E2EEProviderProps) {
       const isSetUp = await isE2EESetUp();
       setIsInitialized(isSetUp);
     } catch (err) {
-      console.error('Error checking E2EE status:', err);
+      logger.error('Error checking E2EE status:', err);
       setError('Failed to check encryption status');
     } finally {
       setIsLoading(false);
@@ -108,7 +108,7 @@ export function E2EEProvider({ children }: E2EEProviderProps) {
       
       setIsInitialized(true);
     } catch (err) {
-      console.error('Error setting up E2EE:', err);
+      logger.error('Error setting up E2EE:', err);
       setError('Failed to set up encryption');
       throw err;
     } finally {
@@ -139,7 +139,7 @@ export function E2EEProvider({ children }: E2EEProviderProps) {
       setIsInitialized(false);
       prekeyBundleCache.clear();
     } catch (err) {
-      console.error('Error resetting E2EE:', err);
+      logger.error('Error resetting E2EE:', err);
       setError('Failed to reset encryption');
       throw err;
     } finally {

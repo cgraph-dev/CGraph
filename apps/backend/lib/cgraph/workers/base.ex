@@ -231,6 +231,9 @@ defmodule Cgraph.Workers.CleanupExpiredSessions do
     max_attempts: 3,
     timeout: :timer.minutes(10)
 
+  import Ecto.Query
+  alias Cgraph.Repo
+
   @impl Cgraph.Workers.Base
   def execute(_args, _job) do
     Logger.info("Starting session cleanup")
@@ -243,16 +246,16 @@ defmodule Cgraph.Workers.CleanupExpiredSessions do
   end
 
   defp cleanup_expired_sessions do
-    _now = DateTime.utc_now()
+    now = DateTime.utc_now()
 
-    # Would delete expired tokens from database
-    # {deleted, _} = Repo.delete_all(
-    #   from t in "tokens",
-    #   where: t.expires_at < ^now
-    # )
-    # deleted
+    # Delete sessions that are expired or were revoked more than 7 days ago
+    {deleted, _} = Repo.delete_all(
+      from s in Cgraph.Accounts.Session,
+      where: s.expires_at < ^now or
+             (not is_nil(s.revoked_at) and s.revoked_at < ^DateTime.add(now, -7, :day))
+    )
 
-    0
+    deleted
   end
 end
 

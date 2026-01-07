@@ -15,6 +15,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { FriendsStackParamList, UserBasic } from '../../types';
 import { Header, Avatar, Button, LoadingSpinner } from '../../components';
+import { createLogger } from '../../lib/logger';
+
+const logger = createLogger('UserProfileScreen');
 
 type RouteProps = RouteProp<FriendsStackParamList, 'UserProfile'>;
 
@@ -51,7 +54,7 @@ export default function UserProfileScreen() {
       const response = await api.get(`/api/v1/users/${userId}`);
       // API returns { data: { id, username, display_name, ... } }
       const userData = response.data?.data || response.data?.user || response.data;
-      console.log('[UserProfileScreen] Fetched user data:', userData);
+      logger.debug('Fetched user data:', userData?.id);
       
       if (!userData || !userData.id) {
         throw new Error('Invalid user data received');
@@ -59,7 +62,7 @@ export default function UserProfileScreen() {
       
       setUser(userData);
     } catch (error) {
-      console.error('Failed to fetch user:', error);
+      logger.error('Failed to fetch user:', error);
       Alert.alert('Error', 'Failed to load user profile');
       navigation.goBack();
     } finally {

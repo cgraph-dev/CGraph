@@ -7,6 +7,9 @@
 
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createLogger } from './logger';
+
+const logger = createLogger('Storage');
 
 // Keys for stored data
 const KEYS = {
@@ -31,7 +34,7 @@ const secureStorage = {
     try {
       return await SecureStore.getItemAsync(key);
     } catch (error) {
-      console.error(`Failed to get secure item ${key}:`, error);
+      logger.error(`Failed to get secure item ${key}:`, error);
       return null;
     }
   },
@@ -41,7 +44,7 @@ const secureStorage = {
       await SecureStore.setItemAsync(key, value);
       return true;
     } catch (error) {
-      console.error(`Failed to set secure item ${key}:`, error);
+      logger.error(`Failed to set secure item ${key}:`, error);
       return false;
     }
   },
@@ -51,7 +54,7 @@ const secureStorage = {
       await SecureStore.deleteItemAsync(key);
       return true;
     } catch (error) {
-      console.error(`Failed to remove secure item ${key}:`, error);
+      logger.error(`Failed to remove secure item ${key}:`, error);
       return false;
     }
   },
@@ -66,7 +69,7 @@ const generalStorage = {
     try {
       return await AsyncStorage.getItem(key);
     } catch (error) {
-      console.error(`Failed to get item ${key}:`, error);
+      logger.error(`Failed to get item ${key}:`, error);
       return null;
     }
   },
@@ -76,7 +79,7 @@ const generalStorage = {
       await AsyncStorage.setItem(key, value);
       return true;
     } catch (error) {
-      console.error(`Failed to set item ${key}:`, error);
+      logger.error(`Failed to set item ${key}:`, error);
       return false;
     }
   },
@@ -86,7 +89,7 @@ const generalStorage = {
       await AsyncStorage.removeItem(key);
       return true;
     } catch (error) {
-      console.error(`Failed to remove item ${key}:`, error);
+      logger.error(`Failed to remove item ${key}:`, error);
       return false;
     }
   },

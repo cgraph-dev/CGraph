@@ -9,6 +9,9 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
+import { createLogger } from './logger';
+
+const logger = createLogger('Biometrics');
 
 const BIOMETRIC_ENABLED_KEY = 'cgraph_biometric_enabled';
 const BIOMETRIC_LAST_AUTH_KEY = 'cgraph_biometric_last_auth';
@@ -52,7 +55,7 @@ export async function getBiometricStatus(): Promise<BiometricStatus> {
       securityLevel: hasHardware && isEnrolled ? securityLevel : 'none',
     };
   } catch (error) {
-    console.error('Error checking biometric status:', error);
+    logger.error('Error checking biometric status:', error);
     return {
       isAvailable: false,
       isEnrolled: false,
@@ -119,7 +122,7 @@ export async function authenticateWithBiometrics(
         : 'Authentication failed',
     };
   } catch (error) {
-    console.error('Biometric authentication error:', error);
+    logger.error('Biometric authentication error:', error);
     return { success: false, error: 'An unexpected error occurred' };
   }
 }
@@ -152,7 +155,7 @@ export async function setBiometricLockEnabled(enabled: boolean): Promise<boolean
     await SecureStore.setItemAsync(BIOMETRIC_ENABLED_KEY, enabled ? 'true' : 'false');
     return true;
   } catch (error) {
-    console.error('Error setting biometric lock:', error);
+    logger.error('Error setting biometric lock:', error);
     return false;
   }
 }

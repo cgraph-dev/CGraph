@@ -11,6 +11,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAudioPlayer, useAudioPlayerStatus, AudioStatus, setAudioModeAsync } from 'expo-audio';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../contexts/ThemeContext';
+import { createLogger } from '../lib/logger';
+
+const logger = createLogger('VoicePlayer');
 
 interface VoiceMessagePlayerProps {
   /** Audio source URL */
@@ -184,7 +187,7 @@ export function VoiceMessagePlayer({
         player.play();
       }
     } catch (err) {
-      console.error('Play/pause error:', err);
+      logger.error('Play/pause error:', err);
       setError('Playback error');
     }
   }, [isPlaying, player, status, audioDuration, error]);

@@ -37,6 +37,9 @@ import socketManager from '../../lib/socket';
 import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
 import { MessagesStackParamList, Message, Conversation, ConversationParticipant, UserBasic } from '../../types';
 import { VoiceMessageRecorder, VoiceMessagePlayer } from '../../components';
+import { createLogger } from '../../lib/logger';
+
+const logger = createLogger('ConversationScreen');
 
 // Helper to process reactions and set hasReacted based on current user
 const processMessagesWithReactions = (messages: Message[], currentUserId: string | undefined): Message[] => {
@@ -624,7 +627,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         // Validate message data before normalizing
         if (!data.message || !data.message.id) {
           if (__DEV__) {
-            console.log('[ConversationScreen] Skipping invalid message payload:', data);
+            logger.debug('Skipping invalid message payload:', data);
           }
           return;
         }
@@ -634,7 +637,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         // Additional validation - skip messages without sender info (except for pin events)
         if (event !== 'message_pinned' && !normalized.sender_id && !normalized.sender?.id) {
           if (__DEV__) {
-            console.log('[ConversationScreen] Skipping message without sender:', normalized.id);
+            logger.debug('Skipping message without sender:', normalized.id);
           }
           return;
         }
@@ -645,7 +648,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           const hasMediaUrl = normalized.metadata?.url || normalized.file_url;
           if (!hasRealContent && !hasMediaUrl) {
             if (__DEV__) {
-              console.log('[ConversationScreen] Skipping empty WebSocket message:', normalized.id);
+              logger.debug('Skipping empty WebSocket message:', normalized.id);
             }
             return;
           }
@@ -655,7 +658,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           // Skip if message was deleted
           if (deletedMessageIdsRef.current.has(normalized.id)) {
             if (__DEV__) {
-              console.log('[ConversationScreen] Skipping deleted message:', normalized.id);
+              logger.debug('Skipping deleted message:', normalized.id);
             }
             return;
           }
@@ -665,7 +668,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             const exists = prev.some(m => m.id === normalized.id);
             if (exists) {
               if (__DEV__) {
-                console.log('[ConversationScreen] Skipping duplicate message:', normalized.id);
+                logger.debug('Skipping duplicate message:', normalized.id);
               }
               return prev;
             }
@@ -779,7 +782,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       
       updateHeader(displayName);
     } catch (error) {
-      console.error('Error fetching conversation:', error);
+      logger.error('Error fetching conversation:', error);
     }
   };
   
@@ -930,7 +933,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         setMessages(sortedMessages);
       }
     } catch (error) {
-      console.error('Error fetching messages:', error);
+      logger.error('Error fetching messages:', error);
     } finally {
       if (isMountedRef.current) {
         setIsLoading(false);
@@ -1018,7 +1021,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         });
       }, 500);
     } catch (error) {
-      console.error('Error sending message:', error);
+      logger.error('Error sending message:', error);
       setInputText(content);
       if (currentReplyTo) setReplyingTo(currentReplyTo); // Restore reply on error
     } finally {
@@ -1058,7 +1061,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       
       // Validate message has required fields before adding
       if (!rawMessage || !rawMessage.id) {
-        console.warn('[handleVoiceComplete] Invalid message response:', rawMessage);
+        logger.warn('Invalid message response:', rawMessage);
         return;
       }
       
@@ -1080,7 +1083,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Clean up the temporary file
       await FileSystem.deleteAsync(voiceData.uri, { idempotent: true });
     } catch (error) {
-      console.error('Error sending voice message:', error);
+      logger.error('Error sending voice message:', error);
       // Alert user of failure
       Alert.alert('Error', 'Failed to send voice message. Please try again.');
     } finally {
@@ -1211,7 +1214,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         );
       }
     } catch (error) {
-      console.error('Error opening file:', error);
+      logger.error('Error opening file:', error);
       Alert.alert('Error', 'Could not open file. Please try again.');
     }
   }, []);
@@ -1399,7 +1402,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     } catch (error: any) {
       // 409 means user already has this exact reaction - silently ignore
       if (error?.response?.status !== 409) {
-        console.warn('Error adding reaction:', error?.message || error);
+        logger.warn('Error adding reaction:', error?.message || error);
       }
     }
   }, [user]);
@@ -1433,7 +1436,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         return { ...m, reactions };
       }));
     } catch (error) {
-      console.error('Error removing reaction:', error);
+      logger.error('Error removing reaction:', error);
       Alert.alert('Error', 'Failed to remove reaction');
     }
   }, [user?.id]);
@@ -1510,7 +1513,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       .receive('error', (err: any) => {
         // Extract reason from various error formats
         const reason = typeof err === 'string' ? err : (err?.reason || err?.error || '');
-        console.warn('[Pin] Error:', reason);
+        logger.warn('Pin error:', reason);
         
         let errorMsg = `Failed to ${isPinned ? 'unpin' : 'pin'} message`;
         
@@ -1566,7 +1569,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 setMessages(prev => prev.filter(m => m.id !== selectedMessage.id));
               })
               .receive('error', (err: any) => {
-                console.error('Failed to unsend message:', err);
+                logger.error('Failed to unsend message:', err);
                 Alert.alert('Error', 'Failed to unsend message');
               });
           }
@@ -1581,34 +1584,34 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const handlePickImage = async () => {
     // Prevent concurrent picker operations
     if (isPickerActiveRef.current) {
-      console.log('[handlePickImage] Picker already active, ignoring');
+      logger.debug('Picker already active, ignoring');
       return;
     }
     
     isPickerActiveRef.current = true;
-    console.log('[handlePickImage] Starting...');
+    logger.debug('Starting image picker...');
     closeAttachMenu();
     
     // Longer delay to ensure modal is fully closed
     await new Promise(resolve => setTimeout(resolve, 500));
     
     try {
-      console.log('[handlePickImage] Requesting permission...');
+      logger.debug('Requesting media library permission...');
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      console.log('[handlePickImage] Permission result:', permission.granted);
+      logger.debug('Permission result:', permission.granted);
       if (!permission.granted) {
         Alert.alert('Permission needed', 'Please allow access to your photos to send images.');
         return;
       }
       
-      console.log('[handlePickImage] Launching image library...');
+      logger.debug('Launching image library...');
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         quality: 0.8,
         allowsMultipleSelection: true,
         selectionLimit: 10,
       });
-      console.log('[handlePickImage] Result:', result.canceled ? 'canceled' : `${result.assets?.length} selected`);
+      logger.debug('Image picker result:', result.canceled ? 'canceled' : `${result.assets?.length} selected`);
       
       if (!result.canceled && result.assets && result.assets.length > 0) {
         // Add to pending attachments and show preview
@@ -1622,7 +1625,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         openAttachmentPreview();
       }
     } catch (error) {
-      console.error('[handlePickImage] Error:', error);
+      logger.error('Error picking image:', error);
       Alert.alert('Error', 'Failed to open photo library');
     } finally {
       isPickerActiveRef.current = false;
@@ -1633,21 +1636,21 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const handleTakePhoto = async () => {
     // Prevent concurrent picker operations
     if (isPickerActiveRef.current) {
-      console.log('[handleTakePhoto] Picker already active, ignoring');
+      logger.debug('Picker already active, ignoring');
       return;
     }
     
     isPickerActiveRef.current = true;
-    console.log('[handleTakePhoto] Starting...');
+    logger.debug('Starting camera...');
     closeAttachMenu();
     
     // Longer delay to ensure modal is fully closed
     await new Promise(resolve => setTimeout(resolve, 500));
     
     try {
-      console.log('[handleTakePhoto] Requesting camera permission...');
+      logger.debug('Requesting camera permission...');
       const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
-      console.log('[handleTakePhoto] Camera permission:', cameraPermission.granted);
+      logger.debug('Camera permission:', cameraPermission.granted);
       if (!cameraPermission.granted) {
         Alert.alert('Permission needed', 'Please allow camera access.');
         return;
@@ -1656,7 +1659,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // Note: Microphone permission is automatically requested by the camera when recording video
       // No need to request it separately for expo-image-picker
       
-      console.log('[handleTakePhoto] Launching camera with photo/video support...');
+      logger.debug('Launching camera with photo/video support...');
       // Open native camera with BOTH photo and video options - user can switch in camera UI
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ['images', 'videos'], // Allow both - user decides in native camera
@@ -1664,13 +1667,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
         videoMaxDuration: 60, // 1 minute max for videos
         videoQuality: 1, // High quality video
       });
-      console.log('[handleTakePhoto] Result:', result.canceled ? 'canceled' : 'selected');
+      logger.debug('Camera result:', result.canceled ? 'canceled' : 'selected');
       
       if (!result.canceled && result.assets[0]) {
         // Add to pending attachments and show preview
         const asset = result.assets[0];
         const isVideo = asset.type === 'video' || asset.mimeType?.startsWith('video/');
-        console.log('[handleTakePhoto] Asset type:', asset.type, 'mimeType:', asset.mimeType, 'isVideo:', isVideo);
+        logger.debug('Asset type:', asset.type, 'mimeType:', asset.mimeType, 'isVideo:', isVideo);
         setPendingAttachments(prev => [...prev, {
           uri: asset.uri,
           type: isVideo ? 'video' as const : 'image' as const,
@@ -1681,7 +1684,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         openAttachmentPreview();
       }
     } catch (error) {
-      console.error('[handleTakePhoto] Error:', error);
+      logger.error('Error taking photo:', error);
       Alert.alert('Error', 'Failed to open camera');
     } finally {
       isPickerActiveRef.current = false;
@@ -1692,26 +1695,26 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const handlePickDocument = async () => {
     // Prevent concurrent picker operations
     if (isPickerActiveRef.current) {
-      console.log('[handlePickDocument] Picker already active, ignoring');
+      logger.debug('Picker already active, ignoring');
       return;
     }
     
     isPickerActiveRef.current = true;
-    console.log('[handlePickDocument] Starting...');
+    logger.debug('Starting document picker...');
     closeAttachMenu();
     
     // Longer delay to ensure modal is fully closed
     await new Promise(resolve => setTimeout(resolve, 500));
     
     try {
-      console.log('[handlePickDocument] Launching document picker...');
+      logger.debug('Launching document picker...');
       // Note: multiple selection disabled - causes issues with bundle files on iOS
       const result = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf', 'text/*', 'application/msword', 'application/vnd.openxmlformats-officedocument.*', 'application/vnd.ms-excel', 'image/*', 'audio/*', 'video/*'],
         copyToCacheDirectory: true,
         multiple: false,
       });
-      console.log('[handlePickDocument] Result:', result.canceled ? 'canceled' : 'selected');
+      logger.debug('Document picker result:', result.canceled ? 'canceled' : 'selected');
       
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];
@@ -1731,7 +1734,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         openAttachmentPreview();
       }
     } catch (error) {
-      console.error('[handlePickDocument] Error:', error);
+      logger.error('Error picking document:', error);
       Alert.alert('Error', 'Failed to open file picker');
     } finally {
       isPickerActiveRef.current = false;
@@ -1829,13 +1832,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
               image_count: uploadedUrls.length,
             } : undefined,
           };
-          console.log('[sendPendingAttachments] Sending message:', JSON.stringify(msgPayload));
+          logger.debug('Sending message:', JSON.stringify(msgPayload));
           const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, msgPayload);
           
           const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
           if (__DEV__) {
-            console.log('[sendPendingAttachments] Server response metadata:', JSON.stringify(rawMessage?.metadata));
-            console.log('[sendPendingAttachments] Message ID:', rawMessage?.id);
+            logger.debug('Server response metadata:', JSON.stringify(rawMessage?.metadata));
+            logger.debug('Message ID:', rawMessage?.id);
           }
           // Don't add message here - let WebSocket handler add it to avoid duplicates
           // The WebSocket broadcast happens server-side before we get the API response
@@ -1857,8 +1860,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
         await uploadAndSendFile(video.uri, 'video', video.name, videos.indexOf(video) === 0 && !files.length ? caption : undefined, video.duration);
       }
     } catch (error: any) {
-      console.error('[sendPendingAttachments] Error:', error);
-      console.error('[sendPendingAttachments] Response:', error?.response?.data);
+      logger.error('Error sending attachments:', error);
+      logger.error('Error response:', error?.response?.data);
       Alert.alert('Error', error?.response?.data?.error || 'Failed to send attachments. Please try again.');
     } finally {
       setIsSending(false);
@@ -1911,7 +1914,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       } as any);
       formData.append('context', 'message');
       
-      console.log('[uploadAndSendFile] Uploading file:', { name, type: mimeType, uri: uri.substring(0, 50) });
+      logger.debug('Uploading file:', { name, type: mimeType, uri: uri.substring(0, 50) });
       
       const response = await api.post('/api/v1/upload', formData, {
         headers: { 
@@ -1920,7 +1923,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         timeout: 120000, // 2 minute timeout for video uploads
       });
       
-      console.log('[uploadAndSendFile] Upload response:', JSON.stringify(response.data));
+      logger.debug('Upload response:', JSON.stringify(response.data));
       
       // Extract URL from various response formats
       const fileUrl = response.data?.data?.url || response.data?.url || response.data?.file?.url;
@@ -1956,11 +1959,11 @@ export default function ConversationScreen({ navigation, route }: Props) {
           flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
         }
       } else {
-        console.error('[uploadAndSendFile] No file URL in response:', response.data);
+        logger.error('No file URL in response:', response.data);
         Alert.alert('Error', 'Upload failed - no file URL returned.');
       }
     } catch (error: any) {
-      console.error('[uploadAndSendFile] Error uploading file:', error?.response?.data || error?.message || error);
+      logger.error('Error uploading file:', error?.response?.data || error?.message || error);
       const errorMessage = error?.response?.data?.error?.message || error?.message || 'Failed to send file. Please try again.';
       Alert.alert('Upload Error', errorMessage);
     } finally {
@@ -1998,7 +2001,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       }
     } catch (error) {
-      console.error('Error sending wave:', error);
+      logger.error('Error sending wave:', error);
     }
   };
   
@@ -2035,7 +2038,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const date = new Date(dateString);
       // Check if date is valid
       if (isNaN(date.getTime())) {
-        console.warn('[ConversationScreen] Invalid date string:', dateString);
+        logger.warn('Invalid date string:', dateString);
         return '';
       }
       return date.toLocaleTimeString([], {
@@ -2043,7 +2046,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         minute: '2-digit',
       });
     } catch (error) {
-      console.error('[ConversationScreen] Error formatting date:', error);
+      logger.error('Error formatting date:', error);
       return '';
     }
   };
@@ -2286,7 +2289,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     // Skip rendering messages without proper ID or that appear empty/invalid
     if (!item.id) {
       if (__DEV__) {
-        console.log('[renderMessage] Skipping message without ID');
+        logger.debug('Skipping message without ID');
       }
       return null;
     }
@@ -2295,7 +2298,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     const hasSender = item.sender_id || item.sender?.id;
     if (!hasSender) {
       if (__DEV__) {
-        console.log('[renderMessage] Skipping message without sender:', item.id);
+        logger.debug('Skipping message without sender:', item.id);
       }
       return null;
     }
@@ -2308,7 +2311,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     
     if (!hasTextContent && !isVoiceWithUrl && !isFileWithUrl) {
       if (__DEV__) {
-        console.log('[renderMessage] Skipping empty/invalid message:', item.id, { 
+        logger.debug('Skipping empty/invalid message:', item.id, { 
           type: item.type, 
           content: item.content?.substring(0, 20),
           hasUrl: !!hasMediaUrl 
