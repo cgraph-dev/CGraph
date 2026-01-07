@@ -80,7 +80,14 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
       duration: rawMetadata.duration as number,
       waveform: rawMetadata.waveform as number[],
       thumbnail: resolveMediaUrl(rawMetadata.thumbnailUrl as string ?? rawMetadata.thumbnail_url as string ?? rawMetadata.thumbnail as string),
+      // Include grid_images for multi-photo messages
+      grid_images: rawMetadata.grid_images as string[] | undefined,
+      image_count: rawMetadata.image_count as number | undefined,
     };
+    // Resolve URLs in grid_images array
+    if (metadata.grid_images && Array.isArray(metadata.grid_images)) {
+      metadata.grid_images = metadata.grid_images.map(url => resolveMediaUrl(url) || url);
+    }
   }
   
   // If metadata.url is still missing, try attachment and root-level fields

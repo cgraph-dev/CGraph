@@ -42,6 +42,9 @@ export interface MessageMetadata {
   duration?: number;
   thumbnail?: string;
   waveform?: number[];
+  // Multi-photo grid support
+  grid_images?: string[];
+  image_count?: number;
 }
 
 export interface Message {

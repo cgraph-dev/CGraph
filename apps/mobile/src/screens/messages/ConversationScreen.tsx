@@ -1605,8 +1605,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
   };
   
-  // Handle camera capture - with video option like Telegram
-  const handleTakePhoto = async (mediaType: 'photo' | 'video' = 'photo') => {
+  // Handle camera capture - opens native camera with photo/video toggle (like Telegram)
+  const handleTakePhoto = async () => {
     // Prevent concurrent picker operations
     if (isPickerActiveRef.current) {
       console.log('[handleTakePhoto] Picker already active, ignoring');
@@ -1614,33 +1614,32 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
     
     isPickerActiveRef.current = true;
-    console.log(`[handleTakePhoto] Starting... mode: ${mediaType}`);
+    console.log('[handleTakePhoto] Starting...');
     closeAttachMenu();
     
     // Longer delay to ensure modal is fully closed
     await new Promise(resolve => setTimeout(resolve, 500));
     
     try {
-      console.log('[handleTakePhoto] Requesting permission...');
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
-      console.log('[handleTakePhoto] Permission result:', permission.granted);
-      if (!permission.granted) {
+      console.log('[handleTakePhoto] Requesting camera permission...');
+      const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
+      console.log('[handleTakePhoto] Camera permission:', cameraPermission.granted);
+      if (!cameraPermission.granted) {
         Alert.alert('Permission needed', 'Please allow camera access.');
         return;
       }
       
-      // For video, also request microphone permission
-      if (mediaType === 'video') {
-        const micPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        console.log('[handleTakePhoto] Mic permission:', micPermission.granted);
-      }
+      // Request microphone permission for video recording
+      const micPermission = await ImagePicker.requestMicrophonePermissionsAsync();
+      console.log('[handleTakePhoto] Mic permission:', micPermission.granted);
       
-      console.log(`[handleTakePhoto] Launching camera for ${mediaType}...`);
+      console.log('[handleTakePhoto] Launching camera with photo/video support...');
+      // Open native camera with BOTH photo and video options - user can switch in camera UI
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: mediaType === 'video' ? ['videos'] : ['images'],
-        quality: mediaType === 'video' ? 0.7 : 0.8,
+        mediaTypes: ['images', 'videos'], // Allow both - user decides in native camera
+        quality: 0.8,
         videoMaxDuration: 60, // 1 minute max for videos
-        allowsEditing: mediaType === 'video',
+        videoQuality: 1, // High quality video
       });
       console.log('[handleTakePhoto] Result:', result.canceled ? 'canceled' : 'selected');
       
@@ -1648,6 +1647,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         // Add to pending attachments and show preview
         const asset = result.assets[0];
         const isVideo = asset.type === 'video' || asset.mimeType?.startsWith('video/');
+        console.log('[handleTakePhoto] Asset type:', asset.type, 'mimeType:', asset.mimeType, 'isVideo:', isVideo);
         setPendingAttachments(prev => [...prev, {
           uri: asset.uri,
           type: isVideo ? 'video' as const : 'image' as const,
@@ -1663,21 +1663,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
     } finally {
       isPickerActiveRef.current = false;
     }
-  };
-  
-  // Show camera mode picker (photo/video)
-  const showCameraPicker = () => {
-    closeAttachMenu();
-    Alert.alert(
-      'Camera',
-      'Choose what to capture',
-      [
-        { text: 'Photo', onPress: () => handleTakePhoto('photo') },
-        { text: 'Video', onPress: () => handleTakePhoto('video') },
-        { text: 'Cancel', style: 'cancel' },
-      ],
-      { cancelable: true }
-    );
   };
   
   // Handle document picker
@@ -1815,7 +1800,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
             content: caption || `📷 ${uploadedUrls.length} photo${uploadedUrls.length > 1 ? 's' : ''}`,
             content_type: 'image', // Use standard 'image' type for backend compatibility
             file_url: uploadedUrls[0], // Primary image
-            metadata: uploadedUrls.length > 1 ? {
+            // Store grid_images in link_preview since backend persists it as a :map
+            link_preview: uploadedUrls.length > 1 ? {
               grid_images: uploadedUrls,
               image_count: uploadedUrls.length,
             } : undefined,
@@ -1826,6 +1812,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
           const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
           if (rawMessage?.id) {
             const normalized = normalizeMessage(rawMessage);
+            // Backend stores grid_images in link_preview, so merge it into metadata
+            if (uploadedUrls.length > 1) {
+              normalized.metadata = {
+                ...normalized.metadata,
+                grid_images: uploadedUrls,
+                image_count: uploadedUrls.length,
+              };
+            }
             setMessages(prev => [normalized, ...prev]);
             flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
           }
@@ -2057,8 +2051,62 @@ export default function ConversationScreen({ navigation, route }: Props) {
             </Text>
           </View>
         )}
-        {/* Image messages */}
-        {item.type === 'image' && item.metadata?.url && (
+        {/* Image Grid messages - multiple photos in one message (check FIRST before single image) */}
+        {item.type === 'image' && item.metadata?.grid_images && Array.isArray(item.metadata.grid_images) && item.metadata.grid_images.length > 0 && (
+          <View style={styles.imageGrid}>
+            {(() => {
+              const images = item.metadata.grid_images as string[];
+              const count = images.length;
+              
+              // Calculate grid layout based on image count
+              const gridStyle = count === 1 ? styles.imageGridSingle :
+                               count === 2 ? styles.imageGridTwo :
+                               count === 3 ? styles.imageGridThree :
+                               count === 4 ? styles.imageGridFour :
+                               styles.imageGridMany;
+              
+              return (
+                <View style={gridStyle}>
+                  {images.slice(0, 4).map((imgUrl, idx) => (
+                    <TouchableOpacity
+                      key={idx}
+                      activeOpacity={0.9}
+                      onPress={() => handleImagePress(imgUrl)}
+                      style={[
+                        styles.gridImageContainer,
+                        count === 1 && styles.gridImageFull,
+                        count === 2 && styles.gridImageHalf,
+                        count === 3 && (idx === 0 ? styles.gridImageThreeMain : styles.gridImageThreeSide),
+                        count >= 4 && styles.gridImageQuarter,
+                      ]}
+                    >
+                      <Image
+                        source={{ uri: imgUrl }}
+                        style={styles.gridImage}
+                        resizeMode="cover"
+                      />
+                      {/* Show "+X more" overlay on 4th image if more than 4 */}
+                      {idx === 3 && count > 4 && (
+                        <View style={styles.gridMoreOverlay}>
+                          <Text style={styles.gridMoreText}>+{count - 4}</Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              );
+            })()}
+            {/* Photo count badge */}
+            {(item.metadata.grid_images as string[]).length > 1 && (
+              <View style={styles.imageGridBadge}>
+                <Ionicons name="images" size={12} color="#fff" />
+                <Text style={styles.imageGridBadgeText}>{(item.metadata.grid_images as string[]).length}</Text>
+              </View>
+            )}
+          </View>
+        )}
+        {/* Single Image messages (only if NOT a grid) */}
+        {item.type === 'image' && item.metadata?.url && !item.metadata?.grid_images && (
           <TouchableOpacity 
             activeOpacity={0.9}
             onPress={() => handleImagePress(item.metadata!.url!)}
@@ -2073,8 +2121,8 @@ export default function ConversationScreen({ navigation, route }: Props) {
             </View>
           </TouchableOpacity>
         )}
-        {/* Image Grid messages - multiple photos in one message */}
-        {(item.type === 'image_grid' || (item.type === 'image' && item.metadata?.grid_images)) && item.metadata?.grid_images && (
+        {/* Legacy Image Grid type (for backwards compatibility) */}
+        {item.type === 'image_grid' && item.metadata?.grid_images && (
           <View style={styles.imageGrid}>
             {(() => {
               const images = item.metadata.grid_images as string[];
@@ -2432,7 +2480,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
     
     const attachOptions = [
       { icon: 'image-outline', label: 'Photo', color: '#10b981', onPress: handlePickImage },
-      { icon: 'camera-outline', label: 'Camera', color: '#3b82f6', onPress: showCameraPicker },
+      { icon: 'camera-outline', label: 'Camera', color: '#3b82f6', onPress: handleTakePhoto },
       { icon: 'document-outline', label: 'File', color: '#8b5cf6', onPress: handlePickDocument },
       { icon: 'location-outline', label: 'Location', color: '#f59e0b', onPress: () => {
         closeAttachMenu();

@@ -98,16 +98,26 @@ defmodule CgraphWeb.API.V1.MessageJSON do
 
   # Build file metadata for voice/audio/file messages from Message struct
   # Populates metadata object with file info for frontend players
-  defp build_file_metadata(%Message{file_url: nil}), do: %{}
-  defp build_file_metadata(%Message{content_type: content_type} = msg)
+  defp build_file_metadata(%Message{file_url: nil, link_preview: nil}), do: %{}
+  defp build_file_metadata(%Message{file_url: nil, link_preview: link_preview}) when is_map(link_preview) do
+    # Return link_preview data for grid images or other custom metadata
+    link_preview
+  end
+  defp build_file_metadata(%Message{content_type: content_type, link_preview: link_preview} = msg)
        when content_type in ["voice", "audio", "file", "image", "video"] do
-    %{
+    base_metadata = %{
       url: msg.file_url,
       filename: msg.file_name,
       size: msg.file_size,
       mimeType: msg.file_mime_type,
       thumbnailUrl: msg.thumbnail_url
     }
+    # Merge link_preview data (grid_images, etc.) into metadata
+    if is_map(link_preview) do
+      Map.merge(base_metadata, link_preview)
+    else
+      base_metadata
+    end
   end
   defp build_file_metadata(_msg), do: %{}
 
