@@ -178,7 +178,15 @@ defmodule Cgraph.Uploads do
     |> Repo.insert()
   end
   
-  defp should_optimize_image?(content_type, size, skip_optimization) do
+  @doc """
+  Check if an image should be optimized based on type, size, and flags.
+  
+  Returns true if:
+  - skip_optimization is false
+  - content_type is an image (but not GIF or SVG)
+  - size exceeds the optimization threshold (100KB)
+  """
+  def should_optimize_image?(content_type, size, skip_optimization) do
     not skip_optimization and
     String.starts_with?(content_type, "image/") and
     content_type not in ["image/gif", "image/svg+xml"] and
@@ -287,7 +295,11 @@ defmodule Cgraph.Uploads do
       :error
   end
   
-  defp supports_webp? do
+  @doc """
+  Check if ImageMagick supports WebP format.
+  Returns true if WebP is available for conversion.
+  """
+  def supports_webp? do
     case System.cmd("convert", ["-list", "format"], stderr_to_stdout: true) do
       {output, 0} -> String.contains?(output, "WEBP")
       _ -> false
