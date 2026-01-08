@@ -57,6 +57,8 @@ class MockOffscreenCanvas {
 }
 
 // Setup globals before all tests
+const savedResizeObserver = (global as any).ResizeObserver;
+
 beforeAll(() => {
   (global as any).window = mockWindow;
   (global as any).document = mockDocument;
@@ -71,7 +73,10 @@ afterAll(() => {
   delete (global as any).document;
   delete (global as any).requestAnimationFrame;
   delete (global as any).cancelAnimationFrame;
-  delete (global as any).ResizeObserver;
+  // Restore the original ResizeObserver instead of deleting
+  if (savedResizeObserver) {
+    (global as any).ResizeObserver = savedResizeObserver;
+  }
   delete (global as any).OffscreenCanvas;
 });
 

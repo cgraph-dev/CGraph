@@ -161,11 +161,11 @@ defmodule Cgraph.Moderation do
       end
 
       # Log for audit
-      Audit.log(:moderation, :report_created, reporter.id, %{
+      Audit.log(:moderation, :report_created, %{
         report_id: report.id,
         target_type: report.target_type,
         category: report.category
-      })
+      }, actor_id: reporter.id)
 
       {:ok, report}
     end
@@ -302,10 +302,10 @@ defmodule Cgraph.Moderation do
          {:ok, _action} <- create_review_action(reviewer, report, attrs),
          {:ok, report} <- apply_action(report, attrs) do
 
-      Audit.log(:moderation, :report_reviewed, reviewer.id, %{
+      Audit.log(:moderation, :report_reviewed, %{
         report_id: report.id,
         action: attrs[:action]
-      })
+      }, actor_id: reviewer.id)
 
       {:ok, report}
     end
@@ -371,7 +371,10 @@ defmodule Cgraph.Moderation do
 
   defp update_report_status(report, status) do
     report
-    |> Ecto.Changeset.change(%{status: status, reviewed_at: DateTime.utc_now()})
+    |> Ecto.Changeset.change(%{
+      status: status,
+      reviewed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+    })
     |> Repo.update()
   end
 
@@ -384,7 +387,9 @@ defmodule Cgraph.Moderation do
   """
   def create_user_restriction(user_id, type, duration_hours) do
     expires_at = if duration_hours do
-      DateTime.add(DateTime.utc_now(), duration_hours * 3600, :second)
+      DateTime.utc_now()
+      |> DateTime.truncate(:second)
+      |> DateTime.add(duration_hours * 3600, :second)
     else
       nil  # Permanent
     end
@@ -501,7 +506,7 @@ defmodule Cgraph.Moderation do
         status: status,
         reviewer_id: reviewer.id,
         reviewer_notes: attrs[:notes],
-        reviewed_at: DateTime.utc_now()
+        reviewed_at: DateTime.utc_now() |> DateTime.truncate(:second)
       })
       |> Repo.update()
       |> maybe_lift_restriction(status)

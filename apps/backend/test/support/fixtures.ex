@@ -247,3 +247,108 @@ defmodule CgraphWeb.ForumFixtures do
     %{comment: comment, user: user}
   end
 end
+
+defmodule CgraphWeb.ModerationFixtures do
+  @moduledoc """
+  Test fixtures for the moderation system.
+  """
+
+  import Ecto.Query
+
+  alias Cgraph.Moderation
+  alias CgraphWeb.UserFixtures
+
+  @doc """
+  Create a report fixture.
+
+  Returns `{report, target}` tuple with the created report and target user.
+  """
+  def report_fixture(reporter \\ nil, attrs \\ %{}) do
+    reporter = reporter || UserFixtures.user_fixture()
+    target = UserFixtures.user_fixture()
+
+    {:ok, report} =
+      attrs
+      |> Enum.into(%{
+        target_type: :user,
+        target_id: target.id,
+        category: :harassment,
+        description: "Test report description #{System.unique_integer()}"
+      })
+      |> then(&Moderation.create_report(reporter, &1))
+
+    {report, target}
+  end
+
+  @doc """
+  Create a message report fixture.
+  """
+  def message_report_fixture(reporter \\ nil, attrs \\ %{}) do
+    reporter = reporter || UserFixtures.user_fixture()
+    message_id = Ecto.UUID.generate()
+
+    {:ok, report} =
+      attrs
+      |> Enum.into(%{
+        target_type: :message,
+        target_id: message_id,
+        category: :spam,
+        description: "Spam message report"
+      })
+      |> then(&Moderation.create_report(reporter, &1))
+
+    report
+  end
+
+  @doc """
+  Create a reviewed report with an action.
+  """
+  def reviewed_report_fixture(reporter \\ nil, admin \\ nil, action \\ :dismiss) do
+    reporter = reporter || UserFixtures.user_fixture()
+    admin = admin || UserFixtures.admin_user_fixture()
+    {report, target} = report_fixture(reporter)
+
+    {:ok, reviewed_report} = Moderation.review_report(admin, report.id, %{
+      action: action,
+      notes: "Test review notes",
+      duration_hours: if(action == :suspend, do: 24, else: nil)
+    })
+
+    {reviewed_report, target, admin}
+  end
+
+  @doc """
+  Create a user restriction fixture.
+  """
+  def user_restriction_fixture(user \\ nil, type \\ :suspended, duration_hours \\ 24) do
+    user = user || UserFixtures.user_fixture()
+
+    {:ok, restriction} = Moderation.create_user_restriction(
+      user.id,
+      type,
+      if(type == :banned, do: nil, else: duration_hours)
+    )
+
+    {restriction, user}
+  end
+
+  @doc """
+  Create an appeal fixture.
+  """
+  def appeal_fixture(reporter \\ nil, admin \\ nil) do
+    {_report, target, admin} = reviewed_report_fixture(reporter, admin, :suspend)
+
+    action = Cgraph.Repo.one!(
+      from(ra in Cgraph.Moderation.ReviewAction,
+        order_by: [desc: ra.inserted_at],
+        limit: 1
+      )
+    )
+
+    {:ok, appeal} = Moderation.create_appeal(target, action.id, %{
+      reason: "I did not violate any rules. This is a misunderstanding that I would like to clarify."
+    })
+
+    {appeal, target, action, admin}
+  end
+end
