@@ -1,10 +1,12 @@
 # Security Architecture
 
-This document describes the security architecture and features implemented in CGraph.
+Look, security is one of those things that's easy to get wrong and really hard to fix after the fact. We've put a lot of thought into how CGraph handles authentication, authorization, and data protection — and we think we've gotten it right. But security is also a moving target, so if you spot something off, please let us know.
+
+This doc explains what we've built and why. It's not exhaustive (that would be a book), but it covers the stuff you actually need to know.
 
 ## Overview
 
-CGraph implements industry-standard security practices across multiple layers:
+We've layered our security like an onion — multiple defenses at different levels. If one layer fails, the others still protect you. Here's the high-level picture:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐

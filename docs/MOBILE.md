@@ -2,7 +2,11 @@
 
 > Building native experiences with React Native and Expo.
 
-This guide covers the CGraph mobile application for iOS and Android. Built with React Native and Expo SDK 54, it shares type definitions and business logic with the web app while delivering a native mobile experience with the New Architecture enabled by default.
+So you want to work on the mobile app? Cool. We built this with React Native and Expo SDK 54, and honestly it's been a pretty good experience. The New Architecture is enabled by default (Fabric renderer, TurboModules — the whole shebang), and we share a lot of code with the web app which keeps things DRY.
+
+Fair warning: mobile development has its quirks. iOS simulators are slow to boot, Android emulators eat RAM for breakfast, and you'll probably fight with CocoaPods at some point. But once you're set up, iteration is fast and the end result feels genuinely native.
+
+Let's dive in.
 
 ---
 

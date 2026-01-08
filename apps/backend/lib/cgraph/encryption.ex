@@ -355,14 +355,26 @@ defmodule Cgraph.Encryption do
 
   defp get_key_from_env do
     case System.get_env("ENCRYPTION_KEY") do
-      nil -> generate_ephemeral_key()
+      nil -> handle_missing_key()
+      "" -> handle_missing_key()
       encoded -> decode_key(encoded, "ENCRYPTION_KEY")
     end
   end
 
-  defp generate_ephemeral_key do
-    Logger.warning("No encryption key configured, using ephemeral key")
-    :crypto.strong_rand_bytes(@aes_key_size)
+  defp handle_missing_key do
+    if Application.get_env(:cgraph, :env) == :prod or Mix.env() == :prod do
+      raise """
+      ENCRYPTION_KEY environment variable is required in production!
+      
+      Generate one with: mix phx.gen.secret 32 | base64
+      
+      This key encrypts sensitive data at rest (TOTP secrets, encrypted fields).
+      Without a stable key, encrypted data becomes unrecoverable after restarts.
+      """
+    else
+      Logger.warning("[DEV ONLY] No ENCRYPTION_KEY set, using ephemeral key - DO NOT USE IN PRODUCTION")
+      :crypto.strong_rand_bytes(@aes_key_size)
+    end
   end
 
   defp decode_key(encoded, source) do

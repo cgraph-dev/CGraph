@@ -45,7 +45,7 @@ defmodule CgraphWeb.Plugs.CookieAuth do
     [
       http_only: true,
       secure: Mix.env() == :prod,
-      same_site: "Lax",
+      same_site: "Strict",  # Strict mode for better CSRF protection
       path: "/"
     ]
   end

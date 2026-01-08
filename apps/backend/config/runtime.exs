@@ -104,4 +104,29 @@ if config_env() == :prod do
       client_secret: System.get_env("TIKTOK_CLIENT_SECRET"),
       redirect_uri: "https://#{host}/api/v1/auth/oauth/tiktok/callback"
     ]
+
+  # Encryption key for data at rest (REQUIRED in production)
+  encryption_key =
+    System.get_env("ENCRYPTION_KEY") ||
+      raise """
+      environment variable ENCRYPTION_KEY is missing.
+      Generate one with: mix phx.gen.secret 32 | base64
+      This key encrypts TOTP secrets, encrypted fields, and sensitive data at rest.
+      """
+
+  config :cgraph, :encryption_key, encryption_key
+
+  # Redis configuration for production
+  redis_url = System.get_env("REDIS_URL") || "redis://localhost:6379/0"
+  config :cgraph, :redis_url, redis_url
+
+  # Mark environment as production for conditional logic
+  config :cgraph, :env, :prod
+
+  # Push notification configuration
+  if System.get_env("EXPO_ACCESS_TOKEN") do
+    config :cgraph, :push_notifications,
+      enabled: true,
+      expo_access_token: System.get_env("EXPO_ACCESS_TOKEN")
+  end
 end

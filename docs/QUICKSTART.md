@@ -5,9 +5,13 @@
 
 ---
 
+Hey there! So you want to get CGraph running on your machine. Good news — it's honestly not that bad. We've done our best to keep the setup straightforward, though there are a few moving parts since we're running a full-stack app with real-time features.
+
+Grab a coffee, maybe put on some music, and let's get you set up.
+
 ## Prerequisites
 
-Before starting, ensure you have these tools installed. Listed versions are tested and recommended.
+First things first — you'll need some tools installed. Don't worry, I'll walk you through each one. These are the versions we've tested against and recommend, but slightly newer versions usually work fine too.
 
 ### Required Software
 

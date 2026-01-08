@@ -318,6 +318,26 @@ defmodule CgraphWeb.Router do
     delete "/friends/:id/block", FriendController, :unblock
     get "/friends/:id/mutual", FriendController, :mutual
     resources "/friends", FriendController, only: [:index, :show, :create, :delete]
+
+    # Content Reports (users can report content/users)
+    resources "/reports", ReportController, only: [:index, :show, :create]
+  end
+
+  # Admin/Moderator API routes
+  scope "/api/admin", CgraphWeb.API.Admin do
+    pipe_through [:api, :api_auth]
+
+    # Moderation queue
+    get "/reports", ModerationController, :list_reports
+    get "/reports/:id", ModerationController, :show_report
+    post "/reports/:id/review", ModerationController, :review_report
+
+    # Appeals
+    get "/appeals", ModerationController, :list_appeals
+    post "/appeals/:id/review", ModerationController, :review_appeal
+
+    # Moderation stats
+    get "/moderation/stats", ModerationController, :stats
   end
 
   # LiveDashboard (dev/admin only)

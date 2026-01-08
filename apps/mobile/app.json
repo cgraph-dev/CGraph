@@ -2,7 +2,7 @@
   "expo": {
     "name": "CGraph",
     "slug": "cgraph",
-    "version": "0.7.1",
+    "version": "0.7.26",
     "runtimeVersion": {
       "policy": "appVersion"
     },

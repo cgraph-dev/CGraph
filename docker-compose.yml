@@ -10,28 +10,33 @@ services:
     container_name: cgraph-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-cgraph}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cgraph_dev_password}
-      POSTGRES_DB: ${POSTGRES_DB:-cgraph_dev}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-cgraph}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./infrastructure/docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cgraph} -d ${POSTGRES_DB:-cgraph_dev}"]
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
       - cgraph-network
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
 
   # Redis Cache
   redis:
     image: redis:7.2-alpine
     container_name: cgraph-redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD:-}
     volumes:
       - redis_data:/data
     ports:
@@ -43,6 +48,11 @@ services:
       retries: 5
     networks:
       - cgraph-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
 
   # Elixir/Phoenix Backend
   backend:
@@ -52,14 +62,15 @@ services:
     container_name: cgraph-backend
     restart: unless-stopped
     environment:
-      MIX_ENV: ${MIX_ENV:-prod}
+      MIX_ENV: prod
       PHX_SERVER: "true"
-      PHX_HOST: ${PHX_HOST:-cgraph.org}
+      PHX_HOST: ${PHX_HOST:?PHX_HOST is required}
       PORT: 4000
-      DATABASE_URL: ecto://${POSTGRES_USER:-cgraph}:${POSTGRES_PASSWORD:-cgraph_dev_password}@postgres:5432/${POSTGRES_DB:-cgraph_dev}
-      REDIS_URL: redis://redis:6379/0
-      SECRET_KEY_BASE: ${SECRET_KEY_BASE:-generate_with_mix_phx_gen_secret}
-      JWT_SECRET: ${JWT_SECRET:-generate_your_jwt_secret}
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      SECRET_KEY_BASE: ${SECRET_KEY_BASE:?SECRET_KEY_BASE is required - generate with mix phx.gen.secret}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required - generate with mix phx.gen.secret}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?ENCRYPTION_KEY is required - generate with mix phx.gen.secret 32 | base64}
     ports:
       - "${BACKEND_PORT:-4000}:4000"
     depends_on:
@@ -75,6 +86,11 @@ services:
       retries: 3
     networks:
       - cgraph-network
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
 
   # React Web Frontend
   web:
@@ -95,6 +111,11 @@ services:
       retries: 3
     networks:
       - cgraph-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
 
   # Nginx Reverse Proxy (Production)
   nginx:

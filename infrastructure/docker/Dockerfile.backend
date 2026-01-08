@@ -21,17 +21,28 @@ RUN mix local.hex --force && \
 # Set working directory
 WORKDIR /app
 
-# Copy mix files
+# Copy mix files first for better caching
 COPY apps/backend/mix.exs apps/backend/mix.lock ./
-COPY apps/backend/config config/
+
+# Copy ALL config files (including prod.exs)
+COPY apps/backend/config ./config/
 
 # Fetch dependencies
 RUN mix deps.get --only prod
 RUN mix deps.compile
 
 # Copy application code
-COPY apps/backend/lib lib/
-COPY apps/backend/priv priv/
+COPY apps/backend/lib ./lib/
+COPY apps/backend/priv ./priv/
+
+# Copy assets if they exist (for Phoenix assets pipeline)
+COPY apps/backend/assets ./assets/ 2>/dev/null || true
+
+# Compile assets (if assets directory exists)
+RUN if [ -d "assets" ]; then \
+      cd assets && npm install && cd .. && \
+      mix assets.deploy; \
+    fi
 
 # Compile the release
 RUN mix compile

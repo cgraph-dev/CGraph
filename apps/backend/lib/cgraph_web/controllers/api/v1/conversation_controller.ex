@@ -121,19 +121,16 @@ defmodule CgraphWeb.API.V1.ConversationController do
   end
 
   # Creates a group conversation with multiple participants
-  defp create_group_conversation(conn, user, participant_ids, name, message_content) do
-    attrs = %{
-      participant_ids: [user.id | participant_ids],
-      name: name,
-      is_group: true
-    }
-
-    with {:ok, conversation} <- Messaging.create_group_conversation(user, attrs),
-         {:ok, _} <- maybe_send_message(conversation, user, message_content) do
-      conn
-      |> put_status(:created)
-      |> render(:show, conversation: conversation, current_user: user)
-    end
+  # NOTE: Group conversations are currently in development (v0.8.0 roadmap)
+  defp create_group_conversation(conn, _user, _participant_ids, _name, _message_content) do
+    conn
+    |> put_status(:bad_request)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error,
+      status: 400,
+      code: "group_conversations_not_supported",
+      message: "Group conversations are coming in v0.8.0. For now, please use 1:1 direct messages or Group Channels for multi-user communication."
+    )
   end
 
   defp maybe_send_message(_conversation, _user, nil), do: {:ok, nil}

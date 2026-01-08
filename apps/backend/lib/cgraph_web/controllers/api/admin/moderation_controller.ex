@@ -1,0 +1,282 @@
+defmodule CgraphWeb.API.Admin.ModerationController do
+  @moduledoc """
+  Admin API controller for content moderation.
+
+  Provides moderator/admin-only endpoints for reviewing and
+  acting on reports.
+
+  ## Endpoints
+
+  - `GET /api/admin/reports` - List pending reports
+  - `GET /api/admin/reports/:id` - Get report details
+  - `POST /api/admin/reports/:id/review` - Review and action a report
+  - `GET /api/admin/appeals` - List pending appeals
+  - `POST /api/admin/appeals/:id/review` - Review an appeal
+  - `GET /api/admin/stats` - Moderation statistics
+  """
+
+  use CgraphWeb, :controller
+
+  alias Cgraph.Moderation
+  alias Cgraph.Moderation.{Report, Appeal}
+
+  action_fallback CgraphWeb.FallbackController
+
+  plug :require_moderator
+
+  # ---------------------------------------------------------------------------
+  # Reports
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  List reports in the moderation queue.
+
+  ## Query Parameters
+
+  - `status` - Filter by status (pending, reviewing, resolved, dismissed)
+  - `category` - Filter by category
+  - `priority` - Filter by priority (critical, high, normal, low)
+  - `limit` - Number of results (default 50, max 100)
+  """
+  def list_reports(conn, params) do
+    opts = [
+      status: normalize_atom(params["status"], :pending),
+      category: normalize_atom(params["category"]),
+      priority: normalize_atom(params["priority"]),
+      limit: to_integer(params["limit"], 50) |> min(100)
+    ]
+
+    reports = Moderation.list_reports(opts)
+    counts = Moderation.pending_report_counts()
+
+    conn
+    |> put_status(:ok)
+    |> json(%{
+      data: Enum.map(reports, &render_report/1),
+      meta: %{
+        pending_counts: counts
+      }
+    })
+  end
+
+  @doc """
+  Get detailed information about a specific report.
+  """
+  def show_report(conn, %{"id" => id}) do
+    case Cgraph.Repo.get(Report, id) |> Cgraph.Repo.preload([:reporter, :review_actions]) do
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "Report not found"})
+
+      report ->
+        json(conn, %{data: render_report_detail(report)})
+    end
+  end
+
+  @doc """
+  Review and take action on a report.
+
+  ## Request Body
+
+  ```json
+  {
+    "action": "warn",
+    "notes": "First offense, issued warning",
+    "duration_hours": null,
+    "notify_reporter": true
+  }
+  ```
+
+  ## Actions
+
+  - `dismiss` - Report invalid, no action taken
+  - `warn` - Issue warning to user
+  - `remove_content` - Delete the reported content
+  - `suspend` - Temporarily suspend user (requires duration_hours)
+  - `ban` - Permanently ban user
+  """
+  def review_report(conn, %{"id" => id} = params) do
+    reviewer = conn.assigns.current_user
+
+    attrs = %{
+      action: normalize_atom(params["action"]),
+      notes: params["notes"],
+      duration_hours: params["duration_hours"],
+      notify_reporter: params["notify_reporter"] == true
+    }
+
+    case Moderation.review_report(reviewer, id, attrs) do
+      {:ok, report} ->
+        json(conn, %{
+          data: render_report(report),
+          message: "Report reviewed successfully"
+        })
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "Report not found"})
+
+      {:error, :unauthorized} ->
+        conn
+        |> put_status(:forbidden)
+        |> json(%{error: "Insufficient permissions"})
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> put_view(json: CgraphWeb.ChangesetJSON)
+        |> render(:error, changeset: changeset)
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Appeals
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  List pending appeals.
+  """
+  def list_appeals(conn, params) do
+    limit = to_integer(params["limit"], 50) |> min(100)
+    appeals = Moderation.list_appeals(limit: limit)
+
+    json(conn, %{data: Enum.map(appeals, &render_appeal/1)})
+  end
+
+  @doc """
+  Review an appeal.
+
+  ## Request Body
+
+  ```json
+  {
+    "approved": true,
+    "notes": "Appeal approved, action was too severe"
+  }
+  ```
+  """
+  def review_appeal(conn, %{"id" => id} = params) do
+    reviewer = conn.assigns.current_user
+
+    attrs = %{
+      approved: params["approved"] == true,
+      notes: params["notes"]
+    }
+
+    case Moderation.review_appeal(reviewer, id, attrs) do
+      {:ok, appeal} ->
+        json(conn, %{
+          data: render_appeal(appeal),
+          message: "Appeal reviewed successfully"
+        })
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "Appeal not found"})
+
+      {:error, :unauthorized} ->
+        conn
+        |> put_status(:forbidden)
+        |> json(%{error: "Insufficient permissions"})
+    end
+  end
+
+  # ---------------------------------------------------------------------------
+  # Statistics
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Get moderation statistics.
+  """
+  def stats(conn, _params) do
+    stats = %{
+      pending_reports: Moderation.pending_report_counts(),
+      today_reviewed: Moderation.reports_reviewed_today(),
+      average_response_time: Moderation.average_response_time(),
+      active_restrictions: Moderation.active_restriction_count()
+    }
+
+    json(conn, %{data: stats})
+  end
+
+  # ---------------------------------------------------------------------------
+  # Private Helpers
+  # ---------------------------------------------------------------------------
+
+  defp require_moderator(conn, _opts) do
+    user = conn.assigns[:current_user]
+
+    if user && user.is_admin do
+      conn
+    else
+      conn
+      |> put_status(:forbidden)
+      |> json(%{error: "Moderator access required"})
+      |> halt()
+    end
+  end
+
+  defp render_report(%Report{} = report) do
+    %{
+      id: report.id,
+      target_type: report.target_type,
+      target_id: report.target_id,
+      category: report.category,
+      status: report.status,
+      priority: report.priority,
+      created_at: report.inserted_at,
+      reviewed_at: report.reviewed_at
+    }
+  end
+
+  defp render_report_detail(%Report{} = report) do
+    render_report(report)
+    |> Map.merge(%{
+      description: report.description,
+      evidence_urls: report.evidence_urls,
+      reporter: report.reporter && %{
+        id: report.reporter.id,
+        username: report.reporter.username
+      },
+      actions: Enum.map(report.review_actions || [], fn action ->
+        %{
+          id: action.id,
+          action: action.action,
+          notes: action.notes,
+          created_at: action.inserted_at
+        }
+      end)
+    })
+  end
+
+  defp render_appeal(%Appeal{} = appeal) do
+    %{
+      id: appeal.id,
+      user_id: appeal.user_id,
+      reason: appeal.reason,
+      status: appeal.status,
+      created_at: appeal.inserted_at,
+      reviewed_at: appeal.reviewed_at
+    }
+  end
+
+  defp normalize_atom(nil), do: nil
+  defp normalize_atom(value) when is_binary(value) do
+    String.to_existing_atom(value)
+  rescue
+    ArgumentError -> nil
+  end
+  defp normalize_atom(value, default), do: normalize_atom(value) || default
+
+  defp to_integer(nil, default), do: default
+  defp to_integer(value, default) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, _} -> int
+      :error -> default
+    end
+  end
+  defp to_integer(value, _default) when is_integer(value), do: value
+end

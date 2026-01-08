@@ -1,10 +1,12 @@
 # Contributing to CGraph
 
-Thank you for your interest in contributing to CGraph! This document provides guidelines and instructions for contributing.
+Hey, thanks for wanting to contribute! Seriously, it means a lot. Whether you're fixing a typo, squashing a bug, or building out a whole new feature — we appreciate it.
+
+This guide will help you get up and running so you can make your first contribution without too much friction. If something's unclear or you get stuck, just open an issue and ask. We don't bite.
 
 ## Code of Conduct
 
-By participating in this project, you agree to maintain a respectful and inclusive environment for everyone.
+One quick thing: be kind. We're building something together, and that works best when everyone feels welcome. Treat others how you'd want to be treated — no drama, no egos.
 
 ## Getting Started
 

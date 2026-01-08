@@ -1,80 +1,93 @@
 # CGraph Changelog
 
-All notable changes to this project will be documented in this file.
+What's new, what's fixed, what broke (and how we fixed it again). We try to keep this updated with every release so you know exactly what changed.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting and [Semantic Versioning](https://semver.org/spec/v2.0.0.html) — so version numbers actually mean something.
 
 ---
 
 ## [0.7.26] - 2026-01-08
 
-### Security
+Honestly, this might be the most important release we've done. It's the one that makes CGraph actually deployable to production without weird failures. We also added the legal docs and moderation system required for app store approval.
 
-#### E2EE Integration - True End-to-End Encryption for Messages
-- **Critical Feature** - Messages now encrypted client-side before transmission
-  - Web: `chatStore.sendMessage` now uses `useE2EEStore.encryptMessage` for direct conversations
-  - Mobile: `ConversationScreen.sendMessage` now encrypts via `useE2EE` hook
-  - X3DH key exchange with AES-256-GCM encryption
-  - Server receives ciphertext (opaque blob) - cannot read message content
-  - Sender's identity key included in metadata for recipient decryption
+If you've been waiting to deploy CGraph for real, this is the release to use.
 
-#### Backend - E2EE Message Handling
-- **Message Controller** - Enhanced to handle encrypted message fields
-  - Accepts `ephemeral_public_key`, `nonce`, `recipient_identity_key_id`, `one_time_prekey_id`
-  - Automatically includes sender's identity key in message metadata
-  - Added `get_user_identity_key/1` function to E2EE module
+### Breaking Changes ⚠️
 
-#### Forum FK Constraints - Database Integrity Fix (P0)
-- **Migration** - Fixed remaining foreign key constraint conflicts in forum tables
-  - Affected tables: threads, thread_posts, thread_attachments, forum_announcements
-  - Audit trail tables (forum_warnings, forum_mod_logs) now nullable for issued_by/moderator
-  - Conditional fixes for optional tables (forum_posts, forum_comments, forum_bans, etc.)
+**You'll need to update your environment variables.** The app now requires certain secrets to be set explicitly — we removed the insecure defaults that were shipping with docker-compose. See the migration section in [V0.7.26_RELEASE_NOTES.md](docs/V0.7.26_RELEASE_NOTES.md).
 
-#### Security Documentation Enhancement
-- **authStore.ts** - Comprehensive security model documentation
-  - Explains HTTP-only cookie primary auth vs sessionStorage WebSocket fallback
-  - Documents XSS attack surface and mitigations
-  - Clarifies Phoenix Channels limitation requiring token in params
+- `SECRET_KEY_BASE` — no longer has a default value
+- `ENCRYPTION_KEY` — **required** in production (app crashes without it now)
+- `GUARDIAN_SECRET_KEY` — required for JWT auth
+- Cookie `SameSite` changed from `Lax` to `Strict` (might affect cross-site flows)
+
+### Fixed
+
+- **Production config missing** — `config/prod.exs` didn't exist. Docker and Fly.io builds failed immediately. Kind of embarrassing. Fixed now.
+- **Encryption key fallback was dangerous** — If you forgot `ENCRYPTION_KEY`, we'd generate a random one. Restart the app? New key. All your encrypted messages? Gone. Now it fails fast with a clear error.
+- **Group conversations returned 500** — The feature isn't built yet, but returning a 500 made it look like the server was broken. Now returns 400 with an explanation.
+- **Version drift** — Backend said 0.7.24, web said 0.7.23, mobile said 0.7.1. We've aligned everything to 0.7.26.
+- **Docker-compose shipped with weak defaults** — Secret values were hardcoded in docker-compose.yml. Production deployments would inherit them if you didn't override. Fixed—now requires `.env` file.
 
 ### Added
 
-#### Offline Support - React Query Persistence
-- **Web App** - Implemented offline-first caching with React Query
-  - Cache persisted to localStorage with 24-hour TTL
-  - `networkMode: 'offlineFirst'` for queries and mutations
-  - Online/offline event listeners for automatic sync
-  - Cache busting on version updates
+#### Content Moderation System (App Store Requirement)
+Finally built out proper content moderation. Apple and Google require this for app store approval.
 
-### Changed
+- **Report API** — Users can report messages, posts, users, etc.
+- **13 report categories** — harassment, hate speech, spam, CSAM, terrorism, etc.
+- **Priority scoring** — Critical reports (CSAM, terrorism) get flagged immediately
+- **Admin review queue** — Moderators can review, warn, suspend, or ban
+- **Appeals workflow** — Users can contest moderation decisions
 
-#### Mobile - iOS Encryption Compliance
-- **app.json** - Updated `usesNonExemptEncryption` to `true`
-  - Required for App Store compliance when E2EE is active
-  - ITSAppUsesNonExemptEncryption also set to true
-  - Annual self-classification report required for Apple
+New endpoints:
+```
+POST   /api/v1/reports          # Submit a report
+GET    /api/v1/reports          # Your report history
+GET    /api/admin/reports       # Mod queue (admin only)
+POST   /api/admin/reports/:id/review
+```
+
+#### Legal Documents
+App stores won't accept you without these:
+- **Privacy Policy** — GDPR and CCPA compliant, covers data collection, retention, user rights
+- **Terms of Service** — Acceptable use, content guidelines, liability limitations
+
+Both are in `docs/LEGAL/`.
+
+#### E2EE Key Verification UI
+Added the UI for verifying encryption keys with your contacts (like Signal's "safety numbers"):
+- Web: `KeyVerification.tsx` component with QR code
+- Mobile: `KeyVerificationScreen.tsx` with share functionality
+
+#### Voice/Video Roadmap Document
+We were being vague about voice and video features. Now there's a clear doc explaining:
+- ✅ Voice messages — implemented
+- 🗓️ Voice calls — planned for v0.9.0
+- 🗓️ Video calls — planned for v0.10.0
+
+### Security
+
+- **SameSite=Strict** on auth cookies (was Lax)
+- **Required secrets** — no more insecure defaults in docker-compose
+- **Fail-fast encryption** — missing ENCRYPTION_KEY crashes immediately in prod
 
 ### Technical Details
 
-**E2EE Message Flow:**
-1. User types message in chat
-2. Client fetches recipient's prekey bundle (cached)
-3. Client performs X3DH key exchange → shared secret
-4. Message encrypted with AES-256-GCM
-5. Ciphertext + ephemeral key + nonce sent to server
-6. Server stores and broadcasts encrypted blob
-7. Recipient fetches message, performs X3DH → decrypt
-
-**Files Modified:**
-- `apps/web/src/stores/chatStore.ts` - E2EE integration
-- `apps/web/src/lib/apiUtils.ts` - E2EE field extraction
-- `apps/web/src/lib/logger.ts` - Added chatLogger
-- `apps/web/src/main.tsx` - Offline persistence setup
-- `apps/mobile/src/screens/messages/ConversationScreen.tsx` - E2EE integration
-- `apps/mobile/app.json` - Encryption compliance flag
-- `apps/backend/lib/cgraph_web/controllers/api/v1/message_controller.ex` - E2EE metadata
-- `apps/backend/lib/cgraph/crypto/e2ee.ex` - get_user_identity_key function
-- `apps/backend/priv/repo/migrations/20260108044204_fix_forum_foreign_key_constraints.exs`
+**New files:**
+- `config/prod.exs` — Production configuration
+- `lib/cgraph/moderation.ex` — Moderation context module  
+- `lib/cgraph/moderation/*.ex` — Report, Appeal, UserRestriction, ReviewAction schemas
+- `priv/repo/migrations/20260105000001_create_moderation_tables.exs`
+- `controllers/api/v1/report_controller.ex`
+- `controllers/api/admin/moderation_controller.ex`
+- `docs/LEGAL/PRIVACY_POLICY.md`
+- `docs/LEGAL/TERMS_OF_SERVICE.md`
+- `docs/REALTIME_COMMUNICATION.md`
+- `apps/web/src/components/e2ee/KeyVerification.tsx`
+- `apps/web/src/components/moderation/ReportDialog.tsx`
+- `apps/mobile/src/screens/settings/KeyVerificationScreen.tsx`
+- `apps/mobile/src/screens/moderation/ReportScreen.tsx`
 
 ---
 
