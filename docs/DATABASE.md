@@ -1,7 +1,7 @@
 # CGraph Database Documentation
 
-> Maintainer: @marcus | Last updated: January 2026  
-> If you're modifying the schema, PLEASE update this doc. Future you will thank present you.
+> Version 0.7.28 | Last updated: January 2026  
+> Schema modifications require updating this documentation.
 
 ---
 
@@ -19,7 +19,7 @@
 
 ## Entity-Relationship Diagram
 
-Here's the full schema. I tried to use a fancy tool but honestly ASCII art is easier to maintain:
+Full schema diagram:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────┐

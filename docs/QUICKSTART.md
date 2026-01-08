@@ -1,17 +1,15 @@
 # CGraph Quick Start Guide
 
 > Get CGraph running locally in 15-30 minutes  
-> Version 0.7.26 | January 2026
+> Version 0.7.28 | January 2026
 
 ---
 
-Hey there! So you want to get CGraph running on your machine. Good news — it's honestly not that bad. We've done our best to keep the setup straightforward, though there are a few moving parts since we're running a full-stack app with real-time features.
-
-Grab a coffee, maybe put on some music, and let's get you set up.
+This guide walks through setting up CGraph on your local machine. The process is straightforward, though there are several components since this is a full-stack app with real-time features.
 
 ## Prerequisites
 
-First things first — you'll need some tools installed. Don't worry, I'll walk you through each one. These are the versions we've tested against and recommend, but slightly newer versions usually work fine too.
+These are the versions tested and recommended. Slightly newer versions typically work fine.
 
 ### Required Software
 
@@ -25,7 +23,7 @@ First things first — you'll need some tools installed. Don't worry, I'll walk 
 | **FFmpeg** | 6.1+ | `ffmpeg -version` | Voice message processing |
 | **asdf** | latest | `asdf --version` | Version manager (recommended) |
 
-*Redis is optional - we use ETS for caching in development*
+*Redis is optional — ETS handles caching in development*
 
 ### Installation Instructions
 
@@ -158,7 +156,7 @@ pnpm install
 
 ## Step 2: Set Up Environment Variables
 
-We use `.env` files for local development. There's an example file you can copy:
+Development uses `.env` files. Copy the example files:
 
 ```bash
 # Backend
@@ -254,7 +252,7 @@ mix ecto.migrate
 
 ## Step 4: Start the Development Servers
 
-The easiest way is to use our turbo script that starts everything:
+The easiest approach is the turbo script that starts everything:
 
 ```bash
 # From project root
@@ -446,12 +444,16 @@ console.log(response.data); // { pong: true, ... }
 ### Running Tests
 
 ```bash
-# Backend tests (620 tests)
+# Backend tests (718 tests)
 cd apps/backend
 mix test
 
 # With coverage
 mix test --cover
+
+# Web frontend (255 tests)
+cd apps/web
+pnpm test
 
 # Web frontend type check
 cd apps/web
@@ -510,7 +512,7 @@ mix phx.gen.json Messaging Message messages \
 
 ## Docker Development (Alternative)
 
-If you prefer Docker, we have a compose file that sets up everything:
+Docker Compose can set up everything if preferred:
 
 ```bash
 # Start all services
@@ -617,15 +619,14 @@ cd apps/backend && mix deps.get && mix ecto.reset
 
 ## Getting Help
 
-Stuck? Here's where to ask:
+Stuck? Resources:
 
-1. **#dev-help** Slack channel - fastest response
-2. **GitHub Issues** - for bugs or feature requests
-3. **@chen** - infrastructure questions
-4. **@marcus** - backend questions
-5. **@aisha** - frontend questions
+1. **GitHub Issues** — for bugs or feature requests
+2. **Project Discord** — community support
+3. **Documentation** — check docs/ folder for detailed guides
+4. **Website** — [www.cgraph.org](https://www.cgraph.org)
 
-When asking for help, please include:
+When asking for help, include:
 - What you're trying to do
 - What error you're seeing (full stack trace)
 - What you've already tried
@@ -637,13 +638,13 @@ When asking for help, please include:
 
 Now that you're up and running:
 
-1. 📚 Read [ARCHITECTURE.md](./ARCHITECTURE.md) to understand how pieces fit together
+1. 📚 Read [ARCHITECTURE.md](./ARCHITECTURE.md) to understand the system design
 2. 🗄️ Check [DATABASE.md](./DATABASE.md) for the data model
-3. 📝 Read [CONTRIBUTING.md](./CONTRIBUTING.md) before making changes
+3. 📝 Read [CONTRIBUTING.md](../CONTRIBUTING.md) before making changes
 4. 🚀 Try building a small feature to get familiar with the codebase
-
-Welcome to the team! 🎉
 
 ---
 
-*If these instructions don't work, please update them! The "docs are always outdated" problem only gets solved if we all maintain them.*
+*Last updated: January 2026 | v0.7.28*
+
+— Burca Lucas

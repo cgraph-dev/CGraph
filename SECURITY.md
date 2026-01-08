@@ -10,63 +10,68 @@
 
 ## Reporting a Vulnerability
 
-We take the security of CGraph seriously. If you believe you've found a security vulnerability, please report it to us responsibly.
+Security is a top priority for CGraph. If you discover a vulnerability, please report it responsibly.
 
 ### How to Report
 
 1. **Do NOT** create a public GitHub issue for security vulnerabilities
-2. Email us at: **security@cgraph.org**
+2. Email: **security@cgraph.org**
 3. Include:
    - Description of the vulnerability
    - Steps to reproduce
    - Potential impact
-   - Any suggested fixes (optional)
+   - Suggested fixes (optional but appreciated)
 
-### What to Expect
+### Response Timeline
 
 - **Acknowledgment**: Within 48 hours
 - **Initial Assessment**: Within 5 business days
-- **Resolution Timeline**: Depends on severity
+- **Resolution**:
   - Critical: 24-72 hours
   - High: 1-2 weeks
   - Medium: 2-4 weeks
   - Low: Next release cycle
 
-### Security Measures
+### Security Architecture
 
-CGraph implements multiple layers of security:
+CGraph implements defense-in-depth with multiple security layers:
 
 #### Authentication & Authorization
 - **Password Hashing**: Argon2id (OWASP recommended)
-- **JWT Tokens**: Short-lived access tokens with secure refresh mechanism
+- **JWT Tokens**: Short-lived access tokens with secure refresh
 - **2FA Support**: TOTP-based two-factor authentication
 - **Session Management**: Remote session revocation, device tracking
-- **OAuth 2.0**: Google, Apple, Facebook, TikTok integration via Assent
+- **OAuth 2.0**: Google, Apple, Facebook, TikTok via Assent
 
-#### Encryption
-- **Transport**: TLS 1.3 for all communications
+#### End-to-End Encryption (E2EE)
+- **Algorithm**: XChaCha20-Poly1305 via libsodium
+- **Key Exchange**: X25519 Diffie-Hellman
+- **Key Derivation**: Argon2id with device-specific salt
+- **Zero-Knowledge**: Server never sees plaintext messages
+- **Forward Secrecy**: Per-conversation key rotation
+
+#### Transport & Storage
+- **Transport**: TLS 1.3 for all connections
 - **At Rest**: AES-256 encryption for sensitive data
-- **End-to-End**: X3DH key agreement + AES-256-GCM for private messages
-- **Key Storage**: Secure key derivation with device-specific binding
+- **Secrets**: Environment-based, never committed to source
 
 #### API Security
-- **Rate Limiting**: Per-endpoint limits with Redis-backed tracking
-- **Input Validation**: Ecto changesets with strict type enforcement
-- **SQL Injection**: Parameterized queries via Ecto
-- **XSS Prevention**: Content Security Policy headers
-- **CSRF Protection**: Token-based validation for state-changing operations
+- **Rate Limiting**: Per-endpoint limits with Redis tracking
+- **Input Validation**: Ecto changesets with strict typing
+- **SQL Injection**: Prevented via parameterized queries
+- **XSS Prevention**: Content Security Policy enforcement
+- **CSRF Protection**: Token validation for mutations
 
 #### Infrastructure
 - **WAF**: Cloudflare Web Application Firewall
-- **DDoS Protection**: Cloudflare with geo-blocking capabilities
-- **Secrets Management**: Environment variables, never committed
-- **Audit Logging**: All sensitive operations logged with user context
+- **DDoS Protection**: Cloudflare with geo-blocking
+- **Audit Logging**: All sensitive operations logged
 
 #### Data Protection
-- **GDPR Compliance**: Data export, deletion on request
-- **Data Minimization**: Only collect necessary information
-- **Retention Policies**: Configurable data retention periods
-- **Backup Encryption**: All backups encrypted at rest
+- **GDPR Compliance**: Full data export and deletion
+- **Data Minimization**: Only necessary data collected
+- **Retention Policies**: Configurable per data type
+- **Backup Encryption**: All backups encrypted
 
 ### Security Headers
 
@@ -83,41 +88,44 @@ Referrer-Policy: strict-origin-when-cross-origin
 
 ### Responsible Disclosure
 
-We believe in responsible disclosure and will:
+Security researchers acting in good faith can expect:
 
-1. Work with you to understand and resolve the issue
-2. Keep you informed of our progress
-3. Credit you in our security acknowledgments (unless you prefer to remain anonymous)
-4. Not take legal action against researchers acting in good faith
+1. Collaborative resolution process
+2. Regular progress updates
+3. Credit in security acknowledgments (anonymous if preferred)
+4. No legal action for responsible disclosure
 
 ### Bug Bounty
 
-We currently don't have a formal bug bounty program, but we deeply appreciate security research and may offer rewards for significant findings at our discretion.
+No formal bounty program exists yet, but significant findings may be rewarded at discretion.
 
 ### Security Updates
 
-Security updates are released as patch versions and announced via:
+Security patches are released as point versions and announced via:
 - GitHub Security Advisories
 - CHANGELOG.md
-- Our official Discord server
+- Project Discord
 
-## Security Checklist for Contributors
+## Contributor Security Checklist
 
-Before submitting PRs:
+Before submitting code:
 
 - [ ] No secrets, API keys, or credentials in code
-- [ ] Input validation for all user-supplied data
-- [ ] Proper error handling without information leakage
+- [ ] Input validation for all user data
+- [ ] Proper error handling (no sensitive data in errors)
 - [ ] Rate limiting for new endpoints
 - [ ] Authorization checks on protected resources
-- [ ] SQL queries use parameterized statements
+- [ ] Parameterized SQL queries only
 - [ ] File uploads validated and sanitized
-- [ ] Logging doesn't expose sensitive data
+- [ ] Logs don't expose sensitive information
 
 ## Contact
 
-- Security issues: security@cgraph.org
-- General questions: support@cgraph.org
+- Security: security@cgraph.org
+- General: hello@cgraph.org
+- Website: [www.cgraph.org](https://www.cgraph.org)
+
+— Burca Lucas
 - PGP Key: Available on request
 
 ---

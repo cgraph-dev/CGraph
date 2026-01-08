@@ -8,9 +8,9 @@
 
 [![CI Status](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml/badge.svg)](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.7.26-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.7.28-green.svg)](CHANGELOG.md)
 
-[Documentation](docs/) · [API Reference](docs/API.md) · [Contributing](CONTRIBUTING.md) · [Changelog](CHANGELOG.md)
+[Website](https://www.cgraph.org) · [Documentation](docs/) · [API Reference](docs/API.md) · [Contributing](CONTRIBUTING.md)
 
 </div>
 
@@ -18,11 +18,11 @@
 
 ## Why CGraph?
 
-Most platforms force you to choose: do you want chat like Discord, forums like Reddit, or the privacy of Signal? We didn't think that was a fair choice.
+Most platforms force you to choose: do you want chat like Discord, forums like Reddit, or the privacy of Signal? That never made sense to me.
 
-CGraph combines all three. You get Discord-style servers with channels and roles, Reddit-style communities where content rises on merit, and Signal-level privacy with proper end-to-end encryption. Oh, and you can log in with your Ethereum wallet if you're into that—no email required.
+CGraph combines all three. You get Discord-style servers with channels and roles, Reddit-style communities where content rises on merit, and Signal-level privacy with proper end-to-end encryption. You can also log in with your Ethereum wallet if that's your thing—no email required.
 
-The whole thing runs on Elixir and Phoenix, which means it can handle way more concurrent users than you'd expect for a project this size. We've tested it at 10K simultaneous WebSocket connections on modest hardware without breaking a sweat.
+The whole thing runs on Elixir and Phoenix, which means it handles way more concurrent users than you'd expect for a project this size. I've tested it at 10K simultaneous WebSocket connections on modest hardware without breaking a sweat.
 
 ## What You Get
 
@@ -49,15 +49,15 @@ The whole thing runs on Elixir and Phoenix, which means it can handle way more c
 
 ## Tech Stack
 
-We picked technologies that would still be good choices in five years:
+Technologies I picked because they'll still be solid choices in five years:
 
 | Layer | Technology | Why |
 |-------|-----------|-----|
 | Backend | Elixir 1.19 + Phoenix 1.8 | Handles millions of connections with minimal resources |
 | Database | PostgreSQL 16 | Rock-solid, great JSON support, full-text search built in |
 | Web | React 19 + Vite | Fast development, fast production builds |
-| Mobile | React Native + Expo | One codebase for iOS and Android that doesn't feel like a compromise |
-| Encryption | libsodium | The same crypto library Signal uses |
+| Mobile | React Native 0.81 + Expo 54 | One codebase for iOS and Android that actually feels native |
+| Encryption | libsodium (XChaCha20-Poly1305) | Same crypto primitives Signal uses |
 
 ## Getting Started
 
@@ -158,7 +158,7 @@ Full API docs at [docs/API.md](docs/API.md) or the OpenAPI spec at [docs/openapi
 
 ## Testing
 
-The backend has 620+ tests covering everything from user auth to real-time presence tracking:
+The backend has 718 tests covering everything from user auth to real-time presence tracking. Web has 255 component and integration tests.
 
 ```bash
 cd apps/backend
@@ -167,9 +167,9 @@ mix test --cover            # with coverage report
 mix test --only presence    # just presence tests
 ```
 
-Frontend type checking:
+Frontend tests:
 ```bash
-cd apps/web && pnpm typecheck
+cd apps/web && pnpm test
 cd apps/mobile && pnpm typecheck
 ```
 
@@ -186,9 +186,13 @@ cd apps/mobile && pnpm typecheck
 
 ## Contributing
 
-We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before submitting PRs.
+Contributions are welcome. Check out [CONTRIBUTING.md](CONTRIBUTING.md) before submitting PRs.
 
-The short version: fork the repo, make your changes, write tests, open a PR. We'll review it as quickly as we can.
+The short version: fork the repo, make your changes, write tests, open a PR. I'll review it as quickly as I can.
+
+## Author
+
+Built and maintained by **Burca Lucas**.
 
 ## Legal
 
@@ -205,6 +209,6 @@ MIT License. See [LICENSE](LICENSE) for the full text.
 
 Built with ☕ and late nights.
 
-**[cgraph.io](https://cgraph.io)**
+**[www.cgraph.org](https://www.cgraph.org)**
 
 </div>

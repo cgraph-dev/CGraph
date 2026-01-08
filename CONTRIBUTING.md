@@ -1,12 +1,12 @@
 # Contributing to CGraph
 
-Hey, thanks for wanting to contribute! Seriously, it means a lot. Whether you're fixing a typo, squashing a bug, or building out a whole new feature — we appreciate it.
+Thanks for wanting to contribute. Whether you're fixing a typo, squashing a bug, or building out a new feature—it's genuinely appreciated.
 
-This guide will help you get up and running so you can make your first contribution without too much friction. If something's unclear or you get stuck, just open an issue and ask. We don't bite.
+This guide should get you up and running so you can make your first contribution without too much friction. If something's unclear or you get stuck, just open an issue and ask.
 
 ## Code of Conduct
 
-One quick thing: be kind. We're building something together, and that works best when everyone feels welcome. Treat others how you'd want to be treated — no drama, no egos.
+One quick thing: be kind. I'm building something here, and that works best when everyone feels welcome. Treat others how you'd want to be treated—no drama, no egos.
 
 ## Getting Started
 
@@ -119,6 +119,8 @@ docs/               # Documentation
 ## Questions?
 
 - Open a [GitHub Issue](https://github.com/cgraph-dev/CGraph/issues)
-- Join our community discussions
+- Check the docs at [www.cgraph.org](https://www.cgraph.org)
 
-Thank you for contributing! 🎉
+Thanks for contributing.
+
+— Burca Lucas

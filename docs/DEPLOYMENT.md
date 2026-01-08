@@ -1,13 +1,9 @@
 # CGraph Deployment Guide
 
-> "It works on my machine" is not a deployment strategy.  
-> — Every DevOps engineer, ever
+> Comprehensive production deployment documentation  
+> Version 0.7.28 | January 2026
 
-Alright, so you've got CGraph running locally and you're ready to show it to the world. Nice! This guide will walk you through deploying to production — and honestly, we've tried to make it as painless as possible.
-
-We primarily use Fly.io because it plays really well with Elixir's distributed nature, but the core concepts here translate to AWS, GCP, or whatever cloud you prefer. Just be prepared to translate some Fly-specific commands.
-
-**A word of caution**: Your first deploy will probably take longer than you expect. That's normal. Don't schedule it the day before a big demo. Trust me on this one.
+This guide covers deploying CGraph to production. Fly.io is the primary platform due to excellent Elixir/OTP support, though concepts translate to other cloud providers.
 
 ---
 

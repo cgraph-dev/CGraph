@@ -25,7 +25,7 @@ info:
     - `X-RateLimit-Remaining`
     - `X-RateLimit-Reset`
     
-  version: 0.7.20
+  version: 0.7.28
   contact:
     name: CGraph Support
     email: support@cgraph.org

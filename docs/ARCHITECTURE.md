@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.26  
-> Living documentation - Updated with E2EE integration and security hardening
+> Last updated: January 2026 | Version 0.7.28  
+> Living documentation — E2EE, moderation system, and security hardening complete
 
 ---
 
@@ -152,7 +152,7 @@ Our technology stack prioritizes real-time performance and developer productivit
 
 ## Data Flow: The Life of a Message
 
-Let me walk you through what happens when Alice sends "hey!" to Bob. This is the flow we spent weeks optimizing, and honestly, I'm pretty proud of how snappy it feels.
+Here's what happens when Alice sends "hey!" to Bob. This flow was carefully optimized for sub-200ms latency.
 
 ### Step 1: Client Sends Message
 
@@ -234,7 +234,7 @@ Phoenix PubSub (backed by Redis for multi-node)
 
 ## Deployment Architecture
 
-We deploy on Fly.io because it's dead simple and has great Elixir support. Here's our production topology:
+Production runs on Fly.io for its Elixir support and global distribution:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -283,7 +283,7 @@ We deploy on Fly.io because it's dead simple and has great Elixir support. Here'
 
 ## Security Architecture
 
-Security isn't an afterthought here. We've been burned before (ask me about the 2023 incident sometime), so now we're paranoid in the good way.
+Security is a first-class concern throughout the architecture.
 
 ### Authentication Flow
 
@@ -356,10 +356,9 @@ Security isn't an afterthought here. We've been burned before (ask me about the 
 ### Rate Limiting Strategy
 
 ```elixir
-# We use a tiered approach based on endpoint sensitivity
-# These are configured in the router pipelines
+# Tiered approach based on endpoint sensitivity
 
-# Auth endpoints - very strict
+# Auth endpoints - strict
 plug RateLimiter, limit: 5, window: 60_000     # 5 per minute
 
 # Normal API - reasonable
@@ -376,7 +375,7 @@ plug RateLimiter, limit: 10, window: 60_000    # 10 per minute
 
 ## Scalability Roadmap
 
-Here's our battle-tested plan for growing CGraph. Each stage has been designed based on actual bottlenecks we've observed (or read horror stories about on HackerNews).
+Battle-tested growth strategy for CGraph, based on observed bottlenecks and industry best practices.
 
 ### Stage 1: Getting Started (100 - 1K users)
 
@@ -470,7 +469,7 @@ User                    CGraph                      Stripe
 
 ### Cloudflare R2 (File Storage)
 
-We chose R2 over S3 because of zero egress fees. For a chat app with lots of image sharing, this saves us hundreds per month.
+R2 was chosen over S3 for zero egress fees — essential for a chat app with heavy image sharing.
 
 ```elixir
 # File upload flow (simplified)
@@ -586,41 +585,43 @@ end
 | 100K | $2,500 | $0.025 |
 | 500K | $10,000 | $0.020 |
 
-The cost per user actually decreases as we scale, then stabilizes around $0.02/user/month. Not bad for a real-time platform!
+Cost per user decreases with scale, stabilizing around $0.02/user/month — reasonable for a real-time platform.
 
 ---
 
-## What's Next?
+## Roadmap
 
-Things on our radar for 2026:
+Planned for 2026:
 
-1. **Voice/Video calls** - Evaluating LiveKit vs. Jitsi
-2. **AI features** - Message summarization, smart search
-3. **ActivityPub** - Federation with other platforms
-4. **Double Ratchet** - Full protocol with session ratcheting
-5. **Self-hosting** - Docker compose for power users
+1. **Voice/Video calls** — Evaluating LiveKit vs. Jitsi
+2. **AI features** — Message summarization, smart search
+3. **ActivityPub** — Federation with other platforms
+4. **Double Ratchet** — Full Signal protocol with session ratcheting
+5. **Self-hosting** — Docker compose for power users
 
-### Recently Completed (v0.6.0)
+### Recently Completed (v0.7.x)
 
-- ✅ **E2EE Implementation** - X3DH key exchange, AES-256-GCM encryption
-- ✅ **Voice Messages** - Recording, transcoding, waveform visualization
-- ✅ **Multi-backend Storage** - Local, S3, Cloudflare R2 support
-- ✅ **Email System** - Transactional emails with templates
-- ✅ **Push Notifications** - APNs, FCM, Expo Push support
-- ✅ **Admin Dashboard** - User management, reports, audit logs
-- ✅ **Security Hardening** - Input validation, abuse detection
-
----
-
-## Questions?
-
-If something in this doc doesn't make sense or seems outdated, check the CHANGELOG or open an issue.
-
-- **Architecture decisions**: Check docs/ARCHITECTURE.md
-- **Frontend questions**: Check docs/FRONTEND.md
-- **DevOps/infrastructure**: Check docs/DEPLOYMENT.md
-- **Security concerns**: security@cgraph.app
+- ✅ **E2EE Implementation** — XChaCha20-Poly1305 via libsodium
+- ✅ **Moderation System** — Reports, bans, audit logs
+- ✅ **Voice Messages** — Recording, transcoding, waveform visualization
+- ✅ **Multi-backend Storage** — Local, S3, Cloudflare R2 support
+- ✅ **Email System** — Transactional emails with templates
+- ✅ **Push Notifications** — APNs, FCM, Expo Push support
+- ✅ **Admin Dashboard** — User management, reports, analytics
+- ✅ **Security Hardening** — Input validation, abuse detection
 
 ---
 
-*This document is maintained in `/docs/ARCHITECTURE.md`. PRs welcome, but please discuss major changes in #engineering first.*
+## Resources
+
+- **Architecture decisions**: [ARCHITECTURE.md](./ARCHITECTURE.md)
+- **Frontend guide**: [FRONTEND.md](./FRONTEND.md)
+- **Deployment**: [DEPLOYMENT.md](./DEPLOYMENT.md)
+- **Security**: [SECURITY.md](../SECURITY.md)
+- **Website**: [www.cgraph.org](https://www.cgraph.org)
+
+---
+
+*Last updated: January 2026 | v0.7.28*
+
+— Burca Lucas
