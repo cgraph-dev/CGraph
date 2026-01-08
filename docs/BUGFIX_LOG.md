@@ -8,10 +8,11 @@
 
 | Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 | v0.7.22 | v0.7.23 | v0.7.24 | v0.7.25 |
 |--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 638 tests | 663 tests | 663 tests |
-| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 warnings | 0 warnings | 0 warnings | 0 warnings |
-| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 638 tests | 663 tests | 663 tests | 663 tests |
+| Backend Test Count | 215 → 220 | 620 tests, 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 failures | 0 warnings | 0 warnings | 0 warnings | 0 warnings | 0 warnings |
+| Web Build | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| E2EE Integration | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Active |
 | OAuth Tests | - | 35 new tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests | 35 tests |
 | Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 10 critical | 12 critical | 14 critical |
 | TypeScript Errors | - | - | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 (pre-existing) |
@@ -35,6 +36,54 @@
 | FK Constraints | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Fixed | ✅ Fixed | ✅ Fixed |
 | Session Management | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Tracking | ✅ Auto-cleanup |
 | Production Logging | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Mobile hardened |
+
+---
+
+## January 8, 2026 - v0.7.26 E2EE Message Integration & Forum FK Fixes
+
+### Overview
+
+This release addresses critical security audit findings. E2EE encryption is now fully integrated into the message flow for both web and mobile clients. Forum foreign key constraints have been corrected to allow proper user deletion without orphaning records.
+
+### Critical Security Fixes
+
+1. **E2EE Now Active in Message Flow (Previously Infrastructure Only)**
+   - **Issue**: E2EE cryptographic code existed but was not called during message sending
+   - **Impact**: Messages were transmitted with transport encryption only, not end-to-end
+   - **Web Fix**: `chatStore.sendMessage()` now encrypts via `useE2EEStore.encryptMessage()` before API call
+   - **Mobile Fix**: `ConversationScreen.sendMessage()` now uses `useE2EE.encryptMessage()` hook
+   - **Backend Fix**: `message_controller.ex` extracts and stores E2EE metadata (ephemeral_public_key, nonce, etc.)
+   - **Added**: `get_user_identity_key/1` function in E2EE module for recipient decryption
+
+2. **Forum Foreign Key Constraint Fixes (Undeletable Users Bug)**
+   - **Issue**: Forum tables had `null: false` combined with `on_delete: :nilify_all` creating an impossible state
+   - **Impact**: Users with forum activity could not be deleted from the system
+   - **Solution**: Migration `20260108044204_fix_forum_foreign_key_constraints.exs`
+   - **Tables Fixed**: threads, thread_posts, thread_attachments, forum_announcements
+   - **Audit Tables**: forum_warnings, forum_mod_logs now have nullable issued_by/moderator columns
+
+3. **Offline Persistence Added (React Query)**
+   - **Issue**: No offline data persistence for web application
+   - **Solution**: Integrated `@tanstack/react-query-persist-client` with localStorage
+   - **Configuration**: 24-hour cache TTL, networkMode: 'offlineFirst'
+   - **Coverage**: All React Query cached data persists across browser sessions
+
+4. **Mobile Encryption Compliance Flag**
+   - **Issue**: `app.json` missing encryption declaration for App Store
+   - **Solution**: Set `usesNonExemptEncryption: true` in expo.ios config
+   - **Rationale**: X3DH + AES-256-GCM qualifies as non-exempt encryption
+
+### Files Changed
+
+| File | Change |
+|------|--------|
+| `apps/web/src/stores/chatStore.ts` | E2EE encryption integration in sendMessage |
+| `apps/web/src/main.tsx` | React Query persistence setup |
+| `apps/mobile/src/screens/messages/ConversationScreen.tsx` | E2EE encryption via useE2EE hook |
+| `apps/mobile/app.json` | usesNonExemptEncryption: true |
+| `apps/backend/lib/cgraph_web/controllers/api/v1/message_controller.ex` | E2EE metadata handling |
+| `apps/backend/lib/cgraph/crypto/e2ee.ex` | Added get_user_identity_key/1 |
+| `apps/backend/priv/repo/migrations/20260108044204_fix_forum_foreign_key_constraints.exs` | Forum FK fixes |
 
 ---
 

@@ -355,12 +355,9 @@ Audit.log(:auth, :login_success, %{
 
 **Module:** `Cgraph.Crypto.E2EE`
 
-**Current Status: Infrastructure Ready, Client Integration In Progress**
+**Current Status: FULLY ACTIVE (v0.7.26+)**
 
-The server-side E2EE infrastructure is fully implemented, providing:
-- Key management APIs for identity keys, signed prekeys, and one-time prekeys
-- X3DH key exchange protocol support
-- Prekey bundle distribution for session establishment
+End-to-end encryption is now integrated into the message flow across all clients. Messages in direct conversations are encrypted on the sender's device and can only be decrypted by the intended recipient.
 
 **Implementation Status:**
 
@@ -371,8 +368,19 @@ The server-side E2EE infrastructure is fully implemented, providing:
 | Prekey Bundle API | ✅ Complete | `/api/v1/e2ee/bundle/:user_id` |
 | Web Crypto Module | ✅ Complete | `lib/crypto/e2ee.ts` |
 | Mobile Crypto Module | ✅ Complete | `lib/crypto/e2ee.ts` |
-| Message Encryption Flow | 🔄 In Progress | Client-side integration needed |
+| Web Message Encryption | ✅ Complete | `chatStore.sendMessage()` encrypts before send |
+| Mobile Message Encryption | ✅ Complete | `ConversationScreen` uses `useE2EE` hook |
+| Backend Metadata Handling | ✅ Complete | `message_controller.ex` preserves E2EE fields |
 | Key Verification UI | 📋 Planned | Safety number display |
+
+**How It Works:**
+
+1. When a user sends a message, the client fetches the recipient's public key bundle
+2. Using X3DH, a shared secret is derived without ever transmitting private keys
+3. The message content is encrypted with AES-256-GCM using the derived key
+4. Encrypted payload, ephemeral public key, and nonce are sent to the server
+5. The server stores the encrypted blob and metadata (cannot decrypt)
+6. Recipient fetches the message and decrypts using their private key
 
 **Architecture:**
 
@@ -392,12 +400,14 @@ The server-side E2EE infrastructure is fully implemented, providing:
 └─────────────────────────────────────────────────────────────────┘
 ```
 
-**Current Transport Security:**
+**Security Properties:**
+- **Forward Secrecy**: Compromising long-term keys does not expose past messages
+- **Cryptographic Deniability**: Recipients cannot prove who sent a message
+- **Break-in Recovery**: One-time prekeys limit damage from session compromise
 
-Until full E2EE client integration is complete, messages are protected by:
-- TLS 1.3 encryption in transit (all connections are HTTPS/WSS)
-- Database encryption at rest
-- Access control (only conversation participants can read messages)
+**Fallback Behavior:**
+
+If E2EE encryption fails (missing keys, crypto errors), the system logs the error and falls back to transport encryption. This maintains availability while alerting operators to key distribution issues.
 
 **Server-Side API Usage:**
 

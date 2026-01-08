@@ -1,7 +1,7 @@
 # CGraph Quick Start Guide
 
 > Get CGraph running locally in 15-30 minutes  
-> Version 0.7.23 | January 2026
+> Version 0.7.26 | January 2026
 
 ---
 

@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.25  
-> Living documentation - Updated with security hardening and idempotency
+> Last updated: January 2026 | Version 0.7.26  
+> Living documentation - Updated with E2EE integration and security hardening
 
 ---
 
