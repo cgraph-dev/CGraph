@@ -64,6 +64,7 @@ export interface ConversationParticipant {
     displayName: string | null;
     avatarUrl: string | null;
     status: string;
+    lastSeenAt?: string | null;
   };
   nickname: string | null;
   isMuted: boolean;

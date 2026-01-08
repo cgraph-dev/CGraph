@@ -89,10 +89,10 @@ defmodule Cgraph.Moderation do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Repo
   alias Cgraph.Accounts.User
-  alias Cgraph.Moderation.{Report, ReviewAction, Appeal, UserRestriction}
   alias Cgraph.Audit
+  alias Cgraph.Moderation.{Report, ReviewAction, Appeal, UserRestriction}
+  alias Cgraph.Repo
 
   require Logger
 
@@ -154,7 +154,7 @@ defmodule Cgraph.Moderation do
     with :ok <- validate_not_self_report(reporter, attrs),
          :ok <- check_duplicate_report(reporter, attrs),
          {:ok, report} <- do_create_report(attrs) do
-      
+
       # Handle critical categories immediately
       if report.category in @critical_categories do
         handle_critical_report(report)
@@ -301,7 +301,7 @@ defmodule Cgraph.Moderation do
          :ok <- validate_reviewer(reviewer),
          {:ok, _action} <- create_review_action(reviewer, report, attrs),
          {:ok, report} <- apply_action(report, attrs) do
-      
+
       Audit.log(:moderation, :report_reviewed, reviewer.id, %{
         report_id: report.id,
         action: attrs[:action]
@@ -349,13 +349,13 @@ defmodule Cgraph.Moderation do
 
   defp apply_action(report, %{action: :suspend} = attrs) do
     duration = attrs[:duration_hours] || 24 * 7  # Default 7 days
-    
+
     {:ok, _} = create_user_restriction(
       report.target_id,
       :suspended,
       duration
     )
-    
+
     update_report_status(report, :resolved)
   end
 
@@ -365,7 +365,7 @@ defmodule Cgraph.Moderation do
       :banned,
       nil  # Permanent
     )
-    
+
     update_report_status(report, :resolved)
   end
 
@@ -493,7 +493,7 @@ defmodule Cgraph.Moderation do
   def review_appeal(%User{} = reviewer, appeal_id, attrs) do
     with {:ok, appeal} <- get_appeal(appeal_id),
          :ok <- validate_reviewer(reviewer) do
-      
+
       status = if attrs[:approved], do: :approved, else: :denied
 
       appeal

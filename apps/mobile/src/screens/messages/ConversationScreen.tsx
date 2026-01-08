@@ -1709,7 +1709,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           type: isVideo ? 'video' as const : 'image' as const,
           name: asset.fileName || `camera_${Date.now()}.${isVideo ? 'mp4' : 'jpg'}`,
           mimeType: asset.mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
-          duration: asset.duration,
+          duration: asset.duration ?? undefined,
         }]);
         openAttachmentPreview();
       }
@@ -2174,58 +2174,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
               <Ionicons name="expand-outline" size={16} color="rgba(255,255,255,0.9)" />
             </View>
           </TouchableOpacity>
-        )}
-        {/* Legacy Image Grid type (for backwards compatibility) */}
-        {item.type === 'image_grid' && item.metadata?.grid_images && (
-          <View style={styles.imageGrid}>
-            {(() => {
-              const images = item.metadata.grid_images as string[];
-              const count = images.length;
-              
-              // Calculate grid layout based on image count
-              const gridStyle = count === 1 ? styles.imageGridSingle :
-                               count === 2 ? styles.imageGridTwo :
-                               count === 3 ? styles.imageGridThree :
-                               count === 4 ? styles.imageGridFour :
-                               styles.imageGridMany;
-              
-              return (
-                <View style={gridStyle}>
-                  {images.slice(0, 4).map((imgUrl, idx) => (
-                    <TouchableOpacity
-                      key={idx}
-                      activeOpacity={0.9}
-                      onPress={() => handleImagePress(imgUrl, images, idx)}
-                      style={[
-                        styles.gridImageContainer,
-                        count === 1 && styles.gridImageFull,
-                        count === 2 && styles.gridImageHalf,
-                        count === 3 && (idx === 0 ? styles.gridImageThreeMain : styles.gridImageThreeSide),
-                        count >= 4 && styles.gridImageQuarter,
-                      ]}
-                    >
-                      <Image
-                        source={{ uri: imgUrl }}
-                        style={styles.gridImage}
-                        resizeMode="cover"
-                      />
-                      {/* Show "+X more" overlay on 4th image if more than 4 */}
-                      {idx === 3 && count > 4 && (
-                        <View style={styles.gridMoreOverlay}>
-                          <Text style={styles.gridMoreText}>+{count - 4}</Text>
-                        </View>
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              );
-            })()}
-            {/* Photo count badge */}
-            <View style={styles.imageGridBadge}>
-              <Ionicons name="images" size={12} color="#fff" />
-              <Text style={styles.imageGridBadgeText}>{(item.metadata.grid_images as string[]).length}</Text>
-            </View>
-          </View>
         )}
         {/* File messages */}
         {item.type === 'file' && item.metadata?.url && (

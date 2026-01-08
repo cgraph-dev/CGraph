@@ -33,11 +33,11 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
       assert cookie.max_age == 60 * 60 * 24 * 7  # 7 days
     end
 
-    test "cookies have SameSite=Lax", %{conn: conn} do
+    test "cookies have SameSite=Strict for security", %{conn: conn} do
       conn = CookieAuth.set_auth_cookies(conn, "access", "refresh")
 
-      assert conn.resp_cookies["cgraph_access_token"].same_site == "Lax"
-      assert conn.resp_cookies["cgraph_refresh_token"].same_site == "Lax"
+      assert conn.resp_cookies["cgraph_access_token"].same_site == "Strict"
+      assert conn.resp_cookies["cgraph_refresh_token"].same_site == "Strict"
     end
   end
 

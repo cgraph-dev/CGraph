@@ -40,7 +40,7 @@ defmodule Cgraph.Moderation.Appeal do
     |> foreign_key_constraint(:user_id)
     |> foreign_key_constraint(:review_action_id)
     |> foreign_key_constraint(:reviewer_id)
-    |> unique_constraint([:user_id, :review_action_id], 
+    |> unique_constraint([:user_id, :review_action_id],
         name: :appeals_user_id_review_action_id_index,
         message: "you have already appealed this action")
   end

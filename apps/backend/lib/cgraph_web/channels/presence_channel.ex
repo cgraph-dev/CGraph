@@ -19,8 +19,8 @@ defmodule CgraphWeb.PresenceChannel do
   """
   use CgraphWeb, :channel
 
-  alias Cgraph.Presence
   alias Cgraph.Accounts.Friends
+  alias Cgraph.Presence
 
   @heartbeat_interval_ms 15_000
   @offline_grace_period_ms 8_000

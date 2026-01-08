@@ -111,21 +111,9 @@ defmodule Cgraph.Repo.Migrations.FixForumForeignKeyConstraints do
     # Additional forum tables that may have issues
     # =========================================================================
     
-    # forum_categories (if exists) - owner_id
-    execute """
-    DO $$ 
-    BEGIN
-      IF EXISTS (
-        SELECT 1 FROM information_schema.tables 
-        WHERE table_name = 'forum_categories'
-      ) THEN
-        ALTER TABLE forum_categories
-        DROP CONSTRAINT IF EXISTS forum_categories_owner_id_fkey,
-        ADD CONSTRAINT forum_categories_owner_id_fkey
-          FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE CASCADE;
-      END IF;
-    END $$;
-    """
+    # forum_categories - This table only has forum_id, not owner_id
+    # The forum_id constraint is already correct with ON DELETE CASCADE
+    # No changes needed here
 
     # forum_posts (if exists separately from thread_posts) - author_id
     execute """

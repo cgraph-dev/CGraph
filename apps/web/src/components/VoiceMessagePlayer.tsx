@@ -41,7 +41,7 @@ export function VoiceMessagePlayer({
   const [progress, setProgress] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(initialDuration || 0);
-  const [isAudioLoaded, setIsAudioLoaded] = useState(false);
+  const [, setIsAudioLoaded] = useState(false);
   const [waveform, setWaveform] = useState<number[]>(
     waveformData || generatePlaceholderWaveform(50)
   );

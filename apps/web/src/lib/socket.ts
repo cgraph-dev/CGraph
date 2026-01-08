@@ -8,20 +8,6 @@ import { normalizeMessage } from './apiUtils';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'ws://localhost:4000/socket';
 
-// Types for presence tracking
-interface PresenceMeta {
-  online_at: string;
-  typing: boolean;
-  status: string;
-  phx_ref?: string;
-}
-
-// Used for presence tracking state
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-interface PresenceState {
-  [userId: string]: { metas: PresenceMeta[] };
-}
-
 class SocketManager {
   private socket: Socket | null = null;
   private channels: Map<string, Channel> = new Map();
@@ -126,9 +112,10 @@ class SocketManager {
     const channel = this.socket.channel(topic, {});
 
     // Handle E2EE key revocation events - CRITICAL for Forward Secrecy
-    channel.on('e2ee:key_revoked', (payload: { user_id: string; key_id: string; revoked_at: string }) => {
-      logger.log('E2EE key revoked event received:', payload);
-      useE2EEStore.getState().handleKeyRevoked(payload.user_id, payload.key_id);
+    channel.on('e2ee:key_revoked', (payload) => {
+      const data = payload as { user_id: string; key_id: string; revoked_at: string };
+      logger.log('E2EE key revoked event received:', data);
+      useE2EEStore.getState().handleKeyRevoked(data.user_id, data.key_id);
     });
 
     // Handle friend request notifications
@@ -317,7 +304,7 @@ class SocketManager {
         // Status changes are handled by onSync
       });
       
-      presence.onLeave((id: string) => {
+      presence.onLeave(() => {
         // Status changes are handled by onSync
         // onLeave fires for every presence update, not just when user truly leaves
       });

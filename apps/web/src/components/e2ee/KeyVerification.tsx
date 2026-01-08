@@ -9,7 +9,6 @@
 import { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { api } from '@/lib/api';
-import { useAuthStore } from '@/stores/authStore';
 import { CheckCircleIcon, ExclamationTriangleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 interface KeyVerificationProps {
@@ -48,7 +47,6 @@ function getQRData(userId: string, safetyNumber: string): string {
 }
 
 export function KeyVerification({ userId, username, onVerified, onClose }: KeyVerificationProps) {
-  const currentUser = useAuthStore((s) => s.user);
   const [state, setState] = useState<VerificationState>({
     safetyNumber: null,
     isVerified: false,

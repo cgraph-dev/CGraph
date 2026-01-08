@@ -36,7 +36,8 @@ COPY apps/backend/lib ./lib/
 COPY apps/backend/priv ./priv/
 
 # Copy assets if they exist (for Phoenix assets pipeline)
-COPY apps/backend/assets ./assets/ 2>/dev/null || true
+# Note: This COPY is optional - build will continue if assets dir doesn't exist
+COPY apps/backend/assets* ./assets/
 
 # Compile assets (if assets directory exists)
 RUN if [ -d "assets" ]; then \

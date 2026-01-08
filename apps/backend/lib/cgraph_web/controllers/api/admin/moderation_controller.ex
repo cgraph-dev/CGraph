@@ -18,7 +18,7 @@ defmodule CgraphWeb.API.Admin.ModerationController do
   use CgraphWeb, :controller
 
   alias Cgraph.Moderation
-  alias Cgraph.Moderation.{Report, Appeal}
+  alias Cgraph.Moderation.{Appeal, Report}
 
   action_fallback CgraphWeb.FallbackController
 

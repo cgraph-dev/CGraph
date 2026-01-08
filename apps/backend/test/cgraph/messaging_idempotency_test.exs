@@ -4,8 +4,8 @@ defmodule Cgraph.MessagingIdempotencyTest do
   """
   use Cgraph.DataCase, async: true
 
-  alias Cgraph.Messaging
   alias Cgraph.Accounts
+  alias Cgraph.Messaging
 
   describe "message idempotency" do
     setup do

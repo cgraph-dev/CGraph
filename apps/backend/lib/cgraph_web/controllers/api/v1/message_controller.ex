@@ -38,7 +38,7 @@ defmodule CgraphWeb.API.V1.MessageController do
     user = conn.assigns.current_user
 
     # Extract E2EE metadata if present
-    e2ee_metadata = 
+    e2ee_metadata =
       if Map.get(params, "is_encrypted", false) do
         %{
           ephemeral_public_key: Map.get(params, "ephemeral_public_key"),

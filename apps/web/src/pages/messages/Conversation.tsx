@@ -50,7 +50,7 @@ export default function Conversation() {
     if (!conversationId || isRefreshing) return;
     setIsRefreshing(true);
     try {
-      await fetchMessages(conversationId, true);
+      await fetchMessages(conversationId);
     } finally {
       setIsRefreshing(false);
     }
@@ -199,18 +199,15 @@ export default function Conversation() {
       formData.append('conversation_id', conversationId);
 
       // Upload voice message
-      const response = await api.post('/api/v1/voice-messages', formData, {
+      await api.post('/api/v1/voice-messages', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      // The backend should return a message object
-      const voiceMessage = response.data.data || response.data.message || response.data;
-      
       // Refetch messages to show the new voice message
       // (alternatively, we could add the message directly to the store)
-      await fetchMessages(conversationId, true);
+      await fetchMessages(conversationId);
     } catch (error) {
       console.error('Failed to send voice message:', error);
     } finally {
