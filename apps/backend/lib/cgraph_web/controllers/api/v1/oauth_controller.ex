@@ -21,9 +21,9 @@ defmodule CgraphWeb.API.V1.OAuthController do
   1. Mobile app uses native SDK to authenticate
   2. Mobile app calls POST /api/v1/auth/oauth/:provider/mobile
   3. Server verifies token and returns JWT
-  
+
   ## Security
-  
+
   Sets HTTP-only cookies for web clients to prevent XSS token theft.
   """
 

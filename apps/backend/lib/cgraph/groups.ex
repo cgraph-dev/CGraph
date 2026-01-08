@@ -1003,7 +1003,7 @@ defmodule Cgraph.Groups do
   def broadcast_reaction_added(channel, message, reaction, user \\ nil) do
     # Use provided user or try to get from reaction
     user_data = user || reaction.user
-    
+
     CgraphWeb.Endpoint.broadcast(
       "channel:#{channel.id}",
       "reaction_added",

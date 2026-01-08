@@ -1692,11 +1692,39 @@ Authorization: Bearer <token>
 
 ### Revoke Key
 
-Revoke a compromised key.
+Revoke a compromised identity key. This should be called when a device is lost or compromised. All contacts are immediately notified via WebSocket so they stop encrypting messages for the revoked key.
 
 ```http
 POST /e2ee/keys/:key_id/revoke
 Authorization: Bearer <token>
+```
+
+**Response:**
+```json
+{
+  "data": {
+    "key_id": "fingerprint",
+    "revoked": true,
+    "revoked_at": "2026-01-08T10:00:00Z"
+  }
+}
+```
+
+**Side Effects:**
+- Broadcasts `e2ee:key_revoked` event to all contacts' `user:{id}` channels
+- Contacts' clients should immediately invalidate cached prekey bundles
+- New messages to this user will fetch fresh key bundles
+
+**WebSocket Event (sent to contacts):**
+```json
+{
+  "event": "e2ee:key_revoked",
+  "payload": {
+    "user_id": "user-uuid",
+    "key_id": "fingerprint",
+    "revoked_at": "2026-01-08T10:00:00Z"
+  }
+}
 ```
 
 ---
@@ -1958,6 +1986,18 @@ socket.channel("channel:CHANNEL_ID")
   "title": "New friend request",
   "body": "...",
   "data": { ... }
+}
+```
+
+**e2ee:key_revoked** (User Channel Only)
+
+Sent when a contact revokes a compromised E2EE key. Clients must invalidate cached prekey bundles for this user.
+
+```json
+{
+  "user_id": "user-uuid",
+  "key_id": "key-fingerprint",
+  "revoked_at": "2026-01-08T10:00:00Z"
 }
 ```
 

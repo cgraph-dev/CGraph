@@ -137,7 +137,7 @@ defmodule CgraphWeb.PresenceChannel do
   @impl true
   def handle_in("get_user_status", %{"user_id" => target_user_id}, socket) do
     user = socket.assigns.current_user
-    
+
     # Only return presence if they are friends
     unless Friends.are_friends?(user.id, target_user_id) do
       {:reply, {:ok, %{online: false, status: "unknown", hidden: true}}, socket}
@@ -171,10 +171,10 @@ defmodule CgraphWeb.PresenceChannel do
     user = socket.assigns.current_user
     friend_ids = socket.assigns[:friend_ids] || get_friend_ids(user.id)
     friend_ids_set = MapSet.new(friend_ids)
-    
+
     # Limit batch size to prevent abuse
     limited_ids = Enum.take(user_ids, @bulk_presence_batch_size)
-    
+
     # Only return status for friends
     friend_limited_ids = Enum.filter(limited_ids, &MapSet.member?(friend_ids_set, &1))
 
@@ -213,18 +213,18 @@ defmodule CgraphWeb.PresenceChannel do
   def handle_in("get_bulk_status", _params, socket) do
     {:reply, {:error, %{reason: "user_ids_required"}}, socket}
   end
-  
+
   @impl true
   def handle_in("refresh_friends", _params, socket) do
     user = socket.assigns.current_user
-    
+
     # Refresh friend list (useful after adding/removing friends)
     friend_ids = get_friend_ids(user.id)
-    
+
     # Push updated presence list filtered by new friends
     presence_list = build_presence_map(Presence.list("users:online"), friend_ids)
     push(socket, "presence_state", %{users: presence_list})
-    
+
     {:reply, :ok, assign(socket, :friend_ids, friend_ids)}
   end
 
@@ -234,14 +234,14 @@ defmodule CgraphWeb.PresenceChannel do
 
     if user && socket.assigns[:tracked] do
       Presence.record_last_seen(user.id)
-      
+
       # Notify friends that this user is going offline
       friend_ids = socket.assigns[:friend_ids] || get_friend_ids(user.id)
       broadcast_to_friends(user.id, friend_ids, "friend_offline", %{
         user_id: user.id,
         last_seen: DateTime.utc_now() |> DateTime.to_iso8601()
       })
-      
+
       schedule_offline_check(user.id)
     end
 
@@ -264,13 +264,13 @@ defmodule CgraphWeb.PresenceChannel do
       )
     end
   end
-  
+
   # Get list of friend user IDs for the given user
   defp get_friend_ids(user_id) do
     Friends.list_friends(user_id)
     |> Enum.map(& &1.friend_id)
   end
-  
+
   # Broadcast a message to all friends of a user
   defp broadcast_to_friends(user_id, friend_ids, event, payload) do
     # Broadcast to each friend's personal channel
@@ -281,7 +281,7 @@ defmodule CgraphWeb.PresenceChannel do
         {event, Map.put(payload, :from_user_id, user_id)}
       )
     end)
-    
+
     # Also broadcast on the presence lobby for friends who are connected
     CgraphWeb.Endpoint.broadcast("presence:lobby", event, payload)
   end
@@ -290,7 +290,7 @@ defmodule CgraphWeb.PresenceChannel do
 
   defp build_presence_map(presence_list, friend_ids) when is_map(presence_list) do
     friend_ids_set = MapSet.new(friend_ids)
-    
+
     presence_list
     |> Enum.filter(fn {user_id, _} -> MapSet.member?(friend_ids_set, user_id) end)
     |> Enum.map(fn {user_id, %{metas: metas}} ->

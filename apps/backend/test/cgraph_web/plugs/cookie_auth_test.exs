@@ -6,14 +6,14 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
   describe "set_auth_cookies/3" do
     test "sets both access and refresh cookies", %{conn: conn} do
       conn = CookieAuth.set_auth_cookies(conn, "access_token_123", "refresh_token_456")
-      
+
       # Verify cookies are set in response
       cookies = conn.resp_cookies
-      
+
       assert cookies["cgraph_access_token"]
       assert cookies["cgraph_access_token"].value == "access_token_123"
       assert cookies["cgraph_access_token"].http_only == true
-      
+
       assert cookies["cgraph_refresh_token"]
       assert cookies["cgraph_refresh_token"].value == "refresh_token_456"
       assert cookies["cgraph_refresh_token"].http_only == true
@@ -21,21 +21,21 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
 
     test "access cookie has correct max_age", %{conn: conn} do
       conn = CookieAuth.set_auth_cookies(conn, "access", "refresh")
-      
+
       cookie = conn.resp_cookies["cgraph_access_token"]
       assert cookie.max_age == 60 * 15  # 15 minutes
     end
 
     test "refresh cookie has correct max_age", %{conn: conn} do
       conn = CookieAuth.set_auth_cookies(conn, "access", "refresh")
-      
+
       cookie = conn.resp_cookies["cgraph_refresh_token"]
       assert cookie.max_age == 60 * 60 * 24 * 7  # 7 days
     end
 
     test "cookies have SameSite=Lax", %{conn: conn} do
       conn = CookieAuth.set_auth_cookies(conn, "access", "refresh")
-      
+
       assert conn.resp_cookies["cgraph_access_token"].same_site == "Lax"
       assert conn.resp_cookies["cgraph_refresh_token"].same_site == "Lax"
     end
@@ -45,14 +45,14 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
     test "clears both cookies", %{conn: conn} do
       # First set cookies
       conn = CookieAuth.set_auth_cookies(conn, "access", "refresh")
-      
+
       # Then clear them
       conn = CookieAuth.clear_auth_cookies(conn)
-      
+
       # Cookies should be set to expire immediately
       access_cookie = conn.resp_cookies["cgraph_access_token"]
       refresh_cookie = conn.resp_cookies["cgraph_refresh_token"]
-      
+
       assert access_cookie.max_age == 0
       assert refresh_cookie.max_age == 0
     end
@@ -67,7 +67,7 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
       conn = conn
         |> put_req_cookie("cgraph_access_token", "test_token_value")
         |> fetch_cookies()
-      
+
       assert CookieAuth.get_access_token(conn) == "test_token_value"
     end
   end
@@ -81,7 +81,7 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
       conn = conn
         |> put_req_cookie("cgraph_refresh_token", "refresh_token_value")
         |> fetch_cookies()
-      
+
       assert CookieAuth.get_refresh_token(conn) == "refresh_token_value"
     end
   end
@@ -92,7 +92,7 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
         |> put_req_header("authorization", "Bearer existing_token")
         |> put_req_cookie("cgraph_access_token", "cookie_token")
         |> CookieAuth.call([])
-      
+
       [auth_header] = get_req_header(conn, "authorization")
       assert auth_header == "Bearer existing_token"
     end
@@ -101,14 +101,14 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
       conn = conn
         |> put_req_cookie("cgraph_access_token", "cookie_token")
         |> CookieAuth.call([])
-      
+
       [auth_header] = get_req_header(conn, "authorization")
       assert auth_header == "Bearer cookie_token"
     end
 
     test "does nothing when no auth header and no cookie", %{conn: conn} do
       conn = CookieAuth.call(conn, [])
-      
+
       assert get_req_header(conn, "authorization") == []
     end
   end
@@ -126,7 +126,7 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
       # Should have cookies set
       assert conn.resp_cookies["cgraph_access_token"]
       assert conn.resp_cookies["cgraph_refresh_token"]
-      
+
       # Verify response also contains tokens in body
       response = json_response(conn, 200)
       assert response["tokens"]["access_token"]

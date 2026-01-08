@@ -426,10 +426,21 @@ count = E2EE.one_time_prekey_count(user_id)
 | Property | Implementation |
 |----------|----------------|
 | Confidentiality | AES-256-GCM encryption |
-| Forward Secrecy | One-time prekeys consumed per session |
+| Forward Secrecy | One-time prekeys consumed per session + key revocation broadcast |
 | Key Verification | Safety numbers derived from identity keys |
 | Key Freshness | Signed prekeys rotated periodically |
+| Key Revocation | Immediate broadcast to all contacts via WebSocket |
 | Deniability | No digital signatures on messages |
+
+**Key Revocation:**
+
+When a user revokes a compromised key (e.g., lost device):
+1. Server marks the key as revoked in the database
+2. `e2ee:key_revoked` event is broadcast to all contacts via their `user:{id}` channel
+3. Client-side E2EE stores invalidate cached prekey bundles for the affected user
+4. Future encryption requests fetch fresh key bundles from the server
+
+This ensures Forward Secrecy by preventing encryption to compromised keys.
 
 **Key Lifecycle:**
 

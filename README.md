@@ -3,7 +3,7 @@
 [![CI](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml/badge.svg)](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml)
 [![Deploy](https://github.com/cgraph-dev/CGraph/actions/workflows/deploy.yml/badge.svg)](https://github.com/cgraph-dev/CGraph/actions/workflows/deploy.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.7.23-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.7.25-green.svg)](CHANGELOG.md)
 [![Elixir](https://img.shields.io/badge/elixir-1.19.4-purple.svg)](https://elixir-lang.org)
 [![React](https://img.shields.io/badge/react-19.1.0-61DAFB.svg)](https://react.dev)
 [![Tests](https://img.shields.io/badge/tests-620%20passing-brightgreen.svg)](apps/backend/test)

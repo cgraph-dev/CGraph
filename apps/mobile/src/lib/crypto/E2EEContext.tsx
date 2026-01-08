@@ -41,6 +41,7 @@ interface E2EEContextType {
   // Key management
   uploadMorePrekeys: (count?: number) => Promise<number>;
   getPrekeyCount: () => Promise<number>;
+  handleKeyRevoked: (userId: string, keyId: string) => void;
   
   // Verification
   getSafetyNumber: (userId: string) => Promise<string>;
@@ -324,6 +325,21 @@ export function E2EEProvider({ children }: E2EEProviderProps) {
     }
   }, []);
   
+  /**
+   * Handle a key revocation event from another user.
+   * This is called when a contact revokes their key (lost device, security breach).
+   * We must immediately invalidate their cached prekey bundle to prevent
+   * encrypting messages for a compromised key.
+   */
+  const handleKeyRevoked = useCallback((userId: string, keyId: string) => {
+    logger.log(`Key revoked for user ${userId}: ${keyId}`);
+    
+    // Invalidate cached bundle for this user
+    prekeyBundleCache.delete(userId);
+    
+    logger.log(`Cleared prekey bundle cache for user ${userId} due to key revocation`);
+  }, []);
+  
   const value: E2EEContextType = {
     isInitialized,
     isLoading,
@@ -334,6 +350,7 @@ export function E2EEProvider({ children }: E2EEProviderProps) {
     decryptMessage,
     uploadMorePrekeys,
     getPrekeyCount,
+    handleKeyRevoked,
     getSafetyNumber,
     getFingerprint,
     getDevices,

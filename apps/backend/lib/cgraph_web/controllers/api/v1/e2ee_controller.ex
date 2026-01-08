@@ -232,13 +232,27 @@ defmodule CgraphWeb.API.V1.E2EEController do
 
   Called when a device is lost or compromised.
   All contacts will be notified that the key changed.
+
+  ## Security Architecture
+
+  When a key is revoked, we MUST notify all contacts immediately so they:
+  1. Stop encrypting messages for the compromised key
+  2. Request fresh key bundles before sending new messages
+  3. Update their local key stores
+
+  This implements Forward Secrecy - a fundamental property that WhatsApp/Signal
+  guarantee. Without this notification, contacts would continue encrypting
+  messages for an attacker's stolen device.
   """
   def revoke_key(conn, %{"key_id" => key_id}) do
     user = conn.assigns.current_user
 
     case E2EE.revoke_identity_key(user.id, key_id) do
       {:ok, key} ->
-        # TODO: Notify contacts about key revocation
+        # CRITICAL: Notify ALL contacts, not just the user themselves
+        # This is the key fix for the Forward Secrecy vulnerability
+        notify_key_revocation(user.id, key.key_id, key.revoked_at)
+
         json(conn, %{data: %{key_id: key.key_id, revoked: true, revoked_at: key.revoked_at}})
 
       {:error, :not_found} ->
@@ -247,6 +261,32 @@ defmodule CgraphWeb.API.V1.E2EEController do
       {:error, reason} ->
         {:error, :internal_server_error, inspect(reason)}
     end
+  end
+
+  # Notify all contacts that a user's key has been revoked
+  # This ensures Forward Secrecy by preventing encryption to compromised keys
+  defp notify_key_revocation(user_id, key_id, revoked_at) do
+    # Get all friend IDs for the user
+    friend_ids = Cgraph.Accounts.Friends.get_accepted_friend_ids(user_id)
+
+    payload = %{
+      user_id: user_id,
+      key_id: key_id,
+      revoked_at: revoked_at
+    }
+
+    # Broadcast to each friend's personal UserChannel
+    # They will receive "e2ee:key_revoked" event and drop the compromised key
+    Enum.each(friend_ids, fn friend_id ->
+      CgraphWeb.Endpoint.broadcast("user:#{friend_id}", "e2ee:key_revoked", payload)
+    end)
+
+    # Also notify the user's own devices (for multi-device sync)
+    CgraphWeb.Endpoint.broadcast("user:#{user_id}", "e2ee:key_revoked", payload)
+
+    # For users with many contacts, consider dispatching to Oban background job
+    # to avoid blocking the HTTP response. For now, inline is fine for <1000 friends.
+    :ok
   end
 
   # ============================================================================

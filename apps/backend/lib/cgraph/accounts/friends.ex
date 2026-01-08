@@ -243,6 +243,22 @@ defmodule Cgraph.Accounts.Friends do
   end
 
   @doc """
+  Gets list of accepted friend IDs for a user.
+
+  Used for real-time notifications and presence tracking.
+  Returns only the IDs for efficient batch operations like
+  broadcasting E2EE key revocations to all contacts.
+  """
+  def get_accepted_friend_ids(user_id) do
+    from(f in Friendship,
+      where: f.user_id == ^user_id,
+      where: f.status == :accepted,
+      select: f.friend_id
+    )
+    |> Repo.all()
+  end
+
+  @doc """
   Gets pending friend requests (incoming).
   """
   def list_incoming_requests(user_id) do

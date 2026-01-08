@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.25] - 2026-01-08
+
+### Security
+
+#### Backend - E2EE Key Revocation Broadcast (Forward Secrecy Fix)
+- **Critical Security Fix** - Key revocation now notifies all contacts
+  - When a user revokes a compromised key (lost device, security breach), all friends are now immediately notified via WebSocket
+  - Contacts' clients invalidate cached prekey bundles, preventing encryption to compromised keys
+  - Implements proper Forward Secrecy guarantees matching Signal/WhatsApp standards
+  - New `notify_key_revocation/3` function broadcasts to all `user:{friend_id}` channels
+  - Added `get_accepted_friend_ids/1` public API in Friends module
+
+#### Web - E2EE Key Revocation Handling
+- **Socket Manager** - Added `joinUserChannel/1` for personal notification channel
+  - Handles `e2ee:key_revoked` events from server
+  - Automatically invalidates cached prekey bundles for revoked users
+- **E2EE Store** - Added `handleKeyRevoked/2` to clear bundle cache on revocation
+
+#### Mobile - E2EE Key Revocation Handling
+- **Socket Manager** - Added user channel support with E2EE callback registration
+  - `joinUserChannel/1` subscribes to personal notifications
+  - `setE2EEKeyRevokedHandler/1` registers callback for key revocation events
+- **E2EE Context** - Added `handleKeyRevoked/2` function to invalidate cached bundles
+
+### Technical Details
+
+**Key Revocation Flow:**
+1. User calls `POST /api/v1/e2ee/keys/:key_id/revoke`
+2. Server marks key as revoked in database
+3. Server broadcasts `e2ee:key_revoked` to all friends' user channels
+4. Friends' clients receive event and clear cached prekey bundle
+5. Next message encryption fetches fresh keys from server
+
+---
+
 ## [0.7.24] - 2026-01-07
 
 ### Security

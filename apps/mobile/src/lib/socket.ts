@@ -430,6 +430,91 @@ class SocketManager {
     }
   }
   
+  // User channel for private notifications
+  private userChannel: Channel | null = null;
+  private userChannelSetUp = false;
+  private e2eeKeyRevokedCallback: ((userId: string, keyId: string) => void) | null = null;
+  
+  /**
+   * Set callback for E2EE key revocation events.
+   * This should be called from E2EEProvider to handle key revocations.
+   */
+  setE2EEKeyRevokedHandler(callback: (userId: string, keyId: string) => void): void {
+    this.e2eeKeyRevokedCallback = callback;
+  }
+  
+  /**
+   * Join the user's personal channel for receiving targeted notifications.
+   * 
+   * This channel receives:
+   * - E2EE key revocation events (critical for Forward Secrecy)
+   * - Friend request notifications
+   * - Message previews for push notifications
+   * - Account state changes
+   * 
+   * @param userId - Current user's ID
+   * @returns Channel instance or null if unable to join
+   */
+  joinUserChannel(userId: string): Channel | null {
+    const topic = `user:${userId}`;
+    
+    if (this.userChannel) {
+      return this.userChannel;
+    }
+    
+    if (!this.socket) {
+      logger.warn('Cannot join user channel: socket not connected');
+      return null;
+    }
+    
+    logger.log('Joining user channel:', topic);
+    this.userChannel = this.socket.channel(topic, {});
+    
+    if (!this.userChannelSetUp) {
+      this.userChannelSetUp = true;
+      
+      // Handle E2EE key revocation events - CRITICAL for Forward Secrecy
+      this.userChannel.on('e2ee:key_revoked', (rawPayload: unknown) => {
+        const payload = rawPayload as { user_id: string; key_id: string; revoked_at: string };
+        logger.log('E2EE key revoked event received:', payload);
+        if (this.e2eeKeyRevokedCallback) {
+          this.e2eeKeyRevokedCallback(payload.user_id, payload.key_id);
+        }
+      });
+      
+      // Handle friend request notifications
+      this.userChannel.on('friend_request', (rawPayload: unknown) => {
+        logger.log('Friend request received:', rawPayload);
+        // Could dispatch to a notification handler here
+      });
+      
+      // Handle message previews (for notifications when app is in background)
+      this.userChannel.on('message_preview', (rawPayload: unknown) => {
+        logger.log('Message preview:', rawPayload);
+      });
+    }
+    
+    this.userChannel.join()
+      .receive('ok', (response: unknown) => {
+        logger.log('Joined user channel:', response);
+      })
+      .receive('error', (response: unknown) => {
+        logger.error('Failed to join user channel:', response);
+        this.userChannel = null;
+        this.userChannelSetUp = false;
+      });
+    
+    return this.userChannel;
+  }
+  
+  leaveUserChannel(): void {
+    if (this.userChannel) {
+      this.userChannel.leave();
+      this.userChannel = null;
+      this.userChannelSetUp = false;
+    }
+  }
+
   // Subscribe to user status changes
   onStatusChange(callback: StatusChangeCallback): () => void {
     this.statusListeners.add(callback);

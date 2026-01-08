@@ -280,7 +280,7 @@ defmodule CgraphWeb.ConversationChannel do
           emoji: replaced_emoji
         })
       end
-      
+
       broadcast!(socket, "reaction_added", %{
         message_id: message_id,
         user_id: user.id,

@@ -50,6 +50,7 @@ interface E2EEState {
   getSafetyNumber: (userId: string) => Promise<string>;
   getDevices: () => Promise<Array<{ device_id: string; created_at: string }>>;
   revokeDevice: (deviceId: string) => Promise<void>;
+  handleKeyRevoked: (userId: string, keyId: string) => void;
   clearError: () => void;
 }
 
@@ -341,6 +342,25 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
         prekeyCount: 0,
       });
     }
+  },
+  
+  /**
+   * Handle a key revocation event from another user.
+   * This is called when a contact revokes their key (lost device, security breach).
+   * We must immediately invalidate their cached prekey bundle to prevent
+   * encrypting messages for a compromised key.
+   */
+  handleKeyRevoked: (userId: string, keyId: string) => {
+    logger.log(`Key revoked for user ${userId}: ${keyId}`);
+    
+    // Invalidate cached bundle for this user
+    const { bundleCache } = get();
+    bundleCache.delete(userId);
+    
+    // Force next encryption to fetch fresh keys
+    set({ bundleCache: new Map(bundleCache) });
+    
+    logger.log(`Cleared prekey bundle cache for user ${userId} due to key revocation`);
   },
   
   /**

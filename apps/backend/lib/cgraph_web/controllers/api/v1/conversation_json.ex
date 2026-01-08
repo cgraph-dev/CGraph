@@ -57,10 +57,10 @@ defmodule CgraphWeb.API.V1.ConversationJSON do
     |> Enum.map(fn p ->
       case p.user do
         %Ecto.Association.NotLoaded{} -> nil
-        user -> 
+        user ->
           # Get last seen from presence cache
           last_seen = Presence.last_seen(user.id)
-          
+
           %{
             id: p.id,
             userId: user.id,

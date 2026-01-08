@@ -257,7 +257,7 @@ defmodule Cgraph.Messaging do
 
   @doc """
   Create a message in a conversation.
-  
+
   Supports idempotency via `client_message_id` parameter. If a message with
   the same client_message_id already exists in the conversation, returns
   the existing message instead of creating a duplicate.
@@ -274,7 +274,7 @@ defmodule Cgraph.Messaging do
     case check_idempotency(conversation.id, message_attrs) do
       {:ok, existing_message} ->
         {:ok, existing_message}
-      
+
       :not_found ->
         do_create_message(conversation, message_attrs)
     end
@@ -282,7 +282,7 @@ defmodule Cgraph.Messaging do
 
   defp check_idempotency(conversation_id, attrs) do
     client_id = Map.get(attrs, "client_message_id") || Map.get(attrs, :client_message_id)
-    
+
     if client_id do
       case Repo.get_by(Message, conversation_id: conversation_id, client_message_id: client_id) do
         nil -> :not_found
@@ -551,7 +551,7 @@ defmodule Cgraph.Messaging do
   def broadcast_reaction_added(conversation, message, reaction, user \\ nil) do
     # Use provided user or try to get from reaction
     user_data = user || reaction.user
-    
+
     CgraphWeb.Endpoint.broadcast(
       "conversation:#{conversation.id}",
       "reaction_added",
@@ -685,7 +685,7 @@ defmodule Cgraph.Messaging do
   Each user can pin up to 3 messages per conversation.
   """
   @max_pins_per_user 3
-  
+
   def pin_message(message_id, user_id) when is_binary(message_id) and is_binary(user_id) do
     case get_message(message_id) do
       {:error, :not_found} -> {:error, :not_found}
@@ -693,13 +693,13 @@ defmodule Cgraph.Messaging do
         cond do
           !message.conversation_id || !user_in_conversation?(message.conversation_id, user_id) ->
             {:error, :unauthorized}
-          
+
           message.is_pinned ->
             {:error, :already_pinned}
-          
+
           count_user_pins(message.conversation_id, user_id) >= @max_pins_per_user ->
             {:error, :pin_limit_reached}
-          
+
           true ->
             message
             |> Ecto.Changeset.change(is_pinned: true, pinned_at: DateTime.utc_now() |> DateTime.truncate(:second), pinned_by_id: user_id)

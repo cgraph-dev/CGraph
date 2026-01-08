@@ -455,6 +455,23 @@ await api.post('/api/v1/messages', {
 });
 ```
 
+**Key Revocation (Forward Secrecy):**
+
+When a device is lost or compromised, the user revokes their key:
+
+```typescript
+// Revoke compromised key
+await api.post(`/api/v1/e2ee/keys/${keyId}/revoke`);
+
+// Server broadcasts to all contacts via WebSocket
+// Clients listen on their user channel:
+userChannel.on('e2ee:key_revoked', (payload) => {
+  // Invalidate cached prekey bundle for this user
+  prekeyBundleCache.delete(payload.user_id);
+  // Next message will fetch fresh keys
+});
+```
+
 ### 5. Background Jobs (Oban)
 
 **Job Processing:**

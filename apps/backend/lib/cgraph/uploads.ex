@@ -4,14 +4,14 @@ defmodule Cgraph.Uploads do
 
   Handles file uploads, storage, and quota management.
   Includes magic byte validation for security and image optimization for performance.
-  
+
   ## Image Optimization
-  
+
   When an image is uploaded, we generate multiple sizes:
   - Thumbnail (150x150) - For lists and previews
   - Preview (800x800) - For chat views
   - Original - For full-screen viewing
-  
+
   This prevents users from downloading massive 10MB photos just to see a small chat bubble.
   """
 
@@ -24,7 +24,7 @@ defmodule Cgraph.Uploads do
   @thumbnail_size {150, 150}
   @preview_size {800, 800}
   @jpeg_quality 85
-  
+
   # Size thresholds for optimization (in bytes)
   @optimize_threshold 100_000  # 100KB - optimize images larger than this
 
@@ -101,10 +101,10 @@ defmodule Cgraph.Uploads do
 
   @doc """
   Store a file upload with magic byte validation and image optimization.
-  
+
   Validates the file's actual content against its claimed MIME type
   to prevent malicious file uploads (e.g., PHP files disguised as images).
-  
+
   For images larger than 100KB, generates:
   - Thumbnail (150x150) for lists
   - Preview (800x800) for chat view
@@ -140,9 +140,9 @@ defmodule Cgraph.Uploads do
 
     # Generate URL
     url = "/uploads/#{context}/#{filename}"
-    
+
     # Optimize images if applicable (preview_url reserved for future use)
-    {thumbnail_url, _preview_url, final_url, dimensions} = 
+    {thumbnail_url, _preview_url, final_url, dimensions} =
       if should_optimize_image?(upload.content_type, stat.size, skip_optimization) do
         base_id = Path.rootname(filename)
         optimize_image(dest_path, base_id, context, upload.content_type)
@@ -177,10 +177,10 @@ defmodule Cgraph.Uploads do
     |> UploadedFile.changeset(file_attrs)
     |> Repo.insert()
   end
-  
+
   @doc """
   Check if an image should be optimized based on type, size, and flags.
-  
+
   Returns true if:
   - skip_optimization is false
   - content_type is an image (but not GIF or SVG)
@@ -192,43 +192,43 @@ defmodule Cgraph.Uploads do
     content_type not in ["image/gif", "image/svg+xml"] and
     size > @optimize_threshold
   end
-  
+
   @doc """
   Optimize an image by creating thumbnail, preview, and optimized original.
-  
+
   Uses ImageMagick (via System.cmd) for image processing.
   Returns {thumbnail_url, preview_url, original_url, dimensions}.
   """
   def optimize_image(source_path, base_id, context, _content_type) do
     upload_path = Path.join([@upload_dir, context])
-    
+
     # Determine output format (prefer WebP for better compression)
     output_ext = if supports_webp?(), do: ".webp", else: Path.extname(source_path)
-    
+
     # Generate file paths
     thumb_filename = "#{base_id}_thumb#{output_ext}"
     preview_filename = "#{base_id}_preview#{output_ext}"
     optimized_filename = "#{base_id}_opt#{output_ext}"
-    
+
     thumb_path = Path.join(upload_path, thumb_filename)
     preview_path = Path.join(upload_path, preview_filename)
     optimized_path = Path.join(upload_path, optimized_filename)
-    
+
     # Get original dimensions
     dimensions = case get_image_dimensions(source_path) do
       {:ok, w, h} -> %{width: w, height: h}
       _ -> %{}
     end
-    
+
     # Generate thumbnail (150x150)
     thumb_result = generate_resized_image(source_path, thumb_path, @thumbnail_size)
-    
+
     # Generate preview (800x800)
     preview_result = generate_resized_image(source_path, preview_path, @preview_size)
-    
+
     # Generate optimized original (strip metadata, optimize)
     opt_result = optimize_original(source_path, optimized_path)
-    
+
     # Build URLs (only if generation succeeded)
     thumb_url = if thumb_result == :ok, do: "/uploads/#{context}/#{thumb_filename}", else: nil
     preview_url = if preview_result == :ok, do: "/uploads/#{context}/#{preview_filename}", else: nil
@@ -238,17 +238,17 @@ defmodule Cgraph.Uploads do
       # Fall back to original if optimization failed
       "/uploads/#{context}/#{base_id}#{Path.extname(source_path)}"
     end
-    
+
     Logger.info("Image optimization complete",
       base_id: base_id,
       thumb: thumb_result == :ok,
       preview: preview_result == :ok,
       optimized: opt_result == :ok
     )
-    
+
     {thumb_url, preview_url, original_url, dimensions}
   end
-  
+
   defp generate_resized_image(source, dest, {max_width, max_height}) do
     # Use ImageMagick convert command
     # -thumbnail preserves aspect ratio and is faster than -resize
@@ -260,10 +260,10 @@ defmodule Cgraph.Uploads do
       "-quality", "#{@jpeg_quality}",
       dest
     ]
-    
+
     case System.cmd("convert", args, stderr_to_stdout: true) do
       {_, 0} -> :ok
-      {error, _} -> 
+      {error, _} ->
         Logger.warning("Image resize failed: #{error}")
         :error
     end
@@ -272,7 +272,7 @@ defmodule Cgraph.Uploads do
       Logger.warning("Image resize error: #{inspect(e)}")
       :error
   end
-  
+
   defp optimize_original(source, dest) do
     # Optimize without resizing
     args = [
@@ -282,10 +282,10 @@ defmodule Cgraph.Uploads do
       "-quality", "#{@jpeg_quality}",
       dest
     ]
-    
+
     case System.cmd("convert", args, stderr_to_stdout: true) do
       {_, 0} -> :ok
-      {error, _} -> 
+      {error, _} ->
         Logger.warning("Image optimization failed: #{error}")
         :error
     end
@@ -294,7 +294,7 @@ defmodule Cgraph.Uploads do
       Logger.warning("Image optimization error: #{inspect(e)}")
       :error
   end
-  
+
   @doc """
   Check if ImageMagick supports WebP format.
   Returns true if WebP is available for conversion.
@@ -336,7 +336,7 @@ defmodule Cgraph.Uploads do
   def check_quota(user) do
     usage = get_user_usage(user)
     used = usage.used_bytes || 0
-    
+
     # Ensure used_bytes is a number before comparison
     used_bytes = if is_number(used), do: used, else: 0
 
@@ -383,7 +383,7 @@ defmodule Cgraph.Uploads do
     file_count = result.count || 0
 
     # Calculate percentage safely, avoiding division by zero or nil issues
-    used_percentage = 
+    used_percentage =
       if is_number(used_bytes) and used_bytes > 0 do
         Float.round(used_bytes / @max_quota * 100, 1)
       else
@@ -451,23 +451,23 @@ defmodule Cgraph.Uploads do
 
   @doc """
   Validate that file content matches the claimed MIME type using magic bytes.
-  
+
   This prevents attacks where malicious files (e.g., PHP scripts) are uploaded
   with fake extensions or MIME types (e.g., .jpg, image/jpeg).
-  
+
   ## Security
-  
+
   - Reads the first few bytes of the file
   - Compares against known magic byte signatures
   - Rejects files where content doesn't match claimed type
   """
   @spec validate_mime_type(String.t(), String.t(), boolean()) :: :ok | {:error, :invalid_file_type}
   def validate_mime_type(_path, _content_type, true), do: :ok
-  
+
   def validate_mime_type(path, content_type, _skip) do
     # Normalize MIME type
     base_type = content_type |> String.split(";") |> List.first() |> String.trim() |> String.downcase()
-    
+
     case Map.get(@magic_signatures, base_type) do
       nil ->
         # Unknown MIME type - check if it's in our allowlist
@@ -477,11 +477,11 @@ defmodule Cgraph.Uploads do
           Logger.warning("Upload rejected: unknown MIME type #{base_type}")
           {:error, :invalid_file_type}
         end
-      
+
       [] ->
         # No magic bytes to check (e.g., text/plain)
         :ok
-      
+
       signatures ->
         validate_file_signature(path, signatures, base_type)
     end
@@ -490,11 +490,11 @@ defmodule Cgraph.Uploads do
   defp validate_file_signature(path, signatures, content_type) do
     case File.open(path, [:read, :binary]) do
       {:ok, file} ->
-        result = 
+        result =
           case IO.binread(file, @magic_read_bytes) do
-            {:error, _} -> 
+            {:error, _} ->
               {:error, :invalid_file_type}
-            :eof -> 
+            :eof ->
               {:error, :invalid_file_type}
             bytes when is_binary(bytes) ->
               if matches_any_signature?(bytes, signatures, content_type) do
@@ -506,7 +506,7 @@ defmodule Cgraph.Uploads do
           end
         File.close(file)
         result
-      
+
       {:error, reason} ->
         Logger.error("Failed to open file for validation: #{inspect(reason)}")
         {:error, :invalid_file_type}
@@ -534,33 +534,33 @@ defmodule Cgraph.Uploads do
       "video/mp4" ->
         <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
         ftyp == "ftyp"
-      
+
       "video/quicktime" ->
         <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
         ftyp == "ftyp"
-      
+
       "audio/m4a" ->
         <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
         ftyp == "ftyp"
-      
+
       "image/webp" ->
         # RIFF....WEBP
         <<riff::binary-size(4), _size::32, webp::binary-size(4), _::binary>> = bytes
         riff == "RIFF" and webp == "WEBP"
-      
+
       "image/heic" ->
         <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
         ftyp == "ftyp"
-      
+
       "image/heif" ->
         <<_size::32, ftyp::binary-size(4), _rest::binary>> = bytes
         ftyp == "ftyp"
-      
+
       _ ->
         false
     end
   end
-  
+
   defp check_container_format(_bytes, _content_type), do: false
 
   # Allow certain generic types that don't have magic bytes

@@ -43,7 +43,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
       if replaced_emoji do
         Messaging.broadcast_reaction_removed(conversation, message, user, replaced_emoji)
       end
-      
+
       # Broadcast reaction to other participants (pass user for complete data)
       Messaging.broadcast_reaction_added(conversation, message, reaction, user)
 
@@ -66,7 +66,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
       if replaced_emoji do
         Messaging.broadcast_reaction_removed(conversation, message, user, replaced_emoji)
       end
-      
+
       # Broadcast reaction to other participants (pass user for complete data)
       Messaging.broadcast_reaction_added(conversation, message, reaction, user)
 
@@ -148,7 +148,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
       if replaced_emoji do
         Groups.broadcast_reaction_removed(channel, message, user, replaced_emoji)
       end
-      
+
       # Broadcast reaction
       Groups.broadcast_reaction_added(channel, message, reaction, user)
 

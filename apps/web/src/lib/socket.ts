@@ -2,6 +2,7 @@ import { Socket, Channel, Presence } from 'phoenix';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useGroupStore, ChannelMessage } from '@/stores/groupStore';
+import { useE2EEStore } from '@/lib/crypto/e2eeStore';
 import { socketLogger as logger } from './logger';
 import { normalizeMessage } from './apiUtils';
 
@@ -96,6 +97,72 @@ class SocketManager {
     this.onlineUsers.clear();
     this.socket?.disconnect();
     this.socket = null;
+  }
+
+  /**
+   * Join the user's personal channel for receiving targeted notifications.
+   * 
+   * This channel receives:
+   * - E2EE key revocation events (critical for security)
+   * - Friend request notifications
+   * - Message previews for push notifications
+   * - Account state changes
+   * 
+   * @param userId - Current user's ID
+   * @returns Channel instance or null if unable to join
+   */
+  joinUserChannel(userId: string): Channel | null {
+    const topic = `user:${userId}`;
+
+    if (this.channels.has(topic)) {
+      return this.channels.get(topic)!;
+    }
+
+    if (!this.socket) {
+      logger.warn('Cannot join user channel: socket not connected');
+      return null;
+    }
+
+    const channel = this.socket.channel(topic, {});
+
+    // Handle E2EE key revocation events - CRITICAL for Forward Secrecy
+    channel.on('e2ee:key_revoked', (payload: { user_id: string; key_id: string; revoked_at: string }) => {
+      logger.log('E2EE key revoked event received:', payload);
+      useE2EEStore.getState().handleKeyRevoked(payload.user_id, payload.key_id);
+    });
+
+    // Handle friend request notifications
+    channel.on('friend_request', (payload) => {
+      logger.log('Friend request received:', payload);
+      // Could dispatch to a notification store here
+    });
+
+    // Handle message previews (for notifications when app is in background)
+    channel.on('message_preview', (payload) => {
+      logger.log('Message preview:', payload);
+    });
+
+    channel
+      .join()
+      .receive('ok', () => {
+        logger.log(`Joined user channel: ${topic}`);
+      })
+      .receive('error', (resp: unknown) => {
+        logger.error(`Failed to join user channel: ${topic}`, resp);
+        this.channels.delete(topic);
+      });
+
+    this.channels.set(topic, channel);
+    return channel;
+  }
+
+  leaveUserChannel(userId: string) {
+    const topic = `user:${userId}`;
+    const channel = this.channels.get(topic);
+    if (channel) {
+      channel.leave();
+      this.channels.delete(topic);
+    }
   }
 
   // Subscribe to user status changes

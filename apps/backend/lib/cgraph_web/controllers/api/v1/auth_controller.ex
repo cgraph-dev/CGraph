@@ -129,13 +129,13 @@ defmodule CgraphWeb.API.V1.AuthController do
   def refresh(conn, params) do
     # Check for refresh token in body first, then cookie
     refresh_token = params["refresh_token"] || CookieAuth.get_refresh_token(conn)
-    
+
     case refresh_token do
       nil ->
         conn
         |> put_status(:unauthorized)
         |> json(%{error: "No refresh token provided"})
-        
+
       token ->
         case Guardian.refresh_tokens(token) do
           {:ok, tokens} ->
@@ -236,13 +236,13 @@ defmodule CgraphWeb.API.V1.AuthController do
       ["Bearer " <> t] -> t
       _ -> CookieAuth.get_access_token(conn)
     end
-    
+
     case token do
       nil ->
         conn
         |> CookieAuth.clear_auth_cookies()
         |> json(%{message: "Logged out successfully"})
-        
+
       token ->
         # Get user for audit logging
         user = Guardian.Plug.current_resource(conn)
@@ -340,7 +340,7 @@ defmodule CgraphWeb.API.V1.AuthController do
         |> List.to_string()
     end
   end
-  
+
   # Set HTTP-only cookies for web clients
   # Mobile clients use the tokens from the JSON response directly
   defp maybe_set_cookies(conn, tokens) do
