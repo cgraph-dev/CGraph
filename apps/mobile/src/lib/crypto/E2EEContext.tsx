@@ -366,11 +366,56 @@ export function E2EEProvider({ children }: E2EEProviderProps) {
 
 /**
  * Hook to use E2EE functionality
+ * 
+ * Returns the E2EE context if available, or safe defaults if not.
+ * This allows components to gracefully handle cases where E2EE
+ * hasn't been initialized yet.
  */
 export function useE2EE(): E2EEContextType {
   const context = useContext(E2EEContext);
+  
+  // Return safe defaults if not within E2EEProvider
+  // This enables graceful degradation for components that may mount
+  // before the provider is ready or in test environments
   if (!context) {
-    throw new Error('useE2EE must be used within an E2EEProvider');
+    return {
+      isInitialized: false,
+      isLoading: false,
+      error: 'E2EE not available - provider not mounted',
+      setupE2EE: async () => {
+        throw new Error('E2EE provider not available');
+      },
+      resetE2EE: async () => {
+        throw new Error('E2EE provider not available');
+      },
+      encryptMessage: async () => {
+        throw new Error('E2EE provider not available');
+      },
+      decryptMessage: async () => {
+        throw new Error('E2EE provider not available');
+      },
+      uploadMorePrekeys: async () => 0,
+      getPrekeyCount: async () => 0,
+      handleKeyRevoked: () => {},
+      getSafetyNumber: async () => '',
+      getFingerprint: async () => null,
+      getDevices: async () => [],
+      revokeDevice: async () => {},
+    };
+  }
+  
+  return context;
+}
+
+/**
+ * Hook to use E2EE functionality with strict provider requirement
+ * 
+ * Use this when E2EE is absolutely required and should throw if missing.
+ */
+export function useE2EEStrict(): E2EEContextType {
+  const context = useContext(E2EEContext);
+  if (!context) {
+    throw new Error('useE2EEStrict must be used within an E2EEProvider');
   }
   return context;
 }
@@ -409,5 +454,6 @@ export function usePreKeyReplenishment(threshold: number = 20) {
 export default {
   E2EEProvider,
   useE2EE,
+  useE2EEStrict,
   usePreKeyReplenishment,
 };

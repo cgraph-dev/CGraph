@@ -18,14 +18,17 @@ const getApiUrl = (): string => {
   // Development mode - allow localhost and LAN connections
   if (__DEV__) {
     if (configuredUrl) {
+      console.log('[API] Using configured URL:', configuredUrl);
       return configuredUrl;
     }
     
     // Android emulator uses 10.0.2.2 to reach host machine's localhost
     // iOS simulator can use localhost directly
     if (Platform.OS === 'android') {
+      console.log('[API] Android detected, using 10.0.2.2:4000');
       return 'http://10.0.2.2:4000';
     }
+    console.log('[API] iOS detected, using localhost:4000');
     return 'http://localhost:4000';
   }
   
@@ -43,6 +46,12 @@ const getApiUrl = (): string => {
 
 const API_URL = getApiUrl();
 
+// Log API configuration at startup in development
+if (__DEV__) {
+  console.log('[API] Base URL configured:', API_URL);
+  console.log('[API] Platform:', Platform.OS);
+}
+
 const api = axios.create({
   baseURL: API_URL,
   timeout: 30000,
@@ -58,6 +67,12 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // Development logging for network debugging
+    if (__DEV__) {
+      console.log(`[API] ${config.method?.toUpperCase()} ${config.baseURL}${config.url}`);
+    }
+    
     return config;
   },
   (error) => Promise.reject(error)
@@ -65,8 +80,27 @@ api.interceptors.request.use(
 
 // Response interceptor with token refresh
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Development logging for successful responses
+    if (__DEV__) {
+      console.log(`[API] Response ${response.status} from ${response.config.url}`);
+    }
+    return response;
+  },
   async (error) => {
+    // Development logging for network errors
+    if (__DEV__) {
+      if (error.response) {
+        console.log(`[API] Error ${error.response.status} from ${error.config?.url}:`, 
+          JSON.stringify(error.response.data, null, 2));
+      } else if (error.request) {
+        console.log(`[API] Network error - no response received for ${error.config?.url}`);
+        console.log('[API] Request details:', error.message);
+      } else {
+        console.log('[API] Request setup error:', error.message);
+      }
+    }
+    
     const originalRequest = error.config;
     
     if (error.response?.status === 401 && !originalRequest._retry) {

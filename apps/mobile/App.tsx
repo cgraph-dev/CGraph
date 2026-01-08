@@ -8,6 +8,7 @@ import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 import { AuthProvider } from './src/contexts/AuthContext';
+import { E2EEProvider } from './src/lib/crypto/E2EEContext';
 import RootNavigator from './src/navigation/RootNavigator';
 
 // Keep splash screen visible while loading
@@ -72,7 +73,9 @@ export default function App() {
         <QueryClientProvider client={queryClient}>
           <ThemeProvider>
             <AuthProvider>
-              <AppContent />
+              <E2EEProvider>
+                <AppContent />
+              </E2EEProvider>
             </AuthProvider>
           </ThemeProvider>
         </QueryClientProvider>

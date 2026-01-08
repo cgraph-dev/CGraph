@@ -83,7 +83,10 @@ apps/mobile/
 │   ├── lib/                # Utilities
 │   │   ├── api.ts          # Axios instance
 │   │   ├── socket.ts       # Phoenix connection
-│   │   └── storage.ts      # Secure storage
+│   │   ├── storage.ts      # Secure storage
+│   │   └── crypto/         # Encryption utilities
+│   │       ├── e2ee.ts     # Core E2EE functions
+│   │       └── E2EEContext.tsx  # E2EE React context
 │   │
 │   ├── navigation/         # Navigation setup
 │   │   ├── RootNavigator.tsx
@@ -634,6 +637,78 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
 export function useTheme() {
   return useContext(ThemeContext);
+}
+```
+
+### E2EE Context
+
+The E2EE (End-to-End Encryption) context handles all cryptographic operations for secure messaging. It's provided at the app root level and offers graceful degradation when encryption isn't yet initialized.
+
+```tsx
+// App.tsx - Provider hierarchy
+import { E2EEProvider } from './src/lib/crypto/E2EEContext';
+
+export default function App() {
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <QueryClientProvider client={queryClient}>
+          <ThemeProvider>
+            <AuthProvider>
+              <E2EEProvider>
+                <AppContent />
+              </E2EEProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </QueryClientProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
+  );
+}
+```
+
+The hook returns safe defaults when called outside a provider (useful for testing or screens that don't need encryption):
+
+```tsx
+// Using E2EE in a component
+import { useE2EE } from '@/lib/crypto/E2EEContext';
+
+function ChatScreen() {
+  const { 
+    isInitialized,     // Whether E2EE keys are set up
+    isLoading,         // Loading state during setup
+    encryptMessage,    // Encrypt plaintext for a recipient
+    decryptMessage,    // Decrypt received message
+    getSafetyNumber,   // Get verification code for a contact
+  } = useE2EE();
+  
+  const sendSecureMessage = async (recipientId: string, text: string) => {
+    if (!isInitialized) {
+      // Fall back to server-side encryption or show setup prompt
+      return sendUnencrypted(text);
+    }
+    
+    const encrypted = await encryptMessage(recipientId, text);
+    await api.post('/messages', { 
+      recipient_id: recipientId, 
+      encrypted_content: encrypted 
+    });
+  };
+  
+  // ...
+}
+```
+
+For components that absolutely require E2EE (like key verification screens), use the strict variant:
+
+```tsx
+import { useE2EEStrict } from '@/lib/crypto/E2EEContext';
+
+function KeyVerificationScreen() {
+  // Throws if not within E2EEProvider - catches misconfiguration early
+  const { getSafetyNumber, getFingerprint } = useE2EEStrict();
+  
+  // ...
 }
 ```
 

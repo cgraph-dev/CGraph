@@ -4,7 +4,7 @@
  * Dynamic configuration for Expo SDK 54
  * Handles environment-specific settings and API URL resolution
  * 
- * @version 0.7.20
+ * @version 0.7.28
  * @see https://docs.expo.dev/workflow/configuration/
  */
 
@@ -71,7 +71,7 @@ module.exports = ({ config }) => {
     ...config,
     name: getAppName(),
     slug: 'cgraph',
-    version: '0.7.20',
+    version: '0.7.28',
     runtimeVersion: {
       policy: 'appVersion',
     },
@@ -103,11 +103,20 @@ module.exports = ({ config }) => {
         NSFaceIDUsageDescription: 'CGraph uses Face ID to protect your account and secure messages.',
         ITSAppUsesNonExemptEncryption: false,
         NSAppTransportSecurity: {
-          NSAllowsArbitraryLoads: IS_DEV, // Allow HTTP only in development
+          // Allow all HTTP connections in development mode
+          // This is required for connecting to localhost or LAN IPs
+          NSAllowsArbitraryLoads: IS_DEV,
+          // Also allow local networking specifically for physical device testing
+          NSAllowsLocalNetworking: IS_DEV,
           NSExceptionDomains: IS_DEV ? {
             localhost: {
               NSExceptionAllowsInsecureHTTPLoads: true,
-              NSIncludesSubdomains: false,
+              NSIncludesSubdomains: true,
+            },
+            // Allow all .local domains (common for LAN hostnames)
+            'local': {
+              NSExceptionAllowsInsecureHTTPLoads: true,
+              NSIncludesSubdomains: true,
             },
           } : undefined,
         },

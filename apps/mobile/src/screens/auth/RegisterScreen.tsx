@@ -52,6 +52,25 @@ export default function RegisterScreen({ navigation }: Props) {
       return;
     }
     
+    // Validate password complexity (matching backend requirements)
+    const hasLowercase = /[a-z]/.test(password);
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    if (!hasLowercase || !hasUppercase || !hasNumber || !hasSpecial) {
+      const missing: string[] = [];
+      if (!hasLowercase) missing.push('lowercase letter');
+      if (!hasUppercase) missing.push('uppercase letter');
+      if (!hasNumber) missing.push('number');
+      if (!hasSpecial) missing.push('special character (!@#$%^&*)');
+      Alert.alert(
+        'Password Requirements',
+        `Password must contain: ${missing.join(', ')}`
+      );
+      return;
+    }
+    
     // Validate username if provided
     if (username.trim() && username.trim().length < 3) {
       Alert.alert('Error', 'Username must be at least 3 characters');
@@ -67,11 +86,54 @@ export default function RegisterScreen({ navigation }: Props) {
     try {
       await register(email, username.trim() || null, password);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { message?: string } } };
-      Alert.alert(
-        'Registration Failed',
-        err.response?.data?.message || 'Could not create account'
-      );
+      // Backend returns errors in multiple formats:
+      // - {error: "message"} for simple errors
+      // - {error: {message: "..."}} for complex errors
+      // - {error: "...", message: "...", details: {...}} for validation
+      // - Network errors have no response
+      const err = error as { 
+        response?: { data?: { error?: string | { message?: string }; message?: string; details?: Record<string, string[]> } };
+        message?: string;
+      };
+      
+      let errorMessage = 'Could not create account';
+      
+      if (err.response?.data) {
+        const data = err.response.data;
+        // Check for validation details first (most specific)
+        if (data.details && typeof data.details === 'object') {
+          // Format validation errors nicely
+          const errorMessages: string[] = [];
+          for (const [field, messages] of Object.entries(data.details)) {
+            if (Array.isArray(messages) && messages.length > 0) {
+              const fieldName = field.charAt(0).toUpperCase() + field.slice(1).replace(/_/g, ' ');
+              errorMessages.push(`${fieldName}: ${messages[0]}`);
+            }
+          }
+          if (errorMessages.length > 0) {
+            errorMessage = errorMessages.join('\n');
+          }
+        } else if (typeof data.error === 'object' && data.error?.message) {
+          // Complex error object
+          errorMessage = data.error.message;
+        } else if (typeof data.error === 'string') {
+          // Simple error string
+          errorMessage = data.error;
+        } else if (data.message) {
+          // Fallback to message field
+          errorMessage = data.message;
+        }
+      } else if (err.message?.includes('Network')) {
+        // Network connectivity issue
+        errorMessage = 'Unable to connect to server. Please check your internet connection.';
+      }
+      
+      // Log for debugging in development
+      if (__DEV__) {
+        console.log('Registration error:', JSON.stringify(err.response?.data || err.message, null, 2));
+      }
+      
+      Alert.alert('Registration Failed', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -167,6 +229,9 @@ export default function RegisterScreen({ navigation }: Props) {
                   onChangeText={setPassword}
                   secureTextEntry
                 />
+                <Text style={[styles.inputHint, { color: colors.textTertiary }]}>
+                  Min 8 characters with uppercase, lowercase, number, and special character (!@#$%^&*)
+                </Text>
               </View>
               
               <View style={styles.inputGroup}>

@@ -6,6 +6,40 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.28] - 2026-01-08
+
+Quick patch for iOS mobile authentication issues. If you've been trying to log in or register on the iOS app and getting weird errors, this should sort it out.
+
+### Fixed
+
+- **iOS login/register crashes** — The E2EE context wasn't wired up in App.tsx, so any screen using `useE2EE` (like ConversationScreen) would throw immediately. Added `E2EEProvider` to the app root.
+
+- **useE2EE hook was too strict** — If the hook was called before the provider mounted (race condition) or in tests, it would crash. Now returns safe defaults when provider isn't available. Added `useE2EEStrict()` for components that absolutely need E2EE.
+
+- **Missing ChangesetJSON module** — Backend referenced `CgraphWeb.ChangesetJSON` for validation errors but the module didn't exist. Password validation failures would 500 instead of showing the actual error. Created the module.
+
+- **Mobile error messages were incomplete** — The app only checked `err.response?.data?.message` but backend returns errors in different formats (`error`, `error.message`, `details`). Now extracts errors from all formats properly.
+
+- **Password requirements unclear** — Users would get cryptic backend errors about password complexity. Added client-side validation and a hint showing requirements (8+ chars, uppercase, lowercase, number, special character).
+
+### Changed
+
+- **Network debug logging** — Added request/response logging in development mode. Check the console if you're having connection issues—you'll see exactly what URL the app is hitting.
+
+- **iOS ATS relaxed for local networking** — Added `NSAllowsLocalNetworking` for dev builds so physical devices can reach LAN IPs without SSL.
+
+### Docs
+
+- Updated MOBILE.md with E2EE context documentation, including the provider hierarchy and usage examples.
+
+---
+
+## [0.7.27] - 2026-01-08
+
+Testing infrastructure and moderation system hardening. All 718 backend tests and 255 web tests passing.
+
+---
+
 ## [0.7.26] - 2026-01-08
 
 Honestly, this might be the most important release we've done. It's the one that makes CGraph actually deployable to production without weird failures. We also added the legal docs and moderation system required for app store approval.

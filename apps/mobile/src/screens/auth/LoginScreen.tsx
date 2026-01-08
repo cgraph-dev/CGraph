@@ -40,11 +40,47 @@ export default function LoginScreen({ navigation }: Props) {
     try {
       await login(identifier, password);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string; message?: string } } };
-      Alert.alert(
-        'Login Failed',
-        err.response?.data?.error || err.response?.data?.message || 'Invalid credentials'
-      );
+      // Backend returns errors in multiple formats:
+      // - {error: "message"} for simple errors
+      // - {error: {message: "..."}} for complex errors  
+      // - {error: "...", message: "...", details: {...}} for validation
+      // - Network errors have no response
+      const err = error as { 
+        response?: { data?: { error?: string | { message?: string }; message?: string; details?: Record<string, string[]> } };
+        message?: string;
+      };
+      
+      let errorMessage = 'Invalid credentials';
+      
+      if (err.response?.data) {
+        const data = err.response.data;
+        // Check for validation details first (most specific)
+        if (data.details && typeof data.details === 'object') {
+          const firstField = Object.keys(data.details)[0];
+          if (firstField && Array.isArray(data.details[firstField])) {
+            errorMessage = `${firstField}: ${data.details[firstField][0]}`;
+          }
+        } else if (typeof data.error === 'object' && data.error?.message) {
+          // Complex error object
+          errorMessage = data.error.message;
+        } else if (typeof data.error === 'string') {
+          // Simple error string
+          errorMessage = data.error;
+        } else if (data.message) {
+          // Fallback to message field
+          errorMessage = data.message;
+        }
+      } else if (err.message?.includes('Network')) {
+        // Network connectivity issue
+        errorMessage = 'Unable to connect to server. Please check your internet connection.';
+      }
+      
+      // Log for debugging in development
+      if (__DEV__) {
+        console.log('Login error:', JSON.stringify(err.response?.data || err.message, null, 2));
+      }
+      
+      Alert.alert('Login Failed', errorMessage);
     } finally {
       setIsLoading(false);
     }
