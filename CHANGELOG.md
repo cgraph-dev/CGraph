@@ -7,6 +7,77 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.7.26] - 2026-01-08
+
+### Security
+
+#### E2EE Integration - True End-to-End Encryption for Messages
+- **Critical Feature** - Messages now encrypted client-side before transmission
+  - Web: `chatStore.sendMessage` now uses `useE2EEStore.encryptMessage` for direct conversations
+  - Mobile: `ConversationScreen.sendMessage` now encrypts via `useE2EE` hook
+  - X3DH key exchange with AES-256-GCM encryption
+  - Server receives ciphertext (opaque blob) - cannot read message content
+  - Sender's identity key included in metadata for recipient decryption
+
+#### Backend - E2EE Message Handling
+- **Message Controller** - Enhanced to handle encrypted message fields
+  - Accepts `ephemeral_public_key`, `nonce`, `recipient_identity_key_id`, `one_time_prekey_id`
+  - Automatically includes sender's identity key in message metadata
+  - Added `get_user_identity_key/1` function to E2EE module
+
+#### Forum FK Constraints - Database Integrity Fix (P0)
+- **Migration** - Fixed remaining foreign key constraint conflicts in forum tables
+  - Affected tables: threads, thread_posts, thread_attachments, forum_announcements
+  - Audit trail tables (forum_warnings, forum_mod_logs) now nullable for issued_by/moderator
+  - Conditional fixes for optional tables (forum_posts, forum_comments, forum_bans, etc.)
+
+#### Security Documentation Enhancement
+- **authStore.ts** - Comprehensive security model documentation
+  - Explains HTTP-only cookie primary auth vs sessionStorage WebSocket fallback
+  - Documents XSS attack surface and mitigations
+  - Clarifies Phoenix Channels limitation requiring token in params
+
+### Added
+
+#### Offline Support - React Query Persistence
+- **Web App** - Implemented offline-first caching with React Query
+  - Cache persisted to localStorage with 24-hour TTL
+  - `networkMode: 'offlineFirst'` for queries and mutations
+  - Online/offline event listeners for automatic sync
+  - Cache busting on version updates
+
+### Changed
+
+#### Mobile - iOS Encryption Compliance
+- **app.json** - Updated `usesNonExemptEncryption` to `true`
+  - Required for App Store compliance when E2EE is active
+  - ITSAppUsesNonExemptEncryption also set to true
+  - Annual self-classification report required for Apple
+
+### Technical Details
+
+**E2EE Message Flow:**
+1. User types message in chat
+2. Client fetches recipient's prekey bundle (cached)
+3. Client performs X3DH key exchange → shared secret
+4. Message encrypted with AES-256-GCM
+5. Ciphertext + ephemeral key + nonce sent to server
+6. Server stores and broadcasts encrypted blob
+7. Recipient fetches message, performs X3DH → decrypt
+
+**Files Modified:**
+- `apps/web/src/stores/chatStore.ts` - E2EE integration
+- `apps/web/src/lib/apiUtils.ts` - E2EE field extraction
+- `apps/web/src/lib/logger.ts` - Added chatLogger
+- `apps/web/src/main.tsx` - Offline persistence setup
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx` - E2EE integration
+- `apps/mobile/app.json` - Encryption compliance flag
+- `apps/backend/lib/cgraph_web/controllers/api/v1/message_controller.ex` - E2EE metadata
+- `apps/backend/lib/cgraph/crypto/e2ee.ex` - get_user_identity_key function
+- `apps/backend/priv/repo/migrations/20260108044204_fix_forum_foreign_key_constraints.exs`
+
+---
+
 ## [0.7.25] - 2026-01-08
 
 ### Security

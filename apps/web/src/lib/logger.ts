@@ -67,3 +67,4 @@ export const e2eeLogger = createLogger('E2EE');
 export const authLogger = createLogger('Auth');
 export const apiLogger = createLogger('API');
 export const forumLogger = createLogger('Forum');
+export const chatLogger = createLogger('Chat');

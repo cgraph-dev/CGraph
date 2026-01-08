@@ -340,6 +340,10 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     sender: sender,
     createdAt: raw.createdAt ?? raw.created_at ?? raw.insertedAt ?? raw.inserted_at ?? new Date().toISOString(),
     updatedAt: raw.updatedAt ?? raw.updated_at ?? raw.createdAt ?? raw.created_at ?? new Date().toISOString(),
+    // E2EE fields - extract from metadata or root level
+    ephemeralPublicKey: metadata?.ephemeral_public_key ?? raw.ephemeralPublicKey ?? raw.ephemeral_public_key ?? null,
+    nonce: metadata?.nonce ?? raw.nonce ?? null,
+    senderIdentityKey: metadata?.sender_identity_key ?? raw.senderIdentityKey ?? raw.sender_identity_key ?? null,
   };
 }
 

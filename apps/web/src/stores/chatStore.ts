@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray, ensureObject, normalizeMessage, normalizeConversations } from '@/lib/apiUtils';
+import { useE2EEStore } from '@/lib/crypto/e2eeStore';
+import { chatLogger as logger } from '@/lib/logger';
 
 export interface Message {
   id: string;
@@ -8,6 +10,7 @@ export interface Message {
   senderId: string;
   content: string;
   encryptedContent: string | null;
+  isEncrypted: boolean;
   messageType: 'text' | 'image' | 'video' | 'file' | 'audio' | 'voice' | 'sticker' | 'gif' | 'system';
   replyToId: string | null;
   replyTo: Message | null;
@@ -24,6 +27,10 @@ export interface Message {
   };
   createdAt: string;
   updatedAt: string;
+  // E2EE metadata for decryption
+  ephemeralPublicKey?: string;
+  nonce?: string;
+  senderIdentityKey?: string;
 }
 
 export interface Reaction {
@@ -84,6 +91,8 @@ interface ChatState {
   fetchConversations: () => Promise<void>;
   fetchMessages: (conversationId: string, before?: string) => Promise<void>;
   sendMessage: (conversationId: string, content: string, replyToId?: string) => Promise<void>;
+  sendEncryptedMessage: (conversationId: string, recipientId: string, content: string, replyToId?: string) => Promise<void>;
+  decryptAndAddMessage: (message: Message) => Promise<void>;
   editMessage: (messageId: string, content: string) => Promise<void>;
   deleteMessage: (messageId: string) => Promise<void>;
   addReaction: (messageId: string, emoji: string) => Promise<void>;
@@ -95,6 +104,7 @@ interface ChatState {
   setTypingUser: (conversationId: string, userId: string, isTyping: boolean, startedAt?: string) => void;
   markAsRead: (conversationId: string) => Promise<void>;
   createConversation: (userIds: string[]) => Promise<Conversation>;
+  getRecipientId: (conversationId: string, currentUserId: string) => string | null;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -155,6 +165,64 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   sendMessage: async (conversationId: string, content: string, replyToId?: string) => {
     try {
+      // Check if E2EE is available and get recipient for encryption
+      const e2eeStore = useE2EEStore.getState();
+      const { conversations } = get();
+      const conversation = conversations.find(c => c.id === conversationId);
+      
+      // Get current user ID from auth store for recipient detection
+      // For direct conversations, encrypt if E2EE is initialized
+      if (e2eeStore.isInitialized && conversation?.type === 'direct') {
+        // Get the other participant (recipient)
+        const currentUserIdFromParticipants = conversation.participants.length === 2
+          ? conversation.participants[0]?.userId
+          : null;
+        
+        // Find recipient (the other participant)
+        const recipientParticipant = conversation.participants.find(
+          p => p.userId !== currentUserIdFromParticipants
+        ) || conversation.participants[1];
+        
+        if (recipientParticipant) {
+          try {
+            // Encrypt the message using E2EE
+            const encryptedMsg = await e2eeStore.encryptMessage(
+              recipientParticipant.userId,
+              content
+            );
+            
+            const payload: Record<string, unknown> = {
+              content: encryptedMsg.ciphertext,
+              is_encrypted: true,
+              ephemeral_public_key: encryptedMsg.ephemeralPublicKey,
+              nonce: encryptedMsg.nonce,
+              recipient_identity_key_id: encryptedMsg.recipientIdentityKeyId,
+              one_time_prekey_id: encryptedMsg.oneTimePreKeyId,
+            };
+            if (replyToId) payload.reply_to_id = replyToId;
+
+            const response = await api.post(
+              `/api/v1/conversations/${conversationId}/messages`,
+              payload
+            );
+            const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
+            if (rawMessage) {
+              const message = normalizeMessage(rawMessage) as unknown as Message;
+              // Store plaintext locally for sender (we know what we sent)
+              message.content = content;
+              get().addMessage(message);
+            }
+            
+            logger.log('Sent E2EE encrypted message');
+            return;
+          } catch (encryptError) {
+            logger.error('E2EE encryption failed, falling back to plaintext:', encryptError);
+            // Fall through to plaintext sending
+          }
+        }
+      }
+      
+      // Fallback: Send plaintext (for group chats or when E2EE not available)
       const payload: Record<string, string> = { content };
       if (replyToId) payload.reply_to_id = replyToId;
 
@@ -169,6 +237,102 @@ export const useChatStore = create<ChatState>((set, get) => ({
       }
     } catch (error) {
       throw error;
+    }
+  },
+
+  /**
+   * Send an encrypted message with explicit recipient ID
+   * Used when caller already knows the recipient
+   */
+  sendEncryptedMessage: async (
+    conversationId: string, 
+    recipientId: string, 
+    content: string, 
+    replyToId?: string
+  ) => {
+    const e2eeStore = useE2EEStore.getState();
+    
+    if (!e2eeStore.isInitialized) {
+      throw new Error('E2EE not initialized - cannot send encrypted message');
+    }
+    
+    try {
+      const encryptedMsg = await e2eeStore.encryptMessage(recipientId, content);
+      
+      const payload: Record<string, unknown> = {
+        content: encryptedMsg.ciphertext,
+        is_encrypted: true,
+        ephemeral_public_key: encryptedMsg.ephemeralPublicKey,
+        nonce: encryptedMsg.nonce,
+        recipient_identity_key_id: encryptedMsg.recipientIdentityKeyId,
+        one_time_prekey_id: encryptedMsg.oneTimePreKeyId,
+      };
+      if (replyToId) payload.reply_to_id = replyToId;
+
+      const response = await api.post(
+        `/api/v1/conversations/${conversationId}/messages`,
+        payload
+      );
+      const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
+      if (rawMessage) {
+        const message = normalizeMessage(rawMessage) as unknown as Message;
+        // Store plaintext locally for sender
+        message.content = content;
+        get().addMessage(message);
+      }
+      
+      logger.log('Sent E2EE encrypted message via sendEncryptedMessage');
+    } catch (error) {
+      logger.error('Failed to send encrypted message:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Decrypt an incoming encrypted message and add it to the store
+   */
+  decryptAndAddMessage: async (message: Message) => {
+    const e2eeStore = useE2EEStore.getState();
+    
+    // If not encrypted or E2EE not initialized, just add as-is
+    if (!message.isEncrypted || !e2eeStore.isInitialized) {
+      get().addMessage(message);
+      return;
+    }
+    
+    try {
+      // We need the sender's identity key and the encrypted message details
+      // These should be in the message metadata from the server
+      const metadata = message.metadata || {};
+      const encryptedPayload = {
+        ciphertext: message.encryptedContent || message.content,
+        ephemeralPublicKey: message.ephemeralPublicKey || metadata.ephemeral_public_key,
+        recipientIdentityKeyId: metadata.recipient_identity_key_id || '',
+        oneTimePreKeyId: metadata.one_time_prekey_id,
+        nonce: message.nonce || metadata.nonce,
+      };
+      
+      const senderIdentityKey = message.senderIdentityKey || metadata.sender_identity_key;
+      
+      if (!encryptedPayload.ephemeralPublicKey || !senderIdentityKey || !encryptedPayload.nonce) {
+        logger.warn('Missing E2EE metadata for decryption, showing encrypted message');
+        get().addMessage({ ...message, content: '[Encrypted message - unable to decrypt]' });
+        return;
+      }
+      
+      const plaintext = await e2eeStore.decryptMessage(
+        message.senderId,
+        senderIdentityKey,
+        encryptedPayload
+      );
+      
+      // Add decrypted message
+      get().addMessage({ ...message, content: plaintext });
+      logger.log('Decrypted and added E2EE message');
+    } catch (error) {
+      logger.error('Failed to decrypt message:', error);
+      // Show placeholder for failed decryption
+      get().addMessage({ ...message, content: '[Unable to decrypt message]' });
     }
   },
 
@@ -311,5 +475,24 @@ export const useChatStore = create<ChatState>((set, get) => ({
       return conversation;
     }
     throw new Error('Failed to create conversation');
+  },
+
+  /**
+   * Get the recipient ID for a direct conversation
+   * Returns null for group conversations or if recipient not found
+   */
+  getRecipientId: (conversationId: string, currentUserId: string): string | null => {
+    const { conversations } = get();
+    const conversation = conversations.find(c => c.id === conversationId);
+    
+    if (!conversation || conversation.type !== 'direct') {
+      return null;
+    }
+    
+    const recipient = conversation.participants.find(
+      p => p.userId !== currentUserId
+    );
+    
+    return recipient?.userId || null;
   },
 }));

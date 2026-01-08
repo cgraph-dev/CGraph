@@ -97,20 +97,36 @@ interface AuthState {
 /**
  * Session storage wrapper for auth persistence
  * 
- * SECURITY MODEL:
- * - Primary auth: HTTP-only cookies (set by backend, immune to XSS)
- * - Fallback: Token in sessionStorage (for WebSocket connections)
+ * SECURITY MODEL (XSS MITIGATION):
+ * ================================
  * 
- * The backend sets HTTP-only cookies on login/register/refresh.
- * These cookies are automatically sent with every request (withCredentials: true).
- * JavaScript cannot access HTTP-only cookies, preventing XSS token theft.
+ * 1. PRIMARY AUTH: HTTP-only cookies
+ *    - Set by backend on login/register/refresh
+ *    - Automatically sent with every request (withCredentials: true)
+ *    - CANNOT be accessed by JavaScript (XSS immune)
+ *    - This is the primary authentication mechanism
  * 
- * We still store tokens in sessionStorage for:
- * 1. WebSocket Phoenix channel authentication (requires token in params)
- * 2. Backwards compatibility during migration
- * 3. Display of auth state in UI
+ * 2. SECONDARY: Token in sessionStorage (WebSocket ONLY)
+ *    - Phoenix Channels require token in connection params
+ *    - HTTP-only cookies cannot be read by JS for WebSocket auth
+ *    - This is a known limitation of WebSocket authentication
  * 
- * Session storage is cleared on browser close for additional security.
+ * MITIGATIONS:
+ *    - sessionStorage (not localStorage): cleared on browser/tab close
+ *    - Base64 encoding: provides obfuscation (not encryption)
+ *    - Short-lived access tokens: expire in 15 minutes
+ *    - Refresh tokens: sent via HTTP-only cookie path restriction
+ *    - CORS + SameSite cookie settings prevent CSRF
+ *    - Content Security Policy prevents inline script injection
+ * 
+ * ATTACK SURFACE:
+ *    - An XSS attack could steal the access token (15 min lifetime)
+ *    - Cannot steal refresh token (HTTP-only cookie with path restriction)
+ *    - User would need to re-login after access token expires
+ * 
+ * FUTURE IMPROVEMENT:
+ *    - Consider using a short-lived WebSocket-specific token
+ *    - Implement token binding to prevent token theft reuse
  */
 const createSecureStorage = (): StateStorage => {
   const encode = (data: string): string => {

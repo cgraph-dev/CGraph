@@ -483,6 +483,18 @@ defmodule Cgraph.Crypto.E2EE do
   end
 
   @doc """
+  Get the current (non-revoked) identity key for a user.
+  
+  Returns the identity key needed for E2EE message attribution.
+  Used by the message controller to include sender's identity key
+  in encrypted message metadata.
+  """
+  @spec get_user_identity_key(String.t()) :: {:ok, IdentityKey.t()} | {:error, term()}
+  def get_user_identity_key(user_id) do
+    get_current_identity_key(user_id)
+  end
+
+  @doc """
   Get the count of remaining one-time prekeys for a user.
 
   Clients should upload more prekeys when this count falls below 25.

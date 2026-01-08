@@ -32,6 +32,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { useE2EE } from '../../lib/crypto/E2EEContext';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
@@ -254,6 +255,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const { colors, colorScheme } = useTheme();
   const isDark = colorScheme === 'dark';
   const { user } = useAuth();
+  const { isInitialized: isE2EEInitialized, encryptMessage } = useE2EE();
   
   const [_conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -987,14 +989,42 @@ export default function ConversationScreen({ navigation, route }: Props) {
     stopTypingIndicator();
     
     try {
-      const messagePayload: Record<string, unknown> = { content };
+      let messagePayload: Record<string, unknown> = { content };
       if (currentReplyTo) {
         messagePayload.reply_to_id = currentReplyTo.id;
+      }
+      
+      // E2EE: Encrypt message for direct conversations if E2EE is initialized
+      let plaintextForLocal = content;
+      if (isE2EEInitialized && otherParticipantId) {
+        try {
+          const encryptedMsg = await encryptMessage(otherParticipantId, content);
+          messagePayload = {
+            content: encryptedMsg.ciphertext,
+            is_encrypted: true,
+            ephemeral_public_key: encryptedMsg.ephemeralPublicKey,
+            nonce: encryptedMsg.nonce,
+            recipient_identity_key_id: encryptedMsg.recipientIdentityKeyId,
+            one_time_prekey_id: encryptedMsg.oneTimePreKeyId,
+          };
+          if (currentReplyTo) {
+            messagePayload.reply_to_id = currentReplyTo.id;
+          }
+          logger.log('Sent E2EE encrypted message');
+        } catch (encryptError) {
+          logger.error('E2EE encryption failed, falling back to plaintext:', encryptError);
+          // Fall through to plaintext
+        }
       }
       
       const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, messagePayload);
       const rawMessage = response.data.data || response.data.message || response.data;
       const normalized = normalizeMessage(rawMessage);
+      
+      // For encrypted messages, store plaintext locally (we know what we sent)
+      if (messagePayload.is_encrypted) {
+        normalized.content = plaintextForLocal;
+      }
       
       // Mark as new message for entrance animation
       setNewMessageIds(prev => new Set(prev).add(normalized.id));

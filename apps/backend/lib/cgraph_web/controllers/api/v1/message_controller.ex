@@ -37,6 +37,31 @@ defmodule CgraphWeb.API.V1.MessageController do
   def create(conn, %{"conversation_id" => conversation_id} = params) do
     user = conn.assigns.current_user
 
+    # Extract E2EE metadata if present
+    e2ee_metadata = 
+      if Map.get(params, "is_encrypted", false) do
+        %{
+          ephemeral_public_key: Map.get(params, "ephemeral_public_key"),
+          nonce: Map.get(params, "nonce"),
+          recipient_identity_key_id: Map.get(params, "recipient_identity_key_id"),
+          one_time_prekey_id: Map.get(params, "one_time_prekey_id"),
+          # Include sender's identity key for recipient to decrypt
+          sender_identity_key: get_sender_identity_key(user.id)
+        }
+        |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+        |> Map.new()
+      else
+        %{}
+      end
+
+    # Merge E2EE metadata with any existing link_preview/metadata
+    base_metadata = Map.get(params, "link_preview") || Map.get(params, "metadata") || %{}
+    combined_metadata = if map_size(e2ee_metadata) > 0 do
+      Map.merge(base_metadata, e2ee_metadata)
+    else
+      base_metadata
+    end
+
     # Build message params, including file attachment fields
     message_params = %{
       content: Map.get(params, "content"),
@@ -50,8 +75,8 @@ defmodule CgraphWeb.API.V1.MessageController do
       file_mime_type: Map.get(params, "file_mime_type"),
       thumbnail_url: Map.get(params, "thumbnail_url"),
       is_encrypted: Map.get(params, "is_encrypted", false),
-      # Custom metadata (grid_images for multi-photo, link previews, etc.)
-      link_preview: Map.get(params, "link_preview") || Map.get(params, "metadata")
+      # Combined metadata (E2EE + link previews, etc.)
+      link_preview: combined_metadata
     }
     # Remove nil values to avoid overwriting with nils
     |> Enum.reject(fn {_k, v} -> is_nil(v) end)
@@ -69,6 +94,14 @@ defmodule CgraphWeb.API.V1.MessageController do
       conn
       |> put_status(:created)
       |> render(:show, message: message)
+    end
+  end
+
+  # Get sender's identity key for E2EE messages
+  defp get_sender_identity_key(user_id) do
+    case Cgraph.Crypto.E2EE.get_user_identity_key(user_id) do
+      {:ok, key} -> key.public_key |> Base.encode64()
+      _ -> nil
     end
   end
 
