@@ -103,6 +103,14 @@ cd apps/mobile
 pnpm start  # scan QR with Expo Go
 ```
 
+### Storybook (Component Development)
+
+Browse and develop UI components in isolation:
+```bash
+cd apps/web && pnpm storybook      # Web: http://localhost:6006
+cd apps/mobile && pnpm storybook   # Mobile: on-device via Expo
+```
+
 ### Docker (Alternative)
 
 If you'd rather not install Elixir locally:

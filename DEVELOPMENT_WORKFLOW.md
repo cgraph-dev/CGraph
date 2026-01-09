@@ -1,6 +1,6 @@
 # CGraph Development Workflow Guide
 
-> **Last Updated**: December 30, 2024
+> **Last Updated**: January 9, 2026
 > 
 > **Status**: ✅ Backend: 216 tests passing | ✅ Web: Builds successfully | ✅ Mobile: TypeScript compiles | ✅ All APIs working
 
@@ -29,12 +29,13 @@ This document contains all commands to test, run, and develop CGraph - a real-ti
 5. [Database Management](#database-management)
 6. [Docker Development](#docker-development)
 7. [Code Quality & Linting](#code-quality--linting)
-8. [Development Tools & URLs](#development-tools--urls)
-9. [Project Structure](#project-structure)
-10. [Implementation Status](#implementation-status)
-11. [Recent Bug Fixes](#recent-bug-fixes)
-12. [Git Workflow](#git-workflow)
-13. [What's Left To Do](#whats-left-to-do)
+8. [Storybook](#storybook)
+9. [Development Tools & URLs](#development-tools--urls)
+10. [Project Structure](#project-structure)
+11. [Implementation Status](#implementation-status)
+12. [Recent Bug Fixes](#recent-bug-fixes)
+13. [Git Workflow](#git-workflow)
+14. [What's Left To Do](#whats-left-to-do)
 
 ---
 
@@ -438,6 +439,43 @@ npm run build            # Build all packages
 
 ---
 
+## Storybook
+
+Storybook provides an interactive component development environment for both web and mobile.
+
+### Web Storybook
+
+```bash
+cd apps/web
+pnpm storybook       # Start dev server on http://localhost:6006
+pnpm build-storybook # Build static site for deployment
+```
+
+### Mobile Storybook (React Native)
+
+```bash
+cd apps/mobile
+pnpm storybook            # Generate stories + start Expo
+pnpm storybook:generate   # Regenerate story list only
+```
+
+Scan the QR code with Expo Go to view components on your device.
+
+### Story Files
+
+Stories use the `.stories.tsx` extension:
+
+| Platform | Story Location |
+|----------|----------------|
+| Web | `apps/web/src/components/*.stories.tsx` |
+| Mobile | `apps/mobile/src/components/stories/*.stories.tsx` |
+
+### Storybook Version
+
+We use Storybook **8.6.15** — the latest stable release with full addon support.
+
+---
+
 ## Development Tools & URLs
 
 ### Local Services
@@ -446,6 +484,7 @@ npm run build            # Build all packages
 |---------|-----|-------|
 | **Backend API** | http://localhost:4000 | Phoenix server |
 | **Web Frontend** | http://localhost:3000 | Vite dev server |
+| **Storybook** | http://localhost:6006 | Component documentation |
 | **API Docs** | http://localhost:4000/dev/dashboard | Phoenix dashboard |
 | **WebSocket** | ws://localhost:4000/socket | Phoenix channels |
 
