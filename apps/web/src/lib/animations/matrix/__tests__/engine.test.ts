@@ -626,7 +626,9 @@ describe('Matrix Engine Performance', () => {
     }
     
     const elapsed = performance.now() - start;
-    expect(elapsed).toBeLessThan(100); // 100ms for 100 engines
+    // Allow up to 5ms per engine creation/destruction cycle
+    // This accounts for slower CI environments and virtualized systems
+    expect(elapsed).toBeLessThan(500);
   });
 
   it('should initialize quickly', () => {
