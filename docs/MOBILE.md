@@ -1625,44 +1625,600 @@ export default function AccountScreen() {
 
 ## Testing
 
-### Unit Tests
+CGraph mobile has a comprehensive testing infrastructure built with Jest, Testing Library, and custom utilities designed for React Native and Expo applications.
+
+### Testing Stack
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| **Jest** | 29.7 | Test runner |
+| **jest-expo** | 54.0 | Expo-specific Jest preset |
+| **@testing-library/react-native** | 13.2 | Component testing |
+| **react-test-renderer** | 19.1 | React test utilities |
+
+### Test Structure
+
+```
+apps/mobile/
+├── jest.config.js              # Jest configuration
+├── src/
+│   ├── test/
+│   │   ├── setup.ts            # Global test setup and mocks
+│   │   └── utils.tsx           # Test utilities and helpers
+│   │
+│   ├── components/
+│   │   └── __tests__/          # Component tests
+│   │       ├── Button.test.tsx
+│   │       ├── Input.test.tsx
+│   │       └── Avatar.test.tsx
+│   │
+│   ├── screens/
+│   │   └── auth/
+│   │       └── __tests__/      # Screen tests
+│   │           ├── LoginScreen.test.tsx
+│   │           └── RegisterScreen.test.tsx
+│   │
+│   ├── contexts/
+│   │   └── __tests__/          # Context tests
+│   │       ├── AuthContext.test.tsx
+│   │       └── ThemeContext.test.tsx
+│   │
+│   ├── hooks/
+│   │   └── __tests__/          # Hook tests
+│   │       └── useFriendPresence.test.ts
+│   │
+│   └── lib/
+│       ├── __tests__/          # Utility tests
+│       │   └── api.test.ts
+│       └── crypto/
+│           └── __tests__/      # E2EE tests
+│               └── E2EEContext.test.tsx
+```
+
+### Running Tests
+
+```bash
+# Run all tests
+pnpm test
+
+# Run tests in watch mode (development)
+pnpm test:watch
+
+# Run tests with coverage report
+pnpm test:coverage
+
+# Run tests in CI mode (no watch, fail fast)
+pnpm test:ci
+
+# Run specific test file
+pnpm test Button.test.tsx
+
+# Run tests matching pattern
+pnpm test --testNamePattern="renders"
+```
+
+### Jest Configuration
+
+```javascript
+// jest.config.js
+module.exports = {
+  preset: 'jest-expo',
+  setupFilesAfterEnv: ['<rootDir>/src/test/setup.ts'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '^@components/(.*)$': '<rootDir>/src/components/$1',
+    '^@screens/(.*)$': '<rootDir>/src/screens/$1',
+    '^@contexts/(.*)$': '<rootDir>/src/contexts/$1',
+    '^@hooks/(.*)$': '<rootDir>/src/hooks/$1',
+    '^@lib/(.*)$': '<rootDir>/src/lib/$1',
+  },
+  transformIgnorePatterns: [
+    'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|phoenix)',
+  ],
+  testPathIgnorePatterns: ['/node_modules/', '/dist/'],
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/test/**/*',
+    '!src/types/**/*',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 60,
+      functions: 60,
+      lines: 60,
+      statements: 60,
+    },
+  },
+  testTimeout: 10000,
+  verbose: true,
+};
+```
+
+### Test Setup
+
+The test setup file configures the environment and provides global mocks:
 
 ```typescript
-// __tests__/components/Button.test.tsx
-import React from 'react';
-import { render, fireEvent } from '@testing-library/react-native';
-import { Button } from '@/components/ui/Button';
-import { ThemeProvider } from '@/contexts/ThemeContext';
+// src/test/setup.ts
+import '@testing-library/react-native/extend-expect';
 
-const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider>{component}</ThemeProvider>);
+// Mock Expo modules
+jest.mock('expo-secure-store');
+jest.mock('expo-constants');
+jest.mock('expo-haptics');
+jest.mock('expo-notifications');
+jest.mock('expo-local-authentication');
+jest.mock('expo-clipboard');
+jest.mock('expo-image-picker');
+jest.mock('expo-file-system');
+
+// Mock React Native Gesture Handler
+jest.mock('react-native-gesture-handler', () => ({
+  GestureHandlerRootView: ({ children }) => children,
+}));
+
+// Mock React Native Reanimated
+jest.mock('react-native-reanimated', () =>
+  require('react-native-reanimated/mock')
+);
+
+// Mock navigation
+jest.mock('@react-navigation/native', () => ({
+  useNavigation: () => ({ navigate: jest.fn(), goBack: jest.fn() }),
+  useRoute: () => ({ params: {} }),
+}));
+
+// Mock Phoenix socket
+jest.mock('phoenix', () => ({
+  Socket: jest.fn().mockImplementation(() => ({
+    connect: jest.fn(),
+    disconnect: jest.fn(),
+    channel: jest.fn(),
+  })),
+}));
+
+// Silence console warnings in tests
+beforeAll(() => {
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterAll(() => {
+  jest.restoreAllMocks();
+});
+```
+
+### Test Utilities
+
+The utilities file provides helpers for common testing patterns:
+
+```typescript
+// src/test/utils.tsx
+import React from 'react';
+import { render, RenderOptions } from '@testing-library/react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthContext';
+
+// Wrapper with all providers
+const AllProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AuthProvider>
+          <NavigationContainer>{children}</NavigationContainer>
+        </AuthProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  );
 };
 
+// Custom render with providers
+export function renderWithProviders(
+  ui: React.ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'>
+) {
+  return render(ui, { wrapper: AllProviders, ...options });
+}
+
+// Mock factories
+export const createMockUser = (overrides = {}) => ({
+  id: 'user-123',
+  email: 'test@example.com',
+  username: 'testuser',
+  display_name: 'Test User',
+  avatar_url: null,
+  ...overrides,
+});
+
+export const createMockMessage = (overrides = {}) => ({
+  id: 'msg-123',
+  content: 'Hello world',
+  sender_id: 'user-123',
+  inserted_at: new Date().toISOString(),
+  ...overrides,
+});
+
+export const createMockNavigation = () => ({
+  navigate: jest.fn(),
+  goBack: jest.fn(),
+  push: jest.fn(),
+  replace: jest.fn(),
+  reset: jest.fn(),
+});
+
+// Async helpers
+export const delay = (ms: number) => new Promise(r => setTimeout(r, ms));
+export const flushPromises = () => new Promise(setImmediate);
+
+// Re-export testing library
+export * from '@testing-library/react-native';
+```
+
+### Component Testing
+
+Test UI components in isolation:
+
+```typescript
+// src/components/__tests__/Button.test.tsx
+import React from 'react';
+import { renderWithProviders, fireEvent } from '../../test/utils';
+import Button from '../Button';
+
 describe('Button', () => {
-  it('renders correctly', () => {
-    const { getByText } = renderWithTheme(
-      <Button title="Click me" onPress={() => {}} />
+  it('renders with correct text', () => {
+    const { getByText } = renderWithProviders(
+      <Button onPress={jest.fn()}>Click me</Button>
     );
     expect(getByText('Click me')).toBeTruthy();
   });
-  
+
   it('calls onPress when pressed', () => {
     const onPress = jest.fn();
-    const { getByText } = renderWithTheme(
-      <Button title="Click me" onPress={onPress} />
+    const { getByText } = renderWithProviders(
+      <Button onPress={onPress}>Click me</Button>
     );
     fireEvent.press(getByText('Click me'));
     expect(onPress).toHaveBeenCalledTimes(1);
   });
-  
+
+  it('does not call onPress when disabled', () => {
+    const onPress = jest.fn();
+    const { getByText } = renderWithProviders(
+      <Button onPress={onPress} disabled>Click me</Button>
+    );
+    fireEvent.press(getByText('Click me'));
+    expect(onPress).not.toHaveBeenCalled();
+  });
+
   it('shows loading indicator when loading', () => {
-    const { queryByText, getByTestId } = renderWithTheme(
-      <Button title="Click me" onPress={() => {}} loading />
+    const { getByTestId, queryByText } = renderWithProviders(
+      <Button onPress={jest.fn()} loading>Click me</Button>
     );
     expect(queryByText('Click me')).toBeNull();
+    expect(getByTestId('loading-indicator')).toBeTruthy();
+  });
+
+  describe('variants', () => {
+    it.each(['primary', 'secondary', 'outline', 'ghost', 'danger'] as const)(
+      'renders %s variant',
+      (variant) => {
+        const { getByTestId } = renderWithProviders(
+          <Button onPress={jest.fn()} variant={variant} testID="button">
+            Test
+          </Button>
+        );
+        expect(getByTestId('button')).toBeTruthy();
+      }
+    );
   });
 });
 ```
+
+### Screen Testing
+
+Test complete screens with navigation and form handling:
+
+```typescript
+// src/screens/auth/__tests__/LoginScreen.test.tsx
+import React from 'react';
+import { Alert } from 'react-native';
+import { renderWithProviders, fireEvent, waitFor } from '../../../test/utils';
+import LoginScreen from '../LoginScreen';
+
+jest.mock('../../../contexts/AuthContext', () => ({
+  useAuth: () => ({
+    login: mockLogin,
+    isAuthenticated: false,
+    isLoading: false,
+  }),
+}));
+
+const mockLogin = jest.fn();
+
+describe('LoginScreen', () => {
+  const mockNavigation = { navigate: jest.fn() };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('renders login form', () => {
+    const { getByPlaceholderText, getByText } = renderWithProviders(
+      <LoginScreen navigation={mockNavigation as any} />
+    );
+
+    expect(getByPlaceholderText('Enter your email')).toBeTruthy();
+    expect(getByPlaceholderText('Enter your password')).toBeTruthy();
+    expect(getByText('Sign In')).toBeTruthy();
+  });
+
+  it('shows validation error for empty form', async () => {
+    jest.spyOn(Alert, 'alert');
+    const { getByText } = renderWithProviders(
+      <LoginScreen navigation={mockNavigation as any} />
+    );
+
+    fireEvent.press(getByText('Sign In'));
+
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Error',
+        'Please enter your email and password'
+      );
+    });
+  });
+
+  it('calls login with credentials', async () => {
+    mockLogin.mockResolvedValueOnce(undefined);
+
+    const { getByPlaceholderText, getByText } = renderWithProviders(
+      <LoginScreen navigation={mockNavigation as any} />
+    );
+
+    fireEvent.changeText(
+      getByPlaceholderText('Enter your email'),
+      'test@example.com'
+    );
+    fireEvent.changeText(
+      getByPlaceholderText('Enter your password'),
+      'password123'
+    );
+    fireEvent.press(getByText('Sign In'));
+
+    await waitFor(() => {
+      expect(mockLogin).toHaveBeenCalledWith('test@example.com', 'password123');
+    });
+  });
+
+  it('handles login failure', async () => {
+    mockLogin.mockRejectedValueOnce({
+      response: { data: { error: 'Invalid credentials' } },
+    });
+    jest.spyOn(Alert, 'alert');
+
+    const { getByPlaceholderText, getByText } = renderWithProviders(
+      <LoginScreen navigation={mockNavigation as any} />
+    );
+
+    fireEvent.changeText(getByPlaceholderText('Enter your email'), 'test@example.com');
+    fireEvent.changeText(getByPlaceholderText('Enter your password'), 'wrong');
+    fireEvent.press(getByText('Sign In'));
+
+    await waitFor(() => {
+      expect(Alert.alert).toHaveBeenCalledWith(
+        'Login Failed',
+        'Invalid credentials'
+      );
+    });
+  });
+});
+```
+
+### Context Testing
+
+Test React Context providers and consumers:
+
+```typescript
+// src/contexts/__tests__/AuthContext.test.tsx
+import React from 'react';
+import { render, waitFor, act } from '@testing-library/react-native';
+import { Text, Pressable } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { AuthProvider, useAuth } from '../AuthContext';
+import api from '../../lib/api';
+
+jest.mock('expo-secure-store');
+jest.mock('../../lib/api');
+
+const TestConsumer = () => {
+  const { user, isAuthenticated, login, logout } = useAuth();
+  return (
+    <>
+      <Text testID="authenticated">{isAuthenticated ? 'yes' : 'no'}</Text>
+      <Text testID="user">{user?.email || 'none'}</Text>
+      <Pressable testID="login" onPress={() => login('test@example.com', 'pass')} />
+      <Pressable testID="logout" onPress={logout} />
+    </>
+  );
+};
+
+describe('AuthContext', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (SecureStore.getItemAsync as jest.Mock).mockResolvedValue(null);
+  });
+
+  it('starts unauthenticated', async () => {
+    const { getByTestId } = render(
+      <AuthProvider><TestConsumer /></AuthProvider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId('authenticated').props.children).toBe('no');
+    });
+  });
+
+  it('authenticates on login', async () => {
+    (api.post as jest.Mock).mockResolvedValue({
+      data: { token: 'jwt', user: { email: 'test@example.com' } },
+    });
+
+    const { getByTestId } = render(
+      <AuthProvider><TestConsumer /></AuthProvider>
+    );
+
+    await act(async () => {
+      getByTestId('login').props.onPress();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('authenticated').props.children).toBe('yes');
+      expect(getByTestId('user').props.children).toBe('test@example.com');
+    });
+  });
+});
+```
+
+### Hook Testing
+
+Test custom hooks with `renderHook`:
+
+```typescript
+// src/hooks/__tests__/useFriendPresence.test.ts
+import { renderHook, act, waitFor } from '@testing-library/react-native';
+import { useFriendPresence } from '../useFriendPresence';
+import socketManager from '../../lib/socket';
+
+jest.mock('../../lib/socket');
+
+describe('useFriendPresence', () => {
+  let statusCallback: Function | null = null;
+
+  beforeEach(() => {
+    (socketManager.onGlobalStatusChange as jest.Mock).mockImplementation((cb) => {
+      statusCallback = cb;
+      return () => { statusCallback = null; };
+    });
+  });
+
+  it('returns null for undefined userId', () => {
+    const { result } = renderHook(() => useFriendPresence(undefined));
+    expect(result.current).toBeNull();
+  });
+
+  it('returns initial presence', () => {
+    (socketManager.getFriendPresence as jest.Mock).mockReturnValue({
+      online: true,
+      status: 'online',
+    });
+
+    const { result } = renderHook(() => useFriendPresence('user-123'));
+    expect(result.current?.online).toBe(true);
+  });
+
+  it('updates on status change', async () => {
+    (socketManager.getFriendPresence as jest.Mock).mockReturnValue({
+      online: false,
+      status: 'offline',
+    });
+
+    const { result } = renderHook(() => useFriendPresence('user-123'));
+
+    act(() => {
+      statusCallback?.('user-123', true, 'online');
+    });
+
+    await waitFor(() => {
+      expect(result.current?.online).toBe(true);
+    });
+  });
+});
+```
+
+### E2EE Testing
+
+Test encryption functionality:
+
+```typescript
+// src/lib/crypto/__tests__/E2EEContext.test.tsx
+import React from 'react';
+import { render, waitFor, act } from '@testing-library/react-native';
+import { E2EEProvider, useE2EE } from '../E2EEContext';
+import * as e2ee from '../e2ee';
+
+jest.mock('../e2ee');
+jest.mock('../../api');
+
+const TestConsumer = () => {
+  const { isInitialized, setupE2EE, encryptMessage } = useE2EE();
+  return (
+    <>
+      <Text testID="initialized">{isInitialized ? 'yes' : 'no'}</Text>
+      <Pressable testID="setup" onPress={setupE2EE} />
+    </>
+  );
+};
+
+describe('E2EEContext', () => {
+  it('checks E2EE status on mount', async () => {
+    (e2ee.isE2EESetUp as jest.Mock).mockResolvedValue(false);
+
+    render(<E2EEProvider><TestConsumer /></E2EEProvider>);
+
+    await waitFor(() => {
+      expect(e2ee.isE2EESetUp).toHaveBeenCalled();
+    });
+  });
+
+  it('sets up E2EE on request', async () => {
+    (e2ee.isE2EESetUp as jest.Mock).mockResolvedValue(false);
+    (e2ee.generateKeyBundle as jest.Mock).mockResolvedValue({});
+    (e2ee.storeKeyBundle as jest.Mock).mockResolvedValue(undefined);
+
+    const { getByTestId } = render(
+      <E2EEProvider><TestConsumer /></E2EEProvider>
+    );
+
+    await act(async () => {
+      getByTestId('setup').props.onPress();
+    });
+
+    await waitFor(() => {
+      expect(e2ee.generateKeyBundle).toHaveBeenCalled();
+      expect(getByTestId('initialized').props.children).toBe('yes');
+    });
+  });
+});
+```
+
+### Testing Best Practices
+
+1. **Use descriptive test names** - Tests should read like documentation
+2. **Follow AAA pattern** - Arrange, Act, Assert
+3. **Test behavior, not implementation** - Focus on what the component does
+4. **Use data-testid sparingly** - Prefer accessible queries
+5. **Mock at the boundary** - Mock APIs and external services, not internal modules
+6. **Keep tests fast** - Use shallow rendering when appropriate
+7. **Test error states** - Happy path and error paths
+8. **Isolate tests** - Each test should be independent
+
+### Coverage Goals
+
+| Category | Target | Current |
+|----------|--------|---------|
+| Components | 80%+ | Building |
+| Screens | 70%+ | Building |
+| Contexts | 90%+ | Building |
+| Hooks | 85%+ | Building |
+| Utils | 90%+ | Building |
+
+Run coverage report: `pnpm test:coverage`
 
 ---
 

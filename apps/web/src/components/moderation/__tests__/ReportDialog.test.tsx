@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReportDialog } from '../ReportDialog';
@@ -297,11 +297,11 @@ describe('ReportDialog', () => {
       const onClose = vi.fn();
       renderReportDialog({ onClose });
 
-      // Click the X button (has XMarkIcon)
-      const closeButton = screen.getByRole('button', { name: '' }); // XMarkIcon has no text
+      // Click the close button (aria-label added for accessibility)
+      const closeButton = screen.getByRole('button', { name: 'Close report dialog' });
       await user.click(closeButton);
 
-      // Note: The close button may need an aria-label for better accessibility
+      expect(onClose).toHaveBeenCalled();
     });
 
     it('calls onClose when Done is clicked after success', async () => {
