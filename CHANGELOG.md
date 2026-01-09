@@ -6,6 +6,53 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.31] - 2026-01-09
+
+Cross-platform Storybook support and version stabilization. This release adds Storybook for React Native/Expo and aligns all Storybook packages to v8.6.15.
+
+### Added
+
+#### Storybook for React Native
+
+- **@storybook/react-native 8.6** — On-device component development:
+  - `@storybook/addon-ondevice-controls` for real-time prop editing
+  - `@storybook/addon-ondevice-actions` for callback logging
+  - Stories discovered from `src/components/**/*.stories.tsx`
+
+- **Mobile Component Stories** — 8 component stories for React Native:
+  - `Button.stories.tsx` — Variants, sizes, loading, disabled states
+  - `Input.stories.tsx` — Labels, errors, icons, multiline
+  - `Avatar.stories.tsx` — Sizes, status indicators, fallbacks
+  - `Card.stories.tsx` — Variants (default, elevated, outlined)
+  - `LoadingSpinner.stories.tsx` — Sizes and full-screen overlay
+  - `Switch.stories.tsx` — Toggle states and interactive demo
+  - `EmptyState.stories.tsx` — Icons, descriptions, actions
+  - `StatusBadge.stories.tsx` — Online, idle, DND, offline
+  - `Skeleton.stories.tsx` — Loading placeholders and compositions
+
+- **Mobile Storybook scripts**:
+  - `pnpm storybook` — Generate stories and start Expo
+  - `pnpm storybook:generate` — Regenerate story list
+
+### Changed
+
+- **Storybook downgraded to v8.6.15** — V10 addons not yet released; using latest stable with full addon support
+- **preview.ts → preview.tsx** — Renamed for JSX support in decorators
+- **ProfilerWrapper phase type** — Added `'nested-update'` for React 18+ compatibility
+
+### Fixed
+
+- **TypeScript errors in preview.tsx** — Added React import for JSX
+- **ProfilerWrapper type mismatch** — Updated `RenderMetric.phase` type
+
+### Docs
+
+- Updated FRONTEND.md Storybook version to 8.6
+- Added Storybook section to MOBILE.md with setup and usage
+- Updated MOBILE.md tech stack table
+
+---
+
 ## [0.7.30] - 2026-01-09
 
 Component documentation and developer experience improvements. This release adds Storybook for interactive component documentation and expands the component story library.

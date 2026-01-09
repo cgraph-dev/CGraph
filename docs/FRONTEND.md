@@ -42,7 +42,7 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 | **Wagmi/Viem** | 2.x | Web3 wallet integration |
 | **Radix UI** | Latest | Accessible components |
 | **Framer Motion** | 12.x | Animations |
-| **Storybook** | 10.x | Component documentation |
+| **Storybook** | 8.6 | Component documentation |
 
 ---
 

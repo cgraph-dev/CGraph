@@ -24,10 +24,11 @@ Let's dive in.
 10. [Styling](#styling)
 11. [Device Features](#device-features)
 12. [Security Features](#security-features)
-13. [Testing](#testing)
-14. [Building for Production](#building-for-production)
-15. [App Store Submission](#app-store-submission)
-16. [Troubleshooting](#troubleshooting)
+13. [Storybook](#storybook)
+14. [Testing](#testing)
+15. [Building for Production](#building-for-production)
+16. [App Store Submission](#app-store-submission)
+17. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -46,6 +47,7 @@ Let's dive in.
 | **Expo Notifications** | 0.32 | Push notifications |
 | **React Native Reanimated** | 4.x | Animations (with Worklets) |
 | **Expo Local Auth** | 17.x | Biometric authentication |
+| **Storybook React Native** | 8.6 | Component documentation |
 
 ---
 
@@ -1620,6 +1622,95 @@ export default function AccountScreen() {
   );
 }
 ```
+
+---
+
+## Storybook
+
+Storybook for React Native lets you develop and test mobile components in isolation, right on your device or simulator. It provides an on-device UI for browsing component stories.
+
+### Getting Started
+
+```bash
+# Generate story list and start Expo with Storybook
+pnpm storybook
+
+# Just regenerate story list
+pnpm storybook:generate
+```
+
+### Configuration
+
+Storybook is configured in the `.storybook/` directory:
+
+```
+apps/mobile/.storybook/
+├── main.ts        # Story discovery configuration
+├── preview.tsx    # Global decorators and parameters
+└── index.tsx      # Storybook entry point
+```
+
+### Writing Stories
+
+Stories live in `src/components/stories/` with a `.stories.tsx` extension:
+
+```
+src/components/stories/
+├── Button.stories.tsx
+├── Input.stories.tsx
+├── Avatar.stories.tsx
+└── ...
+```
+
+#### Basic Story Pattern
+
+```tsx
+import React from 'react';
+import type { Meta, StoryObj } from '@storybook/react';
+import Button from '../Button';
+import { ThemeProvider } from '../../contexts/ThemeContext';
+
+const meta: Meta<typeof Button> = {
+  title: 'Components/Button',
+  component: Button,
+  decorators: [
+    (Story) => (
+      <ThemeProvider>
+        <Story />
+      </ThemeProvider>
+    ),
+  ],
+};
+
+export default meta;
+type Story = StoryObj<typeof Button>;
+
+export const Primary: Story = {
+  args: {
+    children: 'Primary Button',
+    variant: 'primary',
+  },
+};
+```
+
+### On-Device Addons
+
+We include two on-device addons:
+
+- **Controls** — Edit component props in real-time
+- **Actions** — Log callback function calls
+
+### Using Storybook in Development
+
+To view Storybook, you can temporarily switch your app's entry point:
+
+```tsx
+// App.tsx (for Storybook development)
+import StorybookUIRoot from './.storybook';
+export default StorybookUIRoot;
+```
+
+Or use environment variables to toggle between Storybook and the regular app.
 
 ---
 
