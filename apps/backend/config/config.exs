@@ -58,7 +58,7 @@ config :logger, :console,
     # Notifications
     :email_type, :to, :notification_id, :sent, :failed, :count,
     # Media
-    :upload_id,
+    :upload_id, :base_id, :thumb, :preview, :optimized,
     # Feature flags
     :flag, :config, :changes,
     # Audit

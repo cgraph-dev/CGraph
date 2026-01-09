@@ -616,6 +616,69 @@ defmodule Cgraph.Crypto.E2EE do
     end
   end
 
+  @doc """
+  List all registered devices for a user.
+
+  Returns a list of devices with their identity key information.
+  """
+  @spec list_user_devices(String.t()) :: {:ok, list(map())} | {:error, term()}
+  def list_user_devices(user_id) do
+    devices =
+      from(k in IdentityKey,
+        where: k.user_id == ^user_id,
+        where: is_nil(k.revoked_at),
+        select: %{
+          device_id: k.device_id,
+          key_id: k.key_id,
+          identity_key_id: k.key_id,
+          is_verified: k.is_verified,
+          created_at: k.inserted_at
+        },
+        order_by: [desc: k.inserted_at]
+      )
+      |> Repo.all()
+
+    {:ok, devices}
+  end
+
+  @doc """
+  Remove a device and all its associated keys.
+
+  This revokes the identity key and deletes associated prekeys.
+  """
+  @spec remove_device(String.t(), String.t()) :: {:ok, map()} | {:error, term()}
+  def remove_device(user_id, device_id) do
+    identity_key =
+      from(k in IdentityKey,
+        where: k.user_id == ^user_id,
+        where: k.device_id == ^device_id
+      )
+      |> Repo.one()
+
+    case identity_key do
+      nil ->
+        {:error, :not_found}
+
+      key ->
+        # Delete associated one-time prekeys
+        from(p in OneTimePrekey,
+          where: p.user_id == ^user_id
+        )
+        |> Repo.delete_all()
+
+        # Delete signed prekeys for this identity key
+        from(p in SignedPrekey,
+          where: p.identity_key_id == ^key.id
+        )
+        |> Repo.delete_all()
+
+        # Delete the identity key
+        Repo.delete(key)
+
+        {:ok, %{device_id: device_id, removed: true}}
+    end
+  end
+
   # ============================================================================
   # Private Functions
   # ============================================================================
@@ -624,10 +687,14 @@ defmodule Cgraph.Crypto.E2EE do
     identity_key_b64 = keys["identity_key"] || keys[:identity_key]
     device_id = keys["device_id"] || keys[:device_id] || "default"
 
-    with {:ok, public_key} <- Base.decode64(identity_key_b64 || "") do
-      key_id = compute_key_fingerprint(public_key)
-      attrs = %{user_id: user_id, public_key: public_key, key_id: key_id, device_id: device_id}
-      upsert_identity_key_record(user_id, device_id, public_key, attrs)
+    case Base.decode64(identity_key_b64 || "") do
+      {:ok, public_key} ->
+        key_id = compute_key_fingerprint(public_key)
+        attrs = %{user_id: user_id, public_key: public_key, key_id: key_id, device_id: device_id}
+        upsert_identity_key_record(user_id, device_id, public_key, attrs)
+
+      :error ->
+        {:error, :invalid_key_format}
     end
   end
 
@@ -670,11 +737,23 @@ defmodule Cgraph.Crypto.E2EE do
     {public_key_b64, signature_b64, prekey_id}
   end
 
-  defp get_signed_prekey_map(keys), do: keys["signed_prekey"] || keys[:signed_prekey] || %{}
+  # If signed_prekey is a string (base64), return empty map (use fallback to flat keys)
+  defp get_signed_prekey_map(keys) do
+    value = keys["signed_prekey"] || keys[:signed_prekey]
 
-  defp get_field(signed_prekey, keys, str_keys, fallback_atom) do
-    Enum.find_value(str_keys, fn k -> signed_prekey[k] end) ||
-    signed_prekey[hd(str_keys) |> String.to_atom()] ||
+    cond do
+      is_map(value) -> value
+      is_binary(value) -> %{}
+      true -> %{}
+    end
+  end
+
+  defp get_field(signed_prekey, keys, str_keys, fallback_atom) when is_map(signed_prekey) do
+    Enum.find_value(str_keys, fn k -> Map.get(signed_prekey, k) end) ||
+    Map.get(signed_prekey, hd(str_keys) |> String.to_atom()) ||
+    keys[fallback_atom]
+  end
+  defp get_field(_signed_prekey, keys, _str_keys, fallback_atom) do
     keys[fallback_atom]
   end
 
@@ -685,10 +764,13 @@ defmodule Cgraph.Crypto.E2EE do
   defp insert_signed_prekey_if_valid(_user_id, _identity_key, nil, _sig, _prekey_id), do: {:ok, nil}
   defp insert_signed_prekey_if_valid(_user_id, _identity_key, _pk, nil, _prekey_id), do: {:ok, nil}
   defp insert_signed_prekey_if_valid(user_id, identity_key, pk_b64, sig_b64, prekey_id) do
-    with {:ok, public_key} <- Base.decode64(pk_b64),
-         {:ok, signature} <- Base.decode64(sig_b64) do
-      expire_current_prekeys(user_id)
-      create_signed_prekey(user_id, identity_key, public_key, signature, prekey_id)
+    case {Base.decode64(pk_b64), Base.decode64(sig_b64)} do
+      {{:ok, public_key}, {:ok, signature}} ->
+        expire_current_prekeys(user_id)
+        create_signed_prekey(user_id, identity_key, public_key, signature, prekey_id)
+
+      _ ->
+        {:error, :invalid_key_format}
     end
   end
 

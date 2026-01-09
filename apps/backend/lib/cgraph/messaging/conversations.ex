@@ -96,7 +96,8 @@ defmodule Cgraph.Messaging.Conversations do
   Create or get an existing conversation.
   For DMs, returns existing if one exists.
   """
-  @spec create_or_get_conversation(map(), list(String.t())) :: {:ok, Conversation.t(), :existing | :created} | {:error, term()}
+  @spec create_or_get_conversation(map(), list(String.t())) ::
+          {:ok, Conversation.t(), :existing | :created} | {:error, term()}
   def create_or_get_conversation(user, participant_ids) when is_list(participant_ids) do
     all_ids = [user.id | participant_ids] |> Enum.uniq()
 

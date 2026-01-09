@@ -216,6 +216,7 @@ module.exports = ({ config }) => {
       ],
       'expo-video',
       'expo-asset',
+      '@react-native-community/datetimepicker',
     ],
     extra: {
       apiUrl: getApiUrl(),

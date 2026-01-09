@@ -139,9 +139,7 @@ defmodule CgraphWeb.PresenceChannel do
     user = socket.assigns.current_user
 
     # Only return presence if they are friends
-    unless Friends.are_friends?(user.id, target_user_id) do
-      {:reply, {:ok, %{online: false, status: "unknown", hidden: true}}, socket}
-    else
+    if Friends.are_friends?(user.id, target_user_id) do
       presence_data = case Presence.get_user_presence(target_user_id) do
         nil ->
           # User offline - check last seen
@@ -163,6 +161,8 @@ defmodule CgraphWeb.PresenceChannel do
       end
 
       {:reply, {:ok, presence_data}, socket}
+    else
+      {:reply, {:ok, %{online: false, status: "unknown", hidden: true}}, socket}
     end
   end
 

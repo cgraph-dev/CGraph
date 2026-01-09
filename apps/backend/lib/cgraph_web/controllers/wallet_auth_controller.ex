@@ -170,8 +170,20 @@ defmodule CgraphWeb.WalletAuthController do
     } = params
 
     case WalletAuth.recover_with_code(wallet_address, recovery_code, new_pin) do
-      {:ok, {:ok, user}} ->
+      {:ok, user} when is_struct(user) ->
         # Generate remaining recovery codes count
+        remaining = count_remaining_codes(user.id)
+
+        conn
+        |> put_status(:ok)
+        |> json(%{
+          success: true,
+          message: "PIN has been reset successfully",
+          remaining_recovery_codes: remaining
+        })
+
+      {:ok, {:ok, user}} ->
+        # Handle nested transaction result (fallback for compatibility)
         remaining = count_remaining_codes(user.id)
 
         conn
@@ -274,6 +286,39 @@ defmodule CgraphWeb.WalletAuthController do
         conn
         |> put_status(:unprocessable_entity)
         |> json(%{error: "Cannot unlink wallet without email linked"})
+    end
+  end
+
+  @doc """
+  Updates the user's wallet PIN.
+
+  PUT /api/v1/auth/wallet/pin
+  Body: { "current_pin": "123456", "new_pin": "654321" }
+  Requires: Authentication (Bearer token)
+  """
+  def update_pin(conn, %{"current_pin" => current_pin, "new_pin" => new_pin}) do
+    user = Guardian.Plug.current_resource(conn)
+
+    case WalletAuth.update_pin(user, current_pin, new_pin) do
+      {:ok, _user} ->
+        conn
+        |> put_status(:ok)
+        |> json(%{success: true, message: "PIN updated successfully"})
+
+      {:error, :invalid_pin} ->
+        conn
+        |> put_status(:unauthorized)
+        |> json(%{error: "Current PIN is incorrect"})
+
+      {:error, :weak_pin} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "New PIN is too weak"})
+
+      {:error, reason} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: reason})
     end
   end
 

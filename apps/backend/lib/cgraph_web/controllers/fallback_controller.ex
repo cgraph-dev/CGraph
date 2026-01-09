@@ -318,6 +318,14 @@ defmodule CgraphWeb.FallbackController do
     |> render(:"400")
   end
 
+  # Handle 3-tuple errors with status and message: {:error, :status, "message"}
+  def call(conn, {:error, status, message}) when is_atom(status) and is_binary(message) do
+    conn
+    |> put_status(status)
+    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> render(:error, message: message)
+  end
+
   # Handle generic string errors
   def call(conn, {:error, message}) when is_binary(message) do
     conn

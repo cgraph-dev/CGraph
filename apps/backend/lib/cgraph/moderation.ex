@@ -91,7 +91,10 @@ defmodule Cgraph.Moderation do
 
   alias Cgraph.Accounts.User
   alias Cgraph.Audit
-  alias Cgraph.Moderation.{Report, ReviewAction, Appeal, UserRestriction}
+  alias Cgraph.Moderation.Appeal
+  alias Cgraph.Moderation.Report
+  alias Cgraph.Moderation.ReviewAction
+  alias Cgraph.Moderation.UserRestriction
   alias Cgraph.Repo
 
   require Logger

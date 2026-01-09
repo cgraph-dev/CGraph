@@ -1,21 +1,21 @@
 defmodule CgraphWeb.ChangesetJSON do
   @moduledoc """
   JSON view for rendering Ecto Changeset validation errors.
-  
+
   Provides consistent error formatting for form validation failures
   across all API endpoints.
   """
 
   @doc """
   Renders changeset errors in a structured format.
-  
+
   Returns a map with:
   - `error`: Human-readable error message
   - `message`: More detailed description
   - `details`: Field-specific error messages
-  
+
   ## Example Response
-  
+
       %{
         error: "Validation failed",
         message: "Please correct the errors below",
@@ -24,9 +24,9 @@ defmodule CgraphWeb.ChangesetJSON do
           password: ["must contain at least one uppercase letter"]
         }
       }
-  
+
   For simple custom message errors:
-  
+
       %{
         error: "Validation failed",
         message: "Custom error message"
@@ -34,10 +34,10 @@ defmodule CgraphWeb.ChangesetJSON do
   """
   def error(%{changeset: changeset}) do
     errors = Ecto.Changeset.traverse_errors(changeset, &translate_error/1)
-    
+
     # Build a human-readable summary of the first error
     first_error = get_first_error(errors)
-    
+
     %{
       error: "Validation failed",
       message: first_error || "Please correct the errors below",

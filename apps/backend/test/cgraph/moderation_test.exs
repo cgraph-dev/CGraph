@@ -12,7 +12,10 @@ defmodule Cgraph.ModerationTest do
   use Cgraph.DataCase, async: false
 
   alias Cgraph.Moderation
-  alias Cgraph.Moderation.{Report, ReviewAction, Appeal, UserRestriction}
+  alias Cgraph.Moderation.Appeal
+  alias Cgraph.Moderation.Report
+  alias Cgraph.Moderation.ReviewAction
+  alias Cgraph.Moderation.UserRestriction
   import CgraphWeb.UserFixtures
   import CgraphWeb.ModerationFixtures
 
@@ -486,7 +489,7 @@ defmodule Cgraph.ModerationTest do
       |> UserRestriction.changeset(%{
         user_id: user.id,
         type: :suspended,
-        expires_at: DateTime.add(DateTime.utc_now(), 86400, :second),
+        expires_at: DateTime.add(DateTime.utc_now(), 86_400, :second),
         active: false
       })
       |> Repo.insert!()
@@ -794,7 +797,7 @@ defmodule Cgraph.ModerationTest do
       changeset = UserRestriction.changeset(%UserRestriction{}, %{
         user_id: Ecto.UUID.generate(),
         type: :banned,
-        expires_at: DateTime.add(DateTime.utc_now(), 86400, :second)
+        expires_at: DateTime.add(DateTime.utc_now(), 86_400, :second)
       })
 
       refute changeset.valid?

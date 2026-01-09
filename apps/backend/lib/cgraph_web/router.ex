@@ -120,6 +120,7 @@ defmodule CgraphWeb.Router do
     pipe_through [:api, :api_auth]
 
     post "/link", WalletAuthController, :link_wallet
+    put "/pin", WalletAuthController, :update_pin
     delete "/unlink", WalletAuthController, :unlink_wallet
   end
 
@@ -285,10 +286,11 @@ defmodule CgraphWeb.Router do
     delete "/voice-messages/:id", VoiceMessageController, :delete
 
     # End-to-End Encryption (E2EE) Key Management
+    # Note: Specific routes must come before parameterized routes
     post "/e2ee/keys", E2EEController, :register_keys
-    get "/e2ee/keys/:user_id", E2EEController, :get_prekey_bundle
     post "/e2ee/keys/prekeys", E2EEController, :replenish_prekeys
     get "/e2ee/keys/count", E2EEController, :prekey_count
+    get "/e2ee/keys/:user_id", E2EEController, :get_prekey_bundle
     get "/e2ee/devices", E2EEController, :list_devices
     delete "/e2ee/devices/:device_id", E2EEController, :remove_device
     get "/e2ee/safety-number/:user_id", E2EEController, :safety_number

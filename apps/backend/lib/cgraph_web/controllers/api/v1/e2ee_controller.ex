@@ -178,6 +178,60 @@ defmodule CgraphWeb.API.V1.E2EEController do
   end
 
   @doc """
+  Replenish one-time prekeys.
+
+  Alias for upload_prekeys to match router.
+  """
+  def replenish_prekeys(conn, params), do: upload_prekeys(conn, params)
+
+  @doc """
+  List all registered devices for the current user.
+
+  ## Response
+
+      {
+        "data": [
+          {
+            "device_id": "device-001",
+            "key_id": "fingerprint",
+            "created_at": "2024-01-01T00:00:00Z"
+          }
+        ]
+      }
+  """
+  def list_devices(conn, _params) do
+    user = conn.assigns.current_user
+
+    case E2EE.list_user_devices(user.id) do
+      {:ok, devices} ->
+        json(conn, %{data: devices})
+
+      {:error, reason} ->
+        {:error, :internal_server_error, inspect(reason)}
+    end
+  end
+
+  @doc """
+  Remove a device and its associated keys.
+
+  Called when a user logs out from a device or wants to revoke its keys.
+  """
+  def remove_device(conn, %{"device_id" => device_id}) do
+    user = conn.assigns.current_user
+
+    case E2EE.remove_device(user.id, device_id) do
+      {:ok, _} ->
+        json(conn, %{data: %{removed: true, device_id: device_id}})
+
+      {:error, :not_found} ->
+        {:error, :not_found, "Device not found"}
+
+      {:error, reason} ->
+        {:error, :internal_server_error, inspect(reason)}
+    end
+  end
+
+  @doc """
   Get safety number for key verification.
 
   The safety number is derived from both users' identity keys.

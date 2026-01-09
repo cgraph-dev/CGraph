@@ -80,25 +80,6 @@ defmodule Cgraph.Messaging do
   """
   defdelegate create_conversation(user, attrs), to: Conversations
 
-  # Legacy: Inline implementations for backwards compatibility
-  # These will be removed in a future version
-
-    total = Repo.aggregate(query, :count, :id)
-
-    conversations = query
-      |> limit(^per_page)
-      |> offset(^((page - 1) * per_page))
-      |> Repo.all()
-
-    meta = %{page: page, per_page: per_page, total: total}
-    {conversations, meta}
-  end
-
-  @doc """
-  Alias for list_conversations with user first.
-  """
-  def list_user_conversations(user, opts \\ []), do: list_conversations(user, opts)
-
   @doc """
   Get or create a DM conversation between two users.
   Returns `{:ok, conversation, :existing}` or `{:ok, conversation, :created}`.

@@ -342,11 +342,9 @@ defmodule Cgraph.Accounts.WalletAuth do
       username: String.replace(crypto_alias, "-", "_")
     }
 
-    user = %User{}
-      |> User.wallet_registration_changeset(user_attrs)
-      |> Repo.insert!()
-
-    {:ok, user}
+    %User{}
+    |> User.wallet_pin_registration_changeset(user_attrs)
+    |> Repo.insert()
   end
 
   defp setup_recovery(user, _wallet_address, _crypto_alias, _pin, :backup_codes) do
@@ -417,6 +415,42 @@ defmodule Cgraph.Accounts.WalletAuth do
     end
   end
 
+  @doc """
+  Updates a user's PIN.
+
+  ## Parameters
+  - `user`: The authenticated user
+  - `current_pin`: The user's current PIN
+  - `new_pin`: The new PIN to set
+
+  ## Returns
+  - `{:ok, user}` on success
+  - `{:error, :invalid_pin}` if current PIN is wrong
+  - `{:error, :weak_pin}` if new PIN is too weak
+  """
+  def update_pin(user, current_pin, new_pin) do
+    cond do
+      is_nil(user.pin_hash) ->
+        {:error, :no_pin_set}
+
+      not verify_pin(current_pin, user.pin_hash) ->
+        {:error, :invalid_pin}
+
+      true ->
+        case validate_pin_strength(new_pin) do
+          {:ok, _} ->
+            new_hash = hash_pin(new_pin)
+
+            user
+            |> Ecto.Changeset.change(%{pin_hash: new_hash})
+            |> Repo.update()
+
+          {:error, _} ->
+            {:error, :weak_pin}
+        end
+    end
+  end
+
   # =============================================================================
   # Account Recovery
   # =============================================================================
@@ -447,7 +481,7 @@ defmodule Cgraph.Accounts.WalletAuth do
           # Mark code as used
           code = Enum.at(recovery_codes, index)
           code
-          |> Ecto.Changeset.change(%{used: true, used_at: DateTime.utc_now()})
+          |> Ecto.Changeset.change(%{used: true, used_at: DateTime.utc_now() |> DateTime.truncate(:second)})
           |> Repo.update!()
 
           # Update PIN
