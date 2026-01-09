@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,9 @@ import {
   ActivityIndicator,
   ScrollView,
   Linking,
+  Animated,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,6 +37,69 @@ export default function RegisterScreen({ navigation }: Props) {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  
+  // Animation values
+  const fadeAnims = useRef(
+    Array.from({ length: 8 }, () => new Animated.Value(0))
+  ).current;
+  const translateYAnims = useRef(
+    Array.from({ length: 8 }, () => new Animated.Value(15))
+  ).current;
+  const buttonScale = useRef(new Animated.Value(1)).current;
+  const glowOpacity = useRef(new Animated.Value(0.3)).current;
+  
+  useEffect(() => {
+    const animations = fadeAnims.map((anim, index) => {
+      return Animated.parallel([
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 400,
+          delay: index * 80,
+          useNativeDriver: true,
+        }),
+        Animated.timing(translateYAnims[index], {
+          toValue: 0,
+          duration: 400,
+          delay: index * 80,
+          useNativeDriver: true,
+        }),
+      ]);
+    });
+    
+    Animated.stagger(80, animations).start();
+    
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowOpacity, {
+          toValue: 0.6,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+        Animated.timing(glowOpacity, {
+          toValue: 0.3,
+          duration: 2000,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+  
+  const handlePressIn = () => {
+    Animated.spring(buttonScale, {
+      toValue: 0.98,
+      useNativeDriver: true,
+    }).start();
+  };
+  
+  const handlePressOut = () => {
+    Animated.spring(buttonScale, {
+      toValue: 1,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+  };
   
   const handleRegister = async () => {
     if (!email.trim() || !password.trim()) {
@@ -140,8 +205,10 @@ export default function RegisterScreen({ navigation }: Props) {
   };
   
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: '#000' }]}>
       <MatrixAuthBackground />
+      <Animated.View style={[styles.overlay, { opacity: glowOpacity }]} />
+      
       <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -153,183 +220,254 @@ export default function RegisterScreen({ navigation }: Props) {
         >
           <View style={styles.content}>
             {/* Header */}
-            <View style={styles.header}>
-              <Text style={[styles.logo, { color: colors.primary }]}>CGraph</Text>
-              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-                Create your account
-              </Text>
-            </View>
+            <Animated.View style={[
+              styles.header,
+              {
+                opacity: fadeAnims[0],
+                transform: [{ translateY: translateYAnims[0] }],
+              }
+            ]}>
+              <Text style={styles.logo}>CGraph</Text>
+              <Text style={styles.subtitle}>Create your account</Text>
+              <Text style={styles.subtitleSecondary}>Join the next generation of communication</Text>
+            </Animated.View>
             
-            {/* Form */}
-            <View style={styles.form}>
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>Email</Text>
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      backgroundColor: colors.input,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                  ]}
-                  placeholder="Enter your email"
-                  placeholderTextColor={colors.textTertiary}
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-              </View>
-              
-              <View style={styles.inputGroup}>
-                <View style={styles.labelRow}>
-                  <Text style={[styles.label, { color: colors.text }]}>Username</Text>
-                  <Text style={[styles.labelHint, { color: colors.textTertiary }]}>
-                    (Optional)
-                  </Text>
-                </View>
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      backgroundColor: colors.input,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                  ]}
-                  placeholder="Choose a username (optional)"
-                  placeholderTextColor={colors.textTertiary}
-                  value={username}
-                  onChangeText={(text) => setUsername(text.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  maxLength={30}
-                />
-                <Text style={[styles.inputHint, { color: colors.textTertiary }]}>
-                  You can set this later. Can be changed every 14 days.
-                </Text>
-              </View>
-              
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>Password</Text>
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      backgroundColor: colors.input,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                  ]}
-                  placeholder="Create a password"
-                  placeholderTextColor={colors.textTertiary}
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry
-                />
-                <Text style={[styles.inputHint, { color: colors.textTertiary }]}>
-                  Min 8 characters with uppercase, lowercase, number, and special character (!@#$%^&*)
-                </Text>
-              </View>
-              
-              <View style={styles.inputGroup}>
-                <Text style={[styles.label, { color: colors.text }]}>
-                  Confirm Password
-                </Text>
-                <TextInput
-                  style={[
-                    styles.input,
-                    {
-                      backgroundColor: colors.input,
-                      borderColor: colors.border,
-                      color: colors.text,
-                    },
-                  ]}
-                  placeholder="Confirm your password"
-                  placeholderTextColor={colors.textTertiary}
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                  secureTextEntry
-                />
-              </View>
-
-              {/* Terms of Service Agreement - Required for App Store */}
-              <TouchableOpacity 
-                style={styles.termsRow}
-                onPress={() => setAgreedToTerms(!agreedToTerms)}
-                activeOpacity={0.7}
-              >
-                <View style={[
-                  styles.checkbox,
-                  { 
-                    borderColor: agreedToTerms ? colors.primary : colors.border,
-                    backgroundColor: agreedToTerms ? colors.primary : 'transparent',
-                  }
+            {/* Form Container with matrix-card styling */}
+            <LinearGradient
+              colors={['rgba(17, 24, 39, 0.95)', 'rgba(5, 46, 22, 0.15)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.formContainer}
+            >
+              <View style={styles.form}>
+                <Animated.View style={[
+                  styles.inputGroup,
+                  { opacity: fadeAnims[1], transform: [{ translateY: translateYAnims[1] }] }
                 ]}>
-                  {agreedToTerms && (
-                    <Ionicons name="checkmark" size={14} color="#fff" />
-                  )}
-                </View>
-                <Text style={[styles.termsText, { color: colors.textSecondary }]}>
-                  I agree to the{' '}
-                  <Text 
-                    style={[styles.termsLink, { color: colors.primary }]}
-                    onPress={() => Linking.openURL('https://cgraph.org/terms')}
+                  <Text style={styles.label}>Email</Text>
+                  <LinearGradient
+                    colors={focusedField === 'email'
+                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                    }
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.inputGradient, focusedField === 'email' && styles.inputFocused]}
                   >
-                    Terms of Service
-                  </Text>
-                  {' '}and{' '}
-                  <Text 
-                    style={[styles.termsLink, { color: colors.primary }]}
-                    onPress={() => Linking.openURL('https://cgraph.org/privacy')}
+                    <TextInput
+                      style={styles.input}
+                      placeholder="you@example.com"
+                      placeholderTextColor="#6b7280"
+                      value={email}
+                      onChangeText={setEmail}
+                      keyboardType="email-address"
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      onFocus={() => setFocusedField('email')}
+                      onBlur={() => setFocusedField(null)}
+                    />
+                  </LinearGradient>
+                </Animated.View>
+                
+                <Animated.View style={[
+                  styles.inputGroup,
+                  { opacity: fadeAnims[2], transform: [{ translateY: translateYAnims[2] }] }
+                ]}>
+                  <View style={styles.labelRow}>
+                    <Text style={styles.label}>Username</Text>
+                    <Text style={styles.labelHint}>(Optional)</Text>
+                  </View>
+                  <LinearGradient
+                    colors={focusedField === 'username'
+                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                    }
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.inputGradient, focusedField === 'username' && styles.inputFocused]}
                   >
-                    Privacy Policy
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Choose a username"
+                      placeholderTextColor="#6b7280"
+                      value={username}
+                      onChangeText={(text) => setUsername(text.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      maxLength={30}
+                      onFocus={() => setFocusedField('username')}
+                      onBlur={() => setFocusedField(null)}
+                    />
+                  </LinearGradient>
+                  <Text style={styles.inputHint}>
+                    You can set this later. Can be changed every 14 days.
                   </Text>
-                </Text>
-              </TouchableOpacity>
+                </Animated.View>
+                
+                <Animated.View style={[
+                  styles.inputGroup,
+                  { opacity: fadeAnims[3], transform: [{ translateY: translateYAnims[3] }] }
+                ]}>
+                  <Text style={styles.label}>Password</Text>
+                  <LinearGradient
+                    colors={focusedField === 'password'
+                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                    }
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.inputGradient, focusedField === 'password' && styles.inputFocused]}
+                  >
+                    <TextInput
+                      style={styles.input}
+                      placeholder="••••••••"
+                      placeholderTextColor="#6b7280"
+                      value={password}
+                      onChangeText={setPassword}
+                      secureTextEntry
+                      onFocus={() => setFocusedField('password')}
+                      onBlur={() => setFocusedField(null)}
+                    />
+                  </LinearGradient>
+                  <Text style={styles.inputHint}>
+                    Min 8 characters with uppercase, lowercase, number, and special character
+                  </Text>
+                </Animated.View>
+                
+                <Animated.View style={[
+                  styles.inputGroup,
+                  { opacity: fadeAnims[4], transform: [{ translateY: translateYAnims[4] }] }
+                ]}>
+                  <Text style={styles.label}>Confirm Password</Text>
+                  <LinearGradient
+                    colors={focusedField === 'confirm'
+                      ? ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.4)']
+                      : ['rgba(17, 24, 39, 0.9)', 'rgba(5, 46, 22, 0.2)']
+                    }
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.inputGradient, focusedField === 'confirm' && styles.inputFocused]}
+                  >
+                    <TextInput
+                      style={styles.input}
+                      placeholder="••••••••"
+                      placeholderTextColor="#6b7280"
+                      value={confirmPassword}
+                      onChangeText={setConfirmPassword}
+                      secureTextEntry
+                      onFocus={() => setFocusedField('confirm')}
+                      onBlur={() => setFocusedField(null)}
+                    />
+                  </LinearGradient>
+                </Animated.View>
+
+              {/* Terms of Service Agreement */}
+              <Animated.View style={[
+                styles.termsRow,
+                { opacity: fadeAnims[5], transform: [{ translateY: translateYAnims[5] }] }
+              ]}>
+                <TouchableOpacity 
+                  style={styles.termsRowInner}
+                  onPress={() => setAgreedToTerms(!agreedToTerms)}
+                  activeOpacity={0.7}
+                >
+                  <View style={[
+                    styles.checkbox,
+                    { 
+                      borderColor: agreedToTerms ? '#10b981' : 'rgba(55, 65, 81, 0.8)',
+                      backgroundColor: agreedToTerms ? '#10b981' : 'transparent',
+                    }
+                  ]}>
+                    {agreedToTerms && (
+                      <Ionicons name="checkmark" size={14} color="#fff" />
+                    )}
+                  </View>
+                  <Text style={styles.termsText}>
+                    I agree to the{' '}
+                    <Text 
+                      style={styles.termsLink}
+                      onPress={() => Linking.openURL('https://cgraph.org/terms')}
+                    >
+                      Terms of Service
+                    </Text>
+                    {' '}and{' '}
+                    <Text 
+                      style={styles.termsLink}
+                      onPress={() => Linking.openURL('https://cgraph.org/privacy')}
+                    >
+                      Privacy Policy
+                    </Text>
+                  </Text>
+                </TouchableOpacity>
+              </Animated.View>
               
-              <TouchableOpacity
-                style={[styles.button, { backgroundColor: colors.primary }]}
-                onPress={handleRegister}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.buttonText}>Create Account</Text>
-                )}
-              </TouchableOpacity>
+              <Animated.View style={[{
+                opacity: fadeAnims[6],
+                transform: [
+                  { translateY: translateYAnims[6] },
+                  { scale: buttonScale },
+                ],
+              }]}>
+                <TouchableOpacity
+                  activeOpacity={0.9}
+                  onPressIn={handlePressIn}
+                  onPressOut={handlePressOut}
+                  onPress={handleRegister}
+                  disabled={isLoading}
+                >
+                  <LinearGradient
+                    colors={['#059669', '#047857', '#065f46']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.button, isLoading && styles.buttonDisabled]}
+                  >
+                    {isLoading ? (
+                      <View style={styles.loadingContainer}>
+                        <ActivityIndicator color="#fff" size="small" />
+                        <Text style={styles.loadingText}>Creating account...</Text>
+                      </View>
+                    ) : (
+                      <Text style={styles.buttonText}>Create Account</Text>
+                    )}
+                  </LinearGradient>
+                </TouchableOpacity>
+              </Animated.View>
               
               {/* OAuth Divider and Buttons */}
-              <AuthDivider text="or sign up with" />
-              
-              <OAuthButtonGroup
-                variant="icon"
-                providers={['google', 'apple', 'facebook', 'tiktok']}
-                onSuccess={() => {
-                  // Auth context will handle navigation
-                }}
-                onError={(error) => {
-                  if (!error.message.includes('cancelled')) {
-                    console.error('OAuth error:', error);
-                  }
-                }}
-              />
-            </View>
+              <Animated.View style={[{
+                opacity: fadeAnims[7],
+                transform: [{ translateY: translateYAnims[7] }],
+              }]}>
+                <AuthDivider text="Or continue with" />
+                
+                <OAuthButtonGroup
+                  variant="icon"
+                  providers={['google', 'apple', 'facebook', 'tiktok']}
+                  onSuccess={() => {
+                    // Auth context will handle navigation
+                  }}
+                  onError={(error) => {
+                    if (!error.message.includes('cancelled')) {
+                      console.error('OAuth error:', error);
+                    }
+                  }}
+                />
+              </Animated.View>
+              </View>
+            </LinearGradient>
             
             {/* Footer */}
-            <View style={styles.footer}>
-              <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+            <Animated.View style={[
+              styles.footer,
+              { opacity: fadeAnims[7], transform: [{ translateY: translateYAnims[7] }] }
+            ]}>
+              <Text style={styles.footerText}>
                 Already have an account?{' '}
               </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                <Text style={[styles.footerLink, { color: colors.primary }]}>
-                  Sign in
-                </Text>
+                <Text style={styles.footerLink}>Sign in</Text>
               </TouchableOpacity>
-            </View>
+            </Animated.View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -341,6 +479,11 @@ export default function RegisterScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#000',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(5, 46, 22, 0.1)',
   },
   safeArea: {
     flex: 1,
@@ -357,21 +500,46 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 40,
+    marginBottom: 32,
   },
   logo: {
     fontSize: 40,
     fontWeight: 'bold',
     marginBottom: 8,
+    color: '#fff',
+    textShadowColor: 'rgba(16, 185, 129, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 20,
   },
   subtitle: {
-    fontSize: 18,
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#fff',
+    textShadowColor: 'rgba(16, 185, 129, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 10,
+  },
+  subtitleSecondary: {
+    fontSize: 14,
+    color: '#9ca3af',
+    marginTop: 8,
+  },
+  formContainer: {
+    borderRadius: 20,
+    padding: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.2)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 30,
+    elevation: 10,
   },
   form: {
     gap: 16,
   },
   inputGroup: {
-    gap: 6,
+    gap: 8,
   },
   labelRow: {
     flexDirection: 'row',
@@ -381,26 +549,44 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
+    color: '#d1d5db',
+    marginBottom: 2,
   },
   labelHint: {
     fontSize: 12,
     fontStyle: 'italic',
+    color: '#6b7280',
+  },
+  inputGradient: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(55, 65, 81, 0.8)',
+  },
+  inputFocused: {
+    borderColor: 'rgba(16, 185, 129, 0.5)',
+    shadowColor: 'rgba(16, 185, 129, 0.3)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 20,
+    elevation: 5,
   },
   input: {
-    borderWidth: 1,
-    borderRadius: 12,
     padding: 16,
     fontSize: 16,
+    color: '#fff',
   },
   inputHint: {
     fontSize: 12,
     marginTop: 4,
+    color: '#6b7280',
   },
   termsRow: {
+    marginTop: 8,
+  },
+  termsRowInner: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 12,
-    marginTop: 8,
     paddingHorizontal: 4,
   },
   checkbox: {
@@ -416,20 +602,40 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     lineHeight: 19,
+    color: '#9ca3af',
   },
   termsLink: {
     fontWeight: '600',
+    color: '#10b981',
   },
   button: {
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
     marginTop: 8,
+    shadowColor: 'rgba(16, 185, 129, 0.4)',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 20,
+    elevation: 8,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
   },
   buttonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  loadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  loadingText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
   },
   footer: {
     flexDirection: 'row',
@@ -438,9 +644,14 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 14,
+    color: '#9ca3af',
   },
   footerLink: {
     fontSize: 14,
     fontWeight: '600',
+    color: '#10b981',
+    textShadowColor: 'rgba(16, 185, 129, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 5,
   },
 });
