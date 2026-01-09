@@ -6,6 +6,49 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.30] - 2026-01-09
+
+Component documentation and developer experience improvements. This release adds Storybook for interactive component documentation and expands the component story library.
+
+### Added
+
+#### Storybook Integration
+
+- **Storybook 10.x with React/Vite** — Interactive component development environment:
+  - `@storybook/react-vite` for fast HMR development
+  - `@storybook/addon-essentials` for controls, actions, docs
+  - `@storybook/addon-interactions` for testing
+  - Dark/light theme support matching the app
+  - Autodocs enabled for automatic prop documentation
+
+- **Component Stories** — Comprehensive stories for core UI components:
+  - `Button.stories.tsx` — 15 variants including sizes, states, icons, loading
+  - `Input.stories.tsx` — Form inputs with labels, errors, hints, icons
+  - `Avatar.stories.tsx` — User avatars with status indicators, sizes
+  - `Modal.stories.tsx` — Accessible modal dialogs with focus trapping
+  - `Select.stories.tsx` — Custom dropdowns with search and descriptions
+  - `Loading.stories.tsx` — Spinners, skeletons, overlays, dots
+  - `Switch.stories.tsx` — Toggle switches with labels and settings panels
+  - `EmptyState.stories.tsx` — Empty states for various scenarios
+
+#### Developer Experience
+
+- **Storybook scripts** — Added to web package.json:
+  - `pnpm storybook` — Start dev server on port 6006
+  - `pnpm build-storybook` — Build static documentation site
+
+### Changed
+
+- **Version aligned** — All packages now at 0.7.30 (root, backend, web, mobile)
+
+### Docs
+
+- Updated FRONTEND.md with Storybook documentation section
+- Added component development workflow guidance
+- Created V0.7.30_RELEASE_NOTES.md with detailed feature overview
+
+---
+
 ## [0.7.29] - 2026-01-09
 
 Major architecture improvements and code quality fixes. This release focuses on maintainability, performance monitoring, and preventing future bugs through better patterns and tooling.

@@ -17,12 +17,13 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 7. [API Integration](#api-integration)
 8. [Real-Time Features](#real-time-features)
 9. [Component Library](#component-library)
-10. [Styling Guide](#styling-guide)
-11. [Forms and Validation](#forms-and-validation)
-12. [Testing](#testing)
-13. [Performance](#performance)
-14. [Accessibility](#accessibility)
-15. [Common Patterns](#common-patterns)
+10. [Storybook](#storybook)
+11. [Styling Guide](#styling-guide)
+12. [Forms and Validation](#forms-and-validation)
+13. [Testing](#testing)
+14. [Performance](#performance)
+15. [Accessibility](#accessibility)
+16. [Common Patterns](#common-patterns)
 
 ---
 
@@ -31,7 +32,7 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 | Technology | Version | Purpose |
 |------------|---------|---------|
 | **React** | 19.1 | UI framework |
-| **TypeScript** | 5.9 | Type safety |
+| **TypeScript** | 5.8 | Type safety |
 | **Vite** | 6.3 | Build tool / dev server |
 | **TailwindCSS** | 3.4 | Utility-first styling |
 | **Zustand** | 5.x | Global state management |
@@ -41,6 +42,7 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 | **Wagmi/Viem** | 2.x | Web3 wallet integration |
 | **Radix UI** | Latest | Accessible components |
 | **Framer Motion** | 12.x | Animations |
+| **Storybook** | 10.x | Component documentation |
 
 ---
 
@@ -148,6 +150,8 @@ pnpm test:coverage # Run tests with coverage
 pnpm lint         # Lint with ESLint
 pnpm lint:fix     # Auto-fix lint issues
 pnpm typecheck    # Type check without emitting
+pnpm storybook    # Start Storybook dev server (port 6006)
+pnpm build-storybook # Build static Storybook site
 ```
 
 ---
@@ -1228,6 +1232,156 @@ function SearchInput() {
   return <input value={query} onChange={(e) => setQuery(e.target.value)} />;
 }
 ```
+
+---
+
+## Storybook
+
+Storybook is our interactive component development and documentation environment. It lets you develop UI components in isolation, view all their states, and generate documentation automatically.
+
+### Getting Started
+
+```bash
+# Start Storybook development server
+pnpm storybook
+
+# Build static Storybook site
+pnpm build-storybook
+```
+
+Storybook runs on port 6006 by default. Open http://localhost:6006 to view the component library.
+
+### Configuration
+
+Storybook is configured in the `.storybook/` directory:
+
+```
+apps/web/.storybook/
+├── main.ts      # Core configuration
+└── preview.ts   # Global decorators and parameters
+```
+
+**main.ts** — Framework and addon configuration:
+- Uses `@storybook/react-vite` for fast HMR
+- Stories discovered from `src/**/*.stories.tsx`
+- Adds path aliases matching the app (`@` → `src/`)
+- TypeScript prop documentation via `react-docgen-typescript`
+
+**preview.ts** — Global settings:
+- Dark theme matching the CGraph UI
+- Centered layout for most stories
+- TailwindCSS imported for component styling
+- Autodocs enabled for automatic documentation
+
+### Writing Stories
+
+Stories live alongside their components with a `.stories.tsx` extension:
+
+```
+src/components/
+├── Button.tsx
+├── Button.stories.tsx
+├── Input.tsx
+└── Input.stories.tsx
+```
+
+#### Basic Story Pattern
+
+```tsx
+import type { Meta, StoryObj } from '@storybook/react';
+import { fn } from '@storybook/test';
+import { Button } from './Button';
+
+const meta = {
+  title: 'Components/Button',
+  component: Button,
+  parameters: {
+    layout: 'centered',
+  },
+  tags: ['autodocs'],
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary', 'ghost'],
+    },
+    size: {
+      control: 'select',
+      options: ['sm', 'md', 'lg'],
+    },
+  },
+  args: {
+    onClick: fn(),
+  },
+} satisfies Meta<typeof Button>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+// Each export is a story
+export const Primary: Story = {
+  args: {
+    variant: 'primary',
+    children: 'Click me',
+  },
+};
+
+export const Large: Story = {
+  args: {
+    size: 'lg',
+    children: 'Large Button',
+  },
+};
+```
+
+#### Interactive Stories
+
+For components with state, use the `render` function:
+
+```tsx
+export const Interactive: Story = {
+  render: function InteractiveSwitch() {
+    const [checked, setChecked] = useState(false);
+    
+    return (
+      <Switch
+        checked={checked}
+        onChange={setChecked}
+        label="Toggle me"
+      />
+    );
+  },
+};
+```
+
+### Available Component Stories
+
+| Component | Location | Stories |
+|-----------|----------|---------|
+| Button | `Button.stories.tsx` | Primary, Secondary, Ghost, Loading, Disabled, Sizes, Icons |
+| Input | `Input.stories.tsx` | Default, WithLabel, Required, Error, Hint, Icons, Sizes |
+| Avatar | `Avatar.stories.tsx` | Default, Initials, Status indicators, Sizes, Groups |
+| Modal | `Modal.stories.tsx` | Default, Sizes, Footer, Danger, Interactive |
+| Select | `Select.stories.tsx` | Default, Searchable, Icons, Descriptions, Error |
+| Loading | `Loading.stories.tsx` | Spinner, Dots, Skeleton, Overlay, FullScreen |
+| Switch | `Switch.stories.tsx` | Default, Checked, Labels, Sizes, Settings panel |
+| EmptyState | `EmptyState.stories.tsx` | Default, Icon, Action, Pre-configured variants |
+
+### Best Practices
+
+1. **One story per state** — Create separate stories for each meaningful state
+2. **Use autodocs** — Add `tags: ['autodocs']` for automatic documentation
+3. **Mock functions** — Use `fn()` from `@storybook/test` for callbacks
+4. **Decorators** — Add context providers or wrappers as decorators
+5. **Controls** — Define `argTypes` for interactive prop editing
+6. **Descriptions** — Add component descriptions in `parameters.docs.description`
+
+### Adding a New Component Story
+
+1. Create `ComponentName.stories.tsx` next to the component
+2. Import the component and Storybook types
+3. Define the meta object with title, component, and argTypes
+4. Export individual stories for each state
+5. Run `pnpm storybook` to verify
 
 ---
 
