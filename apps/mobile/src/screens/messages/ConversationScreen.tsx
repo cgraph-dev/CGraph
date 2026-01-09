@@ -30,6 +30,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Haptics from 'expo-haptics';
+import { useVideoPlayer, VideoView } from 'expo-video';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { useE2EE } from '../../lib/crypto/E2EEContext';
@@ -244,6 +245,150 @@ const AnimatedReactionBubble = memo(({
   );
 });
 
+// Video Player Component using expo-video
+interface VideoPlayerComponentProps {
+  videoUrl: string;
+  duration?: number;
+  onClose: () => void;
+}
+
+const VideoPlayerComponent = memo(({ videoUrl, duration, onClose }: VideoPlayerComponentProps) => {
+  const player = useVideoPlayer(videoUrl, (player) => {
+    player.loop = false;
+    player.play();
+  });
+  
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [showControls, setShowControls] = useState(true);
+  
+  useEffect(() => {
+    const subscription = player.addListener('playingChange', (event) => {
+      setIsPlaying(event.isPlaying);
+    });
+    
+    return () => {
+      subscription.remove();
+    };
+  }, [player]);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (player.currentTime !== undefined) {
+        setCurrentTime(player.currentTime);
+      }
+    }, 250);
+    
+    return () => clearInterval(interval);
+  }, [player]);
+  
+  const togglePlayPause = () => {
+    if (isPlaying) {
+      player.pause();
+    } else {
+      player.play();
+    }
+    setShowControls(true);
+  };
+  
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  const handleTap = () => {
+    setShowControls(!showControls);
+  };
+  
+  return (
+    <Pressable 
+      style={styles.videoPlayerWrapper} 
+      onPress={handleTap}
+    >
+      <VideoView
+        style={styles.videoPlayer}
+        player={player}
+        contentFit="contain"
+        nativeControls={false}
+      />
+      
+      {/* Custom Controls Overlay */}
+      {showControls && (
+        <View style={styles.videoControlsOverlay}>
+          {/* Center play/pause button */}
+          <TouchableOpacity 
+            style={styles.videoPlayPauseBtn}
+            onPress={togglePlayPause}
+          >
+            <View style={styles.videoPlayPauseBtnInner}>
+              <Ionicons 
+                name={isPlaying ? 'pause' : 'play'} 
+                size={40} 
+                color="#fff" 
+              />
+            </View>
+          </TouchableOpacity>
+          
+          {/* Bottom progress bar */}
+          <View style={styles.videoProgressContainer}>
+            <Text style={styles.videoTimeText}>{formatTime(currentTime)}</Text>
+            <View style={styles.videoProgressBar}>
+              <View 
+                style={[
+                  styles.videoProgressFill,
+                  { 
+                    width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
+                  }
+                ]} 
+              />
+            </View>
+            <Text style={styles.videoTimeText}>
+              {duration ? formatTime(duration) : '--:--'}
+            </Text>
+          </View>
+        </View>
+      )}
+    </Pressable>
+  );
+});
+
+// Attachment Video Preview Component for pending attachments
+interface AttachmentVideoPreviewProps {
+  uri: string;
+  duration?: number;
+}
+
+const AttachmentVideoPreview = memo(({ uri, duration }: AttachmentVideoPreviewProps) => {
+  const player = useVideoPlayer(uri, (player) => {
+    player.loop = false;
+    player.pause();
+  });
+  
+  return (
+    <View style={styles.attachmentPreviewVideoContainer}>
+      <VideoView
+        style={styles.attachmentPreviewImage}
+        player={player}
+        contentFit="cover"
+        nativeControls={false}
+      />
+      <View style={styles.videoPlayOverlay}>
+        <View style={styles.videoPlayButton}>
+          <Ionicons name="play" size={40} color="#fff" />
+        </View>
+      </View>
+      {duration !== undefined && duration > 0 && (
+        <View style={styles.videoDurationBadge}>
+          <Text style={styles.videoDurationText}>
+            {Math.floor(duration / 60)}:{String(Math.floor(duration % 60)).padStart(2, '0')}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+});
+
 type Props = {
   navigation: NativeStackNavigationProp<MessagesStackParamList, 'Conversation'>;
   route: RouteProp<MessagesStackParamList, 'Conversation'>;
@@ -277,6 +422,11 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showImageViewer, setShowImageViewer] = useState(false);
   const imageGalleryRef = useRef<FlatList>(null);
+  
+  // Video player state
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
+  const [selectedVideoDuration, setSelectedVideoDuration] = useState<number>(0);
   
   // Message action menu state
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
@@ -1225,6 +1375,21 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setCurrentImageIndex(0);
     });
   }, [imageViewerAnim, imageScaleAnim]);
+  
+  // Handle video press - open fullscreen video player
+  const handleVideoPress = useCallback((videoUrl: string, duration?: number) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedVideoUrl(videoUrl);
+    setSelectedVideoDuration(duration || 0);
+    setShowVideoPlayer(true);
+  }, []);
+  
+  // Close video player
+  const closeVideoPlayer = useCallback(() => {
+    setShowVideoPlayer(false);
+    setSelectedVideoUrl(null);
+    setSelectedVideoDuration(0);
+  }, []);
   
   // Handle file press - open/download file
   const handleFilePress = useCallback(async (fileUrl: string, filename?: string) => {
@@ -2198,6 +2363,41 @@ export default function ConversationScreen({ navigation, route }: Props) {
             <Ionicons name="download-outline" size={20} color={isOwnMessage ? 'rgba(255,255,255,0.8)' : colors.textSecondary} />
           </TouchableOpacity>
         )}
+        {/* Video messages */}
+        {item.type === 'video' && item.metadata?.url && (
+          <TouchableOpacity 
+            activeOpacity={0.9}
+            onPress={() => handleVideoPress(item.metadata!.url!, item.metadata?.duration)}
+            style={styles.videoMessageContainer}
+          >
+            {/* Video thumbnail - use url as poster or show placeholder */}
+            {item.metadata.thumbnail ? (
+              <Image
+                source={{ uri: item.metadata.thumbnail }}
+                style={styles.videoThumbnail}
+                resizeMode="cover"
+              />
+            ) : (
+              <View style={[styles.videoThumbnail, styles.videoPlaceholder]}>
+                <Ionicons name="videocam" size={40} color="rgba(255,255,255,0.8)" />
+              </View>
+            )}
+            {/* Play button overlay */}
+            <View style={styles.videoPlayOverlayMessage}>
+              <View style={styles.videoPlayButtonMessage}>
+                <Ionicons name="play" size={32} color="#fff" />
+              </View>
+            </View>
+            {/* Duration badge */}
+            {item.metadata.duration && (
+              <View style={styles.videoDurationBadgeMessage}>
+                <Text style={styles.videoDurationTextMessage}>
+                  {Math.floor(item.metadata.duration / 60)}:{String(Math.floor(item.metadata.duration % 60)).padStart(2, '0')}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        )}
         {/* Voice messages */}
         {(item.type === 'voice' || item.type === 'audio') && item.metadata?.url && (
           <VoiceMessagePlayer
@@ -3049,27 +3249,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
                       resizeMode="contain"
                     />
                   ) : attachment.type === 'video' ? (
-                    <View style={styles.attachmentPreviewVideoContainer}>
-                      <Image 
-                        source={{ uri: attachment.uri }}
-                        style={styles.attachmentPreviewImage}
-                        resizeMode="contain"
-                      />
-                      {/* Video play icon overlay */}
-                      <View style={styles.videoPlayOverlay}>
-                        <View style={styles.videoPlayButton}>
-                          <Ionicons name="play" size={40} color="#fff" />
-                        </View>
-                      </View>
-                      {/* Duration badge */}
-                      {attachment.duration && (
-                        <View style={styles.videoDurationBadge}>
-                          <Text style={styles.videoDurationText}>
-                            {Math.floor(attachment.duration / 60)}:{String(Math.floor(attachment.duration % 60)).padStart(2, '0')}
-                          </Text>
-                        </View>
-                      )}
-                    </View>
+                    <AttachmentVideoPreview 
+                      uri={attachment.uri}
+                      duration={attachment.duration}
+                    />
                   ) : (
                     <View style={styles.attachmentPreviewFile}>
                       <View style={[styles.attachmentPreviewFileIcon, { backgroundColor: colors.primary }]}>
@@ -3252,6 +3435,43 @@ export default function ConversationScreen({ navigation, route }: Props) {
             </TouchableOpacity>
           </Animated.View>
         </Animated.View>
+      </Modal>
+      
+      {/* Full-screen Video Player Modal */}
+      <Modal
+        visible={showVideoPlayer}
+        transparent
+        animationType="fade"
+        onRequestClose={closeVideoPlayer}
+        statusBarTranslucent
+      >
+        <View style={styles.videoPlayerContainer}>
+          <TouchableOpacity 
+            style={styles.videoPlayerBackdrop}
+            activeOpacity={1}
+            onPress={closeVideoPlayer}
+          />
+          <View style={styles.videoPlayerContent}>
+            {selectedVideoUrl && (
+              <VideoPlayerComponent
+                videoUrl={selectedVideoUrl}
+                duration={selectedVideoDuration}
+                onClose={closeVideoPlayer}
+              />
+            )}
+          </View>
+          
+          {/* Close button */}
+          <TouchableOpacity 
+            style={styles.videoPlayerCloseBtn}
+            onPress={closeVideoPlayer}
+            hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          >
+            <View style={styles.videoPlayerCloseBtnInner}>
+              <Ionicons name="close" size={24} color="#fff" />
+            </View>
+          </TouchableOpacity>
+        </View>
       </Modal>
       
       {/* Pinned Messages Bar */}
@@ -4654,6 +4874,145 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Video message styles
+  videoMessageContainer: {
+    width: 260,
+    height: 180,
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginBottom: 4,
+    position: 'relative',
+  },
+  videoThumbnail: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#1a1a1a',
+  },
+  videoPlaceholder: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#2a2a2a',
+  },
+  videoPlayOverlayMessage: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoPlayButtonMessage: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 4,
+  },
+  videoDurationBadgeMessage: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    borderRadius: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+  },
+  videoDurationTextMessage: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  // Video player modal styles
+  videoPlayerContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  videoPlayerBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#000',
+  },
+  videoPlayerContent: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  videoPlayerWrapper: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT * 0.7,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  videoPlayer: {
+    width: '100%',
+    height: '100%',
+  },
+  videoControlsOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  videoPlayPauseBtn: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  videoPlayPauseBtnInner: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingLeft: 4,
+  },
+  videoProgressContainer: {
+    position: 'absolute',
+    bottom: 40,
+    left: 20,
+    right: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  videoProgressBar: {
+    flex: 1,
+    height: 4,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  videoProgressFill: {
+    height: '100%',
+    backgroundColor: '#fff',
+    borderRadius: 2,
+  },
+  videoTimeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '500',
+    minWidth: 40,
+    textAlign: 'center',
+  },
+  videoPlayerCloseBtn: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+  },
+  videoPlayerCloseBtnInner: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.6)',
     alignItems: 'center',
     justifyContent: 'center',
   },

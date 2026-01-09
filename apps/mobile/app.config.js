@@ -214,6 +214,7 @@ module.exports = ({ config }) => {
           microphonePermission: 'CGraph needs microphone access for voice messages.',
         },
       ],
+      'expo-video',
       'expo-asset',
     ],
     extra: {
