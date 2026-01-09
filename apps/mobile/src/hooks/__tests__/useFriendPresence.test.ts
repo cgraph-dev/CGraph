@@ -15,6 +15,15 @@ import {
 } from '../useFriendPresence';
 import socketManager from '../../lib/socket';
 
+// Type definition for test assertions
+interface FriendPresenceData {
+  online: boolean;
+  status: string;
+  lastSeen?: string;
+  lastActive?: string;
+  hidden?: boolean;
+}
+
 // Mock socket manager
 jest.mock('../../lib/socket', () => ({
   getFriendPresence: jest.fn(),
@@ -151,7 +160,10 @@ describe('useFriendPresence', () => {
         return null;
       });
 
-      const { result, rerender } = renderHook(
+      const { result, rerender } = renderHook<
+        FriendPresenceData | null,
+        { userId: string | undefined }
+      >(
         ({ userId }) => useFriendPresence(userId),
         { initialProps: { userId: 'user-123' } }
       );
@@ -170,7 +182,10 @@ describe('useFriendPresence', () => {
         status: 'online',
       });
 
-      const { result, rerender } = renderHook(
+      const { result, rerender } = renderHook<
+        FriendPresenceData | null,
+        { userId: string | undefined }
+      >(
         ({ userId }) => useFriendPresence(userId),
         { initialProps: { userId: 'user-123' as string | undefined } }
       );
@@ -357,7 +372,10 @@ describe('useFriendsPresence', () => {
         .mockResolvedValueOnce({ 'user-1': { online: true, status: 'online' } })
         .mockResolvedValueOnce({ 'user-3': { online: true, status: 'online' } });
 
-      const { rerender } = renderHook(
+      const { rerender } = renderHook<
+        Map<string, FriendPresenceData>,
+        { ids: string[] }
+      >(
         ({ ids }) => useFriendsPresence(ids),
         { initialProps: { ids: ['user-1'] } }
       );

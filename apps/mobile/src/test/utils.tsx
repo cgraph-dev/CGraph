@@ -23,16 +23,27 @@ import { User } from '../types';
 // Types
 // ============================================================================
 
-interface TestUser extends User {
+/**
+ * Test user type with required fields for testing.
+ * Aligned with the backend User type but with test-friendly defaults.
+ */
+interface TestUser {
   id: string;
   email: string;
-  username: string;
-  display_name: string;
-  avatar_url: string | null;
-  is_anonymous: boolean;
-  is_premium: boolean;
-  created_at: string;
+  username: string | null;
+  user_id: number;
+  user_id_display: string;
+  display_name?: string;
+  avatar_url?: string;
+  status: 'online' | 'idle' | 'dnd' | 'offline' | 'invisible';
+  can_change_username: boolean;
+  inserted_at: string;
   updated_at: string;
+  is_anonymous?: boolean;
+  is_premium?: boolean;
+  bio?: string;
+  karma?: number;
+  is_verified?: boolean;
 }
 
 interface MockAuthContextValue {
@@ -80,12 +91,16 @@ export function createMockUser(overrides: Partial<TestUser> = {}): TestUser {
     id: 'user-test-123',
     email: 'test@example.com',
     username: 'testuser',
+    user_id: 12345,
+    user_id_display: '#12345',
     display_name: 'Test User',
-    avatar_url: null,
+    avatar_url: undefined,
+    status: 'online',
+    can_change_username: true,
+    inserted_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
     is_anonymous: false,
     is_premium: false,
-    created_at: '2026-01-01T00:00:00Z',
-    updated_at: '2026-01-01T00:00:00Z',
     ...overrides,
   };
 }
@@ -253,7 +268,7 @@ function AllProviders({
   // Navigation Container (optional)
   if (!options.skipNavigation) {
     wrapped = (
-      <NavigationContainer independent={true}>
+      <NavigationContainer>
         {wrapped}
       </NavigationContainer>
     );
@@ -423,4 +438,3 @@ export function createMockRoute<T extends object = object>(
 // ============================================================================
 
 export * from '@testing-library/react-native';
-export { default as userEvent } from '@testing-library/user-event';

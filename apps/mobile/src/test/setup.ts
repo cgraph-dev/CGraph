@@ -322,9 +322,23 @@ jest.mock('@react-navigation/native', () => {
 });
 
 // Mock Axios for API testing
+interface MockAxiosInstance {
+  create: jest.Mock;
+  get: jest.Mock;
+  post: jest.Mock;
+  put: jest.Mock;
+  patch: jest.Mock;
+  delete: jest.Mock;
+  defaults: { headers: { common: Record<string, string> } };
+  interceptors: {
+    request: { use: jest.Mock; eject: jest.Mock };
+    response: { use: jest.Mock; eject: jest.Mock };
+  };
+}
+
 jest.mock('axios', () => {
-  const mockAxios = {
-    create: jest.fn(() => mockAxios),
+  const mockAxios: MockAxiosInstance = {
+    create: jest.fn((): MockAxiosInstance => mockAxios),
     get: jest.fn().mockResolvedValue({ data: {} }),
     post: jest.fn().mockResolvedValue({ data: {} }),
     put: jest.fn().mockResolvedValue({ data: {} }),

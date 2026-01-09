@@ -76,7 +76,12 @@ const AuthConsumer: React.FC = () => {
       </Pressable>
       <Pressable
         testID="update-user-button"
-        onPress={() => updateUser({ display_name: 'Updated Name' })}
+        onPress={() => {
+          // updateUser expects a full User object
+          if (user) {
+            updateUser({ ...user, display_name: 'Updated Name' });
+          }
+        }}
       >
         <Text>Update</Text>
       </Pressable>
