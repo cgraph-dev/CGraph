@@ -21,6 +21,9 @@ export interface User {
   updated_at: string;
 }
 
+// Re-export API response types
+export * from './api';
+
 export interface UserBasic {
   id: string;
   username: string | null;

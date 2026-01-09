@@ -1970,7 +1970,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
   };
   
   // Open attachment preview modal
-  const openAttachmentPreview = () => {
+  const openAttachmentPreview = useCallback(() => {
     setShowAttachmentPreview(true);
     Animated.spring(attachmentPreviewAnim, {
       toValue: 1,
@@ -1978,10 +1978,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
       tension: 65,
       friction: 10,
     }).start();
-  };
+  }, [attachmentPreviewAnim]);
   
   // Close attachment preview modal
-  const closeAttachmentPreview = () => {
+  const closeAttachmentPreview = useCallback(() => {
     Animated.timing(attachmentPreviewAnim, {
       toValue: 0,
       duration: 200,
@@ -1991,7 +1991,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setPendingAttachments([]);
       setAttachmentCaption('');
     });
-  };
+  }, [attachmentPreviewAnim]);
   
   // Remove a specific attachment from pending list
   const removeAttachment = (index: number) => {
@@ -2267,6 +2267,29 @@ export default function ConversationScreen({ navigation, route }: Props) {
       return '';
     }
   };
+
+  // Handle assets selected from TelegramAttachmentPicker
+  // IMPORTANT: This must be defined BEFORE any early returns to comply with Rules of Hooks
+  const handleAttachmentPickerSelect = useCallback((assets: Array<{
+    uri: string;
+    type: 'image' | 'video' | 'file';
+    name?: string;
+    mimeType?: string;
+    duration?: number;
+  }>) => {
+    if (assets.length === 0) return;
+    
+    const newAttachments = assets.map(asset => ({
+      uri: asset.uri,
+      type: asset.type,
+      name: asset.name,
+      mimeType: asset.mimeType,
+      duration: asset.duration,
+    }));
+    
+    setPendingAttachments(prev => [...prev, ...newAttachments]);
+    openAttachmentPreview();
+  }, [openAttachmentPreview]);
   
   // Extracted message content renderer - must be defined before renderMessage
   const renderMessageContent = useCallback((item: Message, isOwnMessage: boolean, senderDisplayName: string) => {
@@ -2694,28 +2717,6 @@ export default function ConversationScreen({ navigation, route }: Props) {
       </View>
     );
   };
-
-  // Handle assets selected from TelegramAttachmentPicker
-  const handleAttachmentPickerSelect = useCallback((assets: Array<{
-    uri: string;
-    type: 'image' | 'video' | 'file';
-    name?: string;
-    mimeType?: string;
-    duration?: number;
-  }>) => {
-    if (assets.length === 0) return;
-    
-    const newAttachments = assets.map(asset => ({
-      uri: asset.uri,
-      type: asset.type,
-      name: asset.name,
-      mimeType: asset.mimeType,
-      duration: asset.duration,
-    }));
-    
-    setPendingAttachments(prev => [...prev, ...newAttachments]);
-    openAttachmentPreview();
-  }, [openAttachmentPreview]);
 
   // Message Actions Menu Component - Modern Discord/Telegram style
   const MessageActionsMenu = () => {

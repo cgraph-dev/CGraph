@@ -3,30 +3,85 @@ defmodule Cgraph.Messaging do
   The Messaging context.
 
   Handles direct messages, conversations, reactions, and read receipts.
+  
+  This module acts as the main entry point and delegates to specialized
+  sub-contexts for better organization:
+  
+  - `Cgraph.Messaging.Conversations` - Conversation CRUD and participant management
+  - `Cgraph.Messaging.Messages` - Message CRUD, pinning, editing
+  - `Cgraph.Messaging.Reactions` - Message reactions
+  - `Cgraph.Messaging.ReadReceipts` - Read status and delivery tracking
+  - `Cgraph.Messaging.Search` - Message search functionality
+  
+  @since v0.7.29 - Refactored to use sub-contexts
   """
 
   import Ecto.Query, warn: false
 
   alias Cgraph.Messaging.{Conversation, ConversationParticipant, Message, Reaction, ReadReceipt}
+  alias Cgraph.Messaging.{Conversations, Messages, Reactions, ReadReceipts, Search}
   alias Cgraph.Repo
 
   # ============================================================================
-  # Conversations
+  # Conversations - Delegated to Conversations sub-context
   # ============================================================================
 
   @doc """
   List conversations for a user.
+  
+  See `Cgraph.Messaging.Conversations.list_conversations/2` for details.
   """
-  def list_conversations(user, opts \\ []) do
-    page = Keyword.get(opts, :page, 1)
-    per_page = Keyword.get(opts, :per_page, 20)
+  defdelegate list_conversations(user, opts \\ []), to: Conversations
 
-    query = from c in Conversation,
-      join: cp in ConversationParticipant, on: cp.conversation_id == c.id,
-      where: cp.user_id == ^user.id,
-      where: cp.left_at |> is_nil(),
-      order_by: [desc: c.last_message_at],
-      preload: [participants: :user]
+  @doc """
+  Alias for list_conversations with user first.
+  """
+  def list_user_conversations(user, opts \\ []), do: Conversations.list_conversations(user, opts)
+
+  @doc """
+  Get a conversation by ID.
+  
+  See `Cgraph.Messaging.Conversations.get_conversation/1` for details.
+  """
+  defdelegate get_conversation(id), to: Conversations
+
+  @doc """
+  Get a conversation for a specific user, ensuring they have access.
+  
+  See `Cgraph.Messaging.Conversations.get_user_conversation/2` for details.
+  """
+  defdelegate get_user_conversation(user, conversation_id), to: Conversations
+
+  @doc """
+  Authorize user access to a conversation.
+  
+  See `Cgraph.Messaging.Conversations.authorize_access/2` for details.
+  """
+  defdelegate authorize_access(user, conversation), to: Conversations
+
+  @doc """
+  Get or create a DM conversation between two users.
+  
+  See `Cgraph.Messaging.Conversations.get_or_create_dm/2` for details.
+  """
+  defdelegate get_or_create_dm(user, other_user), to: Conversations
+
+  @doc """
+  Create or get an existing conversation between users.
+  
+  See `Cgraph.Messaging.Conversations.create_or_get_conversation/2` for details.
+  """
+  defdelegate create_or_get_conversation(user, participant_ids), to: Conversations
+
+  @doc """
+  Create a new conversation.
+  
+  See `Cgraph.Messaging.Conversations.create_conversation/2` for details.
+  """
+  defdelegate create_conversation(user, attrs), to: Conversations
+
+  # Legacy: Inline implementations for backwards compatibility
+  # These will be removed in a future version
 
     total = Repo.aggregate(query, :count, :id)
 

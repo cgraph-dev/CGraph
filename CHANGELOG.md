@@ -6,6 +6,94 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.29] - 2026-01-09
+
+Major architecture improvements and code quality fixes. This release focuses on maintainability, performance monitoring, and preventing future bugs through better patterns and tooling.
+
+### Fixed
+
+- **React hooks violation in ConversationScreen** — The "Rendered more hooks than during the previous render" error was caused by a `useCallback` hook defined after an early return. Moved all hooks before any conditional returns to comply with React's Rules of Hooks.
+
+### Added
+
+#### Component Architecture Improvements
+
+- **Extracted conversation components** — Split the 4,945-line ConversationScreen.tsx into focused, memoized components:
+  - `MessageActionsMenu` — Discord/Telegram-style action sheet for message options
+  - `ReactionPickerModal` — Full emoji picker with categories
+  - `EmptyConversation` — Empty state with wave animations
+  - `AttachmentPreviewModal` — Preview attachments before sending
+  - `ImageViewerModal` — Full-screen image gallery with swipe
+  - `VideoPlayerModal` — Full-screen video player
+  - `TypingIndicator` — Animated typing dots
+  - `AttachmentPicker` — Bottom sheet for attachment options
+  - `MessageInput` — Full-featured message composition input
+  - `AnimatedMessageWrapper` — Message entrance animations
+  - `AnimatedReactionBubble` — Reaction tap animations
+
+All components are in `apps/mobile/src/components/conversation/` and exported via barrel file.
+
+#### ESLint Configuration for Mobile
+
+- **Added eslint.config.js** — Flat config format (ESLint 9+) with strict react-hooks rules
+- **react-hooks/rules-of-hooks: error** — Catches hook ordering violations at build time
+- **react-hooks/exhaustive-deps: warn** — Prevents stale closure bugs
+- TypeScript and React best practices enabled
+
+#### Standardized API Response Types
+
+- **New types/api.ts** — Comprehensive API response wrappers:
+  - `ApiResponse<T>` for single-item responses
+  - `PaginatedResponse<T>` for list endpoints
+  - `ApiError` for consistent error handling
+  - Type guards: `isSuccessResponse()`, `isErrorResponse()`, `hasMorePages()`
+  - Request types for common operations
+
+#### Backend Context Refactoring
+
+- **Split Messaging context** — The 837-line messaging.ex now delegates to focused sub-contexts:
+  - `Cgraph.Messaging.Conversations` — Conversation CRUD and participant management
+  - `Cgraph.Messaging.Messages` — Message CRUD, pinning, editing
+  - `Cgraph.Messaging.Reactions` — Message reactions
+  - `Cgraph.Messaging.ReadReceipts` — Read status and delivery tracking
+  - `Cgraph.Messaging.Search` — Message search functionality
+
+Backwards compatible — main module delegates to sub-contexts.
+
+#### Zustand Slices Pattern
+
+- **New stores/slices/chatSlices.ts** — Slice creators for better state organization:
+  - `createConversationsSlice` — Conversation list management
+  - `createMessagesSlice` — Message lists per conversation
+  - `createTypingSlice` — Typing indicator state
+  - `createReactionsSlice` — Optimistic reaction updates
+
+Enables incremental migration of existing stores.
+
+#### React Profiler Monitoring
+
+- **ProfilerWrapper component** — Development utility for performance monitoring:
+  - Wraps components with React.Profiler
+  - Configurable threshold for slow render logging
+  - In-memory metrics storage for analysis
+  - `getProfilerStats()` for summary statistics
+  - `withProfiler()` HOC for easy wrapping
+  - Automatically disabled in production
+
+Available in both web and mobile apps at `components/dev/`.
+
+### Changed
+
+- **Version aligned** — All packages now at 0.7.29 (root, backend, web, mobile)
+
+### Docs
+
+- Added JSDoc documentation to all new components
+- TypeScript interfaces exported for all props
+- Module-level @since tags for traceability
+
+---
+
 ## [0.7.28] - 2026-01-08
 
 Quick patch for iOS mobile authentication issues. If you've been trying to log in or register on the iOS app and getting weird errors, this should sort it out.
