@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.31  
-> Living documentation — E2EE, moderation system, and security hardening complete
+> Last updated: January 2026 | Version 0.7.32  
+> Living documentation — Enterprise scalability, WebRTC calling, and distributed systems complete
 
 ---
 
@@ -9,11 +9,11 @@
 
 CGraph is a production-ready communication platform that seamlessly integrates real-time messaging with persistent forum discussions. Built to address the limitations of platforms that either excel at ephemeral conversations or long-form discussions—but rarely both—CGraph provides a unified experience across web and mobile.
 
-The platform serves three primary use cases: (1) encrypted instant messaging between individuals and within group channels, (2) community-driven forum discussions with voting and moderation, and (3) a comprehensive friends system with presence tracking that connects users across all features.
+The platform serves three primary use cases: (1) encrypted instant messaging between individuals and within group channels, (2) community-driven forum discussions with voting and moderation, (3) real-time voice and video calls via WebRTC, and (4) a comprehensive friends system with presence tracking that connects users across all features.
 
 Authentication is flexible, supporting traditional email/password, OAuth social login (Google, Apple, Facebook, TikTok), and privacy-focused Web3 wallet authentication. Users choose their preferred identity model without compromise.
 
-Our technology stack prioritizes real-time performance and developer productivity. Elixir/Phoenix powers the backend, leveraging OTP's actor model for managing hundreds of thousands of concurrent WebSocket connections with minimal resource overhead. React 19 drives both web (via Vite) and mobile (via React Native/Expo) clients, sharing TypeScript types and business logic through a carefully architected monorepo. PostgreSQL 16 handles persistent data with advanced JSON operations and full-text search, while Phoenix Presence (CRDT-based) tracks online status without database writes.
+Our technology stack prioritizes real-time performance and developer productivity. Elixir/Phoenix powers the backend, leveraging OTP's actor model for managing hundreds of thousands of concurrent WebSocket connections with minimal resource overhead. React 19 drives both web (via Vite) and mobile (via React Native/Expo) clients, sharing TypeScript types and business logic through a carefully architected monorepo. PostgreSQL 16 handles persistent data with advanced JSON operations, while Meilisearch provides sub-50ms full-text search. Phoenix Presence (CRDT-based) tracks online status with tiered sampling for million-user channels.
 
 ---
 
@@ -49,25 +49,29 @@ Our technology stack prioritizes real-time performance and developer productivit
 │  │   REST API  │ │  WebSocket  │ │  Background │ │   Guardian  │   │
 │  │  Endpoints  │ │  Channels   │ │  Jobs(Oban) │ │    (Auth)   │   │
 │  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘   │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐                   │
+│  │   WebRTC    │ │  Meilisearch│ │ Distributed │                   │
+│  │  Signaling  │ │   Search    │ │ Rate Limit  │                   │
+│  └─────────────┘ └─────────────┘ └─────────────┘                   │
 └─────────────────────────────────────────────────────────────────────┘
                                    │
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         DATA LAYER                                   │
 ├─────────────────────────────────────────────────────────────────────┤
-│  PostgreSQL 16              │  Redis 7                              │
-│  - Primary data store       │  - Session cache                      │
-│  - Full-text search         │  - Presence tracking                  │
-│  - Ecto for ORM             │  - Rate limiting                      │
-│                             │  - Pub/Sub for clustering             │
+│  PostgreSQL 16              │  Redis 7                │ Meilisearch │
+│  - Primary data store       │  - Session cache        │ - Full-text │
+│  - Transactional safety     │  - Presence tracking    │ - Fuzzy     │
+│  - Ecto for ORM             │  - Rate limiting        │ - Typo-     │
+│                             │  - Pub/Sub clustering   │   tolerant  │
 └─────────────────────────────────────────────────────────────────────┘
                                    │
                                    ▼
 ┌─────────────────────────────────────────────────────────────────────┐
 │                      EXTERNAL SERVICES                               │
 ├─────────────────────────────────────────────────────────────────────┤
-│  Cloudflare R2    │  Stripe       │  Resend      │  Expo Push      │
-│  (File storage)   │  (Payments)   │  (Email)     │  (Mobile push)  │
+│  Cloudflare R2    │  Stripe       │  Resend      │  STUN/TURN      │
+│  (File storage)   │  (Payments)   │  (Email)     │  (NAT traversal)│
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -355,20 +359,131 @@ Security is a first-class concern throughout the architecture.
 
 ### Rate Limiting Strategy
 
+Distributed rate limiting using Redis with local ETS fallback:
+
 ```elixir
 # Tiered approach based on endpoint sensitivity
+# All limits enforced cluster-wide via Cgraph.RateLimiter.Distributed
 
-# Auth endpoints - strict
-plug RateLimiter, limit: 5, window: 60_000     # 5 per minute
+# Auth endpoints - strict (prevent brute force)
+plug RateLimiterV2, tier: :strict   # 20 per minute, Redis-backed
 
 # Normal API - reasonable
-plug RateLimiter, limit: 100, window: 60_000   # 100 per minute
+plug RateLimiterV2, tier: :standard # 100 per minute, sliding window
 
-# Search - moderate (expensive queries)
-plug RateLimiter, limit: 30, window: 60_000    # 30 per minute
+# Search - moderate (Meilisearch is fast, but limit abuse)
+plug RateLimiterV2, tier: :relaxed  # 500 per minute
 
-# File uploads - prevent abuse
-plug RateLimiter, limit: 10, window: 60_000    # 10 per minute
+# File uploads - prevent storage abuse
+plug RateLimiterV2, tier: :upload   # 10 per hour, token bucket
+```
+
+**Multi-node consistency**: All rate limits are synchronized across the cluster via Redis Lua scripts. When Redis is unavailable, limits fall back to per-node ETS tables.
+
+---
+
+## Scalability Architecture
+
+Enterprise-grade scalability built into the core, not bolted on later.
+
+### Search Engine (Meilisearch)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     SEARCH ARCHITECTURE                              │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Client Request                                                      │
+│       │                                                              │
+│       ▼                                                              │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │  Cgraph.Search (Context)                                     │    │
+│  │  - Routes to Meilisearch or PostgreSQL fallback              │    │
+│  │  - Unified API for all search types                          │    │
+│  └──────────────────────────────────────────────────────────────┘   │
+│            │                              │                          │
+│            ▼                              ▼                          │
+│  ┌──────────────────┐          ┌──────────────────┐                 │
+│  │   Meilisearch    │          │   PostgreSQL     │                 │
+│  │   (Primary)      │          │   (Fallback)     │                 │
+│  │                  │          │                  │                 │
+│  │  • <50ms latency │          │  • ILIKE queries │                 │
+│  │  • Typo-tolerant │          │  • Always works  │                 │
+│  │  • Fuzzy search  │          │  • Slower        │                 │
+│  └──────────────────┘          └──────────────────┘                 │
+│                                                                      │
+│  Performance Comparison:                                             │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │  Message Count   │  Meilisearch  │  PostgreSQL             │    │
+│  │  ───────────────────────────────────────────────────────── │    │
+│  │  10,000          │  <10ms        │  ~50ms                  │    │
+│  │  100,000         │  <20ms        │  ~200ms                 │    │
+│  │  1,000,000       │  <50ms        │  >1s                    │    │
+│  │  10,000,000      │  <100ms       │  timeout                │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### WebRTC Calling
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     WEBRTC ARCHITECTURE                              │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Alice (Caller)              Server                Bob (Callee)     │
+│       │                         │                       │           │
+│       │  1. create_room         │                       │           │
+│       │────────────────────────▶│                       │           │
+│       │                         │  2. ring              │           │
+│       │                         │──────────────────────▶│           │
+│       │                         │                       │           │
+│       │                         │  3. join_room         │           │
+│       │                         │◀──────────────────────│           │
+│       │                         │                       │           │
+│       │  4. SDP offer           │  5. SDP offer         │           │
+│       │────────────────────────▶│──────────────────────▶│           │
+│       │                         │                       │           │
+│       │  7. SDP answer          │  6. SDP answer        │           │
+│       │◀────────────────────────│◀──────────────────────│           │
+│       │                         │                       │           │
+│       │◀────── ICE candidates exchanged ───────────────▶│           │
+│       │                         │                       │           │
+│       │◀═══════════════ P2P Media Stream ══════════════▶│           │
+│                                                                      │
+│  Signaling: Phoenix Channels (CgraphWeb.CallChannel)                │
+│  ICE Servers: STUN (Google) + optional TURN                         │
+│  Media: Direct peer-to-peer (or SFU for 3+ participants)            │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+### Presence Sampling (Telegram-scale)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                     SAMPLED PRESENCE                                 │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Channel Size         Strategy              Memory Usage            │
+│  ─────────────────────────────────────────────────────────────────  │
+│  < 100 users          Full tracking         ~10KB                   │
+│  100 - 1,000          50% sampling          ~5KB + HLL              │
+│  1,000 - 10,000       10% sampling          ~1KB + HLL              │
+│  10,000 - 100,000     1% sampling           ~0.1KB + HLL            │
+│  > 100,000            0.1% sampling         ~12KB (HLL only)        │
+│                                                                      │
+│  HyperLogLog provides O(1) approximate counts with ±2% accuracy    │
+│  Memory: 12KB for 1M users vs 100MB for full tracking (8000x less) │
+│                                                                      │
+│  Client Experience:                                                  │
+│  ┌─────────────────────────────────────────────────────────────┐    │
+│  │  Small Channel:  "15 members, 7 online"     (exact)         │    │
+│  │  Large Channel:  "~1.2M members, ~45K online" (approximate) │    │
+│  └─────────────────────────────────────────────────────────────┘    │
+│                                                                      │
+└─────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -395,6 +510,7 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 - Add second Phoenix node for redundancy
 - Upgrade to dedicated Postgres (4GB)
 - Add Redis persistence
+- Deploy Meilisearch (256MB)
 
 **Monthly cost:** ~$100
 
@@ -408,6 +524,7 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 - 4+ Phoenix nodes behind load balancer
 - PostgreSQL read replicas
 - Redis cluster (3 nodes)
+- Meilisearch cluster (3 nodes)
 - Separate file storage to R2
 - Background job workers scaled independently
 
@@ -415,7 +532,7 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 
 **Bottlenecks to watch:**
 - Write throughput (partition hot tables)
-- Search performance (add pg_trgm indexes)
+- Presence broadcasts (enable sampled presence)
 - Push notification queues
 
 ### Stage 4: Serious Business (100K - 1M users)
@@ -423,9 +540,10 @@ Battle-tested growth strategy for CGraph, based on observed bottlenecks and indu
 **What changes:**
 - Multi-region deployment
 - PostgreSQL with Citus for sharding
-- Dedicated search cluster (Meilisearch or TypeSense)
+- Meilisearch with geo-distributed replicas
 - CDN for all static assets
 - Separate clusters for real-time vs. API
+- TURN server for restrictive networks
 
 **Monthly cost:** ~$5,000
 
@@ -622,6 +740,6 @@ Planned for 2026:
 
 ---
 
-*Last updated: January 2026 | v0.7.28*
+*Last updated: January 2026 | v0.7.32*
 
 — Burca Lucas

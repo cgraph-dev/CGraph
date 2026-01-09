@@ -45,6 +45,18 @@ defmodule Cgraph.Application do
       # Start Presence for online status tracking
       Cgraph.Presence,
 
+      # Start WebRTC call management
+      Cgraph.WebRTC,
+
+      # Start sampled presence for large channels
+      Cgraph.Presence.Sampled,
+
+      # Start distributed rate limiter
+      Cgraph.RateLimiter.Distributed,
+
+      # Start search indexer background service
+      Cgraph.Search.Indexer,
+
       # Start the data export service (GDPR compliance)
       Cgraph.DataExport,
 

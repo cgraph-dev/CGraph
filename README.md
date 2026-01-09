@@ -8,7 +8,7 @@
 
 [![CI Status](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml/badge.svg)](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.7.31-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.7.32-green.svg)](CHANGELOG.md)
 
 [Website](https://www.cgraph.org) · [Documentation](docs/) · [API Reference](docs/API.md) · [Contributing](CONTRIBUTING.md)
 
@@ -30,6 +30,7 @@ The whole thing runs on Elixir and Phoenix, which means it handles way more conc
 - Real-time chat with typing indicators and read receipts
 - End-to-end encryption using the Signal protocol (X3DH + AES-256-GCM)
 - Voice messages with waveform previews
+- Voice and video calls with up to 10 participants
 - Works on web and mobile with messages syncing instantly
 
 **Discord-style groups**

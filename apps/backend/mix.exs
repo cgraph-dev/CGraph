@@ -93,6 +93,7 @@ defmodule Cgraph.MixProject do
       # HTTP client (latest stable)
       {:tesla, "~> 1.15"},
       {:hackney, "~> 1.20"},
+      {:httpoison, "~> 2.2"},
 
       # Telemetry & monitoring (latest stable for OTP 28)
       {:telemetry_metrics, "~> 1.1"},

@@ -1530,6 +1530,7 @@ socket.connect();
 | `conversation:{conv_id}` | Direct message conversation |
 | `channel:{channel_id}` | Group channel |
 | `forum:{forum_id}` | Forum real-time updates |
+| `call:{room_id}` | Voice/video call signaling (WebRTC) |
 
 ### Joining a Channel
 
@@ -1642,6 +1643,158 @@ presence.onJoin((id, current, newPres) => {
 
 presence.onLeave((id, current, leftPres) => {
   console.log('User left:', id);
+});
+```
+
+### Call Channel (WebRTC Signaling)
+
+Voice and video calls use the `call:{room_id}` channel for WebRTC signaling.
+
+#### Joining a Call
+
+```javascript
+const callChannel = socket.channel(`call:${roomId}`, {
+  device: 'web',
+  media: { audio: true, video: true }
+});
+
+callChannel.join()
+  .receive('ok', ({ room, ice_servers }) => {
+    // Initialize WebRTC peer connections with ice_servers
+    console.log('Joined call room:', room);
+  })
+  .receive('error', ({ reason }) => {
+    console.error('Unable to join call:', reason);
+  });
+```
+
+#### Outgoing Events (Client → Server)
+
+**`signal:offer`** - Send SDP offer to peer
+```javascript
+callChannel.push('signal:offer', {
+  to: 'user_id_of_peer',
+  sdp: localDescription.sdp
+});
+```
+
+**`signal:answer`** - Send SDP answer to peer
+```javascript
+callChannel.push('signal:answer', {
+  to: 'user_id_of_peer',
+  sdp: localDescription.sdp
+});
+```
+
+**`signal:ice_candidate`** - Send ICE candidate
+```javascript
+peerConnection.onicecandidate = (event) => {
+  if (event.candidate) {
+    callChannel.push('signal:ice_candidate', {
+      candidate: event.candidate,
+      to: 'user_id_of_peer' // optional for 1:1 calls
+    });
+  }
+};
+```
+
+**`media:mute`** / **`media:unmute`** - Toggle microphone
+```javascript
+callChannel.push('media:mute', {});
+callChannel.push('media:unmute', {});
+```
+
+**`media:video_on`** / **`media:video_off`** - Toggle camera
+```javascript
+callChannel.push('media:video_on', {});
+callChannel.push('media:video_off', {});
+```
+
+**`media:screen_share`** - Toggle screen sharing
+```javascript
+callChannel.push('media:screen_share', { enabled: true });
+```
+
+**`call:ring`** - Ring specified users to join
+```javascript
+callChannel.push('call:ring', { user_ids: ['usr_abc', 'usr_xyz'] });
+```
+
+**`call:leave`** - Leave the call
+```javascript
+callChannel.push('call:leave', {});
+```
+
+**`call:end`** - End call for all participants (room owner only)
+```javascript
+callChannel.push('call:end', {});
+```
+
+#### Incoming Events (Server → Client)
+
+**`signal:offer`** - Received SDP offer from peer
+```javascript
+callChannel.on('signal:offer', async ({ from, sdp }) => {
+  const pc = getOrCreatePeerConnection(from);
+  await pc.setRemoteDescription(new RTCSessionDescription({ type: 'offer', sdp }));
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  callChannel.push('signal:answer', { to: from, sdp: answer.sdp });
+});
+```
+
+**`signal:answer`** - Received SDP answer from peer
+```javascript
+callChannel.on('signal:answer', async ({ from, sdp }) => {
+  const pc = getPeerConnection(from);
+  await pc.setRemoteDescription(new RTCSessionDescription({ type: 'answer', sdp }));
+});
+```
+
+**`signal:ice_candidate`** - Received ICE candidate from peer
+```javascript
+callChannel.on('signal:ice_candidate', async ({ from, candidate }) => {
+  const pc = getPeerConnection(from);
+  await pc.addIceCandidate(new RTCIceCandidate(candidate));
+});
+```
+
+**`participant:joined`** - Peer joined the call
+```javascript
+callChannel.on('participant:joined', ({ participant_id, device, media }) => {
+  console.log('Participant joined:', participant_id, 'with', device);
+  // Create peer connection for this participant
+});
+```
+
+**`participant:left`** - Peer left the call
+```javascript
+callChannel.on('participant:left', ({ participant_id }) => {
+  console.log('Participant left:', participant_id);
+  // Clean up peer connection
+});
+```
+
+**`participant:media_updated`** - Peer changed media state
+```javascript
+callChannel.on('participant:media_updated', ({ participant_id, media }) => {
+  console.log('Participant media update:', participant_id, media);
+  // Update UI for muted/video states
+});
+```
+
+**`call:ended`** - Call has ended (host ended or all left)
+```javascript
+callChannel.on('call:ended', () => {
+  // Clean up all peer connections and leave
+  callChannel.leave();
+});
+```
+
+**`call:error`** - Error occurred
+```javascript
+callChannel.on('call:error', ({ reason }) => {
+  console.error('Call error:', reason);
 });
 ```
 

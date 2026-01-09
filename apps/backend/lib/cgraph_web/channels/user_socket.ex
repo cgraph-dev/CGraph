@@ -14,6 +14,7 @@ defmodule CgraphWeb.UserSocket do
   channel "group:*", CgraphWeb.GroupChannel
   channel "user:*", CgraphWeb.UserChannel
   channel "presence:*", CgraphWeb.PresenceChannel
+  channel "call:*", CgraphWeb.CallChannel
 
   @impl true
   def connect(%{"token" => token}, socket, _connect_info) do

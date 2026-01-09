@@ -1,16 +1,14 @@
 defmodule CgraphWeb.Plugs.RateLimiterV2 do
   @moduledoc """
-  Production-grade rate limiter implementing the Sliding Window Log algorithm.
+  Production-grade rate limiter with distributed Redis backend.
 
   ## Algorithm
 
-  Unlike fixed-window counters that reset at boundaries (causing burst issues),
-  the sliding window log maintains precise request timestamps and counts requests
-  within a moving time window. This provides:
+  Uses `Cgraph.RateLimiter.Distributed` for cluster-wide rate limiting:
 
-  - **Accurate limiting**: No burst allowance at window boundaries
-  - **Memory efficient**: Uses sorted sets with automatic expiration
-  - **Distributed support**: Works with Redis for multi-node deployments
+  - **Redis backend**: Lua scripts for atomic operations across nodes
+  - **Local fallback**: Cachex when Redis is unavailable
+  - **Sliding window**: Precise request counting without burst issues
 
   ## Rate Limit Tiers
 
@@ -54,6 +52,8 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
 
   import Plug.Conn
   require Logger
+
+  alias Cgraph.RateLimiter.Distributed, as: DistributedRateLimiter
 
   @behaviour Plug
 
@@ -131,19 +131,32 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
 
   defp do_rate_limit_check(conn, opts) do
     start_time = System.monotonic_time()
-    key = build_rate_limit_key(conn, opts)
+    identifier = generate_identifier(conn, opts.by)
+    scope = tier_to_scope(opts.tier)
 
-    result = execute_rate_limit_check(key, opts)
+    # Use distributed rate limiter with Redis backend
+    result = DistributedRateLimiter.check(identifier, scope,
+      limit: opts.limit,
+      window: div(opts.window_ms, 1000)
+    )
 
     # Emit telemetry
     emit_telemetry(result, opts, start_time, conn)
 
     case result do
-      {:allow, remaining, reset_at} ->
+      :ok ->
+        # Get status for headers
+        status = DistributedRateLimiter.status(identifier, scope)
+        remaining = Map.get(status, :remaining, opts.limit - 1)
+        reset_at = System.system_time(:millisecond) + opts.window_ms
+
         conn
         |> add_rate_limit_headers(opts, remaining, reset_at)
 
-      {:deny, retry_after_ms, reset_at} ->
+      {:error, :rate_limited, info} ->
+        retry_after_ms = info.retry_after * 1000
+        reset_at = DateTime.to_unix(info.reset_at, :millisecond)
+
         conn
         |> add_rate_limit_headers(opts, 0, reset_at)
         |> add_retry_after_header(retry_after_ms)
@@ -151,6 +164,13 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
         |> halt()
     end
   end
+
+  defp tier_to_scope(:standard), do: :api
+  defp tier_to_scope(:strict), do: :login
+  defp tier_to_scope(:relaxed), do: :api
+  defp tier_to_scope(:burst), do: :message_burst
+  defp tier_to_scope(:upload), do: :upload
+  defp tier_to_scope(_), do: :api
 
   # ---------------------------------------------------------------------------
   # Key Generation
