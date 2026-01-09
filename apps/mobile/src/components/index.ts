@@ -46,3 +46,6 @@ export { default as Select } from './Select';
 // Voice Messages
 export { default as VoiceMessageRecorder } from './VoiceMessageRecorder';
 export { default as VoiceMessagePlayer } from './VoiceMessagePlayer';
+
+// Attachment Picker
+export { default as TelegramAttachmentPicker } from './TelegramAttachmentPicker';

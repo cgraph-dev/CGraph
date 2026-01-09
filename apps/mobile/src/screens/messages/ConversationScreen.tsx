@@ -38,10 +38,43 @@ import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
 import { MessagesStackParamList, Message, Conversation, ConversationParticipant, UserBasic } from '../../types';
-import { VoiceMessageRecorder, VoiceMessagePlayer } from '../../components';
+import { VoiceMessageRecorder, VoiceMessagePlayer, TelegramAttachmentPicker } from '../../components';
 import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('ConversationScreen');
+
+// Helper to get correct MIME type from file extension or asset
+const getMimeType = (filename: string | undefined, defaultType: string): string => {
+  if (!filename) return defaultType;
+  
+  const ext = filename.toLowerCase().split('.').pop();
+  const mimeMap: Record<string, string> = {
+    // Images
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+    'heic': 'image/heic',
+    'heif': 'image/heif',
+    // Videos
+    'mp4': 'video/mp4',
+    'mov': 'video/quicktime',
+    'm4v': 'video/x-m4v',
+    'webm': 'video/webm',
+    '3gp': 'video/3gpp',
+    // Documents
+    'pdf': 'application/pdf',
+    'doc': 'application/msword',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'xls': 'application/vnd.ms-excel',
+    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'txt': 'text/plain',
+    'csv': 'text/csv',
+  };
+  
+  return ext ? (mimeMap[ext] || defaultType) : defaultType;
+};
 
 // Helper to process reactions and set hasReacted based on current user
 const processMessagesWithReactions = (messages: Message[], currentUserId: string | undefined): Message[] => {
@@ -1995,11 +2028,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
         for (const image of images) {
           const formData = new FormData();
           const name = image.name || `photo_${Date.now()}.jpg`;
+          // Use helper to get correct MIME type from filename, fallback to asset's mimeType or jpeg
+          const mimeType = getMimeType(name, image.mimeType || 'image/jpeg');
           
           formData.append('file', {
             uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,
             name,
-            type: image.mimeType || 'image/jpeg',
+            type: mimeType,
           } as any);
           formData.append('context', 'message');
           
@@ -2085,22 +2120,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
       const defaultExt = type === 'image' ? 'jpg' : type === 'video' ? 'mp4' : 'bin';
       const name = filename || `${type}_${Date.now()}.${defaultExt}`;
       
-      // Determine mime type based on file extension for better accuracy
-      let mimeType = type === 'image' ? 'image/jpeg' : type === 'video' ? 'video/mp4' : 'application/octet-stream';
-      if (filename) {
-        const ext = filename.toLowerCase().split('.').pop();
-        if (ext === 'png') mimeType = 'image/png';
-        else if (ext === 'gif') mimeType = 'image/gif';
-        else if (ext === 'webp') mimeType = 'image/webp';
-        else if (ext === 'pdf') mimeType = 'application/pdf';
-        else if (ext === 'doc' || ext === 'docx') mimeType = 'application/msword';
-        else if (ext === 'xls' || ext === 'xlsx') mimeType = 'application/vnd.ms-excel';
-        else if (ext === 'txt') mimeType = 'text/plain';
-        else if (ext === 'mp4') mimeType = 'video/mp4';
-        else if (ext === 'mov') mimeType = 'video/quicktime';
-        else if (ext === 'avi') mimeType = 'video/x-msvideo';
-        else if (ext === 'webm') mimeType = 'video/webm';
-      }
+      // Use helper for accurate MIME type detection
+      const defaultMime = type === 'image' ? 'image/jpeg' : type === 'video' ? 'video/mp4' : 'application/octet-stream';
+      const mimeType = getMimeType(name, defaultMime);
       
       formData.append('file', {
         uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
@@ -2672,73 +2694,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
       </View>
     );
   };
-  
-  // Attachment menu modal
-  const AttachmentMenu = () => {
-    const slideUp = attachMenuAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [300, 0],
-    });
+
+  // Handle assets selected from TelegramAttachmentPicker
+  const handleAttachmentPickerSelect = useCallback((assets: Array<{
+    uri: string;
+    type: 'image' | 'video' | 'file';
+    name?: string;
+    mimeType?: string;
+    duration?: number;
+  }>) => {
+    if (assets.length === 0) return;
     
-    const attachOptions = [
-      { icon: 'image-outline', label: 'Photo', color: '#10b981', onPress: handlePickImage },
-      { icon: 'camera-outline', label: 'Camera', color: '#3b82f6', onPress: handleTakePhoto },
-      { icon: 'document-outline', label: 'File', color: '#8b5cf6', onPress: handlePickDocument },
-      { icon: 'location-outline', label: 'Location', color: '#f59e0b', onPress: () => {
-        closeAttachMenu();
-        Alert.alert('Location Sharing', 'Location sharing is coming soon!');
-      }},
-    ];
+    const newAttachments = assets.map(asset => ({
+      uri: asset.uri,
+      type: asset.type,
+      name: asset.name,
+      mimeType: asset.mimeType,
+      duration: asset.duration,
+    }));
     
-    if (!showAttachMenu) return null;
-    
-    return (
-      <Modal
-        visible={showAttachMenu}
-        transparent
-        animationType="none"
-        onRequestClose={closeAttachMenu}
-      >
-        <View style={styles.attachMenuOverlay}>
-          <TouchableOpacity 
-            style={styles.attachMenuBackdrop}
-            activeOpacity={1}
-            onPress={closeAttachMenu}
-          />
-          <Animated.View style={[
-            styles.attachMenuContainer,
-            { backgroundColor: colors.surface, transform: [{ translateY: slideUp }] }
-          ]}>
-            <TouchableOpacity 
-              style={styles.attachMenuCloseButton}
-              onPress={closeAttachMenu}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Ionicons name="close" size={24} color={colors.textSecondary} />
-            </TouchableOpacity>
-            <View style={[styles.attachMenuHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.attachMenuTitle, { color: colors.text }]}>Share</Text>
-            
-            <View style={styles.attachMenuGrid}>
-              {attachOptions.map((option, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={styles.attachMenuItem}
-                  onPress={option.onPress}
-                  activeOpacity={0.7}
-                >
-                  <View style={[styles.attachMenuIcon, { backgroundColor: option.color + '20' }]}>
-                    <Ionicons name={option.icon as any} size={28} color={option.color} />
-                  </View>
-                  <Text style={[styles.attachMenuLabel, { color: colors.text }]}>{option.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </Animated.View>
-        </View>
-      </Modal>
-    );
-  };
+    setPendingAttachments(prev => [...prev, ...newAttachments]);
+    openAttachmentPreview();
+  }, [openAttachmentPreview]);
 
   // Message Actions Menu Component - Modern Discord/Telegram style
   const MessageActionsMenu = () => {
@@ -3165,7 +3142,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       keyboardVerticalOffset={90}
     >
-      <AttachmentMenu />
+      {/* Telegram-style Attachment Picker */}
+      <TelegramAttachmentPicker
+        visible={showAttachMenu}
+        onClose={closeAttachMenu}
+        onSelectAssets={handleAttachmentPickerSelect}
+        maxSelection={10}
+      />
       <MessageActionsMenu />
       <ReactionPickerModal />
       
@@ -4097,65 +4080,6 @@ const styles = StyleSheet.create({
   },
   starterText: {
     fontSize: 13,
-  },
-  // Attachment menu styles
-  attachMenuOverlay: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  attachMenuBackdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  attachMenuContainer: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 12,
-    paddingBottom: 40,
-    paddingHorizontal: 20,
-    position: 'relative',
-  },
-  attachMenuCloseButton: {
-    position: 'absolute',
-    top: 12,
-    right: 16,
-    zIndex: 10,
-    padding: 4,
-  },
-  attachMenuHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    alignSelf: 'center',
-    marginBottom: 16,
-  },
-  attachMenuTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  attachMenuGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    flexWrap: 'wrap',
-  },
-  attachMenuItem: {
-    alignItems: 'center',
-    width: '25%',
-    marginBottom: 16,
-  },
-  attachMenuIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  attachMenuLabel: {
-    fontSize: 12,
-    fontWeight: '500',
   },
   // Legacy empty state (kept for compatibility)
   emptyContainer: {

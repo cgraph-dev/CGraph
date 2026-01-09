@@ -14,8 +14,8 @@ defmodule CgraphWeb.API.V1.UploadController do
   @max_video_size 100 * 1024 * 1024 # 100 MB
   @max_file_size 25 * 1024 * 1024   # 25 MB
 
-  @allowed_image_types ~w(image/jpeg image/png image/gif image/webp)
-  @allowed_video_types ~w(video/mp4 video/webm video/quicktime)
+  @allowed_image_types ~w(image/jpeg image/png image/gif image/webp image/heic image/heif)
+  @allowed_video_types ~w(video/mp4 video/webm video/quicktime video/x-m4v video/3gpp)
   @allowed_document_types ~w(
     application/pdf
     application/msword
