@@ -139,11 +139,13 @@ jobs:
       - name: Run Credo
         working-directory: apps/backend
         run: mix credo --strict
+        # TODO: Remove continue-on-error once codebase passes Credo checks
         continue-on-error: true
 
       - name: Compile
         working-directory: apps/backend
         run: mix compile --warnings-as-errors
+        # TODO: Remove continue-on-error once all warnings are fixed
         continue-on-error: true
 
       - name: Run tests
@@ -153,6 +155,7 @@ jobs:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cgraph_test
           REDIS_URL: redis://localhost:6379
         run: mix test --cover --export-coverage default
+        # TODO: Remove continue-on-error once all tests pass
         continue-on-error: true
 
       - name: Upload backend coverage
@@ -187,6 +190,7 @@ jobs:
 
       - name: Run tests
         run: pnpm run test --filter=@cgraph/web -- --run --coverage
+        # TODO: Remove continue-on-error once all tests pass
         continue-on-error: true
 
       - name: Build
@@ -224,6 +228,7 @@ jobs:
 
       - name: Run tests
         run: pnpm run test --filter=@cgraph/mobile -- --ci --coverage
+        # TODO: Remove continue-on-error once all tests pass
         continue-on-error: true
 
       - name: Upload mobile coverage
@@ -300,6 +305,7 @@ jobs:
       - name: Run Sobelow security scan
         working-directory: apps/backend
         run: mix sobelow --config
+        # Security scan may report findings that need review
         continue-on-error: true
 
       - name: Install pnpm
@@ -318,4 +324,5 @@ jobs:
 
       - name: Run pnpm audit
         run: pnpm audit --audit-level=high
+        # Audit may report findings in dependencies that need review
         continue-on-error: true
