@@ -7,6 +7,7 @@
  * @see https://storybook.js.org/docs/configure#configure-story-rendering
  * @since v0.7.30
  */
+import React from 'react';
 import type { Preview } from '@storybook/react';
 import '../src/index.css';
 

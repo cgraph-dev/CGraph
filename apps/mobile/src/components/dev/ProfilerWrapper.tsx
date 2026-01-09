@@ -13,13 +13,12 @@ import React, { Profiler, ProfilerOnRenderCallback, useCallback, useRef } from '
 
 interface RenderMetric {
   id: string;
-  phase: 'mount' | 'update';
+  phase: 'mount' | 'update' | 'nested-update';
   actualDuration: number;
   baseDuration: number;
   startTime: number;
   commitTime: number;
-  timestamp: number;
-}
+  timestamp: number;}
 
 interface ProfilerWrapperProps {
   /** Unique identifier for this profiler instance */
@@ -124,7 +123,7 @@ export function ProfilerWrapper({
   const handleRender: ProfilerOnRenderCallback = useCallback(
     (
       profilerId: string,
-      phase: 'mount' | 'update',
+      phase: 'mount' | 'update' | 'nested-update',
       actualDuration: number,
       baseDuration: number,
       startTime: number,
