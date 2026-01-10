@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForumStore, Forum } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
+import { GlassCard } from '@/components/ui/GlassCard';
+import { motion, AnimatePresence } from 'framer-motion';
+import { HapticFeedback } from '@/lib/haptics';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -13,8 +16,8 @@ import {
   UsersIcon,
   ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
-import { 
-  ArrowUpIcon as ArrowUpIconSolid, 
+import {
+  ArrowUpIcon as ArrowUpIconSolid,
   ArrowDownIcon as ArrowDownIconSolid,
   TrophyIcon as TrophyIconSolid,
 } from '@heroicons/react/24/solid';
@@ -73,86 +76,205 @@ export default function ForumLeaderboard() {
   const sortLabel = selectedSort!.label;
 
   return (
-    <div className="flex-1 flex overflow-hidden">
+    <div className="flex-1 flex overflow-hidden relative">
+      {/* Gradient Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-dark-950 via-dark-900 to-dark-950 pointer-events-none" />
+
+      {/* Ambient Particles */}
+      {[...Array(10)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 bg-yellow-500/30 rounded-full pointer-events-none"
+          initial={{
+            x: Math.random() * window.innerWidth,
+            y: Math.random() * window.innerHeight,
+            scale: Math.random() * 0.5 + 0.5,
+            opacity: 0,
+          }}
+          animate={{
+            y: [null, Math.random() * window.innerHeight],
+            x: [null, Math.random() * window.innerWidth],
+            opacity: [0, 0.6, 0],
+            scale: [null, Math.random() * 1.5 + 0.5],
+          }}
+          transition={{
+            duration: Math.random() * 12 + 18,
+            repeat: Infinity,
+            delay: i * 0.7,
+            ease: 'linear',
+          }}
+        />
+      ))}
+
       {/* Main Leaderboard */}
-      <div className="flex-1 overflow-y-auto">
-        {/* Header */}
-        <div className="sticky top-0 z-10 bg-dark-800/95 backdrop-blur border-b border-dark-600 px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <TrophyIconSolid className="h-8 w-8 text-yellow-500" />
+      <div className="flex-1 overflow-y-auto relative z-10">
+        {/* Header - Glassmorphic */}
+        <div className="sticky top-0 z-10 bg-dark-900/80 backdrop-blur-xl border-b border-yellow-500/20 px-4 py-3">
+          <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 via-orange-500/5 to-transparent pointer-events-none" />
+
+          <div className="flex items-center justify-between relative z-10">
+            <motion.div
+              className="flex items-center gap-3"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              <motion.div
+                animate={{
+                  rotate: [0, 10, -10, 0],
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  repeatDelay: 3,
+                }}
+              >
+                <TrophyIconSolid
+                  className="h-8 w-8 text-yellow-500"
+                  style={{
+                    filter: 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.6))',
+                  }}
+                />
+              </motion.div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Forum Competition</h1>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-300 via-yellow-500 to-orange-500 bg-clip-text text-transparent">
+                  Forum Competition
+                </h1>
                 <p className="text-sm text-gray-400">Vote for your favorite forums!</p>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Sort Dropdown */}
+            {/* Sort Dropdown - Enhanced */}
             <div className="relative">
-              <button
-                onClick={() => setShowSortMenu(!showSortMenu)}
-                className="flex items-center gap-2 px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-white transition-colors"
+              <motion.button
+                onClick={() => {
+                  HapticFeedback.light();
+                  setShowSortMenu(!showSortMenu);
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-4 py-2 bg-dark-700/80 backdrop-blur-sm hover:bg-dark-600 rounded-lg text-white transition-all"
+                style={{
+                  boxShadow: '0 0 15px rgba(16, 185, 129, 0.1)',
+                }}
               >
                 <SortIcon className="h-5 w-5" />
                 <span>{sortLabel}</span>
-              </button>
+              </motion.button>
 
-              {showSortMenu && (
-                <div className="absolute right-0 mt-2 w-48 bg-dark-700 border border-dark-600 rounded-lg shadow-xl overflow-hidden z-20">
-                  {sortOptions.map((option) => (
-                    <button
-                      key={option.value}
-                      onClick={() => {
-                        setSort(option.value);
-                        setShowSortMenu(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-dark-600 transition-colors ${
-                        sort === option.value ? 'bg-dark-600 text-primary-400' : 'text-gray-300'
-                      }`}
+              <AnimatePresence>
+                {showSortMenu && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setShowSortMenu(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                      className="absolute right-0 mt-2 w-48 z-20"
                     >
-                      <option.icon className="h-5 w-5" />
-                      <span>{option.label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
+                      <GlassCard variant="frosted" className="overflow-hidden p-1">
+                        {sortOptions.map((option, index) => (
+                          <motion.button
+                            key={option.value}
+                            onClick={() => {
+                              HapticFeedback.light();
+                              setSort(option.value);
+                              setShowSortMenu(false);
+                            }}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.05 }}
+                            whileHover={{ scale: 1.02, x: 2 }}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded transition-all ${
+                              sort === option.value
+                                ? 'bg-gradient-to-r from-primary-500/20 to-purple-500/20 text-primary-400'
+                                : 'text-gray-300 hover:bg-primary-500/10'
+                            }`}
+                          >
+                            <option.icon className="h-5 w-5" />
+                            <span>{option.label}</span>
+                          </motion.button>
+                        ))}
+                      </GlassCard>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
           </div>
         </div>
 
-        {/* Leaderboard List */}
+        {/* Leaderboard List - With staggered animations */}
         <div className="p-4 space-y-3">
-          {isLoadingLeaderboard && leaderboard.length === 0 ? (
-            <div className="space-y-3">
-              {[...Array(5)].map((_, i) => (
-                <div key={i} className="animate-pulse bg-dark-700 rounded-lg h-24" />
-              ))}
-            </div>
-          ) : (
-            <>
-              {leaderboard.map((forum, index) => (
-                <ForumLeaderboardCard
-                  key={forum.id}
-                  forum={forum}
-                  rank={index + 1}
-                  onVote={handleVote}
-                  isAuthenticated={isAuthenticated}
-                />
-              ))}
+          <AnimatePresence mode="popLayout">
+            {isLoadingLeaderboard && leaderboard.length === 0 ? (
+              <div className="space-y-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="animate-pulse bg-dark-700/50 backdrop-blur-sm rounded-lg h-24" />
+                ))}
+              </div>
+            ) : (
+              <>
+                {leaderboard.map((forum, index) => (
+                  <motion.div
+                    key={forum.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 300,
+                      damping: 20,
+                      delay: index * 0.05,
+                    }}
+                  >
+                    <ForumLeaderboardCard
+                      forum={forum}
+                      rank={index + 1}
+                      onVote={handleVote}
+                      isAuthenticated={isAuthenticated}
+                    />
+                  </motion.div>
+                ))}
 
-              {/* Load More Button */}
-              {leaderboardMeta && 
-               leaderboardMeta.page * leaderboardMeta.perPage < leaderboardMeta.total && (
-                <button
-                  onClick={loadMore}
-                  disabled={isLoadingLeaderboard}
-                  className="w-full py-3 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-lg transition-colors"
-                >
-                  {isLoadingLeaderboard ? 'Loading...' : 'Load More'}
-                </button>
-              )}
-            </>
-          )}
+                {/* Load More Button - Enhanced */}
+                {leaderboardMeta &&
+                  leaderboardMeta.page * leaderboardMeta.perPage < leaderboardMeta.total && (
+                    <motion.button
+                      onClick={() => {
+                        HapticFeedback.light();
+                        loadMore();
+                      }}
+                      disabled={isLoadingLeaderboard}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="w-full py-3 bg-dark-700/80 backdrop-blur-sm hover:bg-dark-600 text-gray-300 rounded-lg transition-all font-medium"
+                      style={{
+                        boxShadow: '0 0 15px rgba(16, 185, 129, 0.1)',
+                      }}
+                    >
+                      {isLoadingLeaderboard ? (
+                        <div className="flex items-center justify-center gap-2">
+                          <motion.div
+                            className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          />
+                          <span>Loading...</span>
+                        </div>
+                      ) : (
+                        'Load More Forums'
+                      )}
+                    </motion.button>
+                  )}
+              </>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
@@ -209,26 +331,46 @@ interface ForumLeaderboardCardProps {
 
 function ForumLeaderboardCard({ forum, rank, onVote, isAuthenticated }: ForumLeaderboardCardProps) {
   const getRankBadge = (rank: number) => {
-    if (rank === 1) return { bg: 'bg-yellow-500', text: 'text-yellow-900', emoji: '🥇' };
-    if (rank === 2) return { bg: 'bg-gray-300', text: 'text-gray-900', emoji: '🥈' };
-    if (rank === 3) return { bg: 'bg-orange-400', text: 'text-orange-900', emoji: '🥉' };
-    return { bg: 'bg-dark-600', text: 'text-gray-300', emoji: null };
+    if (rank === 1) return { bg: 'bg-gradient-to-br from-yellow-400 to-yellow-600', text: 'text-yellow-900', emoji: '🥇', glow: '0 0 20px rgba(245, 158, 11, 0.5)' };
+    if (rank === 2) return { bg: 'bg-gradient-to-br from-gray-300 to-gray-400', text: 'text-gray-900', emoji: '🥈', glow: '0 0 15px rgba(156, 163, 175, 0.4)' };
+    if (rank === 3) return { bg: 'bg-gradient-to-br from-orange-400 to-orange-500', text: 'text-orange-900', emoji: '🥉', glow: '0 0 15px rgba(251, 146, 60, 0.4)' };
+    return { bg: 'bg-dark-600', text: 'text-gray-300', emoji: null, glow: 'none' };
   };
 
   const badge = getRankBadge(rank);
 
   return (
-    <div className="flex bg-dark-700 hover:bg-dark-600 rounded-lg overflow-hidden transition-colors group">
-      {/* Voting Column */}
-      <div className="flex flex-col items-center justify-center w-16 bg-dark-800 p-2 gap-1">
-        <button
-          onClick={() => onVote(forum, 1)}
+    <GlassCard
+      variant="crystal"
+      className="group relative overflow-hidden"
+    >
+      {/* Hover gradient glow */}
+      <motion.div
+        className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 via-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none"
+        transition={{ duration: 0.3 }}
+      />
+
+      <div className="flex relative z-10">
+      {/* Voting Column - Enhanced */}
+      <div className="flex flex-col items-center justify-center w-16 bg-dark-800/50 backdrop-blur-sm p-2 gap-1">
+        <motion.button
+          onClick={() => {
+            if (isAuthenticated) {
+              HapticFeedback.light();
+              onVote(forum, 1);
+            }
+          }}
           disabled={!isAuthenticated}
+          whileHover={isAuthenticated ? { scale: 1.1 } : {}}
+          whileTap={isAuthenticated ? { scale: 0.9 } : {}}
           className={`p-1 rounded transition-colors ${
             forum.userVote === 1
               ? 'text-orange-500'
               : 'text-gray-500 hover:text-orange-400'
           } ${!isAuthenticated ? 'cursor-not-allowed opacity-50' : ''}`}
+          style={{
+            filter: forum.userVote === 1 ? 'drop-shadow(0 0 6px rgba(249, 115, 22, 0.6))' : 'none',
+          }}
           title={isAuthenticated ? 'Upvote' : 'Login to vote'}
         >
           {forum.userVote === 1 ? (
@@ -236,22 +378,41 @@ function ForumLeaderboardCard({ forum, rank, onVote, isAuthenticated }: ForumLea
           ) : (
             <ArrowUpIcon className="h-6 w-6" />
           )}
-        </button>
-        
-        <span className={`font-bold text-lg ${
-          forum.score > 0 ? 'text-orange-400' : forum.score < 0 ? 'text-blue-400' : 'text-gray-400'
-        }`}>
-          {forum.score}
-        </span>
+        </motion.button>
 
-        <button
-          onClick={() => onVote(forum, -1)}
+        <motion.span
+          key={forum.score}
+          initial={{ scale: 1.3, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className={`font-bold text-lg ${
+            forum.score > 0
+              ? 'bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent'
+              : forum.score < 0
+              ? 'bg-gradient-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent'
+              : 'text-gray-400'
+          }`}
+        >
+          {forum.score}
+        </motion.span>
+
+        <motion.button
+          onClick={() => {
+            if (isAuthenticated) {
+              HapticFeedback.light();
+              onVote(forum, -1);
+            }
+          }}
           disabled={!isAuthenticated}
+          whileHover={isAuthenticated ? { scale: 1.1 } : {}}
+          whileTap={isAuthenticated ? { scale: 0.9 } : {}}
           className={`p-1 rounded transition-colors ${
             forum.userVote === -1
               ? 'text-blue-500'
               : 'text-gray-500 hover:text-blue-400'
           } ${!isAuthenticated ? 'cursor-not-allowed opacity-50' : ''}`}
+          style={{
+            filter: forum.userVote === -1 ? 'drop-shadow(0 0 6px rgba(59, 130, 246, 0.6))' : 'none',
+          }}
           title={isAuthenticated ? 'Downvote' : 'Login to vote'}
         >
           {forum.userVote === -1 ? (
@@ -259,18 +420,23 @@ function ForumLeaderboardCard({ forum, rank, onVote, isAuthenticated }: ForumLea
           ) : (
             <ArrowDownIcon className="h-6 w-6" />
           )}
-        </button>
+        </motion.button>
       </div>
 
-      {/* Rank Badge */}
+      {/* Rank Badge - Enhanced */}
       <div className="flex items-center px-3">
-        <div className={`w-10 h-10 rounded-full ${badge.bg} flex items-center justify-center`}>
+        <motion.div
+          className={`w-10 h-10 rounded-full ${badge.bg} flex items-center justify-center`}
+          style={{ boxShadow: badge.glow }}
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+        >
           {badge.emoji ? (
             <span className="text-xl">{badge.emoji}</span>
           ) : (
             <span className={`font-bold ${badge.text}`}>{rank}</span>
           )}
-        </div>
+        </motion.div>
       </div>
 
       {/* Forum Info */}
