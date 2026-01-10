@@ -1,8 +1,8 @@
 {
   "name": "cgraph",
-  "version": "0.7.34",
+  "version": "0.7.35",
   "private": true,
-  "description": "CGraph - Enterprise messaging platform with E2EE messaging, group channels, and public forums",
+  "description": "CGraph - Enterprise messaging platform with Signal Protocol encryption, AI intelligence, holographic UI, and spatial audio",
   "author": "CGraph Team",
   "license": "UNLICENSED",
   "workspaces": [

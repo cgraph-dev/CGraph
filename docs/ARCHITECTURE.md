@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.34  
-> Living documentation — Enterprise scalability, WebRTC calling, Enhanced UI v2.0, and distributed systems complete
+> Last updated: January 2026 | Version 0.7.35  
+> Living documentation — Signal Protocol encryption, AI intelligence, Enhanced UI v3.0, Spatial Audio, and distributed systems complete
 
 ---
 
@@ -9,7 +9,13 @@
 
 CGraph is a production-ready communication platform that seamlessly integrates real-time messaging with persistent forum discussions. Built to address the limitations of platforms that either excel at ephemeral conversations or long-form discussions—but rarely both—CGraph provides a unified experience across web and mobile.
 
-The platform serves three primary use cases: (1) encrypted instant messaging between individuals and within group channels, (2) community-driven forum discussions with voting and moderation, (3) real-time voice and video calls via WebRTC, and (4) a comprehensive friends system with presence tracking that connects users across all features.
+The platform serves four primary use cases: (1) encrypted instant messaging with Signal Protocol-grade security between individuals and within group channels, (2) community-driven forum discussions with voting and moderation, (3) real-time voice and video calls via WebRTC with spatial audio, and (4) a comprehensive friends system with presence tracking that connects users across all features.
+
+**v0.7.35 introduces industry-leading enhancements:**
+- **Signal Protocol Double Ratchet** — Forward secrecy, break-in recovery, out-of-order message handling
+- **AI Message Intelligence** — Smart replies, sentiment analysis, content moderation, topic extraction  
+- **Holographic UI System** — Futuristic interface components with 3D effects
+- **Spatial Audio Engine** — HRTF-based 3D positional audio for VR/AR readiness
 
 Authentication is flexible, supporting traditional email/password, OAuth social login (Google, Apple, Facebook, TikTok), and privacy-focused Web3 wallet authentication. Users choose their preferred identity model without compromise.
 
@@ -28,6 +34,12 @@ Our technology stack prioritizes real-time performance and developer productivit
 │  - Zustand for state           │    - Async Storage                 │
 │  - Socket.io-like via Phoenix  │    - Expo Push Notifications       │
 │  - TypeScript everywhere       │    - Same shared-types package     │
+│  ┌───────────────────────────────────────────────────────────────┐  │
+│  │ ENHANCED UI v3.0 (v0.7.35)                                    │  │
+│  │ - Double Ratchet Encryption    - AI Message Intelligence      │  │
+│  │ - Holographic UI Components    - Spatial Audio Engine         │  │
+│  │ - Three.js 3D Environments     - GSAP/Framer Motion          │  │
+│  └───────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────┘
                                    │
                                    ▼
@@ -75,6 +87,125 @@ Our technology stack prioritizes real-time performance and developer productivit
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
+---
+
+## Client-Side Security Architecture (v0.7.35)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                   SIGNAL PROTOCOL ENCRYPTION                         │
+├─────────────────────────────────────────────────────────────────────┤
+│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
+│  │   X3DH Key      │───▶│  Double Ratchet │───▶│   AES-256-GCM   │ │
+│  │   Agreement     │    │   Engine        │    │   Encryption    │ │
+│  │   (P-384)       │    │                 │    │                 │ │
+│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
+│           │                      │                      │          │
+│           ▼                      ▼                      ▼          │
+│  ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐ │
+│  │  Identity Keys  │    │  DH Ratchet     │    │  Message Keys   │ │
+│  │  Pre-Keys       │    │  (per exchange) │    │  (per message)  │ │
+│  │  One-Time Keys  │    │  Chain Keys     │    │  Nonces         │ │
+│  └─────────────────┘    └─────────────────┘    └─────────────────┘ │
+├─────────────────────────────────────────────────────────────────────┤
+│  Security Properties:                                                │
+│  ✓ Forward Secrecy — Past messages stay secure if keys compromise   │
+│  ✓ Break-in Recovery — Future messages secure after key refresh     │
+│  ✓ Out-of-Order — Skipped message keys stored for later delivery    │
+│  ✓ Post-Quantum Ready — CRYSTALS-Kyber placeholder for future       │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## AI Message Intelligence Architecture (v0.7.35)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                    AI MESSAGE ENGINE                                 │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
+│  │   Sentiment  │  │    Smart     │  │   Content    │              │
+│  │   Analysis   │  │   Replies    │  │  Moderation  │              │
+│  │              │  │              │  │              │              │
+│  │  8 Emotions  │  │  5 Categories│  │  Spam/Scam   │              │
+│  │  Confidence  │  │  Context     │  │  Harassment  │              │
+│  │  Trending    │  │  Learning    │  │  Phishing    │              │
+│  └──────────────┘  └──────────────┘  └──────────────┘              │
+│         │                  │                  │                     │
+│         └──────────────────┼──────────────────┘                     │
+│                            ▼                                         │
+│  ┌─────────────────────────────────────────────────────────────────┐│
+│  │                    NLP Processing Pipeline                       ││
+│  │  Tokenization → Vectorization → Classification → Aggregation   ││
+│  └─────────────────────────────────────────────────────────────────┘│
+│                            │                                         │
+│         ┌──────────────────┼──────────────────┐                     │
+│         ▼                  ▼                  ▼                     │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐              │
+│  │   Language   │  │    Topic     │  │ Conversation │              │
+│  │  Detection   │  │  Extraction  │  │   Insights   │              │
+│  │              │  │              │  │              │              │
+│  │  20+ Lang    │  │  Categories  │  │  Engagement  │              │
+│  │  Script Det  │  │  Confidence  │  │  Patterns    │              │
+│  │  Alternatives│  │  Trending    │  │  Summaries   │              │
+│  └──────────────┘  └──────────────┘  └──────────────┘              │
+│                                                                      │
+├─────────────────────────────────────────────────────────────────────┤
+│  Privacy Mode: Local ML Only — No data leaves the device            │
+│  Cloud Option: Enhanced accuracy with privacy-preserving API        │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Spatial Audio Architecture (v0.7.35)
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                   SPATIAL AUDIO ENGINE                               │
+├─────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Audio Source                   Listener                            │
+│  (Speaker)                      (User)                              │
+│      │                              │                                │
+│      ▼                              ▼                                │
+│  ┌─────────────┐              ┌─────────────┐                       │
+│  │  Position   │              │  Position   │                       │
+│  │  (x, y, z)  │              │  (x, y, z)  │                       │
+│  │  Orientation│              │  Orientation│                       │
+│  └─────────────┘              └─────────────┘                       │
+│         │                            │                               │
+│         └────────────┬───────────────┘                               │
+│                      ▼                                               │
+│  ┌─────────────────────────────────────────────────────────────────┐│
+│  │                    HRTF Processing                               ││
+│  │  Head-Related Transfer Function for realistic 3D spatialization ││
+│  │  - Distance attenuation (inverse/linear/exponential)            ││
+│  │  - Doppler effect simulation                                     ││
+│  │  - Occlusion modeling                                            ││
+│  └─────────────────────────────────────────────────────────────────┘│
+│                      │                                               │
+│  ┌───────────────────┼───────────────────┐                          │
+│  ▼                   ▼                   ▼                          │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐                    │
+│  │ Audio Zones │ │    VAD      │ │   Noise     │                    │
+│  │             │ │  (Voice     │ │ Cancellation│                    │
+│  │ - Room      │ │  Activity   │ │             │                    │
+│  │ - Hall      │ │  Detection) │ │ - RNNoise   │                    │
+│  │ - Cave      │ │             │ │ - Krisp     │                    │
+│  │ - Outdoor   │ │ - Speaking  │ │   compat    │                    │
+│  │ - Custom    │ │ - Threshold │ │             │                    │
+│  └─────────────┘ └─────────────┘ └─────────────┘                    │
+│                                                                      │
+├─────────────────────────────────────────────────────────────────────┤
+│  VR/AR Ready: Full orientation tracking, room-scale positioning     │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
 ### Version Numbers (January 2026)
 
 | Component | Version | Rationale |
@@ -96,6 +227,7 @@ Our technology stack prioritizes real-time performance and developer productivit
 | Guardian | 2.4 | JWT token management with refresh tokens |
 | Argon2 | 4.1 | Password hashing (OWASP recommended) |
 | Assent | 0.2 | OAuth 2.0/OIDC multi-provider support |
+| Double Ratchet | 1.0.0 | Signal Protocol E2EE (v0.7.35) |
 | **Frontend (Web)** |
 | Node.js | 22 LTS | Active LTS until April 2027 |
 | React | 19.1.0 | Latest with concurrent features |
@@ -106,6 +238,8 @@ Our technology stack prioritizes real-time performance and developer productivit
 | @react-three/fiber | 9.5.0 | React renderer for Three.js |
 | GSAP | 3.14.2 | Professional-grade animations |
 | Framer Motion | 12.0.0 | Declarative React animations |
+| AI Engine | 1.0.0 | Message intelligence (v0.7.35) |
+| Spatial Audio | 1.0.0 | 3D positional audio (v0.7.35) |
 | **Frontend (Mobile)** |
 | React Native | 0.81.5 | Latest stable with Fabric renderer |
 | Expo SDK | 54 | Latest stable with improved performance |

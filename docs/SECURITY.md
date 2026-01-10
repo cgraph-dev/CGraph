@@ -2,6 +2,8 @@
 
 Look, security is one of those things that's easy to get wrong and really hard to fix after the fact. We've put a lot of thought into how CGraph handles authentication, authorization, and data protection — and we think we've gotten it right. But security is also a moving target, so if you spot something off, please let us know.
 
+**v0.7.35 introduces Signal Protocol Double Ratchet encryption** — the same cryptographic foundation that secures Signal, WhatsApp, and other industry-leading messengers.
+
 This doc explains what we've built and why. It's not exhaustive (that would be a book), but it covers the stuff you actually need to know.
 
 ## Overview
@@ -12,6 +14,20 @@ We've layered our security like an onion — multiple defenses at different leve
 ┌─────────────────────────────────────────────────────────────────┐
 │                    SECURITY ARCHITECTURE                        │
 ├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│   Client-Side E2EE (v0.7.35)                                    │
+│   ┌─────────────────────────────────────────────────────────┐   │
+│   │                SIGNAL PROTOCOL LAYER                     │   │
+│   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐      │   │
+│   │  │    X3DH     │  │   Double    │  │  AES-256    │      │   │
+│   │  │    Key      │──│   Ratchet   │──│    GCM      │      │   │
+│   │  │  Agreement  │  │   Engine    │  │ Encryption  │      │   │
+│   │  │   (P-384)   │  │             │  │             │      │   │
+│   │  └─────────────┘  └─────────────┘  └─────────────┘      │   │
+│   │                                                          │   │
+│   │  Properties: Forward Secrecy | Break-in Recovery         │   │
+│   │              Out-of-Order Support | Post-Quantum Ready   │   │
+│   └─────────────────────────────────────────────────────────┘   │
 │                                                                  │
 │   Request Flow                                                   │
 │   ┌─────────────┐                                               │
@@ -39,6 +55,104 @@ We've layered our security like an onion — multiple defenses at different leve
 │                                                                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Signal Protocol Double Ratchet (v0.7.35)
+
+The gold standard in end-to-end encryption. Every message uses a unique key, providing perfect forward secrecy and future secrecy.
+
+### Implementation Details
+
+**File:** `apps/web/src/lib/crypto/doubleRatchet.ts` (750+ lines)
+
+| Algorithm | Specification |
+|-----------|--------------|
+| Key Agreement | X3DH (Extended Triple Diffie-Hellman) |
+| Curve | ECDH P-384 (NIST approved) |
+| Encryption | AES-256-GCM (authenticated) |
+| Key Derivation | HKDF-SHA256 |
+| MAC | HMAC-SHA256 |
+
+### Security Properties
+
+| Property | Description |
+|----------|-------------|
+| **Forward Secrecy** | Compromise of long-term keys doesn't reveal past messages |
+| **Break-in Recovery** | Session automatically heals after key compromise |
+| **Out-of-Order** | Handles delayed/reordered messages securely |
+| **Key Erasure** | Message keys deleted after use |
+| **Post-Quantum Ready** | Placeholder for CRYSTALS-Kyber upgrade |
+
+### How the Double Ratchet Works
+
+```
+Alice                                                    Bob
+  │                                                       │
+  │─────── Initial X3DH Key Agreement ────────────────────│
+  │                                                       │
+  │──[DH Ratchet]── Message 1 ─────────────────────────►│
+  │                 (New DH key pair)                     │
+  │                                                       │
+  │◄─[DH Ratchet]── Message 2 ──────────────────────────│
+  │                 (New DH key pair)                     │
+  │                                                       │
+  │──[Symmetric]─── Message 3 ─────────────────────────►│
+  │                 (Same DH, new chain key)              │
+  │                                                       │
+  │──[Symmetric]─── Message 4 ─────────────────────────►│
+  │                 (Same DH, new chain key)              │
+  │                                                       │
+  │◄─[DH Ratchet]── Message 5 ──────────────────────────│
+  │                 (New DH key pair again)               │
+```
+
+### Usage Example
+
+```typescript
+import { DoubleRatchetEngine, generateDHKeyPair } from '@/lib/crypto/doubleRatchet';
+
+// Initialize session
+const alice = new DoubleRatchetEngine({ enableAuditLog: true });
+const sharedSecret = await x3dhKeyAgreement(aliceIdentity, bobPreKey, bobOneTimeKey);
+
+await alice.initializeAlice(sharedSecret, bobPublicKey);
+
+// Encrypt message - each message gets a unique key
+const encrypted = await alice.encryptMessage(
+  new TextEncoder().encode('Secret message'),
+  associatedData // Optional: conversation ID, etc.
+);
+
+// encrypted contains: { header, ciphertext, nonce, mac }
+```
+
+### Cryptographic Audit Log
+
+When `enableAuditLog: true`:
+
+```typescript
+const log = engine.getAuditLog();
+// [
+//   { timestamp: 1736..., action: 'INIT_ALICE', success: true },
+//   { timestamp: 1736..., action: 'ENCRYPT_START', success: true },
+//   { timestamp: 1736..., action: 'DH_RATCHET', success: true },
+//   { timestamp: 1736..., action: 'ENCRYPT_COMPLETE', success: true }
+// ]
+```
+
+### Post-Quantum Placeholder
+
+```typescript
+import { PostQuantumDoubleRatchet } from '@/lib/crypto/doubleRatchet';
+
+// Future-ready: when CRYSTALS-Kyber is standardized, 
+// upgrade is a drop-in replacement
+const pqEngine = new PostQuantumDoubleRatchet();
+await pqEngine.initializeWithQuantumResistance(sharedSecret, peerPublicKey);
+```
+
+---
 
 ## Security Features
 

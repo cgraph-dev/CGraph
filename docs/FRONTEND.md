@@ -1,6 +1,7 @@
 # CGraph Frontend Guide
 
 > Building beautiful, fast, and accessible user interfaces with React.
+> **v0.7.35** — Now featuring Signal Protocol encryption, AI intelligence, holographic UI, and spatial audio.
 
 This guide covers the CGraph web application—a React 19 app built with Vite, TypeScript, and TailwindCSS. Whether you're fixing a bug or building a new feature, you'll find everything you need here.
 
@@ -17,15 +18,19 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 7. [API Integration](#api-integration)
 8. [Real-Time Features](#real-time-features)
 9. [Component Library](#component-library)
-10. [Enhanced UI v2.0](#enhanced-ui-v20) ⭐ **NEW**
-11. [Demo-First Workflow](#demo-first-workflow) ⭐ **NEW**
-12. [Storybook](#storybook)
-13. [Styling Guide](#styling-guide)
-14. [Forms and Validation](#forms-and-validation)
-15. [Testing](#testing)
-16. [Performance](#performance)
-17. [Accessibility](#accessibility)
-18. [Common Patterns](#common-patterns)
+10. [Enhanced UI v3.0](#enhanced-ui-v30) ⭐ **v0.7.35**
+11. [Signal Protocol Encryption](#signal-protocol-encryption) ⭐ **NEW**
+12. [AI Message Intelligence](#ai-message-intelligence) ⭐ **NEW**
+13. [Holographic UI System](#holographic-ui-system) ⭐ **NEW**
+14. [Spatial Audio Engine](#spatial-audio-engine) ⭐ **NEW**
+15. [Demo-First Workflow](#demo-first-workflow)
+16. [Storybook](#storybook)
+17. [Styling Guide](#styling-guide)
+18. [Forms and Validation](#forms-and-validation)
+19. [Testing](#testing)
+20. [Performance](#performance)
+21. [Accessibility](#accessibility)
+22. [Common Patterns](#common-patterns)
 
 ---
 
@@ -44,7 +49,11 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 | **Wagmi/Viem** | 2.x | Web3 wallet integration |
 | **Radix UI** | Latest | Accessible components |
 | **Framer Motion** | 12.x | Animations |
+| **GSAP** | 3.14 | Professional animations |
+| **Three.js** | 0.182 | 3D graphics engine |
 | **Storybook** | 8.6 | Component documentation |
+| **Web Crypto API** | Native | Signal Protocol encryption |
+| **Web Audio API** | Native | Spatial audio processing |
 
 ---
 
@@ -62,7 +71,20 @@ apps/web/
 │   │   ├── ui/          # Base UI primitives (Button, Input, etc.)
 │   │   ├── chat/        # Chat-specific components
 │   │   ├── common/      # Shared components (Avatar, Modal, etc.)
-│   │   └── forms/       # Form components
+│   │   ├── forms/       # Form components
+│   │   └── enhanced/    # ⭐ Enhanced UI v3.0 components
+│   │       ├── AnimationEngine.ts
+│   │       ├── AnimatedMessageWrapper.tsx
+│   │       ├── AnimatedReactionBubble.tsx
+│   │       ├── GlassCard.tsx
+│   │       ├── Matrix3DEnvironment.tsx
+│   │       ├── AdvancedVoiceVisualizer.tsx
+│   │       ├── ThemeEngine.ts
+│   │       ├── ShaderBackground.tsx
+│   │       ├── EnhancedConversation.tsx
+│   │       ├── EnhancedDemo.tsx
+│   │       └── ui/
+│   │           └── HolographicUI.tsx   # ⭐ v0.7.35
 │   │
 │   ├── contexts/        # React Context providers
 │   │   └── ThemeContext.tsx
@@ -79,7 +101,13 @@ apps/web/
 │   ├── lib/             # Utility functions and configs
 │   │   ├── api.ts       # Axios instance
 │   │   ├── socket.ts    # Phoenix socket connection
-│   │   └── utils.ts     # Helper functions
+│   │   ├── utils.ts     # Helper functions
+│   │   ├── crypto/      # ⭐ Cryptographic modules (v0.7.35)
+│   │   │   └── doubleRatchet.ts
+│   │   ├── ai/          # ⭐ AI modules (v0.7.35)
+│   │   │   └── AIMessageEngine.ts
+│   │   └── audio/       # ⭐ Audio modules (v0.7.35)
+│   │       └── SpatialAudioEngine.ts
 │   │
 │   ├── pages/           # Page components (route targets)
 │   │   ├── auth/        # Login, Register, etc.
@@ -1237,11 +1265,21 @@ function SearchInput() {
 
 ---
 
-## Enhanced UI v2.0
+## Enhanced UI v3.0
 
-CGraph v0.7.34 introduces a premium enhanced component library built on Three.js, GSAP, and Framer Motion. These components provide immersive 3D environments, advanced animations, and modern glassmorphic designs.
+CGraph v0.7.35 introduces the most advanced UI system yet, building on the foundation of v2.0 with Signal Protocol encryption, AI message intelligence, holographic components, and spatial audio. This release adds **~3,500 new lines** of cutting-edge code.
 
-### Enhanced Stack
+### What's New in v3.0
+
+| Feature | Description | Lines |
+|---------|-------------|-------|
+| **Signal Protocol** | Double Ratchet encryption with forward secrecy | 750+ |
+| **AI Engine** | Smart replies, sentiment, moderation | 750+ |
+| **Holographic UI** | 8 futuristic components | 650+ |
+| **Spatial Audio** | 3D positional audio with HRTF | 600+ |
+| **Tests** | Comprehensive test suites | 750+ |
+
+### Enhanced Stack (v3.0)
 
 | Package | Version | Purpose |
 |---------|---------|---------|
@@ -1251,8 +1289,10 @@ CGraph v0.7.34 introduces a premium enhanced component library built on Three.js
 | **@react-three/postprocessing** | ^3.0.4 | Post-processing effects |
 | **gsap** | ^3.14.2 | Professional animation library |
 | **framer-motion** | ^12.0.0 | Declarative React animations |
+| **Web Crypto API** | Native | ECDH P-384, AES-256-GCM, HKDF |
+| **Web Audio API** | Native | Spatial audio, HRTF, VAD |
 
-### Component Architecture
+### Component Architecture (v3.0)
 
 ```
 src/components/enhanced/
@@ -1268,12 +1308,414 @@ src/components/enhanced/
 ├── theme/
 │   └── ThemeEngine.ts            (468 lines) - AI-driven theme generation
 ├── ui/
-│   └── GlassCard.tsx             (300 lines) - Glassmorphic card component
-└── voice/
-    └── AdvancedVoiceVisualizer.tsx (565 lines) - Audio visualization
+│   ├── GlassCard.tsx             (300 lines) - Glassmorphic card component
+│   └── HolographicUI.tsx         (650 lines) - ⭐ v0.7.35 Holographic system
+├── voice/
+│   └── AdvancedVoiceVisualizer.tsx (565 lines) - Audio visualization
+└── index.ts                       (110 lines) - Organized exports
 
-Total: 3,958 lines of premium UI code
+src/lib/
+├── crypto/
+│   ├── doubleRatchet.ts          (750 lines) - ⭐ Signal Protocol
+│   └── __tests__/
+│       └── doubleRatchet.test.ts (350 lines)
+├── ai/
+│   ├── AIMessageEngine.ts        (750 lines) - ⭐ AI Intelligence
+│   └── __tests__/
+│       └── AIMessageEngine.test.ts (400 lines)
+└── audio/
+    └── SpatialAudioEngine.ts     (600 lines) - ⭐ Spatial Audio
+
+Total v2.0: 3,958 lines
+Total v3.0: 7,458 lines (+88% increase)
 ```
+
+---
+
+## Signal Protocol Encryption
+
+Industry-standard end-to-end encryption using the Signal Protocol Double Ratchet algorithm.
+
+### Security Features
+
+| Feature | Implementation |
+|---------|----------------|
+| **Key Agreement** | X3DH (Extended Triple Diffie-Hellman) |
+| **Curve** | ECDH P-384 (NIST approved) |
+| **Encryption** | AES-256-GCM (authenticated) |
+| **Key Derivation** | HKDF (HMAC-based) |
+| **Forward Secrecy** | New keys for each message exchange |
+| **Break-in Recovery** | Automatic key refresh |
+
+### Usage
+
+```tsx
+import { DoubleRatchetEngine, generateDHKeyPair } from '@/lib/crypto/doubleRatchet';
+
+// Initialize Alice's session
+const alice = new DoubleRatchetEngine({ enableAuditLog: true });
+const sharedSecret = await x3dhKeyAgreement(); // From your X3DH implementation
+
+// Bob's identity key
+const bobKeyPair = await generateDHKeyPair();
+await alice.initializeAlice(sharedSecret, bobKeyPair.rawPublicKey);
+
+// Encrypt a message
+const plaintext = new TextEncoder().encode('Hello, Bob!');
+const encrypted = await alice.encryptMessage(plaintext);
+
+// Message contains: header, ciphertext, nonce, mac
+console.log('Encrypted:', encrypted);
+
+// Bob decrypts
+const bob = new DoubleRatchetEngine();
+await bob.initializeBob(sharedSecret, bobKeyPair);
+
+const decrypted = await bob.decryptMessage(encrypted);
+const text = new TextDecoder().decode(decrypted.plaintext);
+console.log('Decrypted:', text); // "Hello, Bob!"
+```
+
+### Out-of-Order Messages
+
+```tsx
+// Alice sends messages
+const msg1 = await alice.encryptMessage(encode('First'));
+const msg2 = await alice.encryptMessage(encode('Second'));
+const msg3 = await alice.encryptMessage(encode('Third'));
+
+// Bob receives out of order - still works!
+await bob.decryptMessage(msg3); // "Third" - isOutOfOrder: true
+await bob.decryptMessage(msg1); // "First" - wasSkipped: true
+await bob.decryptMessage(msg2); // "Second" - wasSkipped: true
+```
+
+### Session Persistence
+
+```tsx
+// Export session for storage
+const exported = await alice.exportState();
+localStorage.setItem('session', exported);
+
+// Later: Restore session
+const restored = new DoubleRatchetEngine();
+await restored.importState(localStorage.getItem('session')!);
+```
+
+### Security Stats
+
+```tsx
+const stats = alice.getStats();
+console.log({
+  sessionId: stats.sessionId,
+  messageCount: stats.messageCount,
+  dhRatchetCount: stats.dhRatchetCount,
+  skippedKeysCount: stats.skippedKeysCount,
+});
+```
+
+---
+
+## AI Message Intelligence
+
+Smart AI-powered features for enhanced messaging experiences.
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **Smart Replies** | Context-aware reply suggestions |
+| **Sentiment Analysis** | 8 emotions + positive/negative/neutral |
+| **Content Moderation** | Spam, scam, harassment detection |
+| **Language Detection** | 20+ languages with confidence |
+| **Topic Extraction** | Automatic topic categorization |
+| **Conversation Insights** | Engagement metrics, patterns |
+
+### Usage
+
+```tsx
+import { AIMessageEngine } from '@/lib/ai/AIMessageEngine';
+
+const ai = new AIMessageEngine({
+  enableSmartReplies: true,
+  enableSentimentAnalysis: true,
+  enableContentModeration: true,
+  localMLOnly: true, // Privacy-first: no cloud API calls
+});
+```
+
+### Smart Replies
+
+```tsx
+const message = {
+  text: 'Would you like to grab coffee tomorrow?',
+  senderId: 'user123',
+  timestamp: Date.now(),
+};
+
+const replies = await ai.generateSmartReplies(message);
+// [
+//   { text: "Sure, sounds great!", confidence: 0.92, category: "positive" },
+//   { text: "What time works for you?", confidence: 0.88, category: "question" },
+//   { text: "I'll check my schedule", confidence: 0.85, category: "neutral" }
+// ]
+```
+
+### Sentiment Analysis
+
+```tsx
+const sentiment = await ai.analyzeSentiment(
+  'I am so happy about the amazing news!'
+);
+// {
+//   overall: 'positive',
+//   score: 0.85,
+//   confidence: 0.92,
+//   emotions: {
+//     joy: 0.88,
+//     sadness: 0.02,
+//     anger: 0.01,
+//     fear: 0.01,
+//     surprise: 0.45,
+//     disgust: 0.01,
+//     trust: 0.72,
+//     anticipation: 0.56
+//   }
+// }
+```
+
+### Content Moderation
+
+```tsx
+const result = await ai.moderateContent(
+  'FREE MONEY!!! Click here NOW to WIN $$$!!!'
+);
+// {
+//   isApproved: false,
+//   flags: [
+//     { category: 'spam', severity: 0.95, evidence: 'excessive punctuation, caps' }
+//   ],
+//   suggestedAction: 'block',
+//   overallRiskScore: 0.92
+// }
+```
+
+### Conversation Insights
+
+```tsx
+const insights = await ai.generateInsights(messages);
+// {
+//   participantAnalysis: { user1: { messageCount: 15, avgLength: 45 } },
+//   engagementScore: 0.78,
+//   averageResponseTime: 12500, // ms
+//   patterns: ['question-answer', 'collaborative']
+// }
+```
+
+---
+
+## Holographic UI System
+
+8 futuristic components for next-generation interfaces.
+
+### Components
+
+| Component | Description |
+|-----------|-------------|
+| `HolographicContainer` | 3D parallax container with scanlines |
+| `HolographicText` | Multi-layer glow text |
+| `HolographicButton` | Pulsing animated buttons |
+| `HolographicCard` | Frosted glass cards |
+| `HolographicAvatar` | Animated avatar with ring |
+| `HolographicInput` | Focus-glow input fields |
+| `HolographicProgress` | Animated progress bars |
+| `HolographicNotification` | Toast notifications |
+
+### Color Themes
+
+```tsx
+type HolographicTheme = 'cyan' | 'green' | 'purple' | 'gold';
+```
+
+### Usage
+
+```tsx
+import {
+  HolographicContainer,
+  HolographicButton,
+  HolographicCard,
+  HolographicNotification,
+} from '@/components/enhanced/ui/HolographicUI';
+
+// Container with 3D effects
+<HolographicContainer
+  theme="cyan"
+  scanlines
+  glitch
+  flicker
+  depth={20}
+>
+  <HolographicCard>
+    <HolographicText glow>Welcome to the Future</HolographicText>
+    <HolographicButton 
+      theme="purple"
+      pulsing
+      onClick={() => console.log('Clicked!')}
+    >
+      Enter Matrix
+    </HolographicButton>
+  </HolographicCard>
+</HolographicContainer>
+
+// Notifications
+<HolographicNotification
+  type="success"
+  title="Connection Established"
+  message="Neural link active"
+  duration={5000}
+/>
+```
+
+### Holographic Avatar
+
+```tsx
+<HolographicAvatar
+  src="/avatar.jpg"
+  alt="User"
+  size="lg"
+  status="online"
+  ringAnimation
+  theme="green"
+/>
+```
+
+### Holographic Input
+
+```tsx
+<HolographicInput
+  placeholder="Enter access code..."
+  theme="cyan"
+  icon={<KeyIcon />}
+  value={code}
+  onChange={(e) => setCode(e.target.value)}
+/>
+```
+
+---
+
+## Spatial Audio Engine
+
+VR/AR-ready 3D positional audio system with HRTF support.
+
+### Features
+
+| Feature | Description |
+|---------|-------------|
+| **3D Positioning** | Full x, y, z spatial placement |
+| **HRTF** | Head-Related Transfer Function for realistic audio |
+| **Audio Zones** | Room, hall, cave, outdoor presets |
+| **VAD** | Voice Activity Detection |
+| **Noise Cancellation** | Integration hooks for Krisp/RNNoise |
+
+### Usage
+
+```tsx
+import { SpatialAudioEngine, SpatialAudioRoom } from '@/lib/audio/SpatialAudioEngine';
+
+// Initialize engine
+const engine = new SpatialAudioEngine({
+  hrtfEnabled: true,
+  maxSources: 32,
+});
+
+// Add audio source at position
+const sourceId = engine.createSource({
+  position: { x: 2, y: 0, z: -3 },
+  stream: userAudioStream,
+});
+
+// Update listener (user) position
+engine.updateListenerPosition({ x: 0, y: 0, z: 0 });
+engine.updateListenerOrientation(
+  { x: 0, y: 0, z: -1 }, // Forward
+  { x: 0, y: 1, z: 0 }   // Up
+);
+```
+
+### Audio Zones
+
+```tsx
+// Add a zone with reverb
+engine.addZone({
+  id: 'main-hall',
+  bounds: { minX: -10, maxX: 10, minY: 0, maxY: 5, minZ: -10, maxZ: 10 },
+  reverb: 'hall',
+  reverbAmount: 0.6,
+});
+
+// User enters zone - reverb applies automatically
+engine.updateListenerPosition({ x: 0, y: 1, z: 0 });
+```
+
+### Voice Activity Detection
+
+```tsx
+engine.enableVAD({
+  threshold: 0.01,
+  onSpeakingStart: (sourceId) => {
+    console.log(`${sourceId} started speaking`);
+    highlightUser(sourceId);
+  },
+  onSpeakingEnd: (sourceId) => {
+    console.log(`${sourceId} stopped speaking`);
+    unhighlightUser(sourceId);
+  },
+});
+```
+
+### Spatial Audio Room
+
+```tsx
+// For multi-participant rooms
+const room = new SpatialAudioRoom({
+  roomSize: { width: 20, height: 5, depth: 20 },
+  defaultReverb: 'room',
+});
+
+// Add participants
+room.addParticipant({
+  id: 'user-1',
+  stream: user1Stream,
+  position: { x: -2, y: 0, z: 0 },
+});
+
+room.addParticipant({
+  id: 'user-2',
+  stream: user2Stream,
+  position: { x: 2, y: 0, z: 0 },
+});
+
+// Update for VR headset movement
+room.updateLocalPosition({ x: 0, y: 1.7, z: 0 });
+room.updateLocalOrientation(headsetForward, headsetUp);
+```
+
+---
+
+## Enhanced UI v2.0 (Legacy)
+
+CGraph v0.7.34 introduced the enhanced component library built on Three.js, GSAP, and Framer Motion. These components are still fully supported in v3.0.
+
+### v2.0 Stack
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| **three** | ^0.182.0 | 3D graphics engine |
+| **@react-three/fiber** | ^9.5.0 | React renderer for Three.js |
+| **@react-three/drei** | ^10.7.7 | Useful helpers for R3F |
+| **@react-three/postprocessing** | ^3.0.4 | Post-processing effects |
+| **gsap** | ^3.14.2 | Professional animation library |
+| **framer-motion** | ^12.0.0 | Declarative React animations |
 
 ### GlassCard Component
 
