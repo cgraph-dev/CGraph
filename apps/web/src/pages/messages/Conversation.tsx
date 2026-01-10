@@ -20,6 +20,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
+// Enhanced UI v2.0 components
+import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
+import { AnimatedReactionBubble } from '@/components/conversation/AnimatedReactionBubble';
 
 export default function Conversation() {
   const { conversationId } = useParams<{ conversationId: string }>();
@@ -427,13 +430,21 @@ export default function Conversation() {
                   (msgIndex === 0 || prevSenderId !== messageSenderId);
 
                 return (
-                  <MessageBubble
+                  <AnimatedMessageWrapper
                     key={message.id}
-                    message={message}
-                    isOwn={isOwn}
-                    showAvatar={showAvatar}
-                    onReply={() => setReplyTo(message)}
-                  />
+                    isOwnMessage={isOwn}
+                    index={msgIndex}
+                    messageId={message.id}
+                    onSwipeReply={() => setReplyTo(message)}
+                    enableGestures={true}
+                  >
+                    <MessageBubble
+                      message={message}
+                      isOwn={isOwn}
+                      showAvatar={showAvatar}
+                      onReply={() => setReplyTo(message)}
+                    />
+                  </AnimatedMessageWrapper>
                 );
               })}
             </div>
@@ -700,16 +711,20 @@ function MessageBubble({
           )}
         </div>
 
-        {/* Reactions */}
+        {/* Reactions with Enhanced UI */}
         {message.reactions.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-1">
             {message.reactions.map((reaction, i) => (
-              <button
-                key={i}
-                className="px-2 py-0.5 rounded-full bg-dark-700 text-xs hover:bg-dark-600 transition-colors"
-              >
-                {reaction.emoji}
-              </button>
+              <AnimatedReactionBubble
+                key={`${reaction.emoji}-${i}`}
+                reaction={{
+                  emoji: reaction.emoji,
+                  count: 1,
+                  hasReacted: reaction.userId === (window as any).__currentUserId,
+                }}
+                isOwnMessage={isOwn}
+                onPress={() => {/* Handle reaction toggle */}}
+              />
             ))}
           </div>
         )}
