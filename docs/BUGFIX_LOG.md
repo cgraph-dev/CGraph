@@ -6,14 +6,124 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 | v0.7.22 | v0.7.23 | v0.7.24 | v0.7.25 | v0.7.26 |
-|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 638 tests | 663 tests | 663 tests | 663 tests, 0 failures |
-| Web TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ 0 errors |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ 0 errors |
-| Expo Doctor | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ 17/17 checks |
-| Elixir Credo | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Strict mode |
-| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 10 critical | 12 critical | 14 critical | 15 critical |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 | v0.7.22 | v0.7.23 | v0.7.24 | v0.7.25 | v0.7.26 | v0.7.39 |
+|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 638 tests | 663 tests | 663 tests | 663 tests, 0 failures | - |
+| Web TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ 0 errors | ✅ |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ 0 errors | ✅ 0 errors |
+| Expo Doctor | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ 17/17 checks | ✅ |
+| Elixir Credo | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Strict mode | - |
+| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 10 critical | 12 critical | 14 critical | 15 critical | 15 critical |
+
+---
+
+## January 10, 2026 - v0.7.39 Mobile Attachment Picker & Pinned Messages Overhaul
+
+### Overview
+
+Major update to the mobile attachment picker with gallery fallback, video recording, contact sharing, and a complete redesign of the pinned messages bar.
+
+### Gallery Loading Fallback (Expo Go)
+
+**Issue**: In Expo Go, MediaLibrary has limited access and often returns empty asset lists, leaving users with an empty gallery grid showing only selection circles.
+
+**Solution**: Added detection for empty gallery results and fallback UI with alternative options.
+
+**Files Changed**:
+- `apps/mobile/src/components/TelegramAttachmentPicker.tsx`
+
+**Implementation**:
+```tsx
+// Detect empty gallery and enable fallback
+if (assets.length === 0) {
+  setUseImagePickerFallback(true);
+}
+
+// Fallback UI provides direct ImagePicker access
+{useImagePickerFallback && (
+  <View style={styles.fallbackContainer}>
+    <TouchableOpacity onPress={openImagePicker}>
+      <Text>Browse Gallery</Text>
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => setShowCamera(true)}>
+      <Text>Take Photo/Video</Text>
+    </TouchableOpacity>
+  </View>
+)}
+```
+
+### Video Recording Support
+
+**Issue**: Camera only allowed photo capture, no video recording option.
+
+**Solution**: Added photo/video mode toggle and `recordAsync()` support.
+
+**Implementation**:
+```tsx
+const [cameraMode, setCameraMode] = useState<'photo' | 'video'>('photo');
+const [isRecording, setIsRecording] = useState(false);
+
+const handleCameraCapture = async () => {
+  if (cameraMode === 'video') {
+    if (isRecording) {
+      cameraRef.current?.stopRecording();
+      setIsRecording(false);
+    } else {
+      setIsRecording(true);
+      const video = await cameraRef.current?.recordAsync();
+      // Handle recorded video
+    }
+  } else {
+    const photo = await cameraRef.current?.takePictureAsync();
+  }
+};
+```
+
+### Message Content Display Fix
+
+**Issue**: Video and image messages displayed "🎥 Video" or "📷 Photo" text under the media.
+
+**Solution**: Modified text content rendering to exclude placeholder content.
+
+**Files Changed**:
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx`
+
+**Implementation**:
+```tsx
+// Only show text content if not a media placeholder
+const isMediaPlaceholder = /^(📷 Photo|🎥 Video|📹 Video)/i.test(item.content || '');
+const shouldShowContent = item.type !== 'video' && item.type !== 'image' && !isMediaPlaceholder;
+```
+
+### Contact Sharing Feature
+
+**Issue**: Contact button did nothing, needed Telegram-style contact picker.
+
+**Solution**: Full contact picker implementation with expo-contacts.
+
+**Dependencies Added**:
+- `expo-contacts@^15.0.11`
+
+**Implementation**:
+- Permission request for contacts access
+- Full-screen animated contact list modal
+- Search filtering by name or phone number
+- Contact cards with avatar, name, and phone display
+- VCF format contact sharing
+
+### Enhanced Pinned Messages Bar
+
+**Issue**: Basic pinned message bar lacked visual context (no previews, no sender info).
+
+**Solution**: Complete redesign with media previews and better navigation.
+
+**Features**:
+- LinearGradient indicator showing pin progress
+- Thumbnail previews for pinned images/videos
+- Voice/file type indicators with icons
+- Sender name display
+- Clickable progress dots for direct pin access
+- Styled navigation arrows
 
 ---
 

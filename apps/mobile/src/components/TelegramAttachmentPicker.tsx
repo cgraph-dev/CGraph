@@ -11,12 +11,14 @@ import {
   FlatList,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as MediaLibrary from 'expo-media-library';
+import * as Contacts from 'expo-contacts';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../contexts/ThemeContext';
@@ -66,11 +68,18 @@ const TelegramAttachmentPicker = memo(({
   const [hasMediaPermission, setHasMediaPermission] = useState(false);
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [showCamera, setShowCamera] = useState(false);
+  const [cameraMode, setCameraMode] = useState<'photo' | 'video'>('photo');
+  const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [useImagePickerFallback, setUseImagePickerFallback] = useState(false);
+  const [showContactPicker, setShowContactPicker] = useState(false);
+  const [contacts, setContacts] = useState<(Contacts.Contact & { id: string })[]>([]);
+  const [contactSearchQuery, setContactSearchQuery] = useState('');
   
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
   const cameraRef = useRef<CameraView>(null);
+  const contactCardAnim = useRef(new Animated.Value(0)).current;
   
   // Animation when showing/hiding
   useEffect(() => {
@@ -106,7 +115,7 @@ const TelegramAttachmentPicker = memo(({
     }
   }, [visible]);
   
-  // Load media assets from gallery
+  // Load media assets from gallery with proper URI resolution for Android
   const loadMediaAssets = async () => {
     setIsLoading(true);
     try {
@@ -120,20 +129,92 @@ const TelegramAttachmentPicker = memo(({
           first: 100,
         });
         
-        setAssets(media.assets.map(asset => ({
-          id: asset.id,
-          uri: asset.uri,
-          mediaType: asset.mediaType === 'video' ? 'video' : 'photo',
-          duration: asset.duration,
-          filename: asset.filename,
-          width: asset.width,
-          height: asset.height,
-        })));
+        // Check if we got any assets - if not, we might be in limited mode
+        if (media.assets.length === 0) {
+          console.log('No media assets found, enabling ImagePicker fallback');
+          setUseImagePickerFallback(true);
+          setAssets([]);
+          setIsLoading(false);
+          return;
+        }
+        
+        // On Android with Expo Go, we have limited media access
+        // Try to get localUri for each asset, but gracefully handle failures
+        const assetsWithLocalUri: Asset[] = [];
+        
+        for (const asset of media.assets) {
+          let displayUri = asset.uri;
+          
+          // For Android, try to resolve the local URI
+          if (Platform.OS === 'android') {
+            try {
+              const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
+              if (assetInfo.localUri) {
+                displayUri = assetInfo.localUri;
+              }
+            } catch (e) {
+              // Use original URI as fallback
+              console.log('Could not get local URI for asset:', asset.id);
+            }
+          }
+          
+          assetsWithLocalUri.push({
+            id: asset.id,
+            uri: displayUri,
+            mediaType: asset.mediaType === 'video' ? 'video' as const : 'photo' as const,
+            duration: asset.duration,
+            filename: asset.filename,
+            width: asset.width,
+            height: asset.height,
+          });
+        }
+        
+        // If we couldn't get any valid URIs, enable fallback
+        if (assetsWithLocalUri.length === 0 && media.assets.length > 0) {
+          console.log('Could not resolve any asset URIs, enabling ImagePicker fallback');
+          setUseImagePickerFallback(true);
+        }
+        
+        setAssets(assetsWithLocalUri);
+      } else {
+        // Permission not granted, use ImagePicker fallback
+        setUseImagePickerFallback(true);
       }
     } catch (error) {
       console.error('Error loading media:', error);
+      setUseImagePickerFallback(true);
     } finally {
       setIsLoading(false);
+    }
+  };
+  
+  // Open ImagePicker directly (fallback for Expo Go)
+  const openImagePicker = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onClose();
+      
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsMultipleSelection: true,
+        quality: 0.8,
+        selectionLimit: maxSelection,
+      });
+      
+      if (!result.canceled && result.assets.length > 0) {
+        const selectedItems: SelectedAsset[] = result.assets.map(asset => ({
+          uri: asset.uri,
+          type: asset.type === 'video' ? 'video' as const : 'image' as const,
+          name: asset.fileName || `media_${Date.now()}.${asset.type === 'video' ? 'mp4' : 'jpg'}`,
+          mimeType: asset.mimeType,
+          duration: asset.duration ? asset.duration / 1000 : undefined,
+        }));
+        onSelectAssets(selectedItems);
+      }
+    } catch (error) {
+      console.error('ImagePicker error:', error);
     }
   };
   
@@ -156,29 +237,58 @@ const TelegramAttachmentPicker = memo(({
     });
   }, [maxSelection]);
   
-  // Handle camera capture
+  // Handle camera capture (photo or video)
   const handleCameraCapture = async () => {
     if (!cameraRef.current) return;
     
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      const photo = await cameraRef.current.takePictureAsync({
-        quality: 0.8,
-      });
       
-      if (photo?.uri) {
-        onSelectAssets([{
-          uri: photo.uri,
-          type: 'image',
-          name: `photo_${Date.now()}.jpg`,
-          mimeType: 'image/jpeg',
-        }]);
-        setShowCamera(false);
-        onClose();
+      if (cameraMode === 'photo') {
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.8,
+        });
+        
+        if (photo?.uri) {
+          onSelectAssets([{
+            uri: photo.uri,
+            type: 'image',
+            name: `photo_${Date.now()}.jpg`,
+            mimeType: 'image/jpeg',
+          }]);
+          setShowCamera(false);
+          onClose();
+        }
+      } else {
+        // Video recording
+        if (isRecording) {
+          // Stop recording
+          cameraRef.current.stopRecording();
+          setIsRecording(false);
+        } else {
+          // Start recording
+          setIsRecording(true);
+          const video = await cameraRef.current.recordAsync({
+            maxDuration: 60,
+          });
+          
+          if (video?.uri) {
+            onSelectAssets([{
+              uri: video.uri,
+              type: 'video',
+              name: `video_${Date.now()}.mp4`,
+              mimeType: 'video/mp4',
+            }]);
+            setShowCamera(false);
+            onClose();
+          }
+          setIsRecording(false);
+        }
       }
     } catch (error) {
       console.error('Camera capture error:', error);
-      Alert.alert('Error', 'Failed to capture photo');
+      setIsRecording(false);
+      Alert.alert('Error', `Failed to capture ${cameraMode}`);
     }
   };
   
@@ -347,14 +457,83 @@ const TelegramAttachmentPicker = memo(({
     }
     
     if (tab === 'contact') {
-      Alert.alert('Contact Sharing', 'Contact sharing is coming soon!');
+      handleContactPicker();
       return;
     }
     
     setActiveTab(tab);
   };
   
-  // Fullscreen camera view
+  // Handle contact picker
+  const handleContactPicker = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      
+      const { status } = await Contacts.requestPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert('Permission needed', 'Please allow access to contacts to share them.');
+        return;
+      }
+      
+      const { data } = await Contacts.getContactsAsync({
+        fields: [
+          Contacts.Fields.Name,
+          Contacts.Fields.PhoneNumbers,
+          Contacts.Fields.Emails,
+          Contacts.Fields.Image,
+        ],
+      });
+      
+      if (data.length > 0) {
+        setContacts(data as (Contacts.Contact & { id: string })[]);
+        setShowContactPicker(true);
+        Animated.spring(contactCardAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 50,
+          friction: 9,
+        }).start();
+      } else {
+        Alert.alert('No Contacts', 'No contacts found on this device.');
+      }
+    } catch (error) {
+      console.error('Contact picker error:', error);
+      Alert.alert('Error', 'Failed to load contacts');
+    }
+  };
+  
+  // Share selected contact
+  const shareContact = (contact: Contacts.Contact & { id: string }) => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    
+    const phoneNumber = contact.phoneNumbers?.[0]?.number || '';
+    const email = contact.emails?.[0]?.email || '';
+    
+    // Create contact card message content
+    const contactInfo = {
+      uri: `contact://${contact.id}`,
+      type: 'file' as const,
+      name: `${contact.name || 'Contact'}.vcf`,
+      mimeType: 'text/vcard',
+      contactData: {
+        name: contact.name || 'Unknown',
+        phone: phoneNumber,
+        email: email,
+      },
+    };
+    
+    onSelectAssets([contactInfo]);
+    setShowContactPicker(false);
+    onClose();
+  };
+  
+  // Filter contacts by search query
+  const filteredContacts = contacts.filter(contact => 
+    contact.name?.toLowerCase().includes(contactSearchQuery.toLowerCase()) ||
+    contact.phoneNumbers?.some((p: Contacts.PhoneNumber) => p.number?.includes(contactSearchQuery))
+  );
+  
+  // Fullscreen camera view with photo/video toggle
   if (showCamera) {
     return (
       <Modal visible={visible} animationType="fade" statusBarTranslucent>
@@ -363,22 +542,57 @@ const TelegramAttachmentPicker = memo(({
             ref={cameraRef}
             style={StyleSheet.absoluteFill}
             facing="back"
+            mode={cameraMode === 'video' ? 'video' : 'picture'}
           />
+          
+          {/* Camera mode toggle */}
+          <View style={styles.cameraModeToggle}>
+            <TouchableOpacity
+              style={[styles.cameraModeBtn, cameraMode === 'photo' && styles.cameraModeBtnActive]}
+              onPress={() => { setCameraMode('photo'); Haptics.selectionAsync(); }}
+            >
+              <Ionicons name="camera" size={20} color={cameraMode === 'photo' ? '#fff' : 'rgba(255,255,255,0.6)'} />
+              <Text style={[styles.cameraModeText, cameraMode === 'photo' && styles.cameraModeTextActive]}>Photo</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.cameraModeBtn, cameraMode === 'video' && styles.cameraModeBtnActive]}
+              onPress={() => { setCameraMode('video'); Haptics.selectionAsync(); }}
+            >
+              <Ionicons name="videocam" size={20} color={cameraMode === 'video' ? '#fff' : 'rgba(255,255,255,0.6)'} />
+              <Text style={[styles.cameraModeText, cameraMode === 'video' && styles.cameraModeTextActive]}>Video</Text>
+            </TouchableOpacity>
+          </View>
+          
+          {/* Recording indicator */}
+          {isRecording && (
+            <View style={styles.recordingIndicator}>
+              <View style={styles.recordingDot} />
+              <Text style={styles.recordingText}>Recording...</Text>
+            </View>
+          )}
           
           {/* Camera controls */}
           <View style={styles.cameraControls}>
             <TouchableOpacity
               style={styles.cameraCloseBtn}
-              onPress={() => setShowCamera(false)}
+              onPress={() => { setShowCamera(false); setIsRecording(false); }}
             >
               <Ionicons name="close" size={28} color="#fff" />
             </TouchableOpacity>
             
             <TouchableOpacity
-              style={styles.captureButton}
+              style={[
+                styles.captureButton,
+                cameraMode === 'video' && styles.captureButtonVideo,
+                isRecording && styles.captureButtonRecording,
+              ]}
               onPress={handleCameraCapture}
             >
-              <View style={styles.captureButtonInner} />
+              <View style={[
+                styles.captureButtonInner,
+                cameraMode === 'video' && styles.captureButtonInnerVideo,
+                isRecording && styles.captureButtonInnerRecording,
+              ]} />
             </TouchableOpacity>
             
             <TouchableOpacity
@@ -457,19 +671,52 @@ const TelegramAttachmentPicker = memo(({
             )}
           </View>
           
-          {/* Media Grid */}
-          <FlatList
-            data={assets}
-            renderItem={renderMediaItem}
-            keyExtractor={item => item.id}
-            numColumns={3}
-            contentContainerStyle={styles.gridContent}
-            ListHeaderComponent={renderCameraTile}
-            showsVerticalScrollIndicator={false}
-            initialNumToRender={15}
-            maxToRenderPerBatch={15}
-            windowSize={5}
-          />
+          {/* Media Grid with fallback */}
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.primary} />
+              <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading media...</Text>
+            </View>
+          ) : useImagePickerFallback || assets.length === 0 ? (
+            <View style={styles.fallbackContainer}>
+              <View style={styles.fallbackIconContainer}>
+                <Ionicons name="images-outline" size={64} color={colors.textSecondary} />
+              </View>
+              <Text style={[styles.fallbackTitle, { color: colors.text }]}>
+                Open Gallery
+              </Text>
+              <Text style={[styles.fallbackSubtitle, { color: colors.textSecondary }]}>
+                Tap below to select photos and videos from your device
+              </Text>
+              <TouchableOpacity
+                style={[styles.fallbackButton, { backgroundColor: colors.primary }]}
+                onPress={openImagePicker}
+              >
+                <Ionicons name="folder-open" size={24} color="#fff" />
+                <Text style={styles.fallbackButtonText}>Browse Gallery</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.fallbackCameraButton, { borderColor: colors.primary }]}
+                onPress={openCamera}
+              >
+                <Ionicons name="camera" size={24} color={colors.primary} />
+                <Text style={[styles.fallbackCameraButtonText, { color: colors.primary }]}>Take Photo/Video</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <FlatList
+              data={assets}
+              renderItem={renderMediaItem}
+              keyExtractor={item => item.id}
+              numColumns={3}
+              contentContainerStyle={styles.gridContent}
+              ListHeaderComponent={renderCameraTile}
+              showsVerticalScrollIndicator={false}
+              initialNumToRender={15}
+              maxToRenderPerBatch={15}
+              windowSize={5}
+            />
+          )}
           
           {/* Bottom Tab Bar */}
           <View style={[
@@ -506,6 +753,93 @@ const TelegramAttachmentPicker = memo(({
             ))}
           </View>
         </Animated.View>
+        
+        {/* Contact Picker Modal */}
+        {showContactPicker && (
+          <Animated.View 
+            style={[
+              styles.contactPickerOverlay,
+              { 
+                opacity: contactCardAnim,
+                transform: [{ 
+                  scale: contactCardAnim.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1],
+                  })
+                }],
+              },
+            ]}
+          >
+            <View style={[styles.contactPickerContainer, { backgroundColor: isDark ? '#1c1c1e' : '#fff' }]}>
+              <View style={styles.contactPickerHeader}>
+                <TouchableOpacity 
+                  onPress={() => setShowContactPicker(false)}
+                  style={styles.contactPickerCloseBtn}
+                >
+                  <Ionicons name="close" size={24} color={colors.text} />
+                </TouchableOpacity>
+                <Text style={[styles.contactPickerTitle, { color: colors.text }]}>Share Contact</Text>
+                <View style={{ width: 40 }} />
+              </View>
+              
+              {/* Search bar */}
+              <View style={[styles.contactSearchContainer, { backgroundColor: colors.input }]}>
+                <Ionicons name="search" size={20} color={colors.textSecondary} />
+                <Text 
+                  style={[styles.contactSearchPlaceholder, { color: colors.textSecondary }]}
+                >
+                  Search contacts...
+                </Text>
+              </View>
+              
+              {/* Contact list */}
+              <FlatList
+                data={filteredContacts}
+                keyExtractor={item => item.id || String(Math.random())}
+                renderItem={({ item, index }) => (
+                  <Animated.View
+                    style={{
+                      opacity: contactCardAnim,
+                      transform: [{
+                        translateY: contactCardAnim.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [20 + index * 5, 0],
+                        }),
+                      }],
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={[styles.contactItem, { borderBottomColor: colors.border }]}
+                      onPress={() => shareContact(item)}
+                      activeOpacity={0.7}
+                    >
+                      <View style={[styles.contactAvatar, { backgroundColor: colors.primary }]}>
+                        {item.imageAvailable && item.image ? (
+                          <Image source={{ uri: item.image.uri }} style={styles.contactAvatarImage} />
+                        ) : (
+                          <Text style={styles.contactAvatarText}>
+                            {(item.name || 'U')[0].toUpperCase()}
+                          </Text>
+                        )}
+                      </View>
+                      <View style={styles.contactInfo}>
+                        <Text style={[styles.contactName, { color: colors.text }]} numberOfLines={1}>
+                          {item.name || 'Unknown'}
+                        </Text>
+                        <Text style={[styles.contactPhone, { color: colors.textSecondary }]} numberOfLines={1}>
+                          {item.phoneNumbers?.[0]?.number || item.emails?.[0]?.email || 'No contact info'}
+                        </Text>
+                      </View>
+                      <Ionicons name="paper-plane" size={20} color={colors.primary} />
+                    </TouchableOpacity>
+                  </Animated.View>
+                )}
+                contentContainerStyle={styles.contactListContent}
+                showsVerticalScrollIndicator={false}
+              />
+            </View>
+          </Animated.View>
+        )}
       </View>
     </Modal>
   );
@@ -722,11 +1056,75 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     borderColor: '#fff',
   },
+  captureButtonVideo: {
+    borderColor: '#FF3B30',
+  },
+  captureButtonRecording: {
+    borderColor: '#FF3B30',
+  },
   captureButtonInner: {
     width: 60,
     height: 60,
     borderRadius: 30,
     backgroundColor: '#fff',
+  },
+  captureButtonInnerVideo: {
+    backgroundColor: '#FF3B30',
+  },
+  captureButtonInnerRecording: {
+    width: 30,
+    height: 30,
+    borderRadius: 6,
+    backgroundColor: '#FF3B30',
+  },
+  cameraModeToggle: {
+    position: 'absolute',
+    bottom: 130,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+  },
+  cameraModeBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 6,
+  },
+  cameraModeBtnActive: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+  },
+  cameraModeText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  cameraModeTextActive: {
+    color: '#fff',
+  },
+  recordingIndicator: {
+    position: 'absolute',
+    top: 60,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  recordingDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#FF3B30',
+  },
+  recordingText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   cameraFlipBtn: {
     width: 50,
@@ -735,6 +1133,154 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  // Fallback UI styles
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingBottom: 100,
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 15,
+  },
+  fallbackContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 40,
+    paddingBottom: 100,
+  },
+  fallbackIconContainer: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: 'rgba(128,128,128,0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  fallbackTitle: {
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  fallbackSubtitle: {
+    fontSize: 15,
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 22,
+  },
+  fallbackButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 25,
+    gap: 10,
+    marginBottom: 12,
+  },
+  fallbackButtonText: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '600',
+  },
+  fallbackCameraButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 14,
+    borderRadius: 25,
+    borderWidth: 2,
+    gap: 10,
+  },
+  fallbackCameraButtonText: {
+    fontSize: 17,
+    fontWeight: '600',
+  },
+  // Contact picker styles
+  contactPickerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-end',
+  },
+  contactPickerContainer: {
+    height: SCREEN_HEIGHT * 0.7,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  contactPickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(128,128,128,0.2)',
+  },
+  contactPickerCloseBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(128,128,128,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  contactPickerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  contactSearchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginHorizontal: 16,
+    marginVertical: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 12,
+    gap: 10,
+  },
+  contactSearchPlaceholder: {
+    fontSize: 16,
+  },
+  contactListContent: {
+    paddingBottom: 40,
+  },
+  contactItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  contactAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  contactAvatarImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  contactAvatarText: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  contactInfo: {
+    flex: 1,
+  },
+  contactName: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  contactPhone: {
+    fontSize: 14,
   },
 });
 

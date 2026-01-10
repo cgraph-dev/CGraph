@@ -6,6 +6,391 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.39] - 2026-01-10
+
+**📱 MOBILE ATTACHMENT PICKER OVERHAUL: Gallery Fallback, Video Recording, Contact Sharing & Enhanced Pinned Messages**
+
+This release brings major improvements to the mobile attachment picker and conversation screen, addressing gallery loading issues in Expo Go, adding video recording capability, implementing Telegram-style contact sharing, and completely redesigning the pinned messages bar.
+
+### Fixed
+
+#### 📷 Gallery Thumbnail Loading (Expo Go)
+
+- **Added fallback UI when MediaLibrary fails to load assets**:
+  - Expo Go has limited MediaLibrary access - now detects this and shows helpful alternatives
+  - "Browse Gallery" button launches system ImagePicker to select photos/videos
+  - "Take Photo/Video" button opens camera with mode toggle
+  - No more empty gallery grid with just selection circles
+
+#### 🎥 Camera Video Recording
+
+- **Restored video recording capability**:
+  - Added photo/video mode toggle at the bottom of camera view
+  - Photo mode uses `takePictureAsync()` for instant capture
+  - Video mode uses `recordAsync()` with recording indicator
+  - Red dot and "REC" label shows when recording is active
+  - Tap capture button to start/stop recording
+
+#### 💬 Message Content Display
+
+- **Fixed "🎥 Video" and "📷 Photo" text appearing under media messages**:
+  - Placeholder content now properly hidden for image/video message types
+  - Only actual captions are displayed (not the fallback text)
+  - Cleaner message bubbles without redundant type labels
+
+### Added
+
+#### 👤 Contact Sharing (Telegram-style)
+
+- **New contact picker with animations**:
+  - Contact button now opens a full-screen animated contact list
+  - Search bar to filter contacts by name or phone number
+  - Animated contact cards with smooth entrance animation
+  - Shows contact photo (or initials avatar), name, and phone number
+  - Contacts shared as VCF format with name, phone, and email data
+  - Requires `expo-contacts` permission (added to dependencies)
+
+#### 📌 Enhanced Pinned Messages Bar
+
+- **Complete redesign of the pinned message header**:
+  - Gradient indicator bar shows pin count visually
+  - Media thumbnails for pinned images/videos
+  - Voice message indicator (microphone icon)
+  - File attachment indicator (document icon)
+  - Sender name displayed above message preview
+  - Progress dots for navigating multiple pins (clickable)
+  - Smooth navigation arrows for prev/next pin
+  - Better styling with improved contrast and spacing
+
+### Technical Details
+
+**TelegramAttachmentPicker.tsx Changes:**
+- Added imports: `ActivityIndicator`, `expo-contacts`
+- New state: `cameraMode`, `isRecording`, `useImagePickerFallback`, `showContactPicker`, `contacts`, `contactSearchQuery`, `contactCardAnim`
+- `loadMediaAssets()` now detects empty results and enables fallback UI
+- `openImagePicker()` - Direct ImagePicker launch for Expo Go
+- `handleCameraCapture()` supports both photo and video modes
+- `handleContactPicker()` and `shareContact()` for contact sharing
+- Camera UI with photo/video mode toggle
+- Fallback UI when gallery doesn't load
+- Contact picker modal with search and animated list
+
+**ConversationScreen.tsx Changes:**
+- Text content now excludes video/image types with placeholder content
+- Complete replacement of pinnedBar with pinnedBarEnhanced featuring:
+  - LinearGradient indicator showing pin progress
+  - Media preview thumbnails (Image component)
+  - Voice/file type indicators with icons
+  - Sender info display
+  - Clickable progress dots for direct pin access
+  - Enhanced navigation buttons
+
+### Dependencies Added
+
+- `expo-contacts@^15.0.11` - For accessing device contacts
+
+### Files Modified
+
+- `/apps/mobile/src/components/TelegramAttachmentPicker.tsx` - Major overhaul
+- `/apps/mobile/src/screens/messages/ConversationScreen.tsx` - Pinned bar redesign
+- `/apps/mobile/package.json` - Added expo-contacts dependency
+- `/docs/MOBILE.md` - Documentation updates
+
+---
+
+## [0.7.38] - 2026-01-10
+
+**📱 MOBILE MEDIA FIX: Video Playback & Gallery Improvements**
+
+This release addresses critical issues with media handling on the mobile app, specifically fixing image previews in the attachment picker on Android and enabling inline video viewing in chat.
+
+### Fixed
+
+#### 🖼️ Media Gallery Preview (Android)
+
+- **Fixed image/video previews not showing in TelegramAttachmentPicker**:
+  - Root cause: `MediaLibrary.getAssetsAsync` returns `content://` URIs on Android that aren't directly renderable by the Image component
+  - Solution: Now uses `MediaLibrary.getAssetInfoAsync` to resolve proper `localUri` for each asset
+  - Thumbnails now display correctly in Expo Go and development builds
+  - Performance optimized with parallel URI resolution for up to 100 assets
+
+#### 🎬 Video Messages in Chat
+
+- **Replaced camera placeholder with actual video frame**:
+  - Videos without server thumbnails now display their first frame using `expo-video` VideoView
+  - Removed generic `videocam` icon placeholder that was confusing users
+  - Added `InlineVideoThumbnail` component for memory-efficient video frame previews
+  - Play button overlay clearly indicates tappable video content
+
+### Technical Details
+
+**TelegramAttachmentPicker.tsx Changes:**
+```tsx
+// On Android, resolve localUri for proper image rendering
+if (Platform.OS === 'android') {
+  const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
+  displayUri = assetInfo.localUri || asset.uri;
+}
+```
+
+**ConversationScreen.tsx Changes:**
+```tsx
+// New InlineVideoThumbnail component
+const InlineVideoThumbnail = memo(({ videoUrl }: { videoUrl: string }) => {
+  const player = useVideoPlayer(videoUrl, (player) => {
+    player.loop = false;
+    player.pause(); // Keep paused to show first frame only
+  });
+  
+  return (
+    <VideoView
+      style={styles.videoThumbnail}
+      player={player}
+      contentFit="cover"
+      nativeControls={false}
+    />
+  );
+});
+```
+
+### Unchanged
+
+- Pin message limit (3 messages max) with proper user-facing error message
+- Typing indicator functionality
+- All existing video playback features (fullscreen player, controls, duration badges)
+
+### Files Modified
+
+- `/apps/mobile/src/components/TelegramAttachmentPicker.tsx` - Android URI resolution
+- `/apps/mobile/src/screens/messages/ConversationScreen.tsx` - InlineVideoThumbnail component
+- `/docs/MOBILE.md` - Updated documentation for media features
+
+---
+
+## [0.7.37] - 2026-01-11
+
+**🔒 HARDENED RELEASE: Security Improvements, Test Coverage, Production Integration**
+
+This release focuses on security hardening, comprehensive test coverage for the theme system, and integrating demo features into the production application. Theme import/export has been removed to prevent XSS/injection attack vectors.
+
+### Changed
+
+#### 🔒 Security Hardening
+
+- **Removed Theme Import/Export**: Eliminated the ability to import themes from external JSON files
+  - Removed `importTheme()` and `exportTheme()` methods from ThemeEngine
+  - Removed import/export UI from AppearanceSettingsEnhanced
+  - Removed related context methods from ThemeContextEnhanced
+  - Prevents potential XSS attacks via malicious theme JSON payloads
+
+#### 🧪 Comprehensive Test Coverage
+
+- **ThemeEngine Tests** (`ThemeEngine.test.ts` — 450+ lines):
+  - Initialization and default theme tests
+  - Theme switching across all 7 built-in themes
+  - Color validation for required properties
+  - Animation configuration validation
+  - Preferences management (font scale, message display, etc.)
+  - Custom theme creation and deletion
+  - Subscription system tests
+  - Edge case handling
+
+- **ThemeContextEnhanced Tests** (`ThemeContextEnhanced.test.tsx` — 400+ lines):
+  - Provider context tests
+  - Theme switching via React hooks
+  - Preference management through context
+  - Custom theme operations
+  - Convenience hooks (useThemeColors, useAnimationConfig, useReducedMotion)
+  - Derived value computations
+
+### Added
+
+#### 🌈 Dynamic Background Effects
+
+- **AppLayout Background Integration**:
+  - Optional shader background effects in main application layout
+  - Background effect syncs with current theme colors
+  - Semi-transparent overlay for readability
+  - Backdrop blur on sidebar for depth
+
+- **Background Settings in Appearance**:
+  - Toggle background effects on/off
+  - Choose shader variants: matrix, fluid, particles, waves, neural
+  - Intensity slider (10% - 100%)
+  - Settings persisted via ThemePreferences
+
+- **ThemePreferences Extended**:
+  - `backgroundEffect`: 'none' | 'shader' | 'matrix3d'
+  - `shaderVariant`: 'matrix' | 'fluid' | 'particles' | 'waves' | 'neural'
+  - `backgroundIntensity`: 0.0 - 1.0
+
+#### 📳 System-wide Haptic Feedback
+
+- **AppLayout Navigation**:
+  - Light haptic on navigation item clicks
+  - Medium haptic on logout button
+
+### Technical Changes
+
+- Updated AppearanceSettingsEnhanced to v4.0.1
+- Removed unused React hooks (useState, useRef) after import/export removal
+- Added proper z-indexing for background layers
+- Theme-aware shader color mapping
+
+### Files Modified
+
+- `/apps/web/src/lib/theme/ThemeEngine.ts` — Removed import/export, added background preferences
+- `/apps/web/src/contexts/ThemeContextEnhanced.tsx` — Removed import/export from context
+- `/apps/web/src/components/settings/AppearanceSettingsEnhanced.tsx` — Removed import/export UI, added background settings
+- `/apps/web/src/layouts/AppLayout.tsx` — Added shader background, haptic feedback
+- `/apps/web/src/lib/theme/__tests__/ThemeEngine.test.ts` — New (450+ lines)
+- `/apps/web/src/contexts/__tests__/ThemeContextEnhanced.test.tsx` — New (400+ lines)
+
+---
+
+## [0.7.36] - 2026-01-11
+
+**🎨 SPECTRUM RELEASE: Advanced Theme Engine + Holographic UI v4.0 + Enhanced Appearance Settings**
+
+A comprehensive visual overhaul bringing industry-standard theming capabilities inspired by Discord, Element/Matrix, and Signal. This release adds **~4,000+ lines** of polished theme system code with 7 built-in themes, complete customization controls, and the next generation Holographic UI component library.
+
+### Added
+
+#### 🎨 Advanced Theme Engine (`ThemeEngine.ts` — 1,000+ lines)
+
+Comprehensive theming system with professional-grade features:
+
+- **7 Built-in Themes**:
+  - **Dark** (default): Elegant dark theme with cyan accents
+  - **Light**: Clean light theme for daytime use
+  - **Matrix**: The iconic green-on-black hacker aesthetic
+  - **Holo Cyan**: Futuristic cyan holographic glow
+  - **Holo Purple**: Cyberpunk purple neon vibes
+  - **Holo Gold**: Premium golden holographic shine
+  - **Midnight**: Deep space dark blue theme
+  
+- **Theme Categories**:
+  - Dark themes for low-light environments
+  - Light themes for bright conditions
+  - Special/holographic themes for immersive experiences
+  - Custom user-created themes
+  
+- **User Preferences**:
+  - Font scaling (75% - 150%)
+  - Message density (compact, comfortable, spacious)
+  - Message spacing control
+  - Reduce motion accessibility option
+  - High contrast mode for visibility
+  - System preference following
+  
+- **Technical Features**:
+  - CSS variable injection for real-time updates
+  - localStorage persistence across sessions
+  - BroadcastChannel for cross-tab synchronization
+  - WCAG 2.1 AA contrast ratio compliance
+  - Theme import/export as JSON
+  - Custom theme creation with full color control
+
+#### 🚀 Holographic UI v4.0 (`HolographicUIv4.tsx` — 1,500+ lines)
+
+14 next-generation holographic components with advanced effects:
+
+- **Core Components (Enhanced)**:
+  - `HoloContainer`: Depth-based parallax, scanlines, glow effects
+  - `HoloText`: 6 variants (display, title, subtitle, body, caption, label)
+  - `HoloButton`: 5 styles (primary, secondary, ghost, danger, success)
+  - `HoloCard`: Interactive cards with hover states
+  
+- **New Components**:
+  - `HoloAvatar`: User avatars with status indicators (6 sizes)
+  - `HoloInput`: Form inputs with holographic styling
+  - `HoloProgress`: Progress bars with animated effects
+  - `HoloBadge`: Status badges with 5 variants
+  - `HoloTabs`: Tab navigation with smooth transitions
+  - `HoloDivider`: Decorative dividers with glow
+  - `HoloModal`: Overlay modals with backdrop blur
+  - `HoloNotification`: Toast notifications (4 types)
+  - `HoloTooltip`: Interactive tooltips with positioning
+  
+- **5 Color Presets**:
+  - Cyan: Default futuristic blue
+  - Matrix: Green terminal aesthetic
+  - Purple: Cyberpunk neon
+  - Gold: Premium metallic
+  - Midnight: Deep space blue
+  
+- **Advanced Effects**:
+  - Framer Motion animations throughout
+  - Mouse-following parallax depth
+  - Holographic shimmer animations
+  - Scanline overlays
+  - Glow and shadow systems
+  - Accessibility-first with reduced motion support
+
+#### ⚙️ Enhanced Appearance Settings (`AppearanceSettingsEnhanced.tsx` — 850+ lines)
+
+Professional theme customization panel:
+
+- **Visual Theme Picker**:
+  - Grid layout with theme previews
+  - Live Matrix rain effect in theme cards
+  - Active theme highlighting
+  - Theme category grouping
+  
+- **Accessibility Controls**:
+  - Font size slider with live preview
+  - Message density radio buttons
+  - Reduce animations toggle
+  - High contrast mode toggle
+  - System preference sync option
+  
+- **Advanced Features**:
+  - Custom theme creation wizard
+  - Theme import from JSON
+  - Theme export for sharing
+  - Delete custom themes
+  - Live preview panel
+  
+- **UX Polish**:
+  - Smooth Framer Motion transitions
+  - Responsive grid layout
+  - Touch-friendly controls
+  - Keyboard accessibility
+
+#### 🔗 Theme Context Integration (`ThemeContextEnhanced.tsx`)
+
+React context wrapper for seamless theme integration:
+
+- **Provided Hooks**:
+  - `useThemeEnhanced`: Full theme state and actions
+  - `useThemeColors`: Quick access to current colors
+  - `useHolographicTheme`: Holographic preset helper
+  - `useReducedMotion`: Accessibility motion detection
+  
+- **Features**:
+  - Automatic system preference detection
+  - Cross-tab state synchronization
+  - Reduced motion preference tracking
+  - Dark mode detection
+
+### Changed
+
+- Updated `Settings.tsx` to use new `AppearanceSettingsEnhanced` component
+- Updated `main.tsx` to wrap app with `ThemeProviderEnhanced`
+- Enhanced `EnhancedDemo.tsx` with v4.0 component showcase
+- Added holographic animations to `index.css`
+
+### Technical Notes
+
+- All new components use TypeScript with strict typing
+- Framer Motion for performant animations
+- CSS variables for runtime theme switching
+- LocalStorage for persistence with fallbacks
+- BroadcastChannel API for cross-tab sync
+- Comprehensive JSDoc documentation
+
+---
+
 ## [0.7.35] - 2026-01-11
 
 **🚀 HYPERTHINK RELEASE: Signal Protocol + AI Intelligence + Holographic UI + Spatial Audio**

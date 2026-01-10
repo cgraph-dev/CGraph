@@ -1265,12 +1265,51 @@ The conversation screen delivers a polished messaging experience with thoughtful
 - Voice and video call buttons for WebRTC 1:1 and group calls
 - Visual encryption indicator showing E2EE protection status
 
-**Attachment Menu:**  
+**Attachment Menu (TelegramAttachmentPicker):**  
 Tap the + button to reveal a beautiful slide-up menu with options to:
-- Share photos from your library
-- Capture photos with camera
+- Share photos and videos from your library (with proper Android URI resolution)
+- Capture photos or videos with camera (photo/video mode toggle)
 - Send documents and files
+- Share contacts (Telegram-style contact picker with animations)
 - Share your location (planned)
+
+> **v0.7.39 Note:** Gallery loading now includes fallback UI for Expo Go environments where MediaLibrary has limited access. When the gallery grid is empty, users see "Browse Gallery" and "Take Photo/Video" buttons that use ImagePicker directly. Camera now supports both photo and video recording with a mode toggle.
+
+**Contact Sharing (v0.7.39):**
+The contact picker provides a Telegram-style experience:
+- Full-screen animated contact list with smooth entrance
+- Search bar to filter by name or phone number
+- Contact cards show photo (or initials avatar), name, and number
+- Haptic feedback on selection
+- Contacts shared as VCF format with name, phone, and email data
+- Requires `expo-contacts` permission
+
+**Video Recording (v0.7.39):**
+Camera mode now supports both photos and videos:
+- Photo/Video toggle buttons at bottom of camera view
+- Video mode uses `recordAsync()` for recording
+- Red dot + "REC" indicator while recording
+- Tap capture button to start/stop recording
+
+**Video Messages:**
+Videos sent in conversations display inline with:
+- Real video frame thumbnail (no placeholder icons)
+- Play button overlay for tapping to view fullscreen
+- Duration badge showing video length
+- Fullscreen video player with custom controls (play/pause, progress bar, time display)
+- Clean message bubbles without redundant "📷 Photo" or "🎥 Video" labels
+
+**Pinned Messages Bar (v0.7.39):**
+The enhanced pinned messages header provides rich context:
+- Gradient indicator bar showing pin count visually
+- Media thumbnails for pinned images/videos (actual preview, not icons)
+- Voice message indicator (microphone icon) for pinned voice notes
+- File attachment indicator (document icon) for pinned files
+- Sender name displayed above message preview
+- Progress dots for navigating multiple pins (clickable for direct access)
+- Smooth navigation arrows for prev/next pin
+- Tap anywhere on bar to scroll to pinned message
+- Maximum 3 pinned messages per conversation
 
 **Message Status:**  
 Every outgoing message shows delivery status with intuitive icons:

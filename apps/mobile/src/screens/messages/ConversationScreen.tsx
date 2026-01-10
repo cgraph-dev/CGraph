@@ -285,6 +285,27 @@ interface VideoPlayerComponentProps {
   onClose: () => void;
 }
 
+// Inline Video Thumbnail Component - shows first frame of video without playback controls
+interface InlineVideoThumbnailProps {
+  videoUrl: string;
+}
+
+const InlineVideoThumbnail = memo(({ videoUrl }: InlineVideoThumbnailProps) => {
+  const player = useVideoPlayer(videoUrl, (player) => {
+    player.loop = false;
+    player.pause(); // Keep paused to show first frame only
+  });
+  
+  return (
+    <VideoView
+      style={styles.videoThumbnail}
+      player={player}
+      contentFit="cover"
+      nativeControls={false}
+    />
+  );
+});
+
 const VideoPlayerComponent = memo(({ videoUrl, duration, onClose }: VideoPlayerComponentProps) => {
   const player = useVideoPlayer(videoUrl, (player) => {
     player.loop = false;
@@ -2415,7 +2436,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             onPress={() => handleVideoPress(item.metadata!.url!, item.metadata?.duration)}
             style={styles.videoMessageContainer}
           >
-            {/* Video thumbnail - use url as poster or show placeholder */}
+            {/* Video thumbnail - show inline video frame or image thumbnail */}
             {item.metadata.thumbnail ? (
               <Image
                 source={{ uri: item.metadata.thumbnail }}
@@ -2423,9 +2444,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 resizeMode="cover"
               />
             ) : (
-              <View style={[styles.videoThumbnail, styles.videoPlaceholder]}>
-                <Ionicons name="videocam" size={40} color="rgba(255,255,255,0.8)" />
-              </View>
+              <InlineVideoThumbnail videoUrl={item.metadata.url} />
             )}
             {/* Play button overlay */}
             <View style={styles.videoPlayOverlayMessage}>
@@ -2452,8 +2471,26 @@ export default function ConversationScreen({ navigation, route }: Props) {
             isSender={isOwnMessage}
           />
         )}
-        {/* Text content - hide for voice messages */}
-        {item.content && item.type !== 'voice' && item.type !== 'audio' && (
+        {/* Text content - hide for voice, video, and image messages with default placeholder content */}
+        {item.content && 
+         item.type !== 'voice' && 
+         item.type !== 'audio' && 
+         item.type !== 'video' && 
+         item.type !== 'image' &&
+         !item.content.match(/^(📷 Photo|🎥 Video|📎 .+)$/) && (
+          <Text
+            style={[
+              styles.messageText,
+              { color: isOwnMessage ? '#fff' : colors.text },
+            ]}
+          >
+            {item.content}
+          </Text>
+        )}
+        {/* Show caption for media if it's not just a placeholder */}
+        {item.content && 
+         (item.type === 'video' || item.type === 'image') && 
+         !item.content.match(/^(📷 Photo|🎥 Video)$/) && (
           <Text
             style={[
               styles.messageText,
@@ -3458,51 +3495,135 @@ export default function ConversationScreen({ navigation, route }: Props) {
         </View>
       </Modal>
       
-      {/* Pinned Messages Bar */}
+      {/* Enhanced Pinned Messages Bar with Animation */}
       {currentPinnedMessage && (
-        <TouchableOpacity
-          style={[styles.pinnedBar, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}
-          onPress={() => scrollToMessage(currentPinnedMessage.id)}
-          activeOpacity={0.7}
+        <Animated.View
+          style={[
+            styles.pinnedBarEnhanced,
+            { 
+              backgroundColor: colors.surface,
+              borderBottomColor: colors.border,
+            },
+          ]}
         >
-          <View style={[styles.pinnedBarIndicator, { backgroundColor: colors.primary }]} />
-          <Ionicons name="pin" size={16} color={colors.primary} style={styles.pinnedBarIcon} />
-          <View style={styles.pinnedBarContent}>
-            <View style={styles.pinnedBarHeader}>
-              <Text style={[styles.pinnedBarLabel, { color: colors.primary }]}>
-                Pinned Message
-                {pinnedMessages.length > 1 && ` (${currentPinnedIndex + 1}/${pinnedMessages.length})`}
+          <TouchableOpacity
+            style={styles.pinnedBarTouchable}
+            onPress={() => scrollToMessage(currentPinnedMessage.id)}
+            activeOpacity={0.8}
+          >
+            {/* Animated gradient indicator */}
+            <LinearGradient
+              colors={[colors.primary, `${colors.primary}80`]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              style={styles.pinnedBarGradient}
+            />
+            
+            {/* Media preview thumbnail */}
+            {(currentPinnedMessage.type === 'image' || currentPinnedMessage.type === 'video') && currentPinnedMessage.metadata?.url && (
+              <View style={styles.pinnedMediaPreview}>
+                <Image 
+                  source={{ uri: currentPinnedMessage.metadata.thumbnail || currentPinnedMessage.metadata.url }} 
+                  style={styles.pinnedMediaThumbnail}
+                />
+                {currentPinnedMessage.type === 'video' && (
+                  <View style={styles.pinnedVideoIcon}>
+                    <Ionicons name="play" size={10} color="#fff" />
+                  </View>
+                )}
+              </View>
+            )}
+            
+            {/* Voice message indicator */}
+            {(currentPinnedMessage.type === 'voice' || currentPinnedMessage.type === 'audio') && (
+              <View style={[styles.pinnedVoiceIndicator, { backgroundColor: colors.primary + '20' }]}>
+                <Ionicons name="mic" size={18} color={colors.primary} />
+              </View>
+            )}
+            
+            {/* File indicator */}
+            {currentPinnedMessage.type === 'file' && (
+              <View style={[styles.pinnedFileIndicator, { backgroundColor: colors.primary + '20' }]}>
+                <Ionicons name="document-attach" size={18} color={colors.primary} />
+              </View>
+            )}
+            
+            {/* Content */}
+            <View style={styles.pinnedBarContentEnhanced}>
+              <View style={styles.pinnedBarHeaderRow}>
+                <View style={styles.pinnedIconContainer}>
+                  <Ionicons name="pin" size={12} color={colors.primary} />
+                </View>
+                <Text style={[styles.pinnedBarLabelEnhanced, { color: colors.primary }]}>
+                  Pinned
+                  {pinnedMessages.length > 1 && (
+                    <Text style={styles.pinnedBarCounter}> · {currentPinnedIndex + 1}/{pinnedMessages.length}</Text>
+                  )}
+                </Text>
+                {currentPinnedMessage.sender && (
+                  <Text style={[styles.pinnedBarSender, { color: colors.textSecondary }]} numberOfLines={1}>
+                    by {currentPinnedMessage.sender.display_name || currentPinnedMessage.sender.username}
+                  </Text>
+                )}
+              </View>
+              <Text 
+                style={[styles.pinnedBarTextEnhanced, { color: colors.text }]} 
+                numberOfLines={1}
+              >
+                {currentPinnedMessage.content && !currentPinnedMessage.content.match(/^(📷 Photo|🎥 Video)$/)
+                  ? currentPinnedMessage.content 
+                  : currentPinnedMessage.type === 'image' ? '📷 Photo' 
+                  : currentPinnedMessage.type === 'video' ? '🎬 Video' 
+                  : currentPinnedMessage.type === 'voice' ? '🎤 Voice message' 
+                  : currentPinnedMessage.type === 'file' ? `📎 ${currentPinnedMessage.metadata?.filename || 'File'}` 
+                  : 'Message'}
               </Text>
             </View>
-            <Text 
-              style={[styles.pinnedBarText, { color: colors.textSecondary }]} 
-              numberOfLines={1}
-            >
-              {currentPinnedMessage.content || 
-                (currentPinnedMessage.type === 'image' ? 'Photo' : 
-                 currentPinnedMessage.type === 'voice' ? 'Voice message' : 
-                 currentPinnedMessage.type === 'file' ? 'File' : 'Message')}
-            </Text>
-          </View>
-          {pinnedMessages.length > 1 && (
-            <View style={styles.pinnedBarNav}>
-              <TouchableOpacity
-                onPress={() => navigatePinnedMessages('prev')}
-                style={styles.pinnedBarNavBtn}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Ionicons name="chevron-up" size={18} color={colors.textSecondary} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => navigatePinnedMessages('next')}
-                style={styles.pinnedBarNavBtn}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              >
-                <Ionicons name="chevron-down" size={18} color={colors.textSecondary} />
-              </TouchableOpacity>
-            </View>
-          )}
-        </TouchableOpacity>
+            
+            {/* Progress dots for multiple pins */}
+            {pinnedMessages.length > 1 && (
+              <View style={styles.pinnedProgressContainer}>
+                {pinnedMessages.map((_, idx) => (
+                  <TouchableOpacity
+                    key={idx}
+                    onPress={() => {
+                      setCurrentPinnedIndex(idx);
+                      Haptics.selectionAsync();
+                    }}
+                    hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
+                  >
+                    <View 
+                      style={[
+                        styles.pinnedProgressDot,
+                        { backgroundColor: idx === currentPinnedIndex ? colors.primary : colors.border }
+                      ]}
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+            
+            {/* Navigation arrows */}
+            {pinnedMessages.length > 1 && (
+              <View style={styles.pinnedBarNavEnhanced}>
+                <TouchableOpacity
+                  onPress={() => navigatePinnedMessages('prev')}
+                  style={[styles.pinnedNavBtn, { backgroundColor: colors.input }]}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons name="chevron-up" size={16} color={colors.text} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigatePinnedMessages('next')}
+                  style={[styles.pinnedNavBtn, { backgroundColor: colors.input }]}
+                  hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                >
+                  <Ionicons name="chevron-down" size={16} color={colors.text} />
+                </TouchableOpacity>
+              </View>
+            )}
+          </TouchableOpacity>
+        </Animated.View>
       )}
       
       <FlatList
@@ -4642,6 +4763,119 @@ const styles = StyleSheet.create({
   },
   pinnedBarNavBtn: {
     padding: 2,
+  },
+  // Enhanced pinned message bar styles
+  pinnedBarEnhanced: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.08,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  pinnedBarTouchable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    paddingRight: 8,
+  },
+  pinnedBarGradient: {
+    width: 4,
+    height: 44,
+    borderRadius: 2,
+    marginRight: 10,
+  },
+  pinnedMediaPreview: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    marginRight: 10,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  pinnedMediaThumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  pinnedVideoIcon: {
+    position: 'absolute',
+    bottom: 2,
+    right: 2,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderRadius: 8,
+    width: 16,
+    height: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pinnedVoiceIndicator: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pinnedFileIndicator: {
+    width: 44,
+    height: 44,
+    borderRadius: 8,
+    marginRight: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  pinnedBarContentEnhanced: {
+    flex: 1,
+    marginRight: 8,
+  },
+  pinnedBarHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 3,
+  },
+  pinnedIconContainer: {
+    marginRight: 5,
+  },
+  pinnedBarLabelEnhanced: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  pinnedBarCounter: {
+    fontWeight: '500',
+    opacity: 0.8,
+  },
+  pinnedBarSender: {
+    fontSize: 12,
+    marginLeft: 6,
+    flex: 1,
+  },
+  pinnedBarTextEnhanced: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  pinnedProgressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginRight: 10,
+  },
+  pinnedProgressDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  pinnedBarNavEnhanced: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 2,
+  },
+  pinnedNavBtn: {
+    width: 26,
+    height: 20,
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   // Attachment preview styles
   attachmentPreviewContainer: {

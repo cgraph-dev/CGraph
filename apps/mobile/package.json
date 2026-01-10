@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/mobile",
-  "version": "0.7.34",
+  "version": "0.7.38",
   "private": true,
   "main": "index.js",
   "scripts": {
@@ -40,6 +40,7 @@
     "expo-camera": "~17.0.0",
     "expo-clipboard": "~8.0.0",
     "expo-constants": "~18.0.13",
+    "expo-contacts": "^15.0.11",
     "expo-crypto": "~15.0.0",
     "expo-device": "~8.0.0",
     "expo-document-picker": "^14.0.8",
