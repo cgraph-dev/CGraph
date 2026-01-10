@@ -1,37 +1,79 @@
 /**
  * Enhanced Components Demo Page
  * 
- * Showcases all v2.0 enhanced components in one place
+ * Showcases all v2.0, v3.0, and v4.0 enhanced components in one place
  * for testing and demonstration purposes.
  * 
- * @version 2.0.0
- * @since v0.7.33
+ * @version 4.0.0
+ * @since v0.7.36
  */
 
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
-// Import all enhanced components
+// Import all enhanced components (v2.0)
 import GlassCard, { GlassCardNeon, GlassCardHolographic, GlassCardCrystal } from '@/components/ui/GlassCard';
 import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
 import { AnimatedReactionBubble, ReactionPicker } from '@/components/conversation/AnimatedReactionBubble';
 import Matrix3DEnvironment from '@/components/three/Matrix3DEnvironment';
 import ShaderBackground from '@/components/shaders/ShaderBackground';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
-import { themeEngine } from '@/lib/ai/ThemeEngine';
+import { themeEngine as aiThemeEngine } from '@/lib/ai/ThemeEngine';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
+// Import v3.0 Holographic Components (legacy)
+import {
+  HolographicContainer,
+  HolographicText,
+  HolographicButton,
+  HolographicCard,
+  HolographicAvatar,
+  HolographicInput,
+  HolographicProgress,
+  HolographicNotification,
+} from '@/components/enhanced/ui/HolographicUI';
+
+// Import v4.0 Holographic Components
+import {
+  HoloProvider,
+  HoloText,
+  HoloButton,
+  HoloCard,
+  HoloAvatar,
+  HoloInput,
+  HoloProgress,
+  HoloBadge,
+  HoloTabs,
+  HoloDivider,
+  HoloModal,
+  HoloNotification,
+  HoloTooltip,
+} from '@/components/enhanced/ui/HolographicUIv4';
+
 // Demo sections
-type DemoSection = 'glasscards' | 'messages' | 'reactions' | 'matrix3d' | 'shaders' | 'voice' | 'theme';
+type DemoSection = 'glasscards' | 'messages' | 'reactions' | 'matrix3d' | 'shaders' | 'voice' | 'theme' | 'holographic' | 'holov4';
 
 export default function EnhancedDemo() {
-  const [activeSection, setActiveSection] = useState<DemoSection>('glasscards');
+  const [activeSection, setActiveSection] = useState<DemoSection>('holographic');
   const [showBackground, setShowBackground] = useState(true);
   const [backgroundType, setBackgroundType] = useState<'matrix3d' | 'shader'>('shader');
   const [shaderVariant, setShaderVariant] = useState<'fluid' | 'particles' | 'waves' | 'neural' | 'matrix'>('matrix');
   const [matrixTheme, setMatrixTheme] = useState<'matrix-green' | 'cyber-blue' | 'purple-haze' | 'amber-glow'>('matrix-green');
+  
+  // Holographic demo state
+  const [holoTheme, setHoloTheme] = useState<'cyan' | 'green' | 'purple' | 'gold'>('cyan');
+  const [holoProgress, setHoloProgress] = useState(65);
+  const [holoInput, setHoloInput] = useState('');
+  const [showNotification, setShowNotification] = useState(false);
+  
+  // v4.0 demo state
+  const [holoV4Preset, setHoloV4Preset] = useState<'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight'>('cyan');
+  const [holoV4Tab, setHoloV4Tab] = useState('overview');
+  const [showHoloModal, setShowHoloModal] = useState(false);
 
   const sections: { id: DemoSection; label: string }[] = [
+    { id: 'holov4', label: '🚀 Holographic v4.0' },
+    { id: 'holographic', label: '✨ Holographic v3.0' },
     { id: 'glasscards', label: '🃏 Glass Cards' },
     { id: 'messages', label: '💬 Messages' },
     { id: 'reactions', label: '🎉 Reactions' },
@@ -73,9 +115,9 @@ export default function EnhancedDemo() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-white">
-              ✨ Enhanced Components v2.0
+              ✨ Enhanced Components v3.0
             </h1>
-            <p className="text-gray-400 mt-1">Interactive demo of all new v0.7.33 components</p>
+            <p className="text-gray-400 mt-1">Interactive demo of v0.7.35 HYPERTHINK components</p>
           </div>
           <Link 
             to="/login" 
@@ -166,6 +208,28 @@ export default function EnhancedDemo() {
       {/* Content */}
       <main className="relative z-10 p-6">
         <div className="max-w-7xl mx-auto">
+          {activeSection === 'holov4' && (
+            <HolographicV4Demo
+              preset={holoV4Preset}
+              setPreset={setHoloV4Preset}
+              activeTab={holoV4Tab}
+              setActiveTab={setHoloV4Tab}
+              showModal={showHoloModal}
+              setShowModal={setShowHoloModal}
+            />
+          )}
+          {activeSection === 'holographic' && (
+            <HolographicDemo 
+              theme={holoTheme}
+              setTheme={setHoloTheme}
+              progress={holoProgress}
+              setProgress={setHoloProgress}
+              inputValue={holoInput}
+              setInputValue={setHoloInput}
+              showNotification={showNotification}
+              setShowNotification={setShowNotification}
+            />
+          )}
           {activeSection === 'glasscards' && <GlassCardsDemo />}
           {activeSection === 'messages' && <MessagesDemo />}
           {activeSection === 'reactions' && <ReactionsDemo />}
@@ -175,6 +239,419 @@ export default function EnhancedDemo() {
           {activeSection === 'theme' && <ThemeDemo />}
         </div>
       </main>
+    </div>
+  );
+}
+
+// =============================================================================
+// HOLOGRAPHIC DEMO (v3.0)
+// =============================================================================
+
+interface HolographicDemoProps {
+  theme: 'cyan' | 'green' | 'purple' | 'gold';
+  setTheme: (theme: 'cyan' | 'green' | 'purple' | 'gold') => void;
+  progress: number;
+  setProgress: (progress: number) => void;
+  inputValue: string;
+  setInputValue: (value: string) => void;
+  showNotification: boolean;
+  setShowNotification: (show: boolean) => void;
+}
+
+// =============================================================================
+// HOLOGRAPHIC V4 DEMO
+// =============================================================================
+
+interface HolographicV4DemoProps {
+  preset: 'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight';
+  setPreset: (preset: 'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight') => void;
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  showModal: boolean;
+  setShowModal: (show: boolean) => void;
+}
+
+function HolographicV4Demo({
+  preset,
+  setPreset,
+  activeTab,
+  setActiveTab,
+  showModal,
+  setShowModal,
+}: HolographicV4DemoProps) {
+  const [inputValue, setInputValue] = useState('');
+  const [progress, setProgress] = useState(72);
+  const [showNotification, setShowNotification] = useState(false);
+
+  const presets: Array<'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight'> = ['cyan', 'matrix', 'purple', 'gold', 'midnight'];
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: '📊' },
+    { id: 'components', label: 'Components', icon: '🧩' },
+    { id: 'effects', label: 'Effects', icon: '✨' },
+  ];
+
+  return (
+    <HoloProvider config={{ preset, intensity: 'medium' }}>
+      <div className="space-y-8">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-white mb-2">🚀 Holographic UI v4.0</h2>
+            <p className="text-gray-400">Next-gen holographic components with theme engine integration</p>
+          </div>
+          
+          {/* Preset Selector */}
+          <div className="flex gap-2">
+            {presets.map((p) => (
+              <button
+                key={p}
+                onClick={() => setPreset(p)}
+                className={`px-4 py-2 rounded-lg capitalize transition-all ${
+                  preset === p
+                    ? 'bg-white/20 text-white border border-white/30'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-transparent'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tabs Demo */}
+        <HoloTabs
+          tabs={tabs.map(t => ({ id: t.id, label: `${t.icon} ${t.label}` }))}
+          activeTab={activeTab}
+          onChange={setActiveTab}
+          preset={preset}
+        />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Container & Text */}
+          <HoloCard preset={preset} header={<HoloText variant="subtitle" preset={preset}>Text Variants</HoloText>}>
+            <div className="space-y-4">
+              <HoloText variant="display" preset={preset} gradient>Display</HoloText>
+              <HoloText variant="title" preset={preset}>Title Text</HoloText>
+              <HoloText variant="subtitle" preset={preset}>Subtitle Text</HoloText>
+              <HoloText variant="body" preset={preset}>Body text for content.</HoloText>
+              <HoloText variant="caption" preset={preset}>Caption text</HoloText>
+              <HoloText variant="label" preset={preset}>Label</HoloText>
+            </div>
+          </HoloCard>
+
+          {/* Buttons */}
+          <HoloCard preset={preset} header={<HoloText variant="subtitle" preset={preset}>Buttons</HoloText>}>
+            <div className="space-y-3">
+              <HoloButton preset={preset} variant="primary" fullWidth>
+                Primary Button
+              </HoloButton>
+              <HoloButton preset={preset} variant="secondary" fullWidth>
+                Secondary
+              </HoloButton>
+              <HoloButton preset={preset} variant="ghost" fullWidth>
+                Ghost
+              </HoloButton>
+              <div className="flex gap-2">
+                <HoloButton preset={preset} variant="success" size="sm">
+                  Success
+                </HoloButton>
+                <HoloButton preset={preset} variant="danger" size="sm">
+                  Danger
+                </HoloButton>
+              </div>
+              <HoloButton preset={preset} loading fullWidth>
+                Loading...
+              </HoloButton>
+            </div>
+          </HoloCard>
+
+          {/* Avatars */}
+          <HoloCard preset={preset} header={<HoloText variant="subtitle" preset={preset}>Avatars</HoloText>}>
+            <div className="flex flex-wrap gap-4 items-end">
+              <HoloAvatar name="Alice" size="xs" preset={preset} status="online" />
+              <HoloAvatar name="Bob Wilson" size="sm" preset={preset} status="away" />
+              <HoloAvatar name="Charlie" size="md" preset={preset} status="busy" />
+              <HoloAvatar name="Diana King" size="lg" preset={preset} status="offline" />
+              <HoloAvatar 
+                name="Echo"
+                size="xl"
+                preset={preset}
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=echo"
+              />
+            </div>
+          </HoloCard>
+
+          {/* Input & Progress */}
+          <HoloCard preset={preset} header={<HoloText variant="subtitle" preset={preset}>Inputs & Progress</HoloText>}>
+            <div className="space-y-4">
+              <HoloInput
+                value={inputValue}
+                onChange={setInputValue}
+                placeholder="Type something..."
+                label="Holographic Input"
+                preset={preset}
+              />
+              <div>
+                <p className="text-sm text-gray-400 mb-2">Linear Progress</p>
+                <HoloProgress value={progress} preset={preset} />
+              </div>
+              <div className="flex items-center gap-4">
+                <HoloProgress value={progress} preset={preset} variant="circular" size="sm" />
+                <HoloProgress value={progress} preset={preset} variant="circular" size="md" />
+                <HoloProgress value={progress} preset={preset} variant="circular" size="lg" />
+              </div>
+              <input
+                type="range"
+                min={0}
+                max={100}
+                value={progress}
+                onChange={(e) => setProgress(parseInt(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </HoloCard>
+
+          {/* Badges & Tooltips */}
+          <HoloCard preset={preset} header={<HoloText variant="subtitle" preset={preset}>Badges & Tooltips</HoloText>}>
+            <div className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <HoloBadge preset={preset}>Default</HoloBadge>
+                <HoloBadge preset={preset} variant="success">Success</HoloBadge>
+                <HoloBadge preset={preset} variant="warning">Warning</HoloBadge>
+                <HoloBadge preset={preset} variant="error">Error</HoloBadge>
+                <HoloBadge preset={preset} variant="info" pulse>Live</HoloBadge>
+              </div>
+              <HoloDivider preset={preset} />
+              <div className="flex gap-4">
+                <HoloTooltip content="This is a tooltip!" preset={preset}>
+                  <HoloButton preset={preset} size="sm" variant="ghost">Hover me</HoloButton>
+                </HoloTooltip>
+                <HoloTooltip content="Bottom tooltip" preset={preset} position="bottom">
+                  <HoloButton preset={preset} size="sm" variant="ghost">Bottom</HoloButton>
+                </HoloTooltip>
+              </div>
+            </div>
+          </HoloCard>
+
+          {/* Modal & Notifications */}
+          <HoloCard preset={preset} header={<HoloText variant="subtitle" preset={preset}>Modal & Notifications</HoloText>}>
+            <div className="space-y-4">
+              <HoloButton 
+                preset={preset} 
+                onClick={() => setShowModal(true)}
+                fullWidth
+              >
+                Open Modal
+              </HoloButton>
+              <HoloButton 
+                preset={preset}
+                variant="secondary" 
+                onClick={() => setShowNotification(true)}
+                fullWidth
+              >
+                Show Notification
+              </HoloButton>
+            </div>
+          </HoloCard>
+        </div>
+
+        {/* Modal */}
+        <HoloModal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          title="Holographic Modal v4.0"
+          preset={preset}
+          footer={
+            <>
+              <HoloButton preset={preset} variant="ghost" onClick={() => setShowModal(false)}>
+                Cancel
+              </HoloButton>
+              <HoloButton preset={preset} onClick={() => setShowModal(false)}>
+                Confirm
+              </HoloButton>
+            </>
+          }
+        >
+          <div className="space-y-4">
+            <HoloText variant="body" preset={preset}>
+              This is a holographic modal with the {preset} theme preset. 
+              It features animated borders, glow effects, and smooth transitions.
+            </HoloText>
+            <HoloInput
+              value=""
+              onChange={() => {}}
+              placeholder="Modal input..."
+              preset={preset}
+            />
+          </div>
+        </HoloModal>
+
+        {/* Notification */}
+        {showNotification && (
+          <div className="fixed bottom-4 right-4 z-50">
+            <HoloNotification
+              message="Holographic Notification v4.0"
+              description="This notification features the new holographic styling with smooth animations."
+              type="success"
+              preset={preset}
+              duration={5000}
+              onDismiss={() => setShowNotification(false)}
+              action={{
+                label: 'View Details',
+                onClick: () => console.log('Action clicked'),
+              }}
+            />
+          </div>
+        )}
+      </div>
+    </HoloProvider>
+  );
+}
+
+// =============================================================================
+// HOLOGRAPHIC V3 DEMO
+// =============================================================================
+
+function HolographicDemo({
+  theme,
+  setTheme,
+  progress,
+  setProgress,
+  inputValue,
+  setInputValue,
+  showNotification,
+  setShowNotification,
+}: HolographicDemoProps) {
+  return (
+    <div className="space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-2">✨ Holographic UI v3.0</h2>
+          <p className="text-gray-400">Futuristic interface components with 3D effects</p>
+        </div>
+        
+        {/* Theme Selector */}
+        <div className="flex gap-2">
+          {(['cyan', 'green', 'purple', 'gold'] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTheme(t)}
+              className={`w-8 h-8 rounded-full border-2 transition-all ${
+                theme === t ? 'scale-110 border-white' : 'border-transparent opacity-60 hover:opacity-100'
+              }`}
+              style={{
+                background: t === 'cyan' ? '#00d4ff' : t === 'green' ? '#00ff88' : t === 'purple' ? '#8b5cf6' : '#fbbf24',
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Main Holographic Container */}
+      <HolographicContainer config={{ colorTheme: theme, enableScanlines: true, enableFlicker: true }}>
+        <div className="p-8 space-y-8">
+          {/* Text Demo */}
+          <div className="text-center">
+            <HolographicText colorTheme={theme} variant="title" glowIntensity={2}>
+              WELCOME TO THE FUTURE
+            </HolographicText>
+            <HolographicText colorTheme={theme} variant="subtitle" className="mt-2 opacity-70">
+              CGraph v0.7.35 - HYPERTHINK Release
+            </HolographicText>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <HolographicCard colorTheme={theme}>
+              <div className="p-4 text-center">
+                <div className="text-3xl mb-2">🔐</div>
+                <h3 className="text-white font-semibold">Signal Protocol</h3>
+                <p className="text-sm text-gray-400 mt-1">End-to-end encryption</p>
+              </div>
+            </HolographicCard>
+            
+            <HolographicCard colorTheme={theme}>
+              <div className="p-4 text-center">
+                <div className="text-3xl mb-2">🧠</div>
+                <h3 className="text-white font-semibold">AI Intelligence</h3>
+                <p className="text-sm text-gray-400 mt-1">Smart messaging</p>
+              </div>
+            </HolographicCard>
+            
+            <HolographicCard colorTheme={theme}>
+              <div className="p-4 text-center">
+                <div className="text-3xl mb-2">🔊</div>
+                <h3 className="text-white font-semibold">Spatial Audio</h3>
+                <p className="text-sm text-gray-400 mt-1">3D positional sound</p>
+              </div>
+            </HolographicCard>
+          </div>
+
+          {/* Avatar Row */}
+          <div className="flex justify-center gap-6">
+            <HolographicAvatar colorTheme={theme} size="lg" status="online" name="User 1" />
+            <HolographicAvatar colorTheme={theme} size="lg" status="away" name="User 2" />
+            <HolographicAvatar colorTheme={theme} size="lg" status="busy" name="User 3" />
+            <HolographicAvatar colorTheme={theme} size="lg" status="offline" name="Bot" />
+          </div>
+
+          {/* Input Demo */}
+          <div className="max-w-md mx-auto">
+            <HolographicInput
+              colorTheme={theme}
+              placeholder="Enter access code..."
+              value={inputValue}
+              onChange={setInputValue}
+            />
+          </div>
+
+          {/* Progress Demo */}
+          <div className="max-w-md mx-auto space-y-4">
+            <HolographicProgress colorTheme={theme} value={progress} showLabel />
+            <div className="flex justify-center gap-4">
+              <HolographicButton
+                colorTheme={theme}
+                size="sm"
+                onClick={() => setProgress(Math.max(0, progress - 10))}
+              >
+                -10%
+              </HolographicButton>
+              <HolographicButton
+                colorTheme={theme}
+                size="sm"
+                onClick={() => setProgress(Math.min(100, progress + 10))}
+              >
+                +10%
+              </HolographicButton>
+            </div>
+          </div>
+
+          {/* Button Row */}
+          <div className="flex flex-wrap justify-center gap-4">
+            <HolographicButton colorTheme="cyan" onClick={() => setShowNotification(true)}>
+              Show Notification
+            </HolographicButton>
+            <HolographicButton colorTheme="green">
+              Connect
+            </HolographicButton>
+            <HolographicButton colorTheme="purple">
+              Encrypt
+            </HolographicButton>
+            <HolographicButton colorTheme="gold">
+              Premium
+            </HolographicButton>
+          </div>
+        </div>
+      </HolographicContainer>
+
+      {/* Notification Demo */}
+      {showNotification && (
+        <HolographicNotification
+          type="success"
+          message="Connection Established - Neural link active!"
+          duration={5000}
+          onDismiss={() => setShowNotification(false)}
+        />
+      )}
     </div>
   );
 }
@@ -516,12 +993,12 @@ function VoiceDemo() {
 }
 
 function ThemeDemo() {
-  const [generatedTheme, setGeneratedTheme] = useState<ReturnType<typeof themeEngine.getRecommendedTheme> | null>(null);
+  const [generatedTheme, setGeneratedTheme] = useState<ReturnType<typeof aiThemeEngine.getRecommendedTheme> | null>(null);
 
   const generateTheme = () => {
-    const theme = themeEngine.getRecommendedTheme();
+    const theme = aiThemeEngine.getRecommendedTheme();
     setGeneratedTheme(theme);
-    themeEngine.applyTheme(theme);
+    aiThemeEngine.applyTheme(theme);
     HapticFeedback.medium();
   };
 

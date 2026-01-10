@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationStore, Notification } from '@/stores/notificationStore';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/utils';
 import { EmptyState } from '@/components/ui';
 import {
   BellIcon,
@@ -236,7 +236,7 @@ function NotificationItem({
         </p>
         <p className="text-sm text-gray-400 mt-0.5 line-clamp-2">{notification.body}</p>
         <p className="text-xs text-gray-500 mt-1">
-          {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+          {formatTimeAgo(notification.createdAt)}
         </p>
       </div>
 

@@ -16,7 +16,7 @@
  * @since v0.7.35
  */
 
-import { ReactNode, useRef, useEffect, useState, useMemo, useCallback } from 'react';
+import { ReactNode, useRef, useEffect, useState, useCallback } from 'react';
 import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -49,7 +49,7 @@ export interface HolographicConfig {
 // COLOR THEMES
 // =============================================================================
 
-const HOLOGRAPHIC_THEMES: Record<string, HolographicTheme> = {
+const HOLOGRAPHIC_THEMES = {
   cyan: {
     primary: 'rgba(0, 255, 255, 0.9)',
     secondary: 'rgba(0, 200, 255, 0.7)',
@@ -82,7 +82,13 @@ const HOLOGRAPHIC_THEMES: Record<string, HolographicTheme> = {
     scanline: 'rgba(255, 200, 50, 0.1)',
     background: 'rgba(40, 30, 10, 0.95)',
   },
-};
+} as const satisfies Record<string, HolographicTheme>;
+
+// Helper function to safely get a theme
+function getTheme(colorTheme: HolographicConfig['colorTheme']): HolographicTheme {
+  if (colorTheme === 'custom') return HOLOGRAPHIC_THEMES.cyan;
+  return HOLOGRAPHIC_THEMES[colorTheme] ?? HOLOGRAPHIC_THEMES.cyan;
+}
 
 // =============================================================================
 // HOLOGRAPHIC CONTAINER
@@ -117,7 +123,7 @@ export function HolographicContainer({
     ...userConfig,
   };
   
-  const theme = config.customColors ?? HOLOGRAPHIC_THEMES[config.colorTheme];
+  const theme: HolographicTheme = config.customColors ?? getTheme(config.colorTheme);
   
   // Motion values for parallax
   const mouseX = useMotionValue(0);
@@ -331,7 +337,7 @@ export function HolographicText({
   glowIntensity = 1,
   className,
 }: HolographicTextProps) {
-  const theme = HOLOGRAPHIC_THEMES[colorTheme];
+  const theme = getTheme(colorTheme);
   
   const sizeClasses = {
     title: 'text-4xl font-bold tracking-wider',
@@ -390,7 +396,7 @@ export function HolographicButton({
   colorTheme = 'cyan',
   className,
 }: HolographicButtonProps) {
-  const theme = HOLOGRAPHIC_THEMES[colorTheme];
+  const theme = getTheme(colorTheme);
   const [isPressed, setIsPressed] = useState(false);
   
   const sizeClasses = {
@@ -495,7 +501,7 @@ export function HolographicCard({
   className,
   onClick,
 }: HolographicCardProps) {
-  const theme = HOLOGRAPHIC_THEMES[colorTheme];
+  const theme = getTheme(colorTheme);
   
   return (
     <HolographicContainer
@@ -552,7 +558,7 @@ export function HolographicAvatar({
   colorTheme = 'cyan',
   className,
 }: HolographicAvatarProps) {
-  const theme = HOLOGRAPHIC_THEMES[colorTheme];
+  const theme = getTheme(colorTheme);
   
   const sizeClasses = {
     sm: 'w-8 h-8 text-xs',
@@ -668,7 +674,7 @@ export function HolographicInput({
   colorTheme = 'cyan',
   className,
 }: HolographicInputProps) {
-  const theme = HOLOGRAPHIC_THEMES[colorTheme];
+  const theme = getTheme(colorTheme);
   const [isFocused, setIsFocused] = useState(false);
   
   return (
@@ -740,7 +746,7 @@ export function HolographicProgress({
   colorTheme = 'cyan',
   className,
 }: HolographicProgressProps) {
-  const theme = HOLOGRAPHIC_THEMES[colorTheme];
+  const theme = getTheme(colorTheme);
   
   const heightClasses = {
     sm: 'h-2',
@@ -825,6 +831,8 @@ export function HolographicNotification({
     error: 'purple',
   };
   
+  const colorTheme = typeThemes[type] ?? 'cyan';
+  
   useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(() => {
@@ -833,9 +841,10 @@ export function HolographicNotification({
       }, duration);
       return () => clearTimeout(timer);
     }
+    return undefined;
   }, [duration, onDismiss]);
   
-  const theme = HOLOGRAPHIC_THEMES[typeThemes[type]];
+  const theme = getTheme(colorTheme);
   
   return (
     <AnimatePresence>
@@ -846,7 +855,7 @@ export function HolographicNotification({
           exit={{ opacity: 0, y: -20, scale: 0.9 }}
           className={cn('relative max-w-md', className)}
         >
-          <HolographicContainer config={{ colorTheme: typeThemes[type] }}>
+          <HolographicContainer config={{ colorTheme }}>
             <div className="flex items-center gap-3 p-4">
               <div
                 className="w-3 h-3 rounded-full animate-pulse"

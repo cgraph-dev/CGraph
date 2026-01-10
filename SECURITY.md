@@ -62,6 +62,11 @@ CGraph implements defense-in-depth with multiple security layers:
 - **XSS Prevention**: Content Security Policy enforcement
 - **CSRF Protection**: Token validation for mutations
 
+#### UI Security (v0.7.37+)
+- **Theme Import Removed**: Theme import/export removed to prevent JSON-based XSS/injection
+- **Content Sanitization**: User-generated content sanitized before rendering
+- **No Dynamic Code Execution**: All theme colors validated as hex/rgba strings only
+
 #### Infrastructure
 - **WAF**: Cloudflare Web Application Firewall
 - **DDoS Protection**: Cloudflare with geo-blocking

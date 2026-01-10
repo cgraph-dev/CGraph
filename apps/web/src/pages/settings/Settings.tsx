@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
-import { useTheme } from '@/contexts/ThemeContext';
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
+import AppearanceSettingsEnhanced from '@/components/settings/AppearanceSettingsEnhanced';
 import {
   UserIcon,
   ShieldCheckIcon,
@@ -61,7 +61,7 @@ export default function Settings() {
           {section === 'account' && <AccountSettings />}
           {section === 'security' && <SecuritySettings />}
           {section === 'notifications' && <NotificationSettings />}
-          {section === 'appearance' && <AppearanceSettings />}
+          {section === 'appearance' && <AppearanceSettingsEnhanced />}
           {section === 'language' && <LanguageSettings />}
           {section === 'sessions' && <SessionsSettings />}
           {section === 'privacy' && <PrivacySettings />}
@@ -415,60 +415,6 @@ function NotificationSettings() {
             <p className="text-sm text-gray-400">Receive push notifications on your devices</p>
           </div>
           <Toggle value={settings.push} onChange={(v) => setSettings({ ...settings, push: v })} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AppearanceSettings() {
-  const { theme, setTheme } = useTheme();
-
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Appearance</h1>
-
-      {/* Theme */}
-      <div className="mb-8">
-        <label className="block text-sm font-medium text-gray-300 mb-3">Theme</label>
-        <div className="grid grid-cols-3 gap-4">
-          {(['dark', 'light', 'system'] as const).map((t) => (
-            <button
-              key={t}
-              onClick={() => setTheme(t)}
-              className={`p-4 rounded-lg border-2 transition-colors ${
-                theme === t
-                  ? 'border-primary-500 bg-primary-500/10'
-                  : 'border-dark-600 hover:border-dark-500'
-              }`}
-            >
-              <div
-                className={`h-16 rounded-lg mb-2 ${
-                  t === 'dark'
-                    ? 'bg-dark-900'
-                    : t === 'light'
-                    ? 'bg-gray-100'
-                    : 'bg-gradient-to-r from-dark-900 to-gray-100'
-                }`}
-              />
-              <span className="text-sm font-medium text-white capitalize">{t}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Message Display */}
-      <div className="mb-8">
-        <label className="block text-sm font-medium text-gray-300 mb-3">Message Display</label>
-        <div className="space-y-2">
-          <label className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-800 cursor-pointer">
-            <input type="radio" name="messageDisplay" defaultChecked className="text-primary-600" />
-            <span className="text-white">Cozy - Modern chat experience</span>
-          </label>
-          <label className="flex items-center gap-3 p-3 rounded-lg hover:bg-dark-800 cursor-pointer">
-            <input type="radio" name="messageDisplay" className="text-primary-600" />
-            <span className="text-white">Compact - More messages on screen</span>
-          </label>
         </div>
       </div>
     </div>

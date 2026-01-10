@@ -3,7 +3,7 @@ import { Outlet, useParams, NavLink, useSearchParams, useNavigate } from 'react-
 import { useChatStore, Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { socketManager } from '@/lib/socket';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/utils';
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -290,7 +290,7 @@ function ConversationItem({
           </span>
           {conversation.lastMessage && (
             <span className="text-xs text-gray-500 flex-shrink-0">
-              {formatDistanceToNow(new Date(conversation.lastMessage.createdAt), { addSuffix: false })}
+              {formatTimeAgo(conversation.lastMessage.createdAt, { addSuffix: false })}
             </span>
           )}
         </div>

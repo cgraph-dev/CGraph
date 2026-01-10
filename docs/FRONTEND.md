@@ -1,7 +1,7 @@
 # CGraph Frontend Guide
 
 > Building beautiful, fast, and accessible user interfaces with React.
-> **v0.7.35** — Now featuring Signal Protocol encryption, AI intelligence, holographic UI, and spatial audio.
+> **v0.7.36** — Now featuring Advanced Theme Engine, Holographic UI v4.0, and enhanced customization.
 
 This guide covers the CGraph web application—a React 19 app built with Vite, TypeScript, and TailwindCSS. Whether you're fixing a bug or building a new feature, you'll find everything you need here.
 
@@ -18,19 +18,20 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 7. [API Integration](#api-integration)
 8. [Real-Time Features](#real-time-features)
 9. [Component Library](#component-library)
-10. [Enhanced UI v3.0](#enhanced-ui-v30) ⭐ **v0.7.35**
-11. [Signal Protocol Encryption](#signal-protocol-encryption) ⭐ **NEW**
-12. [AI Message Intelligence](#ai-message-intelligence) ⭐ **NEW**
-13. [Holographic UI System](#holographic-ui-system) ⭐ **NEW**
-14. [Spatial Audio Engine](#spatial-audio-engine) ⭐ **NEW**
-15. [Demo-First Workflow](#demo-first-workflow)
-16. [Storybook](#storybook)
-17. [Styling Guide](#styling-guide)
-18. [Forms and Validation](#forms-and-validation)
-19. [Testing](#testing)
-20. [Performance](#performance)
-21. [Accessibility](#accessibility)
-22. [Common Patterns](#common-patterns)
+10. [Enhanced UI v3.0](#enhanced-ui-v30)
+11. [Theme Engine v4.0](#theme-engine-v40) ⭐ **v0.7.36**
+12. [Holographic UI v4.0](#holographic-ui-v40) ⭐ **v0.7.36**
+13. [Signal Protocol Encryption](#signal-protocol-encryption)
+14. [AI Message Intelligence](#ai-message-intelligence)
+15. [Spatial Audio Engine](#spatial-audio-engine)
+16. [Demo-First Workflow](#demo-first-workflow)
+17. [Storybook](#storybook)
+18. [Styling Guide](#styling-guide)
+19. [Forms and Validation](#forms-and-validation)
+20. [Testing](#testing)
+21. [Performance](#performance)
+22. [Accessibility](#accessibility)
+23. [Common Patterns](#common-patterns)
 
 ---
 
@@ -1514,7 +1515,193 @@ const insights = await ai.generateInsights(messages);
 
 ---
 
-## Holographic UI System
+## Theme Engine v4.0
+
+Advanced theming system with runtime switching, custom themes, and user preferences.
+
+### Overview
+
+The Theme Engine provides:
+- 7 built-in themes (dark, light, matrix, holo-cyan, holo-purple, holo-gold, midnight)
+- Custom theme creation with full color control
+- User preferences (font scaling, message density, accessibility)
+- CSS variable injection for real-time updates
+- Cross-tab synchronization via BroadcastChannel
+- WCAG 2.1 AA compliance
+
+### Quick Start
+
+```tsx
+import { ThemeProviderEnhanced, useThemeEnhanced } from '@/contexts/ThemeContextEnhanced';
+
+// Wrap your app
+<ThemeProviderEnhanced initialTheme="dark">
+  <App />
+</ThemeProviderEnhanced>
+
+// Use in components
+function MyComponent() {
+  const { currentTheme, setTheme, preferences } = useThemeEnhanced();
+  
+  return (
+    <button onClick={() => setTheme('matrix')}>
+      Matrix Mode
+    </button>
+  );
+}
+```
+
+### Available Hooks
+
+| Hook | Purpose |
+|------|---------|
+| `useThemeEnhanced` | Full theme state and actions |
+| `useThemeColors` | Current theme colors |
+| `useHolographicTheme` | Get holo preset from theme |
+| `useReducedMotion` | Accessibility motion check |
+
+### Built-in Themes
+
+| ID | Name | Category |
+|----|------|----------|
+| `dark` | Dark Mode | dark |
+| `light` | Light Mode | light |
+| `matrix` | Matrix | special |
+| `holo-cyan` | Holographic Cyan | special |
+| `holo-purple` | Holographic Purple | special |
+| `holo-gold` | Holographic Gold | special |
+| `midnight` | Midnight | dark |
+
+### User Preferences
+
+```tsx
+const { preferences, setFontScale, setMessageDisplay, toggleReduceMotion } = useThemeEnhanced();
+
+// Font scaling (0.75 - 1.5)
+setFontScale(1.2);
+
+// Message display mode
+setMessageDisplay('compact'); // 'compact' | 'comfortable' | 'spacious'
+
+// Accessibility
+toggleReduceMotion();
+toggleHighContrast();
+```
+
+### Custom Themes
+
+```tsx
+const { createCustomTheme, importTheme, exportTheme } = useThemeEnhanced();
+
+// Create a new theme
+const theme = createCustomTheme({
+  name: 'My Theme',
+  category: 'dark',
+  colors: {
+    primary: '#ff6b6b',
+    background: '#1a1a2e',
+    // ... other colors
+  },
+});
+
+// Export for sharing
+const json = exportTheme(theme.id);
+
+// Import from JSON
+const imported = importTheme(jsonString);
+```
+
+---
+
+## Holographic UI v4.0
+
+Next-generation holographic components with 14 components and 5 color presets.
+
+### Components
+
+| Component | Description |
+|-----------|-------------|
+| `HoloContainer` | Depth-based parallax with scanlines & glow |
+| `HoloText` | 6 variants (display, title, subtitle, body, caption, label) |
+| `HoloButton` | 5 styles (primary, secondary, ghost, danger, success) |
+| `HoloCard` | Interactive cards with hover states |
+| `HoloAvatar` | 6 sizes with status indicators |
+| `HoloInput` | Form inputs with holographic styling |
+| `HoloProgress` | Animated progress bars |
+| `HoloBadge` | Status badges (5 variants) |
+| `HoloTabs` | Tab navigation with transitions |
+| `HoloDivider` | Decorative dividers with glow |
+| `HoloModal` | Overlay modals with backdrop |
+| `HoloNotification` | Toast notifications (4 types) |
+| `HoloTooltip` | Interactive positioned tooltips |
+
+### Color Presets
+
+```tsx
+type HoloPreset = 'cyan' | 'matrix' | 'purple' | 'gold' | 'midnight';
+```
+
+### Usage
+
+```tsx
+import {
+  HoloProvider,
+  HoloContainer,
+  HoloText,
+  HoloButton,
+  HoloCard,
+  HoloModal,
+  HoloNotification,
+} from '@/components/enhanced/ui/HolographicUIv4';
+
+function FuturisticUI() {
+  const [showModal, setShowModal] = useState(false);
+  
+  return (
+    <HoloProvider preset="matrix">
+      <HoloContainer enableScanlines enableGlow enableParallax>
+        <HoloText variant="title" glow>Welcome to the Matrix</HoloText>
+        
+        <HoloCard interactive>
+          <HoloText variant="body">Card content here</HoloText>
+          <HoloButton variant="primary" onClick={() => setShowModal(true)}>
+            Open Modal
+          </HoloButton>
+        </HoloCard>
+        
+        <HoloModal 
+          open={showModal} 
+          onClose={() => setShowModal(false)}
+          title="Modal Title"
+        >
+          <HoloText>Modal content</HoloText>
+        </HoloModal>
+      </HoloContainer>
+    </HoloProvider>
+  );
+}
+```
+
+### Integration with Theme Engine
+
+Holographic components automatically integrate with the theme engine:
+
+```tsx
+const { currentTheme } = useThemeEnhanced();
+
+// Map theme to holo preset
+const holoPreset = currentTheme.id === 'matrix' ? 'matrix' 
+  : currentTheme.id.includes('holo') ? currentTheme.id.replace('holo-', '')
+  : 'cyan';
+
+<HoloProvider preset={holoPreset}>
+  <HoloContainer>...</HoloContainer>
+</HoloProvider>
+```
+
+---
+
+## Holographic UI System (v3.0)
 
 8 futuristic components for next-generation interfaces.
 

@@ -8,6 +8,7 @@ import { Toaster } from 'react-hot-toast';
 import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProviderEnhanced } from './contexts/ThemeContextEnhanced';
 import './index.css';
 
 // Development mode logging
@@ -106,22 +107,24 @@ ReactDOM.createRoot(rootElement).render(
     <ErrorBoundary>
       <Suspense fallback={<GlobalLoadingFallback />}>
         <ThemeProvider>
-          <QueryClientProvider client={queryClient}>
-            <BrowserRouter>
-              <App />
-              <Toaster
-                position="bottom-right"
-                toastOptions={{
-                  className: 'bg-dark-800 text-white border border-dark-700',
-                  duration: 4000,
-                  style: {
-                    background: '#1f2937',
-                    color: '#fff',
-                  },
-                }}
-              />
-            </BrowserRouter>
-          </QueryClientProvider>
+          <ThemeProviderEnhanced>
+            <QueryClientProvider client={queryClient}>
+              <BrowserRouter>
+                  <App />
+                <Toaster
+                  position="bottom-right"
+                  toastOptions={{
+                    className: 'bg-dark-800 text-white border border-dark-700',
+                    duration: 4000,
+                    style: {
+                      background: '#1f2937',
+                      color: '#fff',
+                    },
+                  }}
+                />
+              </BrowserRouter>
+            </QueryClientProvider>
+          </ThemeProviderEnhanced>
         </ThemeProvider>
       </Suspense>
     </ErrorBoundary>

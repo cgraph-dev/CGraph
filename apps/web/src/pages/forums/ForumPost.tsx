@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useForumStore, Comment } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/utils';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import Dropdown, { DropdownItem, DropdownDivider } from '@/components/Dropdown';
 import { toast } from '@/components/ui';
@@ -227,7 +227,7 @@ export default function ForumPost() {
                   </Link>
                 </span>
                 <span>•</span>
-                <span>{formatDistanceToNow(new Date(currentPost.createdAt), { addSuffix: true })}</span>
+                <span>{formatTimeAgo(currentPost.createdAt)}</span>
               </div>
 
               {/* Title */}
@@ -518,7 +518,7 @@ function CommentItem({
               <span className="font-medium text-gray-300 hover:underline">{comment.author.username || comment.author.displayName || 'Unknown'}</span>
             </Link>
             <span>•</span>
-            <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
+            <span>{formatTimeAgo(comment.createdAt)}</span>
             <button
               onClick={() => setIsCollapsed(!isCollapsed)}
               className="text-gray-500 hover:text-white"

@@ -1,11 +1,14 @@
 import { Outlet, NavLink, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useCallback } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/chatStore';
 import { useGroupStore } from '@/stores/groupStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { socketManager } from '@/lib/socket';
 import { ToastContainer } from '@/components/ui';
+import { useThemeEnhanced } from '@/contexts/ThemeContextEnhanced';
+import ShaderBackground from '@/components/shaders/ShaderBackground';
+import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   ChatBubbleLeftRightIcon,
   UserGroupIcon,
@@ -77,6 +80,30 @@ export default function AppLayout() {
   const { fetchConversations, conversations } = useChatStore();
   const { fetchGroups } = useGroupStore();
   const { fetchNotifications, unreadCount } = useNotificationStore();
+  const { theme, preferences } = useThemeEnhanced();
+
+  // Get background settings from preferences
+  const backgroundSettings = useMemo(() => ({
+    effect: preferences.settings.backgroundEffect || 'none',
+    variant: preferences.settings.shaderVariant || 'matrix',
+    intensity: preferences.settings.backgroundIntensity || 0.6,
+  }), [preferences.settings.backgroundEffect, preferences.settings.shaderVariant, preferences.settings.backgroundIntensity]);
+
+  // Get colors for shader background based on theme
+  const shaderColors = useMemo(() => {
+    if (theme.category === 'special' || theme.id === 'matrix') {
+      return {
+        color1: theme.colors.primary,
+        color2: theme.colors.background,
+        color3: theme.colors.holoAccent,
+      };
+    }
+    return {
+      color1: theme.colors.primary,
+      color2: theme.colors.background,
+      color3: theme.colors.accent,
+    };
+  }, [theme]);
 
   // Initialize socket and fetch data on mount
   useEffect(() => {
@@ -98,7 +125,21 @@ export default function AppLayout() {
   const totalUnread = conversations.reduce((sum, conv) => sum + conv.unreadCount, 0);
 
   return (
-    <div className="flex h-screen bg-dark-900 text-white">
+    <div className="flex h-screen text-white relative" style={{ background: theme.colors.background }}>
+      {/* Dynamic Background Effect */}
+      {backgroundSettings.effect === 'shader' && (
+        <ShaderBackground
+          variant={backgroundSettings.variant}
+          color1={shaderColors.color1}
+          color2={shaderColors.color2}
+          color3={shaderColors.color3}
+          speed={0.6}
+          intensity={backgroundSettings.intensity}
+          interactive={false}
+          className="fixed inset-0 -z-10"
+        />
+      )}
+      
       {/* Skip to content link for keyboard users */}
       <a
         href="#main-content"
@@ -109,7 +150,7 @@ export default function AppLayout() {
       
       {/* Sidebar */}
       <aside 
-        className="w-20 bg-dark-800 border-r border-dark-700 flex flex-col items-center py-4"
+        className="w-20 bg-dark-800/90 backdrop-blur-sm border-r border-dark-700 flex flex-col items-center py-4 z-10"
         role="navigation"
         aria-label="Main navigation"
       >
@@ -149,6 +190,7 @@ export default function AppLayout() {
                 to={item.path}
                 aria-label={item.label}
                 aria-current={isActive ? 'page' : undefined}
+                onClick={() => HapticFeedback.light()}
                 className={`relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-200 group ${
                   isActive
                     ? 'bg-primary-600 text-white shadow-lg shadow-primary-600/30'
@@ -175,7 +217,10 @@ export default function AppLayout() {
         {/* User Avatar & Logout */}
         <div className="mt-auto space-y-2" role="group" aria-label="User actions">
           <button
-            onClick={handleLogout}
+            onClick={() => {
+              HapticFeedback.medium();
+              handleLogout();
+            }}
             className="w-12 h-12 rounded-xl flex items-center justify-center text-gray-400 hover:bg-red-600/20 hover:text-red-400 transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-dark-800"
             title="Logout"
             aria-label="Logout from your account"
@@ -204,7 +249,16 @@ export default function AppLayout() {
       </aside>
 
       {/* Main Content */}
-      <main id="main-content" className="flex-1 flex overflow-hidden" role="main">
+      <main 
+        id="main-content" 
+        className="flex-1 flex overflow-hidden z-10" 
+        role="main"
+        style={{
+          background: backgroundSettings.effect !== 'none' 
+            ? `${theme.colors.background}dd` // Semi-transparent overlay
+            : undefined,
+        }}
+      >
         <Outlet />
       </main>
       

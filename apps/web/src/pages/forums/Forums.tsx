@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useForumStore, Post } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
-import { formatDistanceToNow } from 'date-fns';
+import { formatTimeAgo } from '@/lib/utils';
 import { PostCardSkeleton } from '@/components';
 import { LeaderboardSidebar } from '@/components/forums/LeaderboardWidget';
 import {
@@ -350,7 +350,7 @@ export default function Forums() {
             <div className="flex items-center justify-between text-sm mt-2">
               <span className="text-gray-400">Created</span>
               <span className="text-white font-medium">
-                {formatDistanceToNow(new Date(activeForum.createdAt), { addSuffix: true })}
+                {formatTimeAgo(activeForum.createdAt)}
               </span>
             </div>
           </div>
@@ -499,7 +499,7 @@ function PostCard({
               </Link>
             </span>
             <span>•</span>
-            <span>{formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</span>
+            <span>{formatTimeAgo(post.createdAt)}</span>
           </div>
 
           {/* Title */}

@@ -19,7 +19,8 @@ import {
   BoltIcon,
 } from '@heroicons/react/24/outline';
 import { adminApi } from '@/lib/api/admin';
-import { formatDistanceToNow, format } from 'date-fns';
+import { format } from 'date-fns';
+import { formatTimeAgo, safeParseDate } from '@/lib/utils';
 import clsx from 'clsx';
 
 // ============================================================================
@@ -505,7 +506,7 @@ function UserRow({
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
           {user.lastSeenAt
-            ? formatDistanceToNow(new Date(user.lastSeenAt), { addSuffix: true })
+            ? formatTimeAgo(user.lastSeenAt)
             : 'Never'}
         </td>
         <td className="px-6 py-4 whitespace-nowrap text-right">
@@ -652,7 +653,7 @@ function ReportCard({
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Reported by <span className="font-medium">@{report.reporterUsername}</span>
             {' • '}
-            {formatDistanceToNow(new Date(report.insertedAt), { addSuffix: true })}
+            {formatTimeAgo(report.insertedAt)}
           </p>
         </div>
 

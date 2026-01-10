@@ -9,14 +9,15 @@
 1. [Design System Overview](#design-system-overview)
 2. [Theming with TailwindCSS](#theming-with-tailwindcss)
 3. [Matrix Theme System](#matrix-theme-system)
-4. [Component Architecture](#component-architecture)
-5. [Modifying Existing Components](#modifying-existing-components)
-6. [Creating New Components](#creating-new-components)
-7. [Mobile UI (React Native)](#mobile-ui-react-native)
-8. [Dark Mode & Themes](#dark-mode--themes)
-9. [Responsive Design](#responsive-design)
-10. [Animations & Transitions](#animations--transitions)
-11. [Accessibility (a11y)](#accessibility-a11y)
+4. [Advanced Theme Engine (v0.7.36+)](#advanced-theme-engine-v0736)
+5. [Component Architecture](#component-architecture)
+6. [Modifying Existing Components](#modifying-existing-components)
+7. [Creating New Components](#creating-new-components)
+8. [Mobile UI (React Native)](#mobile-ui-react-native)
+9. [Dark Mode & Themes](#dark-mode--themes)
+10. [Responsive Design](#responsive-design)
+11. [Animations & Transitions](#animations--transitions)
+12. [Accessibility (a11y)](#accessibility-a11y)
 
 ---
 
@@ -271,6 +272,270 @@ boxShadow: {
   'matrix-intense': '0 0 30px rgba(0, 255, 65, 0.5), 0 0 60px rgba(0, 255, 65, 0.2)',
 }
 ```
+
+---
+
+## Advanced Theme Engine (v0.7.36+)
+
+CGraph features a comprehensive theme engine inspired by Discord, Element/Matrix, and Signal. This system provides runtime theme switching, custom theme creation, and full user preference controls.
+
+### Available Themes
+
+| Theme ID | Category | Description |
+|----------|----------|-------------|
+| `dark` | Dark | Default elegant dark theme with cyan accents |
+| `light` | Light | Clean light theme for daytime use |
+| `matrix` | Special | Iconic green-on-black hacker aesthetic |
+| `holo-cyan` | Special | Futuristic cyan holographic glow |
+| `holo-purple` | Special | Cyberpunk purple neon vibes |
+| `holo-gold` | Special | Premium golden holographic shine |
+| `midnight` | Dark | Deep space dark blue theme |
+
+### Using the Theme Engine
+
+```tsx
+import { useThemeEnhanced, useThemeColors } from '@/contexts/ThemeContextEnhanced';
+
+function MyComponent() {
+  const { currentTheme, setTheme, preferences } = useThemeEnhanced();
+  const colors = useThemeColors();
+  
+  return (
+    <div style={{ backgroundColor: colors.background, color: colors.text }}>
+      <p>Current theme: {currentTheme.name}</p>
+      <button onClick={() => setTheme('matrix')}>Switch to Matrix</button>
+    </div>
+  );
+}
+```
+
+### Theme Color Properties
+
+The `ThemeColors` interface provides 35+ semantic color properties:
+
+```typescript
+interface ThemeColors {
+  // Primary colors
+  primary: string;
+  primaryLight: string;
+  primaryDark: string;
+  
+  // Secondary colors
+  secondary: string;
+  secondaryLight: string;
+  secondaryDark: string;
+  
+  // Accent colors
+  accent: string;
+  accentLight: string;
+  accentDark: string;
+  
+  // Background colors
+  background: string;
+  backgroundElevated: string;
+  backgroundDark: string;
+  
+  // Surface colors
+  surface: string;
+  surfaceElevated: string;
+  surfaceBorder: string;
+  
+  // Text colors
+  text: string;
+  textSecondary: string;
+  textMuted: string;
+  textInverse: string;
+  
+  // Semantic colors
+  success: string;
+  warning: string;
+  error: string;
+  info: string;
+  
+  // Interactive colors
+  interactive: string;
+  interactiveHover: string;
+  interactiveActive: string;
+  
+  // Status colors
+  online: string;
+  offline: string;
+  away: string;
+  busy: string;
+}
+```
+
+### User Preferences
+
+The theme engine manages user preferences:
+
+```typescript
+interface ThemePreferences {
+  themeId: string;           // Active theme ID
+  customThemes: Theme[];     // User-created themes
+  fontScale: number;         // 0.75 - 1.5 (75% - 150%)
+  messageDisplay: 'compact' | 'comfortable' | 'spacious';
+  messageSpacing: number;    // Custom message spacing
+  reduceMotion: boolean;     // Accessibility option
+  highContrast: boolean;     // WCAG compliance
+  useSystemPreference: boolean;  // Auto dark/light
+}
+```
+
+### Creating Custom Themes
+
+```tsx
+import { useThemeEnhanced } from '@/contexts/ThemeContextEnhanced';
+
+function ThemeCreator() {
+  const { createCustomTheme, setTheme } = useThemeEnhanced();
+  
+  const createMyTheme = () => {
+    const theme = createCustomTheme({
+      name: 'My Custom Theme',
+      category: 'dark',
+      colors: {
+        primary: '#ff6b6b',
+        background: '#1a1a2e',
+        surface: '#16213e',
+        text: '#eee',
+        // ... other required colors
+      },
+    });
+    setTheme(theme.id);
+  };
+  
+  return <button onClick={createMyTheme}>Create Theme</button>;
+}
+```
+
+### Theme Security Note (v0.7.37+)
+
+> ⚠️ **Security Update**: Theme import/export functionality has been removed as of v0.7.37 to prevent potential XSS and code injection attacks. Custom themes can only be created programmatically within the application.
+
+If you need to backup or restore themes, use the browser's localStorage directly (advanced users only):
+
+```javascript
+// Export themes (developer console only)
+const prefs = JSON.parse(localStorage.getItem('cgraph-theme-preferences'));
+console.log(JSON.stringify(prefs.customThemes, null, 2));
+
+// Import themes programmatically via createCustomTheme hook
+```
+
+### CSS Variables
+
+The theme engine injects CSS variables for use in stylesheets:
+
+```css
+:root {
+  --color-primary: #00d9ff;
+  --color-background: #0f0f0f;
+  --color-surface: #1a1a1a;
+  --color-text: #ffffff;
+  --font-scale: 1;
+  --message-spacing: 1rem;
+  /* ... 40+ variables */
+}
+
+/* Usage in CSS */
+.my-component {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: calc(1rem * var(--font-scale));
+}
+```
+
+### Holographic UI v4.0
+
+The new Holographic UI components integrate seamlessly with the theme engine:
+
+```tsx
+import { 
+  HoloProvider, 
+  HoloContainer, 
+  HoloText, 
+  HoloButton,
+  HoloCard,
+  HoloModal,
+} from '@/components/enhanced/ui/HolographicUIv4';
+
+function FuturisticUI() {
+  return (
+    <HoloProvider preset="matrix">
+      <HoloContainer enableScanlines enableGlow>
+        <HoloText variant="title">Welcome to the Matrix</HoloText>
+        <HoloButton variant="primary">Enter</HoloButton>
+      </HoloContainer>
+    </HoloProvider>
+  );
+}
+```
+
+Available HoloProvider presets: `cyan`, `matrix`, `purple`, `gold`, `midnight`
+
+### Accessibility Features
+
+The theme engine includes accessibility controls:
+
+```tsx
+const { preferences, toggleReduceMotion, toggleHighContrast } = useThemeEnhanced();
+
+// Check if user prefers reduced motion
+if (preferences.reduceMotion) {
+  // Skip animations
+}
+
+// High contrast mode adjusts colors automatically
+if (preferences.highContrast) {
+  // Increased contrast ratios
+}
+```
+
+### Cross-Tab Synchronization
+
+Themes sync across browser tabs automatically using the BroadcastChannel API:
+
+```typescript
+// Changes in one tab are reflected in all tabs
+setTheme('matrix'); // All tabs switch to Matrix theme
+```
+
+### Background Effects (v0.7.37+)
+
+The theme system now supports dynamic background effects integrated with the main app layout:
+
+```typescript
+// Background effect options
+interface BackgroundSettings {
+  backgroundEffect: 'none' | 'shader' | 'matrix3d';
+  shaderVariant: 'matrix' | 'fluid' | 'particles' | 'waves' | 'neural';
+  backgroundIntensity: number; // 0.0 - 1.0
+}
+
+// Update via settings
+const { updateSettings } = useThemeEnhanced();
+
+updateSettings({
+  backgroundEffect: 'shader',
+  shaderVariant: 'matrix',
+  backgroundIntensity: 0.6,
+});
+```
+
+**Available Shader Effects:**
+
+| Variant | Description |
+|---------|-------------|
+| `matrix` | Classic Matrix code rain effect |
+| `fluid` | Smooth fluid dynamics simulation |
+| `particles` | Floating particle system |
+| `waves` | Animated wave patterns |
+| `neural` | Neural network-style connections |
+
+**Usage in Components:**
+
+The background effect is applied automatically in `AppLayout.tsx`. Colors are derived from the active theme for seamless integration.
 
 ---
 
