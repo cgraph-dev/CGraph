@@ -6,6 +6,71 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.40] - 2026-01-10
+
+**📱 MOBILE MEDIA FIX: iOS Photo Library URIs & Native Camera Restoration**
+
+Critical fix for the `ph://` URL error when sending photos on iOS and reverting to the native camera for better reliability.
+
+### Fixed
+
+#### 📷 iOS Photo Library URIs (CRITICAL)
+
+- **Fixed "No suitable URL request handler found for ph://" error**:
+  - iOS MediaLibrary returns `ph://` URIs that can't be used for uploads
+  - Now resolves `localUri` for ALL assets on both iOS and Android
+  - Gallery thumbnails now display correctly
+  - Photos/videos can be sent without errors
+
+#### 📹 Camera Restored to Native
+
+- **Reverted from CameraView to native ImagePicker camera**:
+  - Uses `ImagePicker.launchCameraAsync()` for both photos and videos
+  - More reliable across all devices and Expo Go
+  - Photo/Video selection via alert prompt
+  - Removed custom CameraView implementation that was causing issues
+
+### Technical Details
+
+**URI Resolution Fix:**
+```tsx
+// Now resolves localUri for both iOS and Android
+for (const asset of media.assets) {
+  let displayUri = asset.uri;
+  
+  // Always try to resolve localUri for both platforms
+  try {
+    const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
+    if (assetInfo.localUri) {
+      displayUri = assetInfo.localUri;
+    }
+  } catch (e) {
+    console.log('Could not get local URI for asset:', asset.id);
+  }
+}
+```
+
+**Native Camera:**
+```tsx
+// Photo capture
+const result = await ImagePicker.launchCameraAsync({
+  mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  quality: 0.8,
+});
+
+// Video capture
+const result = await ImagePicker.launchCameraAsync({
+  mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+  videoMaxDuration: 60,
+});
+```
+
+### Files Modified
+
+- `/apps/mobile/src/components/TelegramAttachmentPicker.tsx` - Fixed URI resolution, native camera
+
+---
+
 ## [0.7.39] - 2026-01-10
 
 **📱 MOBILE ATTACHMENT PICKER OVERHAUL: Gallery Fallback, Video Recording, Contact Sharing & Enhanced Pinned Messages**

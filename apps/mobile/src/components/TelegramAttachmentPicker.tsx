@@ -19,7 +19,6 @@ import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as MediaLibrary from 'expo-media-library';
 import * as Contacts from 'expo-contacts';
-import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -66,10 +65,6 @@ const TelegramAttachmentPicker = memo(({
   const [assets, setAssets] = useState<Asset[]>([]);
   const [selectedAssets, setSelectedAssets] = useState<Map<string, Asset>>(new Map());
   const [hasMediaPermission, setHasMediaPermission] = useState(false);
-  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [showCamera, setShowCamera] = useState(false);
-  const [cameraMode, setCameraMode] = useState<'photo' | 'video'>('photo');
-  const [isRecording, setIsRecording] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [useImagePickerFallback, setUseImagePickerFallback] = useState(false);
   const [showContactPicker, setShowContactPicker] = useState(false);
@@ -78,7 +73,6 @@ const TelegramAttachmentPicker = memo(({
   
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
-  const cameraRef = useRef<CameraView>(null);
   const contactCardAnim = useRef(new Animated.Value(0)).current;
   
   // Animation when showing/hiding
@@ -138,24 +132,23 @@ const TelegramAttachmentPicker = memo(({
           return;
         }
         
-        // On Android with Expo Go, we have limited media access
-        // Try to get localUri for each asset, but gracefully handle failures
+        // Both iOS and Android need localUri resolution
+        // iOS returns ph:// URIs which can't be uploaded directly
+        // Android returns content:// URIs which may not render properly
         const assetsWithLocalUri: Asset[] = [];
         
         for (const asset of media.assets) {
           let displayUri = asset.uri;
           
-          // For Android, try to resolve the local URI
-          if (Platform.OS === 'android') {
-            try {
-              const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
-              if (assetInfo.localUri) {
-                displayUri = assetInfo.localUri;
-              }
-            } catch (e) {
-              // Use original URI as fallback
-              console.log('Could not get local URI for asset:', asset.id);
+          // Always try to resolve localUri for both platforms
+          try {
+            const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
+            if (assetInfo.localUri) {
+              displayUri = assetInfo.localUri;
             }
+          } catch (e) {
+            // Use original URI as fallback
+            console.log('Could not get local URI for asset:', asset.id);
           }
           
           assetsWithLocalUri.push({
@@ -237,61 +230,6 @@ const TelegramAttachmentPicker = memo(({
     });
   }, [maxSelection]);
   
-  // Handle camera capture (photo or video)
-  const handleCameraCapture = async () => {
-    if (!cameraRef.current) return;
-    
-    try {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      
-      if (cameraMode === 'photo') {
-        const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.8,
-        });
-        
-        if (photo?.uri) {
-          onSelectAssets([{
-            uri: photo.uri,
-            type: 'image',
-            name: `photo_${Date.now()}.jpg`,
-            mimeType: 'image/jpeg',
-          }]);
-          setShowCamera(false);
-          onClose();
-        }
-      } else {
-        // Video recording
-        if (isRecording) {
-          // Stop recording
-          cameraRef.current.stopRecording();
-          setIsRecording(false);
-        } else {
-          // Start recording
-          setIsRecording(true);
-          const video = await cameraRef.current.recordAsync({
-            maxDuration: 60,
-          });
-          
-          if (video?.uri) {
-            onSelectAssets([{
-              uri: video.uri,
-              type: 'video',
-              name: `video_${Date.now()}.mp4`,
-              mimeType: 'video/mp4',
-            }]);
-            setShowCamera(false);
-            onClose();
-          }
-          setIsRecording(false);
-        }
-      }
-    } catch (error) {
-      console.error('Camera capture error:', error);
-      setIsRecording(false);
-      Alert.alert('Error', `Failed to capture ${cameraMode}`);
-    }
-  };
-  
   // Handle send selection
   const handleSendSelection = useCallback(() => {
     if (selectedAssets.size === 0) return;
@@ -338,36 +276,88 @@ const TelegramAttachmentPicker = memo(({
     }
   };
   
-  // Open camera with permission check
-  const openCamera = async () => {
-    if (!cameraPermission?.granted) {
-      const { granted } = await requestCameraPermission();
-      if (!granted) {
-        Alert.alert('Permission needed', 'Camera permission is required to take photos.');
-        return;
+  // Open native camera for photos
+  const openCameraPhoto = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onClose();
+      
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.8,
+        allowsEditing: false,
+      });
+      
+      if (!result.canceled && result.assets.length > 0) {
+        const asset = result.assets[0];
+        onSelectAssets([{
+          uri: asset.uri,
+          type: 'image',
+          name: asset.fileName || `photo_${Date.now()}.jpg`,
+          mimeType: asset.mimeType || 'image/jpeg',
+        }]);
       }
+    } catch (error) {
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to open camera');
     }
-    setShowCamera(true);
   };
   
-  // Render camera tile
+  // Open native camera for video
+  const openCameraVideo = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onClose();
+      
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+        videoMaxDuration: 60,
+        quality: 0.8,
+        allowsEditing: false,
+      });
+      
+      if (!result.canceled && result.assets.length > 0) {
+        const asset = result.assets[0];
+        onSelectAssets([{
+          uri: asset.uri,
+          type: 'video',
+          name: asset.fileName || `video_${Date.now()}.mp4`,
+          mimeType: asset.mimeType || 'video/mp4',
+          duration: asset.duration ? asset.duration / 1000 : undefined,
+        }]);
+      }
+    } catch (error) {
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to open camera');
+    }
+  };
+  
+  // Render camera tile - opens photo/video options
   const renderCameraTile = () => (
     <TouchableOpacity
       style={styles.cameraTile}
-      onPress={openCamera}
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        Alert.alert(
+          'Camera',
+          'What do you want to capture?',
+          [
+            { text: 'Photo', onPress: openCameraPhoto },
+            { text: 'Video', onPress: openCameraVideo },
+            { text: 'Cancel', style: 'cancel' },
+          ]
+        );
+      }}
       activeOpacity={0.8}
     >
       <View style={styles.cameraPreviewContainer}>
-        {cameraPermission?.granted ? (
-          <CameraView
-            style={styles.cameraPreview}
-            facing="back"
-          />
-        ) : (
-          <View style={[styles.cameraPlaceholder, { backgroundColor: colors.surface }]}>
-            <Ionicons name="camera" size={40} color={colors.textSecondary} />
-          </View>
-        )}
+        <View style={[styles.cameraPlaceholder, { backgroundColor: colors.surface }]}>
+          <Ionicons name="camera" size={40} color={colors.textSecondary} />
+        </View>
         <View style={styles.cameraOverlay}>
           <View style={styles.cameraIconCircle}>
             <Ionicons name="camera" size={28} color="#fff" />
@@ -533,80 +523,6 @@ const TelegramAttachmentPicker = memo(({
     contact.phoneNumbers?.some((p: Contacts.PhoneNumber) => p.number?.includes(contactSearchQuery))
   );
   
-  // Fullscreen camera view with photo/video toggle
-  if (showCamera) {
-    return (
-      <Modal visible={visible} animationType="fade" statusBarTranslucent>
-        <View style={styles.fullscreenCamera}>
-          <CameraView
-            ref={cameraRef}
-            style={StyleSheet.absoluteFill}
-            facing="back"
-            mode={cameraMode === 'video' ? 'video' : 'picture'}
-          />
-          
-          {/* Camera mode toggle */}
-          <View style={styles.cameraModeToggle}>
-            <TouchableOpacity
-              style={[styles.cameraModeBtn, cameraMode === 'photo' && styles.cameraModeBtnActive]}
-              onPress={() => { setCameraMode('photo'); Haptics.selectionAsync(); }}
-            >
-              <Ionicons name="camera" size={20} color={cameraMode === 'photo' ? '#fff' : 'rgba(255,255,255,0.6)'} />
-              <Text style={[styles.cameraModeText, cameraMode === 'photo' && styles.cameraModeTextActive]}>Photo</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.cameraModeBtn, cameraMode === 'video' && styles.cameraModeBtnActive]}
-              onPress={() => { setCameraMode('video'); Haptics.selectionAsync(); }}
-            >
-              <Ionicons name="videocam" size={20} color={cameraMode === 'video' ? '#fff' : 'rgba(255,255,255,0.6)'} />
-              <Text style={[styles.cameraModeText, cameraMode === 'video' && styles.cameraModeTextActive]}>Video</Text>
-            </TouchableOpacity>
-          </View>
-          
-          {/* Recording indicator */}
-          {isRecording && (
-            <View style={styles.recordingIndicator}>
-              <View style={styles.recordingDot} />
-              <Text style={styles.recordingText}>Recording...</Text>
-            </View>
-          )}
-          
-          {/* Camera controls */}
-          <View style={styles.cameraControls}>
-            <TouchableOpacity
-              style={styles.cameraCloseBtn}
-              onPress={() => { setShowCamera(false); setIsRecording(false); }}
-            >
-              <Ionicons name="close" size={28} color="#fff" />
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={[
-                styles.captureButton,
-                cameraMode === 'video' && styles.captureButtonVideo,
-                isRecording && styles.captureButtonRecording,
-              ]}
-              onPress={handleCameraCapture}
-            >
-              <View style={[
-                styles.captureButtonInner,
-                cameraMode === 'video' && styles.captureButtonInnerVideo,
-                isRecording && styles.captureButtonInnerRecording,
-              ]} />
-            </TouchableOpacity>
-            
-            <TouchableOpacity
-              style={styles.cameraFlipBtn}
-              onPress={() => {/* Flip camera */}}
-            >
-              <Ionicons name="camera-reverse" size={28} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-    );
-  }
-  
   if (!visible) return null;
   
   return (
@@ -697,7 +613,17 @@ const TelegramAttachmentPicker = memo(({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.fallbackCameraButton, { borderColor: colors.primary }]}
-                onPress={openCamera}
+                onPress={() => {
+                  Alert.alert(
+                    'Camera',
+                    'What do you want to capture?',
+                    [
+                      { text: 'Photo', onPress: openCameraPhoto },
+                      { text: 'Video', onPress: openCameraVideo },
+                      { text: 'Cancel', style: 'cancel' },
+                    ]
+                  );
+                }}
               >
                 <Ionicons name="camera" size={24} color={colors.primary} />
                 <Text style={[styles.fallbackCameraButtonText, { color: colors.primary }]}>Take Photo/Video</Text>
