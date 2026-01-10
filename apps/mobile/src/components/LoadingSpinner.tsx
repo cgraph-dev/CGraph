@@ -11,6 +11,8 @@ interface LoadingSpinnerProps {
   fullScreen?: boolean;
   /** Additional styles */
   style?: ViewStyle;
+  /** Optional testID for testing */
+  testID?: string;
 }
 
 export default function LoadingSpinner({
@@ -18,12 +20,13 @@ export default function LoadingSpinner({
   text,
   fullScreen = false,
   style,
+  testID = 'loading-spinner',
 }: LoadingSpinnerProps) {
   const { colors } = useTheme();
 
   const content = (
-    <View style={[styles.container, style]}>
-      <ActivityIndicator size={size} color={colors.primary} />
+    <View style={[styles.container, style]} testID={fullScreen ? `${testID}-content` : testID}>
+      <ActivityIndicator size={size} color={colors.primary} testID={`${testID}-indicator`} />
       {text && (
         <Text style={[styles.text, { color: colors.textSecondary }]}>{text}</Text>
       )}
@@ -32,7 +35,7 @@ export default function LoadingSpinner({
 
   if (fullScreen) {
     return (
-      <View style={[styles.fullScreen, { backgroundColor: colors.background }]}>
+      <View style={[styles.fullScreen, { backgroundColor: colors.background }]} testID={`${testID}-fullscreen`}>
         {content}
       </View>
     );

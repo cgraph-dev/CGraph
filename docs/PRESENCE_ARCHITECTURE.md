@@ -3,13 +3,16 @@
 ## Table of Contents
 1. [Overview](#overview)
 2. [Architecture](#architecture)
-3. [Common Pitfalls & Solutions](#common-pitfalls--solutions)
-4. [Implementation Details](#implementation-details)
-5. [Troubleshooting](#troubleshooting)
+3. [Sampled Presence for Large Channels](#sampled-presence-for-large-channels)
+4. [Common Pitfalls & Solutions](#common-pitfalls--solutions)
+5. [Implementation Details](#implementation-details)
+6. [Troubleshooting](#troubleshooting)
 
 ## Overview
 
-CGraph uses Phoenix Presence, a distributed CRDT-based presence tracking system that provides real-time online/offline status across the cluster. This document details the architectural decisions, patterns, and best practices for working with presence tracking.
+CGraph uses Phoenix Presence, a distributed CRDT-based presence tracking system that provides real-time online/offline status across the cluster. For large channels (1000+ members), we've added a sampled presence layer that reduces bandwidth and memory usage while maintaining user experience.
+
+This document details the architectural decisions, patterns, and best practices for working with presence tracking.
 
 ### Key Features
 - **Real-time presence tracking** across multiple devices
@@ -17,6 +20,8 @@ CGraph uses Phoenix Presence, a distributed CRDT-based presence tracking system 
 - **Multi-device support** - users can be online from multiple clients
 - **Typing indicators** synced across all participants
 - **Last seen timestamps** for offline users
+- **Sampled presence** for Telegram-scale channels (v0.7.32+)
+- **HyperLogLog counting** — O(1) member counts using 12KB per channel
 
 ## Architecture
 
@@ -43,6 +48,56 @@ User Action → Component → SocketManager → Phoenix Channel → Backend
 Backend Presence → presence_diff → All connected clients
                                 ↓
 Presence.onSync/onJoin/onLeave → Component state update
+```
+
+## Sampled Presence for Large Channels
+
+Standard Phoenix Presence works beautifully for conversations and small groups. But broadcasting presence updates for 100,000+ member channels would saturate both server bandwidth and client memory. We solved this with tiered sampling.
+
+### The Problem at Scale
+
+Imagine a public channel with 500,000 members. If 50,000 of them are online, standard presence would:
+- Broadcast 50,000 user objects to every connected client
+- Send a presence_diff for every join and leave
+- Use ~100MB of RAM per client just for presence data
+
+That's obviously not going to work.
+
+### How Sampled Presence Works
+
+`Cgraph.Presence.Sampled` implements tiered sampling based on channel size:
+
+| Channel Size | Sample Rate | Broadcast Interval | What Users See |
+|-------------|-------------|-------------------|-----------------|
+| < 100 | 100% | Immediate | Everyone online |
+| 100 - 1,000 | 50% | 1 second batched | Half the online users |
+| 1,000 - 100,000 | 1% | 10 second batched | "~5,432 online" |
+| 100,000+ | 0.1% | 30 second batched | "~523K online" |
+
+For huge channels, we stop showing individual online users entirely and just show an approximate count. That's what Telegram does, and it works.
+
+### HyperLogLog for Counting
+
+We use the HyperLogLog algorithm to count unique online users. It's probabilistic but incredibly space-efficient:
+- **12KB of memory** tracks 1 million unique users with ~1% error
+- Counts merge across cluster nodes without conflicts
+- Adding a user ID is O(1), getting count is O(1)
+
+### Deterministic Sampling
+
+When we sample 1% of online users for display, we don't pick randomly each time. That would make the "who's online" list flicker constantly. Instead, we hash each user ID and use the hash to determine if they're in the sample. The same users always appear in the sample, so the list stays stable.
+
+### Configuration
+
+```elixir
+# config/runtime.exs
+config :cgraph, Cgraph.Presence.Sampled,
+  tiers: [
+    %{max_size: 100, sample_rate: 1.0, batch_interval: 0},
+    %{max_size: 1_000, sample_rate: 0.5, batch_interval: 1_000},
+    %{max_size: 100_000, sample_rate: 0.01, batch_interval: 10_000},
+    %{max_size: :infinity, sample_rate: 0.001, batch_interval: 30_000}
+  ]
 ```
 
 ## Common Pitfalls & Solutions

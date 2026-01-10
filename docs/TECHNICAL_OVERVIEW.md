@@ -1,7 +1,7 @@
 # CGraph Technical Overview
 
 > Comprehensive technical reference for the CGraph platform  
-> Version 0.7.31 | January 2026
+> Version 0.7.32 | January 2026
 
 ---
 
@@ -119,10 +119,13 @@ CGraph/
 - **Ecto 3.13** - Database wrapper and query DSL
 - **Guardian 2.4** - JWT-based authentication
 - **Oban 2.20** - Background job processing with Cron support
-- **Phoenix.Presence** - CRDT-based distributed presence tracking
+- **Cgraph.Presence.Sampled** - Tiered presence for million-user channels
+- **Cgraph.RateLimiter.Distributed** - Redis-backed rate limiting with Lua scripts
 - **Cachex 4.1** - High-performance in-memory caching
 - **Argon2** - Secure password hashing (OWASP recommended)
 - **Bandit 1.10** - Pure Elixir HTTP/2 server
+- **Meilisearch** - Sub-50ms typo-tolerant full-text search
+- **WebRTC** - Peer-to-peer voice and video calling
 
 **Project Structure:**
 ```elixir

@@ -457,23 +457,38 @@ Content-Type: application/json
 
 ## Rate Limiting
 
-Requests are rate limited per IP/user:
+CGraph uses a distributed rate limiting system backed by Redis for cluster-wide consistency. When Redis is unavailable, the system gracefully degrades to per-node ETS-based limiting.
 
-| Endpoint Type | Limit | Window |
-|---------------|-------|--------|
-| Public (auth) | 20 requests | 1 minute |
-| Authenticated | 100 requests | 1 minute |
-| Upload | 10 requests | 1 minute |
-| Search | 30 requests | 1 minute |
+### Rate Limit Tiers
 
-**Rate limit headers:**
+| Endpoint Type | Limit | Window | Scope |
+|---------------|-------|--------|-------|
+| Login/Register | 20 requests | 1 minute | IP address |
+| Authenticated API | 100 requests | 1 minute | User ID |
+| File Upload | 10 requests | 1 minute | User ID |
+| Search | 30 requests | 1 minute | User ID |
+| WebSocket Connect | 5 requests | 10 seconds | IP address |
+
+### How It Works
+
+The rate limiter uses Lua scripts executed atomically in Redis, supporting multiple algorithms:
+
+- **Fixed Window** — Simple counter reset at window boundaries (default for login)
+- **Sliding Window** — Smooth rate limiting without burst at window edges
+- **Token Bucket** — Allows controlled bursting for authenticated endpoints
+
+### Rate Limit Headers
+
+Every response includes rate limit information:
+
 ```http
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
 X-RateLimit-Reset: 1699876543
 ```
 
-**When rate limited:**
+### When Rate Limited
+
 ```http
 HTTP/1.1 429 Too Many Requests
 Retry-After: 45
@@ -485,6 +500,10 @@ Retry-After: 45
   }
 }
 ```
+
+### Fallback Behavior
+
+If Redis becomes unavailable, the rate limiter falls back to local ETS tables. This means limits are enforced per-server rather than cluster-wide, but service continues without interruption. The system automatically switches back to Redis when connectivity is restored.
 
 ---
 

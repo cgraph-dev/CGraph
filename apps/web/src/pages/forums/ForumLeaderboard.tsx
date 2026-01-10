@@ -21,13 +21,13 @@ import {
 
 type LeaderboardSort = 'hot' | 'top' | 'new' | 'rising' | 'weekly' | 'members';
 
-const sortOptions: { value: LeaderboardSort; label: string; icon: React.ElementType }[] = [
-  { value: 'hot', label: 'Hot', icon: FireIcon },
-  { value: 'top', label: 'Top All Time', icon: TrophyIcon },
-  { value: 'weekly', label: 'Weekly Best', icon: SparklesIcon },
-  { value: 'rising', label: 'Rising', icon: ArrowTrendingUpIcon },
-  { value: 'new', label: 'New', icon: ClockIcon },
-  { value: 'members', label: 'Most Members', icon: UsersIcon },
+const sortOptions = [
+  { value: 'hot' as const, label: 'Hot', icon: FireIcon },
+  { value: 'top' as const, label: 'Top All Time', icon: TrophyIcon },
+  { value: 'weekly' as const, label: 'Weekly Best', icon: SparklesIcon },
+  { value: 'rising' as const, label: 'Rising', icon: ArrowTrendingUpIcon },
+  { value: 'new' as const, label: 'New', icon: ClockIcon },
+  { value: 'members' as const, label: 'Most Members', icon: UsersIcon },
 ];
 
 /**

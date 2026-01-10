@@ -55,6 +55,12 @@ export default function Avatar({
         .slice(0, 2)
     : '?';
 
+  // Filter out invalid URL schemes that can't be loaded directly
+  // ph:// is iOS Photos library, assets-library:// is legacy iOS
+  const validSource = source && !source.startsWith('ph://') && !source.startsWith('assets-library://')
+    ? source
+    : null;
+
   // Generate consistent color from name
   const getColorFromName = (name: string) => {
     const colors = [
@@ -72,9 +78,9 @@ export default function Avatar({
 
   return (
     <View style={[styles.container, { width: sizeValue, height: sizeValue }, style]}>
-      {source ? (
+      {validSource ? (
         <Image
-          source={{ uri: source }}
+          source={{ uri: validSource }}
           style={[
             styles.image,
             {

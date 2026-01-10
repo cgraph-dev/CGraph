@@ -2,7 +2,7 @@
   "expo": {
     "name": "CGraph",
     "slug": "cgraph",
-    "version": "0.7.26",
+    "version": "0.7.34",
     "runtimeVersion": {
       "policy": "appVersion"
     },
@@ -20,7 +20,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.cgraph.app",
-      "buildNumber": "3",
+      "buildNumber": "4",
       "config": {
         "usesNonExemptEncryption": true
       },

@@ -1,6 +1,6 @@
 # CGraph Database Documentation
 
-> Version 0.7.28 | Last updated: January 2026  
+> Version 0.7.32 | Last updated: January 2026  
 > Schema modifications require updating this documentation.
 
 ---
@@ -39,6 +39,7 @@ Full schema diagram:
     │ avatar_url       │         │
     │ bio              │         │
     │ is_anonymous     │         │
+    │ is_profile_private │       │  ← v0.7.32 (Privacy)
     │ wallet_address   │         │     ┌───────────────────┐
     │ wallet_pin_hash  │         │     │   user_settings   │
     │ status           │         │     ├───────────────────┤
@@ -755,6 +756,43 @@ LIMIT 50;
 *Messages can be deleted by users; we soft-delete with 30-day hard delete.
 
 ### Automated Cleanup Jobs
+
+```elixir
+# lib/cgraph/cron/cleanup.ex
+# Runs nightly at 3 AM UTC via Oban
+def cleanup_old_data do
+  # ... implementation
+end
+```
+
+## 8. Moderation System (v0.7.32)
+
+See `apps/backend/priv/repo/migrations/20260105000001_create_moderation_tables.exs`.
+
+**`reports`** table:
+- `id` (PK, uuid)
+- `reporter_id` (FK -> users)
+- `target_type` (enum: user, message, group, forum, post, comment)
+- `target_id` (uuid)
+- `category` (enum: spam, harassment, hate_speech, etc.)
+- `status` (enum: pending, reviewing, resolved, dismissed)
+- `priority` (enum: critical, high, normal, low)
+
+**`user_restrictions`** table:
+- `user_id` (FK -> users)
+- `type` (enum: suspended, banned)
+- `reason` (text)
+- `expires_at` (timestamp, null = permanent)
+
+## 9. Messages Updates (v0.7.32)
+
+Added fields to `messages` table:
+- `is_pinned` (boolean)
+- `pinned_at` (timestamp)
+- `pinned_by_id` (FK -> users)
+- `client_message_id` (string, unique per conversation/channel for idempotency)
+
+### Cleanup Implementation
 
 ```elixir
 # Runs nightly via Oban cron

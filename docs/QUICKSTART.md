@@ -23,7 +23,7 @@ These are the versions tested and recommended. Slightly newer versions typically
 | **FFmpeg** | 6.1+ | `ffmpeg -version` | Voice message processing |
 | **asdf** | latest | `asdf --version` | Version manager (recommended) |
 
-*Redis is optional — ETS handles caching in development*
+*Redis is recommended for distributed rate limiting and session management. In development, ETS provides fallback caching when Redis is unavailable.*
 
 ### Installation Instructions
 

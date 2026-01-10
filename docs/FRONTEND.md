@@ -17,13 +17,15 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 7. [API Integration](#api-integration)
 8. [Real-Time Features](#real-time-features)
 9. [Component Library](#component-library)
-10. [Storybook](#storybook)
-11. [Styling Guide](#styling-guide)
-12. [Forms and Validation](#forms-and-validation)
-13. [Testing](#testing)
-14. [Performance](#performance)
-15. [Accessibility](#accessibility)
-16. [Common Patterns](#common-patterns)
+10. [Enhanced UI v2.0](#enhanced-ui-v20) ⭐ **NEW**
+11. [Demo-First Workflow](#demo-first-workflow) ⭐ **NEW**
+12. [Storybook](#storybook)
+13. [Styling Guide](#styling-guide)
+14. [Forms and Validation](#forms-and-validation)
+15. [Testing](#testing)
+16. [Performance](#performance)
+17. [Accessibility](#accessibility)
+18. [Common Patterns](#common-patterns)
 
 ---
 
@@ -1232,6 +1234,299 @@ function SearchInput() {
   return <input value={query} onChange={(e) => setQuery(e.target.value)} />;
 }
 ```
+
+---
+
+## Enhanced UI v2.0
+
+CGraph v0.7.34 introduces a premium enhanced component library built on Three.js, GSAP, and Framer Motion. These components provide immersive 3D environments, advanced animations, and modern glassmorphic designs.
+
+### Enhanced Stack
+
+| Package | Version | Purpose |
+|---------|---------|---------|
+| **three** | ^0.182.0 | 3D graphics engine |
+| **@react-three/fiber** | ^9.5.0 | React renderer for Three.js |
+| **@react-three/drei** | ^10.7.7 | Useful helpers for R3F |
+| **@react-three/postprocessing** | ^3.0.4 | Post-processing effects |
+| **gsap** | ^3.14.2 | Professional animation library |
+| **framer-motion** | ^12.0.0 | Declarative React animations |
+
+### Component Architecture
+
+```
+src/components/enhanced/
+├── animations/
+│   ├── AnimationEngine.ts        (661 lines) - GSAP animations, spring physics
+│   └── AnimatedMessageWrapper.tsx (270 lines) - Message animations
+├── effects/
+│   ├── Matrix3DEnvironment.tsx   (395 lines) - Three.js 3D environment
+│   ├── ShaderBackground.tsx      (424 lines) - Custom WebGL shaders
+│   └── AnimatedReactionBubble.tsx (325 lines) - Reaction animations
+├── messaging/
+│   └── EnhancedConversation.tsx  (550 lines) - Next-gen messaging UI
+├── theme/
+│   └── ThemeEngine.ts            (468 lines) - AI-driven theme generation
+├── ui/
+│   └── GlassCard.tsx             (300 lines) - Glassmorphic card component
+└── voice/
+    └── AdvancedVoiceVisualizer.tsx (565 lines) - Audio visualization
+
+Total: 3,958 lines of premium UI code
+```
+
+### GlassCard Component
+
+Premium glassmorphic card with blur effects and animations:
+
+```tsx
+import { GlassCard } from '@/components/enhanced/ui/GlassCard';
+
+<GlassCard
+  variant="primary"        // primary | secondary | accent | danger
+  intensity="medium"       // low | medium | high
+  animated={true}
+  hoverEffect="lift"       // none | lift | glow | scale
+  onClick={() => {}}
+>
+  <h3>Premium Card</h3>
+  <p>With glassmorphic effects</p>
+</GlassCard>
+```
+
+### AnimatedMessageWrapper
+
+Smooth message entrance animations with gesture support:
+
+```tsx
+import { AnimatedMessageWrapper } from '@/components/enhanced/animations/AnimatedMessageWrapper';
+
+<AnimatedMessageWrapper
+  variant="slide"          // slide | fade | scale | bounce
+  direction="left"         // left | right
+  delay={0.1}
+  enableGestures={true}
+>
+  <MessageBubble message={message} />
+</AnimatedMessageWrapper>
+```
+
+### Matrix3DEnvironment
+
+Immersive 3D environment with particle systems:
+
+```tsx
+import { Matrix3DEnvironment } from '@/components/enhanced/effects/Matrix3DEnvironment';
+
+<Matrix3DEnvironment
+  particleCount={5000}
+  enablePostProcessing={true}
+  cameraMode="orbit"       // static | orbit | follow
+  colorScheme="matrix"     // matrix | ocean | sunset | aurora
+/>
+```
+
+### ShaderBackground
+
+Custom WebGL shader backgrounds:
+
+```tsx
+import { ShaderBackground } from '@/components/enhanced/effects/ShaderBackground';
+
+<ShaderBackground
+  shader="gradient"        // gradient | noise | waves | aurora
+  animate={true}
+  colors={['#6366f1', '#8b5cf6', '#d946ef']}
+  speed={0.5}
+/>
+```
+
+### AnimatedReactionBubble
+
+Animated emoji reactions with physics:
+
+```tsx
+import { AnimatedReactionBubble } from '@/components/enhanced/effects/AnimatedReactionBubble';
+
+<AnimatedReactionBubble
+  emoji="❤️"
+  count={42}
+  animated={true}
+  onClick={() => handleReaction('❤️')}
+/>
+```
+
+### ThemeEngine
+
+AI-powered theme generation and management:
+
+```tsx
+import { ThemeEngine } from '@/components/enhanced/theme/ThemeEngine';
+
+// Initialize
+const themeEngine = new ThemeEngine();
+
+// Generate theme from mood
+const theme = await themeEngine.generateFromMood('cyberpunk');
+
+// Apply theme
+themeEngine.applyTheme(theme);
+
+// Get current theme
+const current = themeEngine.getCurrentTheme();
+```
+
+### AdvancedVoiceVisualizer
+
+Real-time audio visualization with multiple styles:
+
+```tsx
+import { AdvancedVoiceVisualizer } from '@/components/enhanced/voice/AdvancedVoiceVisualizer';
+
+<AdvancedVoiceVisualizer
+  audioStream={stream}
+  visualStyle="bars"       // bars | wave | circular | spectrum
+  colorMode="gradient"     // solid | gradient | reactive
+  sensitivity={0.8}
+/>
+```
+
+---
+
+## Demo-First Workflow
+
+CGraph follows a **demo-first development workflow** where all new UI components are developed and tested on a dedicated demo page before integration into the main application.
+
+### Why Demo-First?
+
+1. **Isolation** - Components are developed in isolation without affecting production code
+2. **Rapid Iteration** - Test visual changes immediately without navigation overhead
+3. **Quality Assurance** - Verify animations, interactions, and edge cases before deployment
+4. **Documentation** - Demo page serves as living documentation for components
+5. **Review Ready** - Easy for team members to review UI changes at a dedicated URL
+
+### Demo Page Location
+
+All enhanced components are showcased at:
+
+```
+/test/enhanced
+```
+
+Access during development: http://localhost:5173/test/enhanced
+
+### Demo Page Structure
+
+```tsx
+// src/pages/test/EnhancedDemo.tsx
+import { useState } from 'react';
+
+export function EnhancedDemo() {
+  const [activeSection, setActiveSection] = useState('glass-cards');
+  
+  return (
+    <div className="min-h-screen bg-dark-900 p-8">
+      {/* Navigation */}
+      <nav className="flex gap-4 mb-8">
+        <button onClick={() => setActiveSection('glass-cards')}>Glass Cards</button>
+        <button onClick={() => setActiveSection('messages')}>Messages</button>
+        <button onClick={() => setActiveSection('reactions')}>Reactions</button>
+        {/* ... more sections */}
+      </nav>
+      
+      {/* Component Demos */}
+      {activeSection === 'glass-cards' && <GlassCardDemo />}
+      {activeSection === 'messages' && <MessageDemo />}
+      {/* ... more demos */}
+    </div>
+  );
+}
+```
+
+### Development Workflow
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                     Demo-First Workflow                          │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  1. CREATE COMPONENT                                             │
+│     └── src/components/enhanced/[category]/NewComponent.tsx      │
+│                                                                   │
+│  2. ADD TO DEMO PAGE                                             │
+│     └── src/pages/test/EnhancedDemo.tsx                          │
+│     └── Create demo section with all variants                    │
+│                                                                   │
+│  3. DEVELOP & TEST                                               │
+│     └── Visit /test/enhanced                                     │
+│     └── Iterate on visual design                                 │
+│     └── Test all props and interactions                          │
+│     └── Verify TypeScript types compile                          │
+│                                                                   │
+│  4. REVIEW & APPROVE                                             │
+│     └── Team reviews at /test/enhanced                           │
+│     └── Gather feedback                                          │
+│     └── Make adjustments                                         │
+│                                                                   │
+│  5. INTEGRATE TO PRODUCTION                                      │
+│     └── Import component into real pages                         │
+│     └── Replace existing components if upgrading                 │
+│     └── Verify in production context                             │
+│                                                                   │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Adding a New Demo Section
+
+```tsx
+// In EnhancedDemo.tsx
+
+// 1. Import your component
+import { NewComponent } from '@/components/enhanced/ui/NewComponent';
+
+// 2. Add navigation button
+<button 
+  onClick={() => setActiveSection('new-component')}
+  className={activeSection === 'new-component' ? 'bg-primary-600' : 'bg-dark-700'}
+>
+  New Component
+</button>
+
+// 3. Add demo section
+{activeSection === 'new-component' && (
+  <section className="space-y-8">
+    <h2 className="text-2xl font-bold text-white">New Component</h2>
+    
+    {/* Show all variants */}
+    <div className="grid grid-cols-3 gap-4">
+      <NewComponent variant="primary" />
+      <NewComponent variant="secondary" />
+      <NewComponent variant="accent" />
+    </div>
+    
+    {/* Show interactive states */}
+    <div className="space-y-4">
+      <NewComponent disabled />
+      <NewComponent loading />
+      <NewComponent error="Something went wrong" />
+    </div>
+  </section>
+)}
+```
+
+### Testing Checklist
+
+Before integrating a component from the demo page:
+
+- [ ] All variants render correctly
+- [ ] Animations are smooth (60fps)
+- [ ] Hover/focus states work
+- [ ] Keyboard navigation works
+- [ ] Screen reader announces correctly
+- [ ] Mobile responsive
+- [ ] Dark mode compatible
+- [ ] TypeScript compiles without errors
+- [ ] No console warnings/errors
 
 ---
 

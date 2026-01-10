@@ -1262,7 +1262,7 @@ The conversation screen delivers a polished messaging experience with thoughtful
 
 **Header Actions:**
 - Tap the contact name to view their profile
-- Quick access to voice and video call buttons (planned feature)
+- Voice and video call buttons for WebRTC 1:1 and group calls
 - Visual encryption indicator showing E2EE protection status
 
 **Attachment Menu:**  

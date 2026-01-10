@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.32  
-> Living documentation — Enterprise scalability, WebRTC calling, and distributed systems complete
+> Last updated: January 2026 | Version 0.7.34  
+> Living documentation — Enterprise scalability, WebRTC calling, Enhanced UI v2.0, and distributed systems complete
 
 ---
 
@@ -90,7 +90,7 @@ Our technology stack prioritizes real-time performance and developer productivit
 | Ecto SQL | 3.13 | Latest ORM with streaming support |
 | Postgrex | 0.21 | Native PostgreSQL 16 compatibility |
 | **Background Processing** |
-| Oban | 2.20 | Reliable job queue with Cron scheduling |
+| Oban | 2.22 | Reliable job queue with Cron scheduling |
 | Cachex | 4.1 | In-memory caching with TTL and eviction |
 | **Authentication & Security** |
 | Guardian | 2.4 | JWT token management with refresh tokens |
@@ -102,6 +102,10 @@ Our technology stack prioritizes real-time performance and developer productivit
 | Vite | 6.4.1 | Lightning-fast HMR and builds |
 | TailwindCSS | 3.5 | Utility-first styling |
 | TypeScript | 5.8.0 | Advanced type inference |
+| Three.js | 0.182.0 | 3D graphics engine for Enhanced UI |
+| @react-three/fiber | 9.5.0 | React renderer for Three.js |
+| GSAP | 3.14.2 | Professional-grade animations |
+| Framer Motion | 12.0.0 | Declarative React animations |
 | **Frontend (Mobile)** |
 | React Native | 0.81.5 | Latest stable with Fabric renderer |
 | Expo SDK | 54 | Latest stable with improved performance |
@@ -109,6 +113,38 @@ Our technology stack prioritizes real-time performance and developer productivit
 | **Infrastructure** |
 | FFmpeg | 6.1.1 | Audio/video processing for voice messages |
 | Docker | 24+ | Container runtime for deployments |
+
+---
+
+## OTP Supervision Tree
+
+The backend runs under a single OTP application supervisor that manages all core services. When the application starts, these processes spin up in order and restart automatically if any crash. The supervision strategy is `:one_for_one`, meaning a failed process restarts independently without affecting siblings.
+
+```
+Cgraph.Application (Supervisor)
+├── Cgraph.Repo                     # PostgreSQL connection pool (Ecto)
+├── Cgraph.Vault                    # AES-256-GCM encryption keys
+├── Cgraph.Presence.Sampled         # Tiered presence for large channels
+├── {Phoenix.PubSub, name: Cgraph.PubSub}  # Inter-process messaging
+├── CgraphWeb.Endpoint              # HTTP/WebSocket entry point
+├── Oban                            # Background job processor
+├── Cachex (multiple instances)     # In-memory caches for sessions, tokens
+├── Cgraph.Redis                    # Redis connection (rate limits, sessions)
+├── Cgraph.WebRTC                   # WebRTC session manager
+├── Cgraph.RateLimiter.Distributed  # Redis-backed rate limiting
+├── Cgraph.E2EE.KeyRefreshScheduler # Automatic key rotation
+└── Cgraph.Cluster                  # libcluster node discovery
+```
+
+A few notes on the design choices here:
+
+1. **Redis comes before RateLimiter.Distributed** — Rate limiting depends on Redis, so we start Redis first to avoid crashes during boot.
+
+2. **Presence.Sampled replaces Phoenix.Presence** — For channels with 10k+ members, standard presence floods the system. Sampled presence sends batched updates at intervals based on channel size.
+
+3. **Cachex instances are named** — We run separate caches for sessions (`:session_cache`), tokens (`:token_cache`), and rate limit fallback (`:rate_limit_fallback`) to isolate eviction policies.
+
+4. **Oban handles async work** — Search indexing, email delivery, and notification dispatch all run as Oban jobs so the main request path stays fast.
 
 ---
 

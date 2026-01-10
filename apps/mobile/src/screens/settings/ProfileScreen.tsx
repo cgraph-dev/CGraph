@@ -15,6 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { getValidImageUrl } from '../../lib/imageUtils';
 import api from '../../lib/api';
 import { SettingsStackParamList } from '../../types';
 
@@ -119,8 +120,8 @@ export default function ProfileScreen({ navigation }: Props) {
       {/* Avatar */}
       <View style={styles.avatarSection}>
         <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
-          {user?.avatar_url ? (
-            <Image source={{ uri: user.avatar_url }} style={styles.avatar} />
+          {getValidImageUrl(user?.avatar_url) ? (
+            <Image source={{ uri: getValidImageUrl(user?.avatar_url)! }} style={styles.avatar} />
           ) : (
             <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
               <Text style={styles.avatarText}>

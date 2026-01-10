@@ -13,13 +13,13 @@ import {
 } from '@heroicons/react/24/outline';
 import debounce from 'lodash.debounce';
 
-const categories: { id: SearchCategory; label: string; icon: React.ElementType }[] = [
-  { id: 'all', label: 'All', icon: MagnifyingGlassIcon },
-  { id: 'users', label: 'Users', icon: UserIcon },
-  { id: 'groups', label: 'Groups', icon: UserGroupIcon },
-  { id: 'forums', label: 'Forums', icon: NewspaperIcon },
-  { id: 'posts', label: 'Posts', icon: DocumentTextIcon },
-  { id: 'messages', label: 'Messages', icon: ChatBubbleLeftRightIcon },
+const categories = [
+  { id: 'all' as const, label: 'All', icon: MagnifyingGlassIcon },
+  { id: 'users' as const, label: 'Users', icon: UserIcon },
+  { id: 'groups' as const, label: 'Groups', icon: UserGroupIcon },
+  { id: 'forums' as const, label: 'Forums', icon: NewspaperIcon },
+  { id: 'posts' as const, label: 'Posts', icon: DocumentTextIcon },
+  { id: 'messages' as const, label: 'Messages', icon: ChatBubbleLeftRightIcon },
 ];
 
 export default function Search() {

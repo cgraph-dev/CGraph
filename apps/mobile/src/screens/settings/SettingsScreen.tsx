@@ -12,6 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { getValidImageUrl } from '../../lib/imageUtils';
 import { SettingsStackParamList } from '../../types';
 
 type Props = {
@@ -105,8 +106,8 @@ export default function SettingsScreen({ navigation }: Props) {
         onPress={() => navigation.navigate('Profile')}
       >
         <View style={styles.profileAvatar}>
-          {user?.avatar_url ? (
-            <Image source={{ uri: user.avatar_url }} style={styles.avatarImage} />
+          {getValidImageUrl(user?.avatar_url) ? (
+            <Image source={{ uri: getValidImageUrl(user?.avatar_url)! }} style={styles.avatarImage} />
           ) : (
             <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
               <Text style={styles.avatarText}>

@@ -11,6 +11,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getValidImageUrl } from '../../lib/imageUtils';
 import { UserCardSkeleton } from '../../components/Skeleton';
 import api from '../../lib/api';
 import { FriendsStackParamList } from '../../types';
@@ -138,8 +139,8 @@ export default function LeaderboardScreen({ navigation }: Props) {
       >
         <RankBadge rank={item.rank} />
 
-        {item.avatar_url ? (
-          <Image source={{ uri: item.avatar_url }} style={styles.avatar} />
+        {getValidImageUrl(item.avatar_url) ? (
+          <Image source={{ uri: getValidImageUrl(item.avatar_url)! }} style={styles.avatar} />
         ) : (
           <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
             <Text style={styles.avatarText}>

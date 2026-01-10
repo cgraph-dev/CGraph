@@ -32,6 +32,7 @@ import UserLeaderboard from '@/pages/community/UserLeaderboard';
 import AdminDashboard from '@/pages/admin/AdminDashboard';
 import NotFound from '@/pages/NotFound';
 import MatrixTest from '@/pages/test/MatrixTest';
+import EnhancedDemo from '@/pages/test/EnhancedDemo';
 
 // Initialize auth check on app load - non-blocking
 function AuthInitializer({ children }: { children: React.ReactNode }) {
@@ -135,6 +136,9 @@ export default function App() {
       <Routes>
         {/* Test route for Matrix animation */}
         <Route path="/test/matrix" element={<MatrixTest />} />
+        
+        {/* Enhanced Components Demo */}
+        <Route path="/test/enhanced" element={<EnhancedDemo />} />
         
         {/* Public routes */}
         <Route

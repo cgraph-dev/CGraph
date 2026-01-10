@@ -12,6 +12,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
+import { getValidImageUrl } from '../../lib/imageUtils';
 import api from '../../lib/api';
 import { MessagesStackParamList, UserBasic } from '../../types';
 
@@ -70,8 +71,8 @@ export default function NewConversationScreen({ navigation }: Props) {
         disabled={isCreating}
       >
         <View style={styles.avatarContainer}>
-          {item.avatar_url ? (
-            <Image source={{ uri: item.avatar_url }} style={styles.avatar} />
+          {getValidImageUrl(item.avatar_url) ? (
+            <Image source={{ uri: getValidImageUrl(item.avatar_url)! }} style={styles.avatar} />
           ) : (
             <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
               <Text style={styles.avatarText}>

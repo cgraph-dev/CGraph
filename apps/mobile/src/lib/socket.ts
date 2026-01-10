@@ -77,6 +77,7 @@ class SocketManager {
   private globalOnlineFriends: Map<string, FriendPresenceData> = new Map();
   private globalStatusListeners: Set<GlobalStatusChangeCallback> = new Set();
   private presenceChannelSetUp = false;
+  private presenceChannelJoined = false;
   // Track our own friend IDs for filtering incoming broadcasts
   private myFriendIds: Set<string> = new Set();
   
@@ -169,6 +170,7 @@ class SocketManager {
         // Clear global presence state
         this.presenceChannel = null;
         this.presenceChannelSetUp = false;
+        this.presenceChannelJoined = false;
         this.globalOnlineFriends.clear();
       });
       
@@ -191,6 +193,7 @@ class SocketManager {
     this.presenceChannel?.leave();
     this.presenceChannel = null;
     this.presenceChannelSetUp = false;
+    this.presenceChannelJoined = false;
     this.globalOnlineFriends.clear();
     this.myFriendIds.clear();
     this.socket?.disconnect();
@@ -202,15 +205,17 @@ class SocketManager {
    * This is called automatically when socket connects.
    */
   private joinPresenceChannel(): void {
-    if (!this.socket || this.presenceChannel) return;
+    // Guard: Don't create duplicate channels
+    if (!this.socket || this.presenceChannel || this.presenceChannelSetUp) return;
+    
+    // Set flag immediately to prevent duplicate calls
+    this.presenceChannelSetUp = true;
     
     logger.log('Joining global presence channel');
     this.presenceChannel = this.socket.channel('presence:lobby', {});
     
-    if (!this.presenceChannelSetUp) {
-      this.presenceChannelSetUp = true;
-      
-      // Handle initial presence state (filtered by friends from backend)
+    // Set up event handlers only once per channel instance
+    // Handle initial presence state (filtered by friends from backend)
       this.presenceChannel.on('presence_state', (rawPayload: unknown) => {
         const payload = rawPayload as { users: Record<string, FriendPresenceData> };
         logger.log('Received friend presence state:', Object.keys(payload.users || {}).length, 'friends');
@@ -285,16 +290,20 @@ class SocketManager {
         }
         this.notifyGlobalStatusChange(String(payload.user_id), true, payload.status);
       });
-    }
     
     this.presenceChannel.join()
       .receive('ok', (response: unknown) => {
-        logger.log('Joined global presence channel:', response);
+        // Only log once to prevent spam from duplicate callbacks
+        if (!this.presenceChannelJoined) {
+          this.presenceChannelJoined = true;
+          logger.log('Joined global presence channel:', response);
+        }
       })
       .receive('error', (response: unknown) => {
         logger.error('Failed to join presence channel:', response);
         this.presenceChannel = null;
         this.presenceChannelSetUp = false;
+        this.presenceChannelJoined = false;
       });
   }
   

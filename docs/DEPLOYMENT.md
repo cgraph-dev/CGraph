@@ -212,7 +212,12 @@ fly secrets set \
   R2_ACCESS_KEY_ID="..." \
   R2_SECRET_ACCESS_KEY="..." \
   R2_BUCKET="cgraph-uploads" \
-  R2_ENDPOINT="https://....r2.cloudflarestorage.com"
+  R2_ENDPOINT="https://....r2.cloudflarestorage.com" \
+  MEILISEARCH_URL="http://..." \
+  MEILISEARCH_API_KEY="..." \
+  WEBRTC_STUN_SERVERS="stun:stun.l.google.com:19302,..." \
+  WEBRTC_TURN_SERVERS="" \
+  WEBRTC_MAX_PARTICIPANTS="10"
 ```
 
 ### Step 5: Deploy

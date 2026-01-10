@@ -30,33 +30,34 @@ jest.mock('../../contexts/ThemeContext', () => ({
 describe('LoadingSpinner', () => {
   describe('rendering', () => {
     it('renders without crashing', () => {
-      const { UNSAFE_getAllByType } = render(<LoadingSpinner />);
-      expect(UNSAFE_getAllByType('ActivityIndicator').length).toBe(1);
+      const { getByTestId } = render(<LoadingSpinner />);
+      expect(getByTestId('loading-spinner-indicator')).toBeTruthy();
     });
 
     it('renders activity indicator', () => {
-      const { UNSAFE_getAllByType } = render(<LoadingSpinner />);
-      const indicators = UNSAFE_getAllByType('ActivityIndicator');
-      expect(indicators.length).toBe(1);
+      const { getByTestId } = render(<LoadingSpinner />);
+      const indicator = getByTestId('loading-spinner-indicator');
+      expect(indicator).toBeTruthy();
     });
   });
 
   describe('size prop', () => {
     it('renders large size by default', () => {
-      const { UNSAFE_getByType } = render(<LoadingSpinner />);
-      const indicator = UNSAFE_getByType('ActivityIndicator');
+      const { getByTestId } = render(<LoadingSpinner />);
+      // Default testID is 'loading-spinner' so indicator is 'loading-spinner-indicator'
+      const indicator = getByTestId('loading-spinner-indicator');
       expect(indicator.props.size).toBe('large');
     });
 
     it('renders small size when specified', () => {
-      const { UNSAFE_getByType } = render(<LoadingSpinner size="small" />);
-      const indicator = UNSAFE_getByType('ActivityIndicator');
+      const { getByTestId } = render(<LoadingSpinner size="small" />);
+      const indicator = getByTestId('loading-spinner-indicator');
       expect(indicator.props.size).toBe('small');
     });
 
     it('renders large size when specified explicitly', () => {
-      const { UNSAFE_getByType } = render(<LoadingSpinner size="large" />);
-      const indicator = UNSAFE_getByType('ActivityIndicator');
+      const { getByTestId } = render(<LoadingSpinner size="large" />);
+      const indicator = getByTestId('loading-spinner-indicator');
       expect(indicator.props.size).toBe('large');
     });
   });
@@ -88,75 +89,74 @@ describe('LoadingSpinner', () => {
 
   describe('fullScreen prop', () => {
     it('renders inline by default', () => {
-      const { UNSAFE_getAllByType } = render(<LoadingSpinner />);
-      const views = UNSAFE_getAllByType('View');
+      const { queryByTestId, getByTestId } = render(<LoadingSpinner />);
       // Should have container view but not fullscreen wrapper
-      expect(views.length).toBeGreaterThanOrEqual(1);
+      expect(getByTestId('loading-spinner')).toBeTruthy();
+      expect(queryByTestId('loading-spinner-fullscreen')).toBeNull();
     });
 
     it('renders fullscreen overlay when fullScreen is true', () => {
-      const { UNSAFE_getAllByType } = render(<LoadingSpinner fullScreen={true} />);
-      const views = UNSAFE_getAllByType('View');
+      const { getByTestId } = render(<LoadingSpinner fullScreen={true} />);
       // Should have additional fullscreen wrapper view
-      expect(views.length).toBeGreaterThan(1);
+      expect(getByTestId('loading-spinner-fullscreen')).toBeTruthy();
     });
 
     it('renders inline when fullScreen is false', () => {
-      const { UNSAFE_getAllByType } = render(<LoadingSpinner fullScreen={false} />);
-      const views = UNSAFE_getAllByType('View');
-      expect(views.length).toBeGreaterThanOrEqual(1);
+      const { queryByTestId, getByTestId } = render(<LoadingSpinner fullScreen={false} />);
+      expect(getByTestId('loading-spinner')).toBeTruthy();
+      expect(queryByTestId('loading-spinner-fullscreen')).toBeNull();
     });
   });
 
   describe('style prop', () => {
     it('applies custom styles', () => {
       const customStyle = { marginTop: 20, padding: 10 };
-      const { UNSAFE_getByType } = render(<LoadingSpinner style={customStyle} />);
-      const container = UNSAFE_getByType('View');
-      expect(container.props.style).toBeDefined();
+      const { getByTestId } = render(<LoadingSpinner style={customStyle} />);
+      const container = getByTestId('loading-spinner');
+      expect(container.props.style).toEqual(expect.arrayContaining([expect.objectContaining(customStyle)]));
     });
 
     it('renders with undefined style', () => {
-      const { UNSAFE_getByType } = render(<LoadingSpinner style={undefined} />);
-      const indicator = UNSAFE_getByType('ActivityIndicator');
+      const { getByTestId } = render(<LoadingSpinner style={undefined} />);
+      const indicator = getByTestId('loading-spinner-indicator');
       expect(indicator).toBeTruthy();
     });
   });
 
   describe('color theming', () => {
     it('uses theme primary color', () => {
-      const { UNSAFE_getByType } = render(<LoadingSpinner />);
-      const indicator = UNSAFE_getByType('ActivityIndicator');
+      const { getByTestId } = render(<LoadingSpinner />);
+      const indicator = getByTestId('loading-spinner-indicator');
       expect(indicator.props.color).toBe('#10b981');
     });
   });
 
   describe('combinations', () => {
     it('renders small spinner with text', () => {
-      const { getByText, UNSAFE_getByType } = render(
+      const { getByText, getByTestId } = render(
         <LoadingSpinner size="small" text="Please wait" />
       );
-      expect(UNSAFE_getByType('ActivityIndicator').props.size).toBe('small');
+      expect(getByTestId('loading-spinner-indicator').props.size).toBe('small');
       expect(getByText('Please wait')).toBeTruthy();
     });
 
     it('renders fullscreen with text and large size', () => {
-      const { getByText, UNSAFE_getByType, UNSAFE_getAllByType } = render(
+      const { getByText, getByTestId } = render(
         <LoadingSpinner
           fullScreen={true}
           text="Loading your content..."
           size="large"
         />
       );
-      expect(UNSAFE_getByType('ActivityIndicator').props.size).toBe('large');
+      expect(getByTestId('loading-spinner-indicator').props.size).toBe('large');
       expect(getByText('Loading your content...')).toBeTruthy();
       // Fullscreen has wrapper view
-      expect(UNSAFE_getAllByType('View').length).toBeGreaterThan(1);
+      expect(getByTestId('loading-spinner-fullscreen')).toBeTruthy();
     });
 
     it('renders all props together', () => {
       const customStyle = { margin: 10 };
-      const { getByText, UNSAFE_getByType } = render(
+      const { getByText, getByTestId } = render(
         <LoadingSpinner
           size="small"
           text="Almost done..."
@@ -164,23 +164,23 @@ describe('LoadingSpinner', () => {
           style={customStyle}
         />
       );
-      expect(UNSAFE_getByType('ActivityIndicator').props.size).toBe('small');
+      expect(getByTestId('loading-spinner-indicator').props.size).toBe('small');
       expect(getByText('Almost done...')).toBeTruthy();
     });
   });
 
   describe('edge cases', () => {
     it('handles rapid prop changes', () => {
-      const { rerender, UNSAFE_getByType, getByText, queryByText } = render(
+      const { rerender, getByTestId, getByText, queryByText } = render(
         <LoadingSpinner size="large" />
       );
 
       rerender(<LoadingSpinner size="small" text="Loading..." />);
-      expect(UNSAFE_getByType('ActivityIndicator').props.size).toBe('small');
+      expect(getByTestId('loading-spinner-indicator').props.size).toBe('small');
       expect(getByText('Loading...')).toBeTruthy();
 
       rerender(<LoadingSpinner size="large" />);
-      expect(UNSAFE_getByType('ActivityIndicator').props.size).toBe('large');
+      expect(getByTestId('loading-spinner-indicator').props.size).toBe('large');
       expect(queryByText('Loading...')).toBeNull();
     });
 
@@ -199,9 +199,8 @@ describe('LoadingSpinner', () => {
 
   describe('accessibility', () => {
     it('activity indicator is accessible', () => {
-      const { UNSAFE_getByType } = render(<LoadingSpinner />);
-      const indicator = UNSAFE_getByType('ActivityIndicator');
-      // ActivityIndicator is inherently accessible in React Native
+      const { getByTestId } = render(<LoadingSpinner />);
+      const indicator = getByTestId('loading-spinner-indicator');
       expect(indicator).toBeTruthy();
     });
 

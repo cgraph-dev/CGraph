@@ -6,9 +6,205 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
-## [0.7.32] - 2026-01-09
+## [0.7.34] - 2026-01-10
+
+Enhanced UI v2.0 with advanced animations, 3D effects, and WebGL shaders. This release introduces 9 new premium components and establishes a demo-first development workflow for UI changes.
+
+### Added
+
+#### Enhanced Components v2.0 (Web)
+
+- **`AnimationEngine.ts`** (661 lines) — Advanced animation system:
+  - GSAP-powered animations with spring physics
+  - Haptic feedback simulation for web
+  - Gesture handling with configurable thresholds
+  - Animation presets for common patterns
+  - Performance monitoring and metrics
+
+- **`GlassCard.tsx`** (300 lines) — Glassmorphic card component:
+  - 5 variants: default, frosted, crystal, neon, holographic
+  - 3D hover effects with perspective transforms
+  - Dynamic glow and shimmer effects
+  - Particle systems integration
+  - Gradient borders with animation
+
+- **`AnimatedMessageWrapper.tsx`** (270 lines) — Message animations:
+  - Spring physics entrance/exit animations
+  - Swipe-to-reply gesture support
+  - Long-press context menu detection
+  - Particle effects on new messages
+  - Framer Motion variants with proper typing
+
+- **`AnimatedReactionBubble.tsx`** (325 lines) — Reaction system:
+  - Animated emoji reactions with bounce physics
+  - Particle burst effects on toggle
+  - Reaction picker component
+  - User list tooltips
+
+- **`Matrix3DEnvironment.tsx`** (395 lines) — Three.js 3D scene:
+  - Volumetric matrix rain effect
+  - 4 color themes (matrix-green, cyber-blue, purple-haze, amber-glow)
+  - Post-processing effects (Bloom, ChromaticAberration)
+  - Interactive camera controls
+  - Particle field systems
+
+- **`AdvancedVoiceVisualizer.tsx`** (565 lines) — Audio visualization:
+  - 4 modes: waveform, spectrum, circular, particles
+  - Web Audio API integration
+  - Canvas-based rendering
+  - Theme-aware colors
+
+- **`ThemeEngine.ts`** (468 lines) — AI-powered theming:
+  - Dynamic color generation from base colors
+  - Color theory utilities (complementary, analogous)
+  - Time-of-day and mood-based adaptation
+  - Contrast ratio calculations
+  - Theme persistence
+
+- **`ShaderBackground.tsx`** (424 lines) — WebGL shaders:
+  - 5 variants: fluid, particles, waves, neural, matrix
+  - Custom GLSL fragment shaders
+  - Interactive mouse tracking
+  - Performance-optimized rendering
+
+- **`EnhancedConversation.tsx`** (550 lines) — Next-gen messaging:
+  - Combines all enhanced components
+  - Glassmorphic UI throughout
+  - 3D/shader backgrounds
+  - Advanced message animations
+
+#### Demo-First Development Workflow
+
+- **`/test/enhanced`** route — Interactive component demo page:
+  - All 9 components showcased with controls
+  - Background switcher (Shader/Matrix3D)
+  - Theme and variant selectors
+  - Live code testing environment
+
+#### Mobile Improvements
+
+- **`imageUtils.ts`** — Safe image URL handling:
+  - Filters iOS `ph://` and `assets-library://` URLs
+  - Prevents "No suitable URL request handler" crashes
+  - Null-safe fallback handling
+
+### Fixed
+
+- **TypeScript compilation** — 60+ errors resolved:
+  - Post-processing imports from `@react-three/postprocessing`
+  - Framer-motion Variants typing with `as const`
+  - Motion.div prop conflicts (onDrag, onAnimationStart)
+  - Unused imports and variables cleaned up
+  - Null coalescing for array access patterns
+  - Gesture handler type conflicts resolved
+
+- **Socket presence spam** — Fixed log flooding:
+  - Added `presenceChannelJoined` flag
+  - One-time logging on channel join
+  - Proper cleanup on disconnect
+
+- **Photo URL handling** — iOS photo library URLs:
+  - `getValidImageUrl()` filters invalid schemes
+  - Null returns for non-http/https URLs
+  - Applied to Settings, Profile, Leaderboard screens
+
+- **Mobile test modernization** — Updated LoadingSpinner tests:
+  - Replaced deprecated `UNSAFE_getByType`
+  - Added testID props to components
+  - All 23 tests passing
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    ENHANCED UI v2.0 ARCHITECTURE                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  Demo Page (/test/enhanced)                                                 │
+│  ├── Test all components in isolation                                       │
+│  ├── Iterate on design with live preview                                    │
+│  └── Move to production when ready                                          │
+│                                                                              │
+│  Component Stack:                                                            │
+│  ┌────────────────────────────────────────────────────────────────────────┐ │
+│  │ ShaderBackground / Matrix3DEnvironment (WebGL layer)                   │ │
+│  ├────────────────────────────────────────────────────────────────────────┤ │
+│  │ GlassCard (Glassmorphic containers)                                    │ │
+│  ├────────────────────────────────────────────────────────────────────────┤ │
+│  │ AnimatedMessageWrapper (Spring physics + gestures)                     │ │
+│  ├────────────────────────────────────────────────────────────────────────┤ │
+│  │ AnimatedReactionBubble (Particle effects)                              │ │
+│  ├────────────────────────────────────────────────────────────────────────┤ │
+│  │ AdvancedVoiceVisualizer (Audio feedback)                               │ │
+│  └────────────────────────────────────────────────────────────────────────┘ │
+│                                                                              │
+│  Supporting Systems:                                                         │
+│  ├── AnimationEngine — GSAP + Spring physics                                │
+│  └── ThemeEngine — AI-powered color generation                              │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Component Line Counts
+
+| Component | Lines | Description |
+|-----------|-------|-------------|
+| AnimationEngine.ts | 661 | Animation system with GSAP |
+| AdvancedVoiceVisualizer.tsx | 565 | Audio visualization |
+| EnhancedConversation.tsx | 550 | Next-gen messaging page |
+| ThemeEngine.ts | 468 | AI theme generation |
+| ShaderBackground.tsx | 424 | WebGL shader backgrounds |
+| Matrix3DEnvironment.tsx | 395 | Three.js 3D environment |
+| AnimatedReactionBubble.tsx | 325 | Reaction animations |
+| GlassCard.tsx | 300 | Glassmorphic cards |
+| AnimatedMessageWrapper.tsx | 270 | Message animations |
+| **Total** | **3,958** | Premium UI components |
+
+### Dependencies Added (Web)
+
+```json
+{
+  "three": "^0.182.0",
+  "@react-three/fiber": "^9.5.0",
+  "@react-three/drei": "^10.7.7",
+  "@react-three/postprocessing": "^3.0.4",
+  "gsap": "^3.14.2",
+  "framer-motion": "^12.0.0",
+  "@use-gesture/react": "^10.3.0"
+}
+```
+
+---
+
+## [0.7.33] - 2026-01-10
+
+Security hardening and mobile stability improvements.
+
+### Added
+
+- Secure storage for E2EE keys
+- Production-safe logging
+- Mobile image URL validation
+
+### Fixed
+
+- Socket connection stability
+- Test suite modernization
+- Version alignment across packages
+
+---
+
+## [0.7.32] - 2026-01-10
 
 Enterprise-grade scalability improvements. This release addresses critical architectural gaps identified during Telegram/Discord/Reddit comparison analysis, adding distributed search, WebRTC calling, distributed rate limiting, and presence sampling for million-user scale.
+
+### Fixed
+
+- **Backend compilation**: Resolved all warnings in strict mode (`--warnings-as-errors`).
+- **Telemetry**: Fixed handler attachment deprecations and optimized performance.
+- **Dead Code**: Removed unused rate limiter logic and messaging aliases.
+- **Mobile**: Verified configuration with Expo Doctor (17/17 checks passed).
+- **Security**: Hardened E2EE key revocation notification typing.
 
 ### Added
 
@@ -131,6 +327,22 @@ config :cgraph, Cgraph.Presence.Sampled,
 | Presence memory | 100MB/1M users | 12KB/1M users | 8000x reduction |
 | Rate limit sync | Single node | Cluster-wide | Distributed |
 | Voice/Video | None | Full WebRTC | New capability |
+
+### Fixed
+
+- **Rate limiter telemetry mismatch** — Updated `emit_telemetry/4` in `RateLimiterV2` plug to handle the new return format from `DistributedRateLimiter.check`. Previously expected `{:allow, remaining, _}` tuples but the distributed limiter returns `:ok` or `{:error, :rate_limited, info}`.
+
+- **Redis GenServer not in supervision tree** — Added `Cgraph.Redis` to the application children list. The distributed rate limiter requires this wrapper around Redix for connection pooling and circuit breaker functionality.
+
+- **ETS fold syntax in distributed rate limiter** — Fixed guard clause placement in anonymous function matches within `:ets.foldl/3` calls. Guards in anonymous functions must appear after the comma, not in the pattern match position.
+
+- **Built-in type redefinition** — Renamed `@type identifier` to `@type rate_limit_identifier` in `Cgraph.RateLimiter.Distributed` to avoid shadowing Elixir's built-in `identifier()` type.
+
+- **Function call in guard clause** — Refactored `search_engine.ex` to use `if` statements instead of guard clauses for runtime configuration checks. Guard clauses only accept a limited set of built-in functions.
+
+- **Duplicate function definitions in Messaging context** — Removed duplicate implementations that conflicted with `defdelegate` declarations. When delegating to sub-contexts, the main module shouldn't also define those functions.
+
+- **Missing HTTPoison dependency** — Added `httpoison` to mix.exs dependencies for external HTTP requests.
 
 ---
 

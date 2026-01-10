@@ -1,6 +1,6 @@
 # CGraph Infrastructure Warning Codes Reference
 
-**Version:** 0.7.31  
+**Version:** 0.7.32  
 **Last Updated:** January 2026
 
 This document provides a comprehensive reference for the CGraph infrastructure warning code system. These standardized codes enable consistent monitoring, alerting, and incident response across all CGraph components.
