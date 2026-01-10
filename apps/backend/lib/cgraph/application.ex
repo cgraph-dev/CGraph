@@ -27,6 +27,9 @@ defmodule Cgraph.Application do
       # Start Redis connection pool
       {Redix, redis_config()},
 
+      # Start Redis GenServer wrapper (for rate limiting, etc.)
+      Cgraph.Redis,
+
       # Start Cachex for local caching
       {Cachex, name: :cgraph_cache},
 
@@ -54,8 +57,8 @@ defmodule Cgraph.Application do
       # Start distributed rate limiter
       Cgraph.RateLimiter.Distributed,
 
-      # Start search indexer background service
-      Cgraph.Search.Indexer,
+      # Note: Search indexing is handled by Oban workers (SearchIndexWorker)
+      # No separate GenServer needed for Cgraph.Search.Indexer
 
       # Start the data export service (GDPR compliance)
       Cgraph.DataExport,

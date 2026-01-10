@@ -129,4 +129,31 @@ if config_env() == :prod do
       enabled: true,
       expo_access_token: System.get_env("EXPO_ACCESS_TOKEN")
   end
+
+  # --- New in v0.7.32: Search, WebRTC, Rate Limiter ---
+
+  # Meilisearch (Search Engine)
+  config :cgraph, Cgraph.Search.SearchEngine,
+    url: System.get_env("MEILISEARCH_URL") || "http://localhost:7700",
+    api_key: System.get_env("MEILISEARCH_API_KEY")
+
+  # WebRTC Signaling & ICE
+  config :cgraph, Cgraph.WebRTC,
+    stun_servers: String.split(System.get_env("WEBRTC_STUN_SERVERS") || "stun:stun.l.google.com:19302", ","),
+    turn_servers: [], # Configure via WEBRTC_TURN_SERVERS if needed
+    max_participants: String.to_integer(System.get_env("WEBRTC_MAX_PARTICIPANTS") || "10")
+
+  # Distributed Rate Limiting (Redis-backed)
+  config :cgraph, Cgraph.RateLimiter.Distributed,
+    enabled: true,
+    redis_pool: :rate_limiter_pool
+
+  # Sampled Presence for Large Channels
+  config :cgraph, Cgraph.Presence.Sampled,
+    tiers: [
+      %{max_size: 100, sample_rate: 1.0, batch_interval: 0},
+      %{max_size: 1_000, sample_rate: 0.5, batch_interval: 1_000},
+      %{max_size: 100_000, sample_rate: 0.01, batch_interval: 10_000},
+      %{max_size: :infinity, sample_rate: 0.001, batch_interval: 30_000}
+    ]
 end

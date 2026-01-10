@@ -165,10 +165,15 @@ defmodule Cgraph.Search.Engine do
         emit_search_telemetry(index, query, opts, success, start_time)
         success
 
-      {:error, :meilisearch_unavailable} when config(:fallback_to_postgres) ->
-        Logger.warning("Meilisearch unavailable, falling back to PostgreSQL")
-        emit_fallback_telemetry(index, query)
-        search_postgres(index, query, opts)
+      {:error, :meilisearch_unavailable} ->
+        if config(:fallback_to_postgres) do
+          Logger.warning("Meilisearch unavailable, falling back to PostgreSQL")
+          emit_fallback_telemetry(index, query)
+          search_postgres(index, query, opts)
+        else
+          emit_search_telemetry(index, query, opts, {:error, :meilisearch_unavailable}, start_time)
+          {:error, :meilisearch_unavailable}
+        end
 
       {:error, _} = error ->
         emit_search_telemetry(index, query, opts, error, start_time)

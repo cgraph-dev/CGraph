@@ -176,12 +176,6 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
   # Key Generation
   # ---------------------------------------------------------------------------
 
-  @doc false
-  defp build_rate_limit_key(conn, opts) do
-    identifier = generate_identifier(conn, opts.by)
-    "#{opts.key_prefix}:#{opts.tier}:#{identifier}"
-  end
-
   defp generate_identifier(conn, :ip), do: extract_client_ip(conn)
   defp generate_identifier(conn, :user), do: extract_user_or_ip(conn)
   defp generate_identifier(conn, :ip_and_path), do: build_ip_path_identifier(conn)
@@ -250,63 +244,6 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
   end
 
   # ---------------------------------------------------------------------------
-  # Rate Limit Check (Sliding Window Log Algorithm)
-  # ---------------------------------------------------------------------------
-
-  @doc false
-  defp execute_rate_limit_check(key, opts) do
-    now_ms = System.system_time(:millisecond)
-    window_start = now_ms - opts.window_ms
-
-    # Use transaction for atomic check-and-increment
-    result = Cachex.transaction(:cgraph_cache, [key], fn cache ->
-      # Get current request log (list of timestamps)
-      log = case Cachex.get(cache, key) do
-        {:ok, nil} -> []
-        {:ok, timestamps} -> timestamps
-        _ -> []
-      end
-
-      # Filter to only requests within the current window
-      active_requests = Enum.filter(log, fn ts -> ts > window_start end)
-      current_count = length(active_requests)
-
-      calculate_rate_limit_decision(current_count, active_requests, opts, now_ms, cache, key)
-    end)
-
-    handle_rate_limit_result(result, opts)
-  end
-
-  defp calculate_rate_limit_decision(current_count, active_requests, opts, now_ms, cache, key) do
-    if current_count < opts.limit do
-      allow_request(active_requests, opts, now_ms, cache, key)
-    else
-      deny_request(active_requests, opts, now_ms)
-    end
-  end
-
-  defp allow_request(active_requests, opts, now_ms, cache, key) do
-    new_log = [now_ms | active_requests]
-    Cachex.put(cache, key, new_log, ttl: opts.window_ms + 1000)
-    remaining = opts.limit - length(active_requests) - 1
-    reset_at = now_ms + opts.window_ms
-    {:allow, remaining, reset_at}
-  end
-
-  defp deny_request(active_requests, opts, now_ms) do
-    oldest_in_window = Enum.min(active_requests, fn -> now_ms end)
-    retry_after = oldest_in_window + opts.window_ms - now_ms
-    reset_at = oldest_in_window + opts.window_ms
-    {:deny, max(retry_after, 1000), reset_at}
-  end
-
-  defp handle_rate_limit_result({:ok, rate_result}, _opts), do: rate_result
-  defp handle_rate_limit_result({:error, _}, opts) do
-    Logger.warning("Rate limiter cache failure, allowing request")
-    {:allow, opts.limit, System.system_time(:millisecond) + opts.window_ms}
-  end
-
-  # ---------------------------------------------------------------------------
   # Response Headers
   # ---------------------------------------------------------------------------
 
@@ -361,17 +298,19 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
     }
 
     case result do
-      {:allow, remaining, _} ->
+      :ok ->
         :telemetry.execute(
           [:cgraph, :rate_limiter, :check],
-          %{duration: duration, remaining: remaining},
+          %{duration: duration, remaining: opts.limit},
           metadata
         )
 
-      {:deny, retry_after, _} ->
+      {:error, :rate_limited, info} ->
+        retry_after_ms = info.retry_after * 1000
+
         :telemetry.execute(
           [:cgraph, :rate_limiter, :exceeded],
-          %{duration: duration, retry_after_ms: retry_after},
+          %{duration: duration, retry_after_ms: retry_after_ms},
           metadata
         )
 
@@ -379,7 +318,7 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
           "Rate limit exceeded",
           tier: opts.tier,
           path: conn.request_path,
-          retry_after_seconds: div(retry_after, 1000)
+          retry_after_seconds: info.retry_after
         )
     end
   end

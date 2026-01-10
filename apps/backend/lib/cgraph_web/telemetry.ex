@@ -89,7 +89,7 @@ defmodule CgraphWeb.Telemetry do
         [:phoenix, :live_view, :mount, :start],
         [:phoenix, :live_view, :mount, :stop]
       ],
-      &handle_phoenix_event/4,
+      &__MODULE__.handle_phoenix_event/4,
       nil
     )
 
@@ -99,7 +99,7 @@ defmodule CgraphWeb.Telemetry do
       [
         [:cgraph, :repo, :query]
       ],
-      &handle_ecto_event/4,
+      &__MODULE__.handle_ecto_event/4,
       nil
     )
 
@@ -111,7 +111,7 @@ defmodule CgraphWeb.Telemetry do
         [:oban, :job, :stop],
         [:oban, :job, :exception]
       ],
-      &handle_oban_event/4,
+      &__MODULE__.handle_oban_event/4,
       nil
     )
 
@@ -125,7 +125,7 @@ defmodule CgraphWeb.Telemetry do
         [:cgraph, :rate_limiter, :check],
         [:cgraph, :rate_limiter, :exceeded]
       ],
-      &handle_business_event/4,
+      &__MODULE__.handle_business_event/4,
       nil
     )
 

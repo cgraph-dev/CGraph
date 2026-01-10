@@ -78,7 +78,7 @@ defmodule CgraphWeb.CallChannel do
   require Logger
 
   alias Cgraph.WebRTC
-  alias Cgraph.WebRTC.{Room, Participant}
+  alias Cgraph.WebRTC.Room
 
   @impl true
   def join("call:" <> room_id, params, socket) do

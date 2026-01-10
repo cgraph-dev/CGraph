@@ -174,7 +174,7 @@ defmodule Cgraph.RateLimiter.Distributed do
   # ---------------------------------------------------------------------------
 
   @type scope :: atom()
-  @type identifier :: String.t()
+  @type rate_limit_identifier :: String.t()
   @type check_result :: :ok | {:error, :rate_limited, rate_limit_info()}
 
   @type rate_limit_info :: %{
@@ -344,7 +344,7 @@ defmodule Cgraph.RateLimiter.Distributed do
       :token_bucket ->
         case Redis.command(["EVAL", @token_bucket_script, 1, key,
                            config.limit, window_ms, config.cost, now]) do
-          {:ok, [1, remaining, _]} ->
+          {:ok, [1, _remaining, _]} ->
             {:ok, :ok}
 
           {:ok, [0, remaining, wait_ms]} ->
@@ -359,7 +359,7 @@ defmodule Cgraph.RateLimiter.Distributed do
 
         case Redis.command(["EVAL", @sliding_window_script, 1, key,
                            config.limit, window_ms, now, request_id]) do
-          {:ok, [1, remaining, _]} ->
+          {:ok, [1, _remaining, _]} ->
             {:ok, :ok}
 
           {:ok, [0, remaining, wait_ms]} ->
@@ -375,7 +375,7 @@ defmodule Cgraph.RateLimiter.Distributed do
 
         case Redis.command(["EVAL", @fixed_window_script, 1, window_key,
                            config.limit, window_ms]) do
-          {:ok, [1, remaining, _]} ->
+          {:ok, [1, _remaining, _]} ->
             {:ok, :ok}
 
           {:ok, [0, _, ttl_ms]} ->
@@ -614,14 +614,14 @@ defmodule Cgraph.RateLimiter.Distributed do
 
     # This is a basic cleanup - in production, consider a more sophisticated approach
     :ets.foldl(fn
-      {key, timestamps, _} when is_list(timestamps), acc ->
+      {key, timestamps, _}, acc when is_list(timestamps) ->
         # Sliding window cleanup
-        if length(timestamps) == 0 do
+        if timestamps == [] do
           :ets.delete(@ets_fallback_table, key)
         end
         acc
 
-      {key, _, last_update} when is_integer(last_update), acc ->
+      {key, _, last_update}, acc when is_integer(last_update) ->
         # Token bucket - delete if not accessed in 1 hour
         if now - last_update > 3_600_000 do
           :ets.delete(@ets_fallback_table, key)

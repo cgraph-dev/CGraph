@@ -18,12 +18,13 @@ defmodule Cgraph.Messaging do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Messaging.{Conversation, ConversationParticipant, Message, Reaction, ReadReceipt}
-  alias Cgraph.Messaging.{Conversations, Messages, Reactions, ReadReceipts, Search}
+  alias Cgraph.Messaging.{ConversationParticipant, Message, Reaction, ReadReceipt}
+  alias Cgraph.Messaging.Conversations
   alias Cgraph.Repo
 
   # ============================================================================
   # Conversations - Delegated to Conversations sub-context
+
   # ============================================================================
 
   @doc """
@@ -79,160 +80,6 @@ defmodule Cgraph.Messaging do
   See `Cgraph.Messaging.Conversations.create_conversation/2` for details.
   """
   defdelegate create_conversation(user, attrs), to: Conversations
-
-  @doc """
-  Get or create a DM conversation between two users.
-  Returns `{:ok, conversation, :existing}` or `{:ok, conversation, :created}`.
-  """
-  def get_or_create_dm(user, other_user) do
-    create_or_get_conversation(user, [other_user.id])
-  end
-
-  @doc """
-  Create or get an existing conversation between users.
-
-  For DMs (2 participants), returns existing if one exists.
-  Returns `{:ok, conversation, :existing}` or `{:ok, conversation, :created}`.
-  """
-  def create_or_get_conversation(user, participant_ids) when is_list(participant_ids) do
-    all_ids = [user.id | participant_ids] |> Enum.uniq()
-
-    case check_existing_dm(all_ids) do
-      {:ok, conversation} -> {:ok, conversation, :existing}
-      :not_dm -> create_new_conversation(user, participant_ids)
-      :not_found -> create_new_conversation(user, participant_ids)
-    end
-  end
-  # Legacy wrapper for single recipient_id
-  def create_or_get_conversation(user, recipient_id) when is_binary(recipient_id) do
-    create_or_get_conversation(user, [recipient_id])
-  end
-
-  defp check_existing_dm([_, _] = all_ids), do: find_dm_conversation(all_ids)
-  defp check_existing_dm(_all_ids), do: :not_dm
-
-  defp create_new_conversation(user, participant_ids) do
-    case create_conversation(user, %{"participant_ids" => participant_ids}) do
-      {:ok, conversation} -> {:ok, conversation, :created}
-      error -> error
-    end
-  end
-
-  @doc """
-  Create a group conversation with multiple participants.
-
-  Attrs:
-  - participant_ids: List of all user IDs to include (including creator)
-  - name: Optional group name
-  - is_group: Boolean indicating group conversation (default true)
-  """
-  def create_group_conversation(creator, attrs) do
-    participant_ids = Map.get(attrs, :participant_ids, [])
-    name = Map.get(attrs, :name)
-
-    case create_conversation(creator, %{"participant_ids" => participant_ids, "name" => name}) do
-      {:ok, conversation} -> {:ok, conversation}
-      error -> error
-    end
-  end
-
-  @doc """
-  Get a conversation by ID.
-  """
-  def get_conversation(id) do
-    query = from c in Conversation,
-      where: c.id == ^id,
-      preload: [participants: :user]
-
-    case Repo.one(query) do
-      nil -> {:error, :not_found}
-      conversation -> {:ok, conversation}
-    end
-  end
-
-  @doc """
-  Get a conversation for a specific user, ensuring they have access.
-  """
-  def get_user_conversation(user, conversation_id) do
-    with {:ok, conversation} <- get_conversation(conversation_id),
-         :ok <- authorize_access(user, conversation) do
-      {:ok, conversation}
-    end
-  end
-
-  @doc """
-  Authorize user access to a conversation.
-  Returns :ok if user is a participant, {:error, :forbidden} otherwise.
-  """
-  def authorize_access(user, conversation) do
-    is_participant = Enum.any?(conversation.participants, fn p ->
-      p.user_id == user.id && is_nil(p.left_at)
-    end)
-
-    if is_participant, do: :ok, else: {:error, :forbidden}
-  end
-
-  @doc """
-  Create a new conversation.
-  """
-  def create_conversation(user, attrs) do
-    participant_ids = Map.get(attrs, "participant_ids", [])
-    all_participant_ids = [user.id | participant_ids] |> Enum.uniq()
-
-    Repo.transaction(fn ->
-      get_or_create_conversation_for_participants(user, all_participant_ids)
-    end)
-  end
-
-  defp get_or_create_conversation_for_participants(user, [_, _] = all_ids) do
-    case find_dm_conversation(all_ids) do
-      {:ok, existing} -> existing
-      :not_found -> do_create_conversation(user, all_ids)
-    end
-  end
-  defp get_or_create_conversation_for_participants(user, all_ids) do
-    do_create_conversation(user, all_ids)
-  end
-
-  defp find_dm_conversation([user1_id, user2_id]) do
-    # DM conversations use user_one_id and user_two_id ordered consistently
-    # Sort IDs to ensure consistent ordering
-    [lower_id, higher_id] = Enum.sort([user1_id, user2_id])
-
-    query = from c in Conversation,
-      where: c.user_one_id == ^lower_id,
-      where: c.user_two_id == ^higher_id,
-      preload: [participants: :user]
-
-    case Repo.one(query) do
-      nil -> :not_found
-      conversation -> {:ok, conversation}
-    end
-  end
-
-  defp do_create_conversation(_creator, participant_ids) do
-    # For DMs, use the ordered user_one_id/user_two_id pattern
-    if length(participant_ids) == 2 do
-      [user1_id, user2_id] = participant_ids
-      [lower_id, higher_id] = Enum.sort([user1_id, user2_id])
-
-      {:ok, conversation} = %Conversation{}
-        |> Conversation.changeset(%{user_one_id: lower_id, user_two_id: higher_id})
-        |> Repo.insert()
-
-      # Add participants
-      for user_id <- participant_ids do
-        %ConversationParticipant{}
-        |> ConversationParticipant.changeset(%{conversation_id: conversation.id, user_id: user_id})
-        |> Repo.insert()
-      end
-
-      Repo.preload(conversation, [participants: :user])
-    else
-      # Group conversations - would need schema update to support
-      {:error, :group_conversations_not_supported}
-    end
-  end
 
   # ============================================================================
   # Messages

@@ -89,7 +89,7 @@ defmodule Cgraph.Presence.Sampled do
 
   @ets_table :cgraph_sampled_presence
   @hll_prefix "presence:hll:"
-  @sample_prefix "presence:sample:"
+  # @sample_prefix "presence:sample:" # Unused
 
   # Default tier configuration
   @default_tiers [
@@ -416,7 +416,7 @@ defmodule Cgraph.Presence.Sampled do
   # Private Functions
   # ---------------------------------------------------------------------------
 
-  defp should_sample?(user_id, sample_rate) when sample_rate >= 1.0, do: true
+  defp should_sample?(_user_id, sample_rate) when sample_rate >= 1.0, do: true
   defp should_sample?(user_id, sample_rate) do
     # Deterministic sampling based on user_id hash
     # This ensures the same users are always in the sample

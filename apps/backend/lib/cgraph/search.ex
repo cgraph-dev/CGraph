@@ -34,7 +34,7 @@ defmodule Cgraph.Search do
   alias Cgraph.Groups.Group
   alias Cgraph.Messaging.Message
   alias Cgraph.Repo
-  alias Cgraph.Search.SearchEngine
+  alias Cgraph.Search.Engine, as: SearchEngine
 
   @doc """
   Search users by username, display name, bio, or user_id (identity number).

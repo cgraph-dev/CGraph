@@ -21,6 +21,7 @@ defmodule CgraphWeb.API.V1.E2EEController do
 
   use CgraphWeb, :controller
 
+  alias Cgraph.Accounts.Friends
   alias Cgraph.Crypto.E2EE
 
   action_fallback CgraphWeb.FallbackController
@@ -206,8 +207,8 @@ defmodule CgraphWeb.API.V1.E2EEController do
       {:ok, devices} ->
         json(conn, %{data: devices})
 
-      {:error, reason} ->
-        {:error, :internal_server_error, inspect(reason)}
+        # unreachable normally, but good for defensive coding?
+        # warning said: "typing violation" because success is guaranteed by type
     end
   end
 
@@ -321,7 +322,7 @@ defmodule CgraphWeb.API.V1.E2EEController do
   # This ensures Forward Secrecy by preventing encryption to compromised keys
   defp notify_key_revocation(user_id, key_id, revoked_at) do
     # Get all friend IDs for the user
-    friend_ids = Cgraph.Accounts.Friends.get_accepted_friend_ids(user_id)
+    friend_ids = Friends.get_accepted_friend_ids(user_id)
 
     payload = %{
       user_id: user_id,
