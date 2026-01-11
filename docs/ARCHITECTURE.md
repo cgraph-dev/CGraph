@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
 > Last updated: January 2026 | Version 0.7.41  
-> Living documentation — Signal Protocol encryption, AI intelligence, Enhanced UI v3.0, Spatial Audio, and distributed systems complete
+> Living documentation — End-to-end encryption, Message intelligence, Enhanced UI v3.0, Spatial Audio, and distributed systems complete
 
 ---
 
@@ -9,15 +9,15 @@
 
 CGraph is a production-ready communication platform that seamlessly integrates real-time messaging with persistent forum discussions. Built to address the limitations of platforms that either excel at ephemeral conversations or long-form discussions—but rarely both—CGraph provides a unified experience across web and mobile.
 
-The platform serves four primary use cases: (1) encrypted instant messaging with Signal Protocol-grade security between individuals and within group channels, (2) community-driven forum discussions with voting and moderation, (3) real-time voice and video calls via WebRTC with spatial audio, and (4) a comprehensive friends system with presence tracking that connects users across all features.
+The platform serves four primary use cases: (1) encrypted instant messaging with industry-standard end-to-end encryption between individuals and within group channels, (2) community-driven forum discussions with voting and moderation, (3) real-time voice and video calls via WebRTC with spatial audio, and (4) a comprehensive friends system with presence tracking that connects users across all features.
 
 **v0.7.35 introduces industry-leading enhancements:**
-- **Signal Protocol Double Ratchet** — Forward secrecy, break-in recovery, out-of-order message handling
-- **AI Message Intelligence** — Smart replies, sentiment analysis, content moderation, topic extraction  
+- **Double Ratchet Protocol** — Forward secrecy, break-in recovery, out-of-order message handling
+- **Message Intelligence** — Smart replies, sentiment analysis, content moderation, topic extraction  
 - **Holographic UI System** — Futuristic interface components with 3D effects
 - **Spatial Audio Engine** — HRTF-based 3D positional audio for VR/AR readiness
 
-Authentication is flexible, supporting traditional email/password, OAuth social login (Google, Apple, Facebook, TikTok), and privacy-focused Web3 wallet authentication. Users choose their preferred identity model without compromise.
+Authentication is flexible, supporting traditional email/password, OAuth social login (Google, Apple), and privacy-focused Web3 wallet authentication. Users choose their preferred identity model without compromise.
 
 Our technology stack prioritizes real-time performance and developer productivity. Elixir/Phoenix powers the backend, leveraging OTP's actor model for managing hundreds of thousands of concurrent WebSocket connections with minimal resource overhead. React 19 drives both web (via Vite) and mobile (via React Native/Expo) clients, sharing TypeScript types and business logic through a carefully architected monorepo. PostgreSQL 16 handles persistent data with advanced JSON operations, while Meilisearch provides sub-50ms full-text search. Phoenix Presence (CRDT-based) tracks online status with tiered sampling for million-user channels.
 

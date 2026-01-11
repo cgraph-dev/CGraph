@@ -18,9 +18,9 @@
 
 ## Why CGraph?
 
-Most platforms force you to choose: do you want chat like Discord, forums like Reddit, or the privacy of Signal? That never made sense to me.
+Most platforms force you to choose: do you want real-time chat, community forums, or genuine privacy? That never made sense to me.
 
-CGraph combines all three. You get Discord-style servers with channels and roles, Reddit-style communities where content rises on merit, and Signal-level privacy with proper end-to-end encryption. You can also log in with your Ethereum wallet if that's your thing—no email required.
+CGraph combines all three. You get organized servers with channels and roles, community-driven forums where content rises on merit, and military-grade privacy with proper end-to-end encryption. You can also log in with your Ethereum wallet if that's your thing—no email required.
 
 The whole thing runs on Elixir and Phoenix, which means it handles way more concurrent users than you'd expect for a project this size. I've tested it at 10K simultaneous WebSocket connections on modest hardware without breaking a sweat.
 
@@ -28,17 +28,17 @@ The whole thing runs on Elixir and Phoenix, which means it handles way more conc
 
 **Messaging that actually works**
 - Real-time chat with typing indicators and read receipts
-- End-to-end encryption using the Signal protocol (X3DH + AES-256-GCM)
+- End-to-end encryption using the Double Ratchet protocol (X3DH + AES-256-GCM)
 - Voice messages with waveform previews
 - Voice and video calls with up to 10 participants
 - Works on web and mobile with messages syncing instantly
 
-**Discord-style groups**
+**Organized groups**
 - Create servers with custom channels (text, announcements, etc.)
 - Granular role permissions—moderators, VIPs, whatever you need
 - Invite links with expiration and usage limits
 
-**Reddit-style forums**
+**Community forums**
 - Upvote/downvote system with karma tracking
 - Nested comments that don't become an unreadable mess
 - Forum competition leaderboard—top communities get featured

@@ -4,7 +4,7 @@
 > 
 > **Status**: ✅ Backend: 216 tests passing | ✅ Web: Builds successfully | ✅ Mobile: TypeScript compiles | ✅ All APIs working
 
-This document contains all commands to test, run, and develop CGraph - a real-time communication platform combining Discord-style chat with Reddit-style forums.
+This document contains all commands to test, run, and develop CGraph - a real-time communication platform combining organized group chat with community-driven forums.
 
 ---
 
@@ -565,7 +565,7 @@ CGraph/
 | **accounts/** | User auth, sessions, wallets, friends | ✅ Complete |
 | **messaging/** | DMs, reactions, read receipts | ✅ Complete |
 | **forums/** | Posts, comments, voting, moderation | ✅ Complete |
-| **groups/** | Discord-style groups, channels, roles | ✅ Complete |
+| **groups/** | Organized groups, channels, roles | ✅ Complete |
 | **notifications/** | Push & in-app notifications | ✅ Complete |
 | **Infrastructure** | Caching, jobs, rate limiting, telemetry | ✅ Complete |
 
@@ -693,7 +693,7 @@ The `.gitignore` is configured to exclude all sensitive patterns automatically.
 
 | Feature | Status | What's Left |
 |---------|--------|-------------|
-| **E2E Encryption** | Schema exists | Full Signal Protocol implementation |
+| **E2E Encryption** | Schema exists | Full Double Ratchet protocol implementation |
 | **Polls** | Schema exists (`poll.ex`) | Controller, endpoints, UI |
 | **Custom Emoji** | Schema exists | Upload endpoints, picker UI |
 | **Pinned Posts** | ✅ COMPLETE | Backend endpoints + web/mobile UI |

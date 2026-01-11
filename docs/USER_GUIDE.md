@@ -442,7 +442,7 @@ Your account syncs automatically:
 - **Help Center:** [https://cgraph.dev/help](https://cgraph.dev/help)
 - **Email Support:** support@cgraph.dev
 - **Community Forum:** [https://forum.cgraph.dev](https://forum.cgraph.dev)
-- **Twitter:** [@cgraph](https://twitter.com/cgraph)
+- **Social Media:** [@cgraph](https://x.com/cgraph)
 
 ### Reporting Bugs
 

@@ -153,8 +153,8 @@ async function handleLogin(email: string, password: string) {
 
 ## 👥 Contributors
 
-- Security Audit: @claude-sonnet-4.5
-- Architecture Review: @senior-architect
+- Security Audit: CGraph Security Team
+- Architecture Review: Core Development Team
 
 ---
 

@@ -71,7 +71,7 @@ function App() {
 }
 ```
 
-**Result**: AI-generated theme applied based on time of day and user preferences.
+**Result**: Adaptive theme applied based on time of day and user preferences.
 
 ---
 

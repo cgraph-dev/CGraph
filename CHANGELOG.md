@@ -155,7 +155,7 @@ const result = await ImagePicker.launchCameraAsync({
 
 ### Files Modified
 
-- `/apps/mobile/src/components/TelegramAttachmentPicker.tsx` - Fixed URI resolution, native camera
+- `/apps/mobile/src/components/AttachmentPicker.tsx` - Fixed URI resolution, native camera
 
 ---
 
@@ -163,7 +163,7 @@ const result = await ImagePicker.launchCameraAsync({
 
 **📱 MOBILE ATTACHMENT PICKER OVERHAUL: Gallery Fallback, Video Recording, Contact Sharing & Enhanced Pinned Messages**
 
-This release brings major improvements to the mobile attachment picker and conversation screen, addressing gallery loading issues in Expo Go, adding video recording capability, implementing Telegram-style contact sharing, and completely redesigning the pinned messages bar.
+This release brings major improvements to the mobile attachment picker and conversation screen, addressing gallery loading issues in Expo Go, adding video recording capability, implementing modern-style contact sharing, and completely redesigning the pinned messages bar.
 
 ### Fixed
 
@@ -193,7 +193,7 @@ This release brings major improvements to the mobile attachment picker and conve
 
 ### Added
 
-#### 👤 Contact Sharing (Telegram-style)
+#### 👤 Contact Sharing
 
 - **New contact picker with animations**:
   - Contact button now opens a full-screen animated contact list
@@ -217,7 +217,7 @@ This release brings major improvements to the mobile attachment picker and conve
 
 ### Technical Details
 
-**TelegramAttachmentPicker.tsx Changes:**
+**AttachmentPicker.tsx Changes:**
 - Added imports: `ActivityIndicator`, `expo-contacts`
 - New state: `cameraMode`, `isRecording`, `useImagePickerFallback`, `showContactPicker`, `contacts`, `contactSearchQuery`, `contactCardAnim`
 - `loadMediaAssets()` now detects empty results and enables fallback UI
@@ -244,7 +244,7 @@ This release brings major improvements to the mobile attachment picker and conve
 
 ### Files Modified
 
-- `/apps/mobile/src/components/TelegramAttachmentPicker.tsx` - Major overhaul
+- `/apps/mobile/src/components/AttachmentPicker.tsx` - Major overhaul
 - `/apps/mobile/src/screens/messages/ConversationScreen.tsx` - Pinned bar redesign
 - `/apps/mobile/package.json` - Added expo-contacts dependency
 - `/docs/MOBILE.md` - Documentation updates
@@ -261,7 +261,7 @@ This release addresses critical issues with media handling on the mobile app, sp
 
 #### 🖼️ Media Gallery Preview (Android)
 
-- **Fixed image/video previews not showing in TelegramAttachmentPicker**:
+- **Fixed image/video previews not showing in AttachmentPicker**:
   - Root cause: `MediaLibrary.getAssetsAsync` returns `content://` URIs on Android that aren't directly renderable by the Image component
   - Solution: Now uses `MediaLibrary.getAssetInfoAsync` to resolve proper `localUri` for each asset
   - Thumbnails now display correctly in Expo Go and development builds
@@ -277,7 +277,7 @@ This release addresses critical issues with media handling on the mobile app, sp
 
 ### Technical Details
 
-**TelegramAttachmentPicker.tsx Changes:**
+**AttachmentPicker.tsx Changes:**
 ```tsx
 // On Android, resolve localUri for proper image rendering
 if (Platform.OS === 'android') {
@@ -314,7 +314,7 @@ const InlineVideoThumbnail = memo(({ videoUrl }: { videoUrl: string }) => {
 
 ### Files Modified
 
-- `/apps/mobile/src/components/TelegramAttachmentPicker.tsx` - Android URI resolution
+- `/apps/mobile/src/components/AttachmentPicker.tsx` - Android URI resolution
 - `/apps/mobile/src/screens/messages/ConversationScreen.tsx` - InlineVideoThumbnail component
 - `/docs/MOBILE.md` - Updated documentation for media features
 
@@ -405,7 +405,7 @@ This release focuses on security hardening, comprehensive test coverage for the 
 
 **🎨 SPECTRUM RELEASE: Advanced Theme Engine + Holographic UI v4.0 + Enhanced Appearance Settings**
 
-A comprehensive visual overhaul bringing industry-standard theming capabilities inspired by Discord, Element/Matrix, and Signal. This release adds **~4,000+ lines** of polished theme system code with 7 built-in themes, complete customization controls, and the next generation Holographic UI component library.
+A comprehensive visual overhaul bringing industry-standard theming capabilities inspired by leading communication platforms. This release adds **~4,000+ lines** of polished theme system code with 7 built-in themes, complete customization controls, and the next generation Holographic UI component library.
 
 ### Added
 
@@ -546,17 +546,17 @@ React context wrapper for seamless theme integration:
 
 ## [0.7.35] - 2026-01-11
 
-**🚀 HYPERTHINK RELEASE: Signal Protocol + AI Intelligence + Holographic UI + Spatial Audio**
+**🚀 HYPERTHINK RELEASE: Double Ratchet Protocol + Message Intelligence + Holographic UI + Spatial Audio**
 
-The most ambitious release yet. CGraph now features industry-leading security with full Signal Protocol Double Ratchet encryption, AI-powered messaging intelligence, futuristic holographic UI components, and immersive 3D spatial audio for VR/AR readiness. This release adds **~3,500+ lines** of cutting-edge code across 6 major new systems.
+The most ambitious release yet. CGraph now features industry-leading security with full Double Ratchet encryption, intelligent messaging features, futuristic holographic UI components, and immersive 3D spatial audio for VR/AR readiness. This release adds **~3,500+ lines** of cutting-edge code across 6 major new systems.
 
 ### Added
 
-#### 🔐 Signal Protocol Double Ratchet Encryption (`doubleRatchet.ts` — 750+ lines)
+#### 🔐 Double Ratchet Encryption (`doubleRatchet.ts` — 750+ lines)
 
 The gold standard in end-to-end encryption, now in CGraph:
 
-- **Full Signal Protocol Implementation**:
+- **Full Protocol Implementation**:
   - X3DH (Extended Triple Diffie-Hellman) key agreement
   - ECDH P-384 elliptic curve cryptography
   - AES-256-GCM authenticated encryption
@@ -946,7 +946,7 @@ Security hardening and mobile stability improvements.
 
 ## [0.7.32] - 2026-01-10
 
-Enterprise-grade scalability improvements. This release addresses critical architectural gaps identified during Telegram/Discord/Reddit comparison analysis, adding distributed search, WebRTC calling, distributed rate limiting, and presence sampling for million-user scale.
+Enterprise-grade scalability improvements. This release addresses critical architectural gaps identified during platform comparison analysis, adding distributed search, WebRTC calling, distributed rate limiting, and presence sampling for million-user scale.
 
 ### Fixed
 
@@ -1010,7 +1010,7 @@ Enterprise-grade scalability improvements. This release addresses critical archi
   - Circuit breaker pattern to prevent cascade failures
   - Cluster-wide consistency via Redis
 
-#### Presence Sampling (Telegram-scale)
+#### Presence Sampling (Enterprise-scale)
 
 - **`Cgraph.Presence.Sampled`** — Presence for million-user channels:
   - HyperLogLog for O(1) approximate user counts (12KB for 1M users)
@@ -1199,7 +1199,7 @@ Major architecture improvements and code quality fixes. This release focuses on 
 #### Component Architecture Improvements
 
 - **Extracted conversation components** — Split the 4,945-line ConversationScreen.tsx into focused, memoized components:
-  - `MessageActionsMenu` — Discord/Telegram-style action sheet for message options
+  - `MessageActionsMenu` — Modern action sheet for message options
   - `ReactionPickerModal` — Full emoji picker with categories
   - `EmptyConversation` — Empty state with wave animations
   - `AttachmentPreviewModal` — Preview attachments before sending
@@ -1358,7 +1358,7 @@ App stores won't accept you without these:
 Both are in `docs/LEGAL/`.
 
 #### E2EE Key Verification UI
-Added the UI for verifying encryption keys with your contacts (like Signal's "safety numbers"):
+Added the UI for verifying encryption keys with your contacts:
 - Web: `KeyVerification.tsx` component with QR code
 - Mobile: `KeyVerificationScreen.tsx` with share functionality
 
