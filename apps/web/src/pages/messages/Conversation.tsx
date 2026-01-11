@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { socketManager } from '@/lib/socket';
@@ -35,6 +35,7 @@ import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
 
 export default function Conversation() {
   const { conversationId } = useParams<{ conversationId: string }>();
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const {
     conversations,
@@ -727,6 +728,7 @@ export default function Conversation() {
                       showAvatar={showAvatar}
                       onReply={() => setReplyTo(message)}
                       uiPreferences={uiPreferences}
+                      onAvatarClick={(userId) => navigate(`/user/${userId}`)}
                     />
                   </AnimatedMessageWrapper>
                 );
@@ -973,6 +975,7 @@ function MessageBubble({
   showAvatar,
   onReply,
   uiPreferences,
+  onAvatarClick,
 }: {
   message: Message;
   isOwn: boolean;
@@ -988,6 +991,7 @@ function MessageBubble({
     voiceVisualizerTheme: 'matrix-green' | 'cyber-blue' | 'neon-pink' | 'amber';
     messageEntranceAnimation: 'slide' | 'scale' | 'fade' | 'bounce';
   };
+  onAvatarClick?: (userId: string) => void;
 }) {
   const [showActions, setShowActions] = useState(false);
 
@@ -1013,7 +1017,11 @@ function MessageBubble({
       {!isOwn && (
         <div className="w-8 flex-shrink-0">
           {showAvatar && (
-            <div className="h-8 w-8 rounded-full overflow-hidden bg-dark-600">
+            <button
+              onClick={() => message.sender?.id && onAvatarClick?.(message.sender.id)}
+              className="h-8 w-8 rounded-full overflow-hidden bg-dark-600 cursor-pointer hover:ring-2 hover:ring-primary-500/50 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
+              title={`View ${message.sender?.displayName || message.sender?.username || 'user'}'s profile`}
+            >
               {message.sender?.avatarUrl ? (
                 <img
                   src={message.sender.avatarUrl}
@@ -1025,7 +1033,7 @@ function MessageBubble({
                   {(message.sender?.displayName || message.sender?.username || 'U').charAt(0).toUpperCase()}
                 </div>
               )}
-            </div>
+            </button>
           )}
         </div>
       )}

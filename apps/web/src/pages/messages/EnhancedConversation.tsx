@@ -18,7 +18,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -53,12 +53,14 @@ function EnhancedMessageBubble({
   showAvatar,
   onReply,
   index,
+  onAvatarClick,
 }: {
   message: Message;
   isOwn: boolean;
   showAvatar: boolean;
   onReply: () => void;
   index: number;
+  onAvatarClick?: (userId: string) => void;
 }) {
   const [showActions, setShowActions] = useState(false);
   const [showReactionPicker, setShowReactionPicker] = useState(false);
@@ -103,10 +105,13 @@ function EnhancedMessageBubble({
         {!isOwn && (
           <div className="w-8 flex-shrink-0">
             {showAvatar && (
-              <motion.div
-                className="h-8 w-8 rounded-full overflow-hidden bg-dark-600 ring-2 ring-primary-500/20"
+              <motion.button
+                onClick={() => message.sender?.id && onAvatarClick?.(message.sender.id)}
+                className="h-8 w-8 rounded-full overflow-hidden bg-dark-600 ring-2 ring-primary-500/20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500"
                 whileHover={{ scale: 1.1, rotate: 5 }}
+                whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                title={`View ${message.sender?.displayName || message.sender?.username || 'user'}'s profile`}
               >
                 {message.sender?.avatarUrl ? (
                   <img
@@ -119,7 +124,7 @@ function EnhancedMessageBubble({
                     {(message.sender?.displayName || 'U').charAt(0).toUpperCase()}
                   </div>
                 )}
-              </motion.div>
+              </motion.button>
             )}
           </div>
         )}
@@ -267,6 +272,7 @@ function EnhancedMessageBubble({
 
 export default function EnhancedConversation() {
   const { conversationId } = useParams<{ conversationId: string }>();
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const {
     conversations,
@@ -449,6 +455,7 @@ export default function EnhancedConversation() {
                 showAvatar={showAvatar}
                 onReply={() => setReplyTo(message)}
                 index={index}
+                onAvatarClick={(userId) => navigate(`/user/${userId}`)}
               />
             );
           })}
