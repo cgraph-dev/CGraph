@@ -28,19 +28,28 @@ interface LevelProgressProps {
   className?: string;
 }
 
+// XP calculation helper
+function calculateXPForLevel(level: number): number {
+  const baseXP = 100;
+  return Math.floor(baseXP * Math.pow(level, 1.8));
+}
+
 export default function LevelProgress({
   variant = 'compact',
   showStreak = true,
   className = '',
 }: LevelProgressProps) {
-  const { level, currentXP, totalXP, streak, nextLevelXP, calculateXPForLevel } = useGamificationStore();
+  const { level, currentXP, totalXP, loginStreak } = useGamificationStore();
   const [recentXPGain, setRecentXPGain] = useState<{ amount: number; source: string } | null>(null);
   const [prevTotalXP, setPrevTotalXP] = useState(totalXP);
 
-  // Calculate progress percentage for current level
+  // Calculate XP needed for next level
+  const xpForCurrentLevel = calculateXPForLevel(level);
+  const xpForNextLevel = calculateXPForLevel(level + 1);
+  const neededXP = xpForNextLevel - xpForCurrentLevel;
   const progressXP = currentXP;
-  const neededXP = nextLevelXP;
-  const progressPercent = (progressXP / neededXP) * 100;
+  const progressPercent = neededXP > 0 ? Math.min((progressXP / neededXP) * 100, 100) : 0;
+  const streak = loginStreak;
 
   // Detect XP gains and show notification
   useEffect(() => {

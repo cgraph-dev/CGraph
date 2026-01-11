@@ -11,6 +11,7 @@ import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeProviderEnhanced } from './contexts/ThemeContextEnhanced';
+import { NotificationProvider } from './providers/NotificationProvider';
 import AnimatedLogo from './components/AnimatedLogo';
 import './index.css';
 
@@ -127,7 +128,9 @@ try {
             <ThemeProviderEnhanced>
               <QueryClientProvider client={queryClient}>
                 <BrowserRouter>
+                  <NotificationProvider>
                     <App />
+                  </NotificationProvider>
                   <Toaster
                     position="bottom-right"
                     toastOptions={{

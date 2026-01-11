@@ -72,6 +72,13 @@ defmodule CgraphWeb.API.V1.UserJSON do
       is_profile_private: user.is_profile_private || false,
       can_change_username: User.can_change_username?(user),
       username_next_change_at: User.next_username_change_date(user),
+      # Gamification fields
+      xp: user.xp || 0,
+      level: user.level || 1,
+      coins: user.coins || 0,
+      streak_days: user.streak_days || 0,
+      subscription_tier: user.subscription_tier || "free",
+      equipped_title_id: user.equipped_title_id,
       created_at: user.inserted_at
     }
   end
@@ -123,6 +130,9 @@ defmodule CgraphWeb.API.V1.UserJSON do
       display_name: user.display_name,
       avatar_url: user.avatar_url,
       karma: user.karma || 0,
+      xp: user.xp || 0,
+      level: user.level || 1,
+      streak_days: user.streak_days || 0,
       is_verified: user.is_verified || false
     }
   end

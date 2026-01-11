@@ -92,6 +92,21 @@ defmodule Cgraph.Accounts.User do
     field :deleted_at, :utc_datetime
     field :previous_usernames, {:array, :string}, default: []
 
+    # Gamification
+    field :xp, :integer, default: 0
+    field :level, :integer, default: 1
+    field :coins, :integer, default: 0
+    field :streak_days, :integer, default: 0
+    field :streak_last_claimed, :date
+    field :streak_longest, :integer, default: 0
+    field :equipped_title_id, :binary_id
+    field :equipped_badge_ids, {:array, :binary_id}, default: []
+    field :subscription_tier, :string, default: "free"
+    field :subscription_expires_at, :utc_datetime
+    field :daily_bonus_claimed_at, :date
+    field :total_messages_sent, :integer, default: 0
+    field :total_posts_created, :integer, default: 0
+
     # Associations
     has_many :sessions, Cgraph.Accounts.Session
     has_many :push_tokens, Cgraph.Accounts.PushToken

@@ -4,9 +4,15 @@
 
 1. [Enhanced Chat System](#enhanced-chat-system)
 2. [Gamification System](#gamification-system)
-3. [Forum Features](#forum-features)
-4. [UI/UX Enhancements](#uiux-enhancements)
-5. [Architecture & Security](#architecture--security)
+3. [Leaderboard System](#leaderboard-system)
+4. [Premium & Subscriptions](#premium--subscriptions)
+5. [Virtual Currency & Shop](#virtual-currency--shop)
+6. [Quest System](#quest-system)
+7. [Global Notifications](#global-notifications)
+8. [Performance Optimizations](#performance-optimizations)
+9. [Forum Features](#forum-features)
+10. [UI/UX Enhancements](#uiux-enhancements)
+11. [Architecture & Security](#architecture--security)
 
 ---
 
@@ -620,6 +626,425 @@ function YourComponent() {
 
 ---
 
+## Leaderboard System
+
+**Location:** `/apps/web/src/pages/leaderboard/LeaderboardPage.tsx`
+
+A global ranking system that fosters healthy competition and community engagement.
+
+### Features
+
+#### Multiple Categories
+- **Experience (XP):** Total experience points earned
+- **Karma:** Forum reputation from upvotes/helpful answers
+- **Streak:** Consecutive login days
+- **Messages:** Total messages sent across all conversations
+- **Posts:** Forum posts created
+- **Connections:** Total friend connections
+
+#### Time Period Filters
+- **Today:** Daily rankings reset at midnight UTC
+- **This Week:** Weekly rankings reset on Monday
+- **This Month:** Monthly rankings reset on the 1st
+- **All Time:** Lifetime cumulative rankings
+
+### Visual Design
+
+#### Top 3 Podium
+- Animated entrance with staggered delays
+- Crown icon for #1 position
+- Gold, silver, bronze color schemes
+- Glow effects based on rank
+
+#### Rank Change Indicators
+- Green up arrow with "+N" for improvements
+- Red down arrow with "-N" for drops
+- Gray dash for unchanged positions
+
+### Technical Implementation
+
+```typescript
+interface LeaderboardEntry {
+  rank: number;
+  previousRank: number;
+  userId: string;
+  username: string;
+  displayName: string | null;
+  avatarUrl: string | null;
+  level: number;
+  value: number;
+  isOnline: boolean;
+  isPremium: boolean;
+  isVerified: boolean;
+}
+```
+
+**API Endpoints:**
+- `GET /api/v1/leaderboard?category=xp&period=weekly&page=1` - Fetch rankings
+- Real-time updates via WebSocket for rank changes
+
+**Route:** `/leaderboard`
+
+---
+
+## Premium & Subscriptions
+
+**Location:** `/apps/web/src/pages/premium/PremiumPage.tsx`
+
+A tiered subscription system for monetization with fair free tier.
+
+### Subscription Tiers
+
+#### Free Tier
+- Basic messaging
+- Standard themes
+- 5 custom reactions
+- Limited file upload (25MB)
+- Standard support
+- Basic read receipts
+- 3 group chats
+
+#### Premium ($4.99/month)
+- Everything in Free, plus:
+- Custom themes
+- Voice effects
+- Premium avatars & badges
+- 500MB file uploads
+- Priority support
+- Read receipts everywhere
+- Unlimited group chats
+- AI message suggestions
+- Advanced analytics
+
+#### Premium Plus ($9.99/month)
+- Everything in Premium, plus:
+- All voice effects unlocked
+- Exclusive animated avatars
+- Custom badges creation
+- 2GB file uploads
+- 24/7 priority support
+- Advanced read insights
+- API access
+- Cloud backup
+- Priority in queue
+- Early feature access
+- Personal account manager
+
+### Pricing Features
+- **Annual Billing:** 20% discount on all tiers
+- **Price Toggle:** Switch between monthly/yearly billing
+- **Feature Comparison:** Detailed table comparing all tiers
+
+### Technical Implementation
+
+**API Endpoints:**
+- `POST /api/v1/subscription/subscribe` - Initiate subscription
+- Returns Stripe checkout URL for payment processing
+
+**Route:** `/premium`
+
+---
+
+## Virtual Currency & Shop
+
+**Location:** `/apps/web/src/pages/premium/CoinShop.tsx`
+
+A virtual currency system for cosmetic purchases and engagement rewards.
+
+### Coin Bundles
+
+| Bundle | Coins | Bonus | Price |
+|--------|-------|-------|-------|
+| Starter | 100 | 0 | $0.99 |
+| Basic | 500 | 50 | $4.99 |
+| Popular | 1,200 | 200 | $9.99 |
+| Value | 2,500 | 500 | $19.99 |
+| Premium | 6,500 | 1,500 | $49.99 |
+| Ultimate | 15,000 | 5,000 | $79.99 |
+
+### Shop Categories
+
+#### Themes (800-1,500 coins)
+- Midnight Purple, Ocean Blue, Forest Green, Sunset Orange, etc.
+
+#### Emoji Packs (500-1,000 coins)
+- Cute Animals, Space Adventure, Food Fiesta, Nature Vibes
+
+#### Profile Badges (1,200-3,000 coins)
+- Diamond Member, Verified Plus, Golden Star, etc.
+
+#### Chat Effects (600-2,000 coins)
+- Confetti, Fireworks, Hearts, Sparkles, etc.
+
+#### XP Boosts (750-1,500 coins)
+- 2x XP for 24h, 3x XP for 1h
+
+#### Gift Items (300-2,500 coins)
+- Virtual Coffee, Flowers, Trophy, etc.
+
+### Daily Bonus
+- **Free coins daily:** 25 coins
+- Claims reset at midnight
+
+### Technical Implementation
+
+```typescript
+interface ShopItem {
+  id: string;
+  name: string;
+  description: string;
+  coinPrice: number;
+  category: 'theme' | 'emoji' | 'badge' | 'effect' | 'boost' | 'gift';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  icon: string;
+  preview?: string;
+}
+```
+
+**API Endpoints:**
+- `GET /api/v1/shop/owned` - Fetch owned items
+- `POST /api/v1/shop/purchase-coins` - Purchase coin bundle
+- `POST /api/v1/shop/purchase-item` - Purchase shop item
+- `POST /api/v1/shop/claim-daily` - Claim daily bonus
+
+**Route:** `/premium/coins`
+
+---
+
+## Quest System
+
+**Location:** `/apps/web/src/components/gamification/QuestPanel.tsx`
+
+Daily and weekly quests to drive engagement with meaningful rewards.
+
+### Quest Types
+
+- **Daily:** Reset every 24 hours, simpler objectives
+- **Weekly:** Reset every Monday, larger goals
+- **Monthly:** Reset on 1st of month, significant achievements
+- **Special:** Event-based, limited time
+
+### Features
+
+#### Quest Cards
+- Progress bar showing completion percentage
+- Time remaining countdown
+- XP reward display
+- Expandable objective list
+
+#### Quest Objectives
+- Multiple objectives per quest
+- Individual progress tracking
+- Checkmark indicators for completion
+
+#### Reward System
+- XP rewards (50-500+ XP)
+- Confetti celebration on completion
+- Haptic feedback on claim
+
+### Visual Variants
+
+#### Compact Mode
+- Minimal footprint for sidebar/dashboard
+- Shows top 3 quests
+- Progress percentage indicators
+
+#### Full Mode
+- Complete quest information
+- Expandable objectives
+- Category badges (daily/weekly/monthly/special)
+
+### Technical Implementation
+
+```typescript
+interface Quest {
+  id: string;
+  title: string;
+  description: string;
+  type: 'daily' | 'weekly' | 'monthly' | 'special';
+  objectives: QuestObjective[];
+  xpReward: number;
+  expiresAt: string;
+  completed: boolean;
+  completedAt?: string;
+}
+
+interface QuestObjective {
+  id: string;
+  description: string;
+  targetValue: number;
+  currentValue: number;
+  completed: boolean;
+}
+```
+
+**Integration:** Used in QuestPanel component, exported from `/components/gamification/index.ts`
+
+---
+
+## Global Notifications
+
+**Location:** `/apps/web/src/providers/NotificationProvider.tsx`
+
+Centralized notification system for application-wide alerts and celebrations.
+
+### Notification Types
+
+#### Standard Toast Types
+- **Success:** Green theme, checkmark icon
+- **Error:** Red theme, X icon
+- **Warning:** Yellow theme, exclamation icon
+- **Info:** Blue theme, information icon
+
+#### Special Notification Types
+- **Level Up:** Golden celebration with confetti
+- **Quest Complete:** Purple theme with XP display
+
+### Features
+
+#### Toast Notifications
+- Slide-in animation from left
+- Auto-dismiss with progress bar
+- Manual dismiss button
+- Haptic feedback based on type
+
+#### Level Up Celebrations
+- Full-screen confetti explosion
+- Animated level badge
+- Reward showcase
+- Progress bar countdown
+
+#### Quest Completion
+- Animated icon
+- XP reward display
+- Smooth transitions
+
+### Usage
+
+```typescript
+import { useNotifications } from '@/providers/NotificationProvider';
+
+function MyComponent() {
+  const { notify, notifyLevelUp, notifyQuestComplete } = useNotifications();
+
+  // Standard notification
+  notify({
+    type: 'success',
+    title: 'Action Complete',
+    message: 'Your changes have been saved.',
+  });
+
+  // Level up notification
+  notifyLevelUp({
+    newLevel: 15,
+    rewards: ['New Avatar Frame', 'Title: Rising Star'],
+  });
+
+  // Quest completion
+  notifyQuestComplete({
+    questName: 'Daily Messenger',
+    xpReward: 100,
+  });
+}
+```
+
+### Technical Implementation
+
+```typescript
+type NotificationType = 'success' | 'error' | 'warning' | 'info' | 'levelup' | 'quest';
+
+interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  duration?: number;
+  dismissible?: boolean;
+}
+```
+
+**Integration:** Wrap app with `<NotificationProvider>` in `main.tsx`
+
+---
+
+## Performance Optimizations
+
+**Location:** `/apps/web/src/lib/performance.ts`
+
+Production-ready utilities for handling 10,000+ concurrent users.
+
+### Request Batching
+
+Combines multiple API requests into batched calls for efficiency.
+
+```typescript
+const userBatcher = new RequestBatcher<User>(
+  async (ids) => {
+    const users = await api.get('/users', { ids });
+    return new Map(users.map(u => [u.id, u]));
+  },
+  { batchSize: 50, batchDelay: 16 }
+);
+
+// Automatically batched
+const user = await userBatcher.load('user-123');
+```
+
+### LRU Cache
+
+Memory-efficient caching with TTL expiration.
+
+```typescript
+const cache = new LRUCache<string, User>(500, 10 * 60 * 1000); // 500 items, 10min TTL
+
+cache.set('user-123', userData);
+const cached = cache.get('user-123');
+```
+
+### Pre-configured Caches
+- **userCache:** 500 entries, 10 minute TTL
+- **messageCache:** 1000 entries, 5 minute TTL
+- **presenceCache:** 200 entries, 30 second TTL
+
+### Virtual Scrolling Helpers
+
+Efficient rendering for large lists.
+
+```typescript
+const { items, totalSize, startOffset } = calculateVirtualItems(
+  totalCount,    // Total items
+  itemSize,      // Fixed height or function
+  containerHeight,
+  scrollTop,
+  overscan       // Buffer items (default: 3)
+);
+```
+
+### Utility Functions
+
+- **debounce:** Delay function execution
+- **throttle:** Limit function call rate
+- **preloadImage:** Preload images for instant display
+- **preloadRoute:** Prefetch route chunks
+
+### Performance Monitoring
+
+```typescript
+performanceMonitor.mark('fetch-start');
+await fetchData();
+const duration = performanceMonitor.measure('fetch-complete', 'fetch-start');
+console.log(`Fetch took ${duration}ms`);
+```
+
+### Connection Helpers
+
+- **getConnectionType:** Returns '4g', '3g', '2g', etc.
+- **isSlowConnection:** True for slow networks
+- **getMemoryInfo:** Current heap usage
+- **isMemoryPressure:** True when heap > 80%
+
+---
+
 ## Troubleshooting
 
 ### Common Issues:
@@ -652,6 +1077,6 @@ CGraph's enhanced web application provides a modern, engaging user experience wi
 
 For questions or contributions, please refer to the main repository documentation or contact the development team.
 
-**Version:** 0.7.31
+**Version:** 0.7.44
 **Last Updated:** January 2026
 **Maintained by:** CGraph Development Team

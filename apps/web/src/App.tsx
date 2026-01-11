@@ -34,6 +34,11 @@ import NotFound from '@/pages/NotFound';
 import MatrixTest from '@/pages/test/MatrixTest';
 import EnhancedDemo from '@/pages/test/EnhancedDemo';
 
+// Premium & Gamification
+import PremiumPage from '@/pages/premium/PremiumPage';
+import CoinShop from '@/pages/premium/CoinShop';
+import LeaderboardPage from '@/pages/leaderboard/LeaderboardPage';
+
 // Initialize auth check on app load - non-blocking
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const checkAuth = useAuthStore((state) => state.checkAuth);
@@ -209,6 +214,13 @@ export default function App() {
 
           {/* Community */}
           <Route path="community/leaderboard" element={<UserLeaderboard />} />
+
+          {/* Premium & Coins */}
+          <Route path="premium" element={<PremiumPage />} />
+          <Route path="premium/coins" element={<CoinShop />} />
+
+          {/* Gamification Leaderboard */}
+          <Route path="leaderboard" element={<LeaderboardPage />} />
 
           {/* User Profile */}
           <Route path="user/:userId" element={<UserProfile />} />

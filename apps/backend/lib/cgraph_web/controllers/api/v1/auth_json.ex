@@ -102,6 +102,13 @@ defmodule CgraphWeb.API.V1.AuthJSON do
       auth_type: user.auth_type,
       totp_enabled: user.totp_enabled,
       karma: user.karma || 0,
+      # Gamification fields
+      xp: user.xp || 0,
+      level: user.level || 1,
+      coins: user.coins || 0,
+      streak_days: user.streak_days || 0,
+      subscription_tier: user.subscription_tier || "free",
+      equipped_title_id: user.equipped_title_id,
       can_change_username: User.can_change_username?(user),
       username_next_change_at: User.next_username_change_date(user),
       last_seen_at: user.last_seen_at,

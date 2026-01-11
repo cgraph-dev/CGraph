@@ -325,6 +325,62 @@ defmodule CgraphWeb.Router do
     resources "/reports", ReportController, only: [:index, :show, :create]
   end
 
+  # Gamification API routes (authenticated)
+  scope "/api/v1", CgraphWeb do
+    pipe_through [:api, :api_auth]
+
+    # User gamification stats
+    get "/gamification/stats", GamificationController, :stats
+    get "/gamification/level-info", GamificationController, :level_info
+    get "/gamification/xp/history", GamificationController, :xp_history
+
+    # Achievements
+    get "/gamification/achievements", GamificationController, :achievements
+    get "/gamification/achievements/:id", GamificationController, :show_achievement
+
+    # Leaderboards
+    get "/gamification/leaderboard/:category", GamificationController, :leaderboard
+
+    # Streaks
+    post "/gamification/streak/claim", GamificationController, :claim_streak
+
+    # Quests
+    get "/quests", QuestController, :index
+    get "/quests/active", QuestController, :active
+    get "/quests/daily", QuestController, :daily
+    get "/quests/weekly", QuestController, :weekly
+    get "/quests/:id", QuestController, :show
+    post "/quests/:id/accept", QuestController, :accept
+    post "/quests/:id/claim", QuestController, :claim
+
+    # Titles
+    get "/titles", TitleController, :index
+    get "/titles/owned", TitleController, :owned
+    post "/titles/:id/equip", TitleController, :equip
+    post "/titles/unequip", TitleController, :unequip
+    post "/titles/:id/purchase", TitleController, :purchase
+
+    # Shop
+    get "/shop", ShopController, :index
+    get "/shop/categories", ShopController, :categories
+    get "/shop/purchases", ShopController, :purchases
+    get "/shop/:id", ShopController, :show
+    post "/shop/:id/purchase", ShopController, :purchase
+
+    # Coins
+    get "/coins", CoinsController, :balance
+    get "/coins/history", CoinsController, :history
+    get "/coins/packages", CoinsController, :packages
+    get "/coins/earn", CoinsController, :earn_methods
+
+    # Premium subscriptions
+    get "/premium/status", PremiumController, :status
+    get "/premium/tiers", PremiumController, :tiers
+    get "/premium/features", PremiumController, :features
+    post "/premium/subscribe", PremiumController, :subscribe
+    post "/premium/cancel", PremiumController, :cancel
+  end
+
   # Admin/Moderator API routes
   scope "/api/admin", CgraphWeb.API.Admin do
     pipe_through [:api, :api_auth]

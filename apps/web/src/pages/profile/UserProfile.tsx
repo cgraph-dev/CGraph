@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { useFriendStore } from '@/stores/friendStore';
-import { Button, Avatar } from '@/components';
+import { useGamificationStore } from '@/stores/gamificationStore';
+import { Button } from '@/components';
 import {
   UserPlusIcon,
   UserMinusIcon,
@@ -16,11 +17,19 @@ import {
   CheckBadgeIcon,
   ArrowTrendingUpIcon,
   FireIcon,
+  TrophyIcon,
+  SparklesIcon,
+  StarIcon,
+  BoltIcon,
+  ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import Dropdown, { DropdownItem } from '@/components/Dropdown';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import AnimatedAvatar from '@/components/ui/AnimatedAvatar';
+import LevelProgress from '@/components/gamification/LevelProgress';
+import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 
 interface UserProfile {
   id: string;
@@ -38,7 +47,30 @@ interface UserProfile {
   mutualFriends?: number;
   location?: string;
   website?: string;
+  // Gamification stats
+  level?: number;
+  totalXP?: number;
+  currentXP?: number;
+  loginStreak?: number;
+  achievementCount?: number;
+  totalAchievements?: number;
+  messagesSent?: number;
+  postsCreated?: number;
+  friendsCount?: number;
 }
+
+// Default rarity color for fallback
+const defaultRarityColor = { bg: 'bg-gray-500/20', border: 'border-gray-500/30', text: 'text-gray-400' };
+
+// Rarity color mapping
+const rarityColors: Record<string, { bg: string; border: string; text: string }> = {
+  common: { bg: 'bg-gray-500/20', border: 'border-gray-500/30', text: 'text-gray-400' },
+  uncommon: { bg: 'bg-green-500/20', border: 'border-green-500/30', text: 'text-green-400' },
+  rare: { bg: 'bg-blue-500/20', border: 'border-blue-500/30', text: 'text-blue-400' },
+  epic: { bg: 'bg-purple-500/20', border: 'border-purple-500/30', text: 'text-purple-400' },
+  legendary: { bg: 'bg-yellow-500/20', border: 'border-yellow-500/30', text: 'text-yellow-400' },
+  mythic: { bg: 'bg-pink-500/20', border: 'border-pink-500/30', text: 'text-pink-400' },
+};
 
 type FriendshipStatus = 'none' | 'pending_sent' | 'pending_received' | 'friends' | 'blocked';
 
@@ -47,14 +79,24 @@ export default function UserProfile() {
   const navigate = useNavigate();
   const { user: currentUser } = useAuthStore();
   const { sendRequest, acceptRequest, removeFriend } = useFriendStore();
-  
+  const { achievements, level: myLevel, totalXP: myTotalXP, loginStreak: myStreak } = useGamificationStore();
+
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [friendshipStatus, setFriendshipStatus] = useState<FriendshipStatus>('none');
   const [isActioning, setIsActioning] = useState(false);
+  const [showAllAchievements, setShowAllAchievements] = useState(false);
 
   const isOwnProfile = currentUser?.id === userId;
+
+  // Calculate unlocked achievements for display
+  const unlockedAchievements = useMemo(() => {
+    if (!isOwnProfile) return [];
+    return achievements.filter(a => a.unlocked).slice(0, showAllAchievements ? undefined : 6);
+  }, [achievements, isOwnProfile, showAllAchievements]);
+
+  const totalUnlocked = useMemo(() => achievements.filter(a => a.unlocked).length, [achievements]);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -83,6 +125,16 @@ export default function UserProfile() {
           mutualFriends: userData.mutual_friends_count,
           location: userData.location,
           website: userData.website,
+          // Gamification stats (from API or own data if own profile)
+          level: userData.level || (isOwnProfile ? myLevel : 1),
+          totalXP: userData.total_xp || (isOwnProfile ? myTotalXP : 0),
+          currentXP: userData.current_xp || 0,
+          loginStreak: userData.login_streak || (isOwnProfile ? myStreak : 0),
+          achievementCount: userData.achievement_count || (isOwnProfile ? totalUnlocked : 0),
+          totalAchievements: ACHIEVEMENT_DEFINITIONS.length,
+          messagesSent: userData.messages_sent || 0,
+          postsCreated: userData.posts_created || 0,
+          friendsCount: userData.friends_count || 0,
         });
         
         setFriendshipStatus(userData.friendship_status || 'none');
@@ -95,7 +147,7 @@ export default function UserProfile() {
     }
 
     fetchProfile();
-  }, [userId]);
+  }, [userId, isOwnProfile, myLevel, myTotalXP, myStreak, totalUnlocked]);
 
   const handleSendRequest = async () => {
     if (!profile) return;
@@ -140,18 +192,6 @@ export default function UserProfile() {
     navigate(`/messages?userId=${profile?.id}`);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'online':
-        return 'bg-green-500';
-      case 'idle':
-        return 'bg-yellow-500';
-      case 'dnd':
-        return 'bg-red-500';
-      default:
-        return 'bg-gray-500';
-    }
-  };
 
   if (isLoading) {
     return (
@@ -284,26 +324,30 @@ export default function UserProfile() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="flex items-end gap-6"
         >
-          {/* Avatar */}
+          {/* Avatar with AnimatedAvatar */}
           <motion.div
             className="relative"
             whileHover={{ scale: 1.05 }}
             transition={{ type: 'spring', stiffness: 400, damping: 20 }}
           >
-            <div className="p-1 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full">
-              <Avatar
-                src={profile.avatarUrl || undefined}
-                alt={profile.displayName || profile.username}
-                fallback={(profile.displayName || profile.username).charAt(0).toUpperCase()}
-                size="xl"
-                className="ring-4 ring-dark-900/50 backdrop-blur-sm"
-              />
-            </div>
-            <motion.div
-              className={`absolute bottom-2 right-2 h-5 w-5 rounded-full border-4 border-dark-900 ${getStatusColor(profile.status)}`}
-              animate={{ scale: [1, 1.2, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
+            <AnimatedAvatar
+              src={profile.avatarUrl || undefined}
+              alt={profile.displayName || profile.username}
+              size="2xl"
+              showStatus={true}
+              statusType={profile.status}
             />
+            {/* Level badge overlay */}
+            {profile.level && profile.level > 1 && (
+              <motion.div
+                className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-primary-600 to-purple-600 border-2 border-dark-900 shadow-lg"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3, type: 'spring' }}
+              >
+                <span className="text-xs font-bold text-white">Lvl {profile.level}</span>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Name & Actions */}
@@ -444,6 +488,139 @@ export default function UserProfile() {
                 <p className="text-gray-300 whitespace-pre-wrap">{profile.bio}</p>
               </GlassCard>
             )}
+
+            {/* XP Progress - Show for own profile */}
+            {isOwnProfile && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <LevelProgress variant="expanded" showStreak={true} />
+              </motion.div>
+            )}
+
+            {/* Achievements Showcase */}
+            {isOwnProfile && unlockedAchievements.length > 0 && (
+              <GlassCard variant="holographic" glow className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold bg-gradient-to-r from-white to-primary-200 bg-clip-text text-transparent flex items-center gap-2">
+                    <TrophyIcon className="h-5 w-5 text-yellow-400" />
+                    Achievements
+                  </h2>
+                  <span className="text-sm text-gray-400">
+                    {totalUnlocked} / {ACHIEVEMENT_DEFINITIONS.length}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  <AnimatePresence mode="popLayout">
+                    {unlockedAchievements.map((achievement, index) => {
+                      const colors = rarityColors[achievement.rarity] ?? defaultRarityColor;
+                      return (
+                        <motion.div
+                          key={achievement.id}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          transition={{ delay: index * 0.05 }}
+                          whileHover={{ scale: 1.05, y: -2 }}
+                          className={`p-3 rounded-xl ${colors.bg} border ${colors.border} cursor-pointer group relative overflow-hidden`}
+                          onClick={() => HapticFeedback.light()}
+                        >
+                          <div className="flex items-center gap-2 relative z-10">
+                            <span className="text-2xl">{achievement.icon}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-semibold text-white truncate">{achievement.title}</p>
+                              <p className={`text-[10px] uppercase tracking-wider font-bold ${colors.text}`}>
+                                {achievement.rarity}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </AnimatePresence>
+                </div>
+
+                {totalUnlocked > 6 && (
+                  <motion.button
+                    className="mt-4 w-full py-2 rounded-lg bg-primary-500/20 border border-primary-500/30 text-sm text-primary-400 font-medium hover:bg-primary-500/30 transition-colors flex items-center justify-center gap-2"
+                    onClick={() => {
+                      setShowAllAchievements(!showAllAchievements);
+                      HapticFeedback.light();
+                    }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {showAllAchievements ? 'Show Less' : `View All ${totalUnlocked} Achievements`}
+                    <SparklesIcon className="h-4 w-4" />
+                  </motion.button>
+                )}
+              </GlassCard>
+            )}
+
+            {/* Stats Grid */}
+            <GlassCard variant="frosted" className="p-6">
+              <h2 className="text-lg font-semibold bg-gradient-to-r from-white to-primary-200 bg-clip-text text-transparent mb-4 flex items-center gap-2">
+                <ChartBarIcon className="h-5 w-5 text-primary-400" />
+                Statistics
+              </h2>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <motion.div
+                  className="text-center p-4 rounded-xl bg-dark-800/50 border border-primary-500/20"
+                  whileHover={{ scale: 1.05, borderColor: 'rgba(16, 185, 129, 0.5)' }}
+                >
+                  <div className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-green-400 bg-clip-text text-transparent">
+                    {(profile.level || 1).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
+                    <StarIcon className="h-3 w-3" />
+                    Level
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="text-center p-4 rounded-xl bg-dark-800/50 border border-purple-500/20"
+                  whileHover={{ scale: 1.05, borderColor: 'rgba(139, 92, 246, 0.5)' }}
+                >
+                  <div className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    {(profile.totalXP || 0).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
+                    <SparklesIcon className="h-3 w-3" />
+                    Total XP
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="text-center p-4 rounded-xl bg-dark-800/50 border border-orange-500/20"
+                  whileHover={{ scale: 1.05, borderColor: 'rgba(249, 115, 22, 0.5)' }}
+                >
+                  <div className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent flex items-center justify-center gap-1">
+                    {(profile.loginStreak || 0).toLocaleString()}
+                    {(profile.loginStreak || 0) > 0 && <FireIcon className="h-5 w-5 text-orange-400" />}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
+                    <BoltIcon className="h-3 w-3" />
+                    Day Streak
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  className="text-center p-4 rounded-xl bg-dark-800/50 border border-blue-500/20"
+                  whileHover={{ scale: 1.05, borderColor: 'rgba(59, 130, 246, 0.5)' }}
+                >
+                  <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                    {(profile.friendsCount || 0).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-gray-500 mt-1 flex items-center justify-center gap-1">
+                    <UserPlusIcon className="h-3 w-3" />
+                    Friends
+                  </div>
+                </motion.div>
+              </div>
+            </GlassCard>
 
             {/* Activity / Mutual Friends could go here */}
             {profile.mutualFriends !== undefined && profile.mutualFriends > 0 && (
