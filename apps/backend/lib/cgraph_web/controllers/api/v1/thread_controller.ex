@@ -7,8 +7,11 @@ defmodule CgraphWeb.API.V1.ThreadController do
 
   alias Cgraph.Forums
   import CgraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
+  import CgraphWeb.Helpers.ParamParser
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_limit 100
 
   @doc """
   List threads in a board.
@@ -155,7 +158,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
   """
   def vote(conn, %{"id" => id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
-    value = if is_binary(value), do: String.to_integer(value), else: value
+    value = if is_binary(value), do: parse_int(value, 0, min: -1, max: 1), else: value
 
     case Forums.vote_thread(user.id, id, value) do
       {:ok, :removed} ->
@@ -173,7 +176,7 @@ defmodule CgraphWeb.API.V1.ThreadController do
   Used for "Recent Threads" view on forum homepage.
   """
   def forum_threads(conn, %{"forum_id" => forum_id} = params) do
-    limit = String.to_integer(Map.get(params, "limit", "20"))
+    limit = parse_int(params["limit"], 20, min: 1, max: @max_limit)
     sort = Map.get(params, "sort", "latest")
 
     threads = Forums.list_forum_threads(forum_id, limit: limit, sort: sort)

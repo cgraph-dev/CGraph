@@ -2,15 +2,23 @@ defmodule CgraphWeb.GamificationController do
   @moduledoc """
   Controller for gamification-related endpoints.
   Handles XP, levels, achievements, streaks, and user stats.
+  
+  ## Security
+  
+  - All endpoints require authentication
+  - Pagination parameters are validated and safely parsed
   """
   use CgraphWeb, :controller
 
   import Ecto.Query, warn: false
+  import CgraphWeb.Helpers.ParamParser
 
   alias Cgraph.Gamification
   alias Cgraph.Repo
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_leaderboard_limit 100
 
   @doc """
   GET /api/v1/gamification/stats
@@ -95,10 +103,15 @@ defmodule CgraphWeb.GamificationController do
   @doc """
   GET /api/v1/gamification/leaderboard/:category
   Get leaderboard for a specific category.
+  
+  ## Parameters
+  
+  - `limit` - Max entries to return (1-100, default: 100)
+  - `offset` - Offset for pagination (default: 0)
   """
   def leaderboard(conn, %{"category" => category} = params) do
-    limit = params["limit"] && String.to_integer(params["limit"]) || 100
-    offset = params["offset"] && String.to_integer(params["offset"]) || 0
+    limit = parse_int(params["limit"], 100, min: 1, max: @max_leaderboard_limit)
+    offset = parse_int(params["offset"], 0, min: 0)
     user = conn.assigns.current_user
     
     entries = Gamification.get_leaderboard(category, limit: limit, offset: offset)
@@ -112,11 +125,16 @@ defmodule CgraphWeb.GamificationController do
   @doc """
   GET /api/v1/gamification/xp/history
   Get XP transaction history.
+  
+  ## Parameters
+  
+  - `limit` - Max entries to return (1-100, default: 50)
+  - `offset` - Offset for pagination (default: 0)
   """
   def xp_history(conn, params) do
     user = conn.assigns.current_user
-    query_limit = parse_int(params["limit"], 50)
-    query_offset = parse_int(params["offset"], 0)
+    query_limit = parse_int(params["limit"], 50, min: 1, max: 100)
+    query_offset = parse_int(params["offset"], 0, min: 0)
     
     transactions = 
       from(t in Cgraph.Gamification.XpTransaction,
@@ -131,16 +149,6 @@ defmodule CgraphWeb.GamificationController do
     |> put_status(:ok)
     |> render(:xp_history, transactions: transactions)
   end
-
-  # Helper to parse integer params with default
-  defp parse_int(nil, default), do: default
-  defp parse_int(value, default) when is_binary(value) do
-    case Integer.parse(value) do
-      {int, _} -> int
-      :error -> default
-    end
-  end
-  defp parse_int(value, _default) when is_integer(value), do: value
 
   @doc """
   GET /api/v1/gamification/level-info

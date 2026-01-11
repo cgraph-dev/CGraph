@@ -4,10 +4,14 @@ defmodule CgraphWeb.API.V1.MessageController do
   """
   use CgraphWeb, :controller
 
+  import CgraphWeb.Helpers.ParamParser
+
   alias Cgraph.Messaging
   alias CgraphWeb.API.V1.MessageJSON
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_per_page 100
 
   @doc """
   List messages in a conversation.
@@ -16,8 +20,8 @@ defmodule CgraphWeb.API.V1.MessageController do
     user = conn.assigns.current_user
 
     opts = [
-      page: Map.get(params, "page", "1") |> String.to_integer(),
-      per_page: Map.get(params, "per_page", "50") |> String.to_integer() |> min(100),
+      page: parse_int(params["page"], 1, min: 1),
+      per_page: parse_int(params["per_page"], 50, min: 1, max: @max_per_page),
       before: Map.get(params, "before"),
       after: Map.get(params, "after")
     ]

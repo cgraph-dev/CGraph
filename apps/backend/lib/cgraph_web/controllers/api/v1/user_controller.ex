@@ -2,14 +2,24 @@ defmodule CgraphWeb.API.V1.UserController do
   @moduledoc """
   Controller for user-related endpoints.
   Handles current user operations and user lookups.
+  
+  ## Security
+  
+  - All user data endpoints require authentication
+  - Pagination parameters are validated and safely parsed
+  - Privacy settings are respected for profile access
   """
   use CgraphWeb, :controller
+
+  import CgraphWeb.Helpers.ParamParser
 
   alias Cgraph.Accounts
   alias Cgraph.Accounts.User
   alias Cgraph.Presence
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_per_page 100
 
   @doc """
   Get the current authenticated user's profile.
@@ -131,8 +141,8 @@ defmodule CgraphWeb.API.V1.UserController do
   List users with pagination and optional search.
   """
   def index(conn, params) do
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(100)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
     search = Map.get(params, "q")
 
     {users, total} = Accounts.list_users(
@@ -193,8 +203,8 @@ defmodule CgraphWeb.API.V1.UserController do
   Get top users by karma (leaderboard).
   """
   def leaderboard(conn, params) do
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(100)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
 
     {users, meta} = Accounts.list_top_users_by_karma(
       page: page,

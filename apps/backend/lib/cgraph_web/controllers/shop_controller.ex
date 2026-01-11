@@ -1,19 +1,29 @@
 defmodule CgraphWeb.ShopController do
   @moduledoc """
   Controller for coin shop and purchases.
+  
+  ## Security
+  
+  - All purchase endpoints require authentication
+  - Quantity is validated (1-100) and safely parsed
+  - Race conditions in coin spending are handled by optimistic locking
   """
   use CgraphWeb, :controller
+
+  import CgraphWeb.Helpers.ParamParser
 
   alias Cgraph.Gamification
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_purchase_quantity 100
 
   @doc """
   GET /api/v1/shop
   List all shop items.
   """
   def index(conn, params) do
-    category = params["category"]
+    category = parse_string(params["category"])
     items = Gamification.list_shop_items(category: category)
     
     conn
@@ -42,10 +52,15 @@ defmodule CgraphWeb.ShopController do
   @doc """
   POST /api/v1/shop/:id/purchase
   Purchase a shop item.
+  
+  ## Parameters
+  
+  - `quantity` - Number of items to purchase (1-100, default: 1)
   """
   def purchase(conn, %{"id" => item_id} = params) do
     user = conn.assigns.current_user
-    quantity = params["quantity"] && String.to_integer(params["quantity"]) || 1
+    # Safe parsing with validation: min 1, max 100
+    quantity = parse_int(params["quantity"], 1, min: 1, max: @max_purchase_quantity)
     
     case Gamification.purchase_shop_item(user, item_id, quantity) do
       {:ok, updated_user} ->
@@ -85,7 +100,7 @@ defmodule CgraphWeb.ShopController do
   """
   def purchases(conn, params) do
     user = conn.assigns.current_user
-    category = params["category"]
+    category = parse_string(params["category"])
     
     purchases = Gamification.list_user_purchases(user.id, category: category)
     

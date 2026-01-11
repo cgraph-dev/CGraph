@@ -5,10 +5,14 @@ defmodule CgraphWeb.API.V1.ReactionController do
   """
   use CgraphWeb, :controller
 
+  import CgraphWeb.Helpers.ParamParser
+
   alias Cgraph.Groups
   alias Cgraph.Messaging
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_limit 100
 
   @doc """
   List reactions on a message.
@@ -188,7 +192,7 @@ defmodule CgraphWeb.API.V1.ReactionController do
   """
   def users(conn, %{"conversation_id" => conversation_id, "message_id" => message_id, "emoji" => emoji} = params) do
     user = conn.assigns.current_user
-    limit = Map.get(params, "limit", "50") |> String.to_integer() |> min(100)
+    limit = parse_int(params["limit"], 50, min: 1, max: @max_limit)
 
     with {:ok, conversation} <- Messaging.get_conversation(conversation_id),
          :ok <- Messaging.authorize_access(user, conversation),

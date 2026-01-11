@@ -2,7 +2,9 @@
 
 Look, security is one of those things that's easy to get wrong and really hard to fix after the fact. We've put a lot of thought into how CGraph handles authentication, authorization, and data protection — and we think we've gotten it right. But security is also a moving target, so if you spot something off, please let us know.
 
-**v0.7.35 introduces Signal Protocol Double Ratchet encryption** — the same cryptographic foundation that secures Signal, WhatsApp, and other industry-leading messengers.
+**v0.7.47 introduces critical security hardening** — 2FA brute force protection, race condition fixes, and safe parameter parsing across all controllers.
+
+**v0.7.35 introduced Signal Protocol Double Ratchet encryption** — the same cryptographic foundation that secures Signal, WhatsApp, and other industry-leading messengers.
 
 This doc explains what we've built and why. It's not exhaustive (that would be a book), but it covers the stuff you actually need to know.
 
@@ -336,6 +338,39 @@ RFC 6238 compliant TOTP implementation:
 - 1Password
 - Any RFC 6238 compliant app
 
+#### 2FA Brute Force Protection (v0.7.47+)
+
+**Module:** `CgraphWeb.Plugs.TwoFactorRateLimiter`
+
+Progressive lockout system to prevent brute force attacks on 2FA codes:
+
+```elixir
+# Applied to all 2FA endpoints
+plug CgraphWeb.Plugs.TwoFactorRateLimiter when action in [:verify, :enable, :disable, :use_backup_code]
+```
+
+| Threshold | Action |
+|-----------|--------|
+| 5 failures in 5 minutes | 15-minute lockout |
+| 3 lockout periods | 24-hour extended lockout |
+| Successful verification | All counters reset |
+
+**Implementation Details:**
+- Redis-backed tracking via `Redix`
+- Automatic key expiration (no manual cleanup)
+- User-specific tracking (not IP-based)
+- Registers success/failure via `Plug.Conn.register_before_send`
+
+**Response on Lockout:**
+```json
+{
+  "error": "too_many_attempts",
+  "message": "Too many 2FA attempts. Please try again later.",
+  "locked_until": "2026-01-11T15:30:00Z",
+  "retry_after": 900
+}
+```
+
 ### 6. OAuth Authentication Security
 
 **Module:** `Cgraph.OAuth`
@@ -440,7 +475,44 @@ end
 - `ConversationChannel` - Direct messages
 - `GroupChannel` - Group/channel messages
 
-### 8. Audit Logging
+### 8. Safe Parameter Parsing (v0.7.47+)
+
+**Module:** `CgraphWeb.Helpers.ParamParser`
+
+All API controllers use safe parameter parsing to prevent crashes and injection attacks:
+
+```elixir
+import CgraphWeb.Helpers.ParamParser
+
+# Safe integer parsing with bounds
+page = parse_int(params["page"], 1, min: 1)
+per_page = parse_int(params["per_page"], 20, min: 1, max: 100)
+quantity = parse_int(params["quantity"], 1, min: 1, max: 100)
+
+# Safe atom parsing (prevents atom table exhaustion)
+sort = parse_atom(params["sort"], :created, [:created, :updated, :name])
+direction = parse_atom(params["direction"], :desc, [:asc, :desc])
+
+# Other safe parsers
+uuid = parse_uuid(params["id"])           # Returns nil if invalid
+date = parse_date(params["start"], ~D[2026-01-01])  # With default
+active = parse_bool(params["active"], false)
+```
+
+**Security Benefits:**
+- Prevents uncaught exceptions from malformed input
+- Enforces min/max bounds on numeric parameters
+- Whitelist-based atom parsing prevents atom table exhaustion attacks
+- Returns safe defaults instead of crashing
+
+**Protected Endpoints:**
+All 20+ API controllers including:
+- ForumController, PostController, CommentController
+- UserController, FriendController, GroupController
+- MessageController, NotificationController, SearchController
+- GamificationController, ShopController, CoinsController
+
+### 9. Audit Logging
 
 **Module:** `Cgraph.Audit`
 

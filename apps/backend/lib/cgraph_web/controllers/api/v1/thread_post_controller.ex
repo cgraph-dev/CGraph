@@ -7,6 +7,7 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
 
   alias Cgraph.Forums
   import CgraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
+  import CgraphWeb.Helpers.ParamParser
 
   action_fallback CgraphWeb.FallbackController
 
@@ -104,7 +105,7 @@ defmodule CgraphWeb.API.V1.ThreadPostController do
   """
   def vote(conn, %{"id" => id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
-    value = if is_binary(value), do: String.to_integer(value), else: value
+    value = if is_binary(value), do: parse_int(value, 0, min: -1, max: 1), else: value
 
     case Forums.vote_post(user.id, id, value) do
       {:ok, :removed} ->

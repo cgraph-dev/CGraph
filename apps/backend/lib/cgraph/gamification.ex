@@ -155,22 +155,36 @@ defmodule Cgraph.Gamification do
   end
 
   @doc """
-  Spend coins from a user's balance.
+  Spend coins from a user's balance with race condition protection.
+  
+  Uses SELECT FOR UPDATE to prevent concurrent balance modifications.
   Returns {:ok, user} or {:error, :insufficient_funds}
+  
+  ## Race Condition Prevention
+  
+  The balance check happens INSIDE the transaction with a row-level lock,
+  ensuring two concurrent requests cannot both pass the check before either
+  commits, which would result in a negative balance.
   """
   def spend_coins(%User{} = user, amount, type, opts \\ []) when amount > 0 do
-    if user.coins < amount do
-      {:error, :insufficient_funds}
-    else
-      description = Keyword.get(opts, :description)
-      reference_type = Keyword.get(opts, :reference_type)
-      reference_id = Keyword.get(opts, :reference_id)
-      
-      new_balance = user.coins - amount
+    description = Keyword.get(opts, :description)
+    reference_type = Keyword.get(opts, :reference_type)
+    reference_id = Keyword.get(opts, :reference_id)
 
-      Repo.transaction(fn ->
+    Repo.transaction(fn ->
+      # Lock the user row for update to prevent race conditions
+      # This ensures only one transaction can modify the balance at a time
+      locked_user = 
+        from(u in User, where: u.id == ^user.id, lock: "FOR UPDATE")
+        |> Repo.one!()
+
+      if locked_user.coins < amount do
+        Repo.rollback(:insufficient_funds)
+      else
+        new_balance = locked_user.coins - amount
+
         {:ok, updated_user} = 
-          user
+          locked_user
           |> Ecto.Changeset.change(%{coins: new_balance})
           |> Repo.update()
 
@@ -188,8 +202,8 @@ defmodule Cgraph.Gamification do
           |> Repo.insert()
 
         updated_user
-      end)
-    end
+      end
+    end)
   end
 
   @doc """

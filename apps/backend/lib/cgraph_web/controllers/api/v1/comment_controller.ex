@@ -5,9 +5,13 @@ defmodule CgraphWeb.API.V1.CommentController do
   """
   use CgraphWeb, :controller
 
+  import CgraphWeb.Helpers.ParamParser
+
   alias Cgraph.Forums
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_per_page 100
 
   @doc """
   List comments on a post.
@@ -15,8 +19,8 @@ defmodule CgraphWeb.API.V1.CommentController do
   """
   def index(conn, %{"forum_id" => forum_id, "post_id" => post_id} = params) do
     user = conn.assigns.current_user
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "50") |> String.to_integer() |> min(100)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 50, min: 1, max: @max_per_page)
     sort = Map.get(params, "sort", "best") # best, new, old, controversial
     parent_id = Map.get(params, "parent_id") # For loading replies to a specific comment
 

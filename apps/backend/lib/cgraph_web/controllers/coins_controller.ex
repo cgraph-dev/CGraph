@@ -1,12 +1,21 @@
 defmodule CgraphWeb.CoinsController do
   @moduledoc """
   Controller for coin balance and transactions.
+  
+  ## Security
+  
+  - All endpoints require authentication
+  - Pagination parameters are validated and safely parsed
   """
   use CgraphWeb, :controller
+
+  import CgraphWeb.Helpers.ParamParser
 
   alias Cgraph.Gamification
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_limit 100
 
   @doc """
   GET /api/v1/coins
@@ -27,11 +36,16 @@ defmodule CgraphWeb.CoinsController do
   @doc """
   GET /api/v1/coins/history
   Get coin transaction history.
+  
+  ## Parameters
+  
+  - `limit` - Max results to return (1-100, default: 50)
+  - `offset` - Offset for pagination (default: 0)
   """
   def history(conn, params) do
     user = conn.assigns.current_user
-    limit = params["limit"] && String.to_integer(params["limit"]) || 50
-    offset = params["offset"] && String.to_integer(params["offset"]) || 0
+    limit = parse_int(params["limit"], 50, min: 1, max: @max_limit)
+    offset = parse_int(params["offset"], 0, min: 0)
     
     transactions = Gamification.list_coin_transactions(user.id, limit: limit, offset: offset)
     

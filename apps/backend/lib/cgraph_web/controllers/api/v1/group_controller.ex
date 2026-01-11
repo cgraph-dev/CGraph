@@ -3,19 +3,22 @@ defmodule CgraphWeb.API.V1.GroupController do
   Controller for group (server) management.
   """
   use CgraphWeb, :controller
+  import CgraphWeb.Helpers.ParamParser
 
   alias Cgraph.Groups
   alias Cgraph.Groups.Group
 
   action_fallback CgraphWeb.FallbackController
 
+  @max_per_page 100
+
   @doc """
   List all groups the user is a member of.
   """
   def index(conn, params) do
     user = conn.assigns.current_user
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(100)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
 
     {groups, total} = Groups.list_user_groups(user,
       page: page,
@@ -90,8 +93,8 @@ defmodule CgraphWeb.API.V1.GroupController do
   """
   def audit_log(conn, %{"group_id" => group_id} = params) do
     user = conn.assigns.current_user
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "50") |> String.to_integer() |> min(100)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 50, min: 1, max: @max_per_page)
 
     with {:ok, group} <- Groups.get_user_group(user, group_id),
          :ok <- Groups.authorize(user, group, :view_audit_log),

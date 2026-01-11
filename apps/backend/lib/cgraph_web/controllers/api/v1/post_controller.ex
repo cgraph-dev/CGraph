@@ -2,12 +2,22 @@ defmodule CgraphWeb.API.V1.PostController do
   @moduledoc """
   Handles forum posts.
   Posts are the main content units in forums with voting and comments.
+  
+  ## Security
+  
+  - Pagination parameters are validated and safely parsed
+  - Rate limiting on post creation
+  - Authorization checks for forum access
   """
   use CgraphWeb, :controller
+
+  import CgraphWeb.Helpers.ParamParser
 
   alias Cgraph.Forums
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_per_page 50
 
   @doc """
   List posts in a forum.
@@ -15,8 +25,8 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def index(conn, %{"forum_id" => forum_id} = params) do
     user = Map.get(conn.assigns, :current_user)
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
     sort = Map.get(params, "sort", "hot") # hot, new, top, controversial
     category_id = Map.get(params, "category_id")
 
@@ -276,8 +286,8 @@ defmodule CgraphWeb.API.V1.PostController do
   """
   def feed(conn, params) do
     user = Map.get(conn.assigns, :current_user)
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "25") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 25, min: 1, max: @max_per_page)
     sort = Map.get(params, "sort", "hot")
     time = Map.get(params, "time", "day")
 

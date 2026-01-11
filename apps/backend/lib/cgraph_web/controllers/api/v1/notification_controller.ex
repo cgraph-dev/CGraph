@@ -4,10 +4,13 @@ defmodule CgraphWeb.API.V1.NotificationController do
   Supports listing, marking as read, and managing notification preferences.
   """
   use CgraphWeb, :controller
+  import CgraphWeb.Helpers.ParamParser
 
   alias Cgraph.Notifications
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_per_page 50
 
   @doc """
   List user's notifications.
@@ -15,8 +18,8 @@ defmodule CgraphWeb.API.V1.NotificationController do
   """
   def index(conn, params) do
     user = conn.assigns.current_user
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
     filter = Map.get(params, "filter", "all") # all, unread
     type = Map.get(params, "type") # Optional: message, mention, friend, group, forum
 

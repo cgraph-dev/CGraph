@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/mobile",
-  "version": "0.7.41",
+  "version": "0.7.47",
   "private": true,
   "main": "index.js",
   "scripts": {

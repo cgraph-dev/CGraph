@@ -6,6 +6,95 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.47] - 2026-01-11
+
+**🔒 SECURITY HARDENING RELEASE: Critical Vulnerability Fixes & Database Optimization**
+
+This release addresses multiple critical security vulnerabilities discovered during a comprehensive security audit, adds database performance indexes for scale, and improves code quality across all controllers.
+
+### Security Fixes
+
+#### 🚨 CRITICAL: Race Condition in Coin Spending
+- **Fixed concurrent balance modification vulnerability in `Gamification.spend_coins/2`**:
+  - Added `SELECT FOR UPDATE` row-level locking to prevent double-spending
+  - Balance check now happens inside transaction with locked row
+  - Prevents exploits where multiple simultaneous requests could bypass balance check
+
+#### 🚨 CRITICAL: Premium Subscribe Demo Bypass
+- **Fixed demo mode bypassing payment in production**:
+  - Demo mode now requires explicit `PREMIUM_DEMO_MODE=true` environment variable
+  - Demo mode is automatically disabled in production environment
+  - Added proper Stripe checkout session creation flow
+
+#### 🚨 CRITICAL: 2FA Brute Force Prevention
+- **Created `TwoFactorRateLimiter` plug with progressive lockout**:
+  - 5 attempts per 5 minutes per user
+  - 15-minute lockout after 5 consecutive failures
+  - 24-hour extended lockout after 3 lockout periods
+  - Redis-backed attempt tracking with automatic cleanup
+  - Applied to all 2FA endpoints: verify, enable, disable, use_backup_code
+
+#### 🚨 CRITICAL: Uncaught Integer Parsing Exceptions
+- **Created `CgraphWeb.Helpers.ParamParser` module for safe parameter parsing**:
+  - `parse_int/3` - Safe integer parsing with min/max clamping
+  - `parse_atom/3` - Whitelist-based atom parsing (prevents atom table exhaustion)
+  - `parse_bool/2`, `parse_uuid/1`, `parse_date/2`, `parse_datetime/2`, `parse_string/2`
+- **Fixed 20+ controllers** with unsafe `String.to_integer` calls:
+  - ShopController, CoinsController, GamificationController
+  - ForumController, PostController, CommentController
+  - UserController, FriendController, GroupController
+  - MessageController, NotificationController, SearchController
+  - ThreadController, ChannelMessageController, ReactionController
+
+### Database Performance
+
+#### 📊 New Indexes for Scale (Migration: `20260111120000`)
+- `coin_transactions_user_inserted_index` - Optimizes coin history queries
+- `two_factor_attempts_user_time_index` - Supports 2FA rate limiting
+- `users_subscription_expiry_partial_index` - Premium subscription queries
+- `messages_conversation_time_index` - Message history pagination
+- `channel_messages_channel_time_index` - Channel message queries
+- `friendships_pending_receiver_partial_index` - Friend request listings
+- `notifications_unread_partial_index` - Unread notification counts
+- `sessions_active_token_partial_index` - Session validation speed
+
+### Code Quality
+
+- Enhanced moduledoc documentation across all controllers
+- Added @max_per_page and @max_limit module attributes for consistent limits
+- Improved error messages with structured JSON responses
+- Added parameter documentation in function @doc blocks
+
+### Files Added
+
+- `/apps/backend/lib/cgraph_web/plugs/two_factor_rate_limiter.ex` - 2FA rate limiting
+- `/apps/backend/lib/cgraph_web/helpers/param_parser.ex` - Safe parameter parsing
+- `/apps/backend/priv/repo/migrations/20260111120000_add_comprehensive_security_indexes.exs`
+
+### Files Modified
+
+- `/apps/backend/lib/cgraph/gamification.ex` - Race condition fix
+- `/apps/backend/lib/cgraph_web/controllers/premium_controller.ex` - Demo bypass fix
+- `/apps/backend/lib/cgraph_web/controllers/two_factor_controller.ex` - Rate limiter plug
+- All 20+ API controllers - Safe integer parsing
+
+### Migration Required
+
+```bash
+cd apps/backend
+mix ecto.migrate
+```
+
+### Version Sync
+
+All project versions synchronized to 0.7.47:
+- Root `package.json`
+- `apps/web/package.json`
+- `apps/mobile/package.json`
+- `apps/backend/mix.exs`
+
+---
+
 ## [0.7.41] - 2026-01-10
 
 **🔧 WEB STABILITY RELEASE: TypeScript Fixes, WebSocket Integration & Test Suite Updates**

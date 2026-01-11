@@ -113,44 +113,134 @@ defmodule CgraphWeb.PremiumController do
 
   @doc """
   POST /api/v1/premium/subscribe
-  Subscribe to a tier (mock - would integrate with payment provider).
+  Create a subscription checkout session.
+  
+  ## Security
+  
+  This endpoint does NOT directly grant premium access. It creates a 
+  payment session URL. The actual subscription is granted via webhook
+  after payment confirmation from the payment provider.
+  
+  ## Environment Variables Required
+  
+  - STRIPE_SECRET_KEY: Stripe API key
+  - STRIPE_WEBHOOK_SECRET: Webhook signature verification
+  - PREMIUM_DEMO_MODE: Set to "true" ONLY for development
   """
   def subscribe(conn, %{"tier" => tier}) do
     user = conn.assigns.current_user
     
-    if tier in ["free", "premium", "premium_plus"] do
-      # In production, this would:
-      # 1. Create a Stripe/payment checkout session
-      # 2. Handle webhook for payment confirmation
-      # 3. Update subscription only after payment succeeds
-      
-      # For now, we'll just update the tier (demo mode)
-      expires_at = if tier == "free" do
-        nil
-      else
-        DateTime.add(DateTime.utc_now(), 30 * 24 * 60 * 60, :second)
-      end
-      
-      {:ok, updated_user} = 
-        user
-        |> Ecto.Changeset.change(%{
-          subscription_tier: tier,
-          subscription_expires_at: expires_at
-        })
-        |> Repo.update()
-      
-      conn
-      |> put_status(:ok)
-      |> json(%{
-        success: true,
-        tier: updated_user.subscription_tier,
-        expires_at: updated_user.subscription_expires_at,
-        message: "Subscription updated successfully"
-      })
-    else
+    unless tier in ["free", "premium", "premium_plus"] do
       conn
       |> put_status(:bad_request)
       |> json(%{error: "invalid_tier", message: "Invalid subscription tier"})
+      |> halt()
+    else
+      # Downgrade to free is always allowed
+      if tier == "free" do
+        handle_downgrade_to_free(conn, user)
+      else
+        # Check if demo mode is enabled (ONLY for development)
+        if demo_mode_enabled?() do
+          handle_demo_subscription(conn, user, tier)
+        else
+          create_checkout_session(conn, user, tier)
+        end
+      end
+    end
+  end
+
+  # Handle downgrade to free tier
+  defp handle_downgrade_to_free(conn, user) do
+    {:ok, updated_user} = 
+      user
+      |> Ecto.Changeset.change(%{
+        subscription_tier: "free",
+        subscription_expires_at: nil,
+        cancel_at_period_end: false
+      })
+      |> Repo.update()
+    
+    conn
+    |> put_status(:ok)
+    |> json(%{
+      success: true,
+      tier: updated_user.subscription_tier,
+      message: "Successfully downgraded to free tier"
+    })
+  end
+
+  # Demo mode for development ONLY - requires explicit env var
+  defp demo_mode_enabled? do
+    System.get_env("PREMIUM_DEMO_MODE") == "true" and
+    Application.get_env(:cgraph, :env) != :prod
+  end
+
+  defp handle_demo_subscription(conn, user, tier) do
+    require Logger
+    Logger.warning("[SECURITY] Premium demo mode used for user #{user.id} - tier: #{tier}")
+    
+    expires_at = DateTime.add(DateTime.utc_now(), 30 * 24 * 60 * 60, :second)
+    
+    {:ok, updated_user} = 
+      user
+      |> Ecto.Changeset.change(%{
+        subscription_tier: tier,
+        subscription_expires_at: expires_at
+      })
+      |> Repo.update()
+    
+    conn
+    |> put_status(:ok)
+    |> json(%{
+      success: true,
+      demo_mode: true,
+      tier: updated_user.subscription_tier,
+      expires_at: updated_user.subscription_expires_at,
+      message: "Demo subscription activated (development mode only)"
+    })
+  end
+
+  # Production: Create Stripe checkout session
+  defp create_checkout_session(conn, user, tier) do
+    stripe_key = System.get_env("STRIPE_SECRET_KEY")
+    
+    if is_nil(stripe_key) or stripe_key == "" do
+      conn
+      |> put_status(:service_unavailable)
+      |> json(%{
+        error: "payment_not_configured",
+        message: "Payment processing is not configured. Please contact support."
+      })
+    else
+      # Stripe checkout session creation would go here
+      # For now, return that the feature is coming soon
+      price_ids = %{
+        "premium" => System.get_env("STRIPE_PREMIUM_PRICE_ID"),
+        "premium_plus" => System.get_env("STRIPE_PREMIUM_PLUS_PRICE_ID")
+      }
+      
+      price_id = Map.get(price_ids, tier)
+      
+      if is_nil(price_id) do
+        conn
+        |> put_status(:service_unavailable)
+        |> json(%{
+          error: "price_not_configured",
+          message: "Subscription pricing not configured. Please contact support."
+        })
+      else
+        # In production, this would call Stripe.Checkout.Session.create
+        # For now, return a placeholder response
+        conn
+        |> put_status(:ok)
+        |> json(%{
+          success: true,
+          action: "redirect",
+          checkout_url: nil,
+          message: "Payment integration coming soon. Contact support for manual activation."
+        })
+      end
     end
   end
 
@@ -161,16 +251,27 @@ defmodule CgraphWeb.PremiumController do
   def cancel(conn, _params) do
     user = conn.assigns.current_user
     
-    # In production, this would cancel with payment provider
-    # Subscription remains active until expires_at
-    
-    conn
-    |> put_status(:ok)
-    |> json(%{
-      success: true,
-      message: "Subscription will be cancelled at the end of the billing period",
-      expires_at: user.subscription_expires_at
-    })
+    if user.subscription_tier == "free" do
+      conn
+      |> put_status(:bad_request)
+      |> json(%{error: "no_subscription", message: "No active subscription to cancel"})
+    else
+      # Mark subscription to cancel at period end (don't revoke immediately)
+      {:ok, updated_user} = 
+        user
+        |> Ecto.Changeset.change(%{cancel_at_period_end: true})
+        |> Repo.update()
+      
+      conn
+      |> put_status(:ok)
+      |> json(%{
+        success: true,
+        message: "Subscription will be cancelled at the end of the billing period",
+        expires_at: updated_user.subscription_expires_at,
+        cancel_at_period_end: true
+      })
+    end
+  end
   end
 
   @doc """

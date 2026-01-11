@@ -4,6 +4,7 @@ defmodule CgraphWeb.API.V1.SearchController do
   Supports searching users, messages, posts, and groups.
   """
   use CgraphWeb, :controller
+  import CgraphWeb.Helpers.ParamParser
 
   alias Cgraph.Accounts
   alias Cgraph.Forums
@@ -11,6 +12,10 @@ defmodule CgraphWeb.API.V1.SearchController do
   alias Cgraph.Messaging
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_limit 50
+  @max_per_page 50
+  @max_suggestions 20
 
   @doc """
   Global search across all content types.
@@ -20,7 +25,7 @@ defmodule CgraphWeb.API.V1.SearchController do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
     types = Map.get(params, "types", "all") |> parse_types()
-    limit = Map.get(params, "limit", "20") |> String.to_integer() |> min(50)
+    limit = parse_int(params["limit"], 20, min: 1, max: @max_limit)
 
     if String.length(query) < 2 do
       conn
@@ -39,8 +44,8 @@ defmodule CgraphWeb.API.V1.SearchController do
   def users(conn, params) do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
 
     if String.length(query) < 2 do
       conn
@@ -64,8 +69,8 @@ defmodule CgraphWeb.API.V1.SearchController do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
     conversation_id = Map.get(params, "conversation_id")
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
     before = Map.get(params, "before") # Date filter
     after_date = Map.get(params, "after")
     from_user_id = Map.get(params, "from")
@@ -98,8 +103,8 @@ defmodule CgraphWeb.API.V1.SearchController do
     query = Map.get(params, "q", "")
     forum_id = Map.get(params, "forum_id")
     category_id = Map.get(params, "category_id")
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
     sort = Map.get(params, "sort", "relevance") # relevance, new, top
 
     if String.length(query) < 2 do
@@ -126,8 +131,8 @@ defmodule CgraphWeb.API.V1.SearchController do
   def groups(conn, params) do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
 
     if String.length(query) < 2 do
       conn
@@ -151,7 +156,7 @@ defmodule CgraphWeb.API.V1.SearchController do
     user = conn.assigns.current_user
     query = Map.get(params, "q", "")
     types = Map.get(params, "types", "users,groups") |> parse_types()
-    limit = Map.get(params, "limit", "10") |> String.to_integer() |> min(20)
+    limit = parse_int(params["limit"], 10, min: 1, max: @max_suggestions)
 
     if String.length(query) < 1 do
       render(conn, :suggestions, suggestions: [])

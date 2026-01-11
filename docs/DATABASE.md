@@ -1,6 +1,6 @@
 # CGraph Database Documentation
 
-> Version 0.7.32 | Last updated: January 2026  
+> Version 0.7.47 | Last updated: January 2026  
 > Schema modifications require updating this documentation.
 
 ---
@@ -479,6 +479,23 @@ We've learned the hard way that indexes can make or break performance. Here's ou
 | Hot posts in forum | `posts_forum_id_score_index` | Sorted by score |
 | New posts in forum | `posts_forum_id_inserted_at_index` | Sorted by date |
 | User's notifications | `notifications_user_id_inserted_at_index` | Notification bell |
+| Coin transaction history | `coin_transactions_user_inserted_index` | Gamification (v0.7.47) |
+| 2FA rate limiting | `two_factor_attempts_user_time_index` | Security (v0.7.47) |
+
+### Security & Performance Indexes (v0.7.47)
+
+Added in migration `20260111120000_add_comprehensive_security_indexes.exs`:
+
+| Index | Table | Purpose |
+|-------|-------|---------|
+| `coin_transactions_user_inserted_index` | coin_transactions | Optimize user's coin history queries |
+| `two_factor_attempts_user_time_index` | two_factor_attempts | 2FA rate limiting lookups |
+| `users_subscription_expiry_partial_index` | users | Active premium user queries |
+| `messages_conversation_time_index` | messages | Message history pagination |
+| `channel_messages_channel_time_index` | channel_messages | Channel message history |
+| `friendships_pending_receiver_partial_index` | friendships | Pending friend request list |
+| `notifications_unread_partial_index` | notifications | Unread notification badge |
+| `sessions_active_token_partial_index` | sessions | Session token validation |
 
 ### Indexes We Considered But Didn't Add
 

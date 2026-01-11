@@ -2,12 +2,23 @@ defmodule CgraphWeb.API.V1.ForumController do
   @moduledoc """
   Handles forum management.
   Forums contain categories and posts for discussion.
+  
+  ## Security
+  
+  - Pagination parameters are validated and safely parsed
+  - Vote values are strictly validated to 1 or -1
+  - Authorization checks on all forum operations
   """
   use CgraphWeb, :controller
+
+  import CgraphWeb.Helpers.ParamParser
 
   alias Cgraph.Forums
 
   action_fallback CgraphWeb.FallbackController
+
+  @max_per_page 50
+  @max_leaderboard_limit 25
 
   @doc """
   List all forums visible to the user.
@@ -15,8 +26,8 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def index(conn, params) do
     user = Map.get(conn.assigns, :current_user)
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
 
     {forums, meta} = Forums.list_forums_for_user(user, page: page, per_page: per_page)
     render(conn, :index, forums: forums, meta: meta)
@@ -123,8 +134,8 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def mod_queue(conn, %{"id" => forum_id} = params) do
     user = conn.assigns.current_user
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "20") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 20, min: 1, max: @max_per_page)
     filter = Map.get(params, "filter", "all") # all, reported, pending_approval
 
     with {:ok, forum} <- Forums.get_forum(forum_id),
@@ -196,10 +207,17 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def vote(conn, %{"id" => forum_id, "value" => value}) when value in [1, -1, "1", "-1"] do
     user = conn.assigns.current_user
-    vote_value = if is_binary(value), do: String.to_integer(value), else: value
-
-    with {:ok, forum} <- Forums.get_forum(forum_id),
-         :ok <- Forums.authorize_action(user, forum, :vote) do
+    # Safe parsing - only allow 1 or -1, default to 0 (invalid) if parsing fails
+    vote_value = parse_int(value, 0, min: -1, max: 1)
+    
+    # Reject if parsed value is 0 (invalid vote)
+    if vote_value == 0 do
+      conn
+      |> put_status(:unprocessable_entity)
+      |> json(%{error: "value must be 1 (upvote) or -1 (downvote)"})
+    else
+      with {:ok, forum} <- Forums.get_forum(forum_id),
+           :ok <- Forums.authorize_action(user, forum, :vote) do
       case Forums.vote_forum(user, forum_id, vote_value) do
         {:ok, result} ->
           {:ok, updated_forum} = Forums.get_forum_with_vote(forum_id, user.id)
@@ -303,8 +321,8 @@ defmodule CgraphWeb.API.V1.ForumController do
   """
   def leaderboard(conn, params) do
     user = conn.assigns[:current_user]
-    page = Map.get(params, "page", "1") |> String.to_integer()
-    per_page = Map.get(params, "per_page", "25") |> String.to_integer() |> min(50)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 25, min: 1, max: @max_per_page)
     sort = Map.get(params, "sort", "hot")
     featured_only = Map.get(params, "featured", "false") == "true"
 
@@ -334,7 +352,7 @@ defmodule CgraphWeb.API.V1.ForumController do
   GET /api/v1/forums/top
   """
   def top(conn, params) do
-    limit = Map.get(params, "limit", "10") |> String.to_integer() |> min(25)
+    limit = parse_int(params["limit"], 10, min: 1, max: @max_leaderboard_limit)
     sort = Map.get(params, "sort", "hot")
 
     forums = Forums.get_top_forums(limit, sort)
@@ -351,8 +369,8 @@ defmodule CgraphWeb.API.V1.ForumController do
   - time_range: all | week | month | year (default: all)
   """
   def contributors(conn, %{"id" => forum_id} = params) do
-    page = Map.get(params, "page", "1") |> String.to_integer() |> max(1)
-    per_page = Map.get(params, "per_page", "10") |> String.to_integer() |> min(50) |> max(1)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 10, min: 1, max: @max_per_page)
     time_range = case Map.get(params, "time_range", "all") do
       "week" -> :week
       "month" -> :month
