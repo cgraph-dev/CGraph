@@ -51,10 +51,12 @@ export interface User {
   titleColor?: string;
   badges?: string[];
   streak?: number;
+  coins?: number;
 }
 
 // Map API user response to frontend User type
-function mapUserFromApi(apiUser: Record<string, unknown>): User {
+// Exported for use in OAuth callbacks
+export function mapUserFromApi(apiUser: Record<string, unknown>): User {
   return {
     id: apiUser.id as string,
     uid: (apiUser.uid as string) || '',
@@ -76,6 +78,14 @@ function mapUserFromApi(apiUser: Record<string, unknown>): User {
     canChangeUsername: (apiUser.can_change_username as boolean) ?? true,
     usernameNextChangeAt: (apiUser.username_next_change_at as string | null) || null,
     createdAt: apiUser.inserted_at as string,
+    // Gamification fields
+    level: (apiUser.level as number) || 1,
+    xp: (apiUser.xp as number) || 0,
+    coins: (apiUser.coins as number) || 0,
+    title: (apiUser.title as string | undefined),
+    titleColor: (apiUser.title_color as string | undefined),
+    badges: (apiUser.badges as string[] | undefined),
+    streak: (apiUser.streak as number) || 0,
   };
 }
 

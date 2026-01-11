@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { OAuthProvider, openOAuthPopup, providerColors, providerNames } from '@/lib/oauth';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore, mapUserFromApi } from '@/stores/authStore';
 
 // SVG Icons for OAuth providers
 const GoogleIcon = () => (
@@ -72,29 +72,9 @@ export function OAuthButton({
     try {
       const response = await openOAuthPopup(provider);
       
-      // Update auth store with response
+      // Update auth store with response using proper mapper
       useAuthStore.setState({
-        user: {
-          id: response.user.id,
-          userId: 0,
-          userIdDisplay: '#0000',
-          email: response.user.email,
-          username: response.user.username,
-          displayName: response.user.display_name,
-          avatarUrl: response.user.avatar_url,
-          walletAddress: response.user.wallet_address,
-          emailVerifiedAt: response.user.email_verified_at,
-          twoFactorEnabled: response.user.totp_enabled,
-          status: response.user.status,
-          statusMessage: response.user.custom_status,
-          karma: 0,
-          isVerified: response.user.is_verified,
-          isPremium: response.user.is_premium,
-          isAdmin: false,
-          canChangeUsername: true,
-          usernameNextChangeAt: null,
-          createdAt: response.user.inserted_at,
-        },
+        user: mapUserFromApi(response.user as unknown as Record<string, unknown>),
         token: response.tokens.access_token,
         refreshToken: response.tokens.refresh_token,
         isAuthenticated: true,

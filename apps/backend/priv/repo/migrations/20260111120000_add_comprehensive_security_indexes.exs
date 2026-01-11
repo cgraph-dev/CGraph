@@ -28,14 +28,9 @@ defmodule Cgraph.Repo.Migrations.AddComprehensiveSecurityIndexes do
     )
 
     # =========================================================================
-    # SECURITY: 2FA Attempt Tracking
+    # NOTE: 2FA attempts are stored in Redis, not a database table.
+    # The TwoFactorRateLimiter uses Redis for fast, TTL-based tracking.
     # =========================================================================
-    
-    # Index for fast 2FA attempt lookups (rate limiting brute force)
-    create_if_not_exists index(:two_factor_attempts, [:user_id, :inserted_at],
-      name: :two_factor_attempts_user_time_index,
-      concurrently: true
-    )
 
     # =========================================================================
     # PREMIUM: Subscription Expiry Queries
@@ -58,16 +53,19 @@ defmodule Cgraph.Repo.Migrations.AddComprehensiveSecurityIndexes do
       concurrently: true
     )
 
-    # Channel messages similarly
-    create_if_not_exists index(:channel_messages, [:channel_id, :inserted_at],
-      name: :channel_messages_channel_time_index,
+    # Channel messages - stored in messages table with channel_id 
+    # (channel_messages table doesn't exist - messages table handles all)
+    create_if_not_exists index(:messages, [:channel_id, :inserted_at],
+      where: "channel_id IS NOT NULL",
+      name: :messages_channel_time_partial_index,
       concurrently: true
     )
 
     # Friend requests pending (common dashboard query)
-    create_if_not_exists index(:friendships, [:receiver_id, :status],
+    # friendships table uses user_id (sender) and friend_id (receiver)
+    create_if_not_exists index(:friendships, [:friend_id, :status],
       where: "status = 'pending'",
-      name: :friendships_pending_receiver_partial_index,
+      name: :friendships_pending_friend_partial_index,
       concurrently: true
     )
 
@@ -78,10 +76,10 @@ defmodule Cgraph.Repo.Migrations.AddComprehensiveSecurityIndexes do
       concurrently: true
     )
 
-    # User sessions by token for fast auth lookup
-    create_if_not_exists index(:sessions, [:token],
+    # User sessions by token_hash for fast auth lookup
+    create_if_not_exists index(:sessions, [:token_hash],
       where: "revoked_at IS NULL",
-      name: :sessions_active_token_partial_index,
+      name: :sessions_active_token_hash_partial_index,
       concurrently: true
     )
   end

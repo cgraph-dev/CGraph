@@ -202,7 +202,7 @@ defmodule CgraphWeb.PremiumController do
   end
 
   # Production: Create Stripe checkout session
-  defp create_checkout_session(conn, user, tier) do
+  defp create_checkout_session(conn, _user, tier) do
     stripe_key = System.get_env("STRIPE_SECRET_KEY")
     
     if is_nil(stripe_key) or stripe_key == "" do

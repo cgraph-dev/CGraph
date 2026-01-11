@@ -37,7 +37,7 @@ defmodule Cgraph.Cache.RedisPool do
 
   @pool_size Application.compile_env(:cgraph, [__MODULE__, :pool_size], 20)
   @redis_url Application.compile_env(:cgraph, :redis_url, "redis://localhost:6379/0")
-  @checkout_timeout 5_000
+  # Note: checkout_timeout reserved for future pool timeout config
   @command_timeout 5_000
 
   # ============================================================================

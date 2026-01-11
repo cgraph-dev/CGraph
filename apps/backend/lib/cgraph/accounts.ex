@@ -83,12 +83,15 @@ defmodule Cgraph.Accounts do
   @doc """
   Authenticate a user by email OR username and password.
   Automatically detects if identifier is email (contains @) or username.
+  Both email and username lookups are case-insensitive for better UX.
   """
   def authenticate_by_identifier(identifier, password) do
     user = if String.contains?(identifier, "@") do
       Repo.get_by(User, email: String.downcase(identifier))
     else
-      Repo.get_by(User, username: identifier)
+      # Case-insensitive username lookup using Ecto query
+      from(u in User, where: fragment("lower(?)", u.username) == ^String.downcase(identifier))
+      |> Repo.one()
     end
 
     cond do

@@ -81,8 +81,48 @@ class SocketManager {
     this.channels.clear();
     this.presences.clear();
     this.onlineUsers.clear();
+    this.channelHandlersSetUp.clear();
+    this.lastJoinAttempts.clear();
     this.socket?.disconnect();
     this.socket = null;
+    this.connectionPromise = null;
+  }
+
+  /**
+   * Reconnect with a fresh token after token refresh.
+   * This is called when the API interceptor refreshes the access token.
+   * 
+   * @returns Promise that resolves when reconnection is complete
+   */
+  async reconnectWithNewToken(): Promise<void> {
+    logger.log('Reconnecting socket with new token...');
+    
+    // Store current channel topics to rejoin after reconnect
+    const channelTopics = Array.from(this.channels.keys());
+    
+    // Disconnect current socket
+    this.disconnect();
+    
+    // Wait a moment for cleanup
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Reconnect with fresh token from store
+    await this.connect();
+    
+    // Rejoin essential channels (user channel)
+    const userId = useAuthStore.getState().user?.id;
+    if (userId) {
+      this.joinUserChannel(userId);
+    }
+    
+    logger.log(`Socket reconnected. Previous channels: ${channelTopics.length}`);
+  }
+
+  /**
+   * Check if socket is currently connected
+   */
+  isConnected(): boolean {
+    return this.socket?.isConnected() ?? false;
   }
 
   /**

@@ -7,6 +7,19 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
 
+// Lazy import socket to avoid circular dependency
+let socketManagerPromise: Promise<{ default: { reconnectWithNewToken: () => Promise<void> } }> | null = null;
+async function getSocketManager() {
+  if (!socketManagerPromise) {
+    socketManagerPromise = import('./socket');
+  }
+  return (await socketManagerPromise).default;
+}
+
+// Token refresh mutex to prevent race conditions
+let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
 /**
  * Subscribe to token refresh - queued requests wait for new token
  */
@@ -112,6 +125,11 @@ api.interceptors.response.use(
         // Release mutex and notify subscribers
         isRefreshing = false;
         onTokenRefreshed(newToken);
+
+        // Reconnect WebSocket with new token (async, non-blocking)
+        getSocketManager()
+          .then(sm => sm.reconnectWithNewToken())
+          .catch(err => console.warn('[API] Socket reconnect failed:', err));
 
         // Retry original request with new token
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
