@@ -57,7 +57,7 @@ defmodule CgraphWeb.TitleController do
     user = conn.assigns.current_user
     
     case Gamification.equip_title(user.id, title_id) do
-      {:ok, updated_user} ->
+      {:ok, _updated_user} ->
         title = Repo.get!(Gamification.Title, title_id)
         
         conn

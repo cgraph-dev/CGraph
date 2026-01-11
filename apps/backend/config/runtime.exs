@@ -18,9 +18,15 @@ if config_env() == :prod do
 
   maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
 
+  # Pool size optimized for 10K+ concurrent users
+  # Recommended: Set POOL_SIZE=50-100 based on instance count
+  # Formula: (max_db_connections / app_instances) - 5
+  # Consider deploying PgBouncer for connection multiplexing at scale
   config :cgraph, Cgraph.Repo,
     url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "10"),
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "50"),
+    queue_target: String.to_integer(System.get_env("POOL_QUEUE_TARGET") || "50"),
+    queue_interval: String.to_integer(System.get_env("POOL_QUEUE_INTERVAL") || "1000"),
     socket_options: maybe_ipv6
 
   secret_key_base =

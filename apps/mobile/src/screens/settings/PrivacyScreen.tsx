@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -6,112 +6,82 @@ import {
   Switch,
   StyleSheet,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useSettings, PrivacySettings } from '../../contexts/SettingsContext';
 import { SettingsStackParamList } from '../../types';
-import api from '../../lib/api';
 
 type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'Privacy'>;
 };
 
+type BooleanSettingKey = 'showOnlineStatus' | 'showReadReceipts' | 'showTypingIndicators' | 
+                         'allowFriendRequests' | 'allowMessageRequests' | 'showInSearch';
+
+interface SettingItem {
+  title: string;
+  key: BooleanSettingKey;
+  description: string;
+}
+
 export default function PrivacyScreen({ navigation: _navigation }: Props) {
   const { colors } = useTheme();
-  const { user, refreshUser } = useAuth();
-  
-  const [settings, setSettings] = useState({
-    showOnlineStatus: true,
-    showLastSeen: true,
-    readReceipts: true,
-    allowDMs: true,
-    allowGroupInvites: true,
-    profileVisibility: !(user?.is_profile_private ?? false),
-  });
-  
-  const [isUpdating, setIsUpdating] = useState(false);
+  const { settings, updatePrivacySettings, isLoading, isSaving, fetchSettings } = useSettings();
+  const [hasLoaded, setHasLoaded] = useState(false);
 
-  // Sync profile visibility when user data changes
   useEffect(() => {
-    if (user) {
-      setSettings(prev => ({
-        ...prev,
-        profileVisibility: !(user.is_profile_private ?? false),
-      }));
-    }
-  }, [user?.is_profile_private]);
+    fetchSettings().finally(() => setHasLoaded(true));
+  }, [fetchSettings]);
   
-  const toggleSetting = async (key: keyof typeof settings) => {
-    const newValue = !settings[key];
-    setSettings((prev) => ({ ...prev, [key]: newValue }));
+  const toggleSetting = useCallback(async (key: BooleanSettingKey) => {
+    const currentValue = settings.privacy[key];
     
-    // If it's the profile visibility setting, persist to backend
-    if (key === 'profileVisibility') {
-      setIsUpdating(true);
-      try {
-        // profileVisibility=true means NOT private, so invert the value
-        await api.put('/api/v1/users/me', {
-          is_profile_private: !newValue,
-        });
-        // Refresh user data to sync the new state
-        if (refreshUser) {
-          await refreshUser();
-        }
-      } catch (error) {
-        console.error('Failed to update privacy setting:', error);
-        // Revert the local state on error
-        setSettings((prev) => ({ ...prev, [key]: !newValue }));
-        Alert.alert(
-          'Error',
-          'Failed to update privacy setting. Please try again.'
-        );
-      } finally {
-        setIsUpdating(false);
-      }
+    try {
+      await updatePrivacySettings({ [key]: !currentValue });
+    } catch {
+      Alert.alert('Error', 'Failed to save settings. Please try again.');
     }
-  };
+  }, [settings.privacy, updatePrivacySettings]);
   
-  const privacySettings = [
+  const privacySettings: SettingItem[] = [
     {
       title: 'Show Online Status',
-      key: 'showOnlineStatus' as const,
+      key: 'showOnlineStatus',
       description: 'Let others see when you are online',
     },
     {
-      title: 'Show Last Seen',
-      key: 'showLastSeen' as const,
-      description: 'Let others see when you were last active',
+      title: 'Show Typing Indicators',
+      key: 'showTypingIndicators',
+      description: 'Let others see when you are typing',
     },
     {
       title: 'Read Receipts',
-      key: 'readReceipts' as const,
+      key: 'showReadReceipts',
       description: 'Let others see when you read their messages',
     },
   ];
   
-  const messageSettings = [
+  const messageSettings: SettingItem[] = [
     {
       title: 'Allow Direct Messages',
-      key: 'allowDMs' as const,
+      key: 'allowMessageRequests',
       description: 'Let anyone send you direct messages',
     },
     {
-      title: 'Allow Group Invites',
-      key: 'allowGroupInvites' as const,
-      description: 'Let anyone invite you to groups',
+      title: 'Allow Friend Requests',
+      key: 'allowFriendRequests',
+      description: 'Let anyone send you friend requests',
     },
-  ];
-  
-  const profileSettings = [
     {
-      title: 'Public Profile',
-      key: 'profileVisibility' as const,
-      description: 'When off, only friends can see your profile info. Non-friends will see "Unknown".',
+      title: 'Show in Search',
+      key: 'showInSearch',
+      description: 'Let others find you in search results',
     },
   ];
   
-  const renderSwitch = (item: { title: string; key: keyof typeof settings; description: string }) => (
+  const renderSwitch = (item: SettingItem) => (
     <View key={item.key} style={[styles.settingItem, { borderBottomColor: colors.border }]}>
       <View style={styles.settingInfo}>
         <Text style={[styles.settingTitle, { color: colors.text }]}>{item.title}</Text>
@@ -120,13 +90,22 @@ export default function PrivacyScreen({ navigation: _navigation }: Props) {
         </Text>
       </View>
       <Switch
-        value={settings[item.key]}
+        value={settings.privacy[item.key]}
         onValueChange={() => toggleSetting(item.key)}
+        disabled={isSaving}
         trackColor={{ false: colors.surfaceHover, true: colors.primary }}
         thumbColor="#fff"
       />
     </View>
   );
+
+  if (!hasLoaded && isLoading) {
+    return (
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+      </View>
+    );
+  }
   
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
@@ -145,16 +124,36 @@ export default function PrivacyScreen({ navigation: _navigation }: Props) {
       </View>
       
       <View style={styles.section}>
-        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Profile</Text>
+        <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>Profile Visibility</Text>
         <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
-          {profileSettings.map(renderSwitch)}
+          <View style={[styles.settingItem, { borderBottomColor: colors.border }]}>
+            <View style={styles.settingInfo}>
+              <Text style={[styles.settingTitle, { color: colors.text }]}>Profile Visibility</Text>
+              <Text style={[styles.settingDescription, { color: colors.textSecondary }]}>
+                {settings.privacy.profileVisibility === 'public' ? 'Everyone can see your profile' :
+                 settings.privacy.profileVisibility === 'friends' ? 'Only friends can see your profile' :
+                 'Your profile is private'}
+              </Text>
+            </View>
+            <Text style={[styles.visibilityValue, { color: colors.primary }]}>
+              {settings.privacy.profileVisibility.charAt(0).toUpperCase() + 
+               settings.privacy.profileVisibility.slice(1)}
+            </Text>
+          </View>
         </View>
       </View>
+
+      {isSaving && (
+        <View style={styles.savingIndicator}>
+          <ActivityIndicator size="small" color={colors.primary} />
+          <Text style={[styles.savingText, { color: colors.textSecondary }]}>Saving...</Text>
+        </View>
+      )}
       
       <View style={styles.section}>
         <Text style={[styles.note, { color: colors.textSecondary }]}>
           Your privacy settings help control who can see your information and contact you.
-          Changes may take a few minutes to take effect.
+          Changes are saved automatically.
         </Text>
       </View>
     </ScrollView>
@@ -164,6 +163,11 @@ export default function PrivacyScreen({ navigation: _navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   section: {
     marginTop: 24,
@@ -199,8 +203,23 @@ const styles = StyleSheet.create({
   settingDescription: {
     fontSize: 13,
   },
+  visibilityValue: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  savingIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    gap: 8,
+  },
+  savingText: {
+    fontSize: 14,
+  },
   note: {
     fontSize: 14,
     lineHeight: 20,
+    marginBottom: 32,
   },
 });

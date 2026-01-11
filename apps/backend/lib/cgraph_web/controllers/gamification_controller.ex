@@ -5,8 +5,10 @@ defmodule CgraphWeb.GamificationController do
   """
   use CgraphWeb, :controller
 
+  import Ecto.Query, warn: false
+
   alias Cgraph.Gamification
-  alias CgraphWeb.GamificationJSON
+  alias Cgraph.Repo
 
   action_fallback CgraphWeb.FallbackController
 
@@ -113,21 +115,32 @@ defmodule CgraphWeb.GamificationController do
   """
   def xp_history(conn, params) do
     user = conn.assigns.current_user
-    limit = params["limit"] && String.to_integer(params["limit"]) || 50
-    offset = params["offset"] && String.to_integer(params["offset"]) || 0
+    query_limit = parse_int(params["limit"], 50)
+    query_offset = parse_int(params["offset"], 0)
     
     transactions = 
-      Cgraph.Gamification.XpTransaction
-      |> Ecto.Query.where([t], t.user_id == ^user.id)
-      |> Ecto.Query.order_by([t], desc: t.inserted_at)
-      |> Ecto.Query.limit(^limit)
-      |> Ecto.Query.offset(^offset)
-      |> Cgraph.Repo.all()
+      from(t in Cgraph.Gamification.XpTransaction,
+        where: t.user_id == ^user.id,
+        order_by: [desc: t.inserted_at],
+        limit: ^query_limit,
+        offset: ^query_offset
+      )
+      |> Repo.all()
     
     conn
     |> put_status(:ok)
     |> render(:xp_history, transactions: transactions)
   end
+
+  # Helper to parse integer params with default
+  defp parse_int(nil, default), do: default
+  defp parse_int(value, default) when is_binary(value) do
+    case Integer.parse(value) do
+      {int, _} -> int
+      :error -> default
+    end
+  end
+  defp parse_int(value, _default) when is_integer(value), do: value
 
   @doc """
   GET /api/v1/gamification/level-info

@@ -249,25 +249,54 @@ export const useGamificationStore = create<GamificationState>()(
       fetchGamificationData: async () => {
         set({ isLoading: true });
         try {
-          const [userData, achievements, quests, lore] = await Promise.all([
-            api.get('/api/v1/gamification/profile'),
+          const [statsRes, achievementsRes, questsRes] = await Promise.all([
+            api.get('/api/v1/gamification/stats'),
             api.get('/api/v1/gamification/achievements'),
-            api.get('/api/v1/gamification/quests'),
-            api.get('/api/v1/gamification/lore'),
+            api.get('/api/v1/quests/active'),
           ]);
 
-          const profile = userData.data;
+          const stats = statsRes.data?.data || statsRes.data;
+          const achievements = achievementsRes.data?.data || [];
+          const quests = questsRes.data?.data || [];
 
           set({
-            level: profile.level || 1,
-            currentXP: profile.current_xp || 0,
-            totalXP: profile.total_xp || 0,
-            achievements: achievements.data || [],
-            activeQuests: quests.data?.active || [],
-            completedQuests: quests.data?.completed || [],
-            loreEntries: lore.data || [],
-            loginStreak: profile.login_streak || 0,
-            lastLoginDate: profile.last_login_date,
+            level: stats.level || 1,
+            currentXP: stats.xp || 0,
+            totalXP: stats.xp || 0,
+            achievements: achievements.map((a: Record<string, unknown>) => ({
+              id: a.id,
+              title: a.title,
+              description: a.description,
+              category: a.category,
+              rarity: a.rarity,
+              icon: a.icon,
+              xpReward: a.xp_reward || 0,
+              progress: a.progress || 0,
+              maxProgress: a.max_progress || 1,
+              unlocked: a.unlocked || false,
+              unlockedAt: a.unlocked_at,
+              isHidden: a.is_hidden || false,
+              titleReward: a.title_reward,
+            })),
+            activeQuests: quests.map((q: Record<string, unknown>) => ({
+              id: q.id,
+              title: q.quest?.title || q.title,
+              description: q.quest?.description || q.description,
+              type: q.quest?.type || q.type,
+              xpReward: q.quest?.xp_reward || q.xp_reward || 0,
+              objectives: (q.quest?.objectives?.objectives || []).map((obj: Record<string, unknown>) => ({
+                id: obj.id,
+                description: obj.description,
+                type: obj.type,
+                targetValue: obj.target,
+                currentValue: (q.progress as Record<string, number>)?.[obj.id as string] || 0,
+                completed: ((q.progress as Record<string, number>)?.[obj.id as string] || 0) >= (obj.target as number),
+              })),
+              expiresAt: q.expires_at as string,
+              completed: q.completed || false,
+              completedAt: q.completed_at as string | undefined,
+            })),
+            loginStreak: stats.streak_days || 0,
             isLoading: false,
           });
         } catch (error) {
@@ -283,8 +312,23 @@ export const useGamificationStore = create<GamificationState>()(
         set({ isLoadingAchievements: true });
         try {
           const response = await api.get('/api/v1/gamification/achievements');
+          const achievements = response.data?.data || [];
           set({
-            achievements: response.data || [],
+            achievements: achievements.map((a: Record<string, unknown>) => ({
+              id: a.id,
+              title: a.title,
+              description: a.description,
+              category: a.category,
+              rarity: a.rarity,
+              icon: a.icon,
+              xpReward: a.xp_reward || 0,
+              progress: a.progress || 0,
+              maxProgress: a.max_progress || 1,
+              unlocked: a.unlocked || false,
+              unlockedAt: a.unlocked_at,
+              isHidden: a.is_hidden || false,
+              titleReward: a.title_reward,
+            })),
             isLoadingAchievements: false,
           });
         } catch (error) {
@@ -298,10 +342,38 @@ export const useGamificationStore = create<GamificationState>()(
        */
       fetchQuests: async () => {
         try {
-          const response = await api.get('/api/v1/gamification/quests');
+          const [activeRes, dailyRes, weeklyRes] = await Promise.all([
+            api.get('/api/v1/quests/active'),
+            api.get('/api/v1/quests/daily'),
+            api.get('/api/v1/quests/weekly'),
+          ]);
+          
+          const activeQuests = activeRes.data?.data || [];
+          const dailyQuests = dailyRes.data?.data || [];
+          const weeklyQuests = weeklyRes.data?.data || [];
+          
+          // Combine all quests, filtering for accepted ones
+          const allActive = [
+            ...activeQuests,
+            ...dailyQuests.filter((q: Record<string, unknown>) => q.accepted),
+            ...weeklyQuests.filter((q: Record<string, unknown>) => q.accepted),
+          ];
+          
           set({
-            activeQuests: response.data?.active || [],
-            completedQuests: response.data?.completed || [],
+            activeQuests: allActive.map((q: Record<string, unknown>) => {
+              const quest = q.quest || q;
+              return {
+                id: q.id || quest.id,
+                title: (quest as Record<string, unknown>).title,
+                description: (quest as Record<string, unknown>).description,
+                type: (quest as Record<string, unknown>).type,
+                xpReward: (quest as Record<string, unknown>).xp_reward || 0,
+                objectives: ((quest as Record<string, unknown>).objectives as Record<string, unknown>)?.objectives || [],
+                expiresAt: q.expires_at as string,
+                completed: q.completed || false,
+                completedAt: q.completed_at as string | undefined,
+              };
+            }),
           });
         } catch (error) {
           console.error('[Gamification] Failed to fetch quests:', error);
@@ -310,16 +382,11 @@ export const useGamificationStore = create<GamificationState>()(
 
       /**
        * Fetch lore entries with unlock status
+       * Note: Lore feature is future enhancement - returns empty for now
        */
       fetchLore: async () => {
-        try {
-          const response = await api.get('/api/v1/gamification/lore');
-          set({
-            loreEntries: response.data || [],
-          });
-        } catch (error) {
-          console.error('[Gamification] Failed to fetch lore:', error);
-        }
+        // Lore system is a future enhancement
+        set({ loreEntries: [] });
       },
 
       /**
@@ -402,7 +469,7 @@ export const useGamificationStore = create<GamificationState>()(
       },
 
       /**
-       * Complete a quest and award rewards
+       * Complete a quest and claim rewards
        */
       completeQuest: async (questId: string) => {
         const { activeQuests } = get();
@@ -411,7 +478,8 @@ export const useGamificationStore = create<GamificationState>()(
         if (!quest || quest.completed) return;
 
         try {
-          await api.post(`/api/v1/gamification/quests/${questId}/complete`);
+          const response = await api.post(`/api/v1/quests/${questId}/claim`);
+          const rewards = response.data?.rewards || response.data;
 
           // Move to completed
           set({
@@ -422,12 +490,7 @@ export const useGamificationStore = create<GamificationState>()(
             ],
           });
 
-          // Award XP
-          if (quest.xpReward > 0) {
-            await get().addXP(quest.xpReward, `quest_${questId}`);
-          }
-
-          console.log(`[Gamification] Quest completed: ${quest.title}`);
+          console.log(`[Gamification] Quest completed: ${quest.title}, XP: ${rewards?.xp}, Coins: ${rewards?.coins}`);
         } catch (error) {
           console.error('[Gamification] Failed to complete quest:', error);
         }
@@ -464,7 +527,7 @@ export const useGamificationStore = create<GamificationState>()(
        */
       equipTitle: async (titleId: string) => {
         try {
-          await api.post('/api/v1/gamification/titles/equip', { title_id: titleId });
+          await api.post(`/api/v1/titles/${titleId}/equip`);
 
           const { availableTitles } = get();
           const title = availableTitles.find(t => t.id === titleId);
@@ -482,22 +545,11 @@ export const useGamificationStore = create<GamificationState>()(
       },
 
       /**
-       * Unlock a lore entry
+       * Unlock a lore entry - future feature
        */
-      unlockLoreEntry: async (entryId: string) => {
-        try {
-          await api.post(`/api/v1/gamification/lore/${entryId}/unlock`);
-
-          set({
-            loreEntries: get().loreEntries.map(entry =>
-              entry.id === entryId
-                ? { ...entry, unlocked: true, unlockedAt: new Date().toISOString() }
-                : entry
-            ),
-          });
-        } catch (error) {
-          console.error('[Gamification] Failed to unlock lore:', error);
-        }
+      unlockLoreEntry: async (_entryId: string) => {
+        // Lore system is a future enhancement
+        console.log('[Gamification] Lore system coming soon');
       },
 
       /**
@@ -510,25 +562,19 @@ export const useGamificationStore = create<GamificationState>()(
         if (lastLoginDate === today) return; // Already logged in today
 
         try {
-          const response = await api.post('/api/v1/gamification/daily-login');
-          const newStreak = response.data.streak;
+          const response = await api.post('/api/v1/gamification/streak/claim');
+          const data = response.data?.data || response.data;
 
           set({
             lastLoginDate: today,
-            loginStreak: newStreak,
+            loginStreak: data.streak_days || data.streak || get().loginStreak + 1,
           });
 
-          // Award streak bonus XP
-          let streakMultiplier = 1;
-          if (newStreak >= 100) streakMultiplier = XP_REWARDS.STREAK_100_DAYS;
-          else if (newStreak >= 30) streakMultiplier = XP_REWARDS.STREAK_30_DAYS;
-          else if (newStreak >= 7) streakMultiplier = XP_REWARDS.STREAK_7_DAYS;
-          else if (newStreak >= 3) streakMultiplier = XP_REWARDS.STREAK_3_DAYS;
-
-          const bonusXP = Math.floor(XP_REWARDS.DAILY_LOGIN * streakMultiplier);
-          await get().addXP(bonusXP, 'daily_login');
+          console.log(`[Gamification] Daily login claimed! Streak: ${data.streak_days}, Coins: ${data.coins_earned}`);
         } catch (error) {
-          console.error('[Gamification] Failed to record daily login:', error);
+          // Already claimed or other error - update last login date anyway
+          set({ lastLoginDate: today });
+          console.debug('[Gamification] Daily login already claimed or error:', error);
         }
       },
     }),

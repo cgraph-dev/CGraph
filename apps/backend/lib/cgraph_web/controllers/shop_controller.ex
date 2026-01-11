@@ -5,7 +5,6 @@ defmodule CgraphWeb.ShopController do
   use CgraphWeb, :controller
 
   alias Cgraph.Gamification
-  alias Cgraph.Repo
 
   action_fallback CgraphWeb.FallbackController
 

@@ -40,7 +40,7 @@ defmodule Cgraph.Gamification do
     find_level(xp, 1, 100)
   end
 
-  defp find_level(xp, min_level, max_level) when min_level >= max_level, do: min_level
+  defp find_level(_xp, min_level, max_level) when min_level >= max_level, do: min_level
   defp find_level(xp, min_level, max_level) do
     mid = div(min_level + max_level, 2)
     xp_at_mid = xp_for_level(mid + 1)

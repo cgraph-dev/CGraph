@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { useSettingsStore } from '@/stores/settingsStore';
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
 import AppearanceSettingsEnhanced from '@/components/settings/AppearanceSettingsEnhanced';
@@ -485,22 +486,29 @@ function SecuritySettings() {
 }
 
 function NotificationSettings() {
-  const [settings, setSettings] = useState({
-    messages: true,
-    mentions: true,
-    replies: true,
-    forums: false,
-    groups: true,
-    email: false,
-    push: true,
-  });
+  const { settings, updateNotificationSettings, isSaving, fetchSettings } = useSettingsStore();
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const Toggle = ({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) => (
+  useEffect(() => {
+    fetchSettings().finally(() => setIsLoaded(true));
+  }, [fetchSettings]);
+
+  const handleToggle = useCallback(async (key: keyof typeof settings.notifications, value: boolean) => {
+    try {
+      await updateNotificationSettings({ [key]: value });
+      toast.success('Settings saved');
+    } catch {
+      toast.error('Failed to save settings');
+    }
+  }, [updateNotificationSettings]);
+
+  const Toggle = ({ settingKey, value }: { settingKey: keyof typeof settings.notifications; value: boolean }) => (
     <button
-      onClick={() => onChange(!value)}
+      onClick={() => handleToggle(settingKey, !value)}
+      disabled={isSaving}
       className={`relative w-11 h-6 rounded-full transition-colors ${
         value ? 'bg-primary-600' : 'bg-dark-600'
-      }`}
+      } ${isSaving ? 'opacity-50 cursor-wait' : ''}`}
     >
       <span
         className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
@@ -510,63 +518,145 @@ function NotificationSettings() {
     </button>
   );
 
+  if (!isLoaded) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Notifications</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-6">
+        Notifications
+      </h1>
 
       <div className="space-y-4">
-        <div className="bg-dark-800 rounded-lg border border-dark-700 p-4 flex items-center justify-between">
-          <div>
-            <h3 className="font-medium text-white">Direct Messages</h3>
-            <p className="text-sm text-gray-400">Notify when you receive a message</p>
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Direct Messages</h3>
+              <p className="text-sm text-gray-400">Notify when you receive a message</p>
+            </div>
+            <Toggle settingKey="notifyMessages" value={settings.notifications.notifyMessages} />
           </div>
-          <Toggle value={settings.messages} onChange={(v) => setSettings({ ...settings, messages: v })} />
-        </div>
+        </GlassCard>
 
-        <div className="bg-dark-800 rounded-lg border border-dark-700 p-4 flex items-center justify-between">
-          <div>
-            <h3 className="font-medium text-white">Mentions</h3>
-            <p className="text-sm text-gray-400">Notify when someone mentions you</p>
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Mentions</h3>
+              <p className="text-sm text-gray-400">Notify when someone mentions you</p>
+            </div>
+            <Toggle settingKey="notifyMentions" value={settings.notifications.notifyMentions} />
           </div>
-          <Toggle value={settings.mentions} onChange={(v) => setSettings({ ...settings, mentions: v })} />
-        </div>
+        </GlassCard>
 
-        <div className="bg-dark-800 rounded-lg border border-dark-700 p-4 flex items-center justify-between">
-          <div>
-            <h3 className="font-medium text-white">Comment Replies</h3>
-            <p className="text-sm text-gray-400">Notify when someone replies to your comment</p>
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Forum Replies</h3>
+              <p className="text-sm text-gray-400">Notify when someone replies to your post</p>
+            </div>
+            <Toggle settingKey="notifyForumReplies" value={settings.notifications.notifyForumReplies} />
           </div>
-          <Toggle value={settings.replies} onChange={(v) => setSettings({ ...settings, replies: v })} />
-        </div>
+        </GlassCard>
 
-        <div className="bg-dark-800 rounded-lg border border-dark-700 p-4 flex items-center justify-between">
-          <div>
-            <h3 className="font-medium text-white">Email Notifications</h3>
-            <p className="text-sm text-gray-400">Receive notifications via email</p>
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Friend Requests</h3>
+              <p className="text-sm text-gray-400">Notify when you receive a friend request</p>
+            </div>
+            <Toggle settingKey="notifyFriendRequests" value={settings.notifications.notifyFriendRequests} />
           </div>
-          <Toggle value={settings.email} onChange={(v) => setSettings({ ...settings, email: v })} />
-        </div>
+        </GlassCard>
 
-        <div className="bg-dark-800 rounded-lg border border-dark-700 p-4 flex items-center justify-between">
-          <div>
-            <h3 className="font-medium text-white">Push Notifications</h3>
-            <p className="text-sm text-gray-400">Receive push notifications on your devices</p>
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Group Invites</h3>
+              <p className="text-sm text-gray-400">Notify when you're invited to a group</p>
+            </div>
+            <Toggle settingKey="notifyGroupInvites" value={settings.notifications.notifyGroupInvites} />
           </div>
-          <Toggle value={settings.push} onChange={(v) => setSettings({ ...settings, push: v })} />
-        </div>
+        </GlassCard>
+
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Email Notifications</h3>
+              <p className="text-sm text-gray-400">Receive notifications via email</p>
+            </div>
+            <Toggle settingKey="emailNotifications" value={settings.notifications.emailNotifications} />
+          </div>
+        </GlassCard>
+
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Push Notifications</h3>
+              <p className="text-sm text-gray-400">Receive push notifications on your devices</p>
+            </div>
+            <Toggle settingKey="pushNotifications" value={settings.notifications.pushNotifications} />
+          </div>
+        </GlassCard>
+
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Notification Sound</h3>
+              <p className="text-sm text-gray-400">Play a sound for notifications</p>
+            </div>
+            <Toggle settingKey="notificationSound" value={settings.notifications.notificationSound} />
+          </div>
+        </GlassCard>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function LanguageSettings() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Language</h1>
+  const { settings, updateLocaleSettings, isSaving } = useSettingsStore();
+  const [language, setLanguage] = useState(settings.locale.language);
 
-      <div className="mb-6">
+  const handleLanguageChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLanguage = e.target.value;
+    setLanguage(newLanguage);
+    try {
+      await updateLocaleSettings({ language: newLanguage });
+      toast.success('Language updated');
+    } catch {
+      setLanguage(settings.locale.language);
+      toast.error('Failed to update language');
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-6">
+        Language & Region
+      </h1>
+
+      <GlassCard variant="default" className="mb-6 p-6">
         <label className="block text-sm font-medium text-gray-300 mb-2">Interface Language</label>
-        <select className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+        <select 
+          value={language}
+          onChange={handleLanguageChange}
+          disabled={isSaving}
+          className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+        >
           <option value="en">English</option>
           <option value="es">Español</option>
           <option value="fr">Français</option>
@@ -574,132 +664,535 @@ function LanguageSettings() {
           <option value="ja">日本語</option>
           <option value="zh">中文</option>
           <option value="ko">한국어</option>
+          <option value="pt">Português</option>
+          <option value="ru">Русский</option>
+          <option value="ar">العربية</option>
         </select>
-      </div>
-    </div>
+      </GlassCard>
+
+      <GlassCard variant="default" className="mb-6 p-6">
+        <label className="block text-sm font-medium text-gray-300 mb-2">Date Format</label>
+        <select 
+          value={settings.locale.dateFormat}
+          onChange={async (e) => {
+            try {
+              await updateLocaleSettings({ dateFormat: e.target.value as 'mdy' | 'dmy' | 'ymd' });
+              toast.success('Date format updated');
+            } catch {
+              toast.error('Failed to update date format');
+            }
+          }}
+          disabled={isSaving}
+          className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+        >
+          <option value="mdy">MM/DD/YYYY</option>
+          <option value="dmy">DD/MM/YYYY</option>
+          <option value="ymd">YYYY-MM-DD</option>
+        </select>
+      </GlassCard>
+
+      <GlassCard variant="default" className="p-6">
+        <label className="block text-sm font-medium text-gray-300 mb-2">Time Format</label>
+        <select 
+          value={settings.locale.timeFormat}
+          onChange={async (e) => {
+            try {
+              await updateLocaleSettings({ timeFormat: e.target.value as 'twelve_hour' | 'twenty_four_hour' });
+              toast.success('Time format updated');
+            } catch {
+              toast.error('Failed to update time format');
+            }
+          }}
+          disabled={isSaving}
+          className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+        >
+          <option value="twelve_hour">12-hour (1:30 PM)</option>
+          <option value="twenty_four_hour">24-hour (13:30)</option>
+        </select>
+      </GlassCard>
+    </motion.div>
   );
+}
+
+interface Session {
+  id: string;
+  device: string;
+  location: string;
+  lastActive: string;
+  current: boolean;
+  ipAddress: string;
+  browser: string;
 }
 
 function SessionsSettings() {
-  const sessions = [
-    { id: '1', device: 'Chrome on Windows', location: 'New York, US', lastActive: 'Now', current: true },
-    { id: '2', device: 'Safari on iPhone', location: 'New York, US', lastActive: '2 hours ago', current: false },
-    { id: '3', device: 'Firefox on Mac', location: 'Los Angeles, US', lastActive: '3 days ago', current: false },
-  ];
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRevoking, setIsRevoking] = useState<string | null>(null);
+
+  const fetchSessions = useCallback(async () => {
+    try {
+      const response = await api.get('/api/v1/me/sessions');
+      const data = response.data?.data || response.data?.sessions || [];
+      
+      const mappedSessions: Session[] = data.map((s: Record<string, unknown>) => ({
+        id: s.id as string,
+        device: (s.device as string) || (s.user_agent as string) || 'Unknown Device',
+        location: (s.location as string) || (s.ip_location as string) || 'Unknown Location',
+        lastActive: formatLastActive(s.last_seen_at as string || s.inserted_at as string),
+        current: (s.current as boolean) || false,
+        ipAddress: (s.ip_address as string) || '',
+        browser: parseBrowser(s.user_agent as string || ''),
+      }));
+      
+      setSessions(mappedSessions);
+    } catch (error) {
+      console.error('Failed to fetch sessions:', error);
+      toast.error('Failed to load sessions');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSessions();
+  }, [fetchSessions]);
+
+  const revokeSession = async (sessionId: string) => {
+    setIsRevoking(sessionId);
+    try {
+      await api.delete(`/api/v1/me/sessions/${sessionId}`);
+      setSessions(sessions.filter(s => s.id !== sessionId));
+      toast.success('Session revoked');
+    } catch {
+      toast.error('Failed to revoke session');
+    } finally {
+      setIsRevoking(null);
+    }
+  };
+
+  const revokeAllOtherSessions = async () => {
+    setIsRevoking('all');
+    try {
+      // Revoke all non-current sessions
+      const otherSessions = sessions.filter(s => !s.current);
+      await Promise.all(otherSessions.map(s => api.delete(`/api/v1/me/sessions/${s.id}`)));
+      setSessions(sessions.filter(s => s.current));
+      toast.success('All other sessions revoked');
+    } catch {
+      toast.error('Failed to revoke sessions');
+    } finally {
+      setIsRevoking(null);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="w-8 h-8 border-4 border-primary-500 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Active Sessions</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-6">
+        Active Sessions
+      </h1>
 
       <div className="space-y-4">
-        {sessions.map((session) => (
-          <div key={session.id} className="bg-dark-800 rounded-lg border border-dark-700 p-4 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <DevicePhoneMobileIcon className="h-8 w-8 text-gray-400" />
-              <div>
-                <h3 className="font-medium text-white">
-                  {session.device}
-                  {session.current && (
-                    <span className="ml-2 text-xs text-green-400">(Current)</span>
-                  )}
-                </h3>
-                <p className="text-sm text-gray-400">
-                  {session.location} • {session.lastActive}
-                </p>
+        {sessions.length === 0 ? (
+          <GlassCard variant="default" className="p-6 text-center">
+            <p className="text-gray-400">No active sessions found</p>
+          </GlassCard>
+        ) : (
+          sessions.map((session) => (
+            <GlassCard key={session.id} variant={session.current ? 'crystal' : 'default'} className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <DevicePhoneMobileIcon className={`h-8 w-8 ${session.current ? 'text-primary-400' : 'text-gray-400'}`} />
+                  <div>
+                    <h3 className="font-medium text-white">
+                      {session.browser || session.device}
+                      {session.current && (
+                        <span className="ml-2 text-xs text-green-400 font-semibold">(Current)</span>
+                      )}
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      {session.location} • {session.lastActive}
+                    </p>
+                    {session.ipAddress && (
+                      <p className="text-xs text-gray-500 font-mono">{session.ipAddress}</p>
+                    )}
+                  </div>
+                </div>
+                {!session.current && (
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => revokeSession(session.id)}
+                    disabled={isRevoking === session.id}
+                    className="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-sm font-medium rounded-lg transition-colors disabled:opacity-50"
+                  >
+                    {isRevoking === session.id ? 'Revoking...' : 'Revoke'}
+                  </motion.button>
+                )}
               </div>
-            </div>
-            {!session.current && (
-              <button className="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 text-sm font-medium rounded-lg transition-colors">
-                Revoke
-              </button>
-            )}
-          </div>
-        ))}
+            </GlassCard>
+          ))
+        )}
       </div>
 
-      <button className="mt-6 px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 font-medium rounded-lg transition-colors">
-        Revoke All Other Sessions
-      </button>
-    </div>
+      {sessions.filter(s => !s.current).length > 0 && (
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          onClick={revokeAllOtherSessions}
+          disabled={isRevoking === 'all'}
+          className="mt-6 px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 font-medium rounded-lg transition-colors disabled:opacity-50"
+        >
+          {isRevoking === 'all' ? 'Revoking All...' : 'Revoke All Other Sessions'}
+        </motion.button>
+      )}
+    </motion.div>
   );
 }
 
+// Helper functions for SessionsSettings
+function formatLastActive(dateString: string): string {
+  if (!dateString) return 'Unknown';
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  
+  if (diffMins < 1) return 'Now';
+  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
+  
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+  
+  const diffDays = Math.floor(diffHours / 24);
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  
+  return date.toLocaleDateString();
+}
+
+function parseBrowser(userAgent: string): string {
+  if (!userAgent) return 'Unknown Browser';
+  if (userAgent.includes('Chrome')) return 'Chrome';
+  if (userAgent.includes('Firefox')) return 'Firefox';
+  if (userAgent.includes('Safari')) return 'Safari';
+  if (userAgent.includes('Edge')) return 'Microsoft Edge';
+  if (userAgent.includes('Opera')) return 'Opera';
+  return 'Unknown Browser';
+}
+
 function PrivacySettings() {
+  const { settings, updatePrivacySettings, isSaving } = useSettingsStore();
+
+  const handleSelectChange = async (key: keyof typeof settings.privacy, value: string) => {
+    try {
+      await updatePrivacySettings({ [key]: value });
+      toast.success('Privacy settings updated');
+    } catch {
+      toast.error('Failed to update privacy settings');
+    }
+  };
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Privacy</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-6">
+        Privacy
+      </h1>
 
       <div className="space-y-4">
-        <div className="bg-dark-800 rounded-lg border border-dark-700 p-4">
+        <GlassCard variant="default" className="p-4">
           <h3 className="font-medium text-white mb-2">Who can send you direct messages</h3>
-          <select className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white">
-            <option>Everyone</option>
-            <option>Friends Only</option>
-            <option>No One</option>
+          <select 
+            value={settings.privacy.allowMessageRequests ? 'everyone' : 'nobody'}
+            onChange={(e) => handleSelectChange('allowMessageRequests', e.target.value === 'everyone' ? 'true' : 'false')}
+            disabled={isSaving}
+            className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white disabled:opacity-50"
+          >
+            <option value="everyone">Everyone</option>
+            <option value="friends">Friends Only</option>
+            <option value="nobody">No One</option>
           </select>
-        </div>
+        </GlassCard>
 
-        <div className="bg-dark-800 rounded-lg border border-dark-700 p-4">
+        <GlassCard variant="default" className="p-4">
           <h3 className="font-medium text-white mb-2">Who can see your online status</h3>
-          <select className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white">
-            <option>Everyone</option>
-            <option>Friends Only</option>
-            <option>No One</option>
+          <select 
+            value={settings.privacy.showOnlineStatus ? 'everyone' : 'nobody'}
+            onChange={async (e) => {
+              try {
+                await updatePrivacySettings({ showOnlineStatus: e.target.value === 'everyone' });
+                toast.success('Online status visibility updated');
+              } catch {
+                toast.error('Failed to update settings');
+              }
+            }}
+            disabled={isSaving}
+            className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white disabled:opacity-50"
+          >
+            <option value="everyone">Everyone</option>
+            <option value="nobody">No One</option>
           </select>
-        </div>
+        </GlassCard>
 
-        <div className="bg-dark-800 rounded-lg border border-dark-700 p-4">
+        <GlassCard variant="default" className="p-4">
           <h3 className="font-medium text-white mb-2">Who can add you to groups</h3>
-          <select className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white">
-            <option>Everyone</option>
-            <option>Friends Only</option>
-            <option>No One</option>
+          <select 
+            value={settings.privacy.allowGroupInvites}
+            onChange={async (e) => {
+              try {
+                await updatePrivacySettings({ allowGroupInvites: e.target.value as 'anyone' | 'friends' | 'nobody' });
+                toast.success('Group invite settings updated');
+              } catch {
+                toast.error('Failed to update settings');
+              }
+            }}
+            disabled={isSaving}
+            className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white disabled:opacity-50"
+          >
+            <option value="anyone">Everyone</option>
+            <option value="friends">Friends Only</option>
+            <option value="nobody">No One</option>
           </select>
-        </div>
+        </GlassCard>
+
+        <GlassCard variant="default" className="p-4">
+          <h3 className="font-medium text-white mb-2">Profile Visibility</h3>
+          <select 
+            value={settings.privacy.profileVisibility}
+            onChange={async (e) => {
+              try {
+                await updatePrivacySettings({ profileVisibility: e.target.value as 'public' | 'friends' | 'private' });
+                toast.success('Profile visibility updated');
+              } catch {
+                toast.error('Failed to update settings');
+              }
+            }}
+            disabled={isSaving}
+            className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white disabled:opacity-50"
+          >
+            <option value="public">Public</option>
+            <option value="friends">Friends Only</option>
+            <option value="private">Private</option>
+          </select>
+        </GlassCard>
+
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Allow Friend Requests</h3>
+              <p className="text-sm text-gray-400">Let others send you friend requests</p>
+            </div>
+            <button
+              onClick={async () => {
+                try {
+                  await updatePrivacySettings({ allowFriendRequests: !settings.privacy.allowFriendRequests });
+                  toast.success('Friend request settings updated');
+                } catch {
+                  toast.error('Failed to update settings');
+                }
+              }}
+              disabled={isSaving}
+              className={`relative w-11 h-6 rounded-full transition-colors ${
+                settings.privacy.allowFriendRequests ? 'bg-primary-600' : 'bg-dark-600'
+              } ${isSaving ? 'opacity-50' : ''}`}
+            >
+              <span
+                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                  settings.privacy.allowFriendRequests ? 'translate-x-5' : ''
+                }`}
+              />
+            </button>
+          </div>
+        </GlassCard>
+
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Show in Search Results</h3>
+              <p className="text-sm text-gray-400">Allow others to find you in search</p>
+            </div>
+            <button
+              onClick={async () => {
+                try {
+                  await updatePrivacySettings({ showInSearch: !settings.privacy.showInSearch });
+                  toast.success('Search visibility updated');
+                } catch {
+                  toast.error('Failed to update settings');
+                }
+              }}
+              disabled={isSaving}
+              className={`relative w-11 h-6 rounded-full transition-colors ${
+                settings.privacy.showInSearch ? 'bg-primary-600' : 'bg-dark-600'
+              } ${isSaving ? 'opacity-50' : ''}`}
+            >
+              <span
+                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                  settings.privacy.showInSearch ? 'translate-x-5' : ''
+                }`}
+              />
+            </button>
+          </div>
+        </GlassCard>
+
+        <GlassCard variant="default" className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-white">Read Receipts</h3>
+              <p className="text-sm text-gray-400">Show when you've read messages</p>
+            </div>
+            <button
+              onClick={async () => {
+                try {
+                  await updatePrivacySettings({ showReadReceipts: !settings.privacy.showReadReceipts });
+                  toast.success('Read receipts updated');
+                } catch {
+                  toast.error('Failed to update settings');
+                }
+              }}
+              disabled={isSaving}
+              className={`relative w-11 h-6 rounded-full transition-colors ${
+                settings.privacy.showReadReceipts ? 'bg-primary-600' : 'bg-dark-600'
+              } ${isSaving ? 'opacity-50' : ''}`}
+            >
+              <span
+                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                  settings.privacy.showReadReceipts ? 'translate-x-5' : ''
+                }`}
+              />
+            </button>
+          </div>
+        </GlassCard>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 function BillingSettings() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Billing</h1>
+  const { user } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
 
-      <div className="bg-dark-800 rounded-lg border border-dark-700 p-6 mb-6">
+  const handleUpgrade = async () => {
+    setIsLoading(true);
+    try {
+      // Redirect to Stripe checkout or show upgrade modal
+      const response = await api.post('/api/v1/billing/checkout');
+      if (response.data?.checkout_url) {
+        window.location.href = response.data.checkout_url;
+      } else {
+        toast.info('Premium upgrade coming soon!');
+      }
+    } catch {
+      toast.info('Premium upgrade coming soon!');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-6">
+        Billing
+      </h1>
+
+      <GlassCard variant={user?.isPremium ? 'holographic' : 'default'} glow={user?.isPremium} className="p-6 mb-6">
         <h3 className="font-medium text-white mb-2">Current Plan</h3>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-2xl font-bold text-white">Free</p>
-            <p className="text-gray-400">Basic features included</p>
+            <p className="text-2xl font-bold text-white">
+              {user?.isPremium ? (
+                <span className="bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">
+                  ✨ Premium
+                </span>
+              ) : (
+                'Free'
+              )}
+            </p>
+            <p className="text-gray-400">
+              {user?.isPremium ? 'All features unlocked' : 'Basic features included'}
+            </p>
           </div>
-          <button className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors">
-            Upgrade to Pro
-          </button>
+          {!user?.isPremium && (
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleUpgrade}
+              disabled={isLoading}
+              className="px-4 py-2 bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-700 hover:to-purple-700 text-white font-medium rounded-lg transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+            >
+              {isLoading ? 'Loading...' : 'Upgrade to Premium'}
+            </motion.button>
+          )}
         </div>
-      </div>
+      </GlassCard>
 
-      <div className="bg-dark-800 rounded-lg border border-dark-700 p-6">
-        <h3 className="font-medium text-white mb-4">Pro Benefits</h3>
-        <ul className="space-y-2 text-gray-300">
-          <li className="flex items-center gap-2">
-            <span className="text-green-400">✓</span>
-            Custom profile themes
+      <GlassCard variant="crystal" glow className="p-6">
+        <h3 className="font-medium text-white mb-4">Premium Benefits</h3>
+        <ul className="space-y-3 text-gray-300">
+          <li className="flex items-center gap-3">
+            <span className="text-green-400 text-lg">✓</span>
+            <div>
+              <span className="font-medium">Custom Profile Themes</span>
+              <p className="text-sm text-gray-500">Personalize your profile with exclusive themes</p>
+            </div>
           </li>
-          <li className="flex items-center gap-2">
-            <span className="text-green-400">✓</span>
-            Animated avatars
+          <li className="flex items-center gap-3">
+            <span className="text-green-400 text-lg">✓</span>
+            <div>
+              <span className="font-medium">Animated Avatars</span>
+              <p className="text-sm text-gray-500">Upload GIF avatars and profile banners</p>
+            </div>
           </li>
-          <li className="flex items-center gap-2">
-            <span className="text-green-400">✓</span>
-            Extended file upload limits
+          <li className="flex items-center gap-3">
+            <span className="text-green-400 text-lg">✓</span>
+            <div>
+              <span className="font-medium">Extended File Upload (100MB)</span>
+              <p className="text-sm text-gray-500">Upload larger files and media</p>
+            </div>
           </li>
-          <li className="flex items-center gap-2">
-            <span className="text-green-400">✓</span>
-            Priority support
+          <li className="flex items-center gap-3">
+            <span className="text-green-400 text-lg">✓</span>
+            <div>
+              <span className="font-medium">Custom Titles & Badges</span>
+              <p className="text-sm text-gray-500">Unlock exclusive titles and badges</p>
+            </div>
+          </li>
+          <li className="flex items-center gap-3">
+            <span className="text-green-400 text-lg">✓</span>
+            <div>
+              <span className="font-medium">Priority Support</span>
+              <p className="text-sm text-gray-500">Get faster response times from our team</p>
+            </div>
+          </li>
+          <li className="flex items-center gap-3">
+            <span className="text-green-400 text-lg">✓</span>
+            <div>
+              <span className="font-medium">2x XP & Coin Earnings</span>
+              <p className="text-sm text-gray-500">Level up faster and earn more rewards</p>
+            </div>
           </li>
         </ul>
-      </div>
-    </div>
+      </GlassCard>
+    </motion.div>
   );
 }
