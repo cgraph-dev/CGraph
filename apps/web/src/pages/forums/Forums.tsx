@@ -5,9 +5,9 @@ import { useAuthStore } from '@/stores/authStore';
 import { formatTimeAgo } from '@/lib/utils';
 import { PostCardSkeleton } from '@/components';
 import { LeaderboardSidebar } from '@/components/forums/LeaderboardWidget';
-import { GlassCard } from '@/components/ui/GlassCard';
+import GlassCard from '@/components/ui/GlassCard';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HapticFeedback } from '@/lib/haptics';
+import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   PlusIcon,
   ArrowUpIcon,

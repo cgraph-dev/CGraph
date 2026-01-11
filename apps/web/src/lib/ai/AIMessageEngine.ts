@@ -227,12 +227,12 @@ const HARASSMENT_PATTERNS = [
 // =============================================================================
 
 export class AIMessageEngine {
-  private config: AIConfig;
-  private conversationHistory: Array<{ role: string; content: string; timestamp: number }> = [];
-  private insightsCache: Map<string, ConversationInsight> = new Map();
+  private _config: AIConfig;
+  // private conversationHistory: Array<{ role: string; content: string; timestamp: number }> = [];
+  // private insightsCache: Map<string, ConversationInsight> = new Map();
   
   constructor(config: Partial<AIConfig> = {}) {
-    this.config = {
+    this._config = {
       enableLocalML: config.enableLocalML ?? true,
       enableCloudAI: config.enableCloudAI ?? false,
       privacyMode: config.privacyMode ?? 'strict',
@@ -241,6 +241,8 @@ export class AIMessageEngine {
       language: config.language ?? 'en',
       ...config,
     };
+    // Store config for future use in AI features
+    console.log('AIMessageEngine initialized with config:', this._config);
   }
   
   // ===========================================================================
@@ -259,18 +261,18 @@ export class AIMessageEngine {
     
     // Get base templates
     let replies = [...(SMART_REPLY_TEMPLATES[category] || [])];
-    
+
     // If we detect specific intents, add contextual replies
     if (this.containsQuestion(message)) {
-      replies = [...replies, ...SMART_REPLY_TEMPLATES.question];
+      replies = [...replies, ...(SMART_REPLY_TEMPLATES.question || [])];
     }
-    
+
     if (sentiment.label === 'very_positive' || sentiment.dominantEmotion === 'joy') {
-      replies = [...replies, ...SMART_REPLY_TEMPLATES.excitement];
+      replies = [...replies, ...(SMART_REPLY_TEMPLATES.excitement || [])];
     }
-    
+
     if (sentiment.label === 'negative' || sentiment.dominantEmotion === 'sadness') {
-      replies = [...replies, ...SMART_REPLY_TEMPLATES.sympathy];
+      replies = [...replies, ...(SMART_REPLY_TEMPLATES.sympathy || [])];
     }
     
     // Score and rank replies
@@ -387,7 +389,7 @@ export class AIMessageEngine {
     // Analyze emotions (simplified model)
     const emotions = this.extractEmotions(text, score);
     const dominantEmotion = Object.entries(emotions)
-      .sort(([, a], [, b]) => b - a)[0][0];
+      .sort(([, a], [, b]) => b - a)[0]?.[0] || 'neutral';
     
     return {
       score,
@@ -620,10 +622,19 @@ export class AIMessageEngine {
     // Sort by score
     const sorted = Array.from(langScores.entries())
       .sort(([, a], [, b]) => b - a);
-    
+
     const topLang = sorted[0];
     const totalScore = sorted.reduce((sum, [, score]) => sum + score, 0);
-    
+
+    if (!topLang) {
+      return {
+        language: 'en',
+        confidence: 1,
+        alternatives: [],
+        isMultilingual: false,
+      };
+    }
+
     return {
       language: topLang[0],
       confidence: topLang[1] / totalScore,
@@ -631,7 +642,7 @@ export class AIMessageEngine {
         language,
         confidence: score / totalScore,
       })),
-      isMultilingual: sorted.length > 1 && sorted[1][1] / topLang[1] > 0.3,
+      isMultilingual: sorted.length > 1 && (sorted[1]?.[1] || 0) / topLang[1] > 0.3,
     };
   }
   
@@ -821,14 +832,19 @@ export class AIMessageEngine {
       participationRate[msg.sender] = (participationRate[msg.sender] || 0) + 1;
     }
     for (const sender of Object.keys(participationRate)) {
-      participationRate[sender] /= messages.length;
+      const current = participationRate[sender];
+      if (current !== undefined) {
+        participationRate[sender] = current / messages.length;
+      }
     }
     
     // Response times
     const responseTimes: number[] = [];
     for (let i = 1; i < messages.length; i++) {
-      if (messages[i].sender !== messages[i-1].sender) {
-        responseTimes.push(messages[i].timestamp - messages[i-1].timestamp);
+      const current = messages[i];
+      const previous = messages[i - 1];
+      if (current && previous && current.sender !== previous.sender) {
+        responseTimes.push(current.timestamp - previous.timestamp);
       }
     }
     

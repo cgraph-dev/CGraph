@@ -1,6 +1,6 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.35  
+> Last updated: January 2026 | Version 0.7.41  
 > Living documentation — Signal Protocol encryption, AI intelligence, Enhanced UI v3.0, Spatial Audio, and distributed systems complete
 
 ---
@@ -910,6 +910,6 @@ Planned for 2026:
 
 ---
 
-*Last updated: January 2026 | v0.7.32*
+*Last updated: January 2026 | v0.7.40*
 
 — Burca Lucas

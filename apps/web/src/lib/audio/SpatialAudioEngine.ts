@@ -415,12 +415,16 @@ export class SpatialAudioEngine {
     
     // Generate impulse response
     const reverbParams = REVERB_CONFIGS[config.type] || REVERB_CONFIGS.room;
+    if (!reverbParams) {
+      return convolver;
+    }
+
     const duration = config.decay;
     const sampleRate = ctx.sampleRate;
     const length = sampleRate * duration;
-    
+
     const impulse = ctx.createBuffer(2, length, sampleRate);
-    
+
     for (let channel = 0; channel < 2; channel++) {
       const channelData = impulse.getChannelData(channel);
       for (let i = 0; i < length; i++) {
@@ -513,17 +517,20 @@ export class SpatialAudioEngine {
     let peak = 0;
     for (let i = 0; i < waveformData.length; i++) {
       const sample = waveformData[i];
-      rmsSum += sample * sample;
-      peak = Math.max(peak, Math.abs(sample));
+      if (sample !== undefined) {
+        rmsSum += sample * sample;
+        peak = Math.max(peak, Math.abs(sample));
+      }
     }
     const rms = Math.sqrt(rmsSum / waveformData.length);
-    
+
     // Calculate dominant frequency
     let maxMagnitude = -Infinity;
     let dominantBin = 0;
     for (let i = 0; i < frequencyData.length; i++) {
-      if (frequencyData[i] > maxMagnitude) {
-        maxMagnitude = frequencyData[i];
+      const freq = frequencyData[i];
+      if (freq !== undefined && freq > maxMagnitude) {
+        maxMagnitude = freq;
         dominantBin = i;
       }
     }
@@ -609,8 +616,10 @@ export class SpatialAudioEngine {
     let peak = 0;
     for (let i = 0; i < waveformData.length; i++) {
       const sample = waveformData[i];
-      rmsSum += sample * sample;
-      peak = Math.max(peak, Math.abs(sample));
+      if (sample !== undefined) {
+        rmsSum += sample * sample;
+        peak = Math.max(peak, Math.abs(sample));
+      }
     }
     const rms = Math.sqrt(rmsSum / waveformData.length);
     

@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForumStore, Forum } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
-import { GlassCard } from '@/components/ui/GlassCard';
+import GlassCard from '@/components/ui/GlassCard';
 import { motion, AnimatePresence } from 'framer-motion';
-import { HapticFeedback } from '@/lib/haptics';
+import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -493,6 +493,7 @@ function ForumLeaderboardCard({ forum, rank, onVote, isAuthenticated }: ForumLea
         </div>
       </div>
     </div>
+    </GlassCard>
   );
 }
 

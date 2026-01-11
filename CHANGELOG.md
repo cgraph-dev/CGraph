@@ -6,6 +6,94 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.41] - 2026-01-10
+
+**🔧 WEB STABILITY RELEASE: TypeScript Fixes, WebSocket Integration & Test Suite Updates**
+
+This release addresses TypeScript compilation errors in the web application's cryptographic modules, enhances WebSocket integration for real-time notifications, and updates the test suite to match current API signatures.
+
+### Fixed
+
+#### 🔐 Double Ratchet Encryption (Web Crypto API Compatibility)
+
+- **Fixed ArrayBuffer compatibility issues with Web Crypto API**:
+  - The Web Crypto API requires proper `ArrayBuffer` instances, not `Uint8Array` views
+  - Added `toArrayBuffer()` utility function to create proper ArrayBuffer copies
+  - Applied fix to all crypto operations: `importKey`, `deriveBits`, `encrypt`, `decrypt`, `sign`
+  - Resolves "Argument of type 'Uint8Array' is not assignable to parameter of type 'BufferSource'" errors
+
+#### 🧪 Test Suite Updates
+
+- **Rewrote AIMessageEngine.test.ts to match actual API signatures**:
+  - `generateSmartReplies()` now correctly uses `(message: string, context?)` signature
+  - `analyzeSentiment()` returns proper structure with `score`, `magnitude`, `label`, `emotions`
+  - `moderateContent()` returns `{isSafe, flags: {spam, scam, ...}, severity}` structure
+  - `detectLanguage()` returns `{language, confidence, alternatives, isMultilingual}`
+  - `extractTopics()` expects array of `{content}` objects
+
+- **Fixed null check errors in doubleRatchet.test.ts**:
+  - Added proper null checks before accessing array elements
+  - Prevents "Object is possibly 'undefined'" errors during test execution
+
+### Enhanced
+
+#### 🔌 WebSocket Integration
+
+- **Enhanced AppLayout with user channel subscription**:
+  - Now joins user's personal channel on mount for E2EE key revocations
+  - Properly leaves channel on unmount to prevent memory leaks
+  - Enables real-time friend request notifications
+  - Async initialization ensures socket connects before channel join
+
+### Technical Details
+
+**ArrayBuffer Utility:**
+```typescript
+function toArrayBuffer(data: Uint8Array): ArrayBuffer {
+  const buffer = new ArrayBuffer(data.byteLength);
+  new Uint8Array(buffer).set(data);
+  return buffer;
+}
+```
+
+**User Channel Integration:**
+```typescript
+useEffect(() => {
+  const initializeApp = async () => {
+    await socketManager.connect();
+    if (user?.id) {
+      socketManager.joinUserChannel(user.id);
+    }
+    // ... fetch data
+  };
+  initializeApp();
+  
+  return () => {
+    if (user?.id) {
+      socketManager.leaveUserChannel(user.id);
+    }
+  };
+}, [user]);
+```
+
+### Files Modified
+
+- `/apps/web/src/lib/crypto/doubleRatchet.ts` — Web Crypto ArrayBuffer compatibility
+- `/apps/web/src/lib/ai/__tests__/AIMessageEngine.test.ts` — Complete rewrite
+- `/apps/web/src/lib/crypto/__tests__/doubleRatchet.test.ts` — Null check fixes
+- `/apps/web/src/layouts/AppLayout.tsx` — User channel integration
+
+### Version Sync
+
+All project versions synchronized to 0.7.41:
+- Root `package.json`
+- `apps/web/package.json`
+- `apps/mobile/package.json`
+- `apps/backend/mix.exs`
+- Documentation files (README, QUICKSTART, ARCHITECTURE, DEPLOYMENT, FRONTEND)
+
+---
+
 ## [0.7.40] - 2026-01-10
 
 **📱 MOBILE MEDIA FIX: iOS Photo Library URIs & Native Camera Restoration**

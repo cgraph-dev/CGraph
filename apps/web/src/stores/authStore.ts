@@ -42,6 +42,14 @@ export interface User {
   canChangeUsername: boolean;
   usernameNextChangeAt: string | null;
   createdAt: string;
+
+  // Gamification fields
+  level?: number;
+  xp?: number;
+  title?: string;
+  titleColor?: string;
+  badges?: string[];
+  streak?: number;
 }
 
 // Map API user response to frontend User type
@@ -333,7 +341,7 @@ export const useAuthStore = create<AuthState>()(
       checkAuth: async () => {
         const { token } = get();
         if (!token) {
-          set({ isLoading: false });
+          set({ isLoading: false, isAuthenticated: false });
           return;
         }
 
@@ -346,7 +354,11 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             isLoading: false,
           });
-        } catch {
+        } catch (error) {
+          // Clear invalid/stale auth on any error
+          if (import.meta.env.DEV) {
+            console.log('[AuthStore] checkAuth failed - clearing auth:', error);
+          }
           set({
             user: null,
             token: null,
@@ -383,11 +395,10 @@ export const useAuthStore = create<AuthState>()(
             });
           } else if (state) {
             // Rehydration successful - mark loading as complete
-            // If we have a token, we'll validate it in checkAuth
-            // If not, we're just not authenticated
+            // Don't block on token validation - let the app render
             console.log('[AuthStore] Rehydration complete - hasToken:', !!state.token);
             useAuthStore.setState({
-              isLoading: state.token ? true : false, // Keep loading if we need to validate token
+              isLoading: false, // Never block - checkAuth runs in background
             });
           } else {
             // No state to rehydrate

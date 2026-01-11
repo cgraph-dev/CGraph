@@ -28,9 +28,20 @@
 // =============================================================================
 
 const MAX_SKIP = 1000; // Maximum skipped messages to store
-const MESSAGE_KEY_SEED_INFO = new TextEncoder().encode('DoubleRatchetMessageKeys');
-const CHAIN_KEY_SEED_INFO = new TextEncoder().encode('DoubleRatchetChainKeys');
+// Reserved for future HKDF info parameters - kept for protocol compatibility
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _MESSAGE_KEY_SEED_INFO = new TextEncoder().encode('DoubleRatchetMessageKeys');
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _CHAIN_KEY_SEED_INFO = new TextEncoder().encode('DoubleRatchetChainKeys');
 const ROOT_KEY_SEED_INFO = new TextEncoder().encode('DoubleRatchetRootKeys');
+
+// Utility to ensure ArrayBuffer compatibility for Web Crypto API
+function toArrayBuffer(data: Uint8Array): ArrayBuffer {
+  // Create a proper ArrayBuffer copy to avoid SharedArrayBuffer issues
+  const buffer = new ArrayBuffer(data.byteLength);
+  new Uint8Array(buffer).set(data);
+  return buffer;
+}
 
 // =============================================================================
 // TYPES
@@ -136,7 +147,7 @@ async function generateDHKeyPair(): Promise<KeyPair> {
 async function importDHPublicKey(rawKey: Uint8Array): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     'raw',
-    rawKey,
+    toArrayBuffer(rawKey),
     { name: 'ECDH', namedCurve: 'P-384' },
     false,
     []
@@ -167,7 +178,7 @@ async function hkdfDerive(
 ): Promise<Uint8Array> {
   const keyMaterial = await crypto.subtle.importKey(
     'raw',
-    inputKey,
+    toArrayBuffer(inputKey),
     'HKDF',
     false,
     ['deriveBits']
@@ -177,8 +188,8 @@ async function hkdfDerive(
     {
       name: 'HKDF',
       hash: 'SHA-384',
-      salt,
-      info,
+      salt: toArrayBuffer(salt),
+      info: toArrayBuffer(info),
     },
     keyMaterial,
     length * 8
@@ -204,7 +215,7 @@ async function kdfCK(ck: Uint8Array): Promise<[Uint8Array, Uint8Array]> {
   // Use HMAC for chain key derivation
   const key = await crypto.subtle.importKey(
     'raw',
-    ck,
+    toArrayBuffer(ck),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']
@@ -233,16 +244,16 @@ async function encrypt(
   
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
-    key.slice(0, 32), // Use first 32 bytes for AES-256
+    toArrayBuffer(key.slice(0, 32)), // Use first 32 bytes for AES-256
     'AES-GCM',
     false,
     ['encrypt']
   );
   
   const ciphertext = await crypto.subtle.encrypt(
-    { name: 'AES-GCM', iv: nonce, additionalData: associatedData },
+    { name: 'AES-GCM', iv: nonce, additionalData: toArrayBuffer(associatedData) },
     cryptoKey,
-    plaintext
+    toArrayBuffer(plaintext)
   );
   
   return {
@@ -262,16 +273,16 @@ async function decrypt(
 ): Promise<Uint8Array> {
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
-    key.slice(0, 32),
+    toArrayBuffer(key.slice(0, 32)),
     'AES-GCM',
     false,
     ['decrypt']
   );
   
   const plaintext = await crypto.subtle.decrypt(
-    { name: 'AES-GCM', iv: nonce, additionalData: associatedData },
+    { name: 'AES-GCM', iv: toArrayBuffer(nonce), additionalData: toArrayBuffer(associatedData) },
     cryptoKey,
-    ciphertext
+    toArrayBuffer(ciphertext)
   );
   
   return new Uint8Array(plaintext);
@@ -283,13 +294,13 @@ async function decrypt(
 async function computeMAC(data: Uint8Array, key: Uint8Array): Promise<Uint8Array> {
   const cryptoKey = await crypto.subtle.importKey(
     'raw',
-    key,
+    toArrayBuffer(key),
     { name: 'HMAC', hash: 'SHA-256' },
     false,
     ['sign']
   );
   
-  const signature = await crypto.subtle.sign('HMAC', cryptoKey, data);
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, toArrayBuffer(data));
   return new Uint8Array(signature);
 }
 
@@ -705,7 +716,7 @@ export class DoubleRatchetEngine {
     if (a.length !== b.length) return false;
     let result = 0;
     for (let i = 0; i < a.length; i++) {
-      result |= a[i] ^ b[i];
+      result |= (a[i] ?? 0) ^ (b[i] ?? 0);
     }
     return result === 0;
   }
@@ -782,7 +793,7 @@ export class DoubleRatchetEngine {
   private async importPublicKey(raw: Uint8Array): Promise<CryptoKey> {
     return crypto.subtle.importKey(
       'raw',
-      raw,
+      toArrayBuffer(raw),
       { name: 'ECDH', namedCurve: 'P-384' },
       true,
       []
@@ -875,7 +886,9 @@ export class DoubleRatchetEngine {
  * This provides security against both classical and quantum attackers.
  */
 export class PostQuantumDoubleRatchet extends DoubleRatchetEngine {
-  private kyberState: {
+  // Reserved for future Kyber-768 integration when NIST PQC is standardized in WebCrypto
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private _kyberState: {
     publicKey: Uint8Array | null;
     secretKey: Uint8Array | null;
     sharedSecret: Uint8Array | null;

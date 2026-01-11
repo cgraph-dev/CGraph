@@ -1,7 +1,7 @@
 # CGraph Frontend Guide
 
 > Building beautiful, fast, and accessible user interfaces with React.
-> **v0.7.36** — Now featuring Advanced Theme Engine, Holographic UI v4.0, and enhanced customization.
+> **v0.7.41** — Now featuring Advanced Theme Engine, Holographic UI v4.0, and enhanced customization.
 
 This guide covers the CGraph web application—a React 19 app built with Vite, TypeScript, and TailwindCSS. Whether you're fixing a bug or building a new feature, you'll find everything you need here.
 

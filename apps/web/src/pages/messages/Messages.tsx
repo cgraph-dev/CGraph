@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Outlet, useParams, NavLink, useSearchParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useChatStore, Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { socketManager } from '@/lib/socket';
@@ -9,7 +10,11 @@ import {
   PlusIcon,
   UserIcon,
   ArrowPathIcon,
+  SparklesIcon,
+  ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
+import GlassCard from '@/components/ui/GlassCard';
+import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 export default function Messages() {
   const { conversationId } = useParams();
@@ -115,70 +120,133 @@ export default function Messages() {
   });
 
   return (
-    <div className="flex flex-1 h-full max-h-screen overflow-hidden">
-      {/* Conversations Sidebar */}
-      <div className="w-80 bg-dark-800 border-r border-dark-700 flex flex-col h-full">
-        {/* Header */}
-        <div className="p-4 border-b border-dark-700">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-white">Messages</h2>
-            <div className="flex items-center gap-1">
-              <button
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-                className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
-                title="Refresh conversations"
-              >
-                <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              </button>
-              <button
-                className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors"
-                title="New conversation"
-              >
-                <PlusIcon className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
+    <div className="flex flex-1 h-full max-h-screen overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
+      {/* Conversations Sidebar - Next Gen */}
+      <div className="w-80 bg-dark-900/50 backdrop-blur-xl border-r border-primary-500/20 flex flex-col h-full relative">
+        {/* Ambient glow effect */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
 
-          {/* Search */}
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+        {/* Header */}
+        <div className="p-4 border-b border-primary-500/20 relative z-10">
+          <motion.div
+            className="flex items-center justify-between mb-4"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent flex items-center gap-2">
+              <ChatBubbleLeftRightIcon className="h-6 w-6 text-primary-400" />
+              Messages
+            </h2>
+            <div className="flex items-center gap-1">
+              <motion.button
+                onClick={() => {
+                  handleRefresh();
+                  HapticFeedback.light();
+                }}
+                disabled={isRefreshing}
+                className="p-2 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all disabled:opacity-50 group"
+                title="Refresh conversations"
+                whileHover={{ scale: 1.1, rotate: 180 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''} group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]`} />
+              </motion.button>
+              <motion.button
+                onClick={() => HapticFeedback.medium()}
+                className="p-2 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all group"
+                title="New conversation"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <PlusIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              </motion.button>
+            </div>
+          </motion.div>
+
+          {/* Enhanced Search */}
+          <motion.div
+            className="relative"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <MagnifyingGlassIcon className="h-4 w-4 text-primary-400" />
+            </div>
             <input
               type="text"
               placeholder="Search conversations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full pl-9 pr-4 py-2.5 bg-dark-800/50 border border-primary-500/30 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all backdrop-blur-sm"
             />
-          </div>
+          </motion.div>
         </div>
 
         {/* Conversations List */}
-        <div className="flex-1 overflow-y-auto min-h-0">
+        <div className="flex-1 overflow-y-auto min-h-0 relative z-10">
           {isLoadingConversations && conversations.length === 0 ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
-            </div>
+            <motion.div
+              className="flex items-center justify-center py-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <div className="relative">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-primary-400/30"
+                  animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+            </motion.div>
           ) : filteredConversations.length === 0 ? (
-            <div className="text-center py-8 px-4">
-              <UserIcon className="h-12 w-12 mx-auto text-gray-600 mb-3" />
-              <p className="text-gray-400">
+            <motion.div
+              className="text-center py-12 px-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="relative inline-block mb-4">
+                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-purple-500/20 flex items-center justify-center mx-auto backdrop-blur-sm border border-primary-500/30">
+                  <UserIcon className="h-8 w-8 text-primary-400" />
+                </div>
+                <motion.div
+                  className="absolute inset-0 rounded-2xl bg-primary-400/20"
+                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+              <p className="text-lg font-semibold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent">
                 {searchQuery ? 'No conversations found' : 'No messages yet'}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 mt-2">
                 Start a new conversation to get started
               </p>
-            </div>
+            </motion.div>
           ) : (
-            filteredConversations.map((conv) => (
-              <ConversationItem
-                key={conv.id}
-                conversation={conv}
-                isActive={conv.id === conversationId}
-                currentUserId={user?.id || ''}
-                onlineStatus={onlineStatus}
-              />
-            ))
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {filteredConversations.map((conv, index) => (
+                <motion.div
+                  key={conv.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                >
+                  <ConversationItem
+                    conversation={conv}
+                    isActive={conv.id === conversationId}
+                    currentUserId={user?.id || ''}
+                    onlineStatus={onlineStatus}
+                  />
+                </motion.div>
+              ))}
+            </motion.div>
           )}
         </div>
       </div>
@@ -188,29 +256,82 @@ export default function Messages() {
         {conversationId ? (
           <Outlet />
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-dark-900">
-            <div className="text-center">
-              <div className="h-20 w-20 rounded-2xl bg-dark-800 flex items-center justify-center mx-auto mb-4">
-                <svg
-                  className="h-10 w-10 text-gray-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                  />
-                </svg>
+          <motion.div
+            className="flex-1 flex items-center justify-center bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {/* Ambient particles */}
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-1 rounded-full bg-primary-400"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  opacity: 0.1,
+                }}
+                animate={{
+                  y: [0, -40, 0],
+                  opacity: [0.1, 0.3, 0.1],
+                  scale: [1, 1.5, 1],
+                }}
+                transition={{
+                  duration: 5 + Math.random() * 3,
+                  repeat: Infinity,
+                  delay: Math.random() * 5,
+                }}
+              />
+            ))}
+
+            <motion.div
+              className="text-center relative z-10"
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            >
+              <div className="relative inline-block mb-6">
+                <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center mx-auto backdrop-blur-sm border border-primary-500/30 shadow-2xl">
+                  <ChatBubbleLeftRightIcon className="h-12 w-12 text-primary-400" />
+                </div>
+                <motion.div
+                  className="absolute inset-0 rounded-3xl bg-gradient-to-br from-primary-400/20 to-purple-400/20"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [0.5, 0, 0.5],
+                    rotate: [0, 180, 360],
+                  }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                />
+                <motion.div
+                  className="absolute -inset-4 rounded-3xl border border-primary-400/20"
+                  animate={{
+                    scale: [1, 1.5, 1],
+                    opacity: [0.3, 0, 0.3],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+                />
               </div>
-              <h3 className="text-xl font-semibold text-white mb-2">Your Messages</h3>
-              <p className="text-gray-400 max-w-sm">
+
+              <h3 className="text-3xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-3 flex items-center justify-center gap-2">
+                Your Messages
+                <SparklesIcon className="h-6 w-6 text-primary-400 animate-pulse" />
+              </h3>
+              <p className="text-gray-400 max-w-md text-lg">
                 Select a conversation or start a new one to begin messaging
               </p>
-            </div>
-          </div>
+
+              <motion.div
+                className="mt-6 inline-flex items-center gap-2 text-sm text-gray-500"
+                animate={{ opacity: [0.5, 1, 0.5] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <div className="h-2 w-2 rounded-full bg-primary-500 animate-pulse" />
+                End-to-end encrypted
+              </motion.div>
+            </motion.div>
+          </motion.div>
         )}
       </div>
     </div>
@@ -241,7 +362,7 @@ function getConversationAvatar(conv: Conversation, currentUserId: string): strin
   return null;
 }
 
-// Conversation item component
+// Enhanced Conversation item component
 function ConversationItem({
   conversation,
   isActive,
@@ -253,6 +374,7 @@ function ConversationItem({
   currentUserId: string;
   onlineStatus: Record<string, boolean>;
 }) {
+  const [isHovered, setIsHovered] = useState(false);
   const name = getConversationName(conversation, currentUserId);
   const avatar = getConversationAvatar(conversation, currentUserId);
   const otherParticipant = conversation.participants.find((p) => p.userId !== currentUserId);
@@ -262,47 +384,104 @@ function ConversationItem({
   return (
     <NavLink
       to={`/messages/${conversation.id}`}
-      className={`flex items-center gap-3 px-4 py-3 hover:bg-dark-700 transition-all duration-200 group ${
-        isActive ? 'bg-dark-700 border-l-2 border-primary-500' : 'border-l-2 border-transparent'
+      className={`flex items-center gap-3 px-4 py-3 transition-all duration-200 group relative ${
+        isActive ? 'bg-primary-500/10 border-l-2 border-primary-500' : 'border-l-2 border-transparent hover:bg-primary-500/5'
       }`}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        HapticFeedback.selection();
+      }}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Avatar */}
-      <div className="relative flex-shrink-0">
-        <div className="h-12 w-12 rounded-full overflow-hidden bg-dark-600 transition-transform duration-200 group-hover:scale-105">
-          {avatar ? (
-            <img src={avatar} alt={name} className="h-full w-full object-cover" />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center text-lg font-bold text-gray-400">
-              {name.charAt(0).toUpperCase()}
-            </div>
-          )}
+      {/* Glow effect on hover */}
+      {isHovered && !isActive && (
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        />
+      )}
+      {/* Avatar with gradient border */}
+      <motion.div
+        className="relative flex-shrink-0 z-10"
+        whileHover={{ scale: 1.08 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+      >
+        <div className={`h-12 w-12 rounded-full overflow-hidden p-0.5 transition-all duration-200 ${
+          isActive
+            ? 'bg-gradient-to-br from-primary-500 to-purple-600'
+            : isHovered
+            ? 'bg-gradient-to-br from-primary-500/50 to-purple-600/50'
+            : 'bg-dark-700'
+        }`}>
+          <div className="h-full w-full rounded-full overflow-hidden bg-dark-800">
+            {avatar ? (
+              <img src={avatar} alt={name} className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center text-sm font-bold bg-gradient-to-br from-primary-400 to-purple-400 bg-clip-text text-transparent">
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
         </div>
         {conversation.type === 'direct' && isOnline && (
-          <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-dark-800" />
+          <motion.div
+            className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-dark-900 shadow-lg"
+            animate={{
+              boxShadow: [
+                '0 0 0 0 rgba(34, 197, 94, 0.7)',
+                '0 0 0 6px rgba(34, 197, 94, 0)',
+              ],
+            }}
+            transition={{ duration: 2, repeat: Infinity }}
+          />
         )}
-      </div>
+      </motion.div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 relative z-10">
         <div className="flex items-center justify-between gap-2">
-          <span className={`font-medium truncate ${conversation.unreadCount > 0 ? 'text-white' : 'text-gray-300'}`}>
+          <span className={`font-semibold truncate transition-colors ${
+            conversation.unreadCount > 0
+              ? 'text-white'
+              : isActive
+              ? 'text-primary-300'
+              : 'text-gray-300'
+          }`}>
             {name}
           </span>
           {conversation.lastMessage && (
-            <span className="text-xs text-gray-500 flex-shrink-0">
+            <span className={`text-xs flex-shrink-0 transition-colors ${
+              isActive ? 'text-primary-400' : 'text-gray-500'
+            }`}>
               {formatTimeAgo(conversation.lastMessage.createdAt, { addSuffix: false })}
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2 mt-0.5">
-          <p className={`text-sm truncate ${conversation.unreadCount > 0 ? 'text-gray-300' : 'text-gray-500'}`}>
+        <div className="flex items-center gap-2 mt-1">
+          <p className={`text-sm truncate transition-colors ${
+            conversation.unreadCount > 0
+              ? 'text-gray-300 font-medium'
+              : 'text-gray-500'
+          }`}>
             {conversation.lastMessage?.content || 'No messages yet'}
           </p>
-          {conversation.unreadCount > 0 && (
-            <span className="flex-shrink-0 h-5 min-w-[20px] px-1.5 rounded-full bg-primary-600 text-xs font-bold flex items-center justify-center animate-pulse-subtle">
-              {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
-            </span>
-          )}
+          <AnimatePresence>
+            {conversation.unreadCount > 0 && (
+              <motion.span
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                exit={{ scale: 0, rotate: 180 }}
+                className="flex-shrink-0 h-5 min-w-[20px] px-1.5 rounded-full bg-gradient-to-r from-primary-600 to-purple-600 text-xs font-bold flex items-center justify-center text-white shadow-lg"
+                style={{
+                  boxShadow: '0 0 15px rgba(16, 185, 129, 0.5)',
+                }}
+              >
+                {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </NavLink>

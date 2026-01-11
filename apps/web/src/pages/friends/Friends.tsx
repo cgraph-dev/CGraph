@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useFriendStore, Friend, FriendRequest } from '@/stores/friendStore';
+import { motion, AnimatePresence } from 'framer-motion';
+import GlassCard from '@/components/ui/GlassCard';
+import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   UserPlusIcon,
   UserMinusIcon,
@@ -10,6 +13,8 @@ import {
   EllipsisVerticalIcon,
   NoSymbolIcon,
   ClockIcon,
+  SparklesIcon,
+  UsersIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
 
@@ -107,92 +112,206 @@ export default function Friends() {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative overflow-hidden">
+      {/* Ambient particles */}
+      {[...Array(8)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-0.5 h-0.5 rounded-full bg-primary-400 pointer-events-none"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0.1, 0.3, 0.1],
+            scale: [1, 1.5, 1],
+          }}
+          transition={{
+            duration: 5 + Math.random() * 3,
+            repeat: Infinity,
+            delay: Math.random() * 5,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
       {/* Header */}
-      <div className="border-b border-dark-700 px-6 py-4">
-        <div className="flex items-center justify-between mb-4">
-          <h1 className="text-xl font-semibold">Friends</h1>
-          <button
-            onClick={() => setShowAddFriend(!showAddFriend)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 rounded-lg text-sm font-medium transition-colors"
+      <div className="border-b border-primary-500/20 px-6 py-4 relative z-10 bg-dark-900/30 backdrop-blur-sm">
+        <motion.div
+          className="flex items-center justify-between mb-4"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent flex items-center gap-2">
+            <UsersIcon className="h-6 w-6 text-primary-400" />
+            Friends
+          </h1>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              setShowAddFriend(!showAddFriend);
+              HapticFeedback.medium();
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-lg text-sm font-medium transition-all shadow-lg shadow-primary-500/20"
           >
             <UserPlusIcon className="h-4 w-4" />
             Add Friend
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {/* Add Friend Form */}
-        {showAddFriend && (
-          <form onSubmit={handleAddFriend} className="mb-4">
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <input
-                  type="text"
-                  value={addFriendInput}
-                  onChange={(e) => setAddFriendInput(e.target.value)}
-                  placeholder="Enter a username to add as friend"
-                  className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                />
-                {addFriendError && (
-                  <p className="mt-1 text-sm text-red-400">{addFriendError}</p>
-                )}
-                {addFriendSuccess && (
-                  <p className="mt-1 text-sm text-green-400">Friend request sent!</p>
-                )}
-              </div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="px-6 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-800 disabled:cursor-not-allowed rounded-lg font-medium transition-colors"
-              >
-                Send Request
-              </button>
-            </div>
-          </form>
-        )}
+        <AnimatePresence>
+          {showAddFriend && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <GlassCard variant="crystal" glow className="p-4 mb-4">
+                <form onSubmit={handleAddFriend}>
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        value={addFriendInput}
+                        onChange={(e) => setAddFriendInput(e.target.value)}
+                        placeholder="Enter a username to add as friend"
+                        className="w-full px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      />
+                      <AnimatePresence mode="wait">
+                        {addFriendError && (
+                          <motion.p
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="mt-1 text-sm text-red-400"
+                          >
+                            {addFriendError}
+                          </motion.p>
+                        )}
+                        {addFriendSuccess && (
+                          <motion.p
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="mt-1 text-sm text-green-400"
+                          >
+                            Friend request sent!
+                          </motion.p>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      type="submit"
+                      disabled={isLoading}
+                      onClick={() => HapticFeedback.medium()}
+                      className="px-6 py-2 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-800 disabled:cursor-not-allowed rounded-lg font-medium transition-all shadow-lg shadow-primary-500/20"
+                    >
+                      Send Request
+                    </motion.button>
+                  </div>
+                </form>
+              </GlassCard>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Tabs */}
-        <div className="flex items-center gap-4">
-          {tabs.map((tab) => (
-            <button
+        <motion.div
+          className="flex items-center gap-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+        >
+          {tabs.map((tab, index) => (
+            <motion.div
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
-                activeTab === tab.id
-                  ? 'bg-dark-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-dark-700'
-              }`}
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 20,
+                delay: 0.25 + index * 0.05,
+              }}
             >
-              {tab.label}
-              {tab.count > 0 && (
-                <span
-                  className={`px-1.5 py-0.5 rounded-full text-xs ${
-                    activeTab === tab.id ? 'bg-dark-500' : 'bg-dark-600'
-                  }`}
-                >
-                  {tab.count}
+              <motion.button
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  HapticFeedback.light();
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all"
+              >
+                {activeTab === tab.id && (
+                  <motion.div
+                    layoutId="activeTabIndicator"
+                    className="absolute inset-0 bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent rounded-md"
+                    style={{ boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)' }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                  />
+                )}
+                <span className={`relative z-10 ${activeTab === tab.id ? 'text-white' : 'text-gray-400'}`}>
+                  {tab.label}
                 </span>
-              )}
-            </button>
+                <AnimatePresence mode="wait">
+                  {tab.count > 0 && (
+                    <motion.span
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 180 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      className={`relative z-10 px-1.5 py-0.5 rounded-full text-xs ${
+                        activeTab === tab.id
+                          ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white'
+                          : 'bg-dark-600 text-gray-400'
+                      }`}
+                      style={
+                        activeTab === tab.id
+                          ? { boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)' }
+                          : {}
+                      }
+                    >
+                      {tab.count}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
 
       {/* Search */}
-      {(activeTab === 'all' || activeTab === 'online') && (
-        <div className="px-6 py-3 border-b border-dark-700">
-          <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search friends..."
-              className="w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {(activeTab === 'all' || activeTab === 'online') && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="px-6 py-3 border-b border-primary-500/20 bg-dark-900/20 backdrop-blur-sm relative z-10"
+          >
+            <GlassCard variant="crystal" className="relative">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary-400 z-10" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search friends..."
+                className="w-full pl-10 pr-4 py-2.5 bg-transparent border-none text-white placeholder-gray-400 focus:outline-none relative z-10"
+              />
+            </GlassCard>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
@@ -215,22 +334,42 @@ export default function Friends() {
         )}
 
         {!isLoading && activeTab === 'pending' && (
-          <div className="p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="p-4"
+          >
             {/* Incoming Requests */}
             {pendingRequests.length > 0 && (
               <div className="mb-6">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                <motion.h3
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="text-xs font-semibold bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent uppercase tracking-wider mb-2"
+                >
                   Incoming Requests — {pendingRequests.length}
-                </h3>
+                </motion.h3>
                 <div className="space-y-2">
-                  {pendingRequests.map((request) => (
-                    <FriendRequestCard
+                  {pendingRequests.map((request, index) => (
+                    <motion.div
                       key={request.id}
-                      request={request}
-                      type="incoming"
-                      onAccept={() => acceptRequest(request.id)}
-                      onDecline={() => declineRequest(request.id)}
-                    />
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 20,
+                        delay: index * 0.05,
+                      }}
+                    >
+                      <FriendRequestCard
+                        request={request}
+                        type="incoming"
+                        onAccept={() => acceptRequest(request.id)}
+                        onDecline={() => declineRequest(request.id)}
+                      />
+                    </motion.div>
                   ))}
                 </div>
               </div>
@@ -239,17 +378,33 @@ export default function Friends() {
             {/* Outgoing Requests */}
             {sentRequests.length > 0 && (
               <div>
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                <motion.h3
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: pendingRequests.length * 0.05 }}
+                  className="text-xs font-semibold bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent uppercase tracking-wider mb-2"
+                >
                   Sent Requests — {sentRequests.length}
-                </h3>
+                </motion.h3>
                 <div className="space-y-2">
-                  {sentRequests.map((request) => (
-                    <FriendRequestCard
+                  {sentRequests.map((request, index) => (
+                    <motion.div
                       key={request.id}
-                      request={request}
-                      type="outgoing"
-                      onDecline={() => declineRequest(request.id)}
-                    />
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 20,
+                        delay: (pendingRequests.length + index) * 0.05,
+                      }}
+                    >
+                      <FriendRequestCard
+                        request={request}
+                        type="outgoing"
+                        onDecline={() => declineRequest(request.id)}
+                      />
+                    </motion.div>
                   ))}
                 </div>
               </div>
@@ -262,24 +417,40 @@ export default function Friends() {
                 description="When you receive or send friend requests, they'll appear here."
               />
             )}
-          </div>
+          </motion.div>
         )}
 
         {!isLoading && (activeTab === 'all' || activeTab === 'online') && (
-          <div className="p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="p-4"
+          >
             {filteredFriends.length > 0 ? (
               <div className="space-y-2">
-                {filteredFriends.map((friend) => (
-                  <FriendCard
+                {filteredFriends.map((friend, index) => (
+                  <motion.div
                     key={friend.id}
-                    friend={friend}
-                    statusColor={getStatusColor(friend.status)}
-                    onMessage={() => handleStartChat(friend.id)}
-                    onRemove={() => removeFriend(friend.id)}
-                    onBlock={() => blockUser(friend.id)}
-                    dropdownOpen={dropdownOpen === friend.id}
-                    setDropdownOpen={(open) => setDropdownOpen(open ? friend.id : null)}
-                  />
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 300,
+                      damping: 20,
+                      delay: index * 0.05,
+                    }}
+                  >
+                    <FriendCard
+                      friend={friend}
+                      statusColor={getStatusColor(friend.status)}
+                      onMessage={() => handleStartChat(friend.id)}
+                      onRemove={() => removeFriend(friend.id)}
+                      onBlock={() => blockUser(friend.id)}
+                      dropdownOpen={dropdownOpen === friend.id}
+                      setDropdownOpen={(open) => setDropdownOpen(open ? friend.id : null)}
+                    />
+                  </motion.div>
                 ))}
               </div>
             ) : (
@@ -293,17 +464,22 @@ export default function Friends() {
                 }
               />
             )}
-          </div>
+          </motion.div>
         )}
 
         {!isLoading && activeTab === 'blocked' && (
-          <div className="p-4">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="p-4"
+          >
             <EmptyState
               icon={<NoSymbolIcon className="h-12 w-12" />}
               title="No blocked users"
               description="Users you block will appear here. You can unblock them at any time."
             />
-          </div>
+          </motion.div>
         )}
       </div>
     </div>
@@ -331,80 +507,157 @@ function FriendCard({
   setDropdownOpen,
 }: FriendCardProps) {
   return (
-    <div className="flex items-center justify-between p-3 bg-dark-800 hover:bg-dark-700 rounded-lg transition-all duration-200 group hover:shadow-lg hover:shadow-black/20 hover:-translate-y-0.5">
-      <div className="flex items-center gap-3">
-        <div className="relative">
-          {friend.avatarUrl ? (
-            <img
-              src={friend.avatarUrl}
-              alt={friend.username}
-              className="h-10 w-10 rounded-full object-cover transition-transform duration-200 group-hover:scale-110"
-            />
-          ) : (
-            <div className="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-medium transition-transform duration-200 group-hover:scale-110">
-              {friend.username.charAt(0).toUpperCase()}
-            </div>
-          )}
-          <span
-            className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ${statusColor} ring-2 ring-dark-800 ${friend.status === 'online' ? 'animate-pulse-subtle' : ''}`}
-          />
-        </div>
-        <div>
-          <p className="font-medium text-white">
-            {friend.displayName || friend.username}
-          </p>
-          <p className="text-sm text-gray-400">@{friend.username}</p>
-        </div>
-      </div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ scale: 1.02 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
+      <GlassCard
+        variant="default"
+        className="group relative overflow-hidden"
+        style={{
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+        }}
+      >
+        {/* Hover gradient glow */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none"
+          transition={{ duration: 0.3 }}
+        />
 
-      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
-          onClick={onMessage}
-          className="p-2 hover:bg-dark-600 rounded-lg transition-colors"
-          title="Send Message"
-        >
-          <ChatBubbleLeftRightIcon className="h-5 w-5 text-gray-400 hover:text-white" />
-        </button>
-        <div className="relative">
-          <button
-            onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="p-2 hover:bg-dark-600 rounded-lg transition-colors"
-          >
-            <EllipsisVerticalIcon className="h-5 w-5 text-gray-400 hover:text-white" />
-          </button>
-          {dropdownOpen && (
-            <>
-              <div
-                className="fixed inset-0 z-10"
-                onClick={() => setDropdownOpen(false)}
+        <div className="flex items-center justify-between p-3 relative z-10">
+          <div className="flex items-center gap-3">
+            <motion.div
+              className="relative"
+              whileHover={{ scale: 1.1 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              {friend.avatarUrl ? (
+                <div className="p-0.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full">
+                  <img
+                    src={friend.avatarUrl}
+                    alt={friend.username}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium">
+                  {friend.username.charAt(0).toUpperCase()}
+                </div>
+              )}
+              {/* Pulsing status indicator */}
+              <motion.span
+                className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ${statusColor} ring-2 ring-dark-900`}
+                animate={
+                  friend.status === 'online'
+                    ? {
+                        boxShadow: [
+                          '0 0 0 0 rgba(34, 197, 94, 0.7)',
+                          '0 0 0 6px rgba(34, 197, 94, 0)',
+                        ],
+                      }
+                    : {}
+                }
+                transition={
+                  friend.status === 'online'
+                    ? { duration: 2, repeat: Infinity }
+                    : {}
+                }
               />
-              <div className="absolute right-0 top-full mt-1 w-48 bg-dark-700 border border-dark-600 rounded-lg shadow-lg z-20 py-1">
-                <button
-                  onClick={() => {
-                    onRemove();
-                    setDropdownOpen(false);
-                  }}
-                  className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-dark-600 hover:text-white transition-colors"
-                >
-                  <UserMinusIcon className="h-4 w-4" />
-                  Remove Friend
-                </button>
-                <button
-                  onClick={() => {
-                    onBlock();
-                    setDropdownOpen(false);
-                  }}
-                  className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-dark-600 hover:text-red-300 transition-colors"
-                >
-                  <NoSymbolIcon className="h-4 w-4" />
-                  Block User
-                </button>
-              </div>
-            </>
-          )}
+            </motion.div>
+            <div>
+              <p className="font-medium bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
+                {friend.displayName || friend.username}
+              </p>
+              <p className="text-sm text-gray-400">@{friend.username}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <motion.button
+              onClick={() => {
+                onMessage();
+                HapticFeedback.medium();
+              }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="p-2 bg-dark-700/50 hover:bg-primary-600/20 rounded-lg transition-all group/btn"
+              title="Send Message"
+            >
+              <ChatBubbleLeftRightIcon
+                className="h-5 w-5 text-gray-400 group-hover/btn:text-primary-400 transition-colors"
+                style={{ filter: 'drop-shadow(0 0 4px rgba(16, 185, 129, 0))' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.filter = 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.6))';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.filter = 'drop-shadow(0 0 4px rgba(16, 185, 129, 0))';
+                }}
+              />
+            </motion.button>
+            <div className="relative">
+              <motion.button
+                onClick={() => {
+                  setDropdownOpen(!dropdownOpen);
+                  HapticFeedback.light();
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="p-2 bg-dark-700/50 hover:bg-dark-600 rounded-lg transition-colors"
+              >
+                <EllipsisVerticalIcon className="h-5 w-5 text-gray-400 hover:text-white transition-colors" />
+              </motion.button>
+              <AnimatePresence>
+                {dropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setDropdownOpen(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, y: -10 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                    >
+                      <GlassCard
+                        variant="frosted"
+                        className="absolute right-0 top-full mt-1 w-48 shadow-lg z-20 py-1"
+                      >
+                        <button
+                          onClick={() => {
+                            onRemove();
+                            setDropdownOpen(false);
+                            HapticFeedback.medium();
+                          }}
+                          className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-gray-300 hover:bg-dark-600/50 hover:text-white transition-colors rounded-md"
+                        >
+                          <UserMinusIcon className="h-4 w-4" />
+                          Remove Friend
+                        </button>
+                        <button
+                          onClick={() => {
+                            onBlock();
+                            setDropdownOpen(false);
+                            HapticFeedback.medium();
+                          }}
+                          className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-colors rounded-md"
+                        >
+                          <NoSymbolIcon className="h-4 w-4" />
+                          Block User
+                        </button>
+                      </GlassCard>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </GlassCard>
+    </motion.div>
   );
 }
 
@@ -418,46 +671,95 @@ interface FriendRequestCardProps {
 
 function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequestCardProps) {
   return (
-    <div className="flex items-center justify-between p-3 bg-dark-800 rounded-lg">
-      <div className="flex items-center gap-3">
-        {request.user.avatarUrl ? (
-          <img
-            src={request.user.avatarUrl}
-            alt={request.user.username}
-            className="h-10 w-10 rounded-full object-cover"
+    <motion.div
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
+      <GlassCard
+        variant="crystal"
+        className="relative overflow-hidden group"
+        style={{
+          boxShadow: type === 'incoming'
+            ? '0 4px 20px rgba(16, 185, 129, 0.2)'
+            : '0 4px 20px rgba(0, 0, 0, 0.3)',
+        }}
+      >
+        {/* Animated border for incoming requests */}
+        {type === 'incoming' && (
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent pointer-events-none"
+            animate={{
+              backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+            }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
           />
-        ) : (
-          <div className="h-10 w-10 rounded-full bg-primary-600 flex items-center justify-center text-white font-medium">
-            {request.user.username.charAt(0).toUpperCase()}
-          </div>
         )}
-        <div>
-          <p className="font-medium text-white">
-            {request.user.displayName || request.user.username}
-          </p>
-          <p className="text-sm text-gray-400">@{request.user.username}</p>
-        </div>
-      </div>
 
-      <div className="flex items-center gap-2">
-        {type === 'incoming' && onAccept && (
-          <button
-            onClick={onAccept}
-            className="p-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
-            title="Accept"
-          >
-            <CheckIcon className="h-5 w-5 text-white" />
-          </button>
-        )}
-        <button
-          onClick={onDecline}
-          className="p-2 bg-dark-600 hover:bg-dark-500 rounded-lg transition-colors"
-          title={type === 'incoming' ? 'Decline' : 'Cancel'}
-        >
-          <XMarkIcon className="h-5 w-5 text-gray-400" />
-        </button>
-      </div>
-    </div>
+        <div className="flex items-center justify-between p-3 relative z-10">
+          <div className="flex items-center gap-3">
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            >
+              {request.user.avatarUrl ? (
+                <div className="p-0.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full">
+                  <img
+                    src={request.user.avatarUrl}
+                    alt={request.user.username}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium">
+                  {request.user.username.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </motion.div>
+            <div>
+              <p className="font-medium bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
+                {request.user.displayName || request.user.username}
+              </p>
+              <p className="text-sm text-gray-400">@{request.user.username}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {type === 'incoming' && onAccept && (
+              <motion.button
+                onClick={() => {
+                  onAccept();
+                  HapticFeedback.success();
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="p-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg transition-all group/btn"
+                style={{ boxShadow: '0 0 15px rgba(34, 197, 94, 0.4)' }}
+                title="Accept"
+              >
+                <CheckIcon
+                  className="h-5 w-5 text-white"
+                  style={{ filter: 'drop-shadow(0 0 4px rgba(255, 255, 255, 0.5))' }}
+                />
+              </motion.button>
+            )}
+            <motion.button
+              onClick={() => {
+                onDecline();
+                HapticFeedback.medium();
+              }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="p-2 bg-dark-700/50 hover:bg-red-600/20 rounded-lg transition-all group/btn"
+              title={type === 'incoming' ? 'Decline' : 'Cancel'}
+            >
+              <XMarkIcon className="h-5 w-5 text-gray-400 group-hover/btn:text-red-400 transition-colors" />
+            </motion.button>
+          </div>
+        </div>
+      </GlassCard>
+    </motion.div>
   );
 }
 
@@ -470,10 +772,77 @@ interface EmptyStateProps {
 
 function EmptyState({ icon, title, description }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 text-center">
-      <div className="text-gray-500 mb-4">{icon}</div>
-      <h3 className="text-lg font-medium text-white mb-2">{title}</h3>
-      <p className="text-gray-400 max-w-sm">{description}</p>
-    </div>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      className="flex flex-col items-center justify-center py-12 text-center relative"
+    >
+      {/* Floating particles around icon */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 rounded-full bg-primary-400 pointer-events-none"
+          style={{
+            left: `${50 + Math.cos((i * Math.PI * 2) / 6) * 15}%`,
+            top: `${35 + Math.sin((i * Math.PI * 2) / 6) * 15}%`,
+          }}
+          animate={{
+            y: [0, -10, 0],
+            opacity: [0.2, 0.5, 0.2],
+            scale: [1, 1.5, 1],
+          }}
+          transition={{
+            duration: 3 + Math.random() * 2,
+            repeat: Infinity,
+            delay: i * 0.2,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
+      {/* Rotating icon with holographic effect */}
+      <motion.div
+        className="relative mb-4"
+        animate={{ rotate: [0, 5, -5, 0] }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <GlassCard
+          variant="holographic"
+          glow
+          glowColor="rgba(16, 185, 129, 0.3)"
+          className="p-6"
+        >
+          <div className="text-primary-400">{icon}</div>
+        </GlassCard>
+
+        {/* Pulsing ring */}
+        <motion.div
+          className="absolute inset-0 rounded-xl border-2 border-primary-500/30 pointer-events-none"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.5, 0, 0.5],
+          }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
+      </motion.div>
+
+      <motion.h3
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="text-lg font-medium bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-2"
+      >
+        {title}
+      </motion.h3>
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="text-gray-400 max-w-sm"
+      >
+        {description}
+      </motion.p>
+    </motion.div>
   );
 }

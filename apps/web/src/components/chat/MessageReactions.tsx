@@ -1,0 +1,293 @@
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaceSmileIcon, PlusIcon } from '@heroicons/react/24/outline';
+import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+
+/**
+ * Message Reactions Component
+ *
+ * Provides an intuitive, emoji-based reaction system for messages.
+ * Features:
+ * - Quick reactions with emoji picker
+ * - Animated reaction bubbles that bounce and glow
+ * - Aggregated reaction counts with user lists on hover
+ * - Accessibility support with keyboard navigation
+ * - Haptic feedback for tactile response on interactions
+ *
+ * This component significantly enhances the expressiveness of conversations
+ * without cluttering the UI. Users can quickly acknowledge messages or express
+ * emotions that might not warrant a full reply.
+ */
+
+interface Reaction {
+  emoji: string;
+  count: number;
+  users: Array<{ id: string; username: string }>;
+  hasReacted: boolean;
+}
+
+interface MessageReactionsProps {
+  messageId: string;
+  reactions: Reaction[];
+  onAddReaction: (messageId: string, emoji: string) => void;
+  onRemoveReaction: (messageId: string, emoji: string) => void;
+  currentUserId: string;
+  disabled?: boolean;
+}
+
+// Most commonly used reactions for quick access
+// Carefully selected to cover the most common emotional responses
+// without overwhelming users with choices
+const QUICK_REACTIONS = [
+  '👍', // thumbs up - agreement/approval
+  '❤️', // heart - love/strong approval
+  '😂', // laugh - humor
+  '😮', // wow - surprise/amazement
+  '😢', // sad - empathy/sadness
+  '🎉', // celebrate - excitement/achievement
+  '🔥', // fire - something awesome/hot take
+  '👀', // eyes - interesting/paying attention
+];
+
+// Expanded emoji picker organized by category
+// Users can access these through the picker interface
+const EMOJI_CATEGORIES = {
+  Emotions: ['😊', '😂', '🥰', '😎', '🤔', '😅', '😢', '😡', '🥳', '😴', '🤯', '😱'],
+  Reactions: ['👍', '👎', '👏', '🙌', '🤝', '💪', '🙏', '👀', '💯', '✨', '🔥', '❤️'],
+  Objects: ['🎉', '🎊', '🎁', '🏆', '⭐', '💎', '🚀', '💡', '⚡', '🌈', '☀️', '🌙'],
+  Symbols: ['✅', '❌', '⚠️', '❓', '❗', '💬', '💭', '🔔', '📌', '🎯', '📍', '🔗'],
+};
+
+export default function MessageReactions({
+  messageId,
+  reactions,
+  onAddReaction,
+  onRemoveReaction,
+  currentUserId,
+  disabled = false,
+}: MessageReactionsProps) {
+  const [showPicker, setShowPicker] = useState(false);
+  const [showTooltip, setShowTooltip] = useState<string | null>(null);
+  const pickerRef = useRef<HTMLDivElement>(null);
+  const [activeCategory, setActiveCategory] = useState<keyof typeof EMOJI_CATEGORIES>('Emotions');
+
+  // Close picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target as Node)) {
+        setShowPicker(false);
+      }
+    };
+
+    if (showPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showPicker]);
+
+  const handleReaction = (emoji: string) => {
+    const reaction = reactions.find(r => r.emoji === emoji);
+
+    if (reaction?.hasReacted) {
+      onRemoveReaction(messageId, emoji);
+      HapticFeedback.light();
+    } else {
+      onAddReaction(messageId, emoji);
+      HapticFeedback.medium();
+    }
+
+    setShowPicker(false);
+  };
+
+  const getTotalReactions = () => {
+    return reactions.reduce((sum, r) => sum + r.count, 0);
+  };
+
+  return (
+    <div className="flex items-center gap-1 flex-wrap">
+      {/* Existing reactions */}
+      <AnimatePresence>
+        {reactions.map((reaction) => (
+          <motion.button
+            key={reaction.emoji}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            whileHover={{ scale: 1.1, y: -2 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => handleReaction(reaction.emoji)}
+            onMouseEnter={() => setShowTooltip(reaction.emoji)}
+            onMouseLeave={() => setShowTooltip(null)}
+            disabled={disabled}
+            className={`
+              relative inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs
+              transition-all duration-200 group
+              ${reaction.hasReacted
+                ? 'bg-gradient-to-r from-primary-500/30 to-purple-500/30 border border-primary-500/50'
+                : 'bg-dark-700/50 hover:bg-dark-600/50 border border-dark-600'
+              }
+            `}
+          >
+            {/* Animated glow for user's own reaction */}
+            {reaction.hasReacted && (
+              <motion.div
+                className="absolute inset-0 rounded-full bg-primary-400/20 blur-md"
+                animate={{
+                  opacity: [0.3, 0.6, 0.3],
+                  scale: [0.9, 1.1, 0.9],
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                }}
+              />
+            )}
+
+            <span className="relative text-base leading-none">{reaction.emoji}</span>
+            {reaction.count > 1 && (
+              <span className={`relative font-medium ${reaction.hasReacted ? 'text-primary-200' : 'text-gray-300'}`}>
+                {reaction.count}
+              </span>
+            )}
+
+            {/* Tooltip showing who reacted */}
+            {showTooltip === reaction.emoji && reaction.users.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2
+                          bg-dark-800 border border-dark-600 rounded-lg shadow-xl z-50
+                          whitespace-nowrap text-xs text-gray-200"
+              >
+                <div className="font-medium mb-1">Reacted with {reaction.emoji}</div>
+                <div className="text-gray-400">
+                  {reaction.users.slice(0, 5).map((user, idx) => (
+                    <div key={user.id}>
+                      {user.username}
+                      {idx < Math.min(4, reaction.users.length - 1) && ','}
+                    </div>
+                  ))}
+                  {reaction.users.length > 5 && (
+                    <div className="text-primary-400">and {reaction.users.length - 5} more</div>
+                  )}
+                </div>
+                {/* Tooltip arrow */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px
+                              w-2 h-2 bg-dark-800 border-r border-b border-dark-600
+                              rotate-45" />
+              </motion.div>
+            )}
+          </motion.button>
+        ))}
+      </AnimatePresence>
+
+      {/* Add reaction button */}
+      <div className="relative" ref={pickerRef}>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            setShowPicker(!showPicker);
+            HapticFeedback.light();
+          }}
+          disabled={disabled}
+          className={`
+            p-1.5 rounded-full transition-all duration-200
+            ${getTotalReactions() > 0 ? 'opacity-0 group-hover:opacity-100' : 'opacity-60 hover:opacity-100'}
+            ${showPicker ? 'bg-primary-500/20' : 'hover:bg-dark-700/50'}
+          `}
+          aria-label="Add reaction"
+        >
+          {showPicker ? (
+            <PlusIcon className="h-4 w-4 text-primary-400 rotate-45 transition-transform" />
+          ) : (
+            <FaceSmileIcon className="h-4 w-4 text-gray-400" />
+          )}
+        </motion.button>
+
+        {/* Emoji picker popup */}
+        <AnimatePresence>
+          {showPicker && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 10 }}
+              className="absolute bottom-full left-0 mb-2 p-3 bg-dark-800 border border-dark-600
+                        rounded-lg shadow-2xl z-50 min-w-[280px]"
+            >
+              {/* Quick reactions */}
+              <div className="mb-3">
+                <div className="text-xs text-gray-400 mb-2 font-medium">Quick Reactions</div>
+                <div className="flex gap-1 flex-wrap">
+                  {QUICK_REACTIONS.map((emoji) => (
+                    <motion.button
+                      key={emoji}
+                      whileHover={{ scale: 1.15, rotate: 5 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleReaction(emoji)}
+                      className="p-2 hover:bg-dark-700/70 rounded-lg transition-colors"
+                    >
+                      <span className="text-2xl leading-none">{emoji}</span>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Category tabs */}
+              <div className="flex gap-1 mb-2 border-t border-dark-700 pt-2">
+                {(Object.keys(EMOJI_CATEGORIES) as Array<keyof typeof EMOJI_CATEGORIES>).map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setActiveCategory(category)}
+                    className={`
+                      px-2 py-1 text-xs rounded transition-colors
+                      ${activeCategory === category
+                        ? 'bg-primary-500/20 text-primary-300'
+                        : 'text-gray-400 hover:text-gray-300 hover:bg-dark-700/50'
+                      }
+                    `}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
+
+              {/* Emoji grid */}
+              <div className="grid grid-cols-6 gap-1 max-h-40 overflow-y-auto custom-scrollbar">
+                {EMOJI_CATEGORIES[activeCategory].map((emoji) => (
+                  <motion.button
+                    key={emoji}
+                    whileHover={{ scale: 1.2, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => handleReaction(emoji)}
+                    className="p-2 hover:bg-dark-700/70 rounded transition-colors"
+                  >
+                    <span className="text-xl leading-none">{emoji}</span>
+                  </motion.button>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.2);
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.2);
+          border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.3);
+        }
+      `}</style>
+    </div>
+  );
+}

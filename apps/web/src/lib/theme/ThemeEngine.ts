@@ -1030,4 +1030,5 @@ export const themeEngine = new ThemeEngineImpl();
 export const setTheme = (themeId: string) => themeEngine.setTheme(themeId);
 export const getCurrentTheme = () => themeEngine.getCurrentTheme();
 export const getAllThemes = () => themeEngine.getAllThemes();
+export const getThemeById = (themeId: string): Theme | undefined => THEME_REGISTRY[themeId];
 export const subscribeToTheme = (listener: (theme: Theme) => void) => themeEngine.subscribe(listener);

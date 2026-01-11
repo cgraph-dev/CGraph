@@ -70,6 +70,9 @@ const TelegramAttachmentPicker = memo(({
   const [showContactPicker, setShowContactPicker] = useState(false);
   const [contacts, setContacts] = useState<(Contacts.Contact & { id: string })[]>([]);
   const [contactSearchQuery, setContactSearchQuery] = useState('');
+  const [albums, setAlbums] = useState<MediaLibrary.Album[]>([]);
+  const [selectedAlbum, setSelectedAlbum] = useState<MediaLibrary.Album | null>(null);
+  const [showAlbumPicker, setShowAlbumPicker] = useState(false);
   
   const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
   const backdropAnim = useRef(new Animated.Value(0)).current;
@@ -110,18 +113,32 @@ const TelegramAttachmentPicker = memo(({
   }, [visible]);
   
   // Load media assets from gallery with proper URI resolution for Android
-  const loadMediaAssets = async () => {
+  const loadMediaAssets = async (album?: MediaLibrary.Album | null) => {
     setIsLoading(true);
     try {
       const { status } = await MediaLibrary.requestPermissionsAsync();
       setHasMediaPermission(status === 'granted');
       
       if (status === 'granted') {
-        const media = await MediaLibrary.getAssetsAsync({
+        // Load albums list in background (don't await)
+        if (albums.length === 0) {
+          MediaLibrary.getAlbumsAsync().then(albumsList => {
+            setAlbums(albumsList);
+          }).catch(e => console.log('Could not load albums:', e));
+        }
+        
+        const mediaOptions: MediaLibrary.AssetsOptions = {
           mediaType: ['photo', 'video'],
           sortBy: ['creationTime'],
-          first: 100,
-        });
+          first: 50, // Reduced for faster loading
+        };
+        
+        // If album is specified, get assets from that album
+        if (album) {
+          mediaOptions.album = album.id;
+        }
+        
+        const media = await MediaLibrary.getAssetsAsync(mediaOptions);
         
         // Check if we got any assets - if not, we might be in limited mode
         if (media.assets.length === 0) {
@@ -132,43 +149,44 @@ const TelegramAttachmentPicker = memo(({
           return;
         }
         
-        // Both iOS and Android need localUri resolution
-        // iOS returns ph:// URIs which can't be uploaded directly
-        // Android returns content:// URIs which may not render properly
-        const assetsWithLocalUri: Asset[] = [];
+        // First, show assets immediately with original URIs for fast display
+        const initialAssets: Asset[] = media.assets.map(asset => ({
+          id: asset.id,
+          uri: asset.uri,
+          mediaType: asset.mediaType === 'video' ? 'video' as const : 'photo' as const,
+          duration: asset.duration,
+          filename: asset.filename,
+          width: asset.width,
+          height: asset.height,
+        }));
         
-        for (const asset of media.assets) {
-          let displayUri = asset.uri;
-          
-          // Always try to resolve localUri for both platforms
-          try {
-            const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
-            if (assetInfo.localUri) {
-              displayUri = assetInfo.localUri;
+        setAssets(initialAssets);
+        setIsLoading(false);
+        
+        // Then resolve localUris in parallel batches for uploads (in background)
+        const BATCH_SIZE = 10;
+        const resolvedAssets: Asset[] = [...initialAssets];
+        
+        for (let i = 0; i < media.assets.length; i += BATCH_SIZE) {
+          const batch = media.assets.slice(i, i + BATCH_SIZE);
+          const batchPromises = batch.map(async (asset, batchIndex) => {
+            try {
+              const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
+              if (assetInfo.localUri) {
+                resolvedAssets[i + batchIndex] = {
+                  ...resolvedAssets[i + batchIndex],
+                  uri: assetInfo.localUri,
+                };
+              }
+            } catch (e) {
+              // Keep original URI
             }
-          } catch (e) {
-            // Use original URI as fallback
-            console.log('Could not get local URI for asset:', asset.id);
-          }
-          
-          assetsWithLocalUri.push({
-            id: asset.id,
-            uri: displayUri,
-            mediaType: asset.mediaType === 'video' ? 'video' as const : 'photo' as const,
-            duration: asset.duration,
-            filename: asset.filename,
-            width: asset.width,
-            height: asset.height,
           });
+          await Promise.all(batchPromises);
         }
         
-        // If we couldn't get any valid URIs, enable fallback
-        if (assetsWithLocalUri.length === 0 && media.assets.length > 0) {
-          console.log('Could not resolve any asset URIs, enabling ImagePicker fallback');
-          setUseImagePickerFallback(true);
-        }
-        
-        setAssets(assetsWithLocalUri);
+        // Update with resolved URIs
+        setAssets([...resolvedAssets]);
       } else {
         // Permission not granted, use ImagePicker fallback
         setUseImagePickerFallback(true);
@@ -181,6 +199,14 @@ const TelegramAttachmentPicker = memo(({
     }
   };
   
+  // Handle album selection
+  const handleAlbumSelect = (album: MediaLibrary.Album | null) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedAlbum(album);
+    setShowAlbumPicker(false);
+    loadMediaAssets(album);
+  };
+  
   // Open ImagePicker directly (fallback for Expo Go)
   const openImagePicker = async () => {
     try {
@@ -190,7 +216,7 @@ const TelegramAttachmentPicker = memo(({
       await new Promise(resolve => setTimeout(resolve, 300));
       
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        mediaTypes: ['images', 'videos'],
         allowsMultipleSelection: true,
         quality: 0.8,
         selectionLimit: maxSelection,
@@ -285,7 +311,7 @@ const TelegramAttachmentPicker = memo(({
       await new Promise(resolve => setTimeout(resolve, 300));
       
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         quality: 0.8,
         allowsEditing: false,
       });
@@ -314,7 +340,7 @@ const TelegramAttachmentPicker = memo(({
       await new Promise(resolve => setTimeout(resolve, 300));
       
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Videos,
+        mediaTypes: ['videos'],
         videoMaxDuration: 60,
         quality: 0.8,
         allowsEditing: false,
@@ -336,22 +362,43 @@ const TelegramAttachmentPicker = memo(({
     }
   };
   
-  // Render camera tile - opens photo/video options
+  // Open native camera for both photo and video
+  const openCamera = async () => {
+    try {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      onClose();
+      
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images', 'videos'],
+        quality: 0.8,
+        allowsEditing: false,
+        videoMaxDuration: 60,
+      });
+      
+      if (!result.canceled && result.assets.length > 0) {
+        const asset = result.assets[0];
+        const isVideo = asset.type === 'video' || (asset.uri && asset.uri.includes('.mp4'));
+        onSelectAssets([{
+          uri: asset.uri,
+          type: isVideo ? 'video' : 'image',
+          name: asset.fileName || (isVideo ? `video_${Date.now()}.mp4` : `photo_${Date.now()}.jpg`),
+          mimeType: asset.mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
+          duration: asset.duration ? asset.duration / 1000 : undefined,
+        }]);
+      }
+    } catch (error) {
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to open camera');
+    }
+  };
+  
+  // Render camera tile - opens native camera directly
   const renderCameraTile = () => (
     <TouchableOpacity
       style={styles.cameraTile}
-      onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        Alert.alert(
-          'Camera',
-          'What do you want to capture?',
-          [
-            { text: 'Photo', onPress: openCameraPhoto },
-            { text: 'Video', onPress: openCameraVideo },
-            { text: 'Cancel', style: 'cancel' },
-          ]
-        );
-      }}
+      onPress={openCamera}
       activeOpacity={0.8}
     >
       <View style={styles.cameraPreviewContainer}>
@@ -569,8 +616,16 @@ const TelegramAttachmentPicker = memo(({
               <Ionicons name="close" size={24} color={colors.text} />
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.albumSelector}>
-              <Text style={[styles.albumTitle, { color: colors.text }]}>Recents</Text>
+            <TouchableOpacity 
+              style={styles.albumSelector}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setShowAlbumPicker(true);
+              }}
+            >
+              <Text style={[styles.albumTitle, { color: colors.text }]}>
+                {selectedAlbum ? selectedAlbum.title : 'Recents'}
+              </Text>
               <Ionicons name="chevron-down" size={18} color={colors.text} />
             </TouchableOpacity>
             
@@ -613,17 +668,7 @@ const TelegramAttachmentPicker = memo(({
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.fallbackCameraButton, { borderColor: colors.primary }]}
-                onPress={() => {
-                  Alert.alert(
-                    'Camera',
-                    'What do you want to capture?',
-                    [
-                      { text: 'Photo', onPress: openCameraPhoto },
-                      { text: 'Video', onPress: openCameraVideo },
-                      { text: 'Cancel', style: 'cancel' },
-                    ]
-                  );
-                }}
+                onPress={openCamera}
               >
                 <Ionicons name="camera" size={24} color={colors.primary} />
                 <Text style={[styles.fallbackCameraButtonText, { color: colors.primary }]}>Take Photo/Video</Text>
@@ -679,6 +724,69 @@ const TelegramAttachmentPicker = memo(({
             ))}
           </View>
         </Animated.View>
+        
+        {/* Album Picker Modal */}
+        {showAlbumPicker && (
+          <View style={styles.albumPickerOverlay}>
+            <TouchableOpacity 
+              style={styles.albumPickerBackdrop}
+              activeOpacity={1}
+              onPress={() => setShowAlbumPicker(false)}
+            />
+            <View style={[styles.albumPickerContainer, { backgroundColor: isDark ? '#1c1c1e' : '#fff' }]}>
+              <View style={styles.albumPickerHeader}>
+                <Text style={[styles.albumPickerTitle, { color: colors.text }]}>Select Album</Text>
+                <TouchableOpacity 
+                  onPress={() => setShowAlbumPicker(false)}
+                  style={styles.albumPickerCloseBtn}
+                >
+                  <Ionicons name="close" size={24} color={colors.text} />
+                </TouchableOpacity>
+              </View>
+              
+              <FlatList
+                data={[null, ...albums]}
+                keyExtractor={(item, index) => item?.id || `recents-${index}`}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.albumItem, 
+                      { borderBottomColor: colors.border },
+                      (item === null && selectedAlbum === null) || (item?.id === selectedAlbum?.id) 
+                        ? { backgroundColor: colors.surface } 
+                        : {}
+                    ]}
+                    onPress={() => handleAlbumSelect(item)}
+                    activeOpacity={0.7}
+                  >
+                    <View style={[styles.albumIcon, { backgroundColor: colors.primary + '20' }]}>
+                      <Ionicons 
+                        name={item === null ? 'time-outline' : 'folder-outline'} 
+                        size={24} 
+                        color={colors.primary} 
+                      />
+                    </View>
+                    <View style={styles.albumInfo}>
+                      <Text style={[styles.albumName, { color: colors.text }]}>
+                        {item === null ? 'Recents' : item.title}
+                      </Text>
+                      {item !== null && (
+                        <Text style={[styles.albumCount, { color: colors.textSecondary }]}>
+                          {item.assetCount} items
+                        </Text>
+                      )}
+                    </View>
+                    {((item === null && selectedAlbum === null) || (item?.id === selectedAlbum?.id)) && (
+                      <Ionicons name="checkmark" size={24} color={colors.primary} />
+                    )}
+                  </TouchableOpacity>
+                )}
+                contentContainerStyle={styles.albumListContent}
+                showsVerticalScrollIndicator={false}
+              />
+            </View>
+          </View>
+        )}
         
         {/* Contact Picker Modal */}
         {showContactPicker && (
@@ -1207,6 +1315,78 @@ const styles = StyleSheet.create({
   },
   contactPhone: {
     fontSize: 14,
+  },
+  // Album picker styles
+  albumPickerOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 100,
+  },
+  albumPickerBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  albumPickerContainer: {
+    width: SCREEN_WIDTH * 0.85,
+    maxHeight: SCREEN_HEIGHT * 0.6,
+    borderRadius: 16,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 12,
+    elevation: 10,
+  },
+  albumPickerHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(128,128,128,0.2)',
+  },
+  albumPickerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
+  albumPickerCloseBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(128,128,128,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  albumListContent: {
+    paddingBottom: 20,
+  },
+  albumItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  albumIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  albumInfo: {
+    flex: 1,
+  },
+  albumName: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  albumCount: {
+    fontSize: 13,
+    marginTop: 2,
   },
 });
 

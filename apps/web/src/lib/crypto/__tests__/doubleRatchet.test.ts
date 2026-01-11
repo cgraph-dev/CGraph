@@ -131,7 +131,9 @@ describe('DoubleRatchetEngine', () => {
       }
       
       for (let i = 0; i < messages.length; i++) {
-        const decrypted = await bob.decryptMessage(encrypted[i]);
+        const encryptedMsg = encrypted[i];
+        if (!encryptedMsg) continue;
+        const decrypted = await bob.decryptMessage(encryptedMsg);
         const text = new TextDecoder().decode(decrypted.plaintext);
         expect(text).toBe(messages[i]);
         expect(decrypted.isOutOfOrder).toBe(false);
@@ -242,7 +244,9 @@ describe('DoubleRatchetEngine', () => {
       }
       
       // Bob receives only the last one first
-      await bob.decryptMessage(messages[9]);
+      const lastMessage = messages[9];
+      if (!lastMessage) throw new Error('Message not found');
+      await bob.decryptMessage(lastMessage);
       
       const stats = bob.getStats();
       expect(stats.skippedKeysCount).toBe(9);
@@ -306,7 +310,9 @@ describe('DoubleRatchetEngine', () => {
       const encrypted = await alice.encryptMessage(new TextEncoder().encode('Secret'));
       
       // Tamper with ciphertext
-      encrypted.ciphertext[0] ^= 0xFF;
+      if (encrypted.ciphertext[0] !== undefined) {
+        encrypted.ciphertext[0] ^= 0xFF;
+      }
       
       await expect(bob.decryptMessage(encrypted)).rejects.toThrow();
     });
@@ -320,7 +326,9 @@ describe('DoubleRatchetEngine', () => {
       const encrypted = await alice.encryptMessage(new TextEncoder().encode('Secret'));
       
       // Tamper with MAC
-      encrypted.mac[0] ^= 0xFF;
+      if (encrypted.mac[0] !== undefined) {
+        encrypted.mac[0] ^= 0xFF;
+      }
       
       await expect(bob.decryptMessage(encrypted)).rejects.toThrow('Message authentication failed');
     });

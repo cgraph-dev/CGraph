@@ -1,3 +1,5 @@
+console.log('[CGraph] Module loading - start');
+
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
@@ -9,7 +11,10 @@ import App from './App';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeProviderEnhanced } from './contexts/ThemeContextEnhanced';
+import AnimatedLogo from './components/AnimatedLogo';
 import './index.css';
+
+console.log('[CGraph] All imports completed successfully');
 
 // Development mode logging
 if (import.meta.env.DEV) {
@@ -73,16 +78,24 @@ if (typeof window !== 'undefined') {
 // Global loading fallback component with dark theme
 function GlobalLoadingFallback() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-dark-900">
-      <div className="relative">
-        {/* Animated logo/spinner */}
-        <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center animate-pulse shadow-lg shadow-primary-500/30">
-          <span className="text-2xl font-bold text-white">C</span>
-        </div>
-        {/* Orbital ring */}
-        <div className="absolute inset-0 -m-2 border-2 border-primary-500/30 rounded-full animate-spin" style={{ animationDuration: '3s' }} />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative overflow-hidden">
+      {/* Background particles */}
+      {Array.from({ length: 20 }).map((_, i) => (
+        <div
+          key={i}
+          className="absolute w-0.5 h-0.5 rounded-full bg-primary-400 animate-pulse"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 2}s`,
+            animationDuration: `${2 + Math.random() * 3}s`,
+          }}
+        />
+      ))}
+
+      <div className="relative z-10">
+        <AnimatedLogo size="lg" showText variant="loading" />
       </div>
-      <p className="mt-6 text-gray-400 animate-pulse">Loading CGraph...</p>
     </div>
   );
 }
@@ -102,34 +115,42 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('[CGraph] Unhandled promise rejection:', event.reason);
 });
 
-ReactDOM.createRoot(rootElement).render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <Suspense fallback={<GlobalLoadingFallback />}>
-        <ThemeProvider>
-          <ThemeProviderEnhanced>
-            <QueryClientProvider client={queryClient}>
-              <BrowserRouter>
-                  <App />
-                <Toaster
-                  position="bottom-right"
-                  toastOptions={{
-                    className: 'bg-dark-800 text-white border border-dark-700',
-                    duration: 4000,
-                    style: {
-                      background: '#1f2937',
-                      color: '#fff',
-                    },
-                  }}
-                />
-              </BrowserRouter>
-            </QueryClientProvider>
-          </ThemeProviderEnhanced>
-        </ThemeProvider>
-      </Suspense>
-    </ErrorBoundary>
-  </React.StrictMode>
-);
+console.log('[CGraph] About to call ReactDOM.createRoot...');
+try {
+  const root = ReactDOM.createRoot(rootElement);
+  console.log('[CGraph] Root created, about to render...');
+  root.render(
+    <React.StrictMode>
+      <ErrorBoundary>
+        <Suspense fallback={<GlobalLoadingFallback />}>
+          <ThemeProvider>
+            <ThemeProviderEnhanced>
+              <QueryClientProvider client={queryClient}>
+                <BrowserRouter>
+                    <App />
+                  <Toaster
+                    position="bottom-right"
+                    toastOptions={{
+                      className: 'bg-dark-800 text-white border border-dark-700',
+                      duration: 4000,
+                      style: {
+                        background: '#1f2937',
+                        color: '#fff',
+                      },
+                    }}
+                  />
+                </BrowserRouter>
+              </QueryClientProvider>
+            </ThemeProviderEnhanced>
+          </ThemeProvider>
+        </Suspense>
+      </ErrorBoundary>
+    </React.StrictMode>
+  );
+  console.log('[CGraph] Render called successfully');
+} catch (err) {
+  console.error('[CGraph] Failed to render:', err);
+}
 
 if (import.meta.env.DEV) {
   console.log('[CGraph] Application mounted successfully');

@@ -4,6 +4,9 @@ import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
 import AppearanceSettingsEnhanced from '@/components/settings/AppearanceSettingsEnhanced';
+import { motion, AnimatePresence } from 'framer-motion';
+import GlassCard from '@/components/ui/GlassCard';
+import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   UserIcon,
   ShieldCheckIcon,
@@ -13,6 +16,7 @@ import {
   KeyIcon,
   DevicePhoneMobileIcon,
   CreditCardIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 
 const settingsSections = [
@@ -30,43 +34,135 @@ export default function Settings() {
   const { section = 'account' } = useParams();
 
   return (
-    <div className="flex-1 flex overflow-hidden">
+    <div className="flex-1 flex overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative">
+      {/* Ambient particles */}
+      {[...Array(8)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-0.5 h-0.5 rounded-full bg-primary-400 pointer-events-none"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0.1, 0.3, 0.1],
+            scale: [1, 1.5, 1],
+          }}
+          transition={{
+            duration: 5 + Math.random() * 3,
+            repeat: Infinity,
+            delay: Math.random() * 5,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+
       {/* Sidebar */}
-      <nav className="w-56 bg-dark-800 border-r border-dark-700 p-4 overflow-y-auto">
-        <h2 className="text-lg font-bold text-white mb-4">Settings</h2>
-        <div className="space-y-1">
-          {settingsSections.map((item, index) => (
-            <NavLink
-              key={item.id}
-              to={`/settings/${item.id}`}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 transform hover:translate-x-1 ${
-                  isActive || (item.id === 'account' && section === undefined)
-                    ? 'bg-dark-700 text-white shadow-md'
-                    : 'text-gray-400 hover:text-white hover:bg-dark-700/50'
-                }`
-              }
-              style={{ animationDelay: `${index * 30}ms` }}
-            >
-              <item.icon className="h-5 w-5" />
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </div>
+      <nav className="w-56 bg-dark-900/50 backdrop-blur-xl border-r border-primary-500/20 p-4 overflow-y-auto relative z-10">
+        {/* Ambient glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4 }}
+          className="relative z-10"
+        >
+          <h2 className="text-lg font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-4 flex items-center gap-2">
+            <SparklesIcon className="h-5 w-5 text-primary-400" />
+            Settings
+          </h2>
+          <div className="space-y-1">
+            {settingsSections.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 300,
+                  damping: 20,
+                  delay: 0.05 + index * 0.03,
+                }}
+              >
+                <NavLink
+                  to={`/settings/${item.id}`}
+                  onClick={() => HapticFeedback.light()}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group relative overflow-hidden ${
+                      isActive || (item.id === 'account' && section === undefined)
+                        ? 'text-white'
+                        : 'text-gray-400 hover:text-white'
+                    }`
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      {/* Active/Hover background */}
+                      {isActive ? (
+                        <motion.div
+                          layoutId="activeSettingsTab"
+                          className="absolute inset-0 bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent rounded-lg"
+                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary-500/0 via-purple-500/0 to-transparent rounded-lg opacity-0 group-hover:opacity-100 group-hover:from-primary-500/10 group-hover:via-purple-500/10 transition-all duration-300" />
+                      )}
+
+                      {/* Icon with glow */}
+                      <item.icon
+                        className={`h-5 w-5 relative z-10 transition-all duration-200 ${
+                          isActive ? 'text-primary-400' : 'group-hover:scale-110'
+                        }`}
+                        style={
+                          isActive
+                            ? { filter: 'drop-shadow(0 0 6px rgba(16, 185, 129, 0.6))' }
+                            : {}
+                        }
+                      />
+                      <span className="relative z-10 font-medium">{item.label}</span>
+
+                      {/* Active indicator */}
+                      {isActive && (
+                        <motion.div
+                          className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-500"
+                          layoutId="settingsActiveIndicator"
+                          initial={false}
+                          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                          style={{
+                            boxShadow: '0 0 8px rgba(16, 185, 129, 0.8)',
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
       </nav>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-8">
-        <div className="max-w-2xl animate-fadeIn">
-          {section === 'account' && <AccountSettings />}
-          {section === 'security' && <SecuritySettings />}
-          {section === 'notifications' && <NotificationSettings />}
-          {section === 'appearance' && <AppearanceSettingsEnhanced />}
-          {section === 'language' && <LanguageSettings />}
-          {section === 'sessions' && <SessionsSettings />}
-          {section === 'privacy' && <PrivacySettings />}
-          {section === 'billing' && <BillingSettings />}
-        </div>
+      <div className="flex-1 overflow-y-auto p-8 relative z-10">
+        <motion.div
+          className="max-w-2xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+        >
+          <AnimatePresence mode="wait">
+            {section === 'account' && <AccountSettings key="account" />}
+            {section === 'security' && <SecuritySettings key="security" />}
+            {section === 'notifications' && <NotificationSettings key="notifications" />}
+            {section === 'appearance' && <AppearanceSettingsEnhanced key="appearance" />}
+            {section === 'language' && <LanguageSettings key="language" />}
+            {section === 'sessions' && <SessionsSettings key="sessions" />}
+            {section === 'privacy' && <PrivacySettings key="privacy" />}
+            {section === 'billing' && <BillingSettings key="billing" />}
+          </AnimatePresence>
+        </motion.div>
       </div>
     </div>
   );
@@ -123,11 +219,21 @@ function AccountSettings() {
   };
 
   return (
-    <div className="animate-[fadeIn_300ms_ease-out]">
-      <h1 className="text-2xl font-bold text-white mb-2">Account Settings</h1>
-      
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-6">Account Settings</h1>
+
       {/* User ID Badge */}
-      <div className="mb-8 p-4 bg-gradient-to-r from-primary-900/30 to-dark-800 rounded-xl border border-primary-800/30">
+      <GlassCard
+        variant="holographic"
+        glow
+        glowColor="rgba(16, 185, 129, 0.3)"
+        className="mb-8 p-4"
+      >
         <div className="flex items-center gap-4">
           <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center ring-4 ring-primary-500/20">
             {user?.avatarUrl ? (
@@ -160,10 +266,10 @@ function AccountSettings() {
             </div>
           </div>
         </div>
-      </div>
+      </GlassCard>
 
       {/* Avatar */}
-      <div className="mb-8">
+      <GlassCard variant="crystal" glow className="mb-8 p-6">
         <label className="block text-sm font-medium text-gray-300 mb-3">Profile Picture</label>
         <div className="flex items-center gap-4">
           <div className="h-20 w-20 rounded-full bg-dark-700 overflow-hidden ring-2 ring-dark-600 transition-all hover:ring-primary-500">
@@ -176,16 +282,21 @@ function AccountSettings() {
             )}
           </div>
           <div>
-            <button className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-primary-500/20 active:scale-95">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => HapticFeedback.medium()}
+              className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-primary-500/20"
+            >
               Upload Image
-            </button>
+            </motion.button>
             <p className="text-xs text-gray-500 mt-1">JPG, PNG, or GIF. Max 2MB.</p>
           </div>
         </div>
-      </div>
+      </GlassCard>
 
       {/* Username with 14-day cooldown */}
-      <div className="mb-6">
+      <GlassCard variant="default" className="mb-6 p-6">
         <label className="block text-sm font-medium text-gray-300 mb-2">
           Username
           {!canChangeUsername && nextChangeDate && (
@@ -206,25 +317,30 @@ function AccountSettings() {
             }`}
           />
           {canChangeUsername && username !== user?.username && username.length >= 3 && (
-            <button
-              onClick={handleChangeUsername}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                handleChangeUsername();
+                HapticFeedback.medium();
+              }}
               disabled={isChangingUsername}
               className="px-4 py-3 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg transition-all hover:shadow-lg hover:shadow-primary-500/20"
             >
               {isChangingUsername ? 'Saving...' : 'Change'}
-            </button>
+            </motion.button>
           )}
         </div>
         <p className="text-xs text-gray-500 mt-1">
-          {canChangeUsername 
+          {canChangeUsername
             ? 'Username can be changed every 14 days. Letters, numbers, and underscores only.'
             : `You changed your username recently. Next change available on ${nextChangeDate}.`
           }
         </p>
-      </div>
+      </GlassCard>
 
       {/* Display Name */}
-      <div className="mb-6">
+      <GlassCard variant="default" className="mb-6 p-6">
         <label className="block text-sm font-medium text-gray-300 mb-2">Display Name</label>
         <input
           type="text"
@@ -233,10 +349,10 @@ function AccountSettings() {
           placeholder="How should we call you?"
           className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
         />
-      </div>
+      </GlassCard>
 
       {/* Email */}
-      <div className="mb-6">
+      <GlassCard variant="default" className="mb-6 p-6">
         <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
         <input
           type="email"
@@ -244,10 +360,10 @@ function AccountSettings() {
           onChange={(e) => setEmail(e.target.value)}
           className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all"
         />
-      </div>
+      </GlassCard>
 
       {/* Wallet */}
-      <div className="mb-8">
+      <GlassCard variant="crystal" glow className="mb-8 p-6">
         <label className="block text-sm font-medium text-gray-300 mb-2">Connected Wallet</label>
         {user?.walletAddress ? (
           <div className="flex items-center gap-3">
@@ -266,17 +382,22 @@ function AccountSettings() {
             Connect Wallet
           </button>
         )}
-      </div>
+      </GlassCard>
 
       {/* Save Button */}
-      <button
-        onClick={handleSave}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        onClick={() => {
+          handleSave();
+          HapticFeedback.success();
+        }}
         disabled={isSaving}
-        className="px-6 py-3 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white font-medium rounded-lg transition-colors"
+        className="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 text-white font-medium rounded-lg transition-all shadow-lg shadow-primary-500/20"
       >
         {isSaving ? 'Saving...' : 'Save Changes'}
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 }
 
@@ -284,11 +405,16 @@ function SecuritySettings() {
   const { user } = useAuthStore();
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-white mb-6">Security</h1>
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+    >
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-6">Security</h1>
 
       {/* Password */}
-      <div className="bg-dark-800 rounded-lg border border-dark-700 p-6 mb-4">
+      <GlassCard variant="default" className="p-6 mb-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-medium text-white">Password</h3>
@@ -298,10 +424,10 @@ function SecuritySettings() {
             Change
           </button>
         </div>
-      </div>
+      </GlassCard>
 
       {/* 2FA */}
-      <div className="bg-dark-800 rounded-lg border border-dark-700 p-6 mb-4">
+      <GlassCard variant="default" className="p-6 mb-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-medium text-white">Two-Factor Authentication</h3>
@@ -321,10 +447,10 @@ function SecuritySettings() {
             {user?.twoFactorEnabled ? 'Disable' : 'Enable'}
           </button>
         </div>
-      </div>
+      </GlassCard>
 
       {/* Email Verification */}
-      <div className="bg-dark-800 rounded-lg border border-dark-700 p-6">
+      <GlassCard variant="default" className="p-6">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-medium text-white">Email Verification</h3>
@@ -341,8 +467,8 @@ function SecuritySettings() {
             <span className="text-green-400 text-sm">✓ Verified</span>
           )}
         </div>
-      </div>
-    </div>
+      </GlassCard>
+    </motion.div>
   );
 }
 

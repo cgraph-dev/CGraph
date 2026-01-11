@@ -60,23 +60,13 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 
 // Protected route wrapper
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   if (import.meta.env.DEV) {
-    console.log('[ProtectedRoute] isLoading:', isLoading, 'isAuthenticated:', isAuthenticated);
+    console.log('[ProtectedRoute] isAuthenticated:', isAuthenticated);
   }
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-dark-900">
-        <div className="flex flex-col items-center">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
-          <p className="mt-3 text-sm text-gray-500">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
+  // Never block on loading - just check if authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
@@ -86,20 +76,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 // Public route wrapper (redirect if authenticated)
 function PublicRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
 
   if (import.meta.env.DEV) {
-    console.log('[PublicRoute] isLoading:', isLoading, 'isAuthenticated:', isAuthenticated);
+    console.log('[PublicRoute] isAuthenticated:', isAuthenticated);
   }
 
-  // Don't show loading for public routes - let them render immediately
-  // The AuthInitializer handles the initial loading state
-  if (isLoading) {
-    // For public routes, we show the content but will redirect after auth check
-    // This prevents white screen on initial load
-    return <>{children}</>;
-  }
-
+  // Never block - just redirect if authenticated
   if (isAuthenticated) {
     return <Navigate to="/messages" replace />;
   }
@@ -109,16 +92,9 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
 
 // Admin route wrapper (requires authentication + admin role)
 function AdminRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading, user } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-dark-900">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
-      </div>
-    );
-  }
-
+  // Never block - just check permissions
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }

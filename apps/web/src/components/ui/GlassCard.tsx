@@ -234,7 +234,7 @@ export default function GlassCard({
       />
 
       {/* Content */}
-      <div className="relative z-10 p-6">{children}</div>
+      <div className="relative z-10">{children}</div>
 
       {/* Inner glow highlight */}
       {isHovered && glow && (

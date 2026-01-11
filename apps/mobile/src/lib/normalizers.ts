@@ -9,6 +9,9 @@
 import { Message, UserBasic } from '../types';
 import { API_URL } from './api';
 
+// React Native global for dev mode
+declare const __DEV__: boolean;
+
 /**
  * Resolves a potentially relative URL to an absolute URL.
  * 
@@ -60,7 +63,41 @@ export function normalizeMessage(raw: Record<string, unknown>): Message {
   const senderId = String(raw.senderId ?? raw.sender_id ?? sender?.id ?? '');
   
   // Determine message type from various possible field names
-  const messageType = (raw.type ?? raw.messageType ?? raw.message_type ?? raw.contentType ?? raw.content_type ?? 'text') as Message['type'];
+  let messageType = (raw.type ?? raw.messageType ?? raw.message_type ?? raw.contentType ?? raw.content_type ?? 'text') as Message['type'];
+  
+  // Fix type detection based on mime type (backend sometimes returns wrong contentType)
+  const rawMeta = raw.metadata as Record<string, unknown> | undefined;
+  const mimeType = (
+    raw.fileMimeType ?? 
+    raw.file_mime_type ?? 
+    rawMeta?.mimeType ?? 
+    rawMeta?.mime_type ??
+    rawMeta?.file_mime_type ??
+    (raw.attachment as any)?.mime_type ??
+    (raw.attachment as any)?.mimeType
+  ) as string | undefined;
+  
+  // Also check file extension in URL as fallback
+  const fileUrl = (raw.fileUrl ?? raw.file_url ?? rawMeta?.url ?? (raw.attachment as any)?.url) as string | undefined;
+  const isVideoByExtension = fileUrl && /\.(mp4|mov|m4v|avi|webm|mkv)$/i.test(fileUrl);
+  const isVideoByMime = mimeType && mimeType.startsWith('video/');
+  
+  // Debug logging for video detection
+  if (__DEV__ && (isVideoByMime || isVideoByExtension || messageType === 'video')) {
+    console.log('[Normalizer] Video detection:', {
+      originalType: messageType,
+      mimeType,
+      fileUrl: fileUrl?.substring(0, 50),
+      isVideoByMime,
+      isVideoByExtension
+    });
+  }
+  
+  if ((isVideoByMime || isVideoByExtension) && (messageType === 'image' || messageType === 'text')) {
+    messageType = 'video';
+  } else if (mimeType && mimeType.startsWith('audio/') && messageType !== 'voice' && messageType !== 'audio') {
+    messageType = 'audio';
+  }
   
   // Extract metadata - backend now sends populated metadata for voice/file messages
   // We check multiple sources to ensure maximum compatibility
