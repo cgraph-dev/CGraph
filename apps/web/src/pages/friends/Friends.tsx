@@ -13,7 +13,6 @@ import {
   EllipsisVerticalIcon,
   NoSymbolIcon,
   ClockIcon,
-  SparklesIcon,
   UsersIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
@@ -670,6 +669,12 @@ interface FriendRequestCardProps {
 }
 
 function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequestCardProps) {
+  // Defensive null check for user data
+  const user = request.user || { username: 'Unknown', displayName: null, avatarUrl: null };
+  const username = user.username || 'Unknown';
+  const displayName = user.displayName || username;
+  const avatarUrl = user.avatarUrl;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -703,25 +708,25 @@ function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequest
               whileHover={{ scale: 1.1, rotate: 5 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             >
-              {request.user.avatarUrl ? (
+              {avatarUrl ? (
                 <div className="p-0.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full">
                   <img
-                    src={request.user.avatarUrl}
-                    alt={request.user.username}
+                    src={avatarUrl}
+                    alt={username}
                     className="h-10 w-10 rounded-full object-cover"
                   />
                 </div>
               ) : (
                 <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium">
-                  {request.user.username.charAt(0).toUpperCase()}
+                  {username.charAt(0).toUpperCase()}
                 </div>
               )}
             </motion.div>
             <div>
               <p className="font-medium bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
-                {request.user.displayName || request.user.username}
+                {displayName}
               </p>
-              <p className="text-sm text-gray-400">@{request.user.username}</p>
+              <p className="text-sm text-gray-400">@{username}</p>
             </div>
           </div>
 

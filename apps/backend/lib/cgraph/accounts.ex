@@ -1057,15 +1057,21 @@ defmodule Cgraph.Accounts do
   # ============================================================================
 
   @doc """
-  Search users by username or display name.
+  Search users by username, display name, email, or user_id (UID like #0001).
   """
   def search_users(query, opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 20)
     search_term = "%#{query}%"
 
+    # Check if query is a UID format like #0001 or 0001
+    uid_query = parse_uid_query(query)
+
     db_query = from u in User,
-      where: ilike(u.username, ^search_term) or ilike(u.display_name, ^search_term),
+      where: ilike(u.username, ^search_term) or 
+             ilike(u.display_name, ^search_term) or
+             ilike(u.email, ^search_term) or
+             (not is_nil(^uid_query) and u.user_id == ^uid_query),
       order_by: [asc: u.username]
 
     total = Repo.aggregate(db_query, :count, :id)
@@ -1078,6 +1084,16 @@ defmodule Cgraph.Accounts do
     meta = %{page: page, per_page: per_page, total: total}
     {users, meta}
   end
+
+  # Parse UID query - handles formats like #0001, #1, 0001, 1
+  defp parse_uid_query(query) when is_binary(query) do
+    cleaned = query |> String.replace("#", "") |> String.trim()
+    case Integer.parse(cleaned) do
+      {num, ""} -> num
+      _ -> nil
+    end
+  end
+  defp parse_uid_query(_), do: nil
 
   @doc """
   Get user suggestions for autocomplete.

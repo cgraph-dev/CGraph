@@ -25,6 +25,45 @@ export interface FriendRequest {
   type: 'incoming' | 'outgoing';
 }
 
+// Helper to normalize API response to our FriendRequest format
+function normalizeRequest(data: Record<string, unknown>, type: 'incoming' | 'outgoing'): FriendRequest {
+  // Backend returns 'from' for incoming and 'to' for outgoing requests
+  const userData = (type === 'incoming' ? data.from : data.to) as Record<string, unknown> | undefined;
+  
+  return {
+    id: data.id as string,
+    user: userData ? {
+      id: userData.id as string,
+      username: (userData.username as string) || 'Unknown',
+      displayName: (userData.display_name as string | null) || (userData.displayName as string | null) || null,
+      avatarUrl: (userData.avatar_url as string | null) || (userData.avatarUrl as string | null) || null,
+    } : {
+      id: 'unknown',
+      username: 'Unknown User',
+      displayName: null,
+      avatarUrl: null,
+    },
+    createdAt: (data.sent_at as string) || (data.created_at as string) || new Date().toISOString(),
+    type,
+  };
+}
+
+// Helper to normalize friend data from API
+function normalizeFriend(data: Record<string, unknown>): Friend {
+  const userData = data.user as Record<string, unknown> | undefined;
+  
+  return {
+    id: userData?.id as string || data.id as string,
+    username: (userData?.username as string) || 'Unknown',
+    displayName: (userData?.display_name as string | null) || (userData?.displayName as string | null) || null,
+    avatarUrl: (userData?.avatar_url as string | null) || (userData?.avatarUrl as string | null) || null,
+    status: 'offline',
+    statusMessage: null,
+    friendshipId: data.id as string,
+    createdAt: (data.since as string) || (data.created_at as string) || new Date().toISOString(),
+  };
+}
+
 interface FriendState {
   friends: Friend[];
   pendingRequests: FriendRequest[];
@@ -56,8 +95,10 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await api.get('/api/v1/friends');
+      const rawFriends = ensureArray<Record<string, unknown>>(response.data, 'data');
+      const normalizedFriends = rawFriends.map(normalizeFriend);
       set({
-        friends: ensureArray<Friend>(response.data, 'friends'),
+        friends: normalizedFriends,
         isLoading: false,
       });
     } catch (error: unknown) {
@@ -70,9 +111,11 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
 
   fetchPendingRequests: async () => {
     try {
-      const response = await api.get('/api/v1/friends/pending');
+      const response = await api.get('/api/v1/friends/requests');
+      const rawRequests = ensureArray<Record<string, unknown>>(response.data, 'data');
+      const normalizedRequests = rawRequests.map(r => normalizeRequest(r, 'incoming'));
       set({
-        pendingRequests: ensureArray<FriendRequest>(response.data, 'requests'),
+        pendingRequests: normalizedRequests,
       });
     } catch (error: unknown) {
       set({
@@ -83,13 +126,11 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
 
   fetchSentRequests: async () => {
     try {
-      // Using the same endpoint as pending, filter by type on frontend
-      // or if backend separates them, this would be a different endpoint
-      const response = await api.get('/api/v1/friends/pending');
-      const allRequests = ensureArray<FriendRequest>(response.data, 'requests');
+      const response = await api.get('/api/v1/friends/sent');
+      const rawRequests = ensureArray<Record<string, unknown>>(response.data, 'data');
+      const normalizedRequests = rawRequests.map(r => normalizeRequest(r, 'outgoing'));
       set({
-        pendingRequests: allRequests.filter((r) => r.type === 'incoming'),
-        sentRequests: allRequests.filter((r) => r.type === 'outgoing'),
+        sentRequests: normalizedRequests,
       });
     } catch (error: unknown) {
       set({
@@ -98,14 +139,25 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
     }
   },
 
-  sendRequest: async (usernameOrId: string) => {
+  sendRequest: async (usernameOrIdOrEmail: string) => {
     set({ isLoading: true, error: null });
     try {
-      // Determine if it's a UUID or username
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(usernameOrId);
-      const payload = isUuid 
-        ? { user_id: usernameOrId }
-        : { username: usernameOrId };
+      // Determine the type of identifier
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(usernameOrIdOrEmail);
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(usernameOrIdOrEmail);
+      const isUid = /^#?\d+$/.test(usernameOrIdOrEmail.trim()); // UID format like #0001 or 0001
+      
+      let payload: { user_id?: string; username?: string; email?: string; uid?: string };
+      if (isUuid) {
+        payload = { user_id: usernameOrIdOrEmail };
+      } else if (isEmail) {
+        payload = { email: usernameOrIdOrEmail };
+      } else if (isUid) {
+        // Remove # prefix if present
+        payload = { uid: usernameOrIdOrEmail.replace('#', '').trim() };
+      } else {
+        payload = { username: usernameOrIdOrEmail };
+      }
       
       await api.post('/api/v1/friends', payload);
       // Refresh the lists

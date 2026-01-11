@@ -29,12 +29,42 @@ export default function FriendRequestsScreen() {
 
   const fetchRequests = useCallback(async () => {
     try {
-      const response = await api.get('/api/v1/friends/pending');
-      // Handle various API response formats
-      const data = response.data?.data || response.data?.requests || response.data || [];
-      const requests = Array.isArray(data) ? data : [];
-      setIncomingRequests(requests.filter((r: FriendRequest) => r.type === 'incoming'));
-      setOutgoingRequests(requests.filter((r: FriendRequest) => r.type === 'outgoing'));
+      // Fetch incoming and outgoing requests separately
+      const [incomingRes, outgoingRes] = await Promise.all([
+        api.get('/api/v1/friends/requests'),
+        api.get('/api/v1/friends/sent'),
+      ]);
+      
+      // Normalize incoming requests - API returns { from: user_data, ... }
+      const incomingData = incomingRes.data?.data || incomingRes.data?.requests || incomingRes.data || [];
+      const normalizedIncoming = (Array.isArray(incomingData) ? incomingData : []).map((r: Record<string, unknown>) => ({
+        id: r.id as string,
+        user: r.from ? {
+          id: (r.from as Record<string, unknown>).id as string,
+          username: (r.from as Record<string, unknown>).username as string || 'Unknown',
+          display_name: (r.from as Record<string, unknown>).display_name as string | null,
+          avatar_url: (r.from as Record<string, unknown>).avatar_url as string | null,
+        } : { id: 'unknown', username: 'Unknown', display_name: null, avatar_url: null },
+        type: 'incoming' as const,
+        created_at: r.sent_at as string,
+      }));
+      
+      // Normalize outgoing requests - API returns { to: user_data, ... }
+      const outgoingData = outgoingRes.data?.data || outgoingRes.data?.requests || outgoingRes.data || [];
+      const normalizedOutgoing = (Array.isArray(outgoingData) ? outgoingData : []).map((r: Record<string, unknown>) => ({
+        id: r.id as string,
+        user: r.to ? {
+          id: (r.to as Record<string, unknown>).id as string,
+          username: (r.to as Record<string, unknown>).username as string || 'Unknown',
+          display_name: (r.to as Record<string, unknown>).display_name as string | null,
+          avatar_url: (r.to as Record<string, unknown>).avatar_url as string | null,
+        } : { id: 'unknown', username: 'Unknown', display_name: null, avatar_url: null },
+        type: 'outgoing' as const,
+        created_at: r.sent_at as string,
+      }));
+      
+      setIncomingRequests(normalizedIncoming);
+      setOutgoingRequests(normalizedOutgoing);
     } catch (error) {
       console.error('Failed to fetch requests:', error);
     } finally {

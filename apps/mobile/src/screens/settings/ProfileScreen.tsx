@@ -136,6 +136,15 @@ export default function ProfileScreen({ navigation }: Props) {
         <Text style={[styles.changePhotoText, { color: colors.primary }]}>
           Change photo
         </Text>
+        {/* User ID Display */}
+        <View style={[styles.uidBadge, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.uidText, { color: colors.primary }]}>
+            {user?.user_id_display || '#0000'}
+          </Text>
+        </View>
+        <Text style={[styles.uidHint, { color: colors.textTertiary }]}>
+          Your unique ID - Share this to add friends
+        </Text>
       </View>
       
       {/* Form */}
@@ -299,6 +308,23 @@ const styles = StyleSheet.create({
     marginTop: 12,
     fontSize: 14,
     fontWeight: '500',
+  },
+  uidBadge: {
+    marginTop: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  uidText: {
+    fontSize: 18,
+    fontWeight: '700',
+    fontFamily: 'monospace',
+  },
+  uidHint: {
+    marginTop: 4,
+    fontSize: 12,
+    textAlign: 'center',
   },
   form: {
     padding: 16,

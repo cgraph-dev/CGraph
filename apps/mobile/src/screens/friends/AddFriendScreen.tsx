@@ -14,14 +14,15 @@ import { Input, Button, Header } from '../../components';
 export default function AddFriendScreen() {
   const navigation = useNavigation();
   const { colors } = useTheme();
-  const [username, setUsername] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   const handleSendRequest = async () => {
-    if (!username.trim()) {
-      setError('Please enter a username');
+    const input = searchInput.trim();
+    if (!input) {
+      setError('Please enter a username, email, or user ID');
       return;
     }
 
@@ -30,10 +31,26 @@ export default function AddFriendScreen() {
     setSuccess(false);
 
     try {
-      // Send username instead of user_id - backend now supports both
-      await api.post('/api/v1/friends', { username: username.trim() });
+      // Determine the type of identifier
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
+      const isUid = /^#?\d+$/.test(input); // UID format like #0001 or 0001
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input);
+      
+      let payload: { user_id?: string; username?: string; email?: string; uid?: string };
+      if (isUuid) {
+        payload = { user_id: input };
+      } else if (isEmail) {
+        payload = { email: input };
+      } else if (isUid) {
+        // Remove # prefix if present
+        payload = { uid: input.replace('#', '').trim() };
+      } else {
+        payload = { username: input };
+      }
+      
+      await api.post('/api/v1/friends', payload);
       setSuccess(true);
-      setUsername('');
+      setSearchInput('');
       setTimeout(() => {
         navigation.goBack();
       }, 1500);
@@ -65,15 +82,15 @@ export default function AddFriendScreen() {
             Add a Friend
           </Text>
           <Text style={[styles.description, { color: colors.textSecondary }]}>
-            Enter your friend's username to send them a friend request.
+            Enter your friend's username, email, or user ID (like #0001) to send them a friend request.
           </Text>
 
           <Input
-            label="Username"
-            placeholder="Enter username"
-            value={username}
+            label="Username, Email, or User ID"
+            placeholder="e.g. john_doe, john@example.com, or #0001"
+            value={searchInput}
             onChangeText={(text) => {
-              setUsername(text);
+              setSearchInput(text);
               setError('');
               setSuccess(false);
             }}
@@ -94,7 +111,7 @@ export default function AddFriendScreen() {
           <Button
             onPress={handleSendRequest}
             loading={loading}
-            disabled={!username.trim()}
+            disabled={!searchInput.trim()}
             fullWidth
           >
             📨 Send Friend Request
@@ -103,24 +120,24 @@ export default function AddFriendScreen() {
 
         <View style={[styles.infoCard, { backgroundColor: colors.surface }]}>
           <Text style={[styles.infoTitle, { color: colors.text }]}>
-            How it works
+            How to find friends
           </Text>
           <View style={styles.infoItem}>
             <Text style={[styles.infoNumber, { color: colors.primary }]}>1</Text>
             <Text style={[styles.infoText, { color: colors.textSecondary }]}>
-              Enter your friend's username
+              Username: Enter their @username
             </Text>
           </View>
           <View style={styles.infoItem}>
             <Text style={[styles.infoNumber, { color: colors.primary }]}>2</Text>
             <Text style={[styles.infoText, { color: colors.textSecondary }]}>
-              They'll receive a friend request notification
+              User ID: Enter their ID like #0001
             </Text>
           </View>
           <View style={styles.infoItem}>
             <Text style={[styles.infoNumber, { color: colors.primary }]}>3</Text>
             <Text style={[styles.infoText, { color: colors.textSecondary }]}>
-              Once accepted, you can start chatting!
+              Email: Enter their email address
             </Text>
           </View>
         </View>
