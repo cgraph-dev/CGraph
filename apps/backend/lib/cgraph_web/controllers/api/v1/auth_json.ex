@@ -84,6 +84,7 @@ defmodule CgraphWeb.API.V1.AuthJSON do
   defp user_data(%User{} = user) do
     %{
       id: user.id,
+      uid: user.uid,
       user_id: user.user_id,
       user_id_display: User.format_user_id(user),
       username: user.username,

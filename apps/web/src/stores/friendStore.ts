@@ -143,20 +143,23 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       // Determine the type of identifier
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(usernameOrIdOrEmail);
-      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(usernameOrIdOrEmail);
-      const isUid = /^#?\d+$/.test(usernameOrIdOrEmail.trim()); // UID format like #0001 or 0001
+      const input = usernameOrIdOrEmail.trim();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input);
+      const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
+      // UID format: 10-digit number (new format) or 1-4 digit (legacy format)
+      const cleaned = input.replace('#', '');
+      const isUid = /^\d{1,10}$/.test(cleaned);
       
       let payload: { user_id?: string; username?: string; email?: string; uid?: string };
       if (isUuid) {
-        payload = { user_id: usernameOrIdOrEmail };
+        payload = { user_id: input };
       } else if (isEmail) {
-        payload = { email: usernameOrIdOrEmail };
+        payload = { email: input };
       } else if (isUid) {
-        // Remove # prefix if present
-        payload = { uid: usernameOrIdOrEmail.replace('#', '').trim() };
+        // Send the cleaned UID (without # prefix)
+        payload = { uid: cleaned };
       } else {
-        payload = { username: usernameOrIdOrEmail };
+        payload = { username: input };
       }
       
       await api.post('/api/v1/friends', payload);

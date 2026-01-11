@@ -52,6 +52,7 @@ defmodule CgraphWeb.API.V1.UserJSON do
   def user_data(%User{} = user) do
     %{
       id: user.id,
+      uid: user.uid,
       user_id: user.user_id,
       user_id_display: User.format_user_id(user),
       email: user.email,

@@ -4,6 +4,9 @@ import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
 import AppearanceSettingsEnhanced from '@/components/settings/AppearanceSettingsEnhanced';
+import ChatBubbleSettings from '@/components/settings/ChatBubbleSettings';
+import UICustomizationSettings from '@/components/settings/UICustomizationSettings';
+import AvatarSettings from '@/components/settings/AvatarSettings';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -17,6 +20,9 @@ import {
   DevicePhoneMobileIcon,
   CreditCardIcon,
   SparklesIcon,
+  ChatBubbleLeftRightIcon,
+  UserCircleIcon,
+  AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 
 const settingsSections = [
@@ -24,6 +30,9 @@ const settingsSections = [
   { id: 'security', label: 'Security', icon: ShieldCheckIcon },
   { id: 'notifications', label: 'Notifications', icon: BellIcon },
   { id: 'appearance', label: 'Appearance', icon: PaintBrushIcon },
+  { id: 'ui-customization', label: 'UI Customization', icon: AdjustmentsHorizontalIcon },
+  { id: 'chat-bubbles', label: 'Chat Bubbles', icon: ChatBubbleLeftRightIcon },
+  { id: 'avatar', label: 'Avatar & Profile', icon: UserCircleIcon },
   { id: 'language', label: 'Language', icon: GlobeAltIcon },
   { id: 'sessions', label: 'Sessions', icon: DevicePhoneMobileIcon },
   { id: 'privacy', label: 'Privacy', icon: KeyIcon },
@@ -157,6 +166,9 @@ export default function Settings() {
             {section === 'security' && <SecuritySettings key="security" />}
             {section === 'notifications' && <NotificationSettings key="notifications" />}
             {section === 'appearance' && <AppearanceSettingsEnhanced key="appearance" />}
+            {section === 'ui-customization' && <UICustomizationSettings key="ui-customization" />}
+            {section === 'chat-bubbles' && <ChatBubbleSettings key="chat-bubbles" />}
+            {section === 'avatar' && <AvatarSettings key="avatar" />}
             {section === 'language' && <LanguageSettings key="language" />}
             {section === 'sessions' && <SessionsSettings key="sessions" />}
             {section === 'privacy' && <PrivacySettings key="privacy" />}

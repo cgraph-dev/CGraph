@@ -3,8 +3,9 @@ export interface User {
   id: string;
   email: string;
   username: string | null;
-  user_id: number;
-  user_id_display: string;
+  uid: string;  // Random 10-digit UID (e.g., "4829173650")
+  user_id: number;  // Legacy sequential ID
+  user_id_display: string;  // Formatted UID (e.g., "#4829173650")
   display_name?: string;
   avatar_url?: string;
   bio?: string;

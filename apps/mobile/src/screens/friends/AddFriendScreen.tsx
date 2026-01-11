@@ -33,7 +33,9 @@ export default function AddFriendScreen() {
     try {
       // Determine the type of identifier
       const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input);
-      const isUid = /^#?\d+$/.test(input); // UID format like #0001 or 0001
+      // UID format: 10-digit number (new) or 1-4 digit (legacy)
+      const cleaned = input.replace('#', '');
+      const isUid = /^\d{1,10}$/.test(cleaned);
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(input);
       
       let payload: { user_id?: string; username?: string; email?: string; uid?: string };
@@ -42,8 +44,8 @@ export default function AddFriendScreen() {
       } else if (isEmail) {
         payload = { email: input };
       } else if (isUid) {
-        // Remove # prefix if present
-        payload = { uid: input.replace('#', '').trim() };
+        // Send the cleaned UID (without # prefix)
+        payload = { uid: cleaned };
       } else {
         payload = { username: input };
       }
@@ -82,12 +84,12 @@ export default function AddFriendScreen() {
             Add a Friend
           </Text>
           <Text style={[styles.description, { color: colors.textSecondary }]}>
-            Enter your friend's username, email, or user ID (like #0001) to send them a friend request.
+            Enter your friend's username, email, or user ID (like #4829173650) to send them a friend request.
           </Text>
 
           <Input
             label="Username, Email, or User ID"
-            placeholder="e.g. john_doe, john@example.com, or #0001"
+            placeholder="e.g. john_doe, john@example.com, or #4829173650"
             value={searchInput}
             onChangeText={(text) => {
               setSearchInput(text);
@@ -131,7 +133,7 @@ export default function AddFriendScreen() {
           <View style={styles.infoItem}>
             <Text style={[styles.infoNumber, { color: colors.primary }]}>2</Text>
             <Text style={[styles.infoText, { color: colors.textSecondary }]}>
-              User ID: Enter their ID like #0001
+              User ID: Enter their 10-digit ID like #4829173650
             </Text>
           </View>
           <View style={styles.infoItem}>

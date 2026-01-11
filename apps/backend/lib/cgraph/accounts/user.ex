@@ -13,7 +13,7 @@ defmodule Cgraph.Accounts.User do
   @timestamps_opts [type: :utc_datetime_usec]
 
   @derive {Jason.Encoder, only: [
-    :id, :user_id, :username, :display_name, :email, :avatar_url, :bio,
+    :id, :uid, :user_id, :username, :display_name, :email, :avatar_url, :bio,
     :wallet_address, :is_verified, :is_premium, :status, :last_seen_at,
     :inserted_at
   ]}
@@ -22,7 +22,10 @@ defmodule Cgraph.Accounts.User do
   @username_change_cooldown_days 14
 
   schema "users" do
-    # Unique sequential ID for display (e.g., #0001)
+    # Random 10-digit UID for public display (e.g., #4829173650)
+    # Security: Non-sequential to prevent enumeration attacks
+    field :uid, :string, read_after_writes: true
+    # Legacy sequential ID (kept for backward compatibility)
     field :user_id, :integer, read_after_writes: true
     field :username, :string
     field :username_changed_at, :utc_datetime
@@ -290,12 +293,16 @@ defmodule Cgraph.Accounts.User do
   end
 
   @doc """
-  Formats user_id as display string (e.g., #0001).
+  Formats UID as display string (e.g., #4829173650).
+  Uses the new random 10-digit UID for security (non-enumerable).
+  Falls back to legacy user_id if uid is not yet set.
   """
-  def format_user_id(%__MODULE__{user_id: nil}), do: nil
-  def format_user_id(%__MODULE__{user_id: user_id}) do
+  def format_user_id(%__MODULE__{uid: uid}) when is_binary(uid) and uid != "", do: "#" <> uid
+  def format_user_id(%__MODULE__{user_id: user_id}) when is_integer(user_id) do
+    # Legacy fallback for users before migration
     "#" <> String.pad_leading(Integer.to_string(user_id), 4, "0")
   end
+  def format_user_id(_), do: nil
 
   @doc """
   Password change changeset.

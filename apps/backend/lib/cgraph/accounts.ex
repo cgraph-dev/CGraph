@@ -109,24 +109,37 @@ defmodule Cgraph.Accounts do
   end
 
   @doc """
-  Get a user by their unique numeric user_id.
-  Handles both integer and string formats like "#0001" or "1".
+  Get a user by their UID (random 10-digit string).
+  Handles formats like "#4829173650" or "4829173650".
+  Also supports legacy numeric user_id for backward compatibility.
   """
-  def get_user_by_user_id(user_id)
+  def get_user_by_user_id(uid_or_user_id)
 
-  def get_user_by_user_id(user_id) when is_integer(user_id) do
-    case Repo.get_by(User, user_id: user_id) do
-      nil -> {:error, :not_found}
+  def get_user_by_user_id(uid) when is_binary(uid) do
+    # Handle formats like "#4829173650" or "4829173650"
+    cleaned = uid |> String.replace("#", "") |> String.trim()
+    
+    # First try to find by new uid field (10-digit string)
+    case Repo.get_by(User, uid: cleaned) do
+      nil ->
+        # Fallback: try legacy numeric user_id
+        case Integer.parse(cleaned) do
+          {num, ""} -> 
+            case Repo.get_by(User, user_id: num) do
+              nil -> {:error, :not_found}
+              user -> {:ok, user}
+            end
+          _ -> {:error, :not_found}
+        end
       user -> {:ok, user}
     end
   end
 
-  def get_user_by_user_id(user_id) when is_binary(user_id) do
-    # Handle formats like "#0001" or "0001" or "1"
-    cleaned = user_id |> String.replace("#", "") |> String.trim()
-    case Integer.parse(cleaned) do
-      {num, ""} -> get_user_by_user_id(num)
-      _ -> {:error, :invalid_format}
+  def get_user_by_user_id(user_id) when is_integer(user_id) do
+    # Legacy: search by numeric user_id
+    case Repo.get_by(User, user_id: user_id) do
+      nil -> {:error, :not_found}
+      user -> {:ok, user}
     end
   end
 
@@ -1057,21 +1070,23 @@ defmodule Cgraph.Accounts do
   # ============================================================================
 
   @doc """
-  Search users by username, display name, email, or user_id (UID like #0001).
+  Search users by username, display name, email, or UID (random 10-digit like #4829173650).
   """
   def search_users(query, opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 20)
     search_term = "%#{query}%"
 
-    # Check if query is a UID format like #0001 or 0001
+    # Check if query is a UID format (10-digit string or legacy numeric)
     uid_query = parse_uid_query(query)
+    legacy_user_id = parse_legacy_user_id(query)
 
     db_query = from u in User,
       where: ilike(u.username, ^search_term) or 
              ilike(u.display_name, ^search_term) or
              ilike(u.email, ^search_term) or
-             (not is_nil(^uid_query) and u.user_id == ^uid_query),
+             (not is_nil(^uid_query) and u.uid == ^uid_query) or
+             (not is_nil(^legacy_user_id) and u.user_id == ^legacy_user_id),
       order_by: [asc: u.username]
 
     total = Repo.aggregate(db_query, :count, :id)
@@ -1085,15 +1100,27 @@ defmodule Cgraph.Accounts do
     {users, meta}
   end
 
-  # Parse UID query - handles formats like #0001, #1, 0001, 1
+  # Parse UID query - handles formats like #4829173650 or 4829173650 (10-digit string)
   defp parse_uid_query(query) when is_binary(query) do
     cleaned = query |> String.replace("#", "") |> String.trim()
-    case Integer.parse(cleaned) do
-      {num, ""} -> num
-      _ -> nil
+    # Only match if it looks like a 10-digit UID
+    if Regex.match?(~r/^\d{10}$/, cleaned) do
+      cleaned
+    else
+      nil
     end
   end
   defp parse_uid_query(_), do: nil
+
+  # Parse legacy user_id for backward compatibility (numeric 1-4 digit IDs)
+  defp parse_legacy_user_id(query) when is_binary(query) do
+    cleaned = query |> String.replace("#", "") |> String.trim()
+    case Integer.parse(cleaned) do
+      {num, ""} when num > 0 and num < 10000 -> num  # Legacy IDs are 1-9999
+      _ -> nil
+    end
+  end
+  defp parse_legacy_user_id(_), do: nil
 
   @doc """
   Get user suggestions for autocomplete.

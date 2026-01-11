@@ -24,8 +24,9 @@ function getApiErrorMessage(error: unknown, fallback: string): string {
 
 export interface User {
   id: string;
-  userId: number;
-  userIdDisplay: string;
+  uid: string;  // Random 10-digit UID (e.g., "4829173650")
+  userId: number;  // Legacy sequential ID (for backward compatibility)
+  userIdDisplay: string;  // Formatted UID for display (e.g., "#4829173650")
   email: string;
   username: string | null;
   displayName: string | null;
@@ -56,8 +57,9 @@ export interface User {
 function mapUserFromApi(apiUser: Record<string, unknown>): User {
   return {
     id: apiUser.id as string,
+    uid: (apiUser.uid as string) || '',
     userId: (apiUser.user_id as number) || 0,
-    userIdDisplay: (apiUser.user_id_display as string) || '#0000',
+    userIdDisplay: (apiUser.user_id_display as string) || '#0000000000',
     email: apiUser.email as string,
     username: (apiUser.username as string | null) || null,
     displayName: (apiUser.display_name as string | null) || null,
