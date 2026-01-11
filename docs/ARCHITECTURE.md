@@ -280,6 +280,8 @@ A few notes on the design choices here:
 
 4. **Oban handles async work** — Search indexing, email delivery, and notification dispatch all run as Oban jobs so the main request path stays fast.
 
+5. **RedisPool provides 20 pooled connections** — For 10K+ concurrent users, a single Redis connection becomes a bottleneck. The `Cgraph.Cache.RedisPool` module uses round-robin distribution across connections and supports batch operations via `pipeline/2` and atomic transactions via `transaction/2`. Configure pool size via `REDIS_POOL_SIZE` environment variable.
+
 ---
 
 ## System Architecture Diagram

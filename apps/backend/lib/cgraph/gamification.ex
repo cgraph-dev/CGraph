@@ -1,7 +1,7 @@
 defmodule Cgraph.Gamification do
   @moduledoc """
   The Gamification context.
-  
+
   Handles XP progression, achievements, quests, titles, shop items,
   coin transactions, and leaderboards.
   """
@@ -44,7 +44,7 @@ defmodule Cgraph.Gamification do
   defp find_level(xp, min_level, max_level) do
     mid = div(min_level + max_level, 2)
     xp_at_mid = xp_for_level(mid + 1)
-    
+
     cond do
       xp >= xp_at_mid -> find_level(xp, mid + 1, max_level)
       true -> find_level(xp, min_level, mid)
@@ -60,7 +60,7 @@ defmodule Cgraph.Gamification do
     next_level_xp = xp_for_level(level + 1)
     xp_in_level = xp - current_level_xp
     xp_needed = next_level_xp - current_level_xp
-    
+
     round(xp_in_level / xp_needed * 100)
   end
 
@@ -75,7 +75,7 @@ defmodule Cgraph.Gamification do
     reference_type = Keyword.get(opts, :reference_type)
     reference_id = Keyword.get(opts, :reference_id)
     multiplier = get_xp_multiplier(user)
-    
+
     final_amount = round(amount * Decimal.to_float(multiplier))
     new_xp = user.xp + final_amount
     old_level = user.level
@@ -84,13 +84,13 @@ defmodule Cgraph.Gamification do
 
     Repo.transaction(fn ->
       # Update user XP and level
-      {:ok, updated_user} = 
+      {:ok, updated_user} =
         user
         |> Ecto.Changeset.change(%{xp: new_xp, level: new_level})
         |> Repo.update()
 
       # Create transaction record
-      {:ok, _transaction} = 
+      {:ok, _transaction} =
         %XpTransaction{}
         |> XpTransaction.changeset(%{
           user_id: user.id,
@@ -128,16 +128,16 @@ defmodule Cgraph.Gamification do
     description = Keyword.get(opts, :description)
     reference_type = Keyword.get(opts, :reference_type)
     reference_id = Keyword.get(opts, :reference_id)
-    
+
     new_balance = user.coins + amount
 
     Repo.transaction(fn ->
-      {:ok, updated_user} = 
+      {:ok, updated_user} =
         user
         |> Ecto.Changeset.change(%{coins: new_balance})
         |> Repo.update()
 
-      {:ok, _transaction} = 
+      {:ok, _transaction} =
         %CoinTransaction{}
         |> CoinTransaction.changeset(%{
           user_id: user.id,
@@ -156,12 +156,12 @@ defmodule Cgraph.Gamification do
 
   @doc """
   Spend coins from a user's balance with race condition protection.
-  
+
   Uses SELECT FOR UPDATE to prevent concurrent balance modifications.
   Returns {:ok, user} or {:error, :insufficient_funds}
-  
+
   ## Race Condition Prevention
-  
+
   The balance check happens INSIDE the transaction with a row-level lock,
   ensuring two concurrent requests cannot both pass the check before either
   commits, which would result in a negative balance.
@@ -174,7 +174,7 @@ defmodule Cgraph.Gamification do
     Repo.transaction(fn ->
       # Lock the user row for update to prevent race conditions
       # This ensures only one transaction can modify the balance at a time
-      locked_user = 
+      locked_user =
         from(u in User, where: u.id == ^user.id, lock: "FOR UPDATE")
         |> Repo.one!()
 
@@ -183,12 +183,12 @@ defmodule Cgraph.Gamification do
       else
         new_balance = locked_user.coins - amount
 
-        {:ok, updated_user} = 
+        {:ok, updated_user} =
           locked_user
           |> Ecto.Changeset.change(%{coins: new_balance})
           |> Repo.update()
 
-        {:ok, _transaction} = 
+        {:ok, _transaction} =
           %CoinTransaction{}
           |> CoinTransaction.changeset(%{
             user_id: user.id,
@@ -241,14 +241,14 @@ defmodule Cgraph.Gamification do
         new_streak = user.streak_days + 1
         longest = max(new_streak, user.streak_longest)
         coins = calculate_streak_bonus(new_streak)
-        
+
         do_claim_streak(user, today, new_streak, longest, coins)
 
       # Streak broken or first claim
       true ->
         new_streak = 1
         coins = calculate_streak_bonus(new_streak)
-        
+
         do_claim_streak(user, today, new_streak, user.streak_longest, coins)
     end
   end
@@ -260,7 +260,7 @@ defmodule Cgraph.Gamification do
 
   defp do_claim_streak(user, today, new_streak, longest, coins) do
     Repo.transaction(fn ->
-      {:ok, updated_user} = 
+      {:ok, updated_user} =
         user
         |> Ecto.Changeset.change(%{
           streak_days: new_streak,
@@ -271,7 +271,7 @@ defmodule Cgraph.Gamification do
         })
         |> Repo.update()
 
-      {:ok, _} = 
+      {:ok, _} =
         %CoinTransaction{}
         |> CoinTransaction.changeset(%{
           user_id: user.id,
@@ -283,7 +283,7 @@ defmodule Cgraph.Gamification do
         |> Repo.insert()
 
       # Award XP for daily login
-      {:ok, final_user, _} = award_xp(updated_user, 25, "daily_login", 
+      {:ok, final_user, _} = award_xp(updated_user, 25, "daily_login",
         description: "Daily login bonus")
 
       # Check streak achievements
@@ -339,7 +339,7 @@ defmodule Cgraph.Gamification do
   """
   def list_user_achievements(user_id, opts \\ []) do
     include_locked = Keyword.get(opts, :include_locked, true)
-    
+
     query = from ua in UserAchievement,
       where: ua.user_id == ^user_id,
       join: a in Achievement, on: ua.achievement_id == a.id,
@@ -374,15 +374,15 @@ defmodule Cgraph.Gamification do
   """
   def increment_achievement_progress(user_id, achievement_slug, increment \\ 1) do
     achievement = Repo.get_by(Achievement, slug: achievement_slug)
-    
+
     if achievement do
       {:ok, ua} = get_or_create_user_achievement(user_id, achievement.id)
-      
+
       if ua.unlocked do
         {:ok, ua}  # Already unlocked
       else
         new_progress = ua.progress + increment
-        
+
         if new_progress >= achievement.max_progress do
           # Unlock the achievement
           unlock_user_achievement(ua, achievement)
@@ -403,10 +403,10 @@ defmodule Cgraph.Gamification do
   """
   def unlock_achievement_by_slug(%User{} = user, achievement_slug) do
     achievement = Repo.get_by(Achievement, slug: achievement_slug)
-    
+
     if achievement do
       {:ok, ua} = get_or_create_user_achievement(user.id, achievement.id)
-      
+
       if ua.unlocked do
         {:ok, ua}
       else
@@ -420,7 +420,7 @@ defmodule Cgraph.Gamification do
   defp unlock_user_achievement(ua, achievement) do
     Repo.transaction(fn ->
       # Update user achievement
-      {:ok, updated_ua} = 
+      {:ok, updated_ua} =
         ua
         |> Ecto.Changeset.change(%{
           progress: achievement.max_progress,
@@ -431,14 +431,14 @@ defmodule Cgraph.Gamification do
 
       # Award XP and coins
       user = Repo.get!(User, ua.user_id)
-      
+
       if achievement.xp_reward > 0 do
         award_xp(user, achievement.xp_reward, "achievement",
           description: "Unlocked: #{achievement.title}",
           reference_type: "achievement",
           reference_id: achievement.id)
       end
-      
+
       if achievement.coin_reward > 0 do
         award_coins(user, achievement.coin_reward, "achievement",
           description: "Unlocked: #{achievement.title}",
@@ -468,7 +468,7 @@ defmodule Cgraph.Gamification do
   """
   def list_available_quests(opts \\ []) do
     quest_type = Keyword.get(opts, :type)
-    
+
     query = from q in Quest,
       where: q.is_active == true,
       order_by: [q.type, q.sort_order]
@@ -481,7 +481,7 @@ defmodule Cgraph.Gamification do
 
     # Filter by time constraints
     now = DateTime.utc_now()
-    
+
     query
     |> where([q], is_nil(q.starts_at) or q.starts_at <= ^now)
     |> where([q], is_nil(q.ends_at) or q.ends_at > ^now)
@@ -493,7 +493,7 @@ defmodule Cgraph.Gamification do
   """
   def list_user_quests(user_id, opts \\ []) do
     include_completed = Keyword.get(opts, :include_completed, false)
-    
+
     query = from uq in UserQuest,
       where: uq.user_id == ^user_id,
       join: q in Quest, on: uq.quest_id == q.id,
@@ -514,12 +514,12 @@ defmodule Cgraph.Gamification do
   """
   def accept_quest(user_id, quest_id) do
     quest = Repo.get!(Quest, quest_id)
-    
+
     # Check if already accepted
     case Repo.get_by(UserQuest, user_id: user_id, quest_id: quest_id) do
       nil ->
         expires_at = calculate_quest_expiry(quest)
-        
+
         %UserQuest{}
         |> UserQuest.changeset(%{
           user_id: user_id,
@@ -527,7 +527,7 @@ defmodule Cgraph.Gamification do
           expires_at: expires_at
         })
         |> Repo.insert()
-      
+
       existing ->
         {:ok, existing}
     end
@@ -535,7 +535,7 @@ defmodule Cgraph.Gamification do
 
   defp calculate_quest_expiry(quest) do
     now = DateTime.utc_now()
-    
+
     case quest.type do
       "daily" -> DateTime.add(now, 24 * 60 * 60, :second)
       "weekly" -> DateTime.add(now, 7 * 24 * 60 * 60, :second)
@@ -549,7 +549,7 @@ defmodule Cgraph.Gamification do
   """
   def update_quest_progress(user_id, objective_type, increment \\ 1) do
     # Find all active user quests with matching objectives
-    user_quests = 
+    user_quests =
       from(uq in UserQuest,
         where: uq.user_id == ^user_id and uq.completed == false,
         join: q in Quest, on: uq.quest_id == q.id,
@@ -558,7 +558,7 @@ defmodule Cgraph.Gamification do
 
     for uq <- user_quests do
       objectives = get_in(uq.quest.objectives, ["objectives"]) || []
-      
+
       matching_objectives = Enum.filter(objectives, fn obj ->
         obj["id"] == objective_type or obj["type"] == objective_type
       end)
@@ -568,9 +568,9 @@ defmodule Cgraph.Gamification do
         current = Map.get(uq.progress, obj_id, 0)
         target = obj["target"] || 1
         new_value = min(current + increment, target)
-        
+
         new_progress = Map.put(uq.progress, obj_id, new_value)
-        
+
         # Check if all objectives completed
         all_complete = Enum.all?(objectives, fn o ->
           Map.get(new_progress, o["id"], 0) >= (o["target"] || 1)
@@ -599,7 +599,7 @@ defmodule Cgraph.Gamification do
   Claim rewards for a completed quest.
   """
   def claim_quest_rewards(user_id, user_quest_id) do
-    user_quest = 
+    user_quest =
       UserQuest
       |> where([uq], uq.id == ^user_quest_id and uq.user_id == ^user_id)
       |> preload(:quest)
@@ -608,17 +608,17 @@ defmodule Cgraph.Gamification do
     cond do
       is_nil(user_quest) ->
         {:error, :not_found}
-      
+
       not user_quest.completed ->
         {:error, :not_completed}
-      
+
       user_quest.claimed ->
         {:error, :already_claimed}
-      
+
       true ->
         Repo.transaction(fn ->
           # Mark as claimed
-          {:ok, _} = 
+          {:ok, _} =
             user_quest
             |> UserQuest.claim_changeset()
             |> Repo.update()
@@ -675,7 +675,7 @@ defmodule Cgraph.Gamification do
   """
   def unlock_title_by_slug(%User{} = user, title_slug) do
     title = Repo.get_by(Title, slug: title_slug)
-    
+
     if title do
       # Check if already unlocked
       case Repo.get_by(UserTitle, user_id: user.id, title_id: title.id) do
@@ -687,7 +687,7 @@ defmodule Cgraph.Gamification do
             unlocked_at: DateTime.utc_now()
           })
           |> Repo.insert()
-        
+
         existing ->
           {:ok, existing}
       end
@@ -698,7 +698,7 @@ defmodule Cgraph.Gamification do
 
   defp check_level_titles(user, new_level) do
     # Unlock titles based on level
-    level_titles = 
+    level_titles =
       from(t in Title,
         where: t.unlock_type == "level")
       |> Repo.all()
@@ -716,12 +716,12 @@ defmodule Cgraph.Gamification do
   """
   def equip_title(user_id, title_id) do
     user = Repo.get!(User, user_id)
-    
+
     # Verify user owns this title
     case Repo.get_by(UserTitle, user_id: user_id, title_id: title_id) do
       nil ->
         {:error, :not_owned}
-      
+
       _ ->
         user
         |> Ecto.Changeset.change(%{equipped_title_id: title_id})
@@ -734,17 +734,17 @@ defmodule Cgraph.Gamification do
   """
   def purchase_title(%User{} = user, title_id) do
     title = Repo.get!(Title, title_id)
-    
+
     cond do
       not title.is_purchasable ->
         {:error, :not_purchasable}
-      
+
       user.coins < title.coin_cost ->
         {:error, :insufficient_funds}
-      
+
       Repo.get_by(UserTitle, user_id: user.id, title_id: title.id) != nil ->
         {:error, :already_owned}
-      
+
       true ->
         Repo.transaction(fn ->
           {:ok, updated_user} = spend_coins(user, title.coin_cost, "purchase",
@@ -766,7 +766,7 @@ defmodule Cgraph.Gamification do
   """
   def list_shop_items(opts \\ []) do
     category = Keyword.get(opts, :category)
-    
+
     query = from s in ShopItem,
       where: s.is_active == true,
       order_by: [s.category, s.sort_order]
@@ -797,17 +797,17 @@ defmodule Cgraph.Gamification do
     cond do
       not ShopItem.is_available?(item) ->
         {:error, :not_available}
-      
+
       item.premium_only and user.subscription_tier == "free" ->
         {:error, :premium_required}
-      
+
       user.coins < total_cost ->
         {:error, :insufficient_funds}
-      
+
       # Check if already owns permanent item
       item.type == "permanent" and user_owns_item?(user.id, item_id) ->
         {:error, :already_owned}
-      
+
       true ->
         Repo.transaction(fn ->
           # Spend coins
@@ -817,7 +817,7 @@ defmodule Cgraph.Gamification do
             reference_id: item_id)
 
           # Create purchase record
-          {:ok, _purchase} = 
+          {:ok, _purchase} =
             %UserPurchase{}
             |> UserPurchase.changeset(%{
               user_id: user.id,
@@ -829,7 +829,7 @@ defmodule Cgraph.Gamification do
             |> Repo.insert()
 
           # Update sold count
-          {:ok, _} = 
+          {:ok, _} =
             item
             |> Ecto.Changeset.change(%{sold_count: item.sold_count + quantity})
             |> Repo.update()
@@ -850,7 +850,7 @@ defmodule Cgraph.Gamification do
   """
   def list_user_purchases(user_id, opts \\ []) do
     category = Keyword.get(opts, :category)
-    
+
     query = from p in UserPurchase,
       where: p.user_id == ^user_id,
       join: i in ShopItem, on: p.item_id == i.id,
@@ -881,37 +881,37 @@ defmodule Cgraph.Gamification do
           where: u.is_active == true,
           order_by: [desc: u.xp],
           select: %{id: u.id, username: u.username, value: u.xp, level: u.level}
-      
+
       "level" ->
         from u in User,
           where: u.is_active == true,
           order_by: [desc: u.level, desc: u.xp],
           select: %{id: u.id, username: u.username, value: u.level, xp: u.xp}
-      
+
       "streak" ->
         from u in User,
           where: u.is_active == true,
           order_by: [desc: u.streak_days],
           select: %{id: u.id, username: u.username, value: u.streak_days, longest: u.streak_longest}
-      
+
       "karma" ->
         from u in User,
           where: u.is_active == true,
           order_by: [desc: u.karma],
           select: %{id: u.id, username: u.username, value: u.karma}
-      
+
       "messages" ->
         from u in User,
           where: u.is_active == true,
           order_by: [desc: u.total_messages_sent],
           select: %{id: u.id, username: u.username, value: u.total_messages_sent}
-      
+
       "posts" ->
         from u in User,
           where: u.is_active == true,
           order_by: [desc: u.total_posts_created],
           select: %{id: u.id, username: u.username, value: u.total_posts_created}
-      
+
       _ ->
         from u in User,
           where: u.is_active == true,
@@ -919,7 +919,7 @@ defmodule Cgraph.Gamification do
           select: %{id: u.id, username: u.username, value: u.xp, level: u.level}
     end
 
-    entries = 
+    entries =
       query
       |> limit(^limit)
       |> offset(^offset)
@@ -961,8 +961,8 @@ defmodule Cgraph.Gamification do
   """
   def get_user_stats(user_id) do
     user = Repo.get!(User, user_id)
-    
-    unlocked_achievements = 
+
+    unlocked_achievements =
       from(ua in UserAchievement,
         where: ua.user_id == ^user_id and ua.unlocked == true)
       |> Repo.aggregate(:count)

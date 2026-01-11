@@ -272,7 +272,6 @@ defmodule CgraphWeb.PremiumController do
       })
     end
   end
-  end
 
   @doc """
   GET /api/v1/premium/features

@@ -1,27 +1,27 @@
 defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
   @moduledoc """
   Specialized rate limiter for Two-Factor Authentication endpoints.
-  
+
   ## Security Features
-  
+
   - Per-user rate limiting (not just IP) to prevent distributed brute force
   - Progressive lockout: 5 attempts per 5 minutes, then lockout for 15 minutes
   - Tracks failed attempts separately from successful ones
   - Automatic unlock after lockout period
-  
+
   ## Rate Limits
-  
+
   - 5 verification attempts per 5 minutes per user
   - After 5 failed attempts: 15-minute lockout
   - After 3 lockouts in 24 hours: 24-hour lockout
-  
+
   ## Usage
-  
+
       # In controller:
       plug CgraphWeb.Plugs.TwoFactorRateLimiter when action in [:verify, :disable]
-  
+
   ## Why Separate from Standard Rate Limiter?
-  
+
   Standard rate limiting (100 req/min) would allow ~10,000 attempts in under 2 hours,
   which is enough to brute-force a 6-digit TOTP code (1 million combinations).
   This plug implements proper 2FA protection.
@@ -41,7 +41,7 @@ defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
 
   def call(conn, _opts) do
     user = conn.assigns[:current_user]
-    
+
     if is_nil(user) do
       # No user = authentication failed earlier, let it pass through
       conn
@@ -70,7 +70,7 @@ defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
 
   defp check_lockout(conn, lockout_key) do
     case Redix.command(:redix, ["GET", lockout_key]) do
-      {:ok, nil} -> 
+      {:ok, nil} ->
         {:ok, conn}
       {:ok, _locked_at} ->
         ttl = get_ttl(lockout_key)
@@ -85,7 +85,7 @@ defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
 
   defp check_extended_lockout(conn, lockout_count_key) do
     case Redix.command(:redix, ["GET", lockout_count_key]) do
-      {:ok, nil} -> 
+      {:ok, nil} ->
         {:ok, conn}
       {:ok, count_str} when is_binary(count_str) ->
         count = String.to_integer(count_str)
@@ -149,11 +149,11 @@ defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
         # Success (200 OK) - reset the counter
         status == 200 ->
           Redix.command(:redix, ["DEL", key])
-          
+
         # Failure (422, 401, etc.) - increment counter
         status in [401, 422, 423] ->
           increment_failure(key, lockout_key, lockout_count_key, conn.assigns.current_user.id)
-          
+
         # Other statuses - don't count
         true ->
           :ok
@@ -175,17 +175,17 @@ defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
         # Check if we should trigger lockout
         if count >= @max_attempts do
           Logger.warning("[2FA] Triggering lockout for user #{user_id} after #{count} attempts")
-          
+
           # Set lockout
           Redix.command(:redix, ["SETEX", lockout_key, @lockout_seconds, DateTime.to_iso8601(DateTime.utc_now())])
-          
+
           # Increment lockout count
           case Redix.command(:redix, ["INCR", lockout_count_key]) do
             {:ok, lockout_count} ->
               if lockout_count == 1 do
                 Redix.command(:redix, ["EXPIRE", lockout_count_key, @extended_lockout_seconds])
               end
-              
+
               if lockout_count >= @lockout_threshold do
                 Logger.warning("[2FA] Triggering extended lockout for user #{user_id}")
                 # Extend the lockout to 24 hours
@@ -193,7 +193,7 @@ defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
               end
             _ -> :ok
           end
-          
+
           # Reset attempt counter
           Redix.command(:redix, ["DEL", key])
         end

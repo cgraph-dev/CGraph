@@ -27,16 +27,20 @@ if (import.meta.env.DEV) {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      // Real-time messaging app: shorter stale times for dynamic content
+      staleTime: 1000 * 30, // 30 seconds - better for real-time data
       gcTime: 1000 * 60 * 60 * 24, // 24 hours - keep unused data for offline
-      retry: 1,
-      refetchOnWindowFocus: false,
+      retry: 2,
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      refetchOnWindowFocus: true, // Re-fetch when user returns to app
+      refetchOnReconnect: true, // Re-fetch when coming back online
       // Enable network mode for offline support
       networkMode: 'offlineFirst',
     },
     mutations: {
       // Mutations should pause when offline and resume when online
       networkMode: 'offlineFirst',
+      retry: 2,
     },
   },
 });
@@ -57,7 +61,7 @@ persistQueryClient({
   // Only persist for 24 hours
   maxAge: 1000 * 60 * 60 * 24,
   // Bust cache on major version changes
-  buster: 'v0.7.25',
+  buster: 'v0.7.48',
 });
 
 // Track online/offline status for offline-first behavior

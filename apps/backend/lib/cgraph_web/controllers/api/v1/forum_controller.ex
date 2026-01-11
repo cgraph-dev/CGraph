@@ -218,7 +218,7 @@ defmodule CgraphWeb.API.V1.ForumController do
     else
       with {:ok, forum} <- Forums.get_forum(forum_id),
            :ok <- Forums.authorize_action(user, forum, :vote) do
-      case Forums.vote_forum(user, forum_id, vote_value) do
+        case Forums.vote_forum(user, forum_id, vote_value) do
         {:ok, result} ->
           {:ok, updated_forum} = Forums.get_forum_with_vote(forum_id, user.id)
           conn
@@ -263,6 +263,22 @@ defmodule CgraphWeb.API.V1.ForumController do
           conn
           |> put_status(:unprocessable_entity)
           |> json(%{error: "Unable to vote: #{inspect(reason)}"})
+        end
+      else
+        {:error, :not_found} ->
+          conn
+          |> put_status(:not_found)
+          |> json(%{error: "Forum not found"})
+
+        {:error, :unauthorized} ->
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "Not authorized to vote on this forum"})
+
+        _ ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{error: "Unable to process vote"})
       end
     end
   end
