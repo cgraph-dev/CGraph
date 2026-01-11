@@ -537,6 +537,7 @@ class SocketManager {
 
 // Export singleton instance
 export const socketManager = new SocketManager();
+export default socketManager;
 
 // Hook to manage socket connection
 export function useSocket() {
