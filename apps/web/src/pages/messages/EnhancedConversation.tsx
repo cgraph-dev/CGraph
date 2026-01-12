@@ -43,6 +43,10 @@ import ShaderBackground from '@/components/shaders/ShaderBackground';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { themeEngine } from '@/lib/ai/ThemeEngine';
 
+// Sticker system integration
+import { StickerPicker, StickerButton, StickerMessage } from '@/components/chat/StickerPicker';
+import type { Sticker } from '@/data/stickers';
+
 // =============================================================================
 // ENHANCED MESSAGE BUBBLE
 // =============================================================================
@@ -284,9 +288,11 @@ export default function EnhancedConversation() {
   const [messageInput, setMessageInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
+  const [showStickerPicker, setShowStickerPicker] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputContainerRef = useRef<HTMLDivElement>(null);
 
   const conversation = conversations.find((c) => c.id === conversationId);
   const conversationMessages = conversationId ? messages[conversationId] || [] : [];
@@ -325,6 +331,27 @@ export default function EnhancedConversation() {
       socketManager.sendTyping(`conversation:${conversationId}`, false);
     } catch (error) {
       console.error('Failed to send message:', error);
+      HapticFeedback.error();
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Handle sticker selection - sends sticker as a special message format
+  const handleStickerSelect = async (sticker: Sticker) => {
+    if (!conversationId || isSending) return;
+
+    HapticFeedback.medium();
+    setIsSending(true);
+    setShowStickerPicker(false);
+
+    try {
+      // Send sticker as a special formatted message: [sticker:id:emoji:name]
+      const stickerMessage = `[sticker:${sticker.id}:${sticker.emoji}:${sticker.name}]`;
+      await sendMessage(conversationId, stickerMessage, replyTo?.id);
+      setReplyTo(null);
+    } catch (error) {
+      console.error('Failed to send sticker:', error);
       HapticFeedback.error();
     } finally {
       setIsSending(false);
@@ -494,6 +521,15 @@ export default function EnhancedConversation() {
           intensity="strong"
           className="p-4 flex-shrink-0 rounded-none border-t border-white/10"
         >
+          {/* Sticker Picker - positioned above input */}
+          <div className="relative" ref={inputContainerRef}>
+            <StickerPicker
+              isOpen={showStickerPicker}
+              onClose={() => setShowStickerPicker(false)}
+              onSelect={handleStickerSelect}
+            />
+          </div>
+
           <div className="flex items-end gap-2">
             <motion.button
               className="p-2.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
@@ -502,6 +538,12 @@ export default function EnhancedConversation() {
             >
               <PaperClipIcon className="h-5 w-5" />
             </motion.button>
+
+            {/* Sticker Button */}
+            <StickerButton
+              onClick={() => setShowStickerPicker(!showStickerPicker)}
+              isActive={showStickerPicker}
+            />
 
             <div className="flex-1 bg-dark-700/50 backdrop-blur-sm rounded-xl border border-white/10">
               <textarea

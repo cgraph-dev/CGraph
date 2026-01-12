@@ -43,6 +43,70 @@ export interface ForumModerator {
   avatarUrl: string | null;
 }
 
+// MyBB Feature: Thread Prefixes
+export interface ThreadPrefix {
+  id: string;
+  name: string;
+  color: string;
+  forums: string[]; // Forum IDs where this prefix is allowed
+}
+
+// MyBB Feature: Thread Rating
+export interface ThreadRating {
+  id: string;
+  threadId: string;
+  userId: string;
+  rating: number; // 1-5 stars
+  createdAt: string;
+}
+
+// MyBB Feature: Post Attachment
+export interface PostAttachment {
+  id: string;
+  postId: string;
+  filename: string;
+  originalFilename: string;
+  fileType: string;
+  fileSize: number;
+  thumbnailUrl?: string;
+  downloadUrl: string;
+  downloads: number;
+  uploadedBy: string;
+  uploadedAt: string;
+}
+
+// MyBB Feature: Edit History
+export interface PostEditHistory {
+  id: string;
+  postId: string;
+  editedBy: string;
+  editedByUsername: string;
+  previousContent: string;
+  reason?: string;
+  editedAt: string;
+}
+
+// MyBB Feature: Poll
+export interface Poll {
+  id: string;
+  threadId: string;
+  question: string;
+  options: PollOption[];
+  allowMultiple: boolean;
+  maxSelections?: number;
+  timeout?: string; // ISO date when poll closes
+  public: boolean; // Show who voted
+  closed: boolean;
+  createdAt: string;
+}
+
+export interface PollOption {
+  id: string;
+  text: string;
+  votes: number;
+  voters?: string[]; // User IDs who voted (if public)
+}
+
 export interface Post {
   id: string;
   forumId: string;
@@ -62,11 +126,23 @@ export interface Post {
   commentCount: number;
   myVote: 1 | -1 | null;
   category: ForumCategory | null;
+  // MyBB Features
+  prefix?: ThreadPrefix | null; // Thread prefix ([SOLVED], [HELP], etc.)
+  views: number; // View counter
+  rating?: number; // Average rating (1-5 stars)
+  ratingCount?: number; // Number of ratings
+  myRating?: number | null; // Current user's rating
+  isClosed?: boolean; // Thread closed (no new replies)
+  attachments?: PostAttachment[]; // File attachments
+  editHistory?: PostEditHistory[]; // Edit history
+  isApproved?: boolean; // Moderation approval
+  poll?: Poll | null; // Poll if postType is 'poll'
   author: {
     id: string;
     username: string | null;
     displayName: string | null;
     avatarUrl: string | null;
+    reputation?: number; // User karma/reputation
   };
   forum: {
     id: string;
@@ -74,6 +150,134 @@ export interface Post {
     slug: string;
     iconUrl: string | null;
   };
+  createdAt: string;
+  updatedAt: string;
+  editedAt?: string | null; // Last edit timestamp
+  editedBy?: string | null; // Who edited
+}
+
+// MyBB Feature: Thread/Forum Subscriptions
+export interface Subscription {
+  id: string;
+  userId: string;
+  entityType: 'thread' | 'forum';
+  entityId: string;
+  notificationMode: 'none' | 'email' | 'instant' | 'digest'; // Email notification preference
+  createdAt: string;
+}
+
+// MyBB Feature: User Groups & Permissions
+export interface UserGroup {
+  id: string;
+  name: string;
+  description?: string;
+  color?: string;
+  type: 'system' | 'custom' | 'joinable';
+  isHidden: boolean; // Hide group membership
+  isSuperMod: boolean; // Super moderator group
+  canModerate: boolean;
+  canAdmin: boolean;
+  permissions: GroupPermissions;
+  members?: number; // Member count
+}
+
+export interface GroupPermissions {
+  // Forum permissions
+  canViewForum: boolean;
+  canPostThreads: boolean;
+  canPostReplies: boolean;
+  canPostPolls: boolean;
+  canAttachFiles: boolean;
+  canEditOwnPosts: boolean;
+  canDeleteOwnPosts: boolean;
+  canRateThreads: boolean;
+  canUseReputation: boolean;
+  // PM permissions
+  canSendPM: boolean;
+  maxPMRecipients: number;
+  pmQuota: number;
+  // Upload quota
+  attachmentQuota: number; // MB
+  // Moderation
+  canEditPosts: boolean;
+  canDeletePosts: boolean;
+  canLockThreads: boolean;
+  canMoveThreads: boolean;
+  canSplitThreads: boolean;
+  canMergeThreads: boolean;
+  canWarnUsers: boolean;
+  canBanUsers: boolean;
+}
+
+// MyBB Feature: Warning System
+export interface UserWarning {
+  id: string;
+  userId: string;
+  warningType: WarningType;
+  points: number;
+  reason: string;
+  issuedBy: string;
+  issuedByUsername: string;
+  issuedAt: string;
+  expiresAt?: string | null;
+  isActive: boolean;
+}
+
+export interface WarningType {
+  id: string;
+  name: string;
+  points: number;
+  expiryDays: number;
+  action?: 'moderate' | 'suspend' | 'ban'; // Action when threshold reached
+}
+
+// MyBB Feature: Ban System
+export interface Ban {
+  id: string;
+  userId?: string | null;
+  username?: string;
+  ipAddress?: string | null;
+  email?: string | null;
+  reason: string;
+  bannedBy: string;
+  bannedByUsername: string;
+  bannedAt: string;
+  expiresAt?: string | null; // null = permanent
+  isActive: boolean;
+  notes?: string;
+}
+
+// MyBB Feature: Moderation Queue
+export interface ModerationQueueItem {
+  id: string;
+  itemType: 'post' | 'thread' | 'comment';
+  itemId: string;
+  authorId: string;
+  authorUsername: string;
+  forumId: string;
+  forumName: string;
+  title?: string;
+  content: string;
+  reason: 'new_user' | 'flagged' | 'auto_spam' | 'manual';
+  status: 'pending' | 'approved' | 'rejected';
+  moderatedBy?: string | null;
+  moderatedAt?: string | null;
+  createdAt: string;
+}
+
+// MyBB Feature: Report System
+export interface Report {
+  id: string;
+  reportType: 'post' | 'comment' | 'user' | 'reputation';
+  itemId: string;
+  reportedBy: string;
+  reportedByUsername: string;
+  reason: string;
+  details?: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'dismissed';
+  assignedTo?: string | null;
+  resolvedBy?: string | null;
+  resolution?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -91,14 +295,21 @@ export interface Comment {
   isCollapsed: boolean;
   depth: number;
   children: Comment[];
+  // MyBB Features
+  attachments?: PostAttachment[];
+  editHistory?: PostEditHistory[];
+  isApproved?: boolean;
   author: {
     id: string;
     username: string | null;
     displayName: string | null;
     avatarUrl: string | null;
+    reputation?: number;
   };
   createdAt: string;
   updatedAt: string;
+  editedAt?: string | null;
+  editedBy?: string | null;
 }
 
 type SortOption = 'hot' | 'new' | 'top' | 'controversial';
@@ -110,6 +321,54 @@ interface LeaderboardMeta {
   perPage: number;
   total: number;
   sort: LeaderboardSort;
+}
+
+// MyBB Feature: Data interfaces for creating/updating
+interface CreateThreadPrefixData {
+  name: string;
+  color: string;
+  forums: string[]; // Forum IDs
+}
+
+interface CreatePollData {
+  question: string;
+  options: string[]; // Array of option texts
+  allowMultiple: boolean;
+  maxSelections?: number;
+  timeout?: string; // ISO date
+  public: boolean;
+}
+
+interface CreateUserGroupData {
+  name: string;
+  description?: string;
+  color?: string;
+  type: UserGroup['type'];
+  permissions: Partial<GroupPermissions>;
+}
+
+interface UpdateUserGroupData {
+  name?: string;
+  description?: string;
+  color?: string;
+  permissions?: Partial<GroupPermissions>;
+}
+
+interface CreateBanData {
+  userId?: string;
+  username?: string;
+  ipAddress?: string;
+  email?: string;
+  reason: string;
+  expiresAt?: string | null; // ISO date or null for permanent
+  notes?: string;
+}
+
+interface CreateReportData {
+  reportType: Report['reportType'];
+  itemId: string;
+  reason: string;
+  details?: string;
 }
 
 interface ForumState {
@@ -130,6 +389,14 @@ interface ForumState {
   hasMorePosts: boolean;
   sortBy: SortOption;
   timeRange: TimeRange;
+
+  // MyBB Features State
+  threadPrefixes: ThreadPrefix[];
+  subscriptions: Subscription[];
+  userGroups: UserGroup[];
+  moderationQueue: ModerationQueueItem[];
+  reports: Report[];
+  multiQuoteBuffer: string[]; // Post IDs to multi-quote
 
   // Actions
   fetchForums: () => Promise<void>;
@@ -157,6 +424,72 @@ interface ForumState {
   lockPost: (forumId: string, postId: string) => Promise<void>;
   unlockPost: (forumId: string, postId: string) => Promise<void>;
   deletePost: (forumId: string, postId: string) => Promise<void>;
+
+  // MyBB Feature Actions
+  // Thread Prefixes
+  fetchThreadPrefixes: (forumId?: string) => Promise<void>;
+  createThreadPrefix: (data: CreateThreadPrefixData) => Promise<ThreadPrefix>;
+  deleteThreadPrefix: (prefixId: string) => Promise<void>;
+
+  // Thread Ratings
+  rateThread: (threadId: string, rating: number) => Promise<void>;
+  fetchThreadRatings: (threadId: string) => Promise<ThreadRating[]>;
+
+  // Attachments
+  uploadAttachment: (file: File, postId?: string) => Promise<PostAttachment>;
+  deleteAttachment: (attachmentId: string) => Promise<void>;
+
+  // Edit History
+  fetchEditHistory: (postId: string) => Promise<PostEditHistory[]>;
+
+  // Polls
+  createPoll: (threadId: string, data: CreatePollData) => Promise<Poll>;
+  votePoll: (pollId: string, optionIds: string[]) => Promise<void>;
+  closePoll: (pollId: string) => Promise<void>;
+
+  // Subscriptions
+  subscribeThread: (threadId: string, notificationMode: Subscription['notificationMode']) => Promise<void>;
+  unsubscribeThread: (threadId: string) => Promise<void>;
+  updateSubscription: (subscriptionId: string, notificationMode: Subscription['notificationMode']) => Promise<void>;
+  fetchSubscriptions: () => Promise<void>;
+
+  // User Groups
+  fetchUserGroups: () => Promise<void>;
+  createUserGroup: (data: CreateUserGroupData) => Promise<UserGroup>;
+  updateUserGroup: (groupId: string, data: UpdateUserGroupData) => Promise<UserGroup>;
+  deleteUserGroup: (groupId: string) => Promise<void>;
+
+  // Warnings
+  warnUser: (userId: string, warningTypeId: string, reason: string) => Promise<UserWarning>;
+  fetchUserWarnings: (userId: string) => Promise<UserWarning[]>;
+
+  // Bans
+  banUser: (data: CreateBanData) => Promise<Ban>;
+  unbanUser: (banId: string) => Promise<void>;
+  fetchBans: () => Promise<Ban[]>;
+
+  // Moderation Queue
+  fetchModerationQueue: () => Promise<void>;
+  approveQueueItem: (itemId: string) => Promise<void>;
+  rejectQueueItem: (itemId: string, reason?: string) => Promise<void>;
+
+  // Reports
+  reportItem: (data: CreateReportData) => Promise<Report>;
+  fetchReports: (status?: Report['status']) => Promise<void>;
+  assignReport: (reportId: string, moderatorId: string) => Promise<void>;
+  resolveReport: (reportId: string, resolution: string) => Promise<void>;
+
+  // Multi-quote
+  addToMultiQuote: (postId: string) => void;
+  removeFromMultiQuote: (postId: string) => void;
+  clearMultiQuote: () => void;
+
+  // Thread Moderation
+  moveThread: (threadId: string, targetForumId: string) => Promise<void>;
+  splitThread: (threadId: string, postIds: string[], newTitle: string) => Promise<void>;
+  mergeThreads: (sourceThreadId: string, targetThreadId: string) => Promise<void>;
+  closeThread: (threadId: string) => Promise<void>;
+  reopenThread: (threadId: string) => Promise<void>;
 }
 
 interface CreatePostData {
@@ -201,6 +534,14 @@ export const useForumStore = create<ForumState>((set, get) => ({
   hasMorePosts: true,
   sortBy: 'hot',
   timeRange: 'day',
+
+  // MyBB Features State Initialization
+  threadPrefixes: [],
+  subscriptions: [],
+  userGroups: [],
+  moderationQueue: [],
+  reports: [],
+  multiQuoteBuffer: [],
 
   fetchForums: async () => {
     set({ isLoadingForums: true });

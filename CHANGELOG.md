@@ -6,6 +6,101 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.52] - 2026-01-05
+
+**🎮 GAMIFICATION INTEGRATION: Sticker Picker, Title Badges & Documentation Audit**
+
+This release connects the orphaned gamification data files to the UI, adds comprehensive sticker and title components, and updates documentation to reflect accurate feature counts.
+
+### New Features
+
+#### 🎁 Sticker Picker Component (`src/components/chat/StickerPicker.tsx`)
+- **650+ lines of comprehensive sticker UI**:
+  - Tabbed pack browser with animated transitions
+  - Search functionality across all stickers
+  - Rarity-based styling (common → legendary)
+  - Lock/unlock system based on owned packs
+  - Coin pricing display for premium packs
+  - 16 sticker animations (bounce, shake, wiggle, float, etc.)
+  - Export: `StickerPicker`, `StickerButton`, `StickerMessage`
+
+#### 🏆 Title Badge Component (`src/components/gamification/TitleBadge.tsx`)
+- **350+ lines of animated title display**:
+  - 7 rarity levels with unique styling
+  - 12 animation types (shimmer, glow, pulse, rainbow, etc.)
+  - Tooltip with description and unlock requirements
+  - Size variants (xs, sm, md, lg)
+  - `ProfileTitleDisplay` for editable profiles
+
+### Integration
+
+#### 💬 Chat Integration
+- **EnhancedConversation.tsx**: Added StickerPicker above message input
+- **Conversation.tsx**: Added StickerPicker with full animation support
+- Stickers sent as special message format: `[sticker:id:emoji:name]`
+
+#### 👤 Profile Integration
+- **UserProfile.tsx**: Added TitleBadge next to username
+- Support for `equippedTitle` field from API
+- Animated title display with rarity styling
+
+### Bug Fixes
+
+#### 🐛 TypeScript Errors Fixed (13 total)
+- **doubleRatchet.ts**: Added `@ts-expect-error` for reserved PQC placeholders
+- **App.test.tsx**: Fixed mock user type to allow null assignment
+- **websocket.test.ts**: Fixed unused variable warnings with underscore prefix
+
+### Documentation
+
+#### 📚 Updated Documentation
+- **UI_ENHANCEMENTS.md**: Updated to v0.7.52 with accurate counts:
+  - 107 achievements (not 100+)
+  - 72 stickers in 18 packs (not 100+ in 20+)
+  - 24 chat backgrounds (not 26)
+  - 44 titles (not 50+)
+  - 28 avatar border styles (not 25+)
+- **FRONTEND.md**: Added "Gamification & Customization System" section
+  - Sticker system usage and data structures
+  - Title system integration guide
+  - Achievement tracking documentation
+  - Integration points table
+
+### Technical Details
+
+| Component | Lines | Purpose |
+|-----------|-------|---------|
+| `StickerPicker.tsx` | 650+ | Full sticker selection UI |
+| `TitleBadge.tsx` | 350+ | Animated title display |
+| UI_ENHANCEMENTS.md | Updated | Accurate feature documentation |
+| FRONTEND.md | +114 lines | Gamification section added |
+
+---
+
+## [0.7.51] - 2026-01-05
+
+**🧭 NAVIGATION & UX: Leaderboard Nav + Clickable Avatars**
+
+### Added
+- **TrophyIcon in Navigation**: Added leaderboard/achievements to AppLayout sidebar
+- **Clickable Avatars in Chat**: User avatars in MessageBubble now navigate to `/user/{userId}`
+
+### Files Modified
+- `apps/web/src/layouts/AppLayout.tsx` - Added TrophyIcon navigation item
+- `apps/web/src/pages/messages/Conversation.tsx` - Added onAvatarClick to MessageBubble
+- `apps/web/src/pages/messages/EnhancedConversation.tsx` - Added onAvatarClick to EnhancedMessageBubble
+
+---
+
+## [0.7.50] - 2026-01-05
+
+**🐛 CRITICAL FIX: Loading Screen Infinite Loop**
+
+### Fixed
+- **Duplicate Variable Declarations**: Fixed `stickerSystemEnabled` and `typingIndicatorsEnabled` being declared twice in `api.ts`, causing infinite loading screen
+
+---
+
 ## [0.7.48] - 2026-01-11
 
 **🚀 SCALABILITY RELEASE: 10K+ User Optimization & Comprehensive Testing**

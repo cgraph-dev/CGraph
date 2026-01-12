@@ -29,6 +29,7 @@ import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import AnimatedAvatar from '@/components/ui/AnimatedAvatar';
 import LevelProgress from '@/components/gamification/LevelProgress';
+import { TitleBadge } from '@/components/gamification/TitleBadge';
 import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';
 
 interface UserProfile {
@@ -57,6 +58,8 @@ interface UserProfile {
   messagesSent?: number;
   postsCreated?: number;
   friendsCount?: number;
+  // Title system
+  equippedTitle?: string | null;
 }
 
 // Default rarity color for fallback
@@ -135,6 +138,8 @@ export default function UserProfile() {
           messagesSent: userData.messages_sent || 0,
           postsCreated: userData.posts_created || 0,
           friendsCount: userData.friends_count || 0,
+          // Title system - equipped title ID
+          equippedTitle: userData.equipped_title || userData.title_id || null,
         });
         
         setFriendshipStatus(userData.friendship_status || 'none');
@@ -374,7 +379,17 @@ export default function UserProfile() {
                   </motion.div>
                 )}
               </div>
-              <p className="text-gray-400">@{profile.username}</p>
+              {/* User Title */}
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-gray-400">@{profile.username}</p>
+                {profile.equippedTitle && (
+                  <TitleBadge
+                    title={profile.equippedTitle}
+                    size="xs"
+                    showTooltip
+                  />
+                )}
+              </div>
               {profile.statusMessage && (
                 <p className="text-sm text-gray-500 mt-1">{profile.statusMessage}</p>
               )}

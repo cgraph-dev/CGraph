@@ -34,7 +34,7 @@ export default function AvatarSettings() {
     'electric',
   ];
 
-  const shapes: Array<typeof style.shape> = ['circle', 'rounded-square', 'hexagon', 'star'];
+  const shapes: Array<typeof style.shape> = ['circle', 'rounded-square', 'hexagon', 'octagon', 'shield', 'diamond'];
 
   const animationSpeeds: Array<typeof style.animationSpeed> = ['none', 'slow', 'normal', 'fast'];
 
@@ -80,10 +80,11 @@ export default function AvatarSettings() {
             Live Preview
           </h3>
           <AnimatedAvatar
-            src={user?.avatar}
+            src={user?.avatarUrl}
             alt={user?.displayName || 'User'}
             size="xl"
-            status="online"
+            showStatus
+            statusType="online"
           />
           <p className="text-sm text-gray-400">Your avatar with current settings</p>
         </div>

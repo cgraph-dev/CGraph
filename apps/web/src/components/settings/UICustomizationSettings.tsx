@@ -5,14 +5,11 @@ import {
   SwatchIcon,
   BeakerIcon,
   BoltIcon,
-  EyeIcon,
   Cog6ToothIcon,
   ArrowPathIcon,
   CheckIcon,
   XMarkIcon,
   PaintBrushIcon,
-  CubeIcon,
-  FireIcon,
 } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -236,7 +233,6 @@ export default function UICustomizationSettings() {
   const { preferences, updatePreference, resetToDefaults, exportPreferences, importPreferences } = useUIPreferences();
   const [activeTab, setActiveTab] = useState<'theme' | 'effects' | 'animations' | 'typography' | 'advanced'>('theme');
   const [showExportModal, setShowExportModal] = useState(false);
-  const [importText, setImportText] = useState('');
 
   useEffect(() => {
     applyPreferencesToDOM(preferences);
@@ -346,21 +342,27 @@ export default function UICustomizationSettings() {
   );
 }
 
+// Settings component props interface
+interface SettingsTabProps {
+  preferences: UIPreferences;
+  updatePreference: <K extends keyof UIPreferences>(key: K, value: UIPreferences[K]) => void;
+}
+
 // Theme Settings Tab
-function ThemeSettings({ preferences, updatePreference }: any) {
+function ThemeSettings({ preferences, updatePreference }: SettingsTabProps) {
   const themes = [
-    { value: 'dark', label: 'Dark', preview: 'bg-dark-900' },
-    { value: 'darker', label: 'Darker', preview: 'bg-dark-950' },
-    { value: 'midnight', label: 'Midnight', preview: 'bg-gray-950' },
-    { value: 'amoled', label: 'AMOLED', preview: 'bg-black' },
+    { value: 'dark' as const, label: 'Dark', preview: 'bg-dark-900' },
+    { value: 'darker' as const, label: 'Darker', preview: 'bg-dark-950' },
+    { value: 'midnight' as const, label: 'Midnight', preview: 'bg-gray-950' },
+    { value: 'amoled' as const, label: 'AMOLED', preview: 'bg-black' },
   ];
 
   const gradients = [
-    { value: 'none', label: 'None', preview: 'bg-dark-900' },
-    { value: 'subtle', label: 'Subtle', preview: 'bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950' },
-    { value: 'vibrant', label: 'Vibrant', preview: 'bg-gradient-to-br from-primary-900 via-purple-900 to-pink-900' },
-    { value: 'rainbow', label: 'Rainbow', preview: 'bg-gradient-to-br from-red-900 via-purple-900 to-blue-900' },
-    { value: 'northern-lights', label: 'Aurora', preview: 'bg-gradient-to-br from-green-900 via-blue-900 to-purple-900' },
+    { value: 'none' as const, label: 'None', preview: 'bg-dark-900' },
+    { value: 'subtle' as const, label: 'Subtle', preview: 'bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950' },
+    { value: 'vibrant' as const, label: 'Vibrant', preview: 'bg-gradient-to-br from-primary-900 via-purple-900 to-pink-900' },
+    { value: 'rainbow' as const, label: 'Rainbow', preview: 'bg-gradient-to-br from-red-900 via-purple-900 to-blue-900' },
+    { value: 'northern-lights' as const, label: 'Aurora', preview: 'bg-gradient-to-br from-green-900 via-blue-900 to-purple-900' },
   ];
 
   return (
@@ -437,15 +439,15 @@ function ThemeSettings({ preferences, updatePreference }: any) {
 }
 
 // Effects Settings Tab
-function EffectsSettings({ preferences, updatePreference }: any) {
+function EffectsSettings({ preferences, updatePreference }: SettingsTabProps) {
   const glassEffects = [
-    { value: 'none', label: 'None' },
-    { value: 'default', label: 'Default' },
-    { value: 'frosted', label: 'Frosted' },
-    { value: 'crystal', label: 'Crystal' },
-    { value: 'neon', label: 'Neon' },
-    { value: 'holographic', label: 'Holographic' },
-    { value: 'matrix', label: 'Matrix' },
+    { value: 'none' as const, label: 'None' },
+    { value: 'default' as const, label: 'Default' },
+    { value: 'frosted' as const, label: 'Frosted' },
+    { value: 'crystal' as const, label: 'Crystal' },
+    { value: 'neon' as const, label: 'Neon' },
+    { value: 'holographic' as const, label: 'Holographic' },
+    { value: 'matrix' as const, label: 'Matrix' },
   ];
 
   return (
@@ -515,7 +517,7 @@ function EffectsSettings({ preferences, updatePreference }: any) {
           <Select
             label="Particle Density"
             value={preferences.particleSystem}
-            onChange={(value) => updatePreference('particleSystem', value)}
+            onChange={(value) => updatePreference('particleSystem', value as UIPreferences['particleSystem'])}
             options={[
               { value: 'none', label: 'Disabled' },
               { value: 'minimal', label: 'Minimal (Best Performance)' },
@@ -527,7 +529,7 @@ function EffectsSettings({ preferences, updatePreference }: any) {
           <Select
             label="Particle Color"
             value={preferences.particleColor}
-            onChange={(value) => updatePreference('particleColor', value)}
+            onChange={(value) => updatePreference('particleColor', value as UIPreferences['particleColor'])}
             options={[
               { value: 'primary', label: 'Primary Theme Color' },
               { value: 'rainbow', label: 'Rainbow' },
@@ -537,7 +539,7 @@ function EffectsSettings({ preferences, updatePreference }: any) {
           <Select
             label="Particle Shape"
             value={preferences.particleShape}
-            onChange={(value) => updatePreference('particleShape', value)}
+            onChange={(value) => updatePreference('particleShape', value as UIPreferences['particleShape'])}
             options={[
               { value: 'circle', label: 'Circle' },
               { value: 'square', label: 'Square' },
@@ -576,7 +578,7 @@ function EffectsSettings({ preferences, updatePreference }: any) {
 }
 
 // Animations Settings Tab
-function AnimationsSettings({ preferences, updatePreference }: any) {
+function AnimationsSettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">
       <GlassCard variant="frosted" className="p-6">
@@ -584,7 +586,7 @@ function AnimationsSettings({ preferences, updatePreference }: any) {
         <Select
           label="Global Animation Speed"
           value={preferences.animationSpeed}
-          onChange={(value) => updatePreference('animationSpeed', value)}
+          onChange={(value) => updatePreference('animationSpeed', value as UIPreferences['animationSpeed'])}
           options={[
             { value: 'instant', label: 'Instant (No Animations)' },
             { value: 'fast', label: 'Fast (150ms)' },
@@ -600,7 +602,7 @@ function AnimationsSettings({ preferences, updatePreference }: any) {
         <Select
           label="Effect Complexity"
           value={preferences.animationIntensity}
-          onChange={(value) => updatePreference('animationIntensity', value)}
+          onChange={(value) => updatePreference('animationIntensity', value as UIPreferences['animationIntensity'])}
           options={[
             { value: 'minimal', label: 'Minimal (Best Performance)' },
             { value: 'low', label: 'Low' },
@@ -645,7 +647,7 @@ function AnimationsSettings({ preferences, updatePreference }: any) {
 }
 
 // Typography Settings Tab
-function TypographySettings({ preferences, updatePreference }: any) {
+function TypographySettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">
       <GlassCard variant="frosted" className="p-6">
@@ -654,7 +656,7 @@ function TypographySettings({ preferences, updatePreference }: any) {
           <Select
             label="Font Size"
             value={preferences.fontSize}
-            onChange={(value) => updatePreference('fontSize', value)}
+            onChange={(value) => updatePreference('fontSize', value as UIPreferences['fontSize'])}
             options={[
               { value: 'small', label: 'Small (14px)' },
               { value: 'medium', label: 'Medium (16px)' },
@@ -665,7 +667,7 @@ function TypographySettings({ preferences, updatePreference }: any) {
           <Select
             label="Font Family"
             value={preferences.fontFamily}
-            onChange={(value) => updatePreference('fontFamily', value)}
+            onChange={(value) => updatePreference('fontFamily', value as UIPreferences['fontFamily'])}
             options={[
               { value: 'system', label: 'System Default' },
               { value: 'inter', label: 'Inter (Recommended)' },
@@ -676,7 +678,7 @@ function TypographySettings({ preferences, updatePreference }: any) {
           <Select
             label="Font Weight"
             value={preferences.fontWeight}
-            onChange={(value) => updatePreference('fontWeight', value)}
+            onChange={(value) => updatePreference('fontWeight', value as UIPreferences['fontWeight'])}
             options={[
               { value: 'light', label: 'Light (300)' },
               { value: 'normal', label: 'Normal (400)' },
@@ -694,7 +696,7 @@ function TypographySettings({ preferences, updatePreference }: any) {
           <Select
             label="Line Height"
             value={preferences.lineHeight}
-            onChange={(value) => updatePreference('lineHeight', value)}
+            onChange={(value) => updatePreference('lineHeight', value as UIPreferences['lineHeight'])}
             options={[
               { value: 'compact', label: 'Compact (1.2)' },
               { value: 'normal', label: 'Normal (1.5)' },
@@ -705,7 +707,7 @@ function TypographySettings({ preferences, updatePreference }: any) {
           <Select
             label="Letter Spacing"
             value={preferences.letterSpacing}
-            onChange={(value) => updatePreference('letterSpacing', value)}
+            onChange={(value) => updatePreference('letterSpacing', value as UIPreferences['letterSpacing'])}
             options={[
               { value: 'tight', label: 'Tight (-0.05em)' },
               { value: 'normal', label: 'Normal (0)' },
@@ -720,7 +722,7 @@ function TypographySettings({ preferences, updatePreference }: any) {
 }
 
 // Advanced Settings Tab
-function AdvancedSettings({ preferences, updatePreference }: any) {
+function AdvancedSettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">
       <GlassCard variant="frosted" className="p-6">
@@ -729,7 +731,7 @@ function AdvancedSettings({ preferences, updatePreference }: any) {
           <Select
             label="Spacing"
             value={preferences.spacing}
-            onChange={(value) => updatePreference('spacing', value)}
+            onChange={(value) => updatePreference('spacing', value as UIPreferences['spacing'])}
             options={[
               { value: 'compact', label: 'Compact' },
               { value: 'normal', label: 'Normal' },
@@ -748,7 +750,7 @@ function AdvancedSettings({ preferences, updatePreference }: any) {
           <Select
             label="Content Width"
             value={preferences.contentWidth}
-            onChange={(value) => updatePreference('contentWidth', value)}
+            onChange={(value) => updatePreference('contentWidth', value as UIPreferences['contentWidth'])}
             options={[
               { value: 'narrow', label: 'Narrow (800px)' },
               { value: 'normal', label: 'Normal (1200px)' },
@@ -854,7 +856,13 @@ function AdvancedSettings({ preferences, updatePreference }: any) {
 }
 
 // Helper Components
-function ColorPicker({ label, value, onChange }: any) {
+interface ColorPickerProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function ColorPicker({ label, value, onChange }: ColorPickerProps) {
   return (
     <div className="flex items-center justify-between">
       <label className="text-sm font-medium text-gray-300">{label}</label>
@@ -876,7 +884,17 @@ function ColorPicker({ label, value, onChange }: any) {
   );
 }
 
-function SliderControl({ label, value, onChange, min, max, step = 1, suffix = '' }: any) {
+interface SliderControlProps {
+  label: string;
+  value: number;
+  onChange: (value: number) => void;
+  min: number;
+  max: number;
+  step?: number;
+  suffix?: string;
+}
+
+function SliderControl({ label, value, onChange, min, max, step = 1, suffix = '' }: SliderControlProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
@@ -898,7 +916,19 @@ function SliderControl({ label, value, onChange, min, max, step = 1, suffix = ''
   );
 }
 
-function Select({ label, value, onChange, options }: any) {
+interface SelectOption {
+  value: string;
+  label: string;
+}
+
+interface SelectProps {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: SelectOption[];
+}
+
+function Select({ label, value, onChange, options }: SelectProps) {
   return (
     <div>
       <label className="text-sm font-medium text-gray-300 mb-2 block">{label}</label>
@@ -907,7 +937,7 @@ function Select({ label, value, onChange, options }: any) {
         onChange={(e) => onChange(e.target.value)}
         className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:border-primary-500 transition-colors"
       >
-        {options.map((opt: any) => (
+        {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
@@ -917,7 +947,14 @@ function Select({ label, value, onChange, options }: any) {
   );
 }
 
-function Toggle({ label, description, value, onChange }: any) {
+interface ToggleProps {
+  label: string;
+  description?: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}
+
+function Toggle({ label, description, value, onChange }: ToggleProps) {
   return (
     <div className="flex items-center justify-between p-3 rounded-lg hover:bg-dark-700/30 transition-colors">
       <div className="flex-1">
@@ -944,7 +981,13 @@ function Toggle({ label, description, value, onChange }: any) {
   );
 }
 
-function ExportImportModal({ exportData, onImport, onClose }: any) {
+interface ExportImportModalProps {
+  exportData: string;
+  onImport: (data: string) => void;
+  onClose: () => void;
+}
+
+function ExportImportModal({ exportData, onImport, onClose }: ExportImportModalProps) {
   const [importText, setImportText] = useState('');
   const [copied, setCopied] = useState(false);
 

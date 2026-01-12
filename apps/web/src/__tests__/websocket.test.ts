@@ -52,7 +52,9 @@ describe('WebSocket Service', () => {
       const token = 'test-jwt-token';
       const wsUrl = 'wss://api.example.com/socket';
 
-      const socket = new Socket(wsUrl, {
+      // Creating socket to verify constructor is called with correct params
+      // @ts-expect-error Socket creation is intentional for verifying constructor call
+      const _socket = new Socket(wsUrl, {
         params: { token },
         heartbeatIntervalMs: 30000,
       });
@@ -216,8 +218,8 @@ describe('Connection State Machine', () => {
       reconnecting: ['connected', 'disconnected'],
     };
 
-    // Verify all transitions are valid
-    Object.entries(transitions).forEach(([from, toStates]) => {
+    // Verify all transitions are valid - each target state must exist in the transitions map
+    Object.entries(transitions).forEach(([_from, toStates]) => {
       toStates.forEach((to) => {
         expect(Object.keys(transitions)).toContain(to);
       });

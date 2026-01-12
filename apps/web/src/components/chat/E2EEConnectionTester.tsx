@@ -1,13 +1,11 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
 import {
   ShieldCheckIcon,
   XMarkIcon,
   CheckCircleIcon,
   XCircleIcon,
   ClockIcon,
-  KeyIcon,
-  LockClosedIcon,
   ArrowPathIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
@@ -51,9 +49,9 @@ export default function E2EEConnectionTester({
   recipientName,
   onClose,
 }: E2EEConnectionTesterProps) {
-  const { user } = useAuthStore();
+  useAuthStore(); // Keep store connected
   const [isRunning, setIsRunning] = useState(false);
-  const [currentTestIndex, setCurrentTestIndex] = useState(-1);
+  const [, setCurrentTestIndex] = useState(-1);
   const [tests, setTests] = useState<TestResult[]>([
     {
       name: 'Key Exchange Protocol',

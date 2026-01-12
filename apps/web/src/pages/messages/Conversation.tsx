@@ -33,6 +33,10 @@ import MessageReactions from '@/components/chat/MessageReactions';
 import RichMediaEmbed from '@/components/chat/RichMediaEmbed';
 import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
 
+// Sticker system integration
+import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
+import type { Sticker } from '@/data/stickers';
+
 export default function Conversation() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
@@ -54,9 +58,11 @@ export default function Conversation() {
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
+  const [showStickerPicker, setShowStickerPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const inputContainerRef = useRef<HTMLDivElement>(null);
 
   // ====== NEXT GEN UI CUSTOMIZATION STATE ======
   const [showSettings, setShowSettings] = useState(false);
@@ -205,6 +211,27 @@ export default function Conversation() {
       socketManager.sendTyping(`conversation:${conversationId}`, false);
     } catch (error) {
       console.error('Failed to send message:', error);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Handle sticker selection - sends sticker as a special message format
+  const handleStickerSelect = async (sticker: Sticker) => {
+    if (!conversationId || isSending) return;
+
+    setIsSending(true);
+    setShowStickerPicker(false);
+
+    try {
+      // Send sticker as a special formatted message: [sticker:id:emoji:name]
+      const stickerMessage = `[sticker:${sticker.id}:${sticker.emoji}:${sticker.name}]`;
+      await sendMessage(conversationId, stickerMessage, replyTo?.id);
+      setReplyTo(null);
+      if (uiPreferences.enableHaptic) HapticFeedback.success();
+    } catch (error) {
+      console.error('Failed to send sticker:', error);
+      if (uiPreferences.enableHaptic) HapticFeedback.error();
     } finally {
       setIsSending(false);
     }
@@ -850,6 +877,15 @@ export default function Conversation() {
           borderGradient
           className="rounded-2xl p-2"
         >
+          {/* Sticker Picker - positioned above input */}
+          <div className="relative" ref={inputContainerRef}>
+            <StickerPicker
+              isOpen={showStickerPicker}
+              onClose={() => setShowStickerPicker(false)}
+              onSelect={handleStickerSelect}
+            />
+          </div>
+
           {isVoiceMode ? (
             /* Voice Recorder UI */
             <VoiceMessageRecorder
@@ -888,14 +924,15 @@ export default function Conversation() {
                 />
               </div>
 
-              <motion.button
-                onClick={() => uiPreferences.enableHaptic && HapticFeedback.light()}
-                className="p-2.5 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all group"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <FaceSmileIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-              </motion.button>
+              {/* Sticker Button */}
+              <StickerButton
+                onClick={() => {
+                  setShowStickerPicker(!showStickerPicker);
+                  if (uiPreferences.enableHaptic) HapticFeedback.light();
+                }}
+                isActive={showStickerPicker}
+                className="rounded-xl hover:bg-primary-500/20 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+              />
 
               {/* Morphing Send/Mic Button */}
               <AnimatePresence mode="wait">

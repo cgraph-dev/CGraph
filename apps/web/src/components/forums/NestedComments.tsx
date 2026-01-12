@@ -1,10 +1,9 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
   ChatBubbleLeftIcon,
-  EllipsisHorizontalIcon,
   CheckBadgeIcon,
   StarIcon,
   TrashIcon,
@@ -13,7 +12,6 @@ import {
 import {
   ArrowUpIcon as ArrowUpIconSolid,
   ArrowDownIcon as ArrowDownIconSolid,
-  StarIcon as StarIconSolid,
 } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -82,7 +80,6 @@ interface NestedCommentsProps {
 }
 
 export default function NestedComments({
-  postId,
   comments,
   isAuthorOfPost,
   canMarkBestAnswer,
@@ -162,7 +159,7 @@ export default function NestedComments({
     HapticFeedback.success();
   };
 
-  const renderComment = (comment: Comment, depth: number = 0): JSX.Element => {
+  const renderComment = (comment: Comment, depth: number = 0): React.ReactElement => {
     const isCollapsed = expandedComments.has(comment.id);
     const isReplying = replyingTo === comment.id;
     const isEditing = editingComment === comment.id;

@@ -8,6 +8,8 @@ import { LeaderboardSidebar } from '@/components/forums/LeaderboardWidget';
 import GlassCard from '@/components/ui/GlassCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import ThreadPrefix from '@/components/forums/ThreadPrefix';
+import ThreadRating from '@/components/forums/ThreadRating';
 import {
   PlusIcon,
   ArrowUpIcon,
@@ -726,32 +728,37 @@ function PostCard({
 
           {/* Title */}
           <Link to={`/forums/${post.forum.slug}/post/${post.id}`}>
-            <h2 className="text-lg font-medium text-white hover:text-primary-400 transition-colors mb-2">
-              {post.isPinned && (
-                <span className="inline-flex items-center gap-0.5 mr-2 px-1.5 py-0.5 bg-green-600 text-xs rounded">
-                  📌 Pinned
-                </span>
-              )}
-              {post.isLocked && (
-                <span className="inline-flex items-center gap-0.5 mr-2 px-1.5 py-0.5 bg-yellow-600 text-xs rounded">
-                  <LockClosedIcon className="h-3 w-3" /> Locked
-                </span>
-              )}
-              {post.isNsfw && (
-                <span className="inline-block mr-2 px-1.5 py-0.5 bg-red-600 text-xs rounded">
-                  NSFW
-                </span>
-              )}
-              {post.category && (
-                <span
-                  className="inline-block mr-2 px-1.5 py-0.5 text-xs rounded"
-                  style={{ backgroundColor: post.category.color }}
-                >
-                  {post.category.name}
-                </span>
-              )}
-              {post.title}
-            </h2>
+            <div className="mb-2">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                {post.isPinned && (
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-green-600 text-xs rounded">
+                    📌 Pinned
+                  </span>
+                )}
+                {post.isLocked && (
+                  <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 bg-yellow-600 text-xs rounded">
+                    <LockClosedIcon className="h-3 w-3" /> Locked
+                  </span>
+                )}
+                {post.isNsfw && (
+                  <span className="inline-block px-1.5 py-0.5 bg-red-600 text-xs rounded">
+                    NSFW
+                  </span>
+                )}
+                {post.category && (
+                  <span
+                    className="inline-block px-1.5 py-0.5 text-xs rounded"
+                    style={{ backgroundColor: post.category.color }}
+                  >
+                    {post.category.name}
+                  </span>
+                )}
+                {post.prefix && <ThreadPrefix prefix={post.prefix} size="sm" />}
+              </div>
+              <h2 className="text-lg font-medium text-white hover:text-primary-400 transition-colors">
+                {post.title}
+              </h2>
+            </div>
           </Link>
 
           {/* Preview content */}
@@ -776,6 +783,20 @@ function PostCard({
                 src={post.mediaUrls[0]}
                 alt=""
                 className="max-w-full h-auto object-contain"
+              />
+            </div>
+          )}
+
+          {/* Thread Rating */}
+          {(post.rating !== undefined || post.ratingCount !== undefined) && (
+            <div className="mb-3">
+              <ThreadRating
+                threadId={post.id}
+                rating={post.rating}
+                ratingCount={post.ratingCount}
+                myRating={post.myRating}
+                size="sm"
+                interactive={false}
               />
             </div>
           )}

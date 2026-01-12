@@ -11,8 +11,8 @@ import App from '../App';
 // Mock the auth store
 const mockAuthStore = {
   isAuthenticated: false,
-  user: null,
-  token: null,
+  user: null as { id: string; username: string; isAdmin: boolean } | null,
+  token: null as string | null,
   checkAuth: vi.fn().mockResolvedValue(undefined),
 };
 

@@ -507,11 +507,6 @@ class SocketManager {
     return this.channels.get(topic);
   }
 
-  // Check if connected
-  isConnected(): boolean {
-    return this.socket?.isConnected() ?? false;
-  }
-
   // Get all online statuses for display purposes (without joining)
   getAllOnlineStatuses(): Map<string, Set<string>> {
     return new Map(this.onlineUsers);

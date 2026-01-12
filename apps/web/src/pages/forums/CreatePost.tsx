@@ -1,23 +1,27 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useForumStore } from '@/stores/forumStore';
+import { useForumStore, type PostAttachment } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { MarkdownEditor } from '@/components';
 import { toast } from '@/components/ui/Toast';
+import AttachmentUploader from '@/components/forums/AttachmentUploader';
 import {
   ArrowLeftIcon,
   PhotoIcon,
   LinkIcon,
   XMarkIcon,
+  TagIcon,
+  ChartBarIcon,
+  PaperClipIcon,
 } from '@heroicons/react/24/outline';
 
-type PostType = 'text' | 'image' | 'link';
+type PostType = 'text' | 'image' | 'link' | 'poll';
 
 export default function CreatePost() {
   const { forumSlug } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthStore();
-  const { forums, fetchForum, createPost, subscribe } = useForumStore();
+  const { forums, fetchForum, createPost, subscribe, threadPrefixes, fetchThreadPrefixes } = useForumStore();
 
   const [postType, setPostType] = useState<PostType>('text');
   const [title, setTitle] = useState('');
@@ -27,6 +31,15 @@ export default function CreatePost() {
   const [isJoining, setIsJoining] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // MyBB Features
+  const [selectedPrefix, setSelectedPrefix] = useState<string>('');
+  const [attachments, setAttachments] = useState<PostAttachment[]>([]);
+  const [showPollOptions, setShowPollOptions] = useState(false);
+  const [pollQuestion, setPollQuestion] = useState('');
+  const [pollOptions, setPollOptions] = useState(['', '']);
+  const [pollAllowMultiple, setPollAllowMultiple] = useState(false);
+  const [pollPublic, setPollPublic] = useState(false);
+
   const forum = forums.find((f) => f.slug === forumSlug);
 
   useEffect(() => {
@@ -34,6 +47,13 @@ export default function CreatePost() {
       fetchForum(forumSlug);
     }
   }, [forumSlug, fetchForum]);
+
+  // Fetch thread prefixes for the forum
+  useEffect(() => {
+    if (forum) {
+      fetchThreadPrefixes(forum.id);
+    }
+  }, [forum, fetchThreadPrefixes]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -182,6 +202,17 @@ export default function CreatePost() {
             <LinkIcon className="h-5 w-5" />
             Link
           </button>
+          <button
+            onClick={() => setPostType('poll')}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+              postType === 'poll'
+                ? 'bg-primary-600 text-white'
+                : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
+            }`}
+          >
+            <ChartBarIcon className="h-5 w-5" />
+            Poll
+          </button>
         </div>
 
         {/* Post Form */}
@@ -201,6 +232,28 @@ export default function CreatePost() {
               {title.length}/300
             </div>
           </div>
+
+          {/* Thread Prefix Selector */}
+          {threadPrefixes.length > 0 && (
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                <TagIcon className="h-4 w-4" />
+                Thread Prefix (Optional)
+              </label>
+              <select
+                value={selectedPrefix}
+                onChange={(e) => setSelectedPrefix(e.target.value)}
+                className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="">No Prefix</option>
+                {threadPrefixes.map((prefix) => (
+                  <option key={prefix.id} value={prefix.id}>
+                    {prefix.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Content based on type */}
           {postType === 'text' && (
@@ -239,6 +292,97 @@ export default function CreatePost() {
                 onChange={(e) => setUrl(e.target.value)}
                 className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 required={postType === 'link'}
+              />
+            </div>
+          )}
+
+          {postType === 'poll' && (
+            <div className="space-y-4">
+              {/* Poll Question */}
+              <div>
+                <input
+                  type="text"
+                  placeholder="Poll Question"
+                  value={pollQuestion}
+                  onChange={(e) => setPollQuestion(e.target.value)}
+                  className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  required
+                />
+              </div>
+
+              {/* Poll Options */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-300">Poll Options</label>
+                {pollOptions.map((option, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder={`Option ${index + 1}`}
+                      value={option}
+                      onChange={(e) => {
+                        const newOptions = [...pollOptions];
+                        newOptions[index] = e.target.value;
+                        setPollOptions(newOptions);
+                      }}
+                      className="flex-1 px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      required
+                    />
+                    {pollOptions.length > 2 && (
+                      <button
+                        type="button"
+                        onClick={() => setPollOptions(pollOptions.filter((_, i) => i !== index))}
+                        className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500 text-red-400 rounded-lg transition-colors"
+                      >
+                        <XMarkIcon className="h-5 w-5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setPollOptions([...pollOptions, ''])}
+                  className="w-full px-4 py-2 bg-dark-700 hover:bg-dark-600 border border-dark-600 text-gray-300 rounded-lg transition-colors"
+                >
+                  + Add Option
+                </button>
+              </div>
+
+              {/* Poll Settings */}
+              <div className="space-y-3 p-4 bg-dark-800/50 rounded-lg border border-dark-700">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={pollAllowMultiple}
+                    onChange={(e) => setPollAllowMultiple(e.target.checked)}
+                    className="h-4 w-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+                  />
+                  <span className="text-sm text-gray-300">Allow multiple selections</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={pollPublic}
+                    onChange={(e) => setPollPublic(e.target.checked)}
+                    className="h-4 w-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+                  />
+                  <span className="text-sm text-gray-300">Public poll (show who voted)</span>
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* Attachments for text/link/poll posts */}
+          {(postType === 'text' || postType === 'link' || postType === 'poll') && (
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                <PaperClipIcon className="h-4 w-4" />
+                Attachments (Optional)
+              </label>
+              <AttachmentUploader
+                attachments={attachments}
+                onUpload={(attachment) => setAttachments([...attachments, attachment])}
+                onDelete={(id) => setAttachments(attachments.filter((a) => a.id !== id))}
+                maxFiles={5}
               />
             </div>
           )}

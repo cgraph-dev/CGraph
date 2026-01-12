@@ -1,7 +1,7 @@
 # CGraph Frontend Guide
 
 > Building beautiful, fast, and accessible user interfaces with React.
-> **v0.7.41** — Now featuring Advanced Theme Engine, Holographic UI v4.0, and enhanced customization.
+> **v0.7.52** — Now featuring Gamification System, Sticker Picker, Title Badges, and enhanced customization.
 
 This guide covers the CGraph web application—a React 19 app built with Vite, TypeScript, and TailwindCSS. Whether you're fixing a bug or building a new feature, you'll find everything you need here.
 
@@ -24,14 +24,15 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 13. [Signal Protocol Encryption](#signal-protocol-encryption)
 14. [AI Message Intelligence](#ai-message-intelligence)
 15. [Spatial Audio Engine](#spatial-audio-engine)
-16. [Demo-First Workflow](#demo-first-workflow)
-17. [Storybook](#storybook)
-18. [Styling Guide](#styling-guide)
-19. [Forms and Validation](#forms-and-validation)
-20. [Testing](#testing)
-21. [Performance](#performance)
-22. [Accessibility](#accessibility)
-23. [Common Patterns](#common-patterns)
+16. [Gamification & Customization](#gamification--customization-system) ⭐ **v0.7.52**
+17. [Demo-First Workflow](#demo-first-workflow)
+18. [Storybook](#storybook)
+19. [Styling Guide](#styling-guide)
+20. [Forms and Validation](#forms-and-validation)
+21. [Testing](#testing)
+22. [Performance](#performance)
+23. [Accessibility](#accessibility)
+24. [Common Patterns](#common-patterns)
 
 ---
 
@@ -1886,6 +1887,120 @@ room.addParticipant({
 room.updateLocalPosition({ x: 0, y: 1.7, z: 0 });
 room.updateLocalOrientation(headsetForward, headsetUp);
 ```
+
+---
+
+## Gamification & Customization System
+
+**v0.7.52** introduces a comprehensive gamification and UI customization system with stickers, titles, achievements, and animated avatars.
+
+### System Overview
+
+| Feature | Count | Location |
+|---------|-------|----------|
+| **Achievements** | 107 | `src/data/achievements.ts` |
+| **Stickers** | 72 in 18 packs | `src/data/stickers.ts` |
+| **Titles** | 44 | `src/data/titles.ts` |
+| **Chat Backgrounds** | 24 | `src/data/chatBackgrounds.ts` |
+| **Avatar Borders** | 28 | `src/components/ui/AnimatedAvatar.tsx` |
+
+### Sticker System
+
+The sticker system allows users to send animated stickers in chat conversations.
+
+**Key Components:**
+
+```typescript
+// StickerPicker - Full sticker selection UI
+import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
+
+// In your message input component
+<StickerPicker
+  isOpen={showStickerPicker}
+  onClose={() => setShowStickerPicker(false)}
+  onSelect={handleStickerSelect}
+/>
+
+// Sticker selection handler
+const handleStickerSelect = async (sticker: Sticker) => {
+  // Stickers are sent as special formatted messages
+  const stickerMessage = `[sticker:${sticker.id}:${sticker.emoji}:${sticker.name}]`;
+  await sendMessage(conversationId, stickerMessage);
+};
+```
+
+**Sticker Data Structure:**
+
+```typescript
+interface Sticker {
+  id: string;
+  name: string;
+  emoji: string;
+  category: 'emotions' | 'reactions' | 'memes' | 'seasonal' | 'gaming' | 'animals' | 'food' | 'special';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  animation: 'bounce' | 'shake' | 'pulse' | 'wiggle' | 'float' | 'spin' | 'heartbeat';
+  animationDuration: number;
+  colors: string[];
+  packId: string;
+}
+```
+
+### Title System
+
+User titles are displayed alongside usernames with animated styling based on rarity.
+
+**Key Components:**
+
+```typescript
+// TitleBadge - Animated title display
+import { TitleBadge, ProfileTitleDisplay } from '@/components/gamification/TitleBadge';
+
+// Display a user's title
+<TitleBadge
+  title={user.equippedTitle}
+  size="sm"
+  showTooltip
+/>
+
+// For editable profiles
+<ProfileTitleDisplay
+  titleId={profile.equippedTitle}
+  onChangeTitle={() => openTitleSelector()}
+  isEditable={isOwnProfile}
+/>
+```
+
+**Title Animation Types:**
+- `none` - Static display
+- `shimmer` - Gradient shimmer effect
+- `glow` - Pulsing glow based on rarity
+- `pulse` - Scale pulsing
+- `rainbow` - Color cycling animation
+- `sparkle` - Sparkle particles (legendary+)
+
+### Achievement System
+
+Achievements are tracked through the gamification store and unlock rewards.
+
+```typescript
+import { useGamificationStore } from '@/stores/gamificationStore';
+
+const { achievements, unlockAchievement, fetchAchievements } = useGamificationStore();
+
+// Check achievement progress
+const socialAchievements = achievements.filter(a => a.category === 'social');
+const unlockedCount = achievements.filter(a => a.unlocked).length;
+```
+
+### Integration Points
+
+| Component | Uses |
+|-----------|------|
+| `EnhancedConversation.tsx` | StickerPicker, StickerButton |
+| `Conversation.tsx` | StickerPicker, StickerButton |
+| `UserProfile.tsx` | TitleBadge |
+| `Leaderboard.tsx` | Achievement badges, level display |
+| `gamificationStore.ts` | Achievement tracking, XP, levels |
 
 ---
 
