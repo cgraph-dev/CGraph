@@ -2,9 +2,9 @@ defmodule CgraphWeb.API.V1.UserController do
   @moduledoc """
   Controller for user-related endpoints.
   Handles current user operations and user lookups.
-  
+
   ## Security
-  
+
   - All user data endpoints require authentication
   - Pagination parameters are validated and safely parsed
   - Privacy settings are respected for profile access

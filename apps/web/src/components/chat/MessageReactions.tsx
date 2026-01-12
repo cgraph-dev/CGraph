@@ -63,7 +63,6 @@ export default function MessageReactions({
   reactions,
   onAddReaction,
   onRemoveReaction,
-  currentUserId,
   disabled = false,
 }: MessageReactionsProps) {
   const [showPicker, setShowPicker] = useState(false);
@@ -83,6 +82,7 @@ export default function MessageReactions({
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
+    return undefined;
   }, [showPicker]);
 
   const handleReaction = (emoji: string) => {
@@ -272,7 +272,7 @@ export default function MessageReactions({
         </AnimatePresence>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }

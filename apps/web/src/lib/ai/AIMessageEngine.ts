@@ -588,14 +588,14 @@ export class AIMessageEngine {
     // Simple n-gram based detection
     const langScores = new Map<string, number>();
     
-    // Common patterns for languages
+    // Common patterns for languages - use more specific patterns to avoid false positives
     const patterns: Record<string, RegExp[]> = {
-      en: [/\b(the|is|are|was|were|have|has|been|will|would)\b/gi],
-      es: [/\b(el|la|los|las|es|está|son|están|que|de)\b/gi],
-      fr: [/\b(le|la|les|est|sont|que|de|du|des|un|une)\b/gi],
-      de: [/\b(der|die|das|ist|sind|und|oder|nicht|auch)\b/gi],
-      pt: [/\b(o|a|os|as|é|são|que|de|do|da)\b/gi],
-      it: [/\b(il|la|gli|le|è|sono|che|di|del|della)\b/gi],
+      en: [/\b(the|is|are|was|were|have|has|been|will|would|that|this|with)\b/gi],
+      es: [/\b(está|están|qué|cómo|tengo|tiene|bueno|buenos|días|hola|muy)\b/gi, /[¿¡]/g],
+      fr: [/\b(vous|nous|comment|bonjour|journée|espère|passez|très|merci|s'il)\b/gi, /[àâçéèêëîïôûùü]/gi],
+      de: [/\b(ich|sie|ihnen|einen|hoffe|guten|schönen|haben|heute|morgen)\b/gi, /[äöüß]/gi],
+      pt: [/\b(você|como|bom|obrigado|muito|hoje|amanhã|também)\b/gi, /[ãõ]/g],
+      it: [/\b(come|buongiorno|grazie|oggi|domani|bene|molto)\b/gi],
       ja: [/[\u3040-\u309F\u30A0-\u30FF]/g], // Hiragana/Katakana
       zh: [/[\u4E00-\u9FFF]/g], // Chinese characters
       ko: [/[\uAC00-\uD7AF]/g], // Korean characters

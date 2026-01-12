@@ -50,9 +50,9 @@ defmodule Cgraph.Gamification.ShopItem do
   @doc """
   Returns true if the item is available for purchase.
   """
-  def is_available?(%__MODULE__{is_active: false}), do: false
-  def is_available?(%__MODULE__{limited_quantity: nil}), do: true
-  def is_available?(%__MODULE__{limited_quantity: qty, sold_count: sold}), do: sold < qty
+  def available?(%__MODULE__{is_active: false}), do: false
+  def available?(%__MODULE__{limited_quantity: nil}), do: true
+  def available?(%__MODULE__{limited_quantity: qty, sold_count: sold}), do: sold < qty
 
   def categories, do: @categories
   def types, do: @types

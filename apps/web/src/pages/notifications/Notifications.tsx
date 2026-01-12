@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotificationStore, Notification } from '@/stores/notificationStore';
 import { formatTimeAgo } from '@/lib/utils';
-import { EmptyState } from '@/components/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -17,7 +16,6 @@ import {
   CheckIcon,
   TrashIcon,
   EllipsisHorizontalIcon,
-  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import Dropdown, { DropdownItem } from '@/components/Dropdown';
 

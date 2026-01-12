@@ -2,9 +2,9 @@ defmodule CgraphWeb.API.V1.ForumController do
   @moduledoc """
   Handles forum management.
   Forums contain categories and posts for discussion.
-  
+
   ## Security
-  
+
   - Pagination parameters are validated and safely parsed
   - Vote values are strictly validated to 1 or -1
   - Authorization checks on all forum operations
@@ -209,7 +209,7 @@ defmodule CgraphWeb.API.V1.ForumController do
     user = conn.assigns.current_user
     # Safe parsing - only allow 1 or -1, default to 0 (invalid) if parsing fails
     vote_value = parse_int(value, 0, min: -1, max: 1)
-    
+
     # Reject if parsed value is 0 (invalid vote)
     if vote_value == 0 do
       conn

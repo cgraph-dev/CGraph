@@ -24,6 +24,7 @@ import {
   TrophyIcon,
   SparklesIcon,
   LockClosedIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowUpIcon as ArrowUpIconSolid, ArrowDownIcon as ArrowDownIconSolid } from '@heroicons/react/24/solid';
 
@@ -45,7 +46,7 @@ const timeRangeOptions = [
 export default function Forums() {
   const { forumSlug } = useParams();
   const navigate = useNavigate();
-  const { user: _user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const {
     forums,
     posts,
@@ -201,26 +202,45 @@ export default function Forums() {
                         <p className="text-gray-400">c/{activeForum.slug}</p>
                       </div>
 
-                      <motion.button
-                        onClick={() => {
-                          HapticFeedback.light();
-                          handleSubscribe(activeForum.id, activeForum.isSubscribed);
-                        }}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        className={`px-4 py-2 rounded-full font-medium transition-all ${
-                          activeForum.isSubscribed
-                            ? 'bg-dark-700/80 backdrop-blur-sm text-white hover:bg-dark-600'
-                            : 'bg-gradient-to-r from-primary-600 to-purple-600 text-white hover:from-primary-500 hover:to-purple-500'
-                        }`}
-                        style={{
-                          boxShadow: activeForum.isSubscribed
-                            ? 'none'
-                            : '0 0 20px rgba(16, 185, 129, 0.3)',
-                        }}
-                      >
-                        {activeForum.isSubscribed ? 'Joined' : 'Join'}
-                      </motion.button>
+                      <div className="flex items-center gap-2">
+                        {/* Admin Button - Only for owners/moderators */}
+                        {(activeForum.ownerId === user?.id ||
+                          activeForum.moderators?.some((m: { id: string }) => m.id === user?.id)) && (
+                          <motion.button
+                            onClick={() => {
+                              HapticFeedback.light();
+                              navigate(`/forums/${activeForum.slug}/admin`);
+                            }}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="p-2 bg-dark-700/80 backdrop-blur-sm hover:bg-dark-600 text-gray-400 hover:text-white rounded-full transition-colors"
+                            title="Forum Settings"
+                          >
+                            <Cog6ToothIcon className="h-5 w-5" />
+                          </motion.button>
+                        )}
+
+                        <motion.button
+                          onClick={() => {
+                            HapticFeedback.light();
+                            handleSubscribe(activeForum.id, activeForum.isSubscribed);
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className={`px-4 py-2 rounded-full font-medium transition-all ${
+                            activeForum.isSubscribed
+                              ? 'bg-dark-700/80 backdrop-blur-sm text-white hover:bg-dark-600'
+                              : 'bg-gradient-to-r from-primary-600 to-purple-600 text-white hover:from-primary-500 hover:to-purple-500'
+                          }`}
+                          style={{
+                            boxShadow: activeForum.isSubscribed
+                              ? 'none'
+                              : '0 0 20px rgba(16, 185, 129, 0.3)',
+                          }}
+                        >
+                          {activeForum.isSubscribed ? 'Joined' : 'Join'}
+                        </motion.button>
+                      </div>
                     </div>
 
                     {activeForum.description && (

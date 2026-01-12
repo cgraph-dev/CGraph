@@ -82,6 +82,7 @@ export function OAuthCallbackPage() {
           useAuthStore.setState({
             user: {
               id: response.user.id,
+              uid: (response.user as Record<string, unknown>).uid as string || '',
               userId: 0,
               userIdDisplay: '#0000',
               email: response.user.email,

@@ -278,24 +278,27 @@ export const useGamificationStore = create<GamificationState>()(
               isHidden: a.is_hidden || false,
               titleReward: a.title_reward,
             })),
-            activeQuests: quests.map((q: Record<string, unknown>) => ({
-              id: q.id,
-              title: q.quest?.title || q.title,
-              description: q.quest?.description || q.description,
-              type: q.quest?.type || q.type,
-              xpReward: q.quest?.xp_reward || q.xp_reward || 0,
-              objectives: (q.quest?.objectives?.objectives || []).map((obj: Record<string, unknown>) => ({
-                id: obj.id,
-                description: obj.description,
-                type: obj.type,
-                targetValue: obj.target,
-                currentValue: (q.progress as Record<string, number>)?.[obj.id as string] || 0,
-                completed: ((q.progress as Record<string, number>)?.[obj.id as string] || 0) >= (obj.target as number),
-              })),
-              expiresAt: q.expires_at as string,
-              completed: q.completed || false,
-              completedAt: q.completed_at as string | undefined,
-            })),
+            activeQuests: quests.map((q: Record<string, unknown>) => {
+              const questData = (q.quest || {}) as Record<string, unknown>;
+              return {
+                id: q.id as string,
+                title: (questData.title || q.title) as string,
+                description: (questData.description || q.description) as string,
+                type: (questData.type || q.type) as string,
+                xpReward: (questData.xp_reward || q.xp_reward || 0) as number,
+                objectives: (((questData.objectives as Record<string, unknown>)?.objectives || []) as Record<string, unknown>[]).map((obj) => ({
+                  id: obj.id as string,
+                  description: obj.description as string,
+                  type: obj.type as string,
+                  targetValue: obj.target as number,
+                  currentValue: (q.progress as Record<string, number>)?.[obj.id as string] || 0,
+                  completed: ((q.progress as Record<string, number>)?.[obj.id as string] || 0) >= (obj.target as number),
+                })),
+                expiresAt: q.expires_at as string,
+                completed: (q.completed || false) as boolean,
+                completedAt: q.completed_at as string | undefined,
+              };
+            }),
             loginStreak: stats.streak_days || 0,
             isLoading: false,
           });
@@ -361,16 +364,27 @@ export const useGamificationStore = create<GamificationState>()(
           
           set({
             activeQuests: allActive.map((q: Record<string, unknown>) => {
-              const quest = q.quest || q;
+              const quest = (q.quest || q) as Record<string, unknown>;
+              const rawObjectives = (quest.objectives as { objectives?: unknown[] })?.objectives || [];
               return {
-                id: q.id || quest.id,
-                title: (quest as Record<string, unknown>).title,
-                description: (quest as Record<string, unknown>).description,
-                type: (quest as Record<string, unknown>).type,
-                xpReward: (quest as Record<string, unknown>).xp_reward || 0,
-                objectives: ((quest as Record<string, unknown>).objectives as Record<string, unknown>)?.objectives || [],
+                id: (q.id || quest.id) as string,
+                title: quest.title as string,
+                description: quest.description as string,
+                type: (quest.type as QuestType) || 'daily',
+                xpReward: (quest.xp_reward as number) || 0,
+                objectives: rawObjectives.map((obj: unknown) => {
+                  const o = obj as Record<string, unknown>;
+                  return {
+                    id: (o.id as string) || '',
+                    description: (o.description as string) || '',
+                    type: (o.type as 'count' | 'visit' | 'interact' | 'collect') || 'count',
+                    targetValue: (o.target_value as number) || (o.targetValue as number) || 1,
+                    currentValue: (o.current_value as number) || (o.currentValue as number) || 0,
+                    completed: (o.completed as boolean) || false,
+                  };
+                }),
                 expiresAt: q.expires_at as string,
-                completed: q.completed || false,
+                completed: q.completed as boolean || false,
                 completedAt: q.completed_at as string | undefined,
               };
             }),

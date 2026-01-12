@@ -11,7 +11,7 @@ defmodule Cgraph.Gamification.UserAchievement do
   schema "user_achievements" do
     belongs_to :user, Cgraph.Accounts.User
     belongs_to :achievement, Cgraph.Gamification.Achievement
-    
+
     field :progress, :integer, default: 0
     field :unlocked, :boolean, default: false
     field :unlocked_at, :utc_datetime
@@ -36,7 +36,7 @@ defmodule Cgraph.Gamification.UserAchievement do
   """
   def progress_changeset(user_achievement, increment \\ 1) do
     new_progress = (user_achievement.progress || 0) + increment
-    
+
     user_achievement
     |> cast(%{progress: new_progress}, [:progress])
     |> validate_number(:progress, greater_than_or_equal_to: 0)

@@ -32,7 +32,7 @@ defmodule CgraphWeb.ShopJSON do
       is_active: item.is_active,
       limited_quantity: item.limited_quantity,
       sold_count: item.sold_count,
-      available: is_available?(item)
+      available: available?(item)
     }
   end
 
@@ -46,7 +46,7 @@ defmodule CgraphWeb.ShopJSON do
     }
   end
 
-  defp is_available?(%{is_active: false}), do: false
-  defp is_available?(%{limited_quantity: nil}), do: true
-  defp is_available?(%{limited_quantity: qty, sold_count: sold}), do: sold < qty
+  defp available?(%{is_active: false}), do: false
+  defp available?(%{limited_quantity: nil}), do: true
+  defp available?(%{limited_quantity: qty, sold_count: sold}), do: sold < qty
 end

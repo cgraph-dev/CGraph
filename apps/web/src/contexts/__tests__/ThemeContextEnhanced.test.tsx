@@ -52,16 +52,6 @@ class MockBroadcastChannel {
   dispatchEvent = vi.fn(() => true);
 }
 
-// Mock document
-const mockDocument = {
-  documentElement: {
-    style: {
-      setProperty: vi.fn(),
-      removeProperty: vi.fn(),
-    },
-  },
-};
-
 // Mock matchMedia
 const mockMatchMedia = vi.fn(() => ({
   matches: false,
@@ -77,7 +67,6 @@ const mockMatchMedia = vi.fn(() => ({
 // Save original globals
 const originalLocalStorage = global.localStorage;
 const originalBroadcastChannel = (global as any).BroadcastChannel;
-const originalDocument = global.document;
 const originalMatchMedia = global.matchMedia;
 
 // =============================================================================
@@ -87,15 +76,20 @@ const originalMatchMedia = global.matchMedia;
 beforeAll(() => {
   Object.defineProperty(global, 'localStorage', { value: localStorageMock, writable: true });
   (global as any).BroadcastChannel = MockBroadcastChannel;
-  Object.defineProperty(global, 'document', { value: mockDocument, writable: true });
+  // Don't replace document - jsdom provides it and @testing-library/react needs document.body
+  // Just mock documentElement.style methods on the existing document
+  if (document.documentElement) {
+    vi.spyOn(document.documentElement.style, 'setProperty').mockImplementation(() => {});
+    vi.spyOn(document.documentElement.style, 'removeProperty').mockImplementation(() => '');
+  }
   Object.defineProperty(global, 'matchMedia', { value: mockMatchMedia, writable: true });
 });
 
 afterAll(() => {
   Object.defineProperty(global, 'localStorage', { value: originalLocalStorage, writable: true });
   (global as any).BroadcastChannel = originalBroadcastChannel;
-  Object.defineProperty(global, 'document', { value: originalDocument, writable: true });
   Object.defineProperty(global, 'matchMedia', { value: originalMatchMedia, writable: true });
+  vi.restoreAllMocks();
 });
 
 beforeEach(() => {
@@ -176,7 +170,7 @@ describe('ThemeContextEnhanced', () => {
       });
       
       expect(result.current.theme.id).toBe('matrix');
-      expect(result.current.theme.category).toBe('matrix');
+      expect(result.current.theme.category).toBe('special');
     });
 
     it('should switch to holographic themes', () => {

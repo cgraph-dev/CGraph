@@ -11,9 +11,9 @@ defmodule CgraphWeb.API.V1.TwoFactorController do
 
   Supports all RFC 6238 compliant authenticator apps including
   Google Authenticator, Authy, and Microsoft Authenticator.
-  
+
   ## Security
-  
+
   - Verification endpoints have strict per-user rate limiting (5 attempts/5 min)
   - Progressive lockout: 15 minutes after 5 failures, 24 hours after 3 lockouts
   - All 2FA operations logged for security audit trail

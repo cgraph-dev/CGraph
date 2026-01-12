@@ -144,7 +144,7 @@ describe('ConversationScreen', () => {
       });
 
       const debouncedScroll = (() => {
-        let timeout: NodeJS.Timeout;
+        let timeout: ReturnType<typeof setTimeout>;
         return () => {
           clearTimeout(timeout);
           timeout = setTimeout(handleScroll, DEBOUNCE_MS);
@@ -275,7 +275,7 @@ describe('ConversationScreen', () => {
       });
 
       const debouncedTyping = (() => {
-        let timeout: NodeJS.Timeout;
+        let timeout: ReturnType<typeof setTimeout>;
         return () => {
           clearTimeout(timeout);
           timeout = setTimeout(sendTyping, TYPING_DEBOUNCE);

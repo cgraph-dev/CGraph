@@ -1,10 +1,10 @@
 defmodule Cgraph.Messaging.Search do
   @moduledoc """
   Sub-context for Message Search operations.
-  
+
   Handles searching messages across conversations with full-text support.
   Extracted from the main Messaging context for better maintainability.
-  
+
   @since v0.7.29
   """
 
@@ -15,7 +15,7 @@ defmodule Cgraph.Messaging.Search do
 
   @doc """
   Search messages accessible to a user.
-  
+
   ## Options
     - `:page` - Page number (default: 1)
     - `:per_page` - Results per page (default: 20)
@@ -24,7 +24,7 @@ defmodule Cgraph.Messaging.Search do
     - `:type` - Filter by message type
     - `:date_from` - Messages from this date
     - `:date_to` - Messages until this date
-  
+
   ## Returns
     `{messages, metadata}` tuple
   """

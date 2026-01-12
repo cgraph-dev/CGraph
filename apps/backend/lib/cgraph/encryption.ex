@@ -365,9 +365,9 @@ defmodule Cgraph.Encryption do
     if Application.get_env(:cgraph, :env) == :prod or Mix.env() == :prod do
       raise """
       ENCRYPTION_KEY environment variable is required in production!
-      
+
       Generate one with: mix phx.gen.secret 32 | base64
-      
+
       This key encrypts sensitive data at rest (TOTP secrets, encrypted fields).
       Without a stable key, encrypted data becomes unrecoverable after restarts.
       """

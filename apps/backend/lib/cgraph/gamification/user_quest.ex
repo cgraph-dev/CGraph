@@ -11,7 +11,7 @@ defmodule Cgraph.Gamification.UserQuest do
   schema "user_quests" do
     belongs_to :user, Cgraph.Accounts.User
     belongs_to :quest, Cgraph.Gamification.Quest
-    
+
     field :progress, :map, default: %{}
     field :completed, :boolean, default: false
     field :completed_at, :utc_datetime
@@ -38,7 +38,7 @@ defmodule Cgraph.Gamification.UserQuest do
     current_progress = user_quest.progress || %{}
     current_value = Map.get(current_progress, objective_id, 0)
     new_progress = Map.put(current_progress, objective_id, current_value + increment)
-    
+
     user_quest
     |> cast(%{progress: new_progress}, [:progress])
   end

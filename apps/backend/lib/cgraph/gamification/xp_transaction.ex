@@ -12,7 +12,7 @@ defmodule Cgraph.Gamification.XpTransaction do
 
   schema "xp_transactions" do
     belongs_to :user, Cgraph.Accounts.User
-    
+
     field :amount, :integer
     field :total_after, :integer
     field :level_after, :integer

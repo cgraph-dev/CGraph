@@ -14,13 +14,13 @@ defmodule CgraphWeb.PremiumController do
   """
   def status(conn, _params) do
     user = conn.assigns.current_user
-    
+
     conn
     |> put_status(:ok)
     |> json(%{
       tier: user.subscription_tier,
       expires_at: user.subscription_expires_at,
-      is_active: is_subscription_active?(user),
+      is_active: subscription_active?(user),
       features: get_tier_features(user.subscription_tier)
     })
   end
@@ -105,7 +105,7 @@ defmodule CgraphWeb.PremiumController do
         }
       }
     ]
-    
+
     conn
     |> put_status(:ok)
     |> json(%{tiers: tiers})
@@ -114,28 +114,23 @@ defmodule CgraphWeb.PremiumController do
   @doc """
   POST /api/v1/premium/subscribe
   Create a subscription checkout session.
-  
+
   ## Security
-  
-  This endpoint does NOT directly grant premium access. It creates a 
+
+  This endpoint does NOT directly grant premium access. It creates a
   payment session URL. The actual subscription is granted via webhook
   after payment confirmation from the payment provider.
-  
+
   ## Environment Variables Required
-  
+
   - STRIPE_SECRET_KEY: Stripe API key
   - STRIPE_WEBHOOK_SECRET: Webhook signature verification
   - PREMIUM_DEMO_MODE: Set to "true" ONLY for development
   """
   def subscribe(conn, %{"tier" => tier}) do
     user = conn.assigns.current_user
-    
-    unless tier in ["free", "premium", "premium_plus"] do
-      conn
-      |> put_status(:bad_request)
-      |> json(%{error: "invalid_tier", message: "Invalid subscription tier"})
-      |> halt()
-    else
+
+    if tier in ["free", "premium", "premium_plus"] do
       # Downgrade to free is always allowed
       if tier == "free" do
         handle_downgrade_to_free(conn, user)
@@ -147,12 +142,17 @@ defmodule CgraphWeb.PremiumController do
           create_checkout_session(conn, user, tier)
         end
       end
+    else
+      conn
+      |> put_status(:bad_request)
+      |> json(%{error: "invalid_tier", message: "Invalid subscription tier"})
+      |> halt()
     end
   end
 
   # Handle downgrade to free tier
   defp handle_downgrade_to_free(conn, user) do
-    {:ok, updated_user} = 
+    {:ok, updated_user} =
       user
       |> Ecto.Changeset.change(%{
         subscription_tier: "free",
@@ -160,7 +160,7 @@ defmodule CgraphWeb.PremiumController do
         cancel_at_period_end: false
       })
       |> Repo.update()
-    
+
     conn
     |> put_status(:ok)
     |> json(%{
@@ -179,17 +179,17 @@ defmodule CgraphWeb.PremiumController do
   defp handle_demo_subscription(conn, user, tier) do
     require Logger
     Logger.warning("[SECURITY] Premium demo mode used for user #{user.id} - tier: #{tier}")
-    
+
     expires_at = DateTime.add(DateTime.utc_now(), 30 * 24 * 60 * 60, :second)
-    
-    {:ok, updated_user} = 
+
+    {:ok, updated_user} =
       user
       |> Ecto.Changeset.change(%{
         subscription_tier: tier,
         subscription_expires_at: expires_at
       })
       |> Repo.update()
-    
+
     conn
     |> put_status(:ok)
     |> json(%{
@@ -204,7 +204,7 @@ defmodule CgraphWeb.PremiumController do
   # Production: Create Stripe checkout session
   defp create_checkout_session(conn, _user, tier) do
     stripe_key = System.get_env("STRIPE_SECRET_KEY")
-    
+
     if is_nil(stripe_key) or stripe_key == "" do
       conn
       |> put_status(:service_unavailable)
@@ -219,9 +219,9 @@ defmodule CgraphWeb.PremiumController do
         "premium" => System.get_env("STRIPE_PREMIUM_PRICE_ID"),
         "premium_plus" => System.get_env("STRIPE_PREMIUM_PLUS_PRICE_ID")
       }
-      
+
       price_id = Map.get(price_ids, tier)
-      
+
       if is_nil(price_id) do
         conn
         |> put_status(:service_unavailable)
@@ -250,18 +250,18 @@ defmodule CgraphWeb.PremiumController do
   """
   def cancel(conn, _params) do
     user = conn.assigns.current_user
-    
+
     if user.subscription_tier == "free" do
       conn
       |> put_status(:bad_request)
       |> json(%{error: "no_subscription", message: "No active subscription to cancel"})
     else
       # Mark subscription to cancel at period end (don't revoke immediately)
-      {:ok, updated_user} = 
+      {:ok, updated_user} =
         user
         |> Ecto.Changeset.change(%{cancel_at_period_end: true})
         |> Repo.update()
-      
+
       conn
       |> put_status(:ok)
       |> json(%{
@@ -280,7 +280,7 @@ defmodule CgraphWeb.PremiumController do
   def features(conn, _params) do
     user = conn.assigns.current_user
     features = get_tier_features(user.subscription_tier)
-    
+
     conn
     |> put_status(:ok)
     |> json(%{features: features})
@@ -288,9 +288,9 @@ defmodule CgraphWeb.PremiumController do
 
   # Helper functions
 
-  defp is_subscription_active?(%{subscription_tier: "free"}), do: true
-  defp is_subscription_active?(%{subscription_expires_at: nil}), do: false
-  defp is_subscription_active?(%{subscription_expires_at: expires_at}) do
+  defp subscription_active?(%{subscription_tier: "free"}), do: true
+  defp subscription_active?(%{subscription_expires_at: nil}), do: false
+  defp subscription_active?(%{subscription_expires_at: expires_at}) do
     DateTime.compare(DateTime.utc_now(), expires_at) == :lt
   end
 

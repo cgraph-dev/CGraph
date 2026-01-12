@@ -189,7 +189,8 @@ defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
               if lockout_count >= @lockout_threshold do
                 Logger.warning("[2FA] Triggering extended lockout for user #{user_id}")
                 # Extend the lockout to 24 hours
-                Redix.command(:redix, ["SETEX", lockout_key, @extended_lockout_seconds, DateTime.to_iso8601(DateTime.utc_now())])
+                lockout_timestamp = DateTime.to_iso8601(DateTime.utc_now())
+                Redix.command(:redix, ["SETEX", lockout_key, @extended_lockout_seconds, lockout_timestamp])
               end
             _ -> :ok
           end

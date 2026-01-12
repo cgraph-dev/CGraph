@@ -1,10 +1,10 @@
 defmodule Cgraph.Messaging.Messages do
   @moduledoc """
   Sub-context for Message-related operations.
-  
+
   Handles message creation, retrieval, editing, deletion, and pinning.
   Extracted from the main Messaging context for better maintainability.
-  
+
   @since v0.7.29
   """
 
@@ -15,13 +15,13 @@ defmodule Cgraph.Messaging.Messages do
 
   @doc """
   List messages in a conversation with pagination.
-  
+
   ## Options
     - `:page` - Page number (default: 1)
     - `:per_page` - Results per page (default: 50)
     - `:before` - Cursor for messages before this ID
     - `:after` - Cursor for messages after this ID
-  
+
   ## Returns
     `{messages, metadata}` tuple
   """

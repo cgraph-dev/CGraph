@@ -178,8 +178,9 @@ export default function ForumBoardView() {
 
                     {isOwner && (
                       <button
-                        onClick={() => navigate(`/forums/${forum.slug}/settings`)}
+                        onClick={() => navigate(`/forums/${forum.slug}/admin`)}
                         className="p-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-gray-400 transition-colors"
+                        title="Forum Admin Dashboard"
                       >
                         <CogIcon className="h-5 w-5" />
                       </button>

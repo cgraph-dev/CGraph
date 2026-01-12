@@ -5,9 +5,7 @@ import {
   XMarkIcon,
   ArrowTopRightOnSquareIcon,
   PhotoIcon,
-  VideoCameraIcon,
   MusicalNoteIcon,
-  DocumentIcon,
 } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -56,7 +54,7 @@ const IMAGE_REGEX = /\.(jpg|jpeg|png|gif|webp|svg)(\?.*)?$/i;
 const VIDEO_REGEX = /\.(mp4|webm|ogg|mov)(\?.*)?$/i;
 const AUDIO_REGEX = /\.(mp3|wav|ogg|m4a)(\?.*)?$/i;
 
-export default function RichMediaEmbed({ content, isOwnMessage, onLoad }: RichMediaEmbedProps) {
+export default function RichMediaEmbed({ content, isOwnMessage: _isOwnMessage, onLoad }: RichMediaEmbedProps) {
   const [embeds, setEmbeds] = useState<LinkMetadata[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lightboxMedia, setLightboxMedia] = useState<{ url: string; type: 'image' | 'video' } | null>(null);
@@ -137,7 +135,7 @@ export default function RichMediaEmbed({ content, isOwnMessage, onLoad }: RichMe
         })
       );
 
-      setEmbeds(metadata.filter((m): m is LinkMetadata => m !== null));
+      setEmbeds(metadata.filter((m): m is NonNullable<typeof m> => m !== null) as LinkMetadata[]);
       setIsLoading(false);
       onLoad?.();
     };
@@ -162,7 +160,6 @@ export default function RichMediaEmbed({ content, isOwnMessage, onLoad }: RichMe
             {embed.type === 'image' && (
               <ImageEmbed
                 embed={embed}
-                isOwnMessage={isOwnMessage}
                 onExpand={() => {
                   setLightboxMedia({ url: embed.url, type: 'image' });
                   HapticFeedback.medium();
@@ -172,7 +169,6 @@ export default function RichMediaEmbed({ content, isOwnMessage, onLoad }: RichMe
             {embed.type === 'video' && (
               <VideoEmbed
                 embed={embed}
-                isOwnMessage={isOwnMessage}
                 onExpand={() => {
                   if (!embed.videoUrl?.includes('youtube')) {
                     setLightboxMedia({ url: embed.videoUrl || embed.url, type: 'video' });
@@ -181,9 +177,9 @@ export default function RichMediaEmbed({ content, isOwnMessage, onLoad }: RichMe
                 }}
               />
             )}
-            {embed.type === 'audio' && <AudioEmbed embed={embed} isOwnMessage={isOwnMessage} />}
-            {embed.type === 'website' && <LinkPreview embed={embed} isOwnMessage={isOwnMessage} />}
-            {embed.type === 'article' && <LinkPreview embed={embed} isOwnMessage={isOwnMessage} />}
+            {embed.type === 'audio' && <AudioEmbed embed={embed} />}
+            {embed.type === 'website' && <LinkPreview embed={embed} />}
+            {embed.type === 'article' && <LinkPreview embed={embed} />}
           </motion.div>
         ))}
       </div>
@@ -246,11 +242,9 @@ export default function RichMediaEmbed({ content, isOwnMessage, onLoad }: RichMe
 
 function ImageEmbed({
   embed,
-  isOwnMessage,
   onExpand,
 }: {
   embed: LinkMetadata;
-  isOwnMessage: boolean;
   onExpand: () => void;
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -284,11 +278,9 @@ function ImageEmbed({
 
 function VideoEmbed({
   embed,
-  isOwnMessage,
   onExpand,
 }: {
   embed: LinkMetadata;
-  isOwnMessage: boolean;
   onExpand: () => void;
 }) {
   const [showPlayer, setShowPlayer] = useState(false);
@@ -375,7 +367,7 @@ function VideoEmbed({
   );
 }
 
-function AudioEmbed({ embed, isOwnMessage }: { embed: LinkMetadata; isOwnMessage: boolean }) {
+function AudioEmbed({ embed }: { embed: LinkMetadata }) {
   return (
     <div className="max-w-md">
       <GlassCard variant="frosted" glow className="p-4">
@@ -394,7 +386,7 @@ function AudioEmbed({ embed, isOwnMessage }: { embed: LinkMetadata; isOwnMessage
   );
 }
 
-function LinkPreview({ embed, isOwnMessage }: { embed: LinkMetadata; isOwnMessage: boolean }) {
+function LinkPreview({ embed }: { embed: LinkMetadata }) {
   return (
     <motion.a
       href={embed.url}

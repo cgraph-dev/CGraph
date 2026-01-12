@@ -1,7 +1,7 @@
 defmodule Cgraph.Gamification.Quest do
   @moduledoc """
   Schema for quest definitions.
-  
+
   Quests are time-limited challenges that reward users for completing
   specific objectives within the given timeframe.
   """
@@ -54,14 +54,14 @@ defmodule Cgraph.Gamification.Quest do
   @doc """
   Returns true if the quest is currently active based on time constraints.
   """
-  def is_available?(%__MODULE__{is_active: false}), do: false
-  def is_available?(%__MODULE__{starts_at: nil, ends_at: nil}), do: true
-  def is_available?(%__MODULE__{starts_at: starts_at, ends_at: ends_at}) do
+  def available?(%__MODULE__{is_active: false}), do: false
+  def available?(%__MODULE__{starts_at: nil, ends_at: nil}), do: true
+  def available?(%__MODULE__{starts_at: starts_at, ends_at: ends_at}) do
     now = DateTime.utc_now()
-    
+
     starts_ok = is_nil(starts_at) || DateTime.compare(now, starts_at) in [:gt, :eq]
     ends_ok = is_nil(ends_at) || DateTime.compare(now, ends_at) == :lt
-    
+
     starts_ok && ends_ok
   end
 end

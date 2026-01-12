@@ -381,6 +381,37 @@ class SocketManager {
       channel.on('presence_diff', (diff) => {
         logger.log('Presence diff:', diff);
       });
+
+      // Handle real-time reaction updates
+      channel.on('reaction_added', (payload) => {
+        logger.log('Received reaction_added event:', payload);
+        const data = payload as {
+          message_id: string;
+          user_id: string;
+          emoji: string;
+          user?: { id: string; username: string; display_name?: string; avatar_url?: string };
+        };
+        useChatStore.getState().addReactionToMessage(
+          data.message_id,
+          data.emoji,
+          data.user_id,
+          data.user?.username
+        );
+      });
+
+      channel.on('reaction_removed', (payload) => {
+        logger.log('Received reaction_removed event:', payload);
+        const data = payload as {
+          message_id: string;
+          user_id: string;
+          emoji: string;
+        };
+        useChatStore.getState().removeReactionFromMessage(
+          data.message_id,
+          data.emoji,
+          data.user_id
+        );
+      });
     }
 
     channel
@@ -499,6 +530,21 @@ class SocketManager {
     if (channel) {
       // Send both key formats for backend compatibility
       channel.push('typing', { typing: isTyping, is_typing: isTyping });
+    }
+  }
+
+  // Send reaction through socket for real-time updates
+  sendReaction(conversationId: string, messageId: string, emoji: string, action: 'add' | 'remove'): void {
+    const topic = `conversation:${conversationId}`;
+    const channel = this.channels.get(topic);
+    
+    if (channel?.state === 'joined') {
+      // Backend expects separate events: add_reaction or remove_reaction
+      const eventName = action === 'add' ? 'add_reaction' : 'remove_reaction';
+      channel.push(eventName, {
+        message_id: messageId,
+        emoji,
+      });
     }
   }
 

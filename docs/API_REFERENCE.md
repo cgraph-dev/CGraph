@@ -1100,6 +1100,42 @@ POST /forums/:forum_id/posts/:id/save
 Authorization: Bearer <token>
 ```
 
+### Report Post
+
+```http
+POST /forums/:forum_id/posts/:id/report
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "reason": "spam"
+}
+```
+
+**Reason Values:**
+- `spam` - Spam or misleading content
+- `harassment` - Harassment or bullying
+- `hate_speech` - Hate speech
+- `violence` - Violence or threats
+- `inappropriate` - Inappropriate content
+- `misinformation` - Misinformation
+- `copyright` - Copyright violation
+- `other` - Other (specify in details)
+
+**Response:**
+```json
+{
+  "data": {
+    "id": "uuid",
+    "status": "pending",
+    "reason": "spam",
+    "created_at": "2026-01-12T..."
+  }
+}
+```
+
 ### List Comments
 
 ```http
@@ -1121,6 +1157,37 @@ Authorization: Bearer <token>
   "parent_id": null
 }
 ```
+
+---
+
+## Content Reports
+
+The reports system allows users to flag content for moderation review.
+
+### Create Report (Generic)
+
+```http
+POST /api/v1/reports
+Authorization: Bearer <token>
+```
+
+**Request Body:**
+```json
+{
+  "report": {
+    "report_type": "post",
+    "item_id": "uuid-of-content",
+    "reason": "spam",
+    "details": "Optional additional context"
+  }
+}
+```
+
+**Report Types:**
+- `post` - Forum post
+- `comment` - Post comment
+- `user` - User profile/behavior
+- `reputation` - Malicious reputation voting
 
 ---
 

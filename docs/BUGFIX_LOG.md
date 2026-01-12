@@ -6,14 +6,124 @@
 
 ## Summary
 
-| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 | v0.7.22 | v0.7.23 | v0.7.24 | v0.7.25 | v0.7.26 | v0.7.39 | v0.7.52 |
-|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
-| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 638 tests | 663 tests | 663 tests | 663 tests, 0 failures | - | - |
-| Web TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ 0 errors | ✅ | ✅ 0 errors |
-| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ 0 errors | ✅ 0 errors | ✅ |
-| Expo Doctor | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ 17/17 checks | ✅ | ✅ |
-| Elixir Credo | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Strict mode | - | - |
-| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 10 critical | 12 critical | 14 critical | 15 critical | 15 critical | 15 critical |
+| Metric | v0.2.0 | v0.6.1 | v0.6.4 | v0.6.6 | v0.7.8 | v0.7.9 | v0.7.10 | v0.7.11 | v0.7.18 | v0.7.19 | v0.7.20 | v0.7.21 | v0.7.22 | v0.7.23 | v0.7.24 | v0.7.25 | v0.7.26 | v0.7.39 | v0.7.52 | v0.7.53 |
+|--------|--------|--------|--------|--------|--------|--------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|---------|
+| Backend Tests | 8 failures → 0 | 585 → 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 620 tests | 638 tests | 663 tests | 663 tests | 663 tests, 0 failures | - | - | 830 tests |
+| Web TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ 0 errors | ✅ | ✅ 0 errors | ✅ 0 errors |
+| Mobile TypeScript | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ 0 errors | ✅ 0 errors | ✅ | ✅ |
+| Expo Doctor | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ 17/17 checks | ✅ | ✅ | ✅ |
+| Elixir Credo | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | - | ✅ Strict mode | - | - | 2 readability issues |
+| Security Fixes | - | - | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 6 critical | 10 critical | 12 critical | 14 critical | 15 critical | 15 critical | 15 critical | 15 critical |
+
+---
+
+## January 12, 2026 - v0.7.53 Frontend-Backend Integration Fixes
+
+### Overview
+
+Comprehensive audit of frontend-backend connections revealed several critical bugs where UI features were not connected to backend APIs. This release fixes forum reporting, poll creation, thread prefixes, and real-time message reactions.
+
+### Critical Bug Fixes
+
+#### 1. Forum Report Feature Was Fake
+
+**Issue**: The Report button in ForumPost.tsx showed a toast message but never actually submitted a report to the backend.
+
+**Root Cause**: The `reportItem` function in forumStore threw "Not implemented" error.
+
+**Solution**: 
+- Implemented `reportItem` function with proper API call to POST /api/v1/reports
+- Added report modal with reason selection (spam, harassment, hate speech, violence, inappropriate, misinformation, copyright, other)
+- Connected modal to actual API submission
+
+**Files Modified**:
+- `apps/web/src/stores/forumStore.ts` - Implemented reportItem() with full API integration
+- `apps/web/src/pages/forums/ForumPost.tsx` - Added report modal with reason selection
+
+#### 2. CreatePost Not Sending Poll/Prefix/Attachment Data
+
+**Issue**: Poll creation UI existed but data was never sent to backend. Thread prefix selector existed but selected value was ignored. Attachments were collected but not submitted.
+
+**Root Cause**: The handleSubmit function only sent basic fields, ignoring MyBB-style features.
+
+**Solution**:
+- Updated CreatePostData interface to include prefixId, attachmentIds, and poll object
+- Updated createPost store function to include all fields in API payload
+- Updated CreatePost.tsx handleSubmit to build complete payload with poll validation
+
+**Files Modified**:
+- `apps/web/src/stores/forumStore.ts` - Extended CreatePostData interface and createPost implementation
+- `apps/web/src/pages/forums/CreatePost.tsx` - Full poll/prefix/attachment submission
+
+#### 3. Real-Time Reactions Not Working
+
+**Issue**: Message reactions were not syncing in real-time between users. Reactions only persisted via REST API, requiring page refresh to see others' reactions.
+
+**Root Cause**: Three interconnected bugs:
+1. Frontend sent wrong socket event format (`reaction` with action param) - backend expected `add_reaction`/`remove_reaction`
+2. No socket listeners for `reaction_added`/`reaction_removed` broadcasts
+3. No store methods to apply real-time reaction updates
+
+**Solution**:
+- Fixed sendReaction() to push correct event names: `add_reaction` or `remove_reaction`
+- Added channel.on handlers for `reaction_added` and `reaction_removed` events
+- Added `addReactionToMessage()` and `removeReactionFromMessage()` methods to chatStore
+
+**Files Modified**:
+- `apps/web/src/lib/socket.ts` - Fixed event format and added listeners
+- `apps/web/src/stores/chatStore.ts` - Added real-time reaction update methods
+
+#### 4. Reaction Handler URL Parsing Bug
+
+**Issue**: Reaction handlers in Conversation.tsx tried to get conversationId from URL query params (`?id=xxx`) but the route uses path params (`/messages/:conversationId`).
+
+**Root Cause**: Incorrect URL parsing method.
+
+**Solution**: Changed to extract conversationId from URL path using regex pattern `/messages/([^/]+)/`.
+
+**Files Modified**:
+- `apps/web/src/pages/messages/Conversation.tsx` - Fixed URL parsing in handleAddReaction/handleRemoveReaction
+
+### Enhancements
+
+#### Thread Prefix System
+
+**Issue**: `fetchThreadPrefixes` was an empty stub.
+
+**Solution**: Added standard prefix set with proper ThreadPrefix objects:
+- Discussion (blue)
+- Question (purple)
+- Help (red)
+- Solved (green)
+- Announcement (amber)
+- Guide (cyan)
+- News (pink)
+- Bug (red)
+- Feature Request (violet)
+
+**Files Modified**:
+- `apps/web/src/stores/forumStore.ts` - Implemented fetchThreadPrefixes with standard prefixes
+
+### Test Results
+
+All tests passing:
+- Web: 426 tests ✅
+- Mobile: 43 tests ✅
+- Backend: 830 tests ✅
+
+### Technical Details
+
+**Socket Event Compatibility Matrix (Fixed)**:
+
+| Frontend Event | Backend Handler | Status |
+|----------------|-----------------|--------|
+| `add_reaction` | `handle_in("add_reaction")` | ✅ Fixed |
+| `remove_reaction` | `handle_in("remove_reaction")` | ✅ Fixed |
+
+| Backend Broadcast | Frontend Handler | Status |
+|-------------------|------------------|--------|
+| `reaction_added` | `channel.on('reaction_added')` | ✅ Added |
+| `reaction_removed` | `channel.on('reaction_removed')` | ✅ Added |
 
 ---
 

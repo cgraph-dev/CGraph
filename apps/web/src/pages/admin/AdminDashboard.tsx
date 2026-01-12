@@ -20,7 +20,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { adminApi } from '@/lib/api/admin';
 import { format } from 'date-fns';
-import { formatTimeAgo, safeParseDate } from '@/lib/utils';
+import { formatTimeAgo } from '@/lib/utils';
 import clsx from 'clsx';
 
 // ============================================================================

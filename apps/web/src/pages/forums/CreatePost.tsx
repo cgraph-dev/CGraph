@@ -15,7 +15,7 @@ import {
   PaperClipIcon,
 } from '@heroicons/react/24/outline';
 
-type PostType = 'text' | 'image' | 'link' | 'poll';
+type PostType = 'text' | 'image' | 'link' | 'video' | 'poll';
 
 export default function CreatePost() {
   const { forumSlug } = useParams();
@@ -34,7 +34,8 @@ export default function CreatePost() {
   // MyBB Features
   const [selectedPrefix, setSelectedPrefix] = useState<string>('');
   const [attachments, setAttachments] = useState<PostAttachment[]>([]);
-  const [showPollOptions, setShowPollOptions] = useState(false);
+  // Poll feature - currently disabled pending backend support
+  const [_showPollOptions, _setShowPollOptions] = useState(false);
   const [pollQuestion, setPollQuestion] = useState('');
   const [pollOptions, setPollOptions] = useState(['', '']);
   const [pollAllowMultiple, setPollAllowMultiple] = useState(false);
@@ -88,17 +89,52 @@ export default function CreatePost() {
       return;
     }
 
+    // Validate poll if it's a poll post
+    if (postType === 'poll') {
+      if (!pollQuestion.trim()) {
+        setError('Poll question is required');
+        return;
+      }
+      const validOptions = pollOptions.filter((opt) => opt.trim() !== '');
+      if (validOptions.length < 2) {
+        setError('Poll requires at least 2 options');
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     setError(null);
 
     try {
-      await createPost({
+      const postData: Parameters<typeof createPost>[0] = {
         forumId: forum.id,
         title: title.trim(),
         content: postType === 'text' ? content.trim() : undefined,
         linkUrl: postType === 'link' ? url.trim() : undefined,
         postType,
-      });
+      };
+
+      // Add prefix if selected
+      if (selectedPrefix) {
+        postData.prefixId = selectedPrefix;
+      }
+
+      // Add attachment IDs if any
+      if (attachments.length > 0) {
+        postData.attachmentIds = attachments.map((a) => a.id);
+      }
+
+      // Add poll data if this is a poll post
+      if (postType === 'poll' && pollQuestion.trim()) {
+        postData.poll = {
+          question: pollQuestion.trim(),
+          options: pollOptions.filter((opt) => opt.trim() !== ''),
+          allowMultiple: pollAllowMultiple,
+          isPublic: pollPublic,
+        };
+      }
+
+      await createPost(postData);
 
       navigate(`/forums/${forumSlug}`);
     } catch (err: unknown) {

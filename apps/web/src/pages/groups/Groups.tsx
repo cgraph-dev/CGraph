@@ -12,10 +12,8 @@ import {
   MegaphoneIcon,
   ChatBubbleLeftRightIcon,
   ChevronDownIcon,
-  ChevronRightIcon,
   Cog6ToothIcon,
   UserGroupIcon,
-  SparklesIcon,
 } from '@heroicons/react/24/outline';
 
 export default function Groups() {

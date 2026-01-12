@@ -1,10 +1,10 @@
 defmodule Cgraph.Messaging.Conversations do
   @moduledoc """
   Sub-context for Conversation-related operations.
-  
+
   Handles conversation creation, retrieval, and participant management.
   Extracted from the main Messaging context for better maintainability.
-  
+
   @since v0.7.29
   """
 
@@ -15,11 +15,11 @@ defmodule Cgraph.Messaging.Conversations do
 
   @doc """
   List conversations for a user with pagination.
-  
+
   ## Options
     - `:page` - Page number (default: 1)
     - `:per_page` - Results per page (default: 20)
-  
+
   ## Returns
     `{conversations, metadata}` tuple
   """
@@ -145,7 +145,10 @@ defmodule Cgraph.Messaging.Conversations do
   end
 
   defp get_or_create_conversation_for_participants(user, all_ids) do
-    do_create_conversation(user, all_ids)
+    case do_create_conversation(user, all_ids) do
+      {:error, reason} -> Repo.rollback(reason)
+      conversation -> conversation
+    end
   end
 
   defp find_dm_conversation([user1_id, user2_id]) do

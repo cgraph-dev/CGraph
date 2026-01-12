@@ -1,9 +1,9 @@
 defmodule CgraphWeb.CoinsController do
   @moduledoc """
   Controller for coin balance and transactions.
-  
+
   ## Security
-  
+
   - All endpoints require authentication
   - Pagination parameters are validated and safely parsed
   """
@@ -23,7 +23,7 @@ defmodule CgraphWeb.CoinsController do
   """
   def balance(conn, _params) do
     user = conn.assigns.current_user
-    
+
     conn
     |> put_status(:ok)
     |> json(%{
@@ -36,9 +36,9 @@ defmodule CgraphWeb.CoinsController do
   @doc """
   GET /api/v1/coins/history
   Get coin transaction history.
-  
+
   ## Parameters
-  
+
   - `limit` - Max results to return (1-100, default: 50)
   - `offset` - Offset for pagination (default: 0)
   """
@@ -46,9 +46,9 @@ defmodule CgraphWeb.CoinsController do
     user = conn.assigns.current_user
     limit = parse_int(params["limit"], 50, min: 1, max: @max_limit)
     offset = parse_int(params["offset"], 0, min: 0)
-    
+
     transactions = Gamification.list_coin_transactions(user.id, limit: limit, offset: offset)
-    
+
     conn
     |> put_status(:ok)
     |> render(:history, transactions: transactions)
@@ -60,7 +60,7 @@ defmodule CgraphWeb.CoinsController do
   """
   def packages(conn, _params) do
     user = conn.assigns.current_user
-    
+
     # Define coin packages with bonus for premium users
     base_packages = [
       %{id: "small", coins: 500, price: 4.99, currency: "USD"},
@@ -83,7 +83,7 @@ defmodule CgraphWeb.CoinsController do
         total_coins: pkg.coins + bonus
       })
     end)
-    
+
     conn
     |> put_status(:ok)
     |> json(%{packages: packages})
@@ -124,7 +124,7 @@ defmodule CgraphWeb.CoinsController do
         frequency: "per level"
       }
     ]
-    
+
     conn
     |> put_status(:ok)
     |> json(%{methods: methods})

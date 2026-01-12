@@ -106,6 +106,9 @@ interface ChatState {
   markAsRead: (conversationId: string) => Promise<void>;
   createConversation: (userIds: string[]) => Promise<Conversation>;
   getRecipientId: (conversationId: string, currentUserId: string) => string | null;
+  // Real-time reaction updates from socket
+  addReactionToMessage: (messageId: string, emoji: string, userId: string, username?: string) => void;
+  removeReactionFromMessage: (messageId: string, emoji: string, userId: string) => void;
 }
 
 export const useChatStore = create<ChatState>((set, get) => ({
@@ -495,5 +498,95 @@ export const useChatStore = create<ChatState>((set, get) => ({
     );
     
     return recipient?.userId || null;
+  },
+
+  /**
+   * Add a reaction to a message (from socket event)
+   * Used for real-time reaction sync across clients
+   */
+  addReactionToMessage: (messageId: string, emoji: string, userId: string, username?: string) => {
+    set((state) => {
+      const updatedMessages: Record<string, Message[]> = {};
+      
+      // Find and update the message in all conversations
+      Object.entries(state.messages).forEach(([convId, messages]) => {
+        const messageIndex = messages.findIndex(m => m.id === messageId);
+        if (messageIndex !== -1) {
+          const message = messages[messageIndex];
+          if (!message) {
+            updatedMessages[convId] = messages;
+            return;
+          }
+          const existingReactions = message.reactions || [];
+          
+          // Check if this reaction already exists from this user
+          const existingIndex = existingReactions.findIndex(
+            r => r.emoji === emoji && r.userId === userId
+          );
+          
+          if (existingIndex === -1) {
+            // Add the new reaction with proper Reaction structure
+            const newReaction: Reaction = {
+              id: `${messageId}-${emoji}-${userId}`,
+              emoji,
+              userId,
+              user: {
+                id: userId,
+                username: username || 'User',
+              }
+            };
+            
+            const newReactions = [...existingReactions, newReaction];
+            const updatedMessage: Message = { ...message, reactions: newReactions };
+            const updatedList = [...messages];
+            updatedList[messageIndex] = updatedMessage;
+            updatedMessages[convId] = updatedList;
+          } else {
+            updatedMessages[convId] = messages;
+          }
+        } else {
+          updatedMessages[convId] = messages;
+        }
+      });
+      
+      return { messages: { ...state.messages, ...updatedMessages } };
+    });
+  },
+
+  /**
+   * Remove a reaction from a message (from socket event)
+   * Used for real-time reaction sync across clients
+   */
+  removeReactionFromMessage: (messageId: string, emoji: string, userId: string) => {
+    set((state) => {
+      const updatedMessages: Record<string, Message[]> = {};
+      
+      // Find and update the message in all conversations
+      Object.entries(state.messages).forEach(([convId, messages]) => {
+        const messageIndex = messages.findIndex(m => m.id === messageId);
+        if (messageIndex !== -1) {
+          const message = messages[messageIndex];
+          if (!message) {
+            updatedMessages[convId] = messages;
+            return;
+          }
+          const existingReactions = message.reactions || [];
+          
+          // Remove the reaction from this user
+          const filteredReactions = existingReactions.filter(
+            r => !(r.emoji === emoji && r.userId === userId)
+          );
+          
+          const updatedMessage: Message = { ...message, reactions: filteredReactions };
+          const updatedList = [...messages];
+          updatedList[messageIndex] = updatedMessage;
+          updatedMessages[convId] = updatedList;
+        } else {
+          updatedMessages[convId] = messages;
+        }
+      });
+      
+      return { messages: { ...state.messages, ...updatedMessages } };
+    });
   },
 }));

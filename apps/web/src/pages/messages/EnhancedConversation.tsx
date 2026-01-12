@@ -44,7 +44,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { themeEngine } from '@/lib/ai/ThemeEngine';
 
 // Sticker system integration
-import { StickerPicker, StickerButton, StickerMessage } from '@/components/chat/StickerPicker';
+import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
 import type { Sticker } from '@/data/stickers';
 
 // =============================================================================

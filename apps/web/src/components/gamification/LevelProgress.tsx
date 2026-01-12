@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SparklesIcon, TrophyIcon, FireIcon } from '@heroicons/react/24/outline';
+import { SparklesIcon, FireIcon } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useGamificationStore } from '@/stores/gamificationStore';

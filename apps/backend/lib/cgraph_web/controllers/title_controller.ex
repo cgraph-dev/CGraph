@@ -17,8 +17,8 @@ defmodule CgraphWeb.TitleController do
     titles = Gamification.list_titles()
     user = conn.assigns.current_user
     user_titles = Gamification.list_user_titles(user.id)
-    
-    owned_title_ids = 
+
+    owned_title_ids =
       user_titles
       |> Enum.map(fn ut -> ut.title_id end)
       |> MapSet.new()
@@ -30,7 +30,7 @@ defmodule CgraphWeb.TitleController do
         equipped: user.equipped_title_id == title.id
       }
     end)
-    
+
     conn
     |> put_status(:ok)
     |> render(:index, titles: titles_with_ownership)
@@ -43,7 +43,7 @@ defmodule CgraphWeb.TitleController do
   def owned(conn, _params) do
     user = conn.assigns.current_user
     user_titles = Gamification.list_user_titles(user.id)
-    
+
     conn
     |> put_status(:ok)
     |> render(:owned, user_titles: user_titles, equipped_id: user.equipped_title_id)
@@ -55,11 +55,11 @@ defmodule CgraphWeb.TitleController do
   """
   def equip(conn, %{"id" => title_id}) do
     user = conn.assigns.current_user
-    
+
     case Gamification.equip_title(user.id, title_id) do
       {:ok, _updated_user} ->
         title = Repo.get!(Gamification.Title, title_id)
-        
+
         conn
         |> put_status(:ok)
         |> json(%{
@@ -70,7 +70,7 @@ defmodule CgraphWeb.TitleController do
             color: title.color
           }
         })
-      
+
       {:error, :not_owned} ->
         conn
         |> put_status(:forbidden)
@@ -84,12 +84,12 @@ defmodule CgraphWeb.TitleController do
   """
   def unequip(conn, _params) do
     user = conn.assigns.current_user
-    
-    {:ok, _} = 
+
+    {:ok, _} =
       user
       |> Ecto.Changeset.change(%{equipped_title_id: nil})
       |> Repo.update()
-    
+
     conn
     |> put_status(:ok)
     |> json(%{success: true})
@@ -101,7 +101,7 @@ defmodule CgraphWeb.TitleController do
   """
   def purchase(conn, %{"id" => title_id}) do
     user = conn.assigns.current_user
-    
+
     case Gamification.purchase_title(user, title_id) do
       {:ok, updated_user} ->
         conn
@@ -111,17 +111,17 @@ defmodule CgraphWeb.TitleController do
           coins: updated_user.coins,
           message: "Title purchased successfully"
         })
-      
+
       {:error, :not_purchasable} ->
         conn
         |> put_status(:bad_request)
         |> json(%{error: "not_purchasable", message: "This title cannot be purchased"})
-      
+
       {:error, :insufficient_funds} ->
         conn
         |> put_status(:bad_request)
         |> json(%{error: "insufficient_funds", message: "You don't have enough coins"})
-      
+
       {:error, :already_owned} ->
         conn
         |> put_status(:bad_request)

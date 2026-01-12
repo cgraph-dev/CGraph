@@ -7,20 +7,20 @@ defmodule Cgraph.Gamification do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
   alias Cgraph.Accounts.User
   alias Cgraph.Gamification.{
     Achievement,
-    UserAchievement,
-    Quest,
-    UserQuest,
-    Title,
-    UserTitle,
-    ShopItem,
-    UserPurchase,
     CoinTransaction,
+    Quest,
+    ShopItem,
+    Title,
+    UserAchievement,
+    UserPurchase,
+    UserQuest,
+    UserTitle,
     XpTransaction
   }
+  alias Cgraph.Repo
 
   # ==================== LEVEL SYSTEM ====================
 
@@ -45,9 +45,10 @@ defmodule Cgraph.Gamification do
     mid = div(min_level + max_level, 2)
     xp_at_mid = xp_for_level(mid + 1)
 
-    cond do
-      xp >= xp_at_mid -> find_level(xp, mid + 1, max_level)
-      true -> find_level(xp, min_level, mid)
+    if xp >= xp_at_mid do
+      find_level(xp, mid + 1, max_level)
+    else
+      find_level(xp, min_level, mid)
     end
   end
 
@@ -795,7 +796,7 @@ defmodule Cgraph.Gamification do
     total_cost = item.coin_cost * quantity
 
     cond do
-      not ShopItem.is_available?(item) ->
+      not ShopItem.available?(item) ->
         {:error, :not_available}
 
       item.premium_only and user.subscription_tier == "free" ->

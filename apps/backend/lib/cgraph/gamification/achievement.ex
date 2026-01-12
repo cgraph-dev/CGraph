@@ -1,7 +1,7 @@
 defmodule Cgraph.Gamification.Achievement do
   @moduledoc """
   Schema for achievement definitions.
-  
+
   Achievements are unlockable rewards that users can earn by completing
   specific actions or milestones in the application.
   """

@@ -6,6 +6,10 @@ import { formatTimeAgo } from '@/lib/utils';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import Dropdown, { DropdownItem, DropdownDivider } from '@/components/Dropdown';
 import { toast } from '@/components/ui';
+import ThreadPrefix from '@/components/forums/ThreadPrefix';
+import ThreadRating from '@/components/forums/ThreadRating';
+import PollWidget from '@/components/forums/PollWidget';
+import EditHistoryModal from '@/components/forums/EditHistoryModal';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -20,6 +24,10 @@ import {
   TrashIcon,
   FlagIcon,
   PencilIcon,
+  ClockIcon,
+  BellIcon,
+  BellSlashIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
 import { ArrowUpIcon as ArrowUpIconSolid, ArrowDownIcon as ArrowDownIconSolid } from '@heroicons/react/24/solid';
 
@@ -42,12 +50,18 @@ export default function ForumPost() {
     unlockPost,
     deletePost,
     currentForum,
+    reportItem,
   } = useForumStore();
 
   const [commentContent, setCommentContent] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyContent, setReplyContent] = useState('');
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportReason, setReportReason] = useState('');
+  const [isReporting, setIsReporting] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [showEditHistory, setShowEditHistory] = useState(false);
 
   const postComments = postId ? comments[postId] || [] : [];
 
@@ -231,34 +245,63 @@ export default function ForumPost() {
               </div>
 
               {/* Title */}
-              <h1 className="text-2xl font-bold text-white mb-4">
-                {currentPost.isPinned && (
-                  <span className="inline-flex items-center gap-1 mr-2 px-2 py-1 bg-green-600 text-sm rounded">
-                    <MapPinIcon className="h-3.5 w-3.5" />
-                    Pinned
-                  </span>
-                )}
-                {currentPost.isLocked && (
-                  <span className="inline-flex items-center gap-1 mr-2 px-2 py-1 bg-yellow-600 text-sm rounded">
-                    <LockClosedIcon className="h-3.5 w-3.5" />
-                    Locked
-                  </span>
-                )}
-                {currentPost.isNsfw && (
-                  <span className="inline-block mr-2 px-2 py-1 bg-red-600 text-sm rounded">
-                    NSFW
-                  </span>
-                )}
-                {currentPost.category && (
-                  <span
-                    className="inline-block mr-2 px-2 py-1 text-sm rounded"
-                    style={{ backgroundColor: currentPost.category.color }}
+              <div className="mb-4">
+                {/* Badges Row */}
+                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                  {currentPost.isPinned && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-600 text-sm rounded">
+                      <MapPinIcon className="h-3.5 w-3.5" />
+                      Pinned
+                    </span>
+                  )}
+                  {currentPost.isLocked && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-600 text-sm rounded">
+                      <LockClosedIcon className="h-3.5 w-3.5" />
+                      Locked
+                    </span>
+                  )}
+                  {currentPost.isClosed && (
+                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-600 text-sm rounded">
+                      <LockClosedIcon className="h-3.5 w-3.5" />
+                      Closed
+                    </span>
+                  )}
+                  {currentPost.isNsfw && (
+                    <span className="inline-block px-2 py-1 bg-red-600 text-sm rounded">
+                      NSFW
+                    </span>
+                  )}
+                  {currentPost.category && (
+                    <span
+                      className="inline-block px-2 py-1 text-sm rounded"
+                      style={{ backgroundColor: currentPost.category.color }}
+                    >
+                      {currentPost.category.name}
+                    </span>
+                  )}
+                  {currentPost.prefix && <ThreadPrefix prefix={currentPost.prefix} size="md" />}
+                </div>
+
+                {/* Title */}
+                <h1 className="text-2xl font-bold text-white">
+                  {currentPost.title}
+                </h1>
+
+                {/* Edit indicator */}
+                {currentPost.editedAt && (
+                  <button
+                    onClick={() => setShowEditHistory(true)}
+                    className="mt-2 flex items-center gap-1.5 text-sm text-gray-400 hover:text-primary-400 transition-colors"
                   >
-                    {currentPost.category.name}
-                  </span>
+                    <ClockIcon className="h-4 w-4" />
+                    <span>
+                      Edited {formatTimeAgo(currentPost.editedAt)}
+                      {currentPost.editedBy && ` by ${currentPost.editedBy}`}
+                      {' • View history'}
+                    </span>
+                  </button>
                 )}
-                {currentPost.title}
-              </h1>
+              </div>
 
               {/* Content */}
               {currentPost.postType === 'text' && currentPost.content && (
@@ -288,6 +331,84 @@ export default function ForumPost() {
                 </div>
               )}
 
+              {/* Poll Widget */}
+              {currentPost.poll && (
+                <div className="mb-4">
+                  <PollWidget
+                    poll={currentPost.poll}
+                    threadId={currentPost.id}
+                    isCreator={currentPost.authorId === user?.id}
+                  />
+                </div>
+              )}
+
+              {/* Attachments */}
+              {currentPost.attachments && currentPost.attachments.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="text-sm font-semibold text-gray-400 mb-2">Attachments ({currentPost.attachments.length})</h3>
+                  <div className="space-y-2">
+                    {currentPost.attachments.map((attachment) => (
+                      <div
+                        key={attachment.id}
+                        className="flex items-center gap-3 p-3 bg-dark-700 rounded-lg border border-dark-600 hover:border-primary-500/50 transition-colors"
+                      >
+                        {/* Thumbnail or Icon */}
+                        {attachment.fileType.startsWith('image/') && attachment.thumbnailUrl ? (
+                          <img
+                            src={attachment.thumbnailUrl}
+                            alt={attachment.originalFilename}
+                            className="h-12 w-12 rounded object-cover"
+                          />
+                        ) : (
+                          <div className="h-12 w-12 rounded bg-dark-600 flex items-center justify-center">
+                            <span className="text-xs text-gray-400">
+                              {attachment.fileType.split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* File Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white truncate">
+                            {attachment.originalFilename}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {(attachment.fileSize / 1024 / 1024).toFixed(2)} MB
+                            {attachment.downloads > 0 && (
+                              <span className="ml-2">• {attachment.downloads} downloads</span>
+                            )}
+                          </p>
+                        </div>
+
+                        {/* Download Button */}
+                        <a
+                          href={attachment.downloadUrl}
+                          download={attachment.originalFilename}
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-sm rounded-lg transition-colors"
+                        >
+                          <ArrowDownTrayIcon className="h-4 w-4" />
+                          <span>Download</span>
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Thread Rating */}
+              {(currentPost.rating !== undefined || currentPost.ratingCount !== undefined) && (
+                <div className="mb-4 pb-4 border-b border-dark-700">
+                  <ThreadRating
+                    threadId={currentPost.id}
+                    rating={currentPost.rating}
+                    ratingCount={currentPost.ratingCount}
+                    myRating={currentPost.myRating}
+                    size="md"
+                    interactive={true}
+                  />
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex items-center gap-4 text-gray-400 pt-4 border-t border-dark-700">
                 <span className="flex items-center gap-1.5 text-sm">
@@ -301,6 +422,22 @@ export default function ForumPost() {
                 <button className="flex items-center gap-1.5 text-sm hover:bg-dark-700 px-2 py-1 rounded transition-colors">
                   <BookmarkIcon className="h-5 w-5" />
                   <span>Save</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setIsSubscribed(!isSubscribed);
+                    toast.success(isSubscribed ? 'Unsubscribed from thread' : 'Subscribed to thread');
+                  }}
+                  className={`flex items-center gap-1.5 text-sm hover:bg-dark-700 px-2 py-1 rounded transition-colors ${
+                    isSubscribed ? 'text-primary-400' : ''
+                  }`}
+                >
+                  {isSubscribed ? (
+                    <BellSlashIcon className="h-5 w-5" />
+                  ) : (
+                    <BellIcon className="h-5 w-5" />
+                  )}
+                  <span>{isSubscribed ? 'Unsubscribe' : 'Subscribe'}</span>
                 </button>
                 
                 {/* More Actions Dropdown */}
@@ -392,9 +529,7 @@ export default function ForumPost() {
                   
                   {/* General Actions */}
                   <DropdownItem
-                    onClick={() => {
-                      toast.info('Report submitted', 'Our moderation team will review this post.');
-                    }}
+                    onClick={() => setShowReportModal(true)}
                     icon={<FlagIcon className="h-4 w-4" />}
                   >
                     Report
@@ -464,6 +599,78 @@ export default function ForumPost() {
           )}
         </div>
       </div>
+
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-dark-800 rounded-lg border border-dark-600 p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-white mb-4">Report Post</h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Please select a reason for reporting this post. Our moderation team will review your report.
+            </p>
+            
+            <select
+              value={reportReason}
+              onChange={(e) => setReportReason(e.target.value)}
+              className="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-white mb-4 focus:outline-none focus:border-primary-500"
+            >
+              <option value="">Select a reason...</option>
+              <option value="spam">Spam or misleading</option>
+              <option value="harassment">Harassment or bullying</option>
+              <option value="hate_speech">Hate speech</option>
+              <option value="violence">Violence or threats</option>
+              <option value="inappropriate">Inappropriate content</option>
+              <option value="misinformation">Misinformation</option>
+              <option value="copyright">Copyright violation</option>
+              <option value="other">Other</option>
+            </select>
+
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => {
+                  setShowReportModal(false);
+                  setReportReason('');
+                }}
+                className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  if (!reportReason || !currentPost) return;
+                  setIsReporting(true);
+                  try {
+                    await reportItem({
+                      reportType: 'post',
+                      itemId: currentPost.id,
+                      reason: reportReason,
+                    });
+                    toast.success('Report submitted', 'Our moderation team will review this post.');
+                    setShowReportModal(false);
+                    setReportReason('');
+                  } catch (err) {
+                    console.error('Failed to submit report:', err);
+                    toast.error('Failed to submit report', 'Please try again later.');
+                  } finally {
+                    setIsReporting(false);
+                  }
+                }}
+                disabled={!reportReason || isReporting}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-600/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+              >
+                {isReporting ? 'Submitting...' : 'Submit Report'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit History Modal */}
+      <EditHistoryModal
+        postId={currentPost.id}
+        isOpen={showEditHistory}
+        onClose={() => setShowEditHistory(false)}
+      />
     </div>
   );
 }

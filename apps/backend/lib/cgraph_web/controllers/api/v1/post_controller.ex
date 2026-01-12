@@ -2,9 +2,9 @@ defmodule CgraphWeb.API.V1.PostController do
   @moduledoc """
   Handles forum posts.
   Posts are the main content units in forums with voting and comments.
-  
+
   ## Security
-  
+
   - Pagination parameters are validated and safely parsed
   - Rate limiting on post creation
   - Authorization checks for forum access

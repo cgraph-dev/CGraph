@@ -80,7 +80,7 @@ defmodule Cgraph.WebRTC do
   use GenServer
   require Logger
 
-  alias Cgraph.WebRTC.{Room, Participant}
+  alias Cgraph.WebRTC.{Participant, Room}
 
   @ets_table :cgraph_webrtc_rooms
   @default_call_timeout 60_000

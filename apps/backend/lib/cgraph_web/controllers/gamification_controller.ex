@@ -2,9 +2,9 @@ defmodule CgraphWeb.GamificationController do
   @moduledoc """
   Controller for gamification-related endpoints.
   Handles XP, levels, achievements, streaks, and user stats.
-  
+
   ## Security
-  
+
   - All endpoints require authentication
   - Pagination parameters are validated and safely parsed
   """
@@ -27,7 +27,7 @@ defmodule CgraphWeb.GamificationController do
   def stats(conn, _params) do
     user = conn.assigns.current_user
     stats = Gamification.get_user_stats(user.id)
-    
+
     conn
     |> put_status(:ok)
     |> render(:stats, stats: stats)
@@ -40,12 +40,12 @@ defmodule CgraphWeb.GamificationController do
   def achievements(conn, params) do
     user = conn.assigns.current_user
     category = params["category"]
-    
+
     achievements = Gamification.list_achievements(category: category)
     user_achievements = Gamification.list_user_achievements(user.id)
-    
+
     # Merge user progress with achievement definitions
-    user_progress_map = 
+    user_progress_map =
       user_achievements
       |> Enum.map(fn ua -> {ua.achievement_id, ua} end)
       |> Map.new()
@@ -59,7 +59,7 @@ defmodule CgraphWeb.GamificationController do
         unlocked_at: progress && progress.unlocked_at
       }
     end)
-    
+
     conn
     |> put_status(:ok)
     |> render(:achievements, achievements: achievements_with_progress)
@@ -71,10 +71,10 @@ defmodule CgraphWeb.GamificationController do
   """
   def show_achievement(conn, %{"id" => achievement_id}) do
     user = conn.assigns.current_user
-    
+
     achievement = Cgraph.Repo.get!(Gamification.Achievement, achievement_id)
     {:ok, user_achievement} = Gamification.get_or_create_user_achievement(user.id, achievement_id)
-    
+
     conn
     |> put_status(:ok)
     |> render(:achievement, achievement: achievement, user_achievement: user_achievement)
@@ -86,13 +86,13 @@ defmodule CgraphWeb.GamificationController do
   """
   def claim_streak(conn, _params) do
     user = conn.assigns.current_user
-    
+
     case Gamification.claim_daily_streak(user) do
       {:ok, {updated_user, coins, streak}} ->
         conn
         |> put_status(:ok)
         |> render(:streak_claimed, user: updated_user, coins: coins, streak: streak)
-      
+
       {:error, :already_claimed} ->
         conn
         |> put_status(:bad_request)
@@ -103,9 +103,9 @@ defmodule CgraphWeb.GamificationController do
   @doc """
   GET /api/v1/gamification/leaderboard/:category
   Get leaderboard for a specific category.
-  
+
   ## Parameters
-  
+
   - `limit` - Max entries to return (1-100, default: 100)
   - `offset` - Offset for pagination (default: 0)
   """
@@ -113,10 +113,10 @@ defmodule CgraphWeb.GamificationController do
     limit = parse_int(params["limit"], 100, min: 1, max: @max_leaderboard_limit)
     offset = parse_int(params["offset"], 0, min: 0)
     user = conn.assigns.current_user
-    
+
     entries = Gamification.get_leaderboard(category, limit: limit, offset: offset)
     user_rank = Gamification.get_user_rank(user.id, category)
-    
+
     conn
     |> put_status(:ok)
     |> render(:leaderboard, entries: entries, category: category, user_rank: user_rank)
@@ -125,9 +125,9 @@ defmodule CgraphWeb.GamificationController do
   @doc """
   GET /api/v1/gamification/xp/history
   Get XP transaction history.
-  
+
   ## Parameters
-  
+
   - `limit` - Max entries to return (1-100, default: 50)
   - `offset` - Offset for pagination (default: 0)
   """
@@ -135,8 +135,8 @@ defmodule CgraphWeb.GamificationController do
     user = conn.assigns.current_user
     query_limit = parse_int(params["limit"], 50, min: 1, max: 100)
     query_offset = parse_int(params["offset"], 0, min: 0)
-    
-    transactions = 
+
+    transactions =
       from(t in Cgraph.Gamification.XpTransaction,
         where: t.user_id == ^user.id,
         order_by: [desc: t.inserted_at],
@@ -144,7 +144,7 @@ defmodule CgraphWeb.GamificationController do
         offset: ^query_offset
       )
       |> Repo.all()
-    
+
     conn
     |> put_status(:ok)
     |> render(:xp_history, transactions: transactions)
@@ -156,12 +156,12 @@ defmodule CgraphWeb.GamificationController do
   """
   def level_info(conn, _params) do
     user = conn.assigns.current_user
-    
+
     current_level = user.level
     current_xp = user.xp
     xp_for_current = if current_level == 1, do: 0, else: Gamification.xp_for_level(current_level)
     xp_for_next = Gamification.xp_for_level(current_level + 1)
-    
+
     conn
     |> put_status(:ok)
     |> json(%{

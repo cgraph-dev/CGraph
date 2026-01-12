@@ -12,7 +12,7 @@ defmodule Cgraph.Gamification.CoinTransaction do
 
   schema "coin_transactions" do
     belongs_to :user, Cgraph.Accounts.User
-    
+
     field :amount, :integer
     field :balance_after, :integer
     field :type, :string

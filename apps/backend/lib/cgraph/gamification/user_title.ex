@@ -11,7 +11,7 @@ defmodule Cgraph.Gamification.UserTitle do
   schema "user_titles" do
     belongs_to :user, Cgraph.Accounts.User
     belongs_to :title, Cgraph.Gamification.Title
-    
+
     field :unlocked_at, :utc_datetime
 
     timestamps(type: :utc_datetime)

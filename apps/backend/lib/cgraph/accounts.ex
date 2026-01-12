@@ -121,13 +121,13 @@ defmodule Cgraph.Accounts do
   def get_user_by_user_id(uid) when is_binary(uid) do
     # Handle formats like "#4829173650" or "4829173650"
     cleaned = uid |> String.replace("#", "") |> String.trim()
-    
+
     # First try to find by new uid field (10-digit string)
     case Repo.get_by(User, uid: cleaned) do
       nil ->
         # Fallback: try legacy numeric user_id
         case Integer.parse(cleaned) do
-          {num, ""} -> 
+          {num, ""} ->
             case Repo.get_by(User, user_id: num) do
               nil -> {:error, :not_found}
               user -> {:ok, user}
@@ -1084,12 +1084,29 @@ defmodule Cgraph.Accounts do
     uid_query = parse_uid_query(query)
     legacy_user_id = parse_legacy_user_id(query)
 
+    # Build base query with text-based search conditions
+    base_conditions = dynamic([u],
+      ilike(u.username, ^search_term) or
+      ilike(u.display_name, ^search_term) or
+      ilike(u.email, ^search_term)
+    )
+
+    # Add UID condition if a valid UID was parsed
+    conditions = if uid_query do
+      dynamic([u], ^base_conditions or u.uid == ^uid_query)
+    else
+      base_conditions
+    end
+
+    # Add legacy user_id condition if a valid legacy ID was parsed
+    conditions = if legacy_user_id do
+      dynamic([u], ^conditions or u.user_id == ^legacy_user_id)
+    else
+      conditions
+    end
+
     db_query = from u in User,
-      where: ilike(u.username, ^search_term) or 
-             ilike(u.display_name, ^search_term) or
-             ilike(u.email, ^search_term) or
-             (not is_nil(^uid_query) and u.uid == ^uid_query) or
-             (not is_nil(^legacy_user_id) and u.user_id == ^legacy_user_id),
+      where: ^conditions,
       order_by: [asc: u.username]
 
     total = Repo.aggregate(db_query, :count, :id)
@@ -1119,7 +1136,7 @@ defmodule Cgraph.Accounts do
   defp parse_legacy_user_id(query) when is_binary(query) do
     cleaned = query |> String.replace("#", "") |> String.trim()
     case Integer.parse(cleaned) do
-      {num, ""} when num > 0 and num < 10000 -> num  # Legacy IDs are 1-9999
+      {num, ""} when num > 0 and num < 10_000 -> num  # Legacy IDs are 1-9999
       _ -> nil
     end
   end

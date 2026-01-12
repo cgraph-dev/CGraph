@@ -484,7 +484,7 @@ defmodule Cgraph.Crypto.E2EE do
 
   @doc """
   Get the current (non-revoked) identity key for a user.
-  
+
   Returns the identity key needed for E2EE message attribution.
   Used by the message controller to include sender's identity key
   in encrypted message metadata.

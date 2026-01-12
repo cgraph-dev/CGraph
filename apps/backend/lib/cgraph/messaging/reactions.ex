@@ -1,10 +1,10 @@
 defmodule Cgraph.Messaging.Reactions do
   @moduledoc """
   Sub-context for Reaction-related operations.
-  
+
   Handles adding, removing, and listing reactions on messages.
   Extracted from the main Messaging context for better maintainability.
-  
+
   @since v0.7.29
   """
 
@@ -15,7 +15,7 @@ defmodule Cgraph.Messaging.Reactions do
 
   @doc """
   List reactions on a message.
-  
+
   ## Options
     - `:emoji` - Filter by specific emoji
   """

@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/web",
-  "version": "0.7.52",
+  "version": "0.7.54",
   "private": true,
   "type": "module",
   "scripts": {

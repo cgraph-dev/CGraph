@@ -6,6 +6,148 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.54] - 2026-01-12
+
+**🚀 MYBB FEATURE IMPLEMENTATION: Core Forum Features**
+
+This release implements core MyBB-style forum features including BBCode parsing, user profiles with signatures/badges, advanced moderation tools, and advanced search functionality. All forumStore stub implementations have been converted to working code.
+
+### New Features
+
+#### 📝 BBCode/MyCode Parser (Full Implementation)
+- Created comprehensive BBCode parser (`/lib/bbcode.ts`) with:
+  - All standard tags: `[b]`, `[i]`, `[u]`, `[s]`, `[code]`, `[quote]`, `[url]`, `[img]`, `[list]`
+  - MyBB extensions: `[spoiler]`, `[youtube]`, `[color]`, `[size]`, `[font]`, `[align]`
+  - Security features: XSS prevention, URL validation, HTML escaping
+  - Utility functions: `parseBBCode()`, `stripBBCode()`, `validateBBCode()`, `previewBBCode()`
+- Created `BBCodeRenderer` component for displaying BBCode content
+- Created `BBCodeEditor` with full toolbar:
+  - Formatting buttons (bold, italic, underline, strikethrough)
+  - Color picker, font size selector, emoji picker
+  - Link, image, and YouTube insertion
+  - Live preview toggle with character count
+  - Validation warnings for unclosed tags
+
+#### 👤 User Profile Enhancements
+- Created `profileStore.ts` with:
+  - User signature system (BBCode signatures appended to posts)
+  - Custom profile fields (location, website, occupation, social links)
+  - Badge and title system with rarity levels
+  - Privacy settings (online status, profile visibility)
+  - Block/ignore list management
+  - Avatar/banner upload
+  - User stats (posts, topics, reputation)
+- Created `UserSignature` component for displaying signatures below posts
+
+#### 🛡️ Advanced Moderation System
+- Created `moderationStore.ts` with complete moderation tools:
+  - **Thread moderation**: move, split, merge, copy, close/reopen, soft-delete, restore
+  - **Post moderation**: approve, reject, soft-delete, restore
+  - **Bulk/inline moderation**: select multiple items for batch operations
+  - **Warning system**: issue/revoke warnings with types and points
+  - **Ban management**: user/IP/email bans with expiry
+  - **Moderation queue**: pending items with priorities
+  - **Moderation log**: full audit trail of all actions
+- Created `InlineModerationToolbar` floating component for bulk actions
+
+#### 🔍 Advanced Search
+- Created `AdvancedSearch` component with MyBB-style filters:
+  - Author filter (by username)
+  - Forum filter (specific forums)
+  - Date range (posted between dates)
+  - Search scope (titles only, content only, first post only)
+  - Content type (threads, posts, all)
+  - Thread status (open, closed, sticky, normal)
+  - Reply count range (min/max)
+  - Sort options (relevance, date, views, replies)
+
+### Bug Fixes
+
+#### 🔧 Fixed All ForumStore Stub Implementations
+- **Thread Moderation** (5 functions): moveThread, splitThread, mergeThreads, closeThread, reopenThread
+- **Thread Prefixes** (3 functions): fetchThreadPrefixes, createThreadPrefix, deleteThreadPrefix
+- **Ratings** (2 functions): rateThread, fetchThreadRatings
+- **Attachments** (2 functions): uploadAttachment, deleteAttachment
+- **Polls** (3 functions): createPoll, votePoll, closePoll
+- **Subscriptions** (4 functions): subscribeThread, unsubscribeThread, updateSubscription, fetchSubscriptions
+- **User Groups** (4 functions): fetchUserGroups, createUserGroup, updateUserGroup, deleteUserGroup
+- **Warnings/Bans** (5 functions): warnUser, fetchUserWarnings, banUser, unbanUser, fetchBans
+- **Moderation Queue** (3 functions): fetchModerationQueue, approveQueueItem, rejectQueueItem
+- **Reports** (3 functions): fetchReports, assignReport, resolveReport
+- **Edit History** (1 function): fetchEditHistory
+
+### Technical Improvements
+
+- Fixed TypeScript errors in all new files
+- Used `@heroicons/react` for consistent icon library (no lucide-react dependency)
+- Proper type safety with `ensureArray` casts for API responses
+- Comprehensive error handling with console logging
+
+### Files Added
+- `apps/web/src/lib/bbcode.ts` - BBCode parser library
+- `apps/web/src/components/BBCodeRenderer.tsx` - BBCode rendering component
+- `apps/web/src/components/BBCodeEditor.tsx` - BBCode editor with toolbar
+- `apps/web/src/stores/profileStore.ts` - User profile management
+- `apps/web/src/components/forums/UserSignature.tsx` - Signature display
+- `apps/web/src/stores/moderationStore.ts` - Moderation system
+- `apps/web/src/components/moderation/InlineModerationToolbar.tsx` - Bulk moderation UI
+- `apps/web/src/components/search/AdvancedSearch.tsx` - Advanced search component
+
+### Files Modified
+- `apps/web/src/stores/forumStore.ts` - All stub implementations replaced with working code
+
+---
+
+## [0.7.53] - 2026-01-12
+
+**🔧 FRONTEND-BACKEND INTEGRATION AUDIT: Critical Bug Fixes**
+
+This release fixes several critical bugs where UI features were not properly connected to backend APIs, including forum reporting, poll creation, and real-time message reactions.
+
+### Critical Bug Fixes
+
+#### 🐛 Forum Report Feature Was Fake (#CRITICAL)
+- **Problem**: Report button showed success toast but never actually submitted reports to backend
+- **Root Cause**: `reportItem()` in forumStore threw "Not implemented"
+- **Solution**: Implemented full API integration with report reason selection modal
+- **Files**: `forumStore.ts`, `ForumPost.tsx`
+
+#### 🐛 CreatePost Not Sending Poll/Prefix/Attachment Data (#CRITICAL)
+- **Problem**: Poll creation UI existed but data was never sent. Thread prefix selector was ignored.
+- **Root Cause**: handleSubmit only sent basic fields, ignoring MyBB features
+- **Solution**: Extended CreatePostData interface and createPost implementation to include all fields
+- **Files**: `forumStore.ts`, `CreatePost.tsx`
+
+#### 🐛 Real-Time Reactions Not Working (#CRITICAL)
+- **Problem**: Message reactions not syncing between users in real-time
+- **Root Cause**: Three bugs: (1) Wrong socket event format, (2) No listeners for reaction broadcasts, (3) No store methods for real-time updates
+- **Solution**: 
+  - Fixed `sendReaction()` to use `add_reaction`/`remove_reaction` events
+  - Added channel listeners for `reaction_added`/`reaction_removed`
+  - Added `addReactionToMessage()` and `removeReactionFromMessage()` to chatStore
+- **Files**: `socket.ts`, `chatStore.ts`
+
+#### 🐛 Reaction Handler URL Parsing Bug
+- **Problem**: Reaction handlers tried to get conversationId from query params but route uses path params
+- **Solution**: Changed to extract from URL path using regex
+- **Files**: `Conversation.tsx`
+
+### Enhancements
+
+#### 📝 Thread Prefix System
+- Implemented `fetchThreadPrefixes()` with standard prefix set:
+  - Discussion, Question, Help, Solved, Announcement, Guide, News, Bug, Feature Request
+- Each prefix includes color and optional isDefault flag
+
+### Test Results
+
+- Web: 426 tests ✅ (all pass)
+- Mobile: 43 tests ✅ (all pass)
+- Backend: 830 tests ✅ (all pass)
+- TypeScript: 0 errors
+
+---
+
 ## [0.7.52] - 2026-01-05
 
 **🎮 GAMIFICATION INTEGRATION: Sticker Picker, Title Badges & Documentation Audit**

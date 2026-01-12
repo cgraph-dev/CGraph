@@ -10,7 +10,6 @@ import {
 import { StarIcon } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useGamificationStore } from '@/stores/gamificationStore';
 import confetti from 'canvas-confetti';
 
 /**

@@ -16,7 +16,7 @@ defmodule CgraphWeb.QuestController do
   def index(conn, params) do
     quest_type = params["type"]
     quests = Gamification.list_available_quests(type: quest_type)
-    
+
     conn
     |> put_status(:ok)
     |> render(:index, quests: quests)
@@ -29,9 +29,9 @@ defmodule CgraphWeb.QuestController do
   def active(conn, params) do
     user = conn.assigns.current_user
     include_completed = params["include_completed"] == "true"
-    
+
     user_quests = Gamification.list_user_quests(user.id, include_completed: include_completed)
-    
+
     conn
     |> put_status(:ok)
     |> render(:user_quests, user_quests: user_quests)
@@ -44,10 +44,10 @@ defmodule CgraphWeb.QuestController do
   def show(conn, %{"id" => quest_id}) do
     user = conn.assigns.current_user
     quest = Repo.get!(Gamification.Quest, quest_id)
-    
+
     # Get user's progress if they've accepted this quest
     user_quest = Repo.get_by(Gamification.UserQuest, user_id: user.id, quest_id: quest_id)
-    
+
     conn
     |> put_status(:ok)
     |> render(:show, quest: quest, user_quest: user_quest)
@@ -59,15 +59,15 @@ defmodule CgraphWeb.QuestController do
   """
   def accept(conn, %{"id" => quest_id}) do
     user = conn.assigns.current_user
-    
+
     case Gamification.accept_quest(user.id, quest_id) do
       {:ok, user_quest} ->
         user_quest = Repo.preload(user_quest, :quest)
-        
+
         conn
         |> put_status(:created)
         |> render(:user_quest, user_quest: user_quest)
-      
+
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -82,7 +82,7 @@ defmodule CgraphWeb.QuestController do
   """
   def claim(conn, %{"id" => user_quest_id}) do
     user = conn.assigns.current_user
-    
+
     case Gamification.claim_quest_rewards(user.id, user_quest_id) do
       {:ok, rewards} ->
         conn
@@ -91,17 +91,17 @@ defmodule CgraphWeb.QuestController do
           success: true,
           rewards: rewards
         })
-      
+
       {:error, :not_found} ->
         conn
         |> put_status(:not_found)
         |> json(%{error: "not_found", message: "Quest not found"})
-      
+
       {:error, :not_completed} ->
         conn
         |> put_status(:bad_request)
         |> json(%{error: "not_completed", message: "Quest is not yet completed"})
-      
+
       {:error, :already_claimed} ->
         conn
         |> put_status(:bad_request)
@@ -117,9 +117,9 @@ defmodule CgraphWeb.QuestController do
     user = conn.assigns.current_user
     daily_quests = Gamification.list_available_quests(type: "daily")
     user_quests = Gamification.list_user_quests(user.id)
-    
+
     # Map user progress to daily quests
-    user_quest_map = 
+    user_quest_map =
       user_quests
       |> Enum.map(fn uq -> {uq.quest_id, uq} end)
       |> Map.new()
@@ -134,7 +134,7 @@ defmodule CgraphWeb.QuestController do
         claimed: user_quest && user_quest.claimed || false
       }
     end)
-    
+
     conn
     |> put_status(:ok)
     |> render(:daily, quests: quests_with_progress)
@@ -148,8 +148,8 @@ defmodule CgraphWeb.QuestController do
     user = conn.assigns.current_user
     weekly_quests = Gamification.list_available_quests(type: "weekly")
     user_quests = Gamification.list_user_quests(user.id)
-    
-    user_quest_map = 
+
+    user_quest_map =
       user_quests
       |> Enum.map(fn uq -> {uq.quest_id, uq} end)
       |> Map.new()
@@ -164,7 +164,7 @@ defmodule CgraphWeb.QuestController do
         claimed: user_quest && user_quest.claimed || false
       }
     end)
-    
+
     conn
     |> put_status(:ok)
     |> render(:weekly, quests: quests_with_progress)

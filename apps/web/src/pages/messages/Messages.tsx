@@ -13,7 +13,6 @@ import {
   SparklesIcon,
   ChatBubbleLeftRightIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 export default function Messages() {

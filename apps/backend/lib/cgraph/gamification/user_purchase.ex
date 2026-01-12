@@ -11,7 +11,7 @@ defmodule Cgraph.Gamification.UserPurchase do
   schema "user_purchases" do
     belongs_to :user, Cgraph.Accounts.User
     belongs_to :item, Cgraph.Gamification.ShopItem
-    
+
     field :quantity, :integer, default: 1
     field :coin_spent, :integer
     field :purchased_at, :utc_datetime

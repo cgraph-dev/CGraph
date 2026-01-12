@@ -410,11 +410,15 @@ describe('Password Reset Flow', () => {
   });
 
   it('should enforce password confirmation match', () => {
-    const password = 'NewSecure123';
-    const confirmPassword = 'NewSecure123';
-    const wrongConfirm = 'DifferentPassword';
+    const password: string = 'NewSecure123';
+    const confirmPassword: string = 'NewSecure123';
+    const wrongConfirm: string = 'DifferentPassword';
 
-    expect(password === confirmPassword).toBe(true);
-    expect(password === wrongConfirm).toBe(false);
+    // Validate password matching logic
+    const passwordsMatch = password === confirmPassword;
+    const wrongPasswordsMatch = password === wrongConfirm;
+    
+    expect(passwordsMatch).toBe(true);
+    expect(wrongPasswordsMatch).toBe(false);
   });
 });

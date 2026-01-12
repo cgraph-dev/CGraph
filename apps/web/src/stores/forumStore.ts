@@ -33,14 +33,22 @@ export interface Forum {
 export interface ForumCategory {
   id: string;
   name: string;
-  color: string;
+  slug: string;
+  description?: string;
+  color?: string;
+  order: number;
+  postCount: number;
 }
 
 export interface ForumModerator {
   id: string;
+  forumId: string;
+  userId: string;
   username: string;
-  displayName: string | null;
-  avatarUrl: string | null;
+  displayName?: string | null;
+  avatarUrl?: string | null;
+  permissions: string[];
+  addedAt: string;
 }
 
 // MyBB Feature: Thread Prefixes
@@ -48,7 +56,8 @@ export interface ThreadPrefix {
   id: string;
   name: string;
   color: string;
-  forums: string[]; // Forum IDs where this prefix is allowed
+  forums?: string[]; // Forum IDs where this prefix is allowed (optional)
+  isDefault?: boolean; // Whether this is the default prefix
 }
 
 // MyBB Feature: Thread Rating
@@ -475,7 +484,7 @@ interface ForumState {
 
   // Reports
   reportItem: (data: CreateReportData) => Promise<Report>;
-  fetchReports: (status?: Report['status']) => Promise<void>;
+  fetchReports: (status?: Report['status']) => Promise<Report[]>;
   assignReport: (reportId: string, moderatorId: string) => Promise<void>;
   resolveReport: (reportId: string, resolution: string) => Promise<void>;
 
@@ -496,11 +505,22 @@ interface CreatePostData {
   forumId: string;
   title: string;
   content?: string;
-  postType: 'text' | 'link' | 'image' | 'video';
+  postType: 'text' | 'link' | 'image' | 'video' | 'poll';
   linkUrl?: string;
   mediaUrls?: string[];
   categoryId?: string;
   isNsfw?: boolean;
+  // MyBB features
+  prefixId?: string;
+  attachmentIds?: string[];
+  // Poll data (when postType is 'poll')
+  poll?: {
+    question: string;
+    options: string[];
+    allowMultiple?: boolean;
+    isPublic?: boolean;
+    expiresAt?: string;
+  };
 }
 
 interface CreateForumData {
@@ -515,6 +535,9 @@ interface UpdateForumData {
   description?: string;
   isPublic?: boolean;
   isNsfw?: boolean;
+  iconUrl?: string;
+  bannerUrl?: string;
+  customCss?: string;
 }
 
 export const useForumStore = create<ForumState>((set, get) => ({
@@ -638,7 +661,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
   },
 
   createPost: async (data: CreatePostData) => {
-    const response = await api.post('/api/v1/posts', {
+    // Build request payload with all supported fields
+    const payload: Record<string, unknown> = {
       forum_id: data.forumId,
       title: data.title,
       content: data.content,
@@ -647,7 +671,28 @@ export const useForumStore = create<ForumState>((set, get) => ({
       media_urls: data.mediaUrls,
       category_id: data.categoryId,
       is_nsfw: data.isNsfw,
-    });
+    };
+
+    // Add MyBB features if present
+    if (data.prefixId) {
+      payload.prefix_id = data.prefixId;
+    }
+    if (data.attachmentIds && data.attachmentIds.length > 0) {
+      payload.attachment_ids = data.attachmentIds;
+    }
+
+    // Add poll data if this is a poll post
+    if (data.postType === 'poll' && data.poll) {
+      payload.poll = {
+        question: data.poll.question,
+        options: data.poll.options.filter((opt) => opt.trim() !== ''),
+        allow_multiple: data.poll.allowMultiple || false,
+        is_public: data.poll.isPublic || false,
+        expires_at: data.poll.expiresAt,
+      };
+    }
+
+    const response = await api.post('/api/v1/posts', payload);
     const post = ensureObject<Post>(response.data, 'post');
     if (post) {
       set((state) => ({
@@ -873,6 +918,9 @@ export const useForumStore = create<ForumState>((set, get) => ({
         description: data.description,
         is_public: data.isPublic,
         is_nsfw: data.isNsfw,
+        icon_url: data.iconUrl,
+        banner_url: data.bannerUrl,
+        custom_css: data.customCss,
       });
       const forum = ensureObject<Forum>(response.data, 'forum');
       if (forum) {
@@ -978,6 +1026,507 @@ export const useForumStore = create<ForumState>((set, get) => ({
       }));
     } catch (error) {
       console.error('[forumStore] deletePost error:', error);
+      throw error;
+    }
+  },
+
+  // MyBB Feature implementations
+  fetchThreadPrefixes: async (_forumId?: string) => {
+    // Thread prefixes are stored inline with threads (prefix, prefix_color fields)
+    // For now, provide a set of standard prefixes that can be used
+    // TODO: When forum settings support custom prefixes, fetch from API
+    const standardPrefixes: ThreadPrefix[] = [
+      { id: 'discussion', name: 'Discussion', color: '#3B82F6', isDefault: true },
+      { id: 'question', name: 'Question', color: '#8B5CF6', isDefault: false },
+      { id: 'help', name: 'Help', color: '#EF4444', isDefault: false },
+      { id: 'solved', name: 'Solved', color: '#10B981', isDefault: false },
+      { id: 'announcement', name: 'Announcement', color: '#F59E0B', isDefault: false },
+      { id: 'guide', name: 'Guide', color: '#06B6D4', isDefault: false },
+      { id: 'news', name: 'News', color: '#EC4899', isDefault: false },
+      { id: 'bug', name: 'Bug', color: '#DC2626', isDefault: false },
+      { id: 'feature', name: 'Feature Request', color: '#7C3AED', isDefault: false },
+    ];
+    set({ threadPrefixes: standardPrefixes });
+  },
+  createThreadPrefix: async (data) => {
+    try {
+      const response = await api.post('/api/v1/admin/thread-prefixes', {
+        name: data.name,
+        color: data.color,
+        forums: data.forums,
+      });
+      const prefix = response.data.prefix;
+      set((state) => ({
+        threadPrefixes: [...state.threadPrefixes, prefix],
+      }));
+      return prefix;
+    } catch (error) {
+      console.error('[forumStore] createThreadPrefix error:', error);
+      throw error;
+    }
+  },
+  deleteThreadPrefix: async (prefixId: string) => {
+    try {
+      await api.delete(`/api/v1/admin/thread-prefixes/${prefixId}`);
+      set((state) => ({
+        threadPrefixes: state.threadPrefixes.filter((p) => p.id !== prefixId),
+      }));
+    } catch (error) {
+      console.error('[forumStore] deleteThreadPrefix error:', error);
+      throw error;
+    }
+  },
+  rateThread: async (threadId: string, rating: number) => {
+    try {
+      const response = await api.post(`/api/v1/posts/${threadId}/rate`, { rating });
+      const result = response.data;
+      set((state) => ({
+        posts: state.posts.map((p) =>
+          p.id === threadId
+            ? { ...p, rating: result.average_rating, ratingCount: result.rating_count, myRating: rating }
+            : p
+        ),
+        currentPost: state.currentPost?.id === threadId
+          ? { ...state.currentPost, rating: result.average_rating, ratingCount: result.rating_count, myRating: rating }
+          : state.currentPost,
+      }));
+    } catch (error) {
+      console.error('[forumStore] rateThread error:', error);
+      throw error;
+    }
+  },
+  fetchThreadRatings: async (threadId: string) => {
+    try {
+      const response = await api.get(`/api/v1/posts/${threadId}/ratings`);
+      return ensureArray<ThreadRating>(response.data, 'ratings');
+    } catch (error) {
+      console.error('[forumStore] fetchThreadRatings error:', error);
+      return [];
+    }
+  },
+  uploadAttachment: async (file: File, postId?: string) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      if (postId) {
+        formData.append('post_id', postId);
+      }
+      const response = await api.post('/api/v1/attachments', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      return response.data.attachment as PostAttachment;
+    } catch (error) {
+      console.error('[forumStore] uploadAttachment error:', error);
+      throw error;
+    }
+  },
+  deleteAttachment: async (attachmentId: string) => {
+    try {
+      await api.delete(`/api/v1/attachments/${attachmentId}`);
+    } catch (error) {
+      console.error('[forumStore] deleteAttachment error:', error);
+      throw error;
+    }
+  },
+  fetchEditHistory: async (postId: string) => {
+    try {
+      const response = await api.get(`/api/v1/posts/${postId}/edit-history`);
+      return ensureArray<PostEditHistory>(response.data, 'history');
+    } catch (error) {
+      console.error('[forumStore] fetchEditHistory error:', error);
+      return [];
+    }
+  },
+  createPoll: async (threadId: string, data) => {
+    try {
+      const response = await api.post(`/api/v1/posts/${threadId}/poll`, {
+        question: data.question,
+        options: data.options,
+        allow_multiple: data.allowMultiple,
+        max_selections: data.maxSelections,
+        timeout: data.timeout,
+        public: data.public,
+      });
+      return response.data.poll as Poll;
+    } catch (error) {
+      console.error('[forumStore] createPoll error:', error);
+      throw error;
+    }
+  },
+  votePoll: async (pollId: string, optionIds: string[]) => {
+    try {
+      await api.post(`/api/v1/polls/${pollId}/vote`, { option_ids: optionIds });
+    } catch (error) {
+      console.error('[forumStore] votePoll error:', error);
+      throw error;
+    }
+  },
+  closePoll: async (pollId: string) => {
+    try {
+      await api.post(`/api/v1/polls/${pollId}/close`);
+    } catch (error) {
+      console.error('[forumStore] closePoll error:', error);
+      throw error;
+    }
+  },
+  subscribeThread: async (threadId: string, notificationMode) => {
+    try {
+      await api.post(`/api/v1/posts/${threadId}/subscribe`, {
+        notification_mode: notificationMode,
+      });
+      set((state) => ({
+        subscriptions: [
+          ...state.subscriptions,
+          {
+            id: `sub-${threadId}`,
+            userId: '',
+            entityType: 'thread',
+            entityId: threadId,
+            notificationMode,
+            createdAt: new Date().toISOString(),
+          },
+        ],
+      }));
+    } catch (error) {
+      console.error('[forumStore] subscribeThread error:', error);
+      throw error;
+    }
+  },
+  unsubscribeThread: async (threadId: string) => {
+    try {
+      await api.delete(`/api/v1/posts/${threadId}/subscribe`);
+      set((state) => ({
+        subscriptions: state.subscriptions.filter((s) => s.entityId !== threadId),
+      }));
+    } catch (error) {
+      console.error('[forumStore] unsubscribeThread error:', error);
+      throw error;
+    }
+  },
+  updateSubscription: async (subscriptionId: string, notificationMode) => {
+    try {
+      await api.put(`/api/v1/subscriptions/${subscriptionId}`, {
+        notification_mode: notificationMode,
+      });
+      set((state) => ({
+        subscriptions: state.subscriptions.map((s) =>
+          s.id === subscriptionId ? { ...s, notificationMode } : s
+        ),
+      }));
+    } catch (error) {
+      console.error('[forumStore] updateSubscription error:', error);
+      throw error;
+    }
+  },
+  fetchSubscriptions: async () => {
+    try {
+      const response = await api.get('/api/v1/subscriptions');
+      const subscriptions = ensureArray<Subscription>(response.data, 'subscriptions');
+      set({ subscriptions });
+    } catch (error) {
+      console.error('[forumStore] fetchSubscriptions error:', error);
+    }
+  },
+  fetchUserGroups: async () => {
+    try {
+      const response = await api.get('/api/v1/user-groups');
+      const userGroups = ensureArray<UserGroup>(response.data, 'user_groups');
+      set({ userGroups });
+    } catch (error) {
+      console.error('[forumStore] fetchUserGroups error:', error);
+    }
+  },
+  createUserGroup: async (data) => {
+    try {
+      const response = await api.post('/api/v1/admin/user-groups', {
+        name: data.name,
+        description: data.description,
+        color: data.color,
+        type: data.type,
+        permissions: data.permissions,
+      });
+      const group = response.data.user_group as UserGroup;
+      set((state) => ({
+        userGroups: [...state.userGroups, group],
+      }));
+      return group;
+    } catch (error) {
+      console.error('[forumStore] createUserGroup error:', error);
+      throw error;
+    }
+  },
+  updateUserGroup: async (groupId: string, data) => {
+    try {
+      const response = await api.put(`/api/v1/admin/user-groups/${groupId}`, {
+        name: data.name,
+        description: data.description,
+        color: data.color,
+        permissions: data.permissions,
+      });
+      const group = response.data.user_group as UserGroup;
+      set((state) => ({
+        userGroups: state.userGroups.map((g) => (g.id === groupId ? group : g)),
+      }));
+      return group;
+    } catch (error) {
+      console.error('[forumStore] updateUserGroup error:', error);
+      throw error;
+    }
+  },
+  deleteUserGroup: async (groupId: string) => {
+    try {
+      await api.delete(`/api/v1/admin/user-groups/${groupId}`);
+      set((state) => ({
+        userGroups: state.userGroups.filter((g) => g.id !== groupId),
+      }));
+    } catch (error) {
+      console.error('[forumStore] deleteUserGroup error:', error);
+      throw error;
+    }
+  },
+  warnUser: async (userId: string, warningTypeId: string, reason: string) => {
+    try {
+      const response = await api.post(`/api/v1/admin/users/${userId}/warnings`, {
+        warning_type_id: warningTypeId,
+        reason,
+      });
+      return response.data.warning as UserWarning;
+    } catch (error) {
+      console.error('[forumStore] warnUser error:', error);
+      throw error;
+    }
+  },
+  fetchUserWarnings: async (userId: string) => {
+    try {
+      const response = await api.get(`/api/v1/admin/users/${userId}/warnings`);
+      return ensureArray<UserWarning>(response.data, 'warnings');
+    } catch (error) {
+      console.error('[forumStore] fetchUserWarnings error:', error);
+      return [];
+    }
+  },
+  banUser: async (data) => {
+    try {
+      const response = await api.post('/api/v1/admin/bans', {
+        user_id: data.userId,
+        username: data.username,
+        ip_address: data.ipAddress,
+        email: data.email,
+        reason: data.reason,
+        expires_at: data.expiresAt,
+        notes: data.notes,
+      });
+      return response.data.ban as Ban;
+    } catch (error) {
+      console.error('[forumStore] banUser error:', error);
+      throw error;
+    }
+  },
+  unbanUser: async (banId: string) => {
+    try {
+      await api.delete(`/api/v1/admin/bans/${banId}`);
+    } catch (error) {
+      console.error('[forumStore] unbanUser error:', error);
+      throw error;
+    }
+  },
+  fetchBans: async () => {
+    try {
+      const response = await api.get('/api/v1/admin/bans');
+      return ensureArray<Ban>(response.data, 'bans');
+    } catch (error) {
+      console.error('[forumStore] fetchBans error:', error);
+      return [];
+    }
+  },
+  fetchModerationQueue: async () => {
+    try {
+      const response = await api.get('/api/v1/admin/moderation/queue');
+      const queue = ensureArray<ModerationQueueItem>(response.data, 'items');
+      set({ moderationQueue: queue });
+    } catch (error) {
+      console.error('[forumStore] fetchModerationQueue error:', error);
+    }
+  },
+  approveQueueItem: async (itemId: string) => {
+    try {
+      await api.post(`/api/v1/admin/moderation/queue/${itemId}/approve`);
+      set((state) => ({
+        moderationQueue: state.moderationQueue.filter((i) => i.id !== itemId),
+      }));
+    } catch (error) {
+      console.error('[forumStore] approveQueueItem error:', error);
+      throw error;
+    }
+  },
+  rejectQueueItem: async (itemId: string, reason?: string) => {
+    try {
+      await api.post(`/api/v1/admin/moderation/queue/${itemId}/reject`, { reason });
+      set((state) => ({
+        moderationQueue: state.moderationQueue.filter((i) => i.id !== itemId),
+      }));
+    } catch (error) {
+      console.error('[forumStore] rejectQueueItem error:', error);
+      throw error;
+    }
+  },
+  reportItem: async (data) => {
+    // Determine the correct endpoint based on report type
+    let endpoint = '';
+    const payload: Record<string, unknown> = {
+      reason: data.reason,
+      details: data.details,
+    };
+
+    switch (data.reportType) {
+      case 'post':
+        // The post report endpoint expects forum_id and post_id
+        // We'll extract forum info from current state or use a general report endpoint
+        endpoint = `/api/v1/reports`;
+        payload.report_type = 'post';
+        payload.item_id = data.itemId;
+        break;
+      case 'comment':
+        endpoint = `/api/v1/reports`;
+        payload.report_type = 'comment';
+        payload.item_id = data.itemId;
+        break;
+      case 'user':
+        endpoint = `/api/v1/reports`;
+        payload.report_type = 'user';
+        payload.item_id = data.itemId;
+        break;
+      default:
+        endpoint = `/api/v1/reports`;
+        payload.report_type = data.reportType;
+        payload.item_id = data.itemId;
+    }
+
+    const response = await api.post(endpoint, { report: payload });
+    const report = ensureObject<Report>(response.data, 'report');
+    if (report) {
+      set((state) => ({
+        reports: [...state.reports, report],
+      }));
+      return report;
+    }
+    throw new Error('Failed to submit report');
+  },
+  fetchReports: async (status?) => {
+    try {
+      const params = status ? { status } : {};
+      const response = await api.get('/api/v1/admin/reports', { params });
+      return ensureArray<Report>(response.data, 'reports');
+    } catch (error) {
+      console.error('[forumStore] fetchReports error:', error);
+      return [];
+    }
+  },
+  assignReport: async (reportId: string, moderatorId: string) => {
+    try {
+      await api.post(`/api/v1/admin/reports/${reportId}/assign`, {
+        moderator_id: moderatorId,
+      });
+    } catch (error) {
+      console.error('[forumStore] assignReport error:', error);
+      throw error;
+    }
+  },
+  resolveReport: async (reportId: string, resolution: string) => {
+    try {
+      await api.post(`/api/v1/admin/reports/${reportId}/resolve`, {
+        resolution,
+      });
+    } catch (error) {
+      console.error('[forumStore] resolveReport error:', error);
+      throw error;
+    }
+  },
+  addToMultiQuote: (postId: string) => {
+    set((state) => ({
+      multiQuoteBuffer: state.multiQuoteBuffer.includes(postId)
+        ? state.multiQuoteBuffer
+        : [...state.multiQuoteBuffer, postId],
+    }));
+  },
+  removeFromMultiQuote: (postId: string) => {
+    set((state) => ({
+      multiQuoteBuffer: state.multiQuoteBuffer.filter((id) => id !== postId),
+    }));
+  },
+  clearMultiQuote: () => {
+    set({ multiQuoteBuffer: [] });
+  },
+  moveThread: async (threadId: string, targetForumId: string) => {
+    try {
+      await api.post(`/api/v1/posts/${threadId}/move`, {
+        target_forum_id: targetForumId,
+      });
+      // Update local state - remove from current forum view
+      set((state) => ({
+        posts: state.posts.filter((p) => p.id !== threadId),
+      }));
+    } catch (error) {
+      console.error('[forumStore] moveThread error:', error);
+      throw error;
+    }
+  },
+  splitThread: async (threadId: string, postIds: string[], newTitle: string) => {
+    try {
+      const response = await api.post(`/api/v1/posts/${threadId}/split`, {
+        post_ids: postIds,
+        new_title: newTitle,
+      });
+      // Returns the new thread that was created
+      return response.data.new_thread_id;
+    } catch (error) {
+      console.error('[forumStore] splitThread error:', error);
+      throw error;
+    }
+  },
+  mergeThreads: async (sourceThreadId: string, targetThreadId: string) => {
+    try {
+      await api.post(`/api/v1/posts/${sourceThreadId}/merge`, {
+        target_thread_id: targetThreadId,
+      });
+      // Remove source thread from view
+      set((state) => ({
+        posts: state.posts.filter((p) => p.id !== sourceThreadId),
+      }));
+    } catch (error) {
+      console.error('[forumStore] mergeThreads error:', error);
+      throw error;
+    }
+  },
+  closeThread: async (threadId: string) => {
+    try {
+      await api.post(`/api/v1/posts/${threadId}/close`);
+      set((state) => ({
+        posts: state.posts.map((p) =>
+          p.id === threadId ? { ...p, isLocked: true, isClosed: true } : p
+        ),
+        currentPost: state.currentPost?.id === threadId
+          ? { ...state.currentPost, isLocked: true, isClosed: true }
+          : state.currentPost,
+      }));
+    } catch (error) {
+      console.error('[forumStore] closeThread error:', error);
+      throw error;
+    }
+  },
+  reopenThread: async (threadId: string) => {
+    try {
+      await api.post(`/api/v1/posts/${threadId}/reopen`);
+      set((state) => ({
+        posts: state.posts.map((p) =>
+          p.id === threadId ? { ...p, isLocked: false, isClosed: false } : p
+        ),
+        currentPost: state.currentPost?.id === threadId
+          ? { ...state.currentPost, isLocked: false, isClosed: false }
+          : state.currentPost,
+      }));
+    } catch (error) {
+      console.error('[forumStore] reopenThread error:', error);
       throw error;
     }
   },

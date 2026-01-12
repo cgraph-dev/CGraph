@@ -25,10 +25,10 @@ import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
 // Enhanced UI v3.0 components - NEXT GEN
 import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
-import { AnimatedReactionBubble } from '@/components/conversation/AnimatedReactionBubble';
+// AnimatedReactionBubble available for future use
 import GlassCard from '@/components/ui/GlassCard';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
-import { AnimationEngine, HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import MessageReactions from '@/components/chat/MessageReactions';
 import RichMediaEmbed from '@/components/chat/RichMediaEmbed';
 import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
@@ -1271,13 +1271,16 @@ function aggregateReactions(reactions: Array<{ emoji: string; userId: string; us
         hasReacted: false,
       };
     }
-    aggregated[reaction.emoji].count++;
-    aggregated[reaction.emoji].users.push({
-      id: reaction.userId,
-      username: reaction.username || 'User',
-    });
-    if (reaction.userId === currentUserId) {
-      aggregated[reaction.emoji].hasReacted = true;
+    const agg = aggregated[reaction.emoji];
+    if (agg) {
+      agg.count++;
+      agg.users.push({
+        id: reaction.userId,
+        username: reaction.username || 'User',
+      });
+      if (reaction.userId === currentUserId) {
+        agg.hasReacted = true;
+      }
     }
   });
 
@@ -1285,8 +1288,9 @@ function aggregateReactions(reactions: Array<{ emoji: string; userId: string; us
 }
 
 // Reaction handlers - integrated with API
-function handleAddReaction(messageId: string, emoji: string) {
-  const conversationId = new URLSearchParams(window.location.search).get('id');
+function handleAddReaction(messageId: string, emoji: string, conversationIdParam?: string) {
+  // Use provided conversationId or try to extract from URL path
+  const conversationId = conversationIdParam || window.location.pathname.match(/\/messages\/([^/]+)/)?.[1];
   if (!conversationId) return;
 
   // Optimistic update via socket
@@ -1299,8 +1303,9 @@ function handleAddReaction(messageId: string, emoji: string) {
   });
 }
 
-function handleRemoveReaction(messageId: string, emoji: string) {
-  const conversationId = new URLSearchParams(window.location.search).get('id');
+function handleRemoveReaction(messageId: string, emoji: string, conversationIdParam?: string) {
+  // Use provided conversationId or try to extract from URL path
+  const conversationId = conversationIdParam || window.location.pathname.match(/\/messages\/([^/]+)/)?.[1];
   if (!conversationId) return;
 
   // Optimistic update via socket

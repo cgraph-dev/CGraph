@@ -499,12 +499,12 @@ defmodule Cgraph.Presence.Sampled do
   end
 
   defp schedule_channel_broadcast(state, channel_id, interval) do
-    unless Map.has_key?(state.pending_broadcasts, channel_id) do
+    if Map.has_key?(state.pending_broadcasts, channel_id) do
+      state
+    else
       ref = Process.send_after(self(), {:broadcast, channel_id}, interval)
       pending = Map.put(state.pending_broadcasts, channel_id, ref)
       %{state | pending_broadcasts: pending}
-    else
-      state
     end
   end
 

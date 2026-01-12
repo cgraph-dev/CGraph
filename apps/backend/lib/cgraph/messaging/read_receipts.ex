@@ -1,10 +1,10 @@
 defmodule Cgraph.Messaging.ReadReceipts do
   @moduledoc """
   Sub-context for Read Receipt operations.
-  
+
   Handles marking messages as read and tracking read status.
   Extracted from the main Messaging context for better maintainability.
-  
+
   @since v0.7.29
   """
 
@@ -15,7 +15,7 @@ defmodule Cgraph.Messaging.ReadReceipts do
 
   @doc """
   Mark messages as read for a user in a conversation.
-  
+
   Updates the participant's last_read_at and creates individual read receipts
   for delivery tracking.
   """
