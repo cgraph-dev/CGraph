@@ -67,6 +67,16 @@ const PremiumPage = lazy(() => import('@/pages/premium/PremiumPage'));
 const CoinShop = lazy(() => import('@/pages/premium/CoinShop'));
 const LeaderboardPage = lazy(() => import('@/pages/leaderboard/LeaderboardPage'));
 
+// Members & Community
+const MemberList = lazy(() => import('@/pages/members/MemberList'));
+const WhosOnline = lazy(() => import('@/pages/members/WhosOnline'));
+
+// Calendar & Events
+const CalendarPage = lazy(() => import('@/pages/calendar/CalendarPage'));
+
+// Referrals
+const ReferralPage = lazy(() => import('@/pages/referrals/ReferralPage'));
+
 // Admin (rarely accessed, always lazy)
 const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 
@@ -254,6 +264,18 @@ export default function App() {
 
           {/* Community */}
           <Route path="community/leaderboard" element={<UserLeaderboard />} />
+
+          {/* Members */}
+          <Route path="members" element={<MemberList />} />
+          <Route path="members/online" element={<WhosOnline />} />
+
+          {/* Calendar */}
+          <Route path="calendar" element={<CalendarPage />} />
+          <Route path="calendar/events" element={<CalendarPage />} />
+
+          {/* Referrals */}
+          <Route path="referrals" element={<ReferralPage />} />
+          <Route path="referrals/history" element={<ReferralPage />} />
 
           {/* Premium & Coins */}
           <Route path="premium" element={<PremiumPage />} />

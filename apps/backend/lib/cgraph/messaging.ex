@@ -704,6 +704,422 @@ defmodule Cgraph.Messaging do
   end
 
   # ============================================================================
+  # Private Messages (MyBB-style PM System)
+  # ============================================================================
+
+  alias Cgraph.Messaging.{PrivateMessage, PMFolder, PMDraft}
+
+  @default_pm_folders ["Inbox", "Sent", "Drafts", "Trash"]
+
+  @doc """
+  List PM folders for a user.
+  """
+  def list_pm_folders(user_id) do
+    query =
+      from f in PMFolder,
+        where: f.user_id == ^user_id,
+        order_by: [asc: f.is_system, asc: f.order, asc: f.name]
+
+    folders = Repo.all(query)
+
+    if Enum.empty?(folders) do
+      create_default_pm_folders(user_id)
+    else
+      folders
+    end
+  end
+
+  defp create_default_pm_folders(user_id) do
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+
+    default_entries =
+      @default_pm_folders
+      |> Enum.with_index()
+      |> Enum.map(fn {name, idx} ->
+        %{
+          id: Ecto.UUID.generate(),
+          user_id: user_id,
+          name: name,
+          is_system: true,
+          order: idx,
+          inserted_at: now,
+          updated_at: now
+        }
+      end)
+
+    Repo.insert_all(PMFolder, default_entries, on_conflict: :nothing)
+    list_pm_folders(user_id)
+  end
+
+  @doc """
+  Create a PM folder.
+  """
+  def create_pm_folder(attrs) do
+    %PMFolder{}
+    |> PMFolder.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Get a PM folder.
+  """
+  def get_pm_folder(folder_id, user_id \\ nil) do
+    query = 
+      if user_id do
+        from f in PMFolder, where: f.id == ^folder_id and f.user_id == ^user_id
+      else
+        from f in PMFolder, where: f.id == ^folder_id
+      end
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      folder -> {:ok, folder}
+    end
+  end
+
+  @doc """
+  Get a PM folder by name for a user.
+  """
+  def get_pm_folder_by_name(user_id, name) do
+    Repo.get_by(PMFolder, user_id: user_id, name: name)
+  end
+
+  @doc """
+  Update a PM folder.
+  """
+  def update_pm_folder(%PMFolder{is_system: true}, _attrs) do
+    {:error, :cannot_modify_system_folder}
+  end
+
+  def update_pm_folder(%PMFolder{} = folder, attrs) do
+    folder
+    |> PMFolder.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a PM folder.
+  """
+  def delete_pm_folder(%PMFolder{is_system: true}) do
+    {:error, :cannot_delete_system_folder}
+  end
+
+  def delete_pm_folder(%PMFolder{} = folder) do
+    inbox = get_pm_folder_by_name(folder.user_id, "Inbox")
+
+    from(m in PrivateMessage, where: m.folder_id == ^folder.id)
+    |> Repo.update_all(set: [folder_id: inbox.id])
+
+    Repo.delete(folder)
+  end
+
+  @doc """
+  List private messages in a folder.
+  """
+  def list_private_messages(user_id, opts) when is_list(opts) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 20)
+    offset = (page - 1) * per_page
+    folder_id = Keyword.get(opts, :folder_id)
+    unread_only = Keyword.get(opts, :unread_only, false)
+    search = Keyword.get(opts, :search)
+
+    base_query =
+      from m in PrivateMessage,
+        where: m.recipient_id == ^user_id,
+        order_by: [desc: m.inserted_at],
+        preload: [:sender]
+
+    base_query =
+      if folder_id do
+        from m in base_query, where: m.folder_id == ^folder_id
+      else
+        base_query
+      end
+
+    base_query =
+      if unread_only do
+        from m in base_query, where: m.is_read == false
+      else
+        base_query
+      end
+
+    base_query =
+      if search && String.length(search) >= 2 do
+        search_pattern = "%#{search}%"
+        from m in base_query, where: ilike(m.subject, ^search_pattern) or ilike(m.content, ^search_pattern)
+      else
+        base_query
+      end
+
+    total_count = Repo.aggregate(base_query, :count, :id)
+
+    messages =
+      base_query
+      |> limit(^per_page)
+      |> offset(^offset)
+      |> Repo.all()
+
+    pagination = %{
+      page: page,
+      per_page: per_page,
+      total_count: total_count,
+      total_pages: ceil(total_count / per_page)
+    }
+
+    {messages, pagination}
+  end
+
+  def list_private_messages(user_id, folder_id, opts) when is_binary(folder_id) do
+    list_private_messages(user_id, Keyword.put(opts, :folder_id, folder_id))
+  end
+
+  @doc """
+  Get a private message.
+  """
+  def get_private_message(message_id, user_id) do
+    query =
+      from m in PrivateMessage,
+        where: m.id == ^message_id,
+        where: m.sender_id == ^user_id or m.recipient_id == ^user_id,
+        preload: [:sender, :recipient]
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      message -> {:ok, message}
+    end
+  end
+
+  @doc """
+  Send a private message.
+  """
+  def send_private_message(attrs) do
+    recipient_inbox = get_pm_folder_by_name(attrs.recipient_id, "Inbox") ||
+      create_default_pm_folders_and_get_folder(attrs.recipient_id, "Inbox")
+
+    sender_sent = get_pm_folder_by_name(attrs.sender_id, "Sent") ||
+      create_default_pm_folders_and_get_folder(attrs.sender_id, "Sent")
+
+    recipient_attrs = Map.merge(attrs, %{
+      folder_id: recipient_inbox.id,
+      is_read: false
+    })
+
+    with {:ok, message} <- create_private_message(recipient_attrs) do
+      sender_attrs = Map.merge(attrs, %{
+        folder_id: sender_sent.id,
+        is_read: true
+      })
+      create_private_message(sender_attrs)
+
+      {:ok, Repo.preload(message, [:sender, :recipient])}
+    end
+  end
+
+  defp create_default_pm_folders_and_get_folder(user_id, folder_name) do
+    create_default_pm_folders(user_id)
+    get_pm_folder_by_name(user_id, folder_name)
+  end
+
+  defp create_private_message(attrs) do
+    %PrivateMessage{}
+    |> PrivateMessage.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Update a private message.
+  """
+  def update_private_message(%PrivateMessage{} = message, attrs) do
+    message
+    |> PrivateMessage.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a private message.
+  """
+  def delete_private_message(%PrivateMessage{} = message, user_id) do
+    trash = get_pm_folder_by_name(user_id, "Trash")
+
+    if message.folder_id == trash.id do
+      Repo.delete(message)
+    else
+      update_private_message(message, %{folder_id: trash.id})
+    end
+  end
+
+  @doc """
+  Mark private messages as read.
+  """
+  def mark_pm_as_read(message_ids, user_id) when is_list(message_ids) do
+    from(m in PrivateMessage,
+      where: m.id in ^message_ids and m.recipient_id == ^user_id
+    )
+    |> Repo.update_all(set: [is_read: true, read_at: DateTime.utc_now()])
+
+    :ok
+  end
+
+  @doc """
+  Move private messages to a folder.
+  """
+  def move_pm_to_folder(message_ids, folder_id, user_id) when is_list(message_ids) do
+    from(m in PrivateMessage,
+      where: m.id in ^message_ids and m.recipient_id == ^user_id
+    )
+    |> Repo.update_all(set: [folder_id: folder_id])
+
+    :ok
+  end
+
+  @doc """
+  List PM drafts.
+  """
+  def list_pm_drafts(user_id, opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 20)
+    offset = (page - 1) * per_page
+
+    base_query =
+      from d in PMDraft,
+        where: d.sender_id == ^user_id,
+        order_by: [desc: d.updated_at],
+        preload: [:recipient]
+
+    total_count = Repo.aggregate(base_query, :count, :id)
+
+    drafts =
+      base_query
+      |> limit(^per_page)
+      |> offset(^offset)
+      |> Repo.all()
+
+    pagination = %{
+      page: page,
+      per_page: per_page,
+      total_count: total_count,
+      total_pages: ceil(total_count / per_page)
+    }
+
+    {drafts, pagination}
+  end
+
+  @doc """
+  Save a PM draft.
+  """
+  def save_pm_draft(attrs) do
+    %PMDraft{}
+    |> PMDraft.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Get a PM draft.
+  """
+  def get_pm_draft(draft_id, user_id) do
+    query =
+      from d in PMDraft,
+        where: d.id == ^draft_id and d.sender_id == ^user_id,
+        preload: [:recipient]
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      draft -> {:ok, draft}
+    end
+  end
+
+  @doc """
+  Update a PM draft.
+  """
+  def update_pm_draft(%PMDraft{} = draft, attrs) do
+    draft
+    |> PMDraft.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Delete a PM draft.
+  """
+  def delete_pm_draft(%PMDraft{} = draft) do
+    Repo.delete(draft)
+  end
+
+  @doc """
+  Send a PM draft.
+  """
+  def send_pm_draft(%PMDraft{} = draft) do
+    with {:ok, message} <- send_private_message(%{
+           sender_id: draft.sender_id,
+           recipient_id: draft.recipient_id,
+           subject: draft.subject,
+           content: draft.content
+         }),
+         {:ok, _} <- delete_pm_draft(draft) do
+      {:ok, message}
+    end
+  end
+
+  @doc """
+  Get PM statistics for a user.
+  """
+  def get_pm_stats(user_id) do
+    inbox = get_pm_folder_by_name(user_id, "Inbox")
+    sent = get_pm_folder_by_name(user_id, "Sent")
+
+    inbox_id = if inbox, do: inbox.id, else: nil
+    sent_id = if sent, do: sent.id, else: nil
+
+    total_received =
+      from(m in PrivateMessage, where: m.recipient_id == ^user_id)
+      |> Repo.aggregate(:count, :id)
+
+    unread_count =
+      if inbox_id do
+        from(m in PrivateMessage,
+          where: m.recipient_id == ^user_id and m.is_read == false and m.folder_id == ^inbox_id
+        )
+        |> Repo.aggregate(:count, :id)
+      else
+        0
+      end
+
+    total_sent =
+      if sent_id do
+        from(m in PrivateMessage, where: m.sender_id == ^user_id and m.folder_id == ^sent_id)
+        |> Repo.aggregate(:count, :id)
+      else
+        0
+      end
+
+    drafts_count =
+      from(d in PMDraft, where: d.sender_id == ^user_id)
+      |> Repo.aggregate(:count, :id)
+
+    %{
+      total_received: total_received,
+      unread_count: unread_count,
+      total_sent: total_sent,
+      drafts_count: drafts_count
+    }
+  end
+
+  @doc """
+  Export all private messages for a user.
+  """
+  def export_pm(user_id, _opts \\ []) do
+    messages =
+      from(m in PrivateMessage,
+        where: m.sender_id == ^user_id or m.recipient_id == ^user_id,
+        order_by: [desc: m.inserted_at],
+        preload: [:sender, :recipient, :folder]
+      )
+      |> Repo.all()
+
+    {:ok, messages}
+  end
+
+  # ============================================================================
   # Private Helpers
   # ============================================================================
 

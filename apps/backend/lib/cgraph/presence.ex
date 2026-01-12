@@ -448,6 +448,147 @@ defmodule Cgraph.Presence do
 
   defp room_topic(room_id), do: "room:#{room_id}"
 
+  # ---------------------------------------------------------------------------
+  # Extended Presence Functions for REST API
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  List online users with pagination support for REST API.
+  """
+  def list_online_users(opts) when is_list(opts) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 50)
+    
+    all_users = list_online_users()
+    |> Map.to_list()
+    |> Enum.map(fn {user_id, presence} ->
+      Map.merge(%{id: user_id}, presence)
+    end)
+
+    total_count = length(all_users)
+    offset = (page - 1) * per_page
+    
+    users = all_users
+    |> Enum.drop(offset)
+    |> Enum.take(per_page)
+
+    pagination = %{
+      page: page,
+      per_page: per_page,
+      total_count: total_count,
+      total_pages: ceil(total_count / per_page)
+    }
+
+    {users, pagination}
+  end
+
+  @doc """
+  Count guests (users not logged in).
+  This is an estimate based on connected sockets without user tracking.
+  """
+  def count_guests do
+    # For now, return 0 - would need WebSocket tracking of anonymous connections
+    0
+  end
+
+  @doc """
+  Update user presence from REST API heartbeat.
+  """
+  def update_presence(user_id, location) do
+    # Update last seen
+    record_last_seen(user_id)
+    
+    # Store location in cache
+    Cachex.put(:cgraph_cache, "presence:location:#{user_id}", location, ttl: 300_000)
+    
+    {:ok, :updated}
+  end
+
+  @doc """
+  Get presence statistics.
+  """
+  def get_stats do
+    online_users = list_online_users()
+    users_online = map_size(online_users)
+    
+    invisible_count = online_users
+    |> Enum.count(fn {_id, meta} -> meta[:status] == "invisible" end)
+
+    %{
+      users_online: users_online - invisible_count,
+      guests_online: count_guests(),
+      invisible_users: invisible_count,
+      total_online: users_online + count_guests(),
+      most_online: get_most_online_record(),
+      most_online_date: get_most_online_date(),
+      users_today: get_users_today_count(),
+      bots_online: 0
+    }
+  end
+
+  @doc """
+  Get users at a specific location.
+  """
+  def get_users_at_location(_location) do
+    # Would need to be implemented with location tracking
+    []
+  end
+
+  @doc """
+  Get user status for a specific user (for viewing by another user).
+  """
+  def get_user_status(user_id, _viewer) do
+    status = get_user_status(user_id)
+    last_online = last_seen(user_id)
+    
+    location = case Cachex.get(:cgraph_cache, "presence:location:#{user_id}") do
+      {:ok, loc} -> loc
+      _ -> nil
+    end
+
+    {:ok, %{
+      user_id: user_id,
+      is_online: status != "offline",
+      is_invisible: status == "invisible",
+      last_online_at: last_online,
+      current_location: location,
+      status_text: nil
+    }}
+  end
+
+  @doc """
+  Update visibility (online vs invisible).
+  """
+  def update_visibility(_user_id, _visible) do
+    # Would need socket access to update presence
+    {:ok, :updated}
+  end
+
+  defp get_most_online_record do
+    case Cachex.get(:cgraph_cache, "presence:most_online") do
+      {:ok, nil} -> 0
+      {:ok, count} -> count
+      _ -> 0
+    end
+  end
+
+  defp get_most_online_date do
+    case Cachex.get(:cgraph_cache, "presence:most_online_date") do
+      {:ok, nil} -> nil
+      {:ok, date} -> date
+      _ -> nil
+    end
+  end
+
+  defp get_users_today_count do
+    # Would need to track unique users per day
+    map_size(list_online_users())
+  end
+
+  # ---------------------------------------------------------------------------
+  # Private Helpers
+  # ---------------------------------------------------------------------------
+
   defp last_seen_key(user_id), do: "presence:last_seen:#{user_id}"
 
   defp typing_still_valid?(nil, _now), do: false

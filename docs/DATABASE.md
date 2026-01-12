@@ -1,6 +1,6 @@
 # CGraph Database Documentation
 
-> Version 0.7.47 | Last updated: January 2026  
+> Version 0.7.56 | Last updated: January 12, 2026  
 > Schema modifications require updating this documentation.
 
 ---
@@ -9,11 +9,12 @@
 
 1. [Entity-Relationship Diagram](#entity-relationship-diagram)
 2. [Table Reference](#table-reference)
-3. [Index Strategy](#index-strategy)
-4. [Migration Guide](#migration-guide)
-5. [Backup and Recovery](#backup-and-recovery)
-6. [Query Optimization](#query-optimization)
-7. [Data Retention](#data-retention)
+3. [New Tables (v0.7.56)](#new-tables-v0756)
+4. [Index Strategy](#index-strategy)
+5. [Migration Guide](#migration-guide)
+6. [Backup and Recovery](#backup-and-recovery)
+7. [Query Optimization](#query-optimization)
+8. [Data Retention](#data-retention)
 
 ---
 
@@ -221,6 +222,296 @@ Full schema diagram:
 │ inserted_at      │
 └──────────────────┘
 ```
+
+---
+
+## New Tables (v0.7.56)
+
+### Private Messaging System
+
+#### pm_folders
+
+User-created folders for organizing private messages.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| user_id | uuid | NO | | FK to users |
+| name | varchar | NO | | Folder name |
+| color | varchar | YES | #6366f1 | Folder color |
+| icon | varchar | YES | | Folder icon |
+| is_system | boolean | NO | false | System folder (Inbox, Sent, etc) |
+| order | integer | NO | 0 | Sort order |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `pm_folders_user_id_index` (user_id)
+- `pm_folders_user_id_name_index` UNIQUE (user_id, name)
+
+---
+
+#### private_messages
+
+Private messages between users.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| sender_id | uuid | NO | | FK to users |
+| recipient_id | uuid | NO | | FK to users |
+| folder_id | uuid | YES | | FK to pm_folders |
+| subject | varchar | YES | | Message subject |
+| content | text | NO | | Message body |
+| is_read | boolean | NO | false | Read status |
+| read_at | timestamptz | YES | | When read |
+| is_starred | boolean | NO | false | Starred flag |
+| is_important | boolean | NO | false | Important flag |
+| reply_to_id | uuid | YES | | FK to private_messages |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `private_messages_sender_id_index` (sender_id)
+- `private_messages_recipient_id_index` (recipient_id)
+- `private_messages_folder_id_index` (folder_id)
+- `private_messages_recipient_id_is_read_index` (recipient_id, is_read)
+- `private_messages_inserted_at_index` (inserted_at)
+
+---
+
+#### pm_drafts
+
+Saved message drafts.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| sender_id | uuid | NO | | FK to users |
+| recipient_id | uuid | YES | | FK to users |
+| subject | varchar | YES | | Draft subject |
+| content | text | NO | | Draft body |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `pm_drafts_sender_id_index` (sender_id)
+
+---
+
+### Calendar System
+
+#### calendar_event_categories
+
+Categories for organizing events.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| name | varchar | NO | | Category name |
+| description | text | YES | | Category description |
+| color | varchar | YES | #6366f1 | Category color |
+| icon | varchar | YES | | Category icon |
+| order | integer | NO | 0 | Sort order |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `calendar_event_categories_name_index` UNIQUE (name)
+
+---
+
+#### calendar_events
+
+Calendar events with full metadata.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| author_id | uuid | NO | | FK to users |
+| category_id | uuid | YES | | FK to calendar_event_categories |
+| forum_id | uuid | YES | | FK to forums |
+| title | varchar | NO | | Event title |
+| description | text | YES | | Event description |
+| start_date | timestamptz | NO | | Event start |
+| end_date | timestamptz | YES | | Event end |
+| all_day | boolean | NO | false | All-day event |
+| timezone | varchar | NO | UTC | Event timezone |
+| event_type | varchar | NO | single | single, recurring |
+| is_recurring | boolean | NO | false | Recurring flag |
+| recurrence_pattern | jsonb | YES | | Recurrence rules |
+| recurrence_end_date | timestamptz | YES | | Recurrence end |
+| location | varchar | YES | | Event location |
+| location_url | varchar | YES | | Location URL |
+| visibility | varchar | NO | public | public, private, forum |
+| rsvp_enabled | boolean | NO | false | Allow RSVPs |
+| rsvp_deadline | timestamptz | YES | | RSVP cutoff |
+| max_attendees | integer | YES | | Attendee limit |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `calendar_events_author_id_index` (author_id)
+- `calendar_events_category_id_index` (category_id)
+- `calendar_events_forum_id_index` (forum_id)
+- `calendar_events_start_date_index` (start_date)
+- `calendar_events_visibility_index` (visibility)
+- `calendar_events_start_date_end_date_index` (start_date, end_date)
+
+---
+
+#### calendar_event_rsvps
+
+RSVP responses to events.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| event_id | uuid | NO | | FK to calendar_events |
+| user_id | uuid | NO | | FK to users |
+| status | varchar | NO | going | going, maybe, not_going |
+| note | varchar | YES | | RSVP note |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `calendar_event_rsvps_event_id_index` (event_id)
+- `calendar_event_rsvps_user_id_index` (user_id)
+- `calendar_event_rsvps_event_id_user_id_index` UNIQUE (event_id, user_id)
+
+---
+
+### Referral System
+
+#### referral_codes
+
+User referral codes.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| user_id | uuid | NO | | FK to users (unique) |
+| code | varchar | NO | | Unique referral code |
+| uses | integer | NO | 0 | Times used |
+| is_active | boolean | NO | true | Code is active |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `referral_codes_code_index` UNIQUE (code)
+- `referral_codes_user_id_index` UNIQUE (user_id)
+
+---
+
+#### referrals
+
+Tracking who referred whom.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| referrer_id | uuid | NO | | FK to users (referrer) |
+| referred_id | uuid | NO | | FK to users (new user) |
+| status | varchar | NO | pending | pending, confirmed, rewarded |
+| rewarded_at | timestamptz | YES | | When reward given |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `referrals_referrer_id_index` (referrer_id)
+- `referrals_referred_id_index` UNIQUE (referred_id)
+- `referrals_status_index` (status)
+- `referrals_inserted_at_index` (inserted_at)
+
+---
+
+#### referral_reward_tiers
+
+Reward levels for referrals.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| name | varchar | NO | | Tier name (Bronze, Silver, etc) |
+| description | text | YES | | Tier description |
+| required_referrals | integer | NO | | Referrals needed |
+| reward_type | varchar | NO | | badge, title, custom |
+| reward_value | jsonb | YES | | Reward configuration |
+| icon | varchar | YES | | Tier icon |
+| order | integer | NO | 0 | Display order |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Default Tiers (seeded):**
+| Name | Required | Reward | Icon |
+|------|----------|--------|------|
+| Bronze Recruiter | 5 | badge | 🥉 |
+| Silver Recruiter | 10 | badge | 🥈 |
+| Gold Recruiter | 25 | badge | 🥇 |
+| Diamond Recruiter | 50 | title | 💎 |
+| Legendary Recruiter | 100 | custom | 👑 |
+
+---
+
+#### referral_rewards
+
+Claimed rewards by users.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| user_id | uuid | NO | | FK to users |
+| tier_id | uuid | NO | | FK to referral_reward_tiers |
+| status | varchar | NO | claimed | Reward status |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `referral_rewards_user_id_index` (user_id)
+- `referral_rewards_user_id_tier_id_index` UNIQUE (user_id, tier_id)
+
+---
+
+### Announcement System
+
+#### announcement_dismissals
+
+Tracks which users dismissed which announcements.
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| id | uuid | NO | gen_random_uuid() | Primary key |
+| user_id | uuid | NO | | FK to users |
+| announcement_id | uuid | NO | | FK to forum_announcements |
+| dismissed_at | timestamptz | NO | now() | When dismissed |
+| inserted_at | timestamptz | NO | now() | Created timestamp |
+| updated_at | timestamptz | NO | now() | Updated timestamp |
+
+**Indexes:**
+- `announcement_dismissals_user_id_index` (user_id)
+- `announcement_dismissals_announcement_id_index` (announcement_id)
+- `announcement_dismissals_user_id_announcement_id_index` UNIQUE (user_id, announcement_id)
+
+---
+
+### Reputation System Updates
+
+#### reputation_entries (existing table - new indexes)
+
+Added indexes for better query performance:
+- `reputation_entries_from_user_id_index` (from_user_id)
+- `reputation_entries_to_user_id_index` (to_user_id)
+- `reputation_entries_post_id_index` (post_id)
+- `reputation_entries_inserted_at_index` (inserted_at)
+
+#### users (column addition)
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| reputation | integer | NO | 0 | Cached reputation total |
+
+**New Index:**
+- `users_reputation_index` (reputation)
 
 ---
 

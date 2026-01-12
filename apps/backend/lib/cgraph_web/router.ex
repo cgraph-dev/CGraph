@@ -323,6 +323,91 @@ defmodule CgraphWeb.Router do
 
     # Content Reports (users can report content/users)
     resources "/reports", ReportController, only: [:index, :show, :create]
+
+    # ========================================
+    # MyBB Feature: Private Messages (PM)
+    # ========================================
+    get "/pm/folders", PMController, :list_folders
+    post "/pm/folders", PMController, :create_folder
+    put "/pm/folders/:id", PMController, :update_folder
+    delete "/pm/folders/:id", PMController, :delete_folder
+    get "/pm/messages", PMController, :list_messages
+    get "/pm/messages/:id", PMController, :show_message
+    post "/pm/messages", PMController, :send_message
+    put "/pm/messages/:id", PMController, :update_message
+    delete "/pm/messages/:id", PMController, :delete_message
+    post "/pm/messages/:id/read", PMController, :mark_read
+    post "/pm/messages/:id/move", PMController, :move_to_folder
+    get "/pm/drafts", PMController, :list_drafts
+    post "/pm/drafts", PMController, :save_draft
+    put "/pm/drafts/:id", PMController, :update_draft
+    delete "/pm/drafts/:id", PMController, :delete_draft
+    post "/pm/drafts/:id/send", PMController, :send_draft
+    get "/pm/stats", PMController, :stats
+    post "/pm/export", PMController, :export
+
+    # ========================================
+    # MyBB Feature: Announcements
+    # ========================================
+    get "/announcements", AnnouncementController, :index
+    get "/announcements/:id", AnnouncementController, :show
+    post "/announcements/:id/read", AnnouncementController, :mark_read
+    post "/announcements/:id/dismiss", AnnouncementController, :dismiss
+
+    # ========================================
+    # MyBB Feature: Calendar & Events
+    # ========================================
+    get "/calendar/events", CalendarController, :list_events
+    get "/calendar/events/:id", CalendarController, :show_event
+    post "/calendar/events", CalendarController, :create_event
+    put "/calendar/events/:id", CalendarController, :update_event
+    delete "/calendar/events/:id", CalendarController, :delete_event
+    get "/calendar/categories", CalendarController, :list_categories
+    post "/calendar/categories", CalendarController, :create_category
+    put "/calendar/categories/:id", CalendarController, :update_category
+    delete "/calendar/categories/:id", CalendarController, :delete_category
+    get "/calendar/events/:id/rsvps", CalendarController, :list_rsvps
+    post "/calendar/events/:id/rsvp", CalendarController, :rsvp
+    delete "/calendar/events/:id/rsvp", CalendarController, :cancel_rsvp
+
+    # ========================================
+    # MyBB Feature: Referral System
+    # ========================================
+    get "/referrals/code", ReferralController, :get_code
+    post "/referrals/code/regenerate", ReferralController, :regenerate_code
+    get "/referrals", ReferralController, :list_referrals
+    get "/referrals/pending", ReferralController, :list_pending
+    get "/referrals/stats", ReferralController, :stats
+    get "/referrals/leaderboard", ReferralController, :leaderboard
+    get "/referrals/rewards", ReferralController, :list_reward_tiers
+    post "/referrals/rewards/:id/claim", ReferralController, :claim_reward
+    get "/referrals/validate/:code", ReferralController, :validate_code
+    post "/referrals/apply", ReferralController, :apply_code
+
+    # ========================================
+    # MyBB Feature: Member List & Discovery
+    # ========================================
+    get "/members", MemberController, :index
+    get "/members/:id", MemberController, :show
+    get "/user-groups", MemberController, :list_groups
+
+    # ========================================
+    # MyBB Feature: Presence & Who's Online
+    # ========================================
+    get "/presence/online", PresenceController, :online_users
+    post "/presence/heartbeat", PresenceController, :heartbeat
+    get "/presence/stats", PresenceController, :stats
+
+    # ========================================
+    # MyBB Feature: User Profile Enhancements
+    # ========================================
+    get "/profiles/:username", ProfileController, :show
+    put "/profiles/signature", ProfileController, :update_signature
+    put "/profiles/bio", ProfileController, :update_bio
+    get "/profiles/:username/posts", ProfileController, :posts
+    get "/profiles/:username/threads", ProfileController, :threads
+    get "/profiles/:username/reputation", ProfileController, :reputation
+    post "/profiles/:username/reputation", ProfileController, :give_reputation
   end
 
   # Gamification API routes (authenticated)

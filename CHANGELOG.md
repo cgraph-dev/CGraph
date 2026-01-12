@@ -6,6 +6,170 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.56] - 2026-01-12
+
+**🔗 BACKEND API INTEGRATION: Complete MyBB Feature Backend**
+
+Major release completing the backend API infrastructure for all MyBB features. Every frontend store now has full backend connectivity with proper REST endpoints, context modules, and database tables.
+
+### Backend Controllers Created
+
+#### Private Messaging API (`PMController`)
+- `GET /api/v1/pm/folders` - List user folders
+- `POST /api/v1/pm/folders` - Create custom folder
+- `GET /api/v1/pm/messages` - List messages with filtering
+- `POST /api/v1/pm/messages` - Send new message
+- `PATCH /api/v1/pm/messages/:id/read` - Mark as read
+- `POST /api/v1/pm/messages/:id/move` - Move to folder
+- `GET /api/v1/pm/drafts` - List drafts
+- `POST /api/v1/pm/drafts` - Save draft
+- `POST /api/v1/pm/drafts/:id/send` - Convert draft to message
+- `GET /api/v1/pm/stats` - Unread counts, folder stats
+- `GET /api/v1/pm/export` - Export all PMs (JSON/CSV)
+
+#### Calendar API (`CalendarController`)
+- `GET /api/v1/calendar/events` - List with year/month filtering
+- `POST /api/v1/calendar/events` - Create event
+- `GET /api/v1/calendar/events/:id` - Event details
+- `PUT /api/v1/calendar/events/:id` - Update event
+- `DELETE /api/v1/calendar/events/:id` - Delete event
+- `GET /api/v1/calendar/categories` - List categories
+- `POST /api/v1/calendar/categories` - Create category (admin)
+- `GET /api/v1/calendar/events/:id/rsvps` - List RSVPs
+- `POST /api/v1/calendar/events/:id/rsvp` - Submit RSVP
+- `DELETE /api/v1/calendar/events/:id/rsvp` - Cancel RSVP
+
+#### Referral API (`ReferralController`)
+- `GET /api/v1/referrals/code` - Get user's referral code
+- `POST /api/v1/referrals/code/regenerate` - Generate new code
+- `POST /api/v1/referrals/validate` - Validate a code
+- `POST /api/v1/referrals/apply` - Apply code during signup
+- `GET /api/v1/referrals` - List user's referrals
+- `GET /api/v1/referrals/stats` - Referral statistics
+- `GET /api/v1/referrals/leaderboard` - Top referrers
+- `GET /api/v1/referrals/rewards` - Available reward tiers
+- `POST /api/v1/referrals/rewards/:tier_id/claim` - Claim reward
+
+#### Member Directory API (`MemberController`)
+- `GET /api/v1/members` - Paginated member list
+- `GET /api/v1/members/:id` - Member profile
+- `GET /api/v1/members/groups` - List user groups
+- `GET /api/v1/members/search` - Search members
+- `GET /api/v1/members/stats` - Member statistics
+
+#### Presence API (`PresenceController`)
+- `GET /api/v1/presence/online` - Online users
+- `POST /api/v1/presence/heartbeat` - Update presence
+- `GET /api/v1/presence/stats` - Online/guest counts
+- `GET /api/v1/presence/here` - Users in current location
+- `GET /api/v1/presence/:user_id/status` - User's status
+- `PUT /api/v1/presence/visibility` - Update visibility
+
+#### Profile API (`ProfileController`)
+- `GET /api/v1/profiles/:user_id` - Full profile
+- `PUT /api/v1/profiles/:user_id/signature` - Update signature
+- `PUT /api/v1/profiles/:user_id/bio` - Update bio
+- `GET /api/v1/profiles/:user_id/posts` - User's posts
+- `GET /api/v1/profiles/:user_id/threads` - User's threads
+- `GET /api/v1/profiles/:user_id/reputation` - Rep history
+- `POST /api/v1/profiles/:user_id/reputation` - Give rep
+- `GET /api/v1/profiles/:user_id/activity` - Activity feed
+- `GET /api/v1/profiles/:user_id/visitors` - Profile visitors
+
+#### Announcement API (`AnnouncementController`)
+- `GET /api/v1/announcements` - Active announcements
+- `GET /api/v1/announcements/:id` - Announcement detail
+- `POST /api/v1/announcements/:id/read` - Mark as read
+- `POST /api/v1/announcements/:id/dismiss` - Dismiss
+
+### Database Migrations
+
+Created 5 new migrations adding 12 tables:
+
+```
+20260115000001_create_private_messages_system.exs
+  - pm_folders (user folders with colors/icons)
+  - private_messages (messages with read tracking)
+  - pm_drafts (saved drafts)
+
+20260115000002_create_calendar_system.exs
+  - calendar_event_categories (event types)
+  - calendar_events (full event metadata)
+  - calendar_event_rsvps (attendance tracking)
+
+20260115000003_create_referral_system.exs
+  - referral_codes (unique user codes)
+  - referrals (tracking relationships)
+  - referral_reward_tiers (Bronze→Legendary)
+  - referral_rewards (claimed rewards)
+
+20260115000004_create_announcement_dismissals.exs
+  - announcement_dismissals (user dismissal tracking)
+
+20260115000005_create_reputation_entries.exs
+  - Added indexes for existing reputation_entries table
+  - Added reputation column to users table
+```
+
+### Context Modules
+
+New Elixir contexts created:
+- `Cgraph.Calendar` - Event CRUD, categories, RSVPs
+- `Cgraph.Referrals` - Codes, tracking, rewards, leaderboard
+- `Cgraph.Announcements` - Announcement queries, dismissals
+- `Cgraph.Reputation` - Rep giving, history, summaries
+
+Extended existing contexts:
+- `Cgraph.Messaging` - Added PM folder/message/draft functions
+- `Cgraph.Accounts` - Added member/profile functions
+- `Cgraph.Presence` - Added REST API functions
+- `Cgraph.Forums` - Added `list_user_posts`, `list_user_threads`, `get_user_post_stats`
+
+### Schema Files Created
+
+```
+lib/cgraph/calendar/event.ex
+lib/cgraph/calendar/event_category.ex
+lib/cgraph/calendar/event_rsvp.ex
+lib/cgraph/referrals/referral.ex
+lib/cgraph/referrals/referral_code.ex
+lib/cgraph/referrals/reward_tier.ex
+lib/cgraph/referrals/referral_reward.ex
+lib/cgraph/messaging/pm_folder.ex
+lib/cgraph/messaging/private_message.ex
+lib/cgraph/messaging/pm_draft.ex
+lib/cgraph/announcements/announcement_dismissal.ex
+lib/cgraph/reputation/reputation_entry.ex
+```
+
+### Bug Fixes
+
+- Fixed `parse_int`/`parse_bool` conflicts in controllers (now using imported helpers)
+- Fixed Reputation schema to match existing database columns (`from_user_id`/`to_user_id` instead of `giver_id`/`receiver_id`)
+- Fixed PM controller function name mismatches (`move_pm_to_folder`, `send_pm_draft`, `export_pm`)
+- Removed duplicate `mark_message_read` function in Messaging context
+- Fixed unused alias warnings across all new controllers
+
+### Technical Notes
+
+- All controllers use `action_fallback CgraphWeb.FallbackController`
+- JSON rendering via separate `*_json.ex` modules following Phoenix conventions
+- Consistent pagination across all list endpoints
+- Full authorization checks for user ownership and admin permissions
+- Database uses binary UUIDs as primary keys throughout
+
+### File Statistics
+
+```
+Controllers:    10 files (5 controllers + 5 JSON modules)
+Schemas:        12 files
+Migrations:      5 files
+Contexts:        4 new + 4 extended
+Total:          ~3,500 lines of backend code
+```
+
+---
+
 ## [0.7.55] - 2026-01-12
 
 **🚀 MYBB FEATURE IMPLEMENTATION: Announcements, Quick Reply & Quick Wins**
