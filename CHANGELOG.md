@@ -6,6 +6,105 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.55] - 2026-01-12
+
+**🚀 MYBB FEATURE IMPLEMENTATION: Announcements, Quick Reply & Quick Wins**
+
+This release adds the Announcement System, Quick Reply component, Forum Statistics, Online Status indicators, User Stars/Reputation display, RSS Feed support, and more MyBB-style quick wins.
+
+### New Features
+
+#### 📢 Announcement System
+- Created `announcementStore.ts` with complete announcement management:
+  - **Scopes**: Global, forum-specific, and category announcements
+  - **Visibility**: Date-based (start/end dates) with active status toggle
+  - **Targeting**: User group restrictions for who sees announcements
+  - **Display Options**: Priority ordering, HTML/BBCode support, custom icons
+  - **Styling**: Custom background/text colors
+  - **Read Tracking**: Per-user read status and timestamps
+  - **CRUD Operations**: Create, update, delete, activate/deactivate
+- Created `AnnouncementBanner` component:
+  - Collapsible announcement display
+  - Dismissible with localStorage persistence
+  - Multiple style variants (info, warning, success, error)
+  - Forum and global announcement support
+
+#### ✏️ Quick Reply Component
+- Created `QuickReply` component for thread pages:
+  - Collapsible/expandable quick reply box
+  - Basic BBCode toolbar (bold, italic, underline, quote, code, link, image)
+  - Character counter with limit validation
+  - Attachment quick-add support
+  - Quote selected text functionality
+  - Ctrl+Enter to send shortcut
+  - "Expand to full editor" option
+
+#### 📊 Forum Statistics
+- Created `ForumStatistics` component:
+  - Total threads, posts, and members display
+  - Today's activity counts (posts, threads, new members)
+  - Currently online users list with member/guest breakdown
+  - Record online users display with date
+  - Newest member welcome
+  - Active users in last 24 hours
+  - Compact and full view modes
+  - Auto-refresh every 60 seconds
+
+#### 🟢 Online Status Indicators
+- Created `OnlineStatusIndicator` component:
+  - Status types: online, idle, dnd, offline, invisible
+  - Animated pulse effect for online status
+  - Size variants (xs, sm, md, lg)
+  - Optional label display
+  - Last active time formatting
+- Created `OnlineStatusBadge` for larger displays
+- Created `OnlineStatusDropdown` for users to change their status
+
+#### ⭐ User Stars & Reputation Display
+- Created `UserStars` component:
+  - Configurable star count and max stars
+  - Color variants (gold, silver, bronze, blue, green, red, purple)
+  - Half-star support for partial ratings
+  - Show empty stars option
+- Created `ReputationStars` for reputation-to-stars conversion
+- Created `PostCountStars` for post count-based star display
+- Created `RankBadge` for text-based rank badges with optional stars
+
+#### 📰 RSS Feed Support
+- Created `RSSFeedLinks` component:
+  - Compact and full list views
+  - Feed type icons (forum, thread, global)
+  - Copy feed URL functionality
+  - Subscribe button
+- Created `RSSAutoDiscovery` for adding autodiscovery links to document head
+- Created `ForumRSSButton` for quick access to forum-specific feeds
+
+### File Structure
+```
+apps/web/src/
+├── stores/
+│   └── announcementStore.ts        (NEW - 400+ lines)
+├── components/
+│   ├── forums/
+│   │   ├── QuickReply.tsx          (NEW - 220+ lines)
+│   │   └── ForumStatistics.tsx     (NEW - 260+ lines)
+│   ├── common/
+│   │   ├── OnlineStatusIndicator.tsx (NEW - 220+ lines)
+│   │   ├── UserStars.tsx           (NEW - 250+ lines)
+│   │   └── RSSFeedLinks.tsx        (NEW - 200+ lines)
+│   └── announcements/
+│       └── AnnouncementBanner.tsx  (NEW - 280+ lines)
+```
+
+### Technical Details
+- All components use @heroicons/react (consistent with v0.7.54)
+- TypeScript strict mode compliant
+- Dark mode support throughout
+- Responsive design with mobile considerations
+- Zustand state management for announcements
+
+---
+
 ## [0.7.54] - 2026-01-12
 
 **🚀 MYBB FEATURE IMPLEMENTATION: Core Forum Features**
