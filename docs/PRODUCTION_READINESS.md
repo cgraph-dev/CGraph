@@ -2,6 +2,8 @@
 
 > **Goal**: Support 100+ concurrent users with fully functional UI, deployed to Google Play Store and Apple App Store.
 
+**Last Updated:** January 12, 2026 (v0.7.57)
+
 ---
 
 ## Executive Summary
@@ -10,12 +12,26 @@
 |----------|--------|--------|----------|
 | **Backend Infrastructure** | ✅ Ready | Deployed | Critical |
 | **Web UI Completion** | ✅ Ready | Complete | High |
-| **Mobile UI Completion** | ✅ Ready | Complete | High |
+| **Mobile UI Completion** | 🟡 Partial | Missing Calendar/Referrals | Medium |
 | **App Store Preparation** | 🟡 Partial | 1-2 days | High |
-| **Security Hardening** | ✅ Ready | Complete | Critical |
+| **Security Hardening** | ✅ Ready | Complete (v0.7.57) | Critical |
+| **Content Moderation** | ✅ Ready | Complete (v0.7.57) | Critical |
+| **Rate Limiting** | ✅ Ready | Trust-based system | High |
 | **Testing & QA** | ✅ Ready | 620 tests | High |
 
-**Estimated Remaining Time**: 1-2 days (App Store assets only)
+**Estimated Remaining Time**: 1-2 days (App Store assets + mobile feature parity)
+
+---
+
+## v0.7.57 Security Improvements
+
+The following critical items were addressed in v0.7.57:
+
+- ✅ **Content Moderation**: NCMEC-compatible reporting, automatic quarantine, on-call alerting
+- ✅ **Rate Limiting**: Trust-based dynamic limits with burst protection
+- ✅ **Input Validation**: Enhanced param parsing with XSS prevention
+- ✅ **Infrastructure**: Optimized Fly.io config (1GB memory, BEAM tuning)
+- ✅ **Fraud Prevention**: Referral system protection, self-referral blocking
 
 ---
 
@@ -25,12 +41,13 @@
 - ✅ Phoenix/Elixir backend with 620 tests (212 source files, 4499 functions)
 - ✅ PostgreSQL database configured
 - ✅ WebSocket channels for real-time messaging
-- ✅ Rate limiting implemented
+- ✅ Intelligent rate limiting with user trust levels (v0.7.57)
 - ✅ JWT authentication with Guardian
 - ✅ Wallet-based anonymous authentication
 - ✅ User ID system with auto-increment sequence
 - ✅ 14-day username change cooldown
 - ✅ Friend system with username/user_id support
+- ✅ Critical content moderation with NCMEC preparation (v0.7.57)
 
 ### Required Changes
 

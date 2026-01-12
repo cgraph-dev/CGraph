@@ -446,6 +446,19 @@ defmodule Cgraph.Accounts do
   end
 
   @doc """
+  List all admin users for notification purposes.
+  Returns users with admin or moderator roles.
+  """
+  def list_admin_users do
+    query = from u in User,
+      where: u.role in ["admin", "moderator", "super_admin"],
+      where: is_nil(u.deleted_at),
+      select: u
+
+    Repo.all(query)
+  end
+
+  @doc """
   List top users by karma with pagination.
   """
   def list_top_users_by_karma(opts \\ []) do
@@ -480,6 +493,51 @@ defmodule Cgraph.Accounts do
     user
     |> User.update_changeset(attrs)
     |> Repo.update()
+  end
+
+  @doc """
+  Flag a user's profile for moderation review.
+  Used when profile content is reported for violations.
+  """
+  def flag_profile_for_review(user_id) do
+    case get_user(user_id) do
+      {:ok, user} ->
+        user
+        |> Ecto.Changeset.change(%{
+          flagged_for_review: true,
+          flagged_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        })
+        |> Repo.update()
+      error -> error
+    end
+  end
+
+  @doc """
+  Remove specific content from a user's profile.
+  Used for moderation actions on profile bio, signature, etc.
+  """
+  def remove_profile_content(user_id, content_type, opts \\ []) do
+    _reason = Keyword.get(opts, :reason, :moderation_removal)
+    
+    case get_user(user_id) do
+      {:ok, user} ->
+        changes = case content_type do
+          :bio -> %{bio: nil}
+          :signature -> %{signature: nil}
+          :avatar -> %{avatar_url: nil}
+          :banner -> %{banner_url: nil}
+          _ -> %{}
+        end
+        
+        if map_size(changes) > 0 do
+          user
+          |> Ecto.Changeset.change(changes)
+          |> Repo.update()
+        else
+          {:ok, user}
+        end
+      error -> error
+    end
   end
 
   @doc """

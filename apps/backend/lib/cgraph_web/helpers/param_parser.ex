@@ -192,4 +192,126 @@ defmodule CgraphWeb.Helpers.ParamParser do
     |> then(fn v -> if min_val, do: max(v, min_val), else: v end)
     |> then(fn v -> if max_val, do: min(v, max_val), else: v end)
   end
+
+  # ---------------------------------------------------------------------------
+  # Advanced Validation Helpers
+  # ---------------------------------------------------------------------------
+
+  @doc """
+  Validate and sanitize a referral code.
+  Referral codes must be 8-12 alphanumeric characters.
+  """
+  @spec parse_referral_code(term()) :: {:ok, String.t()} | {:error, :invalid_format}
+  def parse_referral_code(nil), do: {:error, :invalid_format}
+  def parse_referral_code(value) when is_binary(value) do
+    cleaned = value |> String.trim() |> String.upcase()
+    
+    if Regex.match?(~r/^[A-Z0-9]{6,12}$/, cleaned) do
+      {:ok, cleaned}
+    else
+      {:error, :invalid_format}
+    end
+  end
+  def parse_referral_code(_), do: {:error, :invalid_format}
+
+  @doc """
+  Validate an event title with length and content restrictions.
+  """
+  @spec validate_event_title(term()) :: {:ok, String.t()} | {:error, atom()}
+  def validate_event_title(nil), do: {:error, :title_required}
+  def validate_event_title(value) when is_binary(value) do
+    trimmed = String.trim(value)
+    length = String.length(trimmed)
+    
+    cond do
+      length < 3 -> {:error, :title_too_short}
+      length > 200 -> {:error, :title_too_long}
+      contains_prohibited_content?(trimmed) -> {:error, :prohibited_content}
+      true -> {:ok, trimmed}
+    end
+  end
+  def validate_event_title(_), do: {:error, :invalid_title}
+
+  @doc """
+  Validate event dates ensuring start is before end.
+  """
+  @spec validate_event_dates(term(), term()) :: {:ok, DateTime.t(), DateTime.t() | nil} | {:error, atom()}
+  def validate_event_dates(start_date, end_date) do
+    start_dt = parse_datetime(start_date, nil)
+    end_dt = parse_datetime(end_date, nil)
+    
+    cond do
+      is_nil(start_dt) -> {:error, :start_date_required}
+      not is_nil(end_dt) and DateTime.compare(end_dt, start_dt) == :lt ->
+        {:error, :end_date_before_start}
+      DateTime.compare(start_dt, DateTime.utc_now() |> DateTime.add(-3600, :second)) == :lt ->
+        {:error, :start_date_in_past}
+      true -> {:ok, start_dt, end_dt}
+    end
+  end
+
+  @doc """
+  Validate visibility setting against allowed values.
+  """
+  @spec validate_visibility(term()) :: {:ok, String.t()} | {:error, :invalid_visibility}
+  def validate_visibility(value) when value in ["public", "members_only", "invite_only", "private"] do
+    {:ok, value}
+  end
+  def validate_visibility(nil), do: {:ok, "public"}
+  def validate_visibility(_), do: {:error, :invalid_visibility}
+
+  @doc """
+  Validate pagination parameters with sensible bounds.
+  Returns {page, per_page} tuple with validated values.
+  """
+  @spec validate_pagination(map(), keyword()) :: {pos_integer(), pos_integer()}
+  def validate_pagination(params, opts \\ []) do
+    max_per_page = Keyword.get(opts, :max_per_page, 100)
+    default_per_page = Keyword.get(opts, :default_per_page, 25)
+    
+    page = parse_int(params["page"], 1, min: 1, max: 10_000)
+    per_page = parse_int(params["per_page"], default_per_page, min: 1, max: max_per_page)
+    
+    {page, per_page}
+  end
+
+  @doc """
+  Sanitize HTML content, stripping dangerous tags while preserving safe formatting.
+  """
+  @spec sanitize_html(term(), keyword()) :: String.t() | nil
+  def sanitize_html(value, opts \\ [])
+  def sanitize_html(nil, _opts), do: nil
+  def sanitize_html(value, opts) when is_binary(value) do
+    max_length = Keyword.get(opts, :max_length, 50_000)
+    
+    value
+    |> String.slice(0, max_length)
+    |> strip_dangerous_html()
+    |> String.trim()
+    |> then(fn s -> if s == "", do: nil, else: s end)
+  end
+
+  # Strip script tags, event handlers, and other XSS vectors
+  defp strip_dangerous_html(html) do
+    html
+    |> String.replace(~r/<script\b[^>]*>.*?<\/script>/is, "")
+    |> String.replace(~r/\bon\w+\s*=\s*["'][^"']*["']/i, "")
+    |> String.replace(~r/javascript:/i, "")
+    |> String.replace(~r/data:/i, "")
+    |> String.replace(~r/<iframe\b[^>]*>.*?<\/iframe>/is, "")
+    |> String.replace(~r/<object\b[^>]*>.*?<\/object>/is, "")
+    |> String.replace(~r/<embed\b[^>]*>/i, "")
+  end
+
+  # Check for prohibited words/patterns (basic implementation)
+  defp contains_prohibited_content?(text) do
+    # This would typically integrate with a more sophisticated content moderation system
+    prohibited_patterns = [
+      ~r/\b(spam|scam)\b/i
+    ]
+    
+    Enum.any?(prohibited_patterns, fn pattern ->
+      Regex.match?(pattern, text)
+    end)
+  end
 end

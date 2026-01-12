@@ -1,5 +1,16 @@
 # CGraph Terraform Configuration
 # Main infrastructure definition
+#
+# This configuration provisions:
+# - Fly.io applications for backend and frontend
+# - Cloudflare DNS and CDN configuration
+# - Security rules and caching policies
+#
+# Required Environment Setup:
+# - TF_VAR_fly_api_token: Fly.io API token
+# - TF_VAR_cloudflare_api_token: Cloudflare API token
+# - TF_VAR_cloudflare_zone_id: Your Cloudflare zone ID
+# - AWS credentials configured for S3 state backend
 
 terraform {
   required_version = ">= 1.0"
@@ -15,6 +26,8 @@ terraform {
     }
   }
   
+  # State backend configuration - override with your own bucket
+  # To use a different backend, run: terraform init -backend-config=backend.tfvars
   backend "s3" {
     bucket         = "cgraph-terraform-state"
     key            = "production/terraform.tfstate"
@@ -24,16 +37,25 @@ terraform {
   }
 }
 
-# Variables
+# ==============================================================================
+# Variables - All sensitive values must be provided via environment or tfvars
+# ==============================================================================
+
 variable "fly_api_token" {
   type        = string
-  description = "Fly.io API token"
+  description = "Fly.io API token (TF_VAR_fly_api_token)"
   sensitive   = true
+}
+
+variable "fly_org" {
+  type        = string
+  description = "Fly.io organization slug"
+  default     = "personal"
 }
 
 variable "cloudflare_api_token" {
   type        = string
-  description = "Cloudflare API token"
+  description = "Cloudflare API token (TF_VAR_cloudflare_api_token)"
   sensitive   = true
 }
 
@@ -50,8 +72,25 @@ variable "domain" {
 
 variable "environment" {
   type        = string
-  description = "Deployment environment"
+  description = "Deployment environment (production, staging, development)"
   default     = "production"
+  
+  validation {
+    condition     = contains(["production", "staging", "development"], var.environment)
+    error_message = "Environment must be production, staging, or development."
+  }
+}
+
+variable "backend_app_name" {
+  type        = string
+  description = "Name for the backend Fly.io application"
+  default     = "cgraph"
+}
+
+variable "web_app_name" {
+  type        = string
+  description = "Name for the web frontend Fly.io application"
+  default     = "cgraph-web"
 }
 
 # Provider configuration
@@ -63,10 +102,13 @@ provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
 
+# ==============================================================================
 # Fly.io Backend Application
+# ==============================================================================
+
 resource "fly_app" "backend" {
-  name = "cgraph"
-  org  = "personal"
+  name = var.backend_app_name
+  org  = var.fly_org
 }
 
 resource "fly_ip" "backend_ipv4" {
@@ -79,10 +121,13 @@ resource "fly_ip" "backend_ipv6" {
   type = "v6"
 }
 
+# ==============================================================================
 # Fly.io Web Frontend
+# ==============================================================================
+
 resource "fly_app" "web" {
-  name = "cgraph-web"
-  org  = "personal"
+  name = var.web_app_name
+  org  = var.fly_org
 }
 
 resource "fly_ip" "web_ipv4" {
@@ -95,7 +140,10 @@ resource "fly_ip" "web_ipv6" {
   type = "v6"
 }
 
+# ==============================================================================
 # Cloudflare DNS Records
+# ==============================================================================
+
 resource "cloudflare_record" "api" {
   zone_id = var.cloudflare_zone_id
   name    = "api"

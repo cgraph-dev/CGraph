@@ -305,8 +305,16 @@ defmodule CgraphWeb.API.V1.PostController do
   # Private helpers
 
   defp validate_post_rate_limit(user) do
-    # Rate limiting always passes for now (TODO: implement)
-    Forums.check_post_rate_limit(user)
+    case Forums.check_post_rate_limit(user) do
+      :ok -> :ok
+      {:error, :rate_limited, info} ->
+        {:error, :rate_limited, %{
+          message: "You're posting too quickly. Please wait before creating another post.",
+          retry_after: info.retry_after,
+          limit: info.limit,
+          reset_at: info.reset_at
+        }}
+    end
   end
 
   defp authorize_post_edit(user, post, forum) do

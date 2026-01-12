@@ -312,6 +312,8 @@ defmodule CgraphWeb.Router do
     delete "/push-tokens/:token", PushTokenController, :delete
 
     # Friends - specific routes MUST come before resources to avoid being matched as :show
+    get "/friends/requests", FriendController, :incoming_requests
+    get "/friends/sent", FriendController, :outgoing_requests
     get "/friends/pending", FriendController, :pending
     get "/friends/suggestions", FriendController, :suggestions
     post "/friends/:id/accept", FriendController, :accept

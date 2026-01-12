@@ -6,6 +6,78 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 ---
 
+## [0.7.57] - 2026-01-12
+
+**🔒 SECURITY HARDENING & PRODUCTION READINESS**
+
+Comprehensive security audit and production hardening release. This version addresses critical TODOs in the moderation system, implements intelligent rate limiting throughout the application, and enhances infrastructure configurations for production deployment.
+
+### Security Enhancements
+
+#### Critical Content Moderation (`moderation.ex`)
+- Implemented NCMEC-compatible incident report generation for CSAM cases
+- Added automatic content quarantine on critical reports (immediate visibility removal)
+- Integrated on-call staff alerting via PubSub channels
+- Created immutable audit logging for legal compliance
+- Added structured incident data for regulatory submission readiness
+
+#### Warning & Content Removal System
+- Implemented user warning notifications with severity levels
+- Added warning level escalation based on repeat offense history (90-day window)
+- Created content removal handlers for messages, posts, comments, and profile content
+- Added notification delivery for moderation actions
+- Integrated warning count tracking for automatic escalation
+
+### Rate Limiting Overhaul
+
+#### Intelligent Post Rate Limiting (`forums.ex`)
+- Dynamic rate limits based on user trust level (new_user, regular, trusted, veteran)
+- Trust calculation using account age + contribution history
+- Burst protection (3/minute for new users, 9/minute for veterans)
+- Sustained rate limits with sliding windows
+- Per-user multipliers ranging from 0.5x (new) to 3.0x (veteran)
+
+#### Comment Rate Limiting
+- Thread-specific limits to prevent single-post flooding (10 comments/thread/hour)
+- Separate burst and sustained rate check pipeline
+- Integration with existing RateLimiter module
+
+#### Referral System Protection
+- Rate-limited code regeneration (3/day) to prevent abuse
+- Self-referral prevention with owner lookup
+- Referral application rate limiting (5/hour)
+- Fraud detection logging with IP and user-agent tracking
+
+### Input Validation Layer (`param_parser.ex`)
+- Added `parse_referral_code/1` with format validation (6-12 alphanumeric)
+- Added `validate_event_title/1` with length and prohibited content checks
+- Added `validate_event_dates/2` ensuring start < end and not in past
+- Added `validate_visibility/1` with allowed value whitelist
+- Added `validate_pagination/2` with configurable bounds
+- Added `sanitize_html/2` stripping XSS vectors (script, onclick, javascript:, etc.)
+
+### Infrastructure Improvements
+
+#### Fly.io Configuration (`fly.toml`)
+- Increased memory from 512MB to 1GB for BEAM VM
+- Extended kill timeout to 30s for graceful WebSocket shutdown
+- Added BEAM VM tuning environment variables
+- Increased concurrency limits (soft: 1500, hard: 2000)
+- Extended health check grace period for BEAM startup
+
+#### Terraform Configuration (`main.tf`)
+- Added variable injection for organization and app names
+- Added environment validation (production/staging/development)
+- Improved documentation with required environment setup
+- Made S3 backend configurable via backend.tfvars
+
+### Route Fixes
+- Fixed `/api/v1/friends/requests` and `/api/v1/friends/sent` routes
+- Added `pending` action alias in FriendController
+- Aligned frontend API calls with backend route definitions
+
+---
+
 ## [0.7.56] - 2026-01-12
 
 **🔗 BACKEND API INTEGRATION: Complete MyBB Feature Backend**

@@ -630,6 +630,85 @@ defmodule Cgraph.Forums do
   end
 
   @doc """
+  Hide a post for moderation purposes (quarantine).
+  Makes the post invisible without deleting it.
+  """
+  def hide_post(post_id, reason) do
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    case Repo.get(Post, post_id) do
+      nil -> {:error, :not_found}
+      post ->
+        post
+        |> Ecto.Changeset.change(%{
+          hidden_at: now,
+          hidden_reason: reason,
+          visible: false
+        })
+        |> Repo.update()
+    end
+  end
+
+  @doc """
+  Soft delete a post with audit trail for moderation.
+  """
+  def soft_delete_post(post_id, opts \\ []) do
+    reason = Keyword.get(opts, :reason, :user_deleted)
+    report_id = Keyword.get(opts, :report_id)
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    
+    case Repo.get(Post, post_id) do
+      nil -> {:error, :not_found}
+      post ->
+        post
+        |> Ecto.Changeset.change(%{
+          deleted_at: now,
+          deletion_reason: reason,
+          deleted_by_report_id: report_id
+        })
+        |> Repo.update()
+    end
+  end
+
+  @doc """
+  Hide a comment for moderation purposes (quarantine).
+  """
+  def hide_comment(comment_id, reason) do
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    case Repo.get(Comment, comment_id) do
+      nil -> {:error, :not_found}
+      comment ->
+        comment
+        |> Ecto.Changeset.change(%{
+          hidden_at: now,
+          hidden_reason: reason,
+          visible: false
+        })
+        |> Repo.update()
+    end
+  end
+
+  @doc """
+  Soft delete a comment with audit trail for moderation.
+  """
+  def soft_delete_comment(comment_id, opts \\ []) do
+    reason = Keyword.get(opts, :reason, :user_deleted)
+    report_id = Keyword.get(opts, :report_id)
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    
+    case Repo.get(Comment, comment_id) do
+      nil -> {:error, :not_found}
+      comment ->
+        comment
+        |> Ecto.Changeset.change(%{
+          deleted_at: now,
+          deletion_reason: reason,
+          deleted_by_report_id: report_id
+        })
+        |> Repo.update()
+    end
+  end
+
+  @doc """
   Increment post view count.
   """
   def increment_post_views(post) do
@@ -841,9 +920,69 @@ defmodule Cgraph.Forums do
 
   @doc """
   Check post rate limit.
+  
+  Implements intelligent rate limiting based on:
+  - User's reputation and account age
+  - Content-specific thresholds (posts vs comments)
+  - Burst protection for rapid-fire submissions
+  - Trusted user exemptions
+  
+  Returns :ok if allowed, {:error, :rate_limited, info} if blocked.
   """
-  def check_post_rate_limit(_user) do
-    :ok
+  def check_post_rate_limit(user) do
+    identifier = "user:#{user.id}"
+    
+    # Calculate dynamic limit based on user trust level
+    base_config = get_user_rate_config(user, :post)
+    
+    # First check burst limit (prevents rapid submissions)
+    case Cgraph.RateLimiter.check(identifier, :post_burst, limit: base_config.burst_limit, window: 60) do
+      :ok ->
+        # Then check sustained rate limit
+        Cgraph.RateLimiter.check(identifier, :post_sustained, 
+          limit: base_config.sustained_limit, 
+          window: base_config.window
+        )
+      error -> error
+    end
+  end
+
+  # Determine rate limit configuration based on user trust metrics
+  defp get_user_rate_config(user, content_type) do
+    trust_level = calculate_user_trust_level(user)
+    
+    base_limits = %{
+      post: %{burst_limit: 3, sustained_limit: 10, window: 3600},
+      comment: %{burst_limit: 5, sustained_limit: 30, window: 3600}
+    }
+    
+    # Trust level multipliers: new users are restricted, established users get more freedom
+    multiplier = case trust_level do
+      :new_user -> 0.5      # < 7 days old, < 5 posts
+      :regular -> 1.0       # Normal users
+      :trusted -> 2.0       # > 30 days, > 50 posts, good standing
+      :veteran -> 3.0       # > 180 days, > 200 posts, excellent standing
+    end
+    
+    base = Map.get(base_limits, content_type, base_limits.post)
+    
+    %{
+      burst_limit: max(1, round(base.burst_limit * multiplier)),
+      sustained_limit: max(3, round(base.sustained_limit * multiplier)),
+      window: base.window
+    }
+  end
+
+  defp calculate_user_trust_level(user) do
+    account_age_days = DateTime.diff(DateTime.utc_now(), user.inserted_at, :day)
+    post_count = user.post_count || 0
+    
+    cond do
+      account_age_days < 7 or post_count < 5 -> :new_user
+      account_age_days >= 180 and post_count >= 200 -> :veteran
+      account_age_days >= 30 and post_count >= 50 -> :trusted
+      true -> :regular
+    end
   end
 
   defp maybe_add_user_votes(posts, nil), do: posts
@@ -1097,9 +1236,37 @@ defmodule Cgraph.Forums do
 
   @doc """
   Check comment rate limit.
+  
+  Similar to post rate limiting but with higher thresholds since
+  comments are lighter-weight content. Includes thread-specific
+  limits to prevent comment flooding on individual posts.
   """
-  def check_comment_rate_limit(_user) do
-    :ok
+  def check_comment_rate_limit(user, opts \\ []) do
+    identifier = "user:#{user.id}"
+    post_id = Keyword.get(opts, :post_id)
+    
+    # Get user-specific rate config
+    base_config = get_user_rate_config(user, :comment)
+    
+    # Check burst limit first
+    case Cgraph.RateLimiter.check(identifier, :comment_burst, limit: base_config.burst_limit, window: 60) do
+      :ok ->
+        # Check sustained limit
+        case Cgraph.RateLimiter.check(identifier, :comment_sustained, 
+          limit: base_config.sustained_limit, 
+          window: base_config.window
+        ) do
+          :ok when not is_nil(post_id) ->
+            # Also check per-thread limit to prevent flooding single threads
+            thread_identifier = "thread:#{post_id}:user:#{user.id}"
+            Cgraph.RateLimiter.check(thread_identifier, :thread_comment, 
+              limit: 10,  # Max 10 comments per user per thread per hour
+              window: 3600
+            )
+          result -> result
+        end
+      error -> error
+    end
   end
 
   @doc """

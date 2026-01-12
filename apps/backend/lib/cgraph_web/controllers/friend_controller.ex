@@ -43,6 +43,15 @@ defmodule CgraphWeb.FriendController do
   end
 
   @doc """
+  Gets pending friend requests (alias for incoming_requests).
+
+  GET /api/v1/friends/pending
+  """
+  def pending(conn, params) do
+    incoming_requests(conn, params)
+  end
+
+  @doc """
   Gets incoming friend requests.
 
   GET /api/v1/friends/requests/incoming

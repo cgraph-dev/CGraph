@@ -68,6 +68,22 @@ defmodule Cgraph.Referrals do
   end
 
   @doc """
+  Get the owner (user_id) of a referral code.
+  Used for self-referral prevention checks.
+  """
+  def get_code_owner(code) do
+    query =
+      from rc in ReferralCode,
+        where: rc.code == ^code,
+        select: rc.user_id
+
+    case Repo.one(query) do
+      nil -> {:error, :not_found}
+      user_id -> {:ok, user_id}
+    end
+  end
+
+  @doc """
   Validate a referral code.
   """
   def validate_code(code) do

@@ -70,7 +70,7 @@ defmodule CgraphWeb.API.V1.CommentController do
          :ok <- Forums.authorize_action(user, forum, :comment),
          {:ok, post} <- Forums.get_post(forum, post_id),
          :ok <- validate_post_not_locked(post),
-         :ok <- validate_comment_rate_limit(user),
+         :ok <- validate_comment_rate_limit(user, post_id: post.id),
          {:ok, comment} <- Forums.create_comment(post, user, comment_params) do
       # Notify post author and parent comment author
       Forums.notify_comment(comment)
@@ -205,9 +205,18 @@ defmodule CgraphWeb.API.V1.CommentController do
     end
   end
 
-  defp validate_comment_rate_limit(user) do
-    # Rate limiting always passes for now (TODO: implement)
-    Forums.check_comment_rate_limit(user)
+  defp validate_comment_rate_limit(user, opts)
+  defp validate_comment_rate_limit(user, opts) when is_list(opts) do
+    case Forums.check_comment_rate_limit(user, opts) do
+      :ok -> :ok
+      {:error, :rate_limited, info} ->
+        {:error, :rate_limited, %{
+          message: "You're commenting too quickly. Please wait before posting another comment.",
+          retry_after: info.retry_after,
+          limit: info.limit,
+          reset_at: info.reset_at
+        }}
+    end
   end
 
   defp authorize_comment_edit(user, comment, forum) do

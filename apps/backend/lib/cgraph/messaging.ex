@@ -650,6 +650,47 @@ defmodule Cgraph.Messaging do
   end
 
   @doc """
+  Hide a message for moderation purposes (quarantine).
+  Sets visibility to hidden and records the reason.
+  """
+  def hide_message(message_id, reason) do
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    case get_message(message_id) do
+      {:ok, message} ->
+        message
+        |> Ecto.Changeset.change(%{
+          hidden_at: now,
+          hidden_reason: reason,
+          visible: false
+        })
+        |> Repo.update()
+      error -> error
+    end
+  end
+
+  @doc """
+  Soft delete a message with tracking information.
+  Used for moderation actions that need audit trail.
+  """
+  def soft_delete_message(message_id, opts \\ []) do
+    reason = Keyword.get(opts, :reason, :user_deleted)
+    report_id = Keyword.get(opts, :report_id)
+    now = DateTime.utc_now() |> DateTime.truncate(:second)
+    
+    case get_message(message_id) do
+      {:ok, message} ->
+        message
+        |> Ecto.Changeset.change(%{
+          deleted_at: now,
+          deletion_reason: reason,
+          deleted_by_report_id: report_id
+        })
+        |> Repo.update()
+      error -> error
+    end
+  end
+
+  @doc """
   Delete a message.
   Can be called with message_id and user_id, or with message struct and user.
   """

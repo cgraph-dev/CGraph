@@ -1,10 +1,13 @@
 # CGraph Fly.io Configuration
 # Backend application deployment
+#
+# Optimized for Elixir/Phoenix BEAM VM workloads
+# Memory sized for efficient garbage collection and scheduler performance
 
 app = "cgraph"
 primary_region = "iad"
 kill_signal = "SIGTERM"
-kill_timeout = "5s"
+kill_timeout = "30s"  # Allow graceful shutdown of active connections
 
 [experimental]
   auto_rollback = true
@@ -17,7 +20,12 @@ kill_timeout = "5s"
   PHX_SERVER = "true"
   PORT = "4000"
   ECTO_IPV6 = "true"
+  # BEAM VM tuning for production
   ERL_AFLAGS = "-proto_dist inet6_tcp"
+  # Scheduler tuning: +S matches CPU count, +SDcpu enables dirty CPU schedulers
+  ELIXIR_ERL_OPTIONS = "+S 2:2 +SDcpu 2:2 +sbwt very_short +swt very_low"
+  # Memory allocator settings for better performance
+  ERL_CRASH_DUMP_SECONDS = "10"
 
 [http_service]
   internal_port = 4000
@@ -29,20 +37,20 @@ kill_timeout = "5s"
 
   [http_service.concurrency]
     type = "connections"
-    hard_limit = 1000
-    soft_limit = 800
+    hard_limit = 2000
+    soft_limit = 1500
 
   [[http_service.checks]]
     interval = "30s"
     timeout = "5s"
-    grace_period = "10s"
+    grace_period = "30s"  # Extended for BEAM startup
     method = "GET"
     path = "/health"
 
 [[vm]]
   cpu_kind = "shared"
-  cpus = 1
-  memory = "512mb"
+  cpus = 2
+  memory = "1024mb"  # 1GB minimum for BEAM VM with WebSocket connections
 
 [metrics]
   port = 9091
