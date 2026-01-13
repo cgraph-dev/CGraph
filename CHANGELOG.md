@@ -1,4 +1,4 @@
-# [0.9.0] - 2026-01-13
+# [0.8.1] - 2026-01-13
 
 **🎯 MOBILE-WEB FEATURE PARITY: Premium Features & Rich Media**
 
