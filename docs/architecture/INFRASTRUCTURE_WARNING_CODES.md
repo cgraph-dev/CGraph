@@ -258,7 +258,7 @@ export ALERT_LOG="/var/log/cgraph/alerts.log"
 
 ## Related Documentation
 
-- [DEPLOYMENT.md](./DEPLOYMENT.md) - Deployment procedures
-- [SECURITY.md](./SECURITY.md) - Security guidelines
-- [OPERATIONS.md](./OPERATIONS.md) - Operational procedures
-- [PRODUCTION_READINESS.md](./PRODUCTION_READINESS.md) - Production checklist
+- [DEPLOYMENT.md](../guides/DEPLOYMENT.md) - Deployment procedures
+- [SECURITY.md](../guides/SECURITY.md) - Security guidelines
+- [OPERATIONS.md](../guides/OPERATIONS.md) - Operational procedures
+- [PRODUCTION_READINESS.md](../guides/PRODUCTION_READINESS.md) - Production checklist

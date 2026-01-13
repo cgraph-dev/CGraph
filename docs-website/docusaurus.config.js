@@ -14,11 +14,17 @@ const config = {
   projectName: 'CGraph',
 
   onBrokenLinks: 'warn',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenMarkdownLinks: 'log',
 
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
+  },
+
+  // Use CommonMark format to avoid MDX JSX parsing issues
+  markdown: {
+    format: 'detect',
+    mermaid: false,
   },
 
   presets: [

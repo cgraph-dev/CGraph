@@ -17,12 +17,9 @@ An Architecture Decision Record is a document that captures an important archite
 
 | Number | Title | Status | Date |
 |--------|-------|--------|------|
-| [001](001-monorepo-structure.md) | Monorepo Structure with Turborepo | Accepted | 2025-01 |
-| [002](002-signal-protocol-encryption.md) | Signal Protocol for E2E Encryption | Accepted | 2025-02 |
-| [003](003-phoenix-elixir-backend.md) | Phoenix/Elixir for Backend | Accepted | 2025-01 |
-| [004](004-zustand-state-management.md) | Zustand for Cross-Platform State | Accepted | 2025-06 |
-| [005](005-feature-flags-system.md) | Built-in Feature Flags System | Accepted | 2025-08 |
-| [006](006-ddd-feature-structure.md) | DDD Feature Module Structure | Accepted | 2026-01 |
+| [006](./006-ddd-feature-structure.md) | DDD Feature Module Structure | Accepted | 2026-01 |
+
+> Note: ADRs 001-005 document historical decisions made before this tracking system was established.
 
 ## Status Lifecycle
 

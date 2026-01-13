@@ -638,9 +638,9 @@ When asking for help, include:
 
 Now that you're up and running:
 
-1. 📚 Read [ARCHITECTURE.md](./ARCHITECTURE.md) to understand the system design
-2. 🗄️ Check [DATABASE.md](./DATABASE.md) for the data model
-3. 📝 Read [CONTRIBUTING.md](../CONTRIBUTING.md) before making changes
+1. 📚 Read [ARCHITECTURE.md](../architecture/ARCHITECTURE.md) to understand the system design
+2. 🗄️ Check [DATABASE.md](../architecture/DATABASE.md) for the data model
+3. 📝 Read [CONTRIBUTING.md](./CONTRIBUTING.md) before making changes
 4. 🚀 Try building a small feature to get familiar with the codebase
 
 ---

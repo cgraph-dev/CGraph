@@ -2,7 +2,8 @@
 
 ## Status
 
-**Proposed** | Accepted | Deprecated | Superseded by [ADR-XXX](XXX-title.md) | Rejected
+<!-- Choose one: Proposed | Accepted | Deprecated | Superseded | Rejected -->
+**Proposed**
 
 ## Date
 
@@ -106,9 +107,10 @@ We will use **[Option X]** because [key reasons].
 
 ## Related
 
-- Related ADR: [ADR-XXX](XXX-title.md)
-- Related issue: #XXX
-- Related documentation: [Link]
+<!-- Update these with actual links when applicable -->
+- Related ADR: (link to related ADR if any)
+- Related issue: (link to GitHub issue)
+- Related documentation: (link to docs)
 
 ## Notes
 

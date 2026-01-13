@@ -629,7 +629,7 @@ Each forum is a logical tenant with:
 ---
 
 ## Related Documents
-- [API Reference](./API_REFERENCE.md)
-- [Architecture](./ARCHITECTURE.md)
-- [Database Schema](./DATABASE.md)
+- [API Reference](../api/API_REFERENCE.md)
+- [Architecture](../architecture/ARCHITECTURE.md)
+- [Database Schema](../architecture/DATABASE.md)
 - [Frontend Guide](./FRONTEND.md)

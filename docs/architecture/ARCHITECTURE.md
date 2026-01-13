@@ -904,10 +904,10 @@ Planned for 2026:
 
 ## Resources
 
-- **Architecture decisions**: [ARCHITECTURE.md](./ARCHITECTURE.md)
-- **Frontend guide**: [FRONTEND.md](./FRONTEND.md)
-- **Deployment**: [DEPLOYMENT.md](./DEPLOYMENT.md)
-- **Security**: [SECURITY.md](../SECURITY.md)
+- **Architecture decisions**: [ADRs](./decisions/README.md)
+- **Frontend guide**: [FRONTEND.md](../guides/FRONTEND.md)
+- **Deployment**: [DEPLOYMENT.md](../guides/DEPLOYMENT.md)
+- **Security**: [SECURITY.md](../guides/SECURITY.md)
 - **Website**: [www.cgraph.org](https://www.cgraph.org)
 
 ---

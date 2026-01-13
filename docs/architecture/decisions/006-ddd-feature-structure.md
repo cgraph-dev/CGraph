@@ -170,8 +170,8 @@ We will adopt **Option 3: Full DDD with Shared Packages** because it provides th
 
 ## Related
 
-- Related documentation: [MONOREPO_CONVENTIONS.md](../../../MONOREPO_CONVENTIONS.md)
-- Related documentation: [HOW_TO_CONNECT_NEW_COMPONENTS.md](../../../HOW_TO_CONNECT_NEW_COMPONENTS.md)
+- Related documentation: MONOREPO_CONVENTIONS.md (project root)
+- Related documentation: HOW_TO_CONNECT_NEW_COMPONENTS.md (project root)
 
 ## Notes
 

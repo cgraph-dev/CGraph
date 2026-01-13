@@ -547,7 +547,7 @@ npm run test -- src/lib/animations/matrix
 
 ## Contributing
 
-See [CONTRIBUTING.md](/CONTRIBUTING.md) for guidelines on contributing to the Matrix animation system.
+See [CONTRIBUTING.md](../guides/CONTRIBUTING.md) for guidelines on contributing to the Matrix animation system.
 
 When adding new themes or presets, ensure:
 1. All tests pass
