@@ -47,5 +47,8 @@ export { default as Select } from './Select';
 export { default as VoiceMessageRecorder } from './VoiceMessageRecorder';
 export { default as VoiceMessagePlayer } from './VoiceMessagePlayer';
 
+// Chat Components
+export { default as RichMediaEmbed } from './chat/RichMediaEmbed';
+
 // Attachment Picker
 export { default as TelegramAttachmentPicker } from './TelegramAttachmentPicker';
