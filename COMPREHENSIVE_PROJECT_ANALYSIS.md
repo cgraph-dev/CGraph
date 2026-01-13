@@ -8,9 +8,9 @@
 ## 📊 Executive Summary
 
 CGraph is an enterprise-grade, open-source messaging and community platform that combines:
-- **Real-time messaging** (Discord-style)
-- **Community forums** (MyBB-inspired with modern UI)
-- **End-to-end encryption** (Signal Protocol/Double Ratchet)
+- **Real-time messaging** (server-based with channels)
+- **Community forums** (full-featured with modern UI)
+- **End-to-end encryption** (Double Ratchet Protocol)
 - **Web3 authentication** (wallet-based identity)
 - **Multi-platform support** (Web, iOS, Android via React Native)
 
@@ -242,7 +242,7 @@ CGraph/
 
 #### Other (21 files)
 - OAuth buttons (1 file)
-- Telegram-style picker (1 file, 1393 lines!)
+- Multi-format emoji picker (1 file, 1393 lines!)
 - Dev tools (1 file)
 - Tests (5 files)
 - Stories (9 files)
@@ -627,7 +627,7 @@ CGraph/
 ### What Makes CGraph Stand Out
 
 1. **30+ Animated Avatar Borders** 
-   - More than Discord, Telegram, WhatsApp combined
+   - Industry-leading variety
    - Physics-based animations
    - Particle effects
 
@@ -651,8 +651,8 @@ CGraph/
    - Rarity tiers (7 levels)
 
 5. **End-to-End Encryption**
-   - Signal Protocol
-   - Double Ratchet
+   - Double Ratchet Protocol
+   - X3DH Key Exchange
    - Key verification
    - Zero-knowledge architecture
 
@@ -663,8 +663,8 @@ CGraph/
    - On-chain reputation (planned)
 
 7. **Forum Innovation**
-   - MyBB features modernized
-   - Reddit-style voting
+   - Classic forum features modernized
+   - Community voting system
    - Threaded comments
    - Live updates
 

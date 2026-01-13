@@ -19,8 +19,18 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
+      "@features/*": ["./src/features/*"],
+      "@components/*": ["./src/components/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@stores/*": ["./src/stores/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@layouts/*": ["./src/layouts/*"],
       "@cgraph/shared-types": ["../../packages/shared-types/src"],
-      "@cgraph/utils": ["../../packages/utils/src"]
+      "@cgraph/utils": ["../../packages/utils/src"],
+      "@cgraph/ui": ["../../packages/ui/src"],
+      "@cgraph/config": ["../../packages/config/src"],
+      "@cgraph/core": ["../../packages/core/src"]
     }
   },
   "include": ["src"],

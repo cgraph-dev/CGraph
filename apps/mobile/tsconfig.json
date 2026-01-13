@@ -16,9 +16,17 @@
     "verbatimModuleSyntax": false,
     "paths": {
       "@/*": ["./src/*"],
+      "@features/*": ["./src/features/*"],
+      "@components/*": ["./src/components/*"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@screens/*": ["./src/screens/*"],
+      "@services/*": ["./src/services/*"],
+      "@lib/*": ["./src/lib/*"],
       "@cgraph/shared-types": ["../../packages/shared-types/src"],
       "@cgraph/utils": ["../../packages/utils/src"],
-      "@cgraph/config": ["../../packages/config/src"]
+      "@cgraph/config": ["../../packages/config/src"],
+      "@cgraph/ui": ["../../packages/ui/src"],
+      "@cgraph/core": ["../../packages/core/src"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx", "*.js", ".expo/types/**/*.ts", "expo-env.d.ts"],

@@ -84,3 +84,24 @@ export {
   MemberBadge,
   CountBadge,
 } from './ui/Badge';
+
+// Enhanced Holographic UI System v4
+export {
+  HoloProvider,
+  useHolo,
+  HoloContainer,
+  HoloText,
+  HoloButton,
+  HoloCard,
+  HoloAvatar,
+  HoloInput,
+  HoloProgress,
+  HoloBadge,
+  HoloTabs,
+  HoloDivider,
+  HoloModal,
+  HoloNotification,
+  HoloTooltip,
+  HOLO_PRESETS,
+  holoStyles,
+} from './enhanced/ui';

@@ -4,11 +4,11 @@
 
 <img src="docs/assets/cgraph-logo.png" alt="CGraph Logo" width="140" />
 
-### The Open-Source Alternative to Discord, Slack, and Telegram
+### The All-in-One Open-Source Communication Platform
 #### Real-time messaging • Community forums • End-to-end encryption • Web3 authentication • Gamification
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.8.2-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.8.3-green.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-973%20passing-brightgreen.svg)](#testing)
 [![Elixir](https://img.shields.io/badge/elixir-1.17+-purple.svg)](https://elixir-lang.org/)
 
@@ -20,18 +20,18 @@
 
 ## Why CGraph?
 
-| Feature | CGraph | Discord | Slack | Telegram | Signal |
-|---------|:------:|:-------:|:-----:|:--------:|:------:|
-| **End-to-End Encryption** | ✅ Double Ratchet | ❌ | ❌ | ⚠️ Secret chats only | ✅ |
-| **Open Source** | ✅ 100% MIT | ❌ | ❌ | ⚠️ Client only | ✅ |
-| **Web3/Wallet Auth** | ✅ Native | ❌ | ❌ | ❌ | ❌ |
-| **Community Forums** | ✅ Reddit-style | ❌ | ❌ | ❌ | ❌ |
-| **Gamification** | ✅ XP, Achievements, Quests | ❌ | ❌ | ❌ | ❌ |
-| **No Phone Required** | ✅ | ✅ | ✅ | ❌ Required | ❌ Required |
-| **Self-Hostable** | ✅ Full control | ❌ | ⚠️ Enterprise only | ❌ | ⚠️ Complex |
-| **Role Permissions** | ✅ Granular | ✅ | ✅ | ⚠️ Basic | ❌ |
+| Feature | CGraph | Competitors |
+|---------|:------:|:-----------:|
+| **End-to-End Encryption** | ✅ Double Ratchet | ⚠️ Varies |
+| **Open Source** | ✅ 100% MIT | ⚠️ Partial/None |
+| **Web3/Wallet Auth** | ✅ Native | ❌ |
+| **Community Forums** | ✅ Built-in | ❌ |
+| **Gamification** | ✅ XP, Achievements, Quests | ❌ |
+| **No Phone Required** | ✅ | ⚠️ Often required |
+| **Self-Hostable** | ✅ Full control | ⚠️ Limited |
+| **Role Permissions** | ✅ Granular | ⚠️ Basic |
 
-CGraph combines the best of Discord (servers, channels, roles), Reddit (forums, karma, voting), Signal (encryption), and adds gamification—all in one self-hostable package.
+CGraph combines the best of modern communication platforms—real-time messaging, organized servers, rich forums, end-to-end encryption, and gamification—all in one self-hostable package.
 
 ---
 
@@ -39,14 +39,14 @@ CGraph combines the best of Discord (servers, channels, roles), Reddit (forums, 
 
 ### 💬 Real-Time Messaging
 - Instant message delivery with typing indicators and read receipts
-- End-to-end encryption using Double Ratchet protocol (Signal-grade)
+- End-to-end encryption using Double Ratchet protocol (industry-leading security)
 - Voice messages with waveform visualization
 - Voice and video calls (up to 10 participants)
 - Message reactions, editing, and deletion
 - Cross-platform sync (web, iOS, Android)
 
 ### 🏢 Servers & Channels
-- Discord-style servers with unlimited channels
+- Organized servers with unlimited channels
 - Channel categories for organization
 - Custom roles with 20+ granular permissions
 - Invite links with expiration and usage limits

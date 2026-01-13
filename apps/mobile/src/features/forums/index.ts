@@ -1,0 +1,10 @@
+/**
+ * Forums Feature Module (Mobile)
+ * 
+ * @module @features/forums
+ * @since v0.8.3
+ */
+
+export * from './components';
+export * from './services';
+export * from './types';

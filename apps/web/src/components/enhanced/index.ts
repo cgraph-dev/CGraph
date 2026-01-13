@@ -1,13 +1,48 @@
 /**
  * Enhanced Components Index
  *
- * Central export point for all v2.0 and v3.0 enhanced components.
+ * Central export point for all v2.0, v3.0, and v4.0 enhanced components.
  * Import from here for convenience.
  *
- * @version 3.0.0
+ * @version 4.0.0
  * @since v0.7.33
- * @updated v0.7.35
+ * @updated v0.8.3
  */
+
+// =============================================================================
+// HOLOGRAPHIC UI SYSTEM v4.0
+// =============================================================================
+
+export {
+  HoloProvider,
+  useHolo,
+  HoloContainer,
+  HoloText,
+  HoloButton,
+  HoloCard,
+  HoloAvatar,
+  HoloInput,
+  HoloProgress,
+  HoloBadge,
+  HoloTabs,
+  HoloDivider,
+  HoloModal,
+  HoloNotification,
+  HoloTooltip,
+  HOLO_PRESETS,
+  holoStyles,
+} from './ui';
+
+export type { HoloTheme, HoloConfig } from './ui/HolographicUIv4';
+
+// App-level Holographic Provider
+export { 
+  AppHoloProvider, 
+  defaultHoloConfig, 
+  performanceHoloConfig, 
+  accessibleHoloConfig,
+  premiumHoloConfig 
+} from './AppHoloProvider';
 
 // =============================================================================
 // ANIMATION SYSTEM

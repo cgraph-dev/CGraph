@@ -2,7 +2,7 @@
 
 ## Current Implementation Status
 
-After several weeks of focused development, I've significantly expanded the feature set. This document tracks what's done versus what's still needed for complete MyBB parity.
+After several weeks of focused development, I've significantly expanded the feature set. This document tracks what's done versus what's still needed for complete forum feature parity.
 
 ---
 
@@ -89,7 +89,7 @@ The backend now has 91 database tables supporting all these features:
 - `users` - User accounts with profiles, reputation, settings
 - `forums`, `posts`, `comments` - Forum content
 - `conversations`, `messages` - Real-time messaging
-- `groups`, `channels` - Discord-style servers
+- `groups`, `channels` - Organized servers and channels
 
 ### New Tables (v0.7.56+)
 - `pm_folders`, `private_messages`, `pm_drafts` - PM system
@@ -167,7 +167,7 @@ forum_votes                                               wallet_challenges
 
 ## 📈 Implementation Coverage
 
-### Current Coverage: ~75% of MyBB Features
+### Current Coverage: ~75% of Forum Features
 
 ```
 Implemented:        51 features
@@ -211,7 +211,7 @@ Everything else can wait for post-launch polish.
 
 ### React Native Forum Components (January 13, 2026)
 
-The mobile app now has complete feature parity with the web app for MyBB forum features:
+The mobile app now has complete feature parity with the web app for all forum features:
 
 **New Components Created:**
 1. ✅ `ThreadPrefixBadge.tsx` - Colored prefix badges with mobile styling
@@ -221,7 +221,7 @@ The mobile app now has complete feature parity with the web app for MyBB forum f
 5. ✅ `EditHistoryModal.tsx` - Bottom sheet modal for edit timeline
 
 **Screen Integration:**
-- ✅ `PostScreen.tsx` - Fully integrated with all MyBB components
+- ✅ `PostScreen.tsx` - Fully integrated with all forum components
   - Thread prefixes displayed alongside status badges
   - Thread rating system with interactive voting
   - Poll widget for voting and viewing results
@@ -229,7 +229,7 @@ The mobile app now has complete feature parity with the web app for MyBB forum f
   - Edit history modal with timeline view
 
 **Type System:**
-- ✅ Enhanced `types/index.ts` with 6 MyBB interfaces
+- ✅ Enhanced `types/index.ts` with 6 forum interfaces
 - ✅ Added optional fields to Post and Comment interfaces
 
 **Mobile-Specific Features:**
