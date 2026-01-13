@@ -143,6 +143,15 @@ defmodule CgraphWeb.Router do
     get "/posts/feed", PostController, :feed
   end
 
+  # Telemetry endpoints (relaxed rate limiting, minimal auth)
+  scope "/api/v1/telemetry", CgraphWeb.API.V1 do
+    pipe_through :api_relaxed
+
+    # Error reporting from clients (unauthenticated allowed for error tracking)
+    post "/errors", TelemetryController, :create_error
+    post "/metrics", TelemetryController, :create_metric
+  end
+
   # Authenticated API routes
   scope "/api/v1", CgraphWeb.API.V1 do
     pipe_through [:api, :api_auth]

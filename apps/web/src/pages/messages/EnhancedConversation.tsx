@@ -82,10 +82,24 @@ function EnhancedMessageBubble({
   };
 
   // Handle reaction add
-  const handleAddReaction = (emoji: string) => {
+  const { addReaction } = useChatStore();
+  const { user } = useAuthStore();
+  const [isReacting, setIsReacting] = useState(false);
+
+  const handleAddReaction = async (emoji: string) => {
+    if (isReacting) return;
+    setIsReacting(true);
     HapticFeedback.medium();
-    // TODO: Implement API call to add reaction
-    console.log('Add reaction:', emoji, 'to message:', message.id);
+    try {
+      await addReaction(message.id, emoji);
+      setShowReactionPicker(false);
+    } catch (err) {
+      // Optionally show error toast
+      console.error('Failed to add reaction:', err);
+      HapticFeedback.error();
+    } finally {
+      setIsReacting(false);
+    }
   };
 
   return (
@@ -237,16 +251,24 @@ function EnhancedMessageBubble({
                 exit={{ opacity: 0, y: -10 }}
                 layout
               >
-                {message.reactions.map((reaction, i) => (
+                {/* Aggregate reactions by emoji */}
+                {Object.entries(
+                  message.reactions.reduce<Record<string, { count: number; hasReacted: boolean }>>((acc, r) => {
+                    if (!acc[r.emoji]) acc[r.emoji] = { count: 0, hasReacted: false };
+                    acc[r.emoji].count++;
+                    if (user && r.userId === user.id) acc[r.emoji].hasReacted = true;
+                    return acc;
+                  }, {})
+                ).map(([emoji, { count, hasReacted }], i) => (
                   <AnimatedReactionBubble
-                    key={i}
+                    key={emoji}
                     reaction={{
-                      emoji: reaction.emoji,
-                      count: 1, // TODO: Aggregate count from backend
-                      hasReacted: false, // TODO: Check if current user reacted
+                      emoji,
+                      count,
+                      hasReacted,
                     }}
                     isOwnMessage={isOwn}
-                    onPress={() => handleAddReaction(reaction.emoji)}
+                    onPress={() => handleAddReaction(emoji)}
                   />
                 ))}
               </motion.div>

@@ -197,6 +197,66 @@ export interface Forum {
   inserted_at: string;
 }
 
+// MyBB Forum Feature Types
+export interface ThreadPrefix {
+  id: string;
+  name: string;
+  color: string;
+  forums: string[];
+}
+
+export interface ThreadRating {
+  id: string;
+  thread_id: string;
+  user_id: string;
+  rating: number; // 1-5 stars
+  created_at: string;
+}
+
+export interface PostAttachment {
+  id: string;
+  post_id: string;
+  filename: string;
+  original_filename: string;
+  file_type: string;
+  file_size: number;
+  thumbnail_url?: string;
+  download_url: string;
+  downloads: number;
+  uploaded_by: string;
+  uploaded_at: string;
+}
+
+export interface Poll {
+  id: string;
+  thread_id: string;
+  question: string;
+  options: PollOption[];
+  allow_multiple: boolean;
+  max_selections?: number;
+  timeout?: string;
+  public: boolean;
+  closed: boolean;
+  created_at: string;
+}
+
+export interface PollOption {
+  id: string;
+  text: string;
+  votes: number;
+  voters?: string[];
+}
+
+export interface PostEditHistory {
+  id: string;
+  post_id: string;
+  edited_by: string;
+  edited_by_username: string;
+  previous_content: string;
+  reason?: string;
+  edited_at: string;
+}
+
 export interface Post {
   id: string;
   title: string;
@@ -211,6 +271,18 @@ export interface Post {
   is_pinned: boolean;
   is_locked: boolean;
   inserted_at: string;
+  // MyBB Features
+  prefix?: ThreadPrefix;
+  rating?: number;
+  rating_count?: number;
+  my_rating?: number;
+  attachments?: PostAttachment[];
+  poll?: Poll;
+  edit_history?: PostEditHistory[];
+  views?: number;
+  is_closed?: boolean;
+  edited_at?: string;
+  edited_by?: string;
 }
 
 export interface Comment {
@@ -224,6 +296,11 @@ export interface Comment {
   my_vote?: 1 | -1;
   is_edited: boolean;
   inserted_at: string;
+  // MyBB Features
+  attachments?: PostAttachment[];
+  edit_history?: PostEditHistory[];
+  edited_at?: string;
+  edited_by?: string;
 }
 
 export interface Flair {

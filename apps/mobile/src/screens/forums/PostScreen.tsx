@@ -19,7 +19,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { PostCardSkeleton, CommentSkeleton } from '../../components/Skeleton';
 import api from '../../lib/api';
 import { safeFormatMessageTime } from '../../lib/dateUtils';
-import { ForumsStackParamList, Post, Comment } from '../../types';
+import { ForumsStackParamList, Post, Comment, PostEditHistory } from '../../types';
+import ThreadPrefixBadge from '../../components/forums/ThreadPrefixBadge';
+import ThreadRatingDisplay from '../../components/forums/ThreadRatingDisplay';
+import AttachmentList from '../../components/forums/AttachmentList';
+import PollWidget from '../../components/forums/PollWidget';
+import EditHistoryModal from '../../components/forums/EditHistoryModal';
 
 type Props = {
   navigation: NativeStackNavigationProp<ForumsStackParamList, 'Post'>;
@@ -36,6 +41,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [commentText, setCommentText] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showEditHistory, setShowEditHistory] = useState(false);
   
   useEffect(() => {
     fetchPost();
@@ -85,7 +91,7 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
   
   const submitComment = async () => {
     if (!commentText.trim() || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     try {
       const response = await api.post(`/api/v1/posts/${postId}/comments`, {
@@ -97,6 +103,59 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
       console.error('Error submitting comment:', error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleRateThread = async (rating: number) => {
+    if (!post) return;
+    try {
+      await api.post(`/api/v1/threads/${postId}/rate`, { rating });
+      setPost((prev) => {
+        if (!prev) return prev;
+        const oldRating = prev.my_rating || 0;
+        const ratingCount = prev.rating_count || 0;
+        const currentTotal = (prev.rating || 0) * ratingCount;
+        const newTotal = currentTotal - oldRating + rating;
+        const newCount = oldRating ? ratingCount : ratingCount + 1;
+        return {
+          ...prev,
+          my_rating: rating,
+          rating: newCount > 0 ? newTotal / newCount : 0,
+          rating_count: newCount,
+        };
+      });
+    } catch (error) {
+      console.error('Error rating thread:', error);
+    }
+  };
+
+  const handleVotePoll = async (optionIds: string[]) => {
+    try {
+      await api.post(`/api/v1/polls/${post?.poll?.id}/vote`, { option_ids: optionIds });
+      await fetchPost(); // Refresh to get updated results
+    } catch (error) {
+      console.error('Error voting on poll:', error);
+      throw error;
+    }
+  };
+
+  const handleClosePoll = async () => {
+    try {
+      await api.post(`/api/v1/polls/${post?.poll?.id}/close`);
+      await fetchPost();
+    } catch (error) {
+      console.error('Error closing poll:', error);
+      throw error;
+    }
+  };
+
+  const fetchEditHistory = async (postId: string): Promise<PostEditHistory[]> => {
+    try {
+      const response = await api.get(`/api/v1/posts/${postId}/edit-history`);
+      return response.data.data || [];
+    } catch (error) {
+      console.error('Error fetching edit history:', error);
+      return [];
     }
   };
   
@@ -168,8 +227,11 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
             c/{post.forum.slug} • u/{post.author?.username || post.author?.display_name || 'unknown'} • {safeFormatMessageTime(post.inserted_at)}
           </Text>
           
-          {/* Status Badges */}
+          {/* Prefix and Status Badges */}
           <View style={styles.badgesRow}>
+            {post.prefix && (
+              <ThreadPrefixBadge prefix={post.prefix} size="md" />
+            )}
             {post.is_pinned && (
               <View style={[styles.badge, { backgroundColor: '#16a34a' }]}>
                 <Ionicons name="pin" size={12} color="#fff" />
@@ -182,13 +244,68 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
                 <Text style={styles.badgeText}>Locked</Text>
               </View>
             )}
+            {post.is_closed && (
+              <View style={[styles.badge, { backgroundColor: '#dc2626' }]}>
+                <Ionicons name="close-circle" size={12} color="#fff" />
+                <Text style={styles.badgeText}>Closed</Text>
+              </View>
+            )}
           </View>
-          
+
           <Text style={[styles.postTitle, { color: colors.text }]}>{post.title}</Text>
+
+          {/* Thread Rating */}
+          {(post.rating !== undefined || post.rating_count !== undefined) && (
+            <View style={styles.ratingSection}>
+              <ThreadRatingDisplay
+                rating={post.rating || 0}
+                ratingCount={post.rating_count || 0}
+                myRating={post.my_rating}
+                onRate={handleRateThread}
+                size="md"
+                interactive={!post.is_closed && !post.is_locked}
+              />
+            </View>
+          )}
           {post.content && (
             <Text style={[styles.postContent, { color: colors.text }]}>{post.content}</Text>
           )}
-          
+
+          {/* Poll Widget */}
+          {post.poll && (
+            <View style={styles.pollSection}>
+              <PollWidget
+                poll={post.poll}
+                isCreator={post.author?.id === _user?.id}
+                onVote={handleVotePoll}
+                onClose={handleClosePoll}
+              />
+            </View>
+          )}
+
+          {/* Attachments */}
+          {post.attachments && post.attachments.length > 0 && (
+            <View style={styles.attachmentsSection}>
+              <AttachmentList attachments={post.attachments} />
+            </View>
+          )}
+
+          {/* Edit History Link */}
+          {post.edit_history && post.edit_history.length > 0 && (
+            <TouchableOpacity
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setShowEditHistory(true);
+              }}
+              style={styles.editHistoryButton}
+            >
+              <Ionicons name="time-outline" size={14} color={colors.textSecondary} />
+              <Text style={[styles.editHistoryText, { color: colors.textSecondary }]}>
+                Edited {post.edit_history.length} {post.edit_history.length === 1 ? 'time' : 'times'} • View history
+              </Text>
+            </TouchableOpacity>
+          )}
+
           {/* Post actions */}
           <View style={styles.postActions}>
             <View style={styles.voteButtons}>
@@ -271,6 +388,14 @@ export default function PostScreen({ navigation: _navigation, route }: Props) {
           </TouchableOpacity>
         </View>
       )}
+
+      {/* Edit History Modal */}
+      <EditHistoryModal
+        visible={showEditHistory}
+        onClose={() => setShowEditHistory(false)}
+        postId={postId}
+        onFetchHistory={fetchEditHistory}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -426,5 +551,24 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     marginBottom: 12,
+  },
+  ratingSection: {
+    marginBottom: 12,
+  },
+  pollSection: {
+    marginBottom: 16,
+  },
+  attachmentsSection: {
+    marginBottom: 16,
+  },
+  editHistoryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 8,
+    marginBottom: 12,
+  },
+  editHistoryText: {
+    fontSize: 12,
   },
 });

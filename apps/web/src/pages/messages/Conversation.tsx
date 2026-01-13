@@ -25,7 +25,7 @@ import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
 // Enhanced UI v3.0 components - NEXT GEN
 import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
-// AnimatedReactionBubble available for future use
+import { AnimatedReactionBubble, ReactionPicker } from '@/components/conversation/AnimatedReactionBubble';
 import GlassCard from '@/components/ui/GlassCard';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -37,7 +37,15 @@ import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
 import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
 import type { Sticker } from '@/data/stickers';
 
+import ShaderBackground from '@/components/shaders/ShaderBackground';
+import { themeEngine } from '@/lib/ai/ThemeEngine';
+
 export default function Conversation() {
+  // Apply adaptive theme on mount
+  useEffect(() => {
+    const theme = themeEngine.getRecommendedTheme();
+    themeEngine.applyTheme(theme);
+  }, []);
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
@@ -757,6 +765,26 @@ export default function Conversation() {
                       uiPreferences={uiPreferences}
                       onAvatarClick={(userId) => navigate(`/user/${userId}`)}
                     />
+                    {/* Enhanced Reactions: AnimatedReactionBubble */}
+                    {message.reactions && message.reactions.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {Object.entries(
+                          message.reactions.reduce((acc, r) => {
+                            if (!acc[r.emoji]) acc[r.emoji] = { count: 0, hasReacted: false };
+                            acc[r.emoji].count++;
+                            if (user && r.userId === user.id) acc[r.emoji].hasReacted = true;
+                            return acc;
+                          }, {})
+                        ).map(([emoji, { count, hasReacted }]) => (
+                          <AnimatedReactionBubble
+                            key={emoji}
+                            reaction={{ emoji, count, hasReacted }}
+                            isOwnMessage={isOwn}
+                            onPress={() => handleAddReaction(message.id, emoji, conversationId)}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </AnimatedMessageWrapper>
                 );
               })}
@@ -1257,62 +1285,14 @@ function MessageBubble({
   );
 }
 
-// Helper to aggregate reactions by emoji
-function aggregateReactions(reactions: Array<{ emoji: string; userId: string; username?: string }>) {
-  const aggregated: Record<string, { emoji: string; count: number; users: Array<{ id: string; username: string }>; hasReacted: boolean }> = {};
-  const currentUserId = useAuthStore.getState().user?.id || '';
-
-  reactions.forEach((reaction) => {
-    if (!aggregated[reaction.emoji]) {
-      aggregated[reaction.emoji] = {
-        emoji: reaction.emoji,
-        count: 0,
-        users: [],
-        hasReacted: false,
-      };
-    }
-    const agg = aggregated[reaction.emoji];
-    if (agg) {
-      agg.count++;
-      agg.users.push({
-        id: reaction.userId,
-        username: reaction.username || 'User',
-      });
-      if (reaction.userId === currentUserId) {
-        agg.hasReacted = true;
-      }
-    }
-  });
-
-  return Object.values(aggregated);
+// Reaction handler using chatStore (align with EnhancedConversation)
+async function handleAddReaction(messageId: string, emoji: string, conversationIdParam?: string) {
+  try {
+    const { addReaction } = require('@/stores/chatStore');
+    await addReaction(messageId, emoji);
+  } catch (err) {
+    console.error('Failed to add reaction:', err);
+  }
 }
-
-// Reaction handlers - integrated with API
-function handleAddReaction(messageId: string, emoji: string, conversationIdParam?: string) {
-  // Use provided conversationId or try to extract from URL path
-  const conversationId = conversationIdParam || window.location.pathname.match(/\/messages\/([^/]+)/)?.[1];
-  if (!conversationId) return;
-
-  // Optimistic update via socket
-  socketManager.sendReaction(conversationId, messageId, emoji, 'add');
-
-  // API call to persist
-  api.post(`/api/v1/messages/${messageId}/reactions`, { emoji }).catch((error) => {
-    console.error('Failed to add reaction:', error);
-    // Rollback on error - would need store integration for proper rollback
-  });
-}
-
-function handleRemoveReaction(messageId: string, emoji: string, conversationIdParam?: string) {
-  // Use provided conversationId or try to extract from URL path
-  const conversationId = conversationIdParam || window.location.pathname.match(/\/messages\/([^/]+)/)?.[1];
-  if (!conversationId) return;
-
-  // Optimistic update via socket
-  socketManager.sendReaction(conversationId, messageId, emoji, 'remove');
-
-  // API call to persist
-  api.delete(`/api/v1/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`).catch((error) => {
-    console.error('Failed to remove reaction:', error);
-  });
-}
+  {/* ShaderBackground for advanced animated background */}
+  <ShaderBackground variant="fluid" color1="#00ff41" color2="#003b00" color3="#39ff14" speed={0.7} intensity={1.1} interactive className="fixed inset-0 -z-10" />

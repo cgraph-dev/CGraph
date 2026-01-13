@@ -1,19 +1,34 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
+import { captureError, addBreadcrumb } from '@/lib/errorTracking';
 
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  /** Component name for error context */
+  componentName?: string;
+  /** Callback when error is caught */
+  onError?: (error: Error, errorInfo: ErrorInfo) => void;
 }
 
 interface State {
   hasError: boolean;
   error: Error | null;
   errorInfo: ErrorInfo | null;
+  errorId: string | null;
 }
 
 /**
  * Error Boundary component that catches JavaScript errors anywhere in the
  * child component tree and displays a fallback UI instead of crashing.
+ * 
+ * Features:
+ * - Automatic error tracking integration
+ * - Error ID for support reference
+ * - Breadcrumb trail for debugging
+ * - Graceful recovery options
+ * 
+ * @version 2.0.0
+ * @since v0.7.58
  */
 export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
@@ -22,6 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
       hasError: false,
       error: null,
       errorInfo: null,
+      errorId: null,
     };
   }
 
@@ -32,15 +48,65 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     this.setState({ errorInfo });
     
-    // Log to error tracking service in production
-    if (import.meta.env.PROD) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
-      // TODO: Send to Sentry or similar service
-    }
+    // Add breadcrumb for context
+    addBreadcrumb({
+      category: 'error',
+      message: 'React Error Boundary triggered',
+      level: 'error',
+      data: {
+        componentName: this.props.componentName,
+        componentStack: errorInfo.componentStack?.substring(0, 500),
+      },
+    });
+    
+    // Capture error with full context
+    const errorId = captureError(error, {
+      component: this.props.componentName || 'ErrorBoundary',
+      action: 'component_crash',
+      level: 'fatal',
+      metadata: {
+        componentStack: errorInfo.componentStack,
+      },
+      tags: {
+        errorBoundary: 'true',
+        recoverable: 'true',
+      },
+    });
+    
+    this.setState({ errorId });
+    
+    // Call optional error callback
+    this.props.onError?.(error, errorInfo);
+    
+    // Log to console in all environments (sanitized in production)
+    console.error('ErrorBoundary caught an error:', error.message);
   }
 
   handleRetry = (): void => {
-    this.setState({ hasError: false, error: null, errorInfo: null });
+    addBreadcrumb({
+      category: 'user',
+      message: 'User clicked retry after error',
+      level: 'info',
+    });
+    this.setState({ hasError: false, error: null, errorInfo: null, errorId: null });
+  };
+
+  handleReload = (): void => {
+    addBreadcrumb({
+      category: 'user',
+      message: 'User clicked reload after error',
+      level: 'info',
+    });
+    window.location.reload();
+  };
+
+  handleReportIssue = (): void => {
+    // Open support with error context
+    const errorId = this.state.errorId;
+    const supportUrl = errorId 
+      ? `mailto:support@cgraph.org?subject=Error Report ${errorId}&body=Error ID: ${errorId}%0A%0APlease describe what you were doing when this error occurred:%0A%0A`
+      : 'mailto:support@cgraph.org?subject=Error Report&body=Please describe what you were doing when this error occurred:%0A%0A';
+    window.open(supportUrl, '_blank');
   };
 
   render(): ReactNode {
@@ -70,10 +136,15 @@ export class ErrorBoundary extends Component<Props, State> {
             <h2 className="text-xl font-semibold text-white mb-2">
               Something went wrong
             </h2>
-            <p className="text-gray-400 mb-6">
+            <p className="text-gray-400 mb-4">
               We encountered an unexpected error. Please try again or contact support if the problem persists.
             </p>
-            <div className="flex gap-3 justify-center">
+            {this.state.errorId && (
+              <p className="text-xs text-gray-500 mb-4 font-mono bg-dark-800 px-3 py-2 rounded inline-block">
+                Error ID: {this.state.errorId}
+              </p>
+            )}
+            <div className="flex gap-3 justify-center flex-wrap">
               <button
                 onClick={this.handleRetry}
                 className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
@@ -81,10 +152,16 @@ export class ErrorBoundary extends Component<Props, State> {
                 Try Again
               </button>
               <button
-                onClick={() => window.location.reload()}
+                onClick={this.handleReload}
                 className="px-4 py-2 border border-dark-600 text-gray-300 rounded-lg hover:bg-dark-800 transition-colors"
               >
                 Reload Page
+              </button>
+              <button
+                onClick={this.handleReportIssue}
+                className="px-4 py-2 text-gray-400 hover:text-white transition-colors text-sm"
+              >
+                Report Issue
               </button>
             </div>
             {import.meta.env.DEV && this.state.error && (
