@@ -390,7 +390,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
     Task.start(fn ->
       case :httpc.request(
         :post,
-        {'https://events.pagerduty.com/v2/enqueue', [], 'application/json', Jason.encode!(payload)},
+        {~c"https://events.pagerduty.com/v2/enqueue", [], ~c"application/json", Jason.encode!(payload)},
         [],
         []
       ) do
@@ -404,7 +404,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
     Task.start(fn ->
       case :httpc.request(
         :post,
-        {String.to_charlist(url), [], 'application/json', Jason.encode!(payload)},
+        {String.to_charlist(url), [], ~c"application/json", Jason.encode!(payload)},
         [],
         []
       ) do

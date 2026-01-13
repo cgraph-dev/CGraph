@@ -8,6 +8,7 @@ import AccountScreen from '../screens/settings/AccountScreen';
 import AppearanceScreen from '../screens/settings/AppearanceScreen';
 import NotificationsScreen from '../screens/settings/NotificationsScreen';
 import PrivacyScreen from '../screens/settings/PrivacyScreen';
+import { PremiumScreen, CoinShopScreen } from '../screens/premium';
 
 const Stack = createNativeStackNavigator<SettingsStackParamList>();
 
@@ -56,6 +57,16 @@ export default function SettingsNavigator() {
         name="Privacy"
         component={PrivacyScreen}
         options={{ title: 'Privacy' }}
+      />
+      <Stack.Screen
+        name="Premium"
+        component={PremiumScreen}
+        options={{ title: 'CGraph Premium' }}
+      />
+      <Stack.Screen
+        name="CoinShop"
+        component={CoinShopScreen}
+        options={{ title: 'Coin Shop' }}
       />
     </Stack.Navigator>
   );

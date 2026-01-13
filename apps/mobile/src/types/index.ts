@@ -376,6 +376,8 @@ export type SettingsStackParamList = {
   Appearance: undefined;
   Notifications: undefined;
   Privacy: undefined;
+  Premium: undefined;
+  CoinShop: undefined;
 };
 
 // Friend types

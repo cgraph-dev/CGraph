@@ -17,7 +17,7 @@ import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useVideoPlayer, VideoView } from 'expo-video';
-import { Audio } from 'expo-av';
+import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
 import GlassCard from '../ui/GlassCard';
 
 /**
@@ -389,53 +389,40 @@ interface AudioEmbedProps {
 }
 
 const AudioEmbed: React.FC<AudioEmbedProps> = memo(({ embed }) => {
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const audioUrl = embed.audioUrl || embed.url;
+  const player = useAudioPlayer(audioUrl);
+  const status = useAudioPlayerStatus(player);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handlePlayPause = async () => {
+  // Configure audio mode on mount
+  useEffect(() => {
+    setAudioModeAsync({
+      playsInSilentMode: true,
+    });
+  }, []);
+
+  const handlePlayPause = useCallback(() => {
     try {
       if (isLoading) return;
 
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-      if (sound) {
-        if (isPlaying) {
-          await sound.pauseAsync();
-          setIsPlaying(false);
-        } else {
-          await sound.playAsync();
-          setIsPlaying(true);
-        }
+      if (status.playing) {
+        player.pause();
       } else {
-        setIsLoading(true);
-        const { sound: newSound } = await Audio.Sound.createAsync(
-          { uri: embed.audioUrl || embed.url },
-          { shouldPlay: true }
-        );
-        setSound(newSound);
-        setIsPlaying(true);
-        setIsLoading(false);
-
-        newSound.setOnPlaybackStatusUpdate((status) => {
-          if (status.isLoaded && status.didJustFinish) {
-            setIsPlaying(false);
-          }
-        });
+        player.play();
       }
     } catch (error) {
       console.error('Audio playback error:', error);
+    }
+  }, [isLoading, status.playing, player]);
+
+  // Handle loading state
+  useEffect(() => {
+    if (status.playing || status.currentTime > 0) {
       setIsLoading(false);
     }
-  };
-
-  useEffect(() => {
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
-  }, [sound]);
+  }, [status.playing, status.currentTime]);
 
   return (
     <GlassCard variant="frosted" intensity="medium" style={styles.audioCard}>
@@ -453,7 +440,7 @@ const AudioEmbed: React.FC<AudioEmbedProps> = memo(({ embed }) => {
               <ActivityIndicator size="small" color="#fff" />
             ) : (
               <Ionicons
-                name={isPlaying ? 'pause' : 'play'}
+                name={status.playing ? 'pause' : 'play'}
                 size={20}
                 color="#fff"
               />
@@ -465,7 +452,13 @@ const AudioEmbed: React.FC<AudioEmbedProps> = memo(({ embed }) => {
           <Text style={styles.audioTitle} numberOfLines={1}>
             {embed.title || 'Audio File'}
           </Text>
-          <Text style={styles.audioSubtitle}>Tap to play</Text>
+          <Text style={styles.audioSubtitle}>
+            {status.playing 
+              ? 'Playing...' 
+              : status.currentTime > 0 
+              ? 'Paused' 
+              : 'Tap to play'}
+          </Text>
         </View>
 
         <Ionicons name="musical-notes-outline" size={24} color="rgba(255,255,255,0.5)" />
