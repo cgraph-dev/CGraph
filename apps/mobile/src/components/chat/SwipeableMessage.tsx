@@ -47,7 +47,7 @@ export default function SwipeableMessage({
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   const [isLongPressing, setIsLongPressing] = useState(false);
-  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const SWIPE_THRESHOLD = 60;
   const MAX_SWIPE = 100;

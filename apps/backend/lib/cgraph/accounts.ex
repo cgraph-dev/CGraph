@@ -518,7 +518,7 @@ defmodule Cgraph.Accounts do
   """
   def remove_profile_content(user_id, content_type, opts \\ []) do
     _reason = Keyword.get(opts, :reason, :moderation_removal)
-    
+
     case get_user(user_id) do
       {:ok, user} ->
         changes = case content_type do
@@ -528,7 +528,7 @@ defmodule Cgraph.Accounts do
           :banner -> %{banner_url: nil}
           _ -> %{}
         end
-        
+
         if map_size(changes) > 0 do
           user
           |> Ecto.Changeset.change(changes)
@@ -1698,7 +1698,7 @@ defmodule Cgraph.Accounts do
   """
   def search_members(opts \\ []) do
     query = Keyword.get(opts, :query)
-    
+
     if query && String.length(query) >= 2 do
       list_members(Keyword.put(opts, :search, query))
     else

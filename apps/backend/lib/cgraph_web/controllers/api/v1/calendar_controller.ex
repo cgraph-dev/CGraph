@@ -30,7 +30,7 @@ defmodule CgraphWeb.API.V1.CalendarController do
   """
   def list_events(conn, params) do
     user = conn.assigns.current_user
-    
+
     opts = [
       year: parse_int(params["year"], nil),
       month: parse_int(params["month"], nil),
@@ -230,7 +230,7 @@ defmodule CgraphWeb.API.V1.CalendarController do
   # HELPERS
   # ========================================
 
-  defp authorize_modify(%Event{author_id: author_id}, %{id: user_id}) 
+  defp authorize_modify(%Event{author_id: author_id}, %{id: user_id})
        when author_id == user_id do
     :ok
   end
@@ -254,7 +254,7 @@ defmodule CgraphWeb.API.V1.CalendarController do
   defp parse_datetime(val) when is_binary(val) do
     case DateTime.from_iso8601(val) do
       {:ok, dt, _offset} -> dt
-      {:error, _} -> 
+      {:error, _} ->
         case NaiveDateTime.from_iso8601(val) do
           {:ok, ndt} -> DateTime.from_naive!(ndt, "Etc/UTC")
           {:error, _} -> nil

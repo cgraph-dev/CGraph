@@ -11,6 +11,7 @@ import {
   Animated,
   ViewStyle,
   ImageSourcePropType,
+  ImageStyle,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimationColors } from '@/lib/animations/AnimationEngine';
@@ -72,10 +73,20 @@ export default function AnimatedAvatar({
 }: AnimatedAvatarProps) {
   const rotationAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-  const glowAnim = useRef(new Animated.Value(0)).current;
+  const glowAnim = useRef(new Animated.Value(0.5)).current;
   const [particles, setParticles] = useState<Array<{ x: number; y: number; scale: number }>>([]);
 
   useEffect(() => {
+    // Stop any existing animations when borderAnimation changes
+    rotationAnim.stopAnimation();
+    pulseAnim.stopAnimation();
+    glowAnim.stopAnimation();
+    
+    // Reset values
+    rotationAnim.setValue(0);
+    pulseAnim.setValue(1);
+    glowAnim.setValue(0.5);
+
     // Rotation animation for spin, rainbow, cosmic effects
     if (['spin', 'rainbow', 'cosmic', 'celestial'].includes(borderAnimation)) {
       Animated.loop(
@@ -87,8 +98,8 @@ export default function AnimatedAvatar({
       ).start();
     }
 
-    // Pulse animation
-    if (['pulse', 'glow', 'neon', 'supernova'].includes(borderAnimation)) {
+    // Pulse animation - keep separate from glow
+    if (['pulse', 'supernova'].includes(borderAnimation)) {
       Animated.loop(
         Animated.sequence([
           Animated.timing(pulseAnim, {
@@ -105,28 +116,22 @@ export default function AnimatedAvatar({
       ).start();
     }
 
-    // Glow animation
+    // Glow animation - uses JS driver, so keep it simple
     if (['glow', 'neon', 'fire', 'electric', 'plasma'].includes(borderAnimation)) {
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnim, {
-            toValue: 1,
-            duration: 1500,
-            useNativeDriver: false,
-          }),
-          Animated.timing(glowAnim, {
-            toValue: 0,
-            duration: 1500,
-            useNativeDriver: false,
-          }),
-        ])
-      ).start();
+      // Simple static glow - avoid mixing native/JS driver
+      glowAnim.setValue(glowIntensity);
     }
 
     // Generate particles
     if (particleEffect !== 'none') {
       generateParticles();
     }
+    
+    return () => {
+      rotationAnim.stopAnimation();
+      pulseAnim.stopAnimation();
+      glowAnim.stopAnimation();
+    };
   }, [borderAnimation, particleEffect]);
 
   const generateParticles = () => {
@@ -144,7 +149,7 @@ export default function AnimatedAvatar({
     setParticles(newParticles);
   };
 
-  const getBorderColors = (): string[] => {
+  const getBorderColors = (): readonly [string, string, ...string[]] => {
     switch (borderAnimation) {
       case 'gradient':
         return [AnimationColors.primary, AnimationColors.purple];
@@ -196,7 +201,7 @@ export default function AnimatedAvatar({
     }
   };
 
-  const getShapeMask = (): ViewStyle => {
+  const getShapeMask = (): { borderRadius: number } => {
     const borderRadiusMap: Record<AvatarShape, number> = {
       circle: size / 2,
       'rounded-square': size / 6,
@@ -216,10 +221,8 @@ export default function AnimatedAvatar({
     outputRange: ['0deg', '360deg'],
   });
 
-  const glowOpacity = glowAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.3, 1],
-  });
+  // Static glow value based on intensity
+  const glowOpacityValue = 0.7 + (glowIntensity * 0.3);
 
   const borderWidth = 4;
   const containerSize = size + borderWidth * 2 + 8;
@@ -272,7 +275,7 @@ export default function AnimatedAvatar({
               StyleSheet.absoluteFill,
               getShapeMask(),
               {
-                opacity: glowOpacity,
+                opacity: glowOpacityValue,
               },
             ]}
           />
@@ -291,14 +294,14 @@ export default function AnimatedAvatar({
 
         {/* Glow effect */}
         {['glow', 'neon', 'supernova'].includes(borderAnimation) && (
-          <Animated.View
+          <View
             style={[
               StyleSheet.absoluteFill,
               {
                 ...getShapeMask(),
                 shadowColor: getBorderColors()[0],
                 shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: glowOpacity,
+                shadowOpacity: glowOpacityValue,
                 shadowRadius: 20 * glowIntensity,
               },
             ]}
@@ -390,7 +393,7 @@ export default function AnimatedAvatar({
   );
 }
 
-const renderParticle = (effect: ParticleEffect): JSX.Element => {
+const renderParticle = (effect: ParticleEffect): React.ReactNode => {
   const particleMap: Record<ParticleEffect, string> = {
     none: '',
     sparkles: '✨',

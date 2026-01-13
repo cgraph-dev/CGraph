@@ -210,16 +210,16 @@ defmodule Cgraph.Moderation do
     if report.category == :csam do
       # Step 1: Immediately quarantine the content (hide from public view)
       quarantine_reported_content(report)
-      
+
       # Step 2: Generate NCMEC-compatible incident report for legal compliance
       # Note: Actual NCMEC submission requires CyberTipline API integration
       # This creates the structured report data for manual or automated submission
       incident_data = generate_ncmec_incident_report(report)
       Logger.critical("NCMEC_INCIDENT_PREPARED: #{inspect(incident_data)}")
-      
+
       # Step 3: Alert on-call staff via priority notification channel
       alert_oncall_staff(report, :critical)
-      
+
       # Step 4: Log for audit trail (required for legal compliance)
       log_critical_incident(report, incident_data)
     end
@@ -279,14 +279,14 @@ defmodule Cgraph.Moderation do
       requires_immediate_action: true,
       escalation_deadline: DateTime.utc_now() |> DateTime.add(3600, :second)
     }
-    
+
     # Broadcast to admin channel for real-time alerting
     Phoenix.PubSub.broadcast(
       Cgraph.PubSub,
       "admin:moderation:critical",
       {:critical_report, staff_notification}
     )
-    
+
     # Queue background job for additional notification channels (email, SMS, etc.)
     Cgraph.Workers.CriticalAlertDispatcher.enqueue(staff_notification)
   rescue
@@ -304,7 +304,7 @@ defmodule Cgraph.Moderation do
       actions_taken: [:quarantine, :ncmec_report_prepared, :staff_alerted],
       retention_policy: :permanent
     }
-    
+
     # Log to structured audit system
     Logger.info("AUDIT_CRITICAL_INCIDENT: #{Jason.encode!(audit_entry)}")
   end
@@ -445,21 +445,21 @@ defmodule Cgraph.Moderation do
         notes: attrs[:notes] || "Your content was flagged for review.",
         appeal_deadline: DateTime.utc_now() |> DateTime.add(7 * 24 * 3600, :second)
       }
-      
+
       # Create persistent warning record for user history
       record_user_warning(target_user, warning_data)
-      
+
       # Send notification through the standard notification system
       Cgraph.Notifications.notify(target_user, :moderation_warning,
         title: "Content Warning",
         body: "Your content has been flagged. Please review our community guidelines.",
         data: warning_data
       )
-      
+
       # Increment warning count for escalation tracking
       update_user_warning_count(target_user)
     end
-    
+
     update_report_status(report, :resolved)
   end
 
@@ -467,7 +467,7 @@ defmodule Cgraph.Moderation do
     # Soft-delete the reported content based on content type
     removal_result = case report.content_type do
       :message ->
-        Cgraph.Messaging.soft_delete_message(report.content_id, 
+        Cgraph.Messaging.soft_delete_message(report.content_id,
           reason: :moderation_removal,
           report_id: report.id
         )
@@ -489,7 +489,7 @@ defmodule Cgraph.Moderation do
         Logger.warning("Unknown content type for removal: #{report.content_type}")
         {:ok, :no_action}
     end
-    
+
     case removal_result do
       {:ok, _} ->
         # Notify user that content was removed
@@ -760,7 +760,7 @@ defmodule Cgraph.Moderation do
       cat when cat in [:spam, :scam, :impersonation] -> :moderate
       _ -> :minor
     end
-    
+
     # Escalate based on repeat offenses
     cond do
       prior_warnings >= 3 -> :final_warning

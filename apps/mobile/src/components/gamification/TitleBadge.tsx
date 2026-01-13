@@ -14,7 +14,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimationColors } from '@/lib/animations/AnimationEngine';
 
-type TitleRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' | 'divine';
+type TitleRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'mythic' | 'unique';
 
 type TitleAnimation =
   | 'none'
@@ -152,7 +152,7 @@ export default function TitleBadge({
       epic: ['#8b5cf6', '#a78bfa'], // Purple
       legendary: ['#f59e0b', '#fbbf24'], // Amber/Gold
       mythic: ['#ec4899', '#f472b6'], // Pink/Magenta
-      divine: ['#00f5ff', '#ff00ff'], // Cyan to Magenta
+      unique: ['#ef4444', '#fca5a5'], // Red
     };
     return colorMap[rarity];
   };
@@ -182,7 +182,7 @@ export default function TitleBadge({
   };
 
   const getGlowStyle = (): ViewStyle => {
-    if (animation === 'glow' || ['legendary', 'mythic', 'divine'].includes(rarity)) {
+    if (animation === 'glow' || ['legendary', 'mythic'].includes(rarity)) {
       return {
         shadowColor: getRarityColors()[0],
         shadowOffset: { width: 0, height: 0 },

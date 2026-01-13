@@ -52,14 +52,24 @@ export { default as RichMediaEmbed } from './chat/RichMediaEmbed';
 export { default as SwipeableMessage } from './chat/SwipeableMessage';
 export { default as MessageReactions } from './chat/MessageReactions';
 export { default as StickerPicker } from './chat/StickerPicker';
+export { default as MorphingInputButton } from './chat/MorphingInputButton';
+
+// Conversation Components - Enhanced Animations
+export { default as AnimatedReactionBubble } from './conversation/AnimatedReactionBubble';
+export { default as TypingIndicator } from './conversation/TypingIndicator';
 
 // UI Components - Premium Glassmorphism Design
 export { default as GlassCard } from './ui/GlassCard';
 export { default as AnimatedAvatar } from './ui/AnimatedAvatar';
 
-// Gamification Components - Engagement System
+// Gamification Components - Full Engagement System
 export { default as TitleBadge } from './gamification/TitleBadge';
 export { default as LevelUpModal } from './gamification/LevelUpModal';
+export { default as AchievementNotification } from './gamification/AchievementNotification';
+export { default as LevelProgress } from './gamification/LevelProgress';
+export { default as QuestPanel } from './gamification/QuestPanel';
+export type { Achievement, AchievementRarity } from './gamification/AchievementNotification';
+export type { Quest, QuestType, QuestStatus, QuestReward } from './gamification/QuestPanel';
 
 // Forum Components - Complete MyBB Feature Set
 export { default as ThreadPrefixBadge } from './forums/ThreadPrefixBadge';
@@ -67,6 +77,20 @@ export { default as ThreadRatingDisplay } from './forums/ThreadRatingDisplay';
 export { default as AttachmentList } from './forums/AttachmentList';
 export { default as PollWidget } from './forums/PollWidget';
 export { default as EditHistoryModal } from './forums/EditHistoryModal';
+
+// Enhanced UI - Revolutionary Holographic Design System
+export {
+  HOLOGRAPHIC_THEMES,
+  HolographicContainer,
+  HolographicText,
+  HolographicButton,
+  HolographicCard,
+  HolographicAvatar,
+  HolographicInput,
+  HolographicProgress,
+  HolographicNotification,
+} from './enhanced';
+export type { HolographicTheme, HolographicConfig } from './enhanced';
 
 // Attachment Picker
 export { default as TelegramAttachmentPicker } from './TelegramAttachmentPicker';

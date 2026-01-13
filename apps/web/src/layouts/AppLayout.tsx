@@ -21,6 +21,7 @@ import {
   ArrowRightOnRectangleIcon,
   BellIcon,
   TrophyIcon,
+  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import {
   ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid,
@@ -31,6 +32,7 @@ import {
   Cog6ToothIcon as Cog6ToothIconSolid,
   BellIcon as BellIconSolid,
   TrophyIcon as TrophyIconSolid,
+  SparklesIcon as SparklesIconSolid,
 } from '@heroicons/react/24/solid';
 
 const navItems = [
@@ -69,6 +71,12 @@ const navItems = [
     label: 'Forums',
     icon: NewspaperIcon,
     activeIcon: NewspaperIconSolid,
+  },
+  {
+    path: '/gamification',
+    label: 'Rewards',
+    icon: SparklesIcon,
+    activeIcon: SparklesIconSolid,
   },
   {
     path: '/leaderboard',

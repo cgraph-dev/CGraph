@@ -18,6 +18,8 @@ export interface User {
   username_changed_at?: string;
   can_change_username: boolean;
   username_next_change_at?: string;
+  title?: string;  // User's custom title badge
+  title_rarity?: string;  // Rarity tier for the title (common, rare, epic, legendary, mythic, etc.)
   inserted_at: string;
   updated_at: string;
 }
@@ -374,10 +376,32 @@ export type SettingsStackParamList = {
   Profile: undefined;
   Account: undefined;
   Appearance: undefined;
+  UICustomization: undefined;
+  ChatBubbles: undefined;
+  AvatarSettings: undefined;
   Notifications: undefined;
   Privacy: undefined;
   Premium: undefined;
   CoinShop: undefined;
+  Calendar: undefined;
+  Leaderboard: undefined;
+  Referrals: undefined;
+  HolographicDemo: undefined;
+  // Gamification screens
+  GamificationHub: undefined;
+  Achievements: undefined;
+  Quests: undefined;
+  Titles: undefined;
+  // New screens
+  ProfileVisibility: undefined;
+  RSSFeeds: { forumId?: string; forumName?: string };
+  CustomEmoji: undefined;
+  MemberList: undefined;
+  WhosOnline: undefined;
+  E2EEVerification: { userId: string; username: string };
+  AdminDashboard: undefined;
+  ForumReorder: undefined;
+  ExportContent: { type: 'thread' | 'post' | 'conversation'; id: string; title: string };
 };
 
 // Friend types

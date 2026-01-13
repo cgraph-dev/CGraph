@@ -1,6 +1,8 @@
 /**
  * StickerPicker Component - Animated Sticker System
  * Multiple packs, rarity system, purchase integration, search
+ * 
+ * @updated v0.8.2 - Added all 15 animation types for web parity
  */
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -14,6 +16,7 @@ import {
   Animated,
   Modal,
   Dimensions,
+  Easing,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AnimationColors, HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -23,13 +26,32 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type StickerRarity = 'common' | 'rare' | 'epic' | 'legendary';
 
+// All 15 animation types matching web parity
+type StickerAnimationType = 
+  | 'bounce' 
+  | 'pulse' 
+  | 'shake' 
+  | 'wiggle' 
+  | 'float' 
+  | 'pop' 
+  | 'wave' 
+  | 'spin'
+  | 'zoom'
+  | 'flip'
+  | 'swing'
+  | 'jello'
+  | 'heartbeat'
+  | 'flash'
+  | 'rubberband'
+  | 'none';
+
 interface Sticker {
   id: string;
   emoji: string;
   name: string;
   pack: string;
   rarity: StickerRarity;
-  animation: 'bounce' | 'pulse' | 'shake' | 'wiggle' | 'float' | 'pop' | 'wave' | 'spin';
+  animation: StickerAnimationType;
   isLocked: boolean;
   price?: number;
 }
@@ -293,7 +315,7 @@ export default function StickerPicker({
   );
 }
 
-// Separate component for animated sticker item
+// Separate component for animated sticker item with all 15 animation types
 function StickerItem({
   sticker,
   onPress,
@@ -306,39 +328,403 @@ function StickerItem({
   isPurchasing: boolean;
 }) {
   const scaleAnim = useRef(new Animated.Value(1)).current;
+  const scaleXAnim = useRef(new Animated.Value(1)).current;
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const rotateYAnim = useRef(new Animated.Value(0)).current;
+  const translateYAnim = useRef(new Animated.Value(0)).current;
+  const translateXAnim = useRef(new Animated.Value(0)).current;
+  const opacityAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // Animation based on sticker type
-    if (sticker.animation === 'bounce') {
-      Animated.loop(
-        Animated.sequence([
-          Animated.spring(scaleAnim, {
-            toValue: 1.1,
-            tension: 180,
-            friction: 8,
-            useNativeDriver: true,
-          }),
-          Animated.spring(scaleAnim, {
-            toValue: 1,
-            tension: 180,
-            friction: 8,
-            useNativeDriver: true,
-          }),
-        ])
-      ).start();
-    } else if (sticker.animation === 'spin') {
-      Animated.loop(
-        Animated.timing(rotateAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        })
-      ).start();
-    }
-  }, []);
+    // Stop any existing animations
+    scaleAnim.stopAnimation();
+    scaleXAnim.stopAnimation();
+    rotateAnim.stopAnimation();
+    rotateYAnim.stopAnimation();
+    translateYAnim.stopAnimation();
+    translateXAnim.stopAnimation();
+    opacityAnim.stopAnimation();
 
+    // Reset values
+    scaleAnim.setValue(1);
+    scaleXAnim.setValue(1);
+    rotateAnim.setValue(0);
+    rotateYAnim.setValue(0);
+    translateYAnim.setValue(0);
+    translateXAnim.setValue(0);
+    opacityAnim.setValue(1);
+
+    // Animation based on sticker type - all 15 animations matching web
+    switch (sticker.animation) {
+      case 'bounce':
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(translateYAnim, {
+              toValue: -10,
+              duration: 250,
+              useNativeDriver: true,
+              easing: Easing.out(Easing.quad),
+            }),
+            Animated.timing(translateYAnim, {
+              toValue: 0,
+              duration: 250,
+              useNativeDriver: true,
+              easing: Easing.in(Easing.quad),
+            }),
+          ])
+        ).start();
+        break;
+
+      case 'pulse':
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(scaleAnim, {
+              toValue: 1.1,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 1,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+        break;
+
+      case 'shake':
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(translateXAnim, {
+              toValue: -5,
+              duration: 100,
+              useNativeDriver: true,
+            }),
+            Animated.timing(translateXAnim, {
+              toValue: 5,
+              duration: 100,
+              useNativeDriver: true,
+            }),
+            Animated.timing(translateXAnim, {
+              toValue: -5,
+              duration: 100,
+              useNativeDriver: true,
+            }),
+            Animated.timing(translateXAnim, {
+              toValue: 5,
+              duration: 100,
+              useNativeDriver: true,
+            }),
+            Animated.timing(translateXAnim, {
+              toValue: 0,
+              duration: 100,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+        break;
+
+      case 'wiggle':
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(rotateAnim, {
+              toValue: -0.05, // -3 degrees in radians
+              duration: 166,
+              useNativeDriver: true,
+            }),
+            Animated.timing(rotateAnim, {
+              toValue: 0.05, // 3 degrees
+              duration: 166,
+              useNativeDriver: true,
+            }),
+            Animated.timing(rotateAnim, {
+              toValue: -0.05,
+              duration: 166,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+        break;
+
+      case 'float':
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(translateYAnim, {
+              toValue: -10,
+              duration: 1000,
+              useNativeDriver: true,
+              easing: Easing.inOut(Easing.ease),
+            }),
+            Animated.timing(translateYAnim, {
+              toValue: 0,
+              duration: 1000,
+              useNativeDriver: true,
+              easing: Easing.inOut(Easing.ease),
+            }),
+          ])
+        ).start();
+        break;
+
+      case 'pop':
+        // One-time animation
+        Animated.sequence([
+          Animated.timing(scaleAnim, {
+            toValue: 0,
+            duration: 0,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1.2,
+            duration: 150,
+            useNativeDriver: true,
+            easing: Easing.out(Easing.back(2)),
+          }),
+          Animated.timing(scaleAnim, {
+            toValue: 1,
+            duration: 150,
+            useNativeDriver: true,
+          }),
+        ]).start();
+        break;
+
+      case 'wave':
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(rotateAnim, {
+              toValue: 0.35, // 20 degrees
+              duration: 250,
+              useNativeDriver: true,
+            }),
+            Animated.timing(rotateAnim, {
+              toValue: -0.35, // -20 degrees
+              duration: 500,
+              useNativeDriver: true,
+            }),
+            Animated.timing(rotateAnim, {
+              toValue: 0,
+              duration: 250,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+        break;
+
+      case 'zoom':
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(scaleAnim, {
+              toValue: 1.1,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 1,
+              duration: 500,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+        break;
+
+      case 'flip':
+        Animated.loop(
+          Animated.timing(rotateYAnim, {
+            toValue: 1,
+            duration: 1000,
+            useNativeDriver: true,
+            easing: Easing.linear,
+          })
+        ).start();
+        break;
+
+      case 'swing':
+        Animated.sequence([
+          Animated.timing(rotateAnim, {
+            toValue: 0.26, // 15 degrees
+            duration: 166,
+            useNativeDriver: true,
+          }),
+          Animated.timing(rotateAnim, {
+            toValue: -0.175, // -10 degrees
+            duration: 166,
+            useNativeDriver: true,
+          }),
+          Animated.timing(rotateAnim, {
+            toValue: 0.087, // 5 degrees
+            duration: 166,
+            useNativeDriver: true,
+          }),
+          Animated.timing(rotateAnim, {
+            toValue: -0.087, // -5 degrees
+            duration: 166,
+            useNativeDriver: true,
+          }),
+          Animated.timing(rotateAnim, {
+            toValue: 0,
+            duration: 166,
+            useNativeDriver: true,
+          }),
+        ]).start();
+        break;
+
+      case 'jello':
+        Animated.sequence([
+          Animated.timing(scaleXAnim, {
+            toValue: 1.25,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 0.75,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 1.15,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 0.95,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 1.05,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 1,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+        ]).start();
+        break;
+
+      case 'heartbeat':
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(scaleAnim, {
+              toValue: 1.3,
+              duration: 150,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 1,
+              duration: 150,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 1.3,
+              duration: 150,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 1,
+              duration: 1050, // Rest of the 1.5s cycle
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+        break;
+
+      case 'flash':
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(opacityAnim, {
+              toValue: 0.5,
+              duration: 250,
+              useNativeDriver: true,
+            }),
+            Animated.timing(opacityAnim, {
+              toValue: 1,
+              duration: 250,
+              useNativeDriver: true,
+            }),
+            Animated.timing(opacityAnim, {
+              toValue: 0.5,
+              duration: 250,
+              useNativeDriver: true,
+            }),
+            Animated.timing(opacityAnim, {
+              toValue: 1,
+              duration: 250,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+        break;
+
+      case 'rubberband':
+        Animated.sequence([
+          Animated.timing(scaleXAnim, {
+            toValue: 1.25,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 0.75,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 1.15,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 0.95,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 1.05,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+          Animated.timing(scaleXAnim, {
+            toValue: 1,
+            duration: 142,
+            useNativeDriver: true,
+          }),
+        ]).start();
+        break;
+
+      case 'spin':
+        Animated.loop(
+          Animated.timing(rotateAnim, {
+            toValue: 1, // Full rotation
+            duration: 1000,
+            useNativeDriver: true,
+            easing: Easing.linear,
+          })
+        ).start();
+        break;
+
+      case 'none':
+      default:
+        break;
+    }
+
+    return () => {
+      scaleAnim.stopAnimation();
+      scaleXAnim.stopAnimation();
+      rotateAnim.stopAnimation();
+      rotateYAnim.stopAnimation();
+      translateYAnim.stopAnimation();
+      translateXAnim.stopAnimation();
+      opacityAnim.stopAnimation();
+    };
+  }, [sticker.animation]);
+
+  // Interpolations
   const rotation = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  const rotationY = rotateYAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
   });
@@ -360,8 +746,13 @@ function StickerItem({
           {
             transform: [
               { scale: scaleAnim },
+              { scaleX: scaleXAnim },
               { rotate: rotation },
+              { rotateY: rotationY },
+              { translateX: translateXAnim },
+              { translateY: translateYAnim },
             ],
+            opacity: opacityAnim,
           },
           sticker.isLocked && styles.stickerLocked,
         ]}

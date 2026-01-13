@@ -38,7 +38,7 @@ import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
 import { MessagesStackParamList, Message, Conversation, ConversationParticipant, UserBasic } from '../../types';
-import { VoiceMessageRecorder, VoiceMessagePlayer, TelegramAttachmentPicker, RichMediaEmbed } from '../../components';
+import { VoiceMessageRecorder, VoiceMessagePlayer, TelegramAttachmentPicker, RichMediaEmbed, MorphingInputButton } from '../../components';
 import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('ConversationScreen');
@@ -3862,31 +3862,17 @@ export default function ConversationScreen({ navigation, route }: Props) {
             maxLength={4000}
           />
           
-          {/* Toggle between mic and send based on input text */}
-          {inputText.trim() ? (
-            <Animated.View style={{ transform: [{ scale: sendButtonAnim }] }}>
-              <TouchableOpacity
-                style={[styles.sendButton, { backgroundColor: colors.primary }]}
-                onPress={sendMessage}
-                disabled={isSending}
-                activeOpacity={0.8}
-              >
-                {isSending ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  <Ionicons name="send" size={20} color="#fff" />
-                )}
-              </TouchableOpacity>
-            </Animated.View>
-          ) : (
-            <TouchableOpacity
-              style={[styles.sendButton, { backgroundColor: colors.surfaceHover }]}
-              onPress={() => setIsVoiceMode(true)}
-              disabled={isSending}
-            >
-              <Ionicons name="mic" size={22} color={colors.textSecondary} />
-            </TouchableOpacity>
-          )}
+          {/* Morphing send/mic button with web-parity animations */}
+          <MorphingInputButton
+            hasText={inputText.trim().length > 0}
+            isSending={isSending}
+            onSend={sendMessage}
+            onMic={() => setIsVoiceMode(true)}
+            primaryColor={colors.primary}
+            surfaceColor={colors.surfaceHover}
+            textColor={colors.textSecondary}
+            disabled={isSending}
+          />
         </View>
       )}
     </KeyboardAvoidingView>

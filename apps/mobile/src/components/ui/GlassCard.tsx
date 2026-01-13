@@ -24,6 +24,7 @@ interface GlassCardProps {
   intensity?: GlassIntensity;
   animated?: boolean;
   glowColor?: string;
+  borderGradient?: boolean;
   style?: ViewStyle;
 }
 
@@ -33,6 +34,7 @@ export default function GlassCard({
   intensity = 'medium',
   animated = false,
   glowColor = AnimationColors.primary,
+  borderGradient = false,
   style,
 }: GlassCardProps) {
   const shimmerAnim = useRef(new Animated.Value(0)).current;
@@ -92,7 +94,7 @@ export default function GlassCard({
     return opacityMap[intensity];
   };
 
-  const getBorderGradient = (): string[] => {
+  const getBorderGradient = (): readonly [string, string, ...string[]] => {
     switch (variant) {
       case 'frosted':
         return ['rgba(255, 255, 255, 0.2)', 'rgba(255, 255, 255, 0.05)'];

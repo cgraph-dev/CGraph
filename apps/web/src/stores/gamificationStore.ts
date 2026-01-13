@@ -405,46 +405,35 @@ export const useGamificationStore = create<GamificationState>()(
 
       /**
        * Add XP and handle level ups
-       * This is the core progression mechanic
+       * This is used for local state updates after server-side XP awards.
+       * XP is awarded server-side through game actions, not client POST.
        */
       addXP: async (amount: number, source: string) => {
-        const { totalXP, currentXP, level } = get();
+        const { totalXP, level } = get();
         const newTotalXP = totalXP + amount;
         const newLevel = calculateLevelFromXP(newTotalXP);
         const xpForCurrentLevel = calculateXPForLevel(newLevel);
         const newCurrentXP = newTotalXP - xpForCurrentLevel;
 
-        // Optimistic update for instant feedback
+        // Update local state - XP is awarded server-side
         set({
           totalXP: newTotalXP,
           currentXP: newCurrentXP,
           level: newLevel,
         });
 
-        try {
-          // Sync with backend
-          await api.post('/api/v1/gamification/xp', {
-            amount,
-            source,
-            total_xp: newTotalXP,
-            level: newLevel,
-          });
-
-          // Check if we leveled up
-          if (newLevel > level) {
-            // Trigger level up celebration
-            console.log(`[Gamification] LEVEL UP! Now level ${newLevel}`);
-            // TODO: Show level up modal with rewards
-          }
-        } catch (error) {
-          console.error('[Gamification] Failed to sync XP:', error);
-          // Revert on error
-          set({ totalXP, currentXP, level });
+        // Check if we leveled up
+        if (newLevel > level) {
+          console.log(`[Gamification] LEVEL UP! Now level ${newLevel}`);
+          // Level up modal/celebration can be triggered here
         }
+
+        console.log(`[Gamification] +${amount} XP from ${source} | Total: ${newTotalXP} | Level: ${newLevel}`);
       },
 
       /**
-       * Unlock an achievement and award XP
+       * Trigger achievement unlock check on server.
+       * Server validates requirements and awards if criteria are met.
        */
       unlockAchievement: async (achievementId: string) => {
         const { achievements, recentlyUnlocked } = get();
@@ -454,29 +443,33 @@ export const useGamificationStore = create<GamificationState>()(
 
         try {
           const response = await api.post(`/api/v1/gamification/achievements/${achievementId}/unlock`);
-          const unlockedAchievement = response.data;
+          const result = response.data;
 
-          // Update achievement state
-          set({
-            achievements: achievements.map(a =>
-              a.id === achievementId
-                ? { ...a, unlocked: true, unlockedAt: new Date().toISOString() }
-                : a
-            ),
-            recentlyUnlocked: [...recentlyUnlocked, unlockedAchievement].slice(-5), // Keep last 5
-          });
+          if (result.success && result.unlocked) {
+            // Update local achievement state
+            set({
+              achievements: achievements.map(a =>
+                a.id === achievementId
+                  ? { ...a, unlocked: true, unlockedAt: result.unlocked_at || new Date().toISOString() }
+                  : a
+              ),
+              recentlyUnlocked: [...recentlyUnlocked, achievement].slice(-5),
+            });
 
-          // Award XP
-          if (achievement.xpReward > 0) {
-            await get().addXP(achievement.xpReward, `achievement_${achievementId}`);
+            // Award XP locally (server also awards, this syncs UI)
+            if (achievement.xpReward > 0) {
+              await get().addXP(achievement.xpReward, `achievement_${achievementId}`);
+            }
+
+            // Unlock lore if associated
+            if (achievement.loreFragment) {
+              await get().unlockLoreEntry(achievement.loreFragment);
+            }
+
+            console.log(`[Gamification] Achievement unlocked: ${achievement.title}`);
+          } else {
+            console.log(`[Gamification] Achievement not ready: ${achievement.title} - ${result.message}`);
           }
-
-          // Unlock lore if associated
-          if (achievement.loreFragment) {
-            await get().unlockLoreEntry(achievement.loreFragment);
-          }
-
-          console.log(`[Gamification] Achievement unlocked: ${achievement.title}`);
         } catch (error) {
           console.error('[Gamification] Failed to unlock achievement:', error);
         }

@@ -1,4 +1,23 @@
-import React, { useState, useCallback, useEffect } from 'react';
+/**
+ * SearchScreen - Premium Mobile Version
+ * 
+ * A stunning search interface with animated results, glassmorphism effects,
+ * and smooth transitions for finding users, groups, and forums.
+ * 
+ * Features:
+ * - Animated search bar with glow effects
+ * - GlassCard result items with slide-in animations
+ * - Category tabs with gradient selection
+ * - Animated avatars for users
+ * - Recent searches with quick access
+ * - ID search with premium styling
+ * - Haptic feedback throughout
+ * 
+ * @version 2.0.0
+ * @since v0.8.1
+ */
+
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,16 +26,23 @@ import {
   TouchableOpacity,
   ScrollView,
   ActivityIndicator,
+  Animated,
+  Dimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../../contexts/ThemeContext';
+import GlassCard from '../../components/ui/GlassCard';
+import AnimatedAvatar from '../../components/ui/AnimatedAvatar';
+import { EmptyState } from '../../components';
 import api from '../../lib/api';
-import { Avatar, EmptyState } from '../../components';
 import debounce from 'lodash.debounce';
 import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('Search');
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type SearchCategory = 'all' | 'users' | 'groups' | 'forums';
 
@@ -26,6 +52,8 @@ interface SearchUser {
   display_name: string | null;
   avatar_url: string | null;
   status: string;
+  is_premium?: boolean;
+  is_verified?: boolean;
 }
 
 interface SearchGroup {
@@ -46,15 +74,85 @@ interface SearchForum {
   post_count: number;
 }
 
-const categories: { id: SearchCategory; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
-  { id: 'all', label: 'All', icon: 'search' },
-  { id: 'users', label: 'Users', icon: 'person' },
-  { id: 'groups', label: 'Groups', icon: 'people' },
-  { id: 'forums', label: 'Forums', icon: 'newspaper' },
+interface CategoryConfig {
+  id: SearchCategory;
+  label: string;
+  icon: keyof typeof Ionicons.glyphMap;
+  gradient: [string, string];
+}
+
+const categories: CategoryConfig[] = [
+  { id: 'all', label: 'All', icon: 'search', gradient: ['#3b82f6', '#8b5cf6'] },
+  { id: 'users', label: 'Users', icon: 'person', gradient: ['#10b981', '#059669'] },
+  { id: 'groups', label: 'Groups', icon: 'people', gradient: ['#f59e0b', '#f97316'] },
+  { id: 'forums', label: 'Forums', icon: 'newspaper', gradient: ['#ec4899', '#f43f5e'] },
 ];
 
+// Animated Result Item
+function AnimatedResultItem({
+  children,
+  index,
+  onPress,
+}: {
+  children: React.ReactNode;
+  index: number;
+  onPress: () => void;
+}) {
+  const translateX = useRef(new Animated.Value(SCREEN_WIDTH)).current;
+  const opacity = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(0.9)).current;
+
+  useEffect(() => {
+    const delay = index * 60;
+    
+    Animated.parallel([
+      Animated.timing(translateX, {
+        toValue: 0,
+        duration: 350,
+        delay,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 300,
+        delay,
+        useNativeDriver: true,
+      }),
+      Animated.spring(scale, {
+        toValue: 1,
+        friction: 8,
+        tension: 40,
+        delay,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  return (
+    <Animated.View
+      style={{
+        opacity,
+        transform: [{ translateX }, { scale }],
+        marginBottom: 10,
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onPress();
+        }}
+        activeOpacity={0.7}
+      >
+        {children}
+      </TouchableOpacity>
+    </Animated.View>
+  );
+}
+
 export default function SearchScreen() {
-  const { colors } = useTheme();
+  const { colors, colorScheme } = useTheme();
+  const isDark = colorScheme === 'dark';
+  
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<SearchCategory>('all');
   const [loading, setLoading] = useState(false);
@@ -69,6 +167,37 @@ export default function SearchScreen() {
   const [showIdSearch, setShowIdSearch] = useState(false);
   const [idSearchType, setIdSearchType] = useState<'user' | 'group' | 'forum'>('user');
   const [idSearchValue, setIdSearchValue] = useState('');
+  
+  // Animation refs
+  const searchGlow = useRef(new Animated.Value(0)).current;
+  const headerOpacity = useRef(new Animated.Value(0)).current;
+  const headerTranslateY = useRef(new Animated.Value(-20)).current;
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    // Animate header
+    Animated.parallel([
+      Animated.timing(headerOpacity, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }),
+      Animated.spring(headerTranslateY, {
+        toValue: 0,
+        friction: 8,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  useEffect(() => {
+    // Search glow effect when focused
+    Animated.timing(searchGlow, {
+      toValue: isFocused ? 1 : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [isFocused]);
 
   const performSearch = useCallback(
     debounce(async (searchQuery: string, searchCategory: SearchCategory) => {
@@ -126,6 +255,7 @@ export default function SearchScreen() {
 
   const handleIdSearch = async () => {
     if (!idSearchValue.trim()) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
     try {
       let endpoint = '';
@@ -145,158 +275,254 @@ export default function SearchScreen() {
       const data = response.data.data || response.data;
       
       if (data) {
-        // Navigate to the appropriate screen
-        // This would depend on your navigation structure
         logger.log('Found:', data);
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       }
     } catch {
-      // Not found
       logger.log('Not found');
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
     }
   };
 
   const totalResults = users.length + groups.length + forums.length;
 
-  const renderUser = ({ item }: { item: SearchUser }) => (
-    <TouchableOpacity
-      style={[styles.resultItem, { backgroundColor: colors.surface }]}
-      onPress={() => {
-        // Navigate to user profile
-      }}
-    >
-      <Avatar
-        source={item.avatar_url}
-        name={item.display_name || item.username}
-        size="md"
-      />
-      <View style={styles.resultInfo}>
-        <Text style={[styles.resultTitle, { color: colors.text }]}>
-          {item.display_name || item.username}
-        </Text>
-        <Text style={[styles.resultSubtitle, { color: colors.textSecondary }]}>
-          @{item.username}
-        </Text>
-      </View>
-    </TouchableOpacity>
+  const renderUser = (item: SearchUser, index: number) => (
+    <AnimatedResultItem key={item.id} index={index} onPress={() => {}}>
+      <GlassCard variant="frosted" intensity="subtle" style={styles.resultCard}>
+        <View style={styles.resultInner}>
+          <AnimatedAvatar
+            source={{ uri: item.avatar_url || '' }}
+            size={48}
+            borderAnimation={item.is_premium ? 'holographic' : item.status === 'online' ? 'glow' : 'none'}
+            isPremium={item.is_premium}
+          />
+          <View style={styles.resultInfo}>
+            <View style={styles.nameRow}>
+              <Text style={[styles.resultTitle, { color: colors.text }]}>
+                {item.display_name || item.username}
+              </Text>
+              {item.is_verified && (
+                <Ionicons name="checkmark-circle" size={16} color="#3b82f6" style={{ marginLeft: 4 }} />
+              )}
+              {item.is_premium && (
+                <LinearGradient
+                  colors={['#f59e0b', '#ef4444']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.premiumBadge}
+                >
+                  <Text style={styles.premiumText}>PRO</Text>
+                </LinearGradient>
+              )}
+            </View>
+            <Text style={[styles.resultSubtitle, { color: colors.textSecondary }]}>
+              @{item.username}
+            </Text>
+          </View>
+          <View style={[styles.statusDot, { backgroundColor: item.status === 'online' ? '#10b981' : colors.textTertiary }]} />
+        </View>
+      </GlassCard>
+    </AnimatedResultItem>
   );
 
-  const renderGroup = ({ item }: { item: SearchGroup }) => (
-    <TouchableOpacity
-      style={[styles.resultItem, { backgroundColor: colors.surface }]}
-      onPress={() => {
-        // Navigate to group
-      }}
-    >
-      <View style={[styles.groupIcon, { backgroundColor: colors.primary }]}>
-        <Text style={styles.groupIconText}>{item.name.charAt(0).toUpperCase()}</Text>
-      </View>
-      <View style={styles.resultInfo}>
-        <Text style={[styles.resultTitle, { color: colors.text }]}>{item.name}</Text>
-        <Text style={[styles.resultSubtitle, { color: colors.textSecondary }]}>
-          {item.member_count} members
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderGroup = (item: SearchGroup, index: number) => {
+    const gradient = ['#f59e0b', '#f97316'] as [string, string];
+    
+    return (
+      <AnimatedResultItem key={item.id} index={index} onPress={() => {}}>
+        <GlassCard variant="frosted" intensity="subtle" style={styles.resultCard}>
+          <View style={styles.resultInner}>
+            <LinearGradient colors={gradient} style={styles.iconContainer}>
+              <Ionicons name="people" size={22} color="#fff" />
+            </LinearGradient>
+            <View style={styles.resultInfo}>
+              <Text style={[styles.resultTitle, { color: colors.text }]}>{item.name}</Text>
+              <View style={styles.statRow}>
+                <Ionicons name="people-outline" size={12} color={colors.textSecondary} />
+                <Text style={[styles.statText, { color: colors.textSecondary }]}>
+                  {item.member_count.toLocaleString()} members
+                </Text>
+              </View>
+            </View>
+            <LinearGradient colors={gradient} style={styles.arrowContainer}>
+              <Ionicons name="chevron-forward" size={14} color="#fff" />
+            </LinearGradient>
+          </View>
+        </GlassCard>
+      </AnimatedResultItem>
+    );
+  };
 
-  const renderForum = ({ item }: { item: SearchForum }) => (
-    <TouchableOpacity
-      style={[styles.resultItem, { backgroundColor: colors.surface }]}
-      onPress={() => {
-        // Navigate to forum
-      }}
-    >
-      <View style={[styles.groupIcon, { backgroundColor: '#22c55e' }]}>
-        <Text style={styles.groupIconText}>{item.name.charAt(0).toUpperCase()}</Text>
-      </View>
-      <View style={styles.resultInfo}>
-        <Text style={[styles.resultTitle, { color: colors.text }]}>{item.name}</Text>
-        <Text style={[styles.resultSubtitle, { color: colors.textSecondary }]}>
-          {item.post_count} posts
-        </Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderForum = (item: SearchForum, index: number) => {
+    const gradient = ['#ec4899', '#f43f5e'] as [string, string];
+    
+    return (
+      <AnimatedResultItem key={item.id} index={index} onPress={() => {}}>
+        <GlassCard variant="frosted" intensity="subtle" style={styles.resultCard}>
+          <View style={styles.resultInner}>
+            <LinearGradient colors={gradient} style={styles.iconContainer}>
+              <Ionicons name="newspaper" size={22} color="#fff" />
+            </LinearGradient>
+            <View style={styles.resultInfo}>
+              <Text style={[styles.resultTitle, { color: colors.text }]}>c/{item.slug}</Text>
+              <View style={styles.statRow}>
+                <Ionicons name="document-text-outline" size={12} color={colors.textSecondary} />
+                <Text style={[styles.statText, { color: colors.textSecondary }]}>
+                  {item.post_count.toLocaleString()} posts
+                </Text>
+              </View>
+            </View>
+            <LinearGradient colors={gradient} style={styles.arrowContainer}>
+              <Ionicons name="chevron-forward" size={14} color="#fff" />
+            </LinearGradient>
+          </View>
+        </GlassCard>
+      </AnimatedResultItem>
+    );
+  };
+
+  const glowBorderColor = searchGlow.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['transparent', 'rgba(59, 130, 246, 0.5)'],
+  });
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
-      {/* Search Input */}
-      <View style={styles.header}>
-        <View style={[styles.searchInput, { backgroundColor: colors.surfaceSecondary }]}>
-          <Ionicons name="search" size={20} color={colors.textSecondary} />
-          <TextInput
-            style={[styles.input, { color: colors.text }]}
-            placeholder="Search users, groups, forums..."
-            placeholderTextColor={colors.textSecondary}
-            value={query}
-            onChangeText={setQuery}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-          {query.length > 0 && (
-            <TouchableOpacity onPress={() => setQuery('')}>
-              <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
-            </TouchableOpacity>
-          )}
-        </View>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* Animated Header */}
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            opacity: headerOpacity,
+            transform: [{ translateY: headerTranslateY }],
+          },
+        ]}
+      >
+        <SafeAreaView edges={['top']}>
+          <View style={styles.headerContent}>
+            {/* Search Input with Glow */}
+            <Animated.View
+              style={[
+                styles.searchWrapper,
+                {
+                  borderColor: glowBorderColor,
+                  shadowOpacity: isFocused ? 0.3 : 0,
+                },
+              ]}
+            >
+              <GlassCard variant="frosted" intensity="subtle" style={styles.searchCard}>
+                <View style={styles.searchInner}>
+                  <Ionicons name="search" size={20} color={colors.textSecondary} />
+                  <TextInput
+                    style={[styles.input, { color: colors.text }]}
+                    placeholder="Search users, groups, forums..."
+                    placeholderTextColor={colors.textSecondary}
+                    value={query}
+                    onChangeText={setQuery}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                  {query.length > 0 && (
+                    <TouchableOpacity 
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                        setQuery('');
+                      }}
+                    >
+                      <Ionicons name="close-circle" size={20} color={colors.textSecondary} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </GlassCard>
+            </Animated.View>
 
-        {/* ID Search Toggle */}
-        <TouchableOpacity
-          style={[styles.idSearchToggle, { backgroundColor: colors.surface }]}
-          onPress={() => setShowIdSearch(!showIdSearch)}
-        >
-          <Ionicons name="key" size={20} color={colors.primary} />
-        </TouchableOpacity>
-      </View>
+            {/* ID Search Toggle */}
+            <TouchableOpacity
+              style={styles.idToggle}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setShowIdSearch(!showIdSearch);
+              }}
+            >
+              <LinearGradient
+                colors={showIdSearch ? ['#3b82f6', '#8b5cf6'] : [colors.surface, colors.surface]}
+                style={styles.idToggleGradient}
+              >
+                <Ionicons name="key" size={20} color={showIdSearch ? '#fff' : colors.textSecondary} />
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </SafeAreaView>
+      </Animated.View>
 
       {/* ID Search Panel */}
       {showIdSearch && (
-        <View style={[styles.idSearchPanel, { backgroundColor: colors.surface }]}>
-          <Text style={[styles.idSearchTitle, { color: colors.text }]}>
-            Search by ID
-          </Text>
-          <View style={styles.idSearchRow}>
-            <View style={[styles.idTypeSelector, { backgroundColor: colors.surfaceSecondary }]}>
-              {(['user', 'group', 'forum'] as const).map((type) => (
-                <TouchableOpacity
-                  key={type}
-                  style={[
-                    styles.idTypeButton,
-                    idSearchType === type && { backgroundColor: colors.primary },
-                  ]}
-                  onPress={() => setIdSearchType(type)}
-                >
-                  <Text
-                    style={[
-                      styles.idTypeText,
-                      { color: idSearchType === type ? '#fff' : colors.textSecondary },
-                    ]}
+        <GlassCard variant="neon" intensity="subtle" style={styles.idPanel}>
+          <View style={styles.idPanelInner}>
+            <View style={styles.idHeader}>
+              <LinearGradient
+                colors={['#3b82f6', '#8b5cf6']}
+                style={styles.idIconContainer}
+              >
+                <Ionicons name="key" size={16} color="#fff" />
+              </LinearGradient>
+              <Text style={[styles.idTitle, { color: colors.text }]}>Search by ID</Text>
+            </View>
+            
+            <View style={styles.idTypeRow}>
+              {(['user', 'group', 'forum'] as const).map((type) => {
+                const isActive = idSearchType === type;
+                return (
+                  <TouchableOpacity
+                    key={type}
+                    style={styles.idTypeWrapper}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setIdSearchType(type);
+                    }}
                   >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    {isActive ? (
+                      <LinearGradient
+                        colors={['#3b82f6', '#8b5cf6']}
+                        style={styles.idTypeButton}
+                      >
+                        <Text style={styles.idTypeTextActive}>
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </Text>
+                      </LinearGradient>
+                    ) : (
+                      <View style={[styles.idTypeButton, { backgroundColor: colors.surface }]}>
+                        <Text style={[styles.idTypeText, { color: colors.textSecondary }]}>
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
+            <View style={styles.idInputRow}>
+              <TextInput
+                style={[styles.idInput, { backgroundColor: colors.surface, color: colors.text }]}
+                placeholder={`Enter ${idSearchType} ID`}
+                placeholderTextColor={colors.textSecondary}
+                value={idSearchValue}
+                onChangeText={setIdSearchValue}
+              />
+              <TouchableOpacity onPress={handleIdSearch}>
+                <LinearGradient
+                  colors={['#3b82f6', '#8b5cf6']}
+                  style={styles.idSearchButton}
+                >
+                  <Ionicons name="arrow-forward" size={20} color="#fff" />
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
           </View>
-          <View style={styles.idSearchInputRow}>
-            <TextInput
-              style={[
-                styles.idInput,
-                { backgroundColor: colors.surfaceSecondary, color: colors.text },
-              ]}
-              placeholder={`Enter ${idSearchType} ID`}
-              placeholderTextColor={colors.textSecondary}
-              value={idSearchValue}
-              onChangeText={setIdSearchValue}
-            />
-            <TouchableOpacity
-              style={[styles.idSearchButton, { backgroundColor: colors.primary }]}
-              onPress={handleIdSearch}
-            >
-              <Ionicons name="arrow-forward" size={20} color="#fff" />
-            </TouchableOpacity>
-          </View>
-        </View>
+        </GlassCard>
       )}
 
       {/* Category Tabs */}
@@ -306,54 +532,79 @@ export default function SearchScreen() {
         style={styles.categoriesContainer}
         contentContainerStyle={styles.categoriesContent}
       >
-        {categories.map((cat) => (
-          <TouchableOpacity
-            key={cat.id}
-            style={[
-              styles.categoryButton,
-              { backgroundColor: category === cat.id ? colors.primary : colors.surface },
-            ]}
-            onPress={() => setCategory(cat.id)}
-          >
-            <Ionicons
-              name={cat.icon}
-              size={16}
-              color={category === cat.id ? '#fff' : colors.textSecondary}
-            />
-            <Text
-              style={[
-                styles.categoryText,
-                { color: category === cat.id ? '#fff' : colors.textSecondary },
-              ]}
+        {categories.map((cat) => {
+          const isActive = category === cat.id;
+          
+          return (
+            <TouchableOpacity
+              key={cat.id}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                setCategory(cat.id);
+              }}
             >
-              {cat.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              {isActive ? (
+                <LinearGradient
+                  colors={cat.gradient}
+                  style={styles.categoryButton}
+                >
+                  <Ionicons name={cat.icon} size={16} color="#fff" />
+                  <Text style={styles.categoryTextActive}>{cat.label}</Text>
+                </LinearGradient>
+              ) : (
+                <View style={[styles.categoryButton, { backgroundColor: colors.surface }]}>
+                  <Ionicons name={cat.icon} size={16} color={colors.textSecondary} />
+                  <Text style={[styles.categoryText, { color: colors.textSecondary }]}>{cat.label}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          );
+        })}
       </ScrollView>
 
       {/* Results */}
-      <ScrollView style={styles.results} contentContainerStyle={styles.resultsContent}>
+      <ScrollView 
+        style={styles.results} 
+        contentContainerStyle={styles.resultsContent}
+        showsVerticalScrollIndicator={false}
+      >
         {loading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
+            <LinearGradient
+              colors={['#3b82f6', '#8b5cf6']}
+              style={styles.loadingGradient}
+            >
+              <ActivityIndicator size="small" color="#fff" />
+            </LinearGradient>
+            <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+              Searching...
+            </Text>
           </View>
         )}
 
         {!loading && !hasSearched && (
-          <EmptyState
-            icon="search"
-            title="Search CGraph"
-            description="Find users, groups, and forums. You can also search by ID."
-          />
+          <View style={styles.emptyContainer}>
+            <LinearGradient
+              colors={['#3b82f6', '#8b5cf6', '#ec4899']}
+              style={styles.emptyIconContainer}
+            >
+              <Ionicons name="search" size={40} color="#fff" />
+            </LinearGradient>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>Search CGraph</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              Find users, groups, and forums.{'\n'}You can also search by ID.
+            </Text>
+          </View>
         )}
 
         {!loading && hasSearched && totalResults === 0 && (
-          <EmptyState
-            icon="search"
-            title="😕 No results found"
-            description="Try different keywords or search in a specific category"
-          />
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyEmoji}>😕</Text>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>No results found</Text>
+            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+              Try different keywords or{'\n'}search in a specific category
+            </Text>
+          </View>
         )}
 
         {!loading && hasSearched && totalResults > 0 && (
@@ -361,16 +612,28 @@ export default function SearchScreen() {
             {/* Users Section */}
             {(category === 'all' || category === 'users') && users.length > 0 && (
               <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-                  USERS ({users.length})
-                </Text>
-                {(category === 'all' ? users.slice(0, 3) : users).map((user) => (
-                  <React.Fragment key={user.id}>{renderUser({ item: user })}</React.Fragment>
-                ))}
+                <View style={styles.sectionHeader}>
+                  <LinearGradient
+                    colors={['#10b981', '#059669']}
+                    style={styles.sectionIcon}
+                  >
+                    <Ionicons name="person" size={12} color="#fff" />
+                  </LinearGradient>
+                  <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+                    USERS ({users.length})
+                  </Text>
+                </View>
+                {(category === 'all' ? users.slice(0, 3) : users).map((user, i) => renderUser(user, i))}
                 {category === 'all' && users.length > 3 && (
-                  <TouchableOpacity onPress={() => setCategory('users')}>
+                  <TouchableOpacity 
+                    style={styles.viewAllButton}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setCategory('users');
+                    }}
+                  >
                     <Text style={[styles.viewAll, { color: colors.primary }]}>
-                      View all users
+                      View all {users.length} users →
                     </Text>
                   </TouchableOpacity>
                 )}
@@ -380,16 +643,28 @@ export default function SearchScreen() {
             {/* Groups Section */}
             {(category === 'all' || category === 'groups') && groups.length > 0 && (
               <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-                  GROUPS ({groups.length})
-                </Text>
-                {(category === 'all' ? groups.slice(0, 3) : groups).map((group) => (
-                  <React.Fragment key={group.id}>{renderGroup({ item: group })}</React.Fragment>
-                ))}
+                <View style={styles.sectionHeader}>
+                  <LinearGradient
+                    colors={['#f59e0b', '#f97316']}
+                    style={styles.sectionIcon}
+                  >
+                    <Ionicons name="people" size={12} color="#fff" />
+                  </LinearGradient>
+                  <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+                    GROUPS ({groups.length})
+                  </Text>
+                </View>
+                {(category === 'all' ? groups.slice(0, 3) : groups).map((group, i) => renderGroup(group, i))}
                 {category === 'all' && groups.length > 3 && (
-                  <TouchableOpacity onPress={() => setCategory('groups')}>
+                  <TouchableOpacity 
+                    style={styles.viewAllButton}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setCategory('groups');
+                    }}
+                  >
                     <Text style={[styles.viewAll, { color: colors.primary }]}>
-                      View all groups
+                      View all {groups.length} groups →
                     </Text>
                   </TouchableOpacity>
                 )}
@@ -399,16 +674,28 @@ export default function SearchScreen() {
             {/* Forums Section */}
             {(category === 'all' || category === 'forums') && forums.length > 0 && (
               <View style={styles.section}>
-                <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-                  FORUMS ({forums.length})
-                </Text>
-                {(category === 'all' ? forums.slice(0, 3) : forums).map((forum) => (
-                  <React.Fragment key={forum.id}>{renderForum({ item: forum })}</React.Fragment>
-                ))}
+                <View style={styles.sectionHeader}>
+                  <LinearGradient
+                    colors={['#ec4899', '#f43f5e']}
+                    style={styles.sectionIcon}
+                  >
+                    <Ionicons name="newspaper" size={12} color="#fff" />
+                  </LinearGradient>
+                  <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
+                    FORUMS ({forums.length})
+                  </Text>
+                </View>
+                {(category === 'all' ? forums.slice(0, 3) : forums).map((forum, i) => renderForum(forum, i))}
                 {category === 'all' && forums.length > 3 && (
-                  <TouchableOpacity onPress={() => setCategory('forums')}>
+                  <TouchableOpacity 
+                    style={styles.viewAllButton}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setCategory('forums');
+                    }}
+                  >
                     <Text style={[styles.viewAll, { color: colors.primary }]}>
-                      View all forums
+                      View all {forums.length} forums →
                     </Text>
                   </TouchableOpacity>
                 )}
@@ -417,7 +704,7 @@ export default function SearchScreen() {
           </>
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -426,79 +713,116 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: 'row',
-    padding: 16,
-    gap: 12,
+    paddingBottom: 8,
   },
-  searchInput: {
+  headerContent: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    gap: 10,
+  },
+  searchWrapper: {
     flex: 1,
+    borderRadius: 16,
+    borderWidth: 2,
+    shadowColor: '#3b82f6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 12,
+    elevation: 5,
+  },
+  searchCard: {
+    borderRadius: 14,
+  },
+  searchInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
   },
   input: {
     flex: 1,
-    marginLeft: 8,
+    marginLeft: 10,
     fontSize: 16,
   },
-  idSearchToggle: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+  idToggle: {
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
+  idToggleGradient: {
+    width: 48,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 14,
   },
-  idSearchPanel: {
+  idPanel: {
     marginHorizontal: 16,
+    marginBottom: 12,
+    borderRadius: 16,
+  },
+  idPanelInner: {
     padding: 16,
-    borderRadius: 12,
-    marginBottom: 8,
   },
-  idSearchTitle: {
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 12,
-  },
-  idSearchRow: {
-    marginBottom: 12,
-  },
-  idTypeSelector: {
+  idHeader: {
     flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  idIconContainer: {
+    width: 28,
+    height: 28,
     borderRadius: 8,
-    padding: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  idTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  idTypeRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 14,
+  },
+  idTypeWrapper: {
+    flex: 1,
   },
   idTypeButton: {
-    flex: 1,
-    paddingVertical: 8,
-    borderRadius: 6,
+    paddingVertical: 10,
+    borderRadius: 10,
     alignItems: 'center',
   },
   idTypeText: {
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '600',
   },
-  idSearchInputRow: {
+  idTypeTextActive: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  idInputRow: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 10,
   },
   idInput: {
     flex: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 10,
     fontSize: 14,
   },
   idSearchButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 8,
+    width: 48,
+    height: 48,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   categoriesContainer: {
     maxHeight: 50,
+    marginBottom: 8,
   },
   categoriesContent: {
     paddingHorizontal: 16,
@@ -508,68 +832,158 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 10,
     borderRadius: 20,
     gap: 6,
+    marginRight: 8,
   },
   categoryText: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  categoryTextActive: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#fff',
   },
   results: {
     flex: 1,
   },
   resultsContent: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
   },
   loadingContainer: {
-    padding: 40,
+    paddingVertical: 40,
     alignItems: 'center',
+  },
+  loadingGradient: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  loadingText: {
+    fontSize: 14,
+  },
+  emptyContainer: {
+    paddingVertical: 60,
+    alignItems: 'center',
+  },
+  emptyIconContainer: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  emptyEmoji: {
+    fontSize: 60,
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
   },
   section: {
     marginBottom: 24,
   },
-  sectionTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: 0.5,
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 12,
   },
-  resultItem: {
+  sectionIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 8,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+  },
+  resultCard: {
+    borderRadius: 14,
+  },
+  resultInner: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 12,
-    borderRadius: 12,
-    marginBottom: 8,
   },
   resultInfo: {
     flex: 1,
     marginLeft: 12,
   },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   resultTitle: {
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
   },
   resultSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     marginTop: 2,
   },
-  groupIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+  statusDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
   },
-  groupIconText: {
+  premiumBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+    marginLeft: 6,
+  },
+  premiumText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
+    fontSize: 9,
+    fontWeight: '700',
+  },
+  iconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  statRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+  },
+  statText: {
+    fontSize: 12,
+  },
+  arrowContainer: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  viewAllButton: {
+    paddingVertical: 8,
   },
   viewAll: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
     textAlign: 'center',
-    paddingVertical: 8,
   },
 });

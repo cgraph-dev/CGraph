@@ -9,7 +9,7 @@ defmodule CgraphWeb.API.V1.ReferralController do
   - Reward tiers and claiming
   - Leaderboards
   - Referral validation
-  
+
   ## Security
   - Rate limited code regeneration (max 3 per day)
   - Code validation with sanitization
@@ -36,7 +36,7 @@ defmodule CgraphWeb.API.V1.ReferralController do
   """
   def get_code(conn, _params) do
     user = conn.assigns.current_user
-    
+
     with {:ok, code} <- Referrals.get_or_create_code(user.id) do
       render(conn, :code, code: code)
     end
@@ -104,7 +104,7 @@ defmodule CgraphWeb.API.V1.ReferralController do
   """
   def list_referrals(conn, params) do
     user = conn.assigns.current_user
-    
+
     opts = [
       page: parse_int(params["page"], 1),
       per_page: min(parse_int(params["per_page"], 20), @max_per_page),
@@ -120,7 +120,7 @@ defmodule CgraphWeb.API.V1.ReferralController do
   """
   def list_pending(conn, params) do
     user = conn.assigns.current_user
-    
+
     opts = [
       page: parse_int(params["page"], 1),
       per_page: min(parse_int(params["per_page"], 20), @max_per_page)
@@ -186,7 +186,7 @@ defmodule CgraphWeb.API.V1.ReferralController do
 
   # Rate limit code regeneration to prevent abuse
   defp check_regeneration_rate_limit(user) do
-    case RateLimiter.check("referral_regen:#{user.id}", :referral_regenerate, limit: 3, window: 86400) do
+    case RateLimiter.check("referral_regen:#{user.id}", :referral_regenerate, limit: 3, window: 86_400) do
       :ok -> :ok
       {:error, :rate_limited, info} ->
         {:error, :too_many_requests, %{
@@ -228,7 +228,7 @@ defmodule CgraphWeb.API.V1.ReferralController do
   defp log_referral_application(user, code, conn) do
     ip_address = get_client_ip(conn)
     user_agent = get_user_agent(conn)
-    
+
     require Logger
     Logger.info("REFERRAL_APPLIED: user_id=#{user.id} code=#{code} ip=#{ip_address} ua=#{user_agent}")
   end

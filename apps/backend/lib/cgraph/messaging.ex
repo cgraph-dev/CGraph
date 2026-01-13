@@ -676,7 +676,7 @@ defmodule Cgraph.Messaging do
     reason = Keyword.get(opts, :reason, :user_deleted)
     report_id = Keyword.get(opts, :report_id)
     now = DateTime.utc_now() |> DateTime.truncate(:second)
-    
+
     case get_message(message_id) do
       {:ok, message} ->
         message
@@ -805,7 +805,7 @@ defmodule Cgraph.Messaging do
   Get a PM folder.
   """
   def get_pm_folder(folder_id, user_id \\ nil) do
-    query = 
+    query =
       if user_id do
         from f in PMFolder, where: f.id == ^folder_id and f.user_id == ^user_id
       else

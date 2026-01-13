@@ -61,7 +61,7 @@ defmodule Cgraph.Announcements do
   defp apply_group_filter(query, nil), do: query
   defp apply_group_filter(query, user) do
     user_groups = get_user_groups(user)
-    
+
     from a in query,
       where: fragment("? = '{}' OR ? && ?", a.target_groups, a.target_groups, ^user_groups)
   end
@@ -80,7 +80,7 @@ defmodule Cgraph.Announcements do
   defp apply_dismissed_filter(query, nil, false), do: query
   defp apply_dismissed_filter(query, user, false) do
     dismissed_ids = get_dismissed_ids(user.id)
-    
+
     if Enum.empty?(dismissed_ids) do
       query
     else

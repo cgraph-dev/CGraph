@@ -126,7 +126,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
   def handle_cast({:record_error, report}, state) do
     fingerprint = generate_fingerprint(report)
     now = System.system_time(:millisecond)
-    
+
     # Update ETS aggregate
     case :ets.lookup(@table, fingerprint) do
       [] ->
@@ -149,10 +149,10 @@ defmodule Cgraph.Telemetry.ErrorReporter do
           users: users
         }})
     end
-    
+
     # Check for alert threshold
     new_state = maybe_alert(state, report, fingerprint)
-    
+
     {:noreply, %{new_state | total_errors: state.total_errors + 1}}
   end
 
@@ -160,7 +160,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
   def handle_cast({:record_metric, metric}, state) do
     key = {metric.name, metric.tags}
     now = System.system_time(:millisecond)
-    
+
     case :ets.lookup(@metrics_table, key) do
       [] ->
         :ets.insert(@metrics_table, {key, %{
@@ -181,7 +181,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
           max: max(existing.max, metric.value)
         }})
     end
-    
+
     {:noreply, %{state | total_metrics: state.total_metrics + 1}}
   end
 
@@ -194,15 +194,15 @@ defmodule Cgraph.Telemetry.ErrorReporter do
   @impl true
   def handle_call({:get_stats, minutes}, _from, state) do
     cutoff = System.system_time(:millisecond) - (minutes * 60 * 1000)
-    
+
     errors = :ets.tab2list(@table)
     |> Enum.filter(fn {_, data} -> data.last_seen >= cutoff end)
-    
+
     total_count = Enum.reduce(errors, 0, fn {_, data}, acc -> acc + data.count end)
     unique_users = Enum.reduce(errors, MapSet.new(), fn {_, data}, acc ->
       MapSet.union(acc, data.users)
     end)
-    
+
     stats = %{
       total_errors: total_count,
       unique_fingerprints: length(errors),
@@ -211,7 +211,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
       lifetime_errors: state.total_errors,
       lifetime_metrics: state.total_metrics
     }
-    
+
     {:reply, stats, state}
   end
 
@@ -231,7 +231,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
         sample_component: data.sample.component
       }
     end)
-    
+
     {:reply, top, state}
   end
 
@@ -263,7 +263,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
       report.action || "",
       report.level |> to_string()
     ] |> Enum.join("|")
-    
+
     :crypto.hash(:sha256, data)
     |> Base.encode16(case: :lower)
     |> String.slice(0, 16)
@@ -272,7 +272,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
   defp maybe_alert(state, report, fingerprint) do
     now = System.system_time(:millisecond)
     threshold = config(:alert_threshold, 10)
-    
+
     # Get recent error count for this fingerprint
     case :ets.lookup(@table, fingerprint) do
       [{^fingerprint, data}] when data.count >= threshold ->
@@ -295,12 +295,12 @@ defmodule Cgraph.Telemetry.ErrorReporter do
       message: report.message,
       user_id: report.user_id
     )
-    
+
     # Send to Slack if configured
     if webhook = config(:slack_webhook, nil) do
       send_slack_alert(webhook, report)
     end
-    
+
     # Send to PagerDuty if configured
     if key = config(:pagerduty_key, nil) do
       send_pagerduty_alert(key, report)
@@ -315,7 +315,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
       component: sample.component,
       message: sample.message
     )
-    
+
     if webhook = config(:slack_webhook, nil) do
       payload = %{
         text: "⚠️ Error Spike Detected",
@@ -337,7 +337,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
           }
         ]
       }
-      
+
       send_webhook(webhook, payload)
     end
   end
@@ -363,7 +363,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
         }
       ]
     }
-    
+
     send_webhook(webhook, payload)
   end
 
@@ -386,7 +386,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
         }
       }
     }
-    
+
     Task.start(fn ->
       case :httpc.request(
         :post,
@@ -422,12 +422,12 @@ defmodule Cgraph.Telemetry.ErrorReporter do
     if config(:store_errors, true) do
       # Flush aggregated errors to database for long-term storage
       errors = :ets.tab2list(@table)
-      
+
       for {fingerprint, data} <- errors do
         # Store in database (would use Ecto here)
         Logger.debug("Flushing error aggregate: #{fingerprint}, count: #{data.count}")
       end
-      
+
       # Clear old entries (keep last hour)
       cutoff = System.system_time(:millisecond) - :timer.hours(1)
       :ets.select_delete(@table, [{{:"$1", %{last_seen: :"$2"}}, [{:<, :"$2", cutoff}], [true]}])

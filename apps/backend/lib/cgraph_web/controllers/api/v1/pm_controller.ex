@@ -39,7 +39,7 @@ defmodule CgraphWeb.API.V1.PMController do
   """
   def create_folder(conn, %{"name" => name} = params) do
     user = conn.assigns.current_user
-    
+
     attrs = %{
       user_id: user.id,
       name: name,
@@ -87,7 +87,7 @@ defmodule CgraphWeb.API.V1.PMController do
   """
   def list_messages(conn, params) do
     user = conn.assigns.current_user
-    
+
     opts = [
       folder_id: Map.get(params, "folder_id"),
       page: parse_int(params["page"], 1),
@@ -195,7 +195,7 @@ defmodule CgraphWeb.API.V1.PMController do
   """
   def list_drafts(conn, params) do
     user = conn.assigns.current_user
-    
+
     opts = [
       page: parse_int(params["page"], 1),
       per_page: min(parse_int(params["per_page"], 20), @max_per_page)
@@ -287,13 +287,13 @@ defmodule CgraphWeb.API.V1.PMController do
       case format do
         "json" ->
           json(conn, %{messages: export_data})
-        
+
         "csv" ->
           conn
           |> put_resp_content_type("text/csv")
           |> put_resp_header("content-disposition", "attachment; filename=\"pm_export.csv\"")
           |> send_resp(200, export_data)
-        
+
         _ ->
           json(conn, %{messages: export_data})
       end
@@ -313,7 +313,7 @@ defmodule CgraphWeb.API.V1.PMController do
     |> Enum.reject(&(&1 == ""))
   end
 
-  defp authorize_update(%PrivateMessage{sender_id: sender_id}, %{id: user_id}) 
+  defp authorize_update(%PrivateMessage{sender_id: sender_id}, %{id: user_id})
        when sender_id == user_id do
     :ok
   end

@@ -40,7 +40,7 @@ defmodule CgraphWeb.API.V1.MemberJSON do
 
   defp member_full_data(member) do
     base = member_data(member)
-    
+
     Map.merge(base, %{
       bio: member.bio,
       location: Map.get(member, :location),

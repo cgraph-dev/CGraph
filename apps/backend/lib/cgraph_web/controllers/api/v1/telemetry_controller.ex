@@ -51,7 +51,7 @@ defmodule CgraphWeb.API.V1.TelemetryController do
   """
   def create_error(conn, params) do
     user = conn.assigns[:current_user]
-    
+
     # Parse and validate parameters
     error_report = %{
       error_id: params["error_id"],
@@ -67,18 +67,18 @@ defmodule CgraphWeb.API.V1.TelemetryController do
       user_id: user && user.id,
       client_ip: get_client_ip(conn)
     }
-    
+
     # Log structured error for analysis
     log_error(error_report)
-    
+
     # Store for analysis (if enabled)
     ErrorReporter.record(error_report)
-    
+
     # Alert on fatal errors
     if error_report.level == :fatal do
       ErrorReporter.alert_on_call(error_report)
     end
-    
+
     send_resp(conn, 204, "")
   end
 
@@ -89,7 +89,7 @@ defmodule CgraphWeb.API.V1.TelemetryController do
   """
   def create_metric(conn, params) do
     user = conn.assigns[:current_user]
-    
+
     metric = %{
       name: params["name"],
       value: parse_float(params["value"]),
@@ -98,9 +98,9 @@ defmodule CgraphWeb.API.V1.TelemetryController do
       timestamp: parse_timestamp(params["timestamp"]),
       user_id: user && user.id
     }
-    
+
     ErrorReporter.record_metric(metric)
-    
+
     send_resp(conn, 204, "")
   end
 
@@ -222,14 +222,14 @@ defmodule CgraphWeb.API.V1.TelemetryController do
 
   defp get_client_ip(conn) do
     # Check for proxy headers first
-    forwarded_for = 
+    forwarded_for =
       get_req_header(conn, "x-forwarded-for")
       |> List.first()
-    
-    real_ip = 
+
+    real_ip =
       get_req_header(conn, "x-real-ip")
       |> List.first()
-    
+
     cond do
       forwarded_for -> String.split(forwarded_for, ",") |> List.first() |> String.trim()
       real_ip -> real_ip

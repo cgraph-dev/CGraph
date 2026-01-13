@@ -81,6 +81,51 @@ defmodule CgraphWeb.GamificationController do
   end
 
   @doc """
+  POST /api/v1/gamification/achievements/:id/unlock
+  Manually trigger achievement unlock check.
+  This is typically called when client detects a potential unlock condition.
+  The server validates and awards the achievement if criteria are met.
+  """
+  def unlock_achievement(conn, %{"id" => achievement_id}) do
+    user = conn.assigns.current_user
+
+    case Gamification.try_unlock_achievement(user.id, achievement_id) do
+      {:ok, user_achievement} ->
+        achievement = Cgraph.Repo.get!(Gamification.Achievement, achievement_id)
+
+        conn
+        |> put_status(:ok)
+        |> json(%{
+          success: true,
+          unlocked: user_achievement.unlocked,
+          achievement: %{
+            id: achievement.id,
+            name: achievement.name,
+            description: achievement.description,
+            xp_reward: achievement.xp_reward,
+            coin_reward: achievement.coin_reward
+          },
+          unlocked_at: user_achievement.unlocked_at
+        })
+
+      {:error, :already_unlocked} ->
+        conn
+        |> put_status(:ok)
+        |> json(%{success: true, unlocked: true, message: "Achievement already unlocked"})
+
+      {:error, :not_met} ->
+        conn
+        |> put_status(:ok)
+        |> json(%{success: false, unlocked: false, message: "Achievement requirements not met"})
+
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "not_found", message: "Achievement not found"})
+    end
+  end
+
+  @doc """
   POST /api/v1/gamification/streak/claim
   Claim daily login streak bonus.
   """

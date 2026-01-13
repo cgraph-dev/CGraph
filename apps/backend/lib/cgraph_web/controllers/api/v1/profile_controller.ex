@@ -95,9 +95,9 @@ defmodule CgraphWeb.API.V1.ProfileController do
     ]
 
     {reputation_entries, pagination, summary} = Reputation.get_user_reputation(user_id, opts)
-    render(conn, :reputation, 
-      entries: reputation_entries, 
-      pagination: pagination, 
+    render(conn, :reputation,
+      entries: reputation_entries,
+      pagination: pagination,
       summary: summary
     )
   end
@@ -129,7 +129,7 @@ defmodule CgraphWeb.API.V1.ProfileController do
   """
   def activity(conn, %{"user_id" => user_id} = params) do
     current_user = conn.assigns[:current_user]
-    
+
     opts = [
       page: parse_int(params["page"], 1),
       per_page: min(parse_int(params["per_page"], 20), @max_per_page),

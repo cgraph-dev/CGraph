@@ -8,7 +8,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import * as Haptics from 'expo-haptics';
 
 interface ThreadRatingDisplayProps {
-  threadId: string;
+  threadId?: string;
   rating?: number; // Average rating (0-5)
   ratingCount?: number; // Number of ratings
   myRating?: number | null; // Current user's rating (1-5)

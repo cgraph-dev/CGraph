@@ -152,8 +152,8 @@ const RichMediaEmbed: React.FC<RichMediaEmbedProps> = memo(({
       );
 
       const validEmbeds = metadata.filter(
-        (m): m is LinkMetadata => m !== null
-      );
+        (m): m is NonNullable<typeof m> => m !== null
+      ) as LinkMetadata[];
       setEmbeds(validEmbeds);
       setIsLoading(false);
       onLoad?.();

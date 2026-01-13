@@ -56,6 +56,14 @@ defmodule CgraphWeb.Router do
     plug CgraphWeb.Plugs.CurrentUser
   end
 
+  # Admin-only routes (requires authentication + admin role)
+  pipeline :api_admin do
+    plug CgraphWeb.Plugs.CookieAuth
+    plug CgraphWeb.Plugs.AuthPipeline
+    plug CgraphWeb.Plugs.CurrentUser
+    plug CgraphWeb.Plugs.RequireAdmin
+  end
+
   # Health check endpoint (no auth required, relaxed rate limiting)
   scope "/", CgraphWeb do
     pipe_through :api_relaxed
@@ -321,8 +329,8 @@ defmodule CgraphWeb.Router do
     delete "/push-tokens/:token", PushTokenController, :delete
 
     # Friends - specific routes MUST come before resources to avoid being matched as :show
-    get "/friends/requests", FriendController, :incoming_requests
-    get "/friends/sent", FriendController, :outgoing_requests
+    get "/friends/requests", FriendController, :requests
+    get "/friends/sent", FriendController, :sent
     get "/friends/pending", FriendController, :pending
     get "/friends/suggestions", FriendController, :suggestions
     post "/friends/:id/accept", FriendController, :accept
@@ -433,6 +441,7 @@ defmodule CgraphWeb.Router do
     # Achievements
     get "/gamification/achievements", GamificationController, :achievements
     get "/gamification/achievements/:id", GamificationController, :show_achievement
+    post "/gamification/achievements/:id/unlock", GamificationController, :unlock_achievement
 
     # Leaderboards
     get "/gamification/leaderboard/:category", GamificationController, :leaderboard
@@ -475,6 +484,41 @@ defmodule CgraphWeb.Router do
     get "/premium/features", PremiumController, :features
     post "/premium/subscribe", PremiumController, :subscribe
     post "/premium/cancel", PremiumController, :cancel
+  end
+
+  # Admin Dashboard API routes (requires admin role)
+  scope "/api/v1/admin", CgraphWeb.API.V1 do
+    pipe_through [:api, :api_admin]
+
+    # System metrics and real-time stats
+    get "/metrics", AdminController, :metrics
+    get "/realtime", AdminController, :realtime
+
+    # User management
+    get "/users", AdminController, :list_users
+    get "/users/:id", AdminController, :show_user
+    post "/users/:id/ban", AdminController, :ban_user
+    delete "/users/:id/ban", AdminController, :unban_user
+    post "/users/:id/verify", AdminController, :verify_user
+
+    # Content reports
+    get "/reports", AdminController, :list_reports
+    post "/reports/:id/resolve", AdminController, :resolve_report
+
+    # Audit log
+    get "/audit", AdminController, :list_audit_log
+
+    # System configuration
+    get "/config", AdminController, :get_config
+    put "/config", AdminController, :update_config
+
+    # Maintenance mode
+    post "/maintenance/enable", AdminController, :enable_maintenance
+    post "/maintenance/disable", AdminController, :disable_maintenance
+
+    # GDPR / User data
+    post "/users/:id/export", AdminController, :export_user_data
+    delete "/users/:id/data", AdminController, :delete_user_data
   end
 
   # Admin/Moderator API routes

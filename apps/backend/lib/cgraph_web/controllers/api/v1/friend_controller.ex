@@ -34,6 +34,18 @@ defmodule CgraphWeb.API.V1.FriendController do
   end
 
   @doc """
+  Get a specific friendship.
+  GET /api/v1/friends/:id
+  """
+  def show(conn, %{"id" => friendship_id}) do
+    user = conn.assigns.current_user
+
+    with {:ok, friendship} <- Accounts.get_friendship(user, friendship_id) do
+      render(conn, :show, friendship: friendship)
+    end
+  end
+
+  @doc """
   Get pending friend requests (received).
   GET /api/v1/friends/requests
   """

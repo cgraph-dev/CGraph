@@ -39,7 +39,7 @@ defmodule Cgraph.Referrals do
   end
 
   defp generate_unique_code do
-    code = 
+    code =
       :crypto.strong_rand_bytes(6)
       |> Base.encode32(case: :upper)
       |> String.slice(0..7)
@@ -57,9 +57,9 @@ defmodule Cgraph.Referrals do
   """
   def regenerate_code(user_id) do
     case Repo.get_by(ReferralCode, user_id: user_id) do
-      nil -> 
+      nil ->
         create_code(user_id)
-      
+
       existing ->
         existing
         |> ReferralCode.changeset(%{code: generate_unique_code()})
@@ -277,7 +277,7 @@ defmodule Cgraph.Referrals do
 
   defp get_current_tier(confirmed_count) do
     tiers = list_reward_tiers_internal()
-    
+
     tiers
     |> Enum.filter(fn tier -> tier.required_referrals <= confirmed_count end)
     |> Enum.max_by(fn tier -> tier.required_referrals end, fn -> nil end)
@@ -293,14 +293,14 @@ defmodule Cgraph.Referrals do
 
   defp calculate_tier_progress(confirmed_count, current_tier) do
     tiers = list_reward_tiers_internal()
-    next_tier = 
+    next_tier =
       tiers
       |> Enum.filter(fn tier -> tier.required_referrals > current_tier.required_referrals end)
       |> Enum.min_by(& &1.required_referrals, fn -> nil end)
 
     case next_tier do
       nil -> 100
-      tier -> 
+      tier ->
         progress_in_tier = confirmed_count - current_tier.required_referrals
         tier_range = tier.required_referrals - current_tier.required_referrals
         min(100, round(progress_in_tier / tier_range * 100))
@@ -358,7 +358,7 @@ defmodule Cgraph.Referrals do
   """
   def list_reward_tiers(user_id) do
     tiers = list_reward_tiers_internal()
-    
+
     confirmed_count =
       from(r in Referral, where: r.referrer_id == ^user_id and r.status == "confirmed")
       |> Repo.aggregate(:count, :id)
@@ -442,9 +442,9 @@ defmodule Cgraph.Referrals do
   """
   def confirm_referral(referral_id) do
     case Repo.get(Referral, referral_id) do
-      nil -> 
+      nil ->
         {:error, :not_found}
-      
+
       referral ->
         referral
         |> Referral.changeset(%{

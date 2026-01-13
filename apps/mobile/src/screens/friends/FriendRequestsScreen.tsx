@@ -1,4 +1,16 @@
-import React, { useState, useEffect, useCallback } from 'react';
+/**
+ * FriendRequestsScreen - Premium Mobile UI
+ * 
+ * Enhanced friend requests management with:
+ * - Animated glassmorphism request cards
+ * - Gradient tabs with haptic feedback
+ * - Animated accept/decline buttons with shimmer
+ * - Pull-to-refresh with custom animation
+ * - Slide-in animations for list items
+ * - Premium empty states
+ */
+
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,15 +19,282 @@ import {
   RefreshControl,
   TouchableOpacity,
   Alert,
+  Animated,
+  Easing,
+  Dimensions,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
+import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { FriendRequest } from '../../types';
-import { Header, EmptyState, LoadingSpinner, Avatar, IconButton } from '../../components';
+import { Header, LoadingSpinner } from '../../components';
+import GlassCard from '../../components/ui/GlassCard';
+import AnimatedAvatar from '../../components/ui/AnimatedAvatar';
+import { getValidImageUrl } from '../../lib/imageUtils';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 type TabType = 'incoming' | 'outgoing';
+
+// Animated Request Card Component
+function RequestCard({
+  item,
+  index,
+  onAccept,
+  onDecline,
+  processingId,
+  isIncoming,
+}: {
+  item: FriendRequest;
+  index: number;
+  onAccept: (id: string) => void;
+  onDecline: (id: string) => void;
+  processingId: string | null;
+  isIncoming: boolean;
+}) {
+  const slideAnim = useRef(new Animated.Value(50)).current;
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const scaleAnim = useRef(new Animated.Value(0.9)).current;
+  const acceptScale = useRef(new Animated.Value(1)).current;
+  const declineScale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    Animated.sequence([
+      Animated.delay(index * 100),
+      Animated.parallel([
+        Animated.spring(slideAnim, {
+          toValue: 0,
+          tension: 80,
+          friction: 10,
+          useNativeDriver: true,
+        }),
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+        Animated.spring(scaleAnim, {
+          toValue: 1,
+          tension: 100,
+          friction: 8,
+          useNativeDriver: true,
+        }),
+      ]),
+    ]).start();
+  }, [index]);
+
+  const handleAcceptPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Animated.sequence([
+      Animated.timing(acceptScale, { toValue: 0.9, duration: 100, useNativeDriver: true }),
+      Animated.timing(acceptScale, { toValue: 1, duration: 100, useNativeDriver: true }),
+    ]).start(() => onAccept(item.id));
+  };
+
+  const handleDeclinePress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Animated.sequence([
+      Animated.timing(declineScale, { toValue: 0.9, duration: 100, useNativeDriver: true }),
+      Animated.timing(declineScale, { toValue: 1, duration: 100, useNativeDriver: true }),
+    ]).start(() => onDecline(item.id));
+  };
+
+  const displayName = item.user.display_name || item.user.username || 'Unknown';
+  const handle = item.user.username || item.user.id?.slice(0, 8) || 'unknown';
+  const isProcessing = processingId === item.id;
+  const avatarUrl = getValidImageUrl(item.user.avatar_url);
+
+  return (
+    <Animated.View
+      style={[
+        styles.requestCard,
+        {
+          opacity: fadeAnim,
+          transform: [
+            { translateX: slideAnim },
+            { scale: scaleAnim },
+          ],
+        },
+      ]}
+    >
+      <GlassCard variant="neon" intensity="subtle" style={styles.cardInner}>
+        {/* Avatar with animation */}
+        <AnimatedAvatar
+          source={avatarUrl ? { uri: avatarUrl } : { uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=8B5CF6&color=fff&size=128` }}
+          size={56}
+          borderAnimation={isIncoming ? 'pulse' : 'gradient'}
+          showStatus={true}
+          isOnline={item.user.status === 'online'}
+          glowIntensity={0.3}
+        />
+
+        {/* User Info */}
+        <View style={styles.userInfo}>
+          <Text style={styles.displayName} numberOfLines={1}>
+            {displayName}
+          </Text>
+          <Text style={styles.username} numberOfLines={1}>
+            @{handle}
+          </Text>
+          {item.created_at && (
+            <Text style={styles.timestamp}>
+              {formatTimeAgo(item.created_at)}
+            </Text>
+          )}
+        </View>
+
+        {/* Action Buttons */}
+        <View style={styles.actions}>
+          {isIncoming ? (
+            <>
+              <Animated.View style={{ transform: [{ scale: acceptScale }] }}>
+                <TouchableOpacity
+                  onPress={handleAcceptPress}
+                  disabled={isProcessing}
+                  activeOpacity={0.8}
+                >
+                  <LinearGradient
+                    colors={['#22C55E', '#10B981']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={[styles.actionButton, styles.acceptButton]}
+                  >
+                    <Ionicons name="checkmark" size={20} color="#FFF" />
+                  </LinearGradient>
+                </TouchableOpacity>
+              </Animated.View>
+
+              <Animated.View style={{ transform: [{ scale: declineScale }] }}>
+                <TouchableOpacity
+                  onPress={handleDeclinePress}
+                  disabled={isProcessing}
+                  activeOpacity={0.8}
+                >
+                  <View style={[styles.actionButton, styles.declineButton]}>
+                    <Ionicons name="close" size={20} color="#EF4444" />
+                  </View>
+                </TouchableOpacity>
+              </Animated.View>
+            </>
+          ) : (
+            <Animated.View style={{ transform: [{ scale: declineScale }] }}>
+              <TouchableOpacity
+                onPress={handleDeclinePress}
+                disabled={isProcessing}
+                activeOpacity={0.8}
+              >
+                <View style={[styles.actionButton, styles.cancelButton]}>
+                  <Ionicons name="close" size={18} color="#9CA3AF" />
+                  <Text style={styles.cancelText}>Cancel</Text>
+                </View>
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+        </View>
+      </GlassCard>
+    </Animated.View>
+  );
+}
+
+// Empty State Component
+function EmptyRequestsState({ type }: { type: TabType }) {
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const floatAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Pulse animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.1,
+          duration: 1500,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 1500,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    // Float animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(floatAnim, {
+          toValue: -10,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(floatAnim, {
+          toValue: 0,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+  }, []);
+
+  const isIncoming = type === 'incoming';
+
+  return (
+    <View style={styles.emptyContainer}>
+      <Animated.View
+        style={[
+          styles.emptyIconContainer,
+          {
+            transform: [
+              { scale: pulseAnim },
+              { translateY: floatAnim },
+            ],
+          },
+        ]}
+      >
+        <LinearGradient
+          colors={isIncoming ? ['#8B5CF6', '#6366F1'] : ['#06B6D4', '#3B82F6']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.emptyIconGradient}
+        >
+          <Ionicons
+            name={isIncoming ? 'mail-outline' : 'paper-plane-outline'}
+            size={48}
+            color="#FFF"
+          />
+        </LinearGradient>
+      </Animated.View>
+
+      <Text style={styles.emptyTitle}>
+        {isIncoming ? 'No incoming requests' : 'No sent requests'}
+      </Text>
+      <Text style={styles.emptyDescription}>
+        {isIncoming
+          ? 'Friend requests you receive will appear here'
+          : 'Friend requests you send will appear here'}
+      </Text>
+    </View>
+  );
+}
+
+// Helper function
+function formatTimeAgo(dateString: string): string {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (seconds < 60) return 'Just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+  return date.toLocaleDateString();
+}
 
 export default function FriendRequestsScreen() {
   const navigation = useNavigation();
@@ -27,15 +306,46 @@ export default function FriendRequestsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [processingId, setProcessingId] = useState<string | null>(null);
 
+  // Animation values
+  const tabIndicatorPosition = useRef(new Animated.Value(0)).current;
+  const headerOpacity = useRef(new Animated.Value(0)).current;
+  const statsScale = useRef(new Animated.Value(0.9)).current;
+
+  useEffect(() => {
+    // Header entrance animation
+    Animated.parallel([
+      Animated.timing(headerOpacity, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.spring(statsScale, {
+        toValue: 1,
+        tension: 100,
+        friction: 10,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, []);
+
+  useEffect(() => {
+    // Tab indicator animation
+    Animated.spring(tabIndicatorPosition, {
+      toValue: activeTab === 'incoming' ? 0 : 1,
+      tension: 300,
+      friction: 20,
+      useNativeDriver: true,
+    }).start();
+  }, [activeTab]);
+
   const fetchRequests = useCallback(async () => {
     try {
-      // Fetch incoming and outgoing requests separately
       const [incomingRes, outgoingRes] = await Promise.all([
         api.get('/api/v1/friends/requests'),
         api.get('/api/v1/friends/sent'),
       ]);
       
-      // Normalize incoming requests - API returns { from: user_data, ... }
+      // Normalize incoming requests
       const incomingData = incomingRes.data?.data || incomingRes.data?.requests || incomingRes.data || [];
       const normalizedIncoming = (Array.isArray(incomingData) ? incomingData : []).map((r: Record<string, unknown>) => ({
         id: r.id as string,
@@ -44,12 +354,13 @@ export default function FriendRequestsScreen() {
           username: (r.from as Record<string, unknown>).username as string || 'Unknown',
           display_name: (r.from as Record<string, unknown>).display_name as string | null,
           avatar_url: (r.from as Record<string, unknown>).avatar_url as string | null,
-        } : { id: 'unknown', username: 'Unknown', display_name: null, avatar_url: null },
+          status: ((r.from as Record<string, unknown>).status as string) || 'offline',
+        } : { id: 'unknown', username: 'Unknown', display_name: null, avatar_url: null, status: 'offline' },
         type: 'incoming' as const,
         created_at: r.sent_at as string,
       }));
       
-      // Normalize outgoing requests - API returns { to: user_data, ... }
+      // Normalize outgoing requests
       const outgoingData = outgoingRes.data?.data || outgoingRes.data?.requests || outgoingRes.data || [];
       const normalizedOutgoing = (Array.isArray(outgoingData) ? outgoingData : []).map((r: Record<string, unknown>) => ({
         id: r.id as string,
@@ -58,7 +369,8 @@ export default function FriendRequestsScreen() {
           username: (r.to as Record<string, unknown>).username as string || 'Unknown',
           display_name: (r.to as Record<string, unknown>).display_name as string | null,
           avatar_url: (r.to as Record<string, unknown>).avatar_url as string | null,
-        } : { id: 'unknown', username: 'Unknown', display_name: null, avatar_url: null },
+          status: ((r.to as Record<string, unknown>).status as string) || 'offline',
+        } : { id: 'unknown', username: 'Unknown', display_name: null, avatar_url: null, status: 'offline' },
         type: 'outgoing' as const,
         created_at: r.sent_at as string,
       }));
@@ -86,8 +398,10 @@ export default function FriendRequestsScreen() {
     setProcessingId(requestId);
     try {
       await api.post(`/api/v1/friends/${requestId}/accept`);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setIncomingRequests((prev) => prev.filter((r) => r.id !== requestId));
     } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', 'Failed to accept friend request');
     } finally {
       setProcessingId(null);
@@ -98,68 +412,28 @@ export default function FriendRequestsScreen() {
     setProcessingId(requestId);
     try {
       await api.post(`/api/v1/friends/${requestId}/decline`);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setIncomingRequests((prev) => prev.filter((r) => r.id !== requestId));
       setOutgoingRequests((prev) => prev.filter((r) => r.id !== requestId));
     } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', 'Failed to decline friend request');
     } finally {
       setProcessingId(null);
     }
   };
 
-  const renderRequest = ({ item }: { item: FriendRequest }) => {
-    const displayName = item.user.display_name || item.user.username || 'Unknown';
-    const handle = item.user.username || item.user.id?.slice(0, 8) || 'unknown';
-    
-    return (
-      <View style={[styles.requestItem, { backgroundColor: colors.surface }]}>
-        <Avatar
-          source={item.user.avatar_url}
-          name={displayName}
-          size="md"
-        />
-        <View style={styles.requestInfo}>
-          <Text style={[styles.requestName, { color: colors.text }]}>
-            {displayName}
-          </Text>
-          <Text style={[styles.requestUsername, { color: colors.textSecondary }]}>
-            @{handle}
-          </Text>
-        </View>
-        <View style={styles.requestActions}>
-        {activeTab === 'incoming' ? (
-          <>
-            <IconButton
-              icon="checkmark"
-              variant="primary"
-              size="sm"
-              onPress={() => handleAccept(item.id)}
-              disabled={processingId === item.id}
-            />
-            <IconButton
-              icon="close"
-              variant="default"
-              size="sm"
-              onPress={() => handleDecline(item.id)}
-              disabled={processingId === item.id}
-              style={{ marginLeft: 8 }}
-            />
-          </>
-        ) : (
-          <IconButton
-            icon="close"
-            variant="default"
-            size="sm"
-            onPress={() => handleDecline(item.id)}
-            disabled={processingId === item.id}
-          />
-        )}
-      </View>
-    </View>
-    );
+  const handleTabPress = (tab: TabType) => {
+    Haptics.selectionAsync();
+    setActiveTab(tab);
   };
 
   const currentRequests = activeTab === 'incoming' ? incomingRequests : outgoingRequests;
+
+  const indicatorTranslateX = tabIndicatorPosition.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, (SCREEN_WIDTH - 48) / 2],
+  });
 
   if (loading) {
     return <LoadingSpinner fullScreen />;
@@ -173,72 +447,141 @@ export default function FriendRequestsScreen() {
         onBack={() => navigation.goBack()}
       />
 
-      {/* Tabs */}
-      <View style={[styles.tabs, { backgroundColor: colors.surface }]}>
-        <TouchableOpacity
-          style={[
-            styles.tab,
-            activeTab === 'incoming' && { backgroundColor: colors.primary },
-          ]}
-          onPress={() => setActiveTab('incoming')}
-        >
-          <Ionicons
-            name="arrow-down"
-            size={18}
-            color={activeTab === 'incoming' ? '#fff' : colors.textSecondary}
-          />
-          <Text
+      {/* Stats Header */}
+      <Animated.View
+        style={[
+          styles.statsContainer,
+          {
+            opacity: headerOpacity,
+            transform: [{ scale: statsScale }],
+          },
+        ]}
+      >
+        <GlassCard variant="frosted" intensity="subtle" style={styles.statsCard}>
+          <View style={styles.statItem}>
+            <LinearGradient
+              colors={['#8B5CF6', '#6366F1']}
+              style={styles.statIcon}
+            >
+              <Ionicons name="arrow-down" size={16} color="#FFF" />
+            </LinearGradient>
+            <Text style={styles.statNumber}>{incomingRequests.length}</Text>
+            <Text style={styles.statLabel}>Incoming</Text>
+          </View>
+          <View style={styles.statDivider} />
+          <View style={styles.statItem}>
+            <LinearGradient
+              colors={['#06B6D4', '#3B82F6']}
+              style={styles.statIcon}
+            >
+              <Ionicons name="arrow-up" size={16} color="#FFF" />
+            </LinearGradient>
+            <Text style={styles.statNumber}>{outgoingRequests.length}</Text>
+            <Text style={styles.statLabel}>Sent</Text>
+          </View>
+        </GlassCard>
+      </Animated.View>
+
+      {/* Premium Tabs */}
+      <View style={styles.tabsWrapper}>
+        <GlassCard variant="frosted" intensity="medium" style={styles.tabsContainer}>
+          {/* Animated Indicator */}
+          <Animated.View
             style={[
-              styles.tabText,
-              { color: activeTab === 'incoming' ? '#fff' : colors.textSecondary },
+              styles.tabIndicator,
+              {
+                transform: [{ translateX: indicatorTranslateX }],
+              },
             ]}
           >
-            Incoming ({incomingRequests.length})
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            styles.tab,
-            activeTab === 'outgoing' && { backgroundColor: colors.primary },
-          ]}
-          onPress={() => setActiveTab('outgoing')}
-        >
-          <Ionicons
-            name="arrow-up"
-            size={18}
-            color={activeTab === 'outgoing' ? '#fff' : colors.textSecondary}
-          />
-          <Text
-            style={[
-              styles.tabText,
-              { color: activeTab === 'outgoing' ? '#fff' : colors.textSecondary },
-            ]}
+            <LinearGradient
+              colors={activeTab === 'incoming' ? ['#8B5CF6', '#6366F1'] : ['#06B6D4', '#3B82F6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.tabIndicatorGradient}
+            />
+          </Animated.View>
+
+          {/* Tab Buttons */}
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => handleTabPress('incoming')}
+            activeOpacity={0.7}
           >
-            Sent ({outgoingRequests.length})
-          </Text>
-        </TouchableOpacity>
+            <Ionicons
+              name="arrow-down-circle"
+              size={20}
+              color={activeTab === 'incoming' ? '#FFF' : '#9CA3AF'}
+            />
+            <Text style={[
+              styles.tabText,
+              activeTab === 'incoming' && styles.tabTextActive,
+            ]}>
+              Incoming
+            </Text>
+            {incomingRequests.length > 0 && (
+              <View style={[
+                styles.badge,
+                activeTab === 'incoming' && styles.badgeActive,
+              ]}>
+                <Text style={styles.badgeText}>{incomingRequests.length}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.tab}
+            onPress={() => handleTabPress('outgoing')}
+            activeOpacity={0.7}
+          >
+            <Ionicons
+              name="arrow-up-circle"
+              size={20}
+              color={activeTab === 'outgoing' ? '#FFF' : '#9CA3AF'}
+            />
+            <Text style={[
+              styles.tabText,
+              activeTab === 'outgoing' && styles.tabTextActive,
+            ]}>
+              Sent
+            </Text>
+            {outgoingRequests.length > 0 && (
+              <View style={[
+                styles.badge,
+                activeTab === 'outgoing' && styles.badgeActive,
+              ]}>
+                <Text style={styles.badgeText}>{outgoingRequests.length}</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+        </GlassCard>
       </View>
 
-      {/* List */}
+      {/* Request List */}
       <FlatList
         data={currentRequests}
         keyExtractor={(item) => item.id}
-        renderItem={renderRequest}
+        renderItem={({ item, index }) => (
+          <RequestCard
+            item={item}
+            index={index}
+            onAccept={handleAccept}
+            onDecline={handleDecline}
+            processingId={processingId}
+            isIncoming={activeTab === 'incoming'}
+          />
+        )}
         contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        ListEmptyComponent={
-          <EmptyState
-            icon="mail-outline"
-            title={activeTab === 'incoming' ? 'No incoming requests' : 'No sent requests'}
-            description={
-              activeTab === 'incoming'
-                ? 'Friend requests you receive will appear here'
-                : '📨 Friend requests you send will appear here'
-            }
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#8B5CF6"
+            colors={['#8B5CF6']}
           />
         }
+        ListEmptyComponent={<EmptyRequestsState type={activeTab} />}
       />
     </View>
   );
@@ -248,10 +591,64 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  tabs: {
+  statsContainer: {
+    paddingHorizontal: 16,
+    marginTop: 8,
+  },
+  statsCard: {
     flexDirection: 'row',
-    padding: 8,
-    margin: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+  },
+  statItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  statIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#F3F4F6',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#9CA3AF',
+    fontWeight: '500',
+  },
+  statDivider: {
+    width: 1,
+    height: 48,
+    backgroundColor: 'rgba(107, 114, 128, 0.3)',
+  },
+  tabsWrapper: {
+    paddingHorizontal: 16,
+    marginVertical: 16,
+  },
+  tabsContainer: {
+    flexDirection: 'row',
+    padding: 4,
+    position: 'relative',
+  },
+  tabIndicator: {
+    position: 'absolute',
+    top: 4,
+    left: 4,
+    width: '50%',
+    height: '100%',
+    paddingRight: 4,
+  },
+  tabIndicatorGradient: {
+    flex: 1,
     borderRadius: 12,
   },
   tab: {
@@ -259,39 +656,137 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 8,
-    gap: 6,
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+    zIndex: 1,
   },
   tabText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
+    color: '#9CA3AF',
+  },
+  tabTextActive: {
+    color: '#FFF',
+  },
+  badge: {
+    backgroundColor: 'rgba(139, 92, 246, 0.3)',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  badgeActive: {
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#FFF',
   },
   listContent: {
     flexGrow: 1,
     paddingHorizontal: 16,
+    paddingBottom: 24,
   },
-  requestItem: {
+  requestCard: {
+    marginBottom: 12,
+  },
+  cardInner: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    borderRadius: 12,
-    marginBottom: 8,
+    padding: 16,
   },
-  requestInfo: {
+  userInfo: {
     flex: 1,
-    marginLeft: 12,
+    marginLeft: 14,
   },
-  requestName: {
+  displayName: {
     fontSize: 16,
+    fontWeight: '600',
+    color: '#F3F4F6',
+    marginBottom: 2,
+  },
+  username: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    marginBottom: 4,
+  },
+  timestamp: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  actionButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  acceptButton: {
+    shadowColor: '#22C55E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  declineButton: {
+    backgroundColor: 'rgba(239, 68, 68, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+  },
+  cancelButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(107, 114, 128, 0.15)',
+    borderWidth: 1,
+    borderColor: 'rgba(107, 114, 128, 0.3)',
+    paddingHorizontal: 12,
+    width: 'auto',
+  },
+  cancelText: {
+    fontSize: 13,
+    color: '#9CA3AF',
+    marginLeft: 4,
     fontWeight: '500',
   },
-  requestUsername: {
-    fontSize: 14,
-    marginTop: 2,
-  },
-  requestActions: {
-    flexDirection: 'row',
+  emptyContainer: {
+    flex: 1,
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 64,
+    paddingHorizontal: 24,
+  },
+  emptyIconContainer: {
+    marginBottom: 24,
+  },
+  emptyIconGradient: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#F3F4F6',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyDescription: {
+    fontSize: 15,
+    color: '#9CA3AF',
+    textAlign: 'center',
+    lineHeight: 22,
   },
 });

@@ -32,7 +32,7 @@ export default function PollWidget({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0);
-  const isPollClosed = poll.closed || (poll.timeout && new Date(poll.timeout) < new Date());
+  const isPollClosed = Boolean(poll.closed || (poll.timeout && new Date(poll.timeout) < new Date()));
   const hasVoted = false; // TODO: Check if user has voted
 
   const handleOptionToggle = (optionId: string) => {

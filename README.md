@@ -5,14 +5,12 @@
 <img src="docs/assets/cgraph-logo.png" alt="CGraph Logo" width="140" />
 
 ### The Open-Source Alternative to Discord, Slack, and Telegram
-#### Real-time messaging • Community forums • End-to-end encryption • Web3 authentication
+#### Real-time messaging • Community forums • End-to-end encryption • Web3 authentication • Gamification
 
-[![CI Status](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml/badge.svg)](https://github.com/cgraph-dev/CGraph/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.7.48-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.8.2-green.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-973%20passing-brightgreen.svg)](#testing)
-[![Elixir](https://img.shields.io/badge/elixir-1.19-purple.svg)](https://elixir-lang.org/)
-[![10K+ Users](https://img.shields.io/badge/scale-10K%2B%20concurrent-orange.svg)](#scalability)
+[![Elixir](https://img.shields.io/badge/elixir-1.17+-purple.svg)](https://elixir-lang.org/)
 
 [🌐 Website](https://www.cgraph.org) · [📚 Documentation](docs/) · [🔌 API Reference](docs/API.md) · [🤝 Contributing](CONTRIBUTING.md)
 
@@ -20,7 +18,7 @@
 
 ---
 
-## 🏆 Why Choose CGraph Over the Competition?
+## Why CGraph?
 
 | Feature | CGraph | Discord | Slack | Telegram | Signal |
 |---------|:------:|:-------:|:-----:|:--------:|:------:|
@@ -28,107 +26,88 @@
 | **Open Source** | ✅ 100% MIT | ❌ | ❌ | ⚠️ Client only | ✅ |
 | **Web3/Wallet Auth** | ✅ Native | ❌ | ❌ | ❌ | ❌ |
 | **Community Forums** | ✅ Reddit-style | ❌ | ❌ | ❌ | ❌ |
+| **Gamification** | ✅ XP, Achievements, Quests | ❌ | ❌ | ❌ | ❌ |
 | **No Phone Required** | ✅ | ✅ | ✅ | ❌ Required | ❌ Required |
 | **Self-Hostable** | ✅ Full control | ❌ | ⚠️ Enterprise only | ❌ | ⚠️ Complex |
-| **Forum Competition** | ✅ Gamified | ❌ | ❌ | ❌ | ❌ |
 | **Role Permissions** | ✅ Granular | ✅ | ✅ | ⚠️ Basic | ❌ |
-| **Free for Teams** | ✅ Unlimited | ⚠️ Limited | ❌ Paid | ✅ | ✅ |
 
-**The bottom line:** CGraph is the only platform that gives you Discord-style servers, Reddit-style forums, Signal-grade encryption, and Web3 identity—all in one open-source package you can self-host.
-
----
-
-## 🚀 Built for Scale
-
-CGraph is engineered from the ground up to handle **10,000+ concurrent users** without breaking a sweat:
-
-- **Elixir/Phoenix** - 2M+ concurrent WebSocket connections per node
-- **Redis Connection Pool** - 20 pooled connections with round-robin distribution
-- **React.lazy Code Splitting** - Initial bundle reduced from ~500KB to ~150KB
-- **FlatList Optimization** - Mobile handles 10K+ message lists smoothly
-- **PubSub Architecture** - Real-time events scale horizontally across nodes
-
-**Tested at scale:** 10K simultaneous WebSocket connections on a single 4GB instance with <100ms latency.
+CGraph combines the best of Discord (servers, channels, roles), Reddit (forums, karma, voting), Signal (encryption), and adds gamification—all in one self-hostable package.
 
 ---
 
-## ✨ Key Features
-
-<table>
-<tr>
-<td width="50%">
+## Features
 
 ### 💬 Real-Time Messaging
-- Instant delivery with typing indicators & read receipts
-- **End-to-end encryption** (Double Ratchet + X3DH + AES-256-GCM)
+- Instant message delivery with typing indicators and read receipts
+- End-to-end encryption using Double Ratchet protocol (Signal-grade)
 - Voice messages with waveform visualization
-- Voice/video calls (up to 10 participants)
-- Seamless sync across web, iOS, and Android
+- Voice and video calls (up to 10 participants)
+- Message reactions, editing, and deletion
+- Cross-platform sync (web, iOS, Android)
 
-</td>
-<td width="50%">
-
-### 🏢 Organized Communities
-- Discord-style servers with custom channels
-- **Granular role permissions** (moderator, VIP, custom)
-- Invite links with expiration & usage limits
-- Announcement channels with read confirmations
-- Presence indicators showing who's online
-
-</td>
-</tr>
-<tr>
-<td width="50%">
+### 🏢 Servers & Channels
+- Discord-style servers with unlimited channels
+- Channel categories for organization
+- Custom roles with 20+ granular permissions
+- Invite links with expiration and usage limits
+- Audit logs for moderation
+- Custom emoji support
 
 ### 📰 Community Forums
-- Reddit-style upvote/downvote with karma tracking
-- Nested comments that stay readable
-- **Forum competition leaderboard** - top communities get featured
-- Rich text formatting with code syntax highlighting
-- Full-text search across all forum content
+- Reddit-style posts with upvote/downvote
+- Karma tracking and user rankings
+- Nested comment threads
+- Post categories and flairs
+- Forum-specific leaderboards
+- Moderator tools (pin, lock, remove)
+- Rich text with code syntax highlighting
 
-</td>
-<td width="50%">
+### 🎮 Gamification System
+- **XP & Levels** - Earn experience from messaging, posting, and daily activity
+- **Achievements** - 30+ achievements across 6 categories (Social, Content, Exploration, Mastery, Legendary, Secret)
+- **Daily/Weekly Quests** - Complete objectives for bonus rewards
+- **Streak System** - Maintain daily login streaks for XP multipliers (3+ days = 1.5x, 7+ days = 2.0x)
+- **Titles & Badges** - Unlock and equip cosmetic rewards
+- **Virtual Currency** - Earn coins to spend in the shop
+- **Leaderboards** - Compete globally and per-forum
 
-### 🔐 Privacy-First Design
-- Optional **anonymous accounts** via wallet auth
-- **Zero-knowledge encryption** - we can't read your messages
-- No phone number required, ever
-- Self-host for complete data sovereignty
-- GDPR-compliant data export & deletion
+### 🔐 Security & Privacy
+- **E2EE Messaging** - AES-256-GCM encryption with X25519 key exchange
+- **Wallet Authentication** - Login with Ethereum wallet (no email/password needed)
+- **Two-Factor Auth** - TOTP with backup codes
+- **OAuth Support** - Google, Apple, Facebook, TikTok
+- **Zero-Knowledge Design** - Server cannot read encrypted messages
+- **GDPR Compliance** - Full data export and deletion
 
-</td>
-</tr>
-</table>
+### 🌐 Web3 Integration
+- Ethereum wallet login (MetaMask, WalletConnect)
+- NFT profile pictures
+- Token-gated channels
+- Cryptographic identity verification
 
-### 🌐 Web3 Native
-
-CGraph is built for the decentralized future:
-
-```
-🔗 Ethereum Wallet Login    →  No email or password needed
-🎨 NFT Profile Pictures     →  Display your NFTs as avatars  
-💎 Token-Gated Channels     →  Exclusive access for holders
-🔐 Cryptographic Identity   →  Your keys, your identity
-```
+### 📱 Mobile Apps
+- Native iOS and Android apps via Expo
+- Biometric authentication (Face ID, fingerprint)
+- Push notifications
+- Camera and media integration
+- Offline message drafts
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-Modern technologies chosen for performance, scalability, and longevity:
+| Layer | Technology |
+|-------|-----------|
+| **Backend** | Elixir 1.17+ / Phoenix 1.8 |
+| **Database** | PostgreSQL 16+ / Redis 7+ |
+| **Web** | React 19 / Vite / TailwindCSS 4 |
+| **Mobile** | React Native 0.81 / Expo SDK 54 |
+| **Real-time** | Phoenix Channels + Presence |
+| **Encryption** | libsodium (AES-256-GCM, X25519, Ed25519) |
+| **Search** | Meilisearch (optional) |
+| **Storage** | S3/Minio compatible |
 
-| Layer | Technology | Why We Chose It |
-|-------|-----------|-----------------|
-| **Backend** | Elixir 1.19 + Phoenix 1.8 | 2M+ concurrent connections, fault-tolerant, hot code reload |
-| **Database** | PostgreSQL 16 + Redis 7 | ACID compliance, JSON support, full-text search, connection pooling |
-| **Web** | React 19 + Vite + TailwindCSS | Sub-100ms builds, tree-shaking, modern DX |
-| **Mobile** | React Native 0.81 + Expo SDK 54 | Native performance, single codebase, OTA updates |
-| **Real-time** | Phoenix Channels + Presence | Built-in WebSocket handling, presence tracking |
-| **Encryption** | libsodium (XChaCha20-Poly1305) | Same crypto primitives as Signal |
-| **Auth** | JWT + TOTP 2FA + Wallet Signatures | Industry-standard security |
-
-### Architecture Overview
+### Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -154,167 +133,132 @@ Modern technologies chosen for performance, scalability, and longevity:
 
 ---
 
-## ⚡ Getting Started
+## Getting Started
 
 ### Prerequisites
 
 | Tool | Version | Installation |
 |------|---------|-------------|
-| Node.js | 22+ | [nodejs.org](https://nodejs.org) or `asdf install nodejs 22.0.0` |
+| Node.js | 22+ | [nodejs.org](https://nodejs.org) |
 | pnpm | 10+ | `npm install -g pnpm` |
-| Elixir | 1.19+ | [elixir-lang.org](https://elixir-lang.org) or `asdf install elixir 1.19.0` |
+| Elixir | 1.17+ | [elixir-lang.org](https://elixir-lang.org) |
 | PostgreSQL | 16+ | [postgresql.org](https://postgresql.org) |
 | Redis | 7+ | [redis.io](https://redis.io) |
-| FFmpeg | Latest | For voice message processing |
 
-> 💡 **Tip:** Use [asdf](https://asdf-vm.com/) to manage runtime versions automatically via `.tool-versions`
-
-### Quick Start (5 minutes)
+### Quick Start
 
 ```bash
-# Clone and install
+# Clone the repository
 git clone https://github.com/cgraph-dev/CGraph.git
 cd CGraph
+
+# Install dependencies
 pnpm install
 
-# Set up the backend
+# Set up backend
 cd apps/backend
-cp ../../.env.example .env  # then edit .env with your values
+cp ../../.env.example .env
 mix deps.get
 mix ecto.setup
-
-# Run it
 mix phx.server
-```
 
-The API will be at http://localhost:4000. Health check endpoint: `/health`
-
-For the web app:
-```bash
+# In another terminal, start the web app
 cd apps/web
-pnpm dev  # runs at http://localhost:3000
+pnpm dev
 ```
 
-For mobile:
-```bash
-cd apps/mobile
-pnpm start  # scan QR with Expo Go
-```
+The API runs at `http://localhost:4000` and the web app at `http://localhost:3000`.
 
-### Storybook (Component Development)
-
-Browse and develop UI components in isolation:
-```bash
-cd apps/web && pnpm storybook      # Web: http://localhost:6006
-cd apps/mobile && pnpm storybook   # Mobile: on-device via Expo
-```
-
-### Docker (Alternative)
-
-If you'd rather not install Elixir locally:
+### Docker
 
 ```bash
-cp .env.example .env  # configure your environment
+cp .env.example .env
 docker-compose up -d
 ```
 
-Everything spins up automatically—database, backend, the works.
+---
 
 ## Project Structure
 
 ```
 CGraph/
 ├── apps/
-│   ├── backend/        # Elixir API server (the brains)
-│   ├── web/            # React web app
+│   ├── backend/        # Elixir/Phoenix API server
+│   ├── web/            # React web application
 │   └── mobile/         # React Native mobile app
 ├── packages/
-│   ├── shared-types/   # TypeScript types shared between web/mobile
+│   ├── shared-types/   # Shared TypeScript types
 │   ├── ui/             # Shared UI components
 │   └── utils/          # Common utilities
-├── docs/               # You're reading documentation from here
-└── infrastructure/     # Docker, Terraform, deployment scripts
+├── docs/               # Documentation
+└── infrastructure/     # Deployment scripts
 ```
+
+---
 
 ## API Overview
 
-The API is straightforward REST with WebSocket channels for real-time features. Everything lives under `/api/v1`.
+REST API with WebSocket channels for real-time features.
 
 **Authentication:**
 ```bash
-# Traditional email/password
-POST /api/v1/auth/register
-POST /api/v1/auth/login
-
-# Or use your Ethereum wallet
-POST /api/v1/auth/wallet/challenge
-POST /api/v1/auth/wallet/verify
+POST /api/v1/auth/register      # Email/password registration
+POST /api/v1/auth/login         # Email/password login
+POST /api/v1/auth/wallet/verify # Wallet authentication
 ```
 
 **Core Resources:**
 ```bash
-GET  /api/v1/me                 # Your profile
-GET  /api/v1/friends            # Friend list
-GET  /api/v1/conversations      # DM threads
-GET  /api/v1/groups             # Your servers
+GET  /api/v1/me                 # Current user profile
+GET  /api/v1/conversations      # Direct messages
+GET  /api/v1/groups             # Servers
 GET  /api/v1/forums             # Public forums
+GET  /api/v1/gamification/stats # XP, level, achievements
 ```
 
-Full API docs at [docs/API.md](docs/API.md) or the OpenAPI spec at [docs/openapi.yaml](docs/openapi.yaml).
+Full documentation: [docs/API.md](docs/API.md)
 
-## 🧪 Testing
+---
 
-Comprehensive test coverage across all layers:
+## Testing
 
 | Layer | Tests | Coverage |
 |-------|-------|----------|
-| Backend (Elixir) | 718 tests | 89% |
-| Web (React) | 255 tests | 85% |
-| Mobile (RN) | 142 tests | 78% |
-| **Total** | **973 tests** | **84% avg** |
+| Backend | 718 | 89% |
+| Web | 255 | 85% |
+| Mobile | 142 | 78% |
+| **Total** | **973** | **84%** |
 
 ```bash
-# Backend tests
-cd apps/backend
-mix test                      # Run all tests
-mix test --cover              # With coverage report
-mix test --only integration   # Integration tests only
+# Run all tests
+pnpm test
+
+# Backend tests with coverage
+cd apps/backend && mix test --cover
 
 # Web tests
-cd apps/web
-pnpm test                     # Jest + React Testing Library
-pnpm test:coverage            # With coverage
-
-# Mobile tests
-cd apps/mobile
-pnpm test                     # Jest tests
-pnpm typecheck                # TypeScript validation
-
-# Run all tests (from root)
-pnpm test:all
+cd apps/web && pnpm test:coverage
 ```
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 | Document | Description |
 |----------|-------------|
-| [🚀 Quick Start](docs/QUICKSTART.md) | Get running in 5 minutes |
-| [🏗️ Architecture](docs/ARCHITECTURE.md) | System design & data flow |
-| [🔌 API Reference](docs/API_REFERENCE.md) | Complete REST API docs |
-| [📱 OpenAPI Spec](docs/openapi.yaml) | Import into Postman/Insomnia |
-| [🔐 Security](docs/SECURITY.md) | Encryption, auth, threat model |
-| [📦 Deployment](docs/DEPLOYMENT.md) | Production setup guide |
-| [📱 Mobile Guide](docs/MOBILE.md) | React Native specifics |
-| [🎨 UI Customization](docs/UI_CUSTOMIZATION.md) | Theming & branding |
+| [Quick Start](docs/QUICKSTART.md) | Get running in 5 minutes |
+| [Architecture](docs/ARCHITECTURE.md) | System design overview |
+| [API Reference](docs/API_REFERENCE.md) | Complete REST API docs |
+| [Security](docs/SECURITY.md) | Encryption and authentication |
+| [Deployment](docs/DEPLOYMENT.md) | Production setup |
+| [Mobile](docs/MOBILE.md) | React Native development |
 
 ---
 
-## 🔮 Roadmap
+## Roadmap
 
 ### Q1 2026
-- [ ] Bot/Integration API (Discord-style)
+- [ ] Bot/Integration API
 - [ ] Slash commands
 - [ ] Webhooks for external integrations
 
@@ -326,70 +270,38 @@ pnpm test:all
 ### Q3 2026
 - [ ] Federation protocol (ActivityPub)
 - [ ] Matrix bridge
-- [ ] Advanced moderation AI
-
-> 💡 **Have an idea?** [Open an issue](https://github.com/cgraph-dev/CGraph/issues) or [start a discussion](https://github.com/cgraph-dev/CGraph/discussions)
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-We welcome contributions! Check out [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ```bash
-# Fork → Clone → Branch → Code → Test → PR
-git checkout -b feature/my-awesome-feature
-pnpm test:all
-git push origin feature/my-awesome-feature
+git checkout -b feature/your-feature
+pnpm test
+git push origin feature/your-feature
 ```
 
-**First time contributing?** Look for issues tagged [`good-first-issue`](https://github.com/cgraph-dev/CGraph/labels/good-first-issue)
+---
+
+## Author
+
+Built by **Burca Lucas**
+
+- [Website](https://www.cgraph.org)
+- [GitHub](https://github.com/cgraph-dev)
 
 ---
 
-## 💖 Sponsors
+## License
 
-CGraph is independently developed and maintained. If you find it useful, consider supporting development:
-
-<a href="https://github.com/sponsors/cgraph-dev">
-  <img src="https://img.shields.io/badge/Sponsor-❤️-ea4aaa?style=for-the-badge" alt="Sponsor CGraph" />
-</a>
-
----
-
-## 👤 Author
-
-Built and maintained by **Burca Lucas**.
-
-- 🌐 [Website](https://www.cgraph.org)
-- 🐦 [Twitter](https://twitter.com/cgraph_dev)
-- 💼 [GitHub](https://github.com/cgraph-dev)
-
----
-
-## ⚖️ Legal
-
-- [Privacy Policy](docs/LEGAL/PRIVACY_POLICY.md)
-- [Terms of Service](docs/LEGAL/TERMS_OF_SERVICE.md)
-
-## 📄 License
-
-MIT License - See [LICENSE](LICENSE) for full text.
-
-You're free to use CGraph for personal or commercial projects. Attribution appreciated but not required.
+MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
 <div align="center">
 
-### ⭐ Star us on GitHub — it helps more than you know!
-
-[![Star History Chart](https://api.star-history.com/svg?repos=cgraph-dev/CGraph&type=Date)](https://star-history.com/#cgraph-dev/CGraph&Date)
-
-Built with ☕ and late nights in pursuit of a better social platform.
-
 **[www.cgraph.org](https://www.cgraph.org)**
-
-<sub>Made with ❤️ by developers who believe communication should be private, open, and free.</sub>
 
 </div>

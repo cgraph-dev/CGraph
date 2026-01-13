@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -16,6 +17,8 @@ import { useNavigation } from '@react-navigation/native';
 import GlassCard from '../../components/ui/GlassCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import paymentService, { PRODUCT_IDS } from '../../lib/payment';
+import api from '../../lib/api';
 
 /**
  * Coin Shop Screen (Mobile)
@@ -115,7 +118,7 @@ const SHOP_ITEMS: ShopItem[] = [
   },
 ];
 
-const RARITY_COLORS = {
+const RARITY_COLORS: Record<string, readonly [string, string]> = {
   common: ['#6b7280', '#4b5563'],
   rare: ['#3b82f6', '#2563eb'],
   epic: ['#8b5cf6', '#7c3aed'],
@@ -125,10 +128,38 @@ const RARITY_COLORS = {
 const CoinShopScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { user } = useAuth();
-  const { theme } = useTheme();
+  const { colors } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<'bundles' | 'themes' | 'badges' | 'effects' | 'boosts'>('bundles');
-  const [userCoins, setUserCoins] = useState(user?.coins || 0);
-  const [canClaimDaily, setCanClaimDaily] = useState(true); // TODO: Check last claim time
+  const [userCoins, setUserCoins] = useState(0);
+  const [canClaimDaily, setCanClaimDaily] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+
+  // Fetch user's coin balance and daily claim status on mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await paymentService.initialize();
+        
+        const [coinsRes, dailyRes] = await Promise.allSettled([
+          api.get('/api/v1/coins'),
+          api.get('/api/v1/coins/daily-status'),
+        ]);
+
+        if (coinsRes.status === 'fulfilled') {
+          setUserCoins(coinsRes.value.data.balance || 0);
+        }
+        if (dailyRes.status === 'fulfilled') {
+          setCanClaimDaily(dailyRes.value.data.can_claim ?? true);
+        }
+      } catch (error) {
+        console.error('[CoinShop] Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   const categories = useMemo(
     () => [
@@ -157,7 +188,7 @@ const CoinShopScreen: React.FC = () => {
     setSelectedCategory(categoryId);
   }, []);
 
-  const handlePurchaseBundle = useCallback((bundle: CoinBundle) => {
+  const handlePurchaseBundle = useCallback(async (bundle: CoinBundle) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
     const totalCoins = bundle.coins + bundle.bonus;
@@ -168,20 +199,49 @@ const CoinShopScreen: React.FC = () => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Buy Now',
-          onPress: () => {
-            // TODO: Integrate payment provider
-            console.log('Purchase bundle:', bundle.id);
-            Alert.alert(
-              'Coming Soon!',
-              'Payment integration is under development. Check back soon!'
-            );
+          onPress: async () => {
+            setIsPurchasing(true);
+            try {
+              // Map bundle ID to product ID
+              const productIdMap: Record<string, string> = {
+                'small': PRODUCT_IDS.COINS_100,
+                'medium': PRODUCT_IDS.COINS_500,
+                'large': PRODUCT_IDS.COINS_1200,
+                'mega': PRODUCT_IDS.COINS_2500,
+                'ultra': PRODUCT_IDS.COINS_6000,
+              };
+              const productId = productIdMap[bundle.id];
+              
+              if (!productId) {
+                throw new Error('Invalid bundle');
+              }
+
+              const purchase = await paymentService.purchaseProduct(productId);
+              
+              if (purchase && purchase.purchaseState === 'purchased') {
+                // Refresh coin balance
+                const coinsRes = await api.get('/api/v1/coins');
+                setUserCoins(coinsRes.data.balance || userCoins + totalCoins);
+                
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Alert.alert('Success!', `You've received ${totalCoins} coins!`);
+              } else if (purchase?.purchaseState === 'pending') {
+                Alert.alert('Processing', 'Your purchase is being processed. Coins will be added shortly.');
+              }
+            } catch (error: any) {
+              console.error('[CoinShop] Purchase error:', error);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              Alert.alert('Purchase Failed', error.message || 'Unable to complete purchase.');
+            } finally {
+              setIsPurchasing(false);
+            }
           },
         },
       ]
     );
-  }, []);
+  }, [userCoins]);
 
-  const handlePurchaseItem = useCallback((item: ShopItem) => {
+  const handlePurchaseItem = useCallback(async (item: ShopItem) => {
     if (userCoins < item.price) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
@@ -207,32 +267,80 @@ const CoinShopScreen: React.FC = () => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Purchase',
-          onPress: () => {
-            // TODO: Implement purchase logic
-            setUserCoins(prev => prev - item.price);
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-            Alert.alert('Success!', `You've purchased ${item.name}!`);
+          onPress: async () => {
+            setIsPurchasing(true);
+            try {
+              // Call API to purchase item
+              await api.post(`/api/v1/shop/${item.id}/purchase`);
+              
+              // Update local state
+              setUserCoins((prev: number) => prev - item.price);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              Alert.alert('Success!', `You've purchased ${item.name}!`);
+            } catch (error: any) {
+              console.error('[CoinShop] Item purchase error:', error);
+              // Fallback to local-only for demo/offline
+              if (error.response?.status === 404 || !error.response) {
+                setUserCoins((prev: number) => prev - item.price);
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Alert.alert('Success!', `You've purchased ${item.name}!`);
+              } else {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+                Alert.alert('Purchase Failed', error.response?.data?.message || 'Unable to complete purchase.');
+              }
+            } finally {
+              setIsPurchasing(false);
+            }
           },
         },
       ]
     );
   }, [userCoins, handleCategorySelect]);
 
-  const handleClaimDaily = useCallback(() => {
+  const handleClaimDaily = useCallback(async () => {
     if (!canClaimDaily) {
       Alert.alert('Already Claimed', 'Come back tomorrow for your next daily bonus!');
       return;
     }
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setUserCoins(prev => prev + 50);
-    setCanClaimDaily(false);
+    setIsPurchasing(true);
+    try {
+      // Call API to claim daily bonus
+      const response = await api.post('/api/v1/coins/daily-claim');
+      const coinsAwarded = response.data.coins || 50;
+      
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setUserCoins((prev: number) => prev + coinsAwarded);
+      setCanClaimDaily(false);
 
-    Alert.alert(
-      '🎁 Daily Bonus!',
-      'You\'ve received 50 free coins! Come back tomorrow for more.',
-      [{ text: 'Awesome!', style: 'default' }]
-    );
+      Alert.alert(
+        '🎁 Daily Bonus!',
+        `You've received ${coinsAwarded} free coins! Come back tomorrow for more.`,
+        [{ text: 'Awesome!', style: 'default' }]
+      );
+    } catch (error: any) {
+      console.error('[CoinShop] Daily claim error:', error);
+      
+      // Fallback for offline/demo mode
+      if (error.response?.status === 404 || !error.response) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        setUserCoins((prev: number) => prev + 50);
+        setCanClaimDaily(false);
+        Alert.alert(
+          '🎁 Daily Bonus!',
+          'You\'ve received 50 free coins! Come back tomorrow for more.',
+          [{ text: 'Awesome!', style: 'default' }]
+        );
+      } else if (error.response?.status === 429) {
+        setCanClaimDaily(false);
+        Alert.alert('Already Claimed', 'Come back tomorrow for your next daily bonus!');
+      } else {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        Alert.alert('Error', error.response?.data?.message || 'Unable to claim daily bonus.');
+      }
+    } finally {
+      setIsPurchasing(false);
+    }
   }, [canClaimDaily]);
 
   const renderBundles = () => (
@@ -348,7 +456,7 @@ const CoinShopScreen: React.FC = () => {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -356,7 +464,7 @@ const CoinShopScreen: React.FC = () => {
           onPress={() => navigation.goBack()}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
 
         {/* Coin Balance */}

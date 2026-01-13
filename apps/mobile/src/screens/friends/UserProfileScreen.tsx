@@ -11,10 +11,12 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute, RouteProp, CommonActions } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useTheme } from '../../contexts/ThemeContext';
 import api from '../../lib/api';
 import { FriendsStackParamList, UserBasic } from '../../types';
 import { Header, Avatar, Button, LoadingSpinner } from '../../components';
+import { TitleBadge, LevelProgress } from '../../components/gamification';
 import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('UserProfileScreen');
@@ -30,6 +32,13 @@ interface UserProfile extends UserBasic {
   is_profile_private?: boolean;
   friend_request_sent?: boolean;
   friend_request_received?: boolean;
+  // Gamification fields
+  level?: number;
+  xp?: number;
+  achievements_count?: number;
+  titles?: string[];
+  current_title?: string;
+  streak?: number;
 }
 
 const formatKarma = (karma: number): string => {
@@ -263,6 +272,63 @@ export default function UserProfileScreen() {
             </Text>
           )}
 
+          {/* Gamification Stats Section */}
+          {(user.level || user.current_title || user.achievements_count) && (
+            <View style={styles.gamificationSection}>
+              {/* Current Title */}
+              {user.current_title && (
+                <View style={styles.titleContainer}>
+                  <TitleBadge title={user.current_title} rarity="rare" size="md" />
+                </View>
+              )}
+              
+              {/* Level & XP */}
+              {user.level && (
+                <View style={styles.levelContainer}>
+                  <LinearGradient
+                    colors={['#8b5cf620', 'transparent']}
+                    style={styles.levelGradient}
+                  >
+                    <View style={styles.levelHeader}>
+                      <View style={styles.levelBadge}>
+                        <Ionicons name="sparkles" size={16} color="#8b5cf6" />
+                        <Text style={styles.levelText}>Level {user.level}</Text>
+                      </View>
+                      {user.xp !== undefined && (
+                        <Text style={styles.xpText}>{user.xp.toLocaleString()} XP</Text>
+                      )}
+                    </View>
+                  </LinearGradient>
+                </View>
+              )}
+              
+              {/* Stats Row */}
+              <View style={styles.statsRow}>
+                {user.achievements_count !== undefined && (
+                  <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
+                    <Ionicons name="trophy" size={18} color="#f59e0b" />
+                    <Text style={[styles.statValue, { color: colors.text }]}>{user.achievements_count}</Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Achievements</Text>
+                  </View>
+                )}
+                {user.streak !== undefined && user.streak > 0 && (
+                  <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
+                    <Text style={styles.streakEmoji}>🔥</Text>
+                    <Text style={[styles.statValue, { color: colors.text }]}>{user.streak}</Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Day Streak</Text>
+                  </View>
+                )}
+                {user.titles && user.titles.length > 0 && (
+                  <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
+                    <Ionicons name="ribbon" size={18} color="#ec4899" />
+                    <Text style={[styles.statValue, { color: colors.text }]}>{user.titles.length}</Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Titles</Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          )}
+
           {/* Private Profile Notice */}
           {user.is_profile_private && user.username === 'Unknown' && (
             <View style={[styles.privateNotice, { backgroundColor: colors.surfaceHover }]}>
@@ -477,6 +543,71 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 16,
     lineHeight: 20,
+  },
+  // Gamification styles
+  gamificationSection: {
+    width: '100%',
+    marginTop: 20,
+    paddingTop: 16,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  titleContainer: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  levelContainer: {
+    marginBottom: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  levelGradient: {
+    padding: 12,
+    borderRadius: 12,
+  },
+  levelHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  levelBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  levelText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#8b5cf6',
+  },
+  xpText: {
+    fontSize: 14,
+    color: '#9ca3af',
+  },
+  statsRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
+  statItem: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    minWidth: 90,
+  },
+  statValue: {
+    fontSize: 18,
+    fontWeight: '700',
+    marginTop: 4,
+  },
+  statLabel: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  streakEmoji: {
+    fontSize: 18,
   },
   privateNotice: {
     flexDirection: 'row',

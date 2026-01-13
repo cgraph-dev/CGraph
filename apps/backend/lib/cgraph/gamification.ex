@@ -284,7 +284,7 @@ defmodule Cgraph.Gamification do
         |> Repo.insert()
 
       # Award XP for daily login
-      {:ok, final_user, _} = award_xp(updated_user, 25, "daily_login",
+      {:ok, {final_user, _level_up}} = award_xp(updated_user, 25, "daily_login",
         description: "Daily login bonus")
 
       # Check streak achievements
@@ -400,6 +400,34 @@ defmodule Cgraph.Gamification do
   end
 
   @doc """
+  Try to unlock an achievement by ID.
+  Validates the achievement exists and checks if requirements are met.
+  Returns {:ok, user_achievement} on success, or an error tuple.
+  """
+  def try_unlock_achievement(user_id, achievement_id) do
+    case Repo.get(Achievement, achievement_id) do
+      nil ->
+        {:error, :not_found}
+
+      achievement ->
+        {:ok, ua} = get_or_create_user_achievement(user_id, achievement_id)
+
+        cond do
+          ua.unlocked ->
+            {:error, :already_unlocked}
+
+          ua.progress >= achievement.max_progress ->
+            # Requirements met, unlock it
+            unlock_user_achievement(ua, achievement)
+
+          true ->
+            # Requirements not yet met
+            {:error, :not_met}
+        end
+    end
+  end
+
+  @doc """
   Directly unlock an achievement by slug.
   """
   def unlock_achievement_by_slug(%User{} = user, achievement_slug) do
@@ -407,7 +435,6 @@ defmodule Cgraph.Gamification do
 
     if achievement do
       {:ok, ua} = get_or_create_user_achievement(user.id, achievement.id)
-
       if ua.unlocked do
         {:ok, ua}
       else

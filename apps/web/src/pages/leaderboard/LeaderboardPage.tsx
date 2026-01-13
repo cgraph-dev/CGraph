@@ -407,7 +407,7 @@ export default function LeaderboardPage() {
   const totalPages = leaderboard ? Math.ceil(leaderboard.totalCount / pageSize) : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 overflow-y-auto">
+    <div className="flex-1 flex flex-col h-full max-h-screen overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative">
       {/* Background Effects */}
       <FloatingParticles />
 
@@ -427,17 +427,18 @@ export default function LeaderboardPage() {
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-          {/* Trophy Badge */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-12 relative z-10">
+          {/* Header */}
           <motion.div
-            className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-gradient-to-r from-yellow-500/20 via-amber-500/20 to-orange-500/20 border border-yellow-500/30 mb-6 backdrop-blur-sm"
-            whileHover={{ scale: 1.02 }}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            {/* Trophy Badge */}
+            <motion.div
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-gradient-to-r from-yellow-500/20 via-amber-500/20 to-orange-500/20 border border-yellow-500/30 mb-6 backdrop-blur-sm"
+              whileHover={{ scale: 1.02 }}
             animate={{
               boxShadow: [
                 '0 0 20px rgba(250, 204, 21, 0.2)',
@@ -966,6 +967,7 @@ export default function LeaderboardPage() {
             </motion.div>
           ))}
         </motion.div>
+        </div>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ defmodule Cgraph.Gamification.Title do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
 
-  @rarities ~w(common uncommon rare epic legendary mythic)
+  @rarities ~w(common uncommon rare epic legendary mythic unique)
   @unlock_types ~w(achievement level purchase event)
 
   schema "titles" do

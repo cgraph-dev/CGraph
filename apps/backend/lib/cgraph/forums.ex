@@ -655,7 +655,7 @@ defmodule Cgraph.Forums do
     reason = Keyword.get(opts, :reason, :user_deleted)
     report_id = Keyword.get(opts, :report_id)
     now = DateTime.utc_now() |> DateTime.truncate(:second)
-    
+
     case Repo.get(Post, post_id) do
       nil -> {:error, :not_found}
       post ->
@@ -694,7 +694,7 @@ defmodule Cgraph.Forums do
     reason = Keyword.get(opts, :reason, :user_deleted)
     report_id = Keyword.get(opts, :report_id)
     now = DateTime.utc_now() |> DateTime.truncate(:second)
-    
+
     case Repo.get(Comment, comment_id) do
       nil -> {:error, :not_found}
       comment ->
@@ -920,27 +920,27 @@ defmodule Cgraph.Forums do
 
   @doc """
   Check post rate limit.
-  
+
   Implements intelligent rate limiting based on:
   - User's reputation and account age
   - Content-specific thresholds (posts vs comments)
   - Burst protection for rapid-fire submissions
   - Trusted user exemptions
-  
+
   Returns :ok if allowed, {:error, :rate_limited, info} if blocked.
   """
   def check_post_rate_limit(user) do
     identifier = "user:#{user.id}"
-    
+
     # Calculate dynamic limit based on user trust level
     base_config = get_user_rate_config(user, :post)
-    
+
     # First check burst limit (prevents rapid submissions)
     case Cgraph.RateLimiter.check(identifier, :post_burst, limit: base_config.burst_limit, window: 60) do
       :ok ->
         # Then check sustained rate limit
-        Cgraph.RateLimiter.check(identifier, :post_sustained, 
-          limit: base_config.sustained_limit, 
+        Cgraph.RateLimiter.check(identifier, :post_sustained,
+          limit: base_config.sustained_limit,
           window: base_config.window
         )
       error -> error
@@ -950,12 +950,12 @@ defmodule Cgraph.Forums do
   # Determine rate limit configuration based on user trust metrics
   defp get_user_rate_config(user, content_type) do
     trust_level = calculate_user_trust_level(user)
-    
+
     base_limits = %{
       post: %{burst_limit: 3, sustained_limit: 10, window: 3600},
       comment: %{burst_limit: 5, sustained_limit: 30, window: 3600}
     }
-    
+
     # Trust level multipliers: new users are restricted, established users get more freedom
     multiplier = case trust_level do
       :new_user -> 0.5      # < 7 days old, < 5 posts
@@ -963,9 +963,9 @@ defmodule Cgraph.Forums do
       :trusted -> 2.0       # > 30 days, > 50 posts, good standing
       :veteran -> 3.0       # > 180 days, > 200 posts, excellent standing
     end
-    
+
     base = Map.get(base_limits, content_type, base_limits.post)
-    
+
     %{
       burst_limit: max(1, round(base.burst_limit * multiplier)),
       sustained_limit: max(3, round(base.sustained_limit * multiplier)),
@@ -975,8 +975,8 @@ defmodule Cgraph.Forums do
 
   defp calculate_user_trust_level(user) do
     account_age_days = DateTime.diff(DateTime.utc_now(), user.inserted_at, :day)
-    post_count = user.post_count || 0
-    
+    post_count = user.total_posts_created || 0
+
     cond do
       account_age_days < 7 or post_count < 5 -> :new_user
       account_age_days >= 180 and post_count >= 200 -> :veteran
@@ -1236,7 +1236,7 @@ defmodule Cgraph.Forums do
 
   @doc """
   Check comment rate limit.
-  
+
   Similar to post rate limiting but with higher thresholds since
   comments are lighter-weight content. Includes thread-specific
   limits to prevent comment flooding on individual posts.
@@ -1244,22 +1244,22 @@ defmodule Cgraph.Forums do
   def check_comment_rate_limit(user, opts \\ []) do
     identifier = "user:#{user.id}"
     post_id = Keyword.get(opts, :post_id)
-    
+
     # Get user-specific rate config
     base_config = get_user_rate_config(user, :comment)
-    
+
     # Check burst limit first
     case Cgraph.RateLimiter.check(identifier, :comment_burst, limit: base_config.burst_limit, window: 60) do
       :ok ->
         # Check sustained limit
-        case Cgraph.RateLimiter.check(identifier, :comment_sustained, 
-          limit: base_config.sustained_limit, 
+        case Cgraph.RateLimiter.check(identifier, :comment_sustained,
+          limit: base_config.sustained_limit,
           window: base_config.window
         ) do
           :ok when not is_nil(post_id) ->
             # Also check per-thread limit to prevent flooding single threads
             thread_identifier = "thread:#{post_id}:user:#{user.id}"
-            Cgraph.RateLimiter.check(thread_identifier, :thread_comment, 
+            Cgraph.RateLimiter.check(thread_identifier, :thread_comment,
               limit: 10,  # Max 10 comments per user per thread per hour
               window: 3600
             )
@@ -2771,7 +2771,7 @@ defmodule Cgraph.Forums do
 
   @doc """
   Lists posts by a specific user with pagination.
-  
+
   ## Options
     - :page - Page number (default: 1)
     - :per_page - Posts per page (default: 20)
@@ -2834,7 +2834,7 @@ defmodule Cgraph.Forums do
   Lists threads started by a specific user with pagination.
   For classic forum integration where threads are distinct from posts.
   Falls back to posts if no separate thread table exists.
-  
+
   ## Options
     - :page - Page number (default: 1)
     - :per_page - Threads per page (default: 20)

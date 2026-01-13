@@ -1,19 +1,19 @@
 defmodule Cgraph.Workers.CriticalAlertDispatcher do
   @moduledoc """
   Background worker for dispatching critical moderation alerts.
-  
+
   Handles multi-channel notification delivery for urgent moderation events
   such as CSAM reports, threats, and other critical safety issues.
-  
+
   ## Alert Channels
-  
+
   1. **Email** - Immediate email to on-call moderators
   2. **SMS** (if configured) - Text message for critical priority
   3. **Push Notifications** - Mobile app notifications to admin users
   4. **Webhook** (if configured) - External integrations (Slack, PagerDuty, etc.)
-  
+
   ## Usage
-  
+
       Cgraph.Workers.CriticalAlertDispatcher.enqueue(%{
         type: :critical_moderation_alert,
         priority: :critical,
@@ -21,9 +21,9 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
         category: :csam,
         requires_immediate_action: true
       })
-  
+
   ## Configuration
-  
+
       config :cgraph, Cgraph.Workers.CriticalAlertDispatcher,
         email_recipients: ["oncall@example.com"],
         sms_enabled: false,
@@ -43,7 +43,7 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
     Logger.warning("CRITICAL_ALERT_DISPATCH: #{inspect(args)}")
-    
+
     with :ok <- send_admin_emails(args),
          :ok <- send_push_notifications(args),
          :ok <- send_webhook_if_configured(args) do
@@ -68,14 +68,14 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
   defp send_admin_emails(args) do
     alert = Map.get(args, "alert", args)
     recipients = get_admin_email_recipients()
-    
+
     if Enum.empty?(recipients) do
       Logger.info("No admin email recipients configured for critical alerts")
       :ok
     else
       subject = "[CRITICAL] Moderation Alert - #{alert["category"] || alert[:category]}"
       body = format_alert_email(alert)
-      
+
       Enum.each(recipients, fn email ->
         # Queue email using Oban directly since we need custom subject/body
         %{
@@ -88,7 +88,7 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
         |> Cgraph.Workers.SendEmailNotification.new(priority: 0)
         |> Oban.insert()
       end)
-      
+
       :ok
     end
   end
@@ -97,7 +97,7 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
   defp send_push_notifications(args) do
     alert = Map.get(args, "alert", args)
     admin_users = Accounts.list_admin_users()
-    
+
     Enum.each(admin_users, fn admin ->
       Notifications.notify(admin, :critical_moderation_alert,
         title: "🚨 Critical Moderation Alert",
@@ -108,7 +108,7 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
         }
       )
     end)
-    
+
     :ok
   rescue
     e ->
@@ -127,7 +127,7 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
           alert: alert,
           timestamp: DateTime.utc_now() |> DateTime.to_iso8601()
         })
-        
+
         case :httpc.request(:post, {to_charlist(url), [], ~c"application/json", payload}, [], []) do
           {:ok, _} -> :ok
           {:error, reason} ->
@@ -146,16 +146,16 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
     """
     CRITICAL MODERATION ALERT
     =========================
-    
+
     Report ID: #{alert["report_id"] || alert[:report_id]}
     Category: #{alert["category"] || alert[:category]}
     Priority: #{alert["priority"] || alert[:priority]}
-    
+
     This report requires immediate attention and may involve illegal content.
     Please review in the admin dashboard immediately.
-    
+
     Escalation Deadline: #{alert["escalation_deadline"] || "1 hour from now"}
-    
+
     ---
     This is an automated alert from CGraph Moderation System.
     Do not reply to this email.

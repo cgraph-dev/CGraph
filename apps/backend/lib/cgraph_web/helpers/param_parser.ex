@@ -205,7 +205,7 @@ defmodule CgraphWeb.Helpers.ParamParser do
   def parse_referral_code(nil), do: {:error, :invalid_format}
   def parse_referral_code(value) when is_binary(value) do
     cleaned = value |> String.trim() |> String.upcase()
-    
+
     if Regex.match?(~r/^[A-Z0-9]{6,12}$/, cleaned) do
       {:ok, cleaned}
     else
@@ -222,7 +222,7 @@ defmodule CgraphWeb.Helpers.ParamParser do
   def validate_event_title(value) when is_binary(value) do
     trimmed = String.trim(value)
     length = String.length(trimmed)
-    
+
     cond do
       length < 3 -> {:error, :title_too_short}
       length > 200 -> {:error, :title_too_long}
@@ -239,7 +239,7 @@ defmodule CgraphWeb.Helpers.ParamParser do
   def validate_event_dates(start_date, end_date) do
     start_dt = parse_datetime(start_date, nil)
     end_dt = parse_datetime(end_date, nil)
-    
+
     cond do
       is_nil(start_dt) -> {:error, :start_date_required}
       not is_nil(end_dt) and DateTime.compare(end_dt, start_dt) == :lt ->
@@ -268,10 +268,10 @@ defmodule CgraphWeb.Helpers.ParamParser do
   def validate_pagination(params, opts \\ []) do
     max_per_page = Keyword.get(opts, :max_per_page, 100)
     default_per_page = Keyword.get(opts, :default_per_page, 25)
-    
+
     page = parse_int(params["page"], 1, min: 1, max: 10_000)
     per_page = parse_int(params["per_page"], default_per_page, min: 1, max: max_per_page)
-    
+
     {page, per_page}
   end
 
@@ -283,7 +283,7 @@ defmodule CgraphWeb.Helpers.ParamParser do
   def sanitize_html(nil, _opts), do: nil
   def sanitize_html(value, opts) when is_binary(value) do
     max_length = Keyword.get(opts, :max_length, 50_000)
-    
+
     value
     |> String.slice(0, max_length)
     |> strip_dangerous_html()
@@ -309,7 +309,7 @@ defmodule CgraphWeb.Helpers.ParamParser do
     prohibited_patterns = [
       ~r/\b(spam|scam)\b/i
     ]
-    
+
     Enum.any?(prohibited_patterns, fn pattern ->
       Regex.match?(pattern, text)
     end)

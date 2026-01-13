@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Platform,
   Alert,
   Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -17,6 +18,7 @@ import { useNavigation } from '@react-navigation/native';
 import GlassCard from '../../components/ui/GlassCard';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import paymentService, { PRODUCT_IDS, SubscriptionStatus } from '../../lib/payment';
 
 /**
  * Premium Subscription Screen (Mobile)
@@ -39,7 +41,7 @@ interface PremiumTier {
     yearly: number;
   };
   popular?: boolean;
-  gradient: string[];
+  gradient: readonly [string, string, ...string[]];
   features: {
     text: string;
     included: boolean;
@@ -118,11 +120,30 @@ type BillingCycle = 'monthly' | 'yearly';
 const PremiumScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const { user } = useAuth();
-  const { theme } = useTheme();
+  const { colors } = useTheme();
   const [billingCycle, setBillingCycle] = useState<BillingCycle>('yearly');
   const [selectedTier, setSelectedTier] = useState<PremiumTier['id']>('premium');
+  const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isPurchasing, setIsPurchasing] = useState(false);
 
-  const currentTier = user?.premium_tier || 'free';
+  // Fetch subscription status on mount
+  useEffect(() => {
+    const initializePayments = async () => {
+      try {
+        await paymentService.initialize();
+        const status = await paymentService.getSubscriptionStatus();
+        setSubscriptionStatus(status);
+      } catch (error) {
+        console.error('[PremiumScreen] Error fetching subscription:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    initializePayments();
+  }, []);
+
+  const currentTier = subscriptionStatus?.tier || 'free';
 
   const handleBillingToggle = useCallback((cycle: BillingCycle) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -134,9 +155,14 @@ const PremiumScreen: React.FC = () => {
     setSelectedTier(tierId);
   }, []);
 
-  const handleSubscribe = useCallback((tier: PremiumTier) => {
+  const handleSubscribe = useCallback(async (tier: PremiumTier) => {
     if (tier.id === 'free') {
       Alert.alert('Already Free', 'You are currently on the free plan.');
+      return;
+    }
+
+    if (currentTier === tier.id) {
+      Alert.alert('Already Subscribed', `You're already on the ${tier.name} plan.`);
       return;
     }
 
@@ -154,20 +180,42 @@ const PremiumScreen: React.FC = () => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Subscribe',
-          onPress: () => {
-            // TODO: Integrate payment provider (Stripe, RevenueCat, or In-App Purchase)
-            console.log('Subscribe to:', tier.id, billingCycle);
-            Alert.alert(
-              'Coming Soon!',
-              'Payment integration is under development. Check back soon!'
-            );
+          onPress: async () => {
+            setIsPurchasing(true);
+            try {
+              // Get the correct product ID based on tier and billing cycle
+              const productId = tier.id === 'premium'
+                ? (billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_YEARLY : PRODUCT_IDS.PREMIUM_MONTHLY)
+                : (billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_PLUS_YEARLY : PRODUCT_IDS.PREMIUM_PLUS_MONTHLY);
+
+              const purchase = await paymentService.purchaseProduct(productId);
+              
+              if (purchase) {
+                // Refresh subscription status
+                const status = await paymentService.getSubscriptionStatus();
+                setSubscriptionStatus(status);
+                
+                if (purchase.purchaseState === 'purchased') {
+                  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  Alert.alert('Success!', `Welcome to ${tier.name}! Your subscription is now active.`);
+                } else if (purchase.purchaseState === 'pending') {
+                  Alert.alert('Processing', 'Your purchase is being processed. It may take a few moments.');
+                }
+              }
+            } catch (error: any) {
+              console.error('[PremiumScreen] Purchase error:', error);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              Alert.alert('Purchase Failed', error.message || 'Unable to complete purchase.');
+            } finally {
+              setIsPurchasing(false);
+            }
           },
         },
       ]
     );
-  }, [billingCycle]);
+  }, [billingCycle, currentTier]);
 
-  const handleRestorePurchases = useCallback(() => {
+  const handleRestorePurchases = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert(
       'Restore Purchases',
@@ -176,10 +224,28 @@ const PremiumScreen: React.FC = () => {
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Restore',
-          onPress: () => {
-            // TODO: Implement restore logic with payment provider
-            console.log('Restore purchases');
-            Alert.alert('Success', 'Your purchases have been restored!');
+          onPress: async () => {
+            setIsPurchasing(true);
+            try {
+              const restoredPurchases = await paymentService.restorePurchases();
+              
+              if (restoredPurchases.length > 0) {
+                // Refresh subscription status
+                const status = await paymentService.getSubscriptionStatus();
+                setSubscriptionStatus(status);
+                
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                Alert.alert('Success', `Restored ${restoredPurchases.length} purchase(s)!`);
+              } else {
+                Alert.alert('No Purchases', 'No previous purchases found to restore.');
+              }
+            } catch (error: any) {
+              console.error('[PremiumScreen] Restore error:', error);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              Alert.alert('Restore Failed', error.message || 'Unable to restore purchases.');
+            } finally {
+              setIsPurchasing(false);
+            }
           },
         },
       ]
@@ -215,7 +281,7 @@ const PremiumScreen: React.FC = () => {
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
+      style={[styles.container, { backgroundColor: colors.background }]}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
     >
@@ -226,7 +292,7 @@ const PremiumScreen: React.FC = () => {
           onPress={() => navigation.goBack()}
           activeOpacity={0.7}
         >
-          <Ionicons name="arrow-back" size={24} color={theme.colors.text} />
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
         
         <View style={styles.headerTextContainer}>
@@ -238,7 +304,7 @@ const PremiumScreen: React.FC = () => {
           >
             <Ionicons name="diamond" size={24} color="#fff" />
           </LinearGradient>
-          <Text style={[styles.headerTitle, { color: theme.colors.text }]}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>
             CGraph Premium
           </Text>
         </View>
@@ -318,11 +384,11 @@ const PremiumScreen: React.FC = () => {
               <GlassCard
                 variant={isSelected ? 'neon' : 'crystal'}
                 intensity="medium"
-                style={[
-                  styles.tierCardInner,
-                  isSelected && styles.tierCardSelected,
-                  tier.popular && styles.tierCardPopular,
-                ]}
+                style={{
+                  ...styles.tierCardInner,
+                  ...(isSelected ? styles.tierCardSelected : {}),
+                  ...(tier.popular ? styles.tierCardPopular : {}),
+                }}
                 borderGradient={isSelected}
               >
                 {tier.popular && (
@@ -445,11 +511,11 @@ const PremiumScreen: React.FC = () => {
           activeOpacity={0.8}
         >
           <GlassCard variant="frosted" intensity="subtle" style={styles.manageCard}>
-            <Ionicons name="settings-outline" size={20} color={theme.colors.text} />
-            <Text style={[styles.manageText, { color: theme.colors.text }]}>
+            <Ionicons name="settings-outline" size={20} color={colors.text} />
+            <Text style={[styles.manageText, { color: colors.text }]}>
               Manage Subscription
             </Text>
-            <Ionicons name="chevron-forward" size={20} color={theme.colors.textSecondary} />
+            <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
           </GlassCard>
         </TouchableOpacity>
       )}

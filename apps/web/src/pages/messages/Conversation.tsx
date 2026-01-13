@@ -25,7 +25,7 @@ import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
 // Enhanced UI v3.0 components - NEXT GEN
 import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
-import { AnimatedReactionBubble, ReactionPicker } from '@/components/conversation/AnimatedReactionBubble';
+import { AnimatedReactionBubble } from '@/components/conversation/AnimatedReactionBubble';
 import GlassCard from '@/components/ui/GlassCard';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -37,8 +37,92 @@ import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
 import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
 import type { Sticker } from '@/data/stickers';
 
-import ShaderBackground from '@/components/shaders/ShaderBackground';
 import { themeEngine } from '@/lib/ai/ThemeEngine';
+
+// ============================================================================
+// TYPE-SAFE REACTION AGGREGATION UTILITIES
+// ============================================================================
+
+/**
+ * Aggregated reaction format expected by MessageReactions component.
+ * Transforms raw reaction arrays into grouped, counted summaries.
+ */
+interface AggregatedReaction {
+  emoji: string;
+  count: number;
+  users: Array<{ id: string; username: string }>;
+  hasReacted: boolean;
+}
+
+/**
+ * Raw reaction format from the chat store.
+ * Includes individual user attribution for each reaction instance.
+ */
+interface RawReaction {
+  id: string;
+  emoji: string;
+  userId: string;
+  user: {
+    id: string;
+    username: string;
+  };
+}
+
+/**
+ * Aggregates raw reactions into grouped format with counts and user lists.
+ * Uses a Map-based accumulator pattern for O(n) complexity.
+ * 
+ * @param reactions - Array of individual reaction records
+ * @returns Array of aggregated reactions grouped by emoji
+ */
+function aggregateReactions(reactions: RawReaction[] | undefined): AggregatedReaction[] {
+  if (!reactions || reactions.length === 0) return [];
+  
+  const currentUserId = useAuthStore.getState().user?.id;
+  const aggregationMap = new Map<string, AggregatedReaction>();
+  
+  for (const reaction of reactions) {
+    // Skip reactions with missing required data
+    if (!reaction?.emoji) continue;
+    
+    const userId = reaction.user?.id ?? reaction.userId ?? 'unknown';
+    const username = reaction.user?.username ?? 'Unknown User';
+    const existing = aggregationMap.get(reaction.emoji);
+    
+    if (existing) {
+      existing.count++;
+      existing.users.push({ id: userId, username });
+      if (reaction.userId === currentUserId) {
+        existing.hasReacted = true;
+      }
+    } else {
+      aggregationMap.set(reaction.emoji, {
+        emoji: reaction.emoji,
+        count: 1,
+        users: [{ id: userId, username }],
+        hasReacted: reaction.userId === currentUserId,
+      });
+    }
+  }
+  
+  return Array.from(aggregationMap.values());
+}
+
+/**
+ * Handles removal of a reaction from a message.
+ * Integrates with the chat store's reaction management system.
+ * 
+ * @param messageId - The ID of the message to remove reaction from
+ * @param emoji - The emoji to remove
+ */
+async function handleRemoveReaction(messageId: string, emoji: string): Promise<void> {
+  try {
+    const { removeReaction } = useChatStore.getState();
+    await removeReaction(messageId, emoji);
+  } catch (error) {
+    console.error('Failed to remove reaction:', error);
+  }
+}
 
 export default function Conversation() {
   // Apply adaptive theme on mount
@@ -390,9 +474,9 @@ export default function Conversation() {
         borderGradient
         className="h-16 flex items-center justify-between flex-shrink-0 rounded-none z-10"
       >
-        <div className="w-full h-full flex items-center justify-between px-4">
+        <div className="w-full h-full flex items-center pl-4 pr-2">
         <motion.div
-          className="flex items-center gap-3"
+          className="flex items-center gap-3 flex-1 min-w-0"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
@@ -459,7 +543,7 @@ export default function Conversation() {
         </motion.div>
 
         <motion.div
-          className="flex items-center gap-2"
+          className="flex items-center gap-2 ml-auto flex-shrink-0"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
@@ -470,7 +554,7 @@ export default function Conversation() {
               setShowE2EETester(true);
               HapticFeedback.medium();
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-green-500/10 border border-green-500/30 backdrop-blur-sm cursor-pointer transition-all hover:bg-green-500/20"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-green-500/10 border border-green-500/30 backdrop-blur-sm cursor-pointer transition-all hover:bg-green-500/20 mr-2"
             title="Click to test E2EE connection"
             whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(34, 197, 94, 0.3)' }}
             whileTap={{ scale: 0.95 }}
@@ -483,7 +567,7 @@ export default function Conversation() {
             } : {}}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <LockClosedIcon className="h-4 w-4 text-green-400" />
+            <LockClosedIcon className="h-3.5 w-3.5 text-green-400" />
             <span className="text-xs text-green-400 font-bold tracking-wider">E2EE</span>
           </motion.button>
 
@@ -494,39 +578,42 @@ export default function Conversation() {
               if (uiPreferences.enableHaptic) HapticFeedback.light();
             }}
             disabled={isRefreshing}
-            className="p-2.5 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all duration-200 disabled:opacity-50 group"
+            className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all duration-200 disabled:opacity-50"
             title="Refresh messages"
             whileHover={{ scale: 1.1, rotate: uiPreferences.enable3D ? 180 : 0 }}
             whileTap={{ scale: 0.9 }}
           >
-            <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''} group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]`} />
+            <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
           </motion.button>
 
           <motion.button
             onClick={() => uiPreferences.enableHaptic && HapticFeedback.medium()}
-            className="p-2.5 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all duration-200 group"
+            className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all duration-200"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            title="Voice call"
           >
-            <PhoneIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+            <PhoneIcon className="h-5 w-5" />
           </motion.button>
 
           <motion.button
             onClick={() => uiPreferences.enableHaptic && HapticFeedback.medium()}
-            className="p-2.5 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all duration-200 group"
+            className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all duration-200"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            title="Video call"
           >
-            <VideoCameraIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+            <VideoCameraIcon className="h-5 w-5" />
           </motion.button>
 
           <motion.button
             onClick={() => uiPreferences.enableHaptic && HapticFeedback.medium()}
-            className="p-2.5 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all duration-200 group"
+            className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all duration-200"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            title="Conversation info"
           >
-            <InformationCircleIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+            <InformationCircleIcon className="h-5 w-5" />
           </motion.button>
 
           {/* UI Settings Button */}
@@ -535,12 +622,12 @@ export default function Conversation() {
               setShowSettings(!showSettings);
               if (uiPreferences.enableHaptic) HapticFeedback.medium();
             }}
-            className="p-2.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 transition-all duration-200 group border border-purple-500/30"
+            className="p-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-400 transition-all duration-200 border border-purple-500/30 ml-1"
             whileHover={{ scale: 1.1, rotate: 90 }}
             whileTap={{ scale: 0.9 }}
             title="UI Customization"
           >
-            <Cog6ToothIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+            <Cog6ToothIcon className="h-5 w-5" />
           </motion.button>
         </motion.div>
         </div>
@@ -765,14 +852,14 @@ export default function Conversation() {
                       uiPreferences={uiPreferences}
                       onAvatarClick={(userId) => navigate(`/user/${userId}`)}
                     />
-                    {/* Enhanced Reactions: AnimatedReactionBubble */}
+                    {/* Enhanced Reactions: AnimatedReactionBubble with type-safe aggregation */}
                     {message.reactions && message.reactions.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-2">
                         {Object.entries(
-                          message.reactions.reduce((acc, r) => {
-                            if (!acc[r.emoji]) acc[r.emoji] = { count: 0, hasReacted: false };
-                            acc[r.emoji].count++;
-                            if (user && r.userId === user.id) acc[r.emoji].hasReacted = true;
+                          message.reactions.reduce<Record<string, { count: number; hasReacted: boolean }>>((acc, r) => {
+                            const entry = acc[r.emoji] ??= { count: 0, hasReacted: false };
+                            entry.count++;
+                            if (user && r.userId === user.id) entry.hasReacted = true;
                             return acc;
                           }, {})
                         ).map(([emoji, { count, hasReacted }]) => (
@@ -873,7 +960,7 @@ export default function Conversation() {
                 />
                 <div>
                   <p className="text-xs font-semibold bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent">
-                    Replying to {replyTo.sender.displayName || replyTo.sender.username}
+                    Replying to {replyTo.sender?.displayName || replyTo.sender?.username || 'Unknown'}
                   </p>
                   <p className="text-sm text-gray-300 truncate max-w-md">{replyTo.content}</p>
                 </div>
@@ -1108,7 +1195,7 @@ function MessageBubble({
         {/* Reply preview */}
         {message.replyTo && (
           <div className={`mb-1 px-3 py-1.5 rounded-lg bg-dark-700/50 text-xs ${isOwn ? 'text-right' : ''}`}>
-            <span className="text-primary-400">{message.replyTo.sender.username}</span>
+            <span className="text-primary-400">{message.replyTo.sender?.username || 'Unknown'}</span>
             <p className="text-gray-400 truncate max-w-xs">{message.replyTo.content}</p>
           </div>
         )}
@@ -1285,14 +1372,25 @@ function MessageBubble({
   );
 }
 
-// Reaction handler using chatStore (align with EnhancedConversation)
-async function handleAddReaction(messageId: string, emoji: string, conversationIdParam?: string) {
+/**
+ * Handles adding a reaction to a message.
+ * Uses the chat store's reaction system with proper state management.
+ * The conversationId parameter is retained for potential future use
+ * in conversation-scoped reaction analytics.
+ * 
+ * @param messageId - The ID of the message to react to
+ * @param emoji - The emoji to add as reaction
+ * @param _conversationId - Reserved for conversation context (unused currently)
+ */
+async function handleAddReaction(
+  messageId: string, 
+  emoji: string, 
+  _conversationId?: string
+): Promise<void> {
   try {
-    const { addReaction } = require('@/stores/chatStore');
+    const { addReaction } = useChatStore.getState();
     await addReaction(messageId, emoji);
-  } catch (err) {
-    console.error('Failed to add reaction:', err);
+  } catch (error) {
+    console.error('Failed to add reaction:', error);
   }
 }
-  {/* ShaderBackground for advanced animated background */}
-  <ShaderBackground variant="fluid" color1="#00ff41" color2="#003b00" color3="#39ff14" speed={0.7} intensity={1.1} interactive className="fixed inset-0 -z-10" />

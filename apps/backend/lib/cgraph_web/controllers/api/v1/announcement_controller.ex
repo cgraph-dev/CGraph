@@ -5,7 +5,7 @@ defmodule CgraphWeb.API.V1.AnnouncementController do
 
   ## Features
   - Global announcements
-  - Forum-specific announcements  
+  - Forum-specific announcements
   - Read tracking
   - Dismissible announcements
   - Visibility by user group
@@ -21,7 +21,7 @@ defmodule CgraphWeb.API.V1.AnnouncementController do
   """
   def index(conn, params) do
     user = conn.assigns.current_user
-    
+
     opts = [
       forum_id: Map.get(params, "forum_id"),
       include_global: Map.get(params, "include_global", "true") == "true",

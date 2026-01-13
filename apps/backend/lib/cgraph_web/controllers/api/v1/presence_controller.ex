@@ -33,9 +33,9 @@ defmodule CgraphWeb.API.V1.PresenceController do
     {users, pagination} = Presence.list_online_users(opts)
     guests = Presence.count_guests()
 
-    render(conn, :online, 
-      users: users, 
-      pagination: pagination, 
+    render(conn, :online,
+      users: users,
+      pagination: pagination,
       guests: guests,
       total_online: pagination[:total_count] + guests
     )
@@ -86,7 +86,7 @@ defmodule CgraphWeb.API.V1.PresenceController do
   """
   def user_status(conn, %{"user_id" => user_id}) do
     current_user = conn.assigns[:current_user]
-    
+
     with {:ok, status} <- Presence.get_user_status(user_id, current_user) do
       render(conn, :user_status, status: status)
     end

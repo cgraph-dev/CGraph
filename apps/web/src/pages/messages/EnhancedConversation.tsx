@@ -251,15 +251,15 @@ function EnhancedMessageBubble({
                 exit={{ opacity: 0, y: -10 }}
                 layout
               >
-                {/* Aggregate reactions by emoji */}
+                {/* Aggregate reactions by emoji with type-safe accumulator using nullish coalescing assignment */}
                 {Object.entries(
                   message.reactions.reduce<Record<string, { count: number; hasReacted: boolean }>>((acc, r) => {
-                    if (!acc[r.emoji]) acc[r.emoji] = { count: 0, hasReacted: false };
-                    acc[r.emoji].count++;
-                    if (user && r.userId === user.id) acc[r.emoji].hasReacted = true;
+                    const entry = acc[r.emoji] ??= { count: 0, hasReacted: false };
+                    entry.count++;
+                    if (user && r.userId === user.id) entry.hasReacted = true;
                     return acc;
                   }, {})
-                ).map(([emoji, { count, hasReacted }], i) => (
+                ).map(([emoji, { count, hasReacted }]) => (
                   <AnimatedReactionBubble
                     key={emoji}
                     reaction={{

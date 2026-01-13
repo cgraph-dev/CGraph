@@ -72,7 +72,9 @@ config :logger, :console,
     :kind, :stacktrace, :error_type, :fingerprint, :context, :severity,
     :issues, :data, :body,
     # Workers specific
-    :deleted_count, :tags, :state, :resource_id
+    :deleted_count, :tags, :state, :resource_id,
+    # Telemetry/Alerts
+    :affected_users, :component, :message, :error_id, :level, :url
   ]
 
 # Use Jason for JSON parsing

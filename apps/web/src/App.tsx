@@ -1,6 +1,7 @@
 import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { useGamificationStore } from '@/stores/gamificationStore';
 
 // ============================================================================
 // LAYOUTS - Eagerly loaded (always needed)
@@ -67,6 +68,12 @@ const PremiumPage = lazy(() => import('@/pages/premium/PremiumPage'));
 const CoinShop = lazy(() => import('@/pages/premium/CoinShop'));
 const LeaderboardPage = lazy(() => import('@/pages/leaderboard/LeaderboardPage'));
 
+// Gamification Hub & Pages
+const GamificationHubPage = lazy(() => import('@/pages/gamification/GamificationHubPage'));
+const AchievementsPage = lazy(() => import('@/pages/gamification/AchievementsPage'));
+const QuestsPage = lazy(() => import('@/pages/gamification/QuestsPage'));
+const TitlesPage = lazy(() => import('@/pages/gamification/TitlesPage'));
+
 // Members & Community
 const MemberList = lazy(() => import('@/pages/members/MemberList'));
 const WhosOnline = lazy(() => import('@/pages/members/WhosOnline'));
@@ -91,6 +98,8 @@ const EnhancedDemo = lazy(() => import('@/pages/test/EnhancedDemo'));
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const checkAuth = useAuthStore((state) => state.checkAuth);
   const token = useAuthStore((state) => state.token);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const fetchGamificationData = useGamificationStore((state) => state.fetchGamificationData);
 
   useEffect(() => {
     // Run auth check in background - don't block rendering
@@ -106,6 +115,18 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       }
     });
   }, [checkAuth, token]);
+
+  // Fetch gamification data when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      if (import.meta.env.DEV) {
+        console.log('[AuthInitializer] Fetching gamification data...');
+      }
+      fetchGamificationData().catch((error) => {
+        console.error('[AuthInitializer] Gamification fetch failed:', error);
+      });
+    }
+  }, [isAuthenticated, fetchGamificationData]);
 
   // Always render children immediately - no blocking
   return <>{children}</>;
@@ -283,6 +304,15 @@ export default function App() {
 
           {/* Gamification Leaderboard */}
           <Route path="leaderboard" element={<LeaderboardPage />} />
+
+          {/* Gamification Hub & Pages */}
+          <Route path="gamification" element={<GamificationHubPage />} />
+          <Route path="gamification/achievements" element={<AchievementsPage />} />
+          <Route path="gamification/quests" element={<QuestsPage />} />
+          <Route path="gamification/titles" element={<TitlesPage />} />
+          <Route path="achievements" element={<AchievementsPage />} />
+          <Route path="quests" element={<QuestsPage />} />
+          <Route path="titles" element={<TitlesPage />} />
 
           {/* User Profile */}
           <Route path="user/:userId" element={<UserProfile />} />

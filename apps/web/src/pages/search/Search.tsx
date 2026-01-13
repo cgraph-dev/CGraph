@@ -119,7 +119,7 @@ export default function Search() {
     users.length + groups.length + forums.length + posts.length + messages.length;
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative overflow-hidden">
+    <div className="flex-1 flex flex-col h-full max-h-screen overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative">
       {/* Ambient particles */}
       {[...Array(10)].map((_, i) => (
         <motion.div

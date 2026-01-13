@@ -40,8 +40,8 @@ defmodule Cgraph.Calendar.Event do
   end
 
   @required_fields ~w(title start_date author_id)a
-  @optional_fields ~w(description end_date all_day timezone event_type is_recurring 
-                      recurrence_pattern recurrence_end_date location location_url 
+  @optional_fields ~w(description end_date all_day timezone event_type is_recurring
+                      recurrence_pattern recurrence_end_date location location_url
                       visibility category_id forum_id rsvp_enabled rsvp_deadline max_attendees)a
 
   @valid_visibilities ~w(public private forum)

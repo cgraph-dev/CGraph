@@ -1,10 +1,10 @@
 {
   "name": "cgraph",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "private": true,
-  "description": "CGraph - Enterprise messaging platform with Signal Protocol encryption, AI intelligence, holographic UI, and spatial audio",
-  "author": "CGraph Team",
-  "license": "UNLICENSED",
+  "description": "CGraph - Open-source messaging platform with Signal Protocol encryption, gamification, and real-time collaboration",
+  "author": "Burca Lucas",
+  "license": "MIT",
   "workspaces": [
     "apps/*",
     "packages/*"

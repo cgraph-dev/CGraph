@@ -130,10 +130,17 @@ defmodule Cgraph.Presence do
       device: Map.get(meta, :device, "web")
     }, meta)
 
-    result = track(socket, room_topic(room_id), user_id, full_meta)
+    # Use track/4 with PID for Phoenix.Tracker compatibility
+    # Phoenix.Presence's track/3 variant uses (socket, key, meta) but that
+    # requires the socket's topic. For custom topics, use track/4 with PID.
+    pid = socket.channel_pid
+    room_topic = room_topic(room_id)
+
+    # Track in the room-specific topic
+    result = __MODULE__.track(pid, room_topic, user_id, full_meta)
 
     # Also track in global presence
-    track(socket, "users:online", user_id, full_meta)
+    __MODULE__.track(pid, "users:online", user_id, full_meta)
 
     emit_telemetry(:join, user_id, full_meta)
 
@@ -458,7 +465,7 @@ defmodule Cgraph.Presence do
   def list_online_users(opts) when is_list(opts) do
     page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 50)
-    
+
     all_users = list_online_users()
     |> Map.to_list()
     |> Enum.map(fn {user_id, presence} ->
@@ -467,7 +474,7 @@ defmodule Cgraph.Presence do
 
     total_count = length(all_users)
     offset = (page - 1) * per_page
-    
+
     users = all_users
     |> Enum.drop(offset)
     |> Enum.take(per_page)
@@ -497,10 +504,10 @@ defmodule Cgraph.Presence do
   def update_presence(user_id, location) do
     # Update last seen
     record_last_seen(user_id)
-    
+
     # Store location in cache
     Cachex.put(:cgraph_cache, "presence:location:#{user_id}", location, ttl: 300_000)
-    
+
     {:ok, :updated}
   end
 
@@ -510,7 +517,7 @@ defmodule Cgraph.Presence do
   def get_stats do
     online_users = list_online_users()
     users_online = map_size(online_users)
-    
+
     invisible_count = online_users
     |> Enum.count(fn {_id, meta} -> meta[:status] == "invisible" end)
 
@@ -540,7 +547,7 @@ defmodule Cgraph.Presence do
   def get_user_status(user_id, _viewer) do
     status = get_user_status(user_id)
     last_online = last_seen(user_id)
-    
+
     location = case Cachex.get(:cgraph_cache, "presence:location:#{user_id}") do
       {:ok, loc} -> loc
       _ -> nil
