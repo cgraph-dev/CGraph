@@ -8,6 +8,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -30,6 +31,23 @@ export default function SettingsScreen({ navigation }: Props) {
   const { user, logout } = useAuth();
   
   const settingsSections = [
+    {
+      title: 'Premium',
+      items: [
+        {
+          title: 'CGraph Premium',
+          icon: 'star' as const,
+          onPress: () => navigation.navigate('Premium'),
+          isPremium: true,
+        },
+        {
+          title: 'Coin Shop',
+          icon: 'logo-bitcoin' as const,
+          onPress: () => navigation.navigate('CoinShop'),
+          isShop: true,
+        },
+      ],
+    },
     {
       title: 'Account',
       items: [
@@ -138,29 +156,67 @@ export default function SettingsScreen({ navigation }: Props) {
       {/* Settings Sections */}
       {settingsSections.map((section) => (
         <View key={section.title} style={styles.section}>
-          <Text style={[styles.sectionTitle, { color: colors.textSecondary }]}>
-            {section.title}
+          <Text style={[styles.sectionTitle, { color: section.title === 'Premium' ? '#F59E0B' : colors.textSecondary }]}>
+            {section.title === 'Premium' ? '⭐ ' + section.title : section.title}
           </Text>
           <View style={[styles.sectionContent, { backgroundColor: colors.surface }]}>
-            {section.items.map((item, index) => (
-              <TouchableOpacity
-                key={item.title}
-                style={[
-                  styles.settingsItem,
-                  index < section.items.length - 1 && {
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                    borderBottomColor: colors.border,
-                  },
-                ]}
-                onPress={item.onPress}
-              >
-                <Ionicons name={item.icon} size={22} color={colors.textSecondary} />
-                <Text style={[styles.settingsItemText, { color: colors.text }]}>
-                  {item.title}
-                </Text>
-                <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
-              </TouchableOpacity>
-            ))}
+            {section.items.map((item, index) => {
+              const isPremiumItem = 'isPremium' in item || 'isShop' in item;
+              
+              if (isPremiumItem) {
+                return (
+                  <TouchableOpacity
+                    key={item.title}
+                    style={[
+                      styles.settingsItem,
+                      index < section.items.length - 1 && {
+                        borderBottomWidth: StyleSheet.hairlineWidth,
+                        borderBottomColor: colors.border,
+                      },
+                    ]}
+                    onPress={item.onPress}
+                  >
+                    <LinearGradient
+                      colors={['#F59E0B', '#EF4444']}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={styles.premiumIconContainer}
+                    >
+                      <Ionicons name={item.icon} size={18} color="#fff" />
+                    </LinearGradient>
+                    <Text style={[styles.settingsItemText, { color: colors.text, fontWeight: '600' }]}>
+                      {item.title}
+                    </Text>
+                    {'isPremium' in item && (
+                      <View style={styles.premiumBadge}>
+                        <Text style={styles.premiumBadgeText}>PRO</Text>
+                      </View>
+                    )}
+                    <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+                  </TouchableOpacity>
+                );
+              }
+              
+              return (
+                <TouchableOpacity
+                  key={item.title}
+                  style={[
+                    styles.settingsItem,
+                    index < section.items.length - 1 && {
+                      borderBottomWidth: StyleSheet.hairlineWidth,
+                      borderBottomColor: colors.border,
+                    },
+                  ]}
+                  onPress={item.onPress}
+                >
+                  <Ionicons name={item.icon} size={22} color={colors.textSecondary} />
+                  <Text style={[styles.settingsItemText, { color: colors.text }]}>
+                    {item.title}
+                  </Text>
+                  <Ionicons name="chevron-forward" size={20} color={colors.textTertiary} />
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
       ))}
@@ -178,7 +234,7 @@ export default function SettingsScreen({ navigation }: Props) {
       
       {/* Version */}
       <Text style={[styles.version, { color: colors.textTertiary }]}>
-        CGraph v1.0.0
+        CGraph v0.8.1
       </Text>
     </ScrollView>
   );
@@ -261,6 +317,26 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     marginLeft: 12,
+  },
+  premiumIconContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  premiumBadge: {
+    backgroundColor: '#F59E0B',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    marginRight: 8,
+  },
+  premiumBadgeText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
   logoutButton: {
     flexDirection: 'row',

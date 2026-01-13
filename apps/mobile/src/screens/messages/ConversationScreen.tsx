@@ -38,7 +38,7 @@ import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
 import { MessagesStackParamList, Message, Conversation, ConversationParticipant, UserBasic } from '../../types';
-import { VoiceMessageRecorder, VoiceMessagePlayer, TelegramAttachmentPicker } from '../../components';
+import { VoiceMessageRecorder, VoiceMessagePlayer, TelegramAttachmentPicker, RichMediaEmbed } from '../../components';
 import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('ConversationScreen');
@@ -2644,6 +2644,16 @@ export default function ConversationScreen({ navigation, route }: Props) {
           >
             {item.content}
           </Text>
+        )}
+        {/* Rich Media Embeds for URLs in text messages */}
+        {item.content && 
+         item.type === 'text' &&
+         item.content.match(/https?:\/\/[^\s]+/) && (
+          <RichMediaEmbed
+            content={item.content}
+            isOwnMessage={isOwnMessage}
+            maxEmbeds={2}
+          />
         )}
         <View style={styles.messageFooter}>
           <Text
