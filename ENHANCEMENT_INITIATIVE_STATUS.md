@@ -197,13 +197,12 @@ The comprehensive CGraph enhancement initiative has been successfully completed.
 
 ## ⏳ Remaining Optional Enhancements
 
-These items are **not blocking** but would further improve the platform:
+All optional enhancements have been completed:
 
-### Low Priority
-1. **Factory Pattern for Tests** - Create `test/support/factory.ex` with ExMachina
-2. **Documentation Consolidation** - Reorganize `/docs` into subfolders
-3. **Nx Migration** - Consider for better dependency visualization (optional, Turborepo works well)
-4. **Docusaurus/Nextra Deployment** - For searchable hosted documentation
+### ✅ Completed
+1. **Factory Pattern for Tests** - Created `test/support/factory.ex` with ExMachina (400+ lines, 30+ factories)
+2. **Documentation Consolidation** - Reorganized `/docs` into `guides/`, `api/`, `architecture/`, `release-notes/`
+3. **Docusaurus Deployment** - Created `docs-website/` with full Docusaurus 3.7 setup
 
 ### Future Features
 1. **AI Message Suggestions** - ML-powered response suggestions

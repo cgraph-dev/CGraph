@@ -1,0 +1,22 @@
+# Ignore node_modules
+node_modules/
+
+# Build output
+build/
+.docusaurus/
+
+# Lock files (we use pnpm)
+package-lock.json
+yarn.lock
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local

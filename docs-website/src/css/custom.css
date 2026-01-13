@@ -1,0 +1,226 @@
+/**
+ * Custom CSS for CGraph Documentation
+ */
+
+/* Brand colors */
+:root {
+  --ifm-color-primary: #6366f1;
+  --ifm-color-primary-dark: #4f46e5;
+  --ifm-color-primary-darker: #4338ca;
+  --ifm-color-primary-darkest: #3730a3;
+  --ifm-color-primary-light: #818cf8;
+  --ifm-color-primary-lighter: #a5b4fc;
+  --ifm-color-primary-lightest: #c7d2fe;
+  
+  --ifm-code-font-size: 95%;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark mode colors */
+[data-theme='dark'] {
+  --ifm-color-primary: #818cf8;
+  --ifm-color-primary-dark: #6366f1;
+  --ifm-color-primary-darker: #4f46e5;
+  --ifm-color-primary-darkest: #4338ca;
+  --ifm-color-primary-light: #a5b4fc;
+  --ifm-color-primary-lighter: #c7d2fe;
+  --ifm-color-primary-lightest: #e0e7ff;
+  
+  --ifm-background-color: #0f0f23;
+  --ifm-background-surface-color: #1a1a2e;
+  --ifm-navbar-background-color: #0f0f23;
+  --ifm-footer-background-color: #0a0a1a;
+  
+  --docusaurus-highlighted-code-line-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* Navbar styling */
+.navbar {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(8px);
+}
+
+[data-theme='dark'] .navbar {
+  background-color: rgba(15, 15, 35, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar__title {
+  font-weight: 700;
+}
+
+/* Sidebar styling */
+.menu__link {
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.menu__link:hover {
+  background-color: var(--ifm-color-primary-lightest);
+}
+
+[data-theme='dark'] .menu__link:hover {
+  background-color: rgba(99, 102, 241, 0.2);
+}
+
+.menu__link--active {
+  background-color: var(--ifm-color-primary-lightest);
+}
+
+[data-theme='dark'] .menu__link--active {
+  background-color: rgba(99, 102, 241, 0.3);
+}
+
+/* Code blocks */
+.prism-code {
+  border-radius: 8px;
+}
+
+pre code {
+  border-radius: 8px;
+}
+
+/* Tables */
+table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  border: 1px solid var(--ifm-table-border-color);
+  padding: 0.75rem 1rem;
+}
+
+th {
+  background-color: var(--ifm-table-stripe-background);
+  font-weight: 600;
+}
+
+/* Alerts/Admonitions */
+.alert {
+  border-radius: 8px;
+  border-left-width: 4px;
+}
+
+/* Cards */
+.card {
+  border-radius: 12px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* TOC */
+.table-of-contents__link {
+  transition: color 0.2s ease;
+}
+
+.table-of-contents__link--active {
+  color: var(--ifm-color-primary);
+  font-weight: 500;
+}
+
+/* Footer */
+.footer {
+  background: linear-gradient(180deg, var(--ifm-footer-background-color) 0%, #000 100%);
+}
+
+.footer__title {
+  color: var(--ifm-color-primary-light);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ifm-color-primary-lighter);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ifm-color-primary);
+}
+
+/* Search */
+.DocSearch-Button {
+  border-radius: 8px;
+}
+
+/* Mobile improvements */
+@media (max-width: 996px) {
+  .navbar__items--right {
+    gap: 0.5rem;
+  }
+  
+  .navbar__toggle {
+    margin-right: 0;
+  }
+}
+
+/* Animation for page transitions */
+.main-wrapper {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Code language badges */
+.prism-code::before {
+  content: attr(data-language);
+  position: absolute;
+  top: 0;
+  right: 12px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ifm-color-primary);
+  background: var(--ifm-background-surface-color);
+  border-radius: 0 0 4px 4px;
+}
+
+/* Version badge */
+.badge {
+  display: inline-block;
+  padding: 0.25em 0.5em;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 4px;
+  background-color: var(--ifm-color-primary);
+  color: white;
+}
+
+.badge--success {
+  background-color: #10b981;
+}
+
+.badge--warning {
+  background-color: #f59e0b;
+}
+
+.badge--danger {
+  background-color: #ef4444;
+}

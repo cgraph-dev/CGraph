@@ -1,0 +1,81 @@
+# CGraph Documentation
+
+Welcome to the CGraph documentation. This documentation is organized into the following sections:
+
+## 📚 Documentation Sections
+
+### [Guides](guides/)
+Getting started, deployment, and operational guides for CGraph.
+
+- [Quickstart](guides/QUICKSTART.md) - Get up and running in 5 minutes
+- [User Guide](guides/USER_GUIDE.md) - Complete user documentation
+- [Deployment](guides/DEPLOYMENT.md) - Production deployment guide
+- [Mobile](guides/MOBILE.md) - Mobile app documentation
+- [Frontend](guides/FRONTEND.md) - Web frontend documentation
+- [Security](guides/SECURITY.md) - Security best practices
+
+### [API Reference](api/)
+Complete API documentation and OpenAPI specifications.
+
+- [API Overview](api/API.md) - REST API introduction
+- [API Reference](api/API_REFERENCE.md) - Detailed endpoint documentation
+- [OpenAPI Spec](api/openapi.yaml) - OpenAPI 3.0 specification
+
+### [Architecture](architecture/)
+System design, database schema, and technical architecture.
+
+- [Architecture Overview](architecture/ARCHITECTURE.md) - System architecture
+- [Database](architecture/DATABASE.md) - Database schema and design
+- [Database Scaling](architecture/DATABASE_SCALING.md) - Scaling strategies
+- [Presence Architecture](architecture/PRESENCE_ARCHITECTURE.md) - Real-time presence
+- [Real-time Communication](architecture/REALTIME_COMMUNICATION.md) - WebSocket architecture
+- [Technical Overview](architecture/TECHNICAL_OVERVIEW.md) - Technical deep-dive
+
+### [Release Notes](release-notes/)
+Version history and changelog for all releases.
+
+- [V0.7.57](release-notes/V0.7.57_RELEASE_NOTES.md) - Latest stable
+- [V0.7.56](release-notes/V0.7.56_RELEASE_NOTES.md)
+- [V0.7.47](release-notes/V0.7.47_RELEASE_NOTES.md)
+- [V0.7.45](release-notes/V0.7.45_RELEASE_NOTES.md)
+- [V0.7.44](release-notes/V0.7.44_RELEASE_NOTES.md)
+- [All releases...](release-notes/)
+
+---
+
+## 🚀 Quick Links
+
+| Resource | Description |
+|----------|-------------|
+| [GitHub](https://github.com/cgraph-dev/CGraph) | Source code |
+| [Website](https://www.cgraph.org) | Official website |
+| [Discord](https://discord.gg/cgraph) | Community chat |
+| [Contributing](guides/CONTRIBUTING.md) | How to contribute |
+
+---
+
+## 📖 Documentation Structure
+
+```
+docs/
+├── README.md              # This file
+├── api/                   # API documentation
+│   ├── API.md
+│   ├── API_REFERENCE.md
+│   └── openapi.yaml
+├── architecture/          # System architecture
+│   ├── ARCHITECTURE.md
+│   ├── DATABASE.md
+│   └── ...
+├── guides/                # User and developer guides
+│   ├── QUICKSTART.md
+│   ├── DEPLOYMENT.md
+│   └── ...
+└── release-notes/         # Version history
+    ├── V0.7.57_RELEASE_NOTES.md
+    └── ...
+```
+
+---
+
+*Last updated: January 13, 2026*
