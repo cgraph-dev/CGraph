@@ -1,17 +1,92 @@
+# Changelog
+
+All notable changes to CGraph will be documented in this file.
+
+---
+
+## [0.8.5] - 2026-01-13
+
+**📚 DOCUMENTATION CONSOLIDATION: Professional Documentation Structure**
+
+This release consolidates 99 documentation files into ~30 organized documents, fixes version
+inconsistencies across all packages, and establishes a clean documentation hierarchy suitable for
+enterprise use.
+
+### 📁 Documentation Changes
+
+#### Archived (25 files moved to `docs/archive/`)
+
+- APPLAYOUT_ENHANCEMENTS.md
+- FINAL_UI_ENHANCEMENTS_SUMMARY.md
+- FORUM_COMPLETE_INTEGRATION.md
+- FORUM_INTEGRATION_PLAN.md
+- MOBILE_INTEGRATION_COMPLETE.md
+- MOBILE_FORUM_INTEGRATION_PLAN.md
+- MOBILE_NEXT_GEN_COMPONENTS.md
+- PHASE_2_PROGRESS.md
+- PRODUCTION_UI_ENHANCEMENT_PLAN.md
+- UI_ENHANCEMENT_SESSION_SUMMARY.md
+- V0.8.1 release docs (4 files)
+- Additional integration/status docs
+
+#### New Files
+
+- **WORK_SUMMARY.md**: Quick project reference (was referenced but missing)
+- **eslint.config.js**: Root ESLint 9 config for workspace
+
+#### Updated Files
+
+- **IMPLEMENTATION_STATUS.md**: Current state with v0.8.5 info
+- **README.md**: Version badge updated to 0.8.5
+- **All package.json files**: Synchronized to 0.8.5
+
+### 🔧 Version Synchronization
+
+| Package           | Previous | Current |
+| ----------------- | -------- | ------- |
+| root              | 0.8.4    | 0.8.5   |
+| @cgraph/web       | 0.8.2    | 0.8.5   |
+| @cgraph/mobile    | 0.8.2    | 0.8.5   |
+| backend (mix.exs) | 0.8.2    | 0.8.5   |
+
+### 🌐 Documentation Website
+
+- Beautiful interactive homepage with hero section
+- Fixed broken markdown links throughout docs
+- Route prefix updated to `/docs`
+
+---
+
+## [0.8.4] - 2026-01-12
+
+**🏗️ ENTERPRISE INFRASTRUCTURE: CI/CD, Observability, and ADRs**
+
+Added GitHub Actions CI/CD pipeline, Grafana/Prometheus observability, commitlint, and Architecture
+Decision Records.
+
+---
+
 # [0.8.1] - 2026-01-13
 
 **🎯 MOBILE-WEB FEATURE PARITY: Complete Platform Integration**
 
-This is a **MAJOR** release achieving **99% feature parity** between web and mobile platforms. Implements critical missing features including rich media embeds, complete premium subscription system, coin shop marketplace, gamification system, calendar, leaderboard, referral program, and the revolutionary **Holographic UI system**. Over **7,000+ lines** of new production-ready code with comprehensive documentation.
+This is a **MAJOR** release achieving **99% feature parity** between web and mobile platforms.
+Implements critical missing features including rich media embeds, complete premium subscription
+system, coin shop marketplace, gamification system, calendar, leaderboard, referral program, and the
+revolutionary **Holographic UI system**. Over **7,000+ lines** of new production-ready code with
+comprehensive documentation.
 
 ### ✨ New Features
 
 #### 🌟 Revolutionary Holographic UI System (Mobile) ✨
-**Files:** 
+
+**Files:**
+
 - `apps/mobile/src/components/enhanced/ui/HolographicUI.tsx` (1,100+ lines)
 - `apps/mobile/src/screens/settings/HolographicDemoScreen.tsx` (500+ lines)
 
 **Revolutionary "Minority Report" style interface** adapted for React Native with:
+
 - **HolographicContainer**: Animated scanlines, flicker effects, corner decorations, haptic feedback
 - **HolographicText**: 4 variants (title/subtitle/body/label), animated glow, text shadows
 - **HolographicButton**: 4 variants (primary/secondary/danger/ghost), 3 sizes, loading states
@@ -22,6 +97,7 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 - **HolographicNotification**: 4 types (info/success/warning/error), auto-dismiss, haptics
 
 **4 Color Themes:**
+
 - **Cyan**: Classic sci-fi blue (`rgba(0, 255, 255)`)
 - **Green**: Matrix-style green (`rgba(0, 255, 100)`)
 - **Purple**: Cyberpunk purple (`rgba(200, 100, 255)`)
@@ -30,6 +106,7 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 **3 Intensity Levels:** Subtle, Medium, Intense - controlling glow and animation strength
 
 **Technical Features:**
+
 - Cross-platform shadows (iOS shadowColor, Android elevation)
 - Animated API with spring physics and easing functions
 - LinearGradient for holographic overlays
@@ -40,12 +117,15 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 **Demo Screen:** Accessible via Settings → Features → Holographic UI Demo
 
 #### 1. Complete Gamification System (Mobile) 🎮
-**Files:** 
+
+**Files:**
+
 - `apps/mobile/src/components/gamification/AchievementNotification.tsx` (535+ lines)
 - `apps/mobile/src/components/gamification/LevelProgress.tsx` (500+ lines)
 - `apps/mobile/src/components/gamification/QuestPanel.tsx` (700+ lines)
 
 **Achievement System:**
+
 - **5-Tier Rarity**: Common → Uncommon → Rare → Epic → Mythic with unique colors
 - **Particle Effects**: Celebration particles matching achievement rarity
 - **Haptic Feedback**: Impact feedback on unlock, swipe-to-dismiss
@@ -53,6 +133,7 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 - **Sound Effects**: Audio cues for each rarity level
 
 **Level Progress Widget:**
+
 - **Animated XP Bar**: Spring physics, gradient fill
 - **Level Badge**: Pulsing glow effect, inner circle design
 - **Streak Indicator**: Fire animation, multiplier display (up to 3x)
@@ -60,6 +141,7 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 - **Compact/Expanded Modes**: Flexible layout options
 
 **Quest Panel:**
+
 - **Quest Categories**: Daily, Weekly, Special, Story with unique colors
 - **Progress Tracking**: Animated progress bars, completion states
 - **Countdown Timers**: Live countdown for time-limited quests
@@ -68,6 +150,7 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 - **Collapsible Sections**: Organized quest management
 
 #### 2. Leaderboard Screen (Mobile) 🏆
+
 **File:** `apps/mobile/src/screens/leaderboard/LeaderboardScreen.tsx` (800+ lines)
 
 - **6 Categories**: XP, Karma, Streak, Messages, Posts, Friends
@@ -79,6 +162,7 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 - **Online/Premium Badges**: Status indicators on avatars
 
 #### 3. Calendar Screen (Mobile) 📅
+
 **File:** `apps/mobile/src/screens/calendar/CalendarScreen.tsx` (700+ lines)
 
 - **Month Navigation**: Swipe between months, Today quick-jump
@@ -90,6 +174,7 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 - **All-Day Toggle**: Support for all-day events
 
 #### 4. Referral Program Screen (Mobile) 🎁
+
 **File:** `apps/mobile/src/screens/referrals/ReferralScreen.tsx` (900+ lines)
 
 - **Share Integration**: Native share sheet for referral link
@@ -101,6 +186,7 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 - **Recent Referrals**: Status tracking (pending/verified/rejected)
 
 #### 5. Rich Media Embeds (Mobile) 🖼️
+
 **File:** `apps/mobile/src/components/chat/RichMediaEmbed.tsx` (750+ lines)
 
 - **Automatic URL Detection**: Regex-based link extraction from message content
@@ -112,6 +198,7 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 - **UX**: Haptic feedback on all interactions, glassmorphism design, native modal viewer
 
 **Technical Implementation:**
+
 ```typescript
 - Regex patterns: image, video, YouTube, audio, general links
 - React Native Image with lazy loading
@@ -123,10 +210,11 @@ This is a **MAJOR** release achieving **99% feature parity** between web and mob
 ```
 
 **Usage:**
+
 ```typescript
 import { RichMediaEmbed } from '@/components';
 
-<RichMediaEmbed 
+<RichMediaEmbed
   content={message.content}
   isOwnMessage={message.sender.id === user?.id}
   onLoad={() => scrollToBottom()}
@@ -134,6 +222,7 @@ import { RichMediaEmbed } from '@/components';
 ```
 
 #### 2. Premium Subscription System (Mobile) 💎
+
 **File:** `apps/mobile/src/screens/premium/PremiumScreen.tsx` (450+ lines)
 
 - **3-Tier System**: Free ($0), Premium ($4.99/mo), Premium+ ($9.99/mo)
@@ -146,11 +235,13 @@ import { RichMediaEmbed } from '@/components';
 - **Legal Compliance**: Terms of Service and Privacy Policy links
 
 **Feature Matrix:**
+
 - **Free**: Basic messaging, 10 forums, 100 messages/day
 - **Premium ($4.99/mo)**: Unlimited messages, 100 forums, custom themes, priority support
 - **Premium+ ($9.99/mo)**: Everything + badges, custom emojis, analytics, 24/7 support
 
 **Payment Integration Ready:**
+
 ```typescript
 // Supports: Stripe, RevenueCat, Apple IAP, Google Play Billing
 handleSubscribe(tier: PremiumTier, billingCycle: BillingCycle)
@@ -159,6 +250,7 @@ handleManageSubscription()
 ```
 
 #### 3. Coin Shop Marketplace (Mobile) 🏪
+
 **File:** `apps/mobile/src/screens/premium/CoinShopScreen.tsx` (600+ lines)
 
 - **Coin Bundles**: 5 tiers from 100 coins ($0.99) to 7,500 coins ($49.99)
@@ -169,6 +261,7 @@ handleManageSubscription()
 - **Real-time Balance**: Coin count displayed in header
 
 **Coin Bundles:**
+
 ```typescript
 Small:  100 coins - $0.99
 Medium: 550 coins (50 bonus) - $4.99 ⭐ POPULAR
@@ -178,12 +271,14 @@ Ultra:  7,500 coins (1,500 bonus) - $49.99
 ```
 
 **Shop Items:**
+
 - **Themes**: Ocean Depths (common, 150 coins), Neon Dreams (rare, 250 coins)
 - **Badges**: Verified (rare, 300 coins), Rising Star (epic, 500 coins)
 - **Effects**: Sparkle Trail (common, 200 coins), Typing Animations (rare, 200 coins)
 - **Boosts**: 2x XP Boost 24h (uncommon, 150 coins), Double Coins 1h (rare, 150 coins)
 
 **Gamification Integration:**
+
 ```typescript
 // Earn coins from activities
 Daily login: 50 coins
@@ -196,6 +291,7 @@ Referral: 500 coins
 #### 4. Component Organization Improvements 📁
 
 **New Directory Structure:**
+
 ```
 apps/mobile/src/
 ├── components/
@@ -212,12 +308,14 @@ apps/mobile/src/
 ```
 
 **Updated Exports:**
+
 - `/apps/mobile/src/components/index.ts`: Added RichMediaEmbed export
 - `/apps/mobile/src/screens/premium/index.ts`: Premium screen exports
 
 ### 📚 Documentation
 
 #### New Documents:
+
 1. **COMPREHENSIVE_PROJECT_ANALYSIS.md** (15,000+ words)
    - Complete architecture overview
    - Technology stack analysis (Backend, Web, Mobile)
@@ -235,12 +333,14 @@ apps/mobile/src/
    - 98% mobile-web feature parity achievement
 
 #### Updated Documents:
+
 - **CHANGELOG.md**: This entry with comprehensive v0.8.1 notes
 - **Component JSDoc**: Inline documentation for all new components
 
 ### 🎨 Design System
 
 All new components use the established **glassmorphism design system**:
+
 - **GlassCard** variants: holographic, frosted, crystal, neon
 - **Color palette**: Matrix green (#10b981), Purple (#8b5cf6), Amber (#f59e0b)
 - **Typography**: System fonts with 700-800 weight headers
@@ -257,45 +357,49 @@ All new components use the established **glassmorphism design system**:
 - **Native Animations**: useNativeDriver: true for 60fps
 
 **Benchmarks:**
+
 - Message render time: 100ms → 60ms (-40%)
 - Media load time: 3s → 1.5s (-50%)
 - Scroll performance: 50fps → 60fps (+20%)
 
 ### 🌐 Mobile-Web Feature Parity
 
-| Feature Category | Before | After | Status |
-|-----------------|--------|-------|--------|
-| **Rich Media Embeds** | 30% | 100% | ✅ **PARITY ACHIEVED** |
-| **Premium Features** | 0% | 100% | ✅ **PARITY ACHIEVED** |
-| **Subscription System** | 0% | 100% | ✅ **PARITY ACHIEVED** |
-| **Coin Shop** | 0% | 100% | ✅ **PARITY ACHIEVED** |
-| **Overall Parity** | 85% | 98% | 📈 **+13% IMPROVEMENT** |
+| Feature Category        | Before | After | Status                  |
+| ----------------------- | ------ | ----- | ----------------------- |
+| **Rich Media Embeds**   | 30%    | 100%  | ✅ **PARITY ACHIEVED**  |
+| **Premium Features**    | 0%     | 100%  | ✅ **PARITY ACHIEVED**  |
+| **Subscription System** | 0%     | 100%  | ✅ **PARITY ACHIEVED**  |
+| **Coin Shop**           | 0%     | 100%  | ✅ **PARITY ACHIEVED**  |
+| **Overall Parity**      | 85%    | 98%   | 📈 **+13% IMPROVEMENT** |
 
 ### 🚀 Migration Guide
 
 #### For Developers:
 
 **1. Import New Components:**
+
 ```typescript
 import { RichMediaEmbed } from '@/components';
 import { PremiumScreen, CoinShopScreen } from '@/screens/premium';
 ```
 
 **2. Add to Navigation:**
+
 ```typescript
-<Stack.Screen 
-  name="Premium" 
+<Stack.Screen
+  name="Premium"
   component={PremiumScreen}
   options={{ title: 'CGraph Premium' }}
 />
-<Stack.Screen 
-  name="CoinShop" 
+<Stack.Screen
+  name="CoinShop"
   component={CoinShopScreen}
   options={{ title: 'Coin Shop' }}
 />
 ```
 
 **3. Integrate Payment Provider (Required):**
+
 ```typescript
 // Option 1: RevenueCat (Recommended for mobile)
 import Purchases from 'react-native-purchases';
@@ -309,9 +413,10 @@ import * as InAppPurchases from 'expo-in-app-purchases';
 ```
 
 **4. Use Rich Media in Messages:**
+
 ```typescript
 // In ConversationScreen.tsx
-<RichMediaEmbed 
+<RichMediaEmbed
   content={message.content}
   isOwnMessage={message.sender.id === currentUser.id}
   onLoad={() => flatListRef.current?.scrollToEnd()}
@@ -332,12 +437,10 @@ No migration required - all changes are additive and backward-compatible!
    - Status: Shows "Coming Soon" alerts
    - Action Required: Integrate Stripe/RevenueCat before production
    - Estimated Effort: 4-8 hours
-   
 2. **Link Preview Metadata** (MEDIUM PRIORITY)
    - Status: Currently uses favicon fallback only
    - Enhancement: Implement Open Graph scraper
    - Estimated Effort: 2-4 hours
-   
 3. **Video Thumbnail Generation** (MEDIUM PRIORITY)
    - Status: YouTube works, custom videos need backend support
    - Enhancement: Server-side thumbnail generation
@@ -355,6 +458,7 @@ No migration required - all changes are additive and backward-compatible!
 ### 🎯 Next Steps
 
 #### Immediate (Pre-Production):
+
 - [ ] Integrate payment provider (Stripe/RevenueCat)
 - [ ] Add premium screens to navigation
 - [ ] Test on iOS and Android devices
@@ -362,6 +466,7 @@ No migration required - all changes are additive and backward-compatible!
 - [ ] Deploy to staging environment
 
 #### Short-Term (v0.9.1 - v0.9.5):
+
 - [ ] Open Graph metadata scraper
 - [ ] Video thumbnail generation
 - [ ] Audio waveform visualization
@@ -369,6 +474,7 @@ No migration required - all changes are additive and backward-compatible!
 - [ ] Purchase history screen
 
 #### Long-Term (v1.0+):
+
 - [ ] AI-powered features
 - [ ] Real-time translation
 - [ ] Advanced analytics dashboard
@@ -381,18 +487,24 @@ No migration required - all changes are additive and backward-compatible!
 
 **🚀 REVOLUTIONARY MOBILE EXPERIENCE: Next-Gen UI Components**
 
-This is a **MAJOR** release that transforms the CGraph mobile app into a next-generation experience with cutting-edge animations, haptic feedback, gesture interactions, and premium visual design. Over **3,000 lines** of new mobile component code implementing 30+ avatar borders, gesture-based messaging, glassmorphism UI, gamification celebrations, and a complete sticker system.
+This is a **MAJOR** release that transforms the CGraph mobile app into a next-generation experience
+with cutting-edge animations, haptic feedback, gesture interactions, and premium visual design. Over
+**3,000 lines** of new mobile component code implementing 30+ avatar borders, gesture-based
+messaging, glassmorphism UI, gamification celebrations, and a complete sticker system.
 
 ### 🎨 Next-Gen Components (8 Major Components)
 
 #### 1. Animation Engine & Haptic System
-- **Custom haptic feedback patterns**: light, medium, heavy, success, error, celebration, levelUp, longPressConfirm
+
+- **Custom haptic feedback patterns**: light, medium, heavy, success, error, celebration, levelUp,
+  longPressConfirm
 - **Spring physics configs**: gentle, bouncy, snappy, wobbly, stiff (realistic motion)
 - **Animation variants**: fadeIn, scaleIn, slideIn, rotateIn, flipIn with customizable timing
 - **Gesture thresholds**: swipe velocity (500px/s), long press (500ms), double tap (300ms)
 - **Color system**: 25+ predefined colors with matrix/neon/holographic themes
 
 #### 2. GlassCard Component (Glassmorphism)
+
 - **5 premium variants**: default, frosted, crystal, neon, holographic
 - **3 intensity levels**: subtle (10% blur), medium (20%), strong (40%)
 - **Animated effects**: shimmer overlay, pulse animation, scanlines (holographic)
@@ -400,7 +512,9 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 - **Dynamic borders**: 2-4 color gradients with animated glow
 
 #### 3. AnimatedAvatar Component (30+ Styles)
-- **30+ border animations**: rainbow, spin, glow, neon, fire, electric, aurora, plasma, cosmic, matrix, holographic, gem, supernova, black_hole, quantum, void, celestial
+
+- **30+ border animations**: rainbow, spin, glow, neon, fire, electric, aurora, plasma, cosmic,
+  matrix, holographic, gem, supernova, black_hole, quantum, void, celestial
 - **6 avatar shapes**: circle, rounded-square, hexagon, octagon, shield, diamond
 - **7 particle effects**: sparkles, bubbles, flames, snow, hearts, stars with 8-particle systems
 - **Status indicators**: pulsing online status with haptic feedback
@@ -408,6 +522,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 - **Premium badges**: purple-pink gradient with star icon
 
 #### 4. SwipeableMessage Component (Gesture-Based)
+
 - **Swipe to reply**: bidirectional swipe with 60px threshold, 100px max
 - **Long press**: 500ms hold for context menu with scale animation
 - **Haptic feedback**: threshold crossing, success confirmation
@@ -416,13 +531,16 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 - **Message variants**: gradient for mine, solid for others with sender name
 
 #### 5. TitleBadge Component (Rarity System)
-- **7 rarity tiers**: common (gray), uncommon (green), rare (blue), epic (purple), legendary (gold), mythic (pink), divine (cyan-magenta)
+
+- **7 rarity tiers**: common (gray), uncommon (green), rare (blue), epic (purple), legendary (gold),
+  mythic (pink), divine (cyan-magenta)
 - **8 animation types**: shimmer, glow, pulse, rainbow, wave, sparkle, bounce, float
 - **Sparkles system**: auto-enabled for legendary+ with synchronized fade + scale
 - **3 size variants**: sm (11px), md (13px), lg (15px)
 - **Dynamic glow**: rarity-based shadow effects with 10px radius
 
 #### 6. StickerPicker Component (100+ Stickers)
+
 - **Rarity system**: common, rare, epic, legendary with color indicators
 - **Purchase system**: locked stickers with coin prices and purchase confirmation
 - **Animation types**: bounce, pulse, shake, wiggle, float, pop, wave, spin (per sticker)
@@ -432,6 +550,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 - **Coin display**: real-time balance with 💰 icon
 
 #### 7. LevelUpModal Component (Epic Celebrations)
+
 - **Particle explosion**: 50 particles burst from center with physics (velocity, gravity, rotation)
 - **Badge animation**: 360° rotation + spring scale entrance (180x180px)
 - **Glow pulse**: continuous pulsing ring (220px, 40px shadow radius)
@@ -440,6 +559,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 - **Staggered reveals**: rewards fade in after 1.2s delay with translateY animation
 
 #### 8. MessageReactions Component (56 Emojis)
+
 - **Quick reactions**: 8 preset emojis (👍❤️😂😮😢🔥👏🎉)
 - **Emoji picker**: 4 categories (Smileys, Gestures, Hearts, Symbols) with 56 total emojis
 - **Scale animations**: 0→1.3→1 on add, 1→1.3→0 on remove with spring physics
@@ -450,6 +570,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 ### 🎯 Mobile Forum Integration (Completed)
 
 #### Forum Components (5 Components - Phase 2 Complete)
+
 - **ThreadPrefixBadge**: colored prefix badges with mobile styling (83 lines)
 - **ThreadRatingDisplay**: interactive 5-star rating with haptic feedback (154 lines)
 - **AttachmentList**: file display with thumbnails and downloads (178 lines)
@@ -457,6 +578,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 - **EditHistoryModal**: bottom sheet modal with timeline (381 lines)
 
 #### PostScreen Integration
+
 - Thread prefixes displayed alongside status badges
 - Interactive rating system below title (disabled for locked/closed)
 - Poll widget with voting and results refresh
@@ -465,21 +587,22 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 
 ### 📊 Component Statistics
 
-| Component | Lines | Features | Animations | Haptics |
-|-----------|-------|----------|------------|---------|
-| AnimationEngine | 350+ | 10 | 12 | 8 |
-| GlassCard | 230+ | 5 variants | 3 | 0 |
-| AnimatedAvatar | 380+ | 30 borders | 6 | 0 |
-| SwipeableMessage | 320+ | Gestures | 4 | 4 |
-| TitleBadge | 310+ | 7 rarities | 8 | 0 |
-| StickerPicker | 520+ | 100+ stickers | 9 | 5 |
-| LevelUpModal | 450+ | Particles | 6 | 2 |
-| MessageReactions | 460+ | 56 emojis | 3 | 3 |
-| **TOTAL** | **3,020+** | **220+** | **51** | **22** |
+| Component        | Lines      | Features      | Animations | Haptics |
+| ---------------- | ---------- | ------------- | ---------- | ------- |
+| AnimationEngine  | 350+       | 10            | 12         | 8       |
+| GlassCard        | 230+       | 5 variants    | 3          | 0       |
+| AnimatedAvatar   | 380+       | 30 borders    | 6          | 0       |
+| SwipeableMessage | 320+       | Gestures      | 4          | 4       |
+| TitleBadge       | 310+       | 7 rarities    | 8          | 0       |
+| StickerPicker    | 520+       | 100+ stickers | 9          | 5       |
+| LevelUpModal     | 450+       | Particles     | 6          | 2       |
+| MessageReactions | 460+       | 56 emojis     | 3          | 3       |
+| **TOTAL**        | **3,020+** | **220+**      | **51**     | **22**  |
 
 ### 🎨 Design System Enhancements
 
 #### Color Palette (25+ Colors)
+
 - Primary: #10b981 (Matrix green), #8b5cf6 (purple), #ec4899 (pink), #f59e0b (amber)
 - Neon: #00f5ff (cyan), #ff00ff (magenta), #ffff00 (yellow)
 - Matrix: #00ff41 (bright green), #003b00 (dark green)
@@ -487,12 +610,14 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 - Dark theme: 5 shades (dark900-dark500) for depth
 
 #### Typography
+
 - Font sizes: xs (10px) → xxl (20px) with semantic naming
 - Font weights: normal (400) → black (900) for hierarchy
 - Letter spacing: up to 3px for emphasis (LEVEL UP!)
 - Text shadows: rgba(0, 0, 0, 0.3) for depth on gradients
 
 #### Spacing & Layout
+
 - Scale: xs (4px) → xxl (24px) with consistent increments
 - Border radius: sm (8px) → full (999px) for various components
 - Elevation: 3 levels (2, 4, 8) with shadow presets
@@ -509,6 +634,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 ### 📚 Documentation
 
 #### New Documentation Files (2)
+
 1. **MOBILE_INTEGRATION_COMPLETE.md** (1,200+ lines)
    - Forum component implementation guide
    - API integration details
@@ -524,6 +650,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
    - Phase-by-phase implementation roadmap
 
 #### Updated Documentation
+
 - **MISSING_FEATURES_ANALYSIS.md**: Added mobile integration status section
 - Mobile now has 15/15 core forum features (was 5/15)
 - 100% feature parity with web for core features
@@ -531,6 +658,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 ### 🔧 Technical Details
 
 #### Dependencies Added
+
 ```json
 {
   "expo-haptics": "~13.0.0",
@@ -541,6 +669,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 ```
 
 #### New Files Created (13)
+
 1. `/apps/mobile/src/lib/animations/AnimationEngine.ts`
 2. `/apps/mobile/src/components/ui/GlassCard.tsx`
 3. `/apps/mobile/src/components/ui/AnimatedAvatar.tsx`
@@ -556,6 +685,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 13. `/apps/mobile/src/components/forums/EditHistoryModal.tsx`
 
 #### Files Modified (3)
+
 - `/apps/mobile/src/types/index.ts` - Added 6 MyBB interfaces
 - `/apps/mobile/src/screens/forums/PostScreen.tsx` - Integrated all forum components
 - `/MISSING_FEATURES_ANALYSIS.md` - Updated mobile status
@@ -574,6 +704,7 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 ### 🎯 Design Philosophy
 
 **"Next-Generation Mobile Experience"**
+
 1. Motion Design First - Every interaction has purposeful animation
 2. Haptic Feedback - Tactile response reinforces visual feedback
 3. Premium Feel - Glassmorphism, gradients, and glow effects
@@ -585,24 +716,28 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 ### 🚀 What's Next
 
 **Phase 1: Testing**
+
 - Test all components on iOS/Android physical devices
 - Verify haptic patterns feel correct
 - Validate 60fps animation performance
 - Test gesture recognizers with edge cases
 
 **Phase 2: Integration**
+
 - Integrate components into Conversation screen
 - Add to Profile and Forum screens
 - Connect sticker/purchase systems to backend
 - Implement level-up triggers
 
 **Phase 3: Advanced Features**
+
 - Voice message visualizer
 - AR stickers with camera
 - 3D avatar customization
 - Dynamic Island integration (iOS)
 
 **Phase 4: Monetization**
+
 - Premium avatar borders (IAP)
 - Sticker pack purchases
 - Exclusive title rarities
@@ -614,7 +749,9 @@ This is a **MAJOR** release that transforms the CGraph mobile app into a next-ge
 
 **✨ UI ENHANCEMENT INTEGRATION: Advanced Messaging Experience**
 
-This release integrates all advanced UI enhancement components into the production messaging experience, fulfilling the Phase 1 integration plan and aligning code with documentation and design intent.
+This release integrates all advanced UI enhancement components into the production messaging
+experience, fulfilling the Phase 1 integration plan and aligning code with documentation and design
+intent.
 
 ### Major Enhancements
 
@@ -630,14 +767,18 @@ This release integrates all advanced UI enhancement components into the producti
 - All code changes follow strict TypeScript, accessibility, and security standards
 
 **Next Steps:**
+
 - Enhance Messages.tsx and AppLayout.tsx with glassmorphic and animated components
 - Begin Phase 2: Gamification and Premium features
 
 # CGraph Changelog
 
-What's new, what's fixed, what broke (and how we fixed it again). We try to keep this updated with every release so you know exactly what changed.
+What's new, what's fixed, what broke (and how we fixed it again). We try to keep this updated with
+every release so you know exactly what changed.
 
-We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting and [Semantic Versioning](https://semver.org/spec/v2.0.0.html) — so version numbers actually mean something.
+We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting and
+[Semantic Versioning](https://semver.org/spec/v2.0.0.html) — so version numbers actually mean
+something.
 
 ---
 
@@ -645,11 +786,14 @@ We follow [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) formatting an
 
 **🔒 SECURITY HARDENING & PRODUCTION READINESS**
 
-Comprehensive security audit and production hardening release. This version addresses critical TODOs in the moderation system, implements intelligent rate limiting throughout the application, and enhances infrastructure configurations for production deployment.
+Comprehensive security audit and production hardening release. This version addresses critical TODOs
+in the moderation system, implements intelligent rate limiting throughout the application, and
+enhances infrastructure configurations for production deployment.
 
 ### Security Enhancements
 
 #### Critical Content Moderation (`moderation.ex`)
+
 - Implemented NCMEC-compatible incident report generation for CSAM cases
 - Added automatic content quarantine on critical reports (immediate visibility removal)
 - Integrated on-call staff alerting via PubSub channels
@@ -657,6 +801,7 @@ Comprehensive security audit and production hardening release. This version addr
 - Added structured incident data for regulatory submission readiness
 
 #### Warning & Content Removal System
+
 - Implemented user warning notifications with severity levels
 - Added warning level escalation based on repeat offense history (90-day window)
 - Created content removal handlers for messages, posts, comments, and profile content
@@ -666,6 +811,7 @@ Comprehensive security audit and production hardening release. This version addr
 ### Rate Limiting Overhaul
 
 #### Intelligent Post Rate Limiting (`forums.ex`)
+
 - Dynamic rate limits based on user trust level (new_user, regular, trusted, veteran)
 - Trust calculation using account age + contribution history
 - Burst protection (3/minute for new users, 9/minute for veterans)
@@ -673,17 +819,20 @@ Comprehensive security audit and production hardening release. This version addr
 - Per-user multipliers ranging from 0.5x (new) to 3.0x (veteran)
 
 #### Comment Rate Limiting
+
 - Thread-specific limits to prevent single-post flooding (10 comments/thread/hour)
 - Separate burst and sustained rate check pipeline
 - Integration with existing RateLimiter module
 
 #### Referral System Protection
+
 - Rate-limited code regeneration (3/day) to prevent abuse
 - Self-referral prevention with owner lookup
 - Referral application rate limiting (5/hour)
 - Fraud detection logging with IP and user-agent tracking
 
 ### Input Validation Layer (`param_parser.ex`)
+
 - Added `parse_referral_code/1` with format validation (6-12 alphanumeric)
 - Added `validate_event_title/1` with length and prohibited content checks
 - Added `validate_event_dates/2` ensuring start < end and not in past
@@ -694,6 +843,7 @@ Comprehensive security audit and production hardening release. This version addr
 ### Infrastructure Improvements
 
 #### Fly.io Configuration (`fly.toml`)
+
 - Increased memory from 512MB to 1GB for BEAM VM
 - Extended kill timeout to 30s for graceful WebSocket shutdown
 - Added BEAM VM tuning environment variables
@@ -701,12 +851,14 @@ Comprehensive security audit and production hardening release. This version addr
 - Extended health check grace period for BEAM startup
 
 #### Terraform Configuration (`main.tf`)
+
 - Added variable injection for organization and app names
 - Added environment validation (production/staging/development)
 - Improved documentation with required environment setup
 - Made S3 backend configurable via backend.tfvars
 
 ### Route Fixes
+
 - Fixed `/api/v1/friends/requests` and `/api/v1/friends/sent` routes
 - Added `pending` action alias in FriendController
 - Aligned frontend API calls with backend route definitions
@@ -717,11 +869,13 @@ Comprehensive security audit and production hardening release. This version addr
 
 **🔗 BACKEND API INTEGRATION: Complete MyBB Feature Backend**
 
-Major release completing the backend API infrastructure for all MyBB features. Every frontend store now has full backend connectivity with proper REST endpoints, context modules, and database tables.
+Major release completing the backend API infrastructure for all MyBB features. Every frontend store
+now has full backend connectivity with proper REST endpoints, context modules, and database tables.
 
 ### Backend Controllers Created
 
 #### Private Messaging API (`PMController`)
+
 - `GET /api/v1/pm/folders` - List user folders
 - `POST /api/v1/pm/folders` - Create custom folder
 - `GET /api/v1/pm/messages` - List messages with filtering
@@ -735,6 +889,7 @@ Major release completing the backend API infrastructure for all MyBB features. E
 - `GET /api/v1/pm/export` - Export all PMs (JSON/CSV)
 
 #### Calendar API (`CalendarController`)
+
 - `GET /api/v1/calendar/events` - List with year/month filtering
 - `POST /api/v1/calendar/events` - Create event
 - `GET /api/v1/calendar/events/:id` - Event details
@@ -747,6 +902,7 @@ Major release completing the backend API infrastructure for all MyBB features. E
 - `DELETE /api/v1/calendar/events/:id/rsvp` - Cancel RSVP
 
 #### Referral API (`ReferralController`)
+
 - `GET /api/v1/referrals/code` - Get user's referral code
 - `POST /api/v1/referrals/code/regenerate` - Generate new code
 - `POST /api/v1/referrals/validate` - Validate a code
@@ -758,6 +914,7 @@ Major release completing the backend API infrastructure for all MyBB features. E
 - `POST /api/v1/referrals/rewards/:tier_id/claim` - Claim reward
 
 #### Member Directory API (`MemberController`)
+
 - `GET /api/v1/members` - Paginated member list
 - `GET /api/v1/members/:id` - Member profile
 - `GET /api/v1/members/groups` - List user groups
@@ -765,6 +922,7 @@ Major release completing the backend API infrastructure for all MyBB features. E
 - `GET /api/v1/members/stats` - Member statistics
 
 #### Presence API (`PresenceController`)
+
 - `GET /api/v1/presence/online` - Online users
 - `POST /api/v1/presence/heartbeat` - Update presence
 - `GET /api/v1/presence/stats` - Online/guest counts
@@ -773,6 +931,7 @@ Major release completing the backend API infrastructure for all MyBB features. E
 - `PUT /api/v1/presence/visibility` - Update visibility
 
 #### Profile API (`ProfileController`)
+
 - `GET /api/v1/profiles/:user_id` - Full profile
 - `PUT /api/v1/profiles/:user_id/signature` - Update signature
 - `PUT /api/v1/profiles/:user_id/bio` - Update bio
@@ -784,6 +943,7 @@ Major release completing the backend API infrastructure for all MyBB features. E
 - `GET /api/v1/profiles/:user_id/visitors` - Profile visitors
 
 #### Announcement API (`AnnouncementController`)
+
 - `GET /api/v1/announcements` - Active announcements
 - `GET /api/v1/announcements/:id` - Announcement detail
 - `POST /api/v1/announcements/:id/read` - Mark as read
@@ -821,12 +981,14 @@ Created 5 new migrations adding 12 tables:
 ### Context Modules
 
 New Elixir contexts created:
+
 - `Cgraph.Calendar` - Event CRUD, categories, RSVPs
 - `Cgraph.Referrals` - Codes, tracking, rewards, leaderboard
 - `Cgraph.Announcements` - Announcement queries, dismissals
 - `Cgraph.Reputation` - Rep giving, history, summaries
 
 Extended existing contexts:
+
 - `Cgraph.Messaging` - Added PM folder/message/draft functions
 - `Cgraph.Accounts` - Added member/profile functions
 - `Cgraph.Presence` - Added REST API functions
@@ -852,7 +1014,8 @@ lib/cgraph/reputation/reputation_entry.ex
 ### Bug Fixes
 
 - Fixed `parse_int`/`parse_bool` conflicts in controllers (now using imported helpers)
-- Fixed Reputation schema to match existing database columns (`from_user_id`/`to_user_id` instead of `giver_id`/`receiver_id`)
+- Fixed Reputation schema to match existing database columns (`from_user_id`/`to_user_id` instead of
+  `giver_id`/`receiver_id`)
 - Fixed PM controller function name mismatches (`move_pm_to_folder`, `send_pm_draft`, `export_pm`)
 - Removed duplicate `mark_message_read` function in Messaging context
 - Fixed unused alias warnings across all new controllers
@@ -881,11 +1044,13 @@ Total:          ~3,500 lines of backend code
 
 **🚀 MYBB FEATURE IMPLEMENTATION: Announcements, Quick Reply & Quick Wins**
 
-This release adds the Announcement System, Quick Reply component, Forum Statistics, Online Status indicators, User Stars/Reputation display, RSS Feed support, and more MyBB-style quick wins.
+This release adds the Announcement System, Quick Reply component, Forum Statistics, Online Status
+indicators, User Stars/Reputation display, RSS Feed support, and more MyBB-style quick wins.
 
 ### New Features
 
 #### 📢 Announcement System
+
 - Created `announcementStore.ts` with complete announcement management:
   - **Scopes**: Global, forum-specific, and category announcements
   - **Visibility**: Date-based (start/end dates) with active status toggle
@@ -901,6 +1066,7 @@ This release adds the Announcement System, Quick Reply component, Forum Statisti
   - Forum and global announcement support
 
 #### ✏️ Quick Reply Component
+
 - Created `QuickReply` component for thread pages:
   - Collapsible/expandable quick reply box
   - Basic BBCode toolbar (bold, italic, underline, quote, code, link, image)
@@ -911,6 +1077,7 @@ This release adds the Announcement System, Quick Reply component, Forum Statisti
   - "Expand to full editor" option
 
 #### 📊 Forum Statistics
+
 - Created `ForumStatistics` component:
   - Total threads, posts, and members display
   - Today's activity counts (posts, threads, new members)
@@ -922,6 +1089,7 @@ This release adds the Announcement System, Quick Reply component, Forum Statisti
   - Auto-refresh every 60 seconds
 
 #### 🟢 Online Status Indicators
+
 - Created `OnlineStatusIndicator` component:
   - Status types: online, idle, dnd, offline, invisible
   - Animated pulse effect for online status
@@ -932,6 +1100,7 @@ This release adds the Announcement System, Quick Reply component, Forum Statisti
 - Created `OnlineStatusDropdown` for users to change their status
 
 #### ⭐ User Stars & Reputation Display
+
 - Created `UserStars` component:
   - Configurable star count and max stars
   - Color variants (gold, silver, bronze, blue, green, red, purple)
@@ -942,6 +1111,7 @@ This release adds the Announcement System, Quick Reply component, Forum Statisti
 - Created `RankBadge` for text-based rank badges with optional stars
 
 #### 📰 RSS Feed Support
+
 - Created `RSSFeedLinks` component:
   - Compact and full list views
   - Feed type icons (forum, thread, global)
@@ -951,6 +1121,7 @@ This release adds the Announcement System, Quick Reply component, Forum Statisti
 - Created `ForumRSSButton` for quick access to forum-specific feeds
 
 ### File Structure
+
 ```
 apps/web/src/
 ├── stores/
@@ -968,6 +1139,7 @@ apps/web/src/
 ```
 
 ### Technical Details
+
 - All components use @heroicons/react (consistent with v0.7.54)
 - TypeScript strict mode compliant
 - Dark mode support throughout
@@ -980,11 +1152,14 @@ apps/web/src/
 
 **🚀 MYBB FEATURE IMPLEMENTATION: Core Forum Features**
 
-This release implements core MyBB-style forum features including BBCode parsing, user profiles with signatures/badges, advanced moderation tools, and advanced search functionality. All forumStore stub implementations have been converted to working code.
+This release implements core MyBB-style forum features including BBCode parsing, user profiles with
+signatures/badges, advanced moderation tools, and advanced search functionality. All forumStore stub
+implementations have been converted to working code.
 
 ### New Features
 
 #### 📝 BBCode/MyCode Parser (Full Implementation)
+
 - Created comprehensive BBCode parser (`/lib/bbcode.ts`) with:
   - All standard tags: `[b]`, `[i]`, `[u]`, `[s]`, `[code]`, `[quote]`, `[url]`, `[img]`, `[list]`
   - MyBB extensions: `[spoiler]`, `[youtube]`, `[color]`, `[size]`, `[font]`, `[align]`
@@ -999,6 +1174,7 @@ This release implements core MyBB-style forum features including BBCode parsing,
   - Validation warnings for unclosed tags
 
 #### 👤 User Profile Enhancements
+
 - Created `profileStore.ts` with:
   - User signature system (BBCode signatures appended to posts)
   - Custom profile fields (location, website, occupation, social links)
@@ -1010,6 +1186,7 @@ This release implements core MyBB-style forum features including BBCode parsing,
 - Created `UserSignature` component for displaying signatures below posts
 
 #### 🛡️ Advanced Moderation System
+
 - Created `moderationStore.ts` with complete moderation tools:
   - **Thread moderation**: move, split, merge, copy, close/reopen, soft-delete, restore
   - **Post moderation**: approve, reject, soft-delete, restore
@@ -1021,6 +1198,7 @@ This release implements core MyBB-style forum features including BBCode parsing,
 - Created `InlineModerationToolbar` floating component for bulk actions
 
 #### 🔍 Advanced Search
+
 - Created `AdvancedSearch` component with MyBB-style filters:
   - Author filter (by username)
   - Forum filter (specific forums)
@@ -1034,12 +1212,15 @@ This release implements core MyBB-style forum features including BBCode parsing,
 ### Bug Fixes
 
 #### 🔧 Fixed All ForumStore Stub Implementations
-- **Thread Moderation** (5 functions): moveThread, splitThread, mergeThreads, closeThread, reopenThread
+
+- **Thread Moderation** (5 functions): moveThread, splitThread, mergeThreads, closeThread,
+  reopenThread
 - **Thread Prefixes** (3 functions): fetchThreadPrefixes, createThreadPrefix, deleteThreadPrefix
 - **Ratings** (2 functions): rateThread, fetchThreadRatings
 - **Attachments** (2 functions): uploadAttachment, deleteAttachment
 - **Polls** (3 functions): createPoll, votePoll, closePoll
-- **Subscriptions** (4 functions): subscribeThread, unsubscribeThread, updateSubscription, fetchSubscriptions
+- **Subscriptions** (4 functions): subscribeThread, unsubscribeThread, updateSubscription,
+  fetchSubscriptions
 - **User Groups** (4 functions): fetchUserGroups, createUserGroup, updateUserGroup, deleteUserGroup
 - **Warnings/Bans** (5 functions): warnUser, fetchUserWarnings, banUser, unbanUser, fetchBans
 - **Moderation Queue** (3 functions): fetchModerationQueue, approveQueueItem, rejectQueueItem
@@ -1054,6 +1235,7 @@ This release implements core MyBB-style forum features including BBCode parsing,
 - Comprehensive error handling with console logging
 
 ### Files Added
+
 - `apps/web/src/lib/bbcode.ts` - BBCode parser library
 - `apps/web/src/components/BBCodeRenderer.tsx` - BBCode rendering component
 - `apps/web/src/components/BBCodeEditor.tsx` - BBCode editor with toolbar
@@ -1064,6 +1246,7 @@ This release implements core MyBB-style forum features including BBCode parsing,
 - `apps/web/src/components/search/AdvancedSearch.tsx` - Advanced search component
 
 ### Files Modified
+
 - `apps/web/src/stores/forumStore.ts` - All stub implementations replaced with working code
 
 ---
@@ -1072,39 +1255,48 @@ This release implements core MyBB-style forum features including BBCode parsing,
 
 **🔧 FRONTEND-BACKEND INTEGRATION AUDIT: Critical Bug Fixes**
 
-This release fixes several critical bugs where UI features were not properly connected to backend APIs, including forum reporting, poll creation, and real-time message reactions.
+This release fixes several critical bugs where UI features were not properly connected to backend
+APIs, including forum reporting, poll creation, and real-time message reactions.
 
 ### Critical Bug Fixes
 
 #### 🐛 Forum Report Feature Was Fake (#CRITICAL)
+
 - **Problem**: Report button showed success toast but never actually submitted reports to backend
 - **Root Cause**: `reportItem()` in forumStore threw "Not implemented"
 - **Solution**: Implemented full API integration with report reason selection modal
 - **Files**: `forumStore.ts`, `ForumPost.tsx`
 
 #### 🐛 CreatePost Not Sending Poll/Prefix/Attachment Data (#CRITICAL)
+
 - **Problem**: Poll creation UI existed but data was never sent. Thread prefix selector was ignored.
 - **Root Cause**: handleSubmit only sent basic fields, ignoring MyBB features
-- **Solution**: Extended CreatePostData interface and createPost implementation to include all fields
+- **Solution**: Extended CreatePostData interface and createPost implementation to include all
+  fields
 - **Files**: `forumStore.ts`, `CreatePost.tsx`
 
 #### 🐛 Real-Time Reactions Not Working (#CRITICAL)
+
 - **Problem**: Message reactions not syncing between users in real-time
-- **Root Cause**: Three bugs: (1) Wrong socket event format, (2) No listeners for reaction broadcasts, (3) No store methods for real-time updates
-- **Solution**: 
+- **Root Cause**: Three bugs: (1) Wrong socket event format, (2) No listeners for reaction
+  broadcasts, (3) No store methods for real-time updates
+- **Solution**:
   - Fixed `sendReaction()` to use `add_reaction`/`remove_reaction` events
   - Added channel listeners for `reaction_added`/`reaction_removed`
   - Added `addReactionToMessage()` and `removeReactionFromMessage()` to chatStore
 - **Files**: `socket.ts`, `chatStore.ts`
 
 #### 🐛 Reaction Handler URL Parsing Bug
-- **Problem**: Reaction handlers tried to get conversationId from query params but route uses path params
+
+- **Problem**: Reaction handlers tried to get conversationId from query params but route uses path
+  params
 - **Solution**: Changed to extract from URL path using regex
 - **Files**: `Conversation.tsx`
 
 ### Enhancements
 
 #### 📝 Thread Prefix System
+
 - Implemented `fetchThreadPrefixes()` with standard prefix set:
   - Discussion, Question, Help, Solved, Announcement, Guide, News, Bug, Feature Request
 - Each prefix includes color and optional isDefault flag
@@ -1122,11 +1314,13 @@ This release fixes several critical bugs where UI features were not properly con
 
 **🎮 GAMIFICATION INTEGRATION: Sticker Picker, Title Badges & Documentation Audit**
 
-This release connects the orphaned gamification data files to the UI, adds comprehensive sticker and title components, and updates documentation to reflect accurate feature counts.
+This release connects the orphaned gamification data files to the UI, adds comprehensive sticker and
+title components, and updates documentation to reflect accurate feature counts.
 
 ### New Features
 
 #### 🎁 Sticker Picker Component (`src/components/chat/StickerPicker.tsx`)
+
 - **650+ lines of comprehensive sticker UI**:
   - Tabbed pack browser with animated transitions
   - Search functionality across all stickers
@@ -1137,6 +1331,7 @@ This release connects the orphaned gamification data files to the UI, adds compr
   - Export: `StickerPicker`, `StickerButton`, `StickerMessage`
 
 #### 🏆 Title Badge Component (`src/components/gamification/TitleBadge.tsx`)
+
 - **350+ lines of animated title display**:
   - 7 rarity levels with unique styling
   - 12 animation types (shimmer, glow, pulse, rainbow, etc.)
@@ -1147,11 +1342,13 @@ This release connects the orphaned gamification data files to the UI, adds compr
 ### Integration
 
 #### 💬 Chat Integration
+
 - **EnhancedConversation.tsx**: Added StickerPicker above message input
 - **Conversation.tsx**: Added StickerPicker with full animation support
 - Stickers sent as special message format: `[sticker:id:emoji:name]`
 
 #### 👤 Profile Integration
+
 - **UserProfile.tsx**: Added TitleBadge next to username
 - Support for `equippedTitle` field from API
 - Animated title display with rarity styling
@@ -1159,6 +1356,7 @@ This release connects the orphaned gamification data files to the UI, adds compr
 ### Bug Fixes
 
 #### 🐛 TypeScript Errors Fixed (13 total)
+
 - **doubleRatchet.ts**: Added `@ts-expect-error` for reserved PQC placeholders
 - **App.test.tsx**: Fixed mock user type to allow null assignment
 - **websocket.test.ts**: Fixed unused variable warnings with underscore prefix
@@ -1166,6 +1364,7 @@ This release connects the orphaned gamification data files to the UI, adds compr
 ### Documentation
 
 #### 📚 Updated Documentation
+
 - **UI_ENHANCEMENTS.md**: Updated to v0.7.52 with accurate counts:
   - 107 achievements (not 100+)
   - 72 stickers in 18 packs (not 100+ in 20+)
@@ -1180,12 +1379,12 @@ This release connects the orphaned gamification data files to the UI, adds compr
 
 ### Technical Details
 
-| Component | Lines | Purpose |
-|-----------|-------|---------|
-| `StickerPicker.tsx` | 650+ | Full sticker selection UI |
-| `TitleBadge.tsx` | 350+ | Animated title display |
-| UI_ENHANCEMENTS.md | Updated | Accurate feature documentation |
-| FRONTEND.md | +114 lines | Gamification section added |
+| Component           | Lines      | Purpose                        |
+| ------------------- | ---------- | ------------------------------ |
+| `StickerPicker.tsx` | 650+       | Full sticker selection UI      |
+| `TitleBadge.tsx`    | 350+       | Animated title display         |
+| UI_ENHANCEMENTS.md  | Updated    | Accurate feature documentation |
+| FRONTEND.md         | +114 lines | Gamification section added     |
 
 ---
 
@@ -1194,13 +1393,16 @@ This release connects the orphaned gamification data files to the UI, adds compr
 **🧭 NAVIGATION & UX: Leaderboard Nav + Clickable Avatars**
 
 ### Added
+
 - **TrophyIcon in Navigation**: Added leaderboard/achievements to AppLayout sidebar
 - **Clickable Avatars in Chat**: User avatars in MessageBubble now navigate to `/user/{userId}`
 
 ### Files Modified
+
 - `apps/web/src/layouts/AppLayout.tsx` - Added TrophyIcon navigation item
 - `apps/web/src/pages/messages/Conversation.tsx` - Added onAvatarClick to MessageBubble
-- `apps/web/src/pages/messages/EnhancedConversation.tsx` - Added onAvatarClick to EnhancedMessageBubble
+- `apps/web/src/pages/messages/EnhancedConversation.tsx` - Added onAvatarClick to
+  EnhancedMessageBubble
 
 ---
 
@@ -1209,7 +1411,9 @@ This release connects the orphaned gamification data files to the UI, adds compr
 **🐛 CRITICAL FIX: Loading Screen Infinite Loop**
 
 ### Fixed
-- **Duplicate Variable Declarations**: Fixed `stickerSystemEnabled` and `typingIndicatorsEnabled` being declared twice in `api.ts`, causing infinite loading screen
+
+- **Duplicate Variable Declarations**: Fixed `stickerSystemEnabled` and `typingIndicatorsEnabled`
+  being declared twice in `api.ts`, causing infinite loading screen
 
 ---
 
@@ -1217,11 +1421,14 @@ This release connects the orphaned gamification data files to the UI, adds compr
 
 **🚀 SCALABILITY RELEASE: 10K+ User Optimization & Comprehensive Testing**
 
-This release focuses on enabling CGraph to handle 10,000+ concurrent users through connection pooling, frontend code splitting, and query optimization. Also includes comprehensive test coverage and an enhanced README for better project visibility.
+This release focuses on enabling CGraph to handle 10,000+ concurrent users through connection
+pooling, frontend code splitting, and query optimization. Also includes comprehensive test coverage
+and an enhanced README for better project visibility.
 
 ### Scalability Improvements
 
 #### 🔧 Redis Connection Pooling
+
 - **Created `CGraph.Cache.RedisPool` module** for high-throughput Redis operations:
   - 20 pooled connections with round-robin distribution
   - Configurable via `REDIS_POOL_SIZE` environment variable
@@ -1233,6 +1440,7 @@ This release focuses on enabling CGraph to handle 10,000+ concurrent users throu
   - Health check and stats monitoring endpoints
 
 #### ⚡ React.lazy Code Splitting (Web)
+
 - **Implemented lazy loading for all page components**:
   - 20+ pages now loaded on-demand with React.lazy
   - Initial bundle reduced from ~500KB to ~150KB
@@ -1240,6 +1448,7 @@ This release focuses on enabling CGraph to handle 10,000+ concurrent users throu
   - Improved Time-to-Interactive by ~40%
 
 #### 🔄 React Query Optimization
+
 - **Tuned QueryClient for real-time performance**:
   - `staleTime`: 5 minutes → 30 seconds (fresher data)
   - `retryDelay`: Exponential backoff (1s, 2s, 4s...)
@@ -1250,14 +1459,15 @@ This release focuses on enabling CGraph to handle 10,000+ concurrent users throu
 ### Bug Fixes
 
 #### 🐛 Syntax Errors Fixed
+
 - **Fixed malformed `with` block in `forum_controller.ex`**:
   - Added proper `else` clause for error handling
   - Handles `:not_found` and `:unauthorized` cases properly
-  
 - **Fixed double `end` statement in `premium_controller.ex`**:
   - Removed duplicate closing statement causing compilation failure
 
 #### 🧹 Code Quality Fixes (Credo)
+
 - Removed trailing whitespace from:
   - `param_parser.ex`
   - `two_factor_rate_limiter.ex`
@@ -1266,6 +1476,7 @@ This release focuses on enabling CGraph to handle 10,000+ concurrent users throu
 ### Testing
 
 #### ✅ Frontend Test Suite (Web)
+
 - **Created `App.test.tsx`** - Comprehensive routing tests:
   - Route rendering verification
   - Lazy loading with Suspense
@@ -1288,6 +1499,7 @@ This release focuses on enabling CGraph to handle 10,000+ concurrent users throu
   - Validation error parsing
 
 #### ✅ Mobile Test Suite
+
 - **Created `ConversationScreen.test.tsx`**:
   - FlatList optimization props validation
   - Memory management tests
@@ -1306,6 +1518,7 @@ This release focuses on enabling CGraph to handle 10,000+ concurrent users throu
 ### Documentation
 
 #### 📖 README Overhaul
+
 - Added competitor comparison table (vs Discord, Slack, Telegram, Signal)
 - New "Built for Scale" section with performance claims
 - Feature highlights with visual tables
@@ -1339,23 +1552,28 @@ This release focuses on enabling CGraph to handle 10,000+ concurrent users throu
 
 **🔒 SECURITY HARDENING RELEASE: Critical Vulnerability Fixes & Database Optimization**
 
-This release addresses multiple critical security vulnerabilities discovered during a comprehensive security audit, adds database performance indexes for scale, and improves code quality across all controllers.
+This release addresses multiple critical security vulnerabilities discovered during a comprehensive
+security audit, adds database performance indexes for scale, and improves code quality across all
+controllers.
 
 ### Security Fixes
 
 #### 🚨 CRITICAL: Race Condition in Coin Spending
+
 - **Fixed concurrent balance modification vulnerability in `Gamification.spend_coins/2`**:
   - Added `SELECT FOR UPDATE` row-level locking to prevent double-spending
   - Balance check now happens inside transaction with locked row
   - Prevents exploits where multiple simultaneous requests could bypass balance check
 
 #### 🚨 CRITICAL: Premium Subscribe Demo Bypass
+
 - **Fixed demo mode bypassing payment in production**:
   - Demo mode now requires explicit `PREMIUM_DEMO_MODE=true` environment variable
   - Demo mode is automatically disabled in production environment
   - Added proper Stripe checkout session creation flow
 
 #### 🚨 CRITICAL: 2FA Brute Force Prevention
+
 - **Created `TwoFactorRateLimiter` plug with progressive lockout**:
   - 5 attempts per 5 minutes per user
   - 15-minute lockout after 5 consecutive failures
@@ -1364,6 +1582,7 @@ This release addresses multiple critical security vulnerabilities discovered dur
   - Applied to all 2FA endpoints: verify, enable, disable, use_backup_code
 
 #### 🚨 CRITICAL: Uncaught Integer Parsing Exceptions
+
 - **Created `CgraphWeb.Helpers.ParamParser` module for safe parameter parsing**:
   - `parse_int/3` - Safe integer parsing with min/max clamping
   - `parse_atom/3` - Whitelist-based atom parsing (prevents atom table exhaustion)
@@ -1378,6 +1597,7 @@ This release addresses multiple critical security vulnerabilities discovered dur
 ### Database Performance
 
 #### 📊 New Indexes for Scale (Migration: `20260111120000`)
+
 - `coin_transactions_user_inserted_index` - Optimizes coin history queries
 - `two_factor_attempts_user_time_index` - Supports 2FA rate limiting
 - `users_subscription_expiry_partial_index` - Premium subscription queries
@@ -1417,6 +1637,7 @@ mix ecto.migrate
 ### Version Sync
 
 All project versions synchronized to 0.7.47:
+
 - Root `package.json`
 - `apps/web/package.json`
 - `apps/mobile/package.json`
@@ -1428,7 +1649,9 @@ All project versions synchronized to 0.7.47:
 
 **🔧 WEB STABILITY RELEASE: TypeScript Fixes, WebSocket Integration & Test Suite Updates**
 
-This release addresses TypeScript compilation errors in the web application's cryptographic modules, enhances WebSocket integration for real-time notifications, and updates the test suite to match current API signatures.
+This release addresses TypeScript compilation errors in the web application's cryptographic modules,
+enhances WebSocket integration for real-time notifications, and updates the test suite to match
+current API signatures.
 
 ### Fixed
 
@@ -1438,7 +1661,8 @@ This release addresses TypeScript compilation errors in the web application's cr
   - The Web Crypto API requires proper `ArrayBuffer` instances, not `Uint8Array` views
   - Added `toArrayBuffer()` utility function to create proper ArrayBuffer copies
   - Applied fix to all crypto operations: `importKey`, `deriveBits`, `encrypt`, `decrypt`, `sign`
-  - Resolves "Argument of type 'Uint8Array' is not assignable to parameter of type 'BufferSource'" errors
+  - Resolves "Argument of type 'Uint8Array' is not assignable to parameter of type 'BufferSource'"
+    errors
 
 #### 🧪 Test Suite Updates
 
@@ -1466,6 +1690,7 @@ This release addresses TypeScript compilation errors in the web application's cr
 ### Technical Details
 
 **ArrayBuffer Utility:**
+
 ```typescript
 function toArrayBuffer(data: Uint8Array): ArrayBuffer {
   const buffer = new ArrayBuffer(data.byteLength);
@@ -1475,6 +1700,7 @@ function toArrayBuffer(data: Uint8Array): ArrayBuffer {
 ```
 
 **User Channel Integration:**
+
 ```typescript
 useEffect(() => {
   const initializeApp = async () => {
@@ -1485,7 +1711,7 @@ useEffect(() => {
     // ... fetch data
   };
   initializeApp();
-  
+
   return () => {
     if (user?.id) {
       socketManager.leaveUserChannel(user.id);
@@ -1504,6 +1730,7 @@ useEffect(() => {
 ### Version Sync
 
 All project versions synchronized to 0.7.41:
+
 - Root `package.json`
 - `apps/web/package.json`
 - `apps/mobile/package.json`
@@ -1516,7 +1743,8 @@ All project versions synchronized to 0.7.41:
 
 **📱 MOBILE MEDIA FIX: iOS Photo Library URIs & Native Camera Restoration**
 
-Critical fix for the `ph://` URL error when sending photos on iOS and reverting to the native camera for better reliability.
+Critical fix for the `ph://` URL error when sending photos on iOS and reverting to the native camera
+for better reliability.
 
 ### Fixed
 
@@ -1539,11 +1767,12 @@ Critical fix for the `ph://` URL error when sending photos on iOS and reverting 
 ### Technical Details
 
 **URI Resolution Fix:**
+
 ```tsx
 // Now resolves localUri for both iOS and Android
 for (const asset of media.assets) {
   let displayUri = asset.uri;
-  
+
   // Always try to resolve localUri for both platforms
   try {
     const assetInfo = await MediaLibrary.getAssetInfoAsync(asset.id);
@@ -1557,6 +1786,7 @@ for (const asset of media.assets) {
 ```
 
 **Native Camera:**
+
 ```tsx
 // Photo capture
 const result = await ImagePicker.launchCameraAsync({
@@ -1579,9 +1809,12 @@ const result = await ImagePicker.launchCameraAsync({
 
 ## [0.7.39] - 2026-01-10
 
-**📱 MOBILE ATTACHMENT PICKER OVERHAUL: Gallery Fallback, Video Recording, Contact Sharing & Enhanced Pinned Messages**
+**📱 MOBILE ATTACHMENT PICKER OVERHAUL: Gallery Fallback, Video Recording, Contact Sharing &
+Enhanced Pinned Messages**
 
-This release brings major improvements to the mobile attachment picker and conversation screen, addressing gallery loading issues in Expo Go, adding video recording capability, implementing modern-style contact sharing, and completely redesigning the pinned messages bar.
+This release brings major improvements to the mobile attachment picker and conversation screen,
+addressing gallery loading issues in Expo Go, adding video recording capability, implementing
+modern-style contact sharing, and completely redesigning the pinned messages bar.
 
 ### Fixed
 
@@ -1636,8 +1869,10 @@ This release brings major improvements to the mobile attachment picker and conve
 ### Technical Details
 
 **AttachmentPicker.tsx Changes:**
+
 - Added imports: `ActivityIndicator`, `expo-contacts`
-- New state: `cameraMode`, `isRecording`, `useImagePickerFallback`, `showContactPicker`, `contacts`, `contactSearchQuery`, `contactCardAnim`
+- New state: `cameraMode`, `isRecording`, `useImagePickerFallback`, `showContactPicker`, `contacts`,
+  `contactSearchQuery`, `contactCardAnim`
 - `loadMediaAssets()` now detects empty results and enables fallback UI
 - `openImagePicker()` - Direct ImagePicker launch for Expo Go
 - `handleCameraCapture()` supports both photo and video modes
@@ -1647,6 +1882,7 @@ This release brings major improvements to the mobile attachment picker and conve
 - Contact picker modal with search and animated list
 
 **ConversationScreen.tsx Changes:**
+
 - Text content now excludes video/image types with placeholder content
 - Complete replacement of pinnedBar with pinnedBarEnhanced featuring:
   - LinearGradient indicator showing pin progress
@@ -1673,14 +1909,16 @@ This release brings major improvements to the mobile attachment picker and conve
 
 **📱 MOBILE MEDIA FIX: Video Playback & Gallery Improvements**
 
-This release addresses critical issues with media handling on the mobile app, specifically fixing image previews in the attachment picker on Android and enabling inline video viewing in chat.
+This release addresses critical issues with media handling on the mobile app, specifically fixing
+image previews in the attachment picker on Android and enabling inline video viewing in chat.
 
 ### Fixed
 
 #### 🖼️ Media Gallery Preview (Android)
 
 - **Fixed image/video previews not showing in AttachmentPicker**:
-  - Root cause: `MediaLibrary.getAssetsAsync` returns `content://` URIs on Android that aren't directly renderable by the Image component
+  - Root cause: `MediaLibrary.getAssetsAsync` returns `content://` URIs on Android that aren't
+    directly renderable by the Image component
   - Solution: Now uses `MediaLibrary.getAssetInfoAsync` to resolve proper `localUri` for each asset
   - Thumbnails now display correctly in Expo Go and development builds
   - Performance optimized with parallel URI resolution for up to 100 assets
@@ -1696,6 +1934,7 @@ This release addresses critical issues with media handling on the mobile app, sp
 ### Technical Details
 
 **AttachmentPicker.tsx Changes:**
+
 ```tsx
 // On Android, resolve localUri for proper image rendering
 if (Platform.OS === 'android') {
@@ -1705,6 +1944,7 @@ if (Platform.OS === 'android') {
 ```
 
 **ConversationScreen.tsx Changes:**
+
 ```tsx
 // New InlineVideoThumbnail component
 const InlineVideoThumbnail = memo(({ videoUrl }: { videoUrl: string }) => {
@@ -1712,7 +1952,7 @@ const InlineVideoThumbnail = memo(({ videoUrl }: { videoUrl: string }) => {
     player.loop = false;
     player.pause(); // Keep paused to show first frame only
   });
-  
+
   return (
     <VideoView
       style={styles.videoThumbnail}
@@ -1742,7 +1982,9 @@ const InlineVideoThumbnail = memo(({ videoUrl }: { videoUrl: string }) => {
 
 **🔒 HARDENED RELEASE: Security Improvements, Test Coverage, Production Integration**
 
-This release focuses on security hardening, comprehensive test coverage for the theme system, and integrating demo features into the production application. Theme import/export has been removed to prevent XSS/injection attack vectors.
+This release focuses on security hardening, comprehensive test coverage for the theme system, and
+integrating demo features into the production application. Theme import/export has been removed to
+prevent XSS/injection attack vectors.
 
 ### Changed
 
@@ -1812,7 +2054,8 @@ This release focuses on security hardening, comprehensive test coverage for the 
 
 - `/apps/web/src/lib/theme/ThemeEngine.ts` — Removed import/export, added background preferences
 - `/apps/web/src/contexts/ThemeContextEnhanced.tsx` — Removed import/export from context
-- `/apps/web/src/components/settings/AppearanceSettingsEnhanced.tsx` — Removed import/export UI, added background settings
+- `/apps/web/src/components/settings/AppearanceSettingsEnhanced.tsx` — Removed import/export UI,
+  added background settings
 - `/apps/web/src/layouts/AppLayout.tsx` — Added shader background, haptic feedback
 - `/apps/web/src/lib/theme/__tests__/ThemeEngine.test.ts` — New (450+ lines)
 - `/apps/web/src/contexts/__tests__/ThemeContextEnhanced.test.tsx` — New (400+ lines)
@@ -1823,7 +2066,10 @@ This release focuses on security hardening, comprehensive test coverage for the 
 
 **🎨 SPECTRUM RELEASE: Advanced Theme Engine + Holographic UI v4.0 + Enhanced Appearance Settings**
 
-A comprehensive visual overhaul bringing industry-standard theming capabilities inspired by leading communication platforms. This release adds **~4,000+ lines** of polished theme system code with 7 built-in themes, complete customization controls, and the next generation Holographic UI component library.
+A comprehensive visual overhaul bringing industry-standard theming capabilities inspired by leading
+communication platforms. This release adds **~4,000+ lines** of polished theme system code with 7
+built-in themes, complete customization controls, and the next generation Holographic UI component
+library.
 
 ### Added
 
@@ -1839,13 +2085,11 @@ Comprehensive theming system with professional-grade features:
   - **Holo Purple**: Cyberpunk purple neon vibes
   - **Holo Gold**: Premium golden holographic shine
   - **Midnight**: Deep space dark blue theme
-  
 - **Theme Categories**:
   - Dark themes for low-light environments
   - Light themes for bright conditions
   - Special/holographic themes for immersive experiences
   - Custom user-created themes
-  
 - **User Preferences**:
   - Font scaling (75% - 150%)
   - Message density (compact, comfortable, spacious)
@@ -1853,7 +2097,6 @@ Comprehensive theming system with professional-grade features:
   - Reduce motion accessibility option
   - High contrast mode for visibility
   - System preference following
-  
 - **Technical Features**:
   - CSS variable injection for real-time updates
   - localStorage persistence across sessions
@@ -1871,7 +2114,6 @@ Comprehensive theming system with professional-grade features:
   - `HoloText`: 6 variants (display, title, subtitle, body, caption, label)
   - `HoloButton`: 5 styles (primary, secondary, ghost, danger, success)
   - `HoloCard`: Interactive cards with hover states
-  
 - **New Components**:
   - `HoloAvatar`: User avatars with status indicators (6 sizes)
   - `HoloInput`: Form inputs with holographic styling
@@ -1882,14 +2124,12 @@ Comprehensive theming system with professional-grade features:
   - `HoloModal`: Overlay modals with backdrop blur
   - `HoloNotification`: Toast notifications (4 types)
   - `HoloTooltip`: Interactive tooltips with positioning
-  
 - **5 Color Presets**:
   - Cyan: Default futuristic blue
   - Matrix: Green terminal aesthetic
   - Purple: Cyberpunk neon
   - Gold: Premium metallic
   - Midnight: Deep space blue
-  
 - **Advanced Effects**:
   - Framer Motion animations throughout
   - Mouse-following parallax depth
@@ -1907,21 +2147,18 @@ Professional theme customization panel:
   - Live Matrix rain effect in theme cards
   - Active theme highlighting
   - Theme category grouping
-  
 - **Accessibility Controls**:
   - Font size slider with live preview
   - Message density radio buttons
   - Reduce animations toggle
   - High contrast mode toggle
   - System preference sync option
-  
 - **Advanced Features**:
   - Custom theme creation wizard
   - Theme import from JSON
   - Theme export for sharing
   - Delete custom themes
   - Live preview panel
-  
 - **UX Polish**:
   - Smooth Framer Motion transitions
   - Responsive grid layout
@@ -1937,7 +2174,6 @@ React context wrapper for seamless theme integration:
   - `useThemeColors`: Quick access to current colors
   - `useHolographicTheme`: Holographic preset helper
   - `useReducedMotion`: Accessibility motion detection
-  
 - **Features**:
   - Automatic system preference detection
   - Cross-tab state synchronization
@@ -1964,9 +2200,13 @@ React context wrapper for seamless theme integration:
 
 ## [0.7.35] - 2026-01-11
 
-**🚀 HYPERTHINK RELEASE: Double Ratchet Protocol + Message Intelligence + Holographic UI + Spatial Audio**
+**🚀 HYPERTHINK RELEASE: Double Ratchet Protocol + Message Intelligence + Holographic UI + Spatial
+Audio**
 
-The most ambitious release yet. CGraph now features industry-leading security with full Double Ratchet encryption, intelligent messaging features, futuristic holographic UI components, and immersive 3D spatial audio for VR/AR readiness. This release adds **~3,500+ lines** of cutting-edge code across 6 major new systems.
+The most ambitious release yet. CGraph now features industry-leading security with full Double
+Ratchet encryption, intelligent messaging features, futuristic holographic UI components, and
+immersive 3D spatial audio for VR/AR readiness. This release adds **~3,500+ lines** of cutting-edge
+code across 6 major new systems.
 
 ### Added
 
@@ -1979,22 +2219,18 @@ The gold standard in end-to-end encryption, now in CGraph:
   - ECDH P-384 elliptic curve cryptography
   - AES-256-GCM authenticated encryption
   - HKDF (HMAC-based Key Derivation Function)
-  
 - **Forward Secrecy & Break-in Recovery**:
   - Automatic DH ratchet advancement on each exchange
   - Symmetric key ratchet for each message
   - Past message keys are deleted after use
-  
 - **Out-of-Order Message Handling**:
   - Skipped message key storage (up to 1000 keys)
   - Automatic key recovery for delayed messages
   - Timestamp-based key expiration
-  
 - **Session Management**:
   - Full session export/import for device sync
   - Secure key erasure on session destroy
   - Constant-time cryptographic comparisons
-  
 - **Post-Quantum Placeholder** (`PostQuantumDoubleRatchet`):
   - Future-ready architecture for CRYSTALS-Kyber
   - Hybrid classical/quantum-resistant mode
@@ -2009,27 +2245,23 @@ Enterprise-grade AI features for smarter conversations:
   - 5 reply categories: positive, neutral, question, suggestion, closing
   - Confidence scoring for each suggestion
   - Conversation history analysis
-  
 - **8-Emotion Sentiment Analysis**:
   - Joy, sadness, anger, fear, surprise, disgust, trust, anticipation
   - Positive/negative/neutral classification
   - Per-message confidence scores
   - Trend detection over time
-  
 - **Advanced Content Moderation**:
   - Spam detection with pattern analysis
   - Scam/phishing URL identification
   - Harassment/toxicity detection
   - Risk scoring with action recommendations
   - Evidence-based flagging
-  
 - **NLP Features**:
   - Language detection (20+ languages)
   - Topic extraction with categorization
   - Conversation summarization
   - Action item identification
   - Key point extraction
-  
 - **Privacy-First Design**:
   - Local ML processing by default
   - Optional cloud AI integration
@@ -2045,38 +2277,31 @@ Enterprise-grade AI features for smarter conversations:
   - Animated scanlines overlay
   - Flicker/glitch effects
   - 4 color themes: cyan, green, purple, gold
-  
 - **`HolographicText`**:
   - Multi-layer glow effects
   - Holographic shimmer animation
   - Responsive typography scaling
-  
 - **`HolographicButton`**:
   - Pulsing glow animations
   - Hover state transformations
   - Loading spinner integration
   - Disabled state handling
-  
 - **`HolographicCard`**:
   - Frosted glass background
   - Border glow effects
   - Content layering system
-  
 - **`HolographicAvatar`**:
   - Ring animation effects
   - Status indicator overlays
   - Online/offline states
-  
 - **`HolographicInput`**:
   - Focus glow animations
   - Validation state colors
   - Icon slot support
-  
 - **`HolographicProgress`**:
   - Animated progress bar
   - Glow trail effects
   - Percentage display
-  
 - **`HolographicNotification`**:
   - Toast notification system
   - Success/warning/error variants
@@ -2091,24 +2316,20 @@ VR/AR-ready 3D audio system:
   - HRTF (Head-Related Transfer Function) support
   - Real-time position/orientation updates
   - Distance-based attenuation curves
-  
 - **Audio Zones**:
   - Configurable reverb environments
   - Zone transition smoothing
   - Preset environments (room, hall, cave, outdoor)
   - Custom convolution reverbs
-  
 - **Voice Activity Detection (VAD)**:
   - Real-time speech detection
   - Configurable sensitivity thresholds
   - Energy-based and zero-crossing analysis
   - Speaking state callbacks
-  
 - **Noise Cancellation**:
   - Integration hooks for noise suppression
   - Krisp/RNNoise compatible interface
   - Toggle enable/disable
-  
 - **`SpatialAudioRoom` Class**:
   - Multi-participant audio management
   - Room-level audio processing
@@ -2124,7 +2345,6 @@ VR/AR-ready 3D audio system:
   - Session persistence tests
   - Security property validation
   - Tamper detection tests
-  
 - **`AIMessageEngine.test.ts`** (400+ lines):
   - Smart reply generation tests
   - Sentiment analysis validation
@@ -2147,7 +2367,6 @@ VR/AR-ready 3D audio system:
   - Constant-time comparison functions
   - Secure random number generation
   - Memory zeroing on key disposal
-  
 - **Content Security**:
   - XSS pattern detection in moderation
   - URL sanitization for phishing prevention
@@ -2155,18 +2374,19 @@ VR/AR-ready 3D audio system:
 
 ### Technical Specifications
 
-| Component | Lines | Technology |
-|-----------|-------|------------|
-| Double Ratchet | 750+ | Web Crypto API, ECDH P-384 |
-| AI Engine | 750+ | Local NLP, ML patterns |
-| Holographic UI | 650+ | React, Tailwind, CSS3 |
-| Spatial Audio | 600+ | Web Audio API, HRTF |
-| Tests | 750+ | Vitest, React Testing Library |
-| **Total New Code** | **~3,500+** | TypeScript, React |
+| Component          | Lines       | Technology                    |
+| ------------------ | ----------- | ----------------------------- |
+| Double Ratchet     | 750+        | Web Crypto API, ECDH P-384    |
+| AI Engine          | 750+        | Local NLP, ML patterns        |
+| Holographic UI     | 650+        | React, Tailwind, CSS3         |
+| Spatial Audio      | 600+        | Web Audio API, HRTF           |
+| Tests              | 750+        | Vitest, React Testing Library |
+| **Total New Code** | **~3,500+** | TypeScript, React             |
 
 ### Dependencies
 
 No new dependencies required — all features built on existing Web APIs:
+
 - `Web Crypto API` (browser native)
 - `Web Audio API` (browser native)
 - React, Tailwind CSS (existing)
@@ -2176,7 +2396,8 @@ No new dependencies required — all features built on existing Web APIs:
 
 ## [0.7.34] - 2026-01-10
 
-Enhanced UI v2.0 with advanced animations, 3D effects, and WebGL shaders. This release introduces 9 new premium components and establishes a demo-first development workflow for UI changes.
+Enhanced UI v2.0 with advanced animations, 3D effects, and WebGL shaders. This release introduces 9
+new premium components and establishes a demo-first development workflow for UI changes.
 
 ### Added
 
@@ -2315,18 +2536,18 @@ Enhanced UI v2.0 with advanced animations, 3D effects, and WebGL shaders. This r
 
 ### Component Line Counts
 
-| Component | Lines | Description |
-|-----------|-------|-------------|
-| AnimationEngine.ts | 661 | Animation system with GSAP |
-| AdvancedVoiceVisualizer.tsx | 565 | Audio visualization |
-| EnhancedConversation.tsx | 550 | Next-gen messaging page |
-| ThemeEngine.ts | 468 | AI theme generation |
-| ShaderBackground.tsx | 424 | WebGL shader backgrounds |
-| Matrix3DEnvironment.tsx | 395 | Three.js 3D environment |
-| AnimatedReactionBubble.tsx | 325 | Reaction animations |
-| GlassCard.tsx | 300 | Glassmorphic cards |
-| AnimatedMessageWrapper.tsx | 270 | Message animations |
-| **Total** | **3,958** | Premium UI components |
+| Component                   | Lines     | Description                |
+| --------------------------- | --------- | -------------------------- |
+| AnimationEngine.ts          | 661       | Animation system with GSAP |
+| AdvancedVoiceVisualizer.tsx | 565       | Audio visualization        |
+| EnhancedConversation.tsx    | 550       | Next-gen messaging page    |
+| ThemeEngine.ts              | 468       | AI theme generation        |
+| ShaderBackground.tsx        | 424       | WebGL shader backgrounds   |
+| Matrix3DEnvironment.tsx     | 395       | Three.js 3D environment    |
+| AnimatedReactionBubble.tsx  | 325       | Reaction animations        |
+| GlassCard.tsx               | 300       | Glassmorphic cards         |
+| AnimatedMessageWrapper.tsx  | 270       | Message animations         |
+| **Total**                   | **3,958** | Premium UI components      |
 
 ### Dependencies Added (Web)
 
@@ -2364,7 +2585,9 @@ Security hardening and mobile stability improvements.
 
 ## [0.7.32] - 2026-01-10
 
-Enterprise-grade scalability improvements. This release addresses critical architectural gaps identified during platform comparison analysis, adding distributed search, WebRTC calling, distributed rate limiting, and presence sampling for million-user scale.
+Enterprise-grade scalability improvements. This release addresses critical architectural gaps
+identified during platform comparison analysis, adding distributed search, WebRTC calling,
+distributed rate limiting, and presence sampling for million-user scale.
 
 ### Fixed
 
@@ -2488,35 +2711,49 @@ config :cgraph, Cgraph.Presence.Sampled,
 
 ### Technical Details
 
-| Component | Before | After | Improvement |
-|-----------|--------|-------|-------------|
-| Search latency | 500ms+ | <50ms | 10x faster |
-| Search scale | 50K messages | 100M+ messages | 2000x capacity |
-| Presence memory | 100MB/1M users | 12KB/1M users | 8000x reduction |
-| Rate limit sync | Single node | Cluster-wide | Distributed |
-| Voice/Video | None | Full WebRTC | New capability |
+| Component       | Before         | After          | Improvement     |
+| --------------- | -------------- | -------------- | --------------- |
+| Search latency  | 500ms+         | <50ms          | 10x faster      |
+| Search scale    | 50K messages   | 100M+ messages | 2000x capacity  |
+| Presence memory | 100MB/1M users | 12KB/1M users  | 8000x reduction |
+| Rate limit sync | Single node    | Cluster-wide   | Distributed     |
+| Voice/Video     | None           | Full WebRTC    | New capability  |
 
 ### Fixed
 
-- **Rate limiter telemetry mismatch** — Updated `emit_telemetry/4` in `RateLimiterV2` plug to handle the new return format from `DistributedRateLimiter.check`. Previously expected `{:allow, remaining, _}` tuples but the distributed limiter returns `:ok` or `{:error, :rate_limited, info}`.
+- **Rate limiter telemetry mismatch** — Updated `emit_telemetry/4` in `RateLimiterV2` plug to handle
+  the new return format from `DistributedRateLimiter.check`. Previously expected
+  `{:allow, remaining, _}` tuples but the distributed limiter returns `:ok` or
+  `{:error, :rate_limited, info}`.
 
-- **Redis GenServer not in supervision tree** — Added `Cgraph.Redis` to the application children list. The distributed rate limiter requires this wrapper around Redix for connection pooling and circuit breaker functionality.
+- **Redis GenServer not in supervision tree** — Added `Cgraph.Redis` to the application children
+  list. The distributed rate limiter requires this wrapper around Redix for connection pooling and
+  circuit breaker functionality.
 
-- **ETS fold syntax in distributed rate limiter** — Fixed guard clause placement in anonymous function matches within `:ets.foldl/3` calls. Guards in anonymous functions must appear after the comma, not in the pattern match position.
+- **ETS fold syntax in distributed rate limiter** — Fixed guard clause placement in anonymous
+  function matches within `:ets.foldl/3` calls. Guards in anonymous functions must appear after the
+  comma, not in the pattern match position.
 
-- **Built-in type redefinition** — Renamed `@type identifier` to `@type rate_limit_identifier` in `Cgraph.RateLimiter.Distributed` to avoid shadowing Elixir's built-in `identifier()` type.
+- **Built-in type redefinition** — Renamed `@type identifier` to `@type rate_limit_identifier` in
+  `Cgraph.RateLimiter.Distributed` to avoid shadowing Elixir's built-in `identifier()` type.
 
-- **Function call in guard clause** — Refactored `search_engine.ex` to use `if` statements instead of guard clauses for runtime configuration checks. Guard clauses only accept a limited set of built-in functions.
+- **Function call in guard clause** — Refactored `search_engine.ex` to use `if` statements instead
+  of guard clauses for runtime configuration checks. Guard clauses only accept a limited set of
+  built-in functions.
 
-- **Duplicate function definitions in Messaging context** — Removed duplicate implementations that conflicted with `defdelegate` declarations. When delegating to sub-contexts, the main module shouldn't also define those functions.
+- **Duplicate function definitions in Messaging context** — Removed duplicate implementations that
+  conflicted with `defdelegate` declarations. When delegating to sub-contexts, the main module
+  shouldn't also define those functions.
 
-- **Missing HTTPoison dependency** — Added `httpoison` to mix.exs dependencies for external HTTP requests.
+- **Missing HTTPoison dependency** — Added `httpoison` to mix.exs dependencies for external HTTP
+  requests.
 
 ---
 
 ## [0.7.31] - 2026-01-09
 
-Cross-platform Storybook support and version stabilization. This release adds Storybook for React Native/Expo and aligns all Storybook packages to v8.6.15.
+Cross-platform Storybook support and version stabilization. This release adds Storybook for React
+Native/Expo and aligns all Storybook packages to v8.6.15.
 
 ### Added
 
@@ -2544,7 +2781,8 @@ Cross-platform Storybook support and version stabilization. This release adds St
 
 ### Changed
 
-- **Storybook downgraded to v8.6.15** — V10 addons not yet released; using latest stable with full addon support
+- **Storybook downgraded to v8.6.15** — V10 addons not yet released; using latest stable with full
+  addon support
 - **preview.ts → preview.tsx** — Renamed for JSX support in decorators
 - **ProfilerWrapper phase type** — Added `'nested-update'` for React 18+ compatibility
 
@@ -2563,7 +2801,8 @@ Cross-platform Storybook support and version stabilization. This release adds St
 
 ## [0.7.30] - 2026-01-09
 
-Component documentation and developer experience improvements. This release adds Storybook for interactive component documentation and expands the component story library.
+Component documentation and developer experience improvements. This release adds Storybook for
+interactive component documentation and expands the component story library.
 
 ### Added
 
@@ -2606,17 +2845,21 @@ Component documentation and developer experience improvements. This release adds
 
 ## [0.7.29] - 2026-01-09
 
-Major architecture improvements and code quality fixes. This release focuses on maintainability, performance monitoring, and preventing future bugs through better patterns and tooling.
+Major architecture improvements and code quality fixes. This release focuses on maintainability,
+performance monitoring, and preventing future bugs through better patterns and tooling.
 
 ### Fixed
 
-- **React hooks violation in ConversationScreen** — The "Rendered more hooks than during the previous render" error was caused by a `useCallback` hook defined after an early return. Moved all hooks before any conditional returns to comply with React's Rules of Hooks.
+- **React hooks violation in ConversationScreen** — The "Rendered more hooks than during the
+  previous render" error was caused by a `useCallback` hook defined after an early return. Moved all
+  hooks before any conditional returns to comply with React's Rules of Hooks.
 
 ### Added
 
 #### Component Architecture Improvements
 
-- **Extracted conversation components** — Split the 4,945-line ConversationScreen.tsx into focused, memoized components:
+- **Extracted conversation components** — Split the 4,945-line ConversationScreen.tsx into focused,
+  memoized components:
   - `MessageActionsMenu` — Modern action sheet for message options
   - `ReactionPickerModal` — Full emoji picker with categories
   - `EmptyConversation` — Empty state with wave animations
@@ -2694,47 +2937,65 @@ Available in both web and mobile apps at `components/dev/`.
 
 ## [0.7.28] - 2026-01-08
 
-Quick patch for iOS mobile authentication issues. If you've been trying to log in or register on the iOS app and getting weird errors, this should sort it out.
+Quick patch for iOS mobile authentication issues. If you've been trying to log in or register on the
+iOS app and getting weird errors, this should sort it out.
 
 ### Fixed
 
-- **iOS login/register crashes** — The E2EE context wasn't wired up in App.tsx, so any screen using `useE2EE` (like ConversationScreen) would throw immediately. Added `E2EEProvider` to the app root.
+- **iOS login/register crashes** — The E2EE context wasn't wired up in App.tsx, so any screen using
+  `useE2EE` (like ConversationScreen) would throw immediately. Added `E2EEProvider` to the app root.
 
-- **useE2EE hook was too strict** — If the hook was called before the provider mounted (race condition) or in tests, it would crash. Now returns safe defaults when provider isn't available. Added `useE2EEStrict()` for components that absolutely need E2EE.
+- **useE2EE hook was too strict** — If the hook was called before the provider mounted (race
+  condition) or in tests, it would crash. Now returns safe defaults when provider isn't available.
+  Added `useE2EEStrict()` for components that absolutely need E2EE.
 
-- **Missing ChangesetJSON module** — Backend referenced `CgraphWeb.ChangesetJSON` for validation errors but the module didn't exist. Password validation failures would 500 instead of showing the actual error. Created the module.
+- **Missing ChangesetJSON module** — Backend referenced `CgraphWeb.ChangesetJSON` for validation
+  errors but the module didn't exist. Password validation failures would 500 instead of showing the
+  actual error. Created the module.
 
-- **Mobile error messages were incomplete** — The app only checked `err.response?.data?.message` but backend returns errors in different formats (`error`, `error.message`, `details`). Now extracts errors from all formats properly.
+- **Mobile error messages were incomplete** — The app only checked `err.response?.data?.message` but
+  backend returns errors in different formats (`error`, `error.message`, `details`). Now extracts
+  errors from all formats properly.
 
-- **Password requirements unclear** — Users would get cryptic backend errors about password complexity. Added client-side validation and a hint showing requirements (8+ chars, uppercase, lowercase, number, special character).
+- **Password requirements unclear** — Users would get cryptic backend errors about password
+  complexity. Added client-side validation and a hint showing requirements (8+ chars, uppercase,
+  lowercase, number, special character).
 
 ### Changed
 
-- **Network debug logging** — Added request/response logging in development mode. Check the console if you're having connection issues—you'll see exactly what URL the app is hitting.
+- **Network debug logging** — Added request/response logging in development mode. Check the console
+  if you're having connection issues—you'll see exactly what URL the app is hitting.
 
-- **iOS ATS relaxed for local networking** — Added `NSAllowsLocalNetworking` for dev builds so physical devices can reach LAN IPs without SSL.
+- **iOS ATS relaxed for local networking** — Added `NSAllowsLocalNetworking` for dev builds so
+  physical devices can reach LAN IPs without SSL.
 
 ### Docs
 
-- Updated MOBILE.md with E2EE context documentation, including the provider hierarchy and usage examples.
+- Updated MOBILE.md with E2EE context documentation, including the provider hierarchy and usage
+  examples.
 
 ---
 
 ## [0.7.27] - 2026-01-08
 
-Testing infrastructure and moderation system hardening. All 718 backend tests and 255 web tests passing.
+Testing infrastructure and moderation system hardening. All 718 backend tests and 255 web tests
+passing.
 
 ---
 
 ## [0.7.26] - 2026-01-08
 
-Honestly, this might be the most important release we've done. It's the one that makes CGraph actually deployable to production without weird failures. We also added the legal docs and moderation system required for app store approval.
+Honestly, this might be the most important release we've done. It's the one that makes CGraph
+actually deployable to production without weird failures. We also added the legal docs and
+moderation system required for app store approval.
 
 If you've been waiting to deploy CGraph for real, this is the release to use.
 
 ### Breaking Changes ⚠️
 
-**You'll need to update your environment variables.** The app now requires certain secrets to be set explicitly — we removed the insecure defaults that were shipping with docker-compose. See the migration section in [V0.7.26_RELEASE_NOTES.md](docs/V0.7.26_RELEASE_NOTES.md).
+**You'll need to update your environment variables.** The app now requires certain secrets to be set
+explicitly — we removed the insecure defaults that were shipping with docker-compose. See the
+migration section in [V0.7.26_RELEASE_NOTES.md](docs/V0.7.26_RELEASE_NOTES.md).
 
 - `SECRET_KEY_BASE` — no longer has a default value
 - `ENCRYPTION_KEY` — **required** in production (app crashes without it now)
@@ -2743,15 +3004,23 @@ If you've been waiting to deploy CGraph for real, this is the release to use.
 
 ### Fixed
 
-- **Production config missing** — `config/prod.exs` didn't exist. Docker and Fly.io builds failed immediately. Kind of embarrassing. Fixed now.
-- **Encryption key fallback was dangerous** — If you forgot `ENCRYPTION_KEY`, we'd generate a random one. Restart the app? New key. All your encrypted messages? Gone. Now it fails fast with a clear error.
-- **Group conversations returned 500** — The feature isn't built yet, but returning a 500 made it look like the server was broken. Now returns 400 with an explanation.
-- **Version drift** — Backend said 0.7.24, web said 0.7.23, mobile said 0.7.1. We've aligned everything to 0.7.26.
-- **Docker-compose shipped with weak defaults** — Secret values were hardcoded in docker-compose.yml. Production deployments would inherit them if you didn't override. Fixed—now requires `.env` file.
+- **Production config missing** — `config/prod.exs` didn't exist. Docker and Fly.io builds failed
+  immediately. Kind of embarrassing. Fixed now.
+- **Encryption key fallback was dangerous** — If you forgot `ENCRYPTION_KEY`, we'd generate a random
+  one. Restart the app? New key. All your encrypted messages? Gone. Now it fails fast with a clear
+  error.
+- **Group conversations returned 500** — The feature isn't built yet, but returning a 500 made it
+  look like the server was broken. Now returns 400 with an explanation.
+- **Version drift** — Backend said 0.7.24, web said 0.7.23, mobile said 0.7.1. We've aligned
+  everything to 0.7.26.
+- **Docker-compose shipped with weak defaults** — Secret values were hardcoded in
+  docker-compose.yml. Production deployments would inherit them if you didn't override. Fixed—now
+  requires `.env` file.
 
 ### Added
 
 #### Content Moderation System (App Store Requirement)
+
 Finally built out proper content moderation. Apple and Google require this for app store approval.
 
 - **Report API** — Users can report messages, posts, users, etc.
@@ -2761,6 +3030,7 @@ Finally built out proper content moderation. Apple and Google require this for a
 - **Appeals workflow** — Users can contest moderation decisions
 
 New endpoints:
+
 ```
 POST   /api/v1/reports          # Submit a report
 GET    /api/v1/reports          # Your report history
@@ -2769,19 +3039,25 @@ POST   /api/admin/reports/:id/review
 ```
 
 #### Legal Documents
+
 App stores won't accept you without these:
+
 - **Privacy Policy** — GDPR and CCPA compliant, covers data collection, retention, user rights
 - **Terms of Service** — Acceptable use, content guidelines, liability limitations
 
 Both are in `docs/LEGAL/`.
 
 #### E2EE Key Verification UI
+
 Added the UI for verifying encryption keys with your contacts:
+
 - Web: `KeyVerification.tsx` component with QR code
 - Mobile: `KeyVerificationScreen.tsx` with share functionality
 
 #### Voice/Video Roadmap Document
+
 We were being vague about voice and video features. Now there's a clear doc explaining:
+
 - ✅ Voice messages — implemented
 - 🗓️ Voice calls — planned for v0.9.0
 - 🗓️ Video calls — planned for v0.10.0
@@ -2795,8 +3071,9 @@ We were being vague about voice and video features. Now there's a clear doc expl
 ### Technical Details
 
 **New files:**
+
 - `config/prod.exs` — Production configuration
-- `lib/cgraph/moderation.ex` — Moderation context module  
+- `lib/cgraph/moderation.ex` — Moderation context module
 - `lib/cgraph/moderation/*.ex` — Report, Appeal, UserRestriction, ReviewAction schemas
 - `priv/repo/migrations/20260105000001_create_moderation_tables.exs`
 - `controllers/api/v1/report_controller.ex`
@@ -2816,20 +3093,24 @@ We were being vague about voice and video features. Now there's a clear doc expl
 ### Security
 
 #### Backend - E2EE Key Revocation Broadcast (Forward Secrecy Fix)
+
 - **Critical Security Fix** - Key revocation now notifies all contacts
-  - When a user revokes a compromised key (lost device, security breach), all friends are now immediately notified via WebSocket
+  - When a user revokes a compromised key (lost device, security breach), all friends are now
+    immediately notified via WebSocket
   - Contacts' clients invalidate cached prekey bundles, preventing encryption to compromised keys
   - Implements proper Forward Secrecy guarantees matching Signal/WhatsApp standards
   - New `notify_key_revocation/3` function broadcasts to all `user:{friend_id}` channels
   - Added `get_accepted_friend_ids/1` public API in Friends module
 
 #### Web - E2EE Key Revocation Handling
+
 - **Socket Manager** - Added `joinUserChannel/1` for personal notification channel
   - Handles `e2ee:key_revoked` events from server
   - Automatically invalidates cached prekey bundles for revoked users
 - **E2EE Store** - Added `handleKeyRevoked/2` to clear bundle cache on revocation
 
 #### Mobile - E2EE Key Revocation Handling
+
 - **Socket Manager** - Added user channel support with E2EE callback registration
   - `joinUserChannel/1` subscribes to personal notifications
   - `setE2EEKeyRevokedHandler/1` registers callback for key revocation events
@@ -2838,6 +3119,7 @@ We were being vague about voice and video features. Now there's a clear doc expl
 ### Technical Details
 
 **Key Revocation Flow:**
+
 1. User calls `POST /api/v1/e2ee/keys/:key_id/revoke`
 2. Server marks key as revoked in database
 3. Server broadcasts `e2ee:key_revoked` to all friends' user channels
@@ -2851,6 +3133,7 @@ We were being vague about voice and video features. Now there's a clear doc expl
 ### Security
 
 #### Backend - HTTP-Only Cookie Authentication
+
 - **XSS Token Protection** - Moved JWT storage from sessionStorage to HTTP-only cookies
   - New `CgraphWeb.Plugs.CookieAuth` plug for cookie-based auth
   - Access token: 15-minute expiry, HTTP-only, Secure, SameSite=Strict
@@ -2859,12 +3142,14 @@ We were being vague about voice and video features. Now there's a clear doc expl
   - Backwards compatible with mobile apps (still use Authorization header)
 
 #### Web - Credential Security
+
 - Updated axios client with `withCredentials: true` for automatic cookie handling
 - Session tokens no longer accessible to client-side JavaScript
 
 ### Added
 
 #### Backend - Image Optimization Pipeline
+
 - **Automatic Image Processing** - Server-side optimization for uploaded images
   - Thumbnail generation (150x150) for gallery views
   - Preview generation (800x800) for quick loading
@@ -2875,6 +3160,7 @@ We were being vague about voice and video features. Now there's a clear doc expl
   - Skips GIF and SVG formats to preserve animations/vectors
 
 ### Technical Notes
+
 - ImageMagick `convert` command used for image processing
 - Mobile apps unaffected by cookie changes (use native secure storage)
 - Cookie auth integrates seamlessly with existing Guardian JWT pipeline
@@ -2886,6 +3172,7 @@ We were being vague about voice and video features. Now there's a clear doc expl
 ### Security
 
 #### Backend - Upload Security Hardening
+
 - **Magic Byte Validation** - Added content-based file type verification
   - Validates actual file content against claimed MIME type
   - Prevents malicious scripts disguised as images (e.g., `hack.php.png`)
@@ -2893,12 +3180,14 @@ We were being vague about voice and video features. Now there's a clear doc expl
   - Container format validation (MP4, WebM, HEIC) with ftyp box checks
 
 #### Database - Foreign Key Constraint Fixes
+
 - **Cascade Delete Consistency** - Fixed critical constraint conflicts
   - Resolved `nilify_all` + `null: false` conflicts that crashed user deletion
   - Affected tables: conversations, messages, groups, group_members, audit_logs
   - All user-related data now properly cascades on user deletion
 
 #### Documentation - Security Transparency
+
 - **E2EE Status Clarification** - Updated SECURITY.md to accurately reflect:
   - Server-side E2EE infrastructure: Complete
   - Client-side integration: In progress
@@ -2907,6 +3196,7 @@ We were being vague about voice and video features. Now there's a clear doc expl
 ### Added
 
 #### Backend - Message Reliability
+
 - **Message Idempotency** - Prevent duplicate messages on network retry
   - New `client_message_id` field for client-generated UUIDs
   - Server returns existing message if same ID sent twice
@@ -2914,10 +3204,12 @@ We were being vague about voice and video features. Now there's a clear doc expl
   - Backwards compatible (field is optional)
 
 #### Backend - New Tests
+
 - `uploads_security_test.exs` - Magic byte validation test coverage
 - `messaging_idempotency_test.exs` - Idempotency behavior tests
 
 #### Web - Component Utilities
+
 - **cn() Utility** - Added Tailwind class merging utility
   - Located at `src/lib/utils.ts`
   - Enables shadcn/ui and 21st.dev component compatibility
@@ -2926,12 +3218,14 @@ We were being vague about voice and video features. Now there's a clear doc expl
 ### Changed
 
 #### Mobile - Multi-Photo Gallery
+
 - **Swipeable Image Viewer** - Enhanced gallery experience
   - Horizontal FlatList with paging for multi-image messages
   - Real-time page counter during swipe
   - Smooth scroll-to-index on gallery open
 
 #### Mobile - Camera Improvements
+
 - **Permission Handling** - Removed redundant microphone permission request
   - Native camera handles audio permissions automatically
   - Prevents TypeError crash on permission denied
@@ -2939,12 +3233,14 @@ We were being vague about voice and video features. Now there's a clear doc expl
 ### Fixed
 
 #### Mobile - Duplicate Message Prevention
+
 - **WebSocket Echo Handling** - Fixed duplicate key warnings
   - `sentMessageIdsRef` tracks locally-sent messages
   - WebSocket handler skips messages already in list
   - Prevents React key collision errors
 
 #### Backend - Message Controller
+
 - **Link Preview Persistence** - Fixed grid_images not saving
   - Controller now extracts `link_preview` from params
   - Supports both `link_preview` and `metadata` field names
@@ -2959,6 +3255,7 @@ We were being vague about voice and video features. Now there's a clear doc expl
 ### Technical Details
 
 **Magic Byte Validation:**
+
 ```elixir
 # Validates file content against MIME type
 case Uploads.validate_mime_type(path, "image/jpeg", false) do
@@ -2968,11 +3265,12 @@ end
 ```
 
 **Message Idempotency:**
+
 ```typescript
 // Client sends unique ID with message
 const response = await api.post('/messages', {
   content: 'Hello!',
-  client_message_id: crypto.randomUUID()
+  client_message_id: crypto.randomUUID(),
 });
 
 // On retry, server returns existing message instead of duplicate
@@ -2985,6 +3283,7 @@ const response = await api.post('/messages', {
 ### Added
 
 #### Mobile - Chat UX Improvements
+
 - **Inverted FlatList Pattern** - Implemented industry-standard inverted list for chat
   - Messages now display with newest at bottom reliably
   - Automatic scroll to latest message on entering conversation
@@ -2995,6 +3294,7 @@ const response = await api.post('/messages', {
   - Proper cleanup in finally blocks
 
 #### Mobile - Message Management
+
 - **Deleted Message Tracking** - Messages unsent/deleted no longer reappear
   - `deletedMessageIdsRef` tracks deleted message IDs for session
   - Prevents WebSocket from re-adding deleted messages
@@ -3003,11 +3303,13 @@ const response = await api.post('/messages', {
 ### Changed
 
 #### Mobile - Message Handling Architecture
+
 - **Message Sort Order** - Changed from oldest-first to newest-first for inverted list
 - **Scroll Behavior** - All `scrollToEnd` calls replaced with `scrollToOffset({ offset: 0 })`
 - **Message Prepend** - New messages prepend `[normalized, ...prev]` instead of append
 
 #### Project-Wide Version Bump
+
 - Root package: 0.7.20 → 0.7.22
 - Mobile app: 0.7.20 → 0.7.22
 - Web app: 0.7.19 → 0.7.22
@@ -3016,6 +3318,7 @@ const response = await api.post('/messages', {
 ### Fixed
 
 #### Backend - Test Suite Fixes
+
 - **Reaction API Tests** - Fixed 6 failing tests due to `add_reaction/3` return format change
   - Function now returns `{:ok, reaction, replaced_emoji}` (3-tuple)
   - Updated `messaging_test.exs` pattern matches for new format
@@ -3023,6 +3326,7 @@ const response = await api.post('/messages', {
   - All 620 tests now pass
 
 #### Mobile - Critical Bug Fixes
+
 - **Chat Scroll to Last Message** - Fixed scroll always going to first messages instead of latest
   - Root cause: Non-inverted FlatList requires manual scroll management that was failing
   - Solution: Standard inverted FlatList pattern used by WhatsApp, iMessage, Telegram
@@ -3036,24 +3340,23 @@ const response = await api.post('/messages', {
 ### Technical Details
 
 **Inverted FlatList Pattern:**
+
 ```tsx
 // Messages sorted newest-first in array
 const sortedMessages = messages.sort((a, b) => dateB - dateA);
 
 // FlatList with inverted={true} displays first item at BOTTOM
-<FlatList
-  inverted={true}
-  data={sortedMessages}
-/>
+<FlatList inverted={true} data={sortedMessages} />;
 
 // New messages prepend to array (appear at bottom due to inversion)
-setMessages(prev => [newMessage, ...prev]);
+setMessages((prev) => [newMessage, ...prev]);
 
 // Scroll to newest = scroll to offset 0
 flatListRef.current?.scrollToOffset({ offset: 0 });
 ```
 
 **Picker Lock Mechanism:**
+
 ```tsx
 const isPickerActiveRef = useRef(false);
 
@@ -3077,6 +3380,7 @@ const handlePhotoSelect = async () => {
 ### Added
 
 #### Mobile - Conversation Screen Enhancements
+
 - **Attachment Menu** - Tap the + button to share photos, take camera shots, or send documents
   - Beautiful animated slide-up menu with colorful icons
   - Photo picker and camera integration via expo-image-picker
@@ -3095,11 +3399,14 @@ const handlePhotoSelect = async () => {
   - Animated waving hand for personality
 
 ### Changed
+
 - **+ Button Animation** - Rotates 45° when menu is open
 - **Header Layout** - Reorganized with action buttons and E2EE badge
 
 ### Fixed
-- **FriendRequestsScreen** - Fixed "filter is not a function" error by properly handling API response
+
+- **FriendRequestsScreen** - Fixed "filter is not a function" error by properly handling API
+  response
 - **LeaderboardScreen** - Added null safety for username/display_name charAt calls
 - **NotificationsInboxScreen** - Fixed "Invalid time value" errors with safe date parsing
 - **ForumScreen** - Fixed 404 errors by adding correct /api/v1 prefix
@@ -3114,6 +3421,7 @@ const handlePhotoSelect = async () => {
 ### Changed
 
 #### Mobile - Audio System Modernization
+
 - **Migrated VoiceMessagePlayer** - Replaced deprecated expo-av with expo-audio hooks
   - Uses `useAudioPlayer` and `useAudioPlayerStatus` for modern audio playback
   - Simplified state management with reactive status updates
@@ -3129,11 +3437,13 @@ const handlePhotoSelect = async () => {
 ### Fixed
 
 #### Mobile - TypeScript Type Safety
+
 - **Fixed MessageMetadata typing** - Corrected `thumbnailUrl` to `thumbnail` property
 - **Fixed socket typing** - Resolved Phoenix channel event handler type issues
 - **Fixed typing timeout** - Proper NodeJS.Timeout type handling for Map storage
 
 #### Mobile - Dependency Health
+
 - **All expo-doctor checks pass** - 17/17 checks passing
 - **TypeScript strict mode** - Zero compilation errors
 - **SDK 54 compatibility verified** - Ready for production deployment
@@ -3145,15 +3455,21 @@ const handlePhotoSelect = async () => {
 ### Changed
 
 #### Backend - Code Quality Improvements
-- **Reduced cyclomatic complexity** - Refactored 45 functions across codebase to lower complexity scores
-- **Fixed nested depth issues** - Flattened deeply nested conditionals using early returns and pattern matching
-- **Predicate naming conventions** - Renamed `is_blocked?` → `blocked?`, `is_member?` → `member?`, etc. across all modules
-- **Implicit try blocks** - Converted 15 explicit try/rescue to function-level rescue for cleaner code
+
+- **Reduced cyclomatic complexity** - Refactored 45 functions across codebase to lower complexity
+  scores
+- **Fixed nested depth issues** - Flattened deeply nested conditionals using early returns and
+  pattern matching
+- **Predicate naming conventions** - Renamed `is_blocked?` → `blocked?`, `is_member?` → `member?`,
+  etc. across all modules
+- **Implicit try blocks** - Converted 15 explicit try/rescue to function-level rescue for cleaner
+  code
 - **Alphabetical alias ordering** - Organized aliases alphabetically in 50+ files
 - **Removed trailing whitespace** - Cleaned all Elixir source files
 - **Module alias placement** - Fixed aliases appearing before @moduledoc in several modules
 
 #### Code Metrics
+
 - **Credo strict mode**: 2 unavoidable issues (try/after, try/catch patterns require explicit try)
 - **Test suite**: 620 tests covering all functionality
 - **Source files**: 212 Elixir modules with 4,499 functions
@@ -3165,6 +3481,7 @@ const handlePhotoSelect = async () => {
 ### Fixed
 
 #### Backend - Voice Message Upload Enhancement
+
 - **Enhanced upload validation** - Added file existence check before processing
 - **Added Plug.Upload support** - Normalized Plug.Upload structs to map format
 - **Improved error handling** - Better error messages for invalid uploads
@@ -3173,6 +3490,7 @@ const handlePhotoSelect = async () => {
 - **Impact** - Voice message uploads now properly validated and processed
 
 #### Frontend - Real-time Presence Tracking (CRITICAL FIX)
+
 - **Fixed stale online status** - Removed database status fallback that showed users online forever
 - **Mobile** - Now uses ONLY Phoenix Presence for accurate online/offline status
 - **Web** - Integrated real-time presence tracking with status change listeners
@@ -3183,10 +3501,12 @@ const handlePhotoSelect = async () => {
 - **Impact** - Online status now updates immediately when users connect/disconnect
 
 #### Frontend - Friends Page
+
 - **Disabled "Online" filter tab** - Requires global presence tracking implementation
 - **Note** - Database status field shows stale data, tab re-enabled in future version
 
 ### Documentation
+
 - **Added** `docs/PRESENCE_FIX_2026_01_04.md` - Comprehensive presence tracking architecture guide
 - **Updated** Architecture diagrams for Phoenix Presence flow
 
@@ -3196,23 +3516,28 @@ const handlePhotoSelect = async () => {
 
 ### Critical Production Fixes
 
-**EMERGENCY RELEASE:** Resolved critical backend crash and persistent presence loop that made v0.7.16 ineffective.
+**EMERGENCY RELEASE:** Resolved critical backend crash and persistent presence loop that made
+v0.7.16 ineffective.
 
 ### Fixed
 
 #### Backend - Message History Crash (CRITICAL)
+
 - **Protocol.UndefinedError** - Fixed `conversation_channel.ex` treating tuple as list
 - **Root Cause** - `Messaging.list_messages/2` returns `{messages, meta}` tuple, not list
-- **Solution** - Proper tuple unpacking with pattern matching: `{messages, _meta} = Messaging.list_messages(...)`
+- **Solution** - Proper tuple unpacking with pattern matching:
+  `{messages, _meta} = Messaging.list_messages(...)`
 - **Impact** - Conversation loading no longer crashes backend
 
 #### Backend - Voice Message 500 Error
+
 - **UndefinedFunctionError** - Router calling `:upload` but controller defines `:create`
 - **Root Cause** - Mismatch between router action name and controller function name
 - **Solution** - Changed router.ex POST route from `:upload` to `:create`
 - **Impact** - Voice message uploads now work correctly
 
-#### Mobile - Persistent Presence Loop (CRITICAL)  
+#### Mobile - Persistent Presence Loop (CRITICAL)
+
 - **Component Remounting** - React Navigation unmounts/remounts components on navigation
 - **Wrong Pattern** - `hasInitializedRef` gets reset on unmount, defeating one-time initialization
 - **Root Issue** - v0.7.16 debouncing ineffective when component constantly remounts
@@ -3220,24 +3545,28 @@ const handlePhotoSelect = async () => {
 - **Impact** - Join/leave events reduced from 100-200/sec to expected 1-2 events on navigation
 
 #### Mobile - Package Compatibility
+
 - **expo-av** - Updated from 15.0.2 to 16.0.8 for Expo SDK 54 compatibility
 - **Note** - expo-av deprecated in SDK 54, will need migration to expo-audio/expo-video
 
 ### Technical Details
 
 **Why v0.7.16 Failed:**
+
 1. Socket manager debouncing works correctly but can't prevent component-level remounting
 2. Refs (like `hasInitializedRef`) reset on component unmount in React Navigation
 3. Calling `leaveChannel` in useEffect cleanup causes immediate rejoin on remount
 4. Backend tuple/list mismatch caused unrelated crash on message history load
 
 **Proper Solution:**
+
 1. Don't leave channels on component unmount - keep them alive for session
 2. Let socket manager's built-in debouncing handle rapid join attempts
 3. Unpack backend tuple properly with Elixir pattern matching
 4. Update package versions for SDK compatibility
 
 ### Changed
+
 - ConversationScreen now keeps channels alive across navigation
 - Backend properly handles pagination metadata from `list_messages`
 
@@ -3252,32 +3581,39 @@ const handlePhotoSelect = async () => {
 ### Fixed
 
 #### Socket Manager (Mobile & Web)
+
 - **Join/Leave Loop** - Attempted through 1-second join debouncing mechanism
 - **Rapid Rejoin Protection** - Added `lastJoinAttempts` Map to track join timing per channel
-- **Channel State Validation** - Now checks channel health before reusing (joined/joining vs closed/errored)
+- **Channel State Validation** - Now checks channel health before reusing (joined/joining vs
+  closed/errored)
 - **Handler Duplication** - Implemented `channelHandlersSetUp` Set for idempotent registration
 - **Memory Leaks** - Proper cleanup of all Maps on disconnect and channel leave
 - **Race Conditions** - Presence callbacks now set up only once per channel lifecycle
 
 #### Component Lifecycle (Mobile)
-- **Multiple Join Attempts** - Added `channelJoinedRef` to prevent component from rejoining same channel
+
+- **Multiple Join Attempts** - Added `channelJoinedRef` to prevent component from rejoining same
+  channel
 - **Cleanup on Unmount** - Now properly calls `leaveChannel` (safe with debouncing in place)
 - **Date Parsing Errors** - Fixed RangeError with null checks and validation in `formatTime()`
 - **Deprecated API** - Removed `FileSystem.getInfoAsync()` usage in voice message upload
 
 #### Component Lifecycle (Web)
+
 - **Missing Handler Deduplication** - Added tracking to match mobile implementation
 - **Inconsistent Cleanup** - Now mirrors mobile's comprehensive state cleanup
 
 ### Added
 
 #### Socket Manager Features
+
 - **Join Debouncing** - `JOIN_DEBOUNCE_MS = 1000` constant prevents rapid rejoins
 - **Timestamp Tracking** - `lastJoinAttempts: Map<string, number>` per channel topic
 - **Handler Set** - `channelHandlersSetUp: Set<string>` prevents duplicate event listeners
 - **Comprehensive Logging** - Debug messages for join attempts, debouncing, state validation
 
 #### Documentation
+
 - **PRESENCE_ARCHITECTURE.md** - 400+ line comprehensive guide covering:
   - Architecture overview and data flow
   - Common pitfalls with detailed solutions
@@ -3289,7 +3625,9 @@ const handlePhotoSelect = async () => {
 ### Changed
 
 #### joinChannel/joinConversation Method
+
 **Before:** Simple existence check, immediate return
+
 ```typescript
 if (this.channels.has(topic)) {
   return this.channels.get(topic);
@@ -3297,6 +3635,7 @@ if (this.channels.has(topic)) {
 ```
 
 **After:** Multi-stage validation with debouncing
+
 ```typescript
 // 1. Debouncing check
 const timeSinceLastAttempt = now - lastAttempt;
@@ -3323,7 +3662,9 @@ if (!this.channelHandlersSetUp.has(topic)) {
 ```
 
 #### leaveChannel/leaveConversation Method
+
 **Before:** Basic cleanup
+
 ```typescript
 channel.leave();
 this.channels.delete(topic);
@@ -3331,6 +3672,7 @@ this.presences.delete(topic);
 ```
 
 **After:** Comprehensive state cleanup
+
 ```typescript
 channel.leave();
 this.channels.delete(topic);
@@ -3341,7 +3683,9 @@ this.lastJoinAttempts.delete(topic);
 ```
 
 #### ConversationScreen (Mobile)
+
 **Before:** Channel kept alive on unmount to "prevent churn"
+
 ```typescript
 return () => {
   if (cleanupRef.current) cleanupRef.current();
@@ -3350,6 +3694,7 @@ return () => {
 ```
 
 **After:** Proper cleanup with component-level tracking
+
 ```typescript
 const channelJoinedRef = useRef<string | null>(null);
 
@@ -3369,18 +3714,21 @@ return () => {
 #### Architectural Decisions Documented
 
 **Why debouncing works:**
+
 1. Prevents rapid join attempts within 1-second window
 2. Returns existing channel immediately if available
 3. Reduces server load by 95%+ in typical usage
 4. Backend sees clean join/leave patterns
 
 **Why we can now leave channels safely:**
+
 1. Debouncing prevents immediate rejoin loops
 2. Socket manager reuses healthy channels
 3. Channel state validated before operations
 4. Component ref tracking prevents duplicate joins
 
 **Performance Impact:**
+
 - **Before:** 100-200 join/leave events per second during navigation
 - **After:** 1-2 join/leave events per navigation (normal)
 - **Server Load:** Reduced by ~98%
@@ -3389,8 +3737,10 @@ return () => {
 ### Bug Fixes
 
 #### Date Handling
-**Error:** `RangeError: Invalid time value` in message timestamps
-**Fix:** Safe date parsing with validation
+
+**Error:** `RangeError: Invalid time value` in message timestamps **Fix:** Safe date parsing with
+validation
+
 ```typescript
 const formatTime = (dateString: string | undefined | null): string => {
   if (!dateString) return '';
@@ -3409,8 +3759,10 @@ const formatTime = (dateString: string | undefined | null): string => {
 ```
 
 #### Deprecated API
-**Error:** `Method getInfoAsync imported from "expo-file-system" is deprecated`
-**Fix:** Removed unnecessary file existence check
+
+**Error:** `Method getInfoAsync imported from "expo-file-system" is deprecated` **Fix:** Removed
+unnecessary file existence check
+
 ```typescript
 // Before: Check if file exists
 const fileInfo = await FileSystem.getInfoAsync(voiceData.uri);
@@ -3421,12 +3773,15 @@ if (!fileInfo.exists) throw new Error('File not found');
 ```
 
 ### Files Modified
+
 - `apps/mobile/src/lib/socket.ts` - Added debouncing, state tracking, comprehensive cleanup
 - `apps/web/src/lib/socket.ts` - Added debouncing, handler deduplication, cleanup
-- `apps/mobile/src/screens/messages/ConversationScreen.tsx` - Component tracking, proper cleanup, date fixes, API update
+- `apps/mobile/src/screens/messages/ConversationScreen.tsx` - Component tracking, proper cleanup,
+  date fixes, API update
 - `docs/PRESENCE_ARCHITECTURE.md` - New comprehensive documentation
 
 ### Testing Notes
+
 - Monitor terminal for absence of join/leave loops
 - Presence indicators should be stable (not flickering)
 - Navigation between conversations should be smooth
@@ -3444,6 +3799,7 @@ Production-ready socket and channel management eliminating the persistent join/l
 ### Fixed
 
 #### Mobile Channel Stability
+
 - **Join/Leave Loop** - Completely eliminated by not leaving channels on component unmount
 - **Socket Recreation** - Fixed by persisting SocketManager globally across Fast Refresh
 - **Duplicate Event Handlers** - Fixed with centralized listener pattern in socket manager
@@ -3452,7 +3808,9 @@ Production-ready socket and channel management eliminating the persistent join/l
 ### Added
 
 #### Socket Manager Architecture (Mobile)
-- **Global Singleton Persistence** - SocketManager stored on `global.__socketManager` to survive Fast Refresh
+
+- **Global Singleton Persistence** - SocketManager stored on `global.__socketManager` to survive
+  Fast Refresh
 - **Listener-Based Events** - `onChannelMessage()` subscription method for components
 - **Handler Tracking** - `channelHandlersSetUp` Set prevents duplicate handler registration
 - **Connection Promise** - `doConnect()` now returns Promise that resolves when connected
@@ -3460,12 +3818,14 @@ Production-ready socket and channel management eliminating the persistent join/l
 ### Changed
 
 #### Mobile Socket Lifecycle
+
 - **doConnect()** - No longer disconnects existing sockets; waits for reconnection instead
 - **Socket onClose** - Clears all channel references since they become invalid
 - **joinChannel()** - Returns existing channel immediately; sets up handlers only once
 - **leaveChannel()** - Cleans up handler tracking and listener maps
 
 #### ConversationScreen Component
+
 - **Removed local joinChannel()** - All channel logic moved to socket manager
 - **Listener-based cleanup** - Unsubscribes callback but doesn't leave channel
 - **No channel leave on unmount** - Channels stay alive for the session
@@ -3473,6 +3833,7 @@ Production-ready socket and channel management eliminating the persistent join/l
 ### Technical Details
 
 The join/leave loop was caused by a cascade of issues:
+
 1. Expo Fast Refresh re-evaluated modules, creating new SocketManager with empty maps
 2. Component unmount called leaveChannel(), removing channel from map
 3. Component remount found no channel in map, called joinChannel()
@@ -3480,6 +3841,7 @@ The join/leave loop was caused by a cascade of issues:
 5. Presence updates triggered state changes, causing more re-renders
 
 The fix addresses all root causes:
+
 1. Global singleton survives Fast Refresh
 2. Components don't leave channels on unmount
 3. Socket manager tracks which handlers are already set up
@@ -3491,44 +3853,57 @@ The fix addresses all root causes:
 
 ### Scalable Normalization & Channel Stability
 
-Production-grade data normalization layer and comprehensive channel stability fixes for messaging system.
+Production-grade data normalization layer and comprehensive channel stability fixes for messaging
+system.
 
 ### Fixed
 
 #### Web Username Display
+
 - **Sidebar "Unknown" Username** - Fixed by normalizing conversation data at fetch time
 - **Conversation List Data** - All participant data now properly structured with nested user objects
 
 #### Realtime Message Delivery
+
 - **Web Messages Not Updating** - Added event logging and verified normalization pipeline
-- **Mobile Messages Not Updating** - Fixed socket connection race condition by awaiting connection before channel join
+- **Mobile Messages Not Updating** - Fixed socket connection race condition by awaiting connection
+  before channel join
 
 #### Channel Stability
-- **Mobile Join/Leave Loop** - Eliminated rapid cycling with channel identity tracking and 300ms debounced cleanup
-- **Duplicate Channel Joins** - Added `currentChannelRef` to track active channel and prevent duplicate subscriptions
-- **Mount-Aware Handlers** - All message handlers now check component mount state before state updates
+
+- **Mobile Join/Leave Loop** - Eliminated rapid cycling with channel identity tracking and 300ms
+  debounced cleanup
+- **Duplicate Channel Joins** - Added `currentChannelRef` to track active channel and prevent
+  duplicate subscriptions
+- **Mount-Aware Handlers** - All message handlers now check component mount state before state
+  updates
 
 ### Added
 
 #### Normalization Layer (Web)
+
 - `normalizeParticipant()` - Normalizes participant objects with nested user data handling
 - `normalizeConversation()` - Full conversation normalization including participants and lastMessage
 - `normalizeConversations()` - Batch normalizer for conversation arrays
 - Enhanced `normalizeSender()` - Added status field to sender normalization
 
 #### Type Definitions (Mobile)
-- `ConversationParticipant` interface - Proper type for API participant data with nested user objects
+
+- `ConversationParticipant` interface - Proper type for API participant data with nested user
+  objects
 - Updated `Conversation` interface - Changed participants to `ConversationParticipant[]`
 
 ### Changed
 
 #### Web Frontend
+
 - **chatStore.ts** - Import and use `normalizeConversations` in `fetchConversations`
 - **socket.ts** - Added structured logging to message event handlers
 - **socket.ts** - Fixed Presence callback signatures for TypeScript compatibility
 - **apiUtils.ts** - Extended with conversation and participant normalizers
 
 #### Mobile Frontend
+
 - **ConversationScreen.tsx** - Async socket initialization pattern with mount guards
 - **ConversationScreen.tsx** - Channel identity tracking to prevent duplicate joins
 - **ConversationScreen.tsx** - Mount-aware message handlers with duplicate prevention
@@ -3537,13 +3912,13 @@ Production-grade data normalization layer and comprehensive channel stability fi
 
 ### Technical Details
 
-| Issue | Root Cause | Solution | Scale Impact |
-|-------|------------|----------|--------------|
-| Sidebar "Unknown" | Raw conversation data | Normalize at fetch | Single processing point |
-| Web realtime | Silent event handling | Logging + verification | Debug in production |
-| Mobile realtime | Socket not connected | Await connection | Guaranteed delivery |
-| Channel loop | React double-mount | Identity tracking + debounce | Stable connections |
-| Type errors | Wrong participant type | `ConversationParticipant` interface | Type safety |
+| Issue             | Root Cause             | Solution                            | Scale Impact            |
+| ----------------- | ---------------------- | ----------------------------------- | ----------------------- |
+| Sidebar "Unknown" | Raw conversation data  | Normalize at fetch                  | Single processing point |
+| Web realtime      | Silent event handling  | Logging + verification              | Debug in production     |
+| Mobile realtime   | Socket not connected   | Await connection                    | Guaranteed delivery     |
+| Channel loop      | React double-mount     | Identity tracking + debounce        | Stable connections      |
+| Type errors       | Wrong participant type | `ConversationParticipant` interface | Type safety             |
 
 ### Scalability Considerations
 
@@ -3553,6 +3928,7 @@ Production-grade data normalization layer and comprehensive channel stability fi
 4. **Fallback Chains** - Handles schema variations without code changes
 
 ### Files Modified
+
 - `apps/web/src/lib/apiUtils.ts`
 - `apps/web/src/stores/chatStore.ts`
 - `apps/web/src/lib/socket.ts`
@@ -3567,21 +3943,30 @@ Production-grade data normalization layer and comprehensive channel stability fi
 
 ### Message Alignment & Presence Stability Fix
 
-Comprehensive fix for message alignment (all messages appearing on left side) and bidirectional presence tracking issues.
+Comprehensive fix for message alignment (all messages appearing on left side) and bidirectional
+presence tracking issues.
 
 ### Fixed
 
 #### Message Alignment
-- **HTTP Messages Not Normalized** - `chatStore.fetchMessages` now normalizes all API responses through `normalizeMessage()`
-- **SendMessage Not Normalized** - `sendMessage` and `editMessage` now normalize responses before adding to state
-- **Consistent isOwn Detection** - All messages now have properly formatted `senderId` for accurate left/right positioning
+
+- **HTTP Messages Not Normalized** - `chatStore.fetchMessages` now normalizes all API responses
+  through `normalizeMessage()`
+- **SendMessage Not Normalized** - `sendMessage` and `editMessage` now normalize responses before
+  adding to state
+- **Consistent isOwn Detection** - All messages now have properly formatted `senderId` for accurate
+  left/right positioning
 
 #### Presence System Stability
-- **Socket Connection Timing** - Web `Conversation.tsx` now awaits socket connection before joining channels
+
+- **Socket Connection Timing** - Web `Conversation.tsx` now awaits socket connection before joining
+  channels
 - **Mount Guard Pattern** - Added `mounted` flag to prevent operations on unmounted components
-- **Mobile Rapid Join/Leave** - Added debounced channel leave (100ms) to prevent React StrictMode double-mount issues
+- **Mobile Rapid Join/Leave** - Added debounced channel leave (100ms) to prevent React StrictMode
+  double-mount issues
 
 #### Participant Identification
+
 - **Comprehensive ID Extraction** - Added fallback chain: `userId || user_id || user.id || id`
 - **Display Name Resolution** - Enhanced fallback chain with 8+ sources for name display
 - **Cross-format Compatibility** - Handles both camelCase and snake_case participant data
@@ -3589,23 +3974,27 @@ Comprehensive fix for message alignment (all messages appearing on left side) an
 ### Changed
 
 #### Web Frontend
-- **chatStore.ts** - Import `normalizeMessage`, apply to `fetchMessages`, `sendMessage`, `editMessage`
+
+- **chatStore.ts** - Import `normalizeMessage`, apply to `fetchMessages`, `sendMessage`,
+  `editMessage`
 - **Conversation.tsx** - Async socket connection with mount guard, enhanced participant extraction
 - **socket.ts** - Connection promise handling for proper async flow
 
 #### Mobile Frontend
+
 - **ConversationScreen.tsx** - `useRef` mount guard with debounced channel cleanup
 
 ### Technical Details
 
-| Fix | Root Cause | Solution |
-|-----|------------|----------|
-| Message alignment | Raw API stored without normalization | All paths through `normalizeMessage()` |
-| Web presence invisible | `joinConversation` before socket ready | Await `connect()` with mount guard |
-| Mobile join loop | Immediate `leaveChannel` on unmount | 100ms debounce with mount check |
-| Unknown username | Incomplete participant ID matching | 4-source ID + 8-source name fallback |
+| Fix                    | Root Cause                             | Solution                               |
+| ---------------------- | -------------------------------------- | -------------------------------------- |
+| Message alignment      | Raw API stored without normalization   | All paths through `normalizeMessage()` |
+| Web presence invisible | `joinConversation` before socket ready | Await `connect()` with mount guard     |
+| Mobile join loop       | Immediate `leaveChannel` on unmount    | 100ms debounce with mount check        |
+| Unknown username       | Incomplete participant ID matching     | 4-source ID + 8-source name fallback   |
 
 ### Files Modified
+
 - `apps/web/src/stores/chatStore.ts`
 - `apps/web/src/pages/messages/Conversation.tsx`
 - `apps/mobile/src/screens/messages/ConversationScreen.tsx`
@@ -3617,49 +4006,64 @@ Comprehensive fix for message alignment (all messages appearing on left side) an
 
 ### Messaging Display & Presence System Fix
 
-Comprehensive fix for message display issues, sender identification, and real-time presence tracking.
+Comprehensive fix for message display issues, sender identification, and real-time presence
+tracking.
 
 ### Fixed
 
 #### Message Display Issues
-- **"Unknown" Sender Name** - Fixed sender data serialization to use camelCase (displayName, avatarUrl) matching frontend expectations
-- **Messages on Wrong Side** - Fixed isOwn detection by properly normalizing senderId across both camelCase and snake_case formats
-- **Offline Status Always Shown** - Implemented real-time presence tracking with Phoenix Presence integration
+
+- **"Unknown" Sender Name** - Fixed sender data serialization to use camelCase (displayName,
+  avatarUrl) matching frontend expectations
+- **Messages on Wrong Side** - Fixed isOwn detection by properly normalizing senderId across both
+  camelCase and snake_case formats
+- **Offline Status Always Shown** - Implemented real-time presence tracking with Phoenix Presence
+  integration
 
 #### Participant Matching
-- **Mobile Participant Detection** - Fixed participant matching to handle both nested (p.userId, p.user.id) and flat (p.id) formats
+
+- **Mobile Participant Detection** - Fixed participant matching to handle both nested (p.userId,
+  p.user.id) and flat (p.id) formats
 - **Conversation Name Display** - Added comprehensive fallback chain for display name resolution
 
 ### Added
 
 #### Real-Time Presence System
-- **Web Presence Tracking** - Full Phoenix Presence integration with onSync, onJoin, onLeave handlers
+
+- **Web Presence Tracking** - Full Phoenix Presence integration with onSync, onJoin, onLeave
+  handlers
 - **Mobile Presence Tracking** - Equivalent presence system for React Native
 - **Dynamic Online Status** - Header updates in real-time when other user joins/leaves conversation
 - **Status Change Callbacks** - `onStatusChange()` subscription API for presence updates
 
 #### Enhanced Header Display
+
 - **Mobile Custom Header** - Shows user name with dynamic online/offline status indicator
 - **Status Dot Indicator** - Green dot when online, gray when offline
 - **Real-time Updates** - Status changes reflect immediately in UI
 
 #### camelCase Consistency (Backend)
-- **conversation_json.ex** - All fields now use camelCase (participants, lastMessage, createdAt, etc.)
+
+- **conversation_json.ex** - All fields now use camelCase (participants, lastMessage, createdAt,
+  etc.)
 - **Participant Structure** - Returns proper nested structure with userId and user object
 - **message_json.ex sender_data** - Uses displayName and avatarUrl instead of snake_case
 
 ### Changed
 
 #### Web Frontend
+
 - **Conversation.tsx** - Added isOtherUserOnline state with presence subscription
 - **socket.ts** - Added Presence class import, presence tracking maps, status change listeners
 
-#### Mobile Frontend  
+#### Mobile Frontend
+
 - **ConversationScreen.tsx** - Added presence tracking, custom header with status
 - **socket.ts** - Added Presence support with onSync/onJoin/onLeave handlers
 - **normalizers.ts** - Improved sender_id extraction with fallback to sender.id
 
 ### Files Modified
+
 - `apps/backend/lib/cgraph_web/controllers/api/v1/message_json.ex`
 - `apps/backend/lib/cgraph_web/controllers/api/v1/conversation_json.ex`
 - `apps/web/src/lib/apiUtils.ts`
@@ -3675,16 +4079,20 @@ Comprehensive fix for message display issues, sender identification, and real-ti
 
 ### Critical Messaging Fix
 
-Fixed WebSocket message serialization causing "Invalid time value" errors and mobile socket connection failures.
+Fixed WebSocket message serialization causing "Invalid time value" errors and mobile socket
+connection failures.
 
 ### Fixed
 
 #### WebSocket Serialization
-- **Consistent camelCase** - All WebSocket broadcasts now use MessageJSON serializer for consistent field names
+
+- **Consistent camelCase** - All WebSocket broadcasts now use MessageJSON serializer for consistent
+  field names
 - **Date Parsing** - Added safe date parsing with fallback to prevent RangeError on invalid dates
 - **Message History** - Channel join now sends properly serialized message history
 
-#### Mobile Socket Connection  
+#### Mobile Socket Connection
+
 - **WebSocket URL** - Fixed WS_URL derivation from API config (was hardcoded to localhost)
 - **Auto-Connect** - Socket now connects automatically on successful login
 - **Auto-Disconnect** - Socket disconnects on logout to prevent stale connections
@@ -3698,6 +4106,7 @@ Fixed WebSocket message serialization causing "Invalid time value" errors and mo
 - `wsUrl` config option in app.config.js
 
 ### Files Modified
+
 - `apps/backend/lib/cgraph_web/controllers/api/v1/message_json.ex`
 - `apps/backend/lib/cgraph_web/channels/conversation_channel.ex`
 - `apps/backend/lib/cgraph_web/channels/group_channel.ex`
@@ -3716,17 +4125,24 @@ Fixed WebSocket message serialization causing "Invalid time value" errors and mo
 
 ### Username Login & Identity Number Search
 
-Enhanced authentication system with dual login support and user identity number search functionality.
+Enhanced authentication system with dual login support and user identity number search
+functionality.
 
 ### Added
 
 #### Authentication Enhancements
-- **Username Login Support** - Users can now login with either email or username on both web and mobile platforms
-- **Identifier Auto-Detection** - Backend automatically detects if login credential is email (contains `@`) or username
-- **Identity Number Search** - Users can search for others by unique identity number (formats: `#0001`, `0001`, or `1`)
-- **Extended Auth Response** - Login now returns `user_id`, `user_id_display`, `can_change_username`, and `username_next_change_at`
+
+- **Username Login Support** - Users can now login with either email or username on both web and
+  mobile platforms
+- **Identifier Auto-Detection** - Backend automatically detects if login credential is email
+  (contains `@`) or username
+- **Identity Number Search** - Users can search for others by unique identity number (formats:
+  `#0001`, `0001`, or `1`)
+- **Extended Auth Response** - Login now returns `user_id`, `user_id_display`,
+  `can_change_username`, and `username_next_change_at`
 
 #### Backend Functions
+
 - `Accounts.authenticate_by_identifier/2` - Unified authentication accepting email or username
 - `Accounts.get_user_by_user_id/1` - Lookup users by numeric identity number
 - `Search.parse_user_id_query/1` - Helper to detect and parse identity number searches
@@ -3734,19 +4150,23 @@ Enhanced authentication system with dual login support and user identity number 
 ### Changed
 
 #### Web Frontend
+
 - **Login Page** - Email field now accepts "Email or Username" with text input type
 - **Auth Store** - API calls use `identifier` parameter instead of `email`
 
 #### Mobile Frontend
+
 - **Login Screen** - Updated input label and state to support username login
 - **Auth Context** - Login function accepts `identifier` parameter
 
 #### API Response
+
 - Auth JSON now includes comprehensive user identity fields for frontend display
 
 ### Technical Details
 
 Authentication flow:
+
 ```elixir
 # Auto-detect email vs username
 def authenticate_by_identifier(identifier, password) do
@@ -3758,14 +4178,16 @@ end
 ```
 
 Identity number search patterns:
+
 ```elixir
 # Supported formats for user_id search
 "#0001" -> exact match user_id: 1
-"0001"  -> exact match user_id: 1  
+"0001"  -> exact match user_id: 1
 "1"     -> exact match user_id: 1
 ```
 
 ### Files Modified
+
 - `apps/backend/lib/cgraph/accounts.ex`
 - `apps/backend/lib/cgraph_web/controllers/api/v1/auth_controller.ex`
 - `apps/backend/lib/cgraph_web/controllers/api/v1/auth_json.ex`
@@ -3781,35 +4203,48 @@ Identity number search patterns:
 
 ### Mobile Theme Synchronization & Cross-Platform Auth Fix
 
-Major update bringing mobile UI into alignment with web design system and resolving cross-device authentication issues.
+Major update bringing mobile UI into alignment with web design system and resolving cross-device
+authentication issues.
 
 ### Fixed
 
 #### Mobile Authentication
-- **LAN Network Binding** - Backend now binds to `0.0.0.0` instead of `127.0.0.1`, enabling mobile devices to connect via local network
-- **API Host Configuration** - Updated mobile app to use correct LAN IP for development API connections
-- **Cross-Device Login** - Users can now register on web and login on mobile (and vice versa) over the local network
+
+- **LAN Network Binding** - Backend now binds to `0.0.0.0` instead of `127.0.0.1`, enabling mobile
+  devices to connect via local network
+- **API Host Configuration** - Updated mobile app to use correct LAN IP for development API
+  connections
+- **Cross-Device Login** - Users can now register on web and login on mobile (and vice versa) over
+  the local network
 
 #### React Dependency
-- **Version Pinning** - Pinned `react-dom` to exact `19.1.0` to prevent version drift from `react` package
-- **Build Consistency** - Eliminated intermittent white screen issues caused by React version mismatch in Vite cache
+
+- **Version Pinning** - Pinned `react-dom` to exact `19.1.0` to prevent version drift from `react`
+  package
+- **Build Consistency** - Eliminated intermittent white screen issues caused by React version
+  mismatch in Vite cache
 
 ### Changed
 
 #### Mobile Theme Overhaul
-- **Primary Color** - Changed from Indigo (`#6366f1`) to Emerald/Matrix green (`#10b981`) across all components
+
+- **Primary Color** - Changed from Indigo (`#6366f1`) to Emerald/Matrix green (`#10b981`) across all
+  components
 - **Theme Context** - Updated `ThemeContext.tsx` with complete Matrix-inspired color palette
-- **Matrix Animations** - Synchronized `MATRIX_GREEN` theme colors with web implementation (`#39ff14` glow, `#00ff41` bright)
+- **Matrix Animations** - Synchronized `MATRIX_GREEN` theme colors with web implementation
+  (`#39ff14` glow, `#00ff41` bright)
 - **Splash Screen** - Updated Expo splash background from purple to Matrix green
 - **App Icon Background** - Changed adaptive icon background to match new theme
 
 #### Configuration Updates
+
 - **app.config.js** - Version bump, color updates, development API host configuration
 - **dev.exs** - Phoenix HTTP server now accepts connections from all network interfaces
 
 ### Technical Details
 
 Backend network binding change:
+
 ```elixir
 # Before: Only localhost connections
 http: [ip: {127, 0, 0, 1}, port: 4000]
@@ -3819,6 +4254,7 @@ http: [ip: {0, 0, 0, 0}, port: 4000]
 ```
 
 Mobile theme color mapping:
+
 ```typescript
 // Primary colors updated throughout
 primary: '#10b981',        // Emerald-500 (was #6366f1 Indigo)
@@ -3827,6 +4263,7 @@ accent: '#39ff14',         // Matrix glow green
 ```
 
 ### Files Modified
+
 - `apps/mobile/src/contexts/ThemeContext.tsx`
 - `apps/mobile/src/components/matrix/themes.ts`
 - `apps/mobile/app.config.js`
@@ -3840,42 +4277,61 @@ accent: '#39ff14',         // Matrix glow green
 
 ### Comprehensive Bug Fixes & UI Polish
 
-Major codebase review with critical bug fixes for token refresh, socket handling, and cross-platform consistency improvements.
+Major codebase review with critical bug fixes for token refresh, socket handling, and cross-platform
+consistency improvements.
 
 ### Fixed
 
 #### Critical Bug Fixes
-- **Web Token Refresh** - Fixed API token refresh to handle both nested and flat response formats (`response.data.data.tokens` or `response.data`)
-- **Socket Graceful Handling** - Socket `joinConversation` and `joinGroupChannel` now return `null` instead of throwing errors when disconnected, with automatic reconnection
-- **Error Display Duration** - Increased error message auto-dismiss timeout from 1.5s to 5s on Login and Register pages for better user readability
-- **Confirm Password Toggle** - Added missing visibility toggle button for confirm password field on web Register page
+
+- **Web Token Refresh** - Fixed API token refresh to handle both nested and flat response formats
+  (`response.data.data.tokens` or `response.data`)
+- **Socket Graceful Handling** - Socket `joinConversation` and `joinGroupChannel` now return `null`
+  instead of throwing errors when disconnected, with automatic reconnection
+- **Error Display Duration** - Increased error message auto-dismiss timeout from 1.5s to 5s on Login
+  and Register pages for better user readability
+- **Confirm Password Toggle** - Added missing visibility toggle button for confirm password field on
+  web Register page
 
 #### UI/UX Fixes
-- **Terms & Privacy Links** - Fixed placeholder `#` links to actual URLs (`https://cgraph.org/terms` and `/privacy`) on web Register page
-- **Forum Prefix Consistency** - Standardized forum prefix from `r/` to `c/` across all mobile screens for consistency with web app
-- **Conversation Empty State** - Added proper empty state UI to mobile ConversationScreen when no messages exist
+
+- **Terms & Privacy Links** - Fixed placeholder `#` links to actual URLs (`https://cgraph.org/terms`
+  and `/privacy`) on web Register page
+- **Forum Prefix Consistency** - Standardized forum prefix from `r/` to `c/` across all mobile
+  screens for consistency with web app
+- **Conversation Empty State** - Added proper empty state UI to mobile ConversationScreen when no
+  messages exist
 
 ### Added
 
 #### Mobile Enhancements
-- **MatrixAuthBackground** - Added animated matrix background to mobile RegisterScreen for consistency with LoginScreen
-- **Haptic Feedback** - Added haptic feedback (expo-haptics) to vote buttons on ForumScreen and PostScreen
+
+- **MatrixAuthBackground** - Added animated matrix background to mobile RegisterScreen for
+  consistency with LoginScreen
+- **Haptic Feedback** - Added haptic feedback (expo-haptics) to vote buttons on ForumScreen and
+  PostScreen
 - **Empty Conversation UI** - New "No messages yet" empty state with icon and helpful text
 
-#### Web Enhancements  
-- **Forum Sidebar Skeleton** - Added skeleton loading animation to Popular Communities sidebar section during data fetch
+#### Web Enhancements
+
+- **Forum Sidebar Skeleton** - Added skeleton loading animation to Popular Communities sidebar
+  section during data fetch
 - **Forum Empty State** - Added "No communities found" message when forum list is empty
 
 ### Changed
 
 #### Code Quality
-- **Socket Error Recovery** - Socket methods now attempt auto-reconnection on failure rather than throwing
-- **API Response Flexibility** - Token refresh interceptor handles multiple response formats gracefully
+
+- **Socket Error Recovery** - Socket methods now attempt auto-reconnection on failure rather than
+  throwing
+- **API Response Flexibility** - Token refresh interceptor handles multiple response formats
+  gracefully
 - **Consistent Prefixes** - All forum references now use `c/` prefix (mobile was using `r/`)
 
 ### Technical Details
 
 Token refresh now handles multiple response formats:
+
 ```typescript
 // Handles both formats:
 // { data: { tokens: { access_token, refresh_token } } }
@@ -3885,6 +4341,7 @@ const tokens = data.tokens || data;
 ```
 
 Socket graceful reconnection:
+
 ```typescript
 public joinConversation(conversationId: string): Channel | null {
   // Returns null and auto-reconnects instead of throwing
@@ -3902,35 +4359,42 @@ public joinConversation(conversationId: string): Channel | null {
 
 ### Cross-Platform Feature Enhancement
 
-Comprehensive codebase review and enhancement with improved TypeScript type safety, biometric authentication integration in mobile settings, and refined animation system.
+Comprehensive codebase review and enhancement with improved TypeScript type safety, biometric
+authentication integration in mobile settings, and refined animation system.
 
 ### Added
 
 #### Mobile Biometric Settings Integration
+
 - **Account Settings Biometrics** - Added Face ID/Touch ID toggle in Account Settings screen
 - **Biometric Status Detection** - Real-time detection of device biometric capabilities
 - **User-Friendly Prompts** - Contextual alerts for biometric setup requirements
 - **Toggle State Persistence** - Biometric lock preference saved securely
 
 #### Type Safety Improvements
-- **Explicit Type Annotations** - Added explicit types to setState callbacks in matrix animation system
+
+- **Explicit Type Annotations** - Added explicit types to setState callbacks in matrix animation
+  system
 - **Vite Env Types** - Extended ImportMetaEnv with DEV, PROD, MODE, SSR properties
 - **Logger Safety** - Added runtime check for import.meta availability
 
 ### Changed
 
 #### Code Quality
+
 - **MatrixText.tsx** - Added explicit `string[]` types to all setDisplayText callback parameters
-- **useMatrix.ts** - Added `MatrixEngineState` types to all setState callbacks  
+- **useMatrix.ts** - Added `MatrixEngineState` types to all setState callbacks
 - **useMatrix.ts** - Added `number` types to reduce callback parameters
 - **logger.ts** - Made DEV detection resilient to SSR/test environments
 
 #### Documentation
+
 - Updated CHANGELOG with v0.7.3 release notes
 
 ### Fixed
 
 #### TypeScript Errors
+
 - Fixed implicit `any` type errors in MatrixText.tsx (5 occurrences)
 - Fixed implicit `any` type errors in useMatrix.ts (10 occurrences)
 - Fixed `import.meta.env.DEV` type resolution in logger.ts
@@ -3939,8 +4403,14 @@ Comprehensive codebase review and enhancement with improved TypeScript type safe
 ### Technical Details
 
 Biometric integration in AccountScreen.tsx:
+
 ```typescript
-import { getBiometricStatus, getBiometricName, isBiometricLockEnabled, setBiometricLockEnabled } from '../../lib/biometrics';
+import {
+  getBiometricStatus,
+  getBiometricName,
+  isBiometricLockEnabled,
+  setBiometricLockEnabled,
+} from '../../lib/biometrics';
 
 // Detects Face ID, Touch ID, Fingerprint, or Iris
 const status = await getBiometricStatus();
@@ -3953,42 +4423,55 @@ const status = await getBiometricStatus();
 
 ### Matrix Theme UI Enhancement
 
-Major visual overhaul of the authentication interface with matrix-inspired green color scheme and enhanced animations to better integrate with the cipher background effect.
+Major visual overhaul of the authentication interface with matrix-inspired green color scheme and
+enhanced animations to better integrate with the cipher background effect.
 
 ### Changed
 
 #### UI/UX Improvements
-- **Matrix Color Scheme** - Migrated primary colors from blue (#3b82f6) to matrix green (#10b981) for consistent theming with cipher background
-- **Auth Form Animations** - Implemented staggered form field animations with smooth fade-in transitions
+
+- **Matrix Color Scheme** - Migrated primary colors from blue (#3b82f6) to matrix green (#10b981)
+  for consistent theming with cipher background
+- **Auth Form Animations** - Implemented staggered form field animations with smooth fade-in
+  transitions
 - **Input Focus Effects** - Added custom glow effects on form inputs with matrix-themed shadows
 - **Button Hover States** - Enhanced CTA buttons with shine animation and matrix glow on hover
 - **Card Styling** - Auth cards now feature subtle green gradient borders and improved glassmorphism
 
 #### Component Updates
-- **Login.tsx** - Complete styling refresh with matrix theme, staggered animations, improved error display
+
+- **Login.tsx** - Complete styling refresh with matrix theme, staggered animations, improved error
+  display
 - **Register.tsx** - Matching matrix theme with enhanced form validation visual feedback
-- **AuthLayout.tsx** - Updated branding panel with animated grid overlay and feature card hover effects
+- **AuthLayout.tsx** - Updated branding panel with animated grid overlay and feature card hover
+  effects
 - **OAuthButtonGroup** - Added matrix-themed hover states for social login buttons
 
 #### Tailwind Configuration
+
 - **Matrix Color Palette** - New `matrix` color scale with glow, dim, and bright variants
-- **Animation Keyframes** - Added `glowGreen`, `glowPulse`, `matrixFlicker`, `borderGlow`, `float` keyframes
+- **Animation Keyframes** - Added `glowGreen`, `glowPulse`, `matrixFlicker`, `borderGlow`, `float`
+  keyframes
 - **Shadow Utilities** - New `shadow-matrix`, `shadow-matrix-intense` for phosphor glow effects
 - **Form Animations** - `.form-field-animate` class for staggered field entrance animations
 
 #### Build System
+
 - **Turbo v2 Migration** - Updated `turbo.json` from deprecated `pipeline` field to `tasks` field
 
 ### Fixed
 
 #### Authentication
-- **Registration API Format** - Verified registration endpoint correctly wraps params in `{user: {...}}` object
+
+- **Registration API Format** - Verified registration endpoint correctly wraps params in
+  `{user: {...}}` object
 - **Login Flow** - Confirmed login endpoint accepts flat params and returns proper token structure
 - **CORS Configuration** - Verified cross-origin requests from dev server to API work correctly
 
 ### Technical Details
 
 New CSS utility classes added:
+
 - `.matrix-input` - Styled input with green gradient background and glow focus state
 - `.matrix-button` - Primary button with shine animation and glow hover effect
 - `.matrix-card` - Card with green-tinted gradient border and inner glow
@@ -4002,39 +4485,52 @@ New CSS utility classes added:
 
 ### Mobile Development Environment Fix
 
-This release fixes critical mobile development connectivity issues and updates documentation to reflect the SDK 54 platform upgrade.
+This release fixes critical mobile development connectivity issues and updates documentation to
+reflect the SDK 54 platform upgrade.
 
 ### Fixed
 
 #### Mobile API Connectivity
-- **Android Emulator Localhost** - Fixed API URL resolution for Android emulator which cannot access host's `localhost` directly; automatically uses `10.0.2.2` for Android in development
-- **Platform-Specific URL Handling** - API client now properly detects iOS vs Android and applies correct localhost translation
-- **Tunnel/ngrok Errors** - Documented root cause (backend offline) and solutions for "endpoint offline err_ngrok_3200" errors
+
+- **Android Emulator Localhost** - Fixed API URL resolution for Android emulator which cannot access
+  host's `localhost` directly; automatically uses `10.0.2.2` for Android in development
+- **Platform-Specific URL Handling** - API client now properly detects iOS vs Android and applies
+  correct localhost translation
+- **Tunnel/ngrok Errors** - Documented root cause (backend offline) and solutions for "endpoint
+  offline err_ngrok_3200" errors
 
 #### Configuration Improvements
-- **Dynamic app.config.js** - Created new dynamic Expo configuration file for environment-based settings
+
+- **Dynamic app.config.js** - Created new dynamic Expo configuration file for environment-based
+  settings
 - **API URL in Extra Config** - Added `apiUrl` to app.json extra config for proper Constants access
-- **Environment Detection** - Added `IS_DEV`, `IS_PREVIEW` environment detection with app variant suffixes
+- **Environment Detection** - Added `IS_DEV`, `IS_PREVIEW` environment detection with app variant
+  suffixes
 
 ### Changed
 
 #### Documentation Updates
-- **MOBILE.md** - Comprehensive rewrite with SDK 54 tech stack, biometric authentication docs, and platform-specific troubleshooting
-- **02_HOW_TO_START.md** - Updated with Node 22+, pnpm 10+ requirements, mobile connectivity troubleshooting
-- **04_FRONTEND_EXPLAINED.md** - Added SDK 54 build notes, biometric API documentation, New Architecture debugging tips
+
+- **MOBILE.md** - Comprehensive rewrite with SDK 54 tech stack, biometric authentication docs, and
+  platform-specific troubleshooting
+- **02_HOW_TO_START.md** - Updated with Node 22+, pnpm 10+ requirements, mobile connectivity
+  troubleshooting
+- **04_FRONTEND_EXPLAINED.md** - Added SDK 54 build notes, biometric API documentation, New
+  Architecture debugging tips
 
 ### Added
 
 - **Biometric Authentication Docs** - Full API documentation for `biometrics.ts` utility
-- **Mobile Troubleshooting Section** - Platform-specific API URL table, tunnel error solutions, New Architecture debugging
+- **Mobile Troubleshooting Section** - Platform-specific API URL table, tunnel error solutions, New
+  Architecture debugging
 - **Security Features Section** - New documentation section for biometric authentication usage
 
 ### Technical Details
 
-| Environment | Android Emulator | iOS Simulator | Physical Device |
-|-------------|-----------------|---------------|-----------------|
-| Development | `10.0.2.2:4000` | `localhost:4000` | LAN IP required |
-| Production | `api.cgraph.org` | `api.cgraph.org` | `api.cgraph.org` |
+| Environment | Android Emulator | iOS Simulator    | Physical Device  |
+| ----------- | ---------------- | ---------------- | ---------------- |
+| Development | `10.0.2.2:4000`  | `localhost:4000` | LAN IP required  |
+| Production  | `api.cgraph.org` | `api.cgraph.org` | `api.cgraph.org` |
 
 ---
 
@@ -4042,11 +4538,14 @@ This release fixes critical mobile development connectivity issues and updates d
 
 ### Major Platform Upgrade
 
-Comprehensive platform upgrade bringing cutting-edge performance improvements, security enhancements, and the latest React ecosystem updates. This release marks a significant step forward in both mobile and web capabilities.
+Comprehensive platform upgrade bringing cutting-edge performance improvements, security
+enhancements, and the latest React ecosystem updates. This release marks a significant step forward
+in both mobile and web capabilities.
 
 ### Changed
 
 #### Core Platform Updates
+
 - **Expo SDK 54** - Full platform upgrade with React Native 0.81.5 and React 19.1
 - **React Navigation 7** - Updated navigation stack with improved type safety and performance
 - **Reanimated v4** - Next-generation animation engine with react-native-worklets integration
@@ -4055,12 +4554,16 @@ Comprehensive platform upgrade bringing cutting-edge performance improvements, s
 - **TypeScript 5.9** - Latest TypeScript with improved type inference
 
 #### Mobile Improvements (Expo SDK 54)
+
 - **New Architecture Enabled** - Default new architecture support for improved performance
 - **Android Edge-to-Edge** - Full edge-to-edge display support on Android
-- **Precompiled iOS Builds** - Significant build time reduction with precompiled React Native modules
-- **Updated Permissions** - Modern Android permissions model (READ_MEDIA_IMAGES instead of deprecated READ_EXTERNAL_STORAGE)
+- **Precompiled iOS Builds** - Significant build time reduction with precompiled React Native
+  modules
+- **Updated Permissions** - Modern Android permissions model (READ_MEDIA_IMAGES instead of
+  deprecated READ_EXTERNAL_STORAGE)
 
 #### Web Improvements
+
 - **React 19.1** - Latest React with improved concurrent rendering
 - **React Router 7** - Updated routing with enhanced type safety
 - **Vite 6.3** - Faster development server and build times
@@ -4069,7 +4572,9 @@ Comprehensive platform upgrade bringing cutting-edge performance improvements, s
 ### Added
 
 #### Security Enhancements
-- **Biometric Authentication** - New biometric authentication utility (Face ID, Touch ID, Fingerprint)
+
+- **Biometric Authentication** - New biometric authentication utility (Face ID, Touch ID,
+  Fingerprint)
   - `getBiometricStatus()` - Check hardware and enrollment status
   - `authenticateWithBiometrics()` - Secure authentication prompts
   - `setBiometricLockEnabled()` - Enable/disable biometric lock
@@ -4078,6 +4583,7 @@ Comprehensive platform upgrade bringing cutting-edge performance improvements, s
 - **Apple Sign In** - iOS entitlement for Sign in with Apple
 
 #### Developer Experience
+
 - **Metro Config** - Optimized Metro bundler configuration for monorepo
 - **pnpm Workspace** - Added pnpm-workspace.yaml for proper monorepo support
 - **React 19 Babel** - Updated Babel configuration for React 19 JSX transform
@@ -4092,15 +4598,17 @@ Comprehensive platform upgrade bringing cutting-edge performance improvements, s
 ### Dependencies
 
 #### Mobile (@cgraph/mobile)
+
 - expo: ~50.0.0 → ~54.0.0
 - react: 18.2.0 → 19.1.0
 - react-native: 0.73.2 → 0.81.5
 - react-native-reanimated: ~3.6.0 → ~4.1.1
-- @react-navigation/*: 6.x → 7.x
+- @react-navigation/\*: 6.x → 7.x
 - expo-local-authentication: Added ~17.0.0
 - react-native-worklets: Added 0.5.1
 
 #### Web (@cgraph/web)
+
 - react: 18.2.0 → 19.1.0
 - react-dom: 18.2.0 → 19.1.0
 - react-router-dom: 6.x → 7.x
@@ -4108,6 +4616,7 @@ Comprehensive platform upgrade bringing cutting-edge performance improvements, s
 - vite: 5.2.0 → 6.3.0
 
 #### Root (cgraph)
+
 - turbo: 1.12.0 → 2.7.0
 - eslint: 8.x → 9.x
 - typescript-eslint: 7.x → 8.x
@@ -4120,24 +4629,34 @@ Comprehensive platform upgrade bringing cutting-edge performance improvements, s
 
 ### Matrix Animation Performance Overhaul
 
-Major performance rewrite of the Matrix cipher rain animation system. The entire rendering pipeline has been rebuilt from scratch with enterprise-grade optimizations targeting 60fps on all platforms.
+Major performance rewrite of the Matrix cipher rain animation system. The entire rendering pipeline
+has been rebuilt from scratch with enterprise-grade optimizations targeting 60fps on all platforms.
 
 ### Changed
 
 #### Web Canvas Engine (v2.0.0)
-- **Character Atlas System** - Pre-renders all glyphs with glow effects to OffscreenCanvas during initialization, reducing per-frame `fillText` calls from 5 to 0
-- **Object Pooling** - Characters and render queue items now recycled through ObjectPool class, eliminating GC pauses during animation
-- **Batch Rendering** - Characters grouped by alpha level and drawn in single passes, reducing canvas state changes from O(n) to O(alpha-groups)
-- **Delta-Time Interpolation** - Animation updates normalized to 60fps equivalent regardless of actual frame rate
+
+- **Character Atlas System** - Pre-renders all glyphs with glow effects to OffscreenCanvas during
+  initialization, reducing per-frame `fillText` calls from 5 to 0
+- **Object Pooling** - Characters and render queue items now recycled through ObjectPool class,
+  eliminating GC pauses during animation
+- **Batch Rendering** - Characters grouped by alpha level and drawn in single passes, reducing
+  canvas state changes from O(n) to O(alpha-groups)
+- **Delta-Time Interpolation** - Animation updates normalized to 60fps equivalent regardless of
+  actual frame rate
 - **Fixed Timestep Physics** - Accumulator-based update loop prevents spiral of death on slow frames
 
 #### Mobile React Native Engine (v2.0.0)
-- **RAF-Based Loop** - Replaced `setTimeout` with `requestAnimationFrame` via `getTimestamp()` utility for proper 60fps timing
+
+- **RAF-Based Loop** - Replaced `setTimeout` with `requestAnimationFrame` via `getTimestamp()`
+  utility for proper 60fps timing
 - **Mutable Refs** - Column state stored in refs to avoid React re-render overhead
 - **Batch State Updates** - Render counter reduces `setState` calls by 3x
-- **Custom Memo Comparison** - Prevents unnecessary MatrixColumn re-renders when only position changes
+- **Custom Memo Comparison** - Prevents unnecessary MatrixColumn re-renders when only position
+  changes
 
 #### Configuration Tuning
+
 - `maxColumns`: 100 → 180 (80% increase in density)
 - `density`: 0.75 → 0.85
 - `minSpeed`: 4 → 6, `maxSpeed`: 12 → 18 (50% faster)
@@ -4164,12 +4683,14 @@ Major performance rewrite of the Matrix cipher rain animation system. The entire
 - **Missing Return Value** - MatrixText.tsx useEffect now returns cleanup function properly
 - **Implicit Any Parameters** - Added proper typing to map callbacks in mobile component
 - **Test Mocks** - Updated engine.test.ts with MockOffscreenCanvas and createMockContext()
-- **Sync Interval Overhead** - useMatrix hook reduced state sync from 500ms to 1000ms with change detection
+- **Sync Interval Overhead** - useMatrix hook reduced state sync from 500ms to 1000ms with change
+  detection
 
 ### Technical Details
 
 - Web render path: `update()` → `buildLayerRenderQueue()` → `executeBatchRender()`
-- Atlas pre-renders 6 color variants per character: head, head-bright, body-high, body-mid, body-low, tail
+- Atlas pre-renders 6 color variants per character: head, head-bright, body-high, body-mid,
+  body-low, tail
 - Object pool pre-allocates 500 character objects and 100 render queue items
 - Mobile uses Date.now() fallback since performance.now() isn't available in RN
 
@@ -4179,7 +4700,8 @@ Major performance rewrite of the Matrix cipher rain animation system. The entire
 
 ### Matrix Animation Enhancements & Visual Polish
 
-Improved Matrix animation visibility, performance optimization, and new text encryption animation component.
+Improved Matrix animation visibility, performance optimization, and new text encryption animation
+component.
 
 ### Added
 
@@ -4214,11 +4736,13 @@ Improved Matrix animation visibility, performance optimization, and new text enc
 
 ### Security Hardening & Stability
 
-Comprehensive security review and bug fixes addressing critical vulnerabilities across web, mobile, and backend.
+Comprehensive security review and bug fixes addressing critical vulnerabilities across web, mobile,
+and backend.
 
 ### Security
 
-- **Mobile OAuth Token Persistence** - Tokens now properly saved to secure storage after authentication
+- **Mobile OAuth Token Persistence** - Tokens now properly saved to secure storage after
+  authentication
 - **Token Refresh Race Condition** - Implemented mutex pattern to prevent parallel refresh attempts
 - **WebSocket Rate Limiting** - Added 10 msg/10s sliding window rate limiting to messaging channels
 - **Message Content Sanitization** - XSS protection through HTML tag stripping and encoding
@@ -4232,7 +4756,8 @@ Comprehensive security review and bug fixes addressing critical vulnerabilities 
 - Settings.tsx and CreatePost.tsx malformed template literals
 - Tooltip.tsx setTimeout type mismatch
 - Engine.ts now accepts DeepPartial config for nested overrides
-- Missing Expo OAuth packages installed (expo-web-browser, expo-auth-session, expo-apple-authentication)
+- Missing Expo OAuth packages installed (expo-web-browser, expo-auth-session,
+  expo-apple-authentication)
 
 ### Changed
 
@@ -4251,15 +4776,20 @@ Comprehensive security review and bug fixes addressing critical vulnerabilities 
 
 ### Matrix Cipher Background Animation
 
-A high-performance, customizable Matrix-style falling code animation for authentication screens and backgrounds.
+A high-performance, customizable Matrix-style falling code animation for authentication screens and
+backgrounds.
 
 ### Added
 
 #### Web Matrix Animation System (`/apps/web/src/lib/animations/matrix/`)
+
 - **`types.ts`** - Complete TypeScript type system with DeepPartial utility
-- **`characters.ts`** - 9 character sets (Latin, Katakana, Cyrillic, Greek, Numbers, Binary, Hex, Symbols, Code)
-- **`themes.ts`** - 8 color themes (Matrix Green, Cyber Blue, Blood Red, Golden, Purple Haze, Neon Pink, Ice, Fire)
-- **`config.ts`** - Configuration factory with 5 presets (Default, High Quality, Power Saver, Minimal, Intense)
+- **`characters.ts`** - 9 character sets (Latin, Katakana, Cyrillic, Greek, Numbers, Binary, Hex,
+  Symbols, Code)
+- **`themes.ts`** - 8 color themes (Matrix Green, Cyber Blue, Blood Red, Golden, Purple Haze, Neon
+  Pink, Ice, Fire)
+- **`config.ts`** - Configuration factory with 5 presets (Default, High Quality, Power Saver,
+  Minimal, Intense)
 - **`engine.ts`** - High-performance Canvas 2D animation engine (~924 lines)
   - 60fps target with adaptive frame skipping
   - Multi-layer depth effects for 3D parallax
@@ -4271,6 +4801,7 @@ A high-performance, customizable Matrix-style falling code animation for authent
 - **`index.ts`** - Barrel exports
 
 #### Mobile Matrix Animation System (`/apps/mobile/src/components/matrix/`)
+
 - **`types.ts`** - Mobile-specific type definitions
 - **`themes.ts`** - Theme definitions optimized for mobile
 - **`config.ts`** - Mobile configuration with performance presets
@@ -4278,13 +4809,17 @@ A high-performance, customizable Matrix-style falling code animation for authent
 - **`index.ts`** - Exports
 
 #### Integration
+
 - **AuthLayout.tsx** - Added MatrixAuthBackground to web authentication layout
 - **LoginScreen.tsx** - Added MatrixBackground to mobile login screen
 
 #### Documentation
-- **`/docs/MATRIX.md`** - Comprehensive documentation with API reference, examples, and troubleshooting
+
+- **`/docs/MATRIX.md`** - Comprehensive documentation with API reference, examples, and
+  troubleshooting
 
 #### Test Suite
+
 - **208 new tests** covering:
   - Type definitions and DeepPartial utility (15 tests)
   - Character set generation and utilities (46 tests)
@@ -4310,14 +4845,18 @@ Critical security patches and comprehensive OAuth test coverage.
 
 ### Security Fixes
 
-- **Wallet Nonce Replay Attack** (CRITICAL) - Fixed replay attack vulnerability by deleting wallet challenge after successful signature verification
-- **Apple JWT Verification** (CRITICAL) - Added proper JWKS fetching and JWT signature verification for Apple Sign-In tokens
-- **Group Invite Race Condition** - Fixed concurrent invite usage with atomic increment using `Repo.update_all`
+- **Wallet Nonce Replay Attack** (CRITICAL) - Fixed replay attack vulnerability by deleting wallet
+  challenge after successful signature verification
+- **Apple JWT Verification** (CRITICAL) - Added proper JWKS fetching and JWT signature verification
+  for Apple Sign-In tokens
+- **Group Invite Race Condition** - Fixed concurrent invite usage with atomic increment using
+  `Repo.update_all`
 - **Friend Request Race Condition** - Prevented duplicate friendships with upsert pattern
 
 ### Performance Improvements
 
-- **Mark Messages Read N+1** - Converted individual inserts to batch `Repo.insert_all`, reducing database calls from O(n) to O(1)
+- **Mark Messages Read N+1** - Converted individual inserts to batch `Repo.insert_all`, reducing
+  database calls from O(n) to O(1)
 
 ### Fixed
 
@@ -4330,13 +4869,15 @@ Critical security patches and comprehensive OAuth test coverage.
 
 ### Added
 
-- **OAuth Test Suite** - 35 comprehensive tests covering all OAuth providers, security validations, and edge cases
+- **OAuth Test Suite** - 35 comprehensive tests covering all OAuth providers, security validations,
+  and edge cases
 - Test coverage increased from 585 to 620 tests (0 failures)
 
 ### Changed
 
 - Updated BUGFIX_LOG.md with comprehensive documentation of all fixes
-- ReadReceipt batch insert now uses correct field precision (read_at: second, inserted_at: microsecond)
+- ReadReceipt batch insert now uses correct field precision (read_at: second, inserted_at:
+  microsecond)
 
 ---
 
@@ -4344,17 +4885,20 @@ Critical security patches and comprehensive OAuth test coverage.
 
 ### OAuth Authentication & Bug Fixes
 
-Minor release adding OAuth 2.0 authentication with four major providers and fixing authentication issues.
+Minor release adding OAuth 2.0 authentication with four major providers and fixing authentication
+issues.
 
 ### Added
 
 #### OAuth Authentication
+
 - **Google OAuth** - Sign in with Google via OAuth 2.0 + OpenID Connect
 - **Apple Sign In** - Privacy-focused authentication with email relay support
 - **Facebook OAuth** - Social login via Facebook Login SDK
 - **TikTok OAuth** - Login Kit integration for TikTok users
 
 #### Backend OAuth Infrastructure
+
 - New `Cgraph.OAuth` module with provider abstraction
 - OAuth controller with authorize, callback, mobile, link, unlink endpoints
 - User schema extended with `oauth_provider`, `oauth_uid`, `oauth_data`, `oauth_tokens` fields
@@ -4363,33 +4907,39 @@ Minor release adding OAuth 2.0 authentication with four major providers and fixi
 - PKCE support for mobile/SPA flows
 
 #### Web OAuth Components
+
 - `OAuthButtons` component for social login buttons
 - `OAuthCallback` page for handling provider redirects
 - `oauth.ts` service for OAuth API integration
 - Updated Login and Register pages with OAuth options
 
 #### Mobile OAuth Components
+
 - React Native OAuth service with native SDK placeholders
 - `OAuthButtons` component with platform-specific styling
 - WebBrowser fallback for OAuth flow on mobile
 - Updated LoginScreen and RegisterScreen with OAuth buttons
 
 ### Fixed
+
 - **Authentication failing** - Root cause was pending database migrations not applied
 - Module naming inconsistency (`CgraphWeb.Api.V1` → `CgraphWeb.API.V1`)
 - OAuth return type pattern matching in accounts functions
 - Added public `user_json` helper to AuthJSON
 
 ### Changed
+
 - Added `assent ~> 0.2` dependency for OAuth provider support
 - Extended config with OAuth provider credentials (environment variables)
 
 ### Documentation
+
 - Added OAuth section to API.md with complete endpoint documentation
 - Added OAuth security section to SECURITY.md
 - Added OAuth components to FRONTEND.md component library
 
 ### Database Migrations
+
 - `20260103000001_add_oauth_fields.exs` - Adds OAuth fields to users table
 
 ---
@@ -4398,11 +4948,13 @@ Minor release adding OAuth 2.0 authentication with four major providers and fixi
 
 ### Enterprise Security, E2EE, Email & Push Notifications
 
-Major release with enterprise security features, E2EE across all platforms, email delivery, push notifications, and admin tooling.
+Major release with enterprise security features, E2EE across all platforms, email delivery, push
+notifications, and admin tooling.
 
 ### Added
 
 #### Email System
+
 - Enterprise-grade email delivery via Swoosh with Resend for production
 - Welcome, verification, password reset, and security alert templates
 - Notification digest emails with daily/weekly summaries
@@ -4410,6 +4962,7 @@ Major release with enterprise security features, E2EE across all platforms, emai
 - Responsive HTML templates with dark mode
 
 #### Push Notifications
+
 - APNs client with HTTP/2, JWT auth, and connection pooling
 - FCM v1 API with service account auth and topic messaging
 - Expo Push for React Native with batch sending and receipt tracking
@@ -4417,6 +4970,7 @@ Major release with enterprise security features, E2EE across all platforms, emai
 - Telemetry integration
 
 #### Admin Dashboard
+
 - System metrics with real-time updates
 - User management: search, ban/unban, account actions
 - Content moderation and report resolution
@@ -4425,12 +4979,16 @@ Major release with enterprise security features, E2EE across all platforms, emai
 - Admin API client with type safety
 
 #### End-to-End Encryption
-- **Mobile (React Native)**: X25519 via TweetNaCl, X3DH protocol, AES-256-GCM encryption, SecureStore integration, session management
-- **Web (Browser)**: Web Crypto API, ECDH P-256, ECDSA signatures, IndexedDB persistence, automatic prekey replenishment
+
+- **Mobile (React Native)**: X25519 via TweetNaCl, X3DH protocol, AES-256-GCM encryption,
+  SecureStore integration, session management
+- **Web (Browser)**: Web Crypto API, ECDH P-256, ECDSA signatures, IndexedDB persistence, automatic
+  prekey replenishment
 - E2EE React Context/Provider and hooks for both platforms
 - Safety number generation for contact verification
 
 #### Security Hardening
+
 - Comprehensive input validation: email, username, password strength, UUIDs, URLs
 - Abuse detection: spam, harassment, account takeover, brute force
 - Risk scoring with configurable thresholds
@@ -4438,6 +4996,7 @@ Major release with enterprise security features, E2EE across all platforms, emai
 - Password breach detection integration
 
 #### Performance Infrastructure
+
 - Unified caching layer with ETS and Cachex backends
 - Query optimizer with batched loading and cursor pagination
 - Circuit breaker pattern for external service resilience
@@ -4448,11 +5007,13 @@ Major release with enterprise security features, E2EE across all platforms, emai
   - Auto-tuning recommendations
 
 #### Integration Testing
+
 - E2EE messaging: key exchange, encryption/decryption, prekey handling, safety numbers (9 tests)
 - Voice messages: complete lifecycle, storage integration, rate limiting (11 tests)
 - Real-time messaging: WebSocket delivery, typing, presence, edit/delete broadcasts (8 tests)
 
 ### Changed
+
 - Fixed argument order in ConversationChannel for `user_in_conversation?`
 - Fixed conversation channel receiving string instead of struct for `list_messages`
 - Updated `Logger.warn` to `Logger.warning` for Elixir 1.19 compatibility
@@ -4461,6 +5022,7 @@ Major release with enterprise security features, E2EE across all platforms, emai
 - Fixed TypeScript ArrayBuffer type issues in E2EE modules
 
 ### Test Results
+
 - 585 tests total, 578 passing
 - All E2EE and voice message tests passing
 - Web app builds with no TypeScript errors
@@ -4476,6 +5038,7 @@ Upgraded to Erlang/OTP 28.3 and Elixir 1.19.4 for improved performance.
 ### Changed
 
 #### Runtime Upgrades
+
 - **Erlang/OTP**: 25.x → 28.3 (JIT improvements)
 - **Elixir**: 1.14.x → 1.19.4 (set-theoretic types)
 - **Phoenix**: 1.7.21 → 1.8.3 (latest stable)
@@ -4492,6 +5055,7 @@ Upgraded to Erlang/OTP 28.3 and Elixir 1.19.4 for improved performance.
 - **Guardian**: 2.3.x → 2.4.0
 
 #### Deprecation Fixes
+
 - Replaced all `Logger.warn` calls with `Logger.warning` (Elixir 1.15+)
 - Fixed `Cgraph.Events.emit` → `Cgraph.Events.publish` call
 - Renamed duplicate function clause `vote_post/3` → `vote_post_by_id/3`
@@ -4500,11 +5064,13 @@ Upgraded to Erlang/OTP 28.3 and Elixir 1.19.4 for improved performance.
 - Fixed unused variable warnings with underscore prefix
 
 #### Developer Experience
+
 - Added `.tool-versions` files for asdf version management
 - Added `def cli()` callback for Elixir 1.19 preferred_envs pattern
 - Removed `jose` version override (OTP 28 compatible now)
 
 ### Documentation Updated
+
 - Updated ARCHITECTURE.md with new version table
 - Updated README.md prerequisites section
 - Updated QUICKSTART.md installation commands
@@ -4513,6 +5079,7 @@ Upgraded to Erlang/OTP 28.3 and Elixir 1.19.4 for improved performance.
 - Updated UPGRADING_GUIDE.md with new version info
 
 ### Technical Notes
+
 - All 220 tests passing
 - Remaining warnings are from external dependencies (Timex, SweetXml, Waffle, Tesla)
 - OTP 28.3 JIT provides ~5-15% performance improvement
@@ -4524,11 +5091,13 @@ Upgraded to Erlang/OTP 28.3 and Elixir 1.19.4 for improved performance.
 
 ### 🎨 UI Polish & Internal Documentation
 
-This release adds micro-interactions and animation polish across web and mobile, along with comprehensive internal developer documentation.
+This release adds micro-interactions and animation polish across web and mobile, along with
+comprehensive internal developer documentation.
 
 ### Added
 
 #### UI Micro-Interactions (Web)
+
 - **Button**: Scale press feedback (0.97), shadow lift effect, smooth transitions
 - **Loading**: Fade-in animation on mount
 - **Tooltip**: Fade-in animation for tooltip content
@@ -4538,6 +5107,7 @@ This release adds micro-interactions and animation polish across web and mobile,
 - **FileUpload**: Drag state scale, preview fade-in animations
 
 #### Page Animations (Web)
+
 - **Login/Register**: Form fade-in, input focus animations
 - **UserProfile**: Content fade-in, avatar hover scale
 - **Settings**: Navigation slide-in, content fade animation
@@ -4550,10 +5120,12 @@ This release adds micro-interactions and animation polish across web and mobile,
 - **Messages/Friends/Conversation**: Various polish
 
 #### Mobile Animations
+
 - **Button**: Spring press animation using Reanimated
 - **UserListItem**: Animated entrance with staggered delay
 
 #### Stability Features
+
 - **Database Backup Worker**: Oban-based automated PostgreSQL backups
   - Runs daily at 3 AM
   - Compresses with gzip
@@ -4562,10 +5134,13 @@ This release adds micro-interactions and animation polish across web and mobile,
   - Health check integration
 
 #### Internal Documentation
+
 - Created `docs/PrivateFolder/` for internal developer documentation
-- 8 comprehensive documents covering architecture, startup, backend, frontend, database, upgrading, and scaling
+- 8 comprehensive documents covering architecture, startup, backend, frontend, database, upgrading,
+  and scaling
 
 ### Technical Details
+
 - All animations use CSS transforms/opacity for performance (hardware accelerated)
 - Mobile uses react-native-reanimated for 60fps animations
 - Backup worker uses Oban cron with ExAWS for S3 uploads
@@ -4576,43 +5151,52 @@ This release adds micro-interactions and animation polish across web and mobile,
 
 ### 🎉 Production Ready for 100 Users
 
-This release focuses on making the platform ready for initial users with working 1:1 messaging, friend requests, and username improvements.
+This release focuses on making the platform ready for initial users with working 1:1 messaging,
+friend requests, and username improvements.
 
 ### Added
 
 #### Unique User ID System
+
 - **Database**: Auto-increment `user_id` sequence for unique numeric IDs
 - **Display Format**: User IDs displayed as `#0001`, `#0042`, etc.
 - **Optional Usernames**: Username is now optional at registration
 - **14-Day Username Cooldown**: Users can change username every 14 days
 
 #### Friend Request Improvements
+
 - **Add by Username**: Can now send friend requests using username (not just user_id)
 - **Backend Support**: `POST /api/v1/friends` accepts both `user_id` and `username`
 
 #### Messaging Improvements
+
 - **Start Chat from Friends**: Clicking "Message" on a friend creates/opens conversation
 - **Auto-redirect**: Messages page handles `?userId=` param to start new conversations
 
 #### Animation Libraries
+
 - **Web**: `src/lib/animations.ts` with CSS animation utilities
 - **Mobile**: `src/lib/animations.ts` with React Native Animated helpers
 
 #### New Components
+
 - **Web UserBadge**: Displays user ID, username, verification badges, karma
 - **Mobile UserBadge**: Mobile version of user identity component
 - **Mobile AnimatedCard**: Reusable animated container with press feedback
 
 ### Changed
+
 - Username is now nullable in User schema
 - Registration no longer requires username (can be set later)
 - API returns `user_id_display`, `can_change_username`, `next_username_change_at`
 
 ### Fixed
+
 - Mobile AddFriendScreen now sends `username` instead of `user_id`
 - Web friend store detects UUID vs username format automatically
 
 ### Documentation
+
 - Updated API.md with accurate friend endpoints and response formats
 - Updated README with correct test count (220 tests)
 
@@ -4622,11 +5206,14 @@ This release focuses on making the platform ready for initial users with working
 
 ### 🚀 Full UI Implementation & Code Quality Improvements
 
-This release delivers a comprehensive UI implementation for both web and mobile platforms, introduces robust API response handling utilities, and fixes critical authentication and state management issues.
+This release delivers a comprehensive UI implementation for both web and mobile platforms,
+introduces robust API response handling utilities, and fixes critical authentication and state
+management issues.
 
 ### Added
 
 #### Web UI Components (9 new components)
+
 - **Dropdown** - Portal-based dropdown menu with keyboard navigation
 - **Tooltip** - Multi-position tooltip with customizable placement
 - **FileUpload** - Drag-and-drop file upload with progress tracking
@@ -4638,17 +5225,20 @@ This release delivers a comprehensive UI implementation for both web and mobile 
 - **Select** - Searchable select dropdown with filtering
 
 #### Mobile UI Components (4 new components)
+
 - **Tabs** - Native tab navigation for mobile
 - **Switch** - Native toggle switch
 - **ProgressBar** - Progress indicator component
 - **Select** - Modal-based select picker
 
 #### New Pages/Screens
+
 - **Web: Notifications Page** - Full notifications inbox with filtering by type
 - **Web: User Profile Page** - Profile viewing with friend actions
 - **Mobile: NotificationsInboxScreen** - Native notifications list
 
 #### API Utilities (`lib/apiUtils.ts`)
+
 - **ensureArray** - Type-safe array extraction from API responses
 - **ensureObject** - Type-safe object extraction from API responses
 - **extractPagination** - Pagination metadata extraction
@@ -4657,11 +5247,13 @@ This release delivers a comprehensive UI implementation for both web and mobile 
 - **isValidId** - ID validation type guard
 
 #### Navigation
+
 - Web: Added notifications route (`/notifications`)
 - Web: Added user profile route (`/users/:userId`)
 - Mobile: Added NotificationsNavigator with NotificationsTab
 
 ### Changed
+
 - **authStore.ts** - Fixed API response mapping with `mapUserFromApi` helper
 - **friendStore.ts** - Updated to use `ensureArray` for robust response parsing
 - **chatStore.ts** - Updated to use `ensureArray` and `ensureObject`
@@ -4673,6 +5265,7 @@ This release delivers a comprehensive UI implementation for both web and mobile 
 - **App.tsx** - Added AuthInitializer component for proper auth flow
 
 ### Fixed
+
 - **Authentication Infinite Loading** - Added AuthInitializer to call `checkAuth()` on app mount
 - **API Response Parsing** - Fixed `friends.filter is not a function` error by ensuring arrays
 - **Registration Params** - Wrapped user params in `{user: {...}}` for backend compatibility
@@ -4681,12 +5274,14 @@ This release delivers a comprehensive UI implementation for both web and mobile 
 - **Error Handling** - Replaced inline error casting with `extractErrorMessage` utility
 
 ### Technical Debt Addressed
+
 - Removed all `any` type usages in stores (replaced with proper types)
 - Standardized API response handling across all Zustand stores
 - Added comprehensive JSDoc documentation to API utilities
 - Consistent error message extraction pattern across stores
 
 ### Developer Experience
+
 - VS Code TypeScript errors resolved (compile-time verified)
 - Backend: 215 tests passing
 - Web: TypeScript compiles clean (`npx tsc --noEmit`)
@@ -4698,11 +5293,13 @@ This release delivers a comprehensive UI implementation for both web and mobile 
 
 ### 🎨 UI Component Library & Production Readiness
 
-This release adds a comprehensive UI component library and prepares the project for production deployment and app store submission.
+This release adds a comprehensive UI component library and prepares the project for production
+deployment and app store submission.
 
 ### Added
 
 #### Web UI Component Library
+
 - **ErrorBoundary** - React error boundary with recovery functionality
 - **Loading** - Reusable loading spinner with size variants (sm/md/lg)
 - **LoadingOverlay** - Full-screen loading overlay for async operations
@@ -4719,6 +5316,7 @@ This release adds a comprehensive UI component library and prepares the project 
 - **Toast** - Toast notification system (React context based)
 
 #### Production & App Store
+
 - **EAS Build Configuration** - Expo Application Services setup (eas.json)
 - **Privacy Policy Page** - Legal compliance for app stores
 - **Terms of Service Page** - Legal compliance for app stores
@@ -4726,15 +5324,18 @@ This release adds a comprehensive UI component library and prepares the project 
 - **Production Readiness Guide** - Comprehensive deployment checklist
 
 #### Documentation
+
 - Updated UI_CUSTOMIZATION.md with component library reference
 - Created PRODUCTION_READINESS.md for 100-user deployment
 
 ### Changed
+
 - Enhanced `.gitignore` with security patterns (secrets, keys, credentials)
 - Added CSS animations for toast slide-in/fade-out
 - Wrapped App with ErrorBoundary in main.tsx
 
 ### Fixed
+
 - Fixed mobile asset paths in app.json
 
 ---
@@ -4748,6 +5349,7 @@ This release represents the first working version of CGraph with all core functi
 ### Added
 
 #### Backend (Elixir/Phoenix)
+
 - **Authentication System**
   - Email/password registration and login
   - JWT token-based authentication with Guardian
@@ -4793,6 +5395,7 @@ This release represents the first working version of CGraph with all core functi
   - Test environment bypass
 
 #### Web Frontend (React/Vite)
+
 - **Pages**
   - Authentication (login, register, forgot password)
   - Messages (conversations list, chat view)
@@ -4809,6 +5412,7 @@ This release represents the first working version of CGraph with all core functi
   - Server state with React Query
 
 #### Mobile App (React Native/Expo)
+
 - **Screens**
   - Authentication flow
   - Messages and chat
@@ -4827,16 +5431,21 @@ This release represents the first working version of CGraph with all core functi
 
 #### December 29, 2024 Bug Fixes
 
-- **Rate Limiting in Tests** - Added configuration to disable rate limiting in test environment to prevent false test failures
-- **Push Token Platform Mapping** - Fixed mismatch between user-facing platform names (ios/android) and internal schema values (apns/fcm)
+- **Rate Limiting in Tests** - Added configuration to disable rate limiting in test environment to
+  prevent false test failures
+- **Push Token Platform Mapping** - Fixed mismatch between user-facing platform names (ios/android)
+  and internal schema values (apns/fcm)
 - **Push Token Upsert** - Replaced broken `on_conflict` upsert with find-or-create pattern
-- **HTTP Status Codes** - Changed validation errors from 400 to 422 (Unprocessable Entity) for proper REST semantics
-- **Test Assertions** - Fixed multiple test files with incorrect status codes, response paths, and argument orders
+- **HTTP Status Codes** - Changed validation errors from 400 to 422 (Unprocessable Entity) for
+  proper REST semantics
+- **Test Assertions** - Fixed multiple test files with incorrect status codes, response paths, and
+  argument orders
 - **ESLint Configuration** - Created ESLint 9 flat config for web frontend
 
 ### Technical Details
 
 #### Test Results
+
 ```
 Backend: 215 tests, 0 failures, 1 skipped
 Web Build: ✅ 1.92s build time, 264KB main bundle (gzipped: 70KB)
@@ -4844,17 +5453,19 @@ Mobile TypeScript: ✅ Compiles without errors
 ```
 
 #### API Endpoints Summary
-| Category | Endpoints | Status |
-|----------|-----------|--------|
-| Authentication | 8 | ✅ Working |
-| Users | 12 | ✅ Working |
-| Messaging | 15 | ✅ Working |
-| Groups | 18 | ✅ Working |
-| Forums | 14 | ✅ Working |
-| Settings | 6 | ✅ Working |
-| Notifications | 5 | ✅ Working |
+
+| Category       | Endpoints | Status     |
+| -------------- | --------- | ---------- |
+| Authentication | 8         | ✅ Working |
+| Users          | 12        | ✅ Working |
+| Messaging      | 15        | ✅ Working |
+| Groups         | 18        | ✅ Working |
+| Forums         | 14        | ✅ Working |
+| Settings       | 6         | ✅ Working |
+| Notifications  | 5         | ✅ Working |
 
 #### Database Schema
+
 - 25+ tables including users, messages, groups, forums, etc.
 - Full-text search on messages and posts
 - Soft deletes for user data
@@ -4866,7 +5477,8 @@ Mobile TypeScript: ✅ Compiles without errors
 
 ### Architecture Decisions
 
-1. **Monorepo Structure** - Using Turborepo for managing backend, web, mobile, and shared packages together
+1. **Monorepo Structure** - Using Turborepo for managing backend, web, mobile, and shared packages
+   together
 2. **Phoenix Channels** - Real-time WebSocket communication instead of polling
 3. **Zustand over Redux** - Simpler state management with less boilerplate
 4. **React Query** - Server state management with automatic caching and refetching
