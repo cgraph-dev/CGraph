@@ -292,11 +292,15 @@ async function processQueue(): Promise<void> {
 }
 
 async function sendErrorToBackend(error: QueuedError): Promise<void> {
-  // If Sentry is configured, send there too
+  // Sentry integration is optional - only used if @sentry/react is installed
+  // and VITE_SENTRY_DSN is configured. We skip the import entirely if DSN is not set
+  // to avoid Vite import analysis errors when Sentry is not installed.
   if (CONFIG.sentryDsn && typeof window !== 'undefined') {
-    // Dynamic import to avoid bundling Sentry when not used
     try {
-      const Sentry = await import('@sentry/react');
+      // Use Function constructor to create a truly dynamic import that Vite won't analyze
+      // This allows the app to work without @sentry/react installed
+      const dynamicImport = new Function('specifier', 'return import(specifier)');
+      const Sentry = await dynamicImport('@sentry/react');
       Sentry.captureException(new Error(error.error), {
         tags: error.context.tags,
         extra: {
@@ -306,7 +310,8 @@ async function sendErrorToBackend(error: QueuedError): Promise<void> {
         user: error.userContext ? { id: error.userContext.id } : undefined,
       });
     } catch {
-      // Sentry not installed, continue with custom backend
+      // Sentry not installed or failed to load - this is expected when
+      // @sentry/react is not in dependencies. Continue with custom backend.
     }
   }
   

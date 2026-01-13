@@ -132,7 +132,7 @@ apps/mobile/src/
    - Gap analysis and implementation roadmap
    - Performance benchmarks and success metrics
 
-2. **V0.9.0_IMPLEMENTATION_SUMMARY.md** (8,000+ words)
+2. **V0.8.1_IMPLEMENTATION_SUMMARY.md** (8,000+ words)
    - Features implemented with code samples
    - Technical specifications and architecture improvements
    - Migration guides for developers
@@ -141,7 +141,7 @@ apps/mobile/src/
    - 98% mobile-web feature parity achievement
 
 #### Updated Documents:
-- **CHANGELOG.md**: This entry with comprehensive v0.9.0 notes
+- **CHANGELOG.md**: This entry with comprehensive v0.8.1 notes
 - **Component JSDoc**: Inline documentation for all new components
 
 ### 🎨 Design System

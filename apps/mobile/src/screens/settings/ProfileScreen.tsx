@@ -18,6 +18,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getValidImageUrl } from '../../lib/imageUtils';
 import api from '../../lib/api';
 import { SettingsStackParamList } from '../../types';
+import { AnimatedAvatar, GlassCard, TitleBadge } from '../../components';
 
 type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'Profile'>;
@@ -117,18 +118,20 @@ export default function ProfileScreen({ navigation }: Props) {
   
   return (
     <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* Avatar */}
+      {/* Avatar with Next-Gen Animation */}
       <View style={styles.avatarSection}>
         <TouchableOpacity style={styles.avatarContainer} onPress={pickImage}>
-          {getValidImageUrl(user?.avatar_url) ? (
-            <Image source={{ uri: getValidImageUrl(user?.avatar_url)! }} style={styles.avatar} />
-          ) : (
-            <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
-              <Text style={styles.avatarText}>
-                {user?.username?.charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          )}
+          <AnimatedAvatar
+            source={getValidImageUrl(user?.avatar_url) 
+              ? { uri: getValidImageUrl(user?.avatar_url)! }
+              : { uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.username || 'U')}&background=10b981&color=fff&size=256` }}
+            size={120}
+            borderAnimation={user?.is_premium ? 'cosmic' : 'gradient'}
+            showStatus={true}
+            isOnline={true}
+            isPremium={user?.is_premium}
+            glowIntensity={0.7}
+          />
           <View style={[styles.editBadge, { backgroundColor: colors.surface }]}>
             <Ionicons name="camera" size={16} color={colors.text} />
           </View>
@@ -136,12 +139,23 @@ export default function ProfileScreen({ navigation }: Props) {
         <Text style={[styles.changePhotoText, { color: colors.primary }]}>
           Change photo
         </Text>
+        {/* User Title Badge */}
+        {user?.title && (
+          <View style={{ marginTop: 12 }}>
+            <TitleBadge
+              title={user.title}
+              rarity={(user.title_rarity as any) || 'common'}
+              animation="shimmer"
+              showSparkles={true}
+            />
+          </View>
+        )}
         {/* User ID Display */}
-        <View style={[styles.uidBadge, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <GlassCard variant="frosted" intensity="subtle" style={{ marginTop: 16, paddingHorizontal: 20, paddingVertical: 8 }}>
           <Text style={[styles.uidText, { color: colors.primary }]}>
             {user?.user_id_display || '#0000'}
           </Text>
-        </View>
+        </GlassCard>
         <Text style={[styles.uidHint, { color: colors.textTertiary }]}>
           Your unique ID - Share this to add friends
         </Text>

@@ -47,8 +47,29 @@ export { default as Select } from './Select';
 export { default as VoiceMessageRecorder } from './VoiceMessageRecorder';
 export { default as VoiceMessagePlayer } from './VoiceMessagePlayer';
 
-// Chat Components
+// Chat Components - Revolutionary Messaging System
 export { default as RichMediaEmbed } from './chat/RichMediaEmbed';
+export { default as SwipeableMessage } from './chat/SwipeableMessage';
+export { default as MessageReactions } from './chat/MessageReactions';
+export { default as StickerPicker } from './chat/StickerPicker';
+
+// UI Components - Premium Glassmorphism Design
+export { default as GlassCard } from './ui/GlassCard';
+export { default as AnimatedAvatar } from './ui/AnimatedAvatar';
+
+// Gamification Components - Engagement System
+export { default as TitleBadge } from './gamification/TitleBadge';
+export { default as LevelUpModal } from './gamification/LevelUpModal';
+
+// Forum Components - Complete MyBB Feature Set
+export { default as ThreadPrefixBadge } from './forums/ThreadPrefixBadge';
+export { default as ThreadRatingDisplay } from './forums/ThreadRatingDisplay';
+export { default as AttachmentList } from './forums/AttachmentList';
+export { default as PollWidget } from './forums/PollWidget';
+export { default as EditHistoryModal } from './forums/EditHistoryModal';
 
 // Attachment Picker
 export { default as TelegramAttachmentPicker } from './TelegramAttachmentPicker';
+
+// Animation Engine - Re-export for direct access
+export * from '../lib/animations/AnimationEngine';
