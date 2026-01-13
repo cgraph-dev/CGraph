@@ -9,7 +9,7 @@
 #### Real-time messaging • Community forums • End-to-end encryption • Web3 authentication • Gamification
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.8.5-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.8.6-green.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-973%20passing-brightgreen.svg)](#testing)
 [![Elixir](https://img.shields.io/badge/elixir-1.17+-purple.svg)](https://elixir-lang.org/)
 
@@ -45,7 +45,7 @@ rich forums, end-to-end encryption, and gamification—all in one self-hostable 
 - Instant message delivery with typing indicators and read receipts
 - End-to-end encryption using Double Ratchet protocol (industry-leading security)
 - Voice messages with waveform visualization
-- Voice and video calls (up to 10 participants)
+- Voice and video calls via WebRTC (1:1 and group calls)
 - Message reactions, editing, and deletion
 - Cross-platform sync (web, iOS, Android)
 
@@ -266,6 +266,8 @@ cd apps/web && pnpm test:coverage
 | [Security](docs/SECURITY.md)           | Encryption and authentication |
 | [Deployment](docs/DEPLOYMENT.md)       | Production setup              |
 | [Mobile](docs/MOBILE.md)               | React Native development      |
+
+Documentation is auto-generated from code comments using TypeDoc and OpenAPI specs.
 
 ---
 

@@ -25,7 +25,7 @@ info:
     - `X-RateLimit-Remaining`
     - `X-RateLimit-Reset`
     
-  version: 0.7.28
+  version: 0.8.6
   contact:
     name: CGraph Support
     email: support@cgraph.org
@@ -61,6 +61,8 @@ tags:
     description: Forum communities
   - name: Threads
     description: Forum threads and posts
+  - name: Calls
+    description: WebRTC voice and video calls
 
 paths:
   /auth/register:
@@ -1117,6 +1119,131 @@ components:
                 type: array
                 items:
                   type: string
+
+    CallRoom:
+      type: object
+      properties:
+        room_id:
+          type: string
+          format: uuid
+        call_type:
+          type: string
+          enum: [audio, video]
+        participants:
+          type: array
+          items:
+            $ref: '#/components/schemas/CallParticipant'
+        created_at:
+          type: string
+          format: date-time
+
+    CallParticipant:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        username:
+          type: string
+        is_muted:
+          type: boolean
+        is_video_enabled:
+          type: boolean
+        joined_at:
+          type: string
+          format: date-time
+
+  # WebRTC Endpoints
+  /calls/create:
+    post:
+      tags: [Calls]
+      summary: Create a new call room
+      operationId: createCallRoom
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [target_user_id, call_type]
+              properties:
+                target_user_id:
+                  type: string
+                  format: uuid
+                call_type:
+                  type: string
+                  enum: [audio, video]
+      responses:
+        '201':
+          description: Call room created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallRoom'
+
+  /calls/{room_id}:
+    get:
+      tags: [Calls]
+      summary: Get call room details
+      operationId: getCallRoom
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: room_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Call room details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallRoom'
+
+  /calls/{room_id}/join:
+    post:
+      tags: [Calls]
+      summary: Join an existing call
+      operationId: joinCall
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: room_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully joined call
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CallRoom'
+
+  /calls/{room_id}/leave:
+    post:
+      tags: [Calls]
+      summary: Leave a call
+      operationId: leaveCall
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: room_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Successfully left call
 
 security:
   - BearerAuth: []

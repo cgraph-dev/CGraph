@@ -27,6 +27,49 @@ const config = {
     mermaid: false,
   },
 
+  plugins: [
+    // TypeDoc plugin for auto-generated API docs from TypeScript
+    [
+      'docusaurus-plugin-typedoc',
+      {
+        entryPoints: [
+          '../apps/web/src/lib/webrtc/index.ts',
+          '../apps/web/src/lib/api.ts',
+          '../apps/web/src/stores/authStore.ts',
+          '../apps/web/src/features/auth/hooks/index.ts',
+          '../apps/web/src/features/premium/hooks/index.ts',
+          '../apps/web/src/features/groups/hooks/index.ts',
+        ],
+        tsconfig: '../apps/web/tsconfig.json',
+        out: 'api-reference',
+        sidebar: {
+          categoryLabel: 'API Reference',
+          position: 5,
+        },
+      },
+    ],
+    // OpenAPI plugin for REST API docs
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: 'openapi',
+        docsPluginId: 'classic',
+        config: {
+          cgraph: {
+            specPath: '../docs/api/openapi.yaml',
+            outputDir: 'docs/rest-api',
+            sidebarOptions: {
+              groupPathsBy: 'tag',
+              categoryLinkSource: 'tag',
+            },
+          },
+        },
+      },
+    ],
+  ],
+
+  themes: ['docusaurus-theme-openapi-docs'],
+
   presets: [
     [
       'classic',
@@ -39,6 +82,16 @@ const config = {
           editUrl: 'https://github.com/cgraph-dev/CGraph/tree/main/docs-website/',
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
+          // Enable versioning
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: '0.8.6',
+              path: '',
+            },
+          },
+          // Include all docs
+          includeCurrentVersion: true,
         },
         blog: false,
         theme: {

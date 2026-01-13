@@ -4,6 +4,74 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.8.6] - 2026-01-13
+
+**🔗 DDD HOOK CONNECTIONS & WEBRTC: Backend Integration & Voice/Video Calls**
+
+This release connects the Domain-Driven Design (DDD) feature hooks to their backend stores, implements full WebRTC voice/video call infrastructure, and adds automated documentation generation.
+
+### 🔗 DDD Hook Connections
+
+#### Authentication Hooks (`apps/web/src/features/auth/hooks/`)
+- **useAuth()**: Connected to authStore with login, logout, register, loading states
+- **useTwoFactor()**: Full 2FA API integration (enable, verify, disable)
+- **useSessions()**: Session management with state (getSessions, revokeSession, revokeAllOtherSessions)
+
+#### Premium Hooks (`apps/web/src/features/premium/hooks/`)
+- **usePremiumStatus()**: Connected to authStore for tier, features, expiry
+- **useCoins()**: Real coin balance from user data with spend/purchase actions
+
+#### Group Hooks (`apps/web/src/features/groups/hooks/`)
+- **usePermissions()**: Bitfield permission checking from groupStore
+- **useGroupInvites()**: API integration for invites
+- **useChannelNotifications()**: Notification preference management
+
+#### Premium Components (`apps/web/src/features/premium/components/`)
+- **PremiumBadge**: Dynamic badge with real tier data
+- **CoinBalance**: Live coin balance display
+
+### 📞 WebRTC Voice/Video Calls
+
+#### New Frontend Infrastructure
+| File | Purpose |
+|------|---------|
+| `apps/web/src/lib/webrtc/webrtcService.ts` | WebRTC manager class with signaling |
+| `apps/web/src/lib/webrtc/useCall.ts` | React hook for call state management |
+| `apps/web/src/lib/webrtc/index.ts` | Module exports |
+
+#### Features
+- Phoenix Channel signaling for call coordination
+- RTCPeerConnection mesh topology for group calls
+- Audio/video toggle, mute, and screen sharing
+- ICE candidate exchange and connection state management
+- Incoming call handling with accept/reject
+
+### 📚 Documentation Automation
+
+#### TypeDoc Integration
+- Installed typedoc v0.28.16 with markdown plugin
+- Auto-generates API docs from TypeScript source
+- Entry points: webrtc, api, authStore, hooks
+
+#### OpenAPI Integration
+- Installed docusaurus-plugin-openapi-docs v4.5.1
+- Interactive REST API documentation from OpenAPI spec
+- Added WebRTC/Calls endpoints to OpenAPI spec
+
+#### Docusaurus Versioning
+- Configured version system (current = 0.8.6)
+- Scripts: `docs:api`, `docs:openapi`, `docs:version`
+
+### 🔧 Version Synchronization
+
+| Package | Previous | Current |
+|---------|----------|---------|
+| root | 0.8.5 | 0.8.6 |
+| @cgraph/docs | 0.8.5 | 0.8.6 |
+| OpenAPI spec | 0.7.28 | 0.8.6 |
+
+---
+
 ## [0.8.5] - 2026-01-13
 
 **📚 DOCUMENTATION CONSOLIDATION: Professional Documentation Structure**

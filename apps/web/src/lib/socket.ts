@@ -126,6 +126,14 @@ class SocketManager {
   }
 
   /**
+   * Get the underlying Phoenix socket instance.
+   * Used by WebRTC and other services that need direct socket access.
+   */
+  getSocket(): Socket | null {
+    return this.socket;
+  }
+
+  /**
    * Join the user's personal channel for receiving targeted notifications.
    * 
    * This channel receives:
