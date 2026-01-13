@@ -35,7 +35,7 @@ const config = {
         docs: {
           sidebarPath: './sidebars.js',
           path: '../docs',
-          routeBasePath: '/',
+          routeBasePath: '/docs',
           editUrl: 'https://github.com/cgraph-dev/CGraph/tree/main/docs-website/',
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
@@ -53,7 +53,7 @@ const config = {
     ({
       // Social card
       image: 'img/cgraph-social-card.png',
-      
+
       navbar: {
         title: 'CGraph',
         logo: {
@@ -92,7 +92,7 @@ const config = {
           },
         ],
       },
-      
+
       footer: {
         style: 'dark',
         links: [
@@ -101,15 +101,15 @@ const config = {
             items: [
               {
                 label: 'Getting Started',
-                to: '/guides/QUICKSTART',
+                to: '/docs/guides/QUICKSTART',
               },
               {
                 label: 'API Reference',
-                to: '/api/API_REFERENCE',
+                to: '/docs/api/API_REFERENCE',
               },
               {
                 label: 'Architecture',
-                to: '/architecture/ARCHITECTURE',
+                to: '/docs/architecture/ARCHITECTURE',
               },
             ],
           },
@@ -139,20 +139,20 @@ const config = {
               },
               {
                 label: 'Contributing',
-                to: '/guides/CONTRIBUTING',
+                to: '/docs/guides/CONTRIBUTING',
               },
             ],
           },
         ],
         copyright: `Copyright © ${new Date().getFullYear()} CGraph. Built with Docusaurus.`,
       },
-      
+
       prism: {
         theme: require('prism-react-renderer').themes.github,
         darkTheme: require('prism-react-renderer').themes.dracula,
         additionalLanguages: ['elixir', 'bash', 'json', 'yaml', 'typescript'],
       },
-      
+
       // Algolia search (configure with your Algolia credentials)
       algolia: {
         appId: 'YOUR_APP_ID',
@@ -161,14 +161,14 @@ const config = {
         contextualSearch: true,
         searchPagePath: 'search',
       },
-      
+
       // Color mode
       colorMode: {
         defaultMode: 'dark',
         disableSwitch: false,
         respectPrefersColorScheme: true,
       },
-      
+
       // Table of contents
       tableOfContents: {
         minHeadingLevel: 2,

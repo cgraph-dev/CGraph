@@ -21,7 +21,8 @@
 
 ### High-Level Overview
 
-CGraph is built as a monorepo containing three primary applications sharing common code and infrastructure:
+CGraph is built as a monorepo containing three primary applications sharing common code and
+infrastructure:
 
 ```
 CGraph/
@@ -108,6 +109,7 @@ CGraph/
 ### Backend (Elixir/Phoenix)
 
 **Why Elixir?**
+
 - Built on Erlang VM (BEAM) designed for soft real-time systems
 - Lightweight processes (2KB) enable millions of concurrent connections
 - OTP provides battle-tested fault tolerance and supervision trees
@@ -115,6 +117,7 @@ CGraph/
 - Hot code reloading for zero-downtime deployments
 
 **Key Libraries:**
+
 - **Phoenix Framework 1.8.3** - Web framework with WebSocket channels
 - **Ecto 3.13** - Database wrapper and query DSL
 - **Guardian 2.4** - JWT-based authentication
@@ -128,6 +131,7 @@ CGraph/
 - **WebRTC** - Peer-to-peer voice and video calling
 
 **Project Structure:**
+
 ```elixir
 # Context-based architecture
 lib/cgraph/
@@ -148,12 +152,14 @@ lib/cgraph_web/
 ### Frontend Web (React + Vite)
 
 **Why React 19?**
+
 - Concurrent rendering for smooth UI during heavy loads
 - Automatic batching reduces unnecessary re-renders
 - Server Components (future-proofing)
 - Largest ecosystem and community support
 
 **Key Technologies:**
+
 - **Vite 6.4** - Lightning-fast HMR, optimized builds
 - **TypeScript 5.8** - Type safety across the entire codebase
 - **TailwindCSS 3.5** - Utility-first styling
@@ -163,6 +169,7 @@ lib/cgraph_web/
 - **Web Crypto API** - E2EE encryption in browser
 
 **Key Patterns:**
+
 ```typescript
 // Centralized API client
 import { api } from '@/lib/api';
@@ -171,8 +178,12 @@ import { api } from '@/lib/api';
 const useAuthStore = create<AuthState>(
   persist((set) => ({
     user: null,
-    login: async (email, password) => { /* ... */ },
-    logout: async () => { /* ... */ },
+    login: async (email, password) => {
+      /* ... */
+    },
+    logout: async () => {
+      /* ... */
+    },
   }))
 );
 
@@ -189,12 +200,14 @@ const messages = await api.get<Message[]>('/api/v1/messages');
 ### Frontend Mobile (React Native + Expo)
 
 **Why React Native?**
+
 - Code sharing with web (80%+ shared business logic)
 - Native performance with JavaScript flexibility
 - Expo simplifies complex native modules
 - Over-the-air updates via Expo
 
 **Key Technologies:**
+
 - **Expo SDK 54** - Managed workflow with native modules
 - **React Navigation 7** - Native navigation patterns
 - **Expo Secure Store** - Encrypted token storage
@@ -203,6 +216,7 @@ const messages = await api.get<Message[]>('/api/v1/messages');
 - **Expo Crypto** - Native E2EE encryption
 
 **Mobile-Specific Features:**
+
 ```typescript
 // Biometric authentication
 import * as LocalAuthentication from 'expo-local-authentication';
@@ -222,6 +236,7 @@ const token = await SecureStore.getItemAsync('auth_token');
 ### Database (PostgreSQL 16)
 
 **Schema Design Principles:**
+
 - UUID primary keys for distributed systems
 - JSONB columns for flexible metadata
 - Proper foreign key constraints with cascading deletes
@@ -229,6 +244,7 @@ const token = await SecureStore.getItemAsync('auth_token');
 - Partial indexes for common queries
 
 **Key Tables:**
+
 ```sql
 users                    -- User accounts (email, wallet, oauth)
 conversations            -- 1:1 DM containers
@@ -252,6 +268,7 @@ notifications            -- User notifications
 **Multiple Authentication Modes:**
 
 **Email/Password:**
+
 ```elixir
 # Registration
 {:ok, user} = Accounts.create_user(%{
@@ -267,15 +284,17 @@ notifications            -- User notifications
 ```
 
 **OAuth 2.0 (Google, Apple, Facebook, TikTok):**
+
 ```elixir
 # OAuth callback
-{:ok, %{user: user, tokens: tokens}} = 
+{:ok, %{user: user, tokens: tokens}} =
   OAuth.callback(provider, code, state)
 
 # Automatically creates user or links to existing account
 ```
 
 **Web3 Wallet Authentication:**
+
 ```elixir
 # Challenge-response flow
 {:ok, challenge} = WalletAuth.generate_challenge(wallet_address)
@@ -291,6 +310,7 @@ signature = await window.ethereum.request({
 ```
 
 **Token Management:**
+
 - Access tokens (JWT): 1 hour expiry
 - Refresh tokens: 30 day expiry
 - Stored in HttpOnly cookies (web) or Secure Store (mobile)
@@ -304,7 +324,7 @@ signature = await window.ethereum.request({
 # User connects to socket
 defmodule CgraphWeb.UserSocket do
   use Phoenix.Socket
-  
+
   def connect(%{"token" => token}, socket, _connect_info) do
     case Guardian.decode_and_verify(token) do
       {:ok, %{"sub" => user_id}} ->
@@ -318,7 +338,7 @@ end
 # Join conversation channel
 defmodule CgraphWeb.ConversationChannel do
   use Phoenix.Channel
-  
+
   def join("conversation:" <> conversation_id, _params, socket) do
     # Verify user is participant
     if authorized?(socket, conversation_id) do
@@ -327,11 +347,11 @@ defmodule CgraphWeb.ConversationChannel do
       {:error, %{reason: "unauthorized"}}
     end
   end
-  
+
   def handle_in("new_message", %{"content" => content}, socket) do
     # Create message
     {:ok, message} = Messaging.create_message(...)
-    
+
     # Broadcast to all participants
     broadcast!(socket, "new_message", %{message: message})
     {:reply, {:ok, message}, socket}
@@ -340,6 +360,7 @@ end
 ```
 
 **Client Integration:**
+
 ```typescript
 // Web client
 import { Socket } from 'phoenix';
@@ -352,7 +373,8 @@ socket.connect();
 
 const channel = socket.channel(`conversation:${conversationId}`);
 
-channel.join()
+channel
+  .join()
   .receive('ok', () => console.log('Joined'))
   .receive('error', (err) => console.error(err));
 
@@ -385,13 +407,14 @@ def handle_info(:after_join, socket) do
     online_at: DateTime.utc_now(),
     username: socket.assigns.username
   })
-  
+
   push(socket, "presence_state", Presence.list(socket))
   {:noreply, socket}
 end
 ```
 
 **Client receives presence updates:**
+
 ```typescript
 // Subscribe to presence
 channel.on('presence_state', (state) => {
@@ -407,10 +430,11 @@ channel.on('presence_diff', (diff) => {
 ```
 
 **Recent Fix (v0.7.18):**
+
 - Removed stale database status fallback
 - Phoenix Presence is now single source of truth
 - Real-time updates without database writes
-- More details: [docs/PRESENCE_FIX_2026_01_04.md](PRESENCE_FIX_2026_01_04.md)
+- More details: [PRESENCE_FIX_2026_01_04](../guides/PRESENCE_FIX_2026_01_04.md)
 
 ### 4. End-to-End Encryption
 
@@ -430,16 +454,14 @@ await api.post('/api/v1/keys', {
 
 // Establish session with recipient
 const recipientKeys = await api.get(`/api/v1/keys/${recipientId}`);
-const sharedSecret = await x3dhKeyAgreement(
-  myKeys,
-  recipientKeys
-);
+const sharedSecret = await x3dhKeyAgreement(myKeys, recipientKeys);
 
 // Derive encryption key
 const encryptionKey = await hkdf(sharedSecret, 'CGraph-E2EE-v1');
 ```
 
 **Message Encryption (AES-256-GCM):**
+
 ```typescript
 // Encrypt message
 const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -478,11 +500,12 @@ userChannel.on('e2ee:key_revoked', (payload) => {
 ### 5. Background Jobs (Oban)
 
 **Job Processing:**
+
 ```elixir
 # Define worker
 defmodule Cgraph.Workers.EmailWorker do
   use Oban.Worker, queue: :emails, max_attempts: 3
-  
+
   @impl Oban.Worker
   def perform(%Oban.Job{args: %{"user_id" => user_id, "type" => "welcome"}}) do
     user = Accounts.get_user!(user_id)
@@ -498,6 +521,7 @@ end
 ```
 
 **Scheduled Jobs:**
+
 ```elixir
 # Cron configuration
 config :cgraph, Oban,
@@ -515,6 +539,7 @@ config :cgraph, Oban,
 ### 6. Voice Messages
 
 **Recording & Upload (Mobile):**
+
 ```typescript
 import { Audio } from 'expo-av';
 
@@ -540,6 +565,7 @@ await api.post('/api/v1/voice-messages', formData, {
 ```
 
 **Backend Processing (FFmpeg):**
+
 ```elixir
 defmodule Cgraph.Messaging.VoiceMessage do
   # Validate upload
@@ -550,7 +576,7 @@ defmodule Cgraph.Messaging.VoiceMessage do
       true -> :ok
     end
   end
-  
+
   # Convert to standard format
   def process_audio(input_path, output_path) do
     System.cmd("ffmpeg", [
@@ -565,9 +591,11 @@ end
 
 **Voice Message Data Flow:**
 
-Voice messages follow a three-layer data normalization pattern to ensure consistent rendering across platforms:
+Voice messages follow a three-layer data normalization pattern to ensure consistent rendering across
+platforms:
 
-1. **Backend Storage**: File info stored in message fields (`file_url`, `file_name`, `file_size`, `file_mime_type`)
+1. **Backend Storage**: File info stored in message fields (`file_url`, `file_name`, `file_size`,
+   `file_mime_type`)
 2. **JSON Serialization**: `message_json.ex` outputs data in multiple formats:
    - `metadata` object with `url`, `filename`, `size`, `mimeType`
    - Root-level `fileUrl`, `fileName`, `fileSize`, `fileMimeType`
@@ -576,6 +604,7 @@ Voice messages follow a three-layer data normalization pattern to ensure consist
    - Priority: `metadata.url` → `attachment.url` → `fileUrl`
 
 **Rendering Decision (ConversationScreen.tsx):**
+
 ```typescript
 {/* Voice messages render VoiceMessagePlayer if metadata.url exists */}
 {(item.type === 'voice' || item.type === 'audio') && item.metadata?.url && (
@@ -672,6 +701,7 @@ Voice messages follow a three-layer data normalization pattern to ensure consist
 ### Defense in Depth
 
 **Layer 1: Network (Cloudflare)**
+
 - DDoS protection with auto-mitigation
 - WAF rules blocking common attacks (SQL injection, XSS)
 - Rate limiting at edge (configurable per endpoint)
@@ -679,6 +709,7 @@ Voice messages follow a three-layer data normalization pattern to ensure consist
 - SSL/TLS termination with modern cipher suites
 
 **Layer 2: Application (Phoenix)**
+
 - CORS policy restricts origins
 - CSRF protection on state-changing requests
 - Content Security Policy headers
@@ -686,6 +717,7 @@ Voice messages follow a three-layer data normalization pattern to ensure consist
 - Input sanitization and validation
 
 **Layer 3: Authentication**
+
 - Argon2 password hashing (time: 2, memory: 65536 KB, parallelism: 4)
 - JWT tokens with short expiry (1 hour)
 - Token rotation on refresh
@@ -693,12 +725,14 @@ Voice messages follow a three-layer data normalization pattern to ensure consist
 - Account lockout after 5 failed attempts (30 min)
 
 **Layer 4: Authorization**
+
 - Role-based access control (RBAC)
 - Resource-level permissions
 - Channel authorization before join
 - Row-level security policies
 
 **Layer 5: Data**
+
 - End-to-end encryption for messages
 - Encrypted database backups
 - Secure credential storage (environment variables)
@@ -708,6 +742,7 @@ Voice messages follow a three-layer data normalization pattern to ensure consist
 ### Threat Model
 
 **Protected Against:**
+
 - ✅ SQL Injection (Ecto parameterized queries)
 - ✅ XSS (React auto-escaping, CSP headers)
 - ✅ CSRF (SameSite cookies, token verification)
@@ -717,6 +752,7 @@ Voice messages follow a three-layer data normalization pattern to ensure consist
 - ✅ Replay attacks (nonce-based challenge-response)
 
 **Known Limitations:**
+
 - ⚠️ Client-side token storage (XSS can steal tokens)
   - Mitigation: Short expiry, HttpOnly cookies where possible
 - ⚠️ Metadata visibility (who talks to whom, when)
@@ -731,6 +767,7 @@ Voice messages follow a three-layer data normalization pattern to ensure consist
 ### Current Capacity
 
 **Single Node (4 vCPU, 8GB RAM):**
+
 - 50,000+ concurrent WebSocket connections
 - 1,000+ messages per second
 - <50ms message delivery latency (same region)
@@ -739,6 +776,7 @@ Voice messages follow a three-layer data normalization pattern to ensure consist
 ### Horizontal Scaling
 
 **Stateless Application Layer:**
+
 ```
 Load Balancer (Fly.io / Cloudflare)
            │
@@ -753,6 +791,7 @@ Load Balancer (Fly.io / Cloudflare)
 ```
 
 **Phoenix PubSub with Redis:**
+
 ```elixir
 config :cgraph, Cgraph.PubSub,
   adapter: Phoenix.PubSub.Redis,
@@ -764,6 +803,7 @@ All nodes share presence and broadcast state via Redis.
 ### Database Optimization
 
 **Connection Pooling:**
+
 ```elixir
 config :cgraph, Cgraph.Repo,
   pool_size: 20,  # Adjust based on load
@@ -772,33 +812,36 @@ config :cgraph, Cgraph.Repo,
 ```
 
 **Query Optimization:**
+
 ```elixir
 # BAD: N+1 query
 messages = Repo.all(Message)
 Enum.map(messages, fn msg -> Repo.get(User, msg.sender_id) end)
 
 # GOOD: Preload association
-messages = 
+messages =
   Message
   |> preload(:sender)
   |> Repo.all()
 ```
 
 **Indexes:**
+
 ```sql
-CREATE INDEX idx_messages_conversation_timestamp 
+CREATE INDEX idx_messages_conversation_timestamp
   ON messages(conversation_id, inserted_at DESC);
 
-CREATE INDEX idx_messages_sender 
+CREATE INDEX idx_messages_sender
   ON messages(sender_id);
 
-CREATE INDEX idx_presence_conversation_user 
+CREATE INDEX idx_presence_conversation_user
   ON presence_logs(conversation_id, user_id);
 ```
 
 ### Caching Strategy
 
 **Hot Data in Memory:**
+
 ```elixir
 # User sessions (5 min TTL)
 Cachex.fetch(:sessions, user_id, fn user_id ->
@@ -815,6 +858,7 @@ end)
 ```
 
 **Cold Data in PostgreSQL:**
+
 - Archived messages (>30 days)
 - Deleted user data (soft delete)
 - Audit logs
@@ -826,6 +870,7 @@ end)
 ### Local Development
 
 **Prerequisites:**
+
 ```bash
 # Install asdf version manager (0.18+)
 # Linux: download binary release
@@ -852,6 +897,7 @@ npm install -g pnpm
 ```
 
 **Start Development Environment:**
+
 ```bash
 # Terminal 1: Backend
 cd apps/backend
@@ -873,6 +919,7 @@ pnpm start
 ### Testing Strategy
 
 **Backend Tests (585+ tests):**
+
 ```bash
 # Run all tests
 mix test
@@ -888,6 +935,7 @@ mix test --only integration
 ```
 
 **Frontend Tests:**
+
 ```bash
 # Type checking
 pnpm typecheck
@@ -932,7 +980,7 @@ mix ecto.gen.migration add_field_to_users
 # Edit migration file
 defmodule Cgraph.Repo.Migrations.AddFieldToUsers do
   use Ecto.Migration
-  
+
   def change do
     alter table(:users) do
       add :new_field, :string
@@ -984,6 +1032,7 @@ fly ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
 ### Monitoring
 
 **Key Metrics:**
+
 - Request latency (p50, p95, p99)
 - WebSocket connection count
 - Database query performance
@@ -992,6 +1041,7 @@ fly ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
 - Message throughput
 
 **Alerts:**
+
 - Error rate > 1%
 - Response time > 500ms
 - Memory usage > 80%
@@ -1001,13 +1051,13 @@ fly ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
 
 ## Further Reading
 
-- [API Reference](API.md) - Complete API documentation
-- [Deployment Guide](DEPLOYMENT.md) - Production deployment
-- [Security Guide](SECURITY_HARDENING.md) - Security best practices
-- [Database Guide](DATABASE.md) - Schema and query patterns
-- [Operations Guide](OPERATIONS.md) - Monitoring and maintenance
+- [API Reference](../api/API.md) - Complete API documentation
+- [Deployment Guide](../guides/DEPLOYMENT.md) - Production deployment
+- [Security Guide](../guides/SECURITY_HARDENING.md) - Security best practices
+- [Database Guide](./DATABASE.md) - Schema and query patterns
+- [Operations Guide](../guides/OPERATIONS.md) - Monitoring and maintenance
 
 ---
 
-*Last updated: January 4, 2026*  
-*For questions or corrections, please open an issue or PR.*
+_Last updated: January 4, 2026_  
+_For questions or corrections, please open an issue or PR._
