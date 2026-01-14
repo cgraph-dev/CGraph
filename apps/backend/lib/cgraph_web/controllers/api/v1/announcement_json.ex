@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.AnnouncementJson do
+defmodule CGraphWeb.API.V1.AnnouncementJson do
   @moduledoc """
   JSON rendering for Announcement endpoints.
   """

@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.CommentJSON do
+defmodule CGraphWeb.API.V1.CommentJSON do
   @moduledoc """
   JSON rendering for comment responses.
   """
 
-  alias CgraphWeb.API.V1.UserJSON
+  alias CGraphWeb.API.V1.UserJSON
 
   def index(%{comments: comments, meta: meta}) do
     %{

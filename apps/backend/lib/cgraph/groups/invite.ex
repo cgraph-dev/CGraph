@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.Invite do
+defmodule CGraph.Groups.Invite do
   @moduledoc """
   Group invite links with optional expiry and usage limits.
   """
@@ -17,9 +17,9 @@ defmodule Cgraph.Groups.Invite do
     field :is_temporary, :boolean, default: false  # Kick if they leave
     field :is_revoked, :boolean, default: false
 
-    belongs_to :group, Cgraph.Groups.Group
-    belongs_to :channel, Cgraph.Groups.Channel
-    belongs_to :created_by, Cgraph.Accounts.User
+    belongs_to :group, CGraph.Groups.Group
+    belongs_to :channel, CGraph.Groups.Channel
+    belongs_to :created_by, CGraph.Accounts.User
 
     timestamps()
   end

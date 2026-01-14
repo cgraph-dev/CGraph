@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.CalendarJSON do
+defmodule CGraphWeb.API.V1.CalendarJSON do
   @moduledoc """
   JSON rendering for Calendar endpoints.
   """
 
-  alias Cgraph.Calendar.{Event, EventCategory, EventRSVP}
+  alias CGraph.Calendar.{Event, EventCategory, EventRSVP}
 
   # ========================================
   # EVENTS

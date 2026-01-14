@@ -1,4 +1,4 @@
-defmodule Cgraph.Pagination do
+defmodule CGraph.Pagination do
   @moduledoc """
   Cursor-based pagination for efficient, stable pagination.
 
@@ -69,7 +69,7 @@ defmodule Cgraph.Pagination do
   """
 
   import Ecto.Query
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
   @type cursor :: String.t() | nil
   @type direction :: :asc | :desc
@@ -328,7 +328,7 @@ defmodule Cgraph.Pagination do
   end
 end
 
-defmodule Cgraph.Pagination.JSON do
+defmodule CGraph.Pagination.JSON do
   @moduledoc """
   JSON rendering helpers for paginated responses.
   """

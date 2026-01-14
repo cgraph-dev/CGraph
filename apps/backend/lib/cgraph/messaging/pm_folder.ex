@@ -1,12 +1,12 @@
-defmodule Cgraph.Messaging.PMFolder do
+defmodule CGraph.Messaging.PMFolder do
   @moduledoc """
   Schema for Private Message folders.
   """
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Messaging.PrivateMessage
+  alias CGraph.Accounts.User
+  alias CGraph.Messaging.PrivateMessage
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

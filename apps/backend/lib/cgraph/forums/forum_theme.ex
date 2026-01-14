@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.ForumTheme do
+defmodule CGraph.Forums.ForumTheme do
   @moduledoc """
   Forum theme schema - custom themes for MyBB-style forums.
   Supports CSS customization, color schemes, and template overrides.
@@ -46,8 +46,8 @@ defmodule Cgraph.Forums.ForumTheme do
     field :show_breadcrumbs, :boolean, default: true
     field :show_forum_stats, :boolean, default: true
 
-    belongs_to :forum, Cgraph.Forums.Forum
-    belongs_to :created_by, Cgraph.Accounts.User
+    belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :created_by, CGraph.Accounts.User
 
     timestamps()
   end

@@ -1,4 +1,4 @@
-defmodule Cgraph.Workers.DatabaseBackup do
+defmodule CGraph.Workers.DatabaseBackup do
   @moduledoc """
   Automated database backup worker.
 
@@ -165,7 +165,7 @@ defmodule Cgraph.Workers.DatabaseBackup do
 
   # Optional notifications
   defp notify_backup_complete(path, type) do
-    Cgraph.Events.publish(:database_backup_complete, %{
+    CGraph.Events.publish(:database_backup_complete, %{
       path: path,
       type: type,
       timestamp: DateTime.utc_now()
@@ -173,7 +173,7 @@ defmodule Cgraph.Workers.DatabaseBackup do
   end
 
   defp notify_backup_failure(reason) do
-    Cgraph.Events.publish(:database_backup_failed, %{
+    CGraph.Events.publish(:database_backup_failed, %{
       reason: inspect(reason),
       timestamp: DateTime.utc_now()
     })

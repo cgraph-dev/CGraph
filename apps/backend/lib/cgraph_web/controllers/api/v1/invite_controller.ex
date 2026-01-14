@@ -1,13 +1,13 @@
-defmodule CgraphWeb.API.V1.InviteController do
+defmodule CGraphWeb.API.V1.InviteController do
   @moduledoc """
   Handles group invite links.
   Users can create invites, list active invites, and join groups via invite codes.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Groups
+  alias CGraph.Groups
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List all invites for a group.

@@ -1,11 +1,11 @@
-defmodule CgraphWeb.API.V1.AuthJSON do
+defmodule CGraphWeb.API.V1.AuthJSON do
   @moduledoc """
   JSON rendering for authentication responses.
 
   Provides consistent JSON output format for all auth-related endpoints.
   """
 
-  alias Cgraph.Accounts.User
+  alias CGraph.Accounts.User
 
   @doc """
   Renders successful authentication response with user and tokens.

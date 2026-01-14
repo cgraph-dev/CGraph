@@ -1,4 +1,4 @@
-defmodule Cgraph.Presence.Sampled do
+defmodule CGraph.Presence.Sampled do
   @moduledoc """
   Presence sampling for Telegram-scale channels with millions of users.
 
@@ -70,7 +70,7 @@ defmodule Cgraph.Presence.Sampled do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Presence.Sampled,
+      config :cgraph, CGraph.Presence.Sampled,
         tiers: [
           %{max_size: 100, sample_rate: 1.0, batch_interval: 0},
           %{max_size: 1_000, sample_rate: 0.5, batch_interval: 1_000},
@@ -85,7 +85,7 @@ defmodule Cgraph.Presence.Sampled do
   use GenServer
   require Logger
 
-  alias Cgraph.Redis
+  alias CGraph.Redis
 
   @ets_table :cgraph_sampled_presence
   @hll_prefix "presence:hll:"
@@ -286,7 +286,7 @@ defmodule Cgraph.Presence.Sampled do
     summary = get_summary(channel_id)
 
     Phoenix.PubSub.broadcast(
-      Cgraph.PubSub,
+      CGraph.PubSub,
       "presence:#{channel_id}",
       {:presence_summary, summary}
     )
@@ -510,7 +510,7 @@ defmodule Cgraph.Presence.Sampled do
 
   defp broadcast_change(channel_id, event, user_id, meta) do
     Phoenix.PubSub.broadcast(
-      Cgraph.PubSub,
+      CGraph.PubSub,
       "presence:#{channel_id}",
       {:presence_change, %{event: event, user_id: user_id, meta: meta}}
     )

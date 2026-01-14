@@ -1,4 +1,4 @@
-defmodule Cgraph.Moderation.ReviewAction do
+defmodule CGraph.Moderation.ReviewAction do
   @moduledoc """
   Schema for moderation actions taken on reports.
 
@@ -19,9 +19,9 @@ defmodule Cgraph.Moderation.ReviewAction do
     field :notes, :string
     field :duration_hours, :integer  # For suspensions
 
-    belongs_to :report, Cgraph.Moderation.Report
-    belongs_to :reviewer, Cgraph.Accounts.User
-    has_one :appeal, Cgraph.Moderation.Appeal
+    belongs_to :report, CGraph.Moderation.Report
+    belongs_to :reviewer, CGraph.Accounts.User
+    has_one :appeal, CGraph.Moderation.Appeal
 
     timestamps(type: :utc_datetime)
   end

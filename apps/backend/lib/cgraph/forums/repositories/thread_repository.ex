@@ -3,7 +3,7 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
   Repository for Thread entity data access.
   """
   
-  import Ecto.Query, warn: false
+  import Ecto.Query, warn: false, except: [update: 2]
   
   alias CGraph.Repo
   alias CGraph.Forums.Thread
@@ -70,7 +70,8 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
       if include_sticky do
         sort_threads(base_query, sort, true)
       else
-        from t in base_query, where: t.is_sticky == false
+        base_query
+        |> where([t], t.is_sticky == false)
         |> sort_threads(sort, false)
       end
       |> limit(^limit)
@@ -267,7 +268,7 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
   # Private helpers
   
   defp sort_threads(query, sort, include_sticky) do
-    order = 
+    base_order = 
       case sort do
         :latest -> [desc: :last_post_at]
         :newest -> [desc: :inserted_at]
@@ -276,11 +277,14 @@ defmodule CGraph.Forums.Repositories.ThreadRepository do
         _ -> [desc: :last_post_at]
       end
     
-    if include_sticky do
-      from t in query, order_by: [desc: t.is_sticky] ++ order
-    else
-      from t in query, order_by: ^order
-    end
+    order = 
+      if include_sticky do
+        [{:desc, :is_sticky} | base_order]
+      else
+        base_order
+      end
+    
+    from t in query, order_by: ^order
   end
   
   defp maybe_preload(nil, _), do: nil

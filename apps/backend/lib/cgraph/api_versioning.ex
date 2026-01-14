@@ -1,6 +1,6 @@
-defmodule Cgraph.ApiVersioning do
+defmodule CGraph.ApiVersioning do
   @moduledoc """
-  Cgraph.ApiVersioning - Comprehensive API Versioning Infrastructure
+  CGraph.ApiVersioning - Comprehensive API Versioning Infrastructure
 
   ## Overview
 
@@ -52,19 +52,19 @@ defmodule Cgraph.ApiVersioning do
   ### In Router
 
       pipeline :api_v1 do
-        plug CgraphWeb.Plugs.ApiVersion, version: 1
+        plug CGraphWeb.Plugs.ApiVersion, version: 1
       end
 
       pipeline :api_v2 do
-        plug CgraphWeb.Plugs.ApiVersion, version: 2
+        plug CGraphWeb.Plugs.ApiVersion, version: 2
       end
 
-      scope "/api/v1", CgraphWeb.V1 do
+      scope "/api/v1", CGraphWeb.V1 do
         pipe_through [:api, :api_v1]
         resources "/users", UserController
       end
 
-      scope "/api/v2", CgraphWeb.V2 do
+      scope "/api/v2", CGraphWeb.V2 do
         pipe_through [:api, :api_v2]
         resources "/users", UserController
       end
@@ -75,7 +75,7 @@ defmodule Cgraph.ApiVersioning do
         user = Users.get_user!(id)
 
         # Transform response based on API version
-        data = Cgraph.ApiVersioning.transform(conn, :user, user)
+        data = CGraph.ApiVersioning.transform(conn, :user, user)
 
         json(conn, data)
       end
@@ -83,7 +83,7 @@ defmodule Cgraph.ApiVersioning do
   ### Response Transformation
 
       # Register transformers for different versions
-      Cgraph.ApiVersioning.register_transformer(:user, 1, fn user ->
+      CGraph.ApiVersioning.register_transformer(:user, 1, fn user ->
         %{
           id: user.id,
           name: user.full_name,  # v1 used 'name' instead of 'full_name'
@@ -91,7 +91,7 @@ defmodule Cgraph.ApiVersioning do
         }
       end)
 
-      Cgraph.ApiVersioning.register_transformer(:user, 2, fn user ->
+      CGraph.ApiVersioning.register_transformer(:user, 2, fn user ->
         %{
           id: user.id,
           full_name: user.full_name,
@@ -104,7 +104,7 @@ defmodule Cgraph.ApiVersioning do
 
   Configure in `config/config.exs`:
 
-      config :cgraph, Cgraph.ApiVersioning,
+      config :cgraph, CGraph.ApiVersioning,
         current_version: 2,
         minimum_version: 1,
         default_version: 2,
@@ -181,11 +181,11 @@ defmodule Cgraph.ApiVersioning do
   ## Examples
 
       # From URL path /api/v2/users
-      iex> Cgraph.ApiVersioning.get_version(conn)
+      iex> CGraph.ApiVersioning.get_version(conn)
       2
 
       # From header X-API-Version: 3
-      iex> Cgraph.ApiVersioning.get_version(conn)
+      iex> CGraph.ApiVersioning.get_version(conn)
       3
   """
   @spec get_version(Plug.Conn.t()) :: version()
@@ -246,7 +246,7 @@ defmodule Cgraph.ApiVersioning do
 
   ## Examples
 
-      Cgraph.ApiVersioning.register_version(2, %{
+      CGraph.ApiVersioning.register_version(2, %{
         released_at: ~D[2024-01-15],
         changelog_url: "https://docs.example.com/changelog/v2"
       })
@@ -264,7 +264,7 @@ defmodule Cgraph.ApiVersioning do
 
   ## Examples
 
-      Cgraph.ApiVersioning.deprecate_version(1, %{
+      CGraph.ApiVersioning.deprecate_version(1, %{
         sunset_at: ~D[2024-06-01],
         migration_guide: "https://docs.example.com/migration/v1-to-v2",
         replacement_version: 2
@@ -297,7 +297,7 @@ defmodule Cgraph.ApiVersioning do
 
   ## Examples
 
-      Cgraph.ApiVersioning.register_transformer(:user, 1, fn user ->
+      CGraph.ApiVersioning.register_transformer(:user, 1, fn user ->
         %{
           id: user.id,
           name: user.full_name,  # v1 uses 'name'
@@ -305,7 +305,7 @@ defmodule Cgraph.ApiVersioning do
         }
       end)
 
-      Cgraph.ApiVersioning.register_transformer(:user, 2, fn user ->
+      CGraph.ApiVersioning.register_transformer(:user, 2, fn user ->
         %{
           id: user.id,
           full_name: user.full_name,
@@ -333,7 +333,7 @@ defmodule Cgraph.ApiVersioning do
         user = Users.get_user!(id)
 
         # Will use v1 or v2 transformer based on conn's API version
-        data = Cgraph.ApiVersioning.transform(conn, :user, user)
+        data = CGraph.ApiVersioning.transform(conn, :user, user)
 
         json(conn, data)
       end
@@ -435,7 +435,7 @@ defmodule Cgraph.ApiVersioning do
   ## Examples
 
       # Accept: application/vnd.cgraph.v2+json, application/vnd.cgraph.v1+json
-      iex> Cgraph.ApiVersioning.negotiate_version(conn)
+      iex> CGraph.ApiVersioning.negotiate_version(conn)
       2
   """
   @spec negotiate_version(Plug.Conn.t()) :: version()

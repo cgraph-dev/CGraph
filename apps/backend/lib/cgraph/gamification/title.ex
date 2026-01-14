@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.Title do
+defmodule CGraph.Gamification.Title do
   @moduledoc """
   Schema for unlockable titles that users can display.
   """
@@ -23,7 +23,7 @@ defmodule Cgraph.Gamification.Title do
     field :coin_cost, :integer, default: 0
     field :sort_order, :integer, default: 0
 
-    has_many :user_titles, Cgraph.Gamification.UserTitle
+    has_many :user_titles, CGraph.Gamification.UserTitle
 
     timestamps(type: :utc_datetime)
   end

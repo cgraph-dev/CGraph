@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.AuthController do
+defmodule CGraphWeb.API.V1.AuthController do
   @moduledoc """
   Authentication controller handling:
   - Email/password registration and login
@@ -14,14 +14,14 @@ defmodule CgraphWeb.API.V1.AuthController do
   - IP-based rate limiting
   - HTTP-only cookie authentication (XSS-safe)
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Accounts
-  alias Cgraph.Guardian
-  alias Cgraph.Security.AccountLockout
-  alias CgraphWeb.Plugs.CookieAuth
+  alias CGraph.Accounts
+  alias CGraph.Guardian
+  alias CGraph.Security.AccountLockout
+  alias CGraphWeb.Plugs.CookieAuth
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   Register a new user with email and password.
@@ -159,7 +159,7 @@ defmodule CgraphWeb.API.V1.AuthController do
   def wallet_challenge(conn, %{"wallet_address" => address}) do
     case Accounts.get_or_create_wallet_challenge(address) do
       {:ok, nonce} ->
-        message = "Sign this message to authenticate with Cgraph.\n\nNonce: #{nonce}"
+        message = "Sign this message to authenticate with CGraph.\n\nNonce: #{nonce}"
         json(conn, %{message: message, nonce: nonce})
 
       {:error, reason} ->
@@ -218,7 +218,7 @@ defmodule CgraphWeb.API.V1.AuthController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> put_view(json: CgraphWeb.ChangesetJSON)
+        |> put_view(json: CGraphWeb.ChangesetJSON)
         |> render(:error, changeset: changeset)
     end
   end

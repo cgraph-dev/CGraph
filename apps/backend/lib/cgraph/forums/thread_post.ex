@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.ThreadPost do
+defmodule CGraph.Forums.ThreadPost do
   @moduledoc """
   ThreadPost schema representing a reply within a thread.
 
@@ -52,11 +52,11 @@ defmodule Cgraph.Forums.ThreadPost do
     # Soft delete
     field :deleted_at, :utc_datetime
 
-    belongs_to :thread, Cgraph.Forums.Thread
-    belongs_to :author, Cgraph.Accounts.User
+    belongs_to :thread, CGraph.Forums.Thread
+    belongs_to :author, CGraph.Accounts.User
     belongs_to :reply_to, __MODULE__
-    belongs_to :edited_by, Cgraph.Accounts.User
-    has_many :votes, Cgraph.Forums.PostVote, foreign_key: :post_id
+    belongs_to :edited_by, CGraph.Accounts.User
+    has_many :votes, CGraph.Forums.PostVote, foreign_key: :post_id
     has_many :replies, __MODULE__, foreign_key: :reply_to_id
 
     timestamps()

@@ -1,4 +1,4 @@
-defmodule Cgraph.Auth.TokenManager do
+defmodule CGraph.Auth.TokenManager do
   @moduledoc """
   Enhanced JWT token management with security best practices.
 
@@ -77,8 +77,8 @@ defmodule Cgraph.Auth.TokenManager do
   use GenServer
   require Logger
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Guardian
+  alias CGraph.Accounts.User
+  alias CGraph.Guardian
 
   @access_token_ttl {15, :minutes}
   @refresh_token_ttl {7, :days}
@@ -507,7 +507,7 @@ defmodule Cgraph.Auth.TokenManager do
   end
 
   defp get_user(user_id) do
-    case Cgraph.Accounts.get_user(user_id) do
+    case CGraph.Accounts.get_user(user_id) do
       {:error, :not_found} -> {:error, :user_not_found}
       {:ok, user} -> {:ok, user}
     end

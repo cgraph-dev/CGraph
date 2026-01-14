@@ -3,7 +3,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   Repository for Member entity data access.
   """
   
-  import Ecto.Query, warn: false
+  import Ecto.Query, warn: false, except: [update: 2]
   
   alias CGraph.Repo
   alias CGraph.Groups.Member

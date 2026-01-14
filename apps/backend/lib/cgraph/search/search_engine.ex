@@ -1,4 +1,4 @@
-defmodule Cgraph.Search.Engine do
+defmodule CGraph.Search.Engine do
   @moduledoc """
   Distributed search engine with Meilisearch integration.
 
@@ -40,7 +40,7 @@ defmodule Cgraph.Search.Engine do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Search.Engine,
+      config :cgraph, CGraph.Search.Engine,
         backend: :meilisearch,
         meilisearch_url: "http://localhost:7700",
         meilisearch_key: "your-master-key",
@@ -73,7 +73,7 @@ defmodule Cgraph.Search.Engine do
 
   require Logger
 
-  @behaviour Cgraph.Search.Backend
+  @behaviour CGraph.Search.Backend
 
   @default_config [
     backend: :meilisearch,
@@ -388,21 +388,21 @@ defmodule Cgraph.Search.Engine do
   # ---------------------------------------------------------------------------
 
   defp search_postgres(index, query, opts) do
-    # Delegate to existing Cgraph.Search functions
+    # Delegate to existing CGraph.Search functions
     limit = Keyword.get(opts, :limit, 20)
     offset = Keyword.get(opts, :offset, 0)
 
     result = case index do
       :users ->
-        {users, _meta} = Cgraph.Search.search_users(query, limit: limit, offset: offset)
+        {users, _meta} = CGraph.Search.search_users(query, limit: limit, offset: offset)
         users
 
       :posts ->
-        {posts, _meta} = Cgraph.Search.search_posts(query, limit: limit, offset: offset)
+        {posts, _meta} = CGraph.Search.search_posts(query, limit: limit, offset: offset)
         posts
 
       :groups ->
-        {groups, _meta} = Cgraph.Search.search_groups(query, limit: limit, offset: offset)
+        {groups, _meta} = CGraph.Search.search_groups(query, limit: limit, offset: offset)
         groups
 
       :messages ->
@@ -435,25 +435,25 @@ defmodule Cgraph.Search.Engine do
 
   defp http_get(url) do
     Finch.build(:get, url, headers())
-    |> Finch.request(Cgraph.Finch, receive_timeout: config(:request_timeout))
+    |> Finch.request(CGraph.Finch, receive_timeout: config(:request_timeout))
     |> parse_response()
   end
 
   defp http_post(url, body) do
     Finch.build(:post, url, headers(), Jason.encode!(body))
-    |> Finch.request(Cgraph.Finch, receive_timeout: config(:request_timeout))
+    |> Finch.request(CGraph.Finch, receive_timeout: config(:request_timeout))
     |> parse_response()
   end
 
   defp http_patch(url, body) do
     Finch.build(:patch, url, headers(), Jason.encode!(body))
-    |> Finch.request(Cgraph.Finch, receive_timeout: config(:request_timeout))
+    |> Finch.request(CGraph.Finch, receive_timeout: config(:request_timeout))
     |> parse_response()
   end
 
   defp http_delete(url) do
     Finch.build(:delete, url, headers())
-    |> Finch.request(Cgraph.Finch, receive_timeout: config(:request_timeout))
+    |> Finch.request(CGraph.Finch, receive_timeout: config(:request_timeout))
     |> parse_response()
   end
 

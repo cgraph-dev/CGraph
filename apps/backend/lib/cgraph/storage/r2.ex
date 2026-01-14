@@ -1,4 +1,4 @@
-defmodule Cgraph.Storage.R2 do
+defmodule CGraph.Storage.R2 do
   @moduledoc """
   Cloudflare R2 storage backend.
 
@@ -31,7 +31,7 @@ defmodule Cgraph.Storage.R2 do
       {:hackney, "~> 1.18"}
   """
 
-  @behaviour Cgraph.Storage
+  @behaviour CGraph.Storage
 
   require Logger
 

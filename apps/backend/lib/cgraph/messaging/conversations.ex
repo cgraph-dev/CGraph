@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.Conversations do
+defmodule CGraph.Messaging.Conversations do
   @moduledoc """
   Sub-context for Conversation-related operations.
 
@@ -10,8 +10,8 @@ defmodule Cgraph.Messaging.Conversations do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Messaging.{Conversation, ConversationParticipant}
-  alias Cgraph.Repo
+  alias CGraph.Messaging.{Conversation, ConversationParticipant}
+  alias CGraph.Repo
 
   @doc """
   List conversations for a user with pagination.

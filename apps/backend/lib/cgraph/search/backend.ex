@@ -1,4 +1,4 @@
-defmodule Cgraph.Search.Backend do
+defmodule CGraph.Search.Backend do
   @moduledoc """
   Behaviour definition for search backends.
 

@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.PostJSON do
+defmodule CGraphWeb.API.V1.PostJSON do
   @moduledoc """
   JSON rendering for post responses.
   """
 
-  alias CgraphWeb.API.V1.UserJSON
+  alias CGraphWeb.API.V1.UserJSON
 
   def index(%{posts: posts, meta: meta}) do
     %{

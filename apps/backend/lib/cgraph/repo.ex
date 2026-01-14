@@ -1,4 +1,4 @@
-defmodule Cgraph.Repo do
+defmodule CGraph.Repo do
   @moduledoc """
   Ecto repository for CGraph database operations.
 

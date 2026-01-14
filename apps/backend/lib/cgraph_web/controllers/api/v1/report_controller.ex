@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.ReportController do
+defmodule CGraphWeb.API.V1.ReportController do
   @moduledoc """
   REST API controller for content reports.
 
@@ -12,11 +12,11 @@ defmodule CgraphWeb.API.V1.ReportController do
   - `GET /api/v1/reports/:id` - Get report status
   """
 
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Moderation
+  alias CGraph.Moderation
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   Create a new content report.
@@ -66,7 +66,7 @@ defmodule CgraphWeb.API.V1.ReportController do
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> put_view(json: CgraphWeb.ChangesetJSON)
+        |> put_view(json: CGraphWeb.ChangesetJSON)
         |> render(:error, changeset: changeset)
     end
   end

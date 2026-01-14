@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.Role do
+defmodule CGraph.Groups.Role do
   @moduledoc """
   Roles for group permission management.
 
@@ -69,8 +69,8 @@ defmodule Cgraph.Groups.Role do
     field :is_mentionable, :boolean, default: false
     field :is_hoisted, :boolean, default: false  # Show separately in member list
 
-    belongs_to :group, Cgraph.Groups.Group
-    many_to_many :members, Cgraph.Groups.Member, join_through: "member_roles"
+    belongs_to :group, CGraph.Groups.Group
+    many_to_many :members, CGraph.Groups.Member, join_through: "member_roles"
 
     timestamps()
   end

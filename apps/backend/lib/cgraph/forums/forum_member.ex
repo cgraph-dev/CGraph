@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.ForumMember do
+defmodule CGraph.Forums.ForumMember do
   @moduledoc """
   ForumMember schema representing a user's membership in a specific forum.
 
@@ -61,9 +61,9 @@ defmodule Cgraph.Forums.ForumMember do
     field :show_signature, :boolean, default: true
     field :posts_per_page, :integer, default: 20
 
-    belongs_to :forum, Cgraph.Forums.Forum
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :user_group, Cgraph.Forums.ForumUserGroup
+    belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :user_group, CGraph.Forums.ForumUserGroup
 
     timestamps()
   end

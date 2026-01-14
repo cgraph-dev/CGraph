@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification do
+defmodule CGraph.Gamification do
   @moduledoc """
   The Gamification context.
 
@@ -7,8 +7,8 @@ defmodule Cgraph.Gamification do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Accounts.User
-  alias Cgraph.Gamification.{
+  alias CGraph.Accounts.User
+  alias CGraph.Gamification.{
     Achievement,
     CoinTransaction,
     Quest,
@@ -20,7 +20,7 @@ defmodule Cgraph.Gamification do
     UserTitle,
     XpTransaction
   }
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
   # ==================== LEVEL SYSTEM ====================
 

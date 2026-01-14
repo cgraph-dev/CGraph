@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.UserPurchase do
+defmodule CGraph.Gamification.UserPurchase do
   @moduledoc """
   Schema for tracking user purchases from the shop.
   """
@@ -9,8 +9,8 @@ defmodule Cgraph.Gamification.UserPurchase do
   @foreign_key_type :binary_id
 
   schema "user_purchases" do
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :item, Cgraph.Gamification.ShopItem
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :item, CGraph.Gamification.ShopItem
 
     field :quantity, :integer, default: 1
     field :coin_spent, :integer

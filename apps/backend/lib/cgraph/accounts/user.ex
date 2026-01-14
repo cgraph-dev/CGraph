@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.User do
+defmodule CGraph.Accounts.User do
   @moduledoc """
   User schema for CGraph accounts.
 
@@ -108,13 +108,13 @@ defmodule Cgraph.Accounts.User do
     field :total_posts_created, :integer, default: 0
 
     # Associations
-    has_many :sessions, Cgraph.Accounts.Session
-    has_many :push_tokens, Cgraph.Accounts.PushToken
-    has_many :owned_groups, Cgraph.Groups.Group, foreign_key: :owner_id
-    has_many :group_memberships, Cgraph.Groups.Member
-    has_many :messages, Cgraph.Messaging.Message, foreign_key: :sender_id
-    has_many :posts, Cgraph.Forums.Post, foreign_key: :author_id
-    has_many :comments, Cgraph.Forums.Comment, foreign_key: :author_id
+    has_many :sessions, CGraph.Accounts.Session
+    has_many :push_tokens, CGraph.Accounts.PushToken
+    has_many :owned_groups, CGraph.Groups.Group, foreign_key: :owner_id
+    has_many :group_memberships, CGraph.Groups.Member
+    has_many :messages, CGraph.Messaging.Message, foreign_key: :sender_id
+    has_many :posts, CGraph.Forums.Post, foreign_key: :author_id
+    has_many :comments, CGraph.Forums.Comment, foreign_key: :author_id
 
     timestamps()
   end
@@ -357,7 +357,7 @@ defmodule Cgraph.Accounts.User do
       message: "can only contain letters, numbers, and underscores"
     )
     |> validate_length(:username, min: 3, max: 30)
-    |> unsafe_validate_unique(:username, Cgraph.Repo)
+    |> unsafe_validate_unique(:username, CGraph.Repo)
     |> unique_constraint(:username)
   end
 
@@ -369,7 +369,7 @@ defmodule Cgraph.Accounts.User do
     |> validate_format(:username, ~r/^[a-zA-Z0-9_]+$/,
       message: "can only contain letters, numbers, and underscores"
     )
-    |> unsafe_validate_unique(:username, Cgraph.Repo)
+    |> unsafe_validate_unique(:username, CGraph.Repo)
     |> unique_constraint(:username)
   end
 
@@ -379,7 +379,7 @@ defmodule Cgraph.Accounts.User do
       message: "must be a valid email address"
     )
     |> validate_length(:email, max: 160)
-    |> unsafe_validate_unique(:email, Cgraph.Repo)
+    |> unsafe_validate_unique(:email, CGraph.Repo)
     |> unique_constraint(:email)
     |> update_change(:email, &String.downcase/1)
   end
@@ -407,7 +407,7 @@ defmodule Cgraph.Accounts.User do
     |> validate_format(:wallet_address, ~r/^0x[a-fA-F0-9]{40}$/,
       message: "must be a valid Ethereum address"
     )
-    |> unsafe_validate_unique(:wallet_address, Cgraph.Repo)
+    |> unsafe_validate_unique(:wallet_address, CGraph.Repo)
     |> unique_constraint(:wallet_address)
     |> update_change(:wallet_address, &String.downcase/1)
   end

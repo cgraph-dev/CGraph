@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.CustomEmoji do
+defmodule CGraph.Groups.CustomEmoji do
   @moduledoc """
   Schema for custom group emojis.
   """
@@ -10,8 +10,8 @@ defmodule Cgraph.Groups.CustomEmoji do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "group_custom_emojis" do
-    belongs_to :group, Cgraph.Groups.Group
-    belongs_to :uploaded_by, Cgraph.Accounts.User
+    belongs_to :group, CGraph.Groups.Group
+    belongs_to :uploaded_by, CGraph.Accounts.User
 
     field :name, :string
     field :image_url, :string

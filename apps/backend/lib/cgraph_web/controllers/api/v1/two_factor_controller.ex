@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.TwoFactorController do
+defmodule CGraphWeb.API.V1.TwoFactorController do
   @moduledoc """
   Two-factor authentication (2FA) controller.
 
@@ -18,16 +18,16 @@ defmodule CgraphWeb.API.V1.TwoFactorController do
   - Progressive lockout: 15 minutes after 5 failures, 24 hours after 3 lockouts
   - All 2FA operations logged for security audit trail
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Security.TOTP
+  alias CGraph.Accounts.User
+  alias CGraph.Security.TOTP
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   # Apply strict 2FA-specific rate limiting to verification actions
   # This prevents brute force attacks on 6-digit TOTP codes
-  plug CgraphWeb.Plugs.TwoFactorRateLimiter when action in [:verify, :enable, :disable, :use_backup_code]
+  plug CGraphWeb.Plugs.TwoFactorRateLimiter when action in [:verify, :enable, :disable, :use_backup_code]
 
   @doc """
   Initialize 2FA setup for the authenticated user.

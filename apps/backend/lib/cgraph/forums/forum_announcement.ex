@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.ForumAnnouncement do
+defmodule CGraph.Forums.ForumAnnouncement do
   @moduledoc """
   Forum announcement schema - announcements displayed at the top of forums/boards.
   Supports global announcements, board-specific announcements, and scheduling.
@@ -33,9 +33,9 @@ defmodule Cgraph.Forums.ForumAnnouncement do
     field :view_count, :integer, default: 0
     field :dismiss_count, :integer, default: 0
 
-    belongs_to :forum, Cgraph.Forums.Forum
-    belongs_to :board, Cgraph.Forums.Board  # nil if global or forum-wide
-    belongs_to :author, Cgraph.Accounts.User
+    belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :board, CGraph.Forums.Board  # nil if global or forum-wide
+    belongs_to :author, CGraph.Accounts.User
 
     timestamps()
   end

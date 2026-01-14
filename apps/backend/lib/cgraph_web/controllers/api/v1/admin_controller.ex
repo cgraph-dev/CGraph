@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.AdminController do
+defmodule CGraphWeb.API.V1.AdminController do
   @moduledoc """
   Admin dashboard API controller.
 
@@ -38,12 +38,12 @@ defmodule CgraphWeb.API.V1.AdminController do
   ```
   """
 
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Admin
-  alias CgraphWeb.API.V1.AdminJSON
+  alias CGraph.Admin
+  alias CGraphWeb.API.V1.AdminJSON
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   # ---------------------------------------------------------------------------
   # System Metrics

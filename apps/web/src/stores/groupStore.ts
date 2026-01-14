@@ -88,7 +88,7 @@ export interface ChannelMessage {
   createdAt: string;
 }
 
-interface GroupState {
+export interface GroupState {
   groups: Group[];
   activeGroupId: string | null;
   activeChannelId: string | null;

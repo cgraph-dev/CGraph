@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Poll do
+defmodule CGraph.Forums.Poll do
   @moduledoc """
   Schema for post polls.
   """
@@ -10,7 +10,7 @@ defmodule Cgraph.Forums.Poll do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "forum_polls" do
-    belongs_to :post, Cgraph.Forums.Post
+    belongs_to :post, CGraph.Forums.Post
 
     field :question, :string
     field :options, {:array, :map}, default: []

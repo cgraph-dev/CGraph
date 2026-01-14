@@ -92,6 +92,11 @@ export class PermissionService {
     const actorHighestRole = this.getHighestRole(actor.roles, roles);
     const targetHighestRole = this.getHighestRole(target.roles, roles);
     
+    // Both must have roles to compare
+    if (!actorHighestRole || !targetHighestRole) {
+      return { allowed: false, reason: 'Role information unavailable' };
+    }
+    
     // Actor must have higher role than target
     if (actorHighestRole.position <= targetHighestRole.position) {
       return { allowed: false, reason: 'Target has equal or higher role' };
@@ -115,11 +120,12 @@ export class PermissionService {
   /**
    * Get highest role for a member
    */
-  private static getHighestRole(memberRoles: string[], allRoles: RoleEntity[]): RoleEntity {
+  private static getHighestRole(memberRoles: string[], allRoles: RoleEntity[]): RoleEntity | undefined {
     const roles = allRoles.filter(r => memberRoles.includes(r.id));
+    if (roles.length === 0) return undefined;
     return roles.reduce((highest, role) => 
       role.position > highest.position ? role : highest
-    , roles[0]);
+    , roles[0]!);
   }
 }
 

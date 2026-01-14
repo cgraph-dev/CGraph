@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.ThreadJSON do
+defmodule CGraphWeb.API.V1.ThreadJSON do
   @moduledoc """
   JSON rendering for threads.
   """

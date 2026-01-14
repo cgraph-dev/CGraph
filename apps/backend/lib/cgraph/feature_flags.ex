@@ -1,4 +1,4 @@
-defmodule Cgraph.FeatureFlags do
+defmodule CGraph.FeatureFlags do
   @moduledoc """
   Production-grade feature flag system for controlled rollouts.
 

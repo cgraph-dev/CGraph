@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import Card, { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+import Button from '@/components/ui/Button';
+import Badge from '@/components/ui/Badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Select,
@@ -122,7 +122,8 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
     }
   };
 
-  const getModeLabel = (mode: NotificationMode) => {
+  // Helper function for mode labels (used in UI)
+  const _getModeLabel = (mode: NotificationMode) => {
     switch (mode) {
       case 'instant':
         return 'Instant';
@@ -134,6 +135,8 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
         return 'Muted';
     }
   };
+  // Keep for potential future use
+  void _getModeLabel;
 
   const filteredSubscriptions =
     activeTab === 'all'
@@ -167,7 +170,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
           </div>
           <div className="flex items-center gap-2">
             <Select
-              onValueChange={(value: NotificationMode) => bulkUpdateMode(value)}
+              onValueChange={(value) => bulkUpdateMode(value as NotificationMode)}
               disabled={bulkUpdating || subscriptions.length === 0}
             >
               <SelectTrigger className="w-40">
@@ -252,8 +255,8 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
                         <div className="flex items-center gap-2">
                           <Select
                             value={subscription.notificationMode}
-                            onValueChange={(value: NotificationMode) =>
-                              updateSubscription(subscription.id, { notificationMode: value })
+                            onValueChange={(value) =>
+                              updateSubscription(subscription.id, { notificationMode: value as NotificationMode })
                             }
                           >
                             <SelectTrigger className="w-28">

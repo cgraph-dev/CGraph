@@ -1,4 +1,4 @@
-defmodule Cgraph.Events do
+defmodule CGraph.Events do
   @moduledoc """
   Domain event system for event-driven architecture.
 
@@ -230,7 +230,7 @@ defmodule Cgraph.Events do
   @impl true
   def init(_opts) do
     # Subscribe to Phoenix PubSub for distributed events
-    Phoenix.PubSub.subscribe(Cgraph.PubSub, @event_bus_topic)
+    Phoenix.PubSub.subscribe(CGraph.PubSub, @event_bus_topic)
 
     state = %{
       subscriptions: %{},
@@ -250,7 +250,7 @@ defmodule Cgraph.Events do
     dispatch_event(event, state.subscriptions)
 
     # Broadcast for distributed nodes
-    Phoenix.PubSub.broadcast(Cgraph.PubSub, @event_bus_topic, {:event, event})
+    Phoenix.PubSub.broadcast(CGraph.PubSub, @event_bus_topic, {:event, event})
 
     emit_published_telemetry(event)
 
@@ -269,7 +269,7 @@ defmodule Cgraph.Events do
     end)
 
     # Broadcast batch
-    Phoenix.PubSub.broadcast(Cgraph.PubSub, @event_bus_topic, {:events, events})
+    Phoenix.PubSub.broadcast(CGraph.PubSub, @event_bus_topic, {:events, events})
 
     {:noreply, %{state |
       event_store: new_store,

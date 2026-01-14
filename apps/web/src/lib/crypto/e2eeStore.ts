@@ -2,6 +2,13 @@
  * E2EE Store for Web Application
  * 
  * Zustand store for managing E2EE state and operations.
+ * 
+ * v0.9.0: Integrated Double Ratchet for forward secrecy
+ * - Session manager handles per-conversation ratchet state
+ * - X3DH for initial key agreement
+ * - Double Ratchet for ongoing message encryption
+ * 
+ * @module lib/crypto/e2eeStore
  */
 
 import { create } from 'zustand';
@@ -26,6 +33,7 @@ import e2ee, {
   base64ToArrayBuffer,
   exportPublicKey,
 } from './e2ee';
+import { sessionManager, type SecureMessage } from './sessionManager';
 
 interface E2EEState {
   // State
@@ -35,6 +43,7 @@ interface E2EEState {
   deviceId: string | null;
   fingerprint: string | null;
   prekeyCount: number;
+  useDoubleRatchet: boolean;  // Flag to enable Double Ratchet mode
   
   // Prekey bundle cache
   bundleCache: Map<string, { bundle: ServerPrekeyBundle; expiresAt: number }>;
@@ -43,14 +52,28 @@ interface E2EEState {
   initialize: () => Promise<void>;
   setupE2EE: () => Promise<void>;
   resetE2EE: () => Promise<void>;
+  
+  // Legacy encryption (X3DH only, for compatibility)
   encryptMessage: (recipientId: string, plaintext: string) => Promise<EncryptedMessage>;
   decryptMessage: (senderId: string, senderIdentityKey: string, encryptedMessage: EncryptedMessage) => Promise<string>;
+  
+  // Double Ratchet encryption (v0.9.0+)
+  encryptWithRatchet: (recipientId: string, plaintext: string) => Promise<SecureMessage>;
+  decryptWithRatchet: (message: SecureMessage, senderIdentityKey?: string) => Promise<string>;
+  hasRatchetSession: (recipientId: string) => boolean;
+  destroyRatchetSession: (recipientId: string) => Promise<void>;
+  getRatchetSessionStats: (recipientId: string) => ReturnType<typeof sessionManager.getSessionStats>;
+  
+  // Key management
   uploadMorePrekeys: (count?: number) => Promise<number>;
   getPrekeyCount: () => Promise<number>;
   getSafetyNumber: (userId: string) => Promise<string>;
   getDevices: () => Promise<Array<{ device_id: string; created_at: string }>>;
   revokeDevice: (deviceId: string) => Promise<void>;
   handleKeyRevoked: (userId: string, keyId: string) => void;
+  
+  // Settings
+  setUseDoubleRatchet: (enabled: boolean) => void;
   clearError: () => void;
 }
 
@@ -65,6 +88,7 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
   fingerprint: null,
   prekeyCount: 0,
   bundleCache: new Map(),
+  useDoubleRatchet: true, // Enable Double Ratchet by default in v0.9.0+
   
   /**
    * Initialize E2EE state from storage
@@ -83,6 +107,10 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
           const publicKey = await exportPublicKey(identityKey.keyPair.publicKey);
           fp = await fingerprint(publicKey);
         }
+        
+        // Initialize session manager for Double Ratchet
+        await sessionManager.initialize();
+        logger.log('Session manager initialized with Double Ratchet support');
       }
       
       set({
@@ -164,6 +192,9 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
       
       // Clear local keys
       clearE2EEData();
+      
+      // Clear all Double Ratchet sessions
+      await sessionManager.destroyAllSessions();
       
       set({
         isInitialized: false,
@@ -360,7 +391,104 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
     // Force next encryption to fetch fresh keys
     set({ bundleCache: new Map(bundleCache) });
     
-    logger.log(`Cleared prekey bundle cache for user ${userId} due to key revocation`);
+    // Also destroy their ratchet session to force re-establishment
+    sessionManager.destroySession(userId).catch(err => {
+      logger.error(`Failed to destroy ratchet session for ${userId}:`, err);
+    });
+    
+    logger.log(`Cleared prekey bundle cache and ratchet session for user ${userId} due to key revocation`);
+  },
+  
+  // ===========================================================================
+  // DOUBLE RATCHET METHODS (v0.9.0+)
+  // ===========================================================================
+  
+  /**
+   * Encrypt a message using Double Ratchet for forward secrecy.
+   * 
+   * This method establishes a ratchet session if one doesn't exist,
+   * then encrypts the message with the current ratchet state.
+   * Each message uses a unique key that is immediately discarded.
+   * 
+   * @param recipientId - The recipient's user ID
+   * @param plaintext - The message to encrypt
+   * @returns SecureMessage with ratchet header and ciphertext
+   */
+  encryptWithRatchet: async (recipientId: string, plaintext: string): Promise<SecureMessage> => {
+    const { isInitialized } = get();
+    
+    if (!isInitialized) {
+      throw new Error('E2EE not initialized');
+    }
+    
+    // Get recipient's prekey bundle if we don't have a session
+    let recipientBundle: ServerPrekeyBundle | undefined;
+    if (!sessionManager.hasSession(recipientId)) {
+      recipientBundle = await (get() as any).getRecipientBundle(recipientId);
+    }
+    
+    // Get our user ID from the API
+    const meResponse = await api.get('/api/v1/me');
+    const ourUserId = meResponse.data.data?.id || meResponse.data.id;
+    
+    // Encrypt with the session manager
+    return await sessionManager.encryptMessage(ourUserId, recipientId, plaintext, recipientBundle);
+  },
+  
+  /**
+   * Decrypt a message using Double Ratchet.
+   * 
+   * If this is an initial message, establishes the session from X3DH data.
+   * Otherwise, uses the existing ratchet session to decrypt.
+   * 
+   * @param message - The SecureMessage to decrypt
+   * @param senderIdentityKey - Base64-encoded sender identity key (required for initial messages)
+   * @returns The decrypted plaintext
+   */
+  decryptWithRatchet: async (message: SecureMessage, senderIdentityKey?: string): Promise<string> => {
+    const { isInitialized } = get();
+    
+    if (!isInitialized) {
+      throw new Error('E2EE not initialized');
+    }
+    
+    // Convert identity key if provided
+    const identityKeyBuffer = senderIdentityKey 
+      ? base64ToArrayBuffer(senderIdentityKey)
+      : undefined;
+    
+    return await sessionManager.decryptMessage(message, identityKeyBuffer);
+  },
+  
+  /**
+   * Check if we have an active ratchet session with a user.
+   */
+  hasRatchetSession: (recipientId: string): boolean => {
+    return sessionManager.hasSession(recipientId);
+  },
+  
+  /**
+   * Destroy a ratchet session (e.g., when conversation is deleted).
+   */
+  destroyRatchetSession: async (recipientId: string): Promise<void> => {
+    await sessionManager.destroySession(recipientId);
+  },
+  
+  /**
+   * Get statistics for a ratchet session.
+   * Useful for debugging and security audits.
+   */
+  getRatchetSessionStats: (recipientId: string) => {
+    return sessionManager.getSessionStats(recipientId);
+  },
+  
+  /**
+   * Enable or disable Double Ratchet mode.
+   * When disabled, falls back to X3DH-only encryption.
+   */
+  setUseDoubleRatchet: (enabled: boolean) => {
+    set({ useDoubleRatchet: enabled });
+    logger.log(`Double Ratchet mode ${enabled ? 'enabled' : 'disabled'}`);
   },
   
   /**

@@ -23,9 +23,9 @@ interface PremiumBadgeProps {
 }
 
 const TIER_COLORS = {
-  starter: ['#60A5FA', '#3B82F6'],
-  pro: ['#A78BFA', '#8B5CF6'],
-  ultimate: ['#FCD34D', '#F59E0B'],
+  starter: ['#60A5FA', '#3B82F6'] as const,
+  pro: ['#A78BFA', '#8B5CF6'] as const,
+  ultimate: ['#FCD34D', '#F59E0B'] as const,
 };
 
 const TIER_ICONS = {

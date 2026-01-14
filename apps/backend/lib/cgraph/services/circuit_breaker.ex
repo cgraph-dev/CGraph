@@ -1,4 +1,4 @@
-defmodule Cgraph.Services.CircuitBreaker do
+defmodule CGraph.Services.CircuitBreaker do
   @moduledoc """
   Production-grade circuit breaker for external service resilience.
 

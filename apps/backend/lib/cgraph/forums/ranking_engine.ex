@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.RankingEngine do
+defmodule CGraph.Forums.RankingEngine do
   @moduledoc """
   Advanced ranking engine for forum leaderboard competition.
 
@@ -19,8 +19,8 @@ defmodule Cgraph.Forums.RankingEngine do
 
   import Ecto.Query
 
-  alias Cgraph.Forums.{Forum, ForumVote}
-  alias Cgraph.Repo
+  alias CGraph.Forums.{Forum, ForumVote}
+  alias CGraph.Repo
 
   @doc """
   Recalculate all ranking scores for all forums.

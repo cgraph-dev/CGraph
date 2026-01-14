@@ -2,6 +2,12 @@
 // User & Auth Models
 // ============================================
 
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken?: string;
+  expiresAt: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -106,6 +112,16 @@ export interface Reaction {
   userId: string;
   user: UserBasic;
   createdAt: string;
+}
+
+/** Alias for Reaction for backwards compatibility */
+export type MessageReaction = Reaction;
+
+export interface TypingIndicator {
+  conversationId: string;
+  userId: string;
+  isTyping: boolean;
+  timestamp: string;
 }
 
 export interface ReadReceipt {
@@ -230,6 +246,100 @@ export interface ForumCategory {
   forumId: string;
   name: string;
   color: string;
+}
+
+/** Forum board (MyBB-style) - alias for Board */
+export interface ForumBoard {
+  id: string;
+  forumId: string;
+  parentId: string | null;
+  name: string;
+  slug: string;
+  description: string | null;
+  iconUrl: string | null;
+  position: number;
+  isLocked: boolean;
+  threadCount: number;
+  postCount: number;
+  lastPostAt: string | null;
+  lastPostTitle: string | null;
+  lastPostAuthor: UserBasic | null;
+  children: ForumBoard[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Forum thread */
+export interface ForumThread {
+  id: string;
+  boardId: string;
+  authorId: string;
+  author: UserBasic;
+  title: string;
+  slug: string;
+  content: string;
+  prefix?: ThreadPrefix;
+  isPinned: boolean;
+  isLocked: boolean;
+  isAnnouncement: boolean;
+  viewCount: number;
+  replyCount: number;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  lastReplyAt: string | null;
+  lastReplyBy: UserBasic | null;
+  poll?: ForumPoll;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Forum post (reply to thread) */
+export interface ForumPost {
+  id: string;
+  threadId: string;
+  authorId: string;
+  author: UserBasic;
+  content: string;
+  isFirstPost: boolean;
+  isEdited: boolean;
+  editCount: number;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Thread prefix tag */
+export interface ThreadPrefix {
+  id: string;
+  name: string;
+  color: string;
+  textColor?: string;
+}
+
+/** Forum poll */
+export interface ForumPoll {
+  id: string;
+  threadId: string;
+  question: string;
+  options: ForumPollOption[];
+  allowMultiple: boolean;
+  showResults: boolean;
+  expiresAt: string | null;
+  totalVotes: number;
+  hasVoted: boolean;
+  createdAt: string;
+}
+
+/** Forum poll option */
+export interface ForumPollOption {
+  id: string;
+  text: string;
+  votes: number;
+  percentage: number;
+  isSelected?: boolean;
 }
 
 export interface Post {

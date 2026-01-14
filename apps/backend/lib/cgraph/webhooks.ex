@@ -1,4 +1,4 @@
-defmodule Cgraph.Webhooks do
+defmodule CGraph.Webhooks do
   @moduledoc """
   Outbound webhook delivery system with retry logic and event subscriptions.
 
@@ -644,7 +644,7 @@ defmodule Cgraph.Webhooks do
 
     result = try do
       Finch.build(:post, endpoint.url, headers, payload_json)
-      |> Finch.request(Cgraph.Finch, receive_timeout: @default_timeout)
+      |> Finch.request(CGraph.Finch, receive_timeout: @default_timeout)
     rescue
       e -> {:error, Exception.message(e)}
     end

@@ -1,6 +1,6 @@
-defmodule CgraphWeb.Telemetry do
+defmodule CGraphWeb.Telemetry do
   @moduledoc """
-  Telemetry supervisor for CgraphWeb.
+  Telemetry supervisor for CGraphWeb.
 
   ## Overview
 
@@ -129,7 +129,7 @@ defmodule CgraphWeb.Telemetry do
       nil
     )
 
-    Logger.info("CgraphWeb.Telemetry handlers attached")
+    Logger.info("CGraphWeb.Telemetry handlers attached")
     :ok
   end
 
@@ -356,7 +356,7 @@ defmodule CgraphWeb.Telemetry do
 
   ## Examples
 
-      CgraphWeb.Telemetry.emit(:messaging, :message, :sent, %{latency_ms: 45}, %{channel_id: 1})
+      CGraphWeb.Telemetry.emit(:messaging, :message, :sent, %{latency_ms: 45}, %{channel_id: 1})
   """
   def emit(domain, resource, action, measurements, metadata \\ %{}) do
     :telemetry.execute(

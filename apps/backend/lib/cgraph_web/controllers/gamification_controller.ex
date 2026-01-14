@@ -1,4 +1,4 @@
-defmodule CgraphWeb.GamificationController do
+defmodule CGraphWeb.GamificationController do
   @moduledoc """
   Controller for gamification-related endpoints.
   Handles XP, levels, achievements, streaks, and user stats.
@@ -8,15 +8,15 @@ defmodule CgraphWeb.GamificationController do
   - All endpoints require authentication
   - Pagination parameters are validated and safely parsed
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
   import Ecto.Query, warn: false
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Gamification
-  alias Cgraph.Repo
+  alias CGraph.Gamification
+  alias CGraph.Repo
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_leaderboard_limit 100
 
@@ -72,7 +72,7 @@ defmodule CgraphWeb.GamificationController do
   def show_achievement(conn, %{"id" => achievement_id}) do
     user = conn.assigns.current_user
 
-    achievement = Cgraph.Repo.get!(Gamification.Achievement, achievement_id)
+    achievement = CGraph.Repo.get!(Gamification.Achievement, achievement_id)
     {:ok, user_achievement} = Gamification.get_or_create_user_achievement(user.id, achievement_id)
 
     conn
@@ -91,7 +91,7 @@ defmodule CgraphWeb.GamificationController do
 
     case Gamification.try_unlock_achievement(user.id, achievement_id) do
       {:ok, user_achievement} ->
-        achievement = Cgraph.Repo.get!(Gamification.Achievement, achievement_id)
+        achievement = CGraph.Repo.get!(Gamification.Achievement, achievement_id)
 
         conn
         |> put_status(:ok)
@@ -182,7 +182,7 @@ defmodule CgraphWeb.GamificationController do
     query_offset = parse_int(params["offset"], 0, min: 0)
 
     transactions =
-      from(t in Cgraph.Gamification.XpTransaction,
+      from(t in CGraph.Gamification.XpTransaction,
         where: t.user_id == ^user.id,
         order_by: [desc: t.inserted_at],
         limit: ^query_limit,

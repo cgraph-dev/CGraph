@@ -1,4 +1,4 @@
-defmodule Cgraph.Workers.CriticalAlertDispatcher do
+defmodule CGraph.Workers.CriticalAlertDispatcher do
   @moduledoc """
   Background worker for dispatching critical moderation alerts.
 
@@ -14,7 +14,7 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
 
   ## Usage
 
-      Cgraph.Workers.CriticalAlertDispatcher.enqueue(%{
+      CGraph.Workers.CriticalAlertDispatcher.enqueue(%{
         type: :critical_moderation_alert,
         priority: :critical,
         report_id: "uuid",
@@ -24,7 +24,7 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Workers.CriticalAlertDispatcher,
+      config :cgraph, CGraph.Workers.CriticalAlertDispatcher,
         email_recipients: ["oncall@example.com"],
         sms_enabled: false,
         webhook_url: nil
@@ -38,7 +38,7 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
 
   require Logger
 
-  alias Cgraph.{Accounts, Notifications}
+  alias CGraph.{Accounts, Notifications}
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: args}) do
@@ -85,7 +85,7 @@ defmodule Cgraph.Workers.CriticalAlertDispatcher do
           template: "critical_alert",
           priority: :high
         }
-        |> Cgraph.Workers.SendEmailNotification.new(priority: 0)
+        |> CGraph.Workers.SendEmailNotification.new(priority: 0)
         |> Oban.insert()
       end)
 

@@ -1,13 +1,13 @@
-defmodule Cgraph.Calendar.Event do
+defmodule CGraph.Calendar.Event do
   @moduledoc """
   Schema for calendar events.
   """
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Calendar.{EventCategory, EventRSVP}
-  alias Cgraph.Forums.Forum
+  alias CGraph.Accounts.User
+  alias CGraph.Calendar.{EventCategory, EventRSVP}
+  alias CGraph.Forums.Forum
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

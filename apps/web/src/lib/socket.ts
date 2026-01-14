@@ -109,10 +109,11 @@ class SocketManager {
     // Reconnect with fresh token from store
     await this.connect();
     
-    // Rejoin essential channels (user channel)
+    // Rejoin essential channels (user channel and presence lobby)
     const userId = useAuthStore.getState().user?.id;
     if (userId) {
       this.joinUserChannel(userId);
+      this.joinPresenceLobby();
     }
     
     logger.log(`Socket reconnected. Previous channels: ${channelTopics.length}`);
@@ -189,6 +190,126 @@ class SocketManager {
 
     this.channels.set(topic, channel);
     return channel;
+  }
+
+  /**
+   * Join the global presence lobby for friend online/offline status.
+   * 
+   * This channel receives:
+   * - presence_state: Initial list of online friends
+   * - friend_online: When a friend comes online
+   * - friend_offline: When a friend goes offline
+   * - status_update: When a friend changes their status (online/away/busy)
+   * 
+   * @returns Channel instance or null if unable to join
+   */
+  joinPresenceLobby(): Channel | null {
+    const topic = 'presence:lobby';
+
+    if (this.channels.has(topic)) {
+      return this.channels.get(topic)!;
+    }
+
+    if (!this.socket) {
+      logger.warn('Cannot join presence lobby: socket not connected');
+      return null;
+    }
+
+    const channel = this.socket.channel(topic, {});
+    const presence = new Presence(channel);
+
+    // Handle initial presence state
+    presence.onSync(() => {
+      const onlineFriends = new Set<string>();
+      presence.list((id: string) => {
+        onlineFriends.add(id);
+        return id;
+      });
+      
+      // Store in a global "lobby" key
+      this.onlineUsers.set('lobby', onlineFriends);
+      logger.log('Presence sync: online friends count =', onlineFriends.size);
+    });
+
+    // Handle friend coming online
+    channel.on('friend_online', (payload: unknown) => {
+      const data = payload as { user_id: string; status: string };
+      this.onlineUsers.get('lobby')?.add(data.user_id);
+      // Notify all status listeners
+      this.notifyStatusChange('lobby', data.user_id, true);
+      logger.log('Friend came online:', data.user_id);
+    });
+
+    // Handle friend going offline
+    channel.on('friend_offline', (payload: unknown) => {
+      const data = payload as { user_id: string; last_seen?: string };
+      this.onlineUsers.get('lobby')?.delete(data.user_id);
+      this.notifyStatusChange('lobby', data.user_id, false);
+      logger.log('Friend went offline:', data.user_id);
+    });
+
+    // Handle status updates (online -> away -> busy -> etc.)
+    channel.on('status_update', (payload: unknown) => {
+      const data = payload as { user_id: string; status: string };
+      logger.log('Friend status update:', data.user_id, '->', data.status);
+      // Status listeners can query the status via API if needed
+    });
+
+    channel
+      .join()
+      .receive('ok', () => {
+        logger.log('Joined presence lobby');
+        this.onlineUsers.set('lobby', new Set());
+      })
+      .receive('error', (resp: unknown) => {
+        logger.error('Failed to join presence lobby:', resp);
+        this.channels.delete(topic);
+      });
+
+    this.channels.set(topic, channel);
+    this.presences.set(topic, presence);
+    return channel;
+  }
+
+  /**
+   * Check if a friend is online (global presence check).
+   * 
+   * @param userId - Friend's user ID
+   * @returns true if friend is online in the presence lobby
+   */
+  isFriendOnline(userId: string): boolean {
+    const lobbyUsers = this.onlineUsers.get('lobby');
+    if (!lobbyUsers) return false;
+    
+    if (lobbyUsers.has(userId)) return true;
+    
+    // String comparison fallback
+    const userIdStr = String(userId);
+    for (const id of lobbyUsers) {
+      if (String(id) === userIdStr) return true;
+    }
+    
+    return false;
+  }
+
+  /**
+   * Get list of all online friends.
+   * 
+   * @returns Array of online friend user IDs
+   */
+  getOnlineFriends(): string[] {
+    return Array.from(this.onlineUsers.get('lobby') || []);
+  }
+
+  leavePresenceLobby() {
+    const topic = 'presence:lobby';
+    const channel = this.channels.get(topic);
+    if (channel) {
+      channel.leave();
+      this.channels.delete(topic);
+      this.presences.delete(topic);
+      this.onlineUsers.delete('lobby');
+    }
   }
 
   leaveUserChannel(userId: string) {

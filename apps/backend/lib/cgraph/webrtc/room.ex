@@ -1,4 +1,4 @@
-defmodule Cgraph.WebRTC.Room do
+defmodule CGraph.WebRTC.Room do
   @moduledoc """
   Represents a WebRTC call room.
 
@@ -29,7 +29,7 @@ defmodule Cgraph.WebRTC.Room do
     id: String.t(),
     type: :audio | :video | :screen_share,
     creator_id: String.t(),
-    participants: %{String.t() => Cgraph.WebRTC.Participant.t()},
+    participants: %{String.t() => CGraph.WebRTC.Participant.t()},
     state: :waiting | :active | :ended,
     max_participants: pos_integer(),
     group_id: String.t() | nil,

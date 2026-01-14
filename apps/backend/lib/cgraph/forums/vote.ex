@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Vote do
+defmodule CGraph.Forums.Vote do
   @moduledoc """
   Vote schema for posts and comments.
 
@@ -15,9 +15,9 @@ defmodule Cgraph.Forums.Vote do
   schema "votes" do
     field :value, :integer  # 1 or -1
 
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :post, Cgraph.Forums.Post
-    belongs_to :comment, Cgraph.Forums.Comment
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :post, CGraph.Forums.Post
+    belongs_to :comment, CGraph.Forums.Comment
 
     timestamps()
   end

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.Admin.ModerationController do
+defmodule CGraphWeb.API.Admin.ModerationController do
   @moduledoc """
   Admin API controller for content moderation.
 
@@ -15,12 +15,12 @@ defmodule CgraphWeb.API.Admin.ModerationController do
   - `GET /api/admin/stats` - Moderation statistics
   """
 
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Moderation
-  alias Cgraph.Moderation.{Appeal, Report}
+  alias CGraph.Moderation
+  alias CGraph.Moderation.{Appeal, Report}
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   plug :require_moderator
 
@@ -63,7 +63,7 @@ defmodule CgraphWeb.API.Admin.ModerationController do
   Get detailed information about a specific report.
   """
   def show_report(conn, %{"id" => id}) do
-    case Cgraph.Repo.get(Report, id) |> Cgraph.Repo.preload([:reporter, :review_actions]) do
+    case CGraph.Repo.get(Report, id) |> CGraph.Repo.preload([:reporter, :review_actions]) do
       nil ->
         conn
         |> put_status(:not_found)
@@ -126,7 +126,7 @@ defmodule CgraphWeb.API.Admin.ModerationController do
       {:error, %Ecto.Changeset{} = changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> put_view(json: CgraphWeb.ChangesetJSON)
+        |> put_view(json: CGraphWeb.ChangesetJSON)
         |> render(:error, changeset: changeset)
     end
   end

@@ -5,7 +5,7 @@
  */
 
 import { useCallback } from 'react';
-import { useGamificationStore } from './stores';
+import { useGamificationStore } from '../stores';
 
 /**
  * Hook to track and award XP for user actions

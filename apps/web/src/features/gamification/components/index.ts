@@ -10,4 +10,6 @@ export { default as LevelProgress } from '@/components/gamification/LevelProgres
 export { default as LevelUpModal } from '@/components/gamification/LevelUpModal';
 export { default as QuestPanel } from '@/components/gamification/QuestPanel';
 export { default as TitleBadge } from '@/components/gamification/TitleBadge';
-export { default as XPGainAnimation } from '@/components/gamification/XPGainAnimation';
+
+// TODO: Create when needed
+// export { default as XPGainAnimation } from '@/components/gamification/XPGainAnimation';

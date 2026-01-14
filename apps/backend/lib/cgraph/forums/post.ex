@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Post do
+defmodule CGraph.Forums.Post do
   @moduledoc """
   Forum post schema.
 
@@ -64,13 +64,13 @@ defmodule Cgraph.Forums.Post do
     field :flair_text, :string
     field :flair_color, :string
 
-    belongs_to :author, Cgraph.Accounts.User
-    belongs_to :forum, Cgraph.Forums.Forum
-    belongs_to :category, Cgraph.Forums.Category
+    belongs_to :author, CGraph.Accounts.User
+    belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :category, CGraph.Forums.Category
 
-    has_many :comments, Cgraph.Forums.Comment
-    has_many :votes, Cgraph.Forums.Vote
-    has_one :poll, Cgraph.Forums.Poll
+    has_many :comments, CGraph.Forums.Comment
+    has_many :votes, CGraph.Forums.Vote
+    has_one :poll, CGraph.Forums.Poll
 
     timestamps()
   end

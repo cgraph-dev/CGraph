@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.ReferralController do
+defmodule CGraphWeb.API.V1.ReferralController do
   @moduledoc """
   Controller for Referral system.
   Implements comprehensive referral tracking with rewards, leaderboards, and analytics.
@@ -16,14 +16,14 @@ defmodule CgraphWeb.API.V1.ReferralController do
   - Self-referral prevention
   - Fraud detection hooks
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Referrals
-  alias Cgraph.RateLimiter
+  alias CGraph.Referrals
+  alias CGraph.RateLimiter
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 

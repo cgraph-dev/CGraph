@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.UploadJSON do
+defmodule CGraphWeb.API.V1.UploadJSON do
   @moduledoc """
   JSON rendering for upload responses.
   """

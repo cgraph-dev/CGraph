@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.MessageJSON do
+defmodule CGraphWeb.API.V1.MessageJSON do
   @moduledoc """
   JSON rendering for message responses.
 
@@ -6,8 +6,8 @@ defmodule CgraphWeb.API.V1.MessageJSON do
   This module is also used by WebSocket channels for message serialization.
   """
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Messaging.Message
+  alias CGraph.Accounts.User
+  alias CGraph.Messaging.Message
 
   def index(%{messages: messages, meta: meta}) do
     %{

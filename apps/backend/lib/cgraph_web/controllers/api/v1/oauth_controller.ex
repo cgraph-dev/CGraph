@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.OAuthController do
+defmodule CGraphWeb.API.V1.OAuthController do
   @moduledoc """
   OAuth 2.0 authentication controller for external providers.
 
@@ -27,14 +27,14 @@ defmodule CgraphWeb.API.V1.OAuthController do
   Sets HTTP-only cookies for web clients to prevent XSS token theft.
   """
 
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
   require Logger
 
-  alias Cgraph.Crypto
-  alias Cgraph.OAuth
-  alias CgraphWeb.API.V1.AuthJSON
-  alias CgraphWeb.Plugs.CookieAuth
+  alias CGraph.Crypto
+  alias CGraph.OAuth
+  alias CGraphWeb.API.V1.AuthJSON
+  alias CGraphWeb.Plugs.CookieAuth
 
   @valid_providers ~w(google apple facebook tiktok)
 

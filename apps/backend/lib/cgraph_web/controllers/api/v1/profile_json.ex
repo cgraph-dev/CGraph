@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.ProfileJSON do
+defmodule CGraphWeb.API.V1.ProfileJSON do
   @moduledoc """
   JSON rendering for Profile endpoints.
   """

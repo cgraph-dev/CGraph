@@ -1,4 +1,4 @@
-defmodule Cgraph.Notifications.PushService.FcmClient do
+defmodule CGraph.Notifications.PushService.FcmClient do
   @moduledoc """
   Firebase Cloud Messaging (FCM) HTTP v1 API Client.
 
@@ -7,7 +7,7 @@ defmodule Cgraph.Notifications.PushService.FcmClient do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Notifications.PushService,
+      config :cgraph, CGraph.Notifications.PushService,
         fcm_project_id: "your-project-id",
         fcm_service_account_path: "/path/to/service-account.json",
         # or
@@ -316,7 +316,7 @@ defmodule Cgraph.Notifications.PushService.FcmClient do
   defp http_post(url, headers, body) do
     request = Finch.build(:post, url, headers, body)
 
-    case Finch.request(request, Cgraph.Finch, receive_timeout: @default_timeout) do
+    case Finch.request(request, CGraph.Finch, receive_timeout: @default_timeout) do
       {:ok, %Finch.Response{status: status, headers: headers, body: body}} ->
         {:ok, status, headers, body}
 
@@ -519,7 +519,7 @@ defmodule Cgraph.Notifications.PushService.FcmClient do
   # ============================================================================
 
   defp load_config do
-    config = Application.get_env(:cgraph, Cgraph.Notifications.PushService, [])
+    config = Application.get_env(:cgraph, CGraph.Notifications.PushService, [])
 
     %{
       project_id: Keyword.get(config, :fcm_project_id),

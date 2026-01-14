@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Plugs.CookieAuth do
+defmodule CGraphWeb.Plugs.CookieAuth do
   @moduledoc """
   Plug for extracting JWT authentication from HTTP-only cookies.
 

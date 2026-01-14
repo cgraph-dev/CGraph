@@ -1,4 +1,4 @@
-defmodule CgraphWeb.CallChannel do
+defmodule CGraphWeb.CallChannel do
   @moduledoc """
   Phoenix Channel for WebRTC call signaling.
 
@@ -74,11 +74,11 @@ defmodule CgraphWeb.CallChannel do
   ```
   """
 
-  use CgraphWeb, :channel
+  use CGraphWeb, :channel
   require Logger
 
-  alias Cgraph.WebRTC
-  alias Cgraph.WebRTC.Room
+  alias CGraph.WebRTC
+  alias CGraph.WebRTC.Room
 
   @impl true
   def join("call:" <> room_id, params, socket) do
@@ -91,7 +91,7 @@ defmodule CgraphWeb.CallChannel do
     case WebRTC.join_room(room_id, user_id, device: device, media: media) do
       {:ok, room} ->
         # Subscribe to room events
-        :ok = Phoenix.PubSub.subscribe(Cgraph.PubSub, "webrtc:room:#{room_id}")
+        :ok = Phoenix.PubSub.subscribe(CGraph.PubSub, "webrtc:room:#{room_id}")
 
         # Track presence
         send(self(), :after_join)

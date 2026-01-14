@@ -1,4 +1,4 @@
-defmodule CgraphWeb.GamificationJSON do
+defmodule CGraphWeb.GamificationJSON do
   @moduledoc """
   JSON rendering for gamification endpoints.
   """

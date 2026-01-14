@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Channels.SocketSecurity do
+defmodule CGraphWeb.Channels.SocketSecurity do
   @moduledoc """
   WebSocket security and rate limiting module.
 
@@ -48,9 +48,9 @@ defmodule CgraphWeb.Channels.SocketSecurity do
 
   In your socket module:
 
-      defmodule CgraphWeb.UserSocket do
+      defmodule CGraphWeb.UserSocket do
         use Phoenix.Socket
-        use CgraphWeb.Channels.SocketSecurity
+        use CGraphWeb.Channels.SocketSecurity
 
         # ...
       end
@@ -112,7 +112,7 @@ defmodule CgraphWeb.Channels.SocketSecurity do
   """
   defmacro __using__(_opts) do
     quote do
-      import CgraphWeb.Channels.SocketSecurity
+      import CGraphWeb.Channels.SocketSecurity
     end
   end
 

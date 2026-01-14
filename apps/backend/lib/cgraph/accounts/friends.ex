@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.Friends do
+defmodule CGraph.Accounts.Friends do
   @moduledoc """
   Context module for managing friendships.
 
@@ -7,9 +7,9 @@ defmodule Cgraph.Accounts.Friends do
 
   import Ecto.Query
 
-  alias Cgraph.Accounts.{Friendship, User}
-  alias Cgraph.Notifications
-  alias Cgraph.Repo
+  alias CGraph.Accounts.{Friendship, User}
+  alias CGraph.Notifications
+  alias CGraph.Repo
 
   # =============================================================================
   # Friend Requests

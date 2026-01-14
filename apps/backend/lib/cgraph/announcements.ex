@@ -1,13 +1,13 @@
-defmodule Cgraph.Announcements do
+defmodule CGraph.Announcements do
   @moduledoc """
   Context for Announcements system.
   Handles announcement retrieval, read tracking, and dismissal.
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
-  alias Cgraph.Forums.ForumAnnouncement
-  alias Cgraph.Announcements.AnnouncementDismissal
+  alias CGraph.Repo
+  alias CGraph.Forums.ForumAnnouncement
+  alias CGraph.Announcements.AnnouncementDismissal
 
   # ========================================
   # QUERIES

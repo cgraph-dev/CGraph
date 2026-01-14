@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.CoinTransaction do
+defmodule CGraph.Gamification.CoinTransaction do
   @moduledoc """
   Schema for tracking coin balance changes.
   """
@@ -11,7 +11,7 @@ defmodule Cgraph.Gamification.CoinTransaction do
   @types ~w(purchase reward daily_bonus achievement quest gift refund streak admin)
 
   schema "coin_transactions" do
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :user, CGraph.Accounts.User
 
     field :amount, :integer
     field :balance_after, :integer

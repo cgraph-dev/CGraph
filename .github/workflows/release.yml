@@ -213,9 +213,12 @@ jobs:
     steps:
       - name: Send Discord notification
         uses: sarisia/actions-status-discord@v1
-        if: ${{ secrets.DISCORD_WEBHOOK }}
+        # Only runs if DISCORD_WEBHOOK secret is configured
+        if: ${{ vars.DISCORD_NOTIFICATIONS_ENABLED == 'true' }}
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:
-          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+          webhook: ${{ env.DISCORD_WEBHOOK }}
           title: "🚀 CGraph v${{ needs.validate.outputs.version }} Released"
           description: |
             A new version of CGraph has been released!

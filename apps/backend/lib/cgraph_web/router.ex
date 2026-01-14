@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Router do
+defmodule CGraphWeb.Router do
   @moduledoc """
   Main router for CGraph API.
 
@@ -11,61 +11,61 @@ defmodule CgraphWeb.Router do
   - Security headers (HSTS, CSP, X-Frame-Options, etc.)
   - JWT authentication with token revocation support
   """
-  use CgraphWeb, :router
+  use CGraphWeb, :router
 
-  import CgraphWeb.UserAuth
+  import CGraphWeb.UserAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
     plug :fetch_live_flash
-    plug :put_root_layout, html: {CgraphWeb.Layouts, :root}
+    plug :put_root_layout, html: {CGraphWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug CgraphWeb.Plugs.SecurityHeaders, mode: :browser
+    plug CGraphWeb.Plugs.SecurityHeaders, mode: :browser
     plug :fetch_current_user
   end
 
   pipeline :api do
     plug :accepts, ["json"]
     # Security headers for API responses
-    plug CgraphWeb.Plugs.SecurityHeaders, mode: :api
+    plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
     # Enhanced rate limiter with sliding window algorithm
-    # See CgraphWeb.Plugs.RateLimiterV2 for tier documentation
-    plug CgraphWeb.Plugs.RateLimiterV2, tier: :standard
+    # See CGraphWeb.Plugs.RateLimiterV2 for tier documentation
+    plug CGraphWeb.Plugs.RateLimiterV2, tier: :standard
   end
 
   # Strict rate limiting for authentication endpoints (prevent brute force)
   pipeline :api_auth_strict do
     plug :accepts, ["json"]
-    plug CgraphWeb.Plugs.SecurityHeaders, mode: :api
-    plug CgraphWeb.Plugs.RateLimiterV2, tier: :strict
+    plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
+    plug CGraphWeb.Plugs.RateLimiterV2, tier: :strict
   end
 
   # Relaxed rate limiting for read-heavy endpoints
   pipeline :api_relaxed do
     plug :accepts, ["json"]
-    plug CgraphWeb.Plugs.SecurityHeaders, mode: :api
-    plug CgraphWeb.Plugs.RateLimiterV2, tier: :relaxed
+    plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
+    plug CGraphWeb.Plugs.RateLimiterV2, tier: :relaxed
   end
 
   pipeline :api_auth do
     # Check for JWT in HTTP-only cookies (XSS-safe) before checking Authorization header
-    plug CgraphWeb.Plugs.CookieAuth
-    plug CgraphWeb.Plugs.AuthPipeline
-    plug CgraphWeb.Plugs.CurrentUser
+    plug CGraphWeb.Plugs.CookieAuth
+    plug CGraphWeb.Plugs.AuthPipeline
+    plug CGraphWeb.Plugs.CurrentUser
   end
 
   # Admin-only routes (requires authentication + admin role)
   pipeline :api_admin do
-    plug CgraphWeb.Plugs.CookieAuth
-    plug CgraphWeb.Plugs.AuthPipeline
-    plug CgraphWeb.Plugs.CurrentUser
-    plug CgraphWeb.Plugs.RequireAdmin
+    plug CGraphWeb.Plugs.CookieAuth
+    plug CGraphWeb.Plugs.AuthPipeline
+    plug CGraphWeb.Plugs.CurrentUser
+    plug CGraphWeb.Plugs.RequireAdmin
   end
 
   # Health check endpoint (no auth required, relaxed rate limiting)
-  scope "/", CgraphWeb do
+  scope "/", CGraphWeb do
     pipe_through :api_relaxed
 
     get "/health", HealthController, :index
@@ -73,7 +73,7 @@ defmodule CgraphWeb.Router do
   end
 
   # Public API routes (authentication endpoints - strict rate limiting)
-  scope "/api/v1", CgraphWeb.API.V1 do
+  scope "/api/v1", CGraphWeb.API.V1 do
     pipe_through :api_auth_strict
 
     # Authentication - strict rate limiting to prevent brute force attacks
@@ -88,7 +88,7 @@ defmodule CgraphWeb.Router do
   end
 
   # OAuth Authentication Routes (public - strict rate limiting)
-  scope "/api/v1/auth/oauth", CgraphWeb.API.V1 do
+  scope "/api/v1/auth/oauth", CGraphWeb.API.V1 do
     pipe_through :api_auth_strict
 
     # Get available OAuth providers
@@ -104,7 +104,7 @@ defmodule CgraphWeb.Router do
   end
 
   # OAuth account linking (requires auth)
-  scope "/api/v1/auth/oauth", CgraphWeb.API.V1 do
+  scope "/api/v1/auth/oauth", CGraphWeb.API.V1 do
     pipe_through [:api, :api_auth]
 
     post "/:provider/link", OAuthController, :link
@@ -112,7 +112,7 @@ defmodule CgraphWeb.Router do
   end
 
   # Anonymous Wallet Authentication (CGraph-style) - strict rate limiting
-  scope "/api/v1/auth/wallet", CgraphWeb do
+  scope "/api/v1/auth/wallet", CGraphWeb do
     pipe_through :api_auth_strict
 
     post "/generate", WalletAuthController, :generate
@@ -124,7 +124,7 @@ defmodule CgraphWeb.Router do
   end
 
   # Wallet linking (requires auth)
-  scope "/api/v1/auth/wallet", CgraphWeb do
+  scope "/api/v1/auth/wallet", CGraphWeb do
     pipe_through [:api, :api_auth]
 
     post "/link", WalletAuthController, :link_wallet
@@ -133,7 +133,7 @@ defmodule CgraphWeb.Router do
   end
 
   # Public API routes (no auth required, allows anonymous browsing)
-  scope "/api/v1", CgraphWeb.API.V1 do
+  scope "/api/v1", CGraphWeb.API.V1 do
     pipe_through :api_relaxed
 
     # Public forum browsing - forums are public by default
@@ -152,7 +152,7 @@ defmodule CgraphWeb.Router do
   end
 
   # Telemetry endpoints (relaxed rate limiting, minimal auth)
-  scope "/api/v1/telemetry", CgraphWeb.API.V1 do
+  scope "/api/v1/telemetry", CGraphWeb.API.V1 do
     pipe_through :api_relaxed
 
     # Error reporting from clients (unauthenticated allowed for error tracking)
@@ -161,7 +161,7 @@ defmodule CgraphWeb.Router do
   end
 
   # Authenticated API routes
-  scope "/api/v1", CgraphWeb.API.V1 do
+  scope "/api/v1", CGraphWeb.API.V1 do
     pipe_through [:api, :api_auth]
 
     # Authentication - logout and email verification require auth
@@ -430,7 +430,7 @@ defmodule CgraphWeb.Router do
   end
 
   # Gamification API routes (authenticated)
-  scope "/api/v1", CgraphWeb do
+  scope "/api/v1", CGraphWeb do
     pipe_through [:api, :api_auth]
 
     # User gamification stats
@@ -487,7 +487,7 @@ defmodule CgraphWeb.Router do
   end
 
   # Admin Dashboard API routes (requires admin role)
-  scope "/api/v1/admin", CgraphWeb.API.V1 do
+  scope "/api/v1/admin", CGraphWeb.API.V1 do
     pipe_through [:api, :api_admin]
 
     # System metrics and real-time stats
@@ -522,7 +522,7 @@ defmodule CgraphWeb.Router do
   end
 
   # Admin/Moderator API routes
-  scope "/api/admin", CgraphWeb.API.Admin do
+  scope "/api/admin", CGraphWeb.API.Admin do
     pipe_through [:api, :api_auth]
 
     # Moderation queue
@@ -545,7 +545,7 @@ defmodule CgraphWeb.Router do
     scope "/" do
       pipe_through :browser
 
-      live_dashboard "/dashboard", metrics: CgraphWeb.Telemetry
+      live_dashboard "/dashboard", metrics: CGraphWeb.Telemetry
     end
   end
 

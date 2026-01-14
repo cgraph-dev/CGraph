@@ -13,4 +13,10 @@ export { default as MorphingInputButton } from '@/components/chat/MorphingInputB
 export { default as TypingIndicator } from '@/components/conversation/TypingIndicator';
 export { default as MessageActionsMenu } from '@/components/conversation/MessageActionsMenu';
 export { default as AttachmentPicker } from '@/components/conversation/AttachmentPicker';
-export { default as VoiceMessageRecorder } from '@/components/conversation/VoiceMessageRecorder';
+export { default as AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
+export { default as AnimatedReactionBubble } from '@/components/conversation/AnimatedReactionBubble';
+export { default as MessageInput } from '@/components/conversation/MessageInput';
+export { default as EmptyConversation } from '@/components/conversation/EmptyConversation';
+
+// TODO: Create when needed
+// export { default as VoiceMessageRecorder } from '@/components/conversation/VoiceMessageRecorder';

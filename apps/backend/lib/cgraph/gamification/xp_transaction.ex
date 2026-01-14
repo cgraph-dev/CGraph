@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.XpTransaction do
+defmodule CGraph.Gamification.XpTransaction do
   @moduledoc """
   Schema for tracking XP gains and level-ups.
   """
@@ -11,7 +11,7 @@ defmodule Cgraph.Gamification.XpTransaction do
   @sources ~w(message post comment achievement quest daily_login streak forum_join vote received_vote profile_complete friend_added admin)
 
   schema "xp_transactions" do
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :user, CGraph.Accounts.User
 
     field :amount, :integer
     field :total_after, :integer

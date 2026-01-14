@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.ChannelCategory do
+defmodule CGraph.Groups.ChannelCategory do
   @moduledoc """
   Channel categories to organize channels within a group.
   """
@@ -14,8 +14,8 @@ defmodule Cgraph.Groups.ChannelCategory do
     field :position, :integer, default: 0
     field :is_collapsed, :boolean, default: false
 
-    belongs_to :group, Cgraph.Groups.Group
-    has_many :channels, Cgraph.Groups.Channel, foreign_key: :category_id
+    belongs_to :group, CGraph.Groups.Group
+    has_many :channels, CGraph.Groups.Channel, foreign_key: :category_id
 
     timestamps()
   end

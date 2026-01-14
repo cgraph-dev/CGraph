@@ -1,4 +1,4 @@
-defmodule CgraphWeb.ShopController do
+defmodule CGraphWeb.ShopController do
   @moduledoc """
   Controller for coin shop and purchases.
 
@@ -8,13 +8,13 @@ defmodule CgraphWeb.ShopController do
   - Quantity is validated (1-100) and safely parsed
   - Race conditions in coin spending are handled by optimistic locking
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Gamification
+  alias CGraph.Gamification
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_purchase_quantity 100
 

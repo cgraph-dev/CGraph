@@ -92,7 +92,7 @@ export const UsernameChangeScreen: React.FC<Props> = ({
         const response = await fetch(
           `/api/users/check-username?username=${encodeURIComponent(debouncedUsername)}`
         );
-        const data = await response.json();
+        const data = await response.json() as { available: boolean; reason?: string };
         setIsAvailable(data.available);
         setAvailabilityMessage(
           data.available ? 'Username is available!' : data.reason || 'Username is not available'
@@ -119,7 +119,7 @@ export const UsernameChangeScreen: React.FC<Props> = ({
     setLoadingHistory(true);
     try {
       const response = await fetch('/api/users/me/username-history');
-      const data = await response.json();
+      const data = await response.json() as { history?: UsernameHistory[] };
       setHistory(data.history || []);
     } catch {
       console.error('Failed to load username history');
@@ -144,7 +144,7 @@ export const UsernameChangeScreen: React.FC<Props> = ({
       });
       
       if (!response.ok) {
-        const data = await response.json();
+        const data = await response.json() as { message?: string };
         throw new Error(data.message || 'Failed to change username');
       }
       

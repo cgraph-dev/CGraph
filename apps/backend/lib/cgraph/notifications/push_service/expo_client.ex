@@ -1,4 +1,4 @@
-defmodule Cgraph.Notifications.PushService.ExpoClient do
+defmodule CGraph.Notifications.PushService.ExpoClient do
   @moduledoc """
   Expo Push Notification Service Client.
 
@@ -7,7 +7,7 @@ defmodule Cgraph.Notifications.PushService.ExpoClient do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Notifications.PushService,
+      config :cgraph, CGraph.Notifications.PushService,
         expo_access_token: System.get_env("EXPO_ACCESS_TOKEN")
 
   ## Features
@@ -236,7 +236,7 @@ defmodule Cgraph.Notifications.PushService.ExpoClient do
   # ============================================================================
 
   defp build_headers do
-    config = Application.get_env(:cgraph, Cgraph.Notifications.PushService, [])
+    config = Application.get_env(:cgraph, CGraph.Notifications.PushService, [])
     access_token = Keyword.get(config, :expo_access_token)
 
     headers = [
@@ -255,7 +255,7 @@ defmodule Cgraph.Notifications.PushService.ExpoClient do
   defp http_post(url, headers, body) do
     request = Finch.build(:post, url, headers, body)
 
-    case Finch.request(request, Cgraph.Finch, receive_timeout: @default_timeout) do
+    case Finch.request(request, CGraph.Finch, receive_timeout: @default_timeout) do
       {:ok, %Finch.Response{status: status, headers: resp_headers, body: resp_body}} ->
         # Handle gzip compression
         body = maybe_decompress(resp_body, resp_headers)
@@ -296,7 +296,7 @@ defmodule Cgraph.Notifications.PushService.ExpoClient do
   defp parse_error_details(_), do: :unknown_error
 end
 
-defmodule Cgraph.Notifications.PushService.WebPushClient do
+defmodule CGraph.Notifications.PushService.WebPushClient do
   @moduledoc """
   Web Push API Client.
 
@@ -305,7 +305,7 @@ defmodule Cgraph.Notifications.PushService.WebPushClient do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Notifications.PushService,
+      config :cgraph, CGraph.Notifications.PushService,
         vapid_subject: "mailto:admin@cgraph.app",
         vapid_public_key: "BN...",
         vapid_private_key: "..."
@@ -383,7 +383,7 @@ defmodule Cgraph.Notifications.PushService.WebPushClient do
   """
   @spec get_public_key() :: String.t() | nil
   def get_public_key do
-    config = Application.get_env(:cgraph, Cgraph.Notifications.PushService, [])
+    config = Application.get_env(:cgraph, CGraph.Notifications.PushService, [])
     Keyword.get(config, :vapid_public_key)
   end
 
@@ -581,7 +581,7 @@ defmodule Cgraph.Notifications.PushService.WebPushClient do
   # ============================================================================
 
   defp load_config do
-    config = Application.get_env(:cgraph, Cgraph.Notifications.PushService, [])
+    config = Application.get_env(:cgraph, CGraph.Notifications.PushService, [])
 
     %{
       vapid_subject: Keyword.get(config, :vapid_subject, "mailto:admin@cgraph.app"),
@@ -593,7 +593,7 @@ defmodule Cgraph.Notifications.PushService.WebPushClient do
   defp http_post(url, headers, body) do
     request = Finch.build(:post, url, headers, body)
 
-    case Finch.request(request, Cgraph.Finch, receive_timeout: @default_timeout) do
+    case Finch.request(request, CGraph.Finch, receive_timeout: @default_timeout) do
       {:ok, %Finch.Response{status: status, headers: headers, body: body}} ->
         {:ok, status, headers, body}
 

@@ -1,4 +1,4 @@
-defmodule Cgraph.Search.Indexer do
+defmodule CGraph.Search.Indexer do
   @moduledoc """
   Background indexer for keeping search index synchronized.
 
@@ -36,7 +36,7 @@ defmodule Cgraph.Search.Indexer do
       Indexer.index_sync(:users, user)
   """
 
-  alias Cgraph.Search.Engine
+  alias CGraph.Search.Engine
 
   require Logger
 
@@ -54,7 +54,7 @@ defmodule Cgraph.Search.Indexer do
       "index" => to_string(index_name),
       "document" => prepare_document(index_name, document)
     }
-    |> Cgraph.Workers.SearchIndexWorker.new()
+    |> CGraph.Workers.SearchIndexWorker.new()
     |> Oban.insert()
   end
 
@@ -69,7 +69,7 @@ defmodule Cgraph.Search.Indexer do
       "index" => to_string(index_name),
       "documents" => prepared
     }
-    |> Cgraph.Workers.SearchIndexWorker.new()
+    |> CGraph.Workers.SearchIndexWorker.new()
     |> Oban.insert()
   end
 
@@ -82,7 +82,7 @@ defmodule Cgraph.Search.Indexer do
       "index" => to_string(index_name),
       "document_id" => to_string(document_id)
     }
-    |> Cgraph.Workers.SearchIndexWorker.new()
+    |> CGraph.Workers.SearchIndexWorker.new()
     |> Oban.insert()
   end
 
@@ -135,10 +135,10 @@ defmodule Cgraph.Search.Indexer do
   defp reindex_users(batch_size) do
     import Ecto.Query
 
-    Cgraph.Repo.transaction(fn ->
-      Cgraph.Accounts.User
+    CGraph.Repo.transaction(fn ->
+      CGraph.Accounts.User
       |> where([u], is_nil(u.deleted_at))
-      |> Cgraph.Repo.stream(max_rows: batch_size)
+      |> CGraph.Repo.stream(max_rows: batch_size)
       |> Stream.chunk_every(batch_size)
       |> Stream.each(fn batch ->
         documents = Enum.map(batch, &prepare_document(:users, &1))
@@ -155,12 +155,12 @@ defmodule Cgraph.Search.Indexer do
   defp reindex_posts(batch_size) do
     import Ecto.Query
 
-    Cgraph.Repo.transaction(fn ->
-      Cgraph.Forums.Post
-      |> Cgraph.Repo.stream(max_rows: batch_size)
+    CGraph.Repo.transaction(fn ->
+      CGraph.Forums.Post
+      |> CGraph.Repo.stream(max_rows: batch_size)
       |> Stream.chunk_every(batch_size)
       |> Stream.each(fn batch ->
-        batch = Cgraph.Repo.preload(batch, :user)
+        batch = CGraph.Repo.preload(batch, :user)
         documents = Enum.map(batch, &prepare_document(:posts, &1))
         Engine.bulk_index(:posts, documents)
         Process.sleep(100)
@@ -175,10 +175,10 @@ defmodule Cgraph.Search.Indexer do
   defp reindex_groups(batch_size) do
     import Ecto.Query
 
-    Cgraph.Repo.transaction(fn ->
-      Cgraph.Groups.Group
+    CGraph.Repo.transaction(fn ->
+      CGraph.Groups.Group
       |> where([g], g.is_public == true)
-      |> Cgraph.Repo.stream(max_rows: batch_size)
+      |> CGraph.Repo.stream(max_rows: batch_size)
       |> Stream.chunk_every(batch_size)
       |> Stream.each(fn batch ->
         documents = Enum.map(batch, &prepare_document(:groups, &1))
@@ -197,10 +197,10 @@ defmodule Cgraph.Search.Indexer do
 
     # Messages require careful handling due to E2EE
     # Only index metadata, not content
-    Cgraph.Repo.transaction(fn ->
-      Cgraph.Messaging.Message
+    CGraph.Repo.transaction(fn ->
+      CGraph.Messaging.Message
       |> where([m], is_nil(m.deleted_at))
-      |> Cgraph.Repo.stream(max_rows: batch_size)
+      |> CGraph.Repo.stream(max_rows: batch_size)
       |> Stream.chunk_every(batch_size)
       |> Stream.each(fn batch ->
         # Only index non-encrypted messages

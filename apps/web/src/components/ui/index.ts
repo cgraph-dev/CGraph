@@ -39,3 +39,27 @@ export {
 } from './EmptyState';
 export { default as ToastContainer, toast, useToastStore } from './Toast';
 export { default as Tooltip } from './Tooltip';
+
+// Form components
+export { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogDescription, 
+  DialogFooter 
+} from './dialog';
+export { Input } from './input';
+export { Label } from './label';
+export { Alert, AlertDescription, AlertTitle } from './alert';
+export { Popover, PopoverTrigger, PopoverContent } from './popover';
+export { 
+  Select, 
+  SelectTrigger, 
+  SelectValue, 
+  SelectContent, 
+  SelectItem 
+} from './select';
+export { Switch } from './switch';
+export { Separator } from './separator';
+export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';

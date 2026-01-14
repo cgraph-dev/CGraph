@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.ProfileController do
+defmodule CGraphWeb.API.V1.ProfileController do
   @moduledoc """
   Controller for User Profile management.
   Implements MyBB-style profile with signature, bio, reputation, and activity.
@@ -11,13 +11,13 @@ defmodule CgraphWeb.API.V1.ProfileController do
   - Reputation system
   - Activity feed
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Accounts
-  alias Cgraph.Forums
-  alias Cgraph.Reputation
+  alias CGraph.Accounts
+  alias CGraph.Forums
+  alias CGraph.Reputation
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 

@@ -1,6 +1,6 @@
-defmodule Cgraph.Jobs do
+defmodule CGraph.Jobs do
   @moduledoc """
-  Cgraph.Jobs - Comprehensive Background Job Abstraction Layer
+  CGraph.Jobs - Comprehensive Background Job Abstraction Layer
 
   ## Overview
 
@@ -12,7 +12,7 @@ defmodule Cgraph.Jobs do
 
   ```
   ┌─────────────────────────────────────────────────────────────────┐
-  │                        Cgraph.Jobs                              │
+  │                        CGraph.Jobs                              │
   ├─────────────────────────────────────────────────────────────────┤
   │  Job Scheduling    │  Workflow Engine  │  Job Observability    │
   │  ────────────────  │  ────────────────  │  ─────────────────    │
@@ -47,18 +47,18 @@ defmodule Cgraph.Jobs do
   ### Simple Job Enqueueing
 
       # Immediate execution
-      Cgraph.Jobs.enqueue(MyWorker, %{user_id: 123})
+      CGraph.Jobs.enqueue(MyWorker, %{user_id: 123})
 
       # Delayed execution
-      Cgraph.Jobs.enqueue(MyWorker, %{user_id: 123}, delay: :timer.minutes(5))
+      CGraph.Jobs.enqueue(MyWorker, %{user_id: 123}, delay: :timer.minutes(5))
 
       # Scheduled execution
-      Cgraph.Jobs.enqueue(MyWorker, %{user_id: 123}, scheduled_at: ~U[2024-01-15 10:00:00Z])
+      CGraph.Jobs.enqueue(MyWorker, %{user_id: 123}, scheduled_at: ~U[2024-01-15 10:00:00Z])
 
   ### Workflow Orchestration
 
       # Define a workflow
-      workflow = %Cgraph.Jobs.Workflow{
+      workflow = %CGraph.Jobs.Workflow{
         name: "user_onboarding",
         steps: [
           %{worker: CreateAccountWorker, args: %{email: "user@example.com"}},
@@ -68,37 +68,37 @@ defmodule Cgraph.Jobs do
         ]
       }
 
-      {:ok, workflow_id} = Cgraph.Jobs.start_workflow(workflow)
+      {:ok, workflow_id} = CGraph.Jobs.start_workflow(workflow)
 
   ### Progress Tracking
 
       # In your worker
       def perform(%Oban.Job{id: job_id, args: args}) do
-        Cgraph.Jobs.update_progress(job_id, 0, "Starting...")
+        CGraph.Jobs.update_progress(job_id, 0, "Starting...")
 
         Enum.each(1..100, fn i ->
           do_work(i)
-          Cgraph.Jobs.update_progress(job_id, i, "Processing item \#{i}")
+          CGraph.Jobs.update_progress(job_id, i, "Processing item \#{i}")
         end)
 
-        Cgraph.Jobs.update_progress(job_id, 100, "Complete")
+        CGraph.Jobs.update_progress(job_id, 100, "Complete")
         :ok
       end
 
   ## Job Naming Convention
 
-  All workers should follow the naming pattern: `Cgraph.Workers.<Domain>.<Action>Worker`
+  All workers should follow the naming pattern: `CGraph.Workers.<Domain>.<Action>Worker`
 
   Examples:
-  - `Cgraph.Workers.Users.SendWelcomeEmailWorker`
-  - `Cgraph.Workers.Notifications.PushNotificationWorker`
-  - `Cgraph.Workers.Analytics.AggregateMetricsWorker`
+  - `CGraph.Workers.Users.SendWelcomeEmailWorker`
+  - `CGraph.Workers.Notifications.PushNotificationWorker`
+  - `CGraph.Workers.Analytics.AggregateMetricsWorker`
 
   ## Configuration
 
   Configure in `config/config.exs`:
 
-      config :cgraph, Cgraph.Jobs,
+      config :cgraph, CGraph.Jobs,
         progress_ttl: :timer.hours(24),
         workflow_ttl: :timer.hours(72),
         max_workflow_steps: 100,
@@ -115,7 +115,7 @@ defmodule Cgraph.Jobs do
   use GenServer
   require Logger
 
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
   # ---------------------------------------------------------------------------
   # Type Definitions
@@ -208,10 +208,10 @@ defmodule Cgraph.Jobs do
 
   ## Examples
 
-      iex> Cgraph.Jobs.enqueue(MyWorker, %{user_id: 123})
+      iex> CGraph.Jobs.enqueue(MyWorker, %{user_id: 123})
       {:ok, %Oban.Job{id: 1}}
 
-      iex> Cgraph.Jobs.enqueue(MyWorker, %{user_id: 123}, delay: 5000)
+      iex> CGraph.Jobs.enqueue(MyWorker, %{user_id: 123}, delay: 5000)
       {:ok, %Oban.Job{id: 2}}
   """
   @spec enqueue(worker(), job_args(), job_options()) :: {:ok, Oban.Job.t()} | {:error, term()}
@@ -230,10 +230,10 @@ defmodule Cgraph.Jobs do
 
   ## Examples
 
-      iex> Cgraph.Jobs.enqueue_and_wait(MyWorker, %{user_id: 123})
+      iex> CGraph.Jobs.enqueue_and_wait(MyWorker, %{user_id: 123})
       {:ok, result}
 
-      iex> Cgraph.Jobs.enqueue_and_wait(MyWorker, %{user_id: 123}, timeout: 60_000)
+      iex> CGraph.Jobs.enqueue_and_wait(MyWorker, %{user_id: 123}, timeout: 60_000)
       {:ok, result}
   """
   @spec enqueue_and_wait(worker(), job_args(), keyword()) :: {:ok, term()} | {:error, term()}
@@ -260,7 +260,7 @@ defmodule Cgraph.Jobs do
         {MyWorker, %{user_id: 3}}
       ]
 
-      {:ok, inserted_jobs} = Cgraph.Jobs.enqueue_many(jobs)
+      {:ok, inserted_jobs} = CGraph.Jobs.enqueue_many(jobs)
   """
   @spec enqueue_many([{worker(), job_args()} | {worker(), job_args(), job_options()}]) ::
           {:ok, [Oban.Job.t()]} | {:error, term()}
@@ -281,10 +281,10 @@ defmodule Cgraph.Jobs do
   ## Examples
 
       # Every hour
-      Cgraph.Jobs.schedule_recurring(:hourly_cleanup, CleanupWorker, %{}, "0 * * * *")
+      CGraph.Jobs.schedule_recurring(:hourly_cleanup, CleanupWorker, %{}, "0 * * * *")
 
       # Every day at midnight
-      Cgraph.Jobs.schedule_recurring(:daily_report, ReportWorker, %{}, "0 0 * * *")
+      CGraph.Jobs.schedule_recurring(:daily_report, ReportWorker, %{}, "0 0 * * *")
   """
   @spec schedule_recurring(atom(), worker(), job_args(), String.t()) :: :ok | {:error, term()}
   def schedule_recurring(name, worker, args, cron_expression) do
@@ -321,7 +321,7 @@ defmodule Cgraph.Jobs do
         context: %{source: "signup_page"}
       }
 
-      {:ok, workflow_id} = Cgraph.Jobs.start_workflow(workflow)
+      {:ok, workflow_id} = CGraph.Jobs.start_workflow(workflow)
   """
   @spec start_workflow(workflow()) :: {:ok, workflow_id()} | {:error, term()}
   def start_workflow(workflow) do
@@ -375,13 +375,13 @@ defmodule Cgraph.Jobs do
   ## Examples
 
       def perform(%Oban.Job{id: job_id}) do
-        Cgraph.Jobs.update_progress(job_id, 0, "Starting...")
+        CGraph.Jobs.update_progress(job_id, 0, "Starting...")
 
         # Do work...
-        Cgraph.Jobs.update_progress(job_id, 50, "Halfway done")
+        CGraph.Jobs.update_progress(job_id, 50, "Halfway done")
 
         # More work...
-        Cgraph.Jobs.update_progress(job_id, 100, "Complete!")
+        CGraph.Jobs.update_progress(job_id, 100, "Complete!")
         :ok
       end
   """
@@ -398,7 +398,7 @@ defmodule Cgraph.Jobs do
 
     if get_config(:broadcast_progress) do
       Phoenix.PubSub.broadcast(
-        Cgraph.PubSub,
+        CGraph.PubSub,
         "job_progress:#{job_id}",
         {:job_progress, progress}
       )
@@ -426,7 +426,7 @@ defmodule Cgraph.Jobs do
   """
   @spec subscribe_to_progress(job_id()) :: :ok
   def subscribe_to_progress(job_id) do
-    Phoenix.PubSub.subscribe(Cgraph.PubSub, "job_progress:#{job_id}")
+    Phoenix.PubSub.subscribe(CGraph.PubSub, "job_progress:#{job_id}")
   end
 
   # ---------------------------------------------------------------------------

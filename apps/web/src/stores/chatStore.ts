@@ -78,7 +78,7 @@ export interface TypingUserInfo {
   startedAt?: string;
 }
 
-interface ChatState {
+export interface ChatState {
   conversations: Conversation[];
   activeConversationId: string | null;
   messages: Record<string, Message[]>;

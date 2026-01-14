@@ -28,22 +28,6 @@ const config = {
   },
 
   plugins: [
-    // TypeDoc plugin for auto-generated API docs from TypeScript
-    [
-      'docusaurus-plugin-typedoc',
-      {
-        entryPoints: [
-          '../apps/web/src/lib/webrtc/index.ts',
-          '../apps/web/src/lib/api.ts',
-          '../apps/web/src/stores/authStore.ts',
-          '../apps/web/src/features/auth/hooks/index.ts',
-          '../apps/web/src/features/premium/hooks/index.ts',
-          '../apps/web/src/features/groups/hooks/index.ts',
-        ],
-        tsconfig: '../apps/web/tsconfig.json',
-        out: 'api-reference',
-      },
-    ],
     // OpenAPI plugin for REST API docs
     [
       'docusaurus-plugin-openapi-docs',

@@ -1,17 +1,17 @@
-defmodule CgraphWeb.API.V1.SearchController do
+defmodule CGraphWeb.API.V1.SearchController do
   @moduledoc """
   Handles search across the platform.
   Supports searching users, messages, posts, and groups.
   """
-  use CgraphWeb, :controller
-  import CgraphWeb.Helpers.ParamParser
+  use CGraphWeb, :controller
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Accounts
-  alias Cgraph.Forums
-  alias Cgraph.Groups
-  alias Cgraph.Messaging
+  alias CGraph.Accounts
+  alias CGraph.Forums
+  alias CGraph.Groups
+  alias CGraph.Messaging
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_limit 50
   @max_per_page 50

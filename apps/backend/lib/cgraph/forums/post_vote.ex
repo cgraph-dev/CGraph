@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.PostVote do
+defmodule CGraph.Forums.PostVote do
   @moduledoc """
   Vote schema for thread post voting.
 
@@ -15,8 +15,8 @@ defmodule Cgraph.Forums.PostVote do
   schema "post_votes" do
     field :value, :integer
 
-    belongs_to :post, Cgraph.Forums.ThreadPost
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :post, CGraph.Forums.ThreadPost
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps()
   end

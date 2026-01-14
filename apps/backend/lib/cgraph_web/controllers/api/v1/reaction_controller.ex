@@ -1,16 +1,16 @@
-defmodule CgraphWeb.API.V1.ReactionController do
+defmodule CGraphWeb.API.V1.ReactionController do
   @moduledoc """
   Handles message reactions.
   Users can add emoji reactions to messages in conversations and channels.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Groups
-  alias Cgraph.Messaging
+  alias CGraph.Groups
+  alias CGraph.Messaging
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_limit 100
 

@@ -1,11 +1,11 @@
-defmodule Cgraph.Calendar.EventCategory do
+defmodule CGraph.Calendar.EventCategory do
   @moduledoc """
   Schema for event categories.
   """
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Cgraph.Calendar.Event
+  alias CGraph.Calendar.Event
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

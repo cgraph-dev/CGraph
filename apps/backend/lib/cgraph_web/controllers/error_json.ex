@@ -1,4 +1,4 @@
-defmodule CgraphWeb.ErrorJSON do
+defmodule CGraphWeb.ErrorJSON do
   @moduledoc """
   JSON error views for API responses.
   """

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Plugs.RequestId do
+defmodule CGraphWeb.Plugs.RequestId do
   @moduledoc """
   Plug to ensure every request has a unique, traceable request ID.
 
@@ -34,7 +34,7 @@ defmodule CgraphWeb.Plugs.RequestId do
   Add to your endpoint:
 
   ```elixir
-  plug CgraphWeb.Plugs.RequestId
+  plug CGraphWeb.Plugs.RequestId
   ```
 
   Access in controllers:
@@ -119,7 +119,7 @@ defmodule CgraphWeb.Plugs.RequestId do
   end
 end
 
-defmodule CgraphWeb.Plugs.RequestLogger do
+defmodule CGraphWeb.Plugs.RequestLogger do
   @moduledoc """
   Structured request/response logging with performance metrics.
 
@@ -260,7 +260,7 @@ defmodule CgraphWeb.Plugs.RequestLogger do
   defp sanitize_value(value), do: value
 end
 
-defmodule CgraphWeb.Plugs.HealthCheck do
+defmodule CGraphWeb.Plugs.HealthCheck do
   @moduledoc """
   Health check endpoints for load balancers and orchestrators.
 
@@ -335,7 +335,7 @@ defmodule CgraphWeb.Plugs.HealthCheck do
   end
 
   defp check_database do
-    case SQL.query(Cgraph.Repo, "SELECT 1", []) do
+    case SQL.query(CGraph.Repo, "SELECT 1", []) do
       {:ok, _} -> :ok
       {:error, _} -> :error
     end

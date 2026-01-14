@@ -1,4 +1,4 @@
-defmodule CgraphWeb.ShopJSON do
+defmodule CGraphWeb.ShopJSON do
   @moduledoc """
   JSON rendering for shop endpoints.
   """

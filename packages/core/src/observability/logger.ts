@@ -237,11 +237,26 @@ export function createLogger(config: Partial<LoggerConfig> = {}): Logger {
 // Default Logger
 // =============================================================================
 
+// Helper to safely check NODE_ENV across environments
+const getEnvMode = (): string | undefined => {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return typeof (globalThis as any).process !== 'undefined' 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ? (globalThis as any).process.env?.NODE_ENV 
+      : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const isProduction = getEnvMode() === 'production';
+
 export const logger = createLogger({
   service: 'cgraph',
-  level: typeof process !== 'undefined' && process.env?.NODE_ENV === 'production' ? 'info' : 'debug',
-  jsonOutput: typeof process !== 'undefined' && process.env?.NODE_ENV === 'production',
-  coloredOutput: typeof process !== 'undefined' && process.env?.NODE_ENV !== 'production',
+  level: isProduction ? 'info' : 'debug',
+  jsonOutput: isProduction,
+  coloredOutput: !isProduction,
 });
 
 // =============================================================================

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.UserAuth do
+defmodule CGraphWeb.UserAuth do
   @moduledoc """
   User authentication helper functions for routers and controllers.
 
@@ -8,7 +8,7 @@ defmodule CgraphWeb.UserAuth do
   import Plug.Conn
   import Phoenix.Controller
 
-  alias Cgraph.Accounts
+  alias CGraph.Accounts
 
   @doc """
   Fetches the current user from the session or token.
@@ -75,7 +75,7 @@ defmodule CgraphWeb.UserAuth do
     end
 
     if live_socket_id = get_session(conn, :live_socket_id) do
-      CgraphWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
+      CGraphWeb.Endpoint.broadcast(live_socket_id, "disconnect", %{})
     end
 
     conn

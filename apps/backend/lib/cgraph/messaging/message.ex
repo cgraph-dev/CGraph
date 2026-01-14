@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.Message do
+defmodule CGraph.Messaging.Message do
   @moduledoc """
   Message schema for direct messages and channel messages.
 
@@ -40,7 +40,7 @@ defmodule Cgraph.Messaging.Message do
     # Pinned message fields
     field :is_pinned, :boolean, default: false
     field :pinned_at, :utc_datetime
-    belongs_to :pinned_by, Cgraph.Accounts.User
+    belongs_to :pinned_by, CGraph.Accounts.User
 
     # For file attachments
     field :file_url, :string
@@ -53,14 +53,14 @@ defmodule Cgraph.Messaging.Message do
     field :link_preview, :map
 
     # Associations
-    belongs_to :sender, Cgraph.Accounts.User
-    belongs_to :conversation, Cgraph.Messaging.Conversation
-    belongs_to :channel, Cgraph.Groups.Channel  # For group messages
+    belongs_to :sender, CGraph.Accounts.User
+    belongs_to :conversation, CGraph.Messaging.Conversation
+    belongs_to :channel, CGraph.Groups.Channel  # For group messages
     belongs_to :reply_to, __MODULE__
 
-    has_many :reactions, Cgraph.Messaging.Reaction
-    has_many :read_receipts, Cgraph.Messaging.ReadReceipt
-    has_many :edits, Cgraph.Messaging.MessageEdit
+    has_many :reactions, CGraph.Messaging.Reaction
+    has_many :read_receipts, CGraph.Messaging.ReadReceipt
+    has_many :edits, CGraph.Messaging.MessageEdit
 
     timestamps()
   end

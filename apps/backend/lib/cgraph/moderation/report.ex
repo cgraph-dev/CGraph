@@ -1,4 +1,4 @@
-defmodule Cgraph.Moderation.Report do
+defmodule CGraph.Moderation.Report do
   @moduledoc """
   Schema for user-submitted content reports.
 
@@ -42,8 +42,8 @@ defmodule Cgraph.Moderation.Report do
     field :priority, Ecto.Enum, values: @priorities, default: :normal
     field :reviewed_at, :utc_datetime
 
-    belongs_to :reporter, Cgraph.Accounts.User
-    has_many :review_actions, Cgraph.Moderation.ReviewAction
+    belongs_to :reporter, CGraph.Accounts.User
+    has_many :review_actions, CGraph.Moderation.ReviewAction
 
     timestamps(type: :utc_datetime)
   end

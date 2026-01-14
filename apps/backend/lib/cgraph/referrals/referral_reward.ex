@@ -1,12 +1,12 @@
-defmodule Cgraph.Referrals.ReferralReward do
+defmodule CGraph.Referrals.ReferralReward do
   @moduledoc """
   Schema for claimed referral rewards.
   """
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Referrals.RewardTier
+  alias CGraph.Accounts.User
+  alias CGraph.Referrals.RewardTier
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

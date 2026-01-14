@@ -1,8 +1,8 @@
-defmodule CgraphWeb.API.V1.ChannelJSON do
+defmodule CGraphWeb.API.V1.ChannelJSON do
   @moduledoc """
   JSON rendering for channel responses.
   """
-  alias Cgraph.Groups.Channel
+  alias CGraph.Groups.Channel
 
   def index(%{channels: channels}) do
     %{data: Enum.map(channels, &channel_data/1)}

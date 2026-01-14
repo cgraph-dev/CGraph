@@ -1,4 +1,4 @@
-defmodule Cgraph.Repo.Healthcheck do
+defmodule CGraph.Repo.Healthcheck do
   @moduledoc """
   Database health monitoring and diagnostics for CGraph.
 
@@ -15,7 +15,7 @@ defmodule Cgraph.Repo.Healthcheck do
 
   ### Basic Health Check
 
-      case Cgraph.Repo.Healthcheck.check() do
+      case CGraph.Repo.Healthcheck.check() do
         {:ok, %{status: :healthy}} ->
           # Database is healthy
 
@@ -28,7 +28,7 @@ defmodule Cgraph.Repo.Healthcheck do
 
   ### Detailed Diagnostics
 
-      diagnostics = Cgraph.Repo.Healthcheck.diagnostics()
+      diagnostics = CGraph.Repo.Healthcheck.diagnostics()
       # Returns detailed stats including:
       # - Connection pool utilization
       # - Query latency percentiles
@@ -45,7 +45,7 @@ defmodule Cgraph.Repo.Healthcheck do
   """
 
   require Logger
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
   @type status :: :healthy | :degraded | :unhealthy
   @type issue :: %{type: atom(), message: String.t(), severity: :warning | :critical}
@@ -218,7 +218,7 @@ defmodule Cgraph.Repo.Healthcheck do
     checkin_count = :ets.info(:cgraph_repo_pool, :size) || 0
 
     %{
-      pool_size: Application.get_env(:cgraph, Cgraph.Repo)[:pool_size] || 10,
+      pool_size: Application.get_env(:cgraph, CGraph.Repo)[:pool_size] || 10,
       idle: max(checkin_count, 0),
       busy: 0,
       queue_length: 0

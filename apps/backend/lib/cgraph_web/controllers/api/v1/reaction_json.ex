@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.ReactionJSON do
+defmodule CGraphWeb.API.V1.ReactionJSON do
   @moduledoc """
   JSON rendering for reaction responses.
   """
 
-  alias CgraphWeb.API.V1.UserJSON
+  alias CGraphWeb.API.V1.UserJSON
 
   def index(%{reactions: reactions}) do
     %{data: group_reactions(reactions)}

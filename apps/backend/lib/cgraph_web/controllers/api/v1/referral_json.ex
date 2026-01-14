@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.ReferralJSON do
+defmodule CGraphWeb.API.V1.ReferralJSON do
   @moduledoc """
   JSON rendering for Referral endpoints.
   """

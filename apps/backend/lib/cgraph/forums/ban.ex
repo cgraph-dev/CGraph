@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Ban do
+defmodule CGraph.Forums.Ban do
   @moduledoc """
   Schema for forum bans.
   """
@@ -10,9 +10,9 @@ defmodule Cgraph.Forums.Ban do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "forum_bans" do
-    belongs_to :forum, Cgraph.Forums.Forum
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :banned_by, Cgraph.Accounts.User
+    belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :banned_by, CGraph.Accounts.User
 
     field :reason, :string
     field :expires_at, :utc_datetime

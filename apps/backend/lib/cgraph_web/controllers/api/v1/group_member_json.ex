@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.GroupMemberJSON do
+defmodule CGraphWeb.API.V1.GroupMemberJSON do
   @moduledoc """
   JSON rendering for group member responses.
   """
 
-  alias CgraphWeb.API.V1.UserJSON
+  alias CGraphWeb.API.V1.UserJSON
 
   def index(%{members: members, meta: meta}) do
     %{

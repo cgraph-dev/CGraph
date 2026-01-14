@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Board do
+defmodule CGraph.Forums.Board do
   @moduledoc """
   Board schema representing a section/category within a forum.
 
@@ -46,10 +46,10 @@ defmodule Cgraph.Forums.Board do
     # Soft delete
     field :deleted_at, :utc_datetime
 
-    belongs_to :forum, Cgraph.Forums.Forum
+    belongs_to :forum, CGraph.Forums.Forum
     belongs_to :parent_board, __MODULE__
     has_many :sub_boards, __MODULE__, foreign_key: :parent_board_id
-    has_many :threads, Cgraph.Forums.Thread
+    has_many :threads, CGraph.Forums.Thread
 
     timestamps()
   end

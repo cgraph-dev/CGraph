@@ -3,7 +3,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
   Repository for Message entity data access.
   """
   
-  import Ecto.Query, warn: false
+  import Ecto.Query, warn: false, except: [update: 2]
   
   alias CGraph.Repo
   alias CGraph.Messaging.Message

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.GroupJSON do
+defmodule CGraphWeb.API.V1.GroupJSON do
   @moduledoc """
   JSON rendering for group responses.
 
@@ -13,8 +13,8 @@ defmodule CgraphWeb.API.V1.GroupJSON do
   | false     | false           | "private"   |
   """
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Groups.{AuditLog, Channel, Group, Member, Role}
+  alias CGraph.Accounts.User
+  alias CGraph.Groups.{AuditLog, Channel, Group, Member, Role}
 
   def index(%{groups: groups, meta: meta}) do
     %{
@@ -119,7 +119,7 @@ defmodule CgraphWeb.API.V1.GroupJSON do
   defp member_permissions(nil, _), do: []
   defp member_permissions(%Member{} = member, group) do
     # Calculate effective permissions from roles
-    Cgraph.Groups.calculate_permissions(member, group)
+    CGraph.Groups.calculate_permissions(member, group)
   end
 
   defp owner_data(nil), do: nil

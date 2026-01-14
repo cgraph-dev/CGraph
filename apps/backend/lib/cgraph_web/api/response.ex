@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.Response do
+defmodule CGraphWeb.API.Response do
   @moduledoc """
   Standardized API response formatting for consistent client experience.
 

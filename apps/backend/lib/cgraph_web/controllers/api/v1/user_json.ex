@@ -1,8 +1,8 @@
-defmodule CgraphWeb.API.V1.UserJSON do
+defmodule CGraphWeb.API.V1.UserJSON do
   @moduledoc """
   JSON rendering for user responses.
   """
-  alias Cgraph.Accounts.User
+  alias CGraph.Accounts.User
 
   def index(%{users: users, meta: meta}) do
     %{

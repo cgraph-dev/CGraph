@@ -1,12 +1,12 @@
-defmodule Cgraph.Messaging.PrivateMessage do
+defmodule CGraph.Messaging.PrivateMessage do
   @moduledoc """
   Schema for Private Messages (MyBB-style PM system).
   """
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Messaging.PMFolder
+  alias CGraph.Accounts.User
+  alias CGraph.Messaging.PMFolder
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

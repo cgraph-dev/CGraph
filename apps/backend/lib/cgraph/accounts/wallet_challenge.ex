@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.WalletChallenge do
+defmodule CGraph.Accounts.WalletChallenge do
   @moduledoc """
   Schema for storing wallet authentication challenge nonces.
 

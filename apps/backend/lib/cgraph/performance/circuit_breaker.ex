@@ -1,4 +1,4 @@
-defmodule Cgraph.Performance.CircuitBreaker do
+defmodule CGraph.Performance.CircuitBreaker do
   @moduledoc """
   Circuit breaker pattern for external service calls.
 
@@ -32,7 +32,7 @@ defmodule Cgraph.Performance.CircuitBreaker do
   ## Configuration
 
       # In config.exs
-      config :cgraph, Cgraph.Performance.CircuitBreaker,
+      config :cgraph, CGraph.Performance.CircuitBreaker,
         services: %{
           payment_service: %{
             failure_threshold: 5,

@@ -1,13 +1,13 @@
-defmodule CgraphWeb.API.V1.UploadController do
+defmodule CGraphWeb.API.V1.UploadController do
   @moduledoc """
   Handles file uploads.
   Supports images, documents, and other media with size and type restrictions.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Uploads
+  alias CGraph.Uploads
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   # Max file sizes in bytes
   @max_image_size 10 * 1024 * 1024  # 10 MB

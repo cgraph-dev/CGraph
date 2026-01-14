@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/Button';
 import { Bell, BellOff, Loader2 } from 'lucide-react';
 import {
   Popover,
@@ -168,8 +168,8 @@ export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
                   </Label>
                   <Select
                     value={settings.notificationMode}
-                    onValueChange={(value: NotificationMode) =>
-                      handleSettingsChange({ notificationMode: value })
+                    onValueChange={(value) =>
+                      handleSettingsChange({ notificationMode: value as NotificationMode })
                     }
                   >
                     <SelectTrigger id="notification-mode" className="mt-1.5">

@@ -1,4 +1,4 @@
-defmodule Cgraph.Storage.S3 do
+defmodule CGraph.Storage.S3 do
   @moduledoc """
   S3-compatible storage backend.
 
@@ -25,7 +25,7 @@ defmodule Cgraph.Storage.S3 do
       {:sweet_xml, "~> 0.7"}
   """
 
-  @behaviour Cgraph.Storage
+  @behaviour CGraph.Storage
 
   require Logger
 

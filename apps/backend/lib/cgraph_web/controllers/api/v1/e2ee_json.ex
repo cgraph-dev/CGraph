@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.E2EEJSON do
+defmodule CGraphWeb.API.V1.E2EEJSON do
   @moduledoc """
   JSON rendering for E2EE key management responses.
 

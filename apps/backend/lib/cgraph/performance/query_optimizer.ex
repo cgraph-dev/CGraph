@@ -1,4 +1,4 @@
-defmodule Cgraph.Performance.QueryOptimizer do
+defmodule CGraph.Performance.QueryOptimizer do
   @moduledoc """
   Database query optimization utilities.
 
@@ -43,7 +43,7 @@ defmodule Cgraph.Performance.QueryOptimizer do
   import Ecto.Query
   require Logger
 
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
   @default_batch_size 100
   @default_page_limit 50

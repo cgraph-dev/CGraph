@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.Member do
+defmodule CGraph.Groups.Member do
   @moduledoc """
   Group membership with roles and moderation status.
   """
@@ -31,10 +31,10 @@ defmodule Cgraph.Groups.Member do
     field :suppress_everyone, :boolean, default: false
 
     # Associations
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :group, Cgraph.Groups.Group
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :group, CGraph.Groups.Group
 
-    many_to_many :roles, Cgraph.Groups.Role, join_through: "member_roles"
+    many_to_many :roles, CGraph.Groups.Role, join_through: "member_roles"
 
     timestamps()
   end

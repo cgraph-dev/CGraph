@@ -1,4 +1,4 @@
-defmodule Cgraph.Notifications.PushService do
+defmodule CGraph.Notifications.PushService do
   @moduledoc """
   Enterprise-grade Push Notification Service for CGraph.
 
@@ -22,7 +22,7 @@ defmodule Cgraph.Notifications.PushService do
 
   Configure push services in your config files:
 
-      config :cgraph, Cgraph.Notifications.PushService,
+      config :cgraph, CGraph.Notifications.PushService,
         fcm_server_key: System.get_env("FCM_SERVER_KEY"),
         apns_key_id: System.get_env("APNS_KEY_ID"),
         apns_team_id: System.get_env("APNS_TEAM_ID"),
@@ -48,9 +48,9 @@ defmodule Cgraph.Notifications.PushService do
 
   require Logger
 
-  alias Cgraph.Accounts.{PushToken, User}
-  alias Cgraph.Notifications.PushService.{ApnsClient, ExpoClient, FcmClient, WebPushClient}
-  alias Cgraph.Repo
+  alias CGraph.Accounts.{PushToken, User}
+  alias CGraph.Notifications.PushService.{ApnsClient, ExpoClient, FcmClient, WebPushClient}
+  alias CGraph.Repo
 
   @type notification :: %{
     required(:title) => String.t(),

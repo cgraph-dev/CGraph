@@ -1,4 +1,4 @@
-defmodule Cgraph.Reputation.ReputationEntry do
+defmodule CGraph.Reputation.ReputationEntry do
   @moduledoc """
   Schema for reputation entries (given/received).
   Maps to existing reputation_entries table with columns:
@@ -7,9 +7,9 @@ defmodule Cgraph.Reputation.ReputationEntry do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Forums.Post
-  alias Cgraph.Forums.Forum
+  alias CGraph.Accounts.User
+  alias CGraph.Forums.Post
+  alias CGraph.Forums.Forum
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

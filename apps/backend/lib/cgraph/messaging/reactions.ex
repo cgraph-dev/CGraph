@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.Reactions do
+defmodule CGraph.Messaging.Reactions do
   @moduledoc """
   Sub-context for Reaction-related operations.
 
@@ -10,8 +10,8 @@ defmodule Cgraph.Messaging.Reactions do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Messaging.{Message, Reaction}
-  alias Cgraph.Repo
+  alias CGraph.Messaging.{Message, Reaction}
+  alias CGraph.Repo
 
   @doc """
   List reactions on a message.

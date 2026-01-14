@@ -1,11 +1,11 @@
-defmodule Cgraph.Referrals.Referral do
+defmodule CGraph.Referrals.Referral do
   @moduledoc """
   Schema for referrals.
   """
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Cgraph.Accounts.User
+  alias CGraph.Accounts.User
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

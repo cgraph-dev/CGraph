@@ -1,4 +1,4 @@
-defmodule Cgraph.Uploads do
+defmodule CGraph.Uploads do
   @moduledoc """
   The Uploads context.
 
@@ -16,7 +16,7 @@ defmodule Cgraph.Uploads do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
   require Logger
 
@@ -82,7 +82,7 @@ defmodule Cgraph.Uploads do
       field :checksum, :string
       field :is_public, :boolean, default: false
       field :context, :string
-      belongs_to :user, Cgraph.Accounts.User, type: :binary_id
+      belongs_to :user, CGraph.Accounts.User, type: :binary_id
 
       timestamps()
     end

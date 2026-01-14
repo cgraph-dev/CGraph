@@ -25,7 +25,7 @@ config :logger, :console,
 config :cgraph, dev_routes: false
 
 # Configure endpoint for production
-config :cgraph, CgraphWeb.Endpoint,
+config :cgraph, CGraphWeb.Endpoint,
   cache_static_manifest: "priv/static/cache_manifest.json",
   force_ssl: [rewrite_on: [:x_forwarded_proto]],
   check_origin: [
@@ -46,12 +46,12 @@ config :swoosh, :api_client, Swoosh.ApiClient.Finch
 
 # Configure Oban for production with more robust settings
 config :cgraph, Oban,
-  repo: Cgraph.Repo,
+  repo: CGraph.Repo,
   plugins: [
     {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},  # 7 days
     {Oban.Plugins.Cron, crontab: [
       # Daily cleanup jobs
-      {"0 3 * * *", Cgraph.Workers.CleanupWorker}
+      {"0 3 * * *", CGraph.Workers.CleanupWorker}
     ]}
   ],
   queues: [

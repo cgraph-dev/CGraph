@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.UserController do
+defmodule CGraphWeb.API.V1.UserController do
   @moduledoc """
   Controller for user-related endpoints.
   Handles current user operations and user lookups.
@@ -9,15 +9,15 @@ defmodule CgraphWeb.API.V1.UserController do
   - Pagination parameters are validated and safely parsed
   - Privacy settings are respected for profile access
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Accounts
-  alias Cgraph.Accounts.User
-  alias Cgraph.Presence
+  alias CGraph.Accounts
+  alias CGraph.Accounts.User
+  alias CGraph.Presence
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 
@@ -167,7 +167,7 @@ defmodule CgraphWeb.API.V1.UserController do
     with {:ok, user} <- Accounts.get_user(id) do
       # Check if the profile should be private for this viewer
       is_own_profile = current_user && current_user.id == user.id
-      is_friend = current_user && Cgraph.Accounts.Friends.are_friends?(current_user.id, user.id)
+      is_friend = current_user && CGraph.Accounts.Friends.are_friends?(current_user.id, user.id)
       show_full_profile = is_own_profile || is_friend || !user.is_profile_private
 
       if show_full_profile do
@@ -188,7 +188,7 @@ defmodule CgraphWeb.API.V1.UserController do
     with {:ok, user} <- Accounts.get_user_by_username(username) do
       # Check if the profile should be private for this viewer
       is_own_profile = current_user && current_user.id == user.id
-      is_friend = current_user && Cgraph.Accounts.Friends.are_friends?(current_user.id, user.id)
+      is_friend = current_user && CGraph.Accounts.Friends.are_friends?(current_user.id, user.id)
       show_full_profile = is_own_profile || is_friend || !user.is_profile_private
 
       if show_full_profile do
@@ -223,7 +223,7 @@ defmodule CgraphWeb.API.V1.UserController do
   def request_data_export(conn, _params) do
     user = conn.assigns.current_user
 
-    case Cgraph.DataExport.export_user_data(user.id, [
+    case CGraph.DataExport.export_user_data(user.id, [
       format: :json,
       include_messages: true,
       include_posts: true,

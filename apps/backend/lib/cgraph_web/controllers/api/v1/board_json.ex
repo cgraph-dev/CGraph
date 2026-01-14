@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.BoardJSON do
+defmodule CGraphWeb.API.V1.BoardJSON do
   @moduledoc """
   JSON rendering for boards.
   """

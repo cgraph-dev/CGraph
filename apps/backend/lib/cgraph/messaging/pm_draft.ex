@@ -1,11 +1,11 @@
-defmodule Cgraph.Messaging.PMDraft do
+defmodule CGraph.Messaging.PMDraft do
   @moduledoc """
   Schema for Private Message drafts.
   """
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Cgraph.Accounts.User
+  alias CGraph.Accounts.User
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

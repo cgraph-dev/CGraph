@@ -1,4 +1,4 @@
-defmodule CgraphWeb.TitleJSON do
+defmodule CGraphWeb.TitleJSON do
   @moduledoc """
   JSON rendering for title endpoints.
   """

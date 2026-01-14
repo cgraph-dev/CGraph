@@ -1,8 +1,8 @@
-defmodule CgraphWeb.API.V1.SettingsJSON do
+defmodule CGraphWeb.API.V1.SettingsJSON do
   @moduledoc """
   JSON rendering for settings responses.
   """
-  alias Cgraph.Accounts.UserSettings
+  alias CGraph.Accounts.UserSettings
 
   def show(%{settings: settings}) do
     %{data: settings_data(settings)}

@@ -1,17 +1,17 @@
-defmodule CgraphWeb.FallbackController do
+defmodule CGraphWeb.FallbackController do
   @moduledoc """
   Translates controller action results into valid Plug.Conn responses.
 
   This controller is invoked by action_fallback when a controller action
   returns an error tuple like {:error, :not_found} or {:error, changeset}.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
   # Handle Ecto changesets
   def call(conn, {:error, %Ecto.Changeset{} = changeset}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, changeset: changeset)
   end
 
@@ -19,7 +19,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :not_found}) do
     conn
     |> put_status(:not_found)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:"404")
   end
 
@@ -27,7 +27,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :unauthorized}) do
     conn
     |> put_status(:unauthorized)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:"401")
   end
 
@@ -35,7 +35,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :forbidden}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:"403")
   end
 
@@ -44,7 +44,7 @@ defmodule CgraphWeb.FallbackController do
     conn
     |> put_status(:too_many_requests)
     |> put_resp_header("retry-after", to_string(seconds_remaining))
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Rate limit exceeded. Try again in #{seconds_remaining} seconds.")
   end
 
@@ -52,7 +52,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :insufficient_permissions}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You don't have permission to perform this action.")
   end
 
@@ -60,7 +60,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :already_exists}) do
     conn
     |> put_status(:conflict)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Resource already exists.")
   end
 
@@ -68,7 +68,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, %{code: :forum_limit_reached} = error_info}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error,
       code: "forum_limit_reached",
       message: error_info.message,
@@ -84,7 +84,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :already_member}) do
     conn
     |> put_status(:conflict)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You are already a member.")
   end
 
@@ -92,7 +92,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :already_friends}) do
     conn
     |> put_status(:conflict)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You are already friends with this user.")
   end
 
@@ -100,7 +100,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :request_already_sent}) do
     conn
     |> put_status(:conflict)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Friend request already sent.")
   end
 
@@ -108,7 +108,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :cannot_friend_self}) do
     conn
     |> put_status(:bad_request)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You cannot send a friend request to yourself.")
   end
 
@@ -116,7 +116,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :cannot_moderate_self}) do
     conn
     |> put_status(:bad_request)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You cannot perform this action on yourself.")
   end
 
@@ -124,7 +124,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :user_blocked}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You have blocked this user.")
   end
 
@@ -132,7 +132,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :blocked_by_user}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You cannot interact with this user.")
   end
 
@@ -140,7 +140,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :user_banned}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You are banned from this group.")
   end
 
@@ -148,21 +148,21 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :invite_expired}) do
     conn
     |> put_status(:gone)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "This invite has expired.")
   end
 
   def call(conn, {:error, :invite_revoked}) do
     conn
     |> put_status(:gone)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "This invite has been revoked.")
   end
 
   def call(conn, {:error, :invite_max_uses_reached}) do
     conn
     |> put_status(:gone)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "This invite has reached its maximum uses.")
   end
 
@@ -170,7 +170,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :post_locked}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "This post is locked and cannot receive new comments.")
   end
 
@@ -178,7 +178,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :owner_only}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Only the forum owner can perform this action.")
   end
 
@@ -186,7 +186,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :must_join_first}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You must join this forum first to perform this action.")
   end
 
@@ -194,7 +194,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :cannot_leave_own_forum}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You cannot leave a forum you own. Transfer ownership first.")
   end
 
@@ -202,7 +202,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :already_pinned}) do
     conn
     |> put_status(:conflict)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "This message is already pinned.")
   end
 
@@ -210,7 +210,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :pin_limit_reached}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You have reached the maximum number of pinned messages (3).")
   end
 
@@ -219,7 +219,7 @@ defmodule CgraphWeb.FallbackController do
     conn
     |> put_status(:too_many_requests)
     |> put_resp_header("retry-after", to_string(seconds_remaining))
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Vote cooldown active. Try again in #{seconds_remaining} seconds.")
   end
 
@@ -227,7 +227,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :insufficient_karma}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You need more karma to downvote. Participate more in the community first.")
   end
 
@@ -235,7 +235,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :account_too_new}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Your account is too new to vote. Please wait a day before voting.")
   end
 
@@ -243,7 +243,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :cannot_vote_own_content}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "You cannot vote on your own content.")
   end
 
@@ -251,7 +251,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :cannot_modify_default_role}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "The default role cannot be modified.")
   end
 
@@ -259,7 +259,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :not_owner}) do
     conn
     |> put_status(:forbidden)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Only the owner can perform this action.")
   end
 
@@ -267,7 +267,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :unsupported_file_type}) do
     conn
     |> put_status(:unsupported_media_type)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "This file type is not supported.")
   end
 
@@ -275,14 +275,14 @@ defmodule CgraphWeb.FallbackController do
     max_mb = Float.round(max / 1_000_000, 1)
     conn
     |> put_status(:request_entity_too_large)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "#{String.capitalize(type)} exceeds maximum size of #{max_mb} MB.")
   end
 
   def call(conn, {:error, :upload_quota_exceeded}) do
     conn
     |> put_status(:insufficient_storage)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Upload quota exceeded. Please delete some files or upgrade your storage.")
   end
 
@@ -290,7 +290,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :invalid_emoji}) do
     conn
     |> put_status(:bad_request)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Invalid emoji.")
   end
 
@@ -299,14 +299,14 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :token_required}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Push token is required.")
   end
 
   def call(conn, {:error, :invalid_platform}) do
     conn
     |> put_status(:unprocessable_entity)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: "Invalid platform. Must be ios, android, or web.")
   end
 
@@ -314,7 +314,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, :bad_request}) do
     conn
     |> put_status(:bad_request)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:"400")
   end
 
@@ -322,7 +322,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, status, message}) when is_atom(status) and is_binary(message) do
     conn
     |> put_status(status)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: message)
   end
 
@@ -330,7 +330,7 @@ defmodule CgraphWeb.FallbackController do
   def call(conn, {:error, message}) when is_binary(message) do
     conn
     |> put_status(:unprocessable_entity)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: message)
   end
 
@@ -340,7 +340,7 @@ defmodule CgraphWeb.FallbackController do
 
     conn
     |> put_status(:unprocessable_entity)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error, message: message)
   end
 end

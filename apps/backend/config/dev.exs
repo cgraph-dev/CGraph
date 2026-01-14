@@ -2,7 +2,7 @@ import Config
 
 # Configure your database
 # Matches docker-compose.yml settings
-config :cgraph, Cgraph.Repo,
+config :cgraph, CGraph.Repo,
   username: System.get_env("POSTGRES_USER", "cgraph"),
   password: System.get_env("POSTGRES_PASSWORD", "cgraph_dev_password"),
   hostname: System.get_env("POSTGRES_HOST", "localhost"),
@@ -13,7 +13,7 @@ config :cgraph, Cgraph.Repo,
 
 # For development, we disable any cache and enable debugging and code reloading
 # Using 0.0.0.0 to allow connections from mobile devices on the local network
-config :cgraph, CgraphWeb.Endpoint,
+config :cgraph, CGraphWeb.Endpoint,
   http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
@@ -25,7 +25,7 @@ config :cgraph, CgraphWeb.Endpoint,
   ]
 
 # Watch static and templates for browser reloading
-config :cgraph, CgraphWeb.Endpoint,
+config :cgraph, CGraphWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r"priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$",

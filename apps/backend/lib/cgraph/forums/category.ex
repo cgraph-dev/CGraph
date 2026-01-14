@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Category do
+defmodule CGraph.Forums.Category do
   @moduledoc """
   Post flair/category for organizing posts within a forum.
   """
@@ -17,8 +17,8 @@ defmodule Cgraph.Forums.Category do
     field :is_required, :boolean, default: false  # Must select category
     field :position, :integer, default: 0
 
-    belongs_to :forum, Cgraph.Forums.Forum
-    has_many :posts, Cgraph.Forums.Post
+    belongs_to :forum, CGraph.Forums.Forum
+    has_many :posts, CGraph.Forums.Post
 
     timestamps()
   end

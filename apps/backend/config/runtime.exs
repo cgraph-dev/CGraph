@@ -22,7 +22,7 @@ if config_env() == :prod do
   # Recommended: Set POOL_SIZE=50-100 based on instance count
   # Formula: (max_db_connections / app_instances) - 5
   # Consider deploying PgBouncer for connection multiplexing at scale
-  config :cgraph, Cgraph.Repo,
+  config :cgraph, CGraph.Repo,
     url: database_url,
     pool_size: String.to_integer(System.get_env("POOL_SIZE") || "50"),
     queue_target: String.to_integer(System.get_env("POOL_QUEUE_TARGET") || "50"),
@@ -41,7 +41,7 @@ if config_env() == :prod do
 
   config :cgraph, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
-  config :cgraph, CgraphWeb.Endpoint,
+  config :cgraph, CGraphWeb.Endpoint,
     url: [host: host, port: 443, scheme: "https"],
     http: [
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
@@ -50,7 +50,7 @@ if config_env() == :prod do
     secret_key_base: secret_key_base
 
   # Guardian JWT configuration
-  config :cgraph, Cgraph.Guardian,
+  config :cgraph, CGraph.Guardian,
     issuer: "cgraph",
     secret_key: System.get_env("JWT_SECRET") ||
       raise "environment variable JWT_SECRET is missing"
@@ -63,7 +63,7 @@ if config_env() == :prod do
     String.to_integer(System.get_env("JWT_REFRESH_TOKEN_TTL") || "2592000")
 
   # Configure Swoosh for production
-  config :cgraph, Cgraph.Mailer,
+  config :cgraph, CGraph.Mailer,
     adapter: Swoosh.Adapters.Resend,
     api_key: System.get_env("RESEND_API_KEY")
 
@@ -139,23 +139,23 @@ if config_env() == :prod do
   # --- New in v0.7.32: Search, WebRTC, Rate Limiter ---
 
   # Meilisearch (Search Engine)
-  config :cgraph, Cgraph.Search.SearchEngine,
+  config :cgraph, CGraph.Search.SearchEngine,
     url: System.get_env("MEILISEARCH_URL") || "http://localhost:7700",
     api_key: System.get_env("MEILISEARCH_API_KEY")
 
   # WebRTC Signaling & ICE
-  config :cgraph, Cgraph.WebRTC,
+  config :cgraph, CGraph.WebRTC,
     stun_servers: String.split(System.get_env("WEBRTC_STUN_SERVERS") || "stun:stun.l.google.com:19302", ","),
     turn_servers: [], # Configure via WEBRTC_TURN_SERVERS if needed
     max_participants: String.to_integer(System.get_env("WEBRTC_MAX_PARTICIPANTS") || "10")
 
   # Distributed Rate Limiting (Redis-backed)
-  config :cgraph, Cgraph.RateLimiter.Distributed,
+  config :cgraph, CGraph.RateLimiter.Distributed,
     enabled: true,
     redis_pool: :rate_limiter_pool
 
   # Sampled Presence for Large Channels
-  config :cgraph, Cgraph.Presence.Sampled,
+  config :cgraph, CGraph.Presence.Sampled,
     tiers: [
       %{max_size: 100, sample_rate: 1.0, batch_interval: 0},
       %{max_size: 1_000, sample_rate: 0.5, batch_interval: 1_000},

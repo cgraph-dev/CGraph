@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.InviteJSON do
+defmodule CGraphWeb.API.V1.InviteJSON do
   @moduledoc """
   JSON rendering for invite responses.
   """
 
-  alias CgraphWeb.API.V1.{GroupJSON, GroupMemberJSON, UserJSON}
+  alias CGraphWeb.API.V1.{GroupJSON, GroupMemberJSON, UserJSON}
 
   def index(%{invites: invites}) do
     %{data: Enum.map(invites, &invite_data/1)}

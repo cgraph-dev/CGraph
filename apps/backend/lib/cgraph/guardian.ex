@@ -1,4 +1,4 @@
-defmodule Cgraph.Guardian do
+defmodule CGraph.Guardian do
   @moduledoc """
   Guardian implementation for JWT authentication.
 
@@ -23,8 +23,8 @@ defmodule Cgraph.Guardian do
   """
   use Guardian, otp_app: :cgraph
 
-  alias Cgraph.Accounts
-  alias Cgraph.Security.TokenBlacklist
+  alias CGraph.Accounts
+  alias CGraph.Security.TokenBlacklist
 
   require Logger
 

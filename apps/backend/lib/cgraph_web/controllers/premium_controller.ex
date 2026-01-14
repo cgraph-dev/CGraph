@@ -1,12 +1,12 @@
-defmodule CgraphWeb.PremiumController do
+defmodule CGraphWeb.PremiumController do
   @moduledoc """
   Controller for premium subscriptions and features.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   GET /api/v1/premium/status

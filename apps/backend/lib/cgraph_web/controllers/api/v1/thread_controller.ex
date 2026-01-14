@@ -1,15 +1,15 @@
-defmodule CgraphWeb.API.V1.ThreadController do
+defmodule CGraphWeb.API.V1.ThreadController do
   @moduledoc """
   API controller for forum threads.
   Part of the MyBB-style forum hosting platform.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Forums
-  import CgraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
-  import CgraphWeb.Helpers.ParamParser
+  alias CGraph.Forums
+  import CGraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
+  import CGraphWeb.Helpers.ParamParser
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_limit 100
 

@@ -1,4 +1,4 @@
-defmodule Cgraph.Security.TokenBlacklist do
+defmodule CGraph.Security.TokenBlacklist do
   @moduledoc """
   Token revocation system using multi-tier storage (Cachex + Redis).
 
@@ -64,7 +64,7 @@ defmodule Cgraph.Security.TokenBlacklist do
   use GenServer
   require Logger
 
-  alias Cgraph.Audit
+  alias CGraph.Audit
 
   @cache_name :cgraph_cache
   @redis_prefix "token_blacklist:"
@@ -555,7 +555,7 @@ defmodule Cgraph.Security.TokenBlacklist do
 
   defp decode_token_claims(token) do
     # Decode without verification to extract claims
-    case Cgraph.Guardian.decode_and_verify(token, %{}) do
+    case CGraph.Guardian.decode_and_verify(token, %{}) do
       {:ok, claims} -> {:ok, claims}
       {:error, _} ->
         # Try base64 decode for expired tokens

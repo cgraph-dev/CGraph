@@ -1,10 +1,10 @@
-defmodule CgraphWeb.Plugs.RateLimitPlug do
+defmodule CGraphWeb.Plugs.RateLimitPlug do
   @moduledoc """
   Plug for rate limiting HTTP requests.
 
   ## Overview
 
-  Integrates with `Cgraph.RateLimiter` to enforce rate limits at the request level:
+  Integrates with `CGraph.RateLimiter` to enforce rate limits at the request level:
 
   - **IP-based limiting**: Default for unauthenticated requests
   - **User-based limiting**: For authenticated requests
@@ -43,12 +43,12 @@ defmodule CgraphWeb.Plugs.RateLimitPlug do
 
       # Apply to all API routes
       pipeline :api do
-        plug CgraphWeb.Plugs.RateLimitPlug, scope: :api
+        plug CGraphWeb.Plugs.RateLimitPlug, scope: :api
       end
 
       # Custom scope for specific endpoints
       pipeline :auth_rate_limited do
-        plug CgraphWeb.Plugs.RateLimitPlug,
+        plug CGraphWeb.Plugs.RateLimitPlug,
           scope: :login,
           by: :ip,
           limit: 5,
@@ -58,7 +58,7 @@ defmodule CgraphWeb.Plugs.RateLimitPlug do
   ### In Controller
 
       # Per-action rate limiting
-      plug CgraphWeb.Plugs.RateLimitPlug,
+      plug CGraphWeb.Plugs.RateLimitPlug,
         scope: :upload,
         limit: 10,
         window: 3600
@@ -74,18 +74,18 @@ defmodule CgraphWeb.Plugs.RateLimitPlug do
   | `:window` | (from scope) | Override window in seconds |
   | `:cost` | `1` | Request cost |
   | `:skip_whitelisted` | `true` | Skip if identifier is whitelisted |
-  | `:error_view` | `CgraphWeb.ErrorJSON` | View for 429 response |
+  | `:error_view` | `CGraphWeb.ErrorJSON` | View for 429 response |
   """
 
   import Plug.Conn
   require Logger
 
-  alias Cgraph.RateLimiter
+  alias CGraph.RateLimiter
 
   @behaviour Plug
 
   @default_scope :api
-  @default_error_view CgraphWeb.ErrorJSON
+  @default_error_view CGraphWeb.ErrorJSON
 
   # ---------------------------------------------------------------------------
   # Plug Callbacks

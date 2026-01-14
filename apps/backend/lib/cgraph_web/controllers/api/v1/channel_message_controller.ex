@@ -1,14 +1,14 @@
-defmodule CgraphWeb.API.V1.ChannelMessageController do
+defmodule CGraphWeb.API.V1.ChannelMessageController do
   @moduledoc """
   Controller for messages within group channels.
   """
-  use CgraphWeb, :controller
-  import CgraphWeb.Helpers.ParamParser
+  use CGraphWeb, :controller
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Groups
-  alias CgraphWeb.API.V1.MessageJSON
+  alias CGraph.Groups
+  alias CGraphWeb.API.V1.MessageJSON
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 
@@ -52,7 +52,7 @@ defmodule CgraphWeb.API.V1.ChannelMessageController do
          :ok <- Groups.authorize(user, group, :send_messages),
          {:ok, message} <- Groups.send_channel_message(channel, user, message_params) do
       # Broadcast via Phoenix Channels
-      CgraphWeb.Endpoint.broadcast!(
+      CGraphWeb.Endpoint.broadcast!(
         "channel:#{channel_id}",
         "new_message",
         %{message: MessageJSON.message_data(message)}
@@ -72,7 +72,7 @@ defmodule CgraphWeb.API.V1.ChannelMessageController do
 
     with {:ok, _group} <- Groups.get_user_group(user, group_id) do
       # Broadcast typing indicator
-      CgraphWeb.Endpoint.broadcast!(
+      CGraphWeb.Endpoint.broadcast!(
         "channel:#{channel_id}",
         "typing",
         %{

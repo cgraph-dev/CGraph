@@ -1,4 +1,4 @@
-defmodule Cgraph.ErrorReporter do
+defmodule CGraph.ErrorReporter do
   @moduledoc """
   Centralized error reporting and tracking.
 
@@ -60,12 +60,12 @@ defmodule Cgraph.ErrorReporter do
 
   ## Configuration
 
-      config :cgraph, Cgraph.ErrorReporter,
+      config :cgraph, CGraph.ErrorReporter,
         environment: :production,
         release: "1.0.0",
         adapters: [
-          {Cgraph.ErrorReporter.Adapters.Logger, level: :error},
-          {Cgraph.ErrorReporter.Adapters.Sentry, dsn: "..."}
+          {CGraph.ErrorReporter.Adapters.Logger, level: :error},
+          {CGraph.ErrorReporter.Adapters.Sentry, dsn: "..."}
         ],
         excluded_exceptions: [
           Ecto.NoResultsError,
@@ -463,7 +463,7 @@ defmodule Cgraph.ErrorReporter do
   # ---------------------------------------------------------------------------
 
   defp get_config(opts) do
-    app_config = Application.get_env(:cgraph, Cgraph.ErrorReporter, [])
+    app_config = Application.get_env(:cgraph, CGraph.ErrorReporter, [])
 
     %{
       environment: Keyword.get(opts, :environment, Keyword.get(app_config, :environment, :development)),
@@ -473,7 +473,7 @@ defmodule Cgraph.ErrorReporter do
   end
 end
 
-defmodule Cgraph.ErrorReporter.Adapters.Logger do
+defmodule CGraph.ErrorReporter.Adapters.Logger do
   @moduledoc """
   Logger adapter for error reporting.
   """
@@ -505,7 +505,7 @@ defmodule Cgraph.ErrorReporter.Adapters.Logger do
   end
 end
 
-defmodule Cgraph.ErrorReporter.Adapters.Webhook do
+defmodule CGraph.ErrorReporter.Adapters.Webhook do
   @moduledoc """
   Webhook adapter for error reporting to custom endpoints.
   """

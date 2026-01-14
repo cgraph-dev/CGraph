@@ -1,6 +1,6 @@
-defmodule Cgraph.Idempotency do
+defmodule CGraph.Idempotency do
   @moduledoc """
-  Cgraph.Idempotency - Idempotency Key Management System
+  CGraph.Idempotency - Idempotency Key Management System
 
   ## Overview
 
@@ -51,7 +51,7 @@ defmodule Cgraph.Idempotency do
       def create(conn, params) do
         idempotency_key = get_idempotency_key(conn)
 
-        case Cgraph.Idempotency.check(idempotency_key, params) do
+        case CGraph.Idempotency.check(idempotency_key, params) do
           {:cached, response} ->
             # Return cached response
             conn
@@ -64,7 +64,7 @@ defmodule Cgraph.Idempotency do
             result = do_create_order(params)
 
             # Store result
-            Cgraph.Idempotency.store(lock, %{
+            CGraph.Idempotency.store(lock, %{
               status: 201,
               body: result
             })
@@ -84,7 +84,7 @@ defmodule Cgraph.Idempotency do
 
       # In router
       pipeline :idempotent do
-        plug CgraphWeb.Plugs.Idempotency, ttl: :timer.hours(24)
+        plug CGraphWeb.Plugs.Idempotency, ttl: :timer.hours(24)
       end
 
       scope "/api" do
@@ -98,7 +98,7 @@ defmodule Cgraph.Idempotency do
 
   Configure in `config/config.exs`:
 
-      config :cgraph, Cgraph.Idempotency,
+      config :cgraph, CGraph.Idempotency,
         backend: :ets,  # :ets or :redis
         default_ttl: :timer.hours(24),
         lock_ttl: :timer.seconds(30),
@@ -172,14 +172,14 @@ defmodule Cgraph.Idempotency do
 
   ## Examples
 
-      case Cgraph.Idempotency.check("key_123", params) do
+      case CGraph.Idempotency.check("key_123", params) do
         {:cached, response} ->
           # Return cached response
 
         {:ok, lock} ->
           # Execute and store result
           result = execute_operation()
-          Cgraph.Idempotency.store(lock, result)
+          CGraph.Idempotency.store(lock, result)
 
         {:error, reason} ->
           # Handle error

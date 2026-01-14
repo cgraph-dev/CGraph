@@ -157,7 +157,7 @@ export function getStreakMultiplier(streakDays: number): number {
   
   for (const threshold of thresholds) {
     if (streakDays >= threshold) {
-      return STREAK_MULTIPLIERS[threshold];
+      return STREAK_MULTIPLIERS[threshold] ?? 1.0;
     }
   }
   

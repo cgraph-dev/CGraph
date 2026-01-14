@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.CalendarController do
+defmodule CGraphWeb.API.V1.CalendarController do
   @moduledoc """
   Controller for Calendar and Events system.
   Implements MyBB-style calendar with events, categories, and RSVP.
@@ -10,14 +10,14 @@ defmodule CgraphWeb.API.V1.CalendarController do
   - Recurring events
   - Privacy controls
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Calendar
-  alias Cgraph.Calendar.{Event, EventCategory, EventRSVP}
+  alias CGraph.Calendar
+  alias CGraph.Calendar.{Event, EventCategory, EventRSVP}
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 

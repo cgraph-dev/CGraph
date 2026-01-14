@@ -1,13 +1,13 @@
-defmodule CgraphWeb.QuestController do
+defmodule CGraphWeb.QuestController do
   @moduledoc """
   Controller for quest-related endpoints.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Gamification
-  alias Cgraph.Repo
+  alias CGraph.Gamification
+  alias CGraph.Repo
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   GET /api/v1/quests
@@ -71,7 +71,7 @@ defmodule CgraphWeb.QuestController do
       {:error, changeset} ->
         conn
         |> put_status(:unprocessable_entity)
-        |> put_view(CgraphWeb.ChangesetJSON)
+        |> put_view(CGraphWeb.ChangesetJSON)
         |> render(:error, changeset: changeset)
     end
   end

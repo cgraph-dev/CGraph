@@ -1,4 +1,4 @@
-defmodule Cgraph.Referrals.RewardTier do
+defmodule CGraph.Referrals.RewardTier do
   @moduledoc """
   Schema for referral reward tiers.
   """

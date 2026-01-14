@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.InputValidation do
+defmodule CGraphWeb.API.InputValidation do
   @moduledoc """
   Input validation and sanitization for API requests.
 

@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts do
+defmodule CGraph.Accounts do
   @moduledoc """
   The Accounts context.
 
@@ -7,10 +7,10 @@ defmodule Cgraph.Accounts do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Accounts.{Friendship, Session, User, UserSettings, WalletChallenge}
-  alias Cgraph.Repo
-  alias Cgraph.Security.PasswordBreachCheck
-  alias Cgraph.Workers.{Orchestrator, SendEmailNotification}
+  alias CGraph.Accounts.{Friendship, Session, User, UserSettings, WalletChallenge}
+  alias CGraph.Repo
+  alias CGraph.Security.PasswordBreachCheck
+  alias CGraph.Workers.{Orchestrator, SendEmailNotification}
 
   # ============================================================================
   # Registration & Authentication
@@ -287,7 +287,7 @@ defmodule Cgraph.Accounts do
   end
 
   defp build_sign_message(nonce) do
-    "Sign this message to authenticate with Cgraph.\n\nNonce: #{nonce}"
+    "Sign this message to authenticate with CGraph.\n\nNonce: #{nonce}"
   end
 
   defp verify_signature(message, signature, expected_address) do
@@ -1051,14 +1051,14 @@ defmodule Cgraph.Accounts do
   """
   def get_online_friends(user) do
     friend_ids = get_friend_ids(user)
-    online_user_ids = Cgraph.Presence.list_online_users()
+    online_user_ids = CGraph.Presence.list_online_users()
 
     online_friend_ids = MapSet.intersection(MapSet.new(friend_ids), MapSet.new(online_user_ids))
 
     Repo.all(from u in User, where: u.id in ^MapSet.to_list(online_friend_ids))
     |> Enum.map(fn u ->
-      status = Cgraph.Presence.get_user_status(u.id)
-      presence = Cgraph.Presence.get_user_presence(u.id)
+      status = CGraph.Presence.get_user_status(u.id)
+      presence = CGraph.Presence.get_user_presence(u.id)
       status_text = if presence, do: Map.get(presence, :status_message), else: nil
       Map.merge(u, %{status: status, status_text: status_text})
     end)
@@ -1108,7 +1108,7 @@ defmodule Cgraph.Accounts do
     # friendship.user_id = sender of the request
     with {:ok, recipient} <- get_user(friendship.friend_id),
          {:ok, sender} <- get_user(friendship.user_id) do
-      Cgraph.Notifications.notify_friend_request(recipient, sender)
+      CGraph.Notifications.notify_friend_request(recipient, sender)
     end
   end
 
@@ -1122,7 +1122,7 @@ defmodule Cgraph.Accounts do
     # friendship.friend_id = accepter (who accepted the request)
     with {:ok, requester} <- get_user(friendship.user_id),
          {:ok, accepter} <- get_user(friendship.friend_id) do
-      Cgraph.Notifications.notify_friend_accepted(requester, accepter)
+      CGraph.Notifications.notify_friend_accepted(requester, accepter)
     end
   end
 
@@ -1458,7 +1458,7 @@ defmodule Cgraph.Accounts do
   # Push Token Functions
   # ==========================================================================
 
-  alias Cgraph.Accounts.PushToken
+  alias CGraph.Accounts.PushToken
 
   @doc """
   Register a push notification token for a user.

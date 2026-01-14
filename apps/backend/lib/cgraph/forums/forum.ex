@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Forum do
+defmodule CGraph.Forums.Forum do
   @moduledoc """
   Forum schema - combines Reddit-style discovery with MyBB-style full forum hosting.
 
@@ -91,24 +91,24 @@ defmodule Cgraph.Forums.Forum do
     field :deleted_at, :utc_datetime
 
     # Relationships
-    belongs_to :owner, Cgraph.Accounts.User
-    belongs_to :theme, Cgraph.Forums.ForumTheme
+    belongs_to :owner, CGraph.Accounts.User
+    belongs_to :theme, CGraph.Forums.ForumTheme
 
     # Reddit-style posts (if used for simple reddit-like mode)
-    has_many :posts, Cgraph.Forums.Post
-    has_many :categories, Cgraph.Forums.Category
-    has_many :moderators, Cgraph.Forums.Moderator
-    has_many :rules, Cgraph.Forums.Rule
-    has_many :bans, Cgraph.Forums.Ban
-    has_many :forum_votes, Cgraph.Forums.ForumVote
+    has_many :posts, CGraph.Forums.Post
+    has_many :categories, CGraph.Forums.Category
+    has_many :moderators, CGraph.Forums.Moderator
+    has_many :rules, CGraph.Forums.Rule
+    has_many :bans, CGraph.Forums.Ban
+    has_many :forum_votes, CGraph.Forums.ForumVote
 
     # MyBB-style forum hosting
-    has_many :boards, Cgraph.Forums.Board
-    has_many :themes, Cgraph.Forums.ForumTheme
-    has_many :plugins, Cgraph.Forums.ForumPlugin
-    has_many :user_groups, Cgraph.Forums.ForumUserGroup
-    has_many :members, Cgraph.Forums.ForumMember
-    has_many :announcements, Cgraph.Forums.ForumAnnouncement
+    has_many :boards, CGraph.Forums.Board
+    has_many :themes, CGraph.Forums.ForumTheme
+    has_many :plugins, CGraph.Forums.ForumPlugin
+    has_many :user_groups, CGraph.Forums.ForumUserGroup
+    has_many :members, CGraph.Forums.ForumMember
+    has_many :announcements, CGraph.Forums.ForumAnnouncement
 
     timestamps()
   end

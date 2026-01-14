@@ -1,4 +1,4 @@
-defmodule Cgraph.Reputation do
+defmodule CGraph.Reputation do
   @moduledoc """
   Context for Reputation system.
   Handles user reputation giving, receiving, and tracking.
@@ -7,9 +7,9 @@ defmodule Cgraph.Reputation do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
-  alias Cgraph.Reputation.ReputationEntry
-  alias Cgraph.Accounts.User
+  alias CGraph.Repo
+  alias CGraph.Reputation.ReputationEntry
+  alias CGraph.Accounts.User
 
   # ========================================
   # QUERIES

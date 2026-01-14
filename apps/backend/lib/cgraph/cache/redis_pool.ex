@@ -1,4 +1,4 @@
-defmodule Cgraph.Cache.RedisPool do
+defmodule CGraph.Cache.RedisPool do
   @moduledoc """
   Redis connection pool for scalable operations.
 
@@ -21,7 +21,7 @@ defmodule Cgraph.Cache.RedisPool do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Cache.RedisPool,
+      config :cgraph, CGraph.Cache.RedisPool,
         pool_size: 20,
         redis_url: "redis://localhost:6379/0"
 

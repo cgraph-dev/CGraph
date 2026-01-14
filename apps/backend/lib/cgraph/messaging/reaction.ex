@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.Reaction do
+defmodule CGraph.Messaging.Reaction do
   @moduledoc """
   Message reactions (emoji).
 
@@ -38,8 +38,8 @@ defmodule Cgraph.Messaging.Reaction do
   schema "reactions" do
     field :emoji, :string
 
-    belongs_to :message, Cgraph.Messaging.Message
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :message, CGraph.Messaging.Message
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps(updated_at: false)
   end

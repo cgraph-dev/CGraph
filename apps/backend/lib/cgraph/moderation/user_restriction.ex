@@ -1,4 +1,4 @@
-defmodule Cgraph.Moderation.UserRestriction do
+defmodule CGraph.Moderation.UserRestriction do
   @moduledoc """
   Schema for user account restrictions (suspensions/bans).
 
@@ -20,7 +20,7 @@ defmodule Cgraph.Moderation.UserRestriction do
     field :expires_at, :utc_datetime
     field :active, :boolean, default: true
 
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps(type: :utc_datetime)
   end

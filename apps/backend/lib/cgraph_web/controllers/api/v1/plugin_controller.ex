@@ -1,15 +1,15 @@
-defmodule CgraphWeb.API.V1.PluginController do
+defmodule CGraphWeb.API.V1.PluginController do
   @moduledoc """
   Controller for forum plugin management.
 
   Handles plugin marketplace browsing, installation, configuration,
   and management for MyBB-style forum hosting.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Forums
+  alias CGraph.Forums
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List available plugins from the marketplace.

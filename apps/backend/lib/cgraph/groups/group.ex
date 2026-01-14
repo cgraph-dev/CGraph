@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.Group do
+defmodule CGraph.Groups.Group do
   @moduledoc """
   Group schema for Discord-style server/community.
 
@@ -40,13 +40,13 @@ defmodule Cgraph.Groups.Group do
     field :deleted_at, :utc_datetime
 
     # Associations
-    belongs_to :owner, Cgraph.Accounts.User
-    has_many :channels, Cgraph.Groups.Channel
-    has_many :members, Cgraph.Groups.Member
-    has_many :roles, Cgraph.Groups.Role
-    has_many :invites, Cgraph.Groups.Invite
-    has_many :audit_logs, Cgraph.Groups.AuditLog
-    has_many :emojis, Cgraph.Groups.CustomEmoji
+    belongs_to :owner, CGraph.Accounts.User
+    has_many :channels, CGraph.Groups.Channel
+    has_many :members, CGraph.Groups.Member
+    has_many :roles, CGraph.Groups.Role
+    has_many :invites, CGraph.Groups.Invite
+    has_many :audit_logs, CGraph.Groups.AuditLog
+    has_many :emojis, CGraph.Groups.CustomEmoji
 
     timestamps()
   end

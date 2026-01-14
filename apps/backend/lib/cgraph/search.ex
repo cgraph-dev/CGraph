@@ -1,4 +1,4 @@
-defmodule Cgraph.Search do
+defmodule CGraph.Search do
   @moduledoc """
   The Search context.
 
@@ -7,7 +7,7 @@ defmodule Cgraph.Search do
 
   ## Search Backends
 
-  - **Primary**: Meilisearch via `Cgraph.Search.SearchEngine`
+  - **Primary**: Meilisearch via `CGraph.Search.SearchEngine`
     - Sub-50ms response times
     - Typo-tolerant fuzzy matching
     - Relevance ranking
@@ -29,12 +29,12 @@ defmodule Cgraph.Search do
   import Ecto.Query, warn: false
   require Logger
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Forums.Post
-  alias Cgraph.Groups.Group
-  alias Cgraph.Messaging.Message
-  alias Cgraph.Repo
-  alias Cgraph.Search.Engine, as: SearchEngine
+  alias CGraph.Accounts.User
+  alias CGraph.Forums.Post
+  alias CGraph.Groups.Group
+  alias CGraph.Messaging.Message
+  alias CGraph.Repo
+  alias CGraph.Search.Engine, as: SearchEngine
 
   @doc """
   Search users by username, display name, bio, or user_id (identity number).
@@ -400,7 +400,7 @@ defmodule Cgraph.Search do
 
     # Get forum name suggestions
     forums =
-      from(f in Cgraph.Forums.Forum,
+      from(f in CGraph.Forums.Forum,
         where: ilike(f.name, ^search_term),
         select: %{type: "forum", text: f.name, id: f.id},
         limit: ^limit)

@@ -1,4 +1,4 @@
-defmodule Cgraph.WebRTC.Participant do
+defmodule CGraph.WebRTC.Participant do
   @moduledoc """
   Represents a participant in a WebRTC call.
 

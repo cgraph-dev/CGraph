@@ -1,11 +1,11 @@
-defmodule CgraphWeb.Plugs.ApiVersion do
+defmodule CGraphWeb.Plugs.ApiVersion do
   @moduledoc """
-  CgraphWeb.Plugs.ApiVersion - API Version Detection and Validation Plug
+  CGraphWeb.Plugs.ApiVersion - API Version Detection and Validation Plug
 
   ## Overview
 
   This plug handles API version detection, validation, and response header
-  management for versioned API endpoints. It integrates with `Cgraph.ApiVersioning`
+  management for versioned API endpoints. It integrates with `CGraph.ApiVersioning`
   to provide a complete versioning solution.
 
   ## Features
@@ -21,12 +21,12 @@ defmodule CgraphWeb.Plugs.ApiVersion do
   ### In Router Pipeline
 
       pipeline :api_v1 do
-        plug CgraphWeb.Plugs.ApiVersion, version: 1
+        plug CGraphWeb.Plugs.ApiVersion, version: 1
       end
 
       # Or with automatic detection
       pipeline :api_versioned do
-        plug CgraphWeb.Plugs.ApiVersion
+        plug CGraphWeb.Plugs.ApiVersion
       end
 
   ### Options
@@ -55,15 +55,15 @@ defmodule CgraphWeb.Plugs.ApiVersion do
 
   ### Explicit Version
 
-      plug CgraphWeb.Plugs.ApiVersion, version: 2
+      plug CGraphWeb.Plugs.ApiVersion, version: 2
 
   ### Version Range
 
-      plug CgraphWeb.Plugs.ApiVersion, min_version: 2, max_version: 3
+      plug CGraphWeb.Plugs.ApiVersion, min_version: 2, max_version: 3
 
   ### Required Version
 
-      plug CgraphWeb.Plugs.ApiVersion, require: true
+      plug CGraphWeb.Plugs.ApiVersion, require: true
   """
 
   @behaviour Plug
@@ -71,7 +71,7 @@ defmodule CgraphWeb.Plugs.ApiVersion do
   import Plug.Conn
   require Logger
 
-  alias Cgraph.ApiVersioning
+  alias CGraph.ApiVersioning
 
   # ---------------------------------------------------------------------------
   # Plug Callbacks
@@ -342,17 +342,17 @@ defmodule CgraphWeb.Plugs.ApiVersion do
   # ---------------------------------------------------------------------------
 
   defp get_default_version do
-    Application.get_env(:cgraph, Cgraph.ApiVersioning, [])
+    Application.get_env(:cgraph, CGraph.ApiVersioning, [])
     |> Keyword.get(:default_version, 1)
   end
 
   defp get_current_version do
-    Application.get_env(:cgraph, Cgraph.ApiVersioning, [])
+    Application.get_env(:cgraph, CGraph.ApiVersioning, [])
     |> Keyword.get(:current_version, 1)
   end
 
   defp get_min_version do
-    Application.get_env(:cgraph, Cgraph.ApiVersioning, [])
+    Application.get_env(:cgraph, CGraph.ApiVersioning, [])
     |> Keyword.get(:minimum_version, 1)
   end
 

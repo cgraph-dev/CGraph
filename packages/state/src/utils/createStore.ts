@@ -2,16 +2,17 @@
  * Store Creation Utilities
  */
 
-import { create, StateCreator, StoreApi, UseBoundStore } from 'zustand';
+import { create, StateCreator } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
+import type { Draft } from 'immer';
 
 /**
  * Create a store with common middleware (immer, subscribeWithSelector)
  */
 export function createStore<T extends object>(
   initializer: StateCreator<T, [['zustand/immer', never]], []>
-): UseBoundStore<StoreApi<T>> {
+) {
   return create<T>()(
     subscribeWithSelector(
       immer(initializer)
@@ -24,11 +25,11 @@ export function createStore<T extends object>(
  */
 export function createSlice<T extends object>(
   sliceCreator: (
-    set: (fn: (state: T) => void) => void,
+    set: (fn: (state: Draft<T>) => void) => void,
     get: () => T
   ) => T
 ): StateCreator<T, [['zustand/immer', never]], []> {
-  return sliceCreator;
+  return sliceCreator as StateCreator<T, [['zustand/immer', never]], []>;
 }
 
 /**

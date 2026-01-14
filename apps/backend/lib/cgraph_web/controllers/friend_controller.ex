@@ -1,15 +1,15 @@
-defmodule CgraphWeb.FriendController do
+defmodule CGraphWeb.FriendController do
   @moduledoc """
   Friend management endpoints.
   """
 
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Accounts.Friends
-  alias Cgraph.Guardian
-  import CgraphWeb.ControllerHelpers, only: [safe_to_integer: 2]
+  alias CGraph.Accounts.Friends
+  alias CGraph.Guardian
+  import CGraphWeb.ControllerHelpers, only: [safe_to_integer: 2]
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   Lists user's friends.

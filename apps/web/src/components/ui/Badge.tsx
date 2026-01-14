@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info';
+export type BadgeVariant = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'destructive' | 'secondary' | 'outline';
 type BadgeSize = 'sm' | 'md' | 'lg';
 
 interface BadgeProps {
@@ -32,6 +32,9 @@ export default function Badge({
     warning: 'bg-yellow-600/20 text-yellow-400 border border-yellow-500/30',
     danger: 'bg-red-600/20 text-red-400 border border-red-500/30',
     info: 'bg-blue-600/20 text-blue-400 border border-blue-500/30',
+    destructive: 'bg-red-600/20 text-red-400 border border-red-500/30',
+    secondary: 'bg-gray-600/20 text-gray-300 border border-gray-500/30',
+    outline: 'bg-transparent text-gray-300 border border-dark-600',
   };
 
   const sizeStyles: Record<BadgeSize, string> = {
@@ -47,6 +50,9 @@ export default function Badge({
     warning: 'bg-yellow-400',
     danger: 'bg-red-400',
     info: 'bg-blue-400',
+    destructive: 'bg-red-400',
+    secondary: 'bg-gray-400',
+    outline: 'bg-gray-400',
   };
 
   return (

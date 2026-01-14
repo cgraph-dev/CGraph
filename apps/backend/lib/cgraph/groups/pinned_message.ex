@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.PinnedMessage do
+defmodule CGraph.Groups.PinnedMessage do
   @moduledoc """
   Schema for pinned messages in channels.
   """
@@ -10,9 +10,9 @@ defmodule Cgraph.Groups.PinnedMessage do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "channel_pinned_messages" do
-    belongs_to :channel, Cgraph.Groups.Channel
-    belongs_to :message, Cgraph.Messaging.Message
-    belongs_to :pinned_by, Cgraph.Accounts.User
+    belongs_to :channel, CGraph.Groups.Channel
+    belongs_to :message, CGraph.Messaging.Message
+    belongs_to :pinned_by, CGraph.Accounts.User
 
     field :position, :integer
 

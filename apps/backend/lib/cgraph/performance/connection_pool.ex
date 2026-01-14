@@ -1,4 +1,4 @@
-defmodule Cgraph.Performance.ConnectionPool do
+defmodule CGraph.Performance.ConnectionPool do
   @moduledoc """
   Connection pool configuration and management utilities.
 
@@ -31,7 +31,7 @@ defmodule Cgraph.Performance.ConnectionPool do
   ## Configuration Example
 
       # In config.exs
-      config :cgraph, Cgraph.Performance.ConnectionPool,
+      config :cgraph, CGraph.Performance.ConnectionPool,
         database: %{
           pool_size: 20,
           queue_target: 50,
@@ -102,7 +102,7 @@ defmodule Cgraph.Performance.ConnectionPool do
   @spec http_pool_config(keyword()) :: keyword()
   def http_pool_config(opts \\ []) do
     base_config = [
-      name: Cgraph.Finch,
+      name: CGraph.Finch,
       pools: %{
         :default => build_pool_spec(:default, opts),
 

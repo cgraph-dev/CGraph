@@ -1,11 +1,11 @@
-defmodule Cgraph.Workers.SendEmailNotification do
+defmodule CGraph.Workers.SendEmailNotification do
   @moduledoc """
   Oban worker for sending email notifications.
 
   Handles batched email delivery with configurable delays
   to prevent notification spam.
 
-  This worker integrates with `Cgraph.Mailer` for actual email delivery
+  This worker integrates with `CGraph.Mailer` for actual email delivery
   and supports multiple email types with proper template rendering.
 
   ## Supported Email Types
@@ -27,7 +27,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
         email_type: "verification",
         verification_token: token
       }
-      |> Cgraph.Workers.SendEmailNotification.new()
+      |> CGraph.Workers.SendEmailNotification.new()
       |> Oban.insert()
 
       # Send notification email
@@ -35,7 +35,7 @@ defmodule Cgraph.Workers.SendEmailNotification do
         user_id: user.id,
         notification_id: notification.id
       }
-      |> Cgraph.Workers.SendEmailNotification.new()
+      |> CGraph.Workers.SendEmailNotification.new()
       |> Oban.insert()
 
   ## Deduplication
@@ -52,10 +52,10 @@ defmodule Cgraph.Workers.SendEmailNotification do
 
   require Logger
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Mailer
-  alias Cgraph.Notifications.Notification
-  alias Cgraph.Repo
+  alias CGraph.Accounts.User
+  alias CGraph.Mailer
+  alias CGraph.Notifications.Notification
+  alias CGraph.Repo
 
   @impl Oban.Worker
   # Handle verification emails

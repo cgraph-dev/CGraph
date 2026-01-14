@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.VoiceMessageController do
+defmodule CGraphWeb.API.V1.VoiceMessageController do
   @moduledoc """
   API controller for voice message operations.
 
@@ -10,12 +10,12 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
   - `GET /api/v1/voice-messages/:id/waveform` - Get waveform data
   """
 
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Messaging.VoiceMessage
-  alias Cgraph.Repo
+  alias CGraph.Messaging.VoiceMessage
+  alias CGraph.Repo
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   plug :ensure_authenticated
 
@@ -176,9 +176,9 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
   end
 
   defp create_voice_message_in_conversation(voice_message, user, conversation_id) do
-    alias Cgraph.Messaging
-    alias Cgraph.Messaging.Conversation
-    alias CgraphWeb.API.V1.MessageJSON
+    alias CGraph.Messaging
+    alias CGraph.Messaging.Conversation
+    alias CGraphWeb.API.V1.MessageJSON
 
     case Repo.get(Conversation, conversation_id) do
       nil ->
@@ -203,7 +203,7 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
 
             # Broadcast the new message to all channel subscribers (for real-time updates)
             serialized = MessageJSON.message_data(message)
-            CgraphWeb.Endpoint.broadcast(
+            CGraphWeb.Endpoint.broadcast(
               "conversation:#{conversation_id}",
               "new_message",
               %{message: serialized}
@@ -218,7 +218,7 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
   end
 
   defp create_voice_message_in_channel(voice_message, user, channel_id) do
-    alias Cgraph.Groups
+    alias CGraph.Groups
 
     message_attrs = %{
       content: "[Voice Message]",
@@ -256,7 +256,7 @@ defmodule CgraphWeb.API.V1.VoiceMessageController do
   end
 
   defp can_access_message?(user, message_id) do
-    alias Cgraph.Messaging.Message
+    alias CGraph.Messaging.Message
     import Ecto.Query
 
     case Repo.get(Message, message_id) do

@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.ForumJSON do
+defmodule CGraphWeb.API.V1.ForumJSON do
   @moduledoc """
   JSON rendering for forum responses.
   """
 
-  alias CgraphWeb.API.V1.UserJSON
+  alias CGraphWeb.API.V1.UserJSON
 
   def index(%{forums: forums, meta: meta}) do
     %{

@@ -1,13 +1,13 @@
-defmodule CgraphWeb.API.V1.CategoryController do
+defmodule CGraphWeb.API.V1.CategoryController do
   @moduledoc """
   Handles forum categories.
   Categories organize posts within forums.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Forums
+  alias CGraph.Forums
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List all categories in a forum.

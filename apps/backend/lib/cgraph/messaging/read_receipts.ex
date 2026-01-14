@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.ReadReceipts do
+defmodule CGraph.Messaging.ReadReceipts do
   @moduledoc """
   Sub-context for Read Receipt operations.
 
@@ -10,8 +10,8 @@ defmodule Cgraph.Messaging.ReadReceipts do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Messaging.{Conversation, ConversationParticipant, Message, ReadReceipt}
-  alias Cgraph.Repo
+  alias CGraph.Messaging.{Conversation, ConversationParticipant, Message, ReadReceipt}
+  alias CGraph.Repo
 
   @doc """
   Mark messages as read for a user in a conversation.

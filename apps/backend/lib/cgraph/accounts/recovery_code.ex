@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.RecoveryCode do
+defmodule CGraph.Accounts.RecoveryCode do
   @moduledoc """
   Schema for wallet recovery codes.
 
@@ -17,7 +17,7 @@ defmodule Cgraph.Accounts.RecoveryCode do
     field :used, :boolean, default: false
     field :used_at, :utc_datetime
 
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps()
   end

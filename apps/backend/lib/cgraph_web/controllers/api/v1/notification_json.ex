@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.NotificationJSON do
+defmodule CGraphWeb.API.V1.NotificationJSON do
   @moduledoc """
   JSON rendering for notification responses.
   """
 
-  alias CgraphWeb.API.V1.UserJSON
+  alias CGraphWeb.API.V1.UserJSON
 
   def index(%{notifications: notifications, meta: meta}) do
     %{

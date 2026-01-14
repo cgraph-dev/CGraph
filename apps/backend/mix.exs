@@ -1,4 +1,4 @@
-defmodule Cgraph.MixProject do
+defmodule CGraph.MixProject do
   use Mix.Project
 
   @version "0.8.6"
@@ -32,7 +32,7 @@ defmodule Cgraph.MixProject do
 
   def application do
     [
-      mod: {Cgraph.Application, []},
+      mod: {CGraph.Application, []},
       extra_applications: [:logger, :runtime_tools, :os_mon]
     ]
   end

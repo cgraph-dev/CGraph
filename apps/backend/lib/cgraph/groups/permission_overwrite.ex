@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.PermissionOverwrite do
+defmodule CGraph.Groups.PermissionOverwrite do
   @moduledoc """
   Schema for channel permission overwrites.
 
@@ -12,9 +12,9 @@ defmodule Cgraph.Groups.PermissionOverwrite do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "channel_permission_overwrites" do
-    belongs_to :channel, Cgraph.Groups.Channel
-    belongs_to :role, Cgraph.Groups.Role
-    belongs_to :member, Cgraph.Groups.Member
+    belongs_to :channel, CGraph.Groups.Channel
+    belongs_to :role, CGraph.Groups.Role
+    belongs_to :member, CGraph.Groups.Member
 
     # Permissions that are explicitly allowed
     field :allow, :integer, default: 0

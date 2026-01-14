@@ -4,7 +4,7 @@ import Config
 #
 # The MIX_TEST_PARTITION environment variable can be used
 # to provide built-in test partitioning in CI environment.
-config :cgraph, Cgraph.Repo,
+config :cgraph, CGraph.Repo,
   username: "cgraph",
   password: "cgraph_dev_password",
   hostname: "localhost",
@@ -14,13 +14,13 @@ config :cgraph, Cgraph.Repo,
 
 # We don't run a server during test. If one is required,
 # you can enable the server option below.
-config :cgraph, CgraphWeb.Endpoint,
+config :cgraph, CGraphWeb.Endpoint,
   http: [ip: {127, 0, 0, 1}, port: 4002],
   secret_key_base: "test-secret-key-base-at-least-64-characters-long-for-testing-purposes",
   server: false
 
 # In test we don't send emails
-config :cgraph, Cgraph.Mailer, adapter: Swoosh.Adapters.Test
+config :cgraph, CGraph.Mailer, adapter: Swoosh.Adapters.Test
 
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
@@ -32,7 +32,7 @@ config :logger, level: :warning
 config :phoenix, :plug_init_mode, :runtime
 
 # Disable rate limiting in tests to prevent false failures
-config :cgraph, Cgraph.RateLimiter, enabled: false
+config :cgraph, CGraph.RateLimiter, enabled: false
 
 # Oban testing mode
 config :cgraph, Oban, testing: :inline

@@ -1,4 +1,4 @@
-defmodule Cgraph.Admin do
+defmodule CGraph.Admin do
   @moduledoc """
   Admin dashboard context for system monitoring and management.
 
@@ -37,10 +37,10 @@ defmodule Cgraph.Admin do
   require Logger
   import Ecto.Query
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Repo
+  alias CGraph.Accounts.User
+  alias CGraph.Repo
   # Schemas to be implemented:
-  # alias Cgraph.Admin.{AuditEntry, Report, SystemConfig}
+  # alias CGraph.Admin.{AuditEntry, Report, SystemConfig}
 
   # ---------------------------------------------------------------------------
   # System Metrics
@@ -318,12 +318,12 @@ defmodule Cgraph.Admin do
 
   defp terminate_user_sessions(user_id) do
     # Delete all sessions for user
-    from(s in Cgraph.Accounts.Session, where: s.user_id == ^user_id)
+    from(s in CGraph.Accounts.Session, where: s.user_id == ^user_id)
     |> Repo.delete_all()
 
     # Broadcast disconnect to any active sockets
     Phoenix.PubSub.broadcast(
-      Cgraph.PubSub,
+      CGraph.PubSub,
       "user:#{user_id}",
       {:force_disconnect, :banned}
     )

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.ConversationChannel do
+defmodule CGraphWeb.ConversationChannel do
   @moduledoc """
   Channel for 1:1 direct message conversations.
 
@@ -9,11 +9,11 @@ defmodule CgraphWeb.ConversationChannel do
   - Presence (online status)
   - Rate limiting to prevent spam
   """
-  use CgraphWeb, :channel
+  use CGraphWeb, :channel
 
-  alias Cgraph.Messaging
-  alias Cgraph.Presence
-  alias CgraphWeb.API.V1.MessageJSON
+  alias CGraph.Messaging
+  alias CGraph.Presence
+  alias CGraphWeb.API.V1.MessageJSON
 
   @typing_timeout 5_000
 
@@ -120,7 +120,7 @@ defmodule CgraphWeb.ConversationChannel do
         }) do
           {:ok, message} ->
             # Preload sender for serialization (including reply_to sender)
-            message = Cgraph.Repo.preload(message, [:sender, :reactions, [reply_to: :sender]])
+            message = CGraph.Repo.preload(message, [:sender, :reactions, [reply_to: :sender]])
             serialized = MessageJSON.message_data(message)
 
             broadcast!(socket, "new_message", %{message: serialized})
@@ -195,7 +195,7 @@ defmodule CgraphWeb.ConversationChannel do
 
     case Messaging.edit_message(message_id, user.id, content) do
       {:ok, message} ->
-        message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+        message = CGraph.Repo.preload(message, [:sender, :reactions, :reply_to])
         serialized = MessageJSON.message_data(message)
         broadcast!(socket, "message_updated", %{message: serialized})
         {:reply, {:ok, %{message_id: message.id}}, socket}
@@ -234,7 +234,7 @@ defmodule CgraphWeb.ConversationChannel do
 
     case Messaging.pin_message(message_id, user.id) do
       {:ok, message} ->
-        message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+        message = CGraph.Repo.preload(message, [:sender, :reactions, :reply_to])
         serialized = MessageJSON.message_data(message)
         broadcast!(socket, "message_pinned", %{message: serialized})
         {:reply, {:ok, %{message_id: message.id}}, socket}

@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.Friendship do
+defmodule CGraph.Accounts.Friendship do
   @moduledoc """
   Schema for friendships between users.
 
@@ -22,9 +22,9 @@ defmodule Cgraph.Accounts.Friendship do
     field :accepted_at, :utc_datetime  # When the friendship was accepted
 
     # The user who initiated the friendship/request
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :user, CGraph.Accounts.User
     # The target user
-    belongs_to :friend, Cgraph.Accounts.User
+    belongs_to :friend, CGraph.Accounts.User
 
     timestamps()
   end

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Helpers.ParamParser do
+defmodule CGraphWeb.Helpers.ParamParser do
   @moduledoc """
   Safe parameter parsing utilities for API controllers.
 
@@ -7,7 +7,7 @@ defmodule CgraphWeb.Helpers.ParamParser do
 
   ## Usage
 
-      import CgraphWeb.Helpers.ParamParser
+      import CGraphWeb.Helpers.ParamParser
 
       def index(conn, params) do
         limit = parse_int(params["limit"], 50, min: 1, max: 100)

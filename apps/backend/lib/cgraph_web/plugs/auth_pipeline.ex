@@ -1,11 +1,11 @@
-defmodule CgraphWeb.Plugs.AuthPipeline do
+defmodule CGraphWeb.Plugs.AuthPipeline do
   @moduledoc """
   Guardian pipeline for authenticating API requests.
   """
   use Guardian.Plug.Pipeline,
     otp_app: :cgraph,
-    module: Cgraph.Guardian,
-    error_handler: CgraphWeb.Plugs.AuthErrorHandler
+    module: CGraph.Guardian,
+    error_handler: CGraphWeb.Plugs.AuthErrorHandler
 
   plug Guardian.Plug.VerifyHeader, scheme: "Bearer"
   plug Guardian.Plug.EnsureAuthenticated

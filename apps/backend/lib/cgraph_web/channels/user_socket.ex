@@ -1,4 +1,4 @@
-defmodule CgraphWeb.UserSocket do
+defmodule CGraphWeb.UserSocket do
   @moduledoc """
   WebSocket handler for real-time features.
 
@@ -6,15 +6,15 @@ defmodule CgraphWeb.UserSocket do
   """
   use Phoenix.Socket
 
-  alias Cgraph.Accounts
+  alias CGraph.Accounts
 
   # Channels
-  channel "room:*", CgraphWeb.RoomChannel
-  channel "conversation:*", CgraphWeb.ConversationChannel
-  channel "group:*", CgraphWeb.GroupChannel
-  channel "user:*", CgraphWeb.UserChannel
-  channel "presence:*", CgraphWeb.PresenceChannel
-  channel "call:*", CgraphWeb.CallChannel
+  channel "room:*", CGraphWeb.RoomChannel
+  channel "conversation:*", CGraphWeb.ConversationChannel
+  channel "group:*", CGraphWeb.GroupChannel
+  channel "user:*", CGraphWeb.UserChannel
+  channel "presence:*", CGraphWeb.PresenceChannel
+  channel "call:*", CGraphWeb.CallChannel
 
   @impl true
   def connect(%{"token" => token}, socket, _connect_info) do
@@ -38,7 +38,7 @@ defmodule CgraphWeb.UserSocket do
   def id(socket), do: "user_socket:#{socket.assigns.current_user.id}"
 
   defp verify_token(token) do
-    case Cgraph.Guardian.decode_and_verify(token) do
+    case CGraph.Guardian.decode_and_verify(token) do
       {:ok, claims} -> {:ok, claims["sub"]}
       {:error, reason} -> {:error, reason}
     end

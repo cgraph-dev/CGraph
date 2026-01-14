@@ -1,4 +1,4 @@
-defmodule Cgraph.Cache do
+defmodule CGraph.Cache do
   @moduledoc """
   Unified caching layer with multi-tier architecture.
 
@@ -436,7 +436,7 @@ defmodule Cgraph.Cache do
   defp get_l3(key) do
     redis_key = "cache:#{key}"
 
-    case Cgraph.Redis.command(["GET", redis_key]) do
+    case CGraph.Redis.command(["GET", redis_key]) do
       {:ok, nil} -> {:error, :not_found}
       {:ok, data} ->
         # Use :safe option to prevent arbitrary atom creation and code execution
@@ -457,7 +457,7 @@ defmodule Cgraph.Cache do
       ["SETEX", redis_key, div(ttl, 1000), data]
     end
 
-    case Cgraph.Redis.command(cmd) do
+    case CGraph.Redis.command(cmd) do
       {:ok, _} -> :ok
       {:error, _} = error -> error
     end
@@ -467,7 +467,7 @@ defmodule Cgraph.Cache do
 
   defp delete_l3(key) do
     redis_key = "cache:#{key}"
-    Cgraph.Redis.command(["DEL", redis_key])
+    CGraph.Redis.command(["DEL", redis_key])
     :ok
   rescue
     _ -> :ok
@@ -476,10 +476,10 @@ defmodule Cgraph.Cache do
   defp delete_redis_pattern(pattern) do
     redis_pattern = "cache:#{pattern}"
 
-    case Cgraph.Redis.command(["KEYS", redis_pattern]) do
+    case CGraph.Redis.command(["KEYS", redis_pattern]) do
       {:ok, keys} when is_list(keys) ->
         Enum.each(keys, fn key ->
-          Cgraph.Redis.command(["DEL", key])
+          CGraph.Redis.command(["DEL", key])
         end)
       _ -> :ok
     end
@@ -488,7 +488,7 @@ defmodule Cgraph.Cache do
   end
 
   defp redis_stats do
-    case Cgraph.Redis.command(["INFO", "memory"]) do
+    case CGraph.Redis.command(["INFO", "memory"]) do
       {:ok, info} -> parse_redis_info(info)
       _ -> %{}
     end
@@ -597,7 +597,7 @@ defmodule Cgraph.Cache do
   end
 
   defp acquire_lock(lock_key) do
-    case Cgraph.Redis.command(["SET", lock_key, "1", "NX", "EX", "5"]) do
+    case CGraph.Redis.command(["SET", lock_key, "1", "NX", "EX", "5"]) do
       {:ok, "OK"} -> :ok
       _ -> :locked
     end
@@ -606,7 +606,7 @@ defmodule Cgraph.Cache do
   end
 
   defp release_lock(lock_key) do
-    Cgraph.Redis.command(["DEL", lock_key])
+    CGraph.Redis.command(["DEL", lock_key])
   rescue
     _ -> :ok
   end

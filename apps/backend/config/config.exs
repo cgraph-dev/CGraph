@@ -2,18 +2,18 @@ import Config
 
 # General application configuration
 config :cgraph,
-  ecto_repos: [Cgraph.Repo],
+  ecto_repos: [CGraph.Repo],
   generators: [timestamp_type: :utc_datetime, binary_id: true]
 
 # Configures the endpoint
-config :cgraph, CgraphWeb.Endpoint,
+config :cgraph, CGraphWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: CgraphWeb.ErrorHTML, json: CgraphWeb.ErrorJSON],
+    formats: [html: CGraphWeb.ErrorHTML, json: CGraphWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: Cgraph.PubSub,
+  pubsub_server: CGraph.PubSub,
   live_view: [signing_salt: "cgraph_lv"]
 
 # Configure esbuild
@@ -81,18 +81,18 @@ config :logger, :console,
 config :phoenix, :json_library, Jason
 
 # Guardian configuration
-config :cgraph, Cgraph.Guardian,
+config :cgraph, CGraph.Guardian,
   issuer: "cgraph",
   secret_key: System.get_env("JWT_SECRET", "dev-jwt-key-override-in-production")
 
 # Oban configuration
 config :cgraph, Oban,
-  repo: Cgraph.Repo,
+  repo: CGraph.Repo,
   plugins: [Oban.Plugins.Pruner],
   queues: [default: 10, mailers: 5, notifications: 20]
 
 # Swoosh mailer configuration
-config :cgraph, Cgraph.Mailer,
+config :cgraph, CGraph.Mailer,
   adapter: Swoosh.Adapters.Local
 
 # OAuth configuration (override in runtime.exs for production)

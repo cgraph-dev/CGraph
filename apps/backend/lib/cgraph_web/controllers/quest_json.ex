@@ -1,4 +1,4 @@
-defmodule CgraphWeb.QuestJSON do
+defmodule CGraphWeb.QuestJSON do
   @moduledoc """
   JSON rendering for quest endpoints.
   """

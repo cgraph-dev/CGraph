@@ -1,12 +1,12 @@
-defmodule CgraphWeb.API.V1.SettingsController do
+defmodule CGraphWeb.API.V1.SettingsController do
   @moduledoc """
   Controller for user settings endpoints.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Accounts.Settings
+  alias CGraph.Accounts.Settings
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   Get all settings for the current user.

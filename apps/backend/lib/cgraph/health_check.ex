@@ -1,4 +1,4 @@
-defmodule Cgraph.HealthCheck do
+defmodule CGraph.HealthCheck do
   @moduledoc """
   Comprehensive system health checking with detailed diagnostics.
 
@@ -337,7 +337,7 @@ defmodule Cgraph.HealthCheck do
 
     try do
       # Simple connectivity check
-      SQL.query!(Cgraph.Repo, "SELECT 1", [])
+      SQL.query!(CGraph.Repo, "SELECT 1", [])
 
       # Check connection pool
       pool_status = check_pool_status()
@@ -412,7 +412,7 @@ defmodule Cgraph.HealthCheck do
     start_time = System.monotonic_time(:millisecond)
 
     try do
-      case Cgraph.Redis.ping() do
+      case CGraph.Redis.ping() do
         :ok ->
           latency = System.monotonic_time(:millisecond) - start_time
 
@@ -513,7 +513,7 @@ defmodule Cgraph.HealthCheck do
     # DBConnection pool status
     %{
       healthy: true,
-      pool_size: Cgraph.Repo.config()[:pool_size] || 10,
+      pool_size: CGraph.Repo.config()[:pool_size] || 10,
       checked_out: 0
     }
   rescue
@@ -522,7 +522,7 @@ defmodule Cgraph.HealthCheck do
   end
 
   defp database_ready? do
-    SQL.query!(Cgraph.Repo, "SELECT 1", [])
+    SQL.query!(CGraph.Repo, "SELECT 1", [])
     true
   rescue
     _ -> false
@@ -544,7 +544,7 @@ defmodule Cgraph.HealthCheck do
   # ---------------------------------------------------------------------------
 
   defp redis_configured? do
-    Code.ensure_loaded?(Cgraph.Redis)
+    Code.ensure_loaded?(CGraph.Redis)
   end
 
   # ---------------------------------------------------------------------------

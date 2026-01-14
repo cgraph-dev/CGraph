@@ -1,4 +1,4 @@
-defmodule Cgraph.Encryption do
+defmodule CGraph.Encryption do
   @moduledoc """
   Data encryption at rest and field-level encryption.
 
@@ -60,8 +60,8 @@ defmodule Cgraph.Encryption do
         use Ecto.Schema
 
         schema "users" do
-          field :email, Cgraph.Encryption.EncryptedField
-          field :phone, Cgraph.Encryption.EncryptedField
+          field :email, CGraph.Encryption.EncryptedField
+          field :phone, CGraph.Encryption.EncryptedField
         end
       end
 
@@ -385,15 +385,15 @@ defmodule Cgraph.Encryption do
   end
 end
 
-defmodule Cgraph.Encryption.EncryptedField do
+defmodule CGraph.Encryption.EncryptedField do
   @moduledoc """
   Ecto custom type for encrypted fields.
 
   ## Usage
 
       schema "users" do
-        field :ssn, Cgraph.Encryption.EncryptedField
-        field :credit_card, Cgraph.Encryption.EncryptedField
+        field :ssn, CGraph.Encryption.EncryptedField
+        field :credit_card, CGraph.Encryption.EncryptedField
       end
 
   Data is automatically encrypted on insert/update and decrypted on load.
@@ -416,7 +416,7 @@ defmodule Cgraph.Encryption.EncryptedField do
   def load(nil), do: {:ok, nil}
 
   def load(data) when is_binary(data) do
-    case Cgraph.Encryption.decrypt(data) do
+    case CGraph.Encryption.decrypt(data) do
       {:ok, plaintext} -> {:ok, plaintext}
       {:error, _} -> :error
     end
@@ -426,7 +426,7 @@ defmodule Cgraph.Encryption.EncryptedField do
   def dump(nil), do: {:ok, nil}
 
   def dump(value) when is_binary(value) do
-    case Cgraph.Encryption.encrypt(value, format: :binary) do
+    case CGraph.Encryption.encrypt(value, format: :binary) do
       {:ok, ciphertext} -> {:ok, ciphertext}
       {:error, _} -> :error
     end
@@ -438,15 +438,15 @@ defmodule Cgraph.Encryption.EncryptedField do
   def equal?(a, b), do: a == b
 end
 
-defmodule Cgraph.Encryption.EncryptedMap do
+defmodule CGraph.Encryption.EncryptedMap do
   @moduledoc """
   Ecto custom type for encrypted map/JSON fields.
 
   ## Usage
 
       schema "users" do
-        field :settings, Cgraph.Encryption.EncryptedMap
-        field :metadata, Cgraph.Encryption.EncryptedMap
+        field :settings, CGraph.Encryption.EncryptedMap
+        field :metadata, CGraph.Encryption.EncryptedMap
       end
   """
 
@@ -464,7 +464,7 @@ defmodule Cgraph.Encryption.EncryptedMap do
   def load(nil), do: {:ok, nil}
 
   def load(data) when is_binary(data) do
-    case Cgraph.Encryption.decrypt(data) do
+    case CGraph.Encryption.decrypt(data) do
       {:ok, json} ->
         case Jason.decode(json) do
           {:ok, map} -> {:ok, map}
@@ -480,7 +480,7 @@ defmodule Cgraph.Encryption.EncryptedMap do
   def dump(value) when is_map(value) do
     case Jason.encode(value) do
       {:ok, json} ->
-        case Cgraph.Encryption.encrypt(json, format: :binary) do
+        case CGraph.Encryption.encrypt(json, format: :binary) do
           {:ok, ciphertext} -> {:ok, ciphertext}
           {:error, _} -> :error
         end

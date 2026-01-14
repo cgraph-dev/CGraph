@@ -103,3 +103,17 @@ export function CardFooter({ children, className = '' }: CardFooterProps) {
     </div>
   );
 }
+
+// Card Description component
+interface CardDescriptionProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function CardDescription({ children, className = '' }: CardDescriptionProps) {
+  return (
+    <p className={`text-sm text-gray-400 ${className}`}>
+      {children}
+    </p>
+  );
+}

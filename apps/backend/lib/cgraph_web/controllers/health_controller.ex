@@ -1,4 +1,4 @@
-defmodule CgraphWeb.HealthController do
+defmodule CGraphWeb.HealthController do
   @moduledoc """
   Health check endpoints for monitoring and load balancer probes.
 
@@ -16,10 +16,10 @@ defmodule CgraphWeb.HealthController do
   1. Use `/health` for liveness checks (restart if failing)
   2. Use `/ready` for readiness checks (remove from pool if failing)
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Repo
-  alias Cgraph.Repo.Healthcheck
+  alias CGraph.Repo
+  alias CGraph.Repo.Healthcheck
 
   @doc """
   Basic liveness check - returns OK if the service is running.

@@ -1,4 +1,4 @@
-defmodule Cgraph.Workers.SendPushNotification do
+defmodule CGraph.Workers.SendPushNotification do
   @moduledoc """
   Oban worker for sending push notifications.
 
@@ -24,7 +24,7 @@ defmodule Cgraph.Workers.SendPushNotification do
         body: "Custom Body",
         data: %{action: "open_chat", conversation_id: "abc123"}
       }
-      |> Cgraph.Workers.SendPushNotification.new()
+      |> CGraph.Workers.SendPushNotification.new()
       |> Oban.insert()
 
   ## Job Arguments
@@ -50,9 +50,9 @@ defmodule Cgraph.Workers.SendPushNotification do
 
   require Logger
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Notifications.{Notification, PushService}
-  alias Cgraph.Repo
+  alias CGraph.Accounts.User
+  alias CGraph.Notifications.{Notification, PushService}
+  alias CGraph.Repo
 
   @impl Oban.Worker
   def perform(%Oban.Job{args: args, attempt: attempt}) do

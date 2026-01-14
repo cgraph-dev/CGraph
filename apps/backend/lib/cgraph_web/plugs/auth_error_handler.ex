@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Plugs.AuthErrorHandler do
+defmodule CGraphWeb.Plugs.AuthErrorHandler do
   @moduledoc """
   Error handler for Guardian authentication failures.
   """

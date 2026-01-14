@@ -1,4 +1,4 @@
-defmodule Cgraph.Moderation.Appeal do
+defmodule CGraph.Moderation.Appeal do
   @moduledoc """
   Schema for user appeals against moderation actions.
 
@@ -20,9 +20,9 @@ defmodule Cgraph.Moderation.Appeal do
     field :reviewer_notes, :string
     field :reviewed_at, :utc_datetime
 
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :review_action, Cgraph.Moderation.ReviewAction
-    belongs_to :reviewer, Cgraph.Accounts.User
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :review_action, CGraph.Moderation.ReviewAction
+    belongs_to :reviewer, CGraph.Accounts.User
 
     timestamps(type: :utc_datetime)
   end

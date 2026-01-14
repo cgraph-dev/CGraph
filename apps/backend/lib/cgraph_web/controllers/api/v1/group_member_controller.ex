@@ -1,16 +1,16 @@
-defmodule CgraphWeb.API.V1.GroupMemberController do
+defmodule CGraphWeb.API.V1.GroupMemberController do
   @moduledoc """
   Handles group member management actions.
   Includes listing members, updating roles, kicking, banning, muting.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Groups
-  alias Cgraph.Groups.Member
+  alias CGraph.Groups
+  alias CGraph.Groups.Member
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 

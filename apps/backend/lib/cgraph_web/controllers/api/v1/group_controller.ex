@@ -1,14 +1,14 @@
-defmodule CgraphWeb.API.V1.GroupController do
+defmodule CGraphWeb.API.V1.GroupController do
   @moduledoc """
   Controller for group (server) management.
   """
-  use CgraphWeb, :controller
-  import CgraphWeb.Helpers.ParamParser
+  use CGraphWeb, :controller
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Groups
-  alias Cgraph.Groups.Group
+  alias CGraph.Groups
+  alias CGraph.Groups.Group
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 

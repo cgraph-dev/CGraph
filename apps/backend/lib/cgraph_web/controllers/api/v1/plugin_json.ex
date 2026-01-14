@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.PluginJSON do
+defmodule CGraphWeb.API.V1.PluginJSON do
   @moduledoc """
   JSON views for plugin endpoints.
   """

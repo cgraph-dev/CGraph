@@ -1,4 +1,4 @@
-defmodule CgraphWeb.ChangesetJSON do
+defmodule CGraphWeb.ChangesetJSON do
   @moduledoc """
   JSON view for rendering Ecto Changeset validation errors.
 

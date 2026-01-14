@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.PushTokenJSON do
+defmodule CGraphWeb.API.V1.PushTokenJSON do
   @moduledoc """
   JSON rendering for push token responses.
   """

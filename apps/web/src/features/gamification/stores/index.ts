@@ -188,7 +188,9 @@ export const useGamificationStore = create<GamificationState>()(
         const state = get();
         const achievement = state.achievements.find(a => a.id === id);
         if (!achievement) return 0;
-        return Math.min(100, (achievement.currentProgress / achievement.targetProgress) * 100);
+        const current = achievement.currentProgress ?? 0;
+        const target = achievement.targetProgress ?? 1;
+        return Math.min(100, (current / target) * 100);
       },
     }),
     {

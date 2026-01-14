@@ -1,4 +1,4 @@
-defmodule CgraphWeb.CoinsJSON do
+defmodule CGraphWeb.CoinsJSON do
   @moduledoc """
   JSON rendering for coins endpoints.
   """

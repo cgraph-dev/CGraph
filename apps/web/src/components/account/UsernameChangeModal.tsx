@@ -7,11 +7,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
+import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
+import Badge from '@/components/ui/Badge';
 import { Loader2, AlertCircle, CheckCircle2, Clock, History } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 

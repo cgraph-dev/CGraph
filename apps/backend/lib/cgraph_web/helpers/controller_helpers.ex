@@ -1,4 +1,4 @@
-defmodule CgraphWeb.ControllerHelpers do
+defmodule CGraphWeb.ControllerHelpers do
   @moduledoc """
   Shared helper functions for controllers.
 

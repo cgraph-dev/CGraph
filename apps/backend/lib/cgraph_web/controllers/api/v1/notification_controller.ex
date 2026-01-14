@@ -1,14 +1,14 @@
-defmodule CgraphWeb.API.V1.NotificationController do
+defmodule CGraphWeb.API.V1.NotificationController do
   @moduledoc """
   Handles user notifications.
   Supports listing, marking as read, and managing notification preferences.
   """
-  use CgraphWeb, :controller
-  import CgraphWeb.Helpers.ParamParser
+  use CGraphWeb, :controller
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Notifications
+  alias CGraph.Notifications
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 50
 

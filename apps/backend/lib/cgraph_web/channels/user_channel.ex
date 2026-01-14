@@ -1,4 +1,4 @@
-defmodule CgraphWeb.UserChannel do
+defmodule CGraphWeb.UserChannel do
   @moduledoc """
   Per-user private channel for targeted notifications and state sync.
 
@@ -13,10 +13,10 @@ defmodule CgraphWeb.UserChannel do
   - PresenceChannel = global broadcast for online status
   - UserChannel = private delivery for user-specific events
   """
-  use CgraphWeb, :channel
+  use CGraphWeb, :channel
 
-  alias Cgraph.Accounts
-  alias Cgraph.Presence
+  alias CGraph.Accounts
+  alias CGraph.Presence
 
   @max_contact_batch 200
 
@@ -42,8 +42,8 @@ defmodule CgraphWeb.UserChannel do
     user = socket.assigns.current_user
 
     # Subscribe to user-specific pubsub topics
-    Phoenix.PubSub.subscribe(Cgraph.PubSub, "user:#{user.id}:notifications")
-    Phoenix.PubSub.subscribe(Cgraph.PubSub, "user:#{user.id}:presence_updates")
+    Phoenix.PubSub.subscribe(CGraph.PubSub, "user:#{user.id}:notifications")
+    Phoenix.PubSub.subscribe(CGraph.PubSub, "user:#{user.id}:presence_updates")
 
     # If client requested initial contact presence, send it
     if params["include_contact_presence"] do
@@ -113,7 +113,7 @@ defmodule CgraphWeb.UserChannel do
 
     # Verify target is a friend/contact before allowing subscription
     if can_view_presence?(user.id, target_user_id) do
-      Phoenix.PubSub.subscribe(Cgraph.PubSub, "user:#{target_user_id}:status")
+      Phoenix.PubSub.subscribe(CGraph.PubSub, "user:#{target_user_id}:status")
 
       # Send immediate status
       status = get_user_status(target_user_id)
@@ -125,7 +125,7 @@ defmodule CgraphWeb.UserChannel do
 
   @impl true
   def handle_in("unsubscribe_from_user", %{"user_id" => target_user_id}, socket) do
-    Phoenix.PubSub.unsubscribe(Cgraph.PubSub, "user:#{target_user_id}:status")
+    Phoenix.PubSub.unsubscribe(CGraph.PubSub, "user:#{target_user_id}:status")
     {:reply, :ok, socket}
   end
 
@@ -144,7 +144,7 @@ defmodule CgraphWeb.UserChannel do
     # Mark notifications as read
     _updated = Enum.each(ids, fn id ->
       try do
-        Cgraph.Notifications.mark_as_read(id)
+        CGraph.Notifications.mark_as_read(id)
       rescue
         _ -> :ok
       end
@@ -185,8 +185,8 @@ defmodule CgraphWeb.UserChannel do
     import Ecto.Query
 
     try do
-      alias Cgraph.Messaging.ConversationParticipant
-      alias Cgraph.Repo
+      alias CGraph.Messaging.ConversationParticipant
+      alias CGraph.Repo
 
       # Get all conversations the user is in
       conversation_ids = ConversationParticipant
@@ -234,8 +234,8 @@ defmodule CgraphWeb.UserChannel do
     import Ecto.Query
 
     try do
-      alias Cgraph.Messaging.ConversationParticipant
-      alias Cgraph.Repo
+      alias CGraph.Messaging.ConversationParticipant
+      alias CGraph.Repo
 
       # Get conversations viewer is in
       viewer_conversations = ConversationParticipant

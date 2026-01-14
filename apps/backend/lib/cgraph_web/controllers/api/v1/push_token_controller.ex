@@ -1,13 +1,13 @@
-defmodule CgraphWeb.API.V1.PushTokenController do
+defmodule CGraphWeb.API.V1.PushTokenController do
   @moduledoc """
   Handles push notification token registration.
   Users register their device tokens for receiving push notifications.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Notifications
+  alias CGraph.Notifications
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List user's registered push tokens.

@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups do
+defmodule CGraph.Groups do
   @moduledoc """
   The Groups context.
 
@@ -8,9 +8,9 @@ defmodule Cgraph.Groups do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Groups.{AuditLog, Channel, Group, Invite, Member, Role}
-  alias Cgraph.Messaging.Message
-  alias Cgraph.Repo
+  alias CGraph.Groups.{AuditLog, Channel, Group, Invite, Member, Role}
+  alias CGraph.Messaging.Message
+  alias CGraph.Repo
 
   # Helper to convert atom keys to string keys
   defp stringify_keys(map) when is_map(map) do
@@ -313,7 +313,7 @@ defmodule Cgraph.Groups do
   Broadcast typing indicator in channel.
   """
   def broadcast_channel_typing(channel, user) do
-    CgraphWeb.Endpoint.broadcast(
+    CGraphWeb.Endpoint.broadcast(
       "channel:#{channel.id}",
       "typing",
       %{user_id: user.id, username: user.username}
@@ -322,7 +322,7 @@ defmodule Cgraph.Groups do
   end
 
   defp broadcast_channel_message(channel, message) do
-    CgraphWeb.Endpoint.broadcast(
+    CGraphWeb.Endpoint.broadcast(
       "channel:#{channel.id}",
       "new_message",
       %{message: message}
@@ -980,21 +980,21 @@ defmodule Cgraph.Groups do
   List reactions on a channel message.
   """
   def list_message_reactions(message, opts \\ []) do
-    Cgraph.Messaging.list_reactions(message, opts)
+    CGraph.Messaging.list_reactions(message, opts)
   end
 
   @doc """
   Add a reaction to a channel message.
   """
   def add_message_reaction(user, message, emoji) do
-    Cgraph.Messaging.add_reaction(user, message, emoji)
+    CGraph.Messaging.add_reaction(user, message, emoji)
   end
 
   @doc """
   Remove a reaction from a channel message.
   """
   def remove_message_reaction(user, message, emoji) do
-    Cgraph.Messaging.remove_reaction(user, message, emoji)
+    CGraph.Messaging.remove_reaction(user, message, emoji)
   end
 
   @doc """
@@ -1004,7 +1004,7 @@ defmodule Cgraph.Groups do
     # Use provided user or try to get from reaction
     user_data = user || reaction.user
 
-    CgraphWeb.Endpoint.broadcast(
+    CGraphWeb.Endpoint.broadcast(
       "channel:#{channel.id}",
       "reaction_added",
       %{
@@ -1029,7 +1029,7 @@ defmodule Cgraph.Groups do
   Broadcast reaction removed in channel.
   """
   def broadcast_reaction_removed(channel, message, user, emoji) do
-    CgraphWeb.Endpoint.broadcast(
+    CGraphWeb.Endpoint.broadcast(
       "channel:#{channel.id}",
       "reaction_removed",
       %{message_id: message.id, user_id: user.id, emoji: emoji}
@@ -1080,7 +1080,7 @@ defmodule Cgraph.Groups do
   Pin a message in a channel.
   """
   def pin_message(message, user) do
-    alias Cgraph.Groups.PinnedMessage
+    alias CGraph.Groups.PinnedMessage
 
     %PinnedMessage{}
     |> PinnedMessage.changeset(%{

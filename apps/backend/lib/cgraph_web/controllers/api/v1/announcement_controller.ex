@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.AnnouncementController do
+defmodule CGraphWeb.API.V1.AnnouncementController do
   @moduledoc """
   Controller for Announcements.
   Implements MyBB-style announcements system with global and forum-specific announcements.
@@ -10,11 +10,11 @@ defmodule CgraphWeb.API.V1.AnnouncementController do
   - Dismissible announcements
   - Visibility by user group
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Announcements
+  alias CGraph.Announcements
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List all active announcements for the current user.

@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.Search do
+defmodule CGraph.Messaging.Search do
   @moduledoc """
   Sub-context for Message Search operations.
 
@@ -10,8 +10,8 @@ defmodule Cgraph.Messaging.Search do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Messaging.{ConversationParticipant, Message}
-  alias Cgraph.Repo
+  alias CGraph.Messaging.{ConversationParticipant, Message}
+  alias CGraph.Repo
 
   @doc """
   Search messages accessible to a user.

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Plugs.SecurityHeaders do
+defmodule CGraphWeb.Plugs.SecurityHeaders do
   @moduledoc """
   Security headers plug implementing OWASP security best practices.
 
@@ -20,7 +20,7 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
 
   Configure in your config files:
 
-      config :cgraph, CgraphWeb.Plugs.SecurityHeaders,
+      config :cgraph, CGraphWeb.Plugs.SecurityHeaders,
         hsts: true,
         hsts_max_age: 31_536_000,
         csp_report_uri: "/api/csp-report",
@@ -31,11 +31,11 @@ defmodule CgraphWeb.Plugs.SecurityHeaders do
 
       # In router.ex
       pipeline :api do
-        plug CgraphWeb.Plugs.SecurityHeaders, mode: :api
+        plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
       end
 
       pipeline :browser do
-        plug CgraphWeb.Plugs.SecurityHeaders, mode: :browser
+        plug CGraphWeb.Plugs.SecurityHeaders, mode: :browser
       end
 
   ## CSP Modes

@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.Conversation do
+defmodule CGraph.Messaging.Conversation do
   @moduledoc """
   Direct message conversation between two users.
 
@@ -16,11 +16,11 @@ defmodule Cgraph.Messaging.Conversation do
     field :last_message_at, :utc_datetime
     field :is_encrypted, :boolean, default: true
 
-    belongs_to :user_one, Cgraph.Accounts.User
-    belongs_to :user_two, Cgraph.Accounts.User
+    belongs_to :user_one, CGraph.Accounts.User
+    belongs_to :user_two, CGraph.Accounts.User
 
-    has_many :messages, Cgraph.Messaging.Message
-    has_many :participants, Cgraph.Messaging.ConversationParticipant
+    has_many :messages, CGraph.Messaging.Message
+    has_many :participants, CGraph.Messaging.ConversationParticipant
 
     timestamps()
   end

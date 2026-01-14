@@ -1,4 +1,4 @@
-defmodule Cgraph.Application do
+defmodule CGraph.Application do
   @moduledoc """
   Main application supervisor for CGraph backend.
 
@@ -16,64 +16,64 @@ defmodule Cgraph.Application do
   def start(_type, _args) do
     children = [
       # Start telemetry reporters
-      CgraphWeb.Telemetry,
+      CGraphWeb.Telemetry,
 
       # Start the Ecto repository
-      Cgraph.Repo,
+      CGraph.Repo,
 
       # Start the PubSub system
-      {Phoenix.PubSub, name: Cgraph.PubSub},
+      {Phoenix.PubSub, name: CGraph.PubSub},
 
       # Start Redis connection pool
       {Redix, redis_config()},
 
       # Start Redis GenServer wrapper (for rate limiting, etc.)
-      Cgraph.Redis,
+      CGraph.Redis,
 
       # Start Cachex for local caching
       {Cachex, name: :cgraph_cache},
 
       # Start token blacklist for JWT revocation
-      Cgraph.Security.TokenBlacklist,
+      CGraph.Security.TokenBlacklist,
 
       # Start account lockout for brute force protection
-      Cgraph.Security.AccountLockout,
+      CGraph.Security.AccountLockout,
 
       # Start Finch for HTTP requests (used by Swoosh, Tesla)
-      {Finch, name: Cgraph.Finch},
+      {Finch, name: CGraph.Finch},
 
       # Start Oban for background jobs
       {Oban, oban_config()},
 
       # Start Presence for online status tracking
-      Cgraph.Presence,
+      CGraph.Presence,
 
       # Start WebRTC call management
-      Cgraph.WebRTC,
+      CGraph.WebRTC,
 
       # Start sampled presence for large channels
-      Cgraph.Presence.Sampled,
+      CGraph.Presence.Sampled,
 
       # Start distributed rate limiter
-      Cgraph.RateLimiter.Distributed,
+      CGraph.RateLimiter.Distributed,
 
       # Note: Search indexing is handled by Oban workers (SearchIndexWorker)
-      # No separate GenServer needed for Cgraph.Search.Indexer
+      # No separate GenServer needed for CGraph.Search.Indexer
 
       # Start the data export service (GDPR compliance)
-      Cgraph.DataExport,
+      CGraph.DataExport,
 
       # Start the Phoenix endpoint (must be last)
-      CgraphWeb.Endpoint
+      CGraphWeb.Endpoint
     ]
 
-    opts = [strategy: :one_for_one, name: Cgraph.Supervisor]
+    opts = [strategy: :one_for_one, name: CGraph.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
   @impl true
   def config_change(changed, _new, removed) do
-    CgraphWeb.Endpoint.config_change(changed, removed)
+    CGraphWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 

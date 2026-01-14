@@ -1,4 +1,4 @@
-defmodule Cgraph.Audit do
+defmodule CGraph.Audit do
   @moduledoc """
   Production-grade audit logging system for compliance and security.
 

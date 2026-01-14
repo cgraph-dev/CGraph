@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.PostController do
+defmodule CGraphWeb.API.V1.PostController do
   @moduledoc """
   Handles forum posts.
   Posts are the main content units in forums with voting and comments.
@@ -9,13 +9,13 @@ defmodule CgraphWeb.API.V1.PostController do
   - Rate limiting on post creation
   - Authorization checks for forum access
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Forums
+  alias CGraph.Forums
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 50
 

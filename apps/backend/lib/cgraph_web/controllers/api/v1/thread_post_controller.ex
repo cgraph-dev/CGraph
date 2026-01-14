@@ -1,15 +1,15 @@
-defmodule CgraphWeb.API.V1.ThreadPostController do
+defmodule CGraphWeb.API.V1.ThreadPostController do
   @moduledoc """
   API controller for thread posts (replies).
   Part of the MyBB-style forum hosting platform.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Forums
-  import CgraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
-  import CgraphWeb.Helpers.ParamParser
+  alias CGraph.Forums
+  import CGraphWeb.ControllerHelpers, only: [extract_pagination_params: 1]
+  import CGraphWeb.Helpers.ParamParser
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List posts in a thread.

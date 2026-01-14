@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.ShopItem do
+defmodule CGraph.Gamification.ShopItem do
   @moduledoc """
   Schema for items available in the coin shop.
   """
@@ -27,7 +27,7 @@ defmodule Cgraph.Gamification.ShopItem do
     field :metadata, :map, default: %{}
     field :sort_order, :integer, default: 0
 
-    has_many :purchases, Cgraph.Gamification.UserPurchase, foreign_key: :item_id
+    has_many :purchases, CGraph.Gamification.UserPurchase, foreign_key: :item_id
 
     timestamps(type: :utc_datetime)
   end

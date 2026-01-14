@@ -1,4 +1,4 @@
-defmodule Cgraph.Notifications.Notification do
+defmodule CGraph.Notifications.Notification do
   @moduledoc """
   Schema for user notifications.
 
@@ -16,8 +16,8 @@ defmodule Cgraph.Notifications.Notification do
   @foreign_key_type :binary_id
 
   schema "notifications" do
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :actor, Cgraph.Accounts.User  # User who triggered the notification
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :actor, CGraph.Accounts.User  # User who triggered the notification
 
     field :type, Ecto.Enum, values: [
       # Messages

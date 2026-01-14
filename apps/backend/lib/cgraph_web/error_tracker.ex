@@ -1,4 +1,4 @@
-defmodule CgraphWeb.ErrorTracker do
+defmodule CGraphWeb.ErrorTracker do
   @moduledoc """
   Centralized error tracking and monitoring system.
 

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Gettext do
+defmodule CGraphWeb.Gettext do
   @moduledoc """
   A module providing Internationalization with a gettext-based API.
 

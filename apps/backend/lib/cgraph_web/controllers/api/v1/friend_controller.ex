@@ -1,15 +1,15 @@
-defmodule CgraphWeb.API.V1.FriendController do
+defmodule CGraphWeb.API.V1.FriendController do
   @moduledoc """
   Handles friend relationships.
   Supports sending/accepting requests, listing friends, blocking users.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Accounts
+  alias CGraph.Accounts
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
   @max_suggestions 20

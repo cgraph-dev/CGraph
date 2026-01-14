@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.ThreadAttachment do
+defmodule CGraph.Forums.ThreadAttachment do
   @moduledoc """
   Thread attachment schema - file uploads attached to threads or posts.
   Supports images, documents, and other file types with size limits.
@@ -33,9 +33,9 @@ defmodule Cgraph.Forums.ThreadAttachment do
     # Inline display in post
     field :is_inline, :boolean, default: false
 
-    belongs_to :thread, Cgraph.Forums.Thread
-    belongs_to :post, Cgraph.Forums.ThreadPost
-    belongs_to :uploader, Cgraph.Accounts.User
+    belongs_to :thread, CGraph.Forums.Thread
+    belongs_to :post, CGraph.Forums.ThreadPost
+    belongs_to :uploader, CGraph.Accounts.User
 
     timestamps()
   end

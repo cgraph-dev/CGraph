@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.VoiceMessageJSON do
+defmodule CGraphWeb.API.V1.VoiceMessageJSON do
   @moduledoc """
   JSON rendering for voice message responses.
 
@@ -6,7 +6,7 @@ defmodule CgraphWeb.API.V1.VoiceMessageJSON do
   waveform visualization data, and playback URLs.
   """
 
-  alias Cgraph.Messaging.VoiceMessage
+  alias CGraph.Messaging.VoiceMessage
 
   @doc """
   Render a single voice message.

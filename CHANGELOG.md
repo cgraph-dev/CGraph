@@ -4,6 +4,151 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.0] - 2025-01-23
+
+**🔐 SECURITY & REAL-TIME: Double Ratchet E2EE, HTTP-Only Cookies, Presence**
+
+This release introduces industry-standard Double Ratchet encryption for forward secrecy, enhanced authentication security with HTTP-only cookies, and complete online presence tracking.
+
+### 🔐 Double Ratchet End-to-End Encryption
+
+Upgraded from X3DH-only to full Signal Protocol implementation:
+
+| Feature | Description |
+|---------|-------------|
+| Forward Secrecy | Past messages stay secure if keys are compromised |
+| Break-in Recovery | Future messages become secure after compromise |
+| Per-Message Keys | Each message uses a unique key, immediately discarded |
+| Out-of-Order | Messages can be received and decrypted in any order |
+| Session Persistence | Ratchet state stored in IndexedDB |
+
+**New Files:**
+- `apps/web/src/lib/crypto/sessionManager.ts` - Session management with Double Ratchet
+- `apps/web/src/lib/crypto/doubleRatchet.ts` - Core Double Ratchet implementation (949 lines)
+
+**New Store Methods:**
+- `encryptWithRatchet(recipientId, plaintext)` - Encrypt with forward secrecy
+- `decryptWithRatchet(message, senderIdentityKey)` - Decrypt with session auto-establishment
+- `hasRatchetSession(recipientId)` - Check for existing session
+- `destroyRatchetSession(recipientId)` - Delete a session
+- `getRatchetSessionStats(recipientId)` - Get session statistics
+
+### 🔒 HTTP-Only Cookie Authentication
+
+Tokens now stored in HTTP-only cookies instead of localStorage:
+- XSS Protection: JavaScript cannot access tokens
+- Automatic Handling: Cookies sent with all requests
+- WebSocket: Uses separate session token from sessionStorage
+
+**Updated Files:**
+- `apps/web/src/features/auth/services/index.ts` - Deprecated localStorage usage
+- `apps/web/src/lib/api/index.ts` - Added `withCredentials: true`
+
+### 🟢 Online Presence Tracking
+
+Complete friend online status tracking:
+
+**New Files:**
+- `apps/web/src/hooks/usePresence.ts` - `usePresence()` and `useUserOnline()` hooks
+
+**Socket Methods:**
+- `joinPresenceLobby()` - Join global presence channel
+- `isFriendOnline(userId)` - Check single friend status
+- `getOnlineFriends()` - Get all online friend IDs
+
+**Events:** `friend_online`, `friend_offline`, `status_update`
+
+### 📚 API Documentation
+
+OpenAPI spec updated to v0.9.0 (`docs/api/openapi.yaml`):
+- E2EE endpoints (`/api/v1/e2ee/*`)
+- Presence endpoints (`/api/v1/presence/*`)
+- HTTP-only cookie auth scheme
+- SecureMessage and PrekeyBundle schemas
+
+### 📦 Package Versions
+
+All packages updated to 0.9.0:
+- `cgraph`, `@cgraph/web`, `@cgraph/mobile`
+
+### 📱 Mobile Feature Parity (Phase 2)
+
+All internal packages synchronized to v0.8.6:
+- `@cgraph/shared-types` - 0.7.58 → 0.8.6
+- `@cgraph/ui` - 0.7.58 → 0.8.6
+- `@cgraph/utils` - 0.7.58 → 0.8.6
+- `@cgraph/config` - 0.7.58 → 0.8.6
+- `@cgraph/core` - 0.8.3 → 0.8.6
+- `@cgraph/state` - 0.8.3 → 0.8.6 (also fixed zustand ^4.4.0 → ^5.0.0)
+
+### 🔐 Mobile Authentication Hooks
+
+Connected mobile auth hooks to existing AuthContext (`apps/mobile/src/features/auth/hooks/`):
+- **useAuth()**: Wraps AuthContext with haptic feedback
+- **useBiometricAuth()**: Face ID, Touch ID, fingerprint support
+- **useTwoFactor()**: Enable/disable/verify 2FA with TOTP
+- **useSessions()**: View and revoke active sessions
+
+### 💎 Mobile Premium Hooks
+
+Connected premium hooks to backend API and PaymentService (`apps/mobile/src/features/premium/hooks/`):
+- **usePremiumStatus()**: Check subscription tier, feature access with `hasFeature()`
+- **useSubscription()**: Subscribe, cancel, restore purchases (Stripe/IAP)
+- **useCoins()**: Check balance, spend coins, purchase bundles
+- **useShop()**: Browse shop items, check inventory, purchase items
+- **usePremiumHaptics()**: Haptic feedback for premium actions
+
+### 👥 Mobile Group Hooks
+
+Connected group management hooks to backend API (`apps/mobile/src/features/groups/hooks/`):
+- **useGroups()**: Fetch user's groups
+- **useGroup(groupId)**: Single group details, update, leave
+- **useChannels(groupId)**: List and create channels
+- **useChannelNotifications(channelId)**: Mute/unmute channels
+- **useGroupMembers(groupId)**: List, kick, ban members
+- **useGroupInvites(groupId)**: Create, share, revoke invites
+- **useJoinGroup()**: Join via invite code or public groups
+- **useCreateGroup()**: Create new groups
+
+### 📞 Mobile WebRTC Infrastructure
+
+Added WebRTC support for mobile voice/video calls (`apps/mobile/src/lib/webrtc/`):
+
+| File | Purpose |
+|------|---------|
+| `webrtcService.ts` | WebRTC manager with Phoenix signaling |
+| `useCall.ts` | React hook for call state management |
+| `index.ts` | Module exports |
+
+Features:
+- Phoenix Channel signaling (compatible with web)
+- ICE/STUN server support
+- Multi-party mesh topology (up to 10 participants)
+- Mute/unmute audio, enable/disable video
+- Haptic feedback on all call events
+- App state handling (background detection)
+
+**Note:** Requires `react-native-webrtc` package for full functionality.
+
+### 🐛 Bug Fixes
+
+- Fixed zustand version mismatch in `@cgraph/state` (^4.4.0 → ^5.0.0)
+- Fixed TypeScript error in premium hooks (number comparison)
+- Removed unused expo-sharing import in groups hooks
+
+### 📊 Mobile Feature Status
+
+| Feature | Status |
+|---------|--------|
+| Authentication | ✅ Complete |
+| 2FA/TOTP | ✅ Complete |
+| Biometrics | ✅ Complete |
+| Premium | ✅ Complete |
+| Groups | ✅ Complete |
+| WebRTC | ⚙️ Ready (needs package) |
+
+---
+
 ## [0.8.6] - 2026-01-13
 
 **🔗 DDD HOOK CONNECTIONS & WEBRTC: Backend Integration & Voice/Video Calls**

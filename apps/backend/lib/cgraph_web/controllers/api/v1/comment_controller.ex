@@ -1,15 +1,15 @@
-defmodule CgraphWeb.API.V1.CommentController do
+defmodule CGraphWeb.API.V1.CommentController do
   @moduledoc """
   Handles comments on forum posts.
   Supports nested/threaded comments with voting.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Forums
+  alias CGraph.Forums
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 

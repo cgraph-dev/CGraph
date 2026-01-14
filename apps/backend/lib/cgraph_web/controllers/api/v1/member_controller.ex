@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.MemberController do
+defmodule CGraphWeb.API.V1.MemberController do
   @moduledoc """
   Controller for Member directory and groups.
   Implements MyBB-style member listing with advanced filtering.
@@ -10,11 +10,11 @@ defmodule CgraphWeb.API.V1.MemberController do
   - Member profiles
   - Online status
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Accounts
+  alias CGraph.Accounts
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 

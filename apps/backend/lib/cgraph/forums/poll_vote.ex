@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.PollVote do
+defmodule CGraph.Forums.PollVote do
   @moduledoc """
   Poll vote schema - tracks user votes on polls.
   """
@@ -12,8 +12,8 @@ defmodule Cgraph.Forums.PollVote do
   schema "poll_votes" do
     field :option_ids, {:array, :string}, default: []
 
-    belongs_to :poll, Cgraph.Forums.ThreadPoll
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :poll, CGraph.Forums.ThreadPoll
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps()
   end

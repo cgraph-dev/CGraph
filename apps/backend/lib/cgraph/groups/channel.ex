@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.Channel do
+defmodule CGraph.Groups.Channel do
   @moduledoc """
   Channel within a group.
 
@@ -36,12 +36,12 @@ defmodule Cgraph.Groups.Channel do
     field :deleted_at, :utc_datetime
 
     # Associations
-    belongs_to :group, Cgraph.Groups.Group
-    belongs_to :category, Cgraph.Groups.ChannelCategory
+    belongs_to :group, CGraph.Groups.Group
+    belongs_to :category, CGraph.Groups.ChannelCategory
 
-    has_many :messages, Cgraph.Messaging.Message
-    has_many :permission_overwrites, Cgraph.Groups.PermissionOverwrite
-    has_many :pinned_messages, Cgraph.Groups.PinnedMessage
+    has_many :messages, CGraph.Messaging.Message
+    has_many :permission_overwrites, CGraph.Groups.PermissionOverwrite
+    has_many :pinned_messages, CGraph.Groups.PinnedMessage
 
     timestamps()
   end

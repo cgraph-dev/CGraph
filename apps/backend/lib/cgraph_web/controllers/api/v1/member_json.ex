@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.MemberJSON do
+defmodule CGraphWeb.API.V1.MemberJSON do
   @moduledoc """
   JSON rendering for Member endpoints.
   """

@@ -1,4 +1,4 @@
-defmodule Cgraph.Workers.Orchestrator do
+defmodule CGraph.Workers.Orchestrator do
   @moduledoc """
   Background job orchestration and workflow management.
 
@@ -460,7 +460,7 @@ defmodule Cgraph.Workers.Orchestrator do
       failed_at: DateTime.utc_now()
     }
 
-    enqueue(Cgraph.Workers.DeadLetterWorker, dead_letter_args, queue: :dead_letter)
+    enqueue(CGraph.Workers.DeadLetterWorker, dead_letter_args, queue: :dead_letter)
   end
 
   @doc """

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Plugs.RateLimiter do
+defmodule CGraphWeb.Plugs.RateLimiter do
   @moduledoc """
   Rate limiting plug using Redis or ETS.
 

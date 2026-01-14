@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.RoleJSON do
+defmodule CGraphWeb.API.V1.RoleJSON do
   @moduledoc """
   JSON rendering for role responses.
   """

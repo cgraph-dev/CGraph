@@ -1,4 +1,4 @@
-defmodule Cgraph.Cache.Unified do
+defmodule CGraph.Cache.Unified do
   @moduledoc """
   Unified caching layer with support for multiple backends.
 
@@ -295,7 +295,7 @@ defmodule Cgraph.Cache.Unified do
   end
 
   defp backend do
-    Application.get_env(:cgraph, :cache_backend, Cgraph.Cache.Backend.Cachex)
+    Application.get_env(:cgraph, :cache_backend, CGraph.Cache.Backend.Cachex)
   end
 
   defp emit_telemetry(event, namespace, key) do
@@ -307,7 +307,7 @@ defmodule Cgraph.Cache.Unified do
   end
 end
 
-defmodule Cgraph.Cache.Backend.Cachex do
+defmodule CGraph.Cache.Backend.Cachex do
   @moduledoc """
   Cachex-based cache backend (distributed within Elixir cluster).
   """
@@ -362,7 +362,7 @@ defmodule Cgraph.Cache.Backend.Cachex do
   end
 end
 
-defmodule Cgraph.Cache.Backend.ETS do
+defmodule CGraph.Cache.Backend.ETS do
   @moduledoc """
   ETS-based cache backend (local only, for development/testing).
   """

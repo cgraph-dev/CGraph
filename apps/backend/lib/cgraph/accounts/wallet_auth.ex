@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.WalletAuth do
+defmodule CGraph.Accounts.WalletAuth do
   @moduledoc """
   Handles anonymous wallet-based authentication.
 
@@ -14,8 +14,8 @@ defmodule Cgraph.Accounts.WalletAuth do
 
   import Ecto.Query
 
-  alias Cgraph.Accounts.{RecoveryCode, User}
-  alias Cgraph.Repo
+  alias CGraph.Accounts.{RecoveryCode, User}
+  alias CGraph.Repo
 
   @wallet_prefix "0x"
   @wallet_hex_length 24

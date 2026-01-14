@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums do
+defmodule CGraph.Forums do
   @moduledoc """
   The Forums context.
 
@@ -10,15 +10,15 @@ defmodule Cgraph.Forums do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Forums.{Board, Category, Comment, Forum, ForumMember, ForumPlugin}
-  alias Cgraph.Forums.{ForumUserGroup, ForumVote, Moderator, PollVote, Post, PostVote}
-  alias Cgraph.Forums.{Subscription, Thread, ThreadPoll, ThreadPost, ThreadVote, Vote}
+  alias CGraph.Forums.{Board, Category, Comment, Forum, ForumMember, ForumPlugin}
+  alias CGraph.Forums.{ForumUserGroup, ForumVote, Moderator, PollVote, Post, PostVote}
+  alias CGraph.Forums.{Subscription, Thread, ThreadPoll, ThreadPost, ThreadVote, Vote}
   # Reserved for future features
-  alias Cgraph.Forums.ForumAnnouncement, warn: false
-  alias Cgraph.Forums.ForumTheme, warn: false
-  alias Cgraph.Forums.Poll, warn: false
-  alias Cgraph.Forums.ThreadAttachment, warn: false
-  alias Cgraph.Repo
+  alias CGraph.Forums.ForumAnnouncement, warn: false
+  alias CGraph.Forums.ForumTheme, warn: false
+  alias CGraph.Forums.Poll, warn: false
+  alias CGraph.Forums.ThreadAttachment, warn: false
+  alias CGraph.Repo
 
   # ============================================================================
   # Forums
@@ -768,7 +768,7 @@ defmodule Cgraph.Forums do
         # Update post author's karma (only for upvotes, downvotes subtract)
         if post.author_id && post.author_id != user.id do
           karma_change = vote_value
-          from(u in Cgraph.Accounts.User, where: u.id == ^post.author_id)
+          from(u in CGraph.Accounts.User, where: u.id == ^post.author_id)
           |> Repo.update_all(inc: [karma: karma_change])
         end
 
@@ -798,7 +798,7 @@ defmodule Cgraph.Forums do
     # Update post author's karma (karma swing is the difference between new and old vote)
     if post.author_id do
       karma_change = new_value - old_value
-      from(u in Cgraph.Accounts.User, where: u.id == ^post.author_id)
+      from(u in CGraph.Accounts.User, where: u.id == ^post.author_id)
       |> Repo.update_all(inc: [karma: karma_change])
     end
 
@@ -823,7 +823,7 @@ defmodule Cgraph.Forums do
         # Remove karma from post author
         if post.author_id do
           karma_change = -vote.value  # Reverse the karma effect
-          from(u in Cgraph.Accounts.User, where: u.id == ^post.author_id)
+          from(u in CGraph.Accounts.User, where: u.id == ^post.author_id)
           |> Repo.update_all(inc: [karma: karma_change])
         end
 
@@ -898,11 +898,11 @@ defmodule Cgraph.Forums do
 
   Vote type can be :up, :down, "up", or "down"
   """
-  def vote_post(%Cgraph.Accounts.User{} = user, %Post{} = post, vote_type) do
+  def vote_post(%CGraph.Accounts.User{} = user, %Post{} = post, vote_type) do
     vote_on_post(user, post, normalize_vote_type(vote_type))
   end
 
-  def vote_post(%Post{} = post, %Cgraph.Accounts.User{} = user, vote_type) do
+  def vote_post(%Post{} = post, %CGraph.Accounts.User{} = user, vote_type) do
     vote_on_post(user, post, normalize_vote_type(vote_type))
   end
 
@@ -936,10 +936,10 @@ defmodule Cgraph.Forums do
     base_config = get_user_rate_config(user, :post)
 
     # First check burst limit (prevents rapid submissions)
-    case Cgraph.RateLimiter.check(identifier, :post_burst, limit: base_config.burst_limit, window: 60) do
+    case CGraph.RateLimiter.check(identifier, :post_burst, limit: base_config.burst_limit, window: 60) do
       :ok ->
         # Then check sustained rate limit
-        Cgraph.RateLimiter.check(identifier, :post_sustained,
+        CGraph.RateLimiter.check(identifier, :post_sustained,
           limit: base_config.sustained_limit,
           window: base_config.window
         )
@@ -1191,7 +1191,7 @@ defmodule Cgraph.Forums do
     if comment.author_id do
       old_value = if old_vote_type == "up", do: 1, else: -1
       karma_change = vote_value - old_value
-      from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
+      from(u in CGraph.Accounts.User, where: u.id == ^comment.author_id)
       |> Repo.update_all(inc: [karma: karma_change])
     end
 
@@ -1200,7 +1200,7 @@ defmodule Cgraph.Forums do
 
   defp update_comment_author_karma(comment, vote_value, voter_id) do
     if comment.author_id && comment.author_id != voter_id do
-      from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
+      from(u in CGraph.Accounts.User, where: u.id == ^comment.author_id)
       |> Repo.update_all(inc: [karma: vote_value])
     end
   end
@@ -1219,7 +1219,7 @@ defmodule Cgraph.Forums do
 
         # Remove karma from comment author
         if comment.author_id do
-          from(u in Cgraph.Accounts.User, where: u.id == ^comment.author_id)
+          from(u in CGraph.Accounts.User, where: u.id == ^comment.author_id)
           |> Repo.update_all(inc: [karma: -vote_value])
         end
 
@@ -1249,17 +1249,17 @@ defmodule Cgraph.Forums do
     base_config = get_user_rate_config(user, :comment)
 
     # Check burst limit first
-    case Cgraph.RateLimiter.check(identifier, :comment_burst, limit: base_config.burst_limit, window: 60) do
+    case CGraph.RateLimiter.check(identifier, :comment_burst, limit: base_config.burst_limit, window: 60) do
       :ok ->
         # Check sustained limit
-        case Cgraph.RateLimiter.check(identifier, :comment_sustained,
+        case CGraph.RateLimiter.check(identifier, :comment_sustained,
           limit: base_config.sustained_limit,
           window: base_config.window
         ) do
           :ok when not is_nil(post_id) ->
             # Also check per-thread limit to prevent flooding single threads
             thread_identifier = "thread:#{post_id}:user:#{user.id}"
-            Cgraph.RateLimiter.check(thread_identifier, :thread_comment,
+            CGraph.RateLimiter.check(thread_identifier, :thread_comment,
               limit: 10,  # Max 10 comments per user per thread per hour
               window: 3600
             )
@@ -2740,7 +2740,7 @@ defmodule Cgraph.Forums do
   defp hydrate_users(paginated_scores) do
     paginated_scores
     |> Enum.map(fn {%{user_id: user_id, forum_karma: forum_karma}, rank} ->
-      user = Repo.get(Cgraph.Accounts.User, user_id)
+      user = Repo.get(CGraph.Accounts.User, user_id)
       %{rank: rank, user: user, forum_karma: forum_karma}
     end)
     |> Enum.filter(& &1.user != nil)

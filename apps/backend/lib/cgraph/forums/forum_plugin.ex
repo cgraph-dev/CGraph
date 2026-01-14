@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.ForumPlugin do
+defmodule CGraph.Forums.ForumPlugin do
   @moduledoc """
   Forum plugin schema - installed plugins for MyBB-style forums.
   Supports plugin configuration, version tracking, and hooks.
@@ -40,8 +40,8 @@ defmodule Cgraph.Forums.ForumPlugin do
     field :installed_at, :utc_datetime_usec
     field :updated_at_version, :string  # version when last updated
 
-    belongs_to :forum, Cgraph.Forums.Forum
-    belongs_to :installed_by, Cgraph.Accounts.User
+    belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :installed_by, CGraph.Accounts.User
 
     timestamps()
   end

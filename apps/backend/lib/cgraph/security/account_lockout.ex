@@ -1,4 +1,4 @@
-defmodule Cgraph.Security.AccountLockout do
+defmodule CGraph.Security.AccountLockout do
   @moduledoc """
   Account lockout system with persistent state using Redis.
 
@@ -45,7 +45,7 @@ defmodule Cgraph.Security.AccountLockout do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Security.AccountLockout,
+      config :cgraph, CGraph.Security.AccountLockout,
         max_attempts: 5,
         lockout_duration: 900,  # 15 minutes
         progressive_multiplier: 2,
@@ -80,7 +80,7 @@ defmodule Cgraph.Security.AccountLockout do
   use GenServer
   require Logger
 
-  alias Cgraph.Audit
+  alias CGraph.Audit
 
   @redis_prefix "account_lockout:"
   @ip_prefix "ip_lockout:"

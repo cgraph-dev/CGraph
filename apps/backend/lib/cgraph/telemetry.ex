@@ -1,4 +1,4 @@
-defmodule Cgraph.Telemetry do
+defmodule CGraph.Telemetry do
   @moduledoc """
   Telemetry event handlers and metrics for CGraph.
 
@@ -40,7 +40,7 @@ defmodule Cgraph.Telemetry do
 
   Attach handlers in application startup:
 
-      Cgraph.Telemetry.attach_handlers()
+      CGraph.Telemetry.attach_handlers()
 
   Emit custom events:
 
@@ -56,7 +56,7 @@ defmodule Cgraph.Telemetry do
   @doc """
   Attach all telemetry handlers.
 
-  Called during application startup in `Cgraph.Application.start/2`.
+  Called during application startup in `CGraph.Application.start/2`.
   """
   def attach_handlers do
     handlers = [

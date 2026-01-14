@@ -1,4 +1,4 @@
-defmodule Cgraph.Metrics do
+defmodule CGraph.Metrics do
   @moduledoc """
   Prometheus-compatible metrics collection and export.
 

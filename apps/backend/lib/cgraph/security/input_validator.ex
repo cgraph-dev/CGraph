@@ -1,4 +1,4 @@
-defmodule Cgraph.Security.InputValidator do
+defmodule CGraph.Security.InputValidator do
   @moduledoc """
   Comprehensive input validation and sanitization.
 

@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success' | 'outline';
-type ButtonSize = 'sm' | 'md' | 'lg' | 'icon';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'success' | 'outline' | 'destructive' | 'default';
+export type ButtonSize = 'sm' | 'md' | 'lg' | 'icon' | 'default';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
@@ -37,9 +37,14 @@ export default function Button({
     danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
     success: 'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500',
     outline: 'bg-transparent border-2 border-primary-500 text-primary-400 hover:bg-primary-500/10 focus:ring-primary-500',
+    destructive: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500',
+    default: 'bg-dark-700 hover:bg-dark-600 text-white focus:ring-dark-500 border border-dark-600',
   };
 
-  const sizeStyles: Record<ButtonSize, string> = {
+  // Normalize size - 'default' maps to 'md'
+  const normalizedSize = size === 'default' ? 'md' : size;
+  
+  const sizeStyles: Record<Exclude<ButtonSize, 'default'>, string> = {
     sm: 'text-sm px-3 py-1.5 rounded-md gap-1.5',
     md: 'text-sm px-4 py-2 rounded-lg gap-2',
     lg: 'text-base px-6 py-3 rounded-lg gap-2',
@@ -73,13 +78,13 @@ export default function Button({
 
   return (
     <button
-      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${widthStyles} ${className}`}
+      className={`${baseStyles} ${variantStyles[variant]} ${sizeStyles[normalizedSize]} ${widthStyles} ${className}`}
       disabled={disabled || loading}
       {...props}
     >
       {loading && <LoadingSpinner />}
       {!loading && icon && iconPosition === 'left' && icon}
-      {size !== 'icon' && children}
+      {normalizedSize !== 'icon' && children}
       {!loading && icon && iconPosition === 'right' && icon}
     </button>
   );

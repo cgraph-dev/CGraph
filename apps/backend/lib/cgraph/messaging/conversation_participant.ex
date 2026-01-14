@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.ConversationParticipant do
+defmodule CGraph.Messaging.ConversationParticipant do
   @moduledoc """
   Tracks user participation in conversations with per-user settings.
 
@@ -25,8 +25,8 @@ defmodule Cgraph.Messaging.ConversationParticipant do
     field :public_key, :string
     field :encrypted_private_key, :string
 
-    belongs_to :conversation, Cgraph.Messaging.Conversation
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :conversation, CGraph.Messaging.Conversation
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps()
   end

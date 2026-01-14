@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.E2EEController do
+defmodule CGraphWeb.API.V1.E2EEController do
   @moduledoc """
   API controller for End-to-End Encryption key management.
 
@@ -19,12 +19,12 @@ defmodule CgraphWeb.API.V1.E2EEController do
   - All message content is encrypted client-side before transmission
   """
 
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Accounts.Friends
-  alias Cgraph.Crypto.E2EE
+  alias CGraph.Accounts.Friends
+  alias CGraph.Crypto.E2EE
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   plug :ensure_authenticated
 
@@ -333,11 +333,11 @@ defmodule CgraphWeb.API.V1.E2EEController do
     # Broadcast to each friend's personal UserChannel
     # They will receive "e2ee:key_revoked" event and drop the compromised key
     Enum.each(friend_ids, fn friend_id ->
-      CgraphWeb.Endpoint.broadcast("user:#{friend_id}", "e2ee:key_revoked", payload)
+      CGraphWeb.Endpoint.broadcast("user:#{friend_id}", "e2ee:key_revoked", payload)
     end)
 
     # Also notify the user's own devices (for multi-device sync)
-    CgraphWeb.Endpoint.broadcast("user:#{user_id}", "e2ee:key_revoked", payload)
+    CGraphWeb.Endpoint.broadcast("user:#{user_id}", "e2ee:key_revoked", payload)
 
     # For users with many contacts, consider dispatching to Oban background job
     # to avoid blocking the HTTP response. For now, inline is fine for <1000 friends.

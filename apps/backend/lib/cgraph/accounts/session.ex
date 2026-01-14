@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.Session do
+defmodule CGraph.Accounts.Session do
   @moduledoc """
   User session tracking for multi-device support.
 
@@ -23,7 +23,7 @@ defmodule Cgraph.Accounts.Session do
     field :expires_at, :utc_datetime_usec
     field :revoked_at, :utc_datetime_usec
 
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps()
   end

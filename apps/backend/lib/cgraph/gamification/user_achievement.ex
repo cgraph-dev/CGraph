@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.UserAchievement do
+defmodule CGraph.Gamification.UserAchievement do
   @moduledoc """
   Schema for tracking user progress on achievements.
   """
@@ -9,8 +9,8 @@ defmodule Cgraph.Gamification.UserAchievement do
   @foreign_key_type :binary_id
 
   schema "user_achievements" do
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :achievement, Cgraph.Gamification.Achievement
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :achievement, CGraph.Gamification.Achievement
 
     field :progress, :integer, default: 0
     field :unlocked, :boolean, default: false

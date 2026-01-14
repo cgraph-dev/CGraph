@@ -1,4 +1,4 @@
-defmodule CgraphWeb.CoinsController do
+defmodule CGraphWeb.CoinsController do
   @moduledoc """
   Controller for coin balance and transactions.
 
@@ -7,13 +7,13 @@ defmodule CgraphWeb.CoinsController do
   - All endpoints require authentication
   - Pagination parameters are validated and safely parsed
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Gamification
+  alias CGraph.Gamification
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_limit 100
 

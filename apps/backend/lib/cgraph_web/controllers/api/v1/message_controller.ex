@@ -1,15 +1,15 @@
-defmodule CgraphWeb.API.V1.MessageController do
+defmodule CGraphWeb.API.V1.MessageController do
   @moduledoc """
   Controller for messages within conversations.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Messaging
-  alias CgraphWeb.API.V1.MessageJSON
+  alias CGraph.Messaging
+  alias CGraphWeb.API.V1.MessageJSON
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 100
 
@@ -89,7 +89,7 @@ defmodule CgraphWeb.API.V1.MessageController do
     with {:ok, conversation} <- Messaging.get_user_conversation(user, conversation_id),
          {:ok, message} <- Messaging.send_message(conversation, user, message_params) do
       # Broadcast via Phoenix Channels
-      CgraphWeb.Endpoint.broadcast!(
+      CGraphWeb.Endpoint.broadcast!(
         "conversation:#{conversation_id}",
         "new_message",
         %{message: MessageJSON.message_data(message)}
@@ -103,7 +103,7 @@ defmodule CgraphWeb.API.V1.MessageController do
 
   # Get sender's identity key for E2EE messages
   defp get_sender_identity_key(user_id) do
-    case Cgraph.Crypto.E2EE.get_user_identity_key(user_id) do
+    case CGraph.Crypto.E2EE.get_user_identity_key(user_id) do
       {:ok, key} -> key.public_key |> Base.encode64()
       _ -> nil
     end
@@ -131,7 +131,7 @@ defmodule CgraphWeb.API.V1.MessageController do
     # Verify user is a participant in this conversation
     with {:ok, _conversation} <- Messaging.get_user_conversation(user, conversation_id) do
       # Broadcast typing indicator only after authorization
-      CgraphWeb.Endpoint.broadcast!(
+      CGraphWeb.Endpoint.broadcast!(
         "conversation:#{conversation_id}",
         "typing",
         %{

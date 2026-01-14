@@ -1,4 +1,4 @@
-defmodule Cgraph.Presence do
+defmodule CGraph.Presence do
   @moduledoc """
   Real-time user presence tracking with multi-device support.
 
@@ -27,7 +27,7 @@ defmodule Cgraph.Presence do
   │   └─────────────────────┘                  └──────────────────┘│
   │                                                                  │
   │   ┌─────────────────────────────────────────────────────────┐  │
-  │   │                    Cgraph.Presence                        │  │
+  │   │                    CGraph.Presence                        │  │
   │   │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     │  │
   │   │  │ Track   │  │ Update  │  │  List   │  │ Typing  │     │  │
   │   │  │ User    │  │ Status  │  │ Online  │  │ Indicator│     │  │
@@ -74,7 +74,7 @@ defmodule Cgraph.Presence do
 
   use Phoenix.Presence,
     otp_app: :cgraph,
-    pubsub_server: Cgraph.PubSub
+    pubsub_server: CGraph.PubSub
 
   require Logger
 

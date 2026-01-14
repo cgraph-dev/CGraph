@@ -90,7 +90,11 @@ export function AppHoloProvider({
   variant = 'default',
   config: customConfig 
 }: AppHoloProviderProps) {
-  const { theme, reducedMotion, performanceMode } = useThemeEnhanced();
+  const { theme, preferences } = useThemeEnhanced();
+  
+  // Extract settings from preferences
+  const reducedMotion = preferences?.settings?.reduceMotion ?? false;
+  const performanceMode = false; // Can be added to preferences if needed
   
   // Select base config based on variant
   let baseConfig: Partial<HoloConfig>;
@@ -109,18 +113,20 @@ export function AppHoloProvider({
   }
   
   // Apply overrides based on user preferences
+  const performanceModeConfig: Partial<HoloConfig> = performanceMode ? {
+    enableParticles: false,
+    enableFlicker: false,
+    enable3D: false,
+    intensity: 'subtle' as const,
+  } : {};
+  
   const finalConfig: Partial<HoloConfig> = {
     ...baseConfig,
     ...customConfig,
     // Always respect user's motion preference
     reduceMotion: reducedMotion || baseConfig.reduceMotion,
     // Reduce effects in performance mode
-    ...(performanceMode && {
-      enableParticles: false,
-      enableFlicker: false,
-      enable3D: false,
-      intensity: 'subtle' as const,
-    }),
+    ...performanceModeConfig,
   };
   
   // Map app theme colors to HoloUI theme
@@ -131,9 +137,9 @@ export function AppHoloProvider({
     glow: theme.colors.primary,
     background: theme.colors.background,
     surface: theme.colors.surface,
-    text: theme.colors.text,
+    text: theme.colors.textPrimary,
     textMuted: theme.colors.textMuted,
-    border: theme.colors.border,
+    border: theme.colors.surfaceBorder,
     success: '#10b981', // emerald-500
     warning: '#f59e0b', // amber-500
     error: '#ef4444',   // red-500

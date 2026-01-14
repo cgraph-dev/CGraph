@@ -1,4 +1,4 @@
-defmodule Cgraph.Mailer do
+defmodule CGraph.Mailer do
   @moduledoc """
   CGraph Mailer - Enterprise-grade email delivery system.
 
@@ -14,7 +14,7 @@ defmodule Cgraph.Mailer do
 
   Configure the mailer in your config files:
 
-      config :cgraph, Cgraph.Mailer,
+      config :cgraph, CGraph.Mailer,
         adapter: Swoosh.Adapters.SendGrid,
         api_key: System.get_env("SENDGRID_API_KEY"),
         domain: "mail.cgraph.app"
@@ -22,10 +22,10 @@ defmodule Cgraph.Mailer do
   ## Usage
 
       # Send a simple email
-      Cgraph.Mailer.deliver_email(user, :welcome)
+      CGraph.Mailer.deliver_email(user, :welcome)
 
       # Send with custom data
-      Cgraph.Mailer.deliver_email(user, :notification, %{
+      CGraph.Mailer.deliver_email(user, :notification, %{
         title: "New Message",
         body: "You have a new message from John"
       })
@@ -35,8 +35,8 @@ defmodule Cgraph.Mailer do
 
   import Swoosh.Email
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Mailer.Templates
+  alias CGraph.Accounts.User
+  alias CGraph.Mailer.Templates
 
   require Logger
 
@@ -77,10 +77,10 @@ defmodule Cgraph.Mailer do
 
   ## Examples
 
-      iex> Cgraph.Mailer.deliver_email(user, :welcome)
+      iex> CGraph.Mailer.deliver_email(user, :welcome)
       {:ok, %Swoosh.Email{}}
 
-      iex> Cgraph.Mailer.deliver_email(user, :notification, %{title: "New Message"})
+      iex> CGraph.Mailer.deliver_email(user, :notification, %{title: "New Message"})
       {:ok, %Swoosh.Email{}}
   """
   @spec deliver_email(User.t(), email_type(), map(), keyword()) :: delivery_result()

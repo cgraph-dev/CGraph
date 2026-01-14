@@ -1,13 +1,13 @@
-defmodule CgraphWeb.API.V1.BoardController do
+defmodule CGraphWeb.API.V1.BoardController do
   @moduledoc """
   API controller for forum boards (sections/categories).
   Part of the MyBB-style forum hosting platform.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Forums
+  alias CGraph.Forums
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List boards for a forum.

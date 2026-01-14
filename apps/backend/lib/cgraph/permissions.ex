@@ -1,4 +1,4 @@
-defmodule Cgraph.Permissions do
+defmodule CGraph.Permissions do
   @moduledoc """
   Fine-grained permission system with role-based and resource-level access control.
 
@@ -185,7 +185,7 @@ defmodule Cgraph.Permissions do
   """
   def authorize!(user, action, resource, context \\ %{}) do
     unless can?(user, action, resource, context) do
-      raise Cgraph.UnauthorizedError,
+      raise CGraph.UnauthorizedError,
         message: "User not authorized to #{action} #{inspect(resource)}"
     end
 
@@ -532,7 +532,7 @@ defmodule Cgraph.Permissions do
   end
 end
 
-defmodule Cgraph.UnauthorizedError do
+defmodule CGraph.UnauthorizedError do
   @moduledoc """
   Raised when a user is not authorized to perform an action.
   """

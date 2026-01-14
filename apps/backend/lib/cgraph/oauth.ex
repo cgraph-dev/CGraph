@@ -1,4 +1,4 @@
-defmodule Cgraph.OAuth do
+defmodule CGraph.OAuth do
   @moduledoc """
   OAuth 2.0 authentication module supporting Google, Apple, Facebook, and TikTok.
 
@@ -27,9 +27,9 @@ defmodule Cgraph.OAuth do
         # ... other providers
   """
 
-  alias Cgraph.{Accounts, Repo}
-  alias Cgraph.Accounts.User
-  alias Cgraph.Guardian
+  alias CGraph.{Accounts, Repo}
+  alias CGraph.Accounts.User
+  alias CGraph.Guardian
 
   require Logger
 
@@ -74,7 +74,7 @@ defmodule Cgraph.OAuth do
 
   ## Example
 
-      {:ok, url} = Cgraph.OAuth.authorize_url(:google, "random-state-string")
+      {:ok, url} = CGraph.OAuth.authorize_url(:google, "random-state-string")
   """
   @spec authorize_url(provider(), String.t()) :: {:ok, String.t()} | {:error, term()}
   def authorize_url(provider, state) when provider in [:google, :apple, :facebook, :tiktok] do

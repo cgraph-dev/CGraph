@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging do
+defmodule CGraph.Messaging do
   @moduledoc """
   The Messaging context.
 
@@ -7,20 +7,20 @@ defmodule Cgraph.Messaging do
   This module acts as the main entry point and delegates to specialized
   sub-contexts for better organization:
 
-  - `Cgraph.Messaging.Conversations` - Conversation CRUD and participant management
-  - `Cgraph.Messaging.Messages` - Message CRUD, pinning, editing
-  - `Cgraph.Messaging.Reactions` - Message reactions
-  - `Cgraph.Messaging.ReadReceipts` - Read status and delivery tracking
-  - `Cgraph.Messaging.Search` - Message search functionality
+  - `CGraph.Messaging.Conversations` - Conversation CRUD and participant management
+  - `CGraph.Messaging.Messages` - Message CRUD, pinning, editing
+  - `CGraph.Messaging.Reactions` - Message reactions
+  - `CGraph.Messaging.ReadReceipts` - Read status and delivery tracking
+  - `CGraph.Messaging.Search` - Message search functionality
 
   @since v0.7.29 - Refactored to use sub-contexts
   """
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Messaging.{ConversationParticipant, Message, Reaction, ReadReceipt}
-  alias Cgraph.Messaging.Conversations
-  alias Cgraph.Repo
+  alias CGraph.Messaging.{ConversationParticipant, Message, Reaction, ReadReceipt}
+  alias CGraph.Messaging.Conversations
+  alias CGraph.Repo
 
   # ============================================================================
   # Conversations - Delegated to Conversations sub-context
@@ -30,7 +30,7 @@ defmodule Cgraph.Messaging do
   @doc """
   List conversations for a user.
 
-  See `Cgraph.Messaging.Conversations.list_conversations/2` for details.
+  See `CGraph.Messaging.Conversations.list_conversations/2` for details.
   """
   defdelegate list_conversations(user, opts \\ []), to: Conversations
 
@@ -42,42 +42,42 @@ defmodule Cgraph.Messaging do
   @doc """
   Get a conversation by ID.
 
-  See `Cgraph.Messaging.Conversations.get_conversation/1` for details.
+  See `CGraph.Messaging.Conversations.get_conversation/1` for details.
   """
   defdelegate get_conversation(id), to: Conversations
 
   @doc """
   Get a conversation for a specific user, ensuring they have access.
 
-  See `Cgraph.Messaging.Conversations.get_user_conversation/2` for details.
+  See `CGraph.Messaging.Conversations.get_user_conversation/2` for details.
   """
   defdelegate get_user_conversation(user, conversation_id), to: Conversations
 
   @doc """
   Authorize user access to a conversation.
 
-  See `Cgraph.Messaging.Conversations.authorize_access/2` for details.
+  See `CGraph.Messaging.Conversations.authorize_access/2` for details.
   """
   defdelegate authorize_access(user, conversation), to: Conversations
 
   @doc """
   Get or create a DM conversation between two users.
 
-  See `Cgraph.Messaging.Conversations.get_or_create_dm/2` for details.
+  See `CGraph.Messaging.Conversations.get_or_create_dm/2` for details.
   """
   defdelegate get_or_create_dm(user, other_user), to: Conversations
 
   @doc """
   Create or get an existing conversation between users.
 
-  See `Cgraph.Messaging.Conversations.create_or_get_conversation/2` for details.
+  See `CGraph.Messaging.Conversations.create_or_get_conversation/2` for details.
   """
   defdelegate create_or_get_conversation(user, participant_ids), to: Conversations
 
   @doc """
   Create a new conversation.
 
-  See `Cgraph.Messaging.Conversations.create_conversation/2` for details.
+  See `CGraph.Messaging.Conversations.create_conversation/2` for details.
   """
   defdelegate create_conversation(user, attrs), to: Conversations
 
@@ -324,7 +324,7 @@ defmodule Cgraph.Messaging do
   Broadcast typing indicator.
   """
   def broadcast_typing(conversation, user) do
-    CgraphWeb.Endpoint.broadcast(
+    CGraphWeb.Endpoint.broadcast(
       "conversation:#{conversation.id}",
       "typing",
       %{user_id: user.id, username: user.username}
@@ -336,7 +336,7 @@ defmodule Cgraph.Messaging do
   # This function is kept for reference but should not be called
   # Uncommented to avoid unused function warning
   # defp broadcast_message(_conversation, _message) do
-  #   CgraphWeb.Endpoint.broadcast(
+  #   CGraphWeb.Endpoint.broadcast(
   #     "conversation:#{conversation.id}",
   #     "new_message",
   #     %{message: message}
@@ -435,7 +435,7 @@ defmodule Cgraph.Messaging do
     # Use provided user or try to get from reaction
     user_data = user || reaction.user
 
-    CgraphWeb.Endpoint.broadcast(
+    CGraphWeb.Endpoint.broadcast(
       "conversation:#{conversation.id}",
       "reaction_added",
       %{
@@ -460,7 +460,7 @@ defmodule Cgraph.Messaging do
   Broadcast reaction removed event.
   """
   def broadcast_reaction_removed(conversation, message, user, emoji) do
-    CgraphWeb.Endpoint.broadcast(
+    CGraphWeb.Endpoint.broadcast(
       "conversation:#{conversation.id}",
       "reaction_removed",
       %{message_id: message.id, user_id: user.id, emoji: emoji}
@@ -748,7 +748,7 @@ defmodule Cgraph.Messaging do
   # Private Messages (MyBB-style PM System)
   # ============================================================================
 
-  alias Cgraph.Messaging.{PrivateMessage, PMFolder, PMDraft}
+  alias CGraph.Messaging.{PrivateMessage, PMFolder, PMDraft}
 
   @default_pm_folders ["Inbox", "Sent", "Drafts", "Trash"]
 

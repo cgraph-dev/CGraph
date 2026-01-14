@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.ReadReceipt do
+defmodule CGraph.Messaging.ReadReceipt do
   @moduledoc """
   Read receipts for messages.
 
@@ -14,8 +14,8 @@ defmodule Cgraph.Messaging.ReadReceipt do
   schema "read_receipts" do
     field :read_at, :utc_datetime
 
-    belongs_to :message, Cgraph.Messaging.Message
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :message, CGraph.Messaging.Message
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps(updated_at: false)
   end

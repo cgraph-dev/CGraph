@@ -1,4 +1,4 @@
-defmodule Cgraph.RateLimiter.Distributed do
+defmodule CGraph.RateLimiter.Distributed do
   @moduledoc """
   Distributed rate limiting using Redis for multi-node environments.
 
@@ -62,7 +62,7 @@ defmodule Cgraph.RateLimiter.Distributed do
 
   ## Configuration
 
-      config :cgraph, Cgraph.RateLimiter.Distributed,
+      config :cgraph, CGraph.RateLimiter.Distributed,
         enabled: true,
         redis_pool: :rate_limiter,
         key_prefix: "rl:",
@@ -87,7 +87,7 @@ defmodule Cgraph.RateLimiter.Distributed do
   use GenServer
   require Logger
 
-  alias Cgraph.Redis
+  alias CGraph.Redis
 
   @ets_fallback_table :cgraph_rate_limiter_fallback
   @key_prefix "rl:"

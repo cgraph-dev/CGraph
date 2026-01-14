@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.PresenceController do
+defmodule CGraphWeb.API.V1.PresenceController do
   @moduledoc """
   Controller for Presence/Online Status system.
   Real-time user presence tracking with heartbeat.
@@ -9,11 +9,11 @@ defmodule CgraphWeb.API.V1.PresenceController do
   - Presence statistics
   - Location tracking (who's viewing what)
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Presence
+  alias CGraph.Presence
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 200
 

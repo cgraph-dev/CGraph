@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.FriendJSON do
+defmodule CGraphWeb.API.V1.FriendJSON do
   @moduledoc """
   JSON rendering for friend responses.
   """
 
-  alias CgraphWeb.API.V1.UserJSON
+  alias CGraphWeb.API.V1.UserJSON
 
   def index(%{friends: friends, meta: meta}) do
     %{

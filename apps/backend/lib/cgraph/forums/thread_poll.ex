@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.ThreadPoll do
+defmodule CGraph.Forums.ThreadPoll do
   @moduledoc """
   Poll schema for thread polls (MyBB-style).
 
@@ -28,8 +28,8 @@ defmodule Cgraph.Forums.ThreadPoll do
     field :closes_at, :utc_datetime
     field :total_votes, :integer, default: 0
 
-    belongs_to :thread, Cgraph.Forums.Thread
-    has_many :votes, Cgraph.Forums.PollVote, foreign_key: :poll_id
+    belongs_to :thread, CGraph.Forums.Thread
+    has_many :votes, CGraph.Forums.PollVote, foreign_key: :poll_id
 
     timestamps()
   end

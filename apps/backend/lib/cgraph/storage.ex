@@ -1,4 +1,4 @@
-defmodule Cgraph.Storage do
+defmodule CGraph.Storage do
   @moduledoc """
   Unified storage interface for file uploads.
 
@@ -33,13 +33,13 @@ defmodule Cgraph.Storage do
   ## Usage
 
       # Store a file
-      {:ok, result} = Cgraph.Storage.store(file_path, "image.jpg", context: "avatars")
+      {:ok, result} = CGraph.Storage.store(file_path, "image.jpg", context: "avatars")
 
       # Get a signed URL (for private files)
-      {:ok, url} = Cgraph.Storage.signed_url(key, expires_in: 3600)
+      {:ok, url} = CGraph.Storage.signed_url(key, expires_in: 3600)
 
       # Delete a file
-      :ok = Cgraph.Storage.delete(url)
+      :ok = CGraph.Storage.delete(url)
   """
 
   @type storage_result :: %{
@@ -104,9 +104,9 @@ defmodule Cgraph.Storage do
     config = Application.get_env(:cgraph, :storage, [])
 
     case Keyword.get(config, :backend, :local) do
-      :local -> Cgraph.Storage.Local
-      :s3 -> Cgraph.Storage.S3
-      :r2 -> Cgraph.Storage.R2
+      :local -> CGraph.Storage.Local
+      :s3 -> CGraph.Storage.S3
+      :r2 -> CGraph.Storage.R2
       module when is_atom(module) -> module
     end
   end

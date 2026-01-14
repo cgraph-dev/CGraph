@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.TelemetryController do
+defmodule CGraphWeb.API.V1.TelemetryController do
   @moduledoc """
   Telemetry and error reporting endpoint.
 
@@ -21,11 +21,11 @@ defmodule CgraphWeb.API.V1.TelemetryController do
   - Client fingerprinting for abuse detection
   """
 
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Telemetry.ErrorReporter
+  alias CGraph.Telemetry.ErrorReporter
 
   require Logger
 

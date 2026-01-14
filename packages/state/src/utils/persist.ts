@@ -4,8 +4,6 @@
  * Cross-platform persistence for Zustand stores.
  */
 
-import { StateCreator, StoreMutatorIdentifier } from 'zustand';
-
 export interface PersistOptions<T> {
   name: string;
   getStorage: () => PersistStorage;
@@ -41,6 +39,15 @@ export function createLocalStorageAdapter(): PersistStorage {
   };
 }
 
+// Type for async storage module
+interface AsyncStorageModule {
+  default: {
+    getItem: (key: string) => Promise<string | null>;
+    setItem: (key: string, value: string) => Promise<void>;
+    removeItem: (key: string) => Promise<void>;
+  };
+}
+
 /**
  * Create an AsyncStorage adapter (React Native)
  * Note: Requires @react-native-async-storage/async-storage
@@ -49,18 +56,25 @@ export function createAsyncStorageAdapter(): PersistStorage {
   // Dynamic import to avoid bundling issues
   return {
     getItem: async (name) => {
-      const AsyncStorage = await import('@react-native-async-storage/async-storage');
+      const AsyncStorage = await import('@react-native-async-storage/async-storage' as string) as AsyncStorageModule;
       return AsyncStorage.default.getItem(name);
     },
     setItem: async (name, value) => {
-      const AsyncStorage = await import('@react-native-async-storage/async-storage');
+      const AsyncStorage = await import('@react-native-async-storage/async-storage' as string) as AsyncStorageModule;
       await AsyncStorage.default.setItem(name, value);
     },
     removeItem: async (name) => {
-      const AsyncStorage = await import('@react-native-async-storage/async-storage');
+      const AsyncStorage = await import('@react-native-async-storage/async-storage' as string) as AsyncStorageModule;
       await AsyncStorage.default.removeItem(name);
     },
   };
+}
+
+// Type for secure store module
+interface SecureStoreModule {
+  getItemAsync: (key: string) => Promise<string | null>;
+  setItemAsync: (key: string, value: string) => Promise<void>;
+  deleteItemAsync: (key: string) => Promise<void>;
 }
 
 /**
@@ -70,15 +84,15 @@ export function createAsyncStorageAdapter(): PersistStorage {
 export function createSecureStorageAdapter(): PersistStorage {
   return {
     getItem: async (name) => {
-      const SecureStore = await import('expo-secure-store');
+      const SecureStore = await import('expo-secure-store' as string) as SecureStoreModule;
       return SecureStore.getItemAsync(name);
     },
     setItem: async (name, value) => {
-      const SecureStore = await import('expo-secure-store');
+      const SecureStore = await import('expo-secure-store' as string) as SecureStoreModule;
       await SecureStore.setItemAsync(name, value);
     },
     removeItem: async (name) => {
-      const SecureStore = await import('expo-secure-store');
+      const SecureStore = await import('expo-secure-store' as string) as SecureStoreModule;
       await SecureStore.deleteItemAsync(name);
     },
   };

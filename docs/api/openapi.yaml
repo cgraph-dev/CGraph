@@ -7,12 +7,29 @@ info:
     
     ## Authentication
     
-    Most endpoints require authentication via JWT Bearer token:
+    Authentication uses HTTP-only cookies for enhanced security:
+    - Access tokens are set as HTTP-only cookies (15 min expiry)
+    - Refresh tokens are set as HTTP-only cookies (7 day expiry)
+    - All API requests automatically include cookies via `withCredentials: true`
+    
+    For WebSocket connections, a session token is provided via the auth endpoints
+    and passed as a query parameter.
+    
+    Legacy Bearer token authentication is still supported for backwards compatibility:
     ```
     Authorization: Bearer <your-token>
     ```
     
     Obtain tokens via `/api/v1/auth/login` or `/api/v1/auth/register`.
+    
+    ## End-to-End Encryption (v0.9.0+)
+    
+    CGraph implements Signal Protocol-inspired E2EE:
+    - X3DH for initial key agreement
+    - Double Ratchet for forward secrecy
+    - AES-256-GCM for message encryption
+    
+    See the E2EE endpoints under `/api/v1/e2ee/*` for key management.
     
     ## Rate Limiting
     
@@ -25,7 +42,7 @@ info:
     - `X-RateLimit-Remaining`
     - `X-RateLimit-Reset`
     
-  version: 0.8.6
+  version: 0.9.0
   contact:
     name: CGraph Support
     email: support@cgraph.org
@@ -63,6 +80,10 @@ tags:
     description: Forum threads and posts
   - name: Calls
     description: WebRTC voice and video calls
+  - name: E2EE
+    description: End-to-End Encryption key management (v0.9.0+)
+  - name: Presence
+    description: Online status and presence tracking
 
 paths:
   /auth/register:
@@ -807,6 +828,11 @@ components:
       type: http
       scheme: bearer
       bearerFormat: JWT
+    CookieAuth:
+      type: apiKey
+      in: cookie
+      name: access_token
+      description: HTTP-only cookie containing JWT access token (v0.9.0+)
 
   parameters:
     PageParam:
@@ -1245,5 +1271,193 @@ components:
         '200':
           description: Successfully left call
 
+  # ============================================
+  # E2EE ENDPOINTS (v0.9.0+)
+  # ============================================
+
+  /e2ee/keys:
+    post:
+      tags: [E2EE]
+      summary: Register E2EE keys for a device
+      description: |
+        Register identity key, signed prekey, and one-time prekeys for E2EE.
+        Must be called once per device during E2EE setup.
+      operationId: registerE2EEKeys
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/E2EEKeyRegistration'
+      responses:
+        '201':
+          description: Keys registered successfully
+        '400':
+          description: Invalid key format
+
+  /e2ee/keys/{device_id}:
+    delete:
+      tags: [E2EE]
+      summary: Revoke keys for a device
+      description: |
+        Revoke all E2EE keys for a specific device.
+        Used when logging out a device or after security compromise.
+      operationId: revokeDeviceKeys
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: device_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Keys revoked successfully
+        '404':
+          description: Device not found
+
+  /e2ee/bundle/{user_id}:
+    get:
+      tags: [E2EE]
+      summary: Get prekey bundle for a user
+      description: |
+        Retrieve the prekey bundle needed to establish an encrypted session with a user.
+        Returns identity key, signed prekey, and optionally a one-time prekey.
+      operationId: getPrekeyBundle
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Prekey bundle
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrekeyBundle'
+        '404':
+          description: User not found or no keys registered
+
+  /e2ee/prekeys:
+    post:
+      tags: [E2EE]
+      summary: Upload additional one-time prekeys
+      description: |
+        Upload additional one-time prekeys when running low.
+        Should be called periodically to maintain availability.
+      operationId: uploadPrekeys
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [prekeys]
+              properties:
+                prekeys:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      key_id:
+                        type: string
+                      public_key:
+                        type: string
+                        format: base64
+      responses:
+        '200':
+          description: Prekeys uploaded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+
+  /e2ee/prekeys/count:
+    get:
+      tags: [E2EE]
+      summary: Get remaining prekey count
+      description: Check how many one-time prekeys are available for this device.
+      operationId: getPrekeyCount
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Prekey count
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  count:
+                    type: integer
+
+  /e2ee/devices:
+    get:
+      tags: [E2EE]
+      summary: List registered devices
+      description: Get all devices with registered E2EE keys for the current user.
+      operationId: listDevices
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of devices
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    device_id:
+                      type: string
+                    created_at:
+                      type: string
+                      format: date-time
+
+  # ============================================
+  # PRESENCE ENDPOINTS
+  # ============================================
+
+  /presence/status:
+    put:
+      tags: [Presence]
+      summary: Update online status
+      description: Update the current user's online status (online, away, dnd, invisible).
+      operationId: updatePresenceStatus
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [online, away, dnd, invisible]
+                custom_status:
+                  type: string
+                  maxLength: 128
+      responses:
+        '200':
+          description: Status updated
+
 security:
   - BearerAuth: []
+  - CookieAuth: []

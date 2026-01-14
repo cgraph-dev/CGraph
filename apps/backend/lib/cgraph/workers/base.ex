@@ -1,4 +1,4 @@
-defmodule Cgraph.Workers.Base do
+defmodule CGraph.Workers.Base do
   @moduledoc """
   Base module for Oban workers with common patterns.
 
@@ -15,15 +15,15 @@ defmodule Cgraph.Workers.Base do
   ## Usage
 
   ```elixir
-  defmodule Cgraph.Workers.SendEmail do
-    use Cgraph.Workers.Base,
+  defmodule CGraph.Workers.SendEmail do
+    use CGraph.Workers.Base,
       queue: :emails,
       max_attempts: 5,
       priority: 1
 
     @impl true
     def execute(%{"to" => to, "template" => template, "data" => data}, job) do
-      Cgraph.Mailer.send(to, template, data)
+      CGraph.Mailer.send(to, template, data)
     end
   end
   ```
@@ -54,7 +54,7 @@ defmodule Cgraph.Workers.Base do
 
       require Logger
 
-      @behaviour Cgraph.Workers.Base
+      @behaviour CGraph.Workers.Base
       @timeout unquote(timeout)
 
       @impl Oban.Worker
@@ -158,7 +158,7 @@ defmodule Cgraph.Workers.Base do
   end
 end
 
-defmodule Cgraph.Workers.SendWelcomeEmail do
+defmodule CGraph.Workers.SendWelcomeEmail do
   @moduledoc """
   Send welcome email to newly registered users.
 
@@ -178,13 +178,13 @@ defmodule Cgraph.Workers.SendWelcomeEmail do
   - Final attempt after ~2 hours
   """
 
-  use Cgraph.Workers.Base,
+  use CGraph.Workers.Base,
     queue: :emails,
     max_attempts: 5
 
-  alias Cgraph.Accounts
+  alias CGraph.Accounts
 
-  @impl Cgraph.Workers.Base
+  @impl CGraph.Workers.Base
   def execute(%{"user_id" => user_id} = args, _job) do
     case Accounts.get_user(user_id) do
       {:error, :not_found} ->
@@ -207,7 +207,7 @@ defmodule Cgraph.Workers.SendWelcomeEmail do
   end
 end
 
-defmodule Cgraph.Workers.CleanupExpiredSessions do
+defmodule CGraph.Workers.CleanupExpiredSessions do
   @moduledoc """
   Periodic cleanup of expired sessions and tokens.
 
@@ -220,21 +220,21 @@ defmodule Cgraph.Workers.CleanupExpiredSessions do
     plugins: [
       {Oban.Plugins.Cron,
        crontab: [
-         {"0 * * * *", Cgraph.Workers.CleanupExpiredSessions}
+         {"0 * * * *", CGraph.Workers.CleanupExpiredSessions}
        ]}
     ]
   ```
   """
 
-  use Cgraph.Workers.Base,
+  use CGraph.Workers.Base,
     queue: :maintenance,
     max_attempts: 3,
     timeout: :timer.minutes(10)
 
   import Ecto.Query
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
-  @impl Cgraph.Workers.Base
+  @impl CGraph.Workers.Base
   def execute(_args, _job) do
     Logger.info("Starting session cleanup")
 
@@ -250,7 +250,7 @@ defmodule Cgraph.Workers.CleanupExpiredSessions do
 
     # Delete sessions that are expired or were revoked more than 7 days ago
     {deleted, _} = Repo.delete_all(
-      from s in Cgraph.Accounts.Session,
+      from s in CGraph.Accounts.Session,
       where: s.expires_at < ^now or
              (not is_nil(s.revoked_at) and s.revoked_at < ^DateTime.add(now, -7, :day))
     )
@@ -259,7 +259,7 @@ defmodule Cgraph.Workers.CleanupExpiredSessions do
   end
 end
 
-defmodule Cgraph.Workers.ProcessMediaUpload do
+defmodule CGraph.Workers.ProcessMediaUpload do
   @moduledoc """
   Process uploaded media files (images, videos).
 
@@ -283,12 +283,12 @@ defmodule Cgraph.Workers.ProcessMediaUpload do
   ```
   """
 
-  use Cgraph.Workers.Base,
+  use CGraph.Workers.Base,
     queue: :media,
     max_attempts: 3,
     timeout: :timer.minutes(15)
 
-  @impl Cgraph.Workers.Base
+  @impl CGraph.Workers.Base
   def execute(%{"upload_id" => upload_id, "file_path" => path} = args, _job) do
     Logger.info("Processing media upload", upload_id: upload_id)
 
@@ -347,19 +347,19 @@ defmodule Cgraph.Workers.ProcessMediaUpload do
   end
 end
 
-defmodule Cgraph.Workers.SyncExternalData do
+defmodule CGraph.Workers.SyncExternalData do
   @moduledoc """
   Sync data from external APIs with rate limiting.
 
   Uses snooze for backoff when rate limited.
   """
 
-  use Cgraph.Workers.Base,
+  use CGraph.Workers.Base,
     queue: :sync,
     max_attempts: 10,
     timeout: :timer.minutes(5)
 
-  @impl Cgraph.Workers.Base
+  @impl CGraph.Workers.Base
   def execute(%{"source" => source, "resource_id" => id} = _args, _job) do
     Logger.info("Syncing external data", source: source, resource_id: id)
 

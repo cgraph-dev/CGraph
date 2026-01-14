@@ -1,4 +1,4 @@
-defmodule Cgraph.Calendar do
+defmodule CGraph.Calendar do
   @moduledoc """
   Context for Calendar and Events system.
   Handles event management, categories, and RSVPs.
@@ -12,8 +12,8 @@ defmodule Cgraph.Calendar do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
-  alias Cgraph.Calendar.{Event, EventCategory, EventRSVP}
+  alias CGraph.Repo
+  alias CGraph.Calendar.{Event, EventCategory, EventRSVP}
 
   # ========================================
   # EVENTS

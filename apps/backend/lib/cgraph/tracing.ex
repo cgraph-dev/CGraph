@@ -1,4 +1,4 @@
-defmodule Cgraph.Tracing do
+defmodule CGraph.Tracing do
   @moduledoc """
   Distributed tracing system for request flow visualization.
 

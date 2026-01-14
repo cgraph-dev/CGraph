@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.PMController do
+defmodule CGraphWeb.API.V1.PMController do
   @moduledoc """
   Controller for Private Message (PM) system.
   Implements MyBB-style private messaging with folders, drafts, and read receipts.
@@ -10,14 +10,14 @@ defmodule CgraphWeb.API.V1.PMController do
   - Read receipts
   - Export functionality
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Messaging
-  alias Cgraph.Messaging.{PrivateMessage, PMFolder}
+  alias CGraph.Messaging
+  alias CGraph.Messaging.{PrivateMessage, PMFolder}
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 50
 

@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.UserSettings do
+defmodule CGraph.Accounts.UserSettings do
   @moduledoc """
   User settings and preferences schema.
 
@@ -15,7 +15,7 @@ defmodule Cgraph.Accounts.UserSettings do
   @foreign_key_type :binary_id
 
   schema "user_settings" do
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :user, CGraph.Accounts.User
 
     # Notification preferences
     field :email_notifications, :boolean, default: true

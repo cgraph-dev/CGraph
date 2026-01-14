@@ -380,7 +380,7 @@ interface CreateReportData {
   details?: string;
 }
 
-interface ForumState {
+export interface ForumState {
   forums: Forum[];
   posts: Post[];
   currentPost: Post | null;

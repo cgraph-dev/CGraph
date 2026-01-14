@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.Quest do
+defmodule CGraph.Gamification.Quest do
   @moduledoc """
   Schema for quest definitions.
 
@@ -27,7 +27,7 @@ defmodule Cgraph.Gamification.Quest do
     field :repeatable, :boolean, default: false
     field :sort_order, :integer, default: 0
 
-    has_many :user_quests, Cgraph.Gamification.UserQuest
+    has_many :user_quests, CGraph.Gamification.UserQuest
 
     timestamps(type: :utc_datetime)
   end

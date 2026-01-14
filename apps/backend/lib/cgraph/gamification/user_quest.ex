@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.UserQuest do
+defmodule CGraph.Gamification.UserQuest do
   @moduledoc """
   Schema for tracking user progress on quests.
   """
@@ -9,8 +9,8 @@ defmodule Cgraph.Gamification.UserQuest do
   @foreign_key_type :binary_id
 
   schema "user_quests" do
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :quest, Cgraph.Gamification.Quest
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :quest, CGraph.Gamification.Quest
 
     field :progress, :map, default: %{}
     field :completed, :boolean, default: false

@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.ForumUserGroup do
+defmodule CGraph.Forums.ForumUserGroup do
   @moduledoc """
   ForumUserGroup schema for MyBB-style permission groups.
 
@@ -97,8 +97,8 @@ defmodule Cgraph.Forums.ForumUserGroup do
     field :post_flood_limit_seconds, :integer, default: 30
     field :search_flood_limit_seconds, :integer, default: 10
 
-    belongs_to :forum, Cgraph.Forums.Forum
-    has_many :members, Cgraph.Forums.ForumMember, foreign_key: :user_group_id
+    belongs_to :forum, CGraph.Forums.Forum
+    has_many :members, CGraph.Forums.ForumMember, foreign_key: :user_group_id
 
     timestamps()
   end

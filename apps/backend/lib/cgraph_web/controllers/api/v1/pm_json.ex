@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.PMJson do
+defmodule CGraphWeb.API.V1.PMJson do
   @moduledoc """
   JSON rendering for Private Message endpoints.
   """

@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.Achievement do
+defmodule CGraph.Gamification.Achievement do
   @moduledoc """
   Schema for achievement definitions.
 
@@ -29,7 +29,7 @@ defmodule Cgraph.Gamification.Achievement do
     field :badge_reward, :string
     field :sort_order, :integer, default: 0
 
-    has_many :user_achievements, Cgraph.Gamification.UserAchievement
+    has_many :user_achievements, CGraph.Gamification.UserAchievement
 
     timestamps(type: :utc_datetime)
   end

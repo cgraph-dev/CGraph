@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.SearchJSON do
+defmodule CGraphWeb.API.V1.SearchJSON do
   @moduledoc """
   JSON rendering for search responses.
   """
 
-  alias CgraphWeb.API.V1.{GroupJSON, MessageJSON, PostJSON, UserJSON}
+  alias CGraphWeb.API.V1.{GroupJSON, MessageJSON, PostJSON, UserJSON}
 
   def index(%{results: results, query: query}) do
     %{

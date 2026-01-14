@@ -1,4 +1,4 @@
-defmodule Cgraph.Groups.AuditLog do
+defmodule CGraph.Groups.AuditLog do
   @moduledoc """
   Audit log for tracking all moderation actions in a group.
   """
@@ -32,9 +32,9 @@ defmodule Cgraph.Groups.AuditLog do
     field :reason, :string
     field :changes, :map  # JSON of before/after values
 
-    belongs_to :group, Cgraph.Groups.Group
-    belongs_to :user, Cgraph.Accounts.User  # Who performed the action
-    belongs_to :target_user, Cgraph.Accounts.User  # Who was affected (optional)
+    belongs_to :group, CGraph.Groups.Group
+    belongs_to :user, CGraph.Accounts.User  # Who performed the action
+    belongs_to :target_user, CGraph.Accounts.User  # Who was affected (optional)
 
     timestamps(updated_at: false)
   end

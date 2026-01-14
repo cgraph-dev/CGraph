@@ -1,10 +1,10 @@
-defmodule CgraphWeb.API.V1.ChannelMessageJSON do
+defmodule CGraphWeb.API.V1.ChannelMessageJSON do
   @moduledoc """
   JSON rendering for channel message responses.
   Reuses MessageJSON for consistency.
   """
 
-  alias CgraphWeb.API.V1.MessageJSON
+  alias CGraphWeb.API.V1.MessageJSON
 
   def index(%{messages: messages, meta: meta}) do
     %{

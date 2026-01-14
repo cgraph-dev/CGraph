@@ -1,6 +1,6 @@
-defmodule Cgraph.DataExport do
+defmodule CGraph.DataExport do
   @moduledoc """
-  Cgraph.DataExport - Comprehensive Data Export Infrastructure
+  CGraph.DataExport - Comprehensive Data Export Infrastructure
 
   ## Overview
 
@@ -12,7 +12,7 @@ defmodule Cgraph.DataExport do
 
   ```
   ┌─────────────────────────────────────────────────────────────────┐
-  │                      Cgraph.DataExport                         │
+  │                      CGraph.DataExport                         │
   ├─────────────────────────────────────────────────────────────────┤
   │  Export Formats    │  Data Sources     │  Delivery Methods     │
   │  ────────────────  │  ────────────────  │  ─────────────────    │
@@ -53,20 +53,20 @@ defmodule Cgraph.DataExport do
 
   ### User Data Export (GDPR)
 
-      {:ok, export} = Cgraph.DataExport.export_user_data(user_id, [
+      {:ok, export} = CGraph.DataExport.export_user_data(user_id, [
         format: :json,
         include: [:profile, :messages, :activity, :settings],
         delivery: :download
       ])
 
       # Get download URL
-      {:ok, url} = Cgraph.DataExport.get_download_url(export.id)
+      {:ok, url} = CGraph.DataExport.get_download_url(export.id)
 
   ### Custom Query Export
 
       query = from u in User, where: u.created_at > ^start_date
 
-      {:ok, export} = Cgraph.DataExport.export_query(query, [
+      {:ok, export} = CGraph.DataExport.export_query(query, [
         format: :csv,
         filename: "users_export",
         columns: [:id, :email, :name, :created_at]
@@ -74,7 +74,7 @@ defmodule Cgraph.DataExport do
 
   ### Streaming Large Dataset
 
-      Cgraph.DataExport.stream_export(query, [format: :ndjson])
+      CGraph.DataExport.stream_export(query, [format: :ndjson])
       |> Stream.each(&IO.puts/1)
       |> Stream.run()
 
@@ -82,7 +82,7 @@ defmodule Cgraph.DataExport do
 
   Configure in `config/config.exs`:
 
-      config :cgraph, Cgraph.DataExport,
+      config :cgraph, CGraph.DataExport,
         storage: :s3,  # :local or :s3
         bucket: "my-exports-bucket",
         encryption: true,
@@ -103,7 +103,7 @@ defmodule Cgraph.DataExport do
   require Logger
 
   import Ecto.Query
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
   # ---------------------------------------------------------------------------
   # Type Definitions
@@ -165,12 +165,12 @@ defmodule Cgraph.DataExport do
 
   # Export data sources configuration
   @user_data_sources %{
-    profile: {Cgraph.Users.User, :export_profile},
-    settings: {Cgraph.Users.UserSettings, :export_settings},
-    activity: {Cgraph.Audit, :export_user_activity},
-    messages: {Cgraph.Messages, :export_user_messages},
-    connections: {Cgraph.Connections, :export_user_connections},
-    notifications: {Cgraph.Notifications, :export_user_notifications}
+    profile: {CGraph.Users.User, :export_profile},
+    settings: {CGraph.Users.UserSettings, :export_settings},
+    activity: {CGraph.Audit, :export_user_activity},
+    messages: {CGraph.Messages, :export_user_messages},
+    connections: {CGraph.Connections, :export_user_connections},
+    notifications: {CGraph.Notifications, :export_user_notifications}
   }
 
   # ---------------------------------------------------------------------------
@@ -196,10 +196,10 @@ defmodule Cgraph.DataExport do
   ## Examples
 
       # Export all user data as JSON
-      {:ok, export} = Cgraph.DataExport.export_user_data(user_id)
+      {:ok, export} = CGraph.DataExport.export_user_data(user_id)
 
       # Export specific data types as CSV
-      {:ok, export} = Cgraph.DataExport.export_user_data(user_id, [
+      {:ok, export} = CGraph.DataExport.export_user_data(user_id, [
         format: :csv,
         include: [:profile, :messages]
       ])
@@ -225,7 +225,7 @@ defmodule Cgraph.DataExport do
 
       query = from u in User, where: u.role == "admin"
 
-      {:ok, export} = Cgraph.DataExport.export_query(query, [
+      {:ok, export} = CGraph.DataExport.export_query(query, [
         format: :csv,
         filename: "admin_users",
         columns: [:id, :email, :name]
@@ -246,7 +246,7 @@ defmodule Cgraph.DataExport do
 
       query = from u in User, select: %{id: u.id, email: u.email}
 
-      Cgraph.DataExport.stream_export(query, format: :ndjson)
+      CGraph.DataExport.stream_export(query, format: :ndjson)
       |> Stream.into(File.stream!("export.ndjson"))
       |> Stream.run()
   """
@@ -311,7 +311,7 @@ defmodule Cgraph.DataExport do
 
   ## Examples
 
-      {:ok, url} = Cgraph.DataExport.get_download_url(export_id)
+      {:ok, url} = CGraph.DataExport.get_download_url(export_id)
       # => "https://example.com/exports/download/abc123?token=xyz..."
   """
   @spec get_download_url(export_id()) :: {:ok, String.t()} | {:error, term()}
@@ -823,7 +823,7 @@ defmodule Cgraph.DataExport do
       Base.decode64!(key_b64)
     else
       # Generate deterministic key from app secret for development
-      secret = Application.get_env(:cgraph, CgraphWeb.Endpoint)[:secret_key_base] || "dev_secret"
+      secret = Application.get_env(:cgraph, CGraphWeb.Endpoint)[:secret_key_base] || "dev_secret"
       :crypto.hash(:sha256, secret)
     end
   end
@@ -886,8 +886,8 @@ defmodule Cgraph.DataExport do
   # ---------------------------------------------------------------------------
 
   defp build_download_url(export) do
-    base_url = Application.get_env(:cgraph, CgraphWeb.Endpoint)[:url][:host] || "localhost"
-    scheme = Application.get_env(:cgraph, CgraphWeb.Endpoint)[:url][:scheme] || "http"
+    base_url = Application.get_env(:cgraph, CGraphWeb.Endpoint)[:url][:host] || "localhost"
+    scheme = Application.get_env(:cgraph, CGraphWeb.Endpoint)[:url][:scheme] || "http"
 
     "#{scheme}://#{base_url}/api/exports/#{export.id}/download?token=#{export.download_token}"
   end
@@ -913,7 +913,7 @@ defmodule Cgraph.DataExport do
 
       request = Finch.build(:post, webhook_url, headers, body)
 
-      case Finch.request(request, Cgraph.Finch) do
+      case Finch.request(request, CGraph.Finch) do
         {:ok, %{status: status}} when status in 200..299 ->
           Logger.info("[DataExport] Webhook delivered for export #{export.id}")
 
@@ -935,7 +935,7 @@ defmodule Cgraph.DataExport do
   defp log_export_started(export) do
     Logger.info("[DataExport] Started export #{export.id} for user #{export.user_id}")
 
-    Cgraph.Audit.log(:data_export, :export_started, %{
+    CGraph.Audit.log(:data_export, :export_started, %{
       export_id: export.id,
       user_id: export.user_id,
       type: export.type,
@@ -946,7 +946,7 @@ defmodule Cgraph.DataExport do
   defp log_export_completed(export) do
     Logger.info("[DataExport] Completed export #{export.id}, size: #{export.file_size} bytes")
 
-    Cgraph.Audit.log(:data_export, :export_completed, %{
+    CGraph.Audit.log(:data_export, :export_completed, %{
       export_id: export.id,
       user_id: export.user_id,
       file_size: export.file_size,
@@ -957,7 +957,7 @@ defmodule Cgraph.DataExport do
   defp log_export_failed(export) do
     Logger.error("[DataExport] Export #{export.id} failed: #{export.error}")
 
-    Cgraph.Audit.log(:data_export, :export_failed, %{
+    CGraph.Audit.log(:data_export, :export_failed, %{
       export_id: export.id,
       user_id: export.user_id,
       error: export.error
@@ -965,7 +965,7 @@ defmodule Cgraph.DataExport do
   end
 
   defp log_download(export) do
-    Cgraph.Audit.log(:data_export, :export_downloaded, %{
+    CGraph.Audit.log(:data_export, :export_downloaded, %{
       export_id: export.id,
       user_id: export.user_id,
       download_count: export.download_count + 1
@@ -973,7 +973,7 @@ defmodule Cgraph.DataExport do
   end
 
   defp log_export_deleted(export) do
-    Cgraph.Audit.log(:data_export, :export_deleted, %{
+    CGraph.Audit.log(:data_export, :export_deleted, %{
       export_id: export.id,
       user_id: export.user_id
     }, actor_id: export.user_id)

@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.VoiceMessage do
+defmodule CGraph.Messaging.VoiceMessage do
   @moduledoc """
   Voice message processing and storage.
 
@@ -67,8 +67,8 @@ defmodule Cgraph.Messaging.VoiceMessage do
 
   require Logger
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Repo
+  alias CGraph.Accounts.User
+  alias CGraph.Repo
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -136,7 +136,7 @@ defmodule Cgraph.Messaging.VoiceMessage do
     field :codec, :string
 
     belongs_to :user, User
-    belongs_to :message, Cgraph.Messaging.Message
+    belongs_to :message, CGraph.Messaging.Message
 
     timestamps()
   end
@@ -556,7 +556,7 @@ defmodule Cgraph.Messaging.VoiceMessage do
   defp delete_file(_), do: :ok
 
   defp storage_backend do
-    Application.get_env(:cgraph, :storage_backend, Cgraph.Storage.Local)
+    Application.get_env(:cgraph, :storage_backend, CGraph.Storage.Local)
   end
 
   defp parse_float(nil, default), do: default

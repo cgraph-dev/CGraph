@@ -1,6 +1,6 @@
-defmodule Cgraph.BatchProcessor do
+defmodule CGraph.BatchProcessor do
   @moduledoc """
-  Cgraph.BatchProcessor - Comprehensive Batch Processing Infrastructure
+  CGraph.BatchProcessor - Comprehensive Batch Processing Infrastructure
 
   ## Overview
 
@@ -53,14 +53,14 @@ defmodule Cgraph.BatchProcessor do
 
       items = Enum.to_list(1..10_000)
 
-      {:ok, result} = Cgraph.BatchProcessor.process(items, fn item ->
+      {:ok, result} = CGraph.BatchProcessor.process(items, fn item ->
         # Process each item
         {:ok, transformed_item}
       end)
 
   ### With Options
 
-      {:ok, result} = Cgraph.BatchProcessor.process(items, processor_fn, [
+      {:ok, result} = CGraph.BatchProcessor.process(items, processor_fn, [
         batch_size: 100,
         concurrency: 10,
         timeout: :timer.seconds(30),
@@ -75,26 +75,26 @@ defmodule Cgraph.BatchProcessor do
 
       query = from u in User, where: u.active == true
 
-      {:ok, result} = Cgraph.BatchProcessor.stream_process(query, fn batch ->
+      {:ok, result} = CGraph.BatchProcessor.stream_process(query, fn batch ->
         # Process batch of users
         Enum.map(batch, &update_user/1)
       end, batch_size: 1000)
 
   ### Background Batch Job
 
-      {:ok, job_id} = Cgraph.BatchProcessor.start_async(items, processor_fn, [
+      {:ok, job_id} = CGraph.BatchProcessor.start_async(items, processor_fn, [
         name: "user_migration",
         concurrency: 5
       ])
 
       # Check progress
-      {:ok, status} = Cgraph.BatchProcessor.get_status(job_id)
+      {:ok, status} = CGraph.BatchProcessor.get_status(job_id)
 
   ## Configuration
 
   Configure in `config/config.exs`:
 
-      config :cgraph, Cgraph.BatchProcessor,
+      config :cgraph, CGraph.BatchProcessor,
         default_batch_size: 100,
         default_concurrency: 4,
         max_concurrency: 20,
@@ -105,7 +105,7 @@ defmodule Cgraph.BatchProcessor do
   use GenServer
   require Logger
 
-  alias Cgraph.Repo
+  alias CGraph.Repo
 
   # ---------------------------------------------------------------------------
   # Type Definitions
@@ -199,7 +199,7 @@ defmodule Cgraph.BatchProcessor do
 
   ## Examples
 
-      {:ok, result} = Cgraph.BatchProcessor.process(items, fn item ->
+      {:ok, result} = CGraph.BatchProcessor.process(items, fn item ->
         {:ok, transform(item)}
       end)
 
@@ -436,7 +436,7 @@ defmodule Cgraph.BatchProcessor do
   """
   @spec subscribe(batch_id()) :: :ok
   def subscribe(batch_id) do
-    Phoenix.PubSub.subscribe(Cgraph.PubSub, "batch_progress:#{batch_id}")
+    Phoenix.PubSub.subscribe(CGraph.PubSub, "batch_progress:#{batch_id}")
   end
 
   # ---------------------------------------------------------------------------
@@ -625,7 +625,7 @@ defmodule Cgraph.BatchProcessor do
 
         # Broadcast progress update
         Phoenix.PubSub.broadcast(
-          Cgraph.PubSub,
+          CGraph.PubSub,
           "batch_progress:#{batch_id}",
           {:batch_progress, new_progress}
         )

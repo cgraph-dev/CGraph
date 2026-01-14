@@ -6,7 +6,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { SubscriptionTier, CoinPackage, PurchaseHistory } from './types';
+import type { SubscriptionTier, PurchaseHistory } from './types';
 
 export interface PremiumState {
   // Subscription

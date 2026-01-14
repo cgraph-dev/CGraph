@@ -1,6 +1,6 @@
-defmodule Cgraph.ConnectionPool do
+defmodule CGraph.ConnectionPool do
   @moduledoc """
-  Cgraph.ConnectionPool - Database Connection Pool Manager
+  CGraph.ConnectionPool - Database Connection Pool Manager
 
   ## Overview
 
@@ -13,7 +13,7 @@ defmodule Cgraph.ConnectionPool do
 
   ```
   ┌─────────────────────────────────────────────────────────────────┐
-  │                    Cgraph.ConnectionPool                        │
+  │                    CGraph.ConnectionPool                        │
   ├─────────────────────────────────────────────────────────────────┤
   │  Pool Monitoring   │  Health Checks    │  Dynamic Scaling       │
   │  ─────────────────  │  ────────────────  │  ──────────────────   │
@@ -51,7 +51,7 @@ defmodule Cgraph.ConnectionPool do
 
   ### Pool Status
 
-      {:ok, status} = Cgraph.ConnectionPool.get_status()
+      {:ok, status} = CGraph.ConnectionPool.get_status()
       # => %{
       #   pool_size: 10,
       #   active_connections: 7,
@@ -63,7 +63,7 @@ defmodule Cgraph.ConnectionPool do
 
   ### Health Check
 
-      {:ok, health} = Cgraph.ConnectionPool.health_check()
+      {:ok, health} = CGraph.ConnectionPool.health_check()
       # => %{
       #   status: :healthy,
       #   latency_ms: 2.3,
@@ -73,7 +73,7 @@ defmodule Cgraph.ConnectionPool do
 
   ### Slow Query Monitoring
 
-      Cgraph.ConnectionPool.log_slow_query(
+      CGraph.ConnectionPool.log_slow_query(
         query: "SELECT * FROM users WHERE...",
         duration_ms: 1500,
         source: {MyApp.Users, :list_users, 1}
@@ -83,7 +83,7 @@ defmodule Cgraph.ConnectionPool do
 
   Configure in `config/config.exs`:
 
-      config :cgraph, Cgraph.ConnectionPool,
+      config :cgraph, CGraph.ConnectionPool,
         enabled: true,
         health_check_interval: :timer.seconds(30),
         slow_query_threshold_ms: 100,
@@ -174,11 +174,11 @@ defmodule Cgraph.ConnectionPool do
 
   ## Examples
 
-      {:ok, status} = Cgraph.ConnectionPool.get_status()
+      {:ok, status} = CGraph.ConnectionPool.get_status()
       IO.puts("Pool saturation: \#{status.saturation * 100}%")
   """
   @spec get_status(pool_name()) :: {:ok, pool_status()} | {:error, term()}
-  def get_status(pool_name \\ Cgraph.Repo) do
+  def get_status(pool_name \\ CGraph.Repo) do
     GenServer.call(__MODULE__, {:get_status, pool_name})
   end
 
@@ -188,7 +188,7 @@ defmodule Cgraph.ConnectionPool do
   Saturation = active_connections / pool_size
   """
   @spec get_saturation(pool_name()) :: float()
-  def get_saturation(pool_name \\ Cgraph.Repo) do
+  def get_saturation(pool_name \\ CGraph.Repo) do
     case get_status(pool_name) do
       {:ok, status} -> status.saturation
       _ -> 0.0
@@ -199,7 +199,7 @@ defmodule Cgraph.ConnectionPool do
   Check if the pool is under pressure (high saturation or waiting queue).
   """
   @spec under_pressure?(pool_name()) :: boolean()
-  def under_pressure?(pool_name \\ Cgraph.Repo) do
+  def under_pressure?(pool_name \\ CGraph.Repo) do
     case get_status(pool_name) do
       {:ok, status} ->
         status.saturation > get_config(:scale_up_threshold) or
@@ -221,7 +221,7 @@ defmodule Cgraph.ConnectionPool do
 
   ## Examples
 
-      {:ok, health} = Cgraph.ConnectionPool.health_check()
+      {:ok, health} = CGraph.ConnectionPool.health_check()
 
       case health.status do
         :healthy -> :ok
@@ -230,7 +230,7 @@ defmodule Cgraph.ConnectionPool do
       end
   """
   @spec health_check(pool_name()) :: {:ok, health_result()} | {:error, term()}
-  def health_check(pool_name \\ Cgraph.Repo) do
+  def health_check(pool_name \\ CGraph.Repo) do
     GenServer.call(__MODULE__, {:health_check, pool_name}, 10_000)
   end
 
@@ -241,7 +241,7 @@ defmodule Cgraph.ConnectionPool do
   performing a new check.
   """
   @spec get_cached_health(pool_name()) :: {:ok, health_result()} | {:error, :no_data}
-  def get_cached_health(pool_name \\ Cgraph.Repo) do
+  def get_cached_health(pool_name \\ CGraph.Repo) do
     case :ets.lookup(@metrics_table, {:health, pool_name}) do
       [{{:health, ^pool_name}, result}] -> {:ok, result}
       [] -> {:error, :no_data}
@@ -260,7 +260,7 @@ defmodule Cgraph.ConnectionPool do
 
   ## Examples
 
-      Cgraph.ConnectionPool.log_slow_query(%{
+      CGraph.ConnectionPool.log_slow_query(%{
         query: "SELECT * FROM large_table",
         duration_ms: 2500,
         source: {MyApp.Reports, :generate, 2}
@@ -349,7 +349,7 @@ defmodule Cgraph.ConnectionPool do
   but can be called manually for immediate adjustment.
   """
   @spec resize_pool(pool_name(), non_neg_integer()) :: :ok | {:error, term()}
-  def resize_pool(pool_name \\ Cgraph.Repo, new_size) do
+  def resize_pool(pool_name \\ CGraph.Repo, new_size) do
     GenServer.call(__MODULE__, {:resize_pool, pool_name, new_size})
   end
 
@@ -361,7 +361,7 @@ defmodule Cgraph.ConnectionPool do
   Get comprehensive pool metrics for monitoring systems.
   """
   @spec get_metrics(pool_name()) :: map()
-  def get_metrics(pool_name \\ Cgraph.Repo) do
+  def get_metrics(pool_name \\ CGraph.Repo) do
     case get_status(pool_name) do
       {:ok, status} ->
         health = case get_cached_health(pool_name) do
@@ -387,7 +387,7 @@ defmodule Cgraph.ConnectionPool do
   Export metrics in Prometheus format.
   """
   @spec prometheus_metrics(pool_name()) :: String.t()
-  def prometheus_metrics(pool_name \\ Cgraph.Repo) do
+  def prometheus_metrics(pool_name \\ CGraph.Repo) do
     metrics = get_metrics(pool_name)
     pool = metrics[:pool] || %{}
     health = metrics[:health] || %{}
@@ -535,8 +535,8 @@ defmodule Cgraph.ConnectionPool do
   @impl true
   def handle_info(:health_check, state) do
     # Perform health check - always returns {:ok, result}
-    {:ok, result} = perform_health_check(Cgraph.Repo)
-    :ets.insert(@metrics_table, {{:health, Cgraph.Repo}, result})
+    {:ok, result} = perform_health_check(CGraph.Repo)
+    :ets.insert(@metrics_table, {{:health, CGraph.Repo}, result})
 
     # Check for auto-scaling if enabled
     if get_config(:auto_scale) do
@@ -671,7 +671,7 @@ defmodule Cgraph.ConnectionPool do
   end
 
   defp attempt_auto_scale do
-    case get_status(Cgraph.Repo) do
+    case get_status(CGraph.Repo) do
       {:ok, status} -> apply_scaling_decision(status)
       _ -> :ok
     end

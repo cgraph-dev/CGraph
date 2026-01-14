@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.PushToken do
+defmodule CGraph.Accounts.PushToken do
   @moduledoc """
   Push notification tokens for mobile and web push.
 
@@ -22,7 +22,7 @@ defmodule Cgraph.Accounts.PushToken do
     field :is_active, :boolean, default: true
     field :last_used_at, :utc_datetime
 
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps()
   end

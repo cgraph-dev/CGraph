@@ -1,4 +1,4 @@
-defmodule Cgraph.RateLimiter do
+defmodule CGraph.RateLimiter do
   @moduledoc """
   Advanced rate limiting with multiple algorithms and scopes.
 
@@ -56,7 +56,7 @@ defmodule Cgraph.RateLimiter do
   ## Configuration
 
   ```elixir
-  config :cgraph, Cgraph.RateLimiter,
+  config :cgraph, CGraph.RateLimiter,
     default_algorithm: :sliding_window,
     scopes: %{
       api: %{limit: 1000, window: 3600, algorithm: :sliding_window},
@@ -140,7 +140,7 @@ defmodule Cgraph.RateLimiter do
 
   Rate limiting can be disabled entirely via application config:
 
-      config :cgraph, Cgraph.RateLimiter, enabled: false
+      config :cgraph, CGraph.RateLimiter, enabled: false
 
   This is useful for test environments.
   """
@@ -158,7 +158,7 @@ defmodule Cgraph.RateLimiter do
 
   Defaults to true unless explicitly disabled via config:
 
-      config :cgraph, Cgraph.RateLimiter, enabled: false
+      config :cgraph, CGraph.RateLimiter, enabled: false
   """
   def enabled? do
     Application.get_env(:cgraph, __MODULE__, [])

@@ -1,4 +1,4 @@
-defmodule Cgraph.Security.AbuseDetection do
+defmodule CGraph.Security.AbuseDetection do
   @moduledoc """
   Abuse detection and prevention system.
 

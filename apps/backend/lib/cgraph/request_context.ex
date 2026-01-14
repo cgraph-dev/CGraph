@@ -1,6 +1,6 @@
-defmodule Cgraph.RequestContext do
+defmodule CGraph.RequestContext do
   @moduledoc """
-  Cgraph.RequestContext - Request Context Propagation System
+  CGraph.RequestContext - Request Context Propagation System
 
   ## Overview
 
@@ -61,38 +61,38 @@ defmodule Cgraph.RequestContext do
 
   ### In Plug Pipeline
 
-      plug CgraphWeb.Plugs.RequestContext
+      plug CGraphWeb.Plugs.RequestContext
 
   ### Accessing Context
 
       # Get current request ID
-      request_id = Cgraph.RequestContext.get_request_id()
+      request_id = CGraph.RequestContext.get_request_id()
 
       # Get current user
-      user = Cgraph.RequestContext.get_current_user()
+      user = CGraph.RequestContext.get_current_user()
 
       # Get tenant
-      tenant_id = Cgraph.RequestContext.get_tenant_id()
+      tenant_id = CGraph.RequestContext.get_tenant_id()
 
   ### Spawning with Context
 
       # Context automatically propagates to spawned tasks
-      Cgraph.RequestContext.spawn_with_context(fn ->
+      CGraph.RequestContext.spawn_with_context(fn ->
         # Context available here
-        Logger.info("Request: \#{Cgraph.RequestContext.get_request_id()}")
+        Logger.info("Request: \#{CGraph.RequestContext.get_request_id()}")
       end)
 
   ### HTTP Client Headers
 
       # Get headers to propagate to external services
-      headers = Cgraph.RequestContext.propagation_headers()
+      headers = CGraph.RequestContext.propagation_headers()
       HTTPClient.get(url, headers)
 
   ## Configuration
 
   Configure in `config/config.exs`:
 
-      config :cgraph, Cgraph.RequestContext,
+      config :cgraph, CGraph.RequestContext,
         enabled: true,
         generate_request_id: true,
         trace_header: "traceparent",
@@ -160,8 +160,8 @@ defmodule Cgraph.RequestContext do
 
   ## Examples
 
-      Cgraph.RequestContext.init()
-      Cgraph.RequestContext.init(%{
+      CGraph.RequestContext.init()
+      CGraph.RequestContext.init(%{
         request_id: "req_abc123",
         user_id: "user_456",
         tenant_id: "tenant_789"
@@ -438,9 +438,9 @@ defmodule Cgraph.RequestContext do
 
   ## Examples
 
-      headers = Cgraph.RequestContext.propagation_headers()
+      headers = CGraph.RequestContext.propagation_headers()
       Finch.build(:get, url, headers, nil)
-      |> Finch.request(Cgraph.Finch)
+      |> Finch.request(CGraph.Finch)
   """
   @spec propagation_headers() :: [{String.t(), String.t()}]
   def propagation_headers do

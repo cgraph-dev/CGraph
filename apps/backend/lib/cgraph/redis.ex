@@ -1,4 +1,4 @@
-defmodule Cgraph.Redis do
+defmodule CGraph.Redis do
   @moduledoc """
   Redis client wrapper with connection pooling and resilience.
 
@@ -22,7 +22,7 @@ defmodule Cgraph.Redis do
   │        │                                                        │
   │        ▼                                                        │
   │   ┌─────────────────────────────────────────────────────────┐  │
-  │   │                    Cgraph.Redis                          │  │
+  │   │                    CGraph.Redis                          │  │
   │   │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │  │
   │   │  │   Command   │  │   Pipeline  │  │   PubSub    │     │  │
   │   │  │     API     │  │     API     │  │    API      │     │  │
@@ -47,7 +47,7 @@ defmodule Cgraph.Redis do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Redis,
+      config :cgraph, CGraph.Redis,
         host: "localhost",
         port: 6379,
         password: nil,
@@ -464,7 +464,7 @@ defmodule Cgraph.Redis do
   # ---------------------------------------------------------------------------
 
   defp get_config(opts) do
-    app_config = Application.get_env(:cgraph, Cgraph.Redis, [])
+    app_config = Application.get_env(:cgraph, CGraph.Redis, [])
 
     %{
       host: Keyword.get(opts, :host, Keyword.get(app_config, :host, "localhost")),

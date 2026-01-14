@@ -150,7 +150,8 @@ class ObservabilityClient {
   captureMessage(message: string, level: LogLevel = 'info', context?: Record<string, unknown>): string {
     const eventId = this.generateEventId();
 
-    const messageData = {
+    // Store message data for potential future transmission
+    const _messageData = {
       eventId,
       message,
       level,
@@ -160,6 +161,7 @@ class ObservabilityClient {
       environment: this.config?.environment,
       tags: this.config?.tags,
     };
+    void _messageData; // Suppress unused variable warning
 
     if (this.config?.enableConsoleLogging) {
       const consoleFn = level === 'error' ? console.error : level === 'warn' ? console.warn : console.log;
@@ -294,7 +296,7 @@ class ObservabilityClient {
   private setupErrorHandlers(): void {
     if (typeof window !== 'undefined') {
       // Global error handler
-      window.onerror = (message, source, lineno, colno, error) => {
+      window.onerror = (_message, source, lineno, colno, error) => {
         if (error) {
           this.captureError(error, { source, lineno, colno });
         }

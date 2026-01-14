@@ -1,4 +1,4 @@
-defmodule Cgraph.Notifications.PushService.ApnsClient do
+defmodule CGraph.Notifications.PushService.ApnsClient do
   @moduledoc """
   Apple Push Notification Service (APNs) Client.
 
@@ -7,7 +7,7 @@ defmodule Cgraph.Notifications.PushService.ApnsClient do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Notifications.PushService,
+      config :cgraph, CGraph.Notifications.PushService,
         apns_key_id: "ABC123DEF4",
         apns_team_id: "DEF456ABC7",
         apns_bundle_id: "com.cgraph.app",
@@ -241,7 +241,7 @@ defmodule Cgraph.Notifications.PushService.ApnsClient do
 
     request = Finch.build(method, url, headers, body)
 
-    case Finch.request(request, Cgraph.Finch, receive_timeout: @default_timeout) do
+    case Finch.request(request, CGraph.Finch, receive_timeout: @default_timeout) do
       {:ok, %Finch.Response{status: status, headers: headers, body: body}} ->
         {:ok, status, headers, body}
 
@@ -339,7 +339,7 @@ defmodule Cgraph.Notifications.PushService.ApnsClient do
   # ============================================================================
 
   defp load_config do
-    config = Application.get_env(:cgraph, Cgraph.Notifications.PushService, [])
+    config = Application.get_env(:cgraph, CGraph.Notifications.PushService, [])
 
     %{
       key_id: Keyword.get(config, :apns_key_id),

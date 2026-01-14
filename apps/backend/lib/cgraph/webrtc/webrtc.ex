@@ -1,4 +1,4 @@
-defmodule Cgraph.WebRTC do
+defmodule CGraph.WebRTC do
   @moduledoc """
   WebRTC infrastructure for real-time voice and video calls.
 
@@ -48,7 +48,7 @@ defmodule Cgraph.WebRTC do
 
   ## Configuration
 
-      config :cgraph, Cgraph.WebRTC,
+      config :cgraph, CGraph.WebRTC,
         stun_servers: [
           "stun:stun.l.google.com:19302",
           "stun:stun1.l.google.com:19302"
@@ -80,7 +80,7 @@ defmodule Cgraph.WebRTC do
   use GenServer
   require Logger
 
-  alias Cgraph.WebRTC.{Participant, Room}
+  alias CGraph.WebRTC.{Participant, Room}
 
   @ets_table :cgraph_webrtc_rooms
   @default_call_timeout 60_000
@@ -280,7 +280,7 @@ defmodule Cgraph.WebRTC do
 
         Enum.each(other_ids, fn participant_id ->
           Phoenix.PubSub.broadcast(
-            Cgraph.PubSub,
+            CGraph.PubSub,
             "webrtc:user:#{participant_id}",
             {:ice_candidate, %{
               room_id: room_id,
@@ -305,7 +305,7 @@ defmodule Cgraph.WebRTC do
       {:ok, room} ->
         if Map.has_key?(room.participants, to_id) do
           Phoenix.PubSub.broadcast(
-            Cgraph.PubSub,
+            CGraph.PubSub,
             "webrtc:user:#{to_id}",
             {:sdp, %{
               room_id: room_id,
@@ -332,7 +332,7 @@ defmodule Cgraph.WebRTC do
       {:ok, room} ->
         Enum.each(callee_ids, fn callee_id ->
           Phoenix.PubSub.broadcast(
-            Cgraph.PubSub,
+            CGraph.PubSub,
             "webrtc:user:#{callee_id}",
             {:incoming_call, %{
               room_id: room_id,
@@ -532,7 +532,7 @@ defmodule Cgraph.WebRTC do
 
   defp broadcast_room_event(room_id, event, payload) do
     Phoenix.PubSub.broadcast(
-      Cgraph.PubSub,
+      CGraph.PubSub,
       "webrtc:room:#{room_id}",
       {event, payload}
     )

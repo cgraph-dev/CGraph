@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.CategoryJSON do
+defmodule CGraphWeb.API.V1.CategoryJSON do
   @moduledoc """
   JSON rendering for category responses.
   """

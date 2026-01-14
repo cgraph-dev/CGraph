@@ -1,4 +1,4 @@
-defmodule Cgraph.Mailer.Templates do
+defmodule CGraph.Mailer.Templates do
   @moduledoc """
   Email templates for CGraph mailer.
 

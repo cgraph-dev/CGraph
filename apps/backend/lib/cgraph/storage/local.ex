@@ -1,4 +1,4 @@
-defmodule Cgraph.Storage.Local do
+defmodule CGraph.Storage.Local do
   @moduledoc """
   Local filesystem storage backend.
 
@@ -13,7 +13,7 @@ defmodule Cgraph.Storage.Local do
         base_url: "/uploads"
   """
 
-  @behaviour Cgraph.Storage
+  @behaviour CGraph.Storage
 
   require Logger
 

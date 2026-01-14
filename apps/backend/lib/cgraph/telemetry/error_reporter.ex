@@ -1,4 +1,4 @@
-defmodule Cgraph.Telemetry.ErrorReporter do
+defmodule CGraph.Telemetry.ErrorReporter do
   @moduledoc """
   Error reporting and alerting service.
 
@@ -15,7 +15,7 @@ defmodule Cgraph.Telemetry.ErrorReporter do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Telemetry.ErrorReporter,
+      config :cgraph, CGraph.Telemetry.ErrorReporter,
         enabled: true,
         store_errors: true,
         alert_on_fatal: true,

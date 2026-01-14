@@ -1,4 +1,4 @@
-defmodule Cgraph.Notifications do
+defmodule CGraph.Notifications do
   @moduledoc """
   Context for managing notifications.
 
@@ -8,10 +8,10 @@ defmodule Cgraph.Notifications do
 
   import Ecto.Query
 
-  alias Cgraph.Accounts.{Settings, User}
-  alias Cgraph.Notifications.Notification
-  alias Cgraph.Repo
-  alias Cgraph.Workers.{SendEmailNotification, SendPushNotification}
+  alias CGraph.Accounts.{Settings, User}
+  alias CGraph.Notifications.Notification
+  alias CGraph.Repo
+  alias CGraph.Workers.{SendEmailNotification, SendPushNotification}
 
   @doc """
   Creates and delivers a notification to a user.
@@ -133,7 +133,7 @@ defmodule Cgraph.Notifications do
   end
 
   defp broadcast_notification(user, notification) do
-    CgraphWeb.Endpoint.broadcast(
+    CGraphWeb.Endpoint.broadcast(
       "user:#{user.id}",
       "notification",
       serialize(notification)
@@ -334,7 +334,7 @@ defmodule Cgraph.Notifications do
   Settings are stored in user preferences or a separate settings table.
   """
   def update_notification_settings(%User{} = user, settings) do
-    case Cgraph.Accounts.update_user_preferences(user, %{notification_settings: settings}) do
+    case CGraph.Accounts.update_user_preferences(user, %{notification_settings: settings}) do
       {:ok, _user} -> {:ok, settings}
       {:error, _} = error -> error
     end
@@ -432,7 +432,7 @@ defmodule Cgraph.Notifications do
   If a token with the same user_id and token already exists, update it.
   """
   def register_push_token(%User{} = user, token_params) do
-    alias Cgraph.Accounts.PushToken
+    alias CGraph.Accounts.PushToken
 
     attrs = Map.merge(token_params, %{"user_id" => user.id})
 
@@ -458,7 +458,7 @@ defmodule Cgraph.Notifications do
   List all push tokens for a user.
   """
   def list_push_tokens(%User{} = user) do
-    alias Cgraph.Accounts.PushToken
+    alias CGraph.Accounts.PushToken
 
     PushToken
     |> where([p], p.user_id == ^user.id)
@@ -469,7 +469,7 @@ defmodule Cgraph.Notifications do
   Get a specific push token by ID.
   """
   def get_push_token(%User{} = user, token_id) do
-    alias Cgraph.Accounts.PushToken
+    alias CGraph.Accounts.PushToken
 
     case PushToken
          |> where([p], p.id == ^token_id and p.user_id == ^user.id)
@@ -483,7 +483,7 @@ defmodule Cgraph.Notifications do
   Get a specific push token by its value (the actual token string).
   """
   def get_push_token_by_value(%User{} = user, token_value) do
-    alias Cgraph.Accounts.PushToken
+    alias CGraph.Accounts.PushToken
 
     case PushToken
          |> where([p], p.token == ^token_value and p.user_id == ^user.id)
@@ -497,7 +497,7 @@ defmodule Cgraph.Notifications do
   Update a push token.
   """
   def update_push_token(%User{} = user, token_params) do
-    alias Cgraph.Accounts.PushToken
+    alias CGraph.Accounts.PushToken
 
     case Repo.get_by(PushToken, user_id: user.id, device_id: token_params["device_id"]) do
       nil -> {:error, :not_found}
@@ -522,12 +522,12 @@ defmodule Cgraph.Notifications do
       {:ok, %PushToken{}}
 
   """
-  def delete_push_token(%Cgraph.Accounts.PushToken{} = token) do
+  def delete_push_token(%CGraph.Accounts.PushToken{} = token) do
     Repo.delete(token)
   end
 
   def delete_push_token(token_id) when is_binary(token_id) do
-    alias Cgraph.Accounts.PushToken
+    alias CGraph.Accounts.PushToken
 
     case Repo.get(PushToken, token_id) do
       nil -> {:error, :not_found}
@@ -539,7 +539,7 @@ defmodule Cgraph.Notifications do
   Delete a push token by device ID.
   """
   def delete_push_token_by_device(%User{} = user, device_id) do
-    alias Cgraph.Accounts.PushToken
+    alias CGraph.Accounts.PushToken
 
     case Repo.get_by(PushToken, user_id: user.id, device_id: device_id) do
       nil -> {:error, :not_found}

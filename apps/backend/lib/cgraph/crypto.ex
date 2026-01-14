@@ -1,4 +1,4 @@
-defmodule Cgraph.Crypto do
+defmodule CGraph.Crypto do
   @moduledoc """
   Cryptographic utilities for secure messaging and data protection.
 

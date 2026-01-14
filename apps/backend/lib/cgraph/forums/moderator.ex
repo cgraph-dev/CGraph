@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Moderator do
+defmodule CGraph.Forums.Moderator do
   @moduledoc """
   Schema for forum moderators.
   """
@@ -10,8 +10,8 @@ defmodule Cgraph.Forums.Moderator do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "forum_moderators" do
-    belongs_to :forum, Cgraph.Forums.Forum
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :user, CGraph.Accounts.User
 
     field :permissions, {:array, :string}, default: []
     field :added_by_id, :binary_id

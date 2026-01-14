@@ -1,12 +1,12 @@
-defmodule CgraphWeb.Plugs.RequestContext do
+defmodule CGraphWeb.Plugs.RequestContext do
   @moduledoc """
-  CgraphWeb.Plugs.RequestContext - Request Context Initialization Plug
+  CGraphWeb.Plugs.RequestContext - Request Context Initialization Plug
 
   ## Overview
 
   This plug initializes the request context at the beginning of each request,
   extracting trace context, request IDs, and tenant information from headers.
-  It integrates with `Cgraph.RequestContext` for context propagation.
+  It integrates with `CGraph.RequestContext` for context propagation.
 
   ## Features
 
@@ -20,7 +20,7 @@ defmodule CgraphWeb.Plugs.RequestContext do
 
       # In your router
       pipeline :api do
-        plug CgraphWeb.Plugs.RequestContext
+        plug CGraphWeb.Plugs.RequestContext
       end
 
   ## Options
@@ -53,7 +53,7 @@ defmodule CgraphWeb.Plugs.RequestContext do
   import Plug.Conn
   require Logger
 
-  alias Cgraph.RequestContext
+  alias CGraph.RequestContext
 
   # ---------------------------------------------------------------------------
   # Plug Callbacks

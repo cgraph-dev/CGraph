@@ -1,12 +1,12 @@
-defmodule CgraphWeb.API.V1.ChannelController do
+defmodule CGraphWeb.API.V1.ChannelController do
   @moduledoc """
   Controller for group channels.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Groups
+  alias CGraph.Groups
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List channels in a group.

@@ -1,13 +1,13 @@
-defmodule CgraphWeb.API.V1.RoleController do
+defmodule CGraphWeb.API.V1.RoleController do
   @moduledoc """
   Handles role management within groups.
   Roles control permissions and appear in member lists with colors.
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Groups
+  alias CGraph.Groups
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List all roles in a group.

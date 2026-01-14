@@ -1,4 +1,4 @@
-defmodule Cgraph.Services.Registry do
+defmodule CGraph.Services.Registry do
   @moduledoc """
   Service registry for dependency management and health monitoring.
 
@@ -508,7 +508,7 @@ defmodule Cgraph.Services.Registry do
   # ---------------------------------------------------------------------------
 
   defp check_postgres do
-    case Cgraph.Repo.query("SELECT 1") do
+    case CGraph.Repo.query("SELECT 1") do
       {:ok, _} -> :healthy
       _ -> :unhealthy
     end
@@ -517,7 +517,7 @@ defmodule Cgraph.Services.Registry do
   end
 
   defp check_redis do
-    case Cgraph.Redis.command(["PING"]) do
+    case CGraph.Redis.command(["PING"]) do
       {:ok, "PONG"} -> :healthy
       _ -> :unhealthy
     end

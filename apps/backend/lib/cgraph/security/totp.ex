@@ -1,4 +1,4 @@
-defmodule Cgraph.Security.TOTP do
+defmodule CGraph.Security.TOTP do
   @moduledoc """
   Time-based One-Time Password (TOTP) implementation for 2FA.
 
@@ -48,7 +48,7 @@ defmodule Cgraph.Security.TOTP do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Security.TOTP,
+      config :cgraph, CGraph.Security.TOTP,
         issuer: "CGraph",
         digits: 6,
         period: 30,
@@ -66,10 +66,10 @@ defmodule Cgraph.Security.TOTP do
   require Logger
   import Bitwise
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Audit
-  alias Cgraph.Repo
-  alias Cgraph.Security.TokenBlacklist
+  alias CGraph.Accounts.User
+  alias CGraph.Audit
+  alias CGraph.Repo
+  alias CGraph.Security.TokenBlacklist
 
   # TOTP configuration
   @default_issuer "CGraph"
@@ -452,7 +452,7 @@ defmodule Cgraph.Security.TOTP do
 
   defp get_encryption_key do
     # Derive from application secret
-    secret = Application.get_env(:cgraph, CgraphWeb.Endpoint)[:secret_key_base]
+    secret = Application.get_env(:cgraph, CGraphWeb.Endpoint)[:secret_key_base]
 
     :crypto.hash(:sha256, "totp_encryption:" <> secret)
   end

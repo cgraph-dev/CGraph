@@ -1,4 +1,4 @@
-defmodule Cgraph.Gamification.UserTitle do
+defmodule CGraph.Gamification.UserTitle do
   @moduledoc """
   Schema for tracking which titles a user has unlocked.
   """
@@ -9,8 +9,8 @@ defmodule Cgraph.Gamification.UserTitle do
   @foreign_key_type :binary_id
 
   schema "user_titles" do
-    belongs_to :user, Cgraph.Accounts.User
-    belongs_to :title, Cgraph.Gamification.Title
+    belongs_to :user, CGraph.Accounts.User
+    belongs_to :title, CGraph.Gamification.Title
 
     field :unlocked_at, :utc_datetime
 

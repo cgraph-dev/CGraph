@@ -101,8 +101,9 @@ export class EncryptionUtils {
       // Browser
       return btoa(String.fromCharCode(...bytes));
     } else {
-      // Node.js
-      return Buffer.from(bytes).toString('base64');
+      // Node.js - use global Buffer
+      const NodeBuffer = (globalThis as { Buffer?: { from: (data: Uint8Array) => { toString: (enc: string) => string } } }).Buffer;
+      return NodeBuffer?.from(bytes).toString('base64') ?? '';
     }
   }
   
@@ -114,8 +115,10 @@ export class EncryptionUtils {
       // Browser
       return new Uint8Array([...atob(base64)].map(c => c.charCodeAt(0)));
     } else {
-      // Node.js
-      return new Uint8Array(Buffer.from(base64, 'base64'));
+      // Node.js - use global Buffer
+      const NodeBuffer = (globalThis as { Buffer?: { from: (data: string, encoding: string) => Uint8Array } }).Buffer;
+      const buf = NodeBuffer?.from(base64, 'base64');
+      return buf ? new Uint8Array(buf) : new Uint8Array();
     }
   }
   
@@ -142,7 +145,7 @@ export class EncryptionUtils {
     if (a.length !== b.length) return false;
     let result = 0;
     for (let i = 0; i < a.length; i++) {
-      result |= a[i] ^ b[i];
+      result |= (a[i] ?? 0) ^ (b[i] ?? 0);
     }
     return result === 0;
   }

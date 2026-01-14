@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.Messages do
+defmodule CGraph.Messaging.Messages do
   @moduledoc """
   Sub-context for Message-related operations.
 
@@ -10,8 +10,8 @@ defmodule Cgraph.Messaging.Messages do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Messaging.{Conversation, Message}
-  alias Cgraph.Repo
+  alias CGraph.Messaging.{Conversation, Message}
+  alias CGraph.Repo
 
   @doc """
   List messages in a conversation with pagination.
@@ -68,7 +68,7 @@ defmodule Cgraph.Messaging.Messages do
   @spec get_user_message(map(), String.t()) :: {:ok, Message.t()} | {:error, atom()}
   def get_user_message(user, message_id) do
     with {:ok, message} <- get_message(message_id),
-         {:ok, _conversation} <- Cgraph.Messaging.Conversations.get_user_conversation(user, message.conversation_id) do
+         {:ok, _conversation} <- CGraph.Messaging.Conversations.get_user_conversation(user, message.conversation_id) do
       {:ok, message}
     end
   end

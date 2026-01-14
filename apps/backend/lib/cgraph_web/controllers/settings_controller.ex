@@ -1,7 +1,7 @@
-defmodule CgraphWeb.SettingsController do
-  use CgraphWeb, :controller
+defmodule CGraphWeb.SettingsController do
+  use CGraphWeb, :controller
 
-  alias Cgraph.Accounts.Settings
+  alias CGraph.Accounts.Settings
 
   @doc """
   GET /api/settings

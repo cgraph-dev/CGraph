@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.AdminJSON do
+defmodule CGraphWeb.API.V1.AdminJSON do
   @moduledoc """
   JSON rendering for Admin API responses.
 

@@ -1,9 +1,9 @@
-defmodule CgraphWeb.API.V1.ReportJSON do
+defmodule CGraphWeb.API.V1.ReportJSON do
   @moduledoc """
   JSON rendering for report resources.
   """
 
-  alias Cgraph.Moderation.Report
+  alias CGraph.Moderation.Report
 
   @doc """
   Renders a list of reports.

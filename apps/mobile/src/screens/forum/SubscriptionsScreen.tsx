@@ -44,7 +44,7 @@ export const SubscriptionsScreen: React.FC = () => {
   const fetchSubscriptions = useCallback(async () => {
     try {
       const response = await fetch('/api/forum/subscriptions');
-      const data = await response.json();
+      const data = await response.json() as { subscriptions?: Subscription[] };
       setSubscriptions(data.subscriptions || []);
     } catch (error) {
       console.error('Failed to fetch subscriptions:', error);

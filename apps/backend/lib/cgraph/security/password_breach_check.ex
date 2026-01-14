@@ -1,4 +1,4 @@
-defmodule Cgraph.Security.PasswordBreachCheck do
+defmodule CGraph.Security.PasswordBreachCheck do
   @moduledoc """
   Password breach detection using HaveIBeenPwned API with k-anonymity.
 
@@ -45,7 +45,7 @@ defmodule Cgraph.Security.PasswordBreachCheck do
 
   ## Configuration
 
-      config :cgraph, Cgraph.Security.PasswordBreachCheck,
+      config :cgraph, CGraph.Security.PasswordBreachCheck,
         enabled: true,
         reject_threshold: 1,  # Reject if found this many times
         warn_threshold: 0,    # Warn if found at all
@@ -234,7 +234,7 @@ defmodule Cgraph.Security.PasswordBreachCheck do
     # Use Finch for HTTP requests
     request = Finch.build(:get, url, headers)
 
-    case Finch.request(request, Cgraph.Finch, receive_timeout: timeout) do
+    case Finch.request(request, CGraph.Finch, receive_timeout: timeout) do
       {:ok, %Finch.Response{status: 200, body: body}} ->
         {:ok, body}
 
@@ -322,7 +322,7 @@ defmodule Cgraph.Security.PasswordBreachCheck do
     Logger.warning("Breached password detected: found in #{count} breaches, user_id: #{inspect(user_id)}")
 
     if user_id do
-      Cgraph.Audit.log(:security, :breached_password_used, %{
+      CGraph.Audit.log(:security, :breached_password_used, %{
         user_id: user_id,
         breach_count: count
       })

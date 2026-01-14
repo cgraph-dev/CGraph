@@ -1,12 +1,12 @@
-defmodule Cgraph.Announcements.AnnouncementDismissal do
+defmodule CGraph.Announcements.AnnouncementDismissal do
   @moduledoc """
   Schema for tracking dismissed announcements per user.
   """
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Forums.ForumAnnouncement
+  alias CGraph.Accounts.User
+  alias CGraph.Forums.ForumAnnouncement
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id

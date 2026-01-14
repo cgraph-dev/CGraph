@@ -1,4 +1,4 @@
-defmodule Cgraph.Workers.SearchIndexWorker do
+defmodule CGraph.Workers.SearchIndexWorker do
   @moduledoc """
   Oban worker for asynchronous search indexing.
 
@@ -10,7 +10,7 @@ defmodule Cgraph.Workers.SearchIndexWorker do
     max_attempts: 3,
     priority: 2
 
-  alias Cgraph.Search.Engine
+  alias CGraph.Search.Engine
 
   require Logger
 

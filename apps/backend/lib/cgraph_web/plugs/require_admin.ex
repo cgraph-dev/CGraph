@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Plugs.RequireAdmin do
+defmodule CGraphWeb.Plugs.RequireAdmin do
   @moduledoc """
   Authorization plug that restricts access to admin users only.
 
@@ -8,9 +8,9 @@ defmodule CgraphWeb.Plugs.RequireAdmin do
   ## Usage
 
       # In router.ex
-      scope "/api/v1/admin", CgraphWeb.API.V1 do
+      scope "/api/v1/admin", CGraphWeb.API.V1 do
         pipe_through [:api, :api_auth]
-        plug CgraphWeb.Plugs.RequireAdmin
+        plug CGraphWeb.Plugs.RequireAdmin
 
         get "/metrics", AdminController, :metrics
         # ...
@@ -49,7 +49,7 @@ defmodule CgraphWeb.Plugs.RequireAdmin do
   defp deny_access(conn, message) do
     conn
     |> put_status(:forbidden)
-    |> Phoenix.Controller.put_view(json: CgraphWeb.ErrorJSON)
+    |> Phoenix.Controller.put_view(json: CGraphWeb.ErrorJSON)
     |> Phoenix.Controller.render(:error, %{error: message})
     |> halt()
   end

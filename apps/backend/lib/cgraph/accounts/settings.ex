@@ -1,4 +1,4 @@
-defmodule Cgraph.Accounts.Settings do
+defmodule CGraph.Accounts.Settings do
   @moduledoc """
   Context for managing user settings.
 
@@ -9,8 +9,8 @@ defmodule Cgraph.Accounts.Settings do
   - Reset to defaults
   """
 
-  alias Cgraph.Accounts.{Friends, User, UserSettings}
-  alias Cgraph.Repo
+  alias CGraph.Accounts.{Friends, User, UserSettings}
+  alias CGraph.Repo
 
   @doc """
   Gets settings for a user, creating defaults if they don't exist.

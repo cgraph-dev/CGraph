@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Endpoint do
+defmodule CGraphWeb.Endpoint do
   @moduledoc """
   Phoenix endpoint for CGraph web application.
 
@@ -35,7 +35,7 @@ defmodule CgraphWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: false
 
-  socket "/socket", CgraphWeb.UserSocket,
+  socket "/socket", CGraphWeb.UserSocket,
     websocket: [
       connect_info: [:peer_data, :uri, :x_headers],
       timeout: 45_000
@@ -47,7 +47,7 @@ defmodule CgraphWeb.Endpoint do
     at: "/",
     from: :cgraph,
     gzip: true,
-    only: CgraphWeb.static_paths()
+    only: CGraphWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
@@ -83,5 +83,5 @@ defmodule CgraphWeb.Endpoint do
     allow_credentials: true,
     max_age: 86_400
 
-  plug CgraphWeb.Router
+  plug CGraphWeb.Router
 end

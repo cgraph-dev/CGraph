@@ -1,4 +1,4 @@
-defmodule CgraphWeb.PresenceChannel do
+defmodule CGraphWeb.PresenceChannel do
   @moduledoc """
   Global presence channel for WhatsApp-style real-time user status tracking.
 
@@ -17,10 +17,10 @@ defmodule CgraphWeb.PresenceChannel do
   - Typing indicators delegated to room-specific channels
   - Presence only visible to friends
   """
-  use CgraphWeb, :channel
+  use CGraphWeb, :channel
 
-  alias Cgraph.Accounts.Friends
-  alias Cgraph.Presence
+  alias CGraph.Accounts.Friends
+  alias CGraph.Presence
 
   @heartbeat_interval_ms 15_000
   @offline_grace_period_ms 8_000
@@ -258,7 +258,7 @@ defmodule CgraphWeb.PresenceChannel do
   defp broadcast_offline_if_disconnected(user_id) do
     unless Presence.user_online?(user_id) do
       Phoenix.PubSub.broadcast(
-        Cgraph.PubSub,
+        CGraph.PubSub,
         "users:online",
         {:user_offline, user_id, DateTime.utc_now()}
       )
@@ -276,14 +276,14 @@ defmodule CgraphWeb.PresenceChannel do
     # Broadcast to each friend's personal channel
     Enum.each(friend_ids, fn friend_id ->
       Phoenix.PubSub.broadcast(
-        Cgraph.PubSub,
+        CGraph.PubSub,
         "user:#{friend_id}",
         {event, Map.put(payload, :from_user_id, user_id)}
       )
     end)
 
     # Also broadcast on the presence lobby for friends who are connected
-    CgraphWeb.Endpoint.broadcast("presence:lobby", event, payload)
+    CGraphWeb.Endpoint.broadcast("presence:lobby", event, payload)
   end
 
   # Private helpers

@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Plugs.TracingPlug do
+defmodule CGraphWeb.Plugs.TracingPlug do
   @moduledoc """
   Plug for automatic distributed tracing of HTTP requests.
 
@@ -20,7 +20,7 @@ defmodule CgraphWeb.Plugs.TracingPlug do
   Add to your router pipeline:
 
       pipeline :api do
-        plug CgraphWeb.Plugs.TracingPlug
+        plug CGraphWeb.Plugs.TracingPlug
       end
 
   ## Span Attributes
@@ -39,7 +39,7 @@ defmodule CgraphWeb.Plugs.TracingPlug do
 
   ## Configuration
 
-      config :cgraph, CgraphWeb.Plugs.TracingPlug,
+      config :cgraph, CGraphWeb.Plugs.TracingPlug,
         # Header names
         traceparent_header: "traceparent",
         tracestate_header: "tracestate",
@@ -59,7 +59,7 @@ defmodule CgraphWeb.Plugs.TracingPlug do
   import Plug.Conn
   require Logger
 
-  alias Cgraph.Tracing
+  alias CGraph.Tracing
 
   @default_config %{
     traceparent_header: "traceparent",

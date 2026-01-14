@@ -1,11 +1,11 @@
-defmodule CgraphWeb do
+defmodule CGraphWeb do
   @moduledoc """
   The entrypoint for defining your web interface.
 
   This can be used in your application as:
 
-      use CgraphWeb, :controller
-      use CgraphWeb, :html
+      use CGraphWeb, :controller
+      use CGraphWeb, :html
 
   The definitions below will be executed for every controller,
   component, etc, so keep them short and clean.
@@ -33,10 +33,10 @@ defmodule CgraphWeb do
     quote do
       use Phoenix.Controller,
         formats: [:html, :json],
-        layouts: [html: CgraphWeb.Layouts]
+        layouts: [html: CGraphWeb.Layouts]
 
       import Plug.Conn
-      import CgraphWeb.Gettext
+      import CGraphWeb.Gettext
 
       unquote(verified_routes())
     end
@@ -45,7 +45,7 @@ defmodule CgraphWeb do
   def live_view do
     quote do
       use Phoenix.LiveView,
-        layout: {CgraphWeb.Layouts, :app}
+        layout: {CGraphWeb.Layouts, :app}
 
       unquote(html_helpers())
     end
@@ -73,8 +73,8 @@ defmodule CgraphWeb do
   defp html_helpers do
     quote do
       import Phoenix.HTML
-      import CgraphWeb.CoreComponents
-      import CgraphWeb.Gettext
+      import CGraphWeb.CoreComponents
+      import CGraphWeb.Gettext
 
       alias Phoenix.LiveView.JS
 
@@ -85,9 +85,9 @@ defmodule CgraphWeb do
   def verified_routes do
     quote do
       use Phoenix.VerifiedRoutes,
-        endpoint: CgraphWeb.Endpoint,
-        router: CgraphWeb.Router,
-        statics: CgraphWeb.static_paths()
+        endpoint: CGraphWeb.Endpoint,
+        router: CGraphWeb.Router,
+        statics: CGraphWeb.static_paths()
     end
   end
 

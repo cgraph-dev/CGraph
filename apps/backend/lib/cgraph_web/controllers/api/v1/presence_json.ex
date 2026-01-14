@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.PresenceJSON do
+defmodule CGraphWeb.API.V1.PresenceJSON do
   @moduledoc """
   JSON rendering for Presence endpoints.
   """

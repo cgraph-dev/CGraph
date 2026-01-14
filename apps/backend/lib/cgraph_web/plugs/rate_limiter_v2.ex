@@ -1,10 +1,10 @@
-defmodule CgraphWeb.Plugs.RateLimiterV2 do
+defmodule CGraphWeb.Plugs.RateLimiterV2 do
   @moduledoc """
   Production-grade rate limiter with distributed Redis backend.
 
   ## Algorithm
 
-  Uses `Cgraph.RateLimiter.Distributed` for cluster-wide rate limiting:
+  Uses `CGraph.RateLimiter.Distributed` for cluster-wide rate limiting:
 
   - **Redis backend**: Lua scripts for atomic operations across nodes
   - **Local fallback**: Cachex when Redis is unavailable
@@ -24,13 +24,13 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
   ## Usage
 
       # In router pipeline
-      plug CgraphWeb.Plugs.RateLimiterV2, tier: :standard
+      plug CGraphWeb.Plugs.RateLimiterV2, tier: :standard
 
       # Custom limits
-      plug CgraphWeb.Plugs.RateLimiterV2, limit: 50, window_ms: 30_000
+      plug CGraphWeb.Plugs.RateLimiterV2, limit: 50, window_ms: 30_000
 
       # Per-action limits in controller
-      plug CgraphWeb.Plugs.RateLimiterV2, tier: :strict when action in [:create, :delete]
+      plug CGraphWeb.Plugs.RateLimiterV2, tier: :strict when action in [:create, :delete]
 
   ## Response Headers
 
@@ -53,7 +53,7 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
   import Plug.Conn
   require Logger
 
-  alias Cgraph.RateLimiter.Distributed, as: DistributedRateLimiter
+  alias CGraph.RateLimiter.Distributed, as: DistributedRateLimiter
 
   @behaviour Plug
 
@@ -112,7 +112,7 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
 
   Rate limiting can be disabled via config:
 
-      config :cgraph, Cgraph.RateLimiter, enabled: false
+      config :cgraph, CGraph.RateLimiter, enabled: false
   """
   @impl Plug
   def call(conn, opts) do
@@ -125,7 +125,7 @@ defmodule CgraphWeb.Plugs.RateLimiterV2 do
   end
 
   defp rate_limiting_enabled? do
-    Application.get_env(:cgraph, Cgraph.RateLimiter, [])
+    Application.get_env(:cgraph, CGraph.RateLimiter, [])
     |> Keyword.get(:enabled, true)
   end
 

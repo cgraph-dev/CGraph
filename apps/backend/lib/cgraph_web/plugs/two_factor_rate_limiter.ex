@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
+defmodule CGraphWeb.Plugs.TwoFactorRateLimiter do
   @moduledoc """
   Specialized rate limiter for Two-Factor Authentication endpoints.
 
@@ -18,7 +18,7 @@ defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
   ## Usage
 
       # In controller:
-      plug CgraphWeb.Plugs.TwoFactorRateLimiter when action in [:verify, :disable]
+      plug CGraphWeb.Plugs.TwoFactorRateLimiter when action in [:verify, :disable]
 
   ## Why Separate from Standard Rate Limiter?
 
@@ -127,7 +127,7 @@ defmodule CgraphWeb.Plugs.TwoFactorRateLimiter do
     conn
     |> put_resp_header("retry-after", to_string(retry_after))
     |> put_status(:too_many_requests)
-    |> Phoenix.Controller.put_view(json: CgraphWeb.ErrorJSON)
+    |> Phoenix.Controller.put_view(json: CGraphWeb.ErrorJSON)
     |> Phoenix.Controller.json(%{
       error: "rate_limited",
       message: message,

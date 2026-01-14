@@ -1,4 +1,4 @@
-defmodule CgraphWeb.GroupChannel do
+defmodule CGraphWeb.GroupChannel do
   @moduledoc """
   Channel for group/channel messaging (Discord-style).
 
@@ -9,12 +9,12 @@ defmodule CgraphWeb.GroupChannel do
   - Role-based permissions
   - Rate limiting to prevent spam
   """
-  use CgraphWeb, :channel
+  use CGraphWeb, :channel
 
-  alias Cgraph.Groups
-  alias Cgraph.Messaging
-  alias Cgraph.Presence
-  alias CgraphWeb.API.V1.MessageJSON
+  alias CGraph.Groups
+  alias CGraph.Messaging
+  alias CGraph.Presence
+  alias CGraphWeb.API.V1.MessageJSON
 
   # Rate limiting: max 10 messages per 10 seconds per user
   @rate_limit_window_ms 10_000
@@ -190,7 +190,7 @@ defmodule CgraphWeb.GroupChannel do
 
     case Messaging.create_message(message_attrs) do
       {:ok, message} ->
-        message = Cgraph.Repo.preload(message, [:sender, :reactions, :reply_to])
+        message = CGraph.Repo.preload(message, [:sender, :reactions, :reply_to])
         serialized = message |> MessageJSON.message_data() |> Map.put(:senderNickname, member.nickname)
         broadcast!(socket, "new_message", %{message: serialized})
         {:reply, {:ok, %{message_id: message.id}}, socket}

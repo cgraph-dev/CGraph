@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Thread do
+defmodule CGraph.Forums.Thread do
   @moduledoc """
   Thread schema representing a discussion topic within a board.
 
@@ -64,12 +64,12 @@ defmodule Cgraph.Forums.Thread do
     # Soft delete
     field :deleted_at, :utc_datetime
 
-    belongs_to :board, Cgraph.Forums.Board
-    belongs_to :author, Cgraph.Accounts.User
-    belongs_to :last_poster, Cgraph.Accounts.User
-    has_many :posts, Cgraph.Forums.ThreadPost
-    has_many :votes, Cgraph.Forums.ThreadVote
-    has_one :poll, Cgraph.Forums.ThreadPoll
+    belongs_to :board, CGraph.Forums.Board
+    belongs_to :author, CGraph.Accounts.User
+    belongs_to :last_poster, CGraph.Accounts.User
+    has_many :posts, CGraph.Forums.ThreadPost
+    has_many :votes, CGraph.Forums.ThreadVote
+    has_one :poll, CGraph.Forums.ThreadPoll
 
     timestamps()
   end

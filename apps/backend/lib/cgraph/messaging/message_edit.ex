@@ -1,4 +1,4 @@
-defmodule Cgraph.Messaging.MessageEdit do
+defmodule CGraph.Messaging.MessageEdit do
   @moduledoc """
   Edit history for messages.
 
@@ -15,8 +15,8 @@ defmodule Cgraph.Messaging.MessageEdit do
     field :previous_content, :string
     field :edit_number, :integer
 
-    belongs_to :message, Cgraph.Messaging.Message
-    belongs_to :edited_by, Cgraph.Accounts.User
+    belongs_to :message, CGraph.Messaging.Message
+    belongs_to :edited_by, CGraph.Accounts.User
 
     timestamps(updated_at: false)
   end

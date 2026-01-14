@@ -152,7 +152,8 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               We're sorry, but something unexpected happened. Please try again.
             </p>
             
-            {process.env.NODE_ENV === 'development' && (
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            {typeof (globalThis as any).process !== 'undefined' && (globalThis as any).process?.env?.NODE_ENV === 'development' && (
               <details style={styles.details}>
                 <summary style={styles.summary}>Error Details</summary>
                 <pre style={styles.stack}>

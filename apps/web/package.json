@@ -1,6 +1,6 @@
 {
   "name": "@cgraph/web",
-  "version": "0.8.6",
+  "version": "0.9.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -41,6 +41,7 @@
     "linkify-react": "^4.2.0",
     "linkifyjs": "^4.2.0",
     "lodash.debounce": "^4.0.8",
+    "lucide-react": "^0.468.0",
     "phoenix": "^1.8.0",
     "qrcode.react": "^4.2.0",
     "react": "19.1.0",

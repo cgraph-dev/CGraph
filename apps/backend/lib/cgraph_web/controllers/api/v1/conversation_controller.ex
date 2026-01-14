@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.ConversationController do
+defmodule CGraphWeb.API.V1.ConversationController do
   @moduledoc """
   Controller for direct message conversations.
 
@@ -6,11 +6,11 @@ defmodule CgraphWeb.API.V1.ConversationController do
   Creating a conversation with existing participants returns the
   existing conversation (idempotent).
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Messaging
+  alias CGraph.Messaging
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   List all conversations for the current user with pagination.
@@ -125,7 +125,7 @@ defmodule CgraphWeb.API.V1.ConversationController do
   defp create_group_conversation(conn, _user, _participant_ids, _name, _message_content) do
     conn
     |> put_status(:bad_request)
-    |> put_view(json: CgraphWeb.ErrorJSON)
+    |> put_view(json: CGraphWeb.ErrorJSON)
     |> render(:error,
       status: 400,
       code: "group_conversations_not_supported",

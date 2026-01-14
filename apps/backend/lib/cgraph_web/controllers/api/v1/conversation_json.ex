@@ -1,12 +1,12 @@
-defmodule CgraphWeb.API.V1.ConversationJSON do
+defmodule CGraphWeb.API.V1.ConversationJSON do
   @moduledoc """
   JSON rendering for conversation responses.
 
   Handles both direct (1:1) and group conversations with proper
   association loading guards throughout.
   """
-  alias Cgraph.Messaging.{Conversation, Message}
-  alias Cgraph.Presence
+  alias CGraph.Messaging.{Conversation, Message}
+  alias CGraph.Presence
 
   @doc """
   Renders a list of conversations with pagination metadata.

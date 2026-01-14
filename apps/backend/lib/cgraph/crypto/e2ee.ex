@@ -1,4 +1,4 @@
-defmodule Cgraph.Crypto.E2EE do
+defmodule CGraph.Crypto.E2EE do
   @moduledoc """
   End-to-End Encryption implementation for secure messaging.
 
@@ -83,8 +83,8 @@ defmodule Cgraph.Crypto.E2EE do
 
   require Logger
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Repo
+  alias CGraph.Accounts.User
+  alias CGraph.Repo
 
   # ============================================================================
   # Schemas

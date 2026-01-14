@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Comment do
+defmodule CGraph.Forums.Comment do
   @moduledoc """
   Comment schema for forum posts.
 
@@ -32,12 +32,12 @@ defmodule Cgraph.Forums.Comment do
     field :removal_reason, :string
     field :deleted_at, :utc_datetime
 
-    belongs_to :author, Cgraph.Accounts.User
-    belongs_to :post, Cgraph.Forums.Post
+    belongs_to :author, CGraph.Accounts.User
+    belongs_to :post, CGraph.Forums.Post
     belongs_to :parent, __MODULE__
 
     has_many :replies, __MODULE__, foreign_key: :parent_id
-    has_many :votes, Cgraph.Forums.Vote
+    has_many :votes, CGraph.Forums.Vote
 
     timestamps()
   end

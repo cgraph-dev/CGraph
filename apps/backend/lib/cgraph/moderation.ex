@@ -1,4 +1,4 @@
-defmodule Cgraph.Moderation do
+defmodule CGraph.Moderation do
   @moduledoc """
   Content moderation and abuse reporting system.
 
@@ -89,13 +89,13 @@ defmodule Cgraph.Moderation do
 
   import Ecto.Query, warn: false
 
-  alias Cgraph.Accounts.User
-  alias Cgraph.Audit
-  alias Cgraph.Moderation.Appeal
-  alias Cgraph.Moderation.Report
-  alias Cgraph.Moderation.ReviewAction
-  alias Cgraph.Moderation.UserRestriction
-  alias Cgraph.Repo
+  alias CGraph.Accounts.User
+  alias CGraph.Audit
+  alias CGraph.Moderation.Appeal
+  alias CGraph.Moderation.Report
+  alias CGraph.Moderation.ReviewAction
+  alias CGraph.Moderation.UserRestriction
+  alias CGraph.Repo
 
   require Logger
 
@@ -231,13 +231,13 @@ defmodule Cgraph.Moderation do
   defp quarantine_reported_content(report) do
     case report.content_type do
       :message ->
-        Cgraph.Messaging.hide_message(report.content_id, :moderation_quarantine)
+        CGraph.Messaging.hide_message(report.content_id, :moderation_quarantine)
       :post ->
-        Cgraph.Forums.hide_post(report.content_id, :moderation_quarantine)
+        CGraph.Forums.hide_post(report.content_id, :moderation_quarantine)
       :comment ->
-        Cgraph.Forums.hide_comment(report.content_id, :moderation_quarantine)
+        CGraph.Forums.hide_comment(report.content_id, :moderation_quarantine)
       :profile ->
-        Cgraph.Accounts.flag_profile_for_review(report.target_id)
+        CGraph.Accounts.flag_profile_for_review(report.target_id)
       _ ->
         Logger.warning("Unknown content type for quarantine: #{report.content_type}")
     end
@@ -282,13 +282,13 @@ defmodule Cgraph.Moderation do
 
     # Broadcast to admin channel for real-time alerting
     Phoenix.PubSub.broadcast(
-      Cgraph.PubSub,
+      CGraph.PubSub,
       "admin:moderation:critical",
       {:critical_report, staff_notification}
     )
 
     # Queue background job for additional notification channels (email, SMS, etc.)
-    Cgraph.Workers.CriticalAlertDispatcher.enqueue(staff_notification)
+    CGraph.Workers.CriticalAlertDispatcher.enqueue(staff_notification)
   rescue
     e ->
       Logger.error("Failed to alert on-call staff: #{inspect(e)}")
@@ -435,7 +435,7 @@ defmodule Cgraph.Moderation do
 
   defp apply_action(report, %{action: :warn} = attrs) do
     # Send formal warning notification to the user
-    with {:ok, target_user} <- Cgraph.Accounts.get_user(report.target_id) do
+    with {:ok, target_user} <- CGraph.Accounts.get_user(report.target_id) do
       warning_data = %{
         report_id: report.id,
         category: report.category,
@@ -450,7 +450,7 @@ defmodule Cgraph.Moderation do
       record_user_warning(target_user, warning_data)
 
       # Send notification through the standard notification system
-      Cgraph.Notifications.notify(target_user, :moderation_warning,
+      CGraph.Notifications.notify(target_user, :moderation_warning,
         title: "Content Warning",
         body: "Your content has been flagged. Please review our community guidelines.",
         data: warning_data
@@ -467,22 +467,22 @@ defmodule Cgraph.Moderation do
     # Soft-delete the reported content based on content type
     removal_result = case report.content_type do
       :message ->
-        Cgraph.Messaging.soft_delete_message(report.content_id,
+        CGraph.Messaging.soft_delete_message(report.content_id,
           reason: :moderation_removal,
           report_id: report.id
         )
       :post ->
-        Cgraph.Forums.soft_delete_post(report.content_id,
+        CGraph.Forums.soft_delete_post(report.content_id,
           reason: :moderation_removal,
           report_id: report.id
         )
       :comment ->
-        Cgraph.Forums.soft_delete_comment(report.content_id,
+        CGraph.Forums.soft_delete_comment(report.content_id,
           reason: :moderation_removal,
           report_id: report.id
         )
       :profile_content ->
-        Cgraph.Accounts.remove_profile_content(report.target_id, report.content_id,
+        CGraph.Accounts.remove_profile_content(report.target_id, report.content_id,
           reason: :moderation_removal
         )
       _ ->
@@ -493,8 +493,8 @@ defmodule Cgraph.Moderation do
     case removal_result do
       {:ok, _} ->
         # Notify user that content was removed
-        if target_user = Cgraph.Accounts.get_user!(report.target_id) do
-          Cgraph.Notifications.notify(target_user, :content_removed,
+        if target_user = CGraph.Accounts.get_user!(report.target_id) do
+          CGraph.Notifications.notify(target_user, :content_removed,
             title: "Content Removed",
             body: "Your content was removed for violating community guidelines.",
             data: %{

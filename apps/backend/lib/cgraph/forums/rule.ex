@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Rule do
+defmodule CGraph.Forums.Rule do
   @moduledoc """
   Schema for forum rules.
   """
@@ -10,7 +10,7 @@ defmodule Cgraph.Forums.Rule do
   @timestamps_opts [type: :utc_datetime_usec]
 
   schema "forum_rules" do
-    belongs_to :forum, Cgraph.Forums.Forum
+    belongs_to :forum, CGraph.Forums.Forum
 
     field :position, :integer
     field :title, :string

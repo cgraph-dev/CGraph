@@ -1,16 +1,16 @@
-defmodule CgraphWeb.WalletAuthController do
+defmodule CGraphWeb.WalletAuthController do
   @moduledoc """
   Controller for wallet-based authentication endpoints.
 
   Provides anonymous wallet registration, authentication, and recovery flows.
   """
 
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  alias Cgraph.Accounts.WalletAuth
-  alias Cgraph.Guardian
+  alias CGraph.Accounts.WalletAuth
+  alias CGraph.Guardian
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @doc """
   Generates new wallet credentials for display to user.
@@ -374,8 +374,8 @@ defmodule CgraphWeb.WalletAuthController do
   defp count_remaining_codes(user_id) do
     import Ecto.Query
 
-    alias Cgraph.Accounts.RecoveryCode
-    alias Cgraph.Repo
+    alias CGraph.Accounts.RecoveryCode
+    alias CGraph.Repo
 
     Repo.one(
       from rc in RecoveryCode,

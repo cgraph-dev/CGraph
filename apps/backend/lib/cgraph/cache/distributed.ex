@@ -1,4 +1,4 @@
-defmodule Cgraph.Cache.Distributed do
+defmodule CGraph.Cache.Distributed do
   @moduledoc """
   Distributed caching layer with local + remote cache tiering.
 
@@ -70,7 +70,7 @@ defmodule Cgraph.Cache.Distributed do
   ## Configuration
 
   ```elixir
-  config :cgraph, Cgraph.Cache.Distributed,
+  config :cgraph, CGraph.Cache.Distributed,
     l1_max_size: 10_000,
     l1_ttl: :timer.minutes(5),
     redis_pool_size: 10,
@@ -563,7 +563,7 @@ defmodule Cgraph.Cache.Distributed do
   defp maybe_refresh_async(key, fallback, opts) do
     # 10% chance to refresh stale data
     if :rand.uniform(10) == 1 do
-      Task.Supervisor.start_child(Cgraph.TaskSupervisor, fn ->
+      Task.Supervisor.start_child(CGraph.TaskSupervisor, fn ->
         compute_with_lock(key, fallback, opts)
       end)
     end

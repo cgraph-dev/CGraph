@@ -1,4 +1,4 @@
-defmodule CgraphWeb.Plugs.CurrentUser do
+defmodule CGraphWeb.Plugs.CurrentUser do
   @moduledoc """
   Plug to assign the current user to the connection.
   """

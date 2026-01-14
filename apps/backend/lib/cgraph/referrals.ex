@@ -1,4 +1,4 @@
-defmodule Cgraph.Referrals do
+defmodule CGraph.Referrals do
   @moduledoc """
   Context for Referral system.
   Handles referral codes, tracking, rewards, and leaderboards.
@@ -12,9 +12,9 @@ defmodule Cgraph.Referrals do
   """
 
   import Ecto.Query, warn: false
-  alias Cgraph.Repo
-  alias Cgraph.Referrals.{Referral, ReferralCode, ReferralReward, RewardTier}
-  alias Cgraph.Accounts.User
+  alias CGraph.Repo
+  alias CGraph.Referrals.{Referral, ReferralCode, ReferralReward, RewardTier}
+  alias CGraph.Accounts.User
 
   # ========================================
   # REFERRAL CODE

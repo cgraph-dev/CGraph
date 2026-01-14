@@ -1,4 +1,4 @@
-defmodule Cgraph.Forums.Subscription do
+defmodule CGraph.Forums.Subscription do
   @moduledoc """
   Schema for forum subscriptions.
 
@@ -15,8 +15,8 @@ defmodule Cgraph.Forums.Subscription do
   schema "forum_subscriptions" do
     field :notification_level, :string, default: "all"  # all, mentions, none
 
-    belongs_to :forum, Cgraph.Forums.Forum
-    belongs_to :user, Cgraph.Accounts.User
+    belongs_to :forum, CGraph.Forums.Forum
+    belongs_to :user, CGraph.Accounts.User
 
     timestamps()
   end

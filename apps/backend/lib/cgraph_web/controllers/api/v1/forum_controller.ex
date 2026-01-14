@@ -1,4 +1,4 @@
-defmodule CgraphWeb.API.V1.ForumController do
+defmodule CGraphWeb.API.V1.ForumController do
   @moduledoc """
   Handles forum management.
   Forums contain categories and posts for discussion.
@@ -9,13 +9,13 @@ defmodule CgraphWeb.API.V1.ForumController do
   - Vote values are strictly validated to 1 or -1
   - Authorization checks on all forum operations
   """
-  use CgraphWeb, :controller
+  use CGraphWeb, :controller
 
-  import CgraphWeb.Helpers.ParamParser
+  import CGraphWeb.Helpers.ParamParser
 
-  alias Cgraph.Forums
+  alias CGraph.Forums
 
-  action_fallback CgraphWeb.FallbackController
+  action_fallback CGraphWeb.FallbackController
 
   @max_per_page 50
   @max_leaderboard_limit 25
