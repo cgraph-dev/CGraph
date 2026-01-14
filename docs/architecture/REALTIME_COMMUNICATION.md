@@ -1,8 +1,8 @@
 # CGraph Real-Time Communication
 
-**Status: v0.7.32 (January 2026)**
+**Status: v0.9.1 (January 2026)**
 
-Complete documentation for CGraph's real-time communication stack, including messaging, presence, and voice/video calling.
+Complete documentation for CGraph's real-time communication stack, including messaging, presence (sampled at scale), WebRTC voice/video, and HTTP-only cookie-authenticated sockets.
 
 ---
 

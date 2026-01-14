@@ -4,6 +4,98 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.1] - 2026-01-14
+
+**🔧 MAINTENANCE: Critical Bug Fixes, Security Hardening, Documentation Updates**
+
+This maintenance release addresses several critical bugs, security vulnerabilities, and enhances developer documentation.
+
+### 🐛 Backend Bug Fixes
+
+| Fix | Description |
+|-----|-------------|
+| `Cache.put/3` | Added missing function - repositories now work correctly |
+| `Mailer.send_email/1` | Added raw email data API for digest/system emails |
+| `User.changeset/2` | Added generic changeset for username service |
+| `:fuse` dependency | Added circuit breaker library to mix.exs |
+| Module naming | Standardized `CGraph.*` and `CGraphWeb.*` naming |
+
+**New/Updated Files:**
+- `lib/cgraph/cache.ex` - Added `put/3` alias for `set/3`
+- `lib/cgraph/mailer.ex` - Added `send_email/1` with template rendering
+- `lib/cgraph/accounts/user.ex` - Added `changeset/2` function
+- `mix.exs` - Added `{:fuse, "~> 2.5"}` dependency
+
+### 🔐 Security Hardening
+
+| Issue | Severity | Fix |
+|-------|----------|-----|
+| Admin endpoint bypass | High | Changed `/api/admin` routes to use `:api_admin` pipeline |
+| Atom exhaustion | High | Replaced `String.to_atom/1` with safe alternatives in forums, APNS, feature flags |
+| Vote type injection | Medium | Added `safe_vote_type_atom/1` whitelist function |
+
+**Updated Files:**
+- `lib/cgraph_web/router.ex` - Fixed moderation routes authorization
+- `lib/cgraph/forums.ex` - Safe vote type conversion
+- `lib/cgraph/notifications/push_service/apns_client.ex` - Safe error atom conversion
+- `lib/cgraph/feature_flags.ex` - Uses `String.to_existing_atom/1`
+
+### 📝 Frontend Fixes
+
+| Fix | Description |
+|-----|-------------|
+| ESLint config | Added `"type": "module"` to root package.json |
+| Premium tiers | Updated limits: free=5, starter=10, pro=50, business=unlimited |
+| Web push | Implemented service worker and notification toggle |
+| CreateForum text | Updated "1 free forum" → "5 free forums" |
+
+**New Files:**
+- `apps/web/public/sw.js` - Service worker for web push
+- `apps/web/src/services/webPushService.ts` - Web Push API integration
+
+**Updated Files:**
+- `package.json` - Added `"type": "module"`
+- `apps/web/src/features/premium/services/index.ts` - Added `maxForums` to TIER_FEATURES
+- `apps/web/src/pages/settings/Settings.tsx` - Push notification toggle with permission handling
+
+### 📱 Mobile Fixes
+
+| Fix | Description |
+|-----|-------------|
+| Push notifications | Full Expo push notification integration |
+| Settings provider | Added SettingsProvider to App.tsx |
+
+**New Files:**
+- `apps/mobile/src/services/pushNotifications.ts` - Expo push service
+- `apps/mobile/src/hooks/usePushNotifications.ts` - Auto-registration hook
+
+**Updated Files:**
+- `apps/mobile/App.tsx` - Integrated SettingsProvider and push notifications
+
+### 📚 Documentation Updates
+
+- Updated `CLAUDE.md` with:
+  - Key features summary
+  - Caching architecture documentation
+  - Circuit breaker information
+  - Cache and Email API examples
+  - Recent v0.9.x updates section
+- Synced architecture docs to v0.9.1 (auth cookies, Double Ratchet, sampled presence, WebRTC)
+- Added guides: Gamification, Premium/Subscriptions, WebRTC, MyBB features, CI/CD pipeline
+- OpenAPI v0.9.1 with leaderboard + conversation read + referrals/presence/members coverage
+
+### 🏷️ Version Alignment
+
+- Bumped all apps/packages (backend, web, mobile, shared packages, Expo config) to **0.9.1**
+
+### 🛡️ CI & Security Automation
+
+- Added GitHub Actions `docker-build` job to build backend and web images using existing health checks in `infrastructure/docker/Dockerfile.backend` and `infrastructure/docker/Dockerfile.web`.
+- Expanded `security` workflow to run gitleaks, hadolint (both Dockerfiles), Sobelow, pnpm audit, SBOM generation via Syft, and vulnerability scanning via Grype with JSON artifacts uploaded.
+- Documented Context7 MCP helper configuration for research assistance (see `.vscode/mcp.json`).
+
+---
+
 ## [0.9.0] - 2025-01-23
 
 **🔐 SECURITY & REAL-TIME: Double Ratchet E2EE, HTTP-Only Cookies, Presence**

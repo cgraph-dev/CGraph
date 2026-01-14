@@ -1,6 +1,6 @@
 # CGraph Database Documentation
 
-> Version 0.7.56 | Last updated: January 12, 2026  
+> Version 0.9.1 | Last updated: January 14, 2026  
 > Schema modifications require updating this documentation.
 
 ---

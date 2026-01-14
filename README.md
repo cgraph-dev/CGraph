@@ -9,9 +9,11 @@
 #### Real-time messaging • Community forums • End-to-end encryption • Web3 authentication • Gamification
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.8.6-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.1-green.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-973%20passing-brightgreen.svg)](#testing)
 [![Elixir](https://img.shields.io/badge/elixir-1.17+-purple.svg)](https://elixir-lang.org/)
+
+**Current version:** 0.9.1 (January 2026)
 
 [🌐 Website](https://www.cgraph.org) · [📚 Documentation](docs/) · [🔌 API Reference](docs/API.md) ·
 [🤝 Contributing](CONTRIBUTING.md)
@@ -268,6 +270,18 @@ cd apps/web && pnpm test:coverage
 | [Mobile](docs/MOBILE.md)               | React Native development      |
 
 Documentation is auto-generated from code comments using TypeDoc and OpenAPI specs.
+
+## CI & Security Tooling
+
+- CI builds backend and web Docker images each PR to catch Dockerfile/healthcheck regressions early.
+- Security workflow runs gitleaks, hadolint (backend/web Dockerfiles), Sobelow, pnpm audit, Syft SBOM, and Grype vulnerability scans with artifacts; see `.github/workflows/ci.yml`.
+- Context7 MCP helper is configured in `.vscode/mcp.json`; provide your own `CONTEXT7_API_KEY` when prompted.
+
+### Using the Context7 MCP helper
+
+- Purpose: quick research/summarization aid; not a runtime dependency.
+- Setup: supply your Context7 API key when prompted by your MCP-enabled client (stored locally, not in repo/CI).
+- Usage examples: ask it to summarize long docs, draft changelog/release note text, outline tests, or suggest scan tuning (e.g., gitleaks allowlists). Review and commit changes yourself.
 
 ---
 

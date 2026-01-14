@@ -42,7 +42,7 @@ info:
     - `X-RateLimit-Remaining`
     - `X-RateLimit-Reset`
     
-  version: 0.9.0
+  version: 0.9.1
   contact:
     name: CGraph Support
     email: support@cgraph.org
@@ -84,6 +84,12 @@ tags:
     description: End-to-End Encryption key management (v0.9.0+)
   - name: Presence
     description: Online status and presence tracking
+  - name: Leaderboard
+    description: Global and category leaderboards
+  - name: Referrals
+    description: Referral codes, rewards, and validation
+  - name: Members
+    description: Member discovery and MyBB profile endpoints
 
 paths:
   /auth/register:
@@ -518,6 +524,73 @@ paths:
                   maxLength: 4000
                 encrypted_content:
                   type: string
+
+  /conversations/{conversation_id}/read:
+    post:
+      tags: [Conversations]
+      summary: Mark conversation as read
+      operationId: markConversationRead
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Conversation marked as read
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  conversationId:
+                    type: string
+                    format: uuid
+                  unreadCount:
+                    type: integer
+                    example: 0
+
+  /conversations/{conversation_id}/messages/{id}/read:
+    post:
+      tags: [Messages]
+      summary: Mark a message as read
+      operationId: markMessageRead
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Message marked as read
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  messageId:
+                    type: string
+                    format: uuid
                   description: E2EE encrypted content
                 message_type:
                   type: string
@@ -1270,6 +1343,263 @@ components:
       responses:
         '200':
           description: Successfully left call
+
+  # ============================================
+  # LEADERBOARDS & GAMIFICATION
+  # ============================================
+
+  /leaderboard:
+    get:
+      tags: [Leaderboard]
+      summary: Global leaderboard (all categories)
+      operationId: globalLeaderboard
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [xp, level, karma, streak, messages, posts, friends]
+          description: Metric to rank users (default xp)
+        - name: period
+          in: query
+          schema:
+            type: string
+            enum: [daily, weekly, monthly, alltime]
+          description: Time window for scores (default alltime)
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Leaderboard entries with pagination
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        rank:
+                          type: integer
+                        userId:
+                          type: string
+                          format: uuid
+                        username:
+                          type: string
+                        displayName:
+                          type: string
+                        avatarUrl:
+                          type: string
+                        level:
+                          type: integer
+                        value:
+                          type: number
+                        isOnline:
+                          type: boolean
+                        isPremium:
+                          type: boolean
+                        isVerified:
+                          type: boolean
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+                  currentUser:
+                    type: object
+                    nullable: true
+                    properties:
+                      rank:
+                        type: integer
+                      value:
+                        type: number
+                      userId:
+                        type: string
+                        format: uuid
+
+  /users/leaderboard:
+    get:
+      tags: [Leaderboard]
+      summary: Legacy users leaderboard
+      operationId: usersLeaderboard
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Leaderboard data
+
+  /gamification/leaderboard/{category}:
+    get:
+      tags: [Leaderboard]
+      summary: Gamification leaderboard by category
+      operationId: gamificationLeaderboard
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: category
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [xp, level, karma, streak, messages, posts]
+        - $ref: '#/components/parameters/PageParam'
+        - $ref: '#/components/parameters/PerPageParam'
+      responses:
+        '200':
+          description: Leaderboard entries
+
+  # ============================================
+  # MYBB PRESENCE & REFERRALS
+  # ============================================
+
+  /presence/online:
+    get:
+      tags: [Presence]
+      summary: List online users
+      operationId: presenceOnline
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Online users and counts
+
+  /presence/heartbeat:
+    post:
+      tags: [Presence]
+      summary: Send heartbeat to stay online
+      operationId: presenceHeartbeat
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Heartbeat acknowledged
+
+  /presence/stats:
+    get:
+      tags: [Presence]
+      summary: Presence statistics
+      operationId: presenceStats
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Presence metrics
+
+  /members:
+    get:
+      tags: [Members]
+      summary: List members (MyBB)
+      operationId: listMembers
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Members list
+
+  /members/{id}:
+    get:
+      tags: [Members]
+      summary: Get member by ID
+      operationId: getMember
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Member details
+
+  /referrals/stats:
+    get:
+      tags: [Referrals]
+      summary: Referral stats
+      operationId: referralStats
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Referral stats
+
+  /referrals/leaderboard:
+    get:
+      tags: [Referrals]
+      summary: Referral leaderboard
+      operationId: referralLeaderboard
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Referral leaderboard
+
+  /referrals/rewards:
+    get:
+      tags: [Referrals]
+      summary: List referral reward tiers
+      operationId: referralRewardTiers
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Reward tiers
+
+  /referrals/rewards/{id}/claim:
+    post:
+      tags: [Referrals]
+      summary: Claim referral reward
+      operationId: referralClaimReward
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Reward claimed
+
+  /referrals/validate/{code}:
+    get:
+      tags: [Referrals]
+      summary: Validate referral code
+      operationId: referralValidate
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Code valid/invalid
+
+  /referrals/apply:
+    post:
+      tags: [Referrals]
+      summary: Apply referral code
+      operationId: referralApply
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [code]
+              properties:
+                code:
+                  type: string
+      responses:
+        '200':
+          description: Code applied
 
   # ============================================
   # E2EE ENDPOINTS (v0.9.0+)

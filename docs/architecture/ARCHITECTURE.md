@@ -1,7 +1,7 @@
 ## CGraph System Architecture
 
-> Last updated: January 2026 | Version 0.7.41  
-> Living documentation — End-to-end encryption, Message intelligence, Enhanced UI v3.0, Spatial Audio, and distributed systems complete
+> Last updated: January 2026 | Version 0.9.1  
+> Living documentation — HTTP-only cookie auth, Signal Double Ratchet E2EE, sampled presence at scale, WebRTC voice/video, gamification/premium services
 
 ---
 
@@ -11,11 +11,13 @@ CGraph is a production-ready communication platform that seamlessly integrates r
 
 The platform serves four primary use cases: (1) encrypted instant messaging with industry-standard end-to-end encryption between individuals and within group channels, (2) community-driven forum discussions with voting and moderation, (3) real-time voice and video calls via WebRTC with spatial audio, and (4) a comprehensive friends system with presence tracking that connects users across all features.
 
-**v0.7.35 introduces industry-leading enhancements:**
-- **Double Ratchet Protocol** — Forward secrecy, break-in recovery, out-of-order message handling
-- **Message Intelligence** — Smart replies, sentiment analysis, content moderation, topic extraction  
-- **Holographic UI System** — Futuristic interface components with 3D effects
-- **Spatial Audio Engine** — HRTF-based 3D positional audio for VR/AR readiness
+**v0.9.1 highlights (platform-wide):**
+- **Auth** — HTTP-only cookie authentication with JWT rotation; OAuth (Google/Apple), Web3 wallets
+- **E2EE** — Signal X3DH + Double Ratchet with per-message AES-256-GCM; forward secrecy + break-in recovery
+- **Presence** — Phoenix Presence with sampled tiers for 100K+ member channels; HyperLogLog counts
+- **Real-time** — WebRTC voice/video with TURN/STUN, screen share, spatial audio; CRDT-backed presence
+- **Content** — Forums + DMs + groups unified, voice messages, reactions, attachments
+- **Economy** — Gamification (XP/levels/quests/achievements/titles) and Premium tiers/coin shop
 
 Authentication is flexible, supporting traditional email/password, OAuth social login (Google, Apple), and privacy-focused Web3 wallet authentication. Users choose their preferred identity model without compromise.
 

@@ -1,16 +1,24 @@
 import js from '@eslint/js';
+import tseslint from 'typescript-eslint';
 
 export default [
-  js.configs.recommended,
+  {
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/build/**',
+      '**/.docusaurus/**',
+      '**/coverage/**',
+    ],
+  },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
+      parser: tseslint.parser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
-        ecmaFeatures: {
-          jsx: true,
-        },
+        ecmaFeatures: { jsx: true },
       },
       globals: {
         console: 'readonly',
@@ -22,21 +30,20 @@ export default [
         exports: 'readonly',
         global: 'readonly',
         Buffer: 'readonly',
+        window: 'readonly',
+        document: 'readonly',
       },
     },
-    rules: {
-      'no-unused-vars': 'warn',
-      'no-console': 'off',
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
     },
-  },
-  {
-    // Ignore patterns
-    ignores: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/build/**',
-      '**/.docusaurus/**',
-      '**/coverage/**',
-    ],
+    rules: {
+      ...js.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+      'no-console': 'off',
+      'no-undef': 'off',
+    },
   },
 ];
