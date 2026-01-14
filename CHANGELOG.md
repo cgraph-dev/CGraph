@@ -6,9 +6,29 @@ All notable changes to CGraph will be documented in this file.
 
 ## [0.9.1] - 2026-01-14
 
-**🔧 MAINTENANCE: Critical Bug Fixes, Security Hardening, Documentation Updates**
+**🔧 MAINTENANCE: Critical Bug Fixes, Security Hardening, Documentation Updates, Hardening Sprint**
 
-This maintenance release addresses several critical bugs, security vulnerabilities, and enhances developer documentation.
+This maintenance release addresses several critical bugs, security vulnerabilities, enhances developer documentation, and implements production hardening features.
+
+### 🚀 New Features
+
+| Feature | Description |
+|---------|-------------|
+| ETag/If-None-Match | HTTP caching plug for read endpoints - reduces bandwidth by 304 responses |
+| JWT Key Rotation | Dual-key verification with grace period for zero-downtime rotation |
+| Soft Delete Queries | Composable query helpers for soft-deleted record filtering |
+| Cachex Memory Bounds | LRW eviction policy with configurable limits per cache instance |
+| Partial Indexes | Concurrent migration for messages/forum_posts soft-delete optimization |
+
+**New Files:**
+- `lib/cgraph_web/plugs/etag_plug.ex` - ETag generation and validation
+- `lib/cgraph/security/jwt_key_rotation.ex` - Key rotation manager with grace period
+- `lib/cgraph/query/soft_delete.ex` - `not_deleted/1`, `only_deleted/1`, `with_deleted/1` helpers
+- `lib/cgraph_web/validation/message_params.ex` - Message endpoint validation
+- `lib/cgraph_web/validation/user_params.ex` - User profile/settings validation
+- `lib/cgraph_web/validation/gamification_params.ex` - Leaderboard/quest validation
+- `lib/cgraph_web/validation/validation.ex` - Shared validation utilities
+- `priv/repo/migrations/20260114000001_add_messages_partial_indexes.exs`
 
 ### 🐛 Backend Bug Fixes
 

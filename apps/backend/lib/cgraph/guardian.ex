@@ -13,11 +13,13 @@ defmodule CGraph.Guardian do
   - `typ`: Token type (access/refresh)
   - `iat`: Issued at timestamp
   - `exp`: Expiration timestamp
+  - `kid`: Key ID for rotation support (v0.9.1+)
 
   ## Security Features
 
   - JTI-based token revocation
   - User-level mass revocation
+  - Key rotation with grace period
   - Configurable TTL via environment
   - Integration with audit logging
   """
@@ -25,6 +27,7 @@ defmodule CGraph.Guardian do
 
   alias CGraph.Accounts
   alias CGraph.Security.TokenBlacklist
+  alias CGraph.Security.JWTKeyRotation
 
   require Logger
 
@@ -57,9 +60,17 @@ defmodule CGraph.Guardian do
   Called by Guardian before token generation.
   """
   def build_claims(claims, _resource, _opts) do
+    # Add key ID for rotation tracking
+    key_id = try do
+      JWTKeyRotation.key_info().primary.id
+    rescue
+      _ -> "default"
+    end
+
     claims = claims
     |> Map.put("jti", generate_jti())
     |> Map.put("iat", System.system_time(:second))
+    |> Map.put("kid", key_id)
 
     {:ok, claims}
   end

@@ -30,8 +30,18 @@ defmodule CGraph.Application do
       # Start Redis GenServer wrapper (for rate limiting, etc.)
       CGraph.Redis,
 
-      # Start Cachex for local caching
-      {Cachex, name: :cgraph_cache},
+      # Start Cachex for local caching with memory bounds
+      # Default: 100MB limit with LRU eviction (configurable via CACHEX_LIMIT_MB)
+      {Cachex, cachex_config(:cgraph_cache)},
+
+      # Separate cache for sessions with shorter TTL
+      {Cachex, cachex_config(:session_cache, limit: 50_000, ttl: :timer.hours(24))},
+
+      # Token cache for JWT/rate limit lookups
+      {Cachex, cachex_config(:token_cache, limit: 100_000, ttl: :timer.minutes(15))},
+
+      # JWT key rotation manager (supports dual-key verification during rotation)
+      CGraph.Security.JWTKeyRotation,
 
       # Start in-app metrics collector/exporter
       CGraph.Metrics,
@@ -135,5 +145,33 @@ defmodule CGraph.Application do
 
   defp oban_config do
     Application.fetch_env!(:cgraph, Oban)
+  end
+
+  @doc false
+  defp cachex_config(name, opts \\ []) do
+    # Memory limit in entries (default 100k, ~100MB assuming 1KB avg entry)
+    default_limit = String.to_integer(System.get_env("CACHEX_LIMIT_ENTRIES") || "100000")
+    limit = Keyword.get(opts, :limit, default_limit)
+    default_ttl = Keyword.get(opts, :ttl, :timer.hours(1))
+
+    # Cachex 4.x uses hooks for limits
+    # See: https://hexdocs.pm/cachex/Cachex.Limit.Scheduled.html
+    import Cachex.Spec
+
+    [
+      name: name,
+      # LRW eviction when limit reached (scheduled policy - lower memory overhead)
+      hooks: [
+        hook(module: Cachex.Limit.Scheduled, args: {limit, [reclaim: 0.1]})
+      ],
+      # Default TTL for entries without explicit TTL
+      expiration: expiration(
+        default: default_ttl,
+        interval: :timer.seconds(30),
+        lazy: true
+      ),
+      # Stats for monitoring
+      stats: true
+    ]
   end
 end

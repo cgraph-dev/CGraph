@@ -56,6 +56,8 @@ defmodule CGraphWeb.Router do
     plug CGraphWeb.Plugs.ApiVersion
     plug CGraphWeb.Plugs.IdempotencyPlug
     plug CGraphWeb.Plugs.SentryContext
+    # ETag support for bandwidth reduction on public read endpoints
+    plug CGraphWeb.Plugs.ETagPlug, public: true, compute_from_body: true
   end
 
   pipeline :api_auth do
