@@ -26,11 +26,9 @@ const sidebars = {
       type: 'category',
       label: 'Development',
       items: [
-        'guides/CONTRIBUTING',
         'guides/FRONTEND',
         'guides/MOBILE',
         'guides/UI_CUSTOMIZATION',
-        'guides/UI_ENHANCEMENT_IMPLEMENTATION',
       ],
     },
     {

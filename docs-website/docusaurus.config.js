@@ -42,10 +42,6 @@ const config = {
         ],
         tsconfig: '../apps/web/tsconfig.json',
         out: 'api-reference',
-        sidebar: {
-          categoryLabel: 'API Reference',
-          position: 5,
-        },
       },
     ],
     // OpenAPI plugin for REST API docs
