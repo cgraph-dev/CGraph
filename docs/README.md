@@ -14,6 +14,7 @@ Getting started, deployment, and operational guides for CGraph.
 - [Mobile](guides/MOBILE.md) - Mobile app documentation
 - [Frontend](guides/FRONTEND.md) - Web frontend documentation
 - [Security](guides/SECURITY.md) - Security best practices
+- [Context7 Helper](guides/CONTEXT7_HELPER.md) - Using the MCP assistant safely
 
 ### [API Reference](api/)
 
@@ -44,6 +45,11 @@ Version history and changelog for all releases.
 - [V0.7.45](release-notes/V0.7.45_RELEASE_NOTES.md)
 - [V0.7.44](release-notes/V0.7.44_RELEASE_NOTES.md)
 - [All releases...](release-notes/)
+
+### CI & Security Notes
+
+- CI builds backend and web Docker images on every PR and runs gitleaks, hadolint (both Dockerfiles), Sobelow, pnpm audit, Syft SBOM generation, and Grype scanning; see `.github/workflows/ci.yml`.
+- Context7 MCP helper is configured in `.vscode/mcp.json`; supply your own `CONTEXT7_API_KEY` when prompted.
 
 ---
 
@@ -90,4 +96,4 @@ contain outdated information but are kept for reference.
 
 ---
 
-_Version: 0.8.5 | Last updated: January 13, 2026_
+_Version: 0.9.1 | Last updated: January 14, 2026_

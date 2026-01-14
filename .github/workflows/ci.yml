@@ -203,7 +203,7 @@ jobs:
   # Mobile Tests (React Native/Expo)
   # ============================================
   mobile-test:
-    name: Mobile Tests
+    name: Mobile Lint / Typecheck / Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -222,8 +222,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
-        run: pnpm run test --filter=@cgraph/mobile -- --ci --coverage
+      - name: Lint (mobile)
+        run: pnpm --filter @cgraph/mobile run lint
+
+      - name: Typecheck (mobile)
+        run: pnpm --filter @cgraph/mobile run typecheck
+
+      - name: Tests (mobile)
+        run: pnpm --filter @cgraph/mobile run test:ci
 
       - name: Upload mobile coverage
         uses: actions/upload-artifact@v4
@@ -231,6 +237,25 @@ jobs:
           name: mobile-cover
           path: apps/mobile/coverage
         if: always()
+
+  # ============================================
+  # Docker Image Builds (backend & web)
+  # ============================================
+  docker-build:
+    name: Build Images (backend/web)
+    runs-on: ubuntu-latest
+    needs: [lint, typecheck]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        run: docker build -f infrastructure/docker/Dockerfile.backend -t cgraph-backend:ci .
+
+      - name: Build web image
+        run: docker build -f infrastructure/docker/Dockerfile.web -t cgraph-web:ci .
 
   # ============================================
   # Coverage Summary (reports combined)
@@ -285,8 +310,24 @@ jobs:
   security:
     name: Security Scan
     runs-on: ubuntu-latest
+    needs: [lint, typecheck]
     steps:
       - uses: actions/checkout@v4
+
+      - name: Secrets scan (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --no-git --exit-code 1
+
+      - name: Lint Dockerfile (backend)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: infrastructure/docker/Dockerfile.backend
+
+      - name: Lint Dockerfile (web)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: infrastructure/docker/Dockerfile.web
 
       - name: Setup Elixir
         uses: erlef/setup-beam@v1
@@ -319,3 +360,28 @@ jobs:
       - name: Run pnpm audit
         run: pnpm audit --audit-level=high
         continue-on-error: true
+
+      - name: Generate SBOM (Syft)
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: spdx-json
+          output-file: sbom.spdx.json
+
+      - name: Scan dependencies (Grype)
+        uses: anchore/scan-action@v4
+        with:
+          sbom: sbom.spdx.json
+          output-format: json
+          output-file: grype-results.json
+        continue-on-error: true
+
+      - name: Upload security artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-reports
+          path: |
+            sbom.spdx.json
+            grype-results.json
+          if-no-files-found: ignore
+        if: always()

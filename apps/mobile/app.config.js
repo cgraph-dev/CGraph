@@ -4,7 +4,7 @@
  * Dynamic configuration for Expo SDK 54
  * Handles environment-specific settings and API URL resolution
  * 
- * @version 0.7.28
+ * @version 0.9.1
  * @see https://docs.expo.dev/workflow/configuration/
  */
 
@@ -71,7 +71,7 @@ module.exports = ({ config }) => {
     ...config,
     name: getAppName(),
     slug: 'cgraph',
-    version: '0.7.28',
+    version: '0.9.1',
     runtimeVersion: {
       policy: 'appVersion',
     },

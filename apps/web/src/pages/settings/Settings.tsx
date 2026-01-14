@@ -488,9 +488,19 @@ function SecuritySettings() {
 function NotificationSettings() {
   const { settings, updateNotificationSettings, isSaving, fetchSettings } = useSettingsStore();
   const [isLoaded, setIsLoaded] = useState(false);
+  const [pushState, setPushState] = useState<{ supported: boolean; permission: string; registered: boolean }>({
+    supported: false,
+    permission: 'default',
+    registered: false,
+  });
 
   useEffect(() => {
     fetchSettings().finally(() => setIsLoaded(true));
+    // Check web push state
+    import('@/services/webPushService').then(async (webPush) => {
+      const state = await webPush.getPushState();
+      setPushState(state);
+    });
   }, [fetchSettings]);
 
   const handleToggle = useCallback(async (key: keyof typeof settings.notifications, value: boolean) => {
@@ -501,6 +511,36 @@ function NotificationSettings() {
       toast.error('Failed to save settings');
     }
   }, [updateNotificationSettings]);
+
+  // Special handler for push notifications that also handles browser permission
+  const handlePushToggle = useCallback(async () => {
+    const webPush = await import('@/services/webPushService');
+    
+    if (!pushState.supported) {
+      toast.error('Push notifications are not supported in this browser');
+      return;
+    }
+
+    const newValue = !settings.notifications.pushNotifications;
+    
+    if (newValue) {
+      // Enable push notifications
+      const result = await webPush.registerForPushNotifications();
+      if (result.success) {
+        await updateNotificationSettings({ pushNotifications: true });
+        setPushState(prev => ({ ...prev, registered: true, permission: 'granted' }));
+        toast.success('Push notifications enabled');
+      } else {
+        toast.error(result.error || 'Failed to enable push notifications');
+      }
+    } else {
+      // Disable push notifications
+      await webPush.unregisterFromPushNotifications();
+      await updateNotificationSettings({ pushNotifications: false });
+      setPushState(prev => ({ ...prev, registered: false }));
+      toast.success('Push notifications disabled');
+    }
+  }, [settings.notifications.pushNotifications, pushState.supported, updateNotificationSettings]);
 
   const Toggle = ({ settingKey, value }: { settingKey: keyof typeof settings.notifications; value: boolean }) => (
     <button
@@ -517,7 +557,6 @@ function NotificationSettings() {
       />
     </button>
   );
-
   if (!isLoaded) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -602,9 +641,28 @@ function NotificationSettings() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium text-white">Push Notifications</h3>
-              <p className="text-sm text-gray-400">Receive push notifications on your devices</p>
+              <p className="text-sm text-gray-400">
+                {pushState.supported
+                  ? pushState.permission === 'denied'
+                    ? 'Blocked - enable in browser settings'
+                    : 'Receive push notifications in this browser'
+                  : 'Not supported in this browser'
+                }
+              </p>
             </div>
-            <Toggle settingKey="pushNotifications" value={settings.notifications.pushNotifications} />
+            <button
+              onClick={handlePushToggle}
+              disabled={isSaving || !pushState.supported || pushState.permission === 'denied'}
+              className={`relative w-11 h-6 rounded-full transition-colors ${
+                settings.notifications.pushNotifications && pushState.registered ? 'bg-primary-600' : 'bg-dark-600'
+              } ${isSaving || !pushState.supported || pushState.permission === 'denied' ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <span
+                className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                  settings.notifications.pushNotifications && pushState.registered ? 'translate-x-5' : ''
+                }`}
+              />
+            </button>
           </div>
         </GlassCard>
 

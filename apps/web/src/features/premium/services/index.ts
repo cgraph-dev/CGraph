@@ -32,6 +32,7 @@ export const premiumApi = {
 export const TIER_FEATURES = {
   free: {
     maxGroups: 5,
+    maxForums: 5,
     maxFileSize: 10, // MB
     customEmoji: false,
     animatedAvatar: false,
@@ -40,7 +41,8 @@ export const TIER_FEATURES = {
     adFree: false,
   },
   starter: {
-    maxGroups: 25,
+    maxGroups: 10,
+    maxForums: 10,
     maxFileSize: 50,
     customEmoji: true,
     animatedAvatar: false,
@@ -49,7 +51,8 @@ export const TIER_FEATURES = {
     adFree: true,
   },
   pro: {
-    maxGroups: 100,
+    maxGroups: 50,
+    maxForums: 50,
     maxFileSize: 100,
     customEmoji: true,
     animatedAvatar: true,
@@ -57,8 +60,20 @@ export const TIER_FEATURES = {
     prioritySupport: true,
     adFree: true,
   },
+  business: {
+    maxGroups: -1, // unlimited
+    maxForums: -1, // unlimited
+    maxFileSize: 500,
+    customEmoji: true,
+    animatedAvatar: true,
+    premiumBadge: true,
+    prioritySupport: true,
+    adFree: true,
+  },
+  // Alias for backward compatibility
   ultimate: {
     maxGroups: -1, // unlimited
+    maxForums: -1, // unlimited
     maxFileSize: 500,
     customEmoji: true,
     animatedAvatar: true,

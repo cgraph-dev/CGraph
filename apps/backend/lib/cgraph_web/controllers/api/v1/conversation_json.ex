@@ -109,4 +109,15 @@ defmodule CGraphWeb.API.V1.ConversationJSON do
   defp truncate(str, max) do
     String.slice(str, 0, max) <> "..."
   end
+
+  @doc """
+  Renders response for marking a conversation as read.
+  """
+  def mark_read(%{conversation_id: conversation_id}) do
+    %{
+      status: "ok",
+      conversationId: conversation_id,
+      unreadCount: 0
+    }
+  end
 end

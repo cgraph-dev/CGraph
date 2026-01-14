@@ -430,13 +430,16 @@ export function parseBBCode(input: string, options: { escapeInput?: boolean } = 
   let text = options.escapeInput !== false ? escapeHtml(input) : input;
   
   // Un-escape the BBCode tags that we need to process
+  // Use unique placeholders for < and > to preserve them during processing
+  const LT_PLACEHOLDER = '___BBCODE_LT___';
+  const GT_PLACEHOLDER = '___BBCODE_GT___';
   text = text
-    .replace(/&lt;/g, '\x00LT\x00')
-    .replace(/&gt;/g, '\x00GT\x00')
+    .replace(/&lt;/g, LT_PLACEHOLDER)
+    .replace(/&gt;/g, GT_PLACEHOLDER)
     .replace(/\[/g, '[')
     .replace(/\]/g, ']')
-    .replace(/\x00LT\x00/g, '&lt;')
-    .replace(/\x00GT\x00/g, '&gt;');
+    .replace(new RegExp(LT_PLACEHOLDER, 'g'), '&lt;')
+    .replace(new RegExp(GT_PLACEHOLDER, 'g'), '&gt;');
 
   // Sort tags by priority (lower = processed first)
   const sortedTags = [...bbcodeTags].sort((a, b) => (a.priority || 10) - (b.priority || 10));

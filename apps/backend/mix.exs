@@ -1,7 +1,7 @@
 defmodule CGraph.MixProject do
   use Mix.Project
 
-  @version "0.8.6"
+  @version "0.9.1"
   # Compatible with Elixir 1.17+ for CI, and 1.19+ for local development
   @elixir_version "~> 1.17"
 
@@ -94,6 +94,9 @@ defmodule CGraph.MixProject do
       {:tesla, "~> 1.15"},
       {:hackney, "~> 1.20"},
       {:httpoison, "~> 2.2"},
+
+      # Circuit breaker for fault tolerance
+      {:fuse, "~> 2.5"},
 
       # Telemetry & monitoring (latest stable for OTP 28)
       {:telemetry_metrics, "~> 1.1"},

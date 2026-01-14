@@ -137,4 +137,21 @@ defmodule CGraphWeb.API.V1.ConversationController do
   defp maybe_send_message(conversation, user, content) do
     Messaging.send_message(conversation, user, %{content: content})
   end
+
+  @doc """
+  Mark all messages in a conversation as read.
+
+  POST /api/v1/conversations/:id/read
+
+  This marks all messages up to the latest as read for the current user,
+  resetting the unread count to 0.
+  """
+  def mark_read(conn, %{"conversation_id" => conversation_id}) do
+    user = conn.assigns.current_user
+
+    with {:ok, conversation} <- Messaging.get_user_conversation(user, conversation_id),
+         {:ok, _result} <- Messaging.mark_conversation_read(conversation, user) do
+      render(conn, :mark_read, conversation_id: conversation_id)
+    end
+  end
 end

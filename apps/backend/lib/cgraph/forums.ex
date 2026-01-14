@@ -1285,7 +1285,7 @@ defmodule CGraph.Forums do
       where: v.comment_id in ^comment_ids
     )
     |> Repo.all()
-    |> Map.new(& {&1.comment_id, String.to_atom(&1.vote_type)})
+    |> Map.new(& {&1.comment_id, safe_vote_type_atom(&1.vote_type)})
 
     Enum.map(comments, fn comment ->
       Map.put(comment, :user_vote, Map.get(votes, comment.id))
@@ -1295,9 +1295,16 @@ defmodule CGraph.Forums do
   defp maybe_add_comment_vote(comment, nil), do: comment
   defp maybe_add_comment_vote(comment, user_id) do
     vote = Repo.get_by(Vote, user_id: user_id, comment_id: comment.id)
-    user_vote = if vote, do: String.to_atom(vote.vote_type), else: nil
+    user_vote = if vote, do: safe_vote_type_atom(vote.vote_type), else: nil
     Map.put(comment, :user_vote, user_vote)
   end
+  
+  # Convert vote_type string to atom safely (prevents atom exhaustion)
+  defp safe_vote_type_atom("up"), do: :up
+  defp safe_vote_type_atom("down"), do: :down
+  defp safe_vote_type_atom("upvote"), do: :up
+  defp safe_vote_type_atom("downvote"), do: :down
+  defp safe_vote_type_atom(_), do: nil
 
   # ============================================================================
   # Categories

@@ -898,60 +898,37 @@ defmodule CGraph.Gamification do
 
   @doc """
   Get global leaderboard by category.
+
+  ## Options
+
+  - `:limit` - Maximum number of entries to return (default: 100)
+  - `:offset` - Number of entries to skip for pagination (default: 0)
+
+  ## Categories
+
+  - "xp" - Total experience points
+  - "level" - User level
+  - "karma" - Forum reputation
+  - "streak" - Login streak days
+  - "messages" - Total messages sent
+  - "posts" - Total forum posts
+  - "friends" - Friend connections count
+
+  Returns a list of maps with `:id`, `:username`, `:value`, `:rank` and
+  additional fields based on category. Also includes enriched user data
+  like `:display_name`, `:avatar_url`, `:is_premium`, `:is_verified`.
   """
   def get_leaderboard(category, opts \\ []) do
     limit = Keyword.get(opts, :limit, 100)
     offset = Keyword.get(opts, :offset, 0)
 
-    query = case category do
-      "xp" ->
-        from u in User,
-          where: u.is_active == true,
-          order_by: [desc: u.xp],
-          select: %{id: u.id, username: u.username, value: u.xp, level: u.level}
-
-      "level" ->
-        from u in User,
-          where: u.is_active == true,
-          order_by: [desc: u.level, desc: u.xp],
-          select: %{id: u.id, username: u.username, value: u.level, xp: u.xp}
-
-      "streak" ->
-        from u in User,
-          where: u.is_active == true,
-          order_by: [desc: u.streak_days],
-          select: %{id: u.id, username: u.username, value: u.streak_days, longest: u.streak_longest}
-
-      "karma" ->
-        from u in User,
-          where: u.is_active == true,
-          order_by: [desc: u.karma],
-          select: %{id: u.id, username: u.username, value: u.karma}
-
-      "messages" ->
-        from u in User,
-          where: u.is_active == true,
-          order_by: [desc: u.total_messages_sent],
-          select: %{id: u.id, username: u.username, value: u.total_messages_sent}
-
-      "posts" ->
-        from u in User,
-          where: u.is_active == true,
-          order_by: [desc: u.total_posts_created],
-          select: %{id: u.id, username: u.username, value: u.total_posts_created}
+    entries = case category do
+      "friends" ->
+        get_friends_leaderboard(limit, offset)
 
       _ ->
-        from u in User,
-          where: u.is_active == true,
-          order_by: [desc: u.xp],
-          select: %{id: u.id, username: u.username, value: u.xp, level: u.level}
+        get_standard_leaderboard(category, limit, offset)
     end
-
-    entries =
-      query
-      |> limit(^limit)
-      |> offset(^offset)
-      |> Repo.all()
 
     # Add rank numbers
     entries
@@ -959,10 +936,177 @@ defmodule CGraph.Gamification do
     |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
   end
 
+  # Standard leaderboard queries for user-field-based categories
+  defp get_standard_leaderboard(category, limit, offset) do
+    query = case category do
+      "xp" ->
+        from u in User,
+          where: u.is_active == true,
+          order_by: [desc: u.xp, asc: u.inserted_at],
+          select: %{
+            id: u.id,
+            username: u.username,
+            display_name: u.display_name,
+            avatar_url: u.avatar_url,
+            level: u.level,
+            value: u.xp,
+            is_premium: u.subscription_tier in ["premium", "premium_plus"],
+            is_verified: u.is_verified
+          }
+
+      "level" ->
+        from u in User,
+          where: u.is_active == true,
+          order_by: [desc: u.level, desc: u.xp, asc: u.inserted_at],
+          select: %{
+            id: u.id,
+            username: u.username,
+            display_name: u.display_name,
+            avatar_url: u.avatar_url,
+            level: u.level,
+            value: u.level,
+            is_premium: u.subscription_tier in ["premium", "premium_plus"],
+            is_verified: u.is_verified
+          }
+
+      "streak" ->
+        from u in User,
+          where: u.is_active == true,
+          order_by: [desc: u.streak_days, desc: u.streak_longest, asc: u.inserted_at],
+          select: %{
+            id: u.id,
+            username: u.username,
+            display_name: u.display_name,
+            avatar_url: u.avatar_url,
+            level: u.level,
+            value: u.streak_days,
+            longest: u.streak_longest,
+            is_premium: u.subscription_tier in ["premium", "premium_plus"],
+            is_verified: u.is_verified
+          }
+
+      "karma" ->
+        from u in User,
+          where: u.is_active == true,
+          order_by: [desc: u.karma, asc: u.inserted_at],
+          select: %{
+            id: u.id,
+            username: u.username,
+            display_name: u.display_name,
+            avatar_url: u.avatar_url,
+            level: u.level,
+            value: u.karma,
+            is_premium: u.subscription_tier in ["premium", "premium_plus"],
+            is_verified: u.is_verified
+          }
+
+      "messages" ->
+        from u in User,
+          where: u.is_active == true,
+          order_by: [desc: u.total_messages_sent, asc: u.inserted_at],
+          select: %{
+            id: u.id,
+            username: u.username,
+            display_name: u.display_name,
+            avatar_url: u.avatar_url,
+            level: u.level,
+            value: u.total_messages_sent,
+            is_premium: u.subscription_tier in ["premium", "premium_plus"],
+            is_verified: u.is_verified
+          }
+
+      "posts" ->
+        from u in User,
+          where: u.is_active == true,
+          order_by: [desc: u.total_posts_created, asc: u.inserted_at],
+          select: %{
+            id: u.id,
+            username: u.username,
+            display_name: u.display_name,
+            avatar_url: u.avatar_url,
+            level: u.level,
+            value: u.total_posts_created,
+            is_premium: u.subscription_tier in ["premium", "premium_plus"],
+            is_verified: u.is_verified
+          }
+
+      _ ->
+        # Default to XP
+        from u in User,
+          where: u.is_active == true,
+          order_by: [desc: u.xp, asc: u.inserted_at],
+          select: %{
+            id: u.id,
+            username: u.username,
+            display_name: u.display_name,
+            avatar_url: u.avatar_url,
+            level: u.level,
+            value: u.xp,
+            is_premium: u.subscription_tier in ["premium", "premium_plus"],
+            is_verified: u.is_verified
+          }
+    end
+
+    query
+    |> limit(^limit)
+    |> offset(^offset)
+    |> Repo.all()
+  end
+
+  # Friends leaderboard - ranks users by friend count
+  defp get_friends_leaderboard(limit, offset) do
+    alias CGraph.Accounts.Friendship
+
+    # Subquery to count accepted friendships per user
+    friend_counts = from f in Friendship,
+      where: f.status == "accepted",
+      group_by: f.user_id,
+      select: %{user_id: f.user_id, count: count(f.id)}
+
+    from(u in User,
+      left_join: fc in subquery(friend_counts), on: fc.user_id == u.id,
+      where: u.is_active == true,
+      order_by: [desc: coalesce(fc.count, 0), asc: u.inserted_at],
+      limit: ^limit,
+      offset: ^offset,
+      select: %{
+        id: u.id,
+        username: u.username,
+        display_name: u.display_name,
+        avatar_url: u.avatar_url,
+        level: u.level,
+        value: coalesce(fc.count, 0),
+        is_premium: u.subscription_tier in ["premium", "premium_plus"],
+        is_verified: u.is_verified
+      }
+    )
+    |> Repo.all()
+  end
+
+  @doc """
+  Get total count of users for leaderboard pagination.
+
+  Returns the count of active users eligible for leaderboards.
+  """
+  def get_leaderboard_count(_category) do
+    from(u in User, where: u.is_active == true)
+    |> Repo.aggregate(:count)
+  end
+
   @doc """
   Get a user's rank in a specific leaderboard category.
   """
   def get_user_rank(user_id, category) do
+    case category do
+      "friends" ->
+        get_user_friends_rank(user_id)
+
+      _ ->
+        get_user_standard_rank(user_id, category)
+    end
+  end
+
+  defp get_user_standard_rank(user_id, category) do
     user = Repo.get!(User, user_id)
 
     {field, value} = case category do
@@ -980,6 +1124,32 @@ defmodule CGraph.Gamification do
     |> Repo.aggregate(:count)
 
     count + 1
+  end
+
+  defp get_user_friends_rank(user_id) do
+    alias CGraph.Accounts.Friendship
+
+    # Get user's friend count
+    user_friend_count =
+      from(f in Friendship,
+        where: (f.user_id == ^user_id or f.friend_id == ^user_id) and f.status == "accepted"
+      )
+      |> Repo.aggregate(:count)
+
+    # Count users with more friends
+    friend_counts = from f in Friendship,
+      where: f.status == "accepted",
+      group_by: f.user_id,
+      select: %{user_id: f.user_id, count: count(f.id)}
+
+    count_with_more =
+      from(u in User,
+        left_join: fc in subquery(friend_counts), on: fc.user_id == u.id,
+        where: u.is_active == true and coalesce(fc.count, 0) > ^user_friend_count
+      )
+      |> Repo.aggregate(:count)
+
+    count_with_more + 1
   end
 
   # ==================== USER STATS ====================

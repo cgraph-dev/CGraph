@@ -13,16 +13,26 @@ config :cgraph, CGraph.Repo,
 
 # For development, we disable any cache and enable debugging and code reloading
 # Using 0.0.0.0 to allow connections from mobile devices on the local network
+assets_path = Path.expand("../assets", __DIR__)
+
+# Skip asset watchers when the assets directory is absent (API-only dev setups)
+asset_watchers =
+  if File.dir?(assets_path) do
+    [
+      esbuild: {Esbuild, :install_and_run, [:cgraph, ~w(--sourcemap=inline --watch)]},
+      tailwind: {Tailwind, :install_and_run, [:cgraph, ~w(--watch)]}
+    ]
+  else
+    []
+  end
+
 config :cgraph, CGraphWeb.Endpoint,
   http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
   secret_key_base: "dev-secret-key-base-please-change-in-production-this-is-at-least-64-chars",
-  watchers: [
-    esbuild: {Esbuild, :install_and_run, [:cgraph, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:cgraph, ~w(--watch)]}
-  ]
+  watchers: asset_watchers
 
 # Watch static and templates for browser reloading
 config :cgraph, CGraphWeb.Endpoint,

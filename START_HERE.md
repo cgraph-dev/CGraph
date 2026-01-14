@@ -1,6 +1,6 @@
 # 🚀 CGraph - START HERE
 
-> **Quick Navigation Guide** **Current Version**: 0.8.5
+> **Quick Navigation Guide** **Current Version**: 0.9.1
 
 ---
 
@@ -15,6 +15,18 @@ CGraph is an all-in-one open-source communication platform featuring:
 - **End-to-End Encryption** - Signal Protocol (Double Ratchet)
 - **Gamification** - XP, levels, achievements, quests
 - **Cross-Platform** - Web, iOS, Android
+
+### What just changed (0.9.1)
+
+- CI builds backend/web Docker images to validate health checks on every PR.
+- Security workflow runs gitleaks, hadolint, Syft SBOM + Grype scans, Sobelow, and pnpm audit.
+- Context7 MCP helper documented in `.vscode/mcp.json` for assisted research (provide your own API key).
+
+### How to use Context7 MCP
+
+- Purpose: assistant for research/summaries; code changes stay under your control.
+- Provide your `CONTEXT7_API_KEY` when prompted by your MCP-enabled client (not stored in repo/CI).
+- Good asks: summarize long files, draft release notes, suggest tests or scan allowlists; then review before committing.
 
 ---
 

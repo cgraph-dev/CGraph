@@ -1,7 +1,7 @@
 # CGraph Work Summary
 
-> **Version:** 0.8.5  
-> **Last Updated:** January 13, 2026  
+> **Version:** 0.9.1  
+> **Last Updated:** January 14, 2026  
 > **Status:** Active Development
 
 ---
@@ -130,13 +130,11 @@ pnpm build
 
 ---
 
-## Recent Changes (v0.8.5)
+## Recent Changes (v0.9.1)
 
-- Documentation consolidation (99 → ~30 files)
-- Version synchronization across all packages
-- Archive of 25+ completed integration docs
-- Beautiful Docusaurus homepage
-- Root ESLint config for ESLint 9
+- CI now builds backend and web Docker images each PR to validate health checks early.
+- Security workflow runs gitleaks, hadolint (backend/web Dockerfiles), Sobelow, pnpm audit, Syft SBOM, and Grype vulnerability scan with artifacts uploaded.
+- Context7 MCP helper noted in `.vscode/mcp.json`; supply your own API key when prompted.
 
 ---
 

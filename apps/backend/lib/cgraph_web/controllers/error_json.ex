@@ -3,55 +3,63 @@ defmodule CGraphWeb.ErrorJSON do
   JSON error views for API responses.
   """
 
-  # Render changeset errors
-  def error(%{changeset: changeset}) do
+  @default_code "unknown_error"
+  @default_message "An unexpected error occurred"
+
+  def envelope(code, message, details \\ nil) do
     %{
       error: %{
-        message: "Validation failed",
-        details: Ecto.Changeset.traverse_errors(changeset, &translate_error/1)
+        code: code || @default_code,
+        message: message || @default_message,
+        details: details
       }
     }
   end
 
+  # Render changeset errors
+  def error(%{changeset: changeset}) do
+    envelope("validation_error", "Validation failed", Ecto.Changeset.traverse_errors(changeset, &translate_error/1))
+  end
+
   # Render with custom message
   def error(%{message: message}) do
-    %{error: %{message: message}}
+    envelope(nil, message)
   end
 
   # Render with code, message and details (for tier limits, etc.)
   def error(%{code: code, message: message, details: details}) do
-    %{error: %{code: code, message: message, details: details}}
+    envelope(code, message, details)
   end
 
   # Standard HTTP error codes
   def render("400.json", _assigns) do
-    %{error: %{message: "Bad request"}}
+    envelope("bad_request", "Bad request")
   end
 
   def render("401.json", _assigns) do
-    %{error: %{message: "Unauthorized"}}
+    envelope("unauthorized", "Unauthorized")
   end
 
   def render("403.json", _assigns) do
-    %{error: %{message: "Forbidden"}}
+    envelope("forbidden", "Forbidden")
   end
 
   def render("404.json", _assigns) do
-    %{error: %{message: "Not found"}}
+    envelope("not_found", "Not found")
   end
 
   def render("422.json", _assigns) do
-    %{error: %{message: "Unprocessable entity"}}
+    envelope("unprocessable_entity", "Unprocessable entity")
   end
 
   def render("500.json", _assigns) do
-    %{error: %{message: "Internal server error"}}
+    envelope("internal_error", "Internal server error")
   end
 
   # Catch-all for undefined templates
   def render(template, _assigns) do
     status = template |> String.split(".") |> List.first()
-    %{error: %{message: "Error #{status}"}}
+    envelope("error_#{status}", "Error #{status}")
   end
 
   # Translate Ecto changeset errors

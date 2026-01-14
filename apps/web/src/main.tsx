@@ -58,10 +58,8 @@ const localStoragePersister = createSyncStoragePersister({
 persistQueryClient({
   queryClient,
   persister: localStoragePersister,
-  // Only persist for 24 hours
   maxAge: 1000 * 60 * 60 * 24,
-  // Bust cache on major version changes
-  buster: 'v0.7.48',
+  buster: 'v0.9.0-web',
 });
 
 // Track online/offline status for offline-first behavior

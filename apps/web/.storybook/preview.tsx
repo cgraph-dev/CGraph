@@ -10,6 +10,10 @@
 import React from 'react';
 import type { Preview } from '@storybook/react';
 import '../src/index.css';
+import { initialize, mswDecorator } from 'msw-storybook-addon';
+import { handlers } from '../src/mocks/handlers';
+
+initialize({ onUnhandledRequest: 'bypass' });
 
 const preview: Preview = {
   parameters: {
@@ -41,12 +45,17 @@ const preview: Preview = {
   },
   
   decorators: [
+    mswDecorator,
     (Story) => (
       <div className="font-sans antialiased">
         <Story />
       </div>
     ),
   ],
+
+  msw: {
+    handlers,
+  },
   
   tags: ['autodocs'],
 };

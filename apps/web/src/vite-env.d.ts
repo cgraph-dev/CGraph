@@ -116,8 +116,8 @@ declare module 'phoenix' {
     decode(rawPayload: string, callback: (decoded: unknown) => void): void
   }
 
-  export interface LongPoll {
-    new (endPoint: string): LongPoll
+  export class LongPoll {
+    constructor(endPoint: string)
     normalizeEndpoint(endPoint: string): string
     endpointURL(): string
     closeAndRetry(): void

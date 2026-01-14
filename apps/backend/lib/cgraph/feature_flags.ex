@@ -486,7 +486,20 @@ defmodule CGraph.FeatureFlags do
   # Helpers
   # ---------------------------------------------------------------------------
 
-  defp normalize_flag_name(name) when is_binary(name), do: String.to_atom(name)
+  # Convert flag name to atom safely using existing atoms only
+  # This prevents atom table exhaustion from untrusted input
+  defp normalize_flag_name(name) when is_binary(name) do
+    try do
+      String.to_existing_atom(name)
+    rescue
+      ArgumentError ->
+        # Log unknown flag names for monitoring
+        require Logger
+        Logger.warning("Unknown feature flag name requested: #{inspect(name)}")
+        # Return as string to avoid atom creation, callers should handle this
+        name
+    end
+  end
   defp normalize_flag_name(name) when is_atom(name), do: name
 
   # ---------------------------------------------------------------------------

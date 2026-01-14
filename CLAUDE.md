@@ -6,6 +6,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 CGraph is an enterprise messaging platform combining real-time chat, community forums, and decentralized identity. Features include Signal Protocol encryption (X3DH + AES-256-GCM), Ethereum wallet authentication, voice/video calls, and a karma-based forum system.
 
+**Version**: 0.9.0  
+**Last Updated**: January 2026
+
+## Key Features
+
+- **End-to-End Encryption**: Signal Protocol (X3DH + Double Ratchet) with AES-256-GCM
+- **Multi-Auth Support**: Email/password, OAuth (Google, Apple, Facebook), Ethereum wallet
+- **Real-time Messaging**: Phoenix Channels with WebSocket, presence tracking
+- **Forums & Groups**: Reddit-style karma, Discord-style servers with channels
+- **Gamification**: Achievements, leaderboards, XP system
+- **Push Notifications**: Expo (mobile), Web Push API (browser), email digests
+- **Premium Tiers**: free (5 forums/groups), starter (10), pro (50), business (unlimited)
+
 ## Common Commands
 
 ### Monorepo (from root)
@@ -105,6 +118,17 @@ Core business logic organized by domain:
 - WebSocket channels: `user:*`, `conversation:*`, `group:*`, `forum:*`
 - Presence tracking for online status across devices
 
+### Caching Architecture
+Multi-tier caching system in `lib/cgraph/cache.ex`:
+- **L1**: Process-local ETS (microseconds)
+- **L2**: Shared Cachex (milliseconds)
+- **L3**: Redis for distributed caching (low milliseconds)
+
+### Circuit Breaker
+Fault tolerance via `:fuse` library in `lib/cgraph/circuit_breaker.ex`:
+- Automatic service isolation on failures
+- Configurable thresholds and recovery
+
 ### Database
 PostgreSQL with Ecto. Migrations in `apps/backend/priv/repo/migrations/`.
 Uses ULID for IDs, supports full-text search.
@@ -121,11 +145,39 @@ Uses ULID for IDs, supports full-text search.
 - Contexts pattern (Accounts, Messaging, Forums, Groups)
 - Guardian for JWT authentication
 - Oban for background jobs
+- Module naming: `CGraph.*` (capital G) and `CGraphWeb.*`
 
 ### API
 - REST endpoints at `/api/v1/*`
 - JWT tokens in Authorization header
 - Wallet auth via challenge/signature flow at `/api/v1/auth/wallet/*`
+- Push token registration at `/api/v1/push-tokens`
+
+### Cache API
+```elixir
+# Get/Set with TTL
+Cache.set("user:123", user_data, ttl: :timer.minutes(5))
+Cache.put("user:123", user_data, :timer.minutes(5))  # Alias for set
+{:ok, user} = Cache.get("user:123")
+
+# Fetch with fallback
+user = Cache.fetch("user:123", fn -> Repo.get(User, 123) end)
+```
+
+### Email API
+```elixir
+# Template-based emails for users
+Mailer.deliver_email(user, :welcome)
+Mailer.deliver_email(user, :notification, %{title: "New Message"})
+
+# Raw email data for system emails
+Mailer.send_email(%{
+  to: "user@example.com",
+  subject: "Your digest",
+  template: "forum_digest",
+  assigns: %{user_name: "John", items: [...]}
+})
+```
 
 ## Environment Setup
 
@@ -136,3 +188,23 @@ Required:
 - Redis (for caching/rate limiting)
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
+
+## Recent Updates (v0.9.0)
+
+### Backend Fixes
+- Added `Cache.put/3` for API compatibility with repositories
+- Added `Mailer.send_email/1` for raw email data (digest emails)
+- Added `User.changeset/2` generic changeset function
+- Added `:fuse` dependency for circuit breaker support
+- Standardized module naming: `CGraph.*` and `CGraphWeb.*`
+
+### Frontend Fixes
+- Added `"type": "module"` to root package.json for ESLint
+- Updated tier limits: free=5, starter=10, pro=50, business=unlimited
+- Added `maxForums` to TIER_FEATURES matching backend
+- Implemented web push notification toggle with service worker
+
+### Mobile Fixes
+- Implemented push notification service with Expo
+- Added `usePushNotifications` hook for auto-registration
+- Integrated SettingsProvider in App.tsx

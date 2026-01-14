@@ -54,6 +54,70 @@ defmodule CGraph.Mailer do
   # ============================================================================
 
   @doc """
+  Send an email with raw email data map.
+  
+  This is an alternative API for sending emails without a User struct,
+  useful for system emails, digest emails, and other automated messages.
+  
+  ## Parameters
+  
+  - `email_data` - Map containing email configuration:
+    - `:to` - Recipient email address (required)
+    - `:subject` - Email subject (required)
+    - `:template` - Template name (required)
+    - `:assigns` - Map of template variables (optional)
+    - `:from` - Sender tuple {name, email} (optional, uses default)
+  
+  ## Returns
+  
+  - `{:ok, email}` - Email was sent successfully
+  - `{:error, reason}` - Email delivery failed
+  
+  ## Examples
+  
+      iex> CGraph.Mailer.send_email(%{
+      ...>   to: "user@example.com",
+      ...>   subject: "Your daily digest",
+      ...>   template: "forum_digest",
+      ...>   assigns: %{user_name: "John", items: [...]}
+      ...> })
+      {:ok, %Swoosh.Email{}}
+  """
+  @spec send_email(map()) :: delivery_result()
+  def send_email(%{to: to, subject: subject, template: template} = email_data) do
+    assigns = Map.get(email_data, :assigns, %{})
+    from = Map.get(email_data, :from, @default_sender)
+    
+    try do
+      email = 
+        new()
+        |> to(to)
+        |> from(from)
+        |> subject(subject)
+        |> html_body(render_template(template, assigns))
+        |> text_body(render_text_template(template, assigns))
+      
+      case deliver(email) do
+        {:ok, _metadata} = _result ->
+          Logger.info("Email sent: #{template} to #{to}")
+          {:ok, email}
+        {:error, reason} = err ->
+          Logger.error("Failed to send email #{template} to #{to}: #{inspect(reason)}")
+          err
+      end
+    rescue
+      e ->
+        Logger.error("Email send error: #{inspect(e)}")
+        {:error, {:send_failed, e}}
+    end
+  end
+  
+  def send_email(invalid_data) do
+    Logger.error("Invalid email data: #{inspect(invalid_data)}")
+    {:error, :invalid_email_data}
+  end
+
+  @doc """
   Delivers an email to a user based on the email type.
 
   ## Parameters
@@ -366,4 +430,95 @@ defmodule CGraph.Mailer do
     # In production, this would be passed from the request context
     Process.get(:user_agent, "Unknown")
   end
+  
+  # ============================================================================
+  # Template Rendering (for send_email/1 API)
+  # ============================================================================
+  
+  defp render_template(template_name, assigns) when is_binary(template_name) do
+    # Try to use the Templates module if available, otherwise fallback to basic rendering
+    case Code.ensure_loaded(CGraph.Mailer.Templates) do
+      {:module, templates_module} ->
+        if function_exported?(templates_module, :render, 2) do
+          templates_module.render(template_name, assigns)
+        else
+          render_basic_html(template_name, assigns)
+        end
+      {:error, _} ->
+        render_basic_html(template_name, assigns)
+    end
+  end
+  
+  defp render_text_template(template_name, assigns) when is_binary(template_name) do
+    case Code.ensure_loaded(CGraph.Mailer.Templates) do
+      {:module, templates_module} ->
+        if function_exported?(templates_module, :render_text, 2) do
+          templates_module.render_text(template_name, assigns)
+        else
+          render_basic_text(template_name, assigns)
+        end
+      {:error, _} ->
+        render_basic_text(template_name, assigns)
+    end
+  end
+  
+  defp render_basic_html(template_name, assigns) do
+    user_name = Map.get(assigns, :user_name, "User")
+    content = format_assigns_as_html(assigns)
+    
+    """
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>CGraph - #{template_name}</title>
+    </head>
+    <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 20px; background-color: #f4f4f4;">
+      <div style="max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h1 style="color: #10B981; margin-bottom: 20px;">CGraph</h1>
+        <p>Hello #{user_name},</p>
+        #{content}
+        <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
+        <p style="color: #666; font-size: 12px;">This email was sent by CGraph. If you have any questions, please contact support.</p>
+      </div>
+    </body>
+    </html>
+    """
+  end
+  
+  defp render_basic_text(template_name, assigns) do
+    user_name = Map.get(assigns, :user_name, "User")
+    content = format_assigns_as_text(assigns)
+    
+    """
+    CGraph - #{template_name}
+    
+    Hello #{user_name},
+    
+    #{content}
+    
+    ---
+    This email was sent by CGraph. If you have any questions, please contact support.
+    """
+  end
+  
+  defp format_assigns_as_html(assigns) do
+    assigns
+    |> Map.drop([:user_name])
+    |> Enum.map(fn {key, value} -> 
+      "<p><strong>#{key}:</strong> #{format_value(value)}</p>"
+    end)
+    |> Enum.join("\n")
+  end
+  
+  defp format_assigns_as_text(assigns) do
+    assigns
+    |> Map.drop([:user_name])
+    |> Enum.map(fn {key, value} -> "#{key}: #{format_value(value)}" end)
+    |> Enum.join("\n")
+  end
+  
+  defp format_value(value) when is_list(value), do: "#{length(value)} items"
+  defp format_value(value) when is_map(value), do: inspect(value, limit: 50)
+  defp format_value(value), do: to_string(value)
 end

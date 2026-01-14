@@ -33,6 +33,9 @@ defmodule CGraphWeb.Router do
     # Enhanced rate limiter with sliding window algorithm
     # See CGraphWeb.Plugs.RateLimiterV2 for tier documentation
     plug CGraphWeb.Plugs.RateLimiterV2, tier: :standard
+    plug CGraphWeb.Plugs.ApiVersion
+    plug CGraphWeb.Plugs.IdempotencyPlug
+    plug CGraphWeb.Plugs.SentryContext
   end
 
   # Strict rate limiting for authentication endpoints (prevent brute force)
@@ -40,6 +43,9 @@ defmodule CGraphWeb.Router do
     plug :accepts, ["json"]
     plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
     plug CGraphWeb.Plugs.RateLimiterV2, tier: :strict
+    plug CGraphWeb.Plugs.ApiVersion
+    plug CGraphWeb.Plugs.IdempotencyPlug
+    plug CGraphWeb.Plugs.SentryContext
   end
 
   # Relaxed rate limiting for read-heavy endpoints
@@ -47,6 +53,9 @@ defmodule CGraphWeb.Router do
     plug :accepts, ["json"]
     plug CGraphWeb.Plugs.SecurityHeaders, mode: :api
     plug CGraphWeb.Plugs.RateLimiterV2, tier: :relaxed
+    plug CGraphWeb.Plugs.ApiVersion
+    plug CGraphWeb.Plugs.IdempotencyPlug
+    plug CGraphWeb.Plugs.SentryContext
   end
 
   pipeline :api_auth do
@@ -54,6 +63,9 @@ defmodule CGraphWeb.Router do
     plug CGraphWeb.Plugs.CookieAuth
     plug CGraphWeb.Plugs.AuthPipeline
     plug CGraphWeb.Plugs.CurrentUser
+    plug CGraphWeb.Plugs.ApiVersion
+    plug CGraphWeb.Plugs.IdempotencyPlug
+    plug CGraphWeb.Plugs.SentryContext
   end
 
   # Admin-only routes (requires authentication + admin role)
@@ -62,6 +74,9 @@ defmodule CGraphWeb.Router do
     plug CGraphWeb.Plugs.AuthPipeline
     plug CGraphWeb.Plugs.CurrentUser
     plug CGraphWeb.Plugs.RequireAdmin
+    plug CGraphWeb.Plugs.ApiVersion
+    plug CGraphWeb.Plugs.IdempotencyPlug
+    plug CGraphWeb.Plugs.SentryContext
   end
 
   # Health check endpoint (no auth required, relaxed rate limiting)
@@ -70,6 +85,7 @@ defmodule CGraphWeb.Router do
 
     get "/health", HealthController, :index
     get "/ready", HealthController, :ready
+    get "/metrics", MetricsController, :index
   end
 
   # Public API routes (authentication endpoints - strict rate limiting)
@@ -196,6 +212,9 @@ defmodule CGraphWeb.Router do
     put "/settings/locale", SettingsController, :update_locale
     post "/settings/reset", SettingsController, :reset
 
+    # Global Leaderboard (unified endpoint for all leaderboard types)
+    get "/leaderboard", LeaderboardController, :index
+
     # Users
     get "/users/leaderboard", UserController, :leaderboard
     resources "/users", UserController, only: [:index, :show]
@@ -205,6 +224,8 @@ defmodule CGraphWeb.Router do
 
     # Direct Messages (1:1)
     resources "/conversations", ConversationController, only: [:index, :show, :create] do
+      # Mark entire conversation as read
+      post "/read", ConversationController, :mark_read
       resources "/messages", MessageController, only: [:index, :create]
       post "/messages/:id/read", MessageController, :mark_read
       post "/typing", MessageController, :typing
@@ -521,9 +542,9 @@ defmodule CGraphWeb.Router do
     delete "/users/:id/data", AdminController, :delete_user_data
   end
 
-  # Admin/Moderator API routes
+  # Admin/Moderator API routes - MUST use :api_admin for proper authorization
   scope "/api/admin", CGraphWeb.API.Admin do
-    pipe_through [:api, :api_auth]
+    pipe_through [:api, :api_admin]
 
     # Moderation queue
     get "/reports", ModerationController, :list_reports

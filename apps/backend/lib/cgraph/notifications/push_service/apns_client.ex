@@ -371,7 +371,8 @@ defmodule CGraph.Notifications.PushService.ApnsClient do
   defp reason_to_atom("Shutdown"), do: :shutdown
   defp reason_to_atom("InternalServerError"), do: :internal_server_error
   defp reason_to_atom("ServiceUnavailable"), do: :service_unavailable
-  defp reason_to_atom(other), do: String.to_atom(String.downcase(other))
+  # Fallback for unknown errors - use :unknown_error to prevent atom exhaustion
+  defp reason_to_atom(other) when is_binary(other), do: :unknown_apns_error
 
   defp get_header(headers, name) do
     case List.keyfind(headers, name, 0) do

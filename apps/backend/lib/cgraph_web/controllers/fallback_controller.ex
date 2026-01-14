@@ -45,7 +45,7 @@ defmodule CGraphWeb.FallbackController do
     |> put_status(:too_many_requests)
     |> put_resp_header("retry-after", to_string(seconds_remaining))
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "Rate limit exceeded. Try again in #{seconds_remaining} seconds.")
+    |> render(:error, code: "rate_limited", message: "Rate limit exceeded.", details: %{retry_after_seconds: seconds_remaining})
   end
 
   # Handle insufficient permissions
@@ -53,7 +53,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:forbidden)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "You don't have permission to perform this action.")
+    |> render(:error, code: "insufficient_permissions", message: "You don't have permission to perform this action.")
   end
 
   # Handle already exists
@@ -61,7 +61,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:conflict)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "Resource already exists.")
+    |> render(:error, code: "already_exists", message: "Resource already exists.")
   end
 
   # Handle forum limit reached (tier-based limits)
@@ -80,12 +80,28 @@ defmodule CGraphWeb.FallbackController do
     )
   end
 
+  # Handle group limit reached (tier-based limits)
+  def call(conn, {:error, %{code: :group_limit_reached} = error_info}) do
+    conn
+    |> put_status(:unprocessable_entity)
+    |> put_view(json: CGraphWeb.ErrorJSON)
+    |> render(:error,
+      code: "group_limit_reached",
+      message: error_info.message,
+      details: %{
+        current_count: error_info.current_count,
+        max_allowed: error_info.max_allowed,
+        tier: error_info.tier
+      }
+    )
+  end
+
   # Handle already member
   def call(conn, {:error, :already_member}) do
     conn
     |> put_status(:conflict)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "You are already a member.")
+    |> render(:error, code: "already_member", message: "You are already a member.")
   end
 
   # Handle already friends
@@ -93,7 +109,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:conflict)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "You are already friends with this user.")
+    |> render(:error, code: "already_friends", message: "You are already friends with this user.")
   end
 
   # Handle request already sent
@@ -101,7 +117,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:conflict)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "Friend request already sent.")
+    |> render(:error, code: "request_already_sent", message: "Friend request already sent.")
   end
 
   # Handle cannot friend self
@@ -109,7 +125,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:bad_request)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "You cannot send a friend request to yourself.")
+    |> render(:error, code: "cannot_friend_self", message: "You cannot send a friend request to yourself.")
   end
 
   # Handle cannot moderate self
@@ -117,7 +133,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:bad_request)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "You cannot perform this action on yourself.")
+    |> render(:error, code: "cannot_moderate_self", message: "You cannot perform this action on yourself.")
   end
 
   # Handle user blocked
@@ -125,7 +141,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:forbidden)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "You have blocked this user.")
+    |> render(:error, code: "user_blocked", message: "You have blocked this user.")
   end
 
   # Handle blocked by user
@@ -133,7 +149,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:forbidden)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "You cannot interact with this user.")
+    |> render(:error, code: "blocked_by_user", message: "You cannot interact with this user.")
   end
 
   # Handle user banned
@@ -141,7 +157,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:forbidden)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "You are banned from this group.")
+    |> render(:error, code: "user_banned", message: "You are banned from this group.")
   end
 
   # Handle invite errors
@@ -149,21 +165,21 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:gone)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "This invite has expired.")
+    |> render(:error, code: "invite_expired", message: "This invite has expired.")
   end
 
   def call(conn, {:error, :invite_revoked}) do
     conn
     |> put_status(:gone)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "This invite has been revoked.")
+    |> render(:error, code: "invite_revoked", message: "This invite has been revoked.")
   end
 
   def call(conn, {:error, :invite_max_uses_reached}) do
     conn
     |> put_status(:gone)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "This invite has reached its maximum uses.")
+    |> render(:error, code: "invite_max_uses_reached", message: "This invite has reached its maximum uses.")
   end
 
   # Handle post locked
@@ -171,7 +187,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:forbidden)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "This post is locked and cannot receive new comments.")
+    |> render(:error, code: "post_locked", message: "This post is locked and cannot receive new comments.")
   end
 
   # Handle owner only restriction
@@ -179,7 +195,7 @@ defmodule CGraphWeb.FallbackController do
     conn
     |> put_status(:forbidden)
     |> put_view(json: CGraphWeb.ErrorJSON)
-    |> render(:error, message: "Only the forum owner can perform this action.")
+    |> render(:error, code: "owner_only", message: "Only the forum owner can perform this action.")
   end
 
   # Handle must join first

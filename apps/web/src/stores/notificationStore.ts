@@ -67,46 +67,34 @@ export const useNotificationStore = create<NotificationState>((set) => ({
   },
 
   markAsRead: async (notificationId: string) => {
-    try {
-      await api.post(`/api/v1/notifications/${notificationId}/read`);
-      set((state) => ({
-        notifications: state.notifications.map((n) =>
-          n.id === notificationId ? { ...n, isRead: true } : n
-        ),
-        unreadCount: Math.max(0, state.unreadCount - 1),
-      }));
-    } catch (error) {
-      throw error;
-    }
+    await api.post(`/api/v1/notifications/${notificationId}/read`);
+    set((state) => ({
+      notifications: state.notifications.map((n) =>
+        n.id === notificationId ? { ...n, isRead: true } : n
+      ),
+      unreadCount: Math.max(0, state.unreadCount - 1),
+    }));
   },
 
   markAllAsRead: async () => {
-    try {
-      await api.post('/api/v1/notifications/read');
-      set((state) => ({
-        notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
-        unreadCount: 0,
-      }));
-    } catch (error) {
-      throw error;
-    }
+    await api.post('/api/v1/notifications/read');
+    set((state) => ({
+      notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
+      unreadCount: 0,
+    }));
   },
 
   deleteNotification: async (notificationId: string) => {
-    try {
-      await api.delete(`/api/v1/notifications/${notificationId}`);
-      set((state) => {
-        const notification = state.notifications.find((n) => n.id === notificationId);
-        return {
-          notifications: state.notifications.filter((n) => n.id !== notificationId),
-          unreadCount: notification && !notification.isRead
-            ? Math.max(0, state.unreadCount - 1)
-            : state.unreadCount,
-        };
-      });
-    } catch (error) {
-      throw error;
-    }
+    await api.delete(`/api/v1/notifications/${notificationId}`);
+    set((state) => {
+      const notification = state.notifications.find((n) => n.id === notificationId);
+      return {
+        notifications: state.notifications.filter((n) => n.id !== notificationId),
+        unreadCount: notification && !notification.isRead
+          ? Math.max(0, state.unreadCount - 1)
+          : state.unreadCount,
+      };
+    });
   },
 
   addNotification: (notification: Notification) => {
@@ -117,11 +105,7 @@ export const useNotificationStore = create<NotificationState>((set) => ({
   },
 
   clearAll: async () => {
-    try {
-      await api.delete('/api/v1/notifications');
-      set({ notifications: [], unreadCount: 0 });
-    } catch (error) {
-      throw error;
-    }
+    await api.delete('/api/v1/notifications');
+    set({ notifications: [], unreadCount: 0 });
   },
 }));

@@ -20,6 +20,7 @@ defmodule CGraphWeb.API.V1.AuthController do
   alias CGraph.Guardian
   alias CGraph.Security.AccountLockout
   alias CGraphWeb.Plugs.CookieAuth
+  alias CGraphWeb.Validation.AuthParams
 
   action_fallback CGraphWeb.FallbackController
 
@@ -28,7 +29,8 @@ defmodule CGraphWeb.API.V1.AuthController do
   Sets HTTP-only cookies for web clients.
   """
   def register(conn, %{"user" => user_params}) do
-    with {:ok, user} <- Accounts.register_user(user_params),
+      with {:ok, attrs} <- AuthParams.validate_register(user_params),
+        {:ok, user} <- Accounts.register_user(attrs),
          {:ok, tokens} <- Guardian.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn
@@ -52,13 +54,17 @@ defmodule CGraphWeb.API.V1.AuthController do
   end
 
   def login(conn, %{"identifier" => identifier, "password" => password}) do
-    ip_address = get_client_ip(conn)
-    lockout_key = String.downcase(identifier)
+    with {:ok, %{identifier: normalized_identifier, password: normalized_password}} <-
+           AuthParams.validate_login(%{"identifier" => identifier, "password" => password}) do
+      ip_address = get_client_ip(conn)
+      lockout_key = String.downcase(normalized_identifier)
 
-    # Check if account is locked
-    case AccountLockout.check_locked(lockout_key) do
-      {:locked, remaining} -> respond_locked(conn, remaining)
-      :ok -> attempt_authentication(conn, identifier, password, lockout_key, ip_address)
+      case AccountLockout.check_locked(lockout_key) do
+        {:locked, remaining} -> respond_locked(conn, remaining)
+        :ok -> attempt_authentication(conn, normalized_identifier, normalized_password, lockout_key, ip_address)
+      end
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
 
@@ -127,28 +133,31 @@ defmodule CGraphWeb.API.V1.AuthController do
   Accepts token from body or HTTP-only cookie.
   """
   def refresh(conn, params) do
-    # Check for refresh token in body first, then cookie
-    refresh_token = params["refresh_token"] || CookieAuth.get_refresh_token(conn)
+    with {:ok, %{refresh_token: body_token}} <- AuthParams.validate_refresh(params) do
+      refresh_token = body_token || CookieAuth.get_refresh_token(conn)
 
-    case refresh_token do
-      nil ->
-        conn
-        |> put_status(:unauthorized)
-        |> json(%{error: "No refresh token provided"})
+      case refresh_token do
+        nil ->
+          conn
+          |> put_status(:unauthorized)
+          |> json(%{error: "No refresh token provided"})
 
-      token ->
-        case Guardian.refresh_tokens(token) do
-          {:ok, tokens} ->
-            conn
-            |> maybe_set_cookies(tokens)
-            |> json(%{tokens: tokens})
+        token ->
+          case Guardian.refresh_tokens(token) do
+            {:ok, tokens} ->
+              conn
+              |> maybe_set_cookies(tokens)
+              |> json(%{tokens: tokens})
 
-          {:error, _reason} ->
-            conn
-            |> CookieAuth.clear_auth_cookies()
-            |> put_status(:unauthorized)
-            |> json(%{error: "Invalid or expired refresh token"})
-        end
+            {:error, _reason} ->
+              conn
+              |> CookieAuth.clear_auth_cookies()
+              |> put_status(:unauthorized)
+              |> json(%{error: "Invalid or expired refresh token"})
+          end
+      end
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
 
@@ -157,15 +166,19 @@ defmodule CGraphWeb.API.V1.AuthController do
   Returns a nonce to sign with the wallet.
   """
   def wallet_challenge(conn, %{"wallet_address" => address}) do
-    case Accounts.get_or_create_wallet_challenge(address) do
-      {:ok, nonce} ->
-        message = "Sign this message to authenticate with CGraph.\n\nNonce: #{nonce}"
-        json(conn, %{message: message, nonce: nonce})
+    with {:ok, %{wallet_address: wallet_address}} <- AuthParams.validate_wallet_challenge(%{"wallet_address" => address}) do
+      case Accounts.get_or_create_wallet_challenge(wallet_address) do
+        {:ok, nonce} ->
+          message = "Sign this message to authenticate with CGraph.\n\nNonce: #{nonce}"
+          json(conn, %{message: message, nonce: nonce})
 
-      {:error, reason} ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: reason})
+        {:error, reason} ->
+          conn
+          |> put_status(:bad_request)
+          |> json(%{error: reason})
+      end
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
 
@@ -174,7 +187,9 @@ defmodule CGraphWeb.API.V1.AuthController do
   Sets HTTP-only cookies for web clients.
   """
   def wallet_verify(conn, %{"wallet_address" => address, "signature" => signature}) do
-    with {:ok, user} <- Accounts.verify_wallet_signature(address, signature),
+    with {:ok, %{wallet_address: wallet_address, signature: sig}} <-
+           AuthParams.validate_wallet_verify(%{"wallet_address" => address, "signature" => signature}),
+         {:ok, user} <- Accounts.verify_wallet_signature(wallet_address, sig),
          {:ok, tokens} <- Guardian.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn
@@ -197,16 +212,22 @@ defmodule CGraphWeb.API.V1.AuthController do
   Request password reset email.
   """
   def forgot_password(conn, %{"email" => email}) do
-    # Always return success to prevent email enumeration
-    Accounts.request_password_reset(email)
-    json(conn, %{message: "If an account exists with this email, you will receive a password reset link."})
+    with {:ok, %{email: normalized_email}} <- AuthParams.validate_forgot_password(%{"email" => email}) do
+      # Always return success to prevent email enumeration
+      Accounts.request_password_reset(normalized_email)
+      json(conn, %{message: "If an account exists with this email, you will receive a password reset link."})
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+    end
   end
 
   @doc """
   Reset password with token.
   """
   def reset_password(conn, %{"token" => token, "password" => password, "password_confirmation" => confirmation}) do
-    case Accounts.reset_password(token, password, confirmation) do
+    with {:ok, %{token: reset_token, password: pass, password_confirmation: confirm}} <-
+           AuthParams.validate_reset_password(%{"token" => token, "password" => password, "password_confirmation" => confirmation}) do
+      case Accounts.reset_password(reset_token, pass, confirm) do
       {:ok, _user} ->
         json(conn, %{message: "Password has been reset successfully."})
 
@@ -220,6 +241,9 @@ defmodule CGraphWeb.API.V1.AuthController do
         |> put_status(:unprocessable_entity)
         |> put_view(json: CGraphWeb.ChangesetJSON)
         |> render(:error, changeset: changeset)
+      end
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
 

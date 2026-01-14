@@ -470,7 +470,8 @@ defmodule CGraph.Admin do
       },
       limits: %{
         max_message_length: 4000,
-        max_groups_per_user: 100,
+        max_forums_free_tier: 5,
+        max_groups_free_tier: 5,
         max_channels_per_group: 500,
         rate_limit_per_minute: 100
       },

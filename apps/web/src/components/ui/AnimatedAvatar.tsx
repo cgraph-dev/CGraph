@@ -400,7 +400,7 @@ export default function AnimatedAvatar({
       case 'emerald':
       case 'ruby':
       case 'sapphire':
-      case 'amethyst':
+      case 'amethyst': {
         const gemColors: Record<string, string> = {
           diamond: '#ffffff',
           emerald: '#50c878',
@@ -419,6 +419,7 @@ export default function AnimatedAvatar({
           },
           transition: { duration, repeat: Infinity, ease: 'easeInOut' },
         };
+      }
 
       default:
         return {};

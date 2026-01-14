@@ -14,6 +14,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   import CGraphWeb.Helpers.ParamParser
 
   alias CGraph.Forums
+  alias CGraphWeb.Validation.ForumParams
 
   action_fallback CGraphWeb.FallbackController
 
@@ -83,8 +84,9 @@ defmodule CGraphWeb.API.V1.ForumController do
     # Accept params either nested under "forum" key or directly
     forum_params = Map.get(params, "forum") || extract_forum_params(params)
 
-    with :ok <- authorize_forum_creation(user),
-         {:ok, forum} <- Forums.create_forum(user, forum_params) do
+    with {:ok, attrs} <- ForumParams.validate_create(forum_params),
+         :ok <- authorize_forum_creation(user),
+         {:ok, forum} <- Forums.create_forum(user, attrs) do
       conn
       |> put_status(:created)
       |> render(:show, forum: forum)
@@ -107,9 +109,10 @@ defmodule CGraphWeb.API.V1.ForumController do
     user = conn.assigns.current_user
     forum_params = Map.get(params, "forum", %{})
 
-    with {:ok, forum} <- Forums.get_forum(forum_id),
+    with {:ok, attrs} <- ForumParams.validate_update(forum_params),
+         {:ok, forum} <- Forums.get_forum(forum_id),
          :ok <- Forums.authorize_action(user, forum, :manage),
-         {:ok, updated_forum} <- Forums.update_forum(forum, forum_params) do
+         {:ok, updated_forum} <- Forums.update_forum(forum, attrs) do
       render(conn, :show, forum: updated_forum)
     end
   end
@@ -429,9 +432,9 @@ defmodule CGraphWeb.API.V1.ForumController do
 
     max_forums = case user_tier do
       "business" -> :infinity
-      "pro" -> 10
-      "starter" -> 3
-      _ -> 1  # free tier
+      "pro" -> 50
+      "starter" -> 10
+      _ -> 5  # free tier
     end
 
     cond do

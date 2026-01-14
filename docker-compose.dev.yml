@@ -15,6 +15,8 @@ services:
   redis:
     ports:
       - "6379:6379"
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-cgraph_dev_password}
 
   # Backend with hot reload
   backend-dev:
@@ -26,7 +28,7 @@ services:
       MIX_ENV: dev
       PHX_SERVER: "true"
       DATABASE_URL: ecto://cgraph:cgraph_dev_password@postgres:5432/cgraph_dev
-      REDIS_URL: redis://redis:6379/0
+      REDIS_URL: ${REDIS_URL:-redis://:cgraph_dev_password@redis:6379/0}
       SECRET_KEY_BASE: dev_secret_key_base_at_least_64_bytes_long_for_development_only_1234567890
       GUARDIAN_SECRET: dev_guardian_secret_key_for_development_only_1234567890
     volumes:

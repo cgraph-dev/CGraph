@@ -6,6 +6,7 @@ defmodule CGraphWeb.API.SubscriptionController do
   use CGraphWeb, :controller
   
   alias CGraph.Forums.SubscriptionService
+  alias CGraphWeb.Validation.SubscriptionParams
   
   action_fallback CGraphWeb.FallbackController
   
@@ -28,37 +29,16 @@ defmodule CGraphWeb.API.SubscriptionController do
   """
   def create(conn, params) do
     user = conn.assigns.current_user
-    
-    result = 
-      case params do
-        %{"type" => "forum", "targetId" => id} ->
-          SubscriptionService.subscribe_to_forum(user.id, id, build_opts(params))
-          
-        %{"type" => "board", "targetId" => id} ->
-          SubscriptionService.subscribe_to_board(user.id, id, build_opts(params))
-          
-        %{"type" => "thread", "targetId" => id} ->
-          SubscriptionService.subscribe_to_thread(user.id, id, build_opts(params))
-          
-        _ ->
-          {:error, :invalid_type}
-      end
-    
-    case result do
-      {:ok, subscription} ->
-        conn
-        |> put_status(:created)
-        |> json(%{subscription: format_subscription(subscription)})
-        
-      {:error, :invalid_type} ->
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: "Invalid subscription type"})
-        
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> json(%{error: "Failed to create subscription", details: format_errors(changeset)})
+    normalized = normalize_create_params(params)
+
+    with {:ok, validated} <- SubscriptionParams.validate_create(normalized),
+         {:ok, subscription} <- do_create_subscription(user.id, validated) do
+      conn
+      |> put_status(:created)
+      |> json(%{subscription: format_subscription(subscription)})
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+      {:error, reason} -> {:error, reason}
     end
   end
   
@@ -72,25 +52,15 @@ defmodule CGraphWeb.API.SubscriptionController do
     # Verify ownership
     case verify_ownership(id, user.id) do
       {:ok, _} ->
-        attrs = %{}
-        |> maybe_put(:notification_mode, params["notificationMode"])
-        |> maybe_put(:email_notifications, params["emailNotifications"])
-        |> maybe_put(:push_notifications, params["pushNotifications"])
-        |> maybe_put(:include_replies, params["includeReplies"])
-        
-        case SubscriptionService.update_subscription(id, attrs) do
-          {:ok, subscription} ->
-            json(conn, %{subscription: format_subscription(subscription)})
-            
-          {:error, :not_found} ->
-            conn
-            |> put_status(:not_found)
-            |> json(%{error: "Subscription not found"})
-            
-          {:error, changeset} ->
-            conn
-            |> put_status(:unprocessable_entity)
-            |> json(%{error: "Failed to update subscription", details: format_errors(changeset)})
+        normalized = normalize_update_params(params)
+
+        with {:ok, attrs_struct} <- SubscriptionParams.validate_update(normalized),
+             attrs <- to_update_attrs(attrs_struct),
+             {:ok, subscription} <- SubscriptionService.update_subscription(id, attrs) do
+          json(conn, %{subscription: format_subscription(subscription)})
+        else
+          {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+          {:error, reason} -> {:error, reason}
         end
         
       {:error, :unauthorized} ->
@@ -135,24 +105,24 @@ defmodule CGraphWeb.API.SubscriptionController do
   def bulk_update(conn, params) do
     user = conn.assigns.current_user
     subscriptions = SubscriptionService.list_subscriptions(user.id)
-    
-    attrs = %{}
-    |> maybe_put(:notification_mode, params["notificationMode"])
-    |> maybe_put(:email_notifications, params["emailNotifications"])
-    |> maybe_put(:push_notifications, params["pushNotifications"])
-    
-    results = 
-      Enum.map(subscriptions, fn sub ->
-        SubscriptionService.update_subscription(sub.id, attrs)
-      end)
-    
-    success_count = Enum.count(results, fn {status, _} -> status == :ok end)
-    
-    json(conn, %{
-      success: true,
-      updated_count: success_count,
-      total_count: length(subscriptions)
-    })
+
+    with {:ok, attrs_struct} <- SubscriptionParams.validate_bulk_update(normalize_update_params(params)),
+         attrs <- to_update_attrs(attrs_struct) do
+      results =
+        Enum.map(subscriptions, fn sub ->
+          SubscriptionService.update_subscription(sub.id, attrs)
+        end)
+
+      success_count = Enum.count(results, fn {status, _} -> status == :ok end)
+
+      json(conn, %{
+        success: true,
+        updated_count: success_count,
+        total_count: length(subscriptions)
+      })
+    else
+      {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+    end
   end
   
   @doc """
@@ -163,15 +133,15 @@ defmodule CGraphWeb.API.SubscriptionController do
     user = conn.assigns.current_user
     
     case SubscriptionService.toggle_thread_subscription(user.id, thread_id) do
+      {:ok, :deleted} ->
+        json(conn, %{subscribed: false})
+
       {:ok, subscription} ->
         json(conn, %{
           subscribed: true,
           subscription: format_subscription(subscription)
         })
-        
-      {:ok, :deleted} ->
-        json(conn, %{subscribed: false})
-        
+
       {:error, reason} ->
         conn
         |> put_status(:unprocessable_entity)
@@ -227,15 +197,52 @@ defmodule CGraphWeb.API.SubscriptionController do
   
   defp build_opts(params) do
     [
-      mode: params["notificationMode"] || "instant",
-      email: params["emailNotifications"] != false,
-      push: params["pushNotifications"] != false,
-      include_replies: params["includeReplies"] != false
+      mode: params.notification_mode || "instant",
+      email: params.email_notifications != false,
+      push: params.push_notifications != false,
+      include_replies: params.include_replies != false
     ]
   end
   
-  defp maybe_put(map, _key, nil), do: map
-  defp maybe_put(map, key, value), do: Map.put(map, key, value)
+  defp normalize_create_params(params) do
+    %{
+      "type" => params["type"],
+      "target_id" => params["targetId"],
+      "notification_mode" => params["notificationMode"],
+      "email_notifications" => params["emailNotifications"],
+      "push_notifications" => params["pushNotifications"],
+      "include_replies" => params["includeReplies"]
+    }
+  end
+
+  defp normalize_update_params(params) do
+    %{
+      "notification_mode" => params["notificationMode"],
+      "email_notifications" => params["emailNotifications"],
+      "push_notifications" => params["pushNotifications"],
+      "include_replies" => params["includeReplies"]
+    }
+  end
+
+  defp to_update_attrs(%SubscriptionParams{} = params) do
+    params
+    |> Map.from_struct()
+    |> Map.drop([:__struct__, :type, :target_id])
+    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+    |> Map.new()
+  end
+
+  defp do_create_subscription(user_id, %{type: "forum", target_id: id} = params) do
+    SubscriptionService.subscribe_to_forum(user_id, id, build_opts(params))
+  end
+
+  defp do_create_subscription(user_id, %{type: "board", target_id: id} = params) do
+    SubscriptionService.subscribe_to_board(user_id, id, build_opts(params))
+  end
+
+  defp do_create_subscription(user_id, %{type: "thread", target_id: id} = params) do
+    SubscriptionService.subscribe_to_thread(user_id, id, build_opts(params))
+  end
   
   defp verify_ownership(subscription_id, user_id) do
     alias CGraph.Repo
@@ -248,13 +255,15 @@ defmodule CGraphWeb.API.SubscriptionController do
     end
   end
   
-  defp format_errors(%Ecto.Changeset{} = changeset) do
+  @doc false
+  # Kept for future use when validation errors need formatting
+  def format_changeset_errors(%Ecto.Changeset{} = changeset) do
     Ecto.Changeset.traverse_errors(changeset, fn {msg, opts} ->
       Enum.reduce(opts, msg, fn {key, value}, acc ->
         String.replace(acc, "%{#{key}}", to_string(value))
       end)
     end)
   end
-  
-  defp format_errors(_), do: %{}
+
+  def format_changeset_errors(_), do: %{}
 end

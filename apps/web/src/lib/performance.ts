@@ -419,7 +419,7 @@ export { RequestBatcher, LRUCache };
 export function createStableCallback<T extends (...args: Parameters<T>) => ReturnType<T>>(
   callback: T
 ): T {
-  let latestCallback = callback;
+  const latestCallback = callback;
 
   const stableCallback = ((...args: Parameters<T>) => {
     return latestCallback(...args);

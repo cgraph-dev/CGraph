@@ -36,7 +36,7 @@ services:
     image: redis:7.2-alpine
     container_name: cgraph-redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD:-}
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required}
     volumes:
       - redis_data:/data
     ports:
@@ -67,7 +67,7 @@ services:
       PHX_HOST: ${PHX_HOST:?PHX_HOST is required}
       PORT: 4000
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
-      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      REDIS_URL: ${REDIS_URL:-redis://:${REDIS_PASSWORD}@redis:6379/0}
       SECRET_KEY_BASE: ${SECRET_KEY_BASE:?SECRET_KEY_BASE is required - generate with mix phx.gen.secret}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required - generate with mix phx.gen.secret}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY:?ENCRYPTION_KEY is required - generate with mix phx.gen.secret 32 | base64}

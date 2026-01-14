@@ -16,19 +16,28 @@ defmodule CGraphWeb.Endpoint do
     secure: Mix.env() == :prod
   ]
 
-  # CORS origins based on environment
-  # In prod, reads CORS_ORIGINS env (comma-separated) or defaults to cgraph.org
-  @cors_origins (if Mix.env() == :prod do
-    case System.get_env("CORS_ORIGINS") do
-      nil -> [
+  # CORS origins based on environment. Prefer env; fall back to safe defaults in prod
+  # and permissive dev wildcard when unset.
+  @is_prod Mix.env() == :prod
+  @cors_origins (case {System.get_env("CORS_ORIGINS"), @is_prod} do
+    {nil, true} ->
+      [
         "https://cgraph.org",
         "https://www.cgraph.org",
         "https://app.cgraph.org"
       ]
-      origins -> String.split(origins, ",", trim: true)
-    end
-  else
-    "*"
+
+    {nil, false} ->
+      "*"
+
+    {origins, _} ->
+      String.split(origins, ",", trim: true)
+  end)
+
+  # Max request body size (bytes). Override with MAX_BODY_BYTES env.
+  @max_body_bytes (case System.get_env("MAX_BODY_BYTES") do
+    nil -> 10_000_000
+    value -> String.to_integer(value)
   end)
 
   socket "/live", Phoenix.LiveView.Socket,
@@ -63,13 +72,14 @@ defmodule CGraphWeb.Endpoint do
     cookie_key: "request_logger"
 
   plug Plug.RequestId
+  plug CGraphWeb.Plugs.CorrelationId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
     json_decoder: Phoenix.json_library(),
-    length: 50_000_000  # 50MB max upload
+    length: @max_body_bytes
 
   plug Plug.MethodOverride
   plug Plug.Head
@@ -78,7 +88,7 @@ defmodule CGraphWeb.Endpoint do
   # CORS handling
   plug Corsica,
     origins: @cors_origins,
-    allow_headers: ["authorization", "content-type", "x-requested-with"],
+    allow_headers: ["authorization", "content-type", "x-requested-with", "idempotency-key", "x-api-version"],
     allow_methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_credentials: true,
     max_age: 86_400

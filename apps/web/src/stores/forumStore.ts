@@ -583,23 +583,19 @@ export const useForumStore = create<ForumState>((set, get) => ({
   },
 
   fetchForum: async (slug: string) => {
-    try {
-      const response = await api.get(`/api/v1/forums/${slug}`);
-      const rawData = ensureObject<Record<string, unknown>>(response.data, 'forum');
-      if (rawData) {
-        const forum = mapForumFromApi(rawData);
-        set((state) => ({
-          currentForum: forum,
-          forums: state.forums.some((f) => f.id === forum.id)
-            ? state.forums.map((f) => (f.id === forum.id ? forum : f))
-            : [...state.forums, forum],
-        }));
-        return forum;
-      }
-      throw new Error('Forum not found');
-    } catch (error) {
-      throw error;
+    const response = await api.get(`/api/v1/forums/${slug}`);
+    const rawData = ensureObject<Record<string, unknown>>(response.data, 'forum');
+    if (rawData) {
+      const forum = mapForumFromApi(rawData);
+      set((state) => ({
+        currentForum: forum,
+        forums: state.forums.some((f) => f.id === forum.id)
+          ? state.forums.map((f) => (f.id === forum.id ? forum : f))
+          : [...state.forums, forum],
+      }));
+      return forum;
     }
+    throw new Error('Forum not found');
   },
 
   fetchPosts: async (forumSlug?: string, page: number = 1) => {
@@ -634,13 +630,9 @@ export const useForumStore = create<ForumState>((set, get) => ({
   },
 
   fetchPost: async (postId: string) => {
-    try {
-      const response = await api.get(`/api/v1/posts/${postId}`);
-      const post = ensureObject<Post>(response.data, 'post');
-      set({ currentPost: post });
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get(`/api/v1/posts/${postId}`);
+    const post = ensureObject<Post>(response.data, 'post');
+    set({ currentPost: post });
   },
 
   fetchComments: async (postId: string) => {
@@ -812,30 +804,26 @@ export const useForumStore = create<ForumState>((set, get) => ({
 
   // Forum voting (competition)
   voteForum: async (forumId: string, value: 1 | -1) => {
-    try {
-      const response = await api.post(`/api/v1/forums/${forumId}/vote`, { value });
-      const result = response.data;
-      
-      // Update forum in all lists
-      const updateForum = (forum: Forum) => {
-        if (forum.id !== forumId) return forum;
-        return {
-          ...forum,
-          score: result.forum.score,
-          upvotes: result.forum.upvotes,
-          downvotes: result.forum.downvotes,
-          userVote: result.forum.user_vote,
-        };
+    const response = await api.post(`/api/v1/forums/${forumId}/vote`, { value });
+    const result = response.data;
+    
+    // Update forum in all lists
+    const updateForum = (forum: Forum) => {
+      if (forum.id !== forumId) return forum;
+      return {
+        ...forum,
+        score: result.forum.score,
+        upvotes: result.forum.upvotes,
+        downvotes: result.forum.downvotes,
+        userVote: result.forum.user_vote,
       };
-      
-      set((state) => ({
-        forums: state.forums.map(updateForum),
-        leaderboard: state.leaderboard.map(updateForum),
-        topForums: state.topForums.map(updateForum),
-      }));
-    } catch (error) {
-      throw error;
-    }
+    };
+    
+    set((state) => ({
+      forums: state.forums.map(updateForum),
+      leaderboard: state.leaderboard.map(updateForum),
+      topForums: state.topForums.map(updateForum),
+    }));
   },
 
   fetchLeaderboard: async (sort: LeaderboardSort = 'hot', page: number = 1) => {
@@ -867,18 +855,14 @@ export const useForumStore = create<ForumState>((set, get) => ({
   },
 
   fetchTopForums: async (limit: number = 10, sort: LeaderboardSort = 'hot') => {
-    try {
-      const response = await api.get('/api/v1/forums/top', {
-        params: { limit, sort },
-      });
-      
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const rawForums = ensureArray<any>(response.data, 'data');
-      const forums = rawForums.map(mapForumFromApi);
-      set({ topForums: forums });
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get('/api/v1/forums/top', {
+      params: { limit, sort },
+    });
+    
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const rawForums = ensureArray<any>(response.data, 'data');
+    const forums = rawForums.map(mapForumFromApi);
+    set({ topForums: forums });
   },
 
   setSortBy: (sort: SortOption) => {

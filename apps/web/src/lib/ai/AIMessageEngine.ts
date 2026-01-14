@@ -786,7 +786,7 @@ export class AIMessageEngine {
     const entities: TopicExtraction['entities'] = [];
     
     // Date patterns
-    const datePatterns = text.match(/\b\d{1,2}[\/\-]\d{1,2}[\/\-]\d{2,4}\b|\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}(,?\s+\d{4})?\b/gi);
+    const datePatterns = text.match(/\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b|\b(january|february|march|april|may|june|july|august|september|october|november|december)\s+\d{1,2}(,?\s+\d{4})?\b/gi);
     if (datePatterns) {
       for (const match of datePatterns) {
         entities.push({ text: match, type: 'date', confidence: 0.9 });

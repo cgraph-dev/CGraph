@@ -33,6 +33,9 @@ defmodule CGraph.Application do
       # Start Cachex for local caching
       {Cachex, name: :cgraph_cache},
 
+      # Start in-app metrics collector/exporter
+      CGraph.Metrics,
+
       # Start token blacklist for JWT revocation
       CGraph.Security.TokenBlacklist,
 
@@ -63,6 +66,9 @@ defmodule CGraph.Application do
       # Start the data export service (GDPR compliance)
       CGraph.DataExport,
 
+      # Start API versioning (required for version negotiation)
+      CGraph.ApiVersioning,
+
       # Start the Phoenix endpoint (must be last)
       CGraphWeb.Endpoint
     ]
@@ -78,12 +84,17 @@ defmodule CGraph.Application do
   end
 
   defp redis_config do
-    redis_url = System.get_env("REDIS_URL", "redis://localhost:6379")
+    redis_url = System.get_env("REDIS_URL", "redis://localhost:6379/0")
 
     [
       name: :redix,
       host: redis_host(redis_url),
-      port: redis_port(redis_url)
+      port: redis_port(redis_url),
+      password: redis_password(redis_url),
+      database: redis_db(redis_url),
+      sync_connect: false,
+      backoff_initial: 200,
+      backoff_max: 5_000
     ]
   end
 
@@ -95,6 +106,31 @@ defmodule CGraph.Application do
   defp redis_port(url) do
     uri = URI.parse(url)
     uri.port || 6379
+  end
+
+  defp redis_password(url) do
+    uri = URI.parse(url)
+
+    case uri.userinfo do
+      nil -> nil
+      creds -> creds |> String.split(":") |> List.last()
+    end
+  end
+
+  defp redis_db(url) do
+    uri = URI.parse(url)
+
+    case uri.path do
+      "" -> 0
+      nil -> 0
+      path ->
+        path
+        |> String.trim_leading("/")
+        |> case do
+          "" -> 0
+          db -> String.to_integer(db)
+        end
+    end
   end
 
   defp oban_config do

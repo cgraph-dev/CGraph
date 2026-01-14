@@ -54,6 +54,15 @@ defmodule CGraph.Groups do
   def list_user_groups(user, opts \\ []), do: list_groups(user, opts)
 
   @doc """
+  Count the number of groups owned by a user.
+  Used for subscription tier limit enforcement.
+  """
+  def count_user_groups(user_id) do
+    from(g in Group, where: g.owner_id == ^user_id and is_nil(g.deleted_at))
+    |> Repo.aggregate(:count, :id)
+  end
+
+  @doc """
   Get a group by ID.
   """
   def get_group(id) do

@@ -1,6 +1,6 @@
 # CGraph Implementation Status Report
 
-> **Last Updated**: January 13, 2026 **Current Version**: 0.8.5 **Previous Versions**: 0.8.4 → 0.8.3
+> **Last Updated**: January 14, 2026 **Current Version**: 0.9.1 **Previous Versions**: 0.8.4 → 0.8.3
 > → 0.8.2 → 0.8.1 → 0.8.0
 
 ---
@@ -19,6 +19,12 @@ You asked me to enhance the CGraph web application with:
 6. Comprehensive documentation
 
 ### What I Actually Did
+
+#### ✅ NEW: CI/Ops Hardening (0.9.1)
+
+- Added GitHub Actions `docker-build` job to build backend and web images and verify Dockerfile health checks on every PR.
+- Expanded `security` workflow to run gitleaks, hadolint (backend/web Dockerfiles), Sobelow, pnpm audit, Syft SBOM generation, and Grype vulnerability scan with JSON artifacts.
+- Documented Context7 MCP helper in `.vscode/mcp.json` and now prompt for its API key instead of storing it inline.
 
 #### ✅ COMPLETED: Security Infrastructure (v0.7.33)
 

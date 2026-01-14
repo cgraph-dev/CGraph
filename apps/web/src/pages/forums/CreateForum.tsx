@@ -601,7 +601,7 @@ export default function CreateForum() {
                 You're on the <span className="font-bold text-white">{(user as { subscription_tier?: string })?.subscription_tier?.toUpperCase() || 'FREE'}</span> tier.
                 {((user as { subscription_tier?: string })?.subscription_tier || 'free') === 'free' && (
                   <span className="block mt-1 text-gray-400">
-                    This is your 1 free forum. Upgrade to create more forums with additional features!
+                    Free tier includes up to 5 forums. Upgrade for unlimited forums and additional features!
                   </span>
                 )}
               </p>

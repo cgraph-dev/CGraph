@@ -1,7 +1,8 @@
 {
   "name": "cgraph",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "private": true,
+  "type": "module",
   "description": "CGraph - Open-source messaging platform with Signal Protocol encryption, gamification, and real-time collaboration",
   "author": "Burca Lucas",
   "license": "MIT",

@@ -120,6 +120,46 @@ defmodule CGraph.Accounts.User do
   end
 
   @doc """
+  Generic changeset for User updates.
+  
+  This is a general-purpose changeset that can be used for updating
+  any of the common user fields. For specific use cases, prefer the
+  specialized changesets (profile_changeset, username_changeset, etc.).
+  
+  ## Parameters
+  
+  - `user` - The User struct to update
+  - `attrs` - Map of attributes to update
+  
+  ## Examples
+  
+      iex> User.changeset(user, %{username: "new_name"})
+      %Ecto.Changeset{...}
+  """
+  def changeset(user, attrs) do
+    user
+    |> cast(attrs, [
+      :username,
+      :email,
+      :display_name,
+      :bio,
+      :avatar_url,
+      :banner_url,
+      :status,
+      :role,
+      :last_username_change_at,
+      :username_changes_count,
+      :subscription_tier,
+      :subscription_status
+    ])
+    |> validate_length(:username, min: 3, max: 30)
+    |> validate_length(:display_name, max: 100)
+    |> validate_length(:bio, max: 500)
+    |> unique_constraint(:username)
+    |> unique_constraint(:email)
+  end
+
+  @doc """
   Changeset for TOTP 2FA settings.
   """
   def totp_changeset(user, attrs) do

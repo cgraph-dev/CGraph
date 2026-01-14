@@ -142,18 +142,14 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   },
 
   fetchGroup: async (groupId: string) => {
-    try {
-      const response = await api.get(`/api/v1/groups/${groupId}`);
-      const group = ensureObject<Group>(response.data, 'group');
-      if (group) {
-        set((state) => ({
-          groups: state.groups.some((g) => g.id === groupId)
-            ? state.groups.map((g) => (g.id === groupId ? group : g))
-            : [...state.groups, group],
-        }));
-      }
-    } catch (error) {
-      throw error;
+    const response = await api.get(`/api/v1/groups/${groupId}`);
+    const group = ensureObject<Group>(response.data, 'group');
+    if (group) {
+      set((state) => ({
+        groups: state.groups.some((g) => g.id === groupId)
+          ? state.groups.map((g) => (g.id === groupId ? group : g))
+          : [...state.groups, group],
+      }));
     }
   },
 
@@ -185,31 +181,23 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   },
 
   fetchMembers: async (groupId: string) => {
-    try {
-      const response = await api.get(`/api/v1/groups/${groupId}/members`);
-      set((state) => ({
-        members: {
-          ...state.members,
-          [groupId]: ensureArray<Member>(response.data, 'members'),
-        },
-      }));
-    } catch (error) {
-      throw error;
-    }
+    const response = await api.get(`/api/v1/groups/${groupId}/members`);
+    set((state) => ({
+      members: {
+        ...state.members,
+        [groupId]: ensureArray<Member>(response.data, 'members'),
+      },
+    }));
   },
 
   sendChannelMessage: async (channelId: string, content: string, replyToId?: string) => {
-    try {
-      const payload: Record<string, string> = { content };
-      if (replyToId) payload.reply_to_id = replyToId;
+    const payload: Record<string, string> = { content };
+    if (replyToId) payload.reply_to_id = replyToId;
 
-      const response = await api.post(`/api/v1/channels/${channelId}/messages`, payload);
-      const message = ensureObject<ChannelMessage>(response.data, 'message');
-      if (message) {
-        get().addChannelMessage(message);
-      }
-    } catch (error) {
-      throw error;
+    const response = await api.post(`/api/v1/channels/${channelId}/messages`, payload);
+    const message = ensureObject<ChannelMessage>(response.data, 'message');
+    if (message) {
+      get().addChannelMessage(message);
     }
   },
 

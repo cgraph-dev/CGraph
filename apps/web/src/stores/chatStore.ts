@@ -168,79 +168,75 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   sendMessage: async (conversationId: string, content: string, replyToId?: string) => {
-    try {
-      // Check if E2EE is available and get recipient for encryption
-      const e2eeStore = useE2EEStore.getState();
-      const { conversations } = get();
-      const conversation = conversations.find(c => c.id === conversationId);
+    // Check if E2EE is available and get recipient for encryption
+    const e2eeStore = useE2EEStore.getState();
+    const { conversations } = get();
+    const conversation = conversations.find(c => c.id === conversationId);
+    
+    // Get current user ID from auth store for recipient detection
+    // For direct conversations, encrypt if E2EE is initialized
+    if (e2eeStore.isInitialized && conversation?.type === 'direct') {
+      // Get the other participant (recipient)
+      const currentUserIdFromParticipants = conversation.participants.length === 2
+        ? conversation.participants[0]?.userId
+        : null;
       
-      // Get current user ID from auth store for recipient detection
-      // For direct conversations, encrypt if E2EE is initialized
-      if (e2eeStore.isInitialized && conversation?.type === 'direct') {
-        // Get the other participant (recipient)
-        const currentUserIdFromParticipants = conversation.participants.length === 2
-          ? conversation.participants[0]?.userId
-          : null;
-        
-        // Find recipient (the other participant)
-        const recipientParticipant = conversation.participants.find(
-          p => p.userId !== currentUserIdFromParticipants
-        ) || conversation.participants[1];
-        
-        if (recipientParticipant) {
-          try {
-            // Encrypt the message using E2EE
-            const encryptedMsg = await e2eeStore.encryptMessage(
-              recipientParticipant.userId,
-              content
-            );
-            
-            const payload: Record<string, unknown> = {
-              content: encryptedMsg.ciphertext,
-              is_encrypted: true,
-              ephemeral_public_key: encryptedMsg.ephemeralPublicKey,
-              nonce: encryptedMsg.nonce,
-              recipient_identity_key_id: encryptedMsg.recipientIdentityKeyId,
-              one_time_prekey_id: encryptedMsg.oneTimePreKeyId,
-            };
-            if (replyToId) payload.reply_to_id = replyToId;
+      // Find recipient (the other participant)
+      const recipientParticipant = conversation.participants.find(
+        p => p.userId !== currentUserIdFromParticipants
+      ) || conversation.participants[1];
+      
+      if (recipientParticipant) {
+        try {
+          // Encrypt the message using E2EE
+          const encryptedMsg = await e2eeStore.encryptMessage(
+            recipientParticipant.userId,
+            content
+          );
+          
+          const payload: Record<string, unknown> = {
+            content: encryptedMsg.ciphertext,
+            is_encrypted: true,
+            ephemeral_public_key: encryptedMsg.ephemeralPublicKey,
+            nonce: encryptedMsg.nonce,
+            recipient_identity_key_id: encryptedMsg.recipientIdentityKeyId,
+            one_time_prekey_id: encryptedMsg.oneTimePreKeyId,
+          };
+          if (replyToId) payload.reply_to_id = replyToId;
 
-            const response = await api.post(
-              `/api/v1/conversations/${conversationId}/messages`,
-              payload
-            );
-            const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
-            if (rawMessage) {
-              const message = normalizeMessage(rawMessage) as unknown as Message;
-              // Store plaintext locally for sender (we know what we sent)
-              message.content = content;
-              get().addMessage(message);
-            }
-            
-            logger.log('Sent E2EE encrypted message');
-            return;
-          } catch (encryptError) {
-            logger.error('E2EE encryption failed, falling back to plaintext:', encryptError);
-            // Fall through to plaintext sending
+          const response = await api.post(
+            `/api/v1/conversations/${conversationId}/messages`,
+            payload
+          );
+          const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
+          if (rawMessage) {
+            const message = normalizeMessage(rawMessage) as unknown as Message;
+            // Store plaintext locally for sender (we know what we sent)
+            message.content = content;
+            get().addMessage(message);
           }
+          
+          logger.log('Sent E2EE encrypted message');
+          return;
+        } catch (encryptError) {
+          logger.error('E2EE encryption failed, falling back to plaintext:', encryptError);
+          // Fall through to plaintext sending
         }
       }
-      
-      // Fallback: Send plaintext (for group chats or when E2EE not available)
-      const payload: Record<string, string> = { content };
-      if (replyToId) payload.reply_to_id = replyToId;
+    }
+    
+    // Fallback: Send plaintext (for group chats or when E2EE not available)
+    const payload: Record<string, string> = { content };
+    if (replyToId) payload.reply_to_id = replyToId;
 
-      const response = await api.post(
-        `/api/v1/conversations/${conversationId}/messages`,
-        payload
-      );
-      const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
-      if (rawMessage) {
-        const message = normalizeMessage(rawMessage) as unknown as Message;
-        get().addMessage(message);
-      }
-    } catch (error) {
-      throw error;
+    const response = await api.post(
+      `/api/v1/conversations/${conversationId}/messages`,
+      payload
+    );
+    const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
+    if (rawMessage) {
+      const message = normalizeMessage(rawMessage) as unknown as Message;
+      get().addMessage(message);
     }
   },
 
@@ -341,44 +337,28 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 
   editMessage: async (messageId: string, content: string) => {
-    try {
-      const response = await api.patch(`/api/v1/messages/${messageId}`, { content });
-      const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
-      if (rawMessage) {
-        const message = normalizeMessage(rawMessage) as unknown as Message;
-        get().updateMessage(message);
-      }
-    } catch (error) {
-      throw error;
+    const response = await api.patch(`/api/v1/messages/${messageId}`, { content });
+    const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
+    if (rawMessage) {
+      const message = normalizeMessage(rawMessage) as unknown as Message;
+      get().updateMessage(message);
     }
   },
 
   deleteMessage: async (messageId: string) => {
-    try {
-      await api.delete(`/api/v1/messages/${messageId}`);
-      const { activeConversationId } = get();
-      if (activeConversationId) {
-        get().removeMessage(messageId, activeConversationId);
-      }
-    } catch (error) {
-      throw error;
+    await api.delete(`/api/v1/messages/${messageId}`);
+    const { activeConversationId } = get();
+    if (activeConversationId) {
+      get().removeMessage(messageId, activeConversationId);
     }
   },
 
   addReaction: async (messageId: string, emoji: string) => {
-    try {
-      await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
-    } catch (error) {
-      throw error;
-    }
+    await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
   },
 
   removeReaction: async (messageId: string, emoji: string) => {
-    try {
-      await api.delete(`/api/v1/messages/${messageId}/reactions/${emoji}`);
-    } catch (error) {
-      throw error;
-    }
+    await api.delete(`/api/v1/messages/${messageId}/reactions/${emoji}`);
   },
 
   setActiveConversation: (conversationId: string | null) => {

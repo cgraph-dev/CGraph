@@ -55,10 +55,42 @@ defmodule CGraphWeb.API.V1.GroupController do
       visibility: Map.get(params, "visibility", "public")
     }
 
-    with {:ok, %Group{} = group} <- Groups.create_group(user, group_params) do
+    with :ok <- authorize_group_creation(user),
+         {:ok, %Group{} = group} <- Groups.create_group(user, group_params) do
       conn
       |> put_status(:created)
       |> render(:show, group: group, current_user: user)
+    end
+  end
+
+  # Check user's subscription tier and group count limits
+  # Tier limits:
+  # - free: 5 groups
+  # - starter: 10 groups
+  # - pro: 50 groups
+  # - business: unlimited
+  defp authorize_group_creation(user) do
+    user_tier = Map.get(user, :subscription_tier) || "free"
+    owned_groups_count = Groups.count_user_groups(user.id)
+
+    max_groups = case user_tier do
+      "business" -> :infinity
+      "pro" -> 50
+      "starter" -> 10
+      _ -> 5  # free tier
+    end
+
+    cond do
+      max_groups == :infinity -> :ok
+      owned_groups_count < max_groups -> :ok
+      true ->
+        {:error, %{
+          code: :group_limit_reached,
+          message: "You've reached your group limit (#{max_groups}). Upgrade your subscription to create more groups.",
+          current_count: owned_groups_count,
+          max_allowed: max_groups,
+          tier: user_tier
+        }}
     end
   end
 
