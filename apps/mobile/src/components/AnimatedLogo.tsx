@@ -1,6 +1,17 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import Svg, { Circle, Defs, G, Line, LinearGradient, Polygon, Stop } from 'react-native-svg';
+import Svg, {
+  Circle,
+  Defs,
+  Ellipse,
+  G,
+  Line,
+  LinearGradient,
+  Path,
+  Polygon,
+  Rect,
+  Stop,
+} from 'react-native-svg';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -26,67 +37,146 @@ const sizeMap = {
   xl: { container: 128, text: 32 },
 };
 
-// Static Geometric Logo for better performance on mobile
+// Professional CG Monogram Logo for Mobile
 function GeometricLogo({ size }: { size: number }) {
   return (
     <Svg viewBox="0 0 100 100" width={size} height={size}>
       <Defs>
-        {/* Cyan gradient */}
-        <LinearGradient id="cyanGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <Stop offset="0%" stopColor="#00E5FF" stopOpacity={1} />
-          <Stop offset="100%" stopColor="#00B8D4" stopOpacity={1} />
+        {/* Primary gradient - Purple to Indigo */}
+        <LinearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor="#a855f7" />
+          <Stop offset="50%" stopColor="#8b5cf6" />
+          <Stop offset="100%" stopColor="#6366f1" />
         </LinearGradient>
-        {/* Magenta gradient */}
-        <LinearGradient id="magentaGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <Stop offset="0%" stopColor="#FF00FF" stopOpacity={1} />
-          <Stop offset="100%" stopColor="#D500F9" stopOpacity={1} />
+        {/* Secondary gradient - Emerald */}
+        <LinearGradient id="secondaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor="#34d399" />
+          <Stop offset="100%" stopColor="#10b981" />
+        </LinearGradient>
+        {/* Background gradient */}
+        <LinearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <Stop offset="0%" stopColor="#1e1b4b" />
+          <Stop offset="100%" stopColor="#0f172a" />
+        </LinearGradient>
+        {/* Metallic accent */}
+        <LinearGradient id="metallicGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <Stop offset="0%" stopColor="#e2e8f0" stopOpacity={0.9} />
+          <Stop offset="50%" stopColor="#94a3b8" stopOpacity={0.7} />
+          <Stop offset="100%" stopColor="#64748b" stopOpacity={0.5} />
         </LinearGradient>
       </Defs>
 
-      {/* Background dark circle */}
-      <Circle cx="50" cy="50" r="45" fill="#0A1628" />
-
-      {/* Outer geometric ring */}
-      <Circle
-        cx="50"
-        cy="50"
-        r="42"
+      {/* Outer hexagon border */}
+      <Polygon
+        points="50,3 93,25 93,75 50,97 7,75 7,25"
         fill="none"
-        stroke="url(#cyanGradient)"
-        strokeWidth="1"
-        strokeOpacity={0.3}
+        stroke="url(#primaryGradient)"
+        strokeWidth="2"
+        strokeLinejoin="round"
+        strokeOpacity={0.8}
       />
 
-      {/* Inner diamond/geometric shape - main logo */}
-      <G>
-        {/* Top diamond - cyan */}
-        <Polygon points="50,15 70,35 50,55 30,35" fill="url(#cyanGradient)" fillOpacity={0.9} />
-        {/* Bottom diamond - magenta */}
-        <Polygon points="50,45 70,65 50,85 30,65" fill="url(#magentaGradient)" fillOpacity={0.9} />
-        {/* Left accent triangle */}
-        <Polygon points="25,50 35,40 35,60" fill="#00E5FF" fillOpacity={0.6} />
-        {/* Right accent triangle */}
-        <Polygon points="75,50 65,40 65,60" fill="#FF00FF" fillOpacity={0.6} />
+      {/* Inner hexagon background */}
+      <Polygon points="50,8 88,28 88,72 50,92 12,72 12,28" fill="url(#bgGradient)" />
+
+      {/* Subtle grid pattern */}
+      <G opacity={0.1} stroke="#a855f7" strokeWidth="0.3">
+        <Line x1="50" y1="8" x2="50" y2="92" />
+        <Line x1="12" y1="50" x2="88" y2="50" />
+        <Line x1="31" y1="18" x2="69" y2="82" />
+        <Line x1="69" y1="18" x2="31" y2="82" />
       </G>
 
-      {/* Connecting lines for graph effect */}
-      <G stroke="white" strokeWidth="0.5" strokeOpacity={0.4}>
-        <Line x1="50" y1="15" x2="70" y2="35" />
-        <Line x1="50" y1="15" x2="30" y2="35" />
-        <Line x1="50" y1="55" x2="50" y2="45" />
-        <Line x1="70" y1="65" x2="75" y2="50" />
-        <Line x1="30" y1="65" x2="25" y2="50" />
+      {/* Decorative corner accents */}
+      <G opacity={0.6}>
+        <Circle cx="50" cy="8" r="2" fill="url(#secondaryGradient)" />
+        <Circle cx="88" cy="28" r="1.5" fill="url(#primaryGradient)" />
+        <Circle cx="88" cy="72" r="1.5" fill="url(#primaryGradient)" />
+        <Circle cx="50" cy="92" r="2" fill="url(#secondaryGradient)" />
+        <Circle cx="12" cy="72" r="1.5" fill="url(#primaryGradient)" />
+        <Circle cx="12" cy="28" r="1.5" fill="url(#primaryGradient)" />
       </G>
 
-      {/* Node points for graph visualization */}
+      {/* C letter - left side */}
       <G>
-        <Circle cx="50" cy="15" r="3" fill="#00E5FF" />
-        <Circle cx="70" cy="35" r="2" fill="#00E5FF" />
-        <Circle cx="30" cy="35" r="2" fill="#00E5FF" />
-        <Circle cx="50" cy="85" r="3" fill="#FF00FF" />
-        <Circle cx="70" cy="65" r="2" fill="#FF00FF" />
-        <Circle cx="30" cy="65" r="2" fill="#FF00FF" />
+        <Path
+          d="M 28 35 C 28 28, 35 22, 45 22 L 45 22 C 42 22, 32 26, 32 35 L 32 65 C 32 74, 42 78, 45 78 L 45 78 C 35 78, 28 72, 28 65 Z"
+          fill="url(#primaryGradient)"
+        />
+        <Path
+          d="M 45 22 L 55 22 L 55 28 L 45 28 C 38 28, 34 32, 34 35 L 34 36 L 28 36 L 28 35 C 28 28, 35 22, 45 22 Z"
+          fill="url(#primaryGradient)"
+        />
+        <Path
+          d="M 45 78 L 55 78 L 55 72 L 45 72 C 38 72, 34 68, 34 65 L 34 64 L 28 64 L 28 65 C 28 72, 35 78, 45 78 Z"
+          fill="url(#primaryGradient)"
+        />
       </G>
+
+      {/* G letter - right side */}
+      <G>
+        <Path
+          d="M 55 22 C 65 22, 72 28, 72 35 L 72 65 C 72 72, 65 78, 55 78 L 50 78 L 50 72 L 55 72 C 62 72, 66 68, 66 65 L 66 35 C 66 32, 62 28, 55 28 L 50 28 L 50 22 Z"
+          fill="url(#secondaryGradient)"
+        />
+        <Rect x="55" y="47" width="17" height="6" rx="1" fill="url(#secondaryGradient)" />
+        <Rect x="66" y="47" width="6" height="18" rx="1" fill="url(#secondaryGradient)" />
+      </G>
+
+      {/* Central connecting node */}
+      <G opacity={0.8}>
+        <Circle cx="50" cy="50" r="4" fill="url(#metallicGradient)" />
+        <Circle cx="50" cy="50" r="2" fill="url(#primaryGradient)" />
+        <Line
+          x1="50"
+          y1="50"
+          x2="35"
+          y2="35"
+          stroke="url(#primaryGradient)"
+          strokeWidth="1"
+          opacity={0.5}
+        />
+        <Line
+          x1="50"
+          y1="50"
+          x2="65"
+          y2="35"
+          stroke="url(#secondaryGradient)"
+          strokeWidth="1"
+          opacity={0.5}
+        />
+        <Line
+          x1="50"
+          y1="50"
+          x2="35"
+          y2="65"
+          stroke="url(#primaryGradient)"
+          strokeWidth="1"
+          opacity={0.5}
+        />
+        <Line
+          x1="50"
+          y1="50"
+          x2="65"
+          y2="65"
+          stroke="url(#secondaryGradient)"
+          strokeWidth="1"
+          opacity={0.5}
+        />
+      </G>
+
+      {/* Orbital ring */}
+      <Ellipse
+        cx="50"
+        cy="50"
+        rx="40"
+        ry="12"
+        fill="none"
+        stroke="url(#primaryGradient)"
+        strokeWidth="0.5"
+        strokeDasharray="4 4"
+        opacity={0.3}
+      />
     </Svg>
   );
 }
@@ -197,12 +287,12 @@ export function AnimatedLogo({
             ]}
           >
             <View
-              style={[styles.ringDot, styles.cyanDot, { top: -4, left: '50%', marginLeft: -4 }]}
+              style={[styles.ringDot, styles.purpleDot, { top: -4, left: '50%', marginLeft: -4 }]}
             />
             <View
               style={[
                 styles.ringDot,
-                styles.magentaDot,
+                styles.emeraldDot,
                 { bottom: -4, right: '30%', marginRight: -4 },
               ]}
             />
@@ -298,14 +388,14 @@ function ParticleEffect({ index }: { index: number }) {
     opacity: opacity.value,
   }));
 
-  const isCyan = index % 2 === 0;
+  const isPurple = index % 2 === 0;
 
   return (
     <AnimatedView
       style={[
         styles.particle,
         {
-          backgroundColor: isCyan ? '#00E5FF' : '#FF00FF',
+          backgroundColor: isPurple ? '#a855f7' : '#10b981',
           left: `${10 + index * 8}%`,
           top: `${20 + (index % 5) * 15}%`,
         },
@@ -327,7 +417,7 @@ const styles = StyleSheet.create({
   glow: {
     position: 'absolute',
     backgroundColor: 'transparent',
-    shadowColor: '#00E5FF',
+    shadowColor: '#a855f7',
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     shadowRadius: 20,
@@ -336,7 +426,7 @@ const styles = StyleSheet.create({
   rotatingRing: {
     position: 'absolute',
     borderWidth: 1,
-    borderColor: 'rgba(0, 229, 255, 0.2)',
+    borderColor: 'rgba(168, 85, 247, 0.2)',
   },
   ringDot: {
     position: 'absolute',
@@ -344,15 +434,15 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
   },
-  cyanDot: {
-    backgroundColor: '#00E5FF',
+  purpleDot: {
+    backgroundColor: '#a855f7',
   },
-  magentaDot: {
-    backgroundColor: '#FF00FF',
+  emeraldDot: {
+    backgroundColor: '#10b981',
   },
   logoContainer: {
     overflow: 'hidden',
-    shadowColor: '#00E5FF',
+    shadowColor: '#a855f7',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.3,
     shadowRadius: 20,
@@ -363,7 +453,7 @@ const styles = StyleSheet.create({
   },
   logoText: {
     fontWeight: 'bold',
-    color: '#00E5FF',
+    color: '#a855f7',
   },
   loadingText: {
     fontSize: 12,
@@ -388,7 +478,7 @@ const styles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#00E5FF',
+    backgroundColor: '#a855f7',
     borderRadius: 2,
   },
   splashLoadingText: {

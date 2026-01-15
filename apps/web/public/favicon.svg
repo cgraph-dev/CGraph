@@ -1,33 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
   <defs>
-    <!-- Cyan gradient -->
-    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#00B8D4;stop-opacity:1" />
+    <!-- Primary gradient - Purple to Indigo -->
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a855f7" />
+      <stop offset="50%" style="stop-color:#8b5cf6" />
+      <stop offset="100%" style="stop-color:#6366f1" />
     </linearGradient>
-    <!-- Magenta gradient -->
-    <linearGradient id="magentaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FF00FF;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#D500F9;stop-opacity:1" />
+    <!-- Secondary gradient - Emerald -->
+    <linearGradient id="secondaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#34d399" />
+      <stop offset="100%" style="stop-color:#10b981" />
+    </linearGradient>
+    <!-- Background gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e1b4b" />
+      <stop offset="100%" style="stop-color:#0f172a" />
     </linearGradient>
   </defs>
 
-  <!-- Background dark circle -->
-  <circle cx="50" cy="50" r="48" fill="#0A1628" />
+  <!-- Outer hexagon border -->
+  <polygon points="50,3 93,25 93,75 50,97 7,75 7,25" fill="none" stroke="url(#primaryGrad)" stroke-width="2.5" stroke-linejoin="round" stroke-opacity="0.9" />
 
-  <!-- Outer ring -->
-  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#cyanGrad)" stroke-width="1.5" stroke-opacity="0.4" />
+  <!-- Inner hexagon background -->
+  <polygon points="50,8 88,28 88,72 50,92 12,72 12,28" fill="url(#bgGrad)" />
 
-  <!-- Top diamond - cyan -->
-  <polygon points="50,15 70,35 50,55 30,35" fill="url(#cyanGrad)" fill-opacity="0.95" />
-  <!-- Bottom diamond - magenta -->
-  <polygon points="50,45 70,65 50,85 30,65" fill="url(#magentaGrad)" fill-opacity="0.95" />
-  <!-- Left accent triangle -->
-  <polygon points="25,50 35,40 35,60" fill="#00E5FF" fill-opacity="0.7" />
-  <!-- Right accent triangle -->
-  <polygon points="75,50 65,40 65,60" fill="#FF00FF" fill-opacity="0.7" />
+  <!-- C letter (simplified for favicon) -->
+  <path d="M 28 35 C 28 28, 35 22, 45 22 L 52 22 L 52 28 L 45 28 C 38 28, 34 32, 34 35 L 34 65 C 34 68, 38 72, 45 72 L 52 72 L 52 78 L 45 78 C 35 78, 28 72, 28 65 Z" fill="url(#primaryGrad)" />
+  
+  <!-- G letter (simplified for favicon) -->
+  <path d="M 55 22 C 65 22, 72 28, 72 35 L 72 65 C 72 72, 65 78, 55 78 L 50 78 L 50 72 L 55 72 C 62 72, 66 68, 66 65 L 66 53 L 58 53 L 58 47 L 72 47 L 72 35 C 72 32, 62 28, 55 28 L 50 28 L 50 22 Z" fill="url(#secondaryGrad)" />
 
-  <!-- Node points -->
-  <circle cx="50" cy="15" r="4" fill="#00E5FF" />
-  <circle cx="50" cy="85" r="4" fill="#FF00FF" />
+  <!-- Corner accents -->
+  <circle cx="50" cy="8" r="3" fill="url(#secondaryGrad)" />
+  <circle cx="50" cy="92" r="3" fill="url(#secondaryGrad)" />
 </svg>
