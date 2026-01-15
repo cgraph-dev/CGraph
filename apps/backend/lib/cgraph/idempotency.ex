@@ -149,7 +149,9 @@ defmodule CGraph.Idempotency do
 
   @default_config %{
     backend: :ets,
-    default_ttl: :timer.hours(24),
+    # 7 days TTL for idempotency keys - allows for retries across extended periods
+    # and handles cases where clients may retry failed payments days later
+    default_ttl: :timer.hours(168),
     lock_ttl: :timer.seconds(30),
     header: "idempotency-key",
     fingerprint_body: true,

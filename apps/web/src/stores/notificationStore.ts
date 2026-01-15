@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { ensureArray, extractPagination } from '@/lib/apiUtils';
 
@@ -33,79 +34,88 @@ interface NotificationState {
   clearAll: () => Promise<void>;
 }
 
-export const useNotificationStore = create<NotificationState>((set) => ({
-  notifications: [],
-  unreadCount: 0,
-  isLoading: false,
-  hasMore: true,
-
-  fetchNotifications: async (page = 1) => {
-    set({ isLoading: true });
-    try {
-      const response = await api.get('/api/v1/notifications', {
-        params: { page, limit: 20 },
-      });
-      const newNotifications = ensureArray<Notification>(response.data, 'notifications');
-      const meta = extractPagination(response.data);
-      const hasMore = newNotifications.length === 20 || meta.hasMore;
-
-      set((state) => ({
-        notifications:
-          page === 1
-            ? newNotifications
-            : [...state.notifications, ...newNotifications],
-        unreadCount: typeof (response.data as Record<string, unknown>)?.meta === 'object'
-          ? ((response.data as Record<string, { unread_count?: number }>).meta?.unread_count ?? newNotifications.filter((n) => !n.isRead).length)
-          : newNotifications.filter((n) => !n.isRead).length,
-        hasMore,
-        isLoading: false,
-      }));
-    } catch (error) {
-      set({ isLoading: false });
-      throw error;
-    }
-  },
-
-  markAsRead: async (notificationId: string) => {
-    await api.post(`/api/v1/notifications/${notificationId}/read`);
-    set((state) => ({
-      notifications: state.notifications.map((n) =>
-        n.id === notificationId ? { ...n, isRead: true } : n
-      ),
-      unreadCount: Math.max(0, state.unreadCount - 1),
-    }));
-  },
-
-  markAllAsRead: async () => {
-    await api.post('/api/v1/notifications/read');
-    set((state) => ({
-      notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
+export const useNotificationStore = create<NotificationState>()(
+  devtools(
+    (set) => ({
+      notifications: [],
       unreadCount: 0,
-    }));
-  },
+      isLoading: false,
+      hasMore: true,
 
-  deleteNotification: async (notificationId: string) => {
-    await api.delete(`/api/v1/notifications/${notificationId}`);
-    set((state) => {
-      const notification = state.notifications.find((n) => n.id === notificationId);
-      return {
-        notifications: state.notifications.filter((n) => n.id !== notificationId),
-        unreadCount: notification && !notification.isRead
-          ? Math.max(0, state.unreadCount - 1)
-          : state.unreadCount,
-      };
-    });
-  },
+      fetchNotifications: async (page = 1) => {
+        set({ isLoading: true });
+        try {
+          const response = await api.get('/api/v1/notifications', {
+            params: { page, limit: 20 },
+          });
+          const newNotifications = ensureArray<Notification>(response.data, 'notifications');
+          const meta = extractPagination(response.data);
+          const hasMore = newNotifications.length === 20 || meta.hasMore;
 
-  addNotification: (notification: Notification) => {
-    set((state) => ({
-      notifications: [notification, ...state.notifications],
-      unreadCount: notification.isRead ? state.unreadCount : state.unreadCount + 1,
-    }));
-  },
+          set((state) => ({
+            notifications:
+              page === 1 ? newNotifications : [...state.notifications, ...newNotifications],
+            unreadCount:
+              typeof (response.data as Record<string, unknown>)?.meta === 'object'
+                ? ((response.data as Record<string, { unread_count?: number }>).meta
+                    ?.unread_count ?? newNotifications.filter((n) => !n.isRead).length)
+                : newNotifications.filter((n) => !n.isRead).length,
+            hasMore,
+            isLoading: false,
+          }));
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
+      },
 
-  clearAll: async () => {
-    await api.delete('/api/v1/notifications');
-    set({ notifications: [], unreadCount: 0 });
-  },
-}));
+      markAsRead: async (notificationId: string) => {
+        await api.post(`/api/v1/notifications/${notificationId}/read`);
+        set((state) => ({
+          notifications: state.notifications.map((n) =>
+            n.id === notificationId ? { ...n, isRead: true } : n
+          ),
+          unreadCount: Math.max(0, state.unreadCount - 1),
+        }));
+      },
+
+      markAllAsRead: async () => {
+        await api.post('/api/v1/notifications/read');
+        set((state) => ({
+          notifications: state.notifications.map((n) => ({ ...n, isRead: true })),
+          unreadCount: 0,
+        }));
+      },
+
+      deleteNotification: async (notificationId: string) => {
+        await api.delete(`/api/v1/notifications/${notificationId}`);
+        set((state) => {
+          const notification = state.notifications.find((n) => n.id === notificationId);
+          return {
+            notifications: state.notifications.filter((n) => n.id !== notificationId),
+            unreadCount:
+              notification && !notification.isRead
+                ? Math.max(0, state.unreadCount - 1)
+                : state.unreadCount,
+          };
+        });
+      },
+
+      addNotification: (notification: Notification) => {
+        set((state) => ({
+          notifications: [notification, ...state.notifications],
+          unreadCount: notification.isRead ? state.unreadCount : state.unreadCount + 1,
+        }));
+      },
+
+      clearAll: async () => {
+        await api.delete('/api/v1/notifications');
+        set({ notifications: [], unreadCount: 0 });
+      },
+    }),
+    {
+      name: 'NotificationStore',
+      enabled: import.meta.env.DEV,
+    }
+  )
+);

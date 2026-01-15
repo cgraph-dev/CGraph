@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
+import { devtools, persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { AxiosError } from 'axios';
 
@@ -185,248 +185,262 @@ const createSecureStorage = (): StateStorage => {
 };
 
 export const useAuthStore = create<AuthState>()(
-  persist(
-    (set, get) => ({
-      user: null,
-      token: null,
-      refreshToken: null,
-      isAuthenticated: false,
-      isLoading: false, // Start with false - checkAuth will handle loading state
-      error: null,
+  devtools(
+    persist(
+      (set, get) => ({
+        user: null,
+        token: null,
+        refreshToken: null,
+        isAuthenticated: false,
+        isLoading: false, // Start with false - checkAuth will handle loading state
+        error: null,
 
-      login: async (email: string, password: string) => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await api.post('/api/v1/auth/login', {
-            identifier: email, // Backend accepts email or username
-            password,
-          });
-          const { user, tokens } = response.data;
-          set({
-            user: mapUserFromApi(user),
-            token: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } catch (error: unknown) {
-          set({
-            error: getApiErrorMessage(error, 'Login failed'),
-            isLoading: false,
-          });
-          throw error;
-        }
-      },
-
-      getWalletChallenge: async (walletAddress: string): Promise<WalletChallenge> => {
-        try {
-          const response = await api.post('/api/v1/auth/wallet/challenge', {
-            wallet_address: walletAddress,
-          });
-          return {
-            message: response.data.message,
-            nonce: response.data.nonce,
-          };
-        } catch (error: unknown) {
-          const errorMessage = getApiErrorMessage(error, 'Failed to get wallet challenge');
-          set({ error: errorMessage });
-          throw new Error(errorMessage);
-        }
-      },
-
-      loginWithWallet: async (walletAddress: string, signature: string) => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await api.post('/api/v1/auth/wallet/verify', {
-            wallet_address: walletAddress,
-            signature,
-          });
-          const { user, tokens } = response.data;
-          set({
-            user: mapUserFromApi(user),
-            token: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } catch (error: unknown) {
-          set({
-            error: getApiErrorMessage(error, 'Wallet login failed'),
-            isLoading: false,
-          });
-          throw error;
-        }
-      },
-
-      register: async (email: string, username: string, password: string) => {
-        set({ isLoading: true, error: null });
-        try {
-          const response = await api.post('/api/v1/auth/register', {
-            user: {
-              email,
-              username,
-              password,
-              password_confirmation: password, // Backend requires confirmation
-            },
-          });
-          const { user, tokens } = response.data;
-          set({
-            user: mapUserFromApi(user),
-            token: tokens.access_token,
-            refreshToken: tokens.refresh_token,
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } catch (error: unknown) {
-          set({
-            error: getApiErrorMessage(error, 'Registration failed'),
-            isLoading: false,
-          });
-          throw error;
-        }
-      },
-
-      logout: async () => {
-        // Attempt server-side logout to invalidate tokens
-        const { token } = get();
-        if (token) {
+        login: async (email: string, password: string) => {
+          set({ isLoading: true, error: null }, false, 'login/start');
           try {
-            await api.post('/api/v1/auth/logout');
-          } catch {
-            // Continue with client-side cleanup even if server call fails
-            // This handles offline scenarios gracefully
-          }
-        }
-
-        // Clear all client-side auth state
-        set({
-          user: null,
-          token: null,
-          refreshToken: null,
-          isAuthenticated: false,
-          isLoading: false,
-        });
-      },
-
-      refreshSession: async () => {
-        const { refreshToken } = get();
-        if (!refreshToken) {
-          set({ isLoading: false });
-          return;
-        }
-
-        try {
-          const response = await api.post('/api/v1/auth/refresh', {
-            refresh_token: refreshToken,
-          });
-          // Handle both wrapped and unwrapped token responses
-          const data = response.data;
-          const tokens = data.tokens || data;
-          const accessToken = tokens.access_token;
-          const newRefreshToken = tokens.refresh_token;
-
-          if (accessToken) {
-            set({
-              token: accessToken,
-              refreshToken: newRefreshToken || refreshToken,
+            const response = await api.post('/api/v1/auth/login', {
+              identifier: email, // Backend accepts email or username
+              password,
             });
+            const { user, tokens } = response.data;
+            set(
+              {
+                user: mapUserFromApi(user),
+                token: tokens.access_token,
+                refreshToken: tokens.refresh_token,
+                isAuthenticated: true,
+                isLoading: false,
+              },
+              false,
+              'login/success'
+            );
+          } catch (error: unknown) {
+            set(
+              {
+                error: getApiErrorMessage(error, 'Login failed'),
+                isLoading: false,
+              },
+              false,
+              'login/error'
+            );
+            throw error;
           }
-        } catch {
-          set({
-            user: null,
-            token: null,
-            refreshToken: null,
-            isAuthenticated: false,
-          });
-        }
-      },
+        },
 
-      updateUser: (data: Partial<User>) => {
-        const { user } = get();
-        if (user) {
-          set({ user: { ...user, ...data } });
-        }
-      },
-
-      clearError: () => set({ error: null }),
-
-      checkAuth: async () => {
-        const { token } = get();
-        if (!token) {
-          set({ isLoading: false, isAuthenticated: false });
-          return;
-        }
-
-        try {
-          const response = await api.get('/api/v1/me');
-          // Backend returns { data: { id, email, ... } }
-          const userData = response.data.data || response.data.user || response.data;
-          set({
-            user: mapUserFromApi(userData),
-            isAuthenticated: true,
-            isLoading: false,
-          });
-        } catch (error) {
-          // Clear invalid/stale auth on any error
-          if (import.meta.env.DEV) {
-            console.log('[AuthStore] checkAuth failed - clearing auth:', error);
+        getWalletChallenge: async (walletAddress: string): Promise<WalletChallenge> => {
+          try {
+            const response = await api.post('/api/v1/auth/wallet/challenge', {
+              wallet_address: walletAddress,
+            });
+            return {
+              message: response.data.message,
+              nonce: response.data.nonce,
+            };
+          } catch (error: unknown) {
+            const errorMessage = getApiErrorMessage(error, 'Failed to get wallet challenge');
+            set({ error: errorMessage });
+            throw new Error(errorMessage);
           }
-          set({
-            user: null,
-            token: null,
-            refreshToken: null,
-            isAuthenticated: false,
-            isLoading: false,
-          });
-        }
-      },
-    }),
-    {
-      name: 'cgraph-auth',
-      storage: createJSONStorage(() => createSecureStorage()),
-      partialize: (state) => ({
-        token: state.token,
-        refreshToken: state.refreshToken,
-        user: state.user,
-        isAuthenticated: state.isAuthenticated,
-      }),
-      // Critical: Handle rehydration to fix isLoading state
-      onRehydrateStorage: () => {
-        if (import.meta.env.DEV) {
-          console.log('[AuthStore] onRehydrateStorage called');
-        }
-        return (state, error) => {
-          if (import.meta.env.DEV) {
-            console.log('[AuthStore] Rehydration callback - state:', !!state, 'error:', error);
-          }
-          if (error) {
-            console.error('Auth store rehydration failed:', error);
-            // On error, reset to safe state
-            useAuthStore.setState({
+        },
+
+        loginWithWallet: async (walletAddress: string, signature: string) => {
+          set({ isLoading: true, error: null });
+          try {
+            const response = await api.post('/api/v1/auth/wallet/verify', {
+              wallet_address: walletAddress,
+              signature,
+            });
+            const { user, tokens } = response.data;
+            set({
+              user: mapUserFromApi(user),
+              token: tokens.access_token,
+              refreshToken: tokens.refresh_token,
+              isAuthenticated: true,
               isLoading: false,
-              isAuthenticated: false,
+            });
+          } catch (error: unknown) {
+            set({
+              error: getApiErrorMessage(error, 'Wallet login failed'),
+              isLoading: false,
+            });
+            throw error;
+          }
+        },
+
+        register: async (email: string, username: string, password: string) => {
+          set({ isLoading: true, error: null });
+          try {
+            const response = await api.post('/api/v1/auth/register', {
+              user: {
+                email,
+                username,
+                password,
+                password_confirmation: password, // Backend requires confirmation
+              },
+            });
+            const { user, tokens } = response.data;
+            set({
+              user: mapUserFromApi(user),
+              token: tokens.access_token,
+              refreshToken: tokens.refresh_token,
+              isAuthenticated: true,
+              isLoading: false,
+            });
+          } catch (error: unknown) {
+            set({
+              error: getApiErrorMessage(error, 'Registration failed'),
+              isLoading: false,
+            });
+            throw error;
+          }
+        },
+
+        logout: async () => {
+          // Attempt server-side logout to invalidate tokens
+          const { token } = get();
+          if (token) {
+            try {
+              await api.post('/api/v1/auth/logout');
+            } catch {
+              // Continue with client-side cleanup even if server call fails
+              // This handles offline scenarios gracefully
+            }
+          }
+
+          // Clear all client-side auth state
+          set({
+            user: null,
+            token: null,
+            refreshToken: null,
+            isAuthenticated: false,
+            isLoading: false,
+          });
+        },
+
+        refreshSession: async () => {
+          const { refreshToken } = get();
+          if (!refreshToken) {
+            set({ isLoading: false });
+            return;
+          }
+
+          try {
+            const response = await api.post('/api/v1/auth/refresh', {
+              refresh_token: refreshToken,
+            });
+            // Handle both wrapped and unwrapped token responses
+            const data = response.data;
+            const tokens = data.tokens || data;
+            const accessToken = tokens.access_token;
+            const newRefreshToken = tokens.refresh_token;
+
+            if (accessToken) {
+              set({
+                token: accessToken,
+                refreshToken: newRefreshToken || refreshToken,
+              });
+            }
+          } catch {
+            set({
               user: null,
               token: null,
               refreshToken: null,
+              isAuthenticated: false,
             });
-          } else if (state) {
-            // Rehydration successful - mark loading as complete
-            // Don't block on token validation - let the app render
-            if (import.meta.env.DEV) {
-              console.log('[AuthStore] Rehydration complete - hasToken:', !!state.token);
-            }
-            useAuthStore.setState({
-              isLoading: false, // Never block - checkAuth runs in background
-            });
-          } else {
-            // No state to rehydrate
-            if (import.meta.env.DEV) {
-              console.log('[AuthStore] No state to rehydrate');
-            }
-            useAuthStore.setState({ isLoading: false });
           }
-        };
-      },
+        },
+
+        updateUser: (data: Partial<User>) => {
+          const { user } = get();
+          if (user) {
+            set({ user: { ...user, ...data } });
+          }
+        },
+
+        clearError: () => set({ error: null }),
+
+        checkAuth: async () => {
+          const { token } = get();
+          if (!token) {
+            set({ isLoading: false, isAuthenticated: false });
+            return;
+          }
+
+          try {
+            const response = await api.get('/api/v1/me');
+            // Backend returns { data: { id, email, ... } }
+            const userData = response.data.data || response.data.user || response.data;
+            set({
+              user: mapUserFromApi(userData),
+              isAuthenticated: true,
+              isLoading: false,
+            });
+          } catch (error) {
+            // Clear invalid/stale auth on any error
+            if (import.meta.env.DEV) {
+              console.log('[AuthStore] checkAuth failed - clearing auth:', error);
+            }
+            set({
+              user: null,
+              token: null,
+              refreshToken: null,
+              isAuthenticated: false,
+              isLoading: false,
+            });
+          }
+        },
+      }),
+      {
+        name: 'cgraph-auth',
+        storage: createJSONStorage(() => createSecureStorage()),
+        partialize: (state) => ({
+          token: state.token,
+          refreshToken: state.refreshToken,
+          user: state.user,
+          isAuthenticated: state.isAuthenticated,
+        }),
+        // Critical: Handle rehydration to fix isLoading state
+        onRehydrateStorage: () => {
+          if (import.meta.env.DEV) {
+            console.log('[AuthStore] onRehydrateStorage called');
+          }
+          return (state, error) => {
+            if (import.meta.env.DEV) {
+              console.log('[AuthStore] Rehydration callback - state:', !!state, 'error:', error);
+            }
+            if (error) {
+              console.error('Auth store rehydration failed:', error);
+              // On error, reset to safe state
+              useAuthStore.setState({
+                isLoading: false,
+                isAuthenticated: false,
+                user: null,
+                token: null,
+                refreshToken: null,
+              });
+            } else if (state) {
+              // Rehydration successful - mark loading as complete
+              // Don't block on token validation - let the app render
+              if (import.meta.env.DEV) {
+                console.log('[AuthStore] Rehydration complete - hasToken:', !!state.token);
+              }
+              useAuthStore.setState({
+                isLoading: false, // Never block - checkAuth runs in background
+              });
+            } else {
+              // No state to rehydrate
+              if (import.meta.env.DEV) {
+                console.log('[AuthStore] No state to rehydrate');
+              }
+              useAuthStore.setState({ isLoading: false });
+            }
+          };
+        },
+      }
+    ),
+    {
+      name: 'AuthStore',
+      enabled: import.meta.env.DEV,
     }
   )
 );
