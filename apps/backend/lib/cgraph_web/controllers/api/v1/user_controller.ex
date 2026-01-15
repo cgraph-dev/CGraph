@@ -170,10 +170,30 @@ defmodule CGraphWeb.API.V1.UserController do
       is_friend = current_user && CGraph.Accounts.Friends.are_friends?(current_user.id, user.id)
       show_full_profile = is_own_profile || is_friend || !user.is_profile_private
 
-      if show_full_profile do
-        render(conn, :show, user: user)
+      # Get friendship status for the viewing user
+      friendship_status = if current_user && !is_own_profile do
+        Accounts.get_friendship_status(current_user, user)
       else
-        render(conn, :private_profile, user: user)
+        :none
+      end
+
+      friend_request_sent = friendship_status == :pending
+      friend_request_received = friendship_status == :incoming
+
+      if show_full_profile do
+        render(conn, :show,
+          user: user,
+          is_friend: is_friend,
+          friend_request_sent: friend_request_sent,
+          friend_request_received: friend_request_received
+        )
+      else
+        render(conn, :private_profile,
+          user: user,
+          is_friend: is_friend,
+          friend_request_sent: friend_request_sent,
+          friend_request_received: friend_request_received
+        )
       end
     end
   end

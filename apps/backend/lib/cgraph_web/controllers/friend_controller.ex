@@ -5,11 +5,99 @@ defmodule CGraphWeb.FriendController do
 
   use CGraphWeb, :controller
 
+  alias CGraph.Accounts
   alias CGraph.Accounts.Friends
   alias CGraph.Guardian
   import CGraphWeb.ControllerHelpers, only: [safe_to_integer: 2]
 
   action_fallback CGraphWeb.FallbackController
+
+  @doc """
+  Sends a friend request.
+
+  POST /api/v1/friends
+  Body can contain one of: user_id, username, email, or uid
+  """
+  def create(conn, params) do
+    user = Guardian.Plug.current_resource(conn)
+
+    with {:ok, target_user} <- resolve_target_user(params),
+         :ok <- validate_not_self(user, target_user) do
+      case Friends.send_friend_request(user.id, target_user.id) do
+        {:ok, _friendship} ->
+          conn
+          |> put_status(:created)
+          |> json(%{success: true, message: "Friend request sent"})
+
+        {:error, :already_friends} ->
+          conn
+          |> put_status(:conflict)
+          |> json(%{error: "already_friends", message: "You are already friends with this user"})
+
+        {:error, :request_already_sent} ->
+          conn
+          |> put_status(:conflict)
+          |> json(%{error: "request_already_sent", message: "Friend request already pending"})
+
+        {:error, :blocked_by_user} ->
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "blocked", message: "Cannot send friend request to this user"})
+
+        {:error, :user_blocked} ->
+          conn
+          |> put_status(:forbidden)
+          |> json(%{error: "user_blocked", message: "You have blocked this user"})
+
+        {:error, changeset} ->
+          conn
+          |> put_status(:unprocessable_entity)
+          |> json(%{errors: format_errors(changeset)})
+      end
+    else
+      {:error, :not_found} ->
+        conn
+        |> put_status(:not_found)
+        |> json(%{error: "user_not_found", message: "User not found"})
+
+      {:error, :self_request} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> json(%{error: "self_request", message: "You cannot send a friend request to yourself"})
+
+      {:error, :missing_identifier} ->
+        conn
+        |> put_status(:bad_request)
+        |> json(%{error: "missing_identifier", message: "Please provide user_id, username, email, or uid"})
+    end
+  end
+
+  # Resolves a target user from various identifier types
+  defp resolve_target_user(%{"user_id" => user_id}) when is_binary(user_id) do
+    Accounts.get_user(user_id)
+  end
+
+  defp resolve_target_user(%{"username" => username}) when is_binary(username) do
+    Accounts.get_user_by_username(username)
+  end
+
+  defp resolve_target_user(%{"email" => email}) when is_binary(email) do
+    Accounts.get_user_by_email(email)
+  end
+
+  defp resolve_target_user(%{"uid" => uid}) when is_binary(uid) do
+    Accounts.get_user_by_user_id(uid)
+  end
+
+  defp resolve_target_user(_), do: {:error, :missing_identifier}
+
+  defp validate_not_self(user, target_user) do
+    if user.id == target_user.id do
+      {:error, :self_request}
+    else
+      :ok
+    end
+  end
 
   @doc """
   Lists user's friends.

@@ -11,12 +11,28 @@ defmodule CGraphWeb.API.V1.UserJSON do
     }
   end
 
+  def show(%{user: user, is_friend: is_friend, friend_request_sent: friend_request_sent, friend_request_received: friend_request_received}) do
+    %{data: user_data(user)
+      |> Map.put(:is_friend, is_friend || false)
+      |> Map.put(:friend_request_sent, friend_request_sent || false)
+      |> Map.put(:friend_request_received, friend_request_received || false)
+    }
+  end
+
   def show(%{user: user}) do
     %{data: user_data(user)}
   end
 
   def profile(%{user: user}) do
     %{data: public_profile(user)}
+  end
+
+  def private_profile(%{user: user, is_friend: is_friend, friend_request_sent: friend_request_sent, friend_request_received: friend_request_received}) do
+    %{data: hidden_profile(user)
+      |> Map.put(:is_friend, is_friend || false)
+      |> Map.put(:friend_request_sent, friend_request_sent || false)
+      |> Map.put(:friend_request_received, friend_request_received || false)
+    }
   end
 
   def private_profile(%{user: user}) do
@@ -33,12 +49,21 @@ defmodule CGraphWeb.API.V1.UserJSON do
   def sessions(%{sessions: sessions, current_token: current_token}) do
     %{
       data: Enum.map(sessions, fn session ->
+        # Compare hashed token to determine if this is the current session
+        is_current = case current_token do
+          nil -> false
+          token when is_binary(token) ->
+            hashed = :crypto.hash(:sha256, token) |> Base.encode64()
+            session.token_hash == hashed
+          _ -> false
+        end
+
         %{
           id: session.id,
           ip: session.ip_address,
           user_agent: session.user_agent,
           location: session.location,
-          current: session.token == current_token,
+          current: is_current,
           last_active_at: session.last_active_at,
           created_at: session.inserted_at
         }

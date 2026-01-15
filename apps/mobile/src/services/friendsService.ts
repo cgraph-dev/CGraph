@@ -1,12 +1,12 @@
 /**
  * Friends Service
- * 
+ *
  * Backend API integration for friend-related features:
  * - Friend list management
  * - Friend requests
  * - User profiles
  * - Blocking/Reporting
- * 
+ *
  * @module services/friendsService
  * @since v0.9.0
  */
@@ -124,9 +124,9 @@ export interface FriendSuggestion {
 /**
  * Get friend list
  */
-export async function getFriends(options?: { 
-  limit?: number; 
-  offset?: number; 
+export async function getFriends(options?: {
+  limit?: number;
+  offset?: number;
   status?: 'online' | 'offline' | 'all';
   search?: string;
 }): Promise<Friend[]> {
@@ -167,7 +167,10 @@ export async function toggleFavoriteFriend(friendshipId: string): Promise<boolea
 /**
  * Set friend nickname
  */
-export async function setFriendNickname(friendshipId: string, nickname: string | null): Promise<void> {
+export async function setFriendNickname(
+  friendshipId: string,
+  nickname: string | null
+): Promise<void> {
   await api.patch(`/api/v1/friends/${friendshipId}`, { nickname });
 }
 
@@ -184,7 +187,7 @@ export async function removeFriend(friendshipId: string): Promise<void> {
  * Get incoming friend requests
  */
 export async function getIncomingRequests(): Promise<FriendRequest[]> {
-  const response = await api.get('/api/v1/friends/requests/incoming');
+  const response = await api.get('/api/v1/friends/requests');
   return (response.data.data || response.data.requests || []).map(transformFriendRequest);
 }
 
@@ -192,17 +195,20 @@ export async function getIncomingRequests(): Promise<FriendRequest[]> {
  * Get outgoing friend requests
  */
 export async function getOutgoingRequests(): Promise<FriendRequest[]> {
-  const response = await api.get('/api/v1/friends/requests/outgoing');
+  const response = await api.get('/api/v1/friends/sent');
   return (response.data.data || response.data.requests || []).map(transformFriendRequest);
 }
 
 /**
  * Send friend request
  */
-export async function sendFriendRequest(username: string, message?: string): Promise<FriendRequest> {
-  const response = await api.post('/api/v1/friends/requests', { 
-    username, 
-    message 
+export async function sendFriendRequest(
+  username: string,
+  message?: string
+): Promise<FriendRequest> {
+  const response = await api.post('/api/v1/friends', {
+    username,
+    message,
   });
   return transformFriendRequest(response.data.data || response.data);
 }
@@ -211,22 +217,22 @@ export async function sendFriendRequest(username: string, message?: string): Pro
  * Accept friend request
  */
 export async function acceptFriendRequest(requestId: string): Promise<Friend> {
-  const response = await api.post(`/api/v1/friends/requests/${requestId}/accept`);
+  const response = await api.post(`/api/v1/friends/${requestId}/accept`);
   return transformFriend(response.data.data || response.data);
 }
 
 /**
- * Reject friend request
+ * Decline friend request
  */
-export async function rejectFriendRequest(requestId: string): Promise<void> {
-  await api.post(`/api/v1/friends/requests/${requestId}/reject`);
+export async function declineFriendRequest(requestId: string): Promise<void> {
+  await api.post(`/api/v1/friends/${requestId}/decline`);
 }
 
 /**
  * Cancel outgoing friend request
  */
 export async function cancelFriendRequest(requestId: string): Promise<void> {
-  await api.delete(`/api/v1/friends/requests/${requestId}`);
+  await api.delete(`/api/v1/friends/${requestId}`);
 }
 
 // ==================== USER PROFILE API ====================
@@ -300,9 +306,9 @@ export async function unblockUser(userId: string): Promise<void> {
  * Report a user
  */
 export async function reportUser(userId: string, reason: string, details?: string): Promise<void> {
-  await api.post(`/api/v1/users/${userId}/report`, { 
-    reason, 
-    details 
+  await api.post(`/api/v1/users/${userId}/report`, {
+    reason,
+    details,
   });
 }
 
@@ -311,7 +317,10 @@ export async function reportUser(userId: string, reason: string, details?: strin
 /**
  * Search users
  */
-export async function searchUsers(query: string, options?: { limit?: number; offset?: number }): Promise<FriendUser[]> {
+export async function searchUsers(
+  query: string,
+  options?: { limit?: number; offset?: number }
+): Promise<FriendUser[]> {
   const params = {
     q: query,
     limit: options?.limit || 20,

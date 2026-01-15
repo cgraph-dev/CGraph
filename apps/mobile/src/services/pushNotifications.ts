@@ -1,12 +1,12 @@
 /**
  * Push Notification Service for React Native Mobile App
- * 
+ *
  * Handles:
  * - Expo push notification registration
  * - Backend token synchronization
  * - Notification permission requests
  * - Token refresh and cleanup
- * 
+ *
  * @version 0.9.0
  */
 
@@ -19,6 +19,11 @@ import api from '../lib/api';
 // Prevent repeated warning spam during development
 let hasLoggedProjectIdWarning = false;
 let hasLoggedDeviceWarning = false;
+
+// Track registration state at module level to prevent repeated attempts across component re-mounts
+let registrationAttempted = false;
+let registrationFailed = false;
+let lastRegistrationError: string | null = null;
 
 // Configure notification handling
 Notifications.setNotificationHandler({
@@ -96,15 +101,18 @@ export async function getExpoPushToken(): Promise<string | null> {
   }
 
   try {
-    const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? 
-                      Constants.easConfig?.projectId;
-    
+    const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? Constants.easConfig?.projectId;
+
     // Validate projectId is a proper UUID (not placeholder)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!projectId || !uuidRegex.test(projectId)) {
       if (!hasLoggedProjectIdWarning) {
-        console.warn('[Push] No valid EAS project ID found. Push notifications disabled in development.');
-        console.warn('[Push] To enable push notifications, run: npx expo login && eas project:init');
+        console.warn(
+          '[Push] No valid EAS project ID found. Push notifications disabled in development.'
+        );
+        console.warn(
+          '[Push] To enable push notifications, run: npx expo login && eas project:init'
+        );
         hasLoggedProjectIdWarning = true;
       }
       return null;
@@ -113,7 +121,7 @@ export async function getExpoPushToken(): Promise<string | null> {
     const { data: token } = await Notifications.getExpoPushTokenAsync({
       projectId,
     });
-    
+
     console.log('[Push] Got Expo push token:', token.substring(0, 30) + '...');
     return token;
   } catch (error) {
@@ -127,9 +135,8 @@ export async function getExpoPushToken(): Promise<string | null> {
  */
 export async function registerPushTokenWithBackend(token: string): Promise<PushTokenResult> {
   try {
-    const platform = Platform.OS === 'ios' ? 'ios' : 
-                     Platform.OS === 'android' ? 'android' : 'expo';
-    
+    const platform = Platform.OS === 'ios' ? 'ios' : Platform.OS === 'android' ? 'android' : 'expo';
+
     const deviceId = Constants.installationId || `${Platform.OS}-${Date.now()}`;
     const deviceName = Device.modelName || `${Platform.OS} Device`;
 
@@ -145,9 +152,9 @@ export async function registerPushTokenWithBackend(token: string): Promise<PushT
       return { success: true, token };
     }
 
-    return { 
-      success: false, 
-      error: `Unexpected response status: ${response.status}` 
+    return {
+      success: false,
+      error: `Unexpected response status: ${response.status}`,
     };
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
@@ -177,20 +184,54 @@ export async function unregisterPushToken(token: string): Promise<boolean> {
  * 3. Register with backend
  */
 export async function registerForPushNotifications(): Promise<PushTokenResult> {
+  // Skip if we already tried and failed (prevents spam in Expo Go)
+  if (registrationAttempted && registrationFailed) {
+    return { success: false, error: lastRegistrationError || 'Registration previously failed' };
+  }
+
+  registrationAttempted = true;
+
   // Step 1: Request permissions
   const hasPermission = await requestNotificationPermissions();
   if (!hasPermission) {
-    return { success: false, error: 'Permission not granted' };
+    registrationFailed = true;
+    lastRegistrationError = 'Permission not granted or not a physical device';
+    return { success: false, error: lastRegistrationError };
   }
 
   // Step 2: Get Expo push token
   const token = await getExpoPushToken();
   if (!token) {
-    return { success: false, error: 'Failed to get push token' };
+    registrationFailed = true;
+    lastRegistrationError = 'Failed to get push token';
+    return { success: false, error: lastRegistrationError };
   }
 
   // Step 3: Register with backend
-  return registerPushTokenWithBackend(token);
+  const result = await registerPushTokenWithBackend(token);
+  if (!result.success) {
+    registrationFailed = true;
+    lastRegistrationError = result.error || 'Backend registration failed';
+  }
+  return result;
+}
+
+/**
+ * Reset registration state (call when user logs out or wants to retry)
+ */
+export function resetPushRegistration(): void {
+  registrationAttempted = false;
+  registrationFailed = false;
+  lastRegistrationError = null;
+  hasLoggedProjectIdWarning = false;
+  hasLoggedDeviceWarning = false;
+}
+
+/**
+ * Check if push registration should be attempted
+ */
+export function shouldAttemptPushRegistration(): boolean {
+  return !registrationAttempted || !registrationFailed;
 }
 
 /**
@@ -248,7 +289,7 @@ export function parseNotificationData(
   const { notification } = response;
   const { request } = notification;
   const { content } = request;
-  
+
   return {
     type: (content.data?.type as string) || undefined,
     id: (content.data?.id as string) || undefined,
@@ -260,6 +301,8 @@ export function parseNotificationData(
 
 export default {
   registerForPushNotifications,
+  resetPushRegistration,
+  shouldAttemptPushRegistration,
   requestNotificationPermissions,
   getExpoPushToken,
   registerPushTokenWithBackend,

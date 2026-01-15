@@ -5,6 +5,7 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
   - Applies to POST/PUT/PATCH/DELETE only.
   - If Idempotency-Key is missing, request proceeds normally.
   - If the key exists in cache, returns 409 Conflict to prevent duplicate work.
+  - Only caches the key AFTER a successful response (2xx status) to allow retries on failures.
   - Stores the key with a configurable TTL (default 10s) in Cachex :cgraph_cache.
   """
 
@@ -45,8 +46,15 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
         |> halt()
 
       _ ->
-        Cachex.put(:cgraph_cache, cache_key(key), true, ttl: ttl_ms)
-        conn
+        # Only cache the key after a successful response (2xx status)
+        # This allows retries if the original request failed
+        register_before_send(conn, fn response_conn ->
+          status = response_conn.status
+          if status >= 200 and status < 300 do
+            Cachex.put(:cgraph_cache, cache_key(key), true, ttl: ttl_ms)
+          end
+          response_conn
+        end)
     end
   end
 

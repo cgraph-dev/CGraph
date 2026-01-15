@@ -395,10 +395,13 @@ defmodule CGraph.Accounts do
   end
 
   @doc """
-  Get a user by username.
+  Get a user by username (case-insensitive).
   """
   def get_user_by_username(username) do
-    case Repo.get_by(User, username: username) do
+    query = from u in User,
+      where: fragment("lower(?)", u.username) == ^String.downcase(username)
+
+    case Repo.one(query) do
       nil -> {:error, :not_found}
       user -> {:ok, user}
     end

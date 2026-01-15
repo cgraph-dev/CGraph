@@ -99,7 +99,8 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
   });
 
   let isRefreshing = false;
-  const refreshQueue: Array<{ resolve: (token: string) => void; reject: (err: Error) => void }> = [];
+  const refreshQueue: Array<{ resolve: (token: string) => void; reject: (err: Error) => void }> =
+    [];
 
   const enqueueRefresh = (resolve: (token: string) => void, reject: (err: Error) => void) => {
     refreshQueue.push({ resolve, reject });
@@ -139,13 +140,35 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
   instance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-      const cfg = error.config as (InternalAxiosRequestConfig & { _retry?: boolean; metadata?: RequestMeta }) | undefined;
+      const cfg = error.config as
+        | (InternalAxiosRequestConfig & { _retry?: boolean; metadata?: RequestMeta })
+        | undefined;
       const status = error.response?.status;
 
       // 401 handling with refresh
       const isRefreshRequest = cfg?.url === refresh?.endpoint;
 
-      if (status === 401 && refresh && cfg && !cfg._retry && !isRefreshRequest && getRefreshToken && setTokens) {
+      // Helper to generate fresh idempotency key for retry
+      const regenerateIdempotencyKey = (config: InternalAxiosRequestConfig) => {
+        if (idempotency?.enabled !== false) {
+          const header = idempotency?.header || 'Idempotency-Key';
+          const method = (config.method || '').toLowerCase();
+          if (MUTATING_METHODS.includes(method)) {
+            const key = idempotency?.generate ? idempotency.generate() : createIdempotencyKey();
+            config.headers[header] = key;
+          }
+        }
+      };
+
+      if (
+        status === 401 &&
+        refresh &&
+        cfg &&
+        !cfg._retry &&
+        !isRefreshRequest &&
+        getRefreshToken &&
+        setTokens
+      ) {
         cfg._retry = true;
         const refreshToken = await getRefreshToken();
         if (!refreshToken) {
@@ -155,13 +178,11 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
 
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
-            enqueueRefresh(
-              (token) => {
-                if (cfg.headers) cfg.headers.Authorization = `Bearer ${token}`;
-                resolve(instance(cfg));
-              },
-              reject
-            );
+            enqueueRefresh((token) => {
+              if (cfg.headers) cfg.headers.Authorization = `Bearer ${token}`;
+              regenerateIdempotencyKey(cfg);
+              resolve(instance(cfg));
+            }, reject);
           });
         }
 
@@ -170,7 +191,9 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
           const refreshResponse = await instance.request({
             url: refresh.endpoint,
             method: refresh.method || 'post',
-            data: refresh.buildBody ? refresh.buildBody(refreshToken) : { refresh_token: refreshToken },
+            data: refresh.buildBody
+              ? refresh.buildBody(refreshToken)
+              : { refresh_token: refreshToken },
             headers: refresh.headers,
             withCredentials: refresh.withCredentials ?? withCredentials,
           });
@@ -182,6 +205,7 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
           resolveQueue(tokens.accessToken);
 
           if (cfg.headers) cfg.headers.Authorization = `Bearer ${tokens.accessToken}`;
+          regenerateIdempotencyKey(cfg);
           return instance(cfg);
         } catch (refreshErr) {
           isRefreshing = false;
@@ -211,6 +235,8 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
           cfg.metadata.retryCount = attempt + 1;
           const delay = Math.min(backoff * Math.pow(2, attempt), maxBackoff);
           await sleep(delay);
+          // Generate a fresh idempotency key for retry to avoid conflicts
+          regenerateIdempotencyKey(cfg);
           return instance(cfg);
         }
       }
@@ -222,12 +248,19 @@ export function createHttpClient(options: HttpClientOptions): AxiosInstance {
   return instance;
 }
 
-export async function withZod<T>(promise: Promise<AxiosResponse<unknown>>, schema: ZodSchema<T>): Promise<T> {
+export async function withZod<T>(
+  promise: Promise<AxiosResponse<unknown>>,
+  schema: ZodSchema<T>
+): Promise<T> {
   const response = await promise;
   return schema.parse(response.data ?? null);
 }
 
-export function extractApiError(error: unknown): { message: string; code?: string; status?: number } {
+export function extractApiError(error: unknown): {
+  message: string;
+  code?: string;
+  status?: number;
+} {
   if (axios.isAxiosError(error)) {
     const status = error.response?.status;
     const data = (error.response?.data || {}) as Record<string, unknown>;

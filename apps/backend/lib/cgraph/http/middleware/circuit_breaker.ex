@@ -87,8 +87,8 @@ defmodule CGraph.HTTP.Middleware.CircuitBreaker do
           {:reset, reset_time}
         })
 
-        # Attach event handler for state changes
-        :fuse.subscribe(fuse_name, self())
+        # Note: :fuse.subscribe/2 is not available in this version of fuse
+        # Circuit state changes are tracked via telemetry instead
 
       _ ->
         :ok

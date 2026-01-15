@@ -52,7 +52,7 @@ export default function UserProfileScreen() {
   const route = useRoute<RouteProps>();
   const { colors } = useTheme();
   const { userId } = route.params;
-  
+
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -64,11 +64,11 @@ export default function UserProfileScreen() {
       // API returns { data: { id, username, display_name, ... } }
       const userData = response.data?.data || response.data?.user || response.data;
       logger.debug('Fetched user data:', userData?.id);
-      
+
       if (!userData || !userData.id) {
         throw new Error('Invalid user data received');
       }
-      
+
       setUser(userData);
     } catch (error) {
       logger.error('Failed to fetch user:', error);
@@ -113,9 +113,10 @@ export default function UserProfileScreen() {
       Alert.alert('Success', 'Friend request sent!');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
-      let errorMessage = typeof error.response?.data?.error === 'object'
-        ? error.response?.data?.error?.message
-        : error.response?.data?.error;
+      let errorMessage =
+        typeof error.response?.data?.error === 'object'
+          ? error.response?.data?.error?.message
+          : error.response?.data?.error;
       // Map technical messages to user-friendly ones
       if (errorMessage?.includes('Idempotency-Key') || errorMessage?.includes('idempotency')) {
         errorMessage = 'Please wait a moment before trying again';
@@ -130,12 +131,15 @@ export default function UserProfileScreen() {
     if (!user) return;
     setActionLoading(true);
     try {
-      await api.delete(`/api/v1/friends/requests/${user.id}`);
-      setUser({ ...user, friend_request_sent: false });
+      await api.delete(`/api/v1/friends/${user.id}`);
+      setUser({ ...user, friend_request_sent: false, friend_request_received: false });
       Alert.alert('Cancelled', 'Friend request cancelled');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: string; message?: string } } };
-      Alert.alert('Error', error.response?.data?.message || error.response?.data?.error || 'Failed to cancel request');
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || error.response?.data?.error || 'Failed to cancel request'
+      );
     } finally {
       setActionLoading(false);
     }
@@ -145,15 +149,34 @@ export default function UserProfileScreen() {
     if (!user) return;
     setActionLoading(true);
     try {
-      await api.post(`/api/v1/friends/requests/${user.id}/accept`);
+      await api.post(`/api/v1/friends/${user.id}/accept`);
       setUser({ ...user, is_friend: true, friend_request_received: false });
       Alert.alert('Success', 'Friend request accepted!');
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
-      const errorMessage = typeof error.response?.data?.error === 'object'
-        ? error.response?.data?.error?.message
-        : error.response?.data?.error;
+      const errorMessage =
+        typeof error.response?.data?.error === 'object'
+          ? error.response?.data?.error?.message
+          : error.response?.data?.error;
       Alert.alert('Error', errorMessage || 'Failed to accept request');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeclineRequest = async () => {
+    if (!user) return;
+    setActionLoading(true);
+    try {
+      await api.post(`/api/v1/friends/${user.id}/decline`);
+      setUser({ ...user, friend_request_received: false });
+      Alert.alert('Declined', 'Friend request declined');
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { error?: string; message?: string } } };
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || error.response?.data?.error || 'Failed to decline request'
+      );
     } finally {
       setActionLoading(false);
     }
@@ -217,7 +240,10 @@ export default function UserProfileScreen() {
   const handleMuteUser = async () => {
     if (!user) return;
     setShowFriendMenu(false);
-    Alert.alert('Muted', `${user.display_name || user.username} has been muted. You won't receive notifications from them.`);
+    Alert.alert(
+      'Muted',
+      `${user.display_name || user.username} has been muted. You won't receive notifications from them.`
+    );
   };
 
   const handleInviteToForum = () => {
@@ -236,11 +262,7 @@ export default function UserProfileScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Header
-        title="Profile"
-        showBack
-        onBack={() => navigation.goBack()}
-      />
+      <Header title="Profile" showBack onBack={() => navigation.goBack()} />
 
       <ScrollView contentContainerStyle={styles.content}>
         {/* Profile Card */}
@@ -257,7 +279,7 @@ export default function UserProfileScreen() {
           <Text style={[styles.username, { color: colors.textSecondary }]}>
             @{user.username || 'unknown'}
           </Text>
-          
+
           {/* Karma & Verified Badge */}
           <View style={styles.badgesRow}>
             {user.karma !== undefined && (
@@ -275,12 +297,8 @@ export default function UserProfileScreen() {
               </View>
             )}
           </View>
-          
-          {user.bio && (
-            <Text style={[styles.bio, { color: colors.text }]}>
-              {user.bio}
-            </Text>
-          )}
+
+          {user.bio && <Text style={[styles.bio, { color: colors.text }]}>{user.bio}</Text>}
 
           {/* Gamification Stats Section */}
           {(user.level || user.current_title || user.achievements_count) && (
@@ -291,7 +309,7 @@ export default function UserProfileScreen() {
                   <TitleBadge title={user.current_title} rarity="rare" size="md" />
                 </View>
               )}
-              
+
               {/* Level & XP */}
               {user.level && (
                 <View style={styles.levelContainer}>
@@ -311,27 +329,35 @@ export default function UserProfileScreen() {
                   </LinearGradient>
                 </View>
               )}
-              
+
               {/* Stats Row */}
               <View style={styles.statsRow}>
                 {user.achievements_count !== undefined && (
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
                     <Ionicons name="trophy" size={18} color="#f59e0b" />
-                    <Text style={[styles.statValue, { color: colors.text }]}>{user.achievements_count}</Text>
-                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Achievements</Text>
+                    <Text style={[styles.statValue, { color: colors.text }]}>
+                      {user.achievements_count}
+                    </Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                      Achievements
+                    </Text>
                   </View>
                 )}
                 {user.streak !== undefined && user.streak > 0 && (
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
                     <Text style={styles.streakEmoji}>🔥</Text>
                     <Text style={[styles.statValue, { color: colors.text }]}>{user.streak}</Text>
-                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Day Streak</Text>
+                    <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                      Day Streak
+                    </Text>
                   </View>
                 )}
                 {user.titles && user.titles.length > 0 && (
                   <View style={[styles.statItem, { backgroundColor: colors.surfaceHover }]}>
                     <Ionicons name="ribbon" size={18} color="#ec4899" />
-                    <Text style={[styles.statValue, { color: colors.text }]}>{user.titles.length}</Text>
+                    <Text style={[styles.statValue, { color: colors.text }]}>
+                      {user.titles.length}
+                    </Text>
                     <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Titles</Text>
                   </View>
                 )}
@@ -366,7 +392,10 @@ export default function UserProfileScreen() {
           {user.is_friend ? (
             // Already friends - show "Friend" button with options menu
             <TouchableOpacity
-              style={[styles.friendButton, { backgroundColor: colors.success + '20', borderColor: colors.success }]}
+              style={[
+                styles.friendButton,
+                { backgroundColor: colors.success + '20', borderColor: colors.success },
+              ]}
               onPress={() => setShowFriendMenu(true)}
             >
               <Ionicons name="checkmark-circle" size={20} color={colors.success} />
@@ -399,7 +428,7 @@ export default function UserProfileScreen() {
               <Button
                 variant="outline"
                 fullWidth
-                onPress={handleCancelRequest}
+                onPress={handleDeclineRequest}
                 loading={actionLoading}
                 style={{ flex: 1 }}
               >
@@ -414,7 +443,14 @@ export default function UserProfileScreen() {
               onPress={handleSendRequest}
               loading={actionLoading}
               style={{ marginTop: 12 }}
-              icon={<Ionicons name="person-add" size={18} color={colors.primary} style={{ marginRight: 8 }} />}
+              icon={
+                <Ionicons
+                  name="person-add"
+                  size={18}
+                  color={colors.primary}
+                  style={{ marginRight: 8 }}
+                />
+              }
             >
               Send Friend Request
             </Button>
@@ -422,12 +458,7 @@ export default function UserProfileScreen() {
 
           {/* Block button - only show if not friends */}
           {!user.is_friend && (
-            <Button
-              variant="danger"
-              fullWidth
-              onPress={handleBlockUser}
-              style={{ marginTop: 12 }}
-            >
+            <Button variant="danger" fullWidth onPress={handleBlockUser} style={{ marginTop: 12 }}>
               Block User
             </Button>
           )}
@@ -446,7 +477,7 @@ export default function UserProfileScreen() {
             <TouchableWithoutFeedback>
               <View style={[styles.menuContainer, { backgroundColor: colors.surface }]}>
                 <Text style={[styles.menuTitle, { color: colors.text }]}>Friend Options</Text>
-                
+
                 <TouchableOpacity
                   style={[styles.menuItem, { borderBottomColor: colors.border }]}
                   onPress={handleInviteToForum}
@@ -471,10 +502,7 @@ export default function UserProfileScreen() {
                   <Text style={[styles.menuItemText, { color: colors.error }]}>Remove Friend</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  style={styles.menuItem}
-                  onPress={handleBlockUser}
-                >
+                <TouchableOpacity style={styles.menuItem} onPress={handleBlockUser}>
                   <Ionicons name="ban" size={22} color={colors.error} />
                   <Text style={[styles.menuItemText, { color: colors.error }]}>Block</Text>
                 </TouchableOpacity>

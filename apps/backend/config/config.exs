@@ -130,5 +130,8 @@ config :ex_aws,
     region: "auto"
   ]
 
+# Suppress Tesla Builder deprecation warning (we'll migrate when ready)
+config :tesla, disable_deprecated_builder_warning: true
+
 # Import environment specific config
 import_config "#{config_env()}.exs"

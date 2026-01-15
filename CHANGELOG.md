@@ -97,7 +97,18 @@ testing infrastructure, and developer experience improvements.
 
 - `apps/mobile/src/lib/deepLinks.ts` - Deep link handler and routing
 
-### 📊 Code Statistics
+### � Bug Fixes
+
+| Fix                          | Description                                                                                                                    |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| IdempotencyPlug Success-Only | Fixed idempotency caching to only store keys after successful (2xx) responses, allowing retries on failed requests             |
+| Case-Insensitive Username    | Fixed `get_user_by_username/1` to use case-insensitive matching with PostgreSQL `lower()` function                             |
+| HTTP Client Idempotency      | Added `regenerateIdempotencyKey()` helper to regenerate keys on 401 refresh retry and general retry paths                      |
+| Session Token Hash           | Fixed `user_json.ex` sessions function to compare hashed tokens using `token_hash` field instead of non-existent `token` field |
+| Friends API Routes           | Fixed 6 route mismatches in `friendsService.ts` (accept/decline/cancel/block/unblock/mute)                                     |
+| Friend Request UI Handlers   | Added missing `handleDeclineRequest` and fixed `handleCancelRequest`/`handleAcceptRequest` in `UserProfileScreen.tsx`          |
+
+### �📊 Code Statistics
 
 | Category             | Lines Added |
 | -------------------- | ----------- |
