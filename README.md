@@ -9,11 +9,11 @@
 #### Real-time messaging • Community forums • End-to-end encryption • Web3 authentication • Gamification
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.9.1-green.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-973%20passing-brightgreen.svg)](#testing)
+[![Version](https://img.shields.io/badge/version-0.9.2-green.svg)](CHANGELOG.md)
+[![Tests](https://img.shields.io/badge/tests-1030%20passing-brightgreen.svg)](#testing)
 [![Elixir](https://img.shields.io/badge/elixir-1.17+-purple.svg)](https://elixir-lang.org/)
 
-**Current version:** 0.9.1 (January 2026)
+**Current version:** 0.9.2 (January 2026)
 
 [🌐 Website](https://www.cgraph.org) · [📚 Documentation](docs/) · [🔌 API Reference](docs/API.md) ·
 [🤝 Contributing](CONTRIBUTING.md)
@@ -34,6 +34,8 @@
 | **No Phone Required**     |             ✅              | ⚠️ Often required |
 | **Self-Hostable**         |       ✅ Full control       |    ⚠️ Limited     |
 | **Role Permissions**      |         ✅ Granular         |     ⚠️ Basic      |
+| **Referral System**       | ✅ Tiered rewards & leaderboards |        ❌         |
+| **Offline Support**       | ✅ Full queue & auto-sync   |     ⚠️ Limited    |
 
 CGraph combines the best of modern communication platforms—real-time messaging, organized servers,
 rich forums, end-to-end encryption, and gamification—all in one self-hostable package.
@@ -104,7 +106,18 @@ rich forums, end-to-end encryption, and gamification—all in one self-hostable 
 - Biometric authentication (Face ID, fingerprint)
 - Push notifications
 - Camera and media integration
-- Offline message drafts
+- **Full offline support** - Queue messages, reactions, posts with auto-sync on reconnect
+- Priority-based offline queue with exponential backoff
+- Network state monitoring with automatic retry
+
+### 🎁 Referral System
+
+- Unique referral codes with easy sharing
+- Tiered reward structure with progressive bonuses
+- Real-time leaderboards (daily, weekly, monthly, all-time)
+- Track referral status and conversions
+- Claim rewards when tiers are reached
+- Platform-aware sharing (iOS Share Sheet, Android intents)
 
 ---
 

@@ -89,6 +89,7 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 
 // Static pages
 const NotFound = lazy(() => import('@/pages/NotFound'));
+const LandingPage = lazy(() => import('@/pages/LandingPage'));
 
 // Test pages (dev only, lazy)
 const MatrixTest = lazy(() => import('@/pages/test/MatrixTest'));
@@ -191,15 +192,13 @@ export default function App() {
         {/* Enhanced Components Demo */}
         <Route path="/test/enhanced" element={<EnhancedDemo />} />
         
-        {/* Public routes */}
+        {/* Public landing page - shown to unauthenticated visitors */}
         <Route
           path="/"
-          element={
-            <PublicRoute>
-              <Navigate to="/login" replace />
-            </PublicRoute>
-          }
+          element={<LandingPage />}
         />
+        
+        {/* Auth routes */}
         <Route
           path="/login"
           element={

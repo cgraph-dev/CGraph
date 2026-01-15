@@ -369,6 +369,12 @@ export type ForumsStackParamList = {
   Post: { postId: string };
   CreatePost: { forumId: string };
   CreateForum: undefined;
+  // MyBB-style forum screens
+  ForumBoard: { forumId: string; boardId: string; boardName?: string };
+  ForumSettings: { forumId: string };
+  ForumAdmin: { forumId: string };
+  ForumLeaderboard: { forumId?: string };
+  PluginMarketplace: { forumId?: string };
 };
 
 export type SettingsStackParamList = {

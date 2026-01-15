@@ -1,3 +1,19 @@
+/**
+ * UICustomizationScreen - Comprehensive Theme Customization Interface
+ *
+ * Features:
+ * - 5 tabs: Colors, Typography, Layout, Effects, Animations
+ * - Live preview card showing real-time changes
+ * - 12 preset themes with one-tap selection
+ * - Undo/Redo functionality
+ * - Import/Export theme JSON
+ * - Validation warnings
+ * - Accessibility warnings
+ *
+ * @version 2.0.0
+ * @since v0.10.0
+ */
+
 import React, { useState, useCallback } from 'react';
 import {
   View,
@@ -7,129 +23,35 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
-  Animated,
   Share,
-  TextInput,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '../../contexts/ThemeContext';
-import GlassCard from '../../components/ui/GlassCard';
-import { HapticFeedback, AnimationColors } from '@/lib/animations/AnimationEngine';
-import { SettingsStackParamList } from '../../types';
+import { useCustomization } from '@/contexts/CustomizationContext';
+import useCustomizationStore, { useIsDirty, useCanUndo, useCanRedo } from '@/stores/customizationStore';
+import { PRESET_THEMES } from '@/lib/customization/PresetThemes';
+import type { ThemeConfig, ColorShade } from '@/lib/customization/CustomizationEngine';
+import { SettingsStackParamList } from '@/types';
 
 type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'UICustomization'>;
 };
 
+type TabId = 'colors' | 'typography' | 'layout' | 'effects' | 'animations';
+
 // ============================================================================
-// TYPES
+// HAPTIC HELPERS
 // ============================================================================
 
-export interface UIPreferences {
-  // Theme & Colors
-  theme: 'dark' | 'darker' | 'midnight' | 'amoled';
-  primaryColor: string;
-  accentColor: string;
-  backgroundStyle: 'solid' | 'gradient' | 'animated';
-
-  // Glass Effects
-  glassEffect: 'none' | 'default' | 'frosted' | 'crystal' | 'holographic';
-  glassBlur: number;
-  glassOpacity: number;
-  glowIntensity: number;
-
-  // Animations
-  animationSpeed: 'instant' | 'fast' | 'normal' | 'slow';
-  animationIntensity: 'minimal' | 'low' | 'medium' | 'high';
-  enableTransitions: boolean;
-  enableHoverEffects: boolean;
-  enableParallax: boolean;
-
-  // Particles & Effects
-  particleSystem: 'none' | 'minimal' | 'medium' | 'heavy';
-  showAmbientEffects: boolean;
-  showGlowEffects: boolean;
-  showShadows: boolean;
-
-  // Typography
-  fontSize: 'small' | 'medium' | 'large' | 'xlarge';
-  fontWeight: 'light' | 'normal' | 'medium' | 'bold';
-
-  // Spacing & Layout
-  spacing: 'compact' | 'normal' | 'comfortable' | 'spacious';
-  borderRadius: number;
-
-  // Performance
-  reducedMotion: boolean;
-  hardwareAcceleration: boolean;
-  lazyLoadImages: boolean;
-
-  // Accessibility
-  highContrast: boolean;
-  largeClickTargets: boolean;
-  enableHapticFeedback: boolean;
-  enableSoundEffects: boolean;
-}
-
-const defaultPreferences: UIPreferences = {
-  theme: 'dark',
-  primaryColor: '#10b981',
-  accentColor: '#8b5cf6',
-  backgroundStyle: 'gradient',
-
-  glassEffect: 'holographic',
-  glassBlur: 20,
-  glassOpacity: 15,
-  glowIntensity: 50,
-
-  animationSpeed: 'normal',
-  animationIntensity: 'high',
-  enableTransitions: true,
-  enableHoverEffects: true,
-  enableParallax: true,
-
-  particleSystem: 'medium',
-  showAmbientEffects: true,
-  showGlowEffects: true,
-  showShadows: true,
-
-  fontSize: 'medium',
-  fontWeight: 'normal',
-
-  spacing: 'normal',
-  borderRadius: 12,
-
-  reducedMotion: false,
-  hardwareAcceleration: true,
-  lazyLoadImages: true,
-
-  highContrast: false,
-  largeClickTargets: false,
-  enableHapticFeedback: true,
-  enableSoundEffects: false,
+const haptic = {
+  light: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+  medium: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium),
+  success: () => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success),
 };
-
-const STORAGE_KEY = 'cgraph-ui-preferences';
-
-// ============================================================================
-// COLOR PRESETS
-// ============================================================================
-
-const colorPresets = [
-  { name: 'Emerald', primary: '#10b981', accent: '#8b5cf6' },
-  { name: 'Ocean', primary: '#3b82f6', accent: '#06b6d4' },
-  { name: 'Sunset', primary: '#f59e0b', accent: '#ef4444' },
-  { name: 'Berry', primary: '#ec4899', accent: '#8b5cf6' },
-  { name: 'Forest', primary: '#22c55e', accent: '#84cc16' },
-  { name: 'Royal', primary: '#6366f1', accent: '#a855f7' },
-  { name: 'Fire', primary: '#ef4444', accent: '#f97316' },
-  { name: 'Mint', primary: '#2dd4bf', accent: '#22d3ee' },
-];
 
 // ============================================================================
 // SETTINGS SECTION COMPONENT
@@ -137,7 +59,7 @@ const colorPresets = [
 
 interface SectionProps {
   title: string;
-  icon: string;
+  icon: keyof typeof Ionicons.glyphMap;
   iconColor: string;
   children: React.ReactNode;
 }
@@ -147,7 +69,7 @@ function SettingsSection({ title, icon, iconColor, children }: SectionProps) {
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <View style={[styles.sectionIcon, { backgroundColor: iconColor + '20' }]}>
-          <Ionicons name={icon as any} size={18} color={iconColor} />
+          <Ionicons name={icon} size={18} color={iconColor} />
         </View>
         <Text style={styles.sectionTitle}>{title}</Text>
       </View>
@@ -179,55 +101,12 @@ function ToggleRow({ label, description, value, onToggle }: ToggleRowProps) {
       <Switch
         value={value}
         onValueChange={(newValue) => {
-          HapticFeedback.light();
+          haptic.light();
           onToggle(newValue);
         }}
         trackColor={{ false: '#374151', true: '#10b981' }}
         thumbColor={value ? '#fff' : '#9ca3af'}
       />
-    </View>
-  );
-}
-
-interface SegmentedRowProps {
-  label: string;
-  description?: string;
-  options: { value: string; label: string }[];
-  selected: string;
-  onSelect: (value: string) => void;
-}
-
-function SegmentedRow({ label, description, options, selected, onSelect }: SegmentedRowProps) {
-  return (
-    <View style={styles.optionRowVertical}>
-      <View style={styles.optionInfo}>
-        <Text style={styles.optionLabel}>{label}</Text>
-        {description && <Text style={styles.optionDescription}>{description}</Text>}
-      </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.segmentedControl}>
-        {options.map((option) => (
-          <TouchableOpacity
-            key={option.value}
-            style={[
-              styles.segmentedOption,
-              selected === option.value && styles.segmentedOptionSelected,
-            ]}
-            onPress={() => {
-              HapticFeedback.light();
-              onSelect(option.value);
-            }}
-          >
-            <Text
-              style={[
-                styles.segmentedOptionText,
-                selected === option.value && styles.segmentedOptionTextSelected,
-              ]}
-            >
-              {option.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
     </View>
   );
 }
@@ -238,17 +117,18 @@ interface SliderRowProps {
   min: number;
   max: number;
   step?: number;
+  suffix?: string;
   onValueChange: (value: number) => void;
 }
 
-function SliderRow({ label, value, min, max, step = 1, onValueChange }: SliderRowProps) {
+function SliderRow({ label, value, min, max, step = 1, suffix = '', onValueChange }: SliderRowProps) {
   const percentage = ((value - min) / (max - min)) * 100;
 
   return (
     <View style={styles.optionRowVertical}>
       <View style={styles.sliderHeader}>
         <Text style={styles.optionLabel}>{label}</Text>
-        <Text style={styles.sliderValue}>{value}</Text>
+        <Text style={styles.sliderValue}>{value}{suffix}</Text>
       </View>
       <View style={styles.sliderContainer}>
         <View style={styles.sliderTrack}>
@@ -258,7 +138,7 @@ function SliderRow({ label, value, min, max, step = 1, onValueChange }: SliderRo
           <TouchableOpacity
             style={styles.sliderButton}
             onPress={() => {
-              HapticFeedback.light();
+              haptic.light();
               onValueChange(Math.max(min, value - step));
             }}
           >
@@ -267,7 +147,7 @@ function SliderRow({ label, value, min, max, step = 1, onValueChange }: SliderRo
           <TouchableOpacity
             style={styles.sliderButton}
             onPress={() => {
-              HapticFeedback.light();
+              haptic.light();
               onValueChange(Math.min(max, value + step));
             }}
           >
@@ -279,50 +159,138 @@ function SliderRow({ label, value, min, max, step = 1, onValueChange }: SliderRo
   );
 }
 
-// ============================================================================
-// COLOR PICKER COMPONENT
-// ============================================================================
-
-interface ColorPickerProps {
+interface ColorShadePickerProps {
   label: string;
-  presets: typeof colorPresets;
-  selectedPrimary: string;
-  selectedAccent: string;
-  onSelect: (primary: string, accent: string) => void;
+  shades: ColorShade;
+  onSelect: (shade: keyof ColorShade) => void;
 }
 
-function ColorPicker({ label, presets, selectedPrimary, selectedAccent, onSelect }: ColorPickerProps) {
+function ColorShadePicker({ label, shades, onSelect }: ColorShadePickerProps) {
+  const shadeKeys = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
+
   return (
     <View style={styles.optionRowVertical}>
       <Text style={styles.optionLabel}>{label}</Text>
-      <View style={styles.colorGrid}>
-        {presets.map((preset) => {
-          const isSelected = preset.primary === selectedPrimary && preset.accent === selectedAccent;
+      <View style={styles.colorShadeGrid}>
+        {shadeKeys.map((shade) => (
+          <TouchableOpacity
+            key={shade}
+            style={[styles.colorShadeBox, { backgroundColor: shades[shade] }]}
+            onPress={() => {
+              haptic.medium();
+              onSelect(shade);
+            }}
+          >
+            <Text style={styles.colorShadeLabel}>{shade}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </View>
+  );
+}
+
+// ============================================================================
+// PRESET THEME SELECTOR
+// ============================================================================
+
+interface PresetSelectorProps {
+  currentThemeName: string;
+  onSelect: (theme: ThemeConfig) => void;
+}
+
+function PresetSelector({ currentThemeName, onSelect }: PresetSelectorProps) {
+  return (
+    <View style={styles.presetSection}>
+      <Text style={styles.presetTitle}>Quick Presets</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.presetScroll}>
+        {PRESET_THEMES.map((theme) => {
+          const isSelected = theme.name === currentThemeName;
           return (
             <TouchableOpacity
-              key={preset.name}
-              style={[styles.colorPreset, isSelected && styles.colorPresetSelected]}
+              key={theme.name}
+              style={[styles.presetCard, isSelected && styles.presetCardSelected]}
               onPress={() => {
-                HapticFeedback.medium();
-                onSelect(preset.primary, preset.accent);
+                haptic.medium();
+                onSelect(theme);
               }}
             >
               <LinearGradient
-                colors={[preset.primary, preset.accent]}
+                colors={[theme.colors.primary[500], theme.colors.secondary[500]]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.colorPresetGradient}
+                style={styles.presetGradient}
               />
-              <Text style={styles.colorPresetName}>{preset.name}</Text>
+              <Text style={styles.presetName}>{theme.name}</Text>
               {isSelected && (
-                <View style={styles.colorPresetCheck}>
+                <View style={styles.presetCheck}>
                   <Ionicons name="checkmark" size={12} color="#fff" />
                 </View>
               )}
             </TouchableOpacity>
           );
         })}
-      </View>
+      </ScrollView>
+    </View>
+  );
+}
+
+// ============================================================================
+// LIVE PREVIEW CARD
+// ============================================================================
+
+function LivePreviewCard() {
+  const { theme, getColor, getSpacing, getBorderRadius } = useCustomization();
+
+  return (
+    <View style={styles.previewSection}>
+      <Text style={styles.previewTitle}>Live Preview</Text>
+      <BlurView
+        intensity={theme.effects.blur.intensity}
+        tint="dark"
+        style={[
+          styles.previewCard,
+          {
+            borderRadius: getBorderRadius('lg'),
+            padding: getSpacing('md'),
+          },
+        ]}
+      >
+        <View style={styles.previewHeader}>
+          <View style={[styles.previewAvatar, { backgroundColor: getColor('primary.500') }]}>
+            <Ionicons name="person" size={24} color="#fff" />
+          </View>
+          <View style={styles.previewInfo}>
+            <Text style={[styles.previewName, { color: getColor('text.primary') }]}>
+              Sample User
+            </Text>
+            <Text style={[styles.previewSubtext, { color: getColor('text.secondary') }]}>
+              This is how your theme looks
+            </Text>
+          </View>
+        </View>
+        <View
+          style={[
+            styles.previewButton,
+            {
+              backgroundColor: getColor('primary.500'),
+              borderRadius: getBorderRadius('md'),
+            },
+          ]}
+        >
+          <Text style={styles.previewButtonText}>Primary Button</Text>
+        </View>
+        <View
+          style={[
+            styles.previewButton,
+            {
+              backgroundColor: getColor('secondary.500'),
+              borderRadius: getBorderRadius('md'),
+            },
+          ]}
+        >
+          <Text style={styles.previewButtonText}>Secondary Button</Text>
+        </View>
+      </BlurView>
     </View>
   );
 }
@@ -332,82 +300,117 @@ function ColorPicker({ label, presets, selectedPrimary, selectedAccent, onSelect
 // ============================================================================
 
 export default function UICustomizationScreen({ navigation }: Props) {
-  const { colors } = useTheme();
-  const [preferences, setPreferences] = useState<UIPreferences>(defaultPreferences);
-  const [activeTab, setActiveTab] = useState<'theme' | 'effects' | 'animations' | 'accessibility'>('theme');
+  const { theme } = useCustomization();
+  const isDirty = useIsDirty();
+  const canUndo = useCanUndo();
+  const canRedo = useCanRedo();
+  const {
+    updateTheme,
+    saveTheme,
+    undo,
+    redo,
+    resetTheme,
+    exportTheme,
+    importTheme,
+    validateTheme,
+    isAccessible,
+  } = useCustomizationStore();
 
-  // Load preferences on mount
-  React.useEffect(() => {
-    loadPreferences();
-  }, []);
+  const [activeTab, setActiveTab] = useState<TabId>('colors');
 
-  const loadPreferences = async () => {
+  const handleSave = useCallback(async () => {
+    haptic.success();
     try {
-      const stored = await AsyncStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        setPreferences({ ...defaultPreferences, ...JSON.parse(stored) });
-      }
+      await saveTheme();
+      Alert.alert('Success', 'Theme saved successfully!');
     } catch (error) {
-      console.error('Failed to load preferences:', error);
+      Alert.alert('Error', 'Failed to save theme');
     }
-  };
+  }, [saveTheme]);
 
-  const savePreferences = async (newPrefs: UIPreferences) => {
-    try {
-      await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(newPrefs));
-    } catch (error) {
-      console.error('Failed to save preferences:', error);
-    }
-  };
-
-  const updatePreference = useCallback(<K extends keyof UIPreferences>(
-    key: K,
-    value: UIPreferences[K]
-  ) => {
-    setPreferences((prev) => {
-      const newPrefs = { ...prev, [key]: value };
-      savePreferences(newPrefs);
-      return newPrefs;
-    });
-  }, []);
-
-  const resetToDefaults = () => {
-    HapticFeedback.medium();
+  const handleReset = useCallback(() => {
+    haptic.medium();
     Alert.alert(
-      'Reset Settings',
-      'Are you sure you want to reset all UI customization settings to their defaults?',
+      'Reset Theme',
+      'Reset to default theme? This cannot be undone.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Reset',
           style: 'destructive',
           onPress: () => {
-            setPreferences(defaultPreferences);
-            savePreferences(defaultPreferences);
-            HapticFeedback.success();
+            resetTheme();
+            haptic.success();
           },
         },
       ]
     );
-  };
+  }, [resetTheme]);
 
-  const exportPreferences = async () => {
-    HapticFeedback.medium();
+  const handleExport = useCallback(async () => {
+    haptic.medium();
     try {
+      const json = exportTheme();
       await Share.share({
-        message: JSON.stringify(preferences, null, 2),
-        title: 'CGraph UI Preferences',
+        message: json,
+        title: `${theme.name} Theme`,
       });
     } catch (error) {
-      console.error('Failed to export:', error);
+      Alert.alert('Error', 'Failed to export theme');
     }
-  };
+  }, [exportTheme, theme.name]);
 
-  const tabs = [
-    { id: 'theme' as const, label: 'Theme', icon: 'color-palette' },
-    { id: 'effects' as const, label: 'Effects', icon: 'sparkles' },
-    { id: 'animations' as const, label: 'Motion', icon: 'flash' },
-    { id: 'accessibility' as const, label: 'Access', icon: 'accessibility' },
+  const handleImport = useCallback(() => {
+    haptic.medium();
+    Alert.prompt(
+      'Import Theme',
+      'Paste theme JSON below:',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Import',
+          onPress: (json?: string) => {
+            if (json) {
+              try {
+                importTheme(json);
+                haptic.success();
+                Alert.alert('Success', 'Theme imported successfully!');
+              } catch (error) {
+                Alert.alert('Error', 'Invalid theme JSON');
+              }
+            }
+          },
+        },
+      ],
+      'plain-text'
+    );
+  }, [importTheme]);
+
+  const handleValidate = useCallback(() => {
+    const validation = validateTheme();
+    const accessibility = isAccessible();
+
+    let message = '';
+    if (validation.valid && accessibility.accessible) {
+      message = '✅ Theme is valid and accessible!';
+    } else {
+      if (!validation.valid) {
+        message += 'Validation errors:\n' + validation.errors.join('\n') + '\n\n';
+      }
+      if (!accessibility.accessible) {
+        message += 'Accessibility warnings:\n' + accessibility.warnings.join('\n');
+      }
+    }
+
+    Alert.alert('Theme Validation', message);
+  }, [validateTheme, isAccessible]);
+
+  const tabs: Array<{ id: TabId; label: string; icon: keyof typeof Ionicons.glyphMap }> = [
+    { id: 'colors', label: 'Colors', icon: 'color-palette' },
+    { id: 'typography', label: 'Type', icon: 'text' },
+    { id: 'layout', label: 'Layout', icon: 'grid' },
+    { id: 'effects', label: 'Effects', icon: 'sparkles' },
+    { id: 'animations', label: 'Motion', icon: 'flash' },
   ];
 
   return (
@@ -422,45 +425,53 @@ export default function UICustomizationScreen({ navigation }: Props) {
         <TouchableOpacity
           style={styles.backButton}
           onPress={() => {
-            HapticFeedback.light();
+            haptic.light();
             navigation.goBack();
           }}
         >
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
         <View style={styles.headerTitleContainer}>
-          <Text style={styles.headerTitle}>UI Customization</Text>
-          <Text style={styles.headerSubtitle}>Personalize your experience</Text>
+          <Text style={styles.headerTitle}>Theme Studio</Text>
+          <Text style={styles.headerSubtitle}>
+            {theme.name} {isDirty ? '(unsaved)' : ''}
+          </Text>
         </View>
         <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerButton} onPress={exportPreferences}>
-            <Ionicons name="share-outline" size={22} color="#fff" />
+          <TouchableOpacity
+            style={[styles.headerButton, !canUndo && styles.headerButtonDisabled]}
+            onPress={() => canUndo && undo()}
+            disabled={!canUndo}
+          >
+            <Ionicons name="arrow-undo" size={20} color={canUndo ? '#fff' : '#666'} />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.headerButton} onPress={resetToDefaults}>
-            <Ionicons name="refresh" size={22} color="#ef4444" />
+          <TouchableOpacity
+            style={[styles.headerButton, !canRedo && styles.headerButtonDisabled]}
+            onPress={() => canRedo && redo()}
+            disabled={!canRedo}
+          >
+            <Ionicons name="arrow-redo" size={20} color={canRedo ? '#fff' : '#666'} />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Tab Navigation */}
+      {/* Tab Bar */}
       <View style={styles.tabBar}>
         {tabs.map((tab) => (
           <TouchableOpacity
             key={tab.id}
             style={[styles.tab, activeTab === tab.id && styles.tabActive]}
             onPress={() => {
-              HapticFeedback.light();
+              haptic.light();
               setActiveTab(tab.id);
             }}
           >
             <Ionicons
-              name={tab.icon as any}
-              size={20}
+              name={tab.icon}
+              size={18}
               color={activeTab === tab.id ? '#10b981' : '#6b7280'}
             />
-            <Text
-              style={[styles.tabLabel, activeTab === tab.id && styles.tabLabelActive]}
-            >
+            <Text style={[styles.tabLabel, activeTab === tab.id && styles.tabLabelActive]}>
               {tab.label}
             </Text>
           </TouchableOpacity>
@@ -472,68 +483,157 @@ export default function UICustomizationScreen({ navigation }: Props) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Theme Tab */}
-        {activeTab === 'theme' && (
+        {/* Live Preview */}
+        <LivePreviewCard />
+
+        {/* Preset Themes */}
+        <PresetSelector
+          currentThemeName={theme.name}
+          onSelect={(presetTheme) => updateTheme(presetTheme)}
+        />
+
+        {/* Colors Tab */}
+        {activeTab === 'colors' && (
           <>
-            <SettingsSection title="Color Scheme" icon="color-palette" iconColor="#ec4899">
-              <ColorPicker
-                label="Choose a Color Theme"
-                presets={colorPresets}
-                selectedPrimary={preferences.primaryColor}
-                selectedAccent={preferences.accentColor}
-                onSelect={(primary, accent) => {
-                  updatePreference('primaryColor', primary);
-                  updatePreference('accentColor', accent);
+            <SettingsSection title="Primary Color" icon="color-filter" iconColor="#10b981">
+              <ColorShadePicker
+                label="Primary Shades"
+                shades={theme.colors.primary}
+                onSelect={(shade) => {
+                  // Color editing would require a full color picker
+                  Alert.alert('Info', `Selected shade: ${shade}`);
                 }}
               />
             </SettingsSection>
 
-            <SettingsSection title="Theme Style" icon="moon" iconColor="#8b5cf6">
-              <SegmentedRow
-                label="Dark Mode Intensity"
-                options={[
-                  { value: 'dark', label: 'Dark' },
-                  { value: 'darker', label: 'Darker' },
-                  { value: 'midnight', label: 'Midnight' },
-                  { value: 'amoled', label: 'AMOLED' },
-                ]}
-                selected={preferences.theme}
-                onSelect={(value) => updatePreference('theme', value as UIPreferences['theme'])}
+            <SettingsSection title="Secondary Color" icon="color-filter" iconColor="#8b5cf6">
+              <ColorShadePicker
+                label="Secondary Shades"
+                shades={theme.colors.secondary}
+                onSelect={(shade) => {
+                  Alert.alert('Info', `Selected shade: ${shade}`);
+                }}
               />
-              <SegmentedRow
-                label="Background Style"
-                options={[
-                  { value: 'solid', label: 'Solid' },
-                  { value: 'gradient', label: 'Gradient' },
-                  { value: 'animated', label: 'Animated' },
-                ]}
-                selected={preferences.backgroundStyle}
-                onSelect={(value) => updatePreference('backgroundStyle', value as UIPreferences['backgroundStyle'])}
+            </SettingsSection>
+          </>
+        )}
+
+        {/* Typography Tab */}
+        {activeTab === 'typography' && (
+          <>
+            <SettingsSection title="Font Settings" icon="text" iconColor="#3b82f6">
+              <SliderRow
+                label="Base Font Size"
+                value={theme.typography.baseSize}
+                min={12}
+                max={20}
+                step={1}
+                suffix="px"
+                onValueChange={(value) =>
+                  updateTheme({
+                    typography: { ...theme.typography, baseSize: value },
+                  })
+                }
+              />
+              <SliderRow
+                label="Scale Ratio"
+                value={parseFloat(theme.typography.scaleRatio.toFixed(2))}
+                min={1.1}
+                max={1.5}
+                step={0.05}
+                onValueChange={(value) =>
+                  updateTheme({
+                    typography: { ...theme.typography, scaleRatio: value },
+                  })
+                }
+              />
+              <SliderRow
+                label="Line Height"
+                value={theme.typography.lineHeight}
+                min={1.2}
+                max={2.0}
+                step={0.1}
+                onValueChange={(value) =>
+                  updateTheme({
+                    typography: { ...theme.typography, lineHeight: value },
+                  })
+                }
+              />
+            </SettingsSection>
+          </>
+        )}
+
+        {/* Layout Tab */}
+        {activeTab === 'layout' && (
+          <>
+            <SettingsSection title="Spacing" icon="resize" iconColor="#f59e0b">
+              <SliderRow
+                label="Grid Size"
+                value={theme.spacing.gridSize}
+                min={4}
+                max={12}
+                step={2}
+                suffix="px"
+                onValueChange={(value) =>
+                  updateTheme({
+                    spacing: { ...theme.spacing, gridSize: value },
+                  })
+                }
               />
             </SettingsSection>
 
-            <SettingsSection title="Typography" icon="text" iconColor="#3b82f6">
-              <SegmentedRow
-                label="Font Size"
-                options={[
-                  { value: 'small', label: 'S' },
-                  { value: 'medium', label: 'M' },
-                  { value: 'large', label: 'L' },
-                  { value: 'xlarge', label: 'XL' },
-                ]}
-                selected={preferences.fontSize}
-                onSelect={(value) => updatePreference('fontSize', value as UIPreferences['fontSize'])}
+            <SettingsSection title="Border Radius" icon="apps" iconColor="#ec4899">
+              <SliderRow
+                label="None"
+                value={theme.borderRadius.none}
+                min={0}
+                max={4}
+                step={1}
+                suffix="px"
+                onValueChange={(value) =>
+                  updateTheme({
+                    borderRadius: { ...theme.borderRadius, none: value },
+                  })
+                }
               />
-              <SegmentedRow
-                label="Font Weight"
-                options={[
-                  { value: 'light', label: 'Light' },
-                  { value: 'normal', label: 'Normal' },
-                  { value: 'medium', label: 'Medium' },
-                  { value: 'bold', label: 'Bold' },
-                ]}
-                selected={preferences.fontWeight}
-                onSelect={(value) => updatePreference('fontWeight', value as UIPreferences['fontWeight'])}
+              <SliderRow
+                label="Small"
+                value={theme.borderRadius.sm}
+                min={2}
+                max={8}
+                step={1}
+                suffix="px"
+                onValueChange={(value) =>
+                  updateTheme({
+                    borderRadius: { ...theme.borderRadius, sm: value },
+                  })
+                }
+              />
+              <SliderRow
+                label="Medium"
+                value={theme.borderRadius.md}
+                min={4}
+                max={16}
+                step={2}
+                suffix="px"
+                onValueChange={(value) =>
+                  updateTheme({
+                    borderRadius: { ...theme.borderRadius, md: value },
+                  })
+                }
+              />
+              <SliderRow
+                label="Large"
+                value={theme.borderRadius.lg}
+                min={8}
+                max={24}
+                step={2}
+                suffix="px"
+                onValueChange={(value) =>
+                  updateTheme({
+                    borderRadius: { ...theme.borderRadius, lg: value },
+                  })
+                }
               />
             </SettingsSection>
           </>
@@ -542,97 +642,131 @@ export default function UICustomizationScreen({ navigation }: Props) {
         {/* Effects Tab */}
         {activeTab === 'effects' && (
           <>
-            <SettingsSection title="Glass Effects" icon="sparkles" iconColor="#06b6d4">
-              <SegmentedRow
-                label="Glass Style"
-                options={[
-                  { value: 'none', label: 'None' },
-                  { value: 'default', label: 'Default' },
-                  { value: 'frosted', label: 'Frosted' },
-                  { value: 'crystal', label: 'Crystal' },
-                  { value: 'holographic', label: 'Holo' },
-                ]}
-                selected={preferences.glassEffect}
-                onSelect={(value) => updatePreference('glassEffect', value as UIPreferences['glassEffect'])}
-              />
+            <SettingsSection title="Blur Effects" icon="water" iconColor="#06b6d4">
               <SliderRow
-                label="Glass Blur"
-                value={preferences.glassBlur}
-                min={0}
-                max={50}
-                step={5}
-                onValueChange={(value) => updatePreference('glassBlur', value)}
-              />
-              <SliderRow
-                label="Glass Opacity"
-                value={preferences.glassOpacity}
+                label="Blur Intensity"
+                value={theme.effects.blur.intensity}
                 min={0}
                 max={100}
                 step={5}
-                onValueChange={(value) => updatePreference('glassOpacity', value)}
+                onValueChange={(value) =>
+                  updateTheme({
+                    effects: {
+                      ...theme.effects,
+                      blur: { ...theme.effects.blur, intensity: value },
+                    },
+                  })
+                }
               />
-              <SliderRow
-                label="Glow Intensity"
-                value={preferences.glowIntensity}
-                min={0}
-                max={100}
-                step={10}
-                onValueChange={(value) => updatePreference('glowIntensity', value)}
+              <ToggleRow
+                label="Enable Blur"
+                description="Glassmorphism effect on cards"
+                value={theme.effects.blur.enabled}
+                onToggle={(value) =>
+                  updateTheme({
+                    effects: {
+                      ...theme.effects,
+                      blur: { ...theme.effects.blur, enabled: value },
+                    },
+                  })
+                }
               />
             </SettingsSection>
 
-            <SettingsSection title="Particles & Ambient" icon="planet" iconColor="#f59e0b">
-              <SegmentedRow
-                label="Particle System"
-                options={[
-                  { value: 'none', label: 'Off' },
-                  { value: 'minimal', label: 'Min' },
-                  { value: 'medium', label: 'Med' },
-                  { value: 'heavy', label: 'Heavy' },
-                ]}
-                selected={preferences.particleSystem}
-                onSelect={(value) => updatePreference('particleSystem', value as UIPreferences['particleSystem'])}
-              />
+            <SettingsSection title="Particle System" icon="sparkles" iconColor="#f59e0b">
               <ToggleRow
-                label="Ambient Effects"
-                description="Subtle background animations"
-                value={preferences.showAmbientEffects}
-                onToggle={(value) => updatePreference('showAmbientEffects', value)}
+                label="Enable Particles"
+                description="Background particle effects"
+                value={theme.effects.particles.enabled}
+                onToggle={(value) =>
+                  updateTheme({
+                    effects: {
+                      ...theme.effects,
+                      particles: { ...theme.effects.particles, enabled: value },
+                    },
+                  })
+                }
               />
-              <ToggleRow
-                label="Glow Effects"
-                description="Light glow around interactive elements"
-                value={preferences.showGlowEffects}
-                onToggle={(value) => updatePreference('showGlowEffects', value)}
-              />
-              <ToggleRow
-                label="Shadows"
-                description="Drop shadows on cards and buttons"
-                value={preferences.showShadows}
-                onToggle={(value) => updatePreference('showShadows', value)}
-              />
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Particle Density</Text>
+                <View style={{ marginTop: 10 }}>
+                  {(['off', 'low', 'medium', 'high', 'ultra'] as const).map((density) => (
+                    <TouchableOpacity
+                      key={density}
+                      style={[
+                        styles.segmentedOption,
+                        theme.effects.particles.density === density && styles.segmentedOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.light();
+                        updateTheme({
+                          effects: {
+                            ...theme.effects,
+                            particles: { ...theme.effects.particles, density },
+                          },
+                        });
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.segmentedOptionText,
+                          theme.effects.particles.density === density && styles.segmentedOptionTextSelected,
+                        ]}
+                      >
+                        {density.charAt(0).toUpperCase() + density.slice(1)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </View>
             </SettingsSection>
 
-            <SettingsSection title="Layout" icon="grid" iconColor="#22c55e">
-              <SegmentedRow
-                label="Content Spacing"
-                options={[
-                  { value: 'compact', label: 'Compact' },
-                  { value: 'normal', label: 'Normal' },
-                  { value: 'comfortable', label: 'Comfy' },
-                  { value: 'spacious', label: 'Spacious' },
-                ]}
-                selected={preferences.spacing}
-                onSelect={(value) => updatePreference('spacing', value as UIPreferences['spacing'])}
+            <SettingsSection title="Glow Effects" icon="radio-button-on" iconColor="#8b5cf6">
+              <ToggleRow
+                label="Enable Glow"
+                description="Glowing borders and highlights"
+                value={theme.effects.glow.enabled}
+                onToggle={(value) =>
+                  updateTheme({
+                    effects: {
+                      ...theme.effects,
+                      glow: { ...theme.effects.glow, enabled: value },
+                    },
+                  })
+                }
               />
-              <SliderRow
-                label="Border Radius"
-                value={preferences.borderRadius}
-                min={0}
-                max={24}
-                step={2}
-                onValueChange={(value) => updatePreference('borderRadius', value)}
-              />
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Glow Intensity</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+                  {(['off', 'subtle', 'moderate', 'intense'] as const).map((intensity) => (
+                    <TouchableOpacity
+                      key={intensity}
+                      style={[
+                        styles.segmentedOption,
+                        theme.effects.glow.intensity === intensity && styles.segmentedOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.light();
+                        updateTheme({
+                          effects: {
+                            ...theme.effects,
+                            glow: { ...theme.effects.glow, intensity },
+                          },
+                        });
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.segmentedOptionText,
+                          theme.effects.glow.intensity === intensity && styles.segmentedOptionTextSelected,
+                        ]}
+                      >
+                        {intensity.charAt(0).toUpperCase() + intensity.slice(1)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
             </SettingsSection>
           </>
         )}
@@ -640,153 +774,137 @@ export default function UICustomizationScreen({ navigation }: Props) {
         {/* Animations Tab */}
         {activeTab === 'animations' && (
           <>
-            <SettingsSection title="Animation Settings" icon="flash" iconColor="#f59e0b">
-              <SegmentedRow
-                label="Animation Speed"
-                options={[
-                  { value: 'instant', label: 'Instant' },
-                  { value: 'fast', label: 'Fast' },
-                  { value: 'normal', label: 'Normal' },
-                  { value: 'slow', label: 'Slow' },
-                ]}
-                selected={preferences.animationSpeed}
-                onSelect={(value) => updatePreference('animationSpeed', value as UIPreferences['animationSpeed'])}
-              />
-              <SegmentedRow
-                label="Animation Intensity"
-                options={[
-                  { value: 'minimal', label: 'Min' },
-                  { value: 'low', label: 'Low' },
-                  { value: 'medium', label: 'Med' },
-                  { value: 'high', label: 'High' },
-                ]}
-                selected={preferences.animationIntensity}
-                onSelect={(value) => updatePreference('animationIntensity', value as UIPreferences['animationIntensity'])}
+            <SettingsSection title="Animation Speed" icon="speedometer" iconColor="#10b981">
+              <SliderRow
+                label="Speed Multiplier"
+                value={theme.animations.speed}
+                min={0.5}
+                max={2.0}
+                step={0.1}
+                suffix="x"
+                onValueChange={(value) =>
+                  updateTheme({
+                    animations: { ...theme.animations, speed: value },
+                  })
+                }
               />
             </SettingsSection>
 
-            <SettingsSection title="Animation Toggles" icon="toggle" iconColor="#8b5cf6">
-              <ToggleRow
-                label="Transitions"
-                description="Smooth transitions between screens"
-                value={preferences.enableTransitions}
-                onToggle={(value) => updatePreference('enableTransitions', value)}
+            <SettingsSection title="Spring Physics" icon="leaf" iconColor="#22c55e">
+              <SliderRow
+                label="Tension"
+                value={theme.animations.springPhysics.tension}
+                min={50}
+                max={300}
+                step={10}
+                onValueChange={(value) =>
+                  updateTheme({
+                    animations: {
+                      ...theme.animations,
+                      springPhysics: { ...theme.animations.springPhysics, tension: value },
+                    },
+                  })
+                }
               />
-              <ToggleRow
-                label="Hover Effects"
-                description="Interactive feedback on touch"
-                value={preferences.enableHoverEffects}
-                onToggle={(value) => updatePreference('enableHoverEffects', value)}
-              />
-              <ToggleRow
-                label="Parallax Effects"
-                description="Depth effect on scroll"
-                value={preferences.enableParallax}
-                onToggle={(value) => updatePreference('enableParallax', value)}
+              <SliderRow
+                label="Friction"
+                value={theme.animations.springPhysics.friction}
+                min={5}
+                max={40}
+                step={1}
+                onValueChange={(value) =>
+                  updateTheme({
+                    animations: {
+                      ...theme.animations,
+                      springPhysics: { ...theme.animations.springPhysics, friction: value },
+                    },
+                  })
+                }
               />
             </SettingsSection>
 
-            <SettingsSection title="Performance" icon="speedometer" iconColor="#10b981">
+            <SettingsSection title="Haptic Feedback" icon="hand-left" iconColor="#ec4899">
               <ToggleRow
-                label="Reduced Motion"
-                description="Minimize animations for accessibility"
-                value={preferences.reducedMotion}
-                onToggle={(value) => updatePreference('reducedMotion', value)}
+                label="Enable Haptics"
+                description="Vibration feedback on interactions"
+                value={theme.animations.haptics.enabled}
+                onToggle={(value) =>
+                  updateTheme({
+                    animations: {
+                      ...theme.animations,
+                      haptics: { ...theme.animations.haptics, enabled: value },
+                    },
+                  })
+                }
               />
-              <ToggleRow
-                label="Hardware Acceleration"
-                description="Use GPU for smoother animations"
-                value={preferences.hardwareAcceleration}
-                onToggle={(value) => updatePreference('hardwareAcceleration', value)}
-              />
-              <ToggleRow
-                label="Lazy Load Images"
-                description="Load images as they appear on screen"
-                value={preferences.lazyLoadImages}
-                onToggle={(value) => updatePreference('lazyLoadImages', value)}
-              />
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Haptic Strength</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+                  {(['off', 'light', 'medium', 'strong'] as const).map((strength) => (
+                    <TouchableOpacity
+                      key={strength}
+                      style={[
+                        styles.segmentedOption,
+                        theme.animations.haptics.strength === strength && styles.segmentedOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.light();
+                        updateTheme({
+                          animations: {
+                            ...theme.animations,
+                            haptics: { ...theme.animations.haptics, strength },
+                          },
+                        });
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.segmentedOptionText,
+                          theme.animations.haptics.strength === strength && styles.segmentedOptionTextSelected,
+                        ]}
+                      >
+                        {strength.charAt(0).toUpperCase() + strength.slice(1)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
             </SettingsSection>
           </>
         )}
 
-        {/* Accessibility Tab */}
-        {activeTab === 'accessibility' && (
-          <>
-            <SettingsSection title="Visual Accessibility" icon="eye" iconColor="#3b82f6">
-              <ToggleRow
-                label="High Contrast"
-                description="Increase text and border contrast"
-                value={preferences.highContrast}
-                onToggle={(value) => updatePreference('highContrast', value)}
-              />
-              <ToggleRow
-                label="Large Touch Targets"
-                description="Bigger buttons for easier tapping"
-                value={preferences.largeClickTargets}
-                onToggle={(value) => updatePreference('largeClickTargets', value)}
-              />
-            </SettingsSection>
+        {/* Bottom Actions */}
+        <View style={styles.bottomActions}>
+          <TouchableOpacity style={styles.actionButton} onPress={handleImport}>
+            <Ionicons name="cloud-download" size={20} color="#fff" />
+            <Text style={styles.actionButtonText}>Import</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={handleExport}>
+            <Ionicons name="cloud-upload" size={20} color="#fff" />
+            <Text style={styles.actionButtonText}>Export</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={handleValidate}>
+            <Ionicons name="checkmark-circle" size={20} color="#fff" />
+            <Text style={styles.actionButtonText}>Validate</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={handleReset}>
+            <Ionicons name="refresh" size={20} color="#ef4444" />
+            <Text style={styles.actionButtonText}>Reset</Text>
+          </TouchableOpacity>
+        </View>
 
-            <SettingsSection title="Feedback" icon="hand-left" iconColor="#ec4899">
-              <ToggleRow
-                label="Haptic Feedback"
-                description="Vibration feedback on interactions"
-                value={preferences.enableHapticFeedback}
-                onToggle={(value) => updatePreference('enableHapticFeedback', value)}
-              />
-              <ToggleRow
-                label="Sound Effects"
-                description="Audio feedback on actions"
-                value={preferences.enableSoundEffects}
-                onToggle={(value) => updatePreference('enableSoundEffects', value)}
-              />
-            </SettingsSection>
-
-            <SettingsSection title="Quick Actions" icon="flash" iconColor="#f59e0b">
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => {
-                  HapticFeedback.medium();
-                  updatePreference('reducedMotion', true);
-                  updatePreference('animationIntensity', 'minimal');
-                  updatePreference('particleSystem', 'none');
-                  updatePreference('showAmbientEffects', false);
-                }}
-              >
-                <LinearGradient
-                  colors={['#3b82f6', '#2563eb']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.actionButtonGradient}
-                >
-                  <Ionicons name="accessibility" size={20} color="#fff" />
-                  <Text style={styles.actionButtonText}>Enable Accessibility Mode</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={() => {
-                  HapticFeedback.medium();
-                  updatePreference('animationIntensity', 'high');
-                  updatePreference('glassEffect', 'holographic');
-                  updatePreference('particleSystem', 'medium');
-                  updatePreference('showAmbientEffects', true);
-                  updatePreference('showGlowEffects', true);
-                }}
-              >
-                <LinearGradient
-                  colors={['#8b5cf6', '#7c3aed']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.actionButtonGradient}
-                >
-                  <Ionicons name="sparkles" size={20} color="#fff" />
-                  <Text style={styles.actionButtonText}>Enable Premium Effects</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </SettingsSection>
-          </>
+        {isDirty && (
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <LinearGradient
+              colors={['#10b981', '#059669']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.saveButtonGradient}
+            >
+              <Ionicons name="save" size={22} color="#fff" />
+              <Text style={styles.saveButtonText}>Save Theme</Text>
+            </LinearGradient>
+          </TouchableOpacity>
         )}
 
         <View style={styles.bottomPadding} />
@@ -808,7 +926,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 56,
+    paddingTop: Platform.OS === 'ios' ? 56 : 16,
     paddingBottom: 16,
   },
   backButton: {
@@ -829,7 +947,7 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   headerSubtitle: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#9ca3af',
     marginTop: 2,
   },
@@ -845,6 +963,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  headerButtonDisabled: {
+    opacity: 0.4,
+  },
   tabBar: {
     flexDirection: 'row',
     paddingHorizontal: 16,
@@ -856,17 +977,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 8,
-    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 6,
+    borderRadius: 10,
     backgroundColor: 'rgba(255,255,255,0.05)',
-    gap: 6,
+    gap: 4,
   },
   tabActive: {
     backgroundColor: 'rgba(16, 185, 129, 0.15)',
   },
   tabLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: '#6b7280',
   },
@@ -880,13 +1001,114 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 8,
   },
+  previewSection: {
+    marginBottom: 20,
+  },
+  previewTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#9ca3af',
+    marginBottom: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  previewCard: {
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  previewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  previewAvatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewInfo: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  previewName: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  previewSubtext: {
+    fontSize: 13,
+    marginTop: 2,
+  },
+  previewButton: {
+    paddingVertical: 12,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  previewButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  presetSection: {
+    marginBottom: 20,
+  },
+  presetTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#9ca3af',
+    marginBottom: 10,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  presetScroll: {
+    flexGrow: 0,
+  },
+  presetCard: {
+    width: 100,
+    height: 100,
+    marginRight: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'transparent',
+  },
+  presetCardSelected: {
+    borderColor: '#10b981',
+  },
+  presetGradient: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    padding: 8,
+  },
+  presetName: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#fff',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  presetCheck: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: '#10b981',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   section: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 10,
   },
   sectionIcon: {
     width: 32,
@@ -896,45 +1118,105 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     color: '#fff',
     marginLeft: 10,
   },
   sectionContent: {
-    borderRadius: 16,
+    borderRadius: 14,
     overflow: 'hidden',
-    padding: 16,
+    padding: 14,
   },
   optionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: 'rgba(255,255,255,0.08)',
   },
   optionRowVertical: {
-    paddingVertical: 12,
+    paddingVertical: 10,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255,255,255,0.1)',
+    borderBottomColor: 'rgba(255,255,255,0.08)',
   },
   optionInfo: {
     flex: 1,
     marginRight: 12,
   },
   optionLabel: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '500',
     color: '#fff',
   },
   optionDescription: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#9ca3af',
     marginTop: 2,
   },
-  segmentedControl: {
+  sliderHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  sliderValue: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#10b981',
+  },
+  sliderContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+    gap: 10,
+  },
+  sliderTrack: {
+    flex: 1,
+    height: 5,
+    borderRadius: 2.5,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    overflow: 'hidden',
+  },
+  sliderFill: {
+    height: '100%',
+    backgroundColor: '#10b981',
+    borderRadius: 2.5,
+  },
+  sliderButtons: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  sliderButton: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  colorShadeGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     marginTop: 10,
+    gap: 8,
+  },
+  colorShadeBox: {
+    width: '18%',
+    aspectRatio: 1,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  colorShadeLabel: {
+    fontSize: 9,
+    fontWeight: '600',
+    color: '#fff',
+    textShadowColor: 'rgba(0,0,0,0.8)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   segmentedOption: {
     paddingVertical: 8,
@@ -954,103 +1236,45 @@ const styles = StyleSheet.create({
   segmentedOptionTextSelected: {
     color: '#fff',
   },
-  sliderHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  sliderValue: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#10b981',
-  },
-  sliderContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-    gap: 12,
-  },
-  sliderTrack: {
-    flex: 1,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    overflow: 'hidden',
-  },
-  sliderFill: {
-    height: '100%',
-    backgroundColor: '#10b981',
-    borderRadius: 3,
-  },
-  sliderButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  sliderButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  colorGrid: {
+  bottomActions: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 12,
     gap: 10,
-  },
-  colorPreset: {
-    width: '22%',
-    aspectRatio: 1,
-    borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
-  },
-  colorPresetSelected: {
-    borderColor: '#fff',
-  },
-  colorPresetGradient: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    padding: 6,
-  },
-  colorPresetName: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: '#fff',
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
-  },
-  colorPresetCheck: {
-    position: 'absolute',
-    top: 6,
-    right: 6,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: '#10b981',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginTop: 10,
+    marginBottom: 20,
   },
   actionButton: {
-    marginVertical: 8,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  actionButtonGradient: {
+    flex: 1,
+    minWidth: '45%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    gap: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    gap: 8,
   },
   actionButtonText: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
+    color: '#fff',
+  },
+  saveButton: {
+    marginTop: 10,
+    borderRadius: 14,
+    overflow: 'hidden',
+  },
+  saveButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    gap: 10,
+  },
+  saveButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
     color: '#fff',
   },
   bottomPadding: {

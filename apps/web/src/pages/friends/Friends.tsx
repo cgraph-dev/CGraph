@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFriendStore, Friend, FriendRequest } from '@/stores/friendStore';
+import { extractErrorMessage } from '@/lib/apiUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -30,6 +31,7 @@ export default function Friends() {
   const [addFriendInput, setAddFriendInput] = useState('');
   const [addFriendError, setAddFriendError] = useState('');
   const [addFriendSuccess, setAddFriendSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
 
   const {
@@ -85,13 +87,24 @@ export default function Friends() {
       return;
     }
 
+    if (isSubmitting) return; // Prevent double-clicks
+    setIsSubmitting(true);
+
     try {
       await sendRequest(addFriendInput.trim());
       setAddFriendSuccess(true);
       setAddFriendInput('');
       setTimeout(() => setAddFriendSuccess(false), 3000);
-    } catch {
-      setAddFriendError(error || 'Failed to send friend request');
+    } catch (err: unknown) {
+      // Extract error message from axios error response or use store error
+      let errorMsg = extractErrorMessage(err, error || 'Failed to send friend request');
+      // Map technical messages to user-friendly ones
+      if (errorMsg.includes('Idempotency-Key') || errorMsg.includes('idempotency')) {
+        errorMsg = 'Please wait a moment before trying again';
+      }
+      setAddFriendError(errorMsg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -114,9 +127,9 @@ export default function Friends() {
   };
 
   return (
-    <div className="flex flex-1 h-full max-h-screen overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
+    <div className="flex flex-1 h-full overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Friends List Panel */}
-      <div className="w-96 bg-dark-900/50 backdrop-blur-xl border-r border-primary-500/20 flex flex-col h-full relative">
+      <div className="w-96 bg-dark-900/50 backdrop-blur-xl border-r border-primary-500/20 flex flex-col overflow-hidden relative">
         {/* Ambient glow effect */}
         <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
 
@@ -169,10 +182,10 @@ export default function Friends() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       type="submit"
-                      disabled={isLoading}
+                      disabled={isLoading || isSubmitting}
                       className="px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
                     >
-                      Send
+                      {isSubmitting ? 'Sending...' : 'Send'}
                     </motion.button>
                   </div>
                   <AnimatePresence mode="wait">
@@ -415,7 +428,7 @@ export default function Friends() {
       </div>
 
       {/* Welcome Panel - Right Side */}
-      <div className="flex-1 flex flex-col h-full min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <motion.div
           className="flex-1 flex items-center justify-center bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative overflow-hidden"
           initial={{ opacity: 0 }}

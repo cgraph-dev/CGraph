@@ -112,8 +112,15 @@ export default function UserProfileScreen() {
       setUser({ ...user, friend_request_sent: true });
       Alert.alert('Success', 'Friend request sent!');
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { error?: string } } };
-      Alert.alert('Error', error.response?.data?.error || 'Failed to send request');
+      const error = err as { response?: { data?: { error?: { message?: string } | string } } };
+      let errorMessage = typeof error.response?.data?.error === 'object'
+        ? error.response?.data?.error?.message
+        : error.response?.data?.error;
+      // Map technical messages to user-friendly ones
+      if (errorMessage?.includes('Idempotency-Key') || errorMessage?.includes('idempotency')) {
+        errorMessage = 'Please wait a moment before trying again';
+      }
+      Alert.alert('Error', errorMessage || 'Failed to send request');
     } finally {
       setActionLoading(false);
     }
@@ -142,8 +149,11 @@ export default function UserProfileScreen() {
       setUser({ ...user, is_friend: true, friend_request_received: false });
       Alert.alert('Success', 'Friend request accepted!');
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { error?: string } } };
-      Alert.alert('Error', error.response?.data?.error || 'Failed to accept request');
+      const error = err as { response?: { data?: { error?: { message?: string } | string } } };
+      const errorMessage = typeof error.response?.data?.error === 'object'
+        ? error.response?.data?.error?.message
+        : error.response?.data?.error;
+      Alert.alert('Error', errorMessage || 'Failed to accept request');
     } finally {
       setActionLoading(false);
     }
@@ -295,7 +305,7 @@ export default function UserProfileScreen() {
                         <Text style={styles.levelText}>Level {user.level}</Text>
                       </View>
                       {user.xp !== undefined && (
-                        <Text style={styles.xpText}>{user.xp.toLocaleString()} XP</Text>
+                        <Text style={styles.xpText}>{(user.xp ?? 0).toLocaleString()} XP</Text>
                       )}
                     </View>
                   </LinearGradient>

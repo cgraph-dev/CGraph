@@ -1,7 +1,7 @@
 # CGraph Work Summary
 
-> **Version:** 0.9.1  
-> **Last Updated:** January 14, 2026  
+> **Version:** 0.9.2  
+> **Last Updated:** January 15, 2026  
 > **Status:** Active Development
 
 ---
@@ -14,6 +14,8 @@ CGraph is an all-in-one open-source communication platform with:
 - **Real-Time Messaging** - Phoenix Channels, sub-50ms latency
 - **Community Forums** - MyBB-style with Reddit-style discovery
 - **Gamification** - XP, levels, achievements, quests, streaks
+- **Referral System** - Tiered rewards, leaderboards, share functionality
+- **Offline Support** - Priority queue, auto-sync on network restore
 - **Cross-Platform** - Web (React), Mobile (React Native), Backend (Elixir/Phoenix)
 
 ---
@@ -52,11 +54,16 @@ CGraph/
 | Forum System (Posts, Comments, Voting)  | ✅  |   ✅   |   ✅    |
 | Gamification (XP, Levels, Achievements) | ✅  |   ✅   |   ✅    |
 | E2E Encryption Infrastructure           | ✅  |   ✅   |   ✅    |
+| E2EE Hook (useE2EE)                     | ✅  |   ✅   |   ✅    |
 | UI Components (GlassCard, Animations)   | ✅  |   ✅   |   N/A   |
 | Avatar Customization                    | ✅  |   ✅   |   ✅    |
 | Thread Prefixes & Ratings               | ✅  |   ✅   |   ✅    |
 | Poll System                             | ✅  |   ✅   |   ✅    |
 | File Attachments                        | ✅  |   ✅   |   ✅    |
+| Referral System (useReferrals)          | 🔄  |   ✅   |   ✅    |
+| Offline Queue (useOfflineQueue)         | 🔄  |   ✅   |   N/A   |
+| Error Boundaries                        | ✅  |   ✅   |   N/A   |
+| Theme System (Light/Dark)               | ✅  |   ✅   |   N/A   |
 
 ### 🔄 Integration Pending (Hooks Exist, Backend Connection Needed)
 
@@ -130,7 +137,40 @@ pnpm build
 
 ---
 
-## Recent Changes (v0.9.1)
+## Recent Changes (v0.9.2)
+
+### January 15, 2026 - Mobile Infrastructure
+
+**New Hooks:**
+- `useE2EE` (550 lines) - Complete E2EE management with 18 methods
+- `useReferrals` (306 lines) - Referral program with caching, leaderboards
+- `useOfflineQueue` - React wrapper for offline queue system
+
+**New Services:**
+- `referralService.ts` (357 lines) - 9 API functions for referrals
+- `OfflineQueue.ts` (516 lines) - Priority queue with network monitoring
+
+**New Components:**
+- `ErrorBoundary.tsx` (370 lines) - Error boundary + variants + HOC
+
+**Theme Enhancements:**
+- Enhanced `ThemeContext.tsx` with 80+ color tokens per theme
+- Professional light theme matching dark theme structure
+- System preference support with `isDark` helper
+
+**Test Files (57 tests total):**
+- `useE2EE.test.ts` (16 tests)
+- `useReferrals.test.ts` (10 tests)
+- `useOfflineQueue.test.ts` (14 tests)
+- `ErrorBoundary.test.tsx` (17 tests)
+
+**Bug Fixes:**
+- Fixed API import in useE2EE and OfflineQueue (default export)
+- Fixed AxiosResponse `.data` property access
+
+---
+
+## Previous Changes (v0.9.1)
 
 - CI now builds backend and web Docker images each PR to validate health checks early.
 - Security workflow runs gitleaks, hadolint (backend/web Dockerfiles), Sobelow, pnpm audit, Syft SBOM, and Grype vulnerability scan with artifacts uploaded.

@@ -2,24 +2,24 @@ defmodule CGraph.Accounts.UsernameChange do
   @moduledoc """
   Schema for tracking username change history.
   """
-  
+
   use Ecto.Schema
   import Ecto.Changeset
-  
+
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
-  
+
   schema "username_changes" do
     field :old_username, :string
     field :new_username, :string
     field :reason, :string
     field :changed_by_admin, :boolean, default: false
-    
+
     belongs_to :user, CGraph.Accounts.User
-    
+
     timestamps()
   end
-  
+
   def changeset(username_change, attrs) do
     username_change
     |> cast(attrs, [:user_id, :old_username, :new_username, :reason, :changed_by_admin])

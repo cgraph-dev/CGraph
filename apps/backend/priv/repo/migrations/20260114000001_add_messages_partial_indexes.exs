@@ -67,17 +67,17 @@ defmodule CGraph.Repo.Migrations.AddMessagesPartialIndexes do
     WHERE deleted_at IS NULL
     """
 
-    # Add partial indexes for forum posts table if it exists
+    # Add partial indexes for posts table if it exists
     execute """
-    CREATE INDEX CONCURRENTLY IF NOT EXISTS forum_posts_thread_active_idx
-    ON forum_posts (thread_id, inserted_at DESC)
-    WHERE deleted_at IS NULL
+    CREATE INDEX CONCURRENTLY IF NOT EXISTS posts_forum_active_idx
+    ON posts (forum_id, inserted_at DESC)
+    WHERE removed_at IS NULL
     """
 
     execute """
-    CREATE INDEX CONCURRENTLY IF NOT EXISTS forum_posts_author_active_idx
-    ON forum_posts (author_id, inserted_at DESC)
-    WHERE deleted_at IS NULL
+    CREATE INDEX CONCURRENTLY IF NOT EXISTS posts_author_active_idx
+    ON posts (author_id, inserted_at DESC)
+    WHERE removed_at IS NULL
     """
   end
 
@@ -86,7 +86,7 @@ defmodule CGraph.Repo.Migrations.AddMessagesPartialIndexes do
     execute "DROP INDEX CONCURRENTLY IF EXISTS messages_channel_active_idx"
     execute "DROP INDEX CONCURRENTLY IF EXISTS messages_sender_active_idx"
     execute "DROP INDEX CONCURRENTLY IF EXISTS messages_unread_count_idx"
-    execute "DROP INDEX CONCURRENTLY IF EXISTS forum_posts_thread_active_idx"
-    execute "DROP INDEX CONCURRENTLY IF EXISTS forum_posts_author_active_idx"
+    execute "DROP INDEX CONCURRENTLY IF EXISTS posts_forum_active_idx"
+    execute "DROP INDEX CONCURRENTLY IF EXISTS posts_author_active_idx"
   end
 end

@@ -296,9 +296,13 @@ export default function AddFriendScreen() {
       }, 2000);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { error?: { message?: string } | string } } };
-      const errorMessage = typeof error.response?.data?.error === 'object' 
+      let errorMessage = typeof error.response?.data?.error === 'object' 
         ? error.response?.data?.error?.message 
         : error.response?.data?.error;
+      // Map technical messages to user-friendly ones
+      if (errorMessage?.includes('Idempotency-Key') || errorMessage?.includes('idempotency')) {
+        errorMessage = 'Please wait a moment before trying again';
+      }
       setError(errorMessage || 'Failed to send friend request');
     } finally {
       setLoading(false);

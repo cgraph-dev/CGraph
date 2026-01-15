@@ -383,7 +383,7 @@ export default function CoinShop() {
               <div>
                 <p className="text-sm text-gray-400">Your Balance</p>
                 <p className="text-2xl font-bold text-yellow-400">
-                  {coinBalance.toLocaleString()}
+                  {(coinBalance ?? 0).toLocaleString()}
                 </p>
               </div>
             </div>
@@ -481,8 +481,8 @@ export default function CoinShop() {
                       <CurrencyDollarIcon className="h-5 w-5 text-white" />
                     </motion.div>
 
-                    <p className="text-xl font-bold text-white">{bundle.coins.toLocaleString()}</p>
-                    {bundle.bonusCoins > 0 && (
+                    <p className="text-xl font-bold text-white">{(bundle?.coins ?? 0).toLocaleString()}</p>
+                    {(bundle?.bonusCoins ?? 0) > 0 && (
                       <p className="text-xs text-green-400 font-semibold">
                         +{bundle.bonusCoins} bonus
                       </p>
@@ -619,7 +619,7 @@ export default function CoinShop() {
                         <div className="flex items-center gap-1">
                           <CurrencyDollarIcon className="h-5 w-5 text-yellow-400" />
                           <span className="font-bold text-yellow-400">
-                            {item.coinPrice.toLocaleString()}
+                            {(item?.coinPrice ?? 0).toLocaleString()}
                           </span>
                         </div>
 

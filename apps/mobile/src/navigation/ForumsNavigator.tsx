@@ -7,6 +7,12 @@ import ForumScreen from '../screens/forums/ForumScreen';
 import PostScreen from '../screens/forums/PostScreen';
 import CreatePostScreen from '../screens/forums/CreatePostScreen';
 import CreateForumScreen from '../screens/forums/CreateForumScreen';
+// MyBB-style forum screens
+import ForumBoardScreen from '../screens/forums/ForumBoardScreen';
+import ForumSettingsScreen from '../screens/forums/ForumSettingsScreen';
+import ForumAdminScreen from '../screens/forums/ForumAdminScreen';
+import ForumLeaderboardScreen from '../screens/forums/ForumLeaderboardScreen';
+import PluginMarketplaceScreen from '../screens/forums/PluginMarketplaceScreen';
 
 const Stack = createNativeStackNavigator<ForumsStackParamList>();
 
@@ -50,6 +56,32 @@ export default function ForumsNavigator() {
         name="CreateForum"
         component={CreateForumScreen}
         options={{ title: 'Create Forum', presentation: 'modal' }}
+      />
+      {/* MyBB-style forum screens */}
+      <Stack.Screen
+        name="ForumBoard"
+        component={ForumBoardScreen}
+        options={{ title: 'Board' }}
+      />
+      <Stack.Screen
+        name="ForumSettings"
+        component={ForumSettingsScreen}
+        options={{ title: 'Forum Settings' }}
+      />
+      <Stack.Screen
+        name="ForumAdmin"
+        component={ForumAdminScreen}
+        options={{ title: 'Admin Panel' }}
+      />
+      <Stack.Screen
+        name="ForumLeaderboard"
+        component={ForumLeaderboardScreen}
+        options={{ title: 'Leaderboard' }}
+      />
+      <Stack.Screen
+        name="PluginMarketplace"
+        component={PluginMarketplaceScreen}
+        options={{ title: 'Plugins' }}
       />
     </Stack.Navigator>
   );

@@ -32,13 +32,13 @@ defmodule CGraph.Application do
 
       # Start Cachex for local caching with memory bounds
       # Default: 100MB limit with LRU eviction (configurable via CACHEX_LIMIT_MB)
-      {Cachex, cachex_config(:cgraph_cache)},
+      Supervisor.child_spec({Cachex, cachex_config(:cgraph_cache)}, id: :cgraph_cache),
 
       # Separate cache for sessions with shorter TTL
-      {Cachex, cachex_config(:session_cache, limit: 50_000, ttl: :timer.hours(24))},
+      Supervisor.child_spec({Cachex, cachex_config(:session_cache, limit: 50_000, ttl: :timer.hours(24))}, id: :session_cache),
 
       # Token cache for JWT/rate limit lookups
-      {Cachex, cachex_config(:token_cache, limit: 100_000, ttl: :timer.minutes(15))},
+      Supervisor.child_spec({Cachex, cachex_config(:token_cache, limit: 100_000, ttl: :timer.minutes(15))}, id: :token_cache),
 
       # JWT key rotation manager (supports dual-key verification during rotation)
       CGraph.Security.JWTKeyRotation,
@@ -154,24 +154,28 @@ defmodule CGraph.Application do
     limit = Keyword.get(opts, :limit, default_limit)
     default_ttl = Keyword.get(opts, :ttl, :timer.hours(1))
 
-    # Cachex 4.x uses hooks for limits
+    # Cachex 4.x uses hooks for limits and stats
     # See: https://hexdocs.pm/cachex/Cachex.Limit.Scheduled.html
     import Cachex.Spec
 
     [
       name: name,
       # LRW eviction when limit reached (scheduled policy - lower memory overhead)
+      # Cachex 4.x format: {max_size, prune_options, hook_options}
       hooks: [
-        hook(module: Cachex.Limit.Scheduled, args: {limit, [reclaim: 0.1]})
+        hook(module: Cachex.Stats),
+        hook(module: Cachex.Limit.Scheduled, args: {
+          limit,           # max size
+          [reclaim: 0.1],  # options for Cachex.prune/3
+          []               # options for Cachex.Limit.Scheduled (e.g., frequency)
+        })
       ],
       # Default TTL for entries without explicit TTL
       expiration: expiration(
         default: default_ttl,
         interval: :timer.seconds(30),
         lazy: true
-      ),
-      # Stats for monitoring
-      stats: true
+      )
     ]
   end
 end

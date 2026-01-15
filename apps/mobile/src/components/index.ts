@@ -61,6 +61,14 @@ export { default as TypingIndicator } from './conversation/TypingIndicator';
 // UI Components - Premium Glassmorphism Design
 export { default as GlassCard } from './ui/GlassCard';
 export { default as AnimatedAvatar } from './ui/AnimatedAvatar';
+export { default as BottomSheet } from './ui/BottomSheet';
+export type { BottomSheetProps, SnapPoint } from './ui/BottomSheet';
+export { default as ConfettiCelebration } from './ui/ConfettiCelebration';
+export type { ConfettiCelebrationProps, ConfettiPattern } from './ui/ConfettiCelebration';
+export { default as MarkdownRenderer } from './ui/MarkdownRenderer';
+export type { MarkdownRendererProps } from './ui/MarkdownRenderer';
+export { default as Carousel, ParallaxImage, ScaleItem } from './ui/Carousel';
+export type { CarouselProps, CarouselItem } from './ui/Carousel';
 
 // Gamification Components - Full Engagement System
 export { default as TitleBadge } from './gamification/TitleBadge';
@@ -94,6 +102,14 @@ export type { HolographicTheme, HolographicConfig } from './enhanced';
 
 // Attachment Picker
 export { default as TelegramAttachmentPicker } from './TelegramAttachmentPicker';
+
+// Error Boundaries - Production Stability
+export {
+  ErrorBoundary,
+  ScreenErrorBoundary,
+  ComponentErrorBoundary,
+  withErrorBoundary,
+} from './error';
 
 // Animation Engine - Re-export for direct access
 export * from '../lib/animations/AnimationEngine';

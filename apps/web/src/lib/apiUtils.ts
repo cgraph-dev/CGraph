@@ -217,6 +217,11 @@ export function extractErrorMessage(
       if (response.data && typeof response.data === 'object') {
         const data = response.data as Record<string, unknown>;
         if (typeof data.error === 'string') return data.error;
+        // Handle error object with message property: {"error": {"message": "...", "code": "..."}}
+        if (data.error && typeof data.error === 'object') {
+          const errorObj = data.error as Record<string, unknown>;
+          if (typeof errorObj.message === 'string') return errorObj.message;
+        }
         if (typeof data.message === 'string') return data.message;
         if (Array.isArray(data.errors) && data.errors.length > 0) {
           return data.errors.map((e: unknown) =>

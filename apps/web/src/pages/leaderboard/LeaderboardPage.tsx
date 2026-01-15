@@ -349,10 +349,11 @@ export default function LeaderboardPage() {
   }
 
   // Format value based on category
-  const formatValue = (value: number): string => {
-    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
-    return value.toLocaleString();
+  const formatValue = (value: number | undefined | null): string => {
+    const num = value ?? 0;
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toLocaleString();
   };
 
   // Get rank change indicator
@@ -395,16 +396,17 @@ export default function LeaderboardPage() {
 
   // Filter entries by search
   const filteredEntries = useMemo(() => {
-    if (!leaderboard || !searchQuery.trim()) return leaderboard?.entries ?? [];
+    const entries = leaderboard?.entries ?? [];
+    if (!leaderboard || !searchQuery.trim()) return entries;
     const query = searchQuery.toLowerCase();
-    return leaderboard.entries.filter(
+    return entries.filter(
       entry =>
         entry.username.toLowerCase().includes(query) ||
         entry.displayName?.toLowerCase().includes(query)
     );
   }, [leaderboard, searchQuery]);
 
-  const totalPages = leaderboard ? Math.ceil(leaderboard.totalCount / pageSize) : 0;
+  const totalPages = leaderboard?.totalCount ? Math.ceil(leaderboard.totalCount / pageSize) : 0;
 
   return (
     <div className="flex-1 flex flex-col h-full max-h-screen overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative">
@@ -630,7 +632,7 @@ export default function LeaderboardPage() {
               <div className="flex items-center gap-3 text-gray-400 mb-2 sm:mb-0">
                 <GlobeAltIcon className="h-5 w-5" />
                 <span className="text-sm font-medium">
-                  {leaderboard?.totalCount.toLocaleString() || 0} participants competing
+                  {(leaderboard?.totalCount ?? 0).toLocaleString()} participants competing
                 </span>
               </div>
               <div className="flex items-center gap-2 text-gray-500">
@@ -655,7 +657,7 @@ export default function LeaderboardPage() {
             ) : (
               <>
                 {/* Top 3 Podium */}
-                {page === 1 && leaderboard && leaderboard.entries.length >= 3 && (
+                {page === 1 && leaderboard && (leaderboard.entries?.length ?? 0) >= 3 && (
                   <div className="relative py-8 px-4 border-b border-dark-700/50 bg-gradient-to-b from-dark-800/50 to-transparent">
                     {/* Spotlights */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -664,7 +666,7 @@ export default function LeaderboardPage() {
 
                     <div className="flex items-end justify-center gap-4 sm:gap-8 relative">
                       {[1, 0, 2].map((index) => {
-                        const entry = leaderboard.entries[index];
+                        const entry = leaderboard.entries?.[index];
                         if (!entry) return null;
                         const config = getRankConfig(entry.rank);
                         const isFirst = entry.rank === 1;
@@ -947,9 +949,9 @@ export default function LeaderboardPage() {
           className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4"
         >
           {[
-            { label: 'Total Users', value: leaderboard?.totalCount.toLocaleString() ?? '0', icon: <UserGroupIcon className="h-5 w-5" /> },
+            { label: 'Total Users', value: (leaderboard?.totalCount ?? 0).toLocaleString(), icon: <UserGroupIcon className="h-5 w-5" /> },
             { label: 'Active Today', value: Math.floor((leaderboard?.totalCount ?? 0) * 0.15).toLocaleString(), icon: <BoltIcon className="h-5 w-5" /> },
-            { label: 'Your Percentile', value: leaderboard?.userRank ? `Top ${Math.ceil((leaderboard.userRank.rank / (leaderboard.totalCount || 1)) * 100)}%` : 'N/A', icon: <ChartBarIcon className="h-5 w-5" /> },
+            { label: 'Your Percentile', value: leaderboard?.userRank ? `Top ${Math.ceil((leaderboard.userRank.rank / (leaderboard?.totalCount || 1)) * 100)}%` : 'N/A', icon: <ChartBarIcon className="h-5 w-5" /> },
             { label: 'Next Update', value: '5 min', icon: <ClockIcon className="h-5 w-5" /> },
           ].map((stat, index) => (
             <motion.div

@@ -121,18 +121,18 @@ defmodule CGraph.Accounts.User do
 
   @doc """
   Generic changeset for User updates.
-  
+
   This is a general-purpose changeset that can be used for updating
   any of the common user fields. For specific use cases, prefer the
   specialized changesets (profile_changeset, username_changeset, etc.).
-  
+
   ## Parameters
-  
+
   - `user` - The User struct to update
   - `attrs` - Map of attributes to update
-  
+
   ## Examples
-  
+
       iex> User.changeset(user, %{username: "new_name"})
       %Ecto.Changeset{...}
   """

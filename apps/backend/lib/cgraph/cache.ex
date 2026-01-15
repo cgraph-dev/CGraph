@@ -88,18 +88,18 @@ defmodule CGraph.Cache do
 
   @doc """
   Put a value into cache (alias for set/3).
-  
+
   This is provided for API compatibility with modules using `Cache.put/3`.
   Internally delegates to `set/3`.
-  
+
   ## Parameters
-  
+
   - `key` - Cache key
   - `value` - Value to cache
   - `ttl_or_opts` - TTL in milliseconds or keyword options
-  
+
   ## Examples
-  
+
       Cache.put("user:123", user_data, :timer.minutes(5))
       Cache.put("user:123", user_data, ttl: :timer.minutes(5))
   """

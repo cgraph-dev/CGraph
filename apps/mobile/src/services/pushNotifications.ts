@@ -16,6 +16,10 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import api from '../lib/api';
 
+// Prevent repeated warning spam during development
+let hasLoggedProjectIdWarning = false;
+let hasLoggedDeviceWarning = false;
+
 // Configure notification handling
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -46,7 +50,10 @@ export interface NotificationData {
  */
 export async function requestNotificationPermissions(): Promise<boolean> {
   if (!Device.isDevice) {
-    console.warn('[Push] Must use physical device for push notifications');
+    if (!hasLoggedDeviceWarning) {
+      console.warn('[Push] Must use physical device for push notifications');
+      hasLoggedDeviceWarning = true;
+    }
     return false;
   }
 
@@ -81,7 +88,10 @@ export async function requestNotificationPermissions(): Promise<boolean> {
  */
 export async function getExpoPushToken(): Promise<string | null> {
   if (!Device.isDevice) {
-    console.warn('[Push] Must use physical device for push notifications');
+    if (!hasLoggedDeviceWarning) {
+      console.warn('[Push] Must use physical device for push notifications');
+      hasLoggedDeviceWarning = true;
+    }
     return null;
   }
 
@@ -89,8 +99,14 @@ export async function getExpoPushToken(): Promise<string | null> {
     const projectId = Constants.expoConfig?.extra?.eas?.projectId ?? 
                       Constants.easConfig?.projectId;
     
-    if (!projectId) {
-      console.error('[Push] No EAS project ID found');
+    // Validate projectId is a proper UUID (not placeholder)
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!projectId || !uuidRegex.test(projectId)) {
+      if (!hasLoggedProjectIdWarning) {
+        console.warn('[Push] No valid EAS project ID found. Push notifications disabled in development.');
+        console.warn('[Push] To enable push notifications, run: npx expo login && eas project:init');
+        hasLoggedProjectIdWarning = true;
+      }
       return null;
     }
 

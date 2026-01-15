@@ -2,37 +2,37 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   @moduledoc """
   Repository for Member entity data access.
   """
-  
+
   import Ecto.Query, warn: false, except: [update: 2]
-  
+
   alias CGraph.Repo
   alias CGraph.Groups.Member
   alias CGraph.Cache
-  
+
   @cache_ttl :timer.minutes(5)
-  
+
   @doc """
   Get a member by user and group ID.
   """
   @spec get(String.t(), String.t()) :: Member.t() | nil
   def get(group_id, user_id) do
     cache_key = "member:#{group_id}:#{user_id}"
-    
+
     case Cache.get(cache_key) do
       {:ok, nil} ->
-        member = 
+        member =
           from(m in Member,
             where: m.group_id == ^group_id and m.user_id == ^user_id,
             where: is_nil(m.left_at)
           )
           |> Repo.one()
-        
+
         if member, do: Cache.put(cache_key, member, @cache_ttl)
         member
-        
+
       {:ok, cached} ->
         cached
-        
+
       {:error, _} ->
         from(m in Member,
           where: m.group_id == ^group_id and m.user_id == ^user_id,
@@ -41,7 +41,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
         |> Repo.one()
     end
   end
-  
+
   @doc """
   Check if a user is a member of a group.
   """
@@ -49,7 +49,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   def is_member?(group_id, user_id) do
     get(group_id, user_id) != nil
   end
-  
+
   @doc """
   List members for a group with pagination.
   """
@@ -58,15 +58,15 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
     limit = Keyword.get(opts, :limit, 50)
     offset = Keyword.get(opts, :offset, 0)
     role_id = Keyword.get(opts, :role_id)
-    
-    base_query = 
+
+    base_query =
       from m in Member,
         where: m.group_id == ^group_id,
         where: is_nil(m.left_at),
         order_by: [asc: m.inserted_at],
         preload: [:user, :roles]
-    
-    query = 
+
+    query =
       if role_id do
         from m in base_query,
           join: r in assoc(m, :roles),
@@ -76,29 +76,29 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
       end
       |> limit(^limit)
       |> offset(^offset)
-    
+
     members = Repo.all(query)
-    
-    total = 
+
+    total =
       from(m in Member,
         where: m.group_id == ^group_id and is_nil(m.left_at),
         select: count(m.id)
       )
       |> Repo.one()
-    
+
     {members, %{total: total, limit: limit, offset: offset}}
   end
-  
+
   @doc """
   Create a new member.
   """
   @spec create(map()) :: {:ok, Member.t()} | {:error, Ecto.Changeset.t()}
   def create(attrs) do
-    result = 
+    result =
       %Member{}
       |> Member.changeset(attrs)
       |> Repo.insert()
-    
+
     case result do
       {:ok, member} ->
         invalidate_member_cache(member.group_id, member.user_id)
@@ -107,17 +107,17 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
         error
     end
   end
-  
+
   @doc """
   Update a member.
   """
   @spec update(Member.t(), map()) :: {:ok, Member.t()} | {:error, Ecto.Changeset.t()}
   def update(%Member{} = member, attrs) do
-    result = 
+    result =
       member
       |> Member.changeset(attrs)
       |> Repo.update()
-    
+
     case result do
       {:ok, updated} ->
         invalidate_member_cache(updated.group_id, updated.user_id)
@@ -126,7 +126,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
         error
     end
   end
-  
+
   @doc """
   Remove a member (soft delete).
   """
@@ -134,7 +134,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   def remove(%Member{} = member) do
     update(member, %{left_at: DateTime.utc_now()})
   end
-  
+
   @doc """
   Add role to member.
   """
@@ -142,7 +142,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   def add_role(%Member{} = member, role_id) do
     member = Repo.preload(member, :roles)
     new_roles = Enum.uniq([role_id | Enum.map(member.roles, & &1.id)])
-    
+
     member
     |> Member.changeset(%{role_ids: new_roles})
     |> Repo.update()
@@ -154,7 +154,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
         error
     end
   end
-  
+
   @doc """
   Remove role from member.
   """
@@ -162,7 +162,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
   def remove_role(%Member{} = member, role_id) do
     member = Repo.preload(member, :roles)
     new_roles = member.roles |> Enum.map(& &1.id) |> Enum.reject(&(&1 == role_id))
-    
+
     member
     |> Member.changeset(%{role_ids: new_roles})
     |> Repo.update()
@@ -174,7 +174,7 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
         error
     end
   end
-  
+
   @doc """
   Get member count for a group.
   """
@@ -186,9 +186,9 @@ defmodule CGraph.Groups.Repositories.MemberRepository do
     )
     |> Repo.one()
   end
-  
+
   # Private helpers
-  
+
   defp invalidate_member_cache(group_id, user_id) do
     Cache.delete("member:#{group_id}:#{user_id}")
   end

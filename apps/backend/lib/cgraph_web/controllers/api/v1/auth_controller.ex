@@ -53,6 +53,11 @@ defmodule CGraphWeb.API.V1.AuthController do
     login(conn, %{"identifier" => email, "password" => password})
   end
 
+  def login(conn, %{"username" => username, "password" => password}) do
+    # Delegate to identifier-based login for backwards compatibility
+    login(conn, %{"identifier" => username, "password" => password})
+  end
+
   def login(conn, %{"identifier" => identifier, "password" => password}) do
     with {:ok, %{identifier: normalized_identifier, password: normalized_password}} <-
            AuthParams.validate_login(%{"identifier" => identifier, "password" => password}) do

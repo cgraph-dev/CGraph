@@ -184,7 +184,7 @@ function TitleCard({ title, onEquip, onUnequip, onPurchase, currentCoins }: Titl
               <View style={styles.priceRow}>
                 <Text style={styles.coinEmoji}>🪙</Text>
                 <Text style={[styles.priceText, !canAfford && styles.priceTextDisabled]}>
-                  {title.price.toLocaleString()}
+                  {(title.price ?? 0).toLocaleString()}
                 </Text>
               </View>
             )}
@@ -345,7 +345,7 @@ export default function TitlesScreen() {
     
     Alert.alert(
       'Purchase Title',
-      `Do you want to purchase "${title.name}" for ${title.price.toLocaleString()} coins?`,
+      `Do you want to purchase "${title.name}" for ${(title.price ?? 0).toLocaleString()} coins?`,
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -405,7 +405,7 @@ export default function TitlesScreen() {
         
         <View style={styles.headerCoins}>
           <Text style={styles.coinEmoji}>🪙</Text>
-          <Text style={styles.coinsText}>{currentCoins.toLocaleString()}</Text>
+          <Text style={styles.coinsText}>{(currentCoins ?? 0).toLocaleString()}</Text>
         </View>
       </LinearGradient>
       

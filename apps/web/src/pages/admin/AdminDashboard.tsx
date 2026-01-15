@@ -885,7 +885,7 @@ function MetricCard({
         </div>
       </div>
       <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-gray-900 dark:text-white">{value.toLocaleString()}</p>
+      <p className="text-2xl font-bold text-gray-900 dark:text-white">{(value ?? 0).toLocaleString()}</p>
       <p className={clsx('text-sm mt-1', changeColors[changeType])}>{change}</p>
     </motion.div>
   );

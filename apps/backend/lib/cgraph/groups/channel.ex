@@ -4,8 +4,18 @@ defmodule CGraph.Groups.Channel do
 
   Supports:
   - Text channels
-  - Voice channels (WebRTC)
+  - Voice channels (WebRTC) [FUTURE: Real-time voice implementation pending]
   - Announcement channels (read-only for most users)
+  - Stage channels [FUTURE: Stage/speaker events pending]
+
+  ## Voice Channel Implementation Status
+
+  Voice channel types ("voice", "stage") are defined but not yet fully implemented.
+  Future implementation will include:
+  - WebRTC signaling via Phoenix Channels
+  - SFU/MCU integration for multi-party calls
+  - Speaking indicators and voice activity detection
+  - Screen sharing support
   """
   use Ecto.Schema
   import Ecto.Changeset
@@ -19,6 +29,11 @@ defmodule CGraph.Groups.Channel do
     :group_id, :category_id, :inserted_at
   ]}
 
+  # Channel types:
+  # - "text": Standard text chat channel (fully implemented)
+  # - "voice": Voice/video channel [FUTURE: WebRTC integration pending]
+  # - "announcement": Read-only channel for announcements (fully implemented)
+  # - "stage": Speaker/audience events [FUTURE: Stage events pending]
   @channel_types ["text", "voice", "announcement", "stage"]
 
   schema "channels" do

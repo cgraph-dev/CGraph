@@ -1,4 +1,4 @@
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, useLocation, Link } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/chatStore';
@@ -211,26 +211,27 @@ export default function AppLayout() {
           />
         ))}
 
-        {/* Logo */}
+        {/* Logo - Links back to landing page */}
         <motion.div
           className="mb-6 relative"
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
         >
-          <motion.div
-            whileHover={{ scale: 1.1, rotate: 5 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-          >
-            <GlassCard
-              variant="holographic"
-              glow
-              glowColor="rgba(16, 185, 129, 0.5)"
-              className="h-12 w-12 rounded-xl p-0 flex items-center justify-center cursor-pointer"
-              role="img"
-              aria-label="CGraph logo"
+          <Link to="/" title="Back to Home">
+            <motion.div
+              whileHover={{ scale: 1.1, rotate: 5 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             >
+              <GlassCard
+                variant="holographic"
+                glow
+                glowColor="rgba(16, 185, 129, 0.5)"
+                className="h-12 w-12 rounded-xl p-0 flex items-center justify-center cursor-pointer"
+                role="img"
+                aria-label="CGraph logo - Click to go home"
+              >
               <div className="relative z-10">
                 <svg
                   className="h-7 w-7 text-white drop-shadow-lg"
@@ -249,6 +250,7 @@ export default function AppLayout() {
               </div>
             </GlassCard>
           </motion.div>
+          </Link>
 
           {/* Pulsing ring effect around logo */}
           <motion.div

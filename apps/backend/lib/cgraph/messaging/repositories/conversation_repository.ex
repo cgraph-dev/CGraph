@@ -2,43 +2,43 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
   @moduledoc """
   Repository for Conversation entity data access.
   """
-  
+
   import Ecto.Query, warn: false, except: [update: 2]
-  
+
   alias CGraph.Repo
   alias CGraph.Messaging.Conversation
   alias CGraph.Messaging.ConversationParticipant
   alias CGraph.Cache
-  
+
   @cache_ttl :timer.minutes(5)
-  
+
   @doc """
   Get a conversation by ID with optional preloads.
   """
   @spec get(String.t(), list()) :: Conversation.t() | nil
   def get(id, preloads \\ []) do
     cache_key = "conversation:#{id}"
-    
+
     case Cache.get(cache_key) do
       {:ok, nil} ->
-        conversation = 
+        conversation =
           Conversation
           |> Repo.get(id)
           |> maybe_preload(preloads)
-        
+
         if conversation, do: Cache.put(cache_key, conversation, @cache_ttl)
         conversation
-        
+
       {:ok, cached} ->
         cached
-        
+
       {:error, _} ->
         Conversation
         |> Repo.get(id)
         |> maybe_preload(preloads)
     end
   end
-  
+
   @doc """
   Get a conversation by ID, raising if not found.
   """
@@ -49,7 +49,7 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
       conversation -> conversation
     end
   end
-  
+
   @doc """
   Find a direct conversation between two users.
   """
@@ -66,7 +66,7 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
     )
     |> Repo.one()
   end
-  
+
   @doc """
   List conversations for a user with pagination.
   """
@@ -74,8 +74,8 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
   def list_for_user(user_id, opts \\ []) do
     limit = Keyword.get(opts, :limit, 20)
     offset = Keyword.get(opts, :offset, 0)
-    
-    query = 
+
+    query =
       from c in Conversation,
         join: p in ConversationParticipant,
         on: p.conversation_id == c.id,
@@ -84,19 +84,19 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
         preload: [:participants, :last_message],
         limit: ^limit,
         offset: ^offset
-    
+
     conversations = Repo.all(query)
-    
-    total = 
+
+    total =
       from(p in ConversationParticipant,
         where: p.user_id == ^user_id and is_nil(p.left_at),
         select: count(p.id)
       )
       |> Repo.one()
-    
+
     {conversations, %{total: total, limit: limit, offset: offset}}
   end
-  
+
   @doc """
   Create a new conversation.
   """
@@ -106,34 +106,34 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
     |> Conversation.changeset(attrs)
     |> Repo.insert()
   end
-  
+
   @doc """
   Update a conversation.
   """
   @spec update(Conversation.t(), map()) :: {:ok, Conversation.t()} | {:error, Ecto.Changeset.t()}
   def update(%Conversation{} = conversation, attrs) do
-    result = 
+    result =
       conversation
       |> Conversation.changeset(attrs)
       |> Repo.update()
-    
+
     # Invalidate cache on update
     case result do
       {:ok, updated} ->
         Cache.delete("conversation:#{updated.id}")
         {:ok, updated}
-      error -> 
+      error ->
         error
     end
   end
-  
+
   @doc """
   Delete a conversation.
   """
   @spec delete(Conversation.t()) :: {:ok, Conversation.t()} | {:error, Ecto.Changeset.t()}
   def delete(%Conversation{} = conversation) do
     result = Repo.delete(conversation)
-    
+
     case result do
       {:ok, deleted} ->
         Cache.delete("conversation:#{deleted.id}")
@@ -142,7 +142,7 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
         error
     end
   end
-  
+
   @doc """
   Update last message timestamp for a conversation.
   """
@@ -153,9 +153,9 @@ defmodule CGraph.Messaging.Repositories.ConversationRepository do
       conversation -> update(conversation, %{last_message_at: DateTime.utc_now()})
     end
   end
-  
+
   # Private helpers
-  
+
   defp maybe_preload(nil, _), do: nil
   defp maybe_preload(record, []), do: record
   defp maybe_preload(record, preloads), do: Repo.preload(record, preloads)

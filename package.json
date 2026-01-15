@@ -1,6 +1,6 @@
 {
   "name": "cgraph",
-  "version": "0.9.1",
+  "version": "0.9.2",
   "private": true,
   "type": "module",
   "description": "CGraph - Open-source messaging platform with Signal Protocol encryption, gamification, and real-time collaboration",

@@ -2,16 +2,16 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
   @moduledoc """
   Repository for Message entity data access.
   """
-  
+
   import Ecto.Query, warn: false, except: [update: 2]
-  
+
   alias CGraph.Repo
   alias CGraph.Messaging.Message
   alias CGraph.Cache
-  
+
   @cache_ttl :timer.minutes(5)
   @recent_messages_limit 50
-  
+
   @doc """
   Get a message by ID.
   """
@@ -21,7 +21,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
     |> Repo.get(id)
     |> maybe_preload(preloads)
   end
-  
+
   @doc """
   Get a message by ID, raising if not found.
   """
@@ -31,7 +31,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
     |> Repo.get!(id)
     |> maybe_preload(preloads)
   end
-  
+
   @doc """
   List messages for a conversation with cursor-based pagination.
   """
@@ -40,66 +40,66 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
     limit = Keyword.get(opts, :limit, @recent_messages_limit)
     before_cursor = Keyword.get(opts, :before)
     after_cursor = Keyword.get(opts, :after)
-    
-    base_query = 
+
+    base_query =
       from m in Message,
         where: m.conversation_id == ^conversation_id,
         where: is_nil(m.deleted_at),
         preload: [:sender, :reactions, :attachments]
-    
-    query = 
+
+    query =
       base_query
       |> apply_cursor(:before, before_cursor)
       |> apply_cursor(:after, after_cursor)
       |> order_by([m], desc: m.inserted_at)
       |> limit(^(limit + 1))  # Fetch one extra to check if there are more
-    
+
     messages = Repo.all(query)
-    
+
     has_more = length(messages) > limit
     messages = if has_more, do: Enum.take(messages, limit), else: messages
-    
+
     cursors = %{
       has_more: has_more,
       start_cursor: List.first(messages) && List.first(messages).id,
       end_cursor: List.last(messages) && List.last(messages).id
     }
-    
+
     {Enum.reverse(messages), cursors}
   end
-  
+
   @doc """
   Get recent messages for a conversation (from cache if available).
   """
   @spec get_recent(String.t(), integer()) :: list(Message.t())
   def get_recent(conversation_id, limit \\ @recent_messages_limit) do
     cache_key = "conversation:#{conversation_id}:recent_messages"
-    
+
     case Cache.get(cache_key) do
       {:ok, nil} ->
         {messages, _} = list_for_conversation(conversation_id, limit: limit)
         Cache.put(cache_key, messages, @cache_ttl)
         messages
-        
+
       {:ok, cached} when is_list(cached) ->
         cached
-        
+
       _ ->
         {messages, _} = list_for_conversation(conversation_id, limit: limit)
         messages
     end
   end
-  
+
   @doc """
   Create a new message.
   """
   @spec create(map()) :: {:ok, Message.t()} | {:error, Ecto.Changeset.t()}
   def create(attrs) do
-    result = 
+    result =
       %Message{}
       |> Message.changeset(attrs)
       |> Repo.insert()
-    
+
     case result do
       {:ok, message} ->
         # Invalidate cache
@@ -109,17 +109,17 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
         error
     end
   end
-  
+
   @doc """
   Update a message.
   """
   @spec update(Message.t(), map()) :: {:ok, Message.t()} | {:error, Ecto.Changeset.t()}
   def update(%Message{} = message, attrs) do
-    result = 
+    result =
       message
       |> Message.changeset(attrs)
       |> Repo.update()
-    
+
     case result do
       {:ok, updated} ->
         Cache.delete("conversation:#{updated.conversation_id}:recent_messages")
@@ -128,7 +128,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
         error
     end
   end
-  
+
   @doc """
   Soft delete a message.
   """
@@ -136,7 +136,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
   def soft_delete(%Message{} = message) do
     update(message, %{deleted_at: DateTime.utc_now()})
   end
-  
+
   @doc """
   Search messages in a conversation.
   """
@@ -144,7 +144,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
   def search(conversation_id, query, opts \\ []) do
     limit = Keyword.get(opts, :limit, 20)
     search_query = "%#{query}%"
-    
+
     from(m in Message,
       where: m.conversation_id == ^conversation_id,
       where: is_nil(m.deleted_at),
@@ -155,7 +155,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
     )
     |> Repo.all()
   end
-  
+
   @doc """
   Count unread messages for a user in a conversation.
   """
@@ -170,9 +170,9 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
     )
     |> Repo.one()
   end
-  
+
   # Private helpers
-  
+
   defp apply_cursor(query, _, nil), do: query
   defp apply_cursor(query, :before, cursor_id) do
     from m in query,
@@ -184,7 +184,7 @@ defmodule CGraph.Messaging.Repositories.MessageRepository do
       join: cursor in Message, on: cursor.id == ^cursor_id,
       where: m.inserted_at > cursor.inserted_at
   end
-  
+
   defp maybe_preload(nil, _), do: nil
   defp maybe_preload(record, []), do: record
   defp maybe_preload(record, preloads), do: Repo.preload(record, preloads)

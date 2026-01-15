@@ -4,6 +4,87 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.2] - 2026-01-15
+
+**📱 MOBILE: Comprehensive Hook System, Error Handling, Theme Enhancements & Test Coverage**
+
+This release focuses on mobile app infrastructure with new hooks for E2EE, referrals, offline support, plus comprehensive error boundaries and theme system improvements.
+
+### 🚀 New Features
+
+#### Mobile Hooks
+
+| Hook | Description |
+|------|-------------|
+| `useE2EE` | Complete E2EE management with 18 methods: key generation, encryption/decryption, safety numbers, session management |
+| `useReferrals` | Referral program management with caching, leaderboards, reward claiming, share functionality |
+| `useOfflineQueue` | React wrapper for offline queue with convenience methods, computed values, event subscriptions |
+
+#### Services & Systems
+
+| Feature | Description |
+|---------|-------------|
+| `referralService` | 9 API functions for referral system: stats, tiers, leaderboard, rewards, code generation |
+| `OfflineQueue` | Priority-based offline queue with AsyncStorage persistence, network monitoring, exponential backoff |
+| `ErrorBoundary` | Comprehensive error boundary with retry, logging, variants (Screen/Component), and HOC support |
+
+#### Theme Enhancements
+
+| Enhancement | Description |
+|-------------|-------------|
+| Light Theme | Professional design with 80+ color tokens matching dark theme structure |
+| Color System | Added: `surfaceElevated`, `primaryLight`, `textInverse`, `borderFocus`, `divider`, semantic light variants |
+| Nested Objects | `chat` (bubbleSent, bubbleReceived), `sidebar`, `tabBar`, `status`, `rarity`, `premium` |
+| System Preference | Auto-follows device theme with `isDark` helper in context |
+| Type Exports | `ThemeColors`, `ColorSchemeType`, `ThemePreferenceType`, `lightColors`, `darkColors` |
+
+### 📁 New Files
+
+**Hooks:**
+- `apps/mobile/src/hooks/useE2EE.ts` (550 lines) - Complete E2EE hook
+- `apps/mobile/src/hooks/useReferrals.ts` (306 lines) - Referral management hook
+
+**Services:**
+- `apps/mobile/src/services/referralService.ts` (357 lines) - Referral API service
+- `apps/mobile/src/lib/offline/OfflineQueue.ts` (516 lines) - Offline queue system
+
+**Components:**
+- `apps/mobile/src/components/error/ErrorBoundary.tsx` (370 lines) - Error boundary + variants
+
+**Test Files:**
+- `apps/mobile/src/hooks/__tests__/useE2EE.test.ts` (383 lines, 16 tests)
+- `apps/mobile/src/hooks/__tests__/useReferrals.test.ts` (258 lines, 10 tests)
+- `apps/mobile/src/hooks/__tests__/useOfflineQueue.test.ts` (334 lines, 14 tests)
+- `apps/mobile/src/components/error/__tests__/ErrorBoundary.test.tsx` (314 lines, 17 tests)
+
+### 🧪 Test Coverage
+
+| Test Suite | Tests | Coverage |
+|------------|-------|----------|
+| useE2EE | 16 | Initialization, setup, reset, encryption, safety numbers, sessions |
+| useReferrals | 10 | Loading, caching, computed values, claim rewards, error handling |
+| useOfflineQueue | 14 | Initialization, subscriptions, queue operations, convenience methods |
+| ErrorBoundary | 17 | Basic, error details, custom fallback, retry, HOC |
+| **Total** | **57** | Full coverage of new mobile infrastructure |
+
+### 🐛 Bug Fixes
+
+| Fix | Description |
+|-----|-------------|
+| API Import | Fixed default import for api client in `useE2EE.ts` and `OfflineQueue.ts` |
+| Response Access | Fixed AxiosResponse `.data` property access in E2EE registration and prekey bundle |
+| Dynamic Import | Fixed dynamic import in OfflineQueue to use `.default` |
+
+### 📊 Code Statistics
+
+| Category | Lines Added |
+|----------|-------------|
+| Source Files | 2,099 |
+| Test Files | 1,289 |
+| **Total** | **3,388** |
+
+---
+
 ## [0.9.1] - 2026-01-14
 
 **🔧 MAINTENANCE: Critical Bug Fixes, Security Hardening, Documentation Updates, Hardening Sprint**

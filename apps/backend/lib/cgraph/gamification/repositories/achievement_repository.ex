@@ -2,41 +2,41 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
   @moduledoc """
   Repository for Achievement entity data access.
   """
-  
+
   import Ecto.Query, warn: false, except: [update: 2]
-  
+
   alias CGraph.Repo
   alias CGraph.Gamification.Achievement
   alias CGraph.Gamification.UserAchievement
   alias CGraph.Cache
-  
+
   @cache_ttl :timer.hours(1)
-  
+
   @doc """
   Get all achievements (cached).
   """
   @spec list_all() :: list(Achievement.t())
   def list_all do
     cache_key = "achievements:all"
-    
+
     case Cache.get(cache_key) do
       {:ok, nil} ->
-        achievements = 
+        achievements =
           from(a in Achievement, order_by: [asc: a.category, asc: a.tier])
           |> Repo.all()
-        
+
         Cache.put(cache_key, achievements, @cache_ttl)
         achievements
-        
+
       {:ok, cached} ->
         cached
-        
+
       {:error, _} ->
         from(a in Achievement, order_by: [asc: a.category, asc: a.tier])
         |> Repo.all()
     end
   end
-  
+
   @doc """
   Get an achievement by ID.
   """
@@ -44,7 +44,7 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
   def get(id) do
     Repo.get(Achievement, id)
   end
-  
+
   @doc """
   Get achievements by category.
   """
@@ -56,7 +56,7 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
     )
     |> Repo.all()
   end
-  
+
   @doc """
   Get user's achievements.
   """
@@ -68,7 +68,7 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
     )
     |> Repo.all()
   end
-  
+
   @doc """
   Get user's unlocked achievements.
   """
@@ -82,7 +82,7 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
     )
     |> Repo.all()
   end
-  
+
   @doc """
   Get user achievement progress.
   """
@@ -94,15 +94,15 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
     )
     |> Repo.one()
   end
-  
+
   @doc """
   Create or update user achievement progress.
   """
-  @spec upsert_progress(String.t(), String.t(), integer()) :: 
+  @spec upsert_progress(String.t(), String.t(), integer()) ::
     {:ok, UserAchievement.t()} | {:error, Ecto.Changeset.t()}
   def upsert_progress(user_id, achievement_id, progress) do
     achievement = get(achievement_id)
-    
+
     attrs = %{
       user_id: user_id,
       achievement_id: achievement_id,
@@ -110,7 +110,7 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
       is_unlocked: achievement && progress >= achievement.target_progress,
       unlocked_at: if(achievement && progress >= achievement.target_progress, do: DateTime.utc_now(), else: nil)
     }
-    
+
     %UserAchievement{}
     |> UserAchievement.changeset(attrs)
     |> Repo.insert(
@@ -118,23 +118,23 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
       conflict_target: [:user_id, :achievement_id]
     )
   end
-  
+
   @doc """
   Increment achievement progress.
   """
-  @spec increment_progress(String.t(), String.t(), integer()) :: 
+  @spec increment_progress(String.t(), String.t(), integer()) ::
     {:ok, UserAchievement.t()} | {:error, term()}
   def increment_progress(user_id, achievement_id, delta \\ 1) do
     case get_user_achievement(user_id, achievement_id) do
       nil ->
         upsert_progress(user_id, achievement_id, delta)
-        
+
       existing ->
         new_progress = existing.current_progress + delta
         upsert_progress(user_id, achievement_id, new_progress)
     end
   end
-  
+
   @doc """
   Get recent achievement unlocks.
   """
@@ -142,31 +142,31 @@ defmodule CGraph.Gamification.Repositories.AchievementRepository do
   def list_recent_unlocks(opts \\ []) do
     limit = Keyword.get(opts, :limit, 10)
     user_id = Keyword.get(opts, :user_id)
-    
-    base_query = 
+
+    base_query =
       from ua in UserAchievement,
         where: ua.is_unlocked == true,
         order_by: [desc: ua.unlocked_at],
         limit: ^limit,
         preload: [:achievement, :user]
-    
-    query = 
+
+    query =
       if user_id do
         from ua in base_query, where: ua.user_id == ^user_id
       else
         base_query
       end
-    
+
     Repo.all(query)
   end
-  
+
   @doc """
   Get achievement leaderboard.
   """
   @spec leaderboard(keyword()) :: list(map())
   def leaderboard(opts \\ []) do
     limit = Keyword.get(opts, :limit, 20)
-    
+
     from(ua in UserAchievement,
       where: ua.is_unlocked == true,
       group_by: ua.user_id,

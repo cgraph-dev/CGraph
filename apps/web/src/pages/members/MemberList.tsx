@@ -253,7 +253,7 @@ export default function MemberList() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Member List</h1>
             <p className="text-sm text-muted-foreground">
-              {totalMembers.toLocaleString()} registered members
+              {(totalMembers ?? 0).toLocaleString()} registered members
             </p>
           </div>
         </div>
@@ -565,7 +565,7 @@ export default function MemberList() {
                     <td className="px-4 py-3 text-center hidden lg:table-cell">
                       <div className="flex items-center justify-center gap-1.5 text-sm">
                         <ChatBubbleLeftIcon className="h-4 w-4 text-muted-foreground" />
-                        <span>{member.postCount.toLocaleString()}</span>
+                        <span>{(member?.postCount ?? 0).toLocaleString()}</span>
                       </div>
                     </td>
 
@@ -645,7 +645,7 @@ export default function MemberList() {
         <div className="bg-card border border-border rounded-lg p-4 text-center">
           <UserGroupIcon className="h-6 w-6 mx-auto text-primary mb-2" />
           <div className="text-2xl font-bold text-foreground">
-            {totalMembers.toLocaleString()}
+            {(totalMembers ?? 0).toLocaleString()}
           </div>
           <div className="text-sm text-muted-foreground">Total Members</div>
         </div>

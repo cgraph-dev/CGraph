@@ -385,10 +385,11 @@ function EntryRow({ entry, category, isCurrentUser, onPress }: EntryRowProps) {
 // HELPER FUNCTIONS
 // ============================================================================
 
-function formatValue(value: number): string {
-  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`;
-  if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
-  return value.toLocaleString();
+function formatValue(value: number | undefined | null): string {
+  const num = value ?? 0;
+  if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+  if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+  return num.toLocaleString();
 }
 
 // Fallback mock data generator (used when API fails or in development)
@@ -660,7 +661,7 @@ export default function LeaderboardScreen() {
       <View style={styles.listHeader}>
         <Text style={styles.listHeaderText}>All Rankings</Text>
         <Text style={styles.listHeaderCount}>
-          {leaderboard?.totalCount.toLocaleString() || 0} participants
+          {(leaderboard?.totalCount ?? 0).toLocaleString()} participants
         </Text>
       </View>
     </View>

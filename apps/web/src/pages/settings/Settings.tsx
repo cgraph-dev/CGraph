@@ -274,7 +274,7 @@ function AccountSettings() {
                 <span className="text-gray-400">@{user.username}</span>
               )}
               {user?.karma !== undefined && user.karma > 0 && (
-                <span className="text-amber-400 text-sm">⚡ {user.karma.toLocaleString()} karma</span>
+                <span className="text-amber-400 text-sm">⚡ {(user.karma ?? 0).toLocaleString()} karma</span>
               )}
             </div>
           </div>

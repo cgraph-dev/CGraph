@@ -7,6 +7,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+import { CustomizationProvider } from './src/contexts/CustomizationContext';
 import { AuthProvider } from './src/contexts/AuthContext';
 import { SettingsProvider } from './src/contexts/SettingsContext';
 import { E2EEProvider } from './src/lib/crypto/E2EEContext';
@@ -17,17 +18,23 @@ import { usePushNotifications } from './src/hooks/usePushNotifications';
 // Keep splash screen visible while loading
 SplashScreen.preventAutoHideAsync();
 
-function AppContent() {
-  const { colorScheme } = useTheme();
-  
+// Separate component for push notifications - must be inside NavigationContainer
+function PushNotificationHandler({ children }: { children: React.ReactNode }) {
   // Initialize push notifications - auto-registers when authenticated
   usePushNotifications();
+  return <>{children}</>;
+}
+
+function AppContent() {
+  const { colorScheme } = useTheme();
   
   return (
     <>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       <NavigationContainer>
-        <RootNavigator />
+        <PushNotificationHandler>
+          <RootNavigator />
+        </PushNotificationHandler>
       </NavigationContainer>
     </>
   );
@@ -67,15 +74,17 @@ export default function App() {
     <GestureHandlerRootView style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
-          <ThemeProvider>
-            <AuthProvider>
-              <SettingsProvider>
-                <E2EEProvider>
-                  <AppContent />
-                </E2EEProvider>
-              </SettingsProvider>
-            </AuthProvider>
-          </ThemeProvider>
+          <CustomizationProvider>
+            <ThemeProvider>
+              <AuthProvider>
+                <SettingsProvider>
+                  <E2EEProvider>
+                    <AppContent />
+                  </E2EEProvider>
+                </SettingsProvider>
+              </AuthProvider>
+            </ThemeProvider>
+          </CustomizationProvider>
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

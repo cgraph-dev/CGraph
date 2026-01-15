@@ -5,7 +5,7 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
   - Applies to POST/PUT/PATCH/DELETE only.
   - If Idempotency-Key is missing, request proceeds normally.
   - If the key exists in cache, returns 409 Conflict to prevent duplicate work.
-  - Stores the key with a configurable TTL (default 300s) in Cachex :cgraph_cache.
+  - Stores the key with a configurable TTL (default 10s) in Cachex :cgraph_cache.
   """
 
   import Plug.Conn
@@ -16,7 +16,7 @@ defmodule CGraphWeb.Plugs.IdempotencyPlug do
 
   def init(opts) do
     %{
-      ttl_ms: Keyword.get(opts, :ttl_ms, 300_000)
+      ttl_ms: Keyword.get(opts, :ttl_ms, 10_000)
     }
   end
 

@@ -247,7 +247,7 @@ export default function AchievementsPage() {
                   Achievements
                 </h1>
                 <p className="text-sm text-gray-400">
-                  {stats.unlocked} / {stats.total} unlocked • {stats.totalXPEarned.toLocaleString()} XP earned
+                  {stats?.unlocked ?? 0} / {stats?.total ?? 0} unlocked • {(stats?.totalXPEarned ?? 0).toLocaleString()} XP earned
                 </p>
               </div>
             </div>

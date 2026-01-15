@@ -195,7 +195,7 @@ export default function GamificationHubPage() {
           <StatCard
             icon={<BoltIcon className="h-5 w-5 text-white" />}
             label="Total XP"
-            value={totalXP.toLocaleString()}
+            value={(totalXP ?? 0).toLocaleString()}
             gradient="from-purple-500 to-pink-500"
             delay={0.1}
           />

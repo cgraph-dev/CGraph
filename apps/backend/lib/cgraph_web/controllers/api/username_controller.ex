@@ -2,13 +2,13 @@ defmodule CGraphWeb.API.UsernameController do
   @moduledoc """
   API controller for username management.
   """
-  
+
   use CGraphWeb, :controller
-  
+
   alias CGraph.Accounts.UsernameService
-  
+
   action_fallback CGraphWeb.FallbackController
-  
+
   @doc """
   Check if a username is available.
   GET /api/users/check-username?username=xxx
@@ -33,7 +33,7 @@ defmodule CGraphWeb.API.UsernameController do
       end
     end
   end
-  
+
   @doc """
   Change the current user's username.
   POST /api/users/me/change-username
@@ -41,7 +41,7 @@ defmodule CGraphWeb.API.UsernameController do
   def change_username(conn, %{"username" => new_username}) do
     user = conn.assigns.current_user
     is_premium = user.premium_tier != nil
-    
+
     case UsernameService.change_username(user.id, new_username, premium: is_premium) do
       {:ok, updated_user} ->
         json(conn, %{
@@ -52,7 +52,7 @@ defmodule CGraphWeb.API.UsernameController do
             last_username_change_at: updated_user.last_username_change_at
           }
         })
-        
+
       {:error, {:cooldown, days}} ->
         conn
         |> put_status(:too_many_requests)
@@ -62,7 +62,7 @@ defmodule CGraphWeb.API.UsernameController do
           message: "You can change your username in #{days} days",
           days_remaining: days
         })
-        
+
       {:error, :username_taken} ->
         conn
         |> put_status(:conflict)
@@ -71,7 +71,7 @@ defmodule CGraphWeb.API.UsernameController do
           error: "taken",
           message: "Username is already taken"
         })
-        
+
       {:error, :username_recently_released} ->
         conn
         |> put_status(:conflict)
@@ -80,7 +80,7 @@ defmodule CGraphWeb.API.UsernameController do
           error: "reserved",
           message: "Username was recently released and is reserved for 30 days"
         })
-        
+
       {:error, changeset} when is_struct(changeset, Ecto.Changeset) ->
         conn
         |> put_status(:unprocessable_entity)
@@ -91,15 +91,15 @@ defmodule CGraphWeb.API.UsernameController do
         })
     end
   end
-  
+
   @doc """
   Get username change history for the current user.
   GET /api/users/me/username-history
   """
   def history(conn, _params) do
     user = conn.assigns.current_user
-    
-    history = 
+
+    history =
       UsernameService.get_history(user.id)
       |> Enum.map(fn change ->
         %{
@@ -110,10 +110,10 @@ defmodule CGraphWeb.API.UsernameController do
           changedByAdmin: change.changed_by_admin
         }
       end)
-    
+
     json(conn, %{history: history})
   end
-  
+
   @doc """
   Get cooldown status for the current user.
   GET /api/users/me/username-cooldown
@@ -121,7 +121,7 @@ defmodule CGraphWeb.API.UsernameController do
   def cooldown_status(conn, _params) do
     user = conn.assigns.current_user
     is_premium = user.premium_tier != nil
-    
+
     case UsernameService.can_change_username?(user.id, is_premium) do
       {:ok, _} ->
         json(conn, %{
@@ -129,7 +129,7 @@ defmodule CGraphWeb.API.UsernameController do
           days_remaining: 0,
           cooldown_days: if(is_premium, do: 7, else: 30)
         })
-        
+
       {:error, {:cooldown, days}} ->
         json(conn, %{
           can_change: false,
@@ -138,7 +138,7 @@ defmodule CGraphWeb.API.UsernameController do
         })
     end
   end
-  
+
   defp valid_username_format?(username) do
     Regex.match?(~r/^[a-zA-Z0-9_-]{3,32}$/, username)
   end

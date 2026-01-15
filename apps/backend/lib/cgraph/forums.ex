@@ -1298,7 +1298,7 @@ defmodule CGraph.Forums do
     user_vote = if vote, do: safe_vote_type_atom(vote.vote_type), else: nil
     Map.put(comment, :user_vote, user_vote)
   end
-  
+
   # Convert vote_type string to atom safely (prevents atom exhaustion)
   defp safe_vote_type_atom("up"), do: :up
   defp safe_vote_type_atom("down"), do: :down

@@ -2,14 +2,14 @@ defmodule CGraphWeb.API.SubscriptionController do
   @moduledoc """
   API controller for forum subscription management.
   """
-  
+
   use CGraphWeb, :controller
-  
+
   alias CGraph.Forums.SubscriptionService
   alias CGraphWeb.Validation.SubscriptionParams
-  
+
   action_fallback CGraphWeb.FallbackController
-  
+
   @doc """
   List all subscriptions for the current user.
   GET /api/forum/subscriptions
@@ -17,12 +17,12 @@ defmodule CGraphWeb.API.SubscriptionController do
   def index(conn, _params) do
     user = conn.assigns.current_user
     subscriptions = SubscriptionService.list_subscriptions(user.id)
-    
+
     json(conn, %{
       subscriptions: Enum.map(subscriptions, &format_subscription/1)
     })
   end
-  
+
   @doc """
   Create a new subscription.
   POST /api/forum/subscriptions
@@ -41,14 +41,14 @@ defmodule CGraphWeb.API.SubscriptionController do
       {:error, reason} -> {:error, reason}
     end
   end
-  
+
   @doc """
   Update subscription settings.
   PATCH /api/forum/subscriptions/:id
   """
   def update(conn, %{"id" => id} = params) do
     user = conn.assigns.current_user
-    
+
     # Verify ownership
     case verify_ownership(id, user.id) do
       {:ok, _} ->
@@ -62,21 +62,21 @@ defmodule CGraphWeb.API.SubscriptionController do
           {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
           {:error, reason} -> {:error, reason}
         end
-        
+
       {:error, :unauthorized} ->
         conn
         |> put_status(:forbidden)
         |> json(%{error: "Not authorized to update this subscription"})
     end
   end
-  
+
   @doc """
   Delete a subscription.
   DELETE /api/forum/subscriptions/:id
   """
   def delete(conn, %{"id" => id}) do
     user = conn.assigns.current_user
-    
+
     case verify_ownership(id, user.id) do
       {:ok, _} ->
         case SubscriptionService.unsubscribe(id) do
@@ -84,20 +84,20 @@ defmodule CGraphWeb.API.SubscriptionController do
             conn
             |> put_status(:no_content)
             |> send_resp(204, "")
-            
+
           {:error, :not_found} ->
             conn
             |> put_status(:not_found)
             |> json(%{error: "Subscription not found"})
         end
-        
+
       {:error, :unauthorized} ->
         conn
         |> put_status(:forbidden)
         |> json(%{error: "Not authorized to delete this subscription"})
     end
   end
-  
+
   @doc """
   Bulk update all subscriptions.
   POST /api/forum/subscriptions/bulk-update
@@ -124,14 +124,14 @@ defmodule CGraphWeb.API.SubscriptionController do
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
     end
   end
-  
+
   @doc """
   Toggle subscription for a thread.
   POST /api/forum/subscriptions/toggle-thread
   """
   def toggle_thread(conn, %{"threadId" => thread_id}) do
     user = conn.assigns.current_user
-    
+
     case SubscriptionService.toggle_thread_subscription(user.id, thread_id) do
       {:ok, :deleted} ->
         json(conn, %{subscribed: false})
@@ -148,9 +148,9 @@ defmodule CGraphWeb.API.SubscriptionController do
         |> json(%{error: "Failed to toggle subscription", reason: inspect(reason)})
     end
   end
-  
+
   # Private helpers
-  
+
   defp format_subscription(subscription) do
     %{
       id: subscription.id,
@@ -165,7 +165,7 @@ defmodule CGraphWeb.API.SubscriptionController do
       createdAt: subscription.inserted_at
     }
   end
-  
+
   defp get_subscription_type(sub) do
     cond do
       sub.thread_id -> "thread"
@@ -174,7 +174,7 @@ defmodule CGraphWeb.API.SubscriptionController do
       true -> "unknown"
     end
   end
-  
+
   defp get_target_name(sub) do
     cond do
       sub.thread && sub.thread.title -> sub.thread.title
@@ -183,7 +183,7 @@ defmodule CGraphWeb.API.SubscriptionController do
       true -> "Unknown"
     end
   end
-  
+
   defp get_target_path(sub) do
     cond do
       sub.thread && sub.board && sub.forum ->
@@ -194,7 +194,7 @@ defmodule CGraphWeb.API.SubscriptionController do
         nil
     end
   end
-  
+
   defp build_opts(params) do
     [
       mode: params.notification_mode || "instant",
@@ -203,7 +203,7 @@ defmodule CGraphWeb.API.SubscriptionController do
       include_replies: params.include_replies != false
     ]
   end
-  
+
   defp normalize_create_params(params) do
     %{
       "type" => params["type"],
@@ -243,18 +243,18 @@ defmodule CGraphWeb.API.SubscriptionController do
   defp do_create_subscription(user_id, %{type: "thread", target_id: id} = params) do
     SubscriptionService.subscribe_to_thread(user_id, id, build_opts(params))
   end
-  
+
   defp verify_ownership(subscription_id, user_id) do
     alias CGraph.Repo
     alias CGraph.Forums.Subscription
-    
+
     case Repo.get(Subscription, subscription_id) do
       nil -> {:error, :not_found}
       sub when sub.user_id == user_id -> {:ok, sub}
       _ -> {:error, :unauthorized}
     end
   end
-  
+
   @doc false
   # Kept for future use when validation errors need formatting
   def format_changeset_errors(%Ecto.Changeset{} = changeset) do

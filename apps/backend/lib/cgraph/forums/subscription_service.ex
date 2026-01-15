@@ -2,11 +2,11 @@ defmodule CGraph.Forums.SubscriptionService do
   @moduledoc """
   Service for managing forum subscriptions and notifications.
   """
-  
+
   import Ecto.Query, warn: false
   alias CGraph.Repo
   alias CGraph.Forums.Subscription
-  
+
   @doc """
   Subscribe to a forum.
   """
@@ -22,7 +22,7 @@ defmodule CGraph.Forums.SubscriptionService do
     })
     |> Repo.insert()
   end
-  
+
   @doc """
   Subscribe to a board.
   """
@@ -38,7 +38,7 @@ defmodule CGraph.Forums.SubscriptionService do
     })
     |> Repo.insert()
   end
-  
+
   @doc """
   Subscribe to a thread.
   """
@@ -54,7 +54,7 @@ defmodule CGraph.Forums.SubscriptionService do
     })
     |> Repo.insert()
   end
-  
+
   @doc """
   Unsubscribe from a forum/board/thread.
   """
@@ -64,7 +64,7 @@ defmodule CGraph.Forums.SubscriptionService do
       subscription -> Repo.delete(subscription)
     end
   end
-  
+
   @doc """
   Get all subscriptions for a user.
   """
@@ -76,7 +76,7 @@ defmodule CGraph.Forums.SubscriptionService do
     )
     |> Repo.all()
   end
-  
+
   @doc """
   Get subscriptions by type.
   """
@@ -88,7 +88,7 @@ defmodule CGraph.Forums.SubscriptionService do
     )
     |> Repo.all()
   end
-  
+
   def list_board_subscriptions(user_id) do
     from(s in Subscription,
       where: s.user_id == ^user_id,
@@ -97,7 +97,7 @@ defmodule CGraph.Forums.SubscriptionService do
     )
     |> Repo.all()
   end
-  
+
   def list_thread_subscriptions(user_id) do
     from(s in Subscription,
       where: s.user_id == ^user_id,
@@ -106,7 +106,7 @@ defmodule CGraph.Forums.SubscriptionService do
     )
     |> Repo.all()
   end
-  
+
   @doc """
   Update subscription settings.
   """
@@ -119,47 +119,47 @@ defmodule CGraph.Forums.SubscriptionService do
         |> Repo.update()
     end
   end
-  
+
   @doc """
   Get users subscribed to a thread (for sending notifications).
   """
   def get_thread_subscribers(thread_id, exclude_user_id \\ nil) do
-    query = 
+    query =
       from s in Subscription,
         where: s.thread_id == ^thread_id,
         where: s.notification_mode != "none",
         preload: [:user]
-    
-    query = 
+
+    query =
       if exclude_user_id do
         from s in query, where: s.user_id != ^exclude_user_id
       else
         query
       end
-    
+
     Repo.all(query)
   end
-  
+
   @doc """
   Get users subscribed to a board (for new thread notifications).
   """
   def get_board_subscribers(board_id, exclude_user_id \\ nil) do
-    query = 
+    query =
       from s in Subscription,
         where: s.board_id == ^board_id,
         where: s.notification_mode != "none",
         preload: [:user]
-    
-    query = 
+
+    query =
       if exclude_user_id do
         from s in query, where: s.user_id != ^exclude_user_id
       else
         query
       end
-    
+
     Repo.all(query)
   end
-  
+
   @doc """
   Mark unread for a subscription.
   """
@@ -167,7 +167,7 @@ defmodule CGraph.Forums.SubscriptionService do
     from(s in Subscription, where: s.id == ^subscription_id)
     |> Repo.update_all(inc: [unread_count: 1])
   end
-  
+
   @doc """
   Mark subscription as read.
   """
@@ -175,7 +175,7 @@ defmodule CGraph.Forums.SubscriptionService do
     from(s in Subscription, where: s.id == ^subscription_id)
     |> Repo.update_all(set: [unread_count: 0])
   end
-  
+
   @doc """
   Check if user is subscribed to a thread.
   """
@@ -186,7 +186,7 @@ defmodule CGraph.Forums.SubscriptionService do
     )
     |> Repo.exists?()
   end
-  
+
   @doc """
   Toggle subscription to a thread.
   """

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { createIdempotencyKey } from '@cgraph/utils';
 import { api } from '@/lib/api';
 import { ensureArray, extractErrorMessage } from '@/lib/apiUtils';
 
@@ -162,7 +163,10 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
         payload = { username: input };
       }
       
-      await api.post('/api/v1/friends', payload);
+      await api.post('/api/v1/friends', payload, {
+        // Force a fresh idempotency key per request to avoid reuse conflicts in dev
+        headers: { 'Idempotency-Key': createIdempotencyKey() },
+      });
       // Refresh the lists
       await get().fetchSentRequests();
       set({ isLoading: false });

@@ -230,7 +230,7 @@ export default function PremiumPage() {
             whileHover={{ scale: 1.05 }}
           >
             <CurrencyDollarIcon className="h-5 w-5 text-yellow-400" />
-            <span className="text-yellow-400 font-semibold">{coinBalance.toLocaleString()} Coins</span>
+            <span className="text-yellow-400 font-semibold">{(coinBalance ?? 0).toLocaleString()} Coins</span>
             <Button
               variant="ghost"
               size="sm"

@@ -1080,7 +1080,7 @@ export default function SearchScreen() {
               <View style={styles.statRow}>
                 <Ionicons name="people-outline" size={12} color={colors.textSecondary} />
                 <Text style={[styles.statText, { color: colors.textSecondary }]}>
-                  {item.member_count.toLocaleString()} members
+                  {(item?.member_count ?? 0).toLocaleString()} members
                 </Text>
               </View>
             </View>
@@ -1108,7 +1108,7 @@ export default function SearchScreen() {
               <View style={styles.statRow}>
                 <Ionicons name="document-text-outline" size={12} color={colors.textSecondary} />
                 <Text style={[styles.statText, { color: colors.textSecondary }]}>
-                  {item.post_count.toLocaleString()} posts
+                  {(item?.post_count ?? 0).toLocaleString()} posts
                 </Text>
               </View>
             </View>

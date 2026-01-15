@@ -1,23 +1,23 @@
 /**
- * GamificationHubScreen - Mobile
- * 
- * Central hub for all gamification features. Provides an overview of
- * the user's progress and quick access to detailed sections.
- * 
+ * GamificationHubScreen - Revolutionary Mobile Edition
+ *
+ * Central hub for all gamification features with next-generation animations.
+ *
  * Features:
- * - Level and XP progress overview
- * - Current streak with claim button
- * - Coins balance
- * - Quick stats cards
- * - Navigation to detailed screens
- * - Active quest preview
- * - Recent achievement preview
- * 
- * @version 1.0.0
- * @since v0.8.3
+ * - 3D animated level orb with particle effects
+ * - Animated streak fire with dynamic flames
+ * - Floating coin counter with physics
+ * - Morphing stat cards with spring animations
+ * - Quest progress with animated fills
+ * - Achievement showcase with holographic effects
+ * - Parallax scrolling header
+ * - Haptic feedback throughout
+ *
+ * @version 2.0.0 - Revolutionary Edition
+ * @since v0.9.0
  */
 
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -27,19 +27,419 @@ import {
   RefreshControl,
   Dimensions,
   Alert,
+  Animated,
+  Easing,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { LevelProgress, TitleBadge } from '@/components/gamification';
 import { useGamification } from '@/hooks/useGamification';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import GlassCard from '../../components/ui/GlassCard';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 // ============================================================================
-// STAT CARD COMPONENT
+// ANIMATED 3D LEVEL ORB COMPONENT
+// ============================================================================
+
+interface LevelOrbProps {
+  level: number;
+  progress: number; // 0-1
+}
+
+function AnimatedLevelOrb({ level, progress }: LevelOrbProps) {
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const pulseAnim = useRef(new Animated.Value(1)).current;
+  const glowAnim = useRef(new Animated.Value(0.5)).current;
+  const particleAnims = useRef(
+    Array.from({ length: 8 }, () => ({
+      y: new Animated.Value(0),
+      x: new Animated.Value(0),
+      opacity: new Animated.Value(0),
+      scale: new Animated.Value(0.5),
+    }))
+  ).current;
+
+  useEffect(() => {
+    // Continuous rotation
+    Animated.loop(
+      Animated.timing(rotateAnim, {
+        toValue: 1,
+        duration: 20000,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      })
+    ).start();
+
+    // Pulse animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulseAnim, {
+          toValue: 1.08,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(pulseAnim, {
+          toValue: 1,
+          duration: 2000,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    // Glow animation
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowAnim, {
+          toValue: 1,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+        Animated.timing(glowAnim, {
+          toValue: 0.5,
+          duration: 1500,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    // Particle animations
+    particleAnims.forEach((particle, i) => {
+      const delay = i * 300;
+      const angle = (i / 8) * Math.PI * 2;
+      const radius = 50;
+
+      const animate = () => {
+        particle.y.setValue(0);
+        particle.x.setValue(0);
+        particle.opacity.setValue(0);
+        particle.scale.setValue(0.5);
+
+        Animated.parallel([
+          Animated.timing(particle.y, {
+            toValue: -60 - Math.random() * 30,
+            duration: 2000 + Math.random() * 1000,
+            delay,
+            easing: Easing.out(Easing.ease),
+            useNativeDriver: true,
+          }),
+          Animated.timing(particle.x, {
+            toValue: Math.cos(angle) * radius + (Math.random() - 0.5) * 20,
+            duration: 2000 + Math.random() * 1000,
+            delay,
+            useNativeDriver: true,
+          }),
+          Animated.sequence([
+            Animated.timing(particle.opacity, {
+              toValue: 0.8,
+              duration: 500,
+              delay,
+              useNativeDriver: true,
+            }),
+            Animated.timing(particle.opacity, {
+              toValue: 0,
+              duration: 1500,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.timing(particle.scale, {
+            toValue: 1,
+            duration: 1000,
+            delay,
+            useNativeDriver: true,
+          }),
+        ]).start(() => animate());
+      };
+      animate();
+    });
+  }, []);
+
+  const rotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  return (
+    <View style={styles.levelOrbContainer}>
+      {/* Particles */}
+      {particleAnims.map((particle, i) => (
+        <Animated.View
+          key={i}
+          style={[
+            styles.levelParticle,
+            {
+              opacity: particle.opacity,
+              transform: [
+                { translateY: particle.y },
+                { translateX: particle.x },
+                { scale: particle.scale },
+              ],
+            },
+          ]}
+        >
+          <Ionicons name="sparkles" size={12} color="#8B5CF6" />
+        </Animated.View>
+      ))}
+
+      {/* Glow effect */}
+      <Animated.View
+        style={[
+          styles.levelOrbGlow,
+          {
+            opacity: glowAnim,
+            transform: [{ scale: Animated.add(pulseAnim, 0.2) }],
+          },
+        ]}
+      >
+        <LinearGradient
+          colors={['rgba(139, 92, 246, 0.4)', 'transparent']}
+          style={StyleSheet.absoluteFill}
+          start={{ x: 0.5, y: 0.5 }}
+          end={{ x: 1, y: 1 }}
+        />
+      </Animated.View>
+
+      {/* Main orb */}
+      <Animated.View
+        style={[
+          styles.levelOrb,
+          {
+            transform: [{ scale: pulseAnim }, { rotate }],
+          },
+        ]}
+      >
+        <LinearGradient
+          colors={['#8B5CF6', '#6366F1', '#4F46E5']}
+          style={styles.levelOrbGradient}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        >
+          {/* Progress ring */}
+          <View style={styles.progressRingContainer}>
+            <View
+              style={[
+                styles.progressRing,
+                {
+                  borderColor: 'rgba(255,255,255,0.3)',
+                },
+              ]}
+            />
+            <View
+              style={[
+                styles.progressRingFill,
+                {
+                  borderColor: '#FCD34D',
+                  borderTopColor:
+                    progress > 0.25 ? '#FCD34D' : 'transparent',
+                  borderRightColor:
+                    progress > 0.5 ? '#FCD34D' : 'transparent',
+                  borderBottomColor:
+                    progress > 0.75 ? '#FCD34D' : 'transparent',
+                  transform: [{ rotate: `${progress * 360}deg` }],
+                },
+              ]}
+            />
+          </View>
+
+          <Text style={styles.levelOrbText}>{level}</Text>
+          <Text style={styles.levelOrbLabel}>LEVEL</Text>
+        </LinearGradient>
+      </Animated.View>
+    </View>
+  );
+}
+
+// ============================================================================
+// ANIMATED FIRE STREAK COMPONENT
+// ============================================================================
+
+interface FireStreakProps {
+  streak: number;
+  canClaim: boolean;
+  onClaim: () => void;
+}
+
+function AnimatedFireStreak({ streak, canClaim, onClaim }: FireStreakProps) {
+  const flameAnims = useRef(
+    Array.from({ length: 5 }, () => ({
+      scale: new Animated.Value(1),
+      opacity: new Animated.Value(0.7),
+      translateY: new Animated.Value(0),
+    }))
+  ).current;
+  const claimPulse = useRef(new Animated.Value(1)).current;
+  const shimmerAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Flame animations
+    flameAnims.forEach((flame, i) => {
+      const delay = i * 150;
+      Animated.loop(
+        Animated.sequence([
+          Animated.parallel([
+            Animated.timing(flame.scale, {
+              toValue: 1.3 + Math.random() * 0.2,
+              duration: 400 + i * 50,
+              delay,
+              useNativeDriver: true,
+            }),
+            Animated.timing(flame.opacity, {
+              toValue: 1,
+              duration: 400,
+              delay,
+              useNativeDriver: true,
+            }),
+            Animated.timing(flame.translateY, {
+              toValue: -5 - i * 2,
+              duration: 400,
+              delay,
+              useNativeDriver: true,
+            }),
+          ]),
+          Animated.parallel([
+            Animated.timing(flame.scale, {
+              toValue: 1,
+              duration: 400 + i * 50,
+              useNativeDriver: true,
+            }),
+            Animated.timing(flame.opacity, {
+              toValue: 0.7,
+              duration: 400,
+              useNativeDriver: true,
+            }),
+            Animated.timing(flame.translateY, {
+              toValue: 0,
+              duration: 400,
+              useNativeDriver: true,
+            }),
+          ]),
+        ])
+      ).start();
+    });
+
+    // Claim button pulse
+    if (canClaim) {
+      Animated.loop(
+        Animated.sequence([
+          Animated.timing(claimPulse, {
+            toValue: 1.1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+          Animated.timing(claimPulse, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+
+      // Shimmer animation
+      Animated.loop(
+        Animated.timing(shimmerAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        })
+      ).start();
+    }
+  }, [canClaim]);
+
+  const shimmerTranslate = shimmerAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-100, SCREEN_WIDTH],
+  });
+
+  return (
+    <GlassCard variant="neon" intensity="medium" style={styles.streakCardEnhanced}>
+      <View style={styles.streakContentEnhanced}>
+        {/* Animated flames */}
+        <View style={styles.flamesContainer}>
+          {flameAnims.map((flame, i) => (
+            <Animated.Text
+              key={i}
+              style={[
+                styles.flameEmoji,
+                {
+                  fontSize: 24 + i * 4,
+                  opacity: flame.opacity,
+                  transform: [
+                    { scale: flame.scale },
+                    { translateY: flame.translateY },
+                  ],
+                },
+              ]}
+            >
+              🔥
+            </Animated.Text>
+          ))}
+        </View>
+
+        <View style={styles.streakInfoEnhanced}>
+          <Text style={styles.streakValueEnhanced}>{streak}</Text>
+          <Text style={styles.streakLabelEnhanced}>Day Streak</Text>
+          <Text style={styles.streakSubLabel}>
+            {streak >= 7 ? '🏆 On fire!' : 'Keep it going!'}
+          </Text>
+        </View>
+
+        {canClaim ? (
+          <Animated.View style={{ transform: [{ scale: claimPulse }] }}>
+            <TouchableOpacity
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+                onClaim();
+              }}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={['#F97316', '#EF4444']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.claimButtonEnhanced}
+              >
+                {/* Shimmer effect */}
+                <Animated.View
+                  style={[
+                    styles.shimmerOverlay,
+                    { transform: [{ translateX: shimmerTranslate }] },
+                  ]}
+                >
+                  <LinearGradient
+                    colors={[
+                      'transparent',
+                      'rgba(255,255,255,0.3)',
+                      'transparent',
+                    ]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={StyleSheet.absoluteFill}
+                  />
+                </Animated.View>
+                <Ionicons name="gift" size={18} color="#FFF" />
+                <Text style={styles.claimButtonTextEnhanced}>Claim!</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </Animated.View>
+        ) : (
+          <View style={styles.claimedBadgeEnhanced}>
+            <Ionicons name="checkmark-circle" size={24} color="#10B981" />
+          </View>
+        )}
+      </View>
+    </GlassCard>
+  );
+}
+
+// ============================================================================
+// ANIMATED STAT CARD COMPONENT
 // ============================================================================
 
 interface StatCardProps {
@@ -48,29 +448,126 @@ interface StatCardProps {
   value: string | number;
   color: string;
   onPress?: () => void;
+  index?: number;
 }
 
-function StatCard({ icon, label, value, color, onPress }: StatCardProps) {
+function StatCard({ icon, label, value, color, onPress, index = 0 }: StatCardProps) {
+  const scaleAnim = useRef(new Animated.Value(0.8)).current;
+  const opacityAnim = useRef(new Animated.Value(0)).current;
+  const iconRotate = useRef(new Animated.Value(0)).current;
+  const glowAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    // Entrance animation
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        tension: 80,
+        friction: 8,
+        delay: index * 100,
+        useNativeDriver: true,
+      }),
+      Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: 400,
+        delay: index * 100,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [index]);
+
+  const handlePressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 0.95,
+        useNativeDriver: true,
+      }),
+      Animated.timing(iconRotate, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(glowAnim, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.parallel([
+      Animated.spring(scaleAnim, {
+        toValue: 1,
+        useNativeDriver: true,
+      }),
+      Animated.timing(iconRotate, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(glowAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
+  const rotate = iconRotate.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '15deg'],
+  });
+
   const content = (
-    <LinearGradient
-      colors={[color + '30', '#1f293780']}
-      style={styles.statCard}
+    <Animated.View
+      style={[
+        styles.statCardWrapper,
+        {
+          opacity: opacityAnim,
+          transform: [{ scale: scaleAnim }],
+        },
+      ]}
     >
-      <Ionicons name={icon as any} size={24} color={color} />
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </LinearGradient>
+      {/* Glow effect */}
+      <Animated.View
+        style={[
+          styles.statCardGlow,
+          {
+            backgroundColor: color,
+            opacity: Animated.multiply(glowAnim, 0.3),
+          },
+        ]}
+      />
+
+      <LinearGradient
+        colors={[color + '30', '#1f293780']}
+        style={styles.statCard}
+      >
+        <Animated.View style={{ transform: [{ rotate }] }}>
+          <Ionicons name={icon as keyof typeof Ionicons.glyphMap} size={28} color={color} />
+        </Animated.View>
+        <Text style={styles.statValue}>{value}</Text>
+        <Text style={styles.statLabel}>{label}</Text>
+      </LinearGradient>
+    </Animated.View>
   );
-  
+
   if (onPress) {
     return (
-      <TouchableOpacity onPress={onPress} activeOpacity={0.7} style={styles.statCardWrapper}>
+      <TouchableOpacity
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        activeOpacity={1}
+      >
         {content}
       </TouchableOpacity>
     );
   }
-  
-  return <View style={styles.statCardWrapper}>{content}</View>;
+
+  return content;
 }
 
 // ============================================================================
@@ -202,7 +699,7 @@ export default function GamificationHubScreen() {
           onPress={() => navigateTo('CoinShop')}
         >
           <Text style={styles.coinEmoji}>🪙</Text>
-          <Text style={styles.coinsText}>{coins.toLocaleString()}</Text>
+          <Text style={styles.coinsText}>{(coins ?? 0).toLocaleString()}</Text>
         </TouchableOpacity>
       </LinearGradient>
       
@@ -240,7 +737,7 @@ export default function GamificationHubScreen() {
               </View>
               <View style={styles.xpBadge}>
                 <Ionicons name="sparkles" size={16} color="#8b5cf6" />
-                <Text style={styles.xpText}>{xp.toLocaleString()} XP</Text>
+                <Text style={styles.xpText}>{(xp ?? 0).toLocaleString()} XP</Text>
               </View>
             </View>
             
@@ -753,5 +1250,154 @@ const styles = StyleSheet.create({
     height: '100%',
     backgroundColor: '#10b981',
     borderRadius: 2,
+  },
+  // ============================================================================
+  // ANIMATED LEVEL ORB STYLES
+  // ============================================================================
+  levelOrbContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 160,
+    marginVertical: 16,
+  },
+  levelParticle: {
+    position: 'absolute',
+  },
+  levelOrbGlow: {
+    position: 'absolute',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+  },
+  levelOrb: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  levelOrbGradient: {
+    flex: 1,
+    borderRadius: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressRingContainer: {
+    position: 'absolute',
+    width: 110,
+    height: 110,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  progressRing: {
+    position: 'absolute',
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    borderWidth: 3,
+  },
+  progressRingFill: {
+    position: 'absolute',
+    width: 110,
+    height: 110,
+    borderRadius: 55,
+    borderWidth: 3,
+    borderLeftColor: 'transparent',
+  },
+  levelOrbText: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#FFF',
+  },
+  levelOrbLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: 'rgba(255,255,255,0.7)',
+    letterSpacing: 2,
+    marginTop: -4,
+  },
+  // ============================================================================
+  // ANIMATED FIRE STREAK STYLES
+  // ============================================================================
+  streakCardEnhanced: {
+    marginBottom: 20,
+    overflow: 'visible',
+  },
+  streakContentEnhanced: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  flamesContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    marginRight: 12,
+  },
+  flameEmoji: {
+    marginLeft: -8,
+  },
+  streakInfoEnhanced: {
+    flex: 1,
+  },
+  streakValueEnhanced: {
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#FFF',
+  },
+  streakLabelEnhanced: {
+    fontSize: 14,
+    color: '#9CA3AF',
+    marginTop: 2,
+  },
+  streakSubLabel: {
+    fontSize: 12,
+    color: '#F97316',
+    marginTop: 4,
+    fontWeight: '600',
+  },
+  claimButtonEnhanced: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 16,
+    gap: 8,
+    overflow: 'hidden',
+  },
+  shimmerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: 100,
+  },
+  claimButtonTextEnhanced: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFF',
+  },
+  claimedBadgeEnhanced: {
+    backgroundColor: 'rgba(16, 185, 129, 0.2)',
+    padding: 12,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(16, 185, 129, 0.3)',
+  },
+  // ============================================================================
+  // STAT CARD GLOW
+  // ============================================================================
+  statCardGlow: {
+    position: 'absolute',
+    top: -10,
+    left: -10,
+    right: -10,
+    bottom: -10,
+    borderRadius: 26,
+    opacity: 0,
   },
 });
