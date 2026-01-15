@@ -60,15 +60,15 @@ CGraph is a monorepo containing three main applications and shared packages:
 
 ### Technology Stack
 
-| Component | Technology | Version | Purpose |
-|-----------|------------|---------|---------|
-| Backend | Elixir + Phoenix | 1.17 / 1.7.11 | API, WebSockets, Business Logic |
-| Web Frontend | React + Vite | 18.2 / 5.0 | Browser Application |
-| Mobile | React Native + Expo | 0.73 / SDK 54 | iOS/Android Apps |
-| Database | PostgreSQL | 16 | Primary Data Store |
-| Cache | Redis | 7.2 | Caching, Sessions, PubSub |
-| Job Queue | Oban | 2.17 | Background Jobs |
-| Auth | Guardian + Argon2 | - | JWT Authentication |
+| Component    | Technology          | Version       | Purpose                         |
+| ------------ | ------------------- | ------------- | ------------------------------- |
+| Backend      | Elixir + Phoenix    | 1.17 / 1.7.11 | API, WebSockets, Business Logic |
+| Web Frontend | React + Vite        | 18.2 / 5.0    | Browser Application             |
+| Mobile       | React Native + Expo | 0.73 / SDK 54 | iOS/Android Apps                |
+| Database     | PostgreSQL          | 16            | Primary Data Store              |
+| Cache        | Redis               | 7.2           | Caching, Sessions, PubSub       |
+| Job Queue    | Oban                | 2.17          | Background Jobs                 |
+| Auth         | Guardian + Argon2   | -             | JWT Authentication              |
 
 ---
 
@@ -78,16 +78,16 @@ CGraph is a monorepo containing three main applications and shared packages:
 
 Before you begin, ensure you have installed:
 
-| Tool | Minimum Version | Check Command |
-|------|-----------------|---------------|
-| Node.js | 20.0.0 | `node --version` |
-| pnpm | 8.0.0 | `pnpm --version` |
-| Elixir | 1.17.0 | `elixir --version` |
-| Erlang/OTP | 27.0 | `erl -version` |
-| PostgreSQL | 16.0 | `psql --version` |
-| Redis | 7.0 | `redis-cli --version` |
-| Docker | 24.0 | `docker --version` |
-| Git | 2.40 | `git --version` |
+| Tool       | Minimum Version | Check Command         |
+| ---------- | --------------- | --------------------- |
+| Node.js    | 20.0.0          | `node --version`      |
+| pnpm       | 8.0.0           | `pnpm --version`      |
+| Elixir     | 1.17.0          | `elixir --version`    |
+| Erlang/OTP | 27.0            | `erl -version`        |
+| PostgreSQL | 16.0            | `psql --version`      |
+| Redis      | 7.0             | `redis-cli --version` |
+| Docker     | 24.0            | `docker --version`    |
+| Git        | 2.40            | `git --version`       |
 
 ### Quick Start (Automated)
 
@@ -104,6 +104,7 @@ chmod +x infrastructure/scripts/setup-dev.sh
 ```
 
 This script will:
+
 1. Check all prerequisites
 2. Install JavaScript dependencies (pnpm)
 3. Install Elixir dependencies (mix)
@@ -116,12 +117,14 @@ This script will:
 If you prefer manual control:
 
 **Step 1: Clone and enter the repository**
+
 ```bash
 git clone https://github.com/cgraph-dev/CGraph.git
 cd CGraph
 ```
 
 **Step 2: Set up environment variables**
+
 ```bash
 cp .env.example .env
 # Edit .env with your configuration
@@ -129,11 +132,13 @@ nano .env  # or use your preferred editor
 ```
 
 **Step 3: Install JavaScript dependencies**
+
 ```bash
 pnpm install
 ```
 
 **Step 4: Install Elixir dependencies**
+
 ```bash
 cd apps/backend
 mix deps.get
@@ -142,6 +147,7 @@ cd ../..
 ```
 
 **Step 5: Start databases**
+
 ```bash
 # Using Docker (recommended)
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres redis
@@ -150,6 +156,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres re
 ```
 
 **Step 6: Set up the database**
+
 ```bash
 cd apps/backend
 mix ecto.create
@@ -167,6 +174,7 @@ cd ../..
 Open three terminal windows and run:
 
 **Terminal 1: Backend (Phoenix)**
+
 ```bash
 cd apps/backend
 mix phx.server
@@ -176,12 +184,14 @@ mix phx.server
 ```
 
 **Terminal 2: Web Frontend (Vite)**
+
 ```bash
 pnpm --filter @cgraph/web dev
 # Web app available at http://localhost:3000
 ```
 
 **Terminal 3: Mobile (Expo)**
+
 ```bash
 cd apps/mobile
 npx expo start
@@ -217,11 +227,11 @@ docker-compose down
 
 When using `docker-compose.dev.yml`:
 
-| Tool | URL | Purpose |
-|------|-----|---------|
-| pgAdmin | http://localhost:5050 | Database management UI |
-| Redis Commander | http://localhost:8081 | Redis browser |
-| Mailhog | http://localhost:8025 | Email testing |
+| Tool            | URL                   | Purpose                |
+| --------------- | --------------------- | ---------------------- |
+| pgAdmin         | http://localhost:5050 | Database management UI |
+| Redis Commander | http://localhost:8081 | Redis browser          |
+| Mailhog         | http://localhost:8025 | Email testing          |
 
 ---
 
@@ -289,17 +299,20 @@ MAIL_FROM=noreply@cgraph.dev
 ### Environment-Specific Configs
 
 **Development:**
+
 - Hot reloading enabled
 - Debug logging
 - Detailed error messages
 - CORS allows localhost
 
 **Staging:**
+
 - Production-like but with debug tools
 - Staging database
 - Test payment gateway
 
 **Production:**
+
 - Optimized builds
 - Minimal logging
 - Strict CORS
@@ -466,9 +479,57 @@ curl http://localhost:3000/health  # Web frontend
 
 ## Monitoring & Observability
 
+### Prometheus & Grafana Stack (v0.9.3)
+
+The observability stack is pre-configured in `docker-compose.dev.yml`:
+
+```bash
+# Start with observability
+docker-compose -f docker-compose.dev.yml up -d
+
+# Access dashboards
+# Prometheus: http://localhost:9090
+# Grafana: http://localhost:3001 (default: admin/admin)
+```
+
+**Prometheus Configuration** (`infrastructure/prometheus/prometheus.yml`):
+
+```yaml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'cgraph-backend'
+    static_configs:
+      - targets: ['backend:4000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+```
+
+**Grafana Auto-Provisioning:**
+
+- Datasources: `infrastructure/grafana/provisioning/datasources/datasources.yml`
+- Dashboards: `infrastructure/grafana/provisioning/dashboards/dashboards.yml`
+
+### Backend Telemetry Events
+
+The Elixir backend emits telemetry events that Prometheus scrapes:
+
+| Event                                    | Description                          |
+| ---------------------------------------- | ------------------------------------ |
+| `[:cgraph, :http, :request, :start]`     | HTTP request started                 |
+| `[:cgraph, :http, :request, :stop]`      | HTTP request completed with duration |
+| `[:cgraph, :http, :request, :exception]` | HTTP request failed                  |
+| `[:phoenix, :endpoint, :stop]`           | Phoenix request metrics              |
+| `[:ecto, :repo, :query]`                 | Database query metrics               |
+| `[:phoenix, :channel_joined]`            | WebSocket channel joins              |
+| `[:phoenix, :channel_handled_in]`        | WebSocket message handling           |
+
 ### Logging
 
 **Backend (Elixir):**
+
 - Logs are written to stdout
 - Format: JSON in production, human-readable in dev
 - Levels: debug, info, warn, error
@@ -480,6 +541,7 @@ Logger.info("User registered", user_id: user.id)
 ```
 
 **View logs:**
+
 ```bash
 # Docker
 docker-compose logs -f backend
@@ -492,13 +554,13 @@ flyctl logs -a cgraph
 
 Key metrics to monitor:
 
-| Metric | Threshold | Action if Exceeded |
-|--------|-----------|-------------------|
-| API Response Time (p95) | > 200ms | Optimize queries, add caching |
-| Error Rate | > 1% | Check logs, investigate errors |
-| Memory Usage | > 80% | Scale up, check for leaks |
-| DB Connections | > 80% pool | Increase pool size |
-| WebSocket Connections | > 10k/server | Add more instances |
+| Metric                  | Threshold    | Action if Exceeded             |
+| ----------------------- | ------------ | ------------------------------ |
+| API Response Time (p95) | > 200ms      | Optimize queries, add caching  |
+| Error Rate              | > 1%         | Check logs, investigate errors |
+| Memory Usage            | > 80%        | Scale up, check for leaks      |
+| DB Connections          | > 80% pool   | Increase pool size             |
+| WebSocket Connections   | > 10k/server | Add more instances             |
 
 ### Recommended Tools
 
@@ -593,6 +655,7 @@ mix sobelow --config
 ### Common Issues
 
 **"Cannot connect to PostgreSQL"**
+
 ```bash
 # Check if PostgreSQL is running
 docker-compose ps postgres
@@ -606,6 +669,7 @@ echo $DATABASE_URL
 ```
 
 **"Phoenix won't start"**
+
 ```bash
 # Check for compile errors
 cd apps/backend
@@ -621,6 +685,7 @@ mix compile
 ```
 
 **"WebSocket connection failed"**
+
 ```bash
 # Check if endpoint is configured correctly
 grep -r "socket" apps/backend/lib/cgraph_web/
@@ -630,6 +695,7 @@ grep -r "socket" apps/backend/lib/cgraph_web/
 ```
 
 **"Migrations failed"**
+
 ```bash
 # Check migration status
 mix ecto.migrations
@@ -683,17 +749,17 @@ pnpm build
 
 ### File Locations
 
-| Item | Location |
-|------|----------|
-| Backend code | `apps/backend/lib/` |
-| Web frontend | `apps/web/src/` |
-| Mobile app | `apps/mobile/src/` |
-| Database migrations | `apps/backend/priv/repo/migrations/` |
-| API routes | `apps/backend/lib/cgraph_web/router.ex` |
-| Docker configs | `infrastructure/docker/` |
-| Deploy configs | `infrastructure/fly/` |
-| Scripts | `infrastructure/scripts/` |
+| Item                | Location                                |
+| ------------------- | --------------------------------------- |
+| Backend code        | `apps/backend/lib/`                     |
+| Web frontend        | `apps/web/src/`                         |
+| Mobile app          | `apps/mobile/src/`                      |
+| Database migrations | `apps/backend/priv/repo/migrations/`    |
+| API routes          | `apps/backend/lib/cgraph_web/router.ex` |
+| Docker configs      | `infrastructure/docker/`                |
+| Deploy configs      | `infrastructure/fly/`                   |
+| Scripts             | `infrastructure/scripts/`               |
 
 ---
 
-*Last updated: December 2025*
+_Last updated: December 2025_

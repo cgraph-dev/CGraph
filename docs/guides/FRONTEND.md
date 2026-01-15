@@ -1,9 +1,11 @@
 # CGraph Frontend Guide
 
-> Building beautiful, fast, and accessible user interfaces with React.
-> **v0.7.52** — Now featuring Gamification System, Sticker Picker, Title Badges, and enhanced customization.
+> Building beautiful, fast, and accessible user interfaces with React. **v0.7.52** — Now featuring
+> Gamification System, Sticker Picker, Title Badges, and enhanced customization.
 
-This guide covers the CGraph web application—a React 19 app built with Vite, TypeScript, and TailwindCSS. Whether you're fixing a bug or building a new feature, you'll find everything you need here.
+This guide covers the CGraph web application—a React 19 app built with Vite, TypeScript, and
+TailwindCSS. Whether you're fixing a bug or building a new feature, you'll find everything you need
+here.
 
 ---
 
@@ -38,24 +40,24 @@ This guide covers the CGraph web application—a React 19 app built with Vite, T
 
 ## Tech Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React** | 19.1 | UI framework |
-| **TypeScript** | 5.8 | Type safety |
-| **Vite** | 6.3 | Build tool / dev server |
-| **TailwindCSS** | 3.4 | Utility-first styling |
-| **Zustand** | 5.x | Global state management |
-| **React Query** | 5.x | Server state / caching |
-| **React Router** | 7.x | Client-side routing |
-| **Phoenix Channels** | 1.7 | WebSocket real-time |
-| **Wagmi/Viem** | 2.x | Web3 wallet integration |
-| **Radix UI** | Latest | Accessible components |
-| **Framer Motion** | 12.x | Animations |
-| **GSAP** | 3.14 | Professional animations |
-| **Three.js** | 0.182 | 3D graphics engine |
-| **Storybook** | 8.6 | Component documentation |
-| **Web Crypto API** | Native | Signal Protocol encryption |
-| **Web Audio API** | Native | Spatial audio processing |
+| Technology           | Version | Purpose                    |
+| -------------------- | ------- | -------------------------- |
+| **React**            | 19.1    | UI framework               |
+| **TypeScript**       | 5.8     | Type safety                |
+| **Vite**             | 6.3     | Build tool / dev server    |
+| **TailwindCSS**      | 3.4     | Utility-first styling      |
+| **Zustand**          | 5.x     | Global state management    |
+| **React Query**      | 5.x     | Server state / caching     |
+| **React Router**     | 7.x     | Client-side routing        |
+| **Phoenix Channels** | 1.7     | WebSocket real-time        |
+| **Wagmi/Viem**       | 2.x     | Web3 wallet integration    |
+| **Radix UI**         | Latest  | Accessible components      |
+| **Framer Motion**    | 12.x    | Animations                 |
+| **GSAP**             | 3.14    | Professional animations    |
+| **Three.js**         | 0.182   | 3D graphics engine         |
+| **Storybook**        | 8.6     | Component documentation    |
+| **Web Crypto API**   | Native  | Signal Protocol encryption |
+| **Web Audio API**    | Native  | Spatial audio processing   |
 
 ---
 
@@ -252,7 +254,7 @@ interface AuthState {
   token: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  
+
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (data: Partial<User>) => void;
@@ -265,7 +267,7 @@ export const useAuthStore = create<AuthState>()(
       token: null,
       isAuthenticated: false,
       isLoading: true,
-      
+
       login: async (email, password) => {
         set({ isLoading: true });
         const response = await api.post('/auth/login', { email, password });
@@ -276,12 +278,12 @@ export const useAuthStore = create<AuthState>()(
           isLoading: false,
         });
       },
-      
+
       logout: async () => {
         await api.post('/auth/logout');
         set({ user: null, token: null, isAuthenticated: false });
       },
-      
+
       updateUser: (data) => {
         const { user } = get();
         if (user) {
@@ -308,7 +310,7 @@ interface ChatState {
   activeConversation: string | null;
   messages: Record<string, Message[]>;
   typingUsers: Record<string, string[]>;
-  
+
   setActiveConversation: (id: string) => void;
   addMessage: (conversationId: string, message: Message) => void;
   setTyping: (conversationId: string, userId: string, isTyping: boolean) => void;
@@ -319,11 +321,11 @@ export const useChatStore = create<ChatState>((set, get) => ({
   activeConversation: null,
   messages: {},
   typingUsers: {},
-  
+
   setActiveConversation: (id) => {
     set({ activeConversation: id });
   },
-  
+
   addMessage: (conversationId, message) => {
     const { messages } = get();
     const existing = messages[conversationId] || [];
@@ -334,7 +336,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
       },
     });
   },
-  
+
   setTyping: (conversationId, userId, isTyping) => {
     const { typingUsers } = get();
     const current = typingUsers[conversationId] || [];
@@ -350,6 +352,50 @@ export const useChatStore = create<ChatState>((set, get) => ({
   },
 }));
 ```
+
+### Zustand DevTools Integration (v0.9.3)
+
+All core stores now include Redux DevTools integration for debugging. Install the
+[Redux DevTools browser extension](https://github.com/reduxjs/redux-devtools) to use.
+
+```typescript
+// src/stores/authStore.ts
+import { create } from 'zustand';
+import { devtools, persist } from 'zustand/middleware';
+
+export const useAuthStore = create<AuthState>()(
+  devtools(
+    persist(
+      (set, get) => ({
+        // ... state and actions
+        login: async (email, password) => {
+          set({ isLoading: true }, false, 'login/start');
+          // ... login logic
+          set({ isAuthenticated: true }, false, 'login/success');
+        },
+      }),
+      { name: 'cgraph-auth' }
+    ),
+    { name: 'AuthStore', enabled: import.meta.env.DEV }
+  )
+);
+```
+
+**Middleware Utilities** (`src/stores/middleware.ts`):
+
+| Function            | Description                                      |
+| ------------------- | ------------------------------------------------ |
+| `withDevtools()`    | Type-safe wrapper for Redux DevTools integration |
+| `withLogger()`      | Console logging for state changes (dev only)     |
+| `withPerformance()` | Performance monitoring with slow update warnings |
+| `createResetFn()`   | Helper for store reset functionality             |
+| `createSelectors()` | Auto-generate typed selectors from store         |
+
+**Stores with DevTools:**
+
+- `authStore` - Action tracking: `login/start`, `login/success`, `login/error`
+- `chatStore` - Message and conversation debugging
+- `notificationStore` - Notification flow tracking
 
 ### React Query for Server State
 
@@ -382,9 +428,15 @@ export function useMessages(conversationId: string) {
 
 export function useSendMessage() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async ({ conversationId, content }: { conversationId: string; content: string }) => {
+    mutationFn: async ({
+      conversationId,
+      content,
+    }: {
+      conversationId: string;
+      content: string;
+    }) => {
       const { data } = await api.post(`/conversations/${conversationId}/messages`, { content });
       return data.data;
     },
@@ -398,6 +450,90 @@ export function useSendMessage() {
   });
 }
 ```
+
+### Query Key Factories (v0.9.3)
+
+Centralized, type-safe query key management in `src/lib/queryKeys.ts`:
+
+```typescript
+export const queryKeys = {
+  conversations: {
+    all: ['conversations'] as const,
+    list: () => [...queryKeys.conversations.all, 'list'] as const,
+    detail: (id: string) => [...queryKeys.conversations.all, 'detail', id] as const,
+    messages: (id: string) => [...queryKeys.conversations.all, id, 'messages'] as const,
+  },
+  users: {
+    all: ['users'] as const,
+    me: () => [...queryKeys.users.all, 'me'] as const,
+    profile: (id: string) => [...queryKeys.users.all, 'profile', id] as const,
+  },
+  friends: {
+    all: ['friends'] as const,
+    list: () => [...queryKeys.friends.all, 'list'] as const,
+    requests: () => [...queryKeys.friends.all, 'requests'] as const,
+  },
+  // ... more domains
+};
+
+// Usage in hooks
+const { data } = useQuery({
+  queryKey: queryKeys.conversations.messages(conversationId),
+  queryFn: () => fetchMessages(conversationId),
+});
+
+// Invalidation
+queryClient.invalidateQueries({ queryKey: queryKeys.conversations.all });
+```
+
+### API Validation with Zod (v0.9.3)
+
+Runtime type validation for API responses in `src/lib/validation/`:
+
+```typescript
+// schemas.ts - Zod schemas matching OpenAPI spec
+import { z } from 'zod';
+
+export const userSchema = z.object({
+  id: z.string().uuid(),
+  email: z.string().email(),
+  username: z.string().nullable(),
+  display_name: z.string().nullable().optional(),
+  avatar_url: z.string().url().nullable().optional(),
+  // ... gamification fields
+  level: z.number().int().optional(),
+  xp: z.number().int().optional(),
+});
+
+export const loginResponseSchema = z.object({
+  user: userSchema,
+  tokens: z.object({
+    access_token: z.string(),
+    refresh_token: z.string(),
+  }),
+});
+
+// validatedApi.ts - Validated API wrapper
+import { validateWithFallback, loginResponseSchema } from './schemas';
+
+export const authApi = {
+  async login(identifier: string, password: string) {
+    const response = await api.post('/api/v1/auth/login', { identifier, password });
+    return validateWithFallback(loginResponseSchema, response.data, 'login');
+  },
+};
+
+// Usage
+import { validatedApi } from '@/lib/validation';
+const { user, tokens } = await validatedApi.auth.login(email, password);
+```
+
+**Features:**
+
+- Runtime type validation catches backend contract changes early
+- Graceful fallback when validation fails (app continues working)
+- Development-only warnings for schema mismatches
+- Type-safe API responses inferred from Zod schemas
 
 ---
 
@@ -423,11 +559,32 @@ export default function App() {
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
         {/* Public routes */}
-        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
-        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
-        
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+
         {/* Protected routes */}
-        <Route path="/" element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <AppLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route index element={<Navigate to="/messages" replace />} />
           <Route path="messages" element={<Messages />} />
           <Route path="messages/:id" element={<Conversation />} />
@@ -437,7 +594,7 @@ export default function App() {
           <Route path="forums/:forumId/posts/:postId" element={<ForumPost />} />
           <Route path="settings/*" element={<Settings />} />
         </Route>
-        
+
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>
@@ -473,10 +630,10 @@ function ChatHeader() {
   const navigate = useNavigate();
   const { id: conversationId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  
+
   const handleBack = () => navigate(-1);
   const handleSearch = (query: string) => setSearchParams({ q: query });
-  
+
   // ...
 }
 ```
@@ -514,11 +671,11 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     // Handle 401 - Token expired
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
         await useAuthStore.getState().refreshSession();
         const newToken = useAuthStore.getState().token;
@@ -530,7 +687,7 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -542,24 +699,21 @@ api.interceptors.response.use(
 // src/lib/api.ts (continued)
 
 export const authApi = {
-  login: (email: string, password: string) =>
-    api.post('/auth/login', { email, password }),
-  
+  login: (email: string, password: string) => api.post('/auth/login', { email, password }),
+
   register: (email: string, username: string, password: string) =>
     api.post('/auth/register', { email, username, password }),
-  
+
   logout: () => api.post('/auth/logout'),
-  
+
   me: () => api.get('/me'),
 };
 
 export const messagesApi = {
-  list: (page = 1) =>
-    api.get('/conversations', { params: { page } }),
-  
-  get: (id: string) =>
-    api.get(`/conversations/${id}`),
-  
+  list: (page = 1) => api.get('/conversations', { params: { page } }),
+
+  get: (id: string) => api.get(`/conversations/${id}`),
+
   send: (conversationId: string, content: string) =>
     api.post(`/conversations/${conversationId}/messages`, { content }),
 };
@@ -585,45 +739,46 @@ import { useAuthStore } from '@/stores/authStore';
 class SocketManager {
   private socket: Socket | null = null;
   private channels: Map<string, Channel> = new Map();
-  
+
   connect() {
     const token = useAuthStore.getState().token;
     if (!token || this.socket?.isConnected()) return;
-    
+
     this.socket = new Socket(import.meta.env.VITE_WS_URL, {
       params: { token },
     });
-    
+
     this.socket.connect();
-    
+
     this.socket.onError(() => {
       console.error('Socket error');
       this.reconnect();
     });
   }
-  
+
   disconnect() {
     this.channels.forEach((channel) => channel.leave());
     this.channels.clear();
     this.socket?.disconnect();
     this.socket = null;
   }
-  
+
   joinChannel(topic: string, params = {}): Channel {
     if (this.channels.has(topic)) {
       return this.channels.get(topic)!;
     }
-    
+
     const channel = this.socket!.channel(topic, params);
-    
-    channel.join()
+
+    channel
+      .join()
       .receive('ok', () => console.log(`Joined ${topic}`))
       .receive('error', (resp) => console.error(`Failed to join ${topic}`, resp));
-    
+
     this.channels.set(topic, channel);
     return channel;
   }
-  
+
   leaveChannel(topic: string) {
     const channel = this.channels.get(topic);
     if (channel) {
@@ -631,7 +786,7 @@ class SocketManager {
       this.channels.delete(topic);
     }
   }
-  
+
   private reconnect() {
     setTimeout(() => {
       this.disconnect();
@@ -655,24 +810,24 @@ import { useAuthStore } from '@/stores/authStore';
 export function useChannel(topic: string, params = {}) {
   const channelRef = useRef<Channel | null>(null);
   const { isAuthenticated } = useAuthStore();
-  
+
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     socketManager.connect();
     channelRef.current = socketManager.joinChannel(topic, params);
-    
+
     return () => {
       socketManager.leaveChannel(topic);
     };
   }, [topic, isAuthenticated]);
-  
+
   const push = useCallback((event: string, payload = {}) => {
     if (channelRef.current) {
       return channelRef.current.push(event, payload);
     }
   }, []);
-  
+
   const on = useCallback((event: string, callback: (payload: any) => void) => {
     if (channelRef.current) {
       channelRef.current.on(event, callback);
@@ -683,7 +838,7 @@ export function useChannel(topic: string, params = {}) {
       }
     };
   }, []);
-  
+
   return { push, on, channel: channelRef.current };
 }
 ```
@@ -699,34 +854,34 @@ function Conversation() {
   const { id } = useParams<{ id: string }>();
   const { addMessage, setTyping } = useChatStore();
   const { push, on } = useChannel(`conversation:${id}`);
-  
+
   useEffect(() => {
     const unsubMessage = on('new_message', (payload) => {
       addMessage(id!, payload.message);
     });
-    
+
     const unsubTyping = on('typing', (payload) => {
       setTyping(id!, payload.user_id, true);
       // Clear after 3 seconds
       setTimeout(() => setTyping(id!, payload.user_id, false), 3000);
     });
-    
+
     return () => {
       unsubMessage();
       unsubTyping();
     };
   }, [id, on, addMessage, setTyping]);
-  
+
   const sendMessage = (content: string) => {
     push('new_message', { content })
       .receive('ok', (resp) => console.log('Sent!', resp))
       .receive('error', (err) => console.error('Failed', err));
   };
-  
+
   const sendTyping = () => {
     push('typing', {});
   };
-  
+
   // ...
 }
 ```
@@ -771,8 +926,7 @@ const buttonVariants = cva(
 );
 
 interface ButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   isLoading?: boolean;
 }
 
@@ -813,25 +967,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ className, label, error, ...props }, ref) => {
     return (
       <div className="space-y-1">
-        {label && (
-          <label className="text-sm font-medium text-gray-300">
-            {label}
-          </label>
-        )}
+        {label && <label className="text-sm font-medium text-gray-300">{label}</label>}
         <input
           className={cn(
-            'w-full rounded-lg border border-dark-600 bg-dark-800 px-4 py-2',
+            'border-dark-600 bg-dark-800 w-full rounded-lg border px-4 py-2',
             'text-white placeholder-gray-500',
-            'focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500',
+            'focus:border-primary-500 focus:ring-primary-500 focus:ring-1 focus:outline-none',
             error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
             className
           )}
           ref={ref}
           {...props}
         />
-        {error && (
-          <p className="text-sm text-red-500">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
     );
   }
@@ -855,10 +1003,10 @@ import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 function ChatInput() {
   const [isVoiceMode, setIsVoiceMode] = useState(false);
 
-  const handleVoiceComplete = async (data: { 
-    blob: Blob; 
-    duration: number; 
-    waveform: number[] 
+  const handleVoiceComplete = async (data: {
+    blob: Blob;
+    duration: number;
+    waveform: number[]
   }) => {
     // Upload the voice message
     const formData = new FormData();
@@ -866,7 +1014,7 @@ function ChatInput() {
     formData.append('duration', String(data.duration));
     formData.append('waveform', JSON.stringify(data.waveform));
     formData.append('conversation_id', conversationId);
-    
+
     await api.post('/api/v1/voice-messages', formData);
   };
 
@@ -883,6 +1031,7 @@ function ChatInput() {
 ```
 
 **Features:**
+
 - Browser microphone recording with permission handling
 - Live waveform visualization during recording
 - Preview before sending with playback controls
@@ -915,6 +1064,7 @@ function MessageBubble({ message }: { message: Message }) {
 ```
 
 **Features:**
+
 - Play/pause controls
 - Waveform visualization with progress overlay
 - Click-to-seek on waveform
@@ -959,22 +1109,19 @@ export function OAuthButtons({ mode, onError }: OAuthButtonsProps) {
     <div className="space-y-3">
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-dark-600" />
+          <span className="border-dark-600 w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-dark-900 px-2 text-gray-500">
-            Or continue with
-          </span>
+          <span className="bg-dark-900 px-2 text-gray-500">Or continue with</span>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-4 gap-3">
         {providers.map(({ id, name, Icon, color }) => (
           <button
             key={id}
             onClick={() => handleOAuth(id)}
-            className={`${color} flex h-12 items-center justify-center rounded-lg 
-                       transition-all hover:opacity-80`}
+            className={`${color} flex h-12 items-center justify-center rounded-lg transition-all hover:opacity-80`}
             aria-label={`${mode === 'login' ? 'Sign in' : 'Sign up'} with ${name}`}
           >
             <Icon className="h-6 w-6" />
@@ -1014,9 +1161,7 @@ export function OAuthCallback() {
       }
 
       try {
-        const result = await oAuthService.handleOAuthCallback(
-          provider, code, state || undefined
-        );
+        const result = await oAuthService.handleOAuthCallback(provider, code, state || undefined);
         setAuth(result.user, result.token);
         navigate('/chat', { replace: true });
       } catch (err) {
@@ -1033,7 +1178,7 @@ export function OAuthCallback() {
         <div className="text-center">
           <h2 className="text-xl font-semibold text-red-500">Error</h2>
           <p className="text-gray-400">{error}</p>
-          <button onClick={() => navigate('/login')} className="mt-4 text-primary-500">
+          <button onClick={() => navigate('/login')} className="text-primary-500 mt-4">
             Back to Login
           </button>
         </div>
@@ -1112,40 +1257,31 @@ interface ModalProps {
   className?: string;
 }
 
-export function Modal({
-  open,
-  onOpenChange,
-  title,
-  description,
-  children,
-  className,
-}: ModalProps) {
+export function Modal({ open, onOpenChange, title, description, children, className }: ModalProps) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
         <Dialog.Content
           className={cn(
-            'fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2',
-            'w-full max-w-md rounded-xl bg-dark-800 p-6 shadow-xl',
+            'fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2',
+            'bg-dark-800 w-full max-w-md rounded-xl p-6 shadow-xl',
             'focus:outline-none',
             className
           )}
         >
-          <Dialog.Title className="text-lg font-semibold text-white">
-            {title}
-          </Dialog.Title>
+          <Dialog.Title className="text-lg font-semibold text-white">{title}</Dialog.Title>
           {description && (
             <Dialog.Description className="mt-1 text-sm text-gray-400">
               {description}
             </Dialog.Description>
           )}
-          
+
           <div className="mt-4">{children}</div>
-          
+
           <Dialog.Close asChild>
             <button
-              className="absolute right-4 top-4 text-gray-400 hover:text-white"
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
               aria-label="Close"
             >
               <XMarkIcon className="h-5 w-5" />
@@ -1220,14 +1356,14 @@ import { Waveform } from '@/components';
 
 Reusable hooks are located in `src/hooks/`:
 
-| Hook | Purpose |
-|------|---------|
-| `useMediaQuery` | Responsive breakpoint detection |
-| `useLocalStorage` | Persist state to localStorage |
-| `useDebounce` | Debounce rapidly changing values |
-| `useClickOutside` | Detect clicks outside an element |
-| `useWindowSize` | Track viewport dimensions |
-| `useCopyToClipboard` | Copy text with feedback |
+| Hook                 | Purpose                          |
+| -------------------- | -------------------------------- |
+| `useMediaQuery`      | Responsive breakpoint detection  |
+| `useLocalStorage`    | Persist state to localStorage    |
+| `useDebounce`        | Debounce rapidly changing values |
+| `useClickOutside`    | Detect clicks outside an element |
+| `useWindowSize`      | Track viewport dimensions        |
+| `useCopyToClipboard` | Copy text with feedback          |
 
 **Example - Responsive design:**
 
@@ -1269,30 +1405,32 @@ function SearchInput() {
 
 ## Enhanced UI v3.0
 
-CGraph v0.7.35 introduces the most advanced UI system yet, building on the foundation of v2.0 with Signal Protocol encryption, AI message intelligence, holographic components, and spatial audio. This release adds **~3,500 new lines** of cutting-edge code.
+CGraph v0.7.35 introduces the most advanced UI system yet, building on the foundation of v2.0 with
+Signal Protocol encryption, AI message intelligence, holographic components, and spatial audio. This
+release adds **~3,500 new lines** of cutting-edge code.
 
 ### What's New in v3.0
 
-| Feature | Description | Lines |
-|---------|-------------|-------|
-| **Signal Protocol** | Double Ratchet encryption with forward secrecy | 750+ |
-| **AI Engine** | Smart replies, sentiment, moderation | 750+ |
-| **Holographic UI** | 8 futuristic components | 650+ |
-| **Spatial Audio** | 3D positional audio with HRTF | 600+ |
-| **Tests** | Comprehensive test suites | 750+ |
+| Feature             | Description                                    | Lines |
+| ------------------- | ---------------------------------------------- | ----- |
+| **Signal Protocol** | Double Ratchet encryption with forward secrecy | 750+  |
+| **AI Engine**       | Smart replies, sentiment, moderation           | 750+  |
+| **Holographic UI**  | 8 futuristic components                        | 650+  |
+| **Spatial Audio**   | 3D positional audio with HRTF                  | 600+  |
+| **Tests**           | Comprehensive test suites                      | 750+  |
 
 ### Enhanced Stack (v3.0)
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| **three** | ^0.182.0 | 3D graphics engine |
-| **@react-three/fiber** | ^9.5.0 | React renderer for Three.js |
-| **@react-three/drei** | ^10.7.7 | Useful helpers for R3F |
-| **@react-three/postprocessing** | ^3.0.4 | Post-processing effects |
-| **gsap** | ^3.14.2 | Professional animation library |
-| **framer-motion** | ^12.0.0 | Declarative React animations |
-| **Web Crypto API** | Native | ECDH P-384, AES-256-GCM, HKDF |
-| **Web Audio API** | Native | Spatial audio, HRTF, VAD |
+| Package                         | Version  | Purpose                        |
+| ------------------------------- | -------- | ------------------------------ |
+| **three**                       | ^0.182.0 | 3D graphics engine             |
+| **@react-three/fiber**          | ^9.5.0   | React renderer for Three.js    |
+| **@react-three/drei**           | ^10.7.7  | Useful helpers for R3F         |
+| **@react-three/postprocessing** | ^3.0.4   | Post-processing effects        |
+| **gsap**                        | ^3.14.2  | Professional animation library |
+| **framer-motion**               | ^12.0.0  | Declarative React animations   |
+| **Web Crypto API**              | Native   | ECDH P-384, AES-256-GCM, HKDF  |
+| **Web Audio API**               | Native   | Spatial audio, HRTF, VAD       |
 
 ### Component Architecture (v3.0)
 
@@ -1340,14 +1478,14 @@ Industry-standard end-to-end encryption using the Signal Protocol Double Ratchet
 
 ### Security Features
 
-| Feature | Implementation |
-|---------|----------------|
-| **Key Agreement** | X3DH (Extended Triple Diffie-Hellman) |
-| **Curve** | ECDH P-384 (NIST approved) |
-| **Encryption** | AES-256-GCM (authenticated) |
-| **Key Derivation** | HKDF (HMAC-based) |
-| **Forward Secrecy** | New keys for each message exchange |
-| **Break-in Recovery** | Automatic key refresh |
+| Feature               | Implementation                        |
+| --------------------- | ------------------------------------- |
+| **Key Agreement**     | X3DH (Extended Triple Diffie-Hellman) |
+| **Curve**             | ECDH P-384 (NIST approved)            |
+| **Encryption**        | AES-256-GCM (authenticated)           |
+| **Key Derivation**    | HKDF (HMAC-based)                     |
+| **Forward Secrecy**   | New keys for each message exchange    |
+| **Break-in Recovery** | Automatic key refresh                 |
 
 ### Usage
 
@@ -1424,14 +1562,14 @@ Smart AI-powered features for enhanced messaging experiences.
 
 ### Features
 
-| Feature | Description |
-|---------|-------------|
-| **Smart Replies** | Context-aware reply suggestions |
-| **Sentiment Analysis** | 8 emotions + positive/negative/neutral |
-| **Content Moderation** | Spam, scam, harassment detection |
-| **Language Detection** | 20+ languages with confidence |
-| **Topic Extraction** | Automatic topic categorization |
-| **Conversation Insights** | Engagement metrics, patterns |
+| Feature                   | Description                            |
+| ------------------------- | -------------------------------------- |
+| **Smart Replies**         | Context-aware reply suggestions        |
+| **Sentiment Analysis**    | 8 emotions + positive/negative/neutral |
+| **Content Moderation**    | Spam, scam, harassment detection       |
+| **Language Detection**    | 20+ languages with confidence          |
+| **Topic Extraction**      | Automatic topic categorization         |
+| **Conversation Insights** | Engagement metrics, patterns           |
 
 ### Usage
 
@@ -1466,9 +1604,7 @@ const replies = await ai.generateSmartReplies(message);
 ### Sentiment Analysis
 
 ```tsx
-const sentiment = await ai.analyzeSentiment(
-  'I am so happy about the amazing news!'
-);
+const sentiment = await ai.analyzeSentiment('I am so happy about the amazing news!');
 // {
 //   overall: 'positive',
 //   score: 0.85,
@@ -1489,9 +1625,7 @@ const sentiment = await ai.analyzeSentiment(
 ### Content Moderation
 
 ```tsx
-const result = await ai.moderateContent(
-  'FREE MONEY!!! Click here NOW to WIN $$$!!!'
-);
+const result = await ai.moderateContent('FREE MONEY!!! Click here NOW to WIN $$$!!!');
 // {
 //   isApproved: false,
 //   flags: [
@@ -1523,6 +1657,7 @@ Advanced theming system with runtime switching, custom themes, and user preferen
 ### Overview
 
 The Theme Engine provides:
+
 - 7 built-in themes (dark, light, matrix, holo-cyan, holo-purple, holo-gold, midnight)
 - Custom theme creation with full color control
 - User preferences (font scaling, message density, accessibility)
@@ -1538,40 +1673,36 @@ import { ThemeProviderEnhanced, useThemeEnhanced } from '@/contexts/ThemeContext
 // Wrap your app
 <ThemeProviderEnhanced initialTheme="dark">
   <App />
-</ThemeProviderEnhanced>
+</ThemeProviderEnhanced>;
 
 // Use in components
 function MyComponent() {
   const { currentTheme, setTheme, preferences } = useThemeEnhanced();
-  
-  return (
-    <button onClick={() => setTheme('matrix')}>
-      Matrix Mode
-    </button>
-  );
+
+  return <button onClick={() => setTheme('matrix')}>Matrix Mode</button>;
 }
 ```
 
 ### Available Hooks
 
-| Hook | Purpose |
-|------|---------|
-| `useThemeEnhanced` | Full theme state and actions |
-| `useThemeColors` | Current theme colors |
-| `useHolographicTheme` | Get holo preset from theme |
-| `useReducedMotion` | Accessibility motion check |
+| Hook                  | Purpose                      |
+| --------------------- | ---------------------------- |
+| `useThemeEnhanced`    | Full theme state and actions |
+| `useThemeColors`      | Current theme colors         |
+| `useHolographicTheme` | Get holo preset from theme   |
+| `useReducedMotion`    | Accessibility motion check   |
 
 ### Built-in Themes
 
-| ID | Name | Category |
-|----|------|----------|
-| `dark` | Dark Mode | dark |
-| `light` | Light Mode | light |
-| `matrix` | Matrix | special |
-| `holo-cyan` | Holographic Cyan | special |
-| `holo-purple` | Holographic Purple | special |
-| `holo-gold` | Holographic Gold | special |
-| `midnight` | Midnight | dark |
+| ID            | Name               | Category |
+| ------------- | ------------------ | -------- |
+| `dark`        | Dark Mode          | dark     |
+| `light`       | Light Mode         | light    |
+| `matrix`      | Matrix             | special  |
+| `holo-cyan`   | Holographic Cyan   | special  |
+| `holo-purple` | Holographic Purple | special  |
+| `holo-gold`   | Holographic Gold   | special  |
+| `midnight`    | Midnight           | dark     |
 
 ### User Preferences
 
@@ -1620,21 +1751,21 @@ Next-generation holographic components with 14 components and 5 color presets.
 
 ### Components
 
-| Component | Description |
-|-----------|-------------|
-| `HoloContainer` | Depth-based parallax with scanlines & glow |
-| `HoloText` | 6 variants (display, title, subtitle, body, caption, label) |
-| `HoloButton` | 5 styles (primary, secondary, ghost, danger, success) |
-| `HoloCard` | Interactive cards with hover states |
-| `HoloAvatar` | 6 sizes with status indicators |
-| `HoloInput` | Form inputs with holographic styling |
-| `HoloProgress` | Animated progress bars |
-| `HoloBadge` | Status badges (5 variants) |
-| `HoloTabs` | Tab navigation with transitions |
-| `HoloDivider` | Decorative dividers with glow |
-| `HoloModal` | Overlay modals with backdrop |
-| `HoloNotification` | Toast notifications (4 types) |
-| `HoloTooltip` | Interactive positioned tooltips |
+| Component          | Description                                                 |
+| ------------------ | ----------------------------------------------------------- |
+| `HoloContainer`    | Depth-based parallax with scanlines & glow                  |
+| `HoloText`         | 6 variants (display, title, subtitle, body, caption, label) |
+| `HoloButton`       | 5 styles (primary, secondary, ghost, danger, success)       |
+| `HoloCard`         | Interactive cards with hover states                         |
+| `HoloAvatar`       | 6 sizes with status indicators                              |
+| `HoloInput`        | Form inputs with holographic styling                        |
+| `HoloProgress`     | Animated progress bars                                      |
+| `HoloBadge`        | Status badges (5 variants)                                  |
+| `HoloTabs`         | Tab navigation with transitions                             |
+| `HoloDivider`      | Decorative dividers with glow                               |
+| `HoloModal`        | Overlay modals with backdrop                                |
+| `HoloNotification` | Toast notifications (4 types)                               |
+| `HoloTooltip`      | Interactive positioned tooltips                             |
 
 ### Color Presets
 
@@ -1657,24 +1788,22 @@ import {
 
 function FuturisticUI() {
   const [showModal, setShowModal] = useState(false);
-  
+
   return (
     <HoloProvider preset="matrix">
       <HoloContainer enableScanlines enableGlow enableParallax>
-        <HoloText variant="title" glow>Welcome to the Matrix</HoloText>
-        
+        <HoloText variant="title" glow>
+          Welcome to the Matrix
+        </HoloText>
+
         <HoloCard interactive>
           <HoloText variant="body">Card content here</HoloText>
           <HoloButton variant="primary" onClick={() => setShowModal(true)}>
             Open Modal
           </HoloButton>
         </HoloCard>
-        
-        <HoloModal 
-          open={showModal} 
-          onClose={() => setShowModal(false)}
-          title="Modal Title"
-        >
+
+        <HoloModal open={showModal} onClose={() => setShowModal(false)} title="Modal Title">
           <HoloText>Modal content</HoloText>
         </HoloModal>
       </HoloContainer>
@@ -1691,13 +1820,16 @@ Holographic components automatically integrate with the theme engine:
 const { currentTheme } = useThemeEnhanced();
 
 // Map theme to holo preset
-const holoPreset = currentTheme.id === 'matrix' ? 'matrix' 
-  : currentTheme.id.includes('holo') ? currentTheme.id.replace('holo-', '')
-  : 'cyan';
+const holoPreset =
+  currentTheme.id === 'matrix'
+    ? 'matrix'
+    : currentTheme.id.includes('holo')
+      ? currentTheme.id.replace('holo-', '')
+      : 'cyan';
 
 <HoloProvider preset={holoPreset}>
   <HoloContainer>...</HoloContainer>
-</HoloProvider>
+</HoloProvider>;
 ```
 
 ---
@@ -1708,16 +1840,16 @@ const holoPreset = currentTheme.id === 'matrix' ? 'matrix'
 
 ### Components
 
-| Component | Description |
-|-----------|-------------|
-| `HolographicContainer` | 3D parallax container with scanlines |
-| `HolographicText` | Multi-layer glow text |
-| `HolographicButton` | Pulsing animated buttons |
-| `HolographicCard` | Frosted glass cards |
-| `HolographicAvatar` | Animated avatar with ring |
-| `HolographicInput` | Focus-glow input fields |
-| `HolographicProgress` | Animated progress bars |
-| `HolographicNotification` | Toast notifications |
+| Component                 | Description                          |
+| ------------------------- | ------------------------------------ |
+| `HolographicContainer`    | 3D parallax container with scanlines |
+| `HolographicText`         | Multi-layer glow text                |
+| `HolographicButton`       | Pulsing animated buttons             |
+| `HolographicCard`         | Frosted glass cards                  |
+| `HolographicAvatar`       | Animated avatar with ring            |
+| `HolographicInput`        | Focus-glow input fields              |
+| `HolographicProgress`     | Animated progress bars               |
+| `HolographicNotification` | Toast notifications                  |
 
 ### Color Themes
 
@@ -1745,7 +1877,7 @@ import {
 >
   <HolographicCard>
     <HolographicText glow>Welcome to the Future</HolographicText>
-    <HolographicButton 
+    <HolographicButton
       theme="purple"
       pulsing
       onClick={() => console.log('Clicked!')}
@@ -1797,13 +1929,13 @@ VR/AR-ready 3D positional audio system with HRTF support.
 
 ### Features
 
-| Feature | Description |
-|---------|-------------|
-| **3D Positioning** | Full x, y, z spatial placement |
-| **HRTF** | Head-Related Transfer Function for realistic audio |
-| **Audio Zones** | Room, hall, cave, outdoor presets |
-| **VAD** | Voice Activity Detection |
-| **Noise Cancellation** | Integration hooks for Krisp/RNNoise |
+| Feature                | Description                                        |
+| ---------------------- | -------------------------------------------------- |
+| **3D Positioning**     | Full x, y, z spatial placement                     |
+| **HRTF**               | Head-Related Transfer Function for realistic audio |
+| **Audio Zones**        | Room, hall, cave, outdoor presets                  |
+| **VAD**                | Voice Activity Detection                           |
+| **Noise Cancellation** | Integration hooks for Krisp/RNNoise                |
 
 ### Usage
 
@@ -1826,7 +1958,7 @@ const sourceId = engine.createSource({
 engine.updateListenerPosition({ x: 0, y: 0, z: 0 });
 engine.updateListenerOrientation(
   { x: 0, y: 0, z: -1 }, // Forward
-  { x: 0, y: 1, z: 0 }   // Up
+  { x: 0, y: 1, z: 0 } // Up
 );
 ```
 
@@ -1892,17 +2024,18 @@ room.updateLocalOrientation(headsetForward, headsetUp);
 
 ## Gamification & Customization System
 
-**v0.7.52** introduces a comprehensive gamification and UI customization system with stickers, titles, achievements, and animated avatars.
+**v0.7.52** introduces a comprehensive gamification and UI customization system with stickers,
+titles, achievements, and animated avatars.
 
 ### System Overview
 
-| Feature | Count | Location |
-|---------|-------|----------|
-| **Achievements** | 107 | `src/data/achievements.ts` |
-| **Stickers** | 72 in 18 packs | `src/data/stickers.ts` |
-| **Titles** | 44 | `src/data/titles.ts` |
-| **Chat Backgrounds** | 24 | `src/data/chatBackgrounds.ts` |
-| **Avatar Borders** | 28 | `src/components/ui/AnimatedAvatar.tsx` |
+| Feature              | Count          | Location                               |
+| -------------------- | -------------- | -------------------------------------- |
+| **Achievements**     | 107            | `src/data/achievements.ts`             |
+| **Stickers**         | 72 in 18 packs | `src/data/stickers.ts`                 |
+| **Titles**           | 44             | `src/data/titles.ts`                   |
+| **Chat Backgrounds** | 24             | `src/data/chatBackgrounds.ts`          |
+| **Avatar Borders**   | 28             | `src/components/ui/AnimatedAvatar.tsx` |
 
 ### Sticker System
 
@@ -1936,7 +2069,15 @@ interface Sticker {
   id: string;
   name: string;
   emoji: string;
-  category: 'emotions' | 'reactions' | 'memes' | 'seasonal' | 'gaming' | 'animals' | 'food' | 'special';
+  category:
+    | 'emotions'
+    | 'reactions'
+    | 'memes'
+    | 'seasonal'
+    | 'gaming'
+    | 'animals'
+    | 'food'
+    | 'special';
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   animation: 'bounce' | 'shake' | 'pulse' | 'wiggle' | 'float' | 'spin' | 'heartbeat';
   animationDuration: number;
@@ -1971,6 +2112,7 @@ import { TitleBadge, ProfileTitleDisplay } from '@/components/gamification/Title
 ```
 
 **Title Animation Types:**
+
 - `none` - Static display
 - `shimmer` - Gradient shimmer effect
 - `glow` - Pulsing glow based on rarity
@@ -1988,36 +2130,37 @@ import { useGamificationStore } from '@/stores/gamificationStore';
 const { achievements, unlockAchievement, fetchAchievements } = useGamificationStore();
 
 // Check achievement progress
-const socialAchievements = achievements.filter(a => a.category === 'social');
-const unlockedCount = achievements.filter(a => a.unlocked).length;
+const socialAchievements = achievements.filter((a) => a.category === 'social');
+const unlockedCount = achievements.filter((a) => a.unlocked).length;
 ```
 
 ### Integration Points
 
-| Component | Uses |
-|-----------|------|
-| `EnhancedConversation.tsx` | StickerPicker, StickerButton |
-| `Conversation.tsx` | StickerPicker, StickerButton |
-| `UserProfile.tsx` | TitleBadge |
-| `Leaderboard.tsx` | Achievement badges, level display |
-| `gamificationStore.ts` | Achievement tracking, XP, levels |
+| Component                  | Uses                              |
+| -------------------------- | --------------------------------- |
+| `EnhancedConversation.tsx` | StickerPicker, StickerButton      |
+| `Conversation.tsx`         | StickerPicker, StickerButton      |
+| `UserProfile.tsx`          | TitleBadge                        |
+| `Leaderboard.tsx`          | Achievement badges, level display |
+| `gamificationStore.ts`     | Achievement tracking, XP, levels  |
 
 ---
 
 ## Enhanced UI v2.0 (Legacy)
 
-CGraph v0.7.34 introduced the enhanced component library built on Three.js, GSAP, and Framer Motion. These components are still fully supported in v3.0.
+CGraph v0.7.34 introduced the enhanced component library built on Three.js, GSAP, and Framer Motion.
+These components are still fully supported in v3.0.
 
 ### v2.0 Stack
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| **three** | ^0.182.0 | 3D graphics engine |
-| **@react-three/fiber** | ^9.5.0 | React renderer for Three.js |
-| **@react-three/drei** | ^10.7.7 | Useful helpers for R3F |
-| **@react-three/postprocessing** | ^3.0.4 | Post-processing effects |
-| **gsap** | ^3.14.2 | Professional animation library |
-| **framer-motion** | ^12.0.0 | Declarative React animations |
+| Package                         | Version  | Purpose                        |
+| ------------------------------- | -------- | ------------------------------ |
+| **three**                       | ^0.182.0 | 3D graphics engine             |
+| **@react-three/fiber**          | ^9.5.0   | React renderer for Three.js    |
+| **@react-three/drei**           | ^10.7.7  | Useful helpers for R3F         |
+| **@react-three/postprocessing** | ^3.0.4   | Post-processing effects        |
+| **gsap**                        | ^3.14.2  | Professional animation library |
+| **framer-motion**               | ^12.0.0  | Declarative React animations   |
 
 ### GlassCard Component
 
@@ -2027,15 +2170,15 @@ Premium glassmorphic card with blur effects and animations:
 import { GlassCard } from '@/components/enhanced/ui/GlassCard';
 
 <GlassCard
-  variant="primary"        // primary | secondary | accent | danger
-  intensity="medium"       // low | medium | high
+  variant="primary" // primary | secondary | accent | danger
+  intensity="medium" // low | medium | high
   animated={true}
-  hoverEffect="lift"       // none | lift | glow | scale
+  hoverEffect="lift" // none | lift | glow | scale
   onClick={() => {}}
 >
   <h3>Premium Card</h3>
   <p>With glassmorphic effects</p>
-</GlassCard>
+</GlassCard>;
 ```
 
 ### AnimatedMessageWrapper
@@ -2046,13 +2189,13 @@ Smooth message entrance animations with gesture support:
 import { AnimatedMessageWrapper } from '@/components/enhanced/animations/AnimatedMessageWrapper';
 
 <AnimatedMessageWrapper
-  variant="slide"          // slide | fade | scale | bounce
-  direction="left"         // left | right
+  variant="slide" // slide | fade | scale | bounce
+  direction="left" // left | right
   delay={0.1}
   enableGestures={true}
 >
   <MessageBubble message={message} />
-</AnimatedMessageWrapper>
+</AnimatedMessageWrapper>;
 ```
 
 ### Matrix3DEnvironment
@@ -2065,9 +2208,9 @@ import { Matrix3DEnvironment } from '@/components/enhanced/effects/Matrix3DEnvir
 <Matrix3DEnvironment
   particleCount={5000}
   enablePostProcessing={true}
-  cameraMode="orbit"       // static | orbit | follow
-  colorScheme="matrix"     // matrix | ocean | sunset | aurora
-/>
+  cameraMode="orbit" // static | orbit | follow
+  colorScheme="matrix" // matrix | ocean | sunset | aurora
+/>;
 ```
 
 ### ShaderBackground
@@ -2078,11 +2221,11 @@ Custom WebGL shader backgrounds:
 import { ShaderBackground } from '@/components/enhanced/effects/ShaderBackground';
 
 <ShaderBackground
-  shader="gradient"        // gradient | noise | waves | aurora
+  shader="gradient" // gradient | noise | waves | aurora
   animate={true}
   colors={['#6366f1', '#8b5cf6', '#d946ef']}
   speed={0.5}
-/>
+/>;
 ```
 
 ### AnimatedReactionBubble
@@ -2097,7 +2240,7 @@ import { AnimatedReactionBubble } from '@/components/enhanced/effects/AnimatedRe
   count={42}
   animated={true}
   onClick={() => handleReaction('❤️')}
-/>
+/>;
 ```
 
 ### ThemeEngine
@@ -2129,17 +2272,18 @@ import { AdvancedVoiceVisualizer } from '@/components/enhanced/voice/AdvancedVoi
 
 <AdvancedVoiceVisualizer
   audioStream={stream}
-  visualStyle="bars"       // bars | wave | circular | spectrum
-  colorMode="gradient"     // solid | gradient | reactive
+  visualStyle="bars" // bars | wave | circular | spectrum
+  colorMode="gradient" // solid | gradient | reactive
   sensitivity={0.8}
-/>
+/>;
 ```
 
 ---
 
 ## Demo-First Workflow
 
-CGraph follows a **demo-first development workflow** where all new UI components are developed and tested on a dedicated demo page before integration into the main application.
+CGraph follows a **demo-first development workflow** where all new UI components are developed and
+tested on a dedicated demo page before integration into the main application.
 
 ### Why Demo-First?
 
@@ -2167,17 +2311,17 @@ import { useState } from 'react';
 
 export function EnhancedDemo() {
   const [activeSection, setActiveSection] = useState('glass-cards');
-  
+
   return (
-    <div className="min-h-screen bg-dark-900 p-8">
+    <div className="bg-dark-900 min-h-screen p-8">
       {/* Navigation */}
-      <nav className="flex gap-4 mb-8">
+      <nav className="mb-8 flex gap-4">
         <button onClick={() => setActiveSection('glass-cards')}>Glass Cards</button>
         <button onClick={() => setActiveSection('messages')}>Messages</button>
         <button onClick={() => setActiveSection('reactions')}>Reactions</button>
         {/* ... more sections */}
       </nav>
-      
+
       {/* Component Demos */}
       {activeSection === 'glass-cards' && <GlassCardDemo />}
       {activeSection === 'messages' && <MessageDemo />}
@@ -2229,33 +2373,35 @@ export function EnhancedDemo() {
 import { NewComponent } from '@/components/enhanced/ui/NewComponent';
 
 // 2. Add navigation button
-<button 
+<button
   onClick={() => setActiveSection('new-component')}
   className={activeSection === 'new-component' ? 'bg-primary-600' : 'bg-dark-700'}
 >
   New Component
-</button>
+</button>;
 
 // 3. Add demo section
-{activeSection === 'new-component' && (
-  <section className="space-y-8">
-    <h2 className="text-2xl font-bold text-white">New Component</h2>
-    
-    {/* Show all variants */}
-    <div className="grid grid-cols-3 gap-4">
-      <NewComponent variant="primary" />
-      <NewComponent variant="secondary" />
-      <NewComponent variant="accent" />
-    </div>
-    
-    {/* Show interactive states */}
-    <div className="space-y-4">
-      <NewComponent disabled />
-      <NewComponent loading />
-      <NewComponent error="Something went wrong" />
-    </div>
-  </section>
-)}
+{
+  activeSection === 'new-component' && (
+    <section className="space-y-8">
+      <h2 className="text-2xl font-bold text-white">New Component</h2>
+
+      {/* Show all variants */}
+      <div className="grid grid-cols-3 gap-4">
+        <NewComponent variant="primary" />
+        <NewComponent variant="secondary" />
+        <NewComponent variant="accent" />
+      </div>
+
+      {/* Show interactive states */}
+      <div className="space-y-4">
+        <NewComponent disabled />
+        <NewComponent loading />
+        <NewComponent error="Something went wrong" />
+      </div>
+    </section>
+  );
+}
 ```
 
 ### Testing Checklist
@@ -2276,7 +2422,8 @@ Before integrating a component from the demo page:
 
 ## Storybook
 
-Storybook is our interactive component development and documentation environment. It lets you develop UI components in isolation, view all their states, and generate documentation automatically.
+Storybook is our interactive component development and documentation environment. It lets you
+develop UI components in isolation, view all their states, and generate documentation automatically.
 
 ### Getting Started
 
@@ -2301,12 +2448,14 @@ apps/web/.storybook/
 ```
 
 **main.ts** — Framework and addon configuration:
+
 - Uses `@storybook/react-vite` for fast HMR
 - Stories discovered from `src/**/*.stories.tsx`
 - Adds path aliases matching the app (`@` → `src/`)
 - TypeScript prop documentation via `react-docgen-typescript`
 
 **preview.ts** — Global settings:
+
 - Dark theme matching the CGraph UI
 - Centered layout for most stories
 - TailwindCSS imported for component styling
@@ -2380,30 +2529,24 @@ For components with state, use the `render` function:
 export const Interactive: Story = {
   render: function InteractiveSwitch() {
     const [checked, setChecked] = useState(false);
-    
-    return (
-      <Switch
-        checked={checked}
-        onChange={setChecked}
-        label="Toggle me"
-      />
-    );
+
+    return <Switch checked={checked} onChange={setChecked} label="Toggle me" />;
   },
 };
 ```
 
 ### Available Component Stories
 
-| Component | Location | Stories |
-|-----------|----------|---------|
-| Button | `Button.stories.tsx` | Primary, Secondary, Ghost, Loading, Disabled, Sizes, Icons |
-| Input | `Input.stories.tsx` | Default, WithLabel, Required, Error, Hint, Icons, Sizes |
-| Avatar | `Avatar.stories.tsx` | Default, Initials, Status indicators, Sizes, Groups |
-| Modal | `Modal.stories.tsx` | Default, Sizes, Footer, Danger, Interactive |
-| Select | `Select.stories.tsx` | Default, Searchable, Icons, Descriptions, Error |
-| Loading | `Loading.stories.tsx` | Spinner, Dots, Skeleton, Overlay, FullScreen |
-| Switch | `Switch.stories.tsx` | Default, Checked, Labels, Sizes, Settings panel |
-| EmptyState | `EmptyState.stories.tsx` | Default, Icon, Action, Pre-configured variants |
+| Component  | Location                 | Stories                                                    |
+| ---------- | ------------------------ | ---------------------------------------------------------- |
+| Button     | `Button.stories.tsx`     | Primary, Secondary, Ghost, Loading, Disabled, Sizes, Icons |
+| Input      | `Input.stories.tsx`      | Default, WithLabel, Required, Error, Hint, Icons, Sizes    |
+| Avatar     | `Avatar.stories.tsx`     | Default, Initials, Status indicators, Sizes, Groups        |
+| Modal      | `Modal.stories.tsx`      | Default, Sizes, Footer, Danger, Interactive                |
+| Select     | `Select.stories.tsx`     | Default, Searchable, Icons, Descriptions, Error            |
+| Loading    | `Loading.stories.tsx`    | Spinner, Dots, Skeleton, Overlay, FullScreen               |
+| Switch     | `Switch.stories.tsx`     | Default, Checked, Labels, Sizes, Settings panel            |
+| EmptyState | `EmptyState.stories.tsx` | Default, Icon, Action, Pre-configured variants             |
 
 ### Best Practices
 
@@ -2499,7 +2642,8 @@ items.map((item, i) => (
 ))
 ```
 
-Available keyframes: `fadeIn`, `fadeOut`, `slideUp`, `slideDown`, `slideInRight`, `slideInLeft`, `scaleIn`, `pulse`, `shimmer`
+Available keyframes: `fadeIn`, `fadeOut`, `slideUp`, `slideDown`, `slideInRight`, `slideInLeft`,
+`scaleIn`, `pulse`, `shimmer`
 
 ### Common Patterns
 
@@ -2540,34 +2684,37 @@ export function useForm<T extends z.ZodType>({ schema, onSubmit }: UseFormOption
   const [values, setValues] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const setValue = useCallback((field: string, value: any) => {
     setValues((prev) => ({ ...prev, [field]: value }));
     setErrors((prev) => ({ ...prev, [field]: '' }));
   }, []);
-  
-  const handleSubmit = useCallback(async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const result = schema.safeParse(values);
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-      result.error.errors.forEach((err) => {
-        const path = err.path.join('.');
-        fieldErrors[path] = err.message;
-      });
-      setErrors(fieldErrors);
-      return;
-    }
-    
-    setIsSubmitting(true);
-    try {
-      await onSubmit(result.data);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }, [values, schema, onSubmit]);
-  
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      const result = schema.safeParse(values);
+      if (!result.success) {
+        const fieldErrors: Record<string, string> = {};
+        result.error.errors.forEach((err) => {
+          const path = err.path.join('.');
+          fieldErrors[path] = err.message;
+        });
+        setErrors(fieldErrors);
+        return;
+      }
+
+      setIsSubmitting(true);
+      try {
+        await onSubmit(result.data);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [values, schema, onSubmit]
+  );
+
   return { values, errors, setValue, handleSubmit, isSubmitting };
 }
 ```
@@ -2587,14 +2734,14 @@ const loginSchema = z.object({
 
 export default function Login() {
   const { login, error } = useAuthStore();
-  
+
   const { values, errors, setValue, handleSubmit, isSubmitting } = useForm({
     schema: loginSchema,
     onSubmit: async (data) => {
       await login(data.email, data.password);
     },
   });
-  
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <Input
@@ -2604,7 +2751,7 @@ export default function Login() {
         onChange={(e) => setValue('email', e.target.value)}
         error={errors.email}
       />
-      
+
       <Input
         label="Password"
         type="password"
@@ -2612,9 +2759,9 @@ export default function Login() {
         onChange={(e) => setValue('password', e.target.value)}
         error={errors.password}
       />
-      
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      
+
+      {error && <p className="text-sm text-red-500">{error}</p>}
+
       <Button type="submit" isLoading={isSubmitting} className="w-full">
         Login
       </Button>
@@ -2648,7 +2795,7 @@ describe('authStore', () => {
       isLoading: false,
     });
   });
-  
+
   it('should login successfully', async () => {
     vi.mocked(api.post).mockResolvedValueOnce({
       data: {
@@ -2657,22 +2804,20 @@ describe('authStore', () => {
         refresh_token: 'refresh-token',
       },
     });
-    
+
     await useAuthStore.getState().login('test@example.com', 'password');
-    
+
     expect(useAuthStore.getState().isAuthenticated).toBe(true);
     expect(useAuthStore.getState().user?.email).toBe('test@example.com');
   });
-  
+
   it('should handle login error', async () => {
     vi.mocked(api.post).mockRejectedValueOnce({
       response: { data: { error: 'Invalid credentials' } },
     });
-    
-    await expect(
-      useAuthStore.getState().login('test@example.com', 'wrong')
-    ).rejects.toThrow();
-    
+
+    await expect(useAuthStore.getState().login('test@example.com', 'wrong')).rejects.toThrow();
+
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
     expect(useAuthStore.getState().error).toBe('Invalid credentials');
   });
@@ -2692,14 +2837,14 @@ describe('Button', () => {
     render(<Button>Click me</Button>);
     expect(screen.getByText('Click me')).toBeInTheDocument();
   });
-  
+
   it('calls onClick handler', () => {
     const onClick = vi.fn();
     render(<Button onClick={onClick}>Click me</Button>);
     fireEvent.click(screen.getByText('Click me'));
     expect(onClick).toHaveBeenCalledTimes(1);
   });
-  
+
   it('shows loading state', () => {
     render(<Button isLoading>Click me</Button>);
     expect(screen.getByRole('button')).toBeDisabled();
@@ -2720,7 +2865,7 @@ const MarkdownEditor = lazy(() => import('@/components/MarkdownEditor'));
 
 function MessageInput() {
   const [showEmoji, setShowEmoji] = useState(false);
-  
+
   return (
     <div>
       {showEmoji && (
@@ -2741,14 +2886,14 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 function MessageList({ messages }: { messages: Message[] }) {
   const parentRef = useRef<HTMLDivElement>(null);
-  
+
   const virtualizer = useVirtualizer({
     count: messages.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 60,
     overscan: 5,
   });
-  
+
   return (
     <div ref={parentRef} className="h-full overflow-auto">
       <div style={{ height: `${virtualizer.getTotalSize()}px`, position: 'relative' }}>
@@ -2809,7 +2954,7 @@ const handleClick = useCallback(() => {
 ```tsx
 function MessageList() {
   const [focusedIndex, setFocusedIndex] = useState(0);
-  
+
   const handleKeyDown = (e: KeyboardEvent) => {
     switch (e.key) {
       case 'ArrowDown':
@@ -2823,7 +2968,7 @@ function MessageList() {
         break;
     }
   };
-  
+
   return (
     <div role="listbox" onKeyDown={handleKeyDown}>
       {messages.map((msg, i) => (
@@ -2855,7 +3000,7 @@ function useAnnounce() {
     document.body.appendChild(el);
     setTimeout(() => el.remove(), 1000);
   };
-  
+
   return announce;
 }
 
@@ -2877,22 +3022,22 @@ useEffect(() => {
 ```tsx
 function useSendMessage() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: sendMessage,
     onMutate: async (newMessage) => {
       // Cancel outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['messages'] });
-      
+
       // Snapshot previous value
       const previous = queryClient.getQueryData(['messages']);
-      
+
       // Optimistically update
       queryClient.setQueryData(['messages'], (old: Message[]) => [
         ...old,
         { ...newMessage, id: 'temp-' + Date.now(), pending: true },
       ]);
-      
+
       return { previous };
     },
     onError: (err, newMessage, context) => {
@@ -2925,31 +3070,33 @@ interface State {
 
 export class ErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false };
-  
+
   static getDerivedStateFromError(): State {
     return { hasError: true };
   }
-  
+
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Error caught by boundary:', error, errorInfo);
     // Send to Sentry
   }
-  
+
   render() {
     if (this.state.hasError) {
-      return this.props.fallback || (
-        <div className="flex h-full flex-col items-center justify-center">
-          <h2 className="text-xl font-bold text-white">Something went wrong</h2>
-          <button
-            onClick={() => this.setState({ hasError: false })}
-            className="mt-4 text-primary-500"
-          >
-            Try again
-          </button>
-        </div>
+      return (
+        this.props.fallback || (
+          <div className="flex h-full flex-col items-center justify-center">
+            <h2 className="text-xl font-bold text-white">Something went wrong</h2>
+            <button
+              onClick={() => this.setState({ hasError: false })}
+              className="text-primary-500 mt-4"
+            >
+              Try again
+            </button>
+          </div>
+        )
       );
     }
-    
+
     return this.props.children;
   }
 }
@@ -2963,18 +3110,18 @@ import { useDebouncedCallback } from 'use-debounce';
 function UserSearch() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<User[]>([]);
-  
+
   const search = useDebouncedCallback(async (q: string) => {
     if (q.length < 2) return;
     const { data } = await api.get('/search/users', { params: { q } });
     setResults(data.data);
   }, 300);
-  
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(e.target.value);
     search(e.target.value);
   };
-  
+
   return (
     <div>
       <Input value={query} onChange={handleChange} placeholder="Search users..." />
@@ -2992,7 +3139,8 @@ function UserSearch() {
 
 ## Matrix Theme System
 
-The authentication pages use a custom Matrix-inspired theme that creates a cohesive visual experience with the cipher rain background.
+The authentication pages use a custom Matrix-inspired theme that creates a cohesive visual
+experience with the cipher rain background.
 
 ### Color Palette
 
@@ -3012,14 +3160,14 @@ matrix: {
 
 ### CSS Utility Classes
 
-| Class | Usage |
-|-------|-------|
-| `.matrix-input` | Form inputs with green gradient and glow focus |
-| `.matrix-button` | Primary buttons with shine animation |
-| `.matrix-card` | Cards with green-tinted borders |
-| `.matrix-glow` | Text shadow for headings |
-| `.matrix-link` | Links with hover glow effect |
-| `.form-field-animate` | Staggered entrance animation |
+| Class                 | Usage                                          |
+| --------------------- | ---------------------------------------------- |
+| `.matrix-input`       | Form inputs with green gradient and glow focus |
+| `.matrix-button`      | Primary buttons with shine animation           |
+| `.matrix-card`        | Cards with green-tinted borders                |
+| `.matrix-glow`        | Text shadow for headings                       |
+| `.matrix-link`        | Links with hover glow effect                   |
+| `.form-field-animate` | Staggered entrance animation                   |
 
 ### Usage Examples
 
@@ -3050,4 +3198,4 @@ matrix: {
 
 ---
 
-*Happy coding! If you have questions, reach out in #frontend on Slack.*
+_Happy coding! If you have questions, reach out in #frontend on Slack._

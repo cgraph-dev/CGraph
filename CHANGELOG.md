@@ -4,54 +4,166 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.3] - 2026-01-15
+
+**🔒 INFRASTRUCTURE: Security CI/CD, Observability Stack, E2E Testing & Developer Experience**
+
+This release implements comprehensive security scanning, production observability, end-to-end
+testing infrastructure, and developer experience improvements.
+
+### 🚀 New Features
+
+#### Security CI/CD Workflows
+
+| Workflow            | Description                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------- |
+| **Semgrep SAST**    | Static Application Security Testing with security-audit, secrets, and OWASP Top 10 rulesets |
+| **CodeQL Analysis** | GitHub's semantic code analysis for JavaScript/TypeScript security vulnerabilities          |
+| **E2E CI**          | Playwright tests on PRs, Maestro mobile tests on nightly schedule                           |
+
+#### Observability Stack (Prometheus + Grafana)
+
+| Component             | Description                                                                 |
+| --------------------- | --------------------------------------------------------------------------- |
+| **Prometheus**        | Metrics collection with pre-configured scrape targets for backend telemetry |
+| **Grafana**           | Dashboards and alerting with auto-provisioned datasources                   |
+| **Backend Telemetry** | `telemetry_metrics_prometheus_core` integration for Elixir metrics export   |
+
+#### E2E Testing Infrastructure
+
+| Framework            | Coverage                                                                  |
+| -------------------- | ------------------------------------------------------------------------- |
+| **Playwright (Web)** | Auth flows, navigation, messaging - 4 spec files with page object pattern |
+| **Maestro (Mobile)** | Login, registration, logout, navigation, messaging, groups - 8 YAML flows |
+
+#### Backend Infrastructure
+
+| Feature                 | Description                                                          |
+| ----------------------- | -------------------------------------------------------------------- |
+| **Unified HTTP Client** | Tesla-based client with circuit breaker, retry, telemetry middleware |
+| **Idempotency TTL**     | Increased from 24 hours to 7 days for extended retry scenarios       |
+| **Service Clients**     | Pre-configured clients for Stripe, Expo Push, Meilisearch            |
+
+#### Frontend Developer Experience
+
+| Feature                 | Description                                                                                 |
+| ----------------------- | ------------------------------------------------------------------------------------------- |
+| **Query Key Factories** | Type-safe, centralized TanStack Query key management                                        |
+| **Zustand DevTools**    | Redux DevTools integration with action tracking for authStore, chatStore, notificationStore |
+| **Zod Validation**      | Runtime API response validation with graceful fallback                                      |
+| **Store Middleware**    | Shared utilities: `withDevtools`, `withLogger`, `withPerformance`                           |
+| **Coverage Thresholds** | 60% coverage enforcement in Vitest, bundle visualization                                    |
+
+#### Mobile Deep Links
+
+| Feature                   | Description                                         |
+| ------------------------- | --------------------------------------------------- |
+| **Universal Links (iOS)** | Apple App Site Association for `cgraph.org` domain  |
+| **App Links (Android)**   | Asset Links JSON for verified deep linking          |
+| **Deep Link Handler**     | Centralized routing with URL parsing and navigation |
+
+### 📁 New Files
+
+**CI/CD Workflows:**
+
+- `.github/workflows/semgrep.yml` - Semgrep SAST security scanning
+- `.github/workflows/codeql.yml` - CodeQL security analysis
+- `.github/workflows/e2e.yml` - Playwright and Maestro test automation
+
+**Observability:**
+
+- `infrastructure/prometheus/prometheus.yml` - Prometheus scrape configuration
+- `infrastructure/grafana/provisioning/datasources/` - Grafana datasource config
+- `infrastructure/grafana/provisioning/dashboards/` - Dashboard provisioning
+
+**E2E Testing:**
+
+- `apps/web/e2e/` - Playwright test suite (auth, navigation, messaging)
+- `apps/mobile/e2e/` - Maestro flows (auth, navigation, messaging, groups)
+
+**Backend:**
+
+- `apps/backend/lib/cgraph/http.ex` - Unified HTTP client module
+- `apps/backend/lib/cgraph/http/middleware/circuit_breaker.ex` - Fuse-based circuit breaker
+- `apps/backend/lib/cgraph/http/services/` - Stripe, Expo, Meilisearch clients
+
+**Frontend:**
+
+- `apps/web/src/lib/queryKeys.ts` - Query key factory utilities
+- `apps/web/src/stores/middleware.ts` - Zustand middleware utilities
+- `apps/web/src/lib/validation/` - Zod validation schemas and validated API
+
+**Mobile:**
+
+- `apps/mobile/src/lib/deepLinks.ts` - Deep link handler and routing
+
+### 📊 Code Statistics
+
+| Category             | Lines Added |
+| -------------------- | ----------- |
+| CI/CD Workflows      | ~200        |
+| Observability Config | ~150        |
+| E2E Tests            | ~700        |
+| Backend HTTP Client  | ~500        |
+| Frontend DX          | ~1,000      |
+| Mobile Deep Links    | ~200        |
+| **Total**            | **~2,750**  |
+
+---
+
 ## [0.9.2] - 2026-01-15
 
 **📱 MOBILE: Comprehensive Hook System, Error Handling, Theme Enhancements & Test Coverage**
 
-This release focuses on mobile app infrastructure with new hooks for E2EE, referrals, offline support, plus comprehensive error boundaries and theme system improvements.
+This release focuses on mobile app infrastructure with new hooks for E2EE, referrals, offline
+support, plus comprehensive error boundaries and theme system improvements.
 
 ### 🚀 New Features
 
 #### Mobile Hooks
 
-| Hook | Description |
-|------|-------------|
-| `useE2EE` | Complete E2EE management with 18 methods: key generation, encryption/decryption, safety numbers, session management |
-| `useReferrals` | Referral program management with caching, leaderboards, reward claiming, share functionality |
-| `useOfflineQueue` | React wrapper for offline queue with convenience methods, computed values, event subscriptions |
+| Hook              | Description                                                                                                         |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `useE2EE`         | Complete E2EE management with 18 methods: key generation, encryption/decryption, safety numbers, session management |
+| `useReferrals`    | Referral program management with caching, leaderboards, reward claiming, share functionality                        |
+| `useOfflineQueue` | React wrapper for offline queue with convenience methods, computed values, event subscriptions                      |
 
 #### Services & Systems
 
-| Feature | Description |
-|---------|-------------|
-| `referralService` | 9 API functions for referral system: stats, tiers, leaderboard, rewards, code generation |
-| `OfflineQueue` | Priority-based offline queue with AsyncStorage persistence, network monitoring, exponential backoff |
-| `ErrorBoundary` | Comprehensive error boundary with retry, logging, variants (Screen/Component), and HOC support |
+| Feature           | Description                                                                                         |
+| ----------------- | --------------------------------------------------------------------------------------------------- |
+| `referralService` | 9 API functions for referral system: stats, tiers, leaderboard, rewards, code generation            |
+| `OfflineQueue`    | Priority-based offline queue with AsyncStorage persistence, network monitoring, exponential backoff |
+| `ErrorBoundary`   | Comprehensive error boundary with retry, logging, variants (Screen/Component), and HOC support      |
 
 #### Theme Enhancements
 
-| Enhancement | Description |
-|-------------|-------------|
-| Light Theme | Professional design with 80+ color tokens matching dark theme structure |
-| Color System | Added: `surfaceElevated`, `primaryLight`, `textInverse`, `borderFocus`, `divider`, semantic light variants |
-| Nested Objects | `chat` (bubbleSent, bubbleReceived), `sidebar`, `tabBar`, `status`, `rarity`, `premium` |
-| System Preference | Auto-follows device theme with `isDark` helper in context |
-| Type Exports | `ThemeColors`, `ColorSchemeType`, `ThemePreferenceType`, `lightColors`, `darkColors` |
+| Enhancement       | Description                                                                                                |
+| ----------------- | ---------------------------------------------------------------------------------------------------------- |
+| Light Theme       | Professional design with 80+ color tokens matching dark theme structure                                    |
+| Color System      | Added: `surfaceElevated`, `primaryLight`, `textInverse`, `borderFocus`, `divider`, semantic light variants |
+| Nested Objects    | `chat` (bubbleSent, bubbleReceived), `sidebar`, `tabBar`, `status`, `rarity`, `premium`                    |
+| System Preference | Auto-follows device theme with `isDark` helper in context                                                  |
+| Type Exports      | `ThemeColors`, `ColorSchemeType`, `ThemePreferenceType`, `lightColors`, `darkColors`                       |
 
 ### 📁 New Files
 
 **Hooks:**
+
 - `apps/mobile/src/hooks/useE2EE.ts` (550 lines) - Complete E2EE hook
 - `apps/mobile/src/hooks/useReferrals.ts` (306 lines) - Referral management hook
 
 **Services:**
+
 - `apps/mobile/src/services/referralService.ts` (357 lines) - Referral API service
 - `apps/mobile/src/lib/offline/OfflineQueue.ts` (516 lines) - Offline queue system
 
 **Components:**
+
 - `apps/mobile/src/components/error/ErrorBoundary.tsx` (370 lines) - Error boundary + variants
 
 **Test Files:**
+
 - `apps/mobile/src/hooks/__tests__/useE2EE.test.ts` (383 lines, 16 tests)
 - `apps/mobile/src/hooks/__tests__/useReferrals.test.ts` (258 lines, 10 tests)
 - `apps/mobile/src/hooks/__tests__/useOfflineQueue.test.ts` (334 lines, 14 tests)
@@ -59,29 +171,29 @@ This release focuses on mobile app infrastructure with new hooks for E2EE, refer
 
 ### 🧪 Test Coverage
 
-| Test Suite | Tests | Coverage |
-|------------|-------|----------|
-| useE2EE | 16 | Initialization, setup, reset, encryption, safety numbers, sessions |
-| useReferrals | 10 | Loading, caching, computed values, claim rewards, error handling |
-| useOfflineQueue | 14 | Initialization, subscriptions, queue operations, convenience methods |
-| ErrorBoundary | 17 | Basic, error details, custom fallback, retry, HOC |
-| **Total** | **57** | Full coverage of new mobile infrastructure |
+| Test Suite      | Tests  | Coverage                                                             |
+| --------------- | ------ | -------------------------------------------------------------------- |
+| useE2EE         | 16     | Initialization, setup, reset, encryption, safety numbers, sessions   |
+| useReferrals    | 10     | Loading, caching, computed values, claim rewards, error handling     |
+| useOfflineQueue | 14     | Initialization, subscriptions, queue operations, convenience methods |
+| ErrorBoundary   | 17     | Basic, error details, custom fallback, retry, HOC                    |
+| **Total**       | **57** | Full coverage of new mobile infrastructure                           |
 
 ### 🐛 Bug Fixes
 
-| Fix | Description |
-|-----|-------------|
-| API Import | Fixed default import for api client in `useE2EE.ts` and `OfflineQueue.ts` |
+| Fix             | Description                                                                        |
+| --------------- | ---------------------------------------------------------------------------------- |
+| API Import      | Fixed default import for api client in `useE2EE.ts` and `OfflineQueue.ts`          |
 | Response Access | Fixed AxiosResponse `.data` property access in E2EE registration and prekey bundle |
-| Dynamic Import | Fixed dynamic import in OfflineQueue to use `.default` |
+| Dynamic Import  | Fixed dynamic import in OfflineQueue to use `.default`                             |
 
 ### 📊 Code Statistics
 
-| Category | Lines Added |
-|----------|-------------|
-| Source Files | 2,099 |
-| Test Files | 1,289 |
-| **Total** | **3,388** |
+| Category     | Lines Added |
+| ------------ | ----------- |
+| Source Files | 2,099       |
+| Test Files   | 1,289       |
+| **Total**    | **3,388**   |
 
 ---
 
@@ -89,19 +201,21 @@ This release focuses on mobile app infrastructure with new hooks for E2EE, refer
 
 **🔧 MAINTENANCE: Critical Bug Fixes, Security Hardening, Documentation Updates, Hardening Sprint**
 
-This maintenance release addresses several critical bugs, security vulnerabilities, enhances developer documentation, and implements production hardening features.
+This maintenance release addresses several critical bugs, security vulnerabilities, enhances
+developer documentation, and implements production hardening features.
 
 ### 🚀 New Features
 
-| Feature | Description |
-|---------|-------------|
-| ETag/If-None-Match | HTTP caching plug for read endpoints - reduces bandwidth by 304 responses |
-| JWT Key Rotation | Dual-key verification with grace period for zero-downtime rotation |
-| Soft Delete Queries | Composable query helpers for soft-deleted record filtering |
-| Cachex Memory Bounds | LRW eviction policy with configurable limits per cache instance |
-| Partial Indexes | Concurrent migration for messages/forum_posts soft-delete optimization |
+| Feature              | Description                                                               |
+| -------------------- | ------------------------------------------------------------------------- |
+| ETag/If-None-Match   | HTTP caching plug for read endpoints - reduces bandwidth by 304 responses |
+| JWT Key Rotation     | Dual-key verification with grace period for zero-downtime rotation        |
+| Soft Delete Queries  | Composable query helpers for soft-deleted record filtering                |
+| Cachex Memory Bounds | LRW eviction policy with configurable limits per cache instance           |
+| Partial Indexes      | Concurrent migration for messages/forum_posts soft-delete optimization    |
 
 **New Files:**
+
 - `lib/cgraph_web/plugs/etag_plug.ex` - ETag generation and validation
 - `lib/cgraph/security/jwt_key_rotation.ex` - Key rotation manager with grace period
 - `lib/cgraph/query/soft_delete.ex` - `not_deleted/1`, `only_deleted/1`, `with_deleted/1` helpers
@@ -113,15 +227,16 @@ This maintenance release addresses several critical bugs, security vulnerabiliti
 
 ### 🐛 Backend Bug Fixes
 
-| Fix | Description |
-|-----|-------------|
-| `Cache.put/3` | Added missing function - repositories now work correctly |
-| `Mailer.send_email/1` | Added raw email data API for digest/system emails |
-| `User.changeset/2` | Added generic changeset for username service |
-| `:fuse` dependency | Added circuit breaker library to mix.exs |
-| Module naming | Standardized `CGraph.*` and `CGraphWeb.*` naming |
+| Fix                   | Description                                              |
+| --------------------- | -------------------------------------------------------- |
+| `Cache.put/3`         | Added missing function - repositories now work correctly |
+| `Mailer.send_email/1` | Added raw email data API for digest/system emails        |
+| `User.changeset/2`    | Added generic changeset for username service             |
+| `:fuse` dependency    | Added circuit breaker library to mix.exs                 |
+| Module naming         | Standardized `CGraph.*` and `CGraphWeb.*` naming         |
 
 **New/Updated Files:**
+
 - `lib/cgraph/cache.ex` - Added `put/3` alias for `set/3`
 - `lib/cgraph/mailer.ex` - Added `send_email/1` with template rendering
 - `lib/cgraph/accounts/user.ex` - Added `changeset/2` function
@@ -129,13 +244,14 @@ This maintenance release addresses several critical bugs, security vulnerabiliti
 
 ### 🔐 Security Hardening
 
-| Issue | Severity | Fix |
-|-------|----------|-----|
-| Admin endpoint bypass | High | Changed `/api/admin` routes to use `:api_admin` pipeline |
-| Atom exhaustion | High | Replaced `String.to_atom/1` with safe alternatives in forums, APNS, feature flags |
-| Vote type injection | Medium | Added `safe_vote_type_atom/1` whitelist function |
+| Issue                 | Severity | Fix                                                                               |
+| --------------------- | -------- | --------------------------------------------------------------------------------- |
+| Admin endpoint bypass | High     | Changed `/api/admin` routes to use `:api_admin` pipeline                          |
+| Atom exhaustion       | High     | Replaced `String.to_atom/1` with safe alternatives in forums, APNS, feature flags |
+| Vote type injection   | Medium   | Added `safe_vote_type_atom/1` whitelist function                                  |
 
 **Updated Files:**
+
 - `lib/cgraph_web/router.ex` - Fixed moderation routes authorization
 - `lib/cgraph/forums.ex` - Safe vote type conversion
 - `lib/cgraph/notifications/push_service/apns_client.ex` - Safe error atom conversion
@@ -143,34 +259,38 @@ This maintenance release addresses several critical bugs, security vulnerabiliti
 
 ### 📝 Frontend Fixes
 
-| Fix | Description |
-|-----|-------------|
-| ESLint config | Added `"type": "module"` to root package.json |
-| Premium tiers | Updated limits: free=5, starter=10, pro=50, business=unlimited |
-| Web push | Implemented service worker and notification toggle |
-| CreateForum text | Updated "1 free forum" → "5 free forums" |
+| Fix              | Description                                                    |
+| ---------------- | -------------------------------------------------------------- |
+| ESLint config    | Added `"type": "module"` to root package.json                  |
+| Premium tiers    | Updated limits: free=5, starter=10, pro=50, business=unlimited |
+| Web push         | Implemented service worker and notification toggle             |
+| CreateForum text | Updated "1 free forum" → "5 free forums"                       |
 
 **New Files:**
+
 - `apps/web/public/sw.js` - Service worker for web push
 - `apps/web/src/services/webPushService.ts` - Web Push API integration
 
 **Updated Files:**
+
 - `package.json` - Added `"type": "module"`
 - `apps/web/src/features/premium/services/index.ts` - Added `maxForums` to TIER_FEATURES
 - `apps/web/src/pages/settings/Settings.tsx` - Push notification toggle with permission handling
 
 ### 📱 Mobile Fixes
 
-| Fix | Description |
-|-----|-------------|
+| Fix                | Description                             |
+| ------------------ | --------------------------------------- |
 | Push notifications | Full Expo push notification integration |
-| Settings provider | Added SettingsProvider to App.tsx |
+| Settings provider  | Added SettingsProvider to App.tsx       |
 
 **New Files:**
+
 - `apps/mobile/src/services/pushNotifications.ts` - Expo push service
 - `apps/mobile/src/hooks/usePushNotifications.ts` - Auto-registration hook
 
 **Updated Files:**
+
 - `apps/mobile/App.tsx` - Integrated SettingsProvider and push notifications
 
 ### 📚 Documentation Updates
@@ -191,8 +311,10 @@ This maintenance release addresses several critical bugs, security vulnerabiliti
 
 ### 🛡️ CI & Security Automation
 
-- Added GitHub Actions `docker-build` job to build backend and web images using existing health checks in `infrastructure/docker/Dockerfile.backend` and `infrastructure/docker/Dockerfile.web`.
-- Expanded `security` workflow to run gitleaks, hadolint (both Dockerfiles), Sobelow, pnpm audit, SBOM generation via Syft, and vulnerability scanning via Grype with JSON artifacts uploaded.
+- Added GitHub Actions `docker-build` job to build backend and web images using existing health
+  checks in `infrastructure/docker/Dockerfile.backend` and `infrastructure/docker/Dockerfile.web`.
+- Expanded `security` workflow to run gitleaks, hadolint (both Dockerfiles), Sobelow, pnpm audit,
+  SBOM generation via Syft, and vulnerability scanning via Grype with JSON artifacts uploaded.
 - Documented Context7 MCP helper configuration for research assistance (see `.vscode/mcp.json`).
 
 ---
@@ -201,25 +323,28 @@ This maintenance release addresses several critical bugs, security vulnerabiliti
 
 **🔐 SECURITY & REAL-TIME: Double Ratchet E2EE, HTTP-Only Cookies, Presence**
 
-This release introduces industry-standard Double Ratchet encryption for forward secrecy, enhanced authentication security with HTTP-only cookies, and complete online presence tracking.
+This release introduces industry-standard Double Ratchet encryption for forward secrecy, enhanced
+authentication security with HTTP-only cookies, and complete online presence tracking.
 
 ### 🔐 Double Ratchet End-to-End Encryption
 
 Upgraded from X3DH-only to full Signal Protocol implementation:
 
-| Feature | Description |
-|---------|-------------|
-| Forward Secrecy | Past messages stay secure if keys are compromised |
-| Break-in Recovery | Future messages become secure after compromise |
-| Per-Message Keys | Each message uses a unique key, immediately discarded |
-| Out-of-Order | Messages can be received and decrypted in any order |
-| Session Persistence | Ratchet state stored in IndexedDB |
+| Feature             | Description                                           |
+| ------------------- | ----------------------------------------------------- |
+| Forward Secrecy     | Past messages stay secure if keys are compromised     |
+| Break-in Recovery   | Future messages become secure after compromise        |
+| Per-Message Keys    | Each message uses a unique key, immediately discarded |
+| Out-of-Order        | Messages can be received and decrypted in any order   |
+| Session Persistence | Ratchet state stored in IndexedDB                     |
 
 **New Files:**
+
 - `apps/web/src/lib/crypto/sessionManager.ts` - Session management with Double Ratchet
 - `apps/web/src/lib/crypto/doubleRatchet.ts` - Core Double Ratchet implementation (949 lines)
 
 **New Store Methods:**
+
 - `encryptWithRatchet(recipientId, plaintext)` - Encrypt with forward secrecy
 - `decryptWithRatchet(message, senderIdentityKey)` - Decrypt with session auto-establishment
 - `hasRatchetSession(recipientId)` - Check for existing session
@@ -229,11 +354,13 @@ Upgraded from X3DH-only to full Signal Protocol implementation:
 ### 🔒 HTTP-Only Cookie Authentication
 
 Tokens now stored in HTTP-only cookies instead of localStorage:
+
 - XSS Protection: JavaScript cannot access tokens
 - Automatic Handling: Cookies sent with all requests
 - WebSocket: Uses separate session token from sessionStorage
 
 **Updated Files:**
+
 - `apps/web/src/features/auth/services/index.ts` - Deprecated localStorage usage
 - `apps/web/src/lib/api/index.ts` - Added `withCredentials: true`
 
@@ -242,9 +369,11 @@ Tokens now stored in HTTP-only cookies instead of localStorage:
 Complete friend online status tracking:
 
 **New Files:**
+
 - `apps/web/src/hooks/usePresence.ts` - `usePresence()` and `useUserOnline()` hooks
 
 **Socket Methods:**
+
 - `joinPresenceLobby()` - Join global presence channel
 - `isFriendOnline(userId)` - Check single friend status
 - `getOnlineFriends()` - Get all online friend IDs
@@ -254,6 +383,7 @@ Complete friend online status tracking:
 ### 📚 API Documentation
 
 OpenAPI spec updated to v0.9.0 (`docs/api/openapi.yaml`):
+
 - E2EE endpoints (`/api/v1/e2ee/*`)
 - Presence endpoints (`/api/v1/presence/*`)
 - HTTP-only cookie auth scheme
@@ -262,11 +392,13 @@ OpenAPI spec updated to v0.9.0 (`docs/api/openapi.yaml`):
 ### 📦 Package Versions
 
 All packages updated to 0.9.0:
+
 - `cgraph`, `@cgraph/web`, `@cgraph/mobile`
 
 ### 📱 Mobile Feature Parity (Phase 2)
 
 All internal packages synchronized to v0.8.6:
+
 - `@cgraph/shared-types` - 0.7.58 → 0.8.6
 - `@cgraph/ui` - 0.7.58 → 0.8.6
 - `@cgraph/utils` - 0.7.58 → 0.8.6
@@ -277,6 +409,7 @@ All internal packages synchronized to v0.8.6:
 ### 🔐 Mobile Authentication Hooks
 
 Connected mobile auth hooks to existing AuthContext (`apps/mobile/src/features/auth/hooks/`):
+
 - **useAuth()**: Wraps AuthContext with haptic feedback
 - **useBiometricAuth()**: Face ID, Touch ID, fingerprint support
 - **useTwoFactor()**: Enable/disable/verify 2FA with TOTP
@@ -284,7 +417,9 @@ Connected mobile auth hooks to existing AuthContext (`apps/mobile/src/features/a
 
 ### 💎 Mobile Premium Hooks
 
-Connected premium hooks to backend API and PaymentService (`apps/mobile/src/features/premium/hooks/`):
+Connected premium hooks to backend API and PaymentService
+(`apps/mobile/src/features/premium/hooks/`):
+
 - **usePremiumStatus()**: Check subscription tier, feature access with `hasFeature()`
 - **useSubscription()**: Subscribe, cancel, restore purchases (Stripe/IAP)
 - **useCoins()**: Check balance, spend coins, purchase bundles
@@ -294,6 +429,7 @@ Connected premium hooks to backend API and PaymentService (`apps/mobile/src/feat
 ### 👥 Mobile Group Hooks
 
 Connected group management hooks to backend API (`apps/mobile/src/features/groups/hooks/`):
+
 - **useGroups()**: Fetch user's groups
 - **useGroup(groupId)**: Single group details, update, leave
 - **useChannels(groupId)**: List and create channels
@@ -307,13 +443,14 @@ Connected group management hooks to backend API (`apps/mobile/src/features/group
 
 Added WebRTC support for mobile voice/video calls (`apps/mobile/src/lib/webrtc/`):
 
-| File | Purpose |
-|------|---------|
+| File               | Purpose                               |
+| ------------------ | ------------------------------------- |
 | `webrtcService.ts` | WebRTC manager with Phoenix signaling |
-| `useCall.ts` | React hook for call state management |
-| `index.ts` | Module exports |
+| `useCall.ts`       | React hook for call state management  |
+| `index.ts`         | Module exports                        |
 
 Features:
+
 - Phoenix Channel signaling (compatible with web)
 - ICE/STUN server support
 - Multi-party mesh topology (up to 10 participants)
@@ -331,14 +468,14 @@ Features:
 
 ### 📊 Mobile Feature Status
 
-| Feature | Status |
-|---------|--------|
-| Authentication | ✅ Complete |
-| 2FA/TOTP | ✅ Complete |
-| Biometrics | ✅ Complete |
-| Premium | ✅ Complete |
-| Groups | ✅ Complete |
-| WebRTC | ⚙️ Ready (needs package) |
+| Feature        | Status                   |
+| -------------- | ------------------------ |
+| Authentication | ✅ Complete              |
+| 2FA/TOTP       | ✅ Complete              |
+| Biometrics     | ✅ Complete              |
+| Premium        | ✅ Complete              |
+| Groups         | ✅ Complete              |
+| WebRTC         | ⚙️ Ready (needs package) |
 
 ---
 
@@ -346,38 +483,46 @@ Features:
 
 **🔗 DDD HOOK CONNECTIONS & WEBRTC: Backend Integration & Voice/Video Calls**
 
-This release connects the Domain-Driven Design (DDD) feature hooks to their backend stores, implements full WebRTC voice/video call infrastructure, and adds automated documentation generation.
+This release connects the Domain-Driven Design (DDD) feature hooks to their backend stores,
+implements full WebRTC voice/video call infrastructure, and adds automated documentation generation.
 
 ### 🔗 DDD Hook Connections
 
 #### Authentication Hooks (`apps/web/src/features/auth/hooks/`)
+
 - **useAuth()**: Connected to authStore with login, logout, register, loading states
 - **useTwoFactor()**: Full 2FA API integration (enable, verify, disable)
-- **useSessions()**: Session management with state (getSessions, revokeSession, revokeAllOtherSessions)
+- **useSessions()**: Session management with state (getSessions, revokeSession,
+  revokeAllOtherSessions)
 
 #### Premium Hooks (`apps/web/src/features/premium/hooks/`)
+
 - **usePremiumStatus()**: Connected to authStore for tier, features, expiry
 - **useCoins()**: Real coin balance from user data with spend/purchase actions
 
 #### Group Hooks (`apps/web/src/features/groups/hooks/`)
+
 - **usePermissions()**: Bitfield permission checking from groupStore
 - **useGroupInvites()**: API integration for invites
 - **useChannelNotifications()**: Notification preference management
 
 #### Premium Components (`apps/web/src/features/premium/components/`)
+
 - **PremiumBadge**: Dynamic badge with real tier data
 - **CoinBalance**: Live coin balance display
 
 ### 📞 WebRTC Voice/Video Calls
 
 #### New Frontend Infrastructure
-| File | Purpose |
-|------|---------|
-| `apps/web/src/lib/webrtc/webrtcService.ts` | WebRTC manager class with signaling |
-| `apps/web/src/lib/webrtc/useCall.ts` | React hook for call state management |
-| `apps/web/src/lib/webrtc/index.ts` | Module exports |
+
+| File                                       | Purpose                              |
+| ------------------------------------------ | ------------------------------------ |
+| `apps/web/src/lib/webrtc/webrtcService.ts` | WebRTC manager class with signaling  |
+| `apps/web/src/lib/webrtc/useCall.ts`       | React hook for call state management |
+| `apps/web/src/lib/webrtc/index.ts`         | Module exports                       |
 
 #### Features
+
 - Phoenix Channel signaling for call coordination
 - RTCPeerConnection mesh topology for group calls
 - Audio/video toggle, mute, and screen sharing
@@ -387,26 +532,29 @@ This release connects the Domain-Driven Design (DDD) feature hooks to their back
 ### 📚 Documentation Automation
 
 #### TypeDoc Integration
+
 - Installed typedoc v0.28.16 with markdown plugin
 - Auto-generates API docs from TypeScript source
 - Entry points: webrtc, api, authStore, hooks
 
 #### OpenAPI Integration
+
 - Installed docusaurus-plugin-openapi-docs v4.5.1
 - Interactive REST API documentation from OpenAPI spec
 - Added WebRTC/Calls endpoints to OpenAPI spec
 
 #### Docusaurus Versioning
+
 - Configured version system (current = 0.8.6)
 - Scripts: `docs:api`, `docs:openapi`, `docs:version`
 
 ### 🔧 Version Synchronization
 
-| Package | Previous | Current |
-|---------|----------|---------|
-| root | 0.8.5 | 0.8.6 |
-| @cgraph/docs | 0.8.5 | 0.8.6 |
-| OpenAPI spec | 0.7.28 | 0.8.6 |
+| Package      | Previous | Current |
+| ------------ | -------- | ------- |
+| root         | 0.8.5    | 0.8.6   |
+| @cgraph/docs | 0.8.5    | 0.8.6   |
+| OpenAPI spec | 0.7.28   | 0.8.6   |
 
 ---
 

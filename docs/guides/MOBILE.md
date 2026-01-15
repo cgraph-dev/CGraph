@@ -2,9 +2,14 @@
 
 > Building native experiences with React Native and Expo.
 
-So you want to work on the mobile app? Cool. We built this with React Native and Expo SDK 54, and honestly it's been a pretty good experience. The New Architecture is enabled by default (Fabric renderer, TurboModules — the whole shebang), and we share a lot of code with the web app which keeps things DRY.
+So you want to work on the mobile app? Cool. We built this with React Native and Expo SDK 54, and
+honestly it's been a pretty good experience. The New Architecture is enabled by default (Fabric
+renderer, TurboModules — the whole shebang), and we share a lot of code with the web app which keeps
+things DRY.
 
-Fair warning: mobile development has its quirks. iOS simulators are slow to boot, Android emulators eat RAM for breakfast, and you'll probably fight with CocoaPods at some point. But once you're set up, iteration is fast and the end result feels genuinely native.
+Fair warning: mobile development has its quirks. iOS simulators are slow to boot, Android emulators
+eat RAM for breakfast, and you'll probably fight with CocoaPods at some point. But once you're set
+up, iteration is fast and the end result feels genuinely native.
 
 Let's dive in.
 
@@ -34,20 +39,20 @@ Let's dive in.
 
 ## Tech Stack
 
-| Technology | Version | Purpose |
-|------------|---------|---------|
-| **React Native** | 0.81 | Mobile UI framework (New Architecture) |
-| **Expo** | 54.x | Development toolkit |
-| **React** | 19.1 | UI library |
-| **TypeScript** | 5.9 | Type safety |
-| **React Navigation** | 7.x | Navigation library |
-| **Zustand** | 5.x | State management |
-| **React Query** | 5.x | Server state |
-| **Phoenix Channels** | 1.8 | Real-time WebSocket |
-| **Expo Notifications** | 0.32 | Push notifications |
-| **React Native Reanimated** | 4.x | Animations (with Worklets) |
-| **Expo Local Auth** | 17.x | Biometric authentication |
-| **Storybook React Native** | 8.6 | Component documentation |
+| Technology                  | Version | Purpose                                |
+| --------------------------- | ------- | -------------------------------------- |
+| **React Native**            | 0.81    | Mobile UI framework (New Architecture) |
+| **Expo**                    | 54.x    | Development toolkit                    |
+| **React**                   | 19.1    | UI library                             |
+| **TypeScript**              | 5.9     | Type safety                            |
+| **React Navigation**        | 7.x     | Navigation library                     |
+| **Zustand**                 | 5.x     | State management                       |
+| **React Query**             | 5.x     | Server state                           |
+| **Phoenix Channels**        | 1.8     | Real-time WebSocket                    |
+| **Expo Notifications**      | 0.32    | Push notifications                     |
+| **React Native Reanimated** | 4.x     | Animations (with Worklets)             |
+| **Expo Local Auth**         | 17.x    | Biometric authentication               |
+| **Storybook React Native**  | 8.6     | Component documentation                |
 
 ---
 
@@ -133,7 +138,8 @@ apps/mobile/
 - Android: Android Studio Ladybug+ (for emulator)
 - Expo Go app on your device (for testing)
 
-> **Note:** SDK 54 enables the New Architecture (Fabric Renderer + TurboModules) by default for improved performance.
+> **Note:** SDK 54 enables the New Architecture (Fabric Renderer + TurboModules) by default for
+> improved performance.
 
 ### Development Setup
 
@@ -190,20 +196,20 @@ import { Platform } from 'react-native';
 
 const getApiUrl = (): string => {
   const configuredUrl = Constants.expoConfig?.extra?.apiUrl || 'http://localhost:4000';
-  
+
   // Android emulator can't access host's localhost directly
   if (__DEV__ && Platform.OS === 'android' && configuredUrl.includes('localhost')) {
     return configuredUrl.replace('localhost', '10.0.2.2');
   }
-  
+
   return configuredUrl;
 };
 ```
 
-| Environment | Android Emulator | iOS Simulator | Physical Device |
-|-------------|-----------------|---------------|-----------------|
-| Development | 10.0.2.2:4000 | localhost:4000 | LAN IP:4000 |
-| Production | api.cgraph.org | api.cgraph.org | api.cgraph.org |
+| Environment | Android Emulator | iOS Simulator  | Physical Device |
+| ----------- | ---------------- | -------------- | --------------- |
+| Development | 10.0.2.2:4000    | localhost:4000 | LAN IP:4000     |
+| Production  | api.cgraph.org   | api.cgraph.org | api.cgraph.org  |
 
 ### Expo Configuration
 
@@ -364,11 +370,11 @@ const Stack = createNativeStackNavigator();
 
 export default function RootNavigator() {
   const { isAuthenticated, isLoading } = useAuth();
-  
+
   if (isLoading) {
     return <LoadingScreen />;
   }
-  
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {isAuthenticated ? (
@@ -393,7 +399,7 @@ const Tab = createBottomTabNavigator();
 
 export default function MainNavigator() {
   const { colors } = useTheme();
-  
+
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -475,14 +481,14 @@ type NavigationProp = NativeStackNavigationProp<MessagesStackParamList>;
 
 function ConversationsScreen() {
   const navigation = useNavigation<NavigationProp>();
-  
+
   const openChat = (conversation: Conversation) => {
     navigation.navigate('Chat', {
       conversationId: conversation.id,
       title: conversation.participant.username,
     });
   };
-  
+
   // ...
 }
 ```
@@ -520,11 +526,11 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     checkAuth();
   }, []);
-  
+
   const checkAuth = async () => {
     try {
       const token = await SecureStore.getItemAsync('token');
@@ -539,7 +545,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsLoading(false);
     }
   };
-  
+
   const login = async (email: string, password: string) => {
     const { data } = await api.post('/auth/login', { email, password });
     await SecureStore.setItemAsync('token', data.data.token);
@@ -547,21 +553,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     api.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`;
     setUser(data.data.user);
   };
-  
+
   const logout = async () => {
     await SecureStore.deleteItemAsync('token');
     await SecureStore.deleteItemAsync('refreshToken');
     delete api.defaults.headers.common['Authorization'];
     setUser(null);
   };
-  
+
   const register = async (email: string, username: string, password: string) => {
     const { data } = await api.post('/auth/register', { email, username, password });
     await SecureStore.setItemAsync('token', data.data.token);
     api.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`;
     setUser(data.data.user);
   };
-  
+
   return (
     <AuthContext.Provider
       value={{
@@ -629,12 +635,8 @@ const ThemeContext = createContext<ThemeContextType>({
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const colorScheme = useColorScheme() ?? 'dark';
   const colors = colorScheme === 'dark' ? darkTheme : lightTheme;
-  
-  return (
-    <ThemeContext.Provider value={{ colorScheme, colors }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+
+  return <ThemeContext.Provider value={{ colorScheme, colors }}>{children}</ThemeContext.Provider>;
 }
 
 export function useTheme() {
@@ -644,7 +646,9 @@ export function useTheme() {
 
 ### E2EE Context
 
-The E2EE (End-to-End Encryption) context handles all cryptographic operations for secure messaging. It's provided at the app root level and offers graceful degradation when encryption isn't yet initialized.
+The E2EE (End-to-End Encryption) context handles all cryptographic operations for secure messaging.
+It's provided at the app root level and offers graceful degradation when encryption isn't yet
+initialized.
 
 ```tsx
 // App.tsx - Provider hierarchy
@@ -669,34 +673,35 @@ export default function App() {
 }
 ```
 
-The hook returns safe defaults when called outside a provider (useful for testing or screens that don't need encryption):
+The hook returns safe defaults when called outside a provider (useful for testing or screens that
+don't need encryption):
 
 ```tsx
 // Using E2EE in a component
 import { useE2EE } from '@/lib/crypto/E2EEContext';
 
 function ChatScreen() {
-  const { 
-    isInitialized,     // Whether E2EE keys are set up
-    isLoading,         // Loading state during setup
-    encryptMessage,    // Encrypt plaintext for a recipient
-    decryptMessage,    // Decrypt received message
-    getSafetyNumber,   // Get verification code for a contact
+  const {
+    isInitialized, // Whether E2EE keys are set up
+    isLoading, // Loading state during setup
+    encryptMessage, // Encrypt plaintext for a recipient
+    decryptMessage, // Decrypt received message
+    getSafetyNumber, // Get verification code for a contact
   } = useE2EE();
-  
+
   const sendSecureMessage = async (recipientId: string, text: string) => {
     if (!isInitialized) {
       // Fall back to server-side encryption or show setup prompt
       return sendUnencrypted(text);
     }
-    
+
     const encrypted = await encryptMessage(recipientId, text);
-    await api.post('/messages', { 
-      recipient_id: recipientId, 
-      encrypted_content: encrypted 
+    await api.post('/messages', {
+      recipient_id: recipientId,
+      encrypted_content: encrypted,
     });
   };
-  
+
   // ...
 }
 ```
@@ -709,7 +714,7 @@ import { useE2EEStrict } from '@/lib/crypto/E2EEContext';
 function KeyVerificationScreen() {
   // Throws if not within E2EEProvider - catches misconfiguration early
   const { getSafetyNumber, getFingerprint } = useE2EEStrict();
-  
+
   // ...
 }
 ```
@@ -739,20 +744,20 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      
+
       try {
         const refreshToken = await SecureStore.getItemAsync('refreshToken');
         const { data } = await axios.post(`${config.apiUrl}/api/v1/auth/refresh`, {
           refresh_token: refreshToken,
         });
-        
+
         await SecureStore.setItemAsync('token', data.data.token);
         api.defaults.headers.common['Authorization'] = `Bearer ${data.data.token}`;
         originalRequest.headers['Authorization'] = `Bearer ${data.data.token}`;
-        
+
         return api(originalRequest);
       } catch (refreshError) {
         // Force logout
@@ -762,7 +767,7 @@ api.interceptors.response.use(
         return Promise.reject(refreshError);
       }
     }
-    
+
     return Promise.reject(error);
   }
 );
@@ -798,7 +803,7 @@ export function useMessages(conversationId: string) {
 
 export function useSendMessage() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({
       conversationId,
@@ -835,38 +840,38 @@ import { config } from './config';
 class SocketManager {
   private socket: Socket | null = null;
   private channels: Map<string, Channel> = new Map();
-  
+
   async connect() {
     const token = await SecureStore.getItemAsync('token');
     if (!token) return;
-    
+
     this.socket = new Socket(config.wsUrl, {
       params: { token },
     });
-    
+
     this.socket.connect();
   }
-  
+
   disconnect() {
     this.channels.forEach((channel) => channel.leave());
     this.channels.clear();
     this.socket?.disconnect();
     this.socket = null;
   }
-  
+
   joinChannel(topic: string): Channel | null {
     if (!this.socket) return null;
-    
+
     if (this.channels.has(topic)) {
       return this.channels.get(topic)!;
     }
-    
+
     const channel = this.socket.channel(topic, {});
     channel.join();
     this.channels.set(topic, channel);
     return channel;
   }
-  
+
   leaveChannel(topic: string) {
     const channel = this.channels.get(topic);
     if (channel) {
@@ -892,17 +897,17 @@ import { AppState, AppStateStatus } from 'react-native';
 export function useChannel(topic: string) {
   const channelRef = useRef<Channel | null>(null);
   const { isAuthenticated } = useAuth();
-  
+
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     const connect = async () => {
       await socketManager.connect();
       channelRef.current = socketManager.joinChannel(topic);
     };
-    
+
     connect();
-    
+
     // Handle app state changes
     const subscription = AppState.addEventListener('change', (state: AppStateStatus) => {
       if (state === 'active') {
@@ -911,24 +916,135 @@ export function useChannel(topic: string) {
         socketManager.leaveChannel(topic);
       }
     });
-    
+
     return () => {
       socketManager.leaveChannel(topic);
       subscription.remove();
     };
   }, [topic, isAuthenticated]);
-  
+
   const push = useCallback((event: string, payload = {}) => {
     return channelRef.current?.push(event, payload);
   }, []);
-  
+
   const on = useCallback((event: string, callback: (payload: any) => void) => {
     channelRef.current?.on(event, callback);
     return () => channelRef.current?.off(event, callback);
   }, []);
-  
+
   return { push, on };
 }
+```
+
+---
+
+## Deep Links (v0.9.3)
+
+CGraph supports Universal Links (iOS) and App Links (Android) for seamless deep linking.
+
+### Configuration
+
+**iOS** (`app.config.js`):
+
+```javascript
+ios: {
+  associatedDomains: [
+    'applinks:cgraph.org',
+    'applinks:www.cgraph.org',
+  ],
+}
+```
+
+**Android** (`app.config.js`):
+
+```javascript
+android: {
+  intentFilters: [{
+    action: 'VIEW',
+    autoVerify: true,
+    data: [
+      { scheme: 'https', host: 'cgraph.org', pathPrefix: '/' },
+      { scheme: 'https', host: 'www.cgraph.org', pathPrefix: '/' },
+      { scheme: 'cgraph' },
+    ],
+    category: ['BROWSABLE', 'DEFAULT'],
+  }],
+}
+```
+
+### Deep Link Handler
+
+```typescript
+// src/lib/deepLinks.ts
+import { handleDeepLink, createShareableLink } from '@/lib/deepLinks';
+
+// Handle incoming deep links in App.tsx
+useEffect(() => {
+  // Handle links when app is already open
+  const subscription = Linking.addEventListener('url', ({ url }) => {
+    handleDeepLink(url, navigation);
+  });
+
+  // Handle links that opened the app
+  Linking.getInitialURL().then((url) => {
+    if (url) handleDeepLink(url, navigation);
+  });
+
+  return () => subscription.remove();
+}, [navigation]);
+
+// Create shareable links
+const shareConversation = () => {
+  const link = createShareableLink('conversation', conversationId);
+  // Returns: https://cgraph.org/messages/abc123
+  Share.share({ url: link });
+};
+```
+
+### Supported Routes
+
+| URL Pattern                          | Screen       | Parameters             |
+| ------------------------------------ | ------------ | ---------------------- |
+| `/messages/:id`                      | Conversation | `conversationId`       |
+| `/groups/:id`                        | GroupDetail  | `groupId`              |
+| `/groups/:id/channels/:channelId`    | Channel      | `groupId`, `channelId` |
+| `/forums/:id`                        | Forum        | `forumId`              |
+| `/forums/:forumId/threads/:threadId` | Thread       | `forumId`, `threadId`  |
+| `/profile/:id`                       | UserProfile  | `userId`               |
+| `/settings`                          | Settings     | -                      |
+| `/invite/:code`                      | InviteAccept | `inviteCode`           |
+
+### Server-Side Configuration
+
+**iOS** (`public/.well-known/apple-app-site-association`):
+
+```json
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appIDs": ["TEAM_ID.org.cgraph.app"],
+        "paths": ["/messages/*", "/groups/*", "/forums/*", "/profile/*", "/settings", "/invite/*"]
+      }
+    ]
+  }
+}
+```
+
+**Android** (`public/.well-known/assetlinks.json`):
+
+```json
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.cgraph.app",
+      "sha256_cert_fingerprints": ["YOUR_SHA256_FINGERPRINT"]
+    }
+  }
+]
 ```
 
 ---
@@ -959,27 +1075,23 @@ export function useNotifications() {
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
   const { isAuthenticated } = useAuth();
-  
+
   useEffect(() => {
     if (!isAuthenticated) return;
-    
+
     registerForPushNotifications();
-    
+
     // Handle received notifications
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        console.log('Notification received:', notification);
-      }
-    );
-    
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      console.log('Notification received:', notification);
+    });
+
     // Handle notification taps
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        const data = response.notification.request.content.data;
-        handleNotificationTap(data);
-      }
-    );
-    
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data;
+      handleNotificationTap(data);
+    });
+
     return () => {
       if (notificationListener.current) {
         Notifications.removeNotificationSubscription(notificationListener.current);
@@ -989,34 +1101,34 @@ export function useNotifications() {
       }
     };
   }, [isAuthenticated]);
-  
+
   const registerForPushNotifications = async () => {
     if (!Device.isDevice) {
       console.log('Push notifications only work on physical devices');
       return;
     }
-    
+
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
-    
+
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
-    
+
     if (finalStatus !== 'granted') {
       console.log('Failed to get push token');
       return;
     }
-    
+
     // Get Expo push token
     const token = await Notifications.getExpoPushTokenAsync({
       projectId: 'your-project-id',
     });
-    
+
     // Send token to backend
     await api.post('/push-tokens', { token: token.data });
-    
+
     // Android-specific channel setup
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
@@ -1024,7 +1136,7 @@ export function useNotifications() {
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
       });
-      
+
       await Notifications.setNotificationChannelAsync('messages', {
         name: 'Messages',
         importance: Notifications.AndroidImportance.HIGH,
@@ -1032,7 +1144,7 @@ export function useNotifications() {
       });
     }
   };
-  
+
   const handleNotificationTap = (data: any) => {
     // Navigate based on notification type
     switch (data.type) {
@@ -1046,7 +1158,7 @@ export function useNotifications() {
         break;
     }
   };
-  
+
   return { registerForPushNotifications };
 }
 ```
@@ -1057,10 +1169,10 @@ export function useNotifications() {
 # In your Phoenix backend
 defmodule CGraph.PushNotifications do
   @expo_url "https://exp.host/--/api/v2/push/send"
-  
+
   def send_push(user_id, title, body, data \\ %{}) do
     tokens = get_user_push_tokens(user_id)
-    
+
     messages = Enum.map(tokens, fn token ->
       %{
         to: token,
@@ -1070,7 +1182,7 @@ defmodule CGraph.PushNotifications do
         sound: "default"
       }
     end)
-    
+
     HTTPoison.post(@expo_url, Jason.encode!(messages), [
       {"Content-Type", "application/json"}
     ])
@@ -1117,7 +1229,7 @@ export function Button({
   style,
 }: ButtonProps) {
   const { colors } = useTheme();
-  
+
   const buttonStyles: ViewStyle = {
     ...styles.base,
     ...styles[size],
@@ -1130,14 +1242,14 @@ export function Button({
     }),
     ...(disabled && { opacity: 0.5 }),
   };
-  
+
   const textStyles: TextStyle = {
     ...styles.text,
     ...(variant === 'primary' && { color: '#ffffff' }),
     ...(variant === 'secondary' && { color: colors.text }),
     ...(variant === 'outline' && { color: colors.text }),
   };
-  
+
   return (
     <TouchableOpacity
       style={[buttonStyles, style]}
@@ -1187,11 +1299,11 @@ import { Dimensions, useWindowDimensions } from 'react-native';
 // Hook for responsive values
 export function useResponsive() {
   const { width, height } = useWindowDimensions();
-  
+
   const isSmall = width < 375;
   const isMedium = width >= 375 && width < 768;
   const isLarge = width >= 768;
-  
+
   const spacing = {
     xs: isSmall ? 4 : 8,
     sm: isSmall ? 8 : 12,
@@ -1199,7 +1311,7 @@ export function useResponsive() {
     lg: isSmall ? 16 : 24,
     xl: isSmall ? 24 : 32,
   };
-  
+
   const fontSize = {
     xs: isSmall ? 10 : 12,
     sm: isSmall ? 12 : 14,
@@ -1207,14 +1319,15 @@ export function useResponsive() {
     lg: isSmall ? 18 : 20,
     xl: isSmall ? 24 : 28,
   };
-  
+
   return { width, height, isSmall, isMedium, isLarge, spacing, fontSize };
 }
 ```
 
 ### Animation Library
 
-The mobile app includes a comprehensive animation library at `src/lib/animations.ts` using React Native's Animated API:
+The mobile app includes a comprehensive animation library at `src/lib/animations.ts` using React
+Native's Animated API:
 
 ```typescript
 // src/lib/animations.ts
@@ -1253,7 +1366,7 @@ import { AnimatedCard } from '@/components';
 // Animated container with press feedback
 <AnimatedCard onPress={handlePress} delay={100}>
   <Text>Content with fade-in and press scale</Text>
-</AnimatedCard>
+</AnimatedCard>;
 ```
 
 ### Conversation Screen Features
@@ -1261,22 +1374,27 @@ import { AnimatedCard } from '@/components';
 The conversation screen delivers a polished messaging experience with thoughtful interactions:
 
 **Header Actions:**
+
 - Tap the contact name to view their profile
 - Voice and video call buttons for WebRTC 1:1 and group calls
 - Visual encryption indicator showing E2EE protection status
 
 **Attachment Menu (TelegramAttachmentPicker):**  
 Tap the + button to reveal a beautiful slide-up menu with options to:
+
 - Share photos and videos from your library (with proper Android URI resolution)
 - Capture photos or videos with camera (photo/video mode toggle)
 - Send documents and files
 - Share contacts (Telegram-style contact picker with animations)
 - Share your location (planned)
 
-> **v0.7.39 Note:** Gallery loading now includes fallback UI for Expo Go environments where MediaLibrary has limited access. When the gallery grid is empty, users see "Browse Gallery" and "Take Photo/Video" buttons that use ImagePicker directly. Camera now supports both photo and video recording with a mode toggle.
+> **v0.7.39 Note:** Gallery loading now includes fallback UI for Expo Go environments where
+> MediaLibrary has limited access. When the gallery grid is empty, users see "Browse Gallery" and
+> "Take Photo/Video" buttons that use ImagePicker directly. Camera now supports both photo and video
+> recording with a mode toggle.
 
-**Contact Sharing (v0.7.39):**
-The contact picker provides a Telegram-style experience:
+**Contact Sharing (v0.7.39):** The contact picker provides a Telegram-style experience:
+
 - Full-screen animated contact list with smooth entrance
 - Search bar to filter by name or phone number
 - Contact cards show photo (or initials avatar), name, and number
@@ -1284,23 +1402,23 @@ The contact picker provides a Telegram-style experience:
 - Contacts shared as VCF format with name, phone, and email data
 - Requires `expo-contacts` permission
 
-**Video Recording (v0.7.39):**
-Camera mode now supports both photos and videos:
+**Video Recording (v0.7.39):** Camera mode now supports both photos and videos:
+
 - Photo/Video toggle buttons at bottom of camera view
 - Video mode uses `recordAsync()` for recording
 - Red dot + "REC" indicator while recording
 - Tap capture button to start/stop recording
 
-**Video Messages:**
-Videos sent in conversations display inline with:
+**Video Messages:** Videos sent in conversations display inline with:
+
 - Real video frame thumbnail (no placeholder icons)
 - Play button overlay for tapping to view fullscreen
 - Duration badge showing video length
 - Fullscreen video player with custom controls (play/pause, progress bar, time display)
 - Clean message bubbles without redundant "📷 Photo" or "🎥 Video" labels
 
-**Pinned Messages Bar (v0.7.39):**
-The enhanced pinned messages header provides rich context:
+**Pinned Messages Bar (v0.7.39):** The enhanced pinned messages header provides rich context:
+
 - Gradient indicator bar showing pin count visually
 - Media thumbnails for pinned images/videos (actual preview, not icons)
 - Voice message indicator (microphone icon) for pinned voice notes
@@ -1313,6 +1431,7 @@ The enhanced pinned messages header provides rich context:
 
 **Message Status:**  
 Every outgoing message shows delivery status with intuitive icons:
+
 - Single checkmark = sent to server
 - Double checkmark = delivered to recipient
 - Blue double checkmark = message was read
@@ -1320,6 +1439,7 @@ Every outgoing message shows delivery status with intuitive icons:
 
 **Empty Conversation Experience:**  
 New conversations greet you with:
+
 - Large profile avatar of your contact
 - "Wave to [name]" button that sends a random friendly emoji
 - "Say Hi" button pre-fills a greeting
@@ -1327,7 +1447,8 @@ New conversations greet you with:
 - Animated waving hand for that personal touch
 
 **Voice Messages:**  
-Hold the microphone to record, slide to cancel, or release to send. Visual waveform displays during recording with real-time duration counter.
+Hold the microphone to record, slide to cancel, or release to send. Visual waveform displays during
+recording with real-time duration counter.
 
 ---
 
@@ -1345,19 +1466,19 @@ async function pickImage() {
     Alert.alert('Permission needed', 'Please allow access to photos');
     return null;
   }
-  
+
   const result = await ImagePicker.launchImageLibraryAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: true,
     aspect: [1, 1],
     quality: 0.8,
   });
-  
+
   if (!result.canceled) {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     return result.assets[0].uri;
   }
-  
+
   return null;
 }
 
@@ -1367,24 +1488,25 @@ async function takePhoto() {
     Alert.alert('Permission needed', 'Please allow camera access');
     return null;
   }
-  
+
   const result = await ImagePicker.launchCameraAsync({
     allowsEditing: true,
     aspect: [1, 1],
     quality: 0.8,
   });
-  
+
   if (!result.canceled) {
     return result.assets[0].uri;
   }
-  
+
   return null;
 }
 ```
 
 ### Audio Recording and Playback
 
-CGraph uses `expo-audio` for voice message recording and playback. The library provides modern React hooks for managing audio lifecycle.
+CGraph uses `expo-audio` for voice message recording and playback. The library provides modern React
+hooks for managing audio lifecycle.
 
 ```tsx
 // Voice Message Playback
@@ -1393,14 +1515,14 @@ import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from 'expo-au
 function VoicePlayer({ audioUrl }: { audioUrl: string }) {
   const player = useAudioPlayer(audioUrl);
   const status = useAudioPlayerStatus(player);
-  
+
   useEffect(() => {
     // Configure audio for playback
     setAudioModeAsync({
       playsInSilentMode: true,
     });
   }, []);
-  
+
   const handlePlayPause = () => {
     if (status.playing) {
       player.pause();
@@ -1408,11 +1530,13 @@ function VoicePlayer({ audioUrl }: { audioUrl: string }) {
       player.play();
     }
   };
-  
+
   return (
     <TouchableOpacity onPress={handlePlayPause}>
       <Text>{status.playing ? 'Pause' : 'Play'}</Text>
-      <Text>{Math.floor(status.currentTime)}s / {Math.floor(status.duration)}s</Text>
+      <Text>
+        {Math.floor(status.currentTime)}s / {Math.floor(status.duration)}s
+      </Text>
     </TouchableOpacity>
   );
 }
@@ -1420,10 +1544,10 @@ function VoicePlayer({ audioUrl }: { audioUrl: string }) {
 
 ```tsx
 // Voice Message Recording
-import { 
-  useAudioRecorder, 
-  useAudioRecorderState, 
-  RecordingPresets, 
+import {
+  useAudioRecorder,
+  useAudioRecorderState,
+  RecordingPresets,
   AudioModule,
   setAudioModeAsync,
 } from 'expo-audio';
@@ -1431,34 +1555,34 @@ import {
 function VoiceRecorder() {
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const recorderState = useAudioRecorderState(recorder);
-  
+
   const startRecording = async () => {
     // Request permissions
     const { granted } = await AudioModule.requestRecordingPermissionsAsync();
     if (!granted) return;
-    
+
     // Configure audio for recording
     await setAudioModeAsync({
       allowsRecording: true,
       playsInSilentMode: true,
     });
-    
+
     await recorder.prepareToRecordAsync();
     recorder.record();
   };
-  
+
   const stopRecording = async () => {
     await recorder.stop();
     const uri = recorder.uri; // Path to recorded file
     // Upload or play the recording
   };
-  
+
   return (
     <View>
       <Text>Recording: {recorderState.isRecording ? 'Yes' : 'No'}</Text>
       <Text>Duration: {recorderState.durationMillis}ms</Text>
-      <Button 
-        title={recorderState.isRecording ? 'Stop' : 'Record'} 
+      <Button
+        title={recorderState.isRecording ? 'Stop' : 'Record'}
         onPress={recorderState.isRecording ? stopRecording : startRecording}
       />
     </View>
@@ -1466,7 +1590,8 @@ function VoiceRecorder() {
 }
 ```
 
-> **Note**: expo-audio replaced the deprecated expo-av library as of SDK 54. The old Audio.Sound and Audio.Recording APIs are no longer available.
+> **Note**: expo-audio replaced the deprecated expo-av library as of SDK 54. The old Audio.Sound and
+> Audio.Recording APIs are no longer available.
 
 ### Secure Storage
 
@@ -1477,11 +1602,11 @@ export const storage = {
   async get(key: string): Promise<string | null> {
     return SecureStore.getItemAsync(key);
   },
-  
+
   async set(key: string, value: string): Promise<void> {
     await SecureStore.setItemAsync(key, value);
   },
-  
+
   async remove(key: string): Promise<void> {
     await SecureStore.deleteItemAsync(key);
   },
@@ -1613,16 +1738,21 @@ function SecuritySettings() {
 
 ### Account Settings Integration
 
-The biometric lock feature is fully integrated into the Account Settings screen with real-time status detection:
+The biometric lock feature is fully integrated into the Account Settings screen with real-time
+status detection:
 
 ```tsx
 // screens/settings/AccountScreen.tsx
-import { getBiometricStatus, getBiometricName, setBiometricLockEnabled } from '../../lib/biometrics';
+import {
+  getBiometricStatus,
+  getBiometricName,
+  setBiometricLockEnabled,
+} from '../../lib/biometrics';
 
 export default function AccountScreen() {
   const [biometricStatus, setBiometricStatus] = useState<BiometricStatus | null>(null);
   const [biometricEnabled, setBiometricEnabled] = useState(false);
-  
+
   useEffect(() => {
     const loadStatus = async () => {
       const status = await getBiometricStatus();
@@ -1634,24 +1764,26 @@ export default function AccountScreen() {
     };
     loadStatus();
   }, []);
-  
+
   const handleToggle = async (value: boolean) => {
     const success = await setBiometricLockEnabled(value);
     if (success) {
       setBiometricEnabled(value);
     }
   };
-  
+
   return (
     <View>
       {biometricStatus?.isAvailable && (
         <View style={styles.settingsRow}>
-          <Ionicons 
-            name={biometricStatus.biometricType === 'facial' ? 'scan-outline' : 'finger-print-outline'} 
+          <Ionicons
+            name={
+              biometricStatus.biometricType === 'facial' ? 'scan-outline' : 'finger-print-outline'
+            }
           />
           <Text>{getBiometricName(biometricStatus.biometricType)}</Text>
-          <Switch 
-            value={biometricEnabled} 
+          <Switch
+            value={biometricEnabled}
             onValueChange={handleToggle}
             disabled={!biometricStatus.isEnrolled}
           />
@@ -1666,7 +1798,8 @@ export default function AccountScreen() {
 
 ## Storybook
 
-Storybook for React Native lets you develop and test mobile components in isolation, right on your device or simulator. It provides an on-device UI for browsing component stories.
+Storybook for React Native lets you develop and test mobile components in isolation, right on your
+device or simulator. It provides an on-device UI for browsing component stories.
 
 ### Getting Started
 
@@ -1755,16 +1888,17 @@ Or use environment variables to toggle between Storybook and the regular app.
 
 ## Testing
 
-CGraph mobile has a comprehensive testing infrastructure built with Jest, Testing Library, and custom utilities designed for React Native and Expo applications.
+CGraph mobile has a comprehensive testing infrastructure built with Jest, Testing Library, and
+custom utilities designed for React Native and Expo applications.
 
 ### Testing Stack
 
-| Tool | Version | Purpose |
-|------|---------|---------|
-| **Jest** | 29.7 | Test runner |
-| **jest-expo** | 54.0 | Expo-specific Jest preset |
-| **@testing-library/react-native** | 13.2 | Component testing |
-| **react-test-renderer** | 19.1 | React test utilities |
+| Tool                              | Version | Purpose                   |
+| --------------------------------- | ------- | ------------------------- |
+| **Jest**                          | 29.7    | Test runner               |
+| **jest-expo**                     | 54.0    | Expo-specific Jest preset |
+| **@testing-library/react-native** | 13.2    | Component testing         |
+| **react-test-renderer**           | 19.1    | React test utilities      |
 
 ### Test Structure
 
@@ -1846,12 +1980,7 @@ module.exports = {
     'node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@unimodules/.*|unimodules|sentry-expo|native-base|react-native-svg|phoenix)',
   ],
   testPathIgnorePatterns: ['/node_modules/', '/dist/'],
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/test/**/*',
-    '!src/types/**/*',
-  ],
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!src/**/*.d.ts', '!src/test/**/*', '!src/types/**/*'],
   coverageThreshold: {
     global: {
       branches: 60,
@@ -1889,9 +2018,7 @@ jest.mock('react-native-gesture-handler', () => ({
 }));
 
 // Mock React Native Reanimated
-jest.mock('react-native-reanimated', () =>
-  require('react-native-reanimated/mock')
-);
+jest.mock('react-native-reanimated', () => require('react-native-reanimated/mock'));
 
 // Mock navigation
 jest.mock('@react-navigation/native', () => ({
@@ -2233,7 +2360,9 @@ describe('useFriendPresence', () => {
   beforeEach(() => {
     (socketManager.onGlobalStatusChange as jest.Mock).mockImplementation((cb) => {
       statusCallback = cb;
-      return () => { statusCallback = null; };
+      return () => {
+        statusCallback = null;
+      };
     });
   });
 
@@ -2340,13 +2469,13 @@ describe('E2EEContext', () => {
 
 ### Coverage Goals
 
-| Category | Target | Current |
-|----------|--------|---------|
-| Components | 80%+ | Building |
-| Screens | 70%+ | Building |
-| Contexts | 90%+ | Building |
-| Hooks | 85%+ | Building |
-| Utils | 90%+ | Building |
+| Category   | Target | Current  |
+| ---------- | ------ | -------- |
+| Components | 80%+   | Building |
+| Screens    | 70%+   | Building |
+| Contexts   | 90%+   | Building |
+| Hooks      | 85%+   | Building |
+| Utils      | 90%+   | Building |
 
 Run coverage report: `pnpm test:coverage`
 
@@ -2416,6 +2545,7 @@ eas build --platform all --profile production
 Before submitting to app stores, ensure the following:
 
 **GDPR/Privacy Compliance (Required):**
+
 - ✅ Terms of Service acceptance on registration
 - ✅ Privacy Policy link accessible in app
 - ✅ Terms of Service link accessible in app
@@ -2425,6 +2555,7 @@ Before submitting to app stores, ensure the following:
 - ✅ `ITSAppUsesNonExemptEncryption: false` declared (or proper export compliance)
 
 **App Configuration (`app.json`):**
+
 ```json
 {
   "expo": {
@@ -2452,6 +2583,7 @@ Before submitting to app stores, ensure the following:
 ```
 
 **EAS Configuration (`eas.json`):**
+
 - Development, preview, and production build profiles
 - Submission configuration for iOS and Android
 - Auto-increment enabled for production
@@ -2470,6 +2602,7 @@ eas submit --platform ios --id <build-id>
 ```
 
 **Required Assets:**
+
 - App icon (1024x1024, no alpha channel)
 - Screenshots for all required device sizes:
   - 6.7" (iPhone 15 Pro Max)
@@ -2482,6 +2615,7 @@ eas submit --platform ios --id <build-id>
 - Age rating questionnaire completed
 
 **App Store Review Tips:**
+
 - Ensure demo credentials if login required
 - All features must be functional
 - No placeholder text or "coming soon" features
@@ -2498,6 +2632,7 @@ eas submit --platform android --latest
 ```
 
 **Required:**
+
 - Feature graphic (1024x500)
 - App icon (512x512)
 - Screenshots (phone and tablet)
@@ -2506,8 +2641,8 @@ eas submit --platform android --latest
 - Data safety form completed
 - Target API level 34+ (Android 14)
 
-**Google Play Data Safety:**
-When completing the data safety form, declare:
+**Google Play Data Safety:** When completing the data safety form, declare:
+
 - Account info (email, username)
 - User-generated content (messages, posts)
 - Device identifiers (for push notifications)
@@ -2526,6 +2661,7 @@ When completing the data safety form, declare:
 ### Common Issues
 
 **Metro bundler stuck or stale cache**
+
 ```bash
 # Clear all caches and restart (recommended first step)
 npx expo start --clear
@@ -2537,6 +2673,7 @@ npx expo start --clear
 ```
 
 **"The endpoint is offline" (ngrok/tunnel error)**
+
 ```bash
 # This means Expo can't reach your backend
 # 1. Ensure backend is running
@@ -2547,11 +2684,13 @@ curl http://localhost:4000/api/v1/health
 ```
 
 **API calls fail on Android emulator**
+
 - Android emulator can't access host's `localhost` directly
 - The API client automatically uses `10.0.2.2` for Android in development
 - Make sure your backend is listening on `0.0.0.0` not just `127.0.0.1`
 
 **iOS build fails**
+
 ```bash
 # Clear derived data
 rm -rf ~/Library/Developer/Xcode/DerivedData
@@ -2559,12 +2698,14 @@ cd ios && pod install --repo-update
 ```
 
 **Android build fails**
+
 ```bash
 # Clean Gradle
 cd android && ./gradlew clean
 ```
 
 **New Architecture issues (SDK 54+)**
+
 ```bash
 # If experiencing crashes or rendering issues with the New Architecture:
 # 1. Check all native modules are compatible with Fabric/TurboModules
@@ -2575,22 +2716,26 @@ cd android && ./gradlew clean
 ```
 
 **React 19.1 / Suspense issues**
+
 - React 19.1 has stricter Suspense behavior
 - Ensure all data-fetching components have Suspense boundaries
 - Check React Query v5 compatibility settings
 
 **Push notifications not working**
+
 - Ensure physical device (not simulator)
 - Check Expo project ID matches
 - Verify notification permissions granted
 - Test with Expo's push notification tool first
 
 **WebSocket disconnecting**
+
 - Check network connectivity
 - Verify token is valid
 - Handle app state changes (foreground/background)
 
 **Biometric authentication not available**
+
 - Device must have biometric hardware (Face ID, Touch ID, fingerprint)
 - User must have enrolled at least one biometric in system settings
 - Check `biometrics.isAvailable()` before showing the option
@@ -2601,8 +2746,9 @@ cd android && ./gradlew clean
 // Enable network logging in development
 if (__DEV__) {
   // Note: May not work with New Architecture - use React DevTools instead
-  XMLHttpRequest = GLOBAL.originalXMLHttpRequest ?
-    GLOBAL.originalXMLHttpRequest : GLOBAL.XMLHttpRequest;
+  XMLHttpRequest = GLOBAL.originalXMLHttpRequest
+    ? GLOBAL.originalXMLHttpRequest
+    : GLOBAL.XMLHttpRequest;
 }
 
 // React Query focus management
@@ -2649,4 +2795,5 @@ Sentry.init({
 
 ---
 
-*Happy mobile development! Built with Expo SDK 54, React Native 0.81, and the New Architecture. Questions? Open an issue on GitHub.*
+_Happy mobile development! Built with Expo SDK 54, React Native 0.81, and the New Architecture.
+Questions? Open an issue on GitHub._

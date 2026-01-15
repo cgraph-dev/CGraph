@@ -1,16 +1,23 @@
 # Security Architecture
 
-Look, security is one of those things that's easy to get wrong and really hard to fix after the fact. We've put a lot of thought into how CGraph handles authentication, authorization, and data protection — and we think we've gotten it right. But security is also a moving target, so if you spot something off, please let us know.
+Look, security is one of those things that's easy to get wrong and really hard to fix after the
+fact. We've put a lot of thought into how CGraph handles authentication, authorization, and data
+protection — and we think we've gotten it right. But security is also a moving target, so if you
+spot something off, please let us know.
 
-**v0.7.47 introduces critical security hardening** — 2FA brute force protection, race condition fixes, and safe parameter parsing across all controllers.
+**v0.7.47 introduces critical security hardening** — 2FA brute force protection, race condition
+fixes, and safe parameter parsing across all controllers.
 
-**v0.7.35 introduced Signal Protocol Double Ratchet encryption** — the same cryptographic foundation that secures Signal, WhatsApp, and other industry-leading messengers.
+**v0.7.35 introduced Signal Protocol Double Ratchet encryption** — the same cryptographic foundation
+that secures Signal, WhatsApp, and other industry-leading messengers.
 
-This doc explains what we've built and why. It's not exhaustive (that would be a book), but it covers the stuff you actually need to know.
+This doc explains what we've built and why. It's not exhaustive (that would be a book), but it
+covers the stuff you actually need to know.
 
 ## Overview
 
-We've layered our security like an onion — multiple defenses at different levels. If one layer fails, the others still protect you. Here's the high-level picture:
+We've layered our security like an onion — multiple defenses at different levels. If one layer
+fails, the others still protect you. Here's the high-level picture:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -62,29 +69,30 @@ We've layered our security like an onion — multiple defenses at different leve
 
 ## Signal Protocol Double Ratchet (v0.7.35)
 
-The gold standard in end-to-end encryption. Every message uses a unique key, providing perfect forward secrecy and future secrecy.
+The gold standard in end-to-end encryption. Every message uses a unique key, providing perfect
+forward secrecy and future secrecy.
 
 ### Implementation Details
 
 **File:** `apps/web/src/lib/crypto/doubleRatchet.ts` (750+ lines)
 
-| Algorithm | Specification |
-|-----------|--------------|
-| Key Agreement | X3DH (Extended Triple Diffie-Hellman) |
-| Curve | ECDH P-384 (NIST approved) |
-| Encryption | AES-256-GCM (authenticated) |
-| Key Derivation | HKDF-SHA256 |
-| MAC | HMAC-SHA256 |
+| Algorithm      | Specification                         |
+| -------------- | ------------------------------------- |
+| Key Agreement  | X3DH (Extended Triple Diffie-Hellman) |
+| Curve          | ECDH P-384 (NIST approved)            |
+| Encryption     | AES-256-GCM (authenticated)           |
+| Key Derivation | HKDF-SHA256                           |
+| MAC            | HMAC-SHA256                           |
 
 ### Security Properties
 
-| Property | Description |
-|----------|-------------|
-| **Forward Secrecy** | Compromise of long-term keys doesn't reveal past messages |
-| **Break-in Recovery** | Session automatically heals after key compromise |
-| **Out-of-Order** | Handles delayed/reordered messages securely |
-| **Key Erasure** | Message keys deleted after use |
-| **Post-Quantum Ready** | Placeholder for CRYSTALS-Kyber upgrade |
+| Property               | Description                                               |
+| ---------------------- | --------------------------------------------------------- |
+| **Forward Secrecy**    | Compromise of long-term keys doesn't reveal past messages |
+| **Break-in Recovery**  | Session automatically heals after key compromise          |
+| **Out-of-Order**       | Handles delayed/reordered messages securely               |
+| **Key Erasure**        | Message keys deleted after use                            |
+| **Post-Quantum Ready** | Placeholder for CRYSTALS-Kyber upgrade                    |
 
 ### How the Double Ratchet Works
 
@@ -148,7 +156,7 @@ const log = engine.getAuditLog();
 ```typescript
 import { PostQuantumDoubleRatchet } from '@/lib/crypto/doubleRatchet';
 
-// Future-ready: when CRYSTALS-Kyber is standardized, 
+// Future-ready: when CRYSTALS-Kyber is standardized,
 // upgrade is a drop-in replacement
 const pqEngine = new PostQuantumDoubleRatchet();
 await pqEngine.initializeWithQuantumResistance(sharedSecret, peerPublicKey);
@@ -176,6 +184,7 @@ TokenBlacklist.revoked?(token)
 ```
 
 **Features:**
+
 - Multi-tier storage (Cachex → ETS → Redis)
 - Sub-millisecond lookups
 - JTI-based revocation for efficiency
@@ -183,6 +192,7 @@ TokenBlacklist.revoked?(token)
 - Automatic cleanup of expired entries
 
 **Storage Architecture:**
+
 - L1: Cachex (hot cache, <1ms)
 - L2: ETS bloom filter (<1ms)
 - L3: Redis (persistent, <5ms)
@@ -193,24 +203,25 @@ TokenBlacklist.revoked?(token)
 
 Web clients now use HTTP-only cookies for JWT storage, preventing XSS-based token theft:
 
-**Cookie Configuration:**
-| Cookie | Max Age | Flags |
-|--------|---------|-------|
-| `cgraph_access_token` | 15 minutes | HttpOnly, Secure, SameSite=Strict |
-| `cgraph_refresh_token` | 7 days | HttpOnly, Secure, SameSite=Strict |
+**Cookie Configuration:** | Cookie | Max Age | Flags | |--------|---------|-------| |
+`cgraph_access_token` | 15 minutes | HttpOnly, Secure, SameSite=Strict | | `cgraph_refresh_token` |
+7 days | HttpOnly, Secure, SameSite=Strict |
 
 **Security Benefits:**
+
 - Tokens inaccessible to JavaScript (prevents XSS theft)
 - Automatic CSRF protection via SameSite=Strict
 - Cookies only sent over HTTPS (Secure flag)
 - Seamless integration with existing Guardian JWT pipeline
 
 **Client Compatibility:**
+
 - **Web:** Uses cookies automatically with `withCredentials: true`
 - **Mobile:** Continues using Authorization header with native secure storage
 - **API:** Both cookie and header auth supported simultaneously
 
 **How It Works:**
+
 1. Login/register endpoints set HTTP-only cookies alongside JSON response
 2. `CookieAuth` plug extracts token from cookie if no Authorization header present
 3. Token is injected into connection for Guardian to verify
@@ -222,17 +233,18 @@ Web clients now use HTTP-only cookies for JWT storage, preventing XSS-based toke
 
 OWASP-compliant security headers on all responses:
 
-| Header | Value | Purpose |
-|--------|-------|---------|
-| Strict-Transport-Security | max-age=31536000; includeSubDomains; preload | Force HTTPS |
-| Content-Security-Policy | default-src 'none'; ... | Prevent XSS |
-| X-Content-Type-Options | nosniff | Prevent MIME sniffing |
-| X-Frame-Options | DENY | Prevent clickjacking |
-| Referrer-Policy | strict-origin-when-cross-origin | Control referrer |
-| Permissions-Policy | camera=(), microphone=(), ... | Restrict features |
-| Cross-Origin-Opener-Policy | same-origin | Isolate context |
+| Header                     | Value                                        | Purpose               |
+| -------------------------- | -------------------------------------------- | --------------------- |
+| Strict-Transport-Security  | max-age=31536000; includeSubDomains; preload | Force HTTPS           |
+| Content-Security-Policy    | default-src 'none'; ...                      | Prevent XSS           |
+| X-Content-Type-Options     | nosniff                                      | Prevent MIME sniffing |
+| X-Frame-Options            | DENY                                         | Prevent clickjacking  |
+| Referrer-Policy            | strict-origin-when-cross-origin              | Control referrer      |
+| Permissions-Policy         | camera=(), microphone=(), ...                | Restrict features     |
+| Cross-Origin-Opener-Policy | same-origin                                  | Isolate context       |
 
 **Configuration:**
+
 ```elixir
 config :cgraph, CgraphWeb.Plugs.SecurityHeaders,
   hsts: true,
@@ -261,6 +273,7 @@ AccountLockout.clear_attempts(email)
 ```
 
 **Default Configuration:**
+
 - Max attempts: 5
 - Initial lockout: 15 minutes
 - Progressive multiplier: 2x
@@ -268,6 +281,7 @@ AccountLockout.clear_attempts(email)
 - Attempt window: 1 hour
 
 **Progressive Lockout Duration:**
+
 1. First lock: 15 minutes
 2. Second lock: 30 minutes
 3. Third lock: 1 hour
@@ -296,6 +310,7 @@ PasswordBreachCheck.check_async(password, user_id: user.id)
 ```
 
 **Privacy Guarantee:**
+
 - Only first 5 characters of SHA-1 hash sent to API
 - HIBP cannot determine which password you're checking
 - Full password never leaves your server
@@ -325,6 +340,7 @@ RFC 6238 compliant TOTP implementation:
 ```
 
 **Features:**
+
 - Standard 30-second time windows
 - ±1 window drift tolerance
 - 10 backup codes per user
@@ -332,6 +348,7 @@ RFC 6238 compliant TOTP implementation:
 - Backup codes are hashed (one-way)
 
 **Supported Authenticator Apps:**
+
 - Google Authenticator
 - Authy
 - Microsoft Authenticator
@@ -349,19 +366,21 @@ Progressive lockout system to prevent brute force attacks on 2FA codes:
 plug CgraphWeb.Plugs.TwoFactorRateLimiter when action in [:verify, :enable, :disable, :use_backup_code]
 ```
 
-| Threshold | Action |
-|-----------|--------|
-| 5 failures in 5 minutes | 15-minute lockout |
-| 3 lockout periods | 24-hour extended lockout |
-| Successful verification | All counters reset |
+| Threshold               | Action                   |
+| ----------------------- | ------------------------ |
+| 5 failures in 5 minutes | 15-minute lockout        |
+| 3 lockout periods       | 24-hour extended lockout |
+| Successful verification | All counters reset       |
 
 **Implementation Details:**
+
 - Redis-backed tracking via `Redix`
 - Automatic key expiration (no manual cleanup)
 - User-specific tracking (not IP-based)
 - Registers success/failure via `Plug.Conn.register_before_send`
 
 **Response on Lockout:**
+
 ```json
 {
   "error": "too_many_attempts",
@@ -377,13 +396,10 @@ plug CgraphWeb.Plugs.TwoFactorRateLimiter when action in [:verify, :enable, :dis
 
 OAuth 2.0 / OpenID Connect authentication with multiple identity providers:
 
-**Supported Providers:**
-| Provider | Protocol | Features |
-|----------|----------|----------|
-| Google | OAuth 2.0 + OIDC | Email verification, profile info |
-| Apple | Sign in with Apple | Privacy-focused, email relay |
-| Facebook | OAuth 2.0 | Profile, friends (optional) |
-| TikTok | OAuth 2.0 | Login Kit integration |
+**Supported Providers:** | Provider | Protocol | Features | |----------|----------|----------| |
+Google | OAuth 2.0 + OIDC | Email verification, profile info | | Apple | Sign in with Apple |
+Privacy-focused, email relay | | Facebook | OAuth 2.0 | Profile, friends (optional) | | TikTok |
+OAuth 2.0 | Login Kit integration |
 
 **Security Implementation:**
 
@@ -406,6 +422,7 @@ OAuth.mobile_callback(:google, %{
 ```
 
 **Security Features:**
+
 - **State Parameter**: Cryptographically random, prevents CSRF
 - **PKCE**: Proof Key for Code Exchange for mobile/SPA flows
 - **ID Token Verification**: JWTs verified against provider JWKS endpoints
@@ -414,12 +431,14 @@ OAuth.mobile_callback(:google, %{
 - **Provider Validation**: Only configured providers allowed
 
 **Data Handling:**
+
 - Minimal data collection (email, name, avatar only)
 - OAuth tokens stored encrypted
 - Tokens can be revoked per-provider
 - Provider-specific privacy settings respected
 
 **Apple Sign In Specifics:**
+
 - Supports email relay (Hide My Email)
 - User info only provided on first authorization
 - Server-to-server token validation
@@ -431,13 +450,14 @@ OAuth.mobile_callback(:google, %{
 
 Multi-algorithm rate limiting:
 
-| Tier | Limit | Window | Use Case |
-|------|-------|--------|----------|
-| strict | 5 | 5 min | Authentication |
-| standard | 1000 | 1 hour | General API |
-| relaxed | 10000 | 1 hour | Read-heavy |
+| Tier     | Limit | Window | Use Case       |
+| -------- | ----- | ------ | -------------- |
+| strict   | 5     | 5 min  | Authentication |
+| standard | 1000  | 1 hour | General API    |
+| relaxed  | 10000 | 1 hour | Read-heavy     |
 
 **Algorithms:**
+
 - Token Bucket (burst allowance)
 - Sliding Window (precise counting)
 - Leaky Bucket (constant rate)
@@ -447,11 +467,11 @@ Multi-algorithm rate limiting:
 
 Real-time message channels include built-in rate limiting to prevent spam and DoS attacks:
 
-| Parameter | Value | Description |
-|-----------|-------|-------------|
-| Window | 10 seconds | Sliding window duration |
-| Max Messages | 10 | Maximum messages per window |
-| Per User | Yes | Each user tracked independently |
+| Parameter    | Value      | Description                     |
+| ------------ | ---------- | ------------------------------- |
+| Window       | 10 seconds | Sliding window duration         |
+| Max Messages | 10         | Maximum messages per window     |
+| Per User     | Yes        | Each user tracked independently |
 
 **Implementation:**
 
@@ -462,7 +482,7 @@ defp check_rate_limit(socket) do
   window_start = now - @rate_limit_window_ms
   recent = socket.assigns[:rate_limit_messages] || []
   recent = Enum.filter(recent, fn ts -> ts > window_start end)
-  
+
   if length(recent) >= @rate_limit_max_messages do
     {:error, :rate_limited, socket}
   else
@@ -472,6 +492,7 @@ end
 ```
 
 **Channels Protected:**
+
 - `ConversationChannel` - Direct messages
 - `GroupChannel` - Group/channel messages
 
@@ -500,13 +521,14 @@ active = parse_bool(params["active"], false)
 ```
 
 **Security Benefits:**
+
 - Prevents uncaught exceptions from malformed input
 - Enforces min/max bounds on numeric parameters
 - Whitelist-based atom parsing prevents atom table exhaustion attacks
 - Returns safe defaults instead of crashing
 
-**Protected Endpoints:**
-All 20+ API controllers including:
+**Protected Endpoints:** All 20+ API controllers including:
+
 - ForumController, PostController, CommentController
 - UserController, FriendController, GroupController
 - MessageController, NotificationController, SearchController
@@ -527,6 +549,7 @@ Audit.log(:auth, :login_success, %{
 ```
 
 **Event Categories:**
+
 - `auth`: Login, logout, password changes
 - `user`: Profile updates, email changes
 - `admin`: Bans, config changes
@@ -534,6 +557,7 @@ Audit.log(:auth, :login_success, %{
 - `security`: Rate limits, blocked requests
 
 **Retention Periods:**
+
 - Security events: 7 years
 - Admin actions: 5 years
 - User actions: 2 years
@@ -545,21 +569,23 @@ Audit.log(:auth, :login_success, %{
 
 **Current Status: FULLY ACTIVE (v0.7.26+)**
 
-End-to-end encryption is now integrated into the message flow across all clients. Messages in direct conversations are encrypted on the sender's device and can only be decrypted by the intended recipient.
+End-to-end encryption is now integrated into the message flow across all clients. Messages in direct
+conversations are encrypted on the sender's device and can only be decrypted by the intended
+recipient.
 
 **Implementation Status:**
 
-| Component | Status | Notes |
-|-----------|--------|-------|
-| Server Key Storage | ✅ Complete | Full X3DH key hierarchy support |
-| Key Registration API | ✅ Complete | `/api/v1/e2ee/keys` endpoint |
-| Prekey Bundle API | ✅ Complete | `/api/v1/e2ee/bundle/:user_id` |
-| Web Crypto Module | ✅ Complete | `lib/crypto/e2ee.ts` |
-| Mobile Crypto Module | ✅ Complete | `lib/crypto/e2ee.ts` |
-| Web Message Encryption | ✅ Complete | `chatStore.sendMessage()` encrypts before send |
-| Mobile Message Encryption | ✅ Complete | `ConversationScreen` uses `useE2EE` hook |
-| Backend Metadata Handling | ✅ Complete | `message_controller.ex` preserves E2EE fields |
-| Key Verification UI | 📋 Planned | Safety number display |
+| Component                 | Status      | Notes                                          |
+| ------------------------- | ----------- | ---------------------------------------------- |
+| Server Key Storage        | ✅ Complete | Full X3DH key hierarchy support                |
+| Key Registration API      | ✅ Complete | `/api/v1/e2ee/keys` endpoint                   |
+| Prekey Bundle API         | ✅ Complete | `/api/v1/e2ee/bundle/:user_id`                 |
+| Web Crypto Module         | ✅ Complete | `lib/crypto/e2ee.ts`                           |
+| Mobile Crypto Module      | ✅ Complete | `lib/crypto/e2ee.ts`                           |
+| Web Message Encryption    | ✅ Complete | `chatStore.sendMessage()` encrypts before send |
+| Mobile Message Encryption | ✅ Complete | `ConversationScreen` uses `useE2EE` hook       |
+| Backend Metadata Handling | ✅ Complete | `message_controller.ex` preserves E2EE fields  |
+| Key Verification UI       | 📋 Planned  | Safety number display                          |
 
 **How It Works:**
 
@@ -589,13 +615,16 @@ End-to-end encryption is now integrated into the message flow across all clients
 ```
 
 **Security Properties:**
+
 - **Forward Secrecy**: Compromising long-term keys does not expose past messages
 - **Cryptographic Deniability**: Recipients cannot prove who sent a message
 - **Break-in Recovery**: One-time prekeys limit damage from session compromise
 
 **Fallback Behavior:**
 
-If E2EE encryption fails (missing keys, crypto errors), the system logs the error and falls back to transport encryption. This maintains availability while alerting operators to key distribution issues.
+If E2EE encryption fails (missing keys, crypto errors), the system logs the error and falls back to
+transport encryption. This maintains availability while alerting operators to key distribution
+issues.
 
 **Server-Side API Usage:**
 
@@ -621,18 +650,19 @@ count = E2EE.one_time_prekey_count(user_id)
 
 **Target Security Properties (When Fully Integrated):**
 
-| Property | Implementation |
-|----------|----------------|
-| Confidentiality | AES-256-GCM encryption |
-| Forward Secrecy | One-time prekeys consumed per session + key revocation broadcast |
-| Key Verification | Safety numbers derived from identity keys |
-| Key Freshness | Signed prekeys rotated periodically |
-| Key Revocation | Immediate broadcast to all contacts via WebSocket |
-| Deniability | No digital signatures on messages |
+| Property         | Implementation                                                   |
+| ---------------- | ---------------------------------------------------------------- |
+| Confidentiality  | AES-256-GCM encryption                                           |
+| Forward Secrecy  | One-time prekeys consumed per session + key revocation broadcast |
+| Key Verification | Safety numbers derived from identity keys                        |
+| Key Freshness    | Signed prekeys rotated periodically                              |
+| Key Revocation   | Immediate broadcast to all contacts via WebSocket                |
+| Deniability      | No digital signatures on messages                                |
 
 **Key Revocation:**
 
 When a user revokes a compromised key (e.g., lost device):
+
 1. Server marks the key as revoked in the database
 2. `e2ee:key_revoked` event is broadcast to all contacts via their `user:{id}` channel
 3. Client-side E2EE stores invalidate cached prekey bundles for the affected user
@@ -647,6 +677,7 @@ This ensures Forward Secrecy by preventing encryption to compromised keys.
 3. **One-Time Prekeys**: Consumed once, replenished in batches of 100
 
 **Privacy Guarantee (Target State):**
+
 - Private keys NEVER leave the client device
 - Server stores only public keys
 - Message content encrypted client-side before transmission
@@ -660,26 +691,134 @@ Secure handling of voice message recordings:
 
 **Security Controls:**
 
-| Control | Implementation |
-|---------|----------------|
-| Size Limit | 10 MB maximum |
-| Duration Limit | 5 minutes maximum |
-| Format Validation | Whitelist of audio MIME types |
-| Rate Limiting | 10/minute, 100/hour per user |
-| Storage | Encrypted at rest (S3/R2) |
-| Access Control | Owner or conversation participants only |
+| Control           | Implementation                          |
+| ----------------- | --------------------------------------- |
+| Size Limit        | 10 MB maximum                           |
+| Duration Limit    | 5 minutes maximum                       |
+| Format Validation | Whitelist of audio MIME types           |
+| Rate Limiting     | 10/minute, 100/hour per user            |
+| Storage           | Encrypted at rest (S3/R2)               |
+| Access Control    | Owner or conversation participants only |
 
 **Supported Formats:**
+
 - `audio/webm` (Opus) - Web preferred
 - `audio/m4a` (AAC) - iOS preferred
 - `audio/ogg`, `audio/mp3`, `audio/wav`
 
 **Processing Pipeline:**
+
 1. Validate format and size
 2. Store original securely
 3. Extract metadata (duration, waveform)
 4. Transcode to Opus for optimal playback
 5. Generate signed URLs for access
+
+## CI/CD Security Scanning (v0.9.3)
+
+We've integrated automated security scanning into our CI/CD pipeline to catch vulnerabilities before
+they reach production. Two complementary tools run on every push and pull request:
+
+### Semgrep SAST
+
+Semgrep provides fast, pattern-based static analysis:
+
+```yaml
+# .github/workflows/semgrep.yml
+name: Semgrep SAST
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  semgrep:
+    runs-on: ubuntu-latest
+    container:
+      image: returntocorp/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep ci
+```
+
+**What it catches:**
+
+- Hardcoded credentials and secrets
+- SQL injection patterns
+- Command injection vulnerabilities
+- Insecure deserialization
+- XSS vulnerabilities
+- OWASP Top 10 issues
+
+**Custom rules** are defined in `.semgrep/` for CGraph-specific patterns:
+
+- Unsafe Phoenix controller patterns
+- Missing authentication checks
+- Insecure cryptography usage
+- Exposed debug endpoints
+
+### CodeQL Analysis
+
+GitHub's CodeQL provides deep semantic analysis:
+
+```yaml
+# .github/workflows/codeql.yml
+name: CodeQL Analysis
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1' # Weekly full scan
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    strategy:
+      matrix:
+        language: [javascript, typescript]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+      - uses: github/codeql-action/analyze@v3
+```
+
+**What it catches:**
+
+- Data flow vulnerabilities
+- Taint tracking across function boundaries
+- Security-sensitive API misuse
+- Complex injection patterns
+- Prototype pollution
+
+### Security Gate Policy
+
+Pull requests are blocked if:
+
+- **Critical** or **High** severity findings are detected
+- Security scan fails to complete
+- New vulnerabilities are introduced (delta scan)
+
+Results are posted as PR comments and tracked in GitHub Security tab.
+
+### Local Security Scanning
+
+Developers can run scans locally before pushing:
+
+```bash
+# Run Semgrep locally
+pnpm security:scan
+
+# Run specific ruleset
+semgrep --config=p/owasp-top-ten .
+
+# Scan only changed files
+semgrep --config=.semgrep/ --diff-depth=2
+```
 
 ## JWT Configuration
 
@@ -690,6 +829,7 @@ config :cgraph, :jwt_refresh_token_ttl, 604_800  # 7 days
 ```
 
 Tokens include:
+
 - `sub`: User ID
 - `jti`: Unique token ID for revocation
 - `typ`: Token type (access/refresh)
@@ -716,6 +856,9 @@ Tokens include:
 - [x] Voice message security controls
 - [x] Magic byte file validation (v0.7.23+)
 - [x] Message idempotency (v0.7.23+)
+- [x] Semgrep SAST scanning (v0.9.3+)
+- [x] CodeQL semantic analysis (v0.9.3+)
+- [x] Security gate on PRs (v0.9.3+)
 
 ## Security Telemetry Events
 
@@ -775,22 +918,26 @@ RATE_LIMIT_ENABLED=true
 In case of a security incident:
 
 1. **Revoke all user tokens:**
+
    ```elixir
    Guardian.revoke_all_user_tokens(user_id, :security_breach)
    ```
 
 2. **Lock the account:**
+
    ```elixir
    AccountLockout.record_failed_attempt(email)
    # Repeat until locked
    ```
 
 3. **Review audit logs:**
+
    ```elixir
    Audit.query(user_id: user_id, from: incident_time)
    ```
 
 4. **Force password reset:**
+
    ```elixir
    Accounts.request_password_reset(email)
    ```
