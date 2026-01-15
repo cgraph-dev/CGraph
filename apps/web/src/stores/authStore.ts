@@ -24,9 +24,9 @@ function getApiErrorMessage(error: unknown, fallback: string): string {
 
 export interface User {
   id: string;
-  uid: string;  // Random 10-digit UID (e.g., "4829173650")
-  userId: number;  // Legacy sequential ID (for backward compatibility)
-  userIdDisplay: string;  // Formatted UID for display (e.g., "#4829173650")
+  uid: string; // Random 10-digit UID (e.g., "4829173650")
+  userId: number; // Legacy sequential ID (for backward compatibility)
+  userIdDisplay: string; // Formatted UID for display (e.g., "#4829173650")
   email: string;
   username: string | null;
   displayName: string | null;
@@ -82,9 +82,9 @@ export function mapUserFromApi(apiUser: Record<string, unknown>): User {
     level: (apiUser.level as number) || 1,
     xp: (apiUser.xp as number) || 0,
     coins: (apiUser.coins as number) || 0,
-    title: (apiUser.title as string | undefined),
-    titleColor: (apiUser.title_color as string | undefined),
-    badges: (apiUser.badges as string[] | undefined),
+    title: apiUser.title as string | undefined,
+    titleColor: apiUser.title_color as string | undefined,
+    badges: apiUser.badges as string[] | undefined,
     streak: (apiUser.streak as number) || 0,
   };
 }
@@ -116,21 +116,21 @@ export interface AuthState {
 
 /**
  * Session storage wrapper for auth persistence
- * 
+ *
  * SECURITY MODEL (XSS MITIGATION):
  * ================================
- * 
+ *
  * 1. PRIMARY AUTH: HTTP-only cookies
  *    - Set by backend on login/register/refresh
  *    - Automatically sent with every request (withCredentials: true)
  *    - CANNOT be accessed by JavaScript (XSS immune)
  *    - This is the primary authentication mechanism
- * 
+ *
  * 2. SECONDARY: Token in sessionStorage (WebSocket ONLY)
  *    - Phoenix Channels require token in connection params
  *    - HTTP-only cookies cannot be read by JS for WebSocket auth
  *    - This is a known limitation of WebSocket authentication
- * 
+ *
  * MITIGATIONS:
  *    - sessionStorage (not localStorage): cleared on browser/tab close
  *    - Base64 encoding: provides obfuscation (not encryption)
@@ -138,12 +138,12 @@ export interface AuthState {
  *    - Refresh tokens: sent via HTTP-only cookie path restriction
  *    - CORS + SameSite cookie settings prevent CSRF
  *    - Content Security Policy prevents inline script injection
- * 
+ *
  * ATTACK SURFACE:
  *    - An XSS attack could steal the access token (15 min lifetime)
  *    - Cannot steal refresh token (HTTP-only cookie with path restriction)
  *    - User would need to re-login after access token expires
- * 
+ *
  * FUTURE IMPROVEMENT:
  *    - Consider using a short-lived WebSocket-specific token
  *    - Implement token binding to prevent token theft reuse
@@ -198,7 +198,7 @@ export const useAuthStore = create<AuthState>()(
         set({ isLoading: true, error: null });
         try {
           const response = await api.post('/api/v1/auth/login', {
-            identifier: email,  // Backend accepts email or username
+            identifier: email, // Backend accepts email or username
             password,
           });
           const { user, tokens } = response.data;
@@ -266,7 +266,7 @@ export const useAuthStore = create<AuthState>()(
               email,
               username,
               password,
-              password_confirmation: password,  // Backend requires confirmation
+              password_confirmation: password, // Backend requires confirmation
             },
           });
           const { user, tokens } = response.data;
@@ -297,7 +297,7 @@ export const useAuthStore = create<AuthState>()(
             // This handles offline scenarios gracefully
           }
         }
-        
+
         // Clear all client-side auth state
         set({
           user: null,
@@ -324,7 +324,7 @@ export const useAuthStore = create<AuthState>()(
           const tokens = data.tokens || data;
           const accessToken = tokens.access_token;
           const newRefreshToken = tokens.refresh_token;
-          
+
           if (accessToken) {
             set({
               token: accessToken,
@@ -392,9 +392,13 @@ export const useAuthStore = create<AuthState>()(
       }),
       // Critical: Handle rehydration to fix isLoading state
       onRehydrateStorage: () => {
-        console.log('[AuthStore] onRehydrateStorage called');
+        if (import.meta.env.DEV) {
+          console.log('[AuthStore] onRehydrateStorage called');
+        }
         return (state, error) => {
-          console.log('[AuthStore] Rehydration callback - state:', !!state, 'error:', error);
+          if (import.meta.env.DEV) {
+            console.log('[AuthStore] Rehydration callback - state:', !!state, 'error:', error);
+          }
           if (error) {
             console.error('Auth store rehydration failed:', error);
             // On error, reset to safe state
@@ -408,13 +412,17 @@ export const useAuthStore = create<AuthState>()(
           } else if (state) {
             // Rehydration successful - mark loading as complete
             // Don't block on token validation - let the app render
-            console.log('[AuthStore] Rehydration complete - hasToken:', !!state.token);
+            if (import.meta.env.DEV) {
+              console.log('[AuthStore] Rehydration complete - hasToken:', !!state.token);
+            }
             useAuthStore.setState({
               isLoading: false, // Never block - checkAuth runs in background
             });
           } else {
             // No state to rehydrate
-            console.log('[AuthStore] No state to rehydrate');
+            if (import.meta.env.DEV) {
+              console.log('[AuthStore] No state to rehydrate');
+            }
             useAuthStore.setState({ isLoading: false });
           }
         };

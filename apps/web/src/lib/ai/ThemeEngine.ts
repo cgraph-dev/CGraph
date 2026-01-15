@@ -299,7 +299,7 @@ export class AIThemeEngine {
     hsl.l = modifiers.lightness;
 
     const primary = ColorTheory.rgbToHex(
-      ...Object.values(ColorTheory.hslToRgb(hsl.h, hsl.s, hsl.l)) as [number, number, number]
+      ...(Object.values(ColorTheory.hslToRgb(hsl.h, hsl.s, hsl.l)) as [number, number, number])
     );
 
     // Generate complementary and analogous colors
@@ -398,7 +398,13 @@ export class AIThemeEngine {
    */
   learnFromInteraction(themeUsed: string, satisfaction: number): void {
     // Store in localStorage for persistence
-    const history = JSON.parse(localStorage.getItem('theme-history') || '[]');
+    let history: Array<{ theme: string; satisfaction: number; timestamp: number }> = [];
+    try {
+      history = JSON.parse(localStorage.getItem('theme-history') || '[]');
+    } catch {
+      // Corrupted data, reset
+      history = [];
+    }
     history.push({
       theme: themeUsed,
       satisfaction,
@@ -417,7 +423,13 @@ export class AIThemeEngine {
    * Get recommended theme based on learned preferences
    */
   getRecommendedTheme(): AdaptiveTheme {
-    const history = JSON.parse(localStorage.getItem('theme-history') || '[]');
+    let history: Array<{ theme: string; satisfaction: number; timestamp: number }> = [];
+    try {
+      history = JSON.parse(localStorage.getItem('theme-history') || '[]');
+    } catch {
+      // Corrupted data, use default
+      return this.generateTheme();
+    }
 
     // If no history, return default
     if (history.length === 0) {

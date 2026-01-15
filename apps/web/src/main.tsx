@@ -1,4 +1,6 @@
-console.log('[CGraph] Module loading - start');
+if (import.meta.env.DEV) {
+  console.log('[CGraph] Module loading - start');
+}
 
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
@@ -15,7 +17,9 @@ import { NotificationProvider } from './providers/NotificationProvider';
 import AnimatedLogo from './components/AnimatedLogo';
 import './index.css';
 
-console.log('[CGraph] All imports completed successfully');
+if (import.meta.env.DEV) {
+  console.log('[CGraph] All imports completed successfully');
+}
 
 // Development mode logging
 if (import.meta.env.DEV) {
@@ -67,10 +71,10 @@ if (typeof window !== 'undefined') {
   onlineManager.setEventListener((setOnline) => {
     const handleOnline = () => setOnline(true);
     const handleOffline = () => setOnline(false);
-    
+
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-    
+
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
@@ -81,12 +85,12 @@ if (typeof window !== 'undefined') {
 // Global loading fallback component with dark theme
 function GlobalLoadingFallback() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative overflow-hidden">
+    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Background particles */}
       {Array.from({ length: 20 }).map((_, i) => (
         <div
           key={i}
-          className="absolute w-0.5 h-0.5 rounded-full bg-primary-400 animate-pulse"
+          className="absolute h-0.5 w-0.5 animate-pulse rounded-full bg-primary-400"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -118,10 +122,14 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('[CGraph] Unhandled promise rejection:', event.reason);
 });
 
-console.log('[CGraph] About to call ReactDOM.createRoot...');
+if (import.meta.env.DEV) {
+  console.log('[CGraph] About to call ReactDOM.createRoot...');
+}
 try {
   const root = ReactDOM.createRoot(rootElement);
-  console.log('[CGraph] Root created, about to render...');
+  if (import.meta.env.DEV) {
+    console.log('[CGraph] Root created, about to render...');
+  }
   root.render(
     <React.StrictMode>
       <ErrorBoundary>
@@ -152,7 +160,9 @@ try {
       </ErrorBoundary>
     </React.StrictMode>
   );
-  console.log('[CGraph] Render called successfully');
+  if (import.meta.env.DEV) {
+    console.log('[CGraph] Render called successfully');
+  }
 } catch (err) {
   console.error('[CGraph] Failed to render:', err);
 }

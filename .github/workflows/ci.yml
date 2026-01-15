@@ -372,8 +372,7 @@ jobs:
         uses: anchore/scan-action@v4
         with:
           sbom: sbom.spdx.json
-          output-format: json
-          output-file: grype-results.json
+          fail-build: false
         continue-on-error: true
 
       - name: Upload security artifacts
@@ -382,6 +381,6 @@ jobs:
           name: security-reports
           path: |
             sbom.spdx.json
-            grype-results.json
+            results.sarif
           if-no-files-found: ignore
         if: always()
