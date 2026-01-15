@@ -1,0 +1,18 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.cgraph.app",
+      "sha256_cert_fingerprints": ["YOUR_PRODUCTION_SHA256_FINGERPRINT"]
+    }
+  },
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "org.cgraph.appdev",
+      "sha256_cert_fingerprints": ["YOUR_DEV_SHA256_FINGERPRINT"]
+    }
+  }
+]

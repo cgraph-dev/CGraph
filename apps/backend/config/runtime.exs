@@ -122,8 +122,26 @@ if config_env() == :prod do
 
   config :cgraph, :encryption_key, encryption_key
 
-  # Redis configuration for production
-  redis_url = System.get_env("REDIS_URL") || "redis://localhost:6379/0"
+  # Redis configuration for production (password REQUIRED)
+  redis_url =
+    System.get_env("REDIS_URL") ||
+      raise """
+      environment variable REDIS_URL is missing.
+      For production, use a URL with password: redis://:password@host:6379/0
+      """
+
+  # Validate Redis URL has password in production
+  redis_uri = URI.parse(redis_url)
+  has_password = redis_uri.userinfo != nil and String.contains?(redis_uri.userinfo || "", ":")
+
+  unless has_password do
+    raise """
+    REDIS_URL must include a password in production.
+    Current URL appears to have no password.
+    Use format: redis://:your_secure_password@host:6379/0
+    """
+  end
+
   config :cgraph, :redis_url, redis_url
 
   # Mark environment as production for conditional logic

@@ -1,20 +1,20 @@
 # CGraph Docker Compose - Development Override
 # Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
 
-version: "3.9"
+version: '3.9'
 
 services:
   # PostgreSQL with exposed port for local development
   postgres:
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
       POSTGRES_PASSWORD: cgraph_dev_password
 
   # Redis with exposed port
   redis:
     ports:
-      - "6379:6379"
+      - '6379:6379'
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-cgraph_dev_password}
 
@@ -26,7 +26,7 @@ services:
     container_name: cgraph-backend-dev
     environment:
       MIX_ENV: dev
-      PHX_SERVER: "true"
+      PHX_SERVER: 'true'
       DATABASE_URL: ecto://cgraph:cgraph_dev_password@postgres:5432/cgraph_dev
       REDIS_URL: ${REDIS_URL:-redis://:cgraph_dev_password@redis:6379/0}
       SECRET_KEY_BASE: dev_secret_key_base_at_least_64_bytes_long_for_development_only_1234567890
@@ -36,7 +36,7 @@ services:
       - backend_deps:/app/deps
       - backend_build:/app/_build
     ports:
-      - "4000:4000"
+      - '4000:4000'
     depends_on:
       postgres:
         condition: service_healthy
@@ -54,11 +54,11 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@cgraph.dev}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
-      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     ports:
-      - "5050:80"
+      - '5050:80'
     depends_on:
       - postgres
     networks:
@@ -72,7 +72,7 @@ services:
     environment:
       REDIS_HOSTS: local:redis:6379
     ports:
-      - "8081:8081"
+      - '8081:8081'
     depends_on:
       - redis
     networks:
@@ -84,10 +84,65 @@ services:
     container_name: cgraph-mailhog
     restart: unless-stopped
     ports:
-      - "1025:1025"  # SMTP
-      - "8025:8025"  # Web UI
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI
     networks:
       - cgraph-network
+
+  # Prometheus for metrics collection
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: cgraph-prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - '9090:9090'
+    depends_on:
+      backend-dev:
+        condition: service_started
+    networks:
+      - cgraph-network
+    healthcheck:
+      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:9090/-/healthy']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Grafana for metrics visualization
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: cgraph-grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_SERVER_ROOT_URL: 'http://localhost:3001'
+      GF_INSTALL_PLUGINS: 'grafana-clock-panel,grafana-simple-json-datasource'
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports:
+      - '3001:3000'
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    networks:
+      - cgraph-network
+    healthcheck:
+      test: ['CMD-SHELL', 'wget -q --spider http://localhost:3000/api/health || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   postgres_data:
@@ -95,6 +150,8 @@ volumes:
   pgadmin_data:
   backend_deps:
   backend_build:
+  prometheus_data:
+  grafana_data:
 
 networks:
   cgraph-network:

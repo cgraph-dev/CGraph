@@ -1,0 +1,41 @@
+# Send Message E2E Test
+# Tests sending a message in a conversation
+
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+---
+# First, log in and navigate to conversations
+- runFlow: conversations.yaml
+
+# Look for message input
+- assertVisible:
+    text: 'Type a message|Write a message'
+    regex: true
+
+# Tap on message input
+- tapOn:
+    text: 'Type a message|Write a message'
+    regex: true
+
+# Type a test message
+- inputText: 'Test message from E2E ${TIMESTAMP}'
+
+# Tap send button
+- tapOn:
+    id: 'send-button|send-message'
+    regex: true
+    optional: true
+
+# Alternative: tap on send icon if button not found
+- tapOn:
+    text: 'Send'
+    optional: true
+
+# Wait for message to be sent
+- waitForAnimationToEnd
+
+# Verify message appears in conversation
+- assertVisible:
+    text: 'Test message from E2E'
+
+- takeScreenshot: message-sent

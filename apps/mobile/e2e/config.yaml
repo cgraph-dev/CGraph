@@ -1,0 +1,20 @@
+# Maestro E2E Test Configuration
+# https://maestro.mobile.dev/reference/configuration
+
+# App configuration
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+# Test environment
+env:
+  API_URL: ${MAESTRO_API_URL:http://localhost:4000}
+  TEST_USER_EMAIL: ${TEST_USER_EMAIL:test@cgraph.dev}
+  TEST_USER_PASSWORD: ${TEST_USER_PASSWORD:testpassword123}
+
+# Flow defaults
+onFlowStart:
+  - runFlow: ../helpers/wait-for-app.yaml
+
+# Tags for filtering tests
+tags:
+  smoke: [auth/login.yaml, navigation/main-tabs.yaml]
+  full: [auth/*.yaml, navigation/*.yaml, messaging/*.yaml, groups/*.yaml]

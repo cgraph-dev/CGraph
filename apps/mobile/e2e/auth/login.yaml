@@ -1,0 +1,56 @@
+# Login Flow E2E Test
+# Tests the login flow for CGraph mobile app
+
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+---
+# Start fresh - clear app state
+- clearState
+
+# Wait for app to load
+- waitForAnimationToEnd
+
+# Verify we're on the welcome/landing screen
+- assertVisible:
+    text: 'Sign In|Log In|Welcome'
+    regex: true
+
+# Navigate to login
+- tapOn:
+    text: 'Sign In|Log In'
+    regex: true
+
+# Wait for login form
+- assertVisible:
+    text: 'Email'
+
+# Enter credentials
+- tapOn: 'Email'
+- inputText: ${TEST_USER_EMAIL}
+
+- tapOn: 'Password'
+- inputText: ${TEST_USER_PASSWORD}
+
+# Hide keyboard
+- hideKeyboard
+
+# Submit login
+- tapOn:
+    text: 'Sign In|Log In|Submit'
+    regex: true
+
+# Wait for login to complete
+- extendedWaitUntil:
+    notVisible:
+      text: 'Sign In|Log In'
+      regex: true
+    timeout: 15000
+
+# Verify successful login - should see home/dashboard
+- assertVisible:
+    text: 'Home|Dashboard|Conversations'
+    regex: true
+    optional: false
+
+# Take screenshot for verification
+- takeScreenshot: login-success

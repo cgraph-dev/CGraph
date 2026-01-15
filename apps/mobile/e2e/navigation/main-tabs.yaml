@@ -1,0 +1,73 @@
+# Main Tabs Navigation E2E Test
+# Tests bottom tab navigation on CGraph mobile app
+
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+---
+# First, log in
+- runFlow: ../auth/login.yaml
+
+# Verify bottom tabs are visible
+- assertVisible:
+    text: 'Home|Dashboard'
+    regex: true
+
+# Navigate to Conversations tab
+- tapOn:
+    text: 'Conversations|Messages|Chat'
+    regex: true
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    text: 'Conversations|Messages|No conversations'
+    regex: true
+
+- takeScreenshot: tab-conversations
+
+# Navigate to Groups tab
+- tapOn:
+    text: 'Groups|Communities'
+    regex: true
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    text: 'Groups|Communities|No groups'
+    regex: true
+
+- takeScreenshot: tab-groups
+
+# Navigate to Forum tab (if present)
+- tapOn:
+    text: 'Forum|Discuss'
+    regex: true
+    optional: true
+
+- waitForAnimationToEnd
+
+# Navigate to Profile tab
+- tapOn:
+    text: 'Profile|Account|Me'
+    regex: true
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    text: 'Profile|Settings|Edit'
+    regex: true
+
+- takeScreenshot: tab-profile
+
+# Navigate back to Home
+- tapOn:
+    text: 'Home|Dashboard'
+    regex: true
+
+- waitForAnimationToEnd
+
+- assertVisible:
+    text: 'Home|Dashboard'
+    regex: true
+
+- takeScreenshot: tab-home-return

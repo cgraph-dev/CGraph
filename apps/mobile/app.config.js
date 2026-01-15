@@ -1,9 +1,9 @@
 /**
  * Expo App Configuration
- * 
+ *
  * Dynamic configuration for Expo SDK 54
  * Handles environment-specific settings and API URL resolution
- * 
+ *
  * @version 0.9.1
  * @see https://docs.expo.dev/workflow/configuration/
  */
@@ -24,11 +24,11 @@ const getApiUrl = () => {
     const LAN_IP = process.env.API_HOST || '192.168.1.129';
     return process.env.API_URL || `http://${LAN_IP}:4000`;
   }
-  
+
   if (IS_PREVIEW) {
     return process.env.API_URL || 'https://staging-api.cgraph.app';
   }
-  
+
   return process.env.API_URL || 'https://api.cgraph.app';
 };
 
@@ -40,11 +40,11 @@ const getWsUrl = () => {
     const LAN_IP = process.env.API_HOST || '192.168.1.129';
     return process.env.WS_URL || `ws://${LAN_IP}:4000/socket`;
   }
-  
+
   if (IS_PREVIEW) {
     return process.env.WS_URL || 'wss://staging-api.cgraph.app/socket';
   }
-  
+
   return process.env.WS_URL || 'wss://api.cgraph.app/socket';
 };
 
@@ -94,13 +94,22 @@ module.exports = ({ config }) => {
       config: {
         usesNonExemptEncryption: false,
       },
+      // Universal Links (Associated Domains)
+      associatedDomains: IS_DEV
+        ? ['applinks:staging.cgraph.app', 'webcredentials:staging.cgraph.app']
+        : ['applinks:cgraph.app', 'applinks:www.cgraph.app', 'webcredentials:cgraph.app'],
       infoPlist: {
         UIBackgroundModes: ['remote-notification', 'fetch'],
-        NSCameraUsageDescription: 'CGraph needs camera access to take photos for messages and profile pictures.',
-        NSPhotoLibraryUsageDescription: 'CGraph needs photo library access to share images in messages.',
-        NSPhotoLibraryAddUsageDescription: 'CGraph needs permission to save images to your photo library.',
-        NSMicrophoneUsageDescription: 'CGraph needs microphone access for voice messages and calls.',
-        NSFaceIDUsageDescription: 'CGraph uses Face ID to protect your account and secure messages.',
+        NSCameraUsageDescription:
+          'CGraph needs camera access to take photos for messages and profile pictures.',
+        NSPhotoLibraryUsageDescription:
+          'CGraph needs photo library access to share images in messages.',
+        NSPhotoLibraryAddUsageDescription:
+          'CGraph needs permission to save images to your photo library.',
+        NSMicrophoneUsageDescription:
+          'CGraph needs microphone access for voice messages and calls.',
+        NSFaceIDUsageDescription:
+          'CGraph uses Face ID to protect your account and secure messages.',
         ITSAppUsesNonExemptEncryption: false,
         NSAppTransportSecurity: {
           // Allow all HTTP connections in development mode
@@ -108,17 +117,19 @@ module.exports = ({ config }) => {
           NSAllowsArbitraryLoads: IS_DEV,
           // Also allow local networking specifically for physical device testing
           NSAllowsLocalNetworking: IS_DEV,
-          NSExceptionDomains: IS_DEV ? {
-            localhost: {
-              NSExceptionAllowsInsecureHTTPLoads: true,
-              NSIncludesSubdomains: true,
-            },
-            // Allow all .local domains (common for LAN hostnames)
-            'local': {
-              NSExceptionAllowsInsecureHTTPLoads: true,
-              NSIncludesSubdomains: true,
-            },
-          } : undefined,
+          NSExceptionDomains: IS_DEV
+            ? {
+                localhost: {
+                  NSExceptionAllowsInsecureHTTPLoads: true,
+                  NSIncludesSubdomains: true,
+                },
+                // Allow all .local domains (common for LAN hostnames)
+                local: {
+                  NSExceptionAllowsInsecureHTTPLoads: true,
+                  NSIncludesSubdomains: true,
+                },
+              }
+            : undefined,
         },
       },
       entitlements: {
@@ -150,6 +161,30 @@ module.exports = ({ config }) => {
       },
       package: `org.cgraph.app${getAppVariantSuffix().replace('.', '')}`,
       versionCode: 3,
+      // Android App Links (Deep Links)
+      intentFilters: [
+        {
+          action: 'VIEW',
+          autoVerify: true,
+          data: [
+            {
+              scheme: 'https',
+              host: IS_DEV ? 'staging.cgraph.app' : 'cgraph.app',
+              pathPrefix: '/',
+            },
+            ...(IS_DEV
+              ? []
+              : [
+                  {
+                    scheme: 'https',
+                    host: 'www.cgraph.app',
+                    pathPrefix: '/',
+                  },
+                ]),
+          ],
+          category: ['BROWSABLE', 'DEFAULT'],
+        },
+      ],
       permissions: [
         'CAMERA',
         'READ_MEDIA_IMAGES',
@@ -163,10 +198,7 @@ module.exports = ({ config }) => {
         'USE_BIOMETRIC',
         'USE_FINGERPRINT',
       ],
-      blockedPermissions: [
-        'READ_EXTERNAL_STORAGE',
-        'WRITE_EXTERNAL_STORAGE',
-      ],
+      blockedPermissions: ['READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE'],
     },
     web: {
       favicon: './assets/favicon.png',
@@ -184,7 +216,8 @@ module.exports = ({ config }) => {
       [
         'expo-camera',
         {
-          cameraPermission: 'CGraph needs camera access to take photos for messages and profile pictures.',
+          cameraPermission:
+            'CGraph needs camera access to take photos for messages and profile pictures.',
           microphonePermission: 'CGraph needs microphone access for voice messages and calls.',
           recordAudioAndroid: true,
         },
@@ -193,7 +226,8 @@ module.exports = ({ config }) => {
         'expo-image-picker',
         {
           photosPermission: 'CGraph needs photo library access to share images in messages.',
-          cameraPermission: 'CGraph needs camera access to take photos for messages and profile pictures.',
+          cameraPermission:
+            'CGraph needs camera access to take photos for messages and profile pictures.',
         },
       ],
       [

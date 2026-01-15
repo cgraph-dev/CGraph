@@ -101,6 +101,7 @@ defmodule CGraph.MixProject do
       # Telemetry & monitoring (latest stable for OTP 28)
       {:telemetry_metrics, "~> 1.1"},
       {:telemetry_poller, "~> 1.1"},
+      {:telemetry_metrics_prometheus_core, "~> 1.2"},
       {:sentry, "~> 11.0"},
 
       # Utilities

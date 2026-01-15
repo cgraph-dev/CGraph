@@ -1,0 +1,50 @@
+# Logout Flow E2E Test
+# Tests the logout flow for CGraph mobile app
+
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+---
+# First, log in
+- runFlow: login.yaml
+
+# Navigate to profile/settings
+- tapOn:
+    text: 'Profile|Settings|Account|Menu'
+    regex: true
+
+# Wait for settings screen
+- waitForAnimationToEnd
+
+# Look for logout button
+- scrollUntilVisible:
+    element:
+      text: 'Log Out|Sign Out|Logout'
+      regex: true
+    direction: DOWN
+    timeout: 10000
+
+# Tap logout
+- tapOn:
+    text: 'Log Out|Sign Out|Logout'
+    regex: true
+
+# Confirm logout if dialog appears
+- tapOn:
+    text: 'Confirm|Yes|Log Out'
+    regex: true
+    optional: true
+
+# Wait for logout to complete
+- extendedWaitUntil:
+    visible:
+      text: 'Sign In|Log In|Welcome'
+      regex: true
+    timeout: 10000
+
+# Verify we're back on welcome/login screen
+- assertVisible:
+    text: 'Sign In|Log In'
+    regex: true
+
+# Take screenshot for verification
+- takeScreenshot: logout-success

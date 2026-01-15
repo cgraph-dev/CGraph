@@ -1,0 +1,41 @@
+# Conversations List E2E Test
+# Tests the conversations list screen
+
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+---
+# First, log in
+- runFlow: ../auth/login.yaml
+
+# Navigate to Conversations
+- tapOn:
+    text: 'Conversations|Messages|Chat'
+    regex: true
+
+- waitForAnimationToEnd
+
+# Verify conversations screen
+- assertVisible:
+    text: 'Conversations|Messages'
+    regex: true
+
+# Check for new conversation button
+- assertVisible:
+    id: 'new-conversation-button|fab-new'
+    regex: true
+    optional: true
+
+# If there are conversations, tap the first one
+- tapOn:
+    index: 0
+    optional: true
+
+- waitForAnimationToEnd
+
+# If we opened a conversation, verify message input
+- assertVisible:
+    text: 'Type a message|Write a message'
+    regex: true
+    optional: true
+
+- takeScreenshot: conversations-screen

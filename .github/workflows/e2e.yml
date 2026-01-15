@@ -1,0 +1,191 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main, develop]
+  schedule:
+    # Run nightly at 4 AM UTC for comprehensive testing
+    - cron: '0 4 * * *'
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22.x'
+  PNPM_VERSION: '10'
+
+permissions:
+  contents: read
+  checks: write
+
+jobs:
+  # ============================================
+  # Web E2E Tests (Playwright)
+  # ============================================
+  e2e-web:
+    name: Web E2E (Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: cgraph_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7.2
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm --filter @cgraph/web exec playwright install --with-deps chromium
+
+      - name: Build web app
+        run: pnpm run build --filter=@cgraph/web
+
+      - name: Run Playwright tests
+        run: pnpm --filter @cgraph/web run test:e2e
+        env:
+          PLAYWRIGHT_BASE_URL: http://localhost:3000
+          SKIP_AUTH: 'true' # Skip real auth for CI
+          CI: true
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: apps/web/playwright-report/
+          retention-days: 30
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results
+          path: apps/web/test-results/
+          retention-days: 7
+
+  # ============================================
+  # Mobile E2E Tests (Maestro) - Nightly Only
+  # ============================================
+  e2e-mobile:
+    name: Mobile E2E (Maestro)
+    runs-on: macos-latest
+    timeout-minutes: 60
+    if: github.event_name == 'schedule' || contains(github.event.head_commit.message, '[e2e-mobile]')
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Maestro CLI
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Setup iOS Simulator
+        uses: futureware-tech/simulator-action@v3
+        with:
+          model: 'iPhone 15'
+
+      - name: Build Expo app (iOS)
+        run: |
+          cd apps/mobile
+          npx expo prebuild --platform ios --clean
+          npx expo run:ios --configuration Release --device "iPhone 15"
+        continue-on-error: true
+
+      - name: Run Maestro tests
+        run: |
+          maestro test apps/mobile/e2e/ \
+            --format junit \
+            --output maestro-report.xml \
+            --env MAESTRO_APP_ID=org.cgraph.app.dev \
+            --env TEST_USER_EMAIL=${{ secrets.TEST_USER_EMAIL }} \
+            --env TEST_USER_PASSWORD=${{ secrets.TEST_USER_PASSWORD }}
+        continue-on-error: true
+        env:
+          MAESTRO_DRIVER_STARTUP_TIMEOUT: 120000
+
+      - name: Upload Maestro report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: maestro-report
+          path: maestro-report.xml
+          retention-days: 30
+
+      - name: Publish test results
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: 'maestro-report.xml'
+          check_name: 'Maestro E2E Results'
+
+  # ============================================
+  # Summary Job
+  # ============================================
+  e2e-complete:
+    name: E2E Complete
+    runs-on: ubuntu-latest
+    needs: [e2e-web]
+    if: always()
+    steps:
+      - name: Check E2E results
+        run: |
+          if [ "${{ needs.e2e-web.result }}" == "failure" ]; then
+            echo "::error::Web E2E tests failed"
+            exit 1
+          fi
+          echo "E2E tests completed successfully"

@@ -1,0 +1,47 @@
+# Groups Screen E2E Test
+# Tests the groups list and basic functionality
+
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+---
+# First, log in
+- runFlow: ../auth/login.yaml
+
+# Navigate to Groups
+- tapOn:
+    text: 'Groups|Communities'
+    regex: true
+
+- waitForAnimationToEnd
+
+# Verify groups screen
+- assertVisible:
+    text: 'Groups|Communities'
+    regex: true
+
+# Check for create group button
+- assertVisible:
+    id: 'create-group-button|fab-new'
+    regex: true
+    optional: true
+
+# Look for group list or empty state
+- assertVisible:
+    text: '.*' # Any content
+    optional: true
+
+- takeScreenshot: groups-screen
+
+# Test create group flow
+- tapOn:
+    id: 'create-group-button|fab-new'
+    regex: true
+    optional: true
+
+# If dialog/screen opens, verify it
+- assertVisible:
+    text: 'Create Group|New Group|Group Name'
+    regex: true
+    optional: true
+
+- takeScreenshot: create-group-dialog

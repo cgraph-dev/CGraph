@@ -1,0 +1,68 @@
+# Registration Flow E2E Test
+# Tests the registration flow for CGraph mobile app
+
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+---
+# Start fresh - clear app state
+- clearState
+
+# Wait for app to load
+- waitForAnimationToEnd
+
+# Navigate to register
+- tapOn:
+    text: 'Sign Up|Register|Create Account|Get Started'
+    regex: true
+
+# Wait for registration form
+- assertVisible:
+    text: 'Email'
+
+# Generate unique email for test
+- runScript:
+    file: ../helpers/generate-email.js
+    output: testEmail
+
+# Fill registration form
+- tapOn: 'Email'
+- inputText: ${output.testEmail}
+
+- tapOn:
+    text: 'Username|Display Name|Name'
+    regex: true
+- inputText: 'TestUser${RANDOM}'
+
+- tapOn: 'Password'
+- inputText: 'TestPassword123!'
+
+# If there's a confirm password field
+- tapOn:
+    text: 'Confirm Password|Re-enter Password'
+    regex: true
+    optional: true
+- inputText: 'TestPassword123!'
+
+# Hide keyboard
+- hideKeyboard
+
+# Accept terms if present
+- tapOn:
+    text: 'I agree|Accept Terms|Terms of Service'
+    regex: true
+    optional: true
+
+# Submit registration
+- tapOn:
+    text: 'Sign Up|Register|Create Account|Submit'
+    regex: true
+
+# Wait for registration to complete
+- extendedWaitUntil:
+    visible:
+      text: 'Verify|Confirmation|Dashboard|Home'
+      regex: true
+    timeout: 20000
+
+# Take screenshot for verification
+- takeScreenshot: registration-success

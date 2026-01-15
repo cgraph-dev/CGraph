@@ -1,0 +1,48 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "TEAM_ID.org.cgraph.app",
+        "paths": [
+          "/conversation/*",
+          "/group/*",
+          "/user/*",
+          "/thread/*",
+          "/invite/*",
+          "/auth/verify",
+          "/auth/reset",
+          "/forum/*",
+          "/settings",
+          "/profile",
+          "/notifications"
+        ]
+      },
+      {
+        "appID": "TEAM_ID.org.cgraph.app.dev",
+        "paths": [
+          "/conversation/*",
+          "/group/*",
+          "/user/*",
+          "/thread/*",
+          "/invite/*",
+          "/auth/verify",
+          "/auth/reset",
+          "/forum/*",
+          "/settings",
+          "/profile",
+          "/notifications"
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": [
+      "TEAM_ID.org.cgraph.app",
+      "TEAM_ID.org.cgraph.app.dev"
+    ]
+  },
+  "appclips": {
+    "apps": []
+  }
+}

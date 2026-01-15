@@ -1,0 +1,14 @@
+# Wait for App to Load
+# Helper flow that waits for the app to be ready
+
+appId: ${MAESTRO_APP_ID:org.cgraph.app.dev}
+
+---
+# Wait for splash screen to finish
+- extendedWaitUntil:
+    visible:
+      text: '.*' # Any text indicates app is loaded
+    timeout: 30000
+
+# Additional stability wait
+- waitForAnimationToEnd
