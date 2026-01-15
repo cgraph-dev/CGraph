@@ -10,8 +10,8 @@ const FeatureList = [
     title: '🔒 End-to-End Encryption',
     description: (
       <>
-        Messages secured with the Signal Protocol. Your conversations are private by default with
-        military-grade encryption.
+        Messages secured with Signal Protocol-inspired encryption. Your conversations are private by
+        default with industry-standard AES-256-GCM encryption.
       </>
     ),
     link: '/docs/architecture/ARCHITECTURE',

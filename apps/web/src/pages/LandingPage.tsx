@@ -22,7 +22,7 @@ const features = [
     icon: '🔐',
     title: 'End-to-End Encryption',
     description:
-      'Signal Protocol-grade encryption with X3DH key agreement and Double Ratchet for forward secrecy. Your messages stay private.',
+      'Signal Protocol-inspired encryption with X3DH key agreement and Double Ratchet for forward secrecy. Your messages stay private.',
     gradient: 'from-purple-500 to-indigo-600',
   },
   {
@@ -625,9 +625,8 @@ function SecuritySection() {
               </span>
             </h2>
             <p className="mb-8 text-xl leading-relaxed text-gray-400">
-              We implement Signal Protocol — the same encryption used by privacy-focused messaging
-              apps. Your messages are encrypted end-to-end, meaning only you and your recipients can
-              read them.
+              We implement encryption inspired by the Signal Protocol. Your messages are encrypted
+              end-to-end, meaning only you and your recipients can read them.
             </p>
             <div className="space-y-4">
               {securityFeatures.slice(0, 3).map((item, index) => (

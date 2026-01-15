@@ -10,7 +10,8 @@
 
 ## Reporting a Vulnerability
 
-Security is a top priority for CGraph. If you discover a vulnerability, please report it responsibly.
+Security is a top priority for CGraph. If you discover a vulnerability, please report it
+responsibly.
 
 ### How to Report
 
@@ -37,6 +38,7 @@ Security is a top priority for CGraph. If you discover a vulnerability, please r
 CGraph implements defense-in-depth with multiple security layers:
 
 #### Authentication & Authorization
+
 - **Password Hashing**: Argon2id (OWASP recommended)
 - **JWT Tokens**: Short-lived access tokens with secure refresh
 - **2FA Support**: TOTP-based two-factor authentication
@@ -44,18 +46,26 @@ CGraph implements defense-in-depth with multiple security layers:
 - **OAuth 2.0**: Google, Apple, Facebook, TikTok via Assent
 
 #### End-to-End Encryption (E2EE)
-- **Algorithm**: XChaCha20-Poly1305 via libsodium
-- **Key Exchange**: X25519 Diffie-Hellman
-- **Key Derivation**: Argon2id with device-specific salt
+
+- **Algorithm**: AES-256-GCM via Web Crypto API
+- **Key Exchange**: P-256 ECDH (Signal Protocol-inspired X3DH)
+- **Ratcheting**: Double Ratchet protocol for forward secrecy
+- **Key Derivation**: HKDF-SHA256 with conversation-specific salt
 - **Zero-Knowledge**: Server never sees plaintext messages
-- **Forward Secrecy**: Per-conversation key rotation
+- **Forward Secrecy**: Per-message key ratcheting
+
+> **Note**: Our E2EE implementation is Signal Protocol-inspired but custom-built. It has not
+> undergone formal third-party security audit. See
+> [SECURITY_ROADMAP.md](docs/guides/SECURITY_ROADMAP.md) for our security maturity plan.
 
 #### Transport & Storage
+
 - **Transport**: TLS 1.3 for all connections
 - **At Rest**: AES-256 encryption for sensitive data
 - **Secrets**: Environment-based, never committed to source
 
 #### API Security
+
 - **Rate Limiting**: Per-endpoint limits with Redis tracking
 - **Input Validation**: Ecto changesets with strict typing
 - **SQL Injection**: Prevented via parameterized queries
@@ -63,16 +73,19 @@ CGraph implements defense-in-depth with multiple security layers:
 - **CSRF Protection**: Token validation for mutations
 
 #### UI Security (v0.7.37+)
+
 - **Theme Import Removed**: Theme import/export removed to prevent JSON-based XSS/injection
 - **Content Sanitization**: User-generated content sanitized before rendering
 - **No Dynamic Code Execution**: All theme colors validated as hex/rgba strings only
 
 #### Infrastructure
+
 - **WAF**: Cloudflare Web Application Firewall
 - **DDoS Protection**: Cloudflare with geo-blocking
 - **Audit Logging**: All sensitive operations logged
 
 #### Data Protection
+
 - **GDPR Compliance**: Full data export and deletion
 - **Data Minimization**: Only necessary data collected
 - **Retention Policies**: Configurable per data type
@@ -107,6 +120,7 @@ No formal bounty program exists yet, but significant findings may be rewarded at
 ### Security Updates
 
 Security patches are released as point versions and announced via:
+
 - GitHub Security Advisories
 - CHANGELOG.md
 - Project Discord
@@ -131,6 +145,7 @@ Before submitting code:
 - Website: [www.cgraph.org](https://www.cgraph.org)
 
 — Burca Lucas
+
 - PGP Key: Available on request
 
 ---

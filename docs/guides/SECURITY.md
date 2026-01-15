@@ -1,5 +1,24 @@
 # Security Architecture
 
+> **⚠️ Security Maturity Disclaimer**
+>
+> CGraph's end-to-end encryption is **Signal Protocol-inspired** but **custom-implemented** using
+> the Web Crypto API. While we follow cryptographic best practices (X3DH key agreement, Double
+> Ratchet, AES-256-GCM), our implementation has **not undergone formal third-party security audit**.
+>
+> **What this means:**
+>
+> - ✅ We use well-established cryptographic primitives (P-256 ECDH, AES-256-GCM, HKDF)
+> - ✅ We implement the Signal Protocol patterns (X3DH, Double Ratchet, forward secrecy)
+> - ⚠️ We do NOT use libsignal or other audited implementations
+> - ⚠️ Custom crypto code may contain implementation bugs
+> - 🔜 Third-party audit is planned (see [SECURITY_ROADMAP.md](./SECURITY_ROADMAP.md))
+>
+> For high-risk threat models, we recommend evaluating the
+> [source code](https://github.com/bluscreams/CGraph/tree/main/apps/web/src/lib/crypto) directly.
+
+---
+
 Look, security is one of those things that's easy to get wrong and really hard to fix after the
 fact. We've put a lot of thought into how CGraph handles authentication, authorization, and data
 protection — and we think we've gotten it right. But security is also a moving target, so if you
@@ -8,8 +27,8 @@ spot something off, please let us know.
 **v0.7.47 introduces critical security hardening** — 2FA brute force protection, race condition
 fixes, and safe parameter parsing across all controllers.
 
-**v0.7.35 introduced Signal Protocol Double Ratchet encryption** — the same cryptographic foundation
-that secures Signal, WhatsApp, and other industry-leading messengers.
+**v0.7.35 introduced Signal Protocol-inspired Double Ratchet encryption** — using the same
+cryptographic patterns that secure Signal, WhatsApp, and other industry-leading messengers.
 
 This doc explains what we've built and why. It's not exhaustive (that would be a book), but it
 covers the stuff you actually need to know.
@@ -31,7 +50,7 @@ fails, the others still protect you. Here's the high-level picture:
 │   │  │    X3DH     │  │   Double    │  │  AES-256    │      │   │
 │   │  │    Key      │──│   Ratchet   │──│    GCM      │      │   │
 │   │  │  Agreement  │  │   Engine    │  │ Encryption  │      │   │
-│   │  │   (P-384)   │  │             │  │             │      │   │
+│   │  │   (P-256)   │  │             │  │             │      │   │
 │   │  └─────────────┘  └─────────────┘  └─────────────┘      │   │
 │   │                                                          │   │
 │   │  Properties: Forward Secrecy | Break-in Recovery         │   │

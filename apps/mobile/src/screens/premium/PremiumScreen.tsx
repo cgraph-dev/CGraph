@@ -75,7 +75,7 @@ const PREMIUM_TIERS: PremiumTier[] = [
     name: 'Premium',
     price: {
       monthly: 4.99,
-      yearly: 47.90, // 20% discount
+      yearly: 47.9, // 20% discount
     },
     popular: true,
     gradient: ['#8b5cf6', '#7c3aed'],
@@ -97,13 +97,13 @@ const PREMIUM_TIERS: PremiumTier[] = [
     name: 'Premium+',
     price: {
       monthly: 9.99,
-      yearly: 95.90, // 20% discount
+      yearly: 95.9, // 20% discount
     },
     gradient: ['#f59e0b', '#d97706'],
     features: [
       { text: 'Unlimited messages', included: true },
       { text: 'Unlimited groups', included: true },
-      { text: 'Military-grade E2EE', included: true },
+      { text: 'End-to-end encryption', included: true },
       { text: '1 GB file uploads', included: true },
       { text: 'All premium features', included: true },
       { text: 'Custom avatar borders', included: true },
@@ -155,28 +155,25 @@ const PremiumScreen: React.FC = () => {
     setSelectedTier(tierId);
   }, []);
 
-  const handleSubscribe = useCallback(async (tier: PremiumTier) => {
-    if (tier.id === 'free') {
-      Alert.alert('Already Free', 'You are currently on the free plan.');
-      return;
-    }
+  const handleSubscribe = useCallback(
+    async (tier: PremiumTier) => {
+      if (tier.id === 'free') {
+        Alert.alert('Already Free', 'You are currently on the free plan.');
+        return;
+      }
 
-    if (currentTier === tier.id) {
-      Alert.alert('Already Subscribed', `You're already on the ${tier.name} plan.`);
-      return;
-    }
+      if (currentTier === tier.id) {
+        Alert.alert('Already Subscribed', `You're already on the ${tier.name} plan.`);
+        return;
+      }
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
-    const price = tier.price[billingCycle];
-    const priceText = billingCycle === 'yearly' 
-      ? `$${price}/year (Save 20%!)` 
-      : `$${price}/month`;
+      const price = tier.price[billingCycle];
+      const priceText =
+        billingCycle === 'yearly' ? `$${price}/year (Save 20%!)` : `$${price}/month`;
 
-    Alert.alert(
-      `Subscribe to ${tier.name}`,
-      `You'll be charged ${priceText}. Continue?`,
-      [
+      Alert.alert(`Subscribe to ${tier.name}`, `You'll be charged ${priceText}. Continue?`, [
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Subscribe',
@@ -184,22 +181,33 @@ const PremiumScreen: React.FC = () => {
             setIsPurchasing(true);
             try {
               // Get the correct product ID based on tier and billing cycle
-              const productId = tier.id === 'premium'
-                ? (billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_YEARLY : PRODUCT_IDS.PREMIUM_MONTHLY)
-                : (billingCycle === 'yearly' ? PRODUCT_IDS.PREMIUM_PLUS_YEARLY : PRODUCT_IDS.PREMIUM_PLUS_MONTHLY);
+              const productId =
+                tier.id === 'premium'
+                  ? billingCycle === 'yearly'
+                    ? PRODUCT_IDS.PREMIUM_YEARLY
+                    : PRODUCT_IDS.PREMIUM_MONTHLY
+                  : billingCycle === 'yearly'
+                    ? PRODUCT_IDS.PREMIUM_PLUS_YEARLY
+                    : PRODUCT_IDS.PREMIUM_PLUS_MONTHLY;
 
               const purchase = await paymentService.purchaseProduct(productId);
-              
+
               if (purchase) {
                 // Refresh subscription status
                 const status = await paymentService.getSubscriptionStatus();
                 setSubscriptionStatus(status);
-                
+
                 if (purchase.purchaseState === 'purchased') {
                   Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-                  Alert.alert('Success!', `Welcome to ${tier.name}! Your subscription is now active.`);
+                  Alert.alert(
+                    'Success!',
+                    `Welcome to ${tier.name}! Your subscription is now active.`
+                  );
                 } else if (purchase.purchaseState === 'pending') {
-                  Alert.alert('Processing', 'Your purchase is being processed. It may take a few moments.');
+                  Alert.alert(
+                    'Processing',
+                    'Your purchase is being processed. It may take a few moments.'
+                  );
                 }
               }
             } catch (error: any) {
@@ -211,15 +219,16 @@ const PremiumScreen: React.FC = () => {
             }
           },
         },
-      ]
-    );
-  }, [billingCycle, currentTier]);
+      ]);
+    },
+    [billingCycle, currentTier]
+  );
 
   const handleRestorePurchases = useCallback(async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert(
       'Restore Purchases',
-      'We\'ll restore any previous purchases linked to your account.',
+      "We'll restore any previous purchases linked to your account.",
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -228,12 +237,12 @@ const PremiumScreen: React.FC = () => {
             setIsPurchasing(true);
             try {
               const restoredPurchases = await paymentService.restorePurchases();
-              
+
               if (restoredPurchases.length > 0) {
                 // Refresh subscription status
                 const status = await paymentService.getSubscriptionStatus();
                 setSubscriptionStatus(status);
-                
+
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 Alert.alert('Success', `Restored ${restoredPurchases.length} purchase(s)!`);
               } else {
@@ -254,7 +263,7 @@ const PremiumScreen: React.FC = () => {
 
   const handleManageSubscription = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
+
     if (Platform.OS === 'ios') {
       Linking.openURL('https://apps.apple.com/account/subscriptions');
     } else {
@@ -294,7 +303,7 @@ const PremiumScreen: React.FC = () => {
         >
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </TouchableOpacity>
-        
+
         <View style={styles.headerTextContainer}>
           <LinearGradient
             colors={['#8b5cf6', '#ec4899']}
@@ -304,9 +313,7 @@ const PremiumScreen: React.FC = () => {
           >
             <Ionicons name="diamond" size={24} color="#fff" />
           </LinearGradient>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>
-            CGraph Premium
-          </Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>CGraph Premium</Text>
         </View>
 
         <TouchableOpacity
@@ -329,10 +336,7 @@ const PremiumScreen: React.FC = () => {
       {/* Billing Toggle */}
       <View style={styles.billingToggleContainer}>
         <TouchableOpacity
-          style={[
-            styles.billingOption,
-            billingCycle === 'monthly' && styles.billingOptionActive,
-          ]}
+          style={[styles.billingOption, billingCycle === 'monthly' && styles.billingOptionActive]}
           onPress={() => handleBillingToggle('monthly')}
           activeOpacity={0.8}
         >
@@ -347,10 +351,7 @@ const PremiumScreen: React.FC = () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[
-            styles.billingOption,
-            billingCycle === 'yearly' && styles.billingOptionActive,
-          ]}
+          style={[styles.billingOption, billingCycle === 'yearly' && styles.billingOptionActive]}
           onPress={() => handleBillingToggle('yearly')}
           activeOpacity={0.8}
         >
@@ -415,11 +416,7 @@ const PremiumScreen: React.FC = () => {
                   >
                     <Ionicons
                       name={
-                        tier.id === 'free'
-                          ? 'people'
-                          : tier.id === 'premium'
-                          ? 'diamond'
-                          : 'rocket'
+                        tier.id === 'free' ? 'people' : tier.id === 'premium' ? 'diamond' : 'rocket'
                       }
                       size={28}
                       color="#fff"
@@ -512,9 +509,7 @@ const PremiumScreen: React.FC = () => {
         >
           <GlassCard variant="frosted" intensity="subtle" style={styles.manageCard}>
             <Ionicons name="settings-outline" size={20} color={colors.text} />
-            <Text style={[styles.manageText, { color: colors.text }]}>
-              Manage Subscription
-            </Text>
+            <Text style={[styles.manageText, { color: colors.text }]}>Manage Subscription</Text>
             <Ionicons name="chevron-forward" size={20} color={colors.textSecondary} />
           </GlassCard>
         </TouchableOpacity>
@@ -523,8 +518,8 @@ const PremiumScreen: React.FC = () => {
       {/* Footer */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
-          Subscriptions automatically renew unless canceled at least 24 hours before the end of
-          the current period.
+          Subscriptions automatically renew unless canceled at least 24 hours before the end of the
+          current period.
         </Text>
         <TouchableOpacity
           onPress={() => {
