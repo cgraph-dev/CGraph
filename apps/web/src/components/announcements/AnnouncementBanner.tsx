@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  MegaphoneIcon, 
-  XMarkIcon, 
-  ChevronDownIcon, 
+import DOMPurify from 'dompurify';
+import {
+  MegaphoneIcon,
+  XMarkIcon,
+  ChevronDownIcon,
   ChevronUpIcon,
   ExclamationTriangleIcon,
   InformationCircleIcon,
@@ -12,7 +13,7 @@ import { useAnnouncementStore, type Announcement } from '@/stores/announcementSt
 
 /**
  * AnnouncementBanner Component
- * 
+ *
  * MyBB-style announcement banner that displays at the top of forums.
  * Features:
  * - Global and forum-specific announcements
@@ -87,20 +88,18 @@ export function AnnouncementBanner({
   // Combine and filter announcements
   const announcements = React.useMemo(() => {
     let all: Announcement[] = [];
-    
+
     if (showGlobal) {
       all = [...globalAnnouncements];
     }
-    
+
     if (forumId) {
       const forumSpecific = forumAnnouncements.get(forumId) || [];
       all = [...all, ...forumSpecific];
     }
-    
+
     // Filter out dismissed
-    return all
-      .filter((a) => !dismissedIds.has(a.id))
-      .slice(0, maxVisible);
+    return all.filter((a) => !dismissedIds.has(a.id)).slice(0, maxVisible);
   }, [globalAnnouncements, forumAnnouncements, forumId, showGlobal, dismissedIds, maxVisible]);
 
   const handleDismiss = (id: string) => {
@@ -160,7 +159,7 @@ function AnnouncementItem({
   // Determine style based on announcement properties
   const style = getAnnouncementStyle(announcement);
   const styleClasses = getStyleClasses(style);
-  
+
   const isLongContent = announcement.content.length > 200;
   const shouldShowToggle = collapsible && isLongContent;
 
@@ -169,20 +168,18 @@ function AnnouncementItem({
       {/* Header */}
       <div className={`flex items-center gap-3 px-4 py-3 ${styleClasses.header}`}>
         <StyleIcon style={style} />
-        <h4 className={`flex-1 font-semibold ${styleClasses.title}`}>
-          {announcement.title}
-        </h4>
+        <h4 className={`flex-1 font-semibold ${styleClasses.title}`}>{announcement.title}</h4>
         <div className="flex items-center gap-2">
           {shouldShowToggle && (
             <button
               type="button"
               onClick={onToggle}
-              className="p-1 hover:bg-black/10 rounded transition-colors"
+              className="rounded p-1 transition-colors hover:bg-black/10"
             >
               {isExpanded ? (
-                <ChevronUpIcon className="w-4 h-4" />
+                <ChevronUpIcon className="h-4 w-4" />
               ) : (
-                <ChevronDownIcon className="w-4 h-4" />
+                <ChevronDownIcon className="h-4 w-4" />
               )}
             </button>
           )}
@@ -190,10 +187,10 @@ function AnnouncementItem({
             <button
               type="button"
               onClick={onDismiss}
-              className="p-1 hover:bg-black/10 rounded transition-colors"
+              className="rounded p-1 transition-colors hover:bg-black/10"
               title="Dismiss"
             >
-              <XMarkIcon className="w-4 h-4" />
+              <XMarkIcon className="h-4 w-4" />
             </button>
           )}
         </div>
@@ -202,22 +199,22 @@ function AnnouncementItem({
       {/* Content */}
       <div
         className={`px-4 pb-3 ${styleClasses.content} ${
-          shouldShowToggle && !isExpanded ? 'max-h-20 overflow-hidden relative' : ''
+          shouldShowToggle && !isExpanded ? 'relative max-h-20 overflow-hidden' : ''
         }`}
       >
         {/* Render content - could use BBCode renderer here */}
-        <div 
+        <div
           className="prose prose-sm dark:prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ 
-            __html: announcement.allowHtml 
-              ? announcement.content 
-              : escapeHtml(announcement.content).replace(/\n/g, '<br/>') 
+          dangerouslySetInnerHTML={{
+            __html: announcement.allowHtml
+              ? DOMPurify.sanitize(announcement.content, { USE_PROFILES: { html: true } })
+              : escapeHtml(announcement.content).replace(/\n/g, '<br/>'),
           }}
         />
-        
+
         {/* Fade overlay for collapsed long content */}
         {shouldShowToggle && !isExpanded && (
-          <div className="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white dark:from-gray-800 to-transparent pointer-events-none" />
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-white to-transparent dark:from-gray-800" />
         )}
       </div>
 
@@ -226,7 +223,7 @@ function AnnouncementItem({
         <button
           type="button"
           onClick={onToggle}
-          className={`w-full py-2 text-sm font-medium hover:bg-black/5 transition-colors ${styleClasses.readMore}`}
+          className={`w-full py-2 text-sm font-medium transition-colors hover:bg-black/5 ${styleClasses.readMore}`}
         >
           Read more
         </button>
@@ -240,17 +237,21 @@ function getAnnouncementStyle(announcement: Announcement): AnnouncementStyle {
   if (announcement.backgroundColor) {
     // Try to infer from custom color
     if (announcement.backgroundColor.includes('red')) return 'error';
-    if (announcement.backgroundColor.includes('yellow') || announcement.backgroundColor.includes('orange')) return 'warning';
+    if (
+      announcement.backgroundColor.includes('yellow') ||
+      announcement.backgroundColor.includes('orange')
+    )
+      return 'warning';
     if (announcement.backgroundColor.includes('green')) return 'success';
     if (announcement.backgroundColor.includes('blue')) return 'info';
   }
-  
+
   // Check title for keywords
   const titleLower = announcement.title.toLowerCase();
   if (titleLower.includes('warning') || titleLower.includes('important')) return 'warning';
   if (titleLower.includes('error') || titleLower.includes('critical')) return 'error';
   if (titleLower.includes('success') || titleLower.includes('complete')) return 'success';
-  
+
   return 'default';
 }
 
@@ -304,15 +305,15 @@ function getStyleClasses(style: AnnouncementStyle) {
 function StyleIcon({ style }: { style: AnnouncementStyle }) {
   switch (style) {
     case 'info':
-      return <InformationCircleIcon className="w-5 h-5 text-blue-500" />;
+      return <InformationCircleIcon className="h-5 w-5 text-blue-500" />;
     case 'warning':
-      return <ExclamationTriangleIcon className="w-5 h-5 text-yellow-500" />;
+      return <ExclamationTriangleIcon className="h-5 w-5 text-yellow-500" />;
     case 'success':
-      return <CheckCircleIcon className="w-5 h-5 text-green-500" />;
+      return <CheckCircleIcon className="h-5 w-5 text-green-500" />;
     case 'error':
-      return <ExclamationTriangleIcon className="w-5 h-5 text-red-500" />;
+      return <ExclamationTriangleIcon className="h-5 w-5 text-red-500" />;
     default:
-      return <MegaphoneIcon className="w-5 h-5 text-gray-500" />;
+      return <MegaphoneIcon className="h-5 w-5 text-gray-500" />;
   }
 }
 

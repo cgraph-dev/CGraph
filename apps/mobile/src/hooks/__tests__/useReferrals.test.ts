@@ -210,17 +210,15 @@ describe('useReferrals', () => {
     });
 
     await act(async () => {
-      const success = await result.current.claimReward(2);
+      const success = await result.current.claimReward('2');
       expect(success).toBe(true);
     });
 
-    expect(referralService.claimTierReward).toHaveBeenCalledWith(2);
+    expect(referralService.claimTierReward).toHaveBeenCalledWith('2');
   });
 
   it('should handle errors gracefully', async () => {
-    (referralService.getReferralCode as jest.Mock).mockRejectedValue(
-      new Error('Network error')
-    );
+    (referralService.getReferralCode as jest.Mock).mockRejectedValue(new Error('Network error'));
 
     const { result } = renderHook(() => useReferrals());
 
@@ -243,9 +241,9 @@ describe('useReferrals', () => {
     const initialCodeCalls = (referralService.getReferralCode as jest.Mock).mock.calls.length;
     const initialStatsCalls = (referralService.getReferralStats as jest.Mock).mock.calls.length;
 
-    // Call refresh without forceRefresh - should use cache
+    // Call refresh - data should still be available from cache
     await act(async () => {
-      await result.current.refresh(false);
+      await result.current.refresh();
     });
 
     // Caching is based on time, and since we just loaded, the data should still be fresh
@@ -255,16 +253,16 @@ describe('useReferrals', () => {
     expect(result.current.stats).toEqual(mockReferralStats);
   });
 
-  it('should force refresh when forceRefresh is true', async () => {
+  it('should force refresh when called', async () => {
     const { result } = renderHook(() => useReferrals());
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    // Force refresh should bypass cache
+    // Refresh should fetch data again
     await act(async () => {
-      await result.current.refresh(true);
+      await result.current.refresh();
     });
 
     expect(referralService.getReferralCode).toHaveBeenCalledTimes(2);
