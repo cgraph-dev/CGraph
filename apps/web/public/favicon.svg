@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="32" height="32">
+  <defs>
+    <!-- Cyan gradient -->
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00E5FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00B8D4;stop-opacity:1" />
+    </linearGradient>
+    <!-- Magenta gradient -->
+    <linearGradient id="magentaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF00FF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D500F9;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background dark circle -->
+  <circle cx="50" cy="50" r="48" fill="#0A1628" />
+
+  <!-- Outer ring -->
+  <circle cx="50" cy="50" r="45" fill="none" stroke="url(#cyanGrad)" stroke-width="1.5" stroke-opacity="0.4" />
+
+  <!-- Top diamond - cyan -->
+  <polygon points="50,15 70,35 50,55 30,35" fill="url(#cyanGrad)" fill-opacity="0.95" />
+  <!-- Bottom diamond - magenta -->
+  <polygon points="50,45 70,65 50,85 30,65" fill="url(#magentaGrad)" fill-opacity="0.95" />
+  <!-- Left accent triangle -->
+  <polygon points="25,50 35,40 35,60" fill="#00E5FF" fill-opacity="0.7" />
+  <!-- Right accent triangle -->
+  <polygon points="75,50 65,40 65,60" fill="#FF00FF" fill-opacity="0.7" />
+
+  <!-- Node points -->
+  <circle cx="50" cy="15" r="4" fill="#00E5FF" />
+  <circle cx="50" cy="85" r="4" fill="#FF00FF" />
+</svg>

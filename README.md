@@ -2,7 +2,7 @@
 
 <div align="center">
 
-<img src="docs/assets/cgraph-logo.png" alt="CGraph Logo" width="140" />
+<img src="docs/assets/cgraph-logo.svg" alt="CGraph Logo" width="140" />
 
 ### The All-in-One Open-Source Communication Platform
 
