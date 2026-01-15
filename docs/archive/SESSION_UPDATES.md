@@ -1,8 +1,10 @@
 # CGraph Development Session - Comprehensive Updates
 
-This document details all the changes, enhancements, and bug fixes made during the development session.
+This document details all the changes, enhancements, and bug fixes made during the development
+session.
 
 ## Table of Contents
+
 1. [Session: January 5, 2026 - v0.7.19](#session-january-5-2026---v0719)
 2. [Session: January 4, 2026 - v0.6.5](#session-january-4-2026---v065)
 3. [Session: January 3, 2026 - v0.6.4](#session-january-3-2026---v064)
@@ -21,14 +23,19 @@ This document details all the changes, enhancements, and bug fixes made during t
 
 ### Overview
 
-This session focused on real-time presence improvements, voice message fixes, and production deployment preparations. Key accomplishments include real-time voice message delivery, enhanced last seen functionality, and domain configuration updates from cgraph.io to cgraph.org.
+This session focused on real-time presence improvements, voice message fixes, and production
+deployment preparations. Key accomplishments include real-time voice message delivery, enhanced last
+seen functionality, and domain configuration updates from cgraph.io to cgraph.org.
 
 ### Real-Time Voice Messages
 
 #### Problem
-Voice messages sent via REST API were not appearing in real-time for other participants. Users had to refresh the chat to see new voice messages.
+
+Voice messages sent via REST API were not appearing in real-time for other participants. Users had
+to refresh the chat to see new voice messages.
 
 #### Solution
+
 Added WebSocket broadcast after voice message creation in conversation context.
 
 **File Modified:** `apps/backend/lib/cgraph_web/controllers/api/v1/voice_message_controller.ex`
@@ -46,6 +53,7 @@ CgraphWeb.Endpoint.broadcast(
 ### Enhanced Last Seen Functionality
 
 #### Backend Changes
+
 Added `lastSeenAt` to conversation participant data from Phoenix Presence cache.
 
 **File Modified:** `apps/backend/lib/cgraph_web/controllers/api/v1/conversation_json.ex`
@@ -65,6 +73,7 @@ user: %{
 ```
 
 #### Web Frontend Changes
+
 Added `formatLastSeen()` helper function for human-readable timestamps.
 
 **File Modified:** `apps/web/src/pages/messages/Conversation.tsx`
@@ -72,10 +81,10 @@ Added `formatLastSeen()` helper function for human-readable timestamps.
 ```typescript
 const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
   if (!lastSeenAt) return 'Offline';
-  
+
   const lastSeen = new Date(lastSeenAt);
   const diffMins = Math.floor((now - lastSeen) / 60000);
-  
+
   if (diffMins < 1) return 'Last seen just now';
   if (diffMins < 60) return `Last seen ${diffMins}m ago`;
   // ... etc
@@ -83,6 +92,7 @@ const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
 ```
 
 **Features:**
+
 - Shows "Last seen just now" for < 1 minute
 - Shows "Last seen Xm ago" for < 1 hour
 - Shows "Last seen Xh ago" for < 24 hours
@@ -91,11 +101,13 @@ const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
 - Shows "Last seen [date]" for older
 
 #### Mobile Frontend Changes
+
 Identical `formatLastSeen()` function added to mobile.
 
 **File Modified:** `apps/mobile/src/screens/messages/ConversationScreen.tsx`
 
 **Changes:**
+
 - Added `otherParticipantLastSeen` state variable
 - Added `formatLastSeen()` helper function
 - Updated `updateHeader` to show last seen instead of "Offline"
@@ -104,9 +116,11 @@ Identical `formatLastSeen()` function added to mobile.
 ### Typing Indicator Filter
 
 #### Problem
+
 Users were seeing their own name in the typing indicator list.
 
 #### Solution
+
 Filter out current user from typing users array on web.
 
 **File Modified:** `apps/web/src/pages/messages/Conversation.tsx`
@@ -116,8 +130,8 @@ Filter out current user from typing users array on web.
 const typing = conversationId ? typingUsers[conversationId] || [] : [];
 
 // After:
-const typing = conversationId 
-  ? (typingUsers[conversationId] || []).filter(userId => userId !== user?.id) 
+const typing = conversationId
+  ? (typingUsers[conversationId] || []).filter((userId) => userId !== user?.id)
   : [];
 ```
 
@@ -128,12 +142,14 @@ Also added "typing..." status display priority in header (typing > online > last
 Removed verbose debug logging from message handling for cleaner console output.
 
 **Files Modified:**
+
 - `apps/mobile/src/screens/messages/ConversationScreen.tsx`
 - `apps/mobile/src/lib/normalizers.ts`
 
 **Removed:**
+
 - `[ConversationScreen] FULL USER OBJECT` debug logs
-- Participant ID debug logs  
+- Participant ID debug logs
 - Presence list debug logs
 - Normalizer debug logs
 
@@ -141,38 +157,32 @@ Removed verbose debug logging from message handling for cleaner console output.
 
 Updated from cgraph.io to cgraph.org across all configuration files.
 
-**Files Modified:**
-| File | Change |
-|------|--------|
-| `apps/backend/config/runtime.exs` | PHX_HOST default: cgraph.io → cgraph.org |
-| `apps/backend/lib/cgraph_web/endpoint.ex` | CORS origins: cgraph.io → cgraph.org |
-| `docker-compose.yml` | PHX_HOST default: localhost → cgraph.org |
-| `infrastructure/docker/nginx.conf` | server_name: _ → cgraph.org www.cgraph.org |
+**Files Modified:** | File | Change | |------|--------| | `apps/backend/config/runtime.exs` |
+PHX*HOST default: cgraph.io → cgraph.org | | `apps/backend/lib/cgraph_web/endpoint.ex` | CORS
+origins: cgraph.io → cgraph.org | | `docker-compose.yml` | PHX_HOST default: localhost → cgraph.org
+| | `infrastructure/docker/nginx.conf` | server_name: * → cgraph.org www.cgraph.org |
 
 ### Production Environment Files
 
 Created production environment configuration files.
 
-**New Files:**
-| File | Purpose |
-|------|---------|
-| `.env.production.example` | Template for production environment variables |
-| `apps/web/.env.production` | Web frontend production config |
-| `apps/web/.env.example` | Updated with development/production comments |
+**New Files:** | File | Purpose | |------|---------| | `.env.production.example` | Template for
+production environment variables | | `apps/web/.env.production` | Web frontend production config | |
+`apps/web/.env.example` | Updated with development/production comments |
 
 ### Version Bump
 
 Bumped all package versions from 0.7.18 to 0.7.19:
 
-| Package | Version |
-|---------|---------|
-| Root package.json | 0.7.19 |
-| apps/backend/mix.exs | 0.7.19 |
-| apps/web/package.json | 0.7.19 |
-| apps/mobile/package.json | 0.7.19 |
-| docs/ARCHITECTURE.md | 0.7.19 |
-| docs/QUICKSTART.md | 0.7.19 |
-| docs/TECHNICAL_OVERVIEW.md | 0.7.19 |
+| Package                    | Version |
+| -------------------------- | ------- |
+| Root package.json          | 0.7.19  |
+| apps/backend/mix.exs       | 0.7.19  |
+| apps/web/package.json      | 0.7.19  |
+| apps/mobile/package.json   | 0.7.19  |
+| docs/ARCHITECTURE.md       | 0.7.19  |
+| docs/QUICKSTART.md         | 0.7.19  |
+| docs/TECHNICAL_OVERVIEW.md | 0.7.19  |
 
 ### Files Changed Summary
 
@@ -213,23 +223,27 @@ docs/SESSION_UPDATES.md                       # This update
 
 ### Overview
 
-Matrix animation enhancements session. Improved character visibility, fixed slow motion issues, added text encryption animation component, and optimized for mobile performance.
+Matrix animation enhancements session. Improved character visibility, fixed slow motion issues,
+added text encryption animation component, and optimized for mobile performance.
 
 ### Matrix Animation Improvements
 
 #### 1. Fixed Slow Motion Issue
 
-**Problem:** Matrix animation was running in slow motion after FPS was reduced to 30 for power-saver preset.
+**Problem:** Matrix animation was running in slow motion after FPS was reduced to 30 for power-saver
+preset.
 
 **Solution:** Increased FPS and column speed settings while maintaining performance.
 
 **Changes:**
+
 - Power saver FPS: 30 → 50
 - Column minSpeed: 3 → 5
 - Column maxSpeed: 10 → 15
 - Mobile FPS: 24 → 35
 
 **Files Modified:**
+
 - `apps/web/src/lib/animations/matrix/config.ts`
 
 #### 2. Enhanced Character Visibility
@@ -239,6 +253,7 @@ Matrix animation enhancements session. Improved character visibility, fixed slow
 **Solution:** Implemented multi-layer glow rendering with 5 passes.
 
 **Rendering Passes:**
+
 1. 3D shadow layer (offset dark shadow)
 2. Outer glow (large blur radius)
 3. Inner glow (medium blur)
@@ -246,6 +261,7 @@ Matrix animation enhancements session. Improved character visibility, fixed slow
 5. Head highlight (brightest glow on leading chars)
 
 **Files Modified:**
+
 - `apps/web/src/lib/animations/matrix/engine.ts`
 - `apps/web/src/lib/animations/matrix/themes.ts`
 
@@ -256,14 +272,17 @@ Matrix animation enhancements session. Improved character visibility, fixed slow
 **Solution:** Created comprehensive MatrixText animation system.
 
 **New Files:**
+
 - `apps/web/src/lib/animations/matrix/MatrixText.tsx` (345 lines)
 
 **Components Exported:**
+
 - `MatrixText` - Base component for text encryption animation
-- `MatrixLogo` - CGraph-specific logo with periodic encryption cycles  
+- `MatrixLogo` - CGraph-specific logo with periodic encryption cycles
 - `useMatrixText` - Hook for programmatic control
 
 **Features:**
+
 - Character-by-character transformation
 - Katakana, numbers, symbols for cipher effect
 - Configurable encryption/decryption duration
@@ -272,13 +291,9 @@ Matrix animation enhancements session. Improved character visibility, fixed slow
 - Smooth reveal animation
 
 **Usage:**
+
 ```tsx
-<MatrixLogo 
-  text="CGraph" 
-  className="text-4xl"
-  speed={80}
-  glowColor="#00ff41"
-/>
+<MatrixLogo text="CGraph" className="text-4xl" speed={80} glowColor="#00ff41" />
 ```
 
 #### 4. Auth Layout Integration
@@ -288,6 +303,7 @@ Matrix animation enhancements session. Improved character visibility, fixed slow
 **Solution:** Replaced static "CGraph" with animated MatrixLogo.
 
 **Files Modified:**
+
 - `apps/web/src/layouts/AuthLayout.tsx`
 - `apps/web/src/lib/animations/matrix/index.ts`
 
@@ -298,12 +314,14 @@ Matrix animation enhancements session. Improved character visibility, fixed slow
 **Solution:** Optimized mobile configuration while enabling bloom for consistent appearance.
 
 **Changes:**
+
 - Mobile targetFPS: 24 → 35
 - Enabled bloom effect on mobile (was disabled)
 - Column count scaled to device width
 - Reduced character density for performance
 
 **Files Modified:**
+
 - `apps/web/src/lib/animations/matrix/config.ts`
 
 ### TypeScript Fixes
@@ -317,35 +335,44 @@ Matrix animation enhancements session. Improved character visibility, fixed slow
 
 ### Overview
 
-Comprehensive codebase review and security hardening session. Addressed critical security vulnerabilities, fixed TypeScript errors, and improved overall system stability.
+Comprehensive codebase review and security hardening session. Addressed critical security
+vulnerabilities, fixed TypeScript errors, and improved overall system stability.
 
 ### Security Fixes
 
 #### 1. Mobile OAuth Token Persistence
 
-**Problem:** OAuth tokens were not saved after successful authentication, causing users to be logged out on app restart.
+**Problem:** OAuth tokens were not saved after successful authentication, causing users to be logged
+out on app restart.
 
-**Solution:** Added token storage in `verifyWithBackend` function to persist access and refresh tokens to secure storage.
+**Solution:** Added token storage in `verifyWithBackend` function to persist access and refresh
+tokens to secure storage.
 
 **Files Modified:**
+
 - `apps/mobile/src/lib/oauth.ts`
 
 #### 2. Token Refresh Race Condition
 
-**Problem:** Multiple concurrent 401 responses triggered parallel token refresh attempts, causing race conditions.
+**Problem:** Multiple concurrent 401 responses triggered parallel token refresh attempts, causing
+race conditions.
 
-**Solution:** Implemented refresh mutex with subscriber queue pattern - queued requests wait for a single refresh operation.
+**Solution:** Implemented refresh mutex with subscriber queue pattern - queued requests wait for a
+single refresh operation.
 
 **Files Modified:**
+
 - `apps/web/src/lib/api.ts`
 
 #### 3. WebSocket Rate Limiting
 
 **Problem:** No rate limiting on WebSocket channels allowed potential spam attacks.
 
-**Solution:** Added sliding window rate limiting (10 messages per 10 seconds) to conversation and group channels.
+**Solution:** Added sliding window rate limiting (10 messages per 10 seconds) to conversation and
+group channels.
 
 **Files Modified:**
+
 - `lib/cgraph_web/channels/conversation_channel.ex`
 - `lib/cgraph_web/channels/group_channel.ex`
 
@@ -353,9 +380,11 @@ Comprehensive codebase review and security hardening session. Addressed critical
 
 **Problem:** Message content not sanitized, allowing XSS through script injection.
 
-**Solution:** Added HTML sanitization in message changeset - strips scripts, iframes, event handlers.
+**Solution:** Added HTML sanitization in message changeset - strips scripts, iframes, event
+handlers.
 
 **Files Modified:**
+
 - `lib/cgraph/messaging/message.ex`
 
 #### 5. Apple Token Verification (Mobile Flow)
@@ -365,6 +394,7 @@ Comprehensive codebase review and security hardening session. Addressed critical
 **Solution:** Updated to use JWKS verification from OAuth module instead of simple base64 decode.
 
 **Files Modified:**
+
 - `lib/cgraph_web/controllers/api/v1/oauth_controller.ex`
 - `lib/cgraph/oauth.ex` (added public `verify_apple_token/2`)
 
@@ -375,6 +405,7 @@ Comprehensive codebase review and security hardening session. Addressed critical
 **Solution:** Switched to sessionStorage with base64 encoding for obfuscation.
 
 **Files Modified:**
+
 - `apps/web/src/stores/authStore.ts`
 
 ### Bug Fixes
@@ -382,11 +413,13 @@ Comprehensive codebase review and security hardening session. Addressed critical
 #### Matrix Animation Test Suite
 
 Fixed TypeScript errors in Matrix animation test files:
+
 - `types.test.ts` - Corrected property names to match actual type definitions
 - `engine.test.ts` - Fixed unused imports and added missing CYBER_BLUE import
 - `themes.test.ts` - Added non-null assertions for optional properties
 
 **Files Modified:**
+
 - `apps/web/src/lib/animations/matrix/__tests__/types.test.ts`
 - `apps/web/src/lib/animations/matrix/__tests__/engine.test.ts`
 - `apps/web/src/lib/animations/matrix/__tests__/themes.test.ts`
@@ -394,18 +427,22 @@ Fixed TypeScript errors in Matrix animation test files:
 #### Mobile Configuration
 
 - Fixed `getRandomChar` function to handle undefined array access
-- Installed missing Expo OAuth packages: `expo-web-browser`, `expo-auth-session`, `expo-apple-authentication`
+- Installed missing Expo OAuth packages: `expo-web-browser`, `expo-auth-session`,
+  `expo-apple-authentication`
 
 **Files Modified:**
+
 - `apps/mobile/src/components/matrix/config.ts`
 
 #### UI Template Fixes
 
 Fixed malformed template literals in JSX components:
+
 - Settings.tsx - Fixed escaped quotation marks in className
 - CreatePost.tsx - Fixed same issue
 
 **Files Modified:**
+
 - `apps/web/src/pages/settings/Settings.tsx`
 - `apps/web/src/pages/forums/CreatePost.tsx`
 
@@ -414,25 +451,28 @@ Fixed malformed template literals in JSX components:
 Fixed TypeScript error with setTimeout return type.
 
 **Files Modified:**
+
 - `apps/web/src/components/ui/Tooltip.tsx`
 
 ### Architecture Improvements
 
 #### Engine Type Signature Update
 
-Changed `MatrixEngine` constructor and factory to accept `DeepPartial<MatrixConfig>` instead of `Partial<MatrixConfig>` for proper nested configuration overrides.
+Changed `MatrixEngine` constructor and factory to accept `DeepPartial<MatrixConfig>` instead of
+`Partial<MatrixConfig>` for proper nested configuration overrides.
 
 **Files Modified:**
+
 - `apps/web/src/lib/animations/matrix/engine.ts`
 
 ### Summary
 
-| Category | Items Fixed |
-|----------|-------------|
-| Critical Security | 6 |
-| Bug Fixes | 8 |
+| Category          | Items Fixed      |
+| ----------------- | ---------------- |
+| Critical Security | 6                |
+| Bug Fixes         | 8                |
 | TypeScript Errors | 0 (all resolved) |
-| Documentation | 3 files updated |
+| Documentation     | 3 files updated  |
 
 ---
 
@@ -440,7 +480,8 @@ Changed `MatrixEngine` constructor and factory to accept `DeepPartial<MatrixConf
 
 ### Overview
 
-This session implemented comprehensive security hardening features to bring CGraph to industry-standard security practices for Google Play deployment.
+This session implemented comprehensive security hardening features to bring CGraph to
+industry-standard security practices for Google Play deployment.
 
 ### New Security Features
 
@@ -466,6 +507,7 @@ TokenBlacklist.revoke_all_for_user(user_id, reason: :password_change)
 **Module:** `CgraphWeb.Plugs.SecurityHeaders`
 
 OWASP-compliant security headers:
+
 - Strict-Transport-Security (HSTS with preload)
 - Content-Security-Policy (strict for API, balanced for browser)
 - X-Frame-Options (DENY)
@@ -506,28 +548,28 @@ OWASP-compliant security headers:
 
 ### Files Created
 
-| File | Purpose |
-|------|---------|
-| `lib/cgraph/security/token_blacklist.ex` | JWT token revocation system |
-| `lib/cgraph/security/account_lockout.ex` | Brute force protection |
-| `lib/cgraph/security/password_breach_check.ex` | HIBP integration |
-| `lib/cgraph/security/totp.ex` | 2FA implementation |
-| `lib/cgraph_web/plugs/security_headers.ex` | OWASP security headers |
-| `lib/cgraph/guardian/hooks.ex` | Guardian callbacks |
-| `test/cgraph/security_test.exs` | Security feature tests |
-| `docs/SECURITY.md` | Security documentation |
-| `priv/repo/migrations/20250716000001_add_totp_backup_fields.exs` | TOTP migration |
+| File                                                             | Purpose                     |
+| ---------------------------------------------------------------- | --------------------------- |
+| `lib/cgraph/security/token_blacklist.ex`                         | JWT token revocation system |
+| `lib/cgraph/security/account_lockout.ex`                         | Brute force protection      |
+| `lib/cgraph/security/password_breach_check.ex`                   | HIBP integration            |
+| `lib/cgraph/security/totp.ex`                                    | 2FA implementation          |
+| `lib/cgraph_web/plugs/security_headers.ex`                       | OWASP security headers      |
+| `lib/cgraph/guardian/hooks.ex`                                   | Guardian callbacks          |
+| `test/cgraph/security_test.exs`                                  | Security feature tests      |
+| `docs/SECURITY.md`                                               | Security documentation      |
+| `priv/repo/migrations/20250716000001_add_totp_backup_fields.exs` | TOTP migration              |
 
 ### Files Modified
 
-| File | Changes |
-|------|---------|
-| `lib/cgraph/guardian.ex` | Added JTI generation, revocation integration |
-| `lib/cgraph/application.ex` | Added TokenBlacklist and AccountLockout to supervisor |
-| `lib/cgraph_web/router.ex` | Added SecurityHeaders plug to all pipelines |
-| `lib/cgraph_web/controllers/api/v1/auth_controller.ex` | Integrated lockout and token revocation |
-| `lib/cgraph/accounts.ex` | Added password breach check on registration |
-| `lib/cgraph/accounts/user.ex` | Added TOTP fields and changeset |
+| File                                                   | Changes                                               |
+| ------------------------------------------------------ | ----------------------------------------------------- |
+| `lib/cgraph/guardian.ex`                               | Added JTI generation, revocation integration          |
+| `lib/cgraph/application.ex`                            | Added TokenBlacklist and AccountLockout to supervisor |
+| `lib/cgraph_web/router.ex`                             | Added SecurityHeaders plug to all pipelines           |
+| `lib/cgraph_web/controllers/api/v1/auth_controller.ex` | Integrated lockout and token revocation               |
+| `lib/cgraph/accounts.ex`                               | Added password breach check on registration           |
+| `lib/cgraph/accounts/user.ex`                          | Added TOTP fields and changeset                       |
 
 ### JWT Configuration Updates
 
@@ -540,6 +582,7 @@ OWASP-compliant security headers:
 ### Security Telemetry Events
 
 New telemetry events for monitoring:
+
 - `[:cgraph, :security, :token_revoked]`
 - `[:cgraph, :security, :account_locked]`
 - `[:cgraph, :security, :password_breached]`
@@ -548,6 +591,7 @@ New telemetry events for monitoring:
 ### Test Coverage
 
 Added ~50 new security-focused tests covering:
+
 - Token revocation and blacklisting
 - Account lockout progression
 - Password breach detection
@@ -574,13 +618,13 @@ CGraph v1.0.0 is the first production-ready release, featuring:
 
 #### Authentication & Error Handling
 
-| Component | Enhancement |
-|-----------|-------------|
-| Login (Web) | Auto-dismiss errors after 1.5s with fade animation |
-| Register (Web) | Auto-dismiss errors after 1.5s |
-| Forgot Password (Web) | Auto-dismiss errors after 1.5s |
-| Login (Mobile) | Fixed API error field extraction (`error` not `message`) |
-| Auth Store | Replaced `any` types with proper `unknown` + type guards |
+| Component             | Enhancement                                              |
+| --------------------- | -------------------------------------------------------- |
+| Login (Web)           | Auto-dismiss errors after 1.5s with fade animation       |
+| Register (Web)        | Auto-dismiss errors after 1.5s                           |
+| Forgot Password (Web) | Auto-dismiss errors after 1.5s                           |
+| Login (Mobile)        | Fixed API error field extraction (`error` not `message`) |
+| Auth Store            | Replaced `any` types with proper `unknown` + type guards |
 
 #### Type Safety Improvements
 
@@ -591,12 +635,12 @@ CGraph v1.0.0 is the first production-ready release, featuring:
 
 #### Version Updates
 
-| Package | Old Version | New Version |
-|---------|-------------|-------------|
-| @cgraph/root | 0.1.0 | 1.0.0 |
-| @cgraph/web | 0.1.0 | 1.0.0 |
-| @cgraph/mobile | 1.0.0 | 1.0.0 |
-| @cgraph/backend | 0.1.0 | 1.0.0 |
+| Package         | Old Version | New Version |
+| --------------- | ----------- | ----------- |
+| @cgraph/root    | 0.1.0       | 1.0.0       |
+| @cgraph/web     | 0.1.0       | 1.0.0       |
+| @cgraph/mobile  | 1.0.0       | 1.0.0       |
+| @cgraph/backend | 0.1.0       | 1.0.0       |
 
 #### Files Changed
 
@@ -618,42 +662,46 @@ package.json
 
 ### App Store Compliance & Pattern Matching Fixes
 
-This session focused on preparing the app for Google Play and App Store submission, along with fixing critical pattern matching issues across the codebase.
+This session focused on preparing the app for Google Play and App Store submission, along with
+fixing critical pattern matching issues across the codebase.
 
 #### Backend Pattern Matching Fixes
 
 All functions now properly handle `{:ok, value}` / `{:error, reason}` return patterns:
 
-| File | Fix |
-|------|-----|
-| `conversation_channel.ex` | Fixed `get_conversation/2` pattern matching |
-| `group_channel.ex` | Fixed `get_channel/2`, `get_member/2`, `get_message/1` patterns |
-| `user_socket.ex` | Fixed `get_user/1` pattern matching |
-| `workers/base.ex` | Fixed `SendWelcomeEmail` and `SyncExternalData` patterns |
-| `token_manager.ex` | Fixed `get_user/1` pattern matching |
-| `accounts.ex` | Fixed `get_online_friends/1` - Presence returns string not map |
-| `health_check.ex` | Fixed `Redis.ping()` returns `:ok`/`:error`, not `{:ok, "PONG"}` |
-| `connection_pool.ex` | Fixed `perform_health_check` always returns `{:ok, ...}` |
-| `batch_processor.ex` | Fixed `process/3` always returns `{:ok, result}` |
-| `post_controller.ex` | Simplified rate limit validation |
-| `comment_controller.ex` | Simplified rate limit validation |
+| File                      | Fix                                                              |
+| ------------------------- | ---------------------------------------------------------------- |
+| `conversation_channel.ex` | Fixed `get_conversation/2` pattern matching                      |
+| `group_channel.ex`        | Fixed `get_channel/2`, `get_member/2`, `get_message/1` patterns  |
+| `user_socket.ex`          | Fixed `get_user/1` pattern matching                              |
+| `workers/base.ex`         | Fixed `SendWelcomeEmail` and `SyncExternalData` patterns         |
+| `token_manager.ex`        | Fixed `get_user/1` pattern matching                              |
+| `accounts.ex`             | Fixed `get_online_friends/1` - Presence returns string not map   |
+| `health_check.ex`         | Fixed `Redis.ping()` returns `:ok`/`:error`, not `{:ok, "PONG"}` |
+| `connection_pool.ex`      | Fixed `perform_health_check` always returns `{:ok, ...}`         |
+| `batch_processor.ex`      | Fixed `process/3` always returns `{:ok, result}`                 |
+| `post_controller.ex`      | Simplified rate limit validation                                 |
+| `comment_controller.ex`   | Simplified rate limit validation                                 |
 
 **Test Results:** 255 tests, 0 failures, 1 skipped
 
 #### Mobile App Store Compliance
 
 **AccountScreen.tsx - GDPR Features:**
+
 - ✅ Data export button calling `/api/v1/me/data-export`
 - ✅ Account deletion with "DELETE" confirmation
 - ✅ Privacy Policy link (opens external browser)
 - ✅ Terms of Service link (opens external browser)
 
 **RegisterScreen.tsx - Terms Acceptance:**
+
 - ✅ Checkbox for Terms of Service & Privacy Policy agreement
 - ✅ Cannot register without accepting terms
 - ✅ Links to actual policy documents
 
 **app.json - iOS/Android Configuration:**
+
 - ✅ `ITSAppUsesNonExemptEncryption: false` (skip export compliance)
 - ✅ iOS Privacy Manifest with `NSPrivacyAccessedAPITypes`
 - ✅ URL scheme for deep linking (`cgraph://`)
@@ -699,52 +747,59 @@ docs/SESSION_UPDATES.md
 ### Critical Fixes
 
 #### 1. Private Forum Access Control
-**Problem:** Private forums were accessible to non-members.
-**Solution:** Added membership verification in `ForumController.show/2` and `authorize_action/3`.
-**Files Changed:**
+
+**Problem:** Private forums were accessible to non-members. **Solution:** Added membership
+verification in `ForumController.show/2` and `authorize_action/3`. **Files Changed:**
+
 - `apps/backend/lib/cgraph/forums.ex`
 - `apps/backend/lib/cgraph_web/controllers/api/v1/forum_controller.ex`
 
 #### 2. Mobile API Paths
-**Problem:** Mobile app API calls were missing the `/api/v1/` prefix.
-**Solution:** Updated all API endpoints in mobile screens.
-**Files Changed:**
+
+**Problem:** Mobile app API calls were missing the `/api/v1/` prefix. **Solution:** Updated all API
+endpoints in mobile screens. **Files Changed:**
+
 - `apps/mobile/src/screens/forums/PostScreen.tsx`
 - `apps/mobile/src/screens/forums/CreatePostScreen.tsx`
 
 ### High Priority Fixes
 
 #### 3. isSubscribed Always False
-**Problem:** Forum subscription status was not being populated from database.
-**Solution:** Added `is_forum_subscribed/2` function and enriched API responses.
-**Files Changed:**
+
+**Problem:** Forum subscription status was not being populated from database. **Solution:** Added
+`is_forum_subscribed/2` function and enriched API responses. **Files Changed:**
+
 - `apps/backend/lib/cgraph/forums.ex`
 - `apps/backend/lib/cgraph_web/controllers/api/v1/forum_json.ex`
 
 #### 4. isOwner Check Bug
-**Problem:** `isOwner` was checking truthy value instead of comparing IDs.
-**Solution:** Fixed comparison: `currentForum.ownerId === user?.id`
-**Files Changed:**
+
+**Problem:** `isOwner` was checking truthy value instead of comparing IDs. **Solution:** Fixed
+comparison: `currentForum.ownerId === user?.id` **Files Changed:**
+
 - `apps/web/src/pages/forums/ForumBoardView.tsx`
 
 #### 5. Vote Removal Wrong Field
-**Problem:** `remove_vote/2` was using `vote_type` instead of `value`.
-**Solution:** Corrected field name to `value`.
-**Files Changed:**
+
+**Problem:** `remove_vote/2` was using `vote_type` instead of `value`. **Solution:** Corrected field
+name to `value`. **Files Changed:**
+
 - `apps/backend/lib/cgraph/forums.ex`
 
 #### 6. Forum Lookup by Slug
-**Problem:** Forum 404 errors when accessed by slug instead of UUID.
-**Solution:** Backend now handles both UUID and slug lookups.
-**Files Changed:**
+
+**Problem:** Forum 404 errors when accessed by slug instead of UUID. **Solution:** Backend now
+handles both UUID and slug lookups. **Files Changed:**
+
 - `apps/backend/lib/cgraph_web/controllers/api/v1/forum_controller.ex`
 
 ### Medium Priority Fixes
 
 #### 7. toLocaleString Null Access
-**Problem:** Crashes when calling `toLocaleString()` on undefined values.
-**Solution:** Added null coalescing: `(value ?? 0).toLocaleString()`
-**Files Changed:**
+
+**Problem:** Crashes when calling `toLocaleString()` on undefined values. **Solution:** Added null
+coalescing: `(value ?? 0).toLocaleString()` **Files Changed:**
+
 - Multiple forum component files
 
 ---
@@ -754,30 +809,38 @@ docs/SESSION_UPDATES.md
 ### Forum Privacy Controls
 
 #### Public/Private Forums
+
 Users can now create forums with privacy settings:
+
 - **Public forums:** Visible to all, anyone can view posts
 - **Private forums:** Only members can view content
 
 **API Fields Added:**
+
 - `is_public: boolean` - Forum visibility
 - `is_member: boolean` - Current user's membership status
 - `is_subscribed: boolean` - Current user's subscription status
 - `owner_id: string` - Forum owner's user ID
 
 ### Forum Settings Page
+
 New settings page for forum owners at `/forums/:slug/settings`:
+
 - Toggle forum privacy (public/private)
 - Toggle NSFW content
 - Edit forum name and description
 - Delete forum with confirmation
 
 **Files Created:**
+
 - `apps/web/src/pages/forums/ForumSettings.tsx`
 
 ### Markdown Support
 
 #### MarkdownRenderer Component
+
 Renders markdown content with GitHub Flavored Markdown support:
+
 - Headers (h1-h6)
 - Bold, italic, strikethrough
 - Code blocks with syntax classes
@@ -790,7 +853,9 @@ Renders markdown content with GitHub Flavored Markdown support:
 **File:** `apps/web/src/components/MarkdownRenderer.tsx`
 
 #### MarkdownEditor Component
+
 Rich markdown editor with toolbar:
+
 - Bold, Italic, Code buttons
 - Link and Image insertion
 - Ordered/Unordered list helpers
@@ -800,7 +865,9 @@ Rich markdown editor with toolbar:
 **File:** `apps/web/src/components/MarkdownEditor.tsx`
 
 ### Post Creation Page
+
 New dedicated page for creating posts at `/forums/:slug/create-post`:
+
 - Post type selection (Text, Image, Link)
 - Rich markdown editing for text posts
 - Forum validation
@@ -813,7 +880,9 @@ New dedicated page for creating posts at `/forums/:slug/create-post`:
 ## UI/UX Improvements
 
 ### Animation System
+
 Enhanced Tailwind animation configuration:
+
 - `fade-in-up` - Elements fade in while sliding up
 - `slide-in-right` - Slide in from left
 - `bounce-in` - Playful bounce entrance
@@ -821,13 +890,17 @@ Enhanced Tailwind animation configuration:
 - `glow` - Pulsing glow effect
 
 ### Shadow System
+
 New box-shadow utilities:
+
 - `shadow-glow-sm/md/lg` - Glowing shadows
 - `shadow-card` - Subtle card elevation
 - `shadow-card-hover` - Enhanced hover state
 
 ### Skeleton Loading States
+
 Replaced spinner loading with content-aware skeletons:
+
 - `PostCardSkeleton` - Matches post card layout
 - `ForumCardSkeleton` - Matches forum card layout
 - `CommentSkeleton` - Matches comment layout
@@ -835,12 +908,15 @@ Replaced spinner loading with content-aware skeletons:
 **File:** `apps/web/src/components/ui/Skeleton.tsx`
 
 ### Post Cards
+
 - Added subtle hover animations
 - Smooth shadow transitions
 - Fade-in animation on load
 
 ### CSS Utilities
+
 New utility classes in `index.css`:
+
 - `.card-interactive` - Card with hover lift effect
 - `.stagger-animation` - Staggered child animations
 - `.text-gradient` - Gradient text effect
@@ -854,6 +930,7 @@ New utility classes in `index.css`:
 ### Backend Forum Functions
 
 #### New Functions in `forums.ex`:
+
 ```elixir
 # Check if user is a forum member
 is_forum_member(forum_id, user_id)
@@ -866,11 +943,12 @@ authorize_action(:manage, forum, user)  # For owners only
 ```
 
 #### Updated Functions:
+
 ```elixir
 # Now creates membership when subscribing
 subscribe_to_forum(forum_id, user_id)
 
-# Now removes membership when unsubscribing  
+# Now removes membership when unsubscribing
 unsubscribe_from_forum(forum_id, user_id)
 
 # Includes membership status in results
@@ -880,13 +958,16 @@ list_forums_for_user(user_id)
 ### Store Updates
 
 #### forumStore.ts
+
 Added new functions:
+
 ```typescript
 updateForum(forumId: string, data: UpdateForumData): Promise<void>
 deleteForum(forumId: string): Promise<void>
 ```
 
 New interface:
+
 ```typescript
 interface UpdateForumData {
   name?: string;
@@ -905,6 +986,7 @@ interface UpdateForumData {
 All in `apps/web/src/components/ui/`:
 
 #### Card (`Card.tsx`)
+
 ```tsx
 <Card variant="default|interactive|elevated" padding="none|sm|md|lg" animate>
   <CardHeader>...</CardHeader>
@@ -915,6 +997,7 @@ All in `apps/web/src/components/ui/`:
 ```
 
 #### Badge (`Badge.tsx`)
+
 ```tsx
 <Badge variant="default|primary|success|warning|danger|info" size="sm|md|lg" dot icon={...}>
   Label
@@ -927,8 +1010,9 @@ All in `apps/web/src/components/ui/`:
 ```
 
 #### Button (`Button.tsx`)
+
 ```tsx
-<Button 
+<Button
   variant="primary|secondary|ghost|danger|success|outline"
   size="sm|md|lg|icon"
   loading
@@ -943,8 +1027,9 @@ All in `apps/web/src/components/ui/`:
 ```
 
 #### Avatar (`Avatar.tsx`)
+
 ```tsx
-<Avatar 
+<Avatar
   src="/path/to/image.jpg"
   name="John Doe"
   size="xs|sm|md|lg|xl"
@@ -960,6 +1045,7 @@ All in `apps/web/src/components/ui/`:
 ```
 
 #### Skeleton (`Skeleton.tsx`)
+
 ```tsx
 <Skeleton variant="text|circular|rectangular" width={100} height={20} lines={3} />
 
@@ -969,7 +1055,9 @@ All in `apps/web/src/components/ui/`:
 ```
 
 ### Component Exports
+
 All components exported from:
+
 - `apps/web/src/components/index.ts`
 - `apps/web/src/components/ui/index.ts`
 
@@ -978,6 +1066,7 @@ All components exported from:
 ## Dependencies Added
 
 ### Web (`apps/web/package.json`)
+
 ```json
 {
   "react-markdown": "^9.x",
@@ -990,36 +1079,38 @@ All components exported from:
 ## File Changes Summary
 
 ### Files Created
-| Path | Description |
-|------|-------------|
-| `apps/web/src/pages/forums/CreatePost.tsx` | New post creation page |
-| `apps/web/src/pages/forums/ForumSettings.tsx` | Forum settings page |
-| `apps/web/src/components/MarkdownRenderer.tsx` | Markdown display |
-| `apps/web/src/components/MarkdownEditor.tsx` | Markdown editing |
-| `apps/web/src/components/ui/Card.tsx` | Card component |
-| `apps/web/src/components/ui/Badge.tsx` | Badge component |
-| `apps/web/src/components/ui/Button.tsx` | Button component |
-| `apps/web/src/components/ui/Avatar.tsx` | Avatar component |
-| `apps/web/src/components/ui/Skeleton.tsx` | Skeleton loaders |
-| `apps/web/src/components/ui/index.ts` | UI component exports |
-| `docs/SESSION_UPDATES.md` | This document |
+
+| Path                                           | Description            |
+| ---------------------------------------------- | ---------------------- |
+| `apps/web/src/pages/forums/CreatePost.tsx`     | New post creation page |
+| `apps/web/src/pages/forums/ForumSettings.tsx`  | Forum settings page    |
+| `apps/web/src/components/MarkdownRenderer.tsx` | Markdown display       |
+| `apps/web/src/components/MarkdownEditor.tsx`   | Markdown editing       |
+| `apps/web/src/components/ui/Card.tsx`          | Card component         |
+| `apps/web/src/components/ui/Badge.tsx`         | Badge component        |
+| `apps/web/src/components/ui/Button.tsx`        | Button component       |
+| `apps/web/src/components/ui/Avatar.tsx`        | Avatar component       |
+| `apps/web/src/components/ui/Skeleton.tsx`      | Skeleton loaders       |
+| `apps/web/src/components/ui/index.ts`          | UI component exports   |
+| `docs/SESSION_UPDATES.md`                      | This document          |
 
 ### Files Modified
-| Path | Changes |
-|------|---------|
-| `apps/backend/lib/cgraph/forums.ex` | Membership functions, vote fix |
-| `apps/backend/lib/cgraph_web/controllers/api/v1/forum_controller.ex` | Auth checks, slug handling |
-| `apps/backend/lib/cgraph_web/controllers/api/v1/forum_json.ex` | New fields |
-| `apps/web/src/App.tsx` | New routes |
-| `apps/web/src/stores/forumStore.ts` | CRUD functions |
-| `apps/web/src/pages/forums/Forums.tsx` | Skeleton loading, animations |
-| `apps/web/src/pages/forums/ForumPost.tsx` | Markdown rendering, skeleton |
-| `apps/web/src/pages/forums/ForumBoardView.tsx` | Owner check fix |
-| `apps/web/src/components/index.ts` | New exports |
-| `apps/web/src/index.css` | New utilities |
-| `apps/web/tailwind.config.js` | New animations |
-| `apps/mobile/src/screens/forums/PostScreen.tsx` | API path fix |
-| `apps/mobile/src/screens/forums/CreatePostScreen.tsx` | API path fix |
+
+| Path                                                                 | Changes                        |
+| -------------------------------------------------------------------- | ------------------------------ |
+| `apps/backend/lib/cgraph/forums.ex`                                  | Membership functions, vote fix |
+| `apps/backend/lib/cgraph_web/controllers/api/v1/forum_controller.ex` | Auth checks, slug handling     |
+| `apps/backend/lib/cgraph_web/controllers/api/v1/forum_json.ex`       | New fields                     |
+| `apps/web/src/App.tsx`                                               | New routes                     |
+| `apps/web/src/stores/forumStore.ts`                                  | CRUD functions                 |
+| `apps/web/src/pages/forums/Forums.tsx`                               | Skeleton loading, animations   |
+| `apps/web/src/pages/forums/ForumPost.tsx`                            | Markdown rendering, skeleton   |
+| `apps/web/src/pages/forums/ForumBoardView.tsx`                       | Owner check fix                |
+| `apps/web/src/components/index.ts`                                   | New exports                    |
+| `apps/web/src/index.css`                                             | New utilities                  |
+| `apps/web/tailwind.config.js`                                        | New animations                 |
+| `apps/mobile/src/screens/forums/PostScreen.tsx`                      | API path fix                   |
+| `apps/mobile/src/screens/forums/CreatePostScreen.tsx`                | API path fix                   |
 
 ---
 
@@ -1061,14 +1152,18 @@ All components exported from:
 ## Karma & Reputation System
 
 ### Overview
-A karma system that tracks user reputation based on community engagement. Users earn karma when their posts and comments receive upvotes, and lose karma when receiving downvotes.
+
+A karma system that tracks user reputation based on community engagement. Users earn karma when
+their posts and comments receive upvotes, and lose karma when receiving downvotes.
 
 ### Backend Changes
 
 #### User Karma Tracking
+
 **Field Added:** `karma` field on User model (integer, default 0)
 
 #### Karma Updates on Votes
+
 When voting on posts or comments, the author's karma is automatically updated:
 
 ```elixir
@@ -1076,7 +1171,7 @@ When voting on posts or comments, the author's karma is automatically updated:
 # Increments author karma by +1 for upvote, -1 for downvote
 update_author_karma(post.author_id, value)
 
-# In forums.ex - update_vote/2  
+# In forums.ex - update_vote/2
 # Swings karma by ±2 when changing vote direction
 swing = (new_value - old_value)  # Results in +2 or -2
 update_author_karma(author_id, swing)
@@ -1087,11 +1182,13 @@ update_author_karma(author_id, -vote.value)
 ```
 
 **Files Modified:**
+
 - `apps/backend/lib/cgraph/forums.ex` - Vote functions updated
 
 ### User API Updates
 
 #### Karma in User Responses
+
 The user API now includes karma, verification, and premium status:
 
 ```elixir
@@ -1105,11 +1202,13 @@ The user API now includes karma, verification, and premium status:
 ```
 
 **Files Modified:**
+
 - `apps/backend/lib/cgraph_web/controllers/api/v1/user_json.ex`
 
 ### User Leaderboard
 
 #### Backend
+
 New endpoint to retrieve top users ranked by karma:
 
 ```elixir
@@ -1117,22 +1216,26 @@ New endpoint to retrieve top users ranked by karma:
 def leaderboard(conn, params) do
   page = Map.get(params, "page", "1") |> String.to_integer()
   limit = Map.get(params, "limit", "25") |> String.to_integer() |> min(100)
-  
+
   {users, meta} = Accounts.list_top_users_by_karma(page: page, limit: limit)
   render(conn, :leaderboard, users: users, meta: meta)
 end
 ```
 
 **Files Modified:**
+
 - `apps/backend/lib/cgraph/accounts.ex` - Added `list_top_users_by_karma/1`
 - `apps/backend/lib/cgraph_web/controllers/api/v1/user_controller.ex` - Added `leaderboard/2`
-- `apps/backend/lib/cgraph_web/controllers/api/v1/user_json.ex` - Added `leaderboard/1` and `leaderboard_entry/2`
+- `apps/backend/lib/cgraph_web/controllers/api/v1/user_json.ex` - Added `leaderboard/1` and
+  `leaderboard_entry/2`
 - `apps/backend/lib/cgraph_web/router.ex` - Added route
 
 #### Frontend
+
 New User Leaderboard page at `/community/leaderboard`:
 
 **Features:**
+
 - Top 3 spotlight with podium-style display
 - Full ranked list with user avatars and karma
 - Pagination controls
@@ -1140,9 +1243,11 @@ New User Leaderboard page at `/community/leaderboard`:
 - Sidebar link with trophy icon
 
 **Files Created:**
+
 - `apps/web/src/pages/community/UserLeaderboard.tsx`
 
 **Files Modified:**
+
 - `apps/web/src/App.tsx` - Added route and import
 - `apps/web/src/layouts/AppLayout.tsx` - Added leaderboard to sidebar
 - `apps/web/src/pages/forums/Forums.tsx` - Added "Top Users" quick link
@@ -1150,6 +1255,7 @@ New User Leaderboard page at `/community/leaderboard`:
 ### Profile Page Updates
 
 #### Karma Display
+
 User profile now displays karma with visual indicators:
 
 ```tsx
@@ -1157,19 +1263,22 @@ User profile now displays karma with visual indicators:
 <div className="flex items-center gap-2">
   <TrophyIcon className="h-5 w-5 text-yellow-500" />
   <span className="text-lg font-semibold text-white">
-    {user.karma >= 0 ? '+' : ''}{formatNumber(user.karma)}
+    {user.karma >= 0 ? '+' : ''}
+    {formatNumber(user.karma)}
   </span>
   <span className="text-sm text-gray-400">karma</span>
 </div>
 ```
 
 **Features:**
+
 - Trophy icon with golden color
 - Formatted number (1.2K, 1.5M, etc.)
 - Positive/negative indicator
 - Additional stats display (post count, comment count)
 
 **Files Modified:**
+
 - `apps/web/src/pages/profile/UserProfile.tsx`
 
 ---
@@ -1177,11 +1286,13 @@ User profile now displays karma with visual indicators:
 ## Mobile App Enhancements
 
 ### Skeleton Loading Component
+
 Created a comprehensive skeleton loading system for React Native:
 
 **File Created:** `apps/mobile/src/components/Skeleton.tsx`
 
 **Components:**
+
 - `Skeleton` - Base animated skeleton with shimmer effect
 - `ForumCardSkeleton` - Forum list item skeleton
 - `PostCardSkeleton` - Post display skeleton
@@ -1191,7 +1302,9 @@ Created a comprehensive skeleton loading system for React Native:
 ### Mobile Karma Display
 
 #### Settings Screen
+
 Profile card now shows karma with trophy icon:
+
 - Golden trophy icon
 - Formatted karma number (1.2K format)
 - Integrated into profile card
@@ -1199,7 +1312,9 @@ Profile card now shows karma with trophy icon:
 **File Modified:** `apps/mobile/src/screens/settings/SettingsScreen.tsx`
 
 #### User Profile Screen
+
 Enhanced profile viewing with:
+
 - Karma badge with trophy icon
 - Verified badge for verified users
 - Visual badges row
@@ -1207,11 +1322,13 @@ Enhanced profile viewing with:
 **File Modified:** `apps/mobile/src/screens/friends/UserProfileScreen.tsx`
 
 ### Mobile Leaderboard Screen
+
 New user leaderboard for mobile at:
 
 **File Created:** `apps/mobile/src/screens/community/LeaderboardScreen.tsx`
 
 **Features:**
+
 - Top contributors header with trophy icon
 - Rank badges (gold/silver/bronze for top 3)
 - User cards with avatar, karma, verified status
@@ -1222,16 +1339,19 @@ New user leaderboard for mobile at:
 ### Navigation Updates
 
 #### Friends Navigator
+
 Added Leaderboard route:
 
 **File Modified:** `apps/mobile/src/navigation/FriendsNavigator.tsx`
 
 #### Friend List Screen
+
 Added "Top Users" quick action button:
 
 **File Modified:** `apps/mobile/src/screens/friends/FriendListScreen.tsx`
 
 ### Type Updates
+
 Added karma and verification fields to mobile types:
 
 ```typescript
@@ -1253,9 +1373,11 @@ interface UserBasic {
 **File Modified:** `apps/mobile/src/types/index.ts`
 
 ### Forum Screens Loading States
+
 Updated to use skeleton loading instead of spinners:
 
 **Files Modified:**
+
 - `apps/mobile/src/screens/forums/ForumListScreen.tsx` - ForumCardSkeleton
 - `apps/mobile/src/screens/forums/PostScreen.tsx` - PostCardSkeleton, CommentSkeleton
 
@@ -1264,9 +1386,11 @@ Updated to use skeleton loading instead of spinners:
 ## Post Moderation Features
 
 ### Pin/Unpin Posts
+
 Added ability for forum moderators and owners to pin/unpin posts.
 
 #### Store Functions Added:
+
 ```typescript
 // forumStore.ts
 pinPost(postId: string, forumId: string)
@@ -1276,16 +1400,19 @@ unlockPost(postId: string)
 ```
 
 #### UI Changes:
+
 - Moderation dropdown in ForumPost.tsx with Pin/Unpin, Lock/Unlock options
 - Pinned/Locked badges displayed on posts
 - Locked posts show disabled comment input with message
 
 **Files Modified:**
+
 - `apps/web/src/stores/forumStore.ts`
 - `apps/web/src/pages/forums/ForumPost.tsx`
 - `apps/web/src/pages/forums/Forums.tsx`
 
 ### Mobile Moderation UI
+
 Added pinned/locked badges and locked comment message to mobile:
 
 **File Modified:** `apps/mobile/src/screens/forums/PostScreen.tsx`
@@ -1295,7 +1422,9 @@ Added pinned/locked badges and locked comment message to mobile:
 ## UI Component Library Expansion
 
 ### ErrorState Component
+
 Reusable error display with retry functionality:
+
 - `NetworkError` - Connection issues
 - `NotFoundError` - Missing content
 - `PermissionError` - Access denied
@@ -1304,7 +1433,9 @@ Reusable error display with retry functionality:
 **File Created:** `apps/web/src/components/ui/ErrorState.tsx`
 
 ### EmptyState Component
+
 Empty content placeholder with action buttons:
+
 - `NoPostsEmpty` - No posts in forum
 - `NoCommentsEmpty` - No comments on post
 - `NoMembersEmpty` - No members in group
@@ -1315,7 +1446,9 @@ Empty content placeholder with action buttons:
 **File Created:** `apps/web/src/components/ui/EmptyState.tsx`
 
 ### Toast Notification System
+
 Global toast notifications for user feedback:
+
 - Success, Error, Warning, Info variants
 - Auto-dismiss with configurable duration
 - Slide-in animation
@@ -1323,7 +1456,9 @@ Global toast notifications for user feedback:
 **File Created:** `apps/web/src/components/ui/Toast.tsx`
 
 ### Tooltip Component
+
 Accessible tooltip with positioning:
+
 - Top, bottom, left, right positions
 - Keyboard accessible (focus/blur)
 - Portal-based rendering
@@ -1335,12 +1470,16 @@ Accessible tooltip with positioning:
 ## Accessibility (a11y) Improvements
 
 ### Skip to Content Link
+
 Added hidden skip link for keyboard navigation:
+
 - Only visible when focused
 - Jumps to main content area
 
 ### ARIA Labels
+
 Enhanced semantic markup:
+
 - Navigation landmarks with aria-label
 - Current page indication with aria-current
 - Decorative icons hidden from screen readers
@@ -1355,7 +1494,9 @@ Enhanced semantic markup:
 ### Image/Media Message Support
 
 #### Web Conversation Enhancement
+
 Enhanced message bubbles to render different media types:
+
 - Image messages with click-to-open in new tab
 - Video messages with built-in player controls
 - File messages with download link and icon
@@ -1364,7 +1505,9 @@ Enhanced message bubbles to render different media types:
 **File Modified:** `apps/web/src/pages/messages/Conversation.tsx`
 
 #### Mobile Conversation Enhancement
+
 Added media message rendering to mobile chat:
+
 - Image messages with TouchableOpacity for lightbox
 - File attachment display with icon and filename
 - New styles: `messageImage`, `fileAttachment`
@@ -1372,6 +1515,7 @@ Added media message rendering to mobile chat:
 **File Modified:** `apps/mobile/src/screens/messages/ConversationScreen.tsx`
 
 #### Mobile Message Type Update
+
 Added `metadata` field to Message interface for storing media URLs and filenames.
 
 **File Modified:** `apps/mobile/src/types/index.ts`
@@ -1379,13 +1523,16 @@ Added `metadata` field to Message interface for storing media URLs and filenames
 ### Enhanced Error and Empty States
 
 #### UserLeaderboard Improvement
+
 Replaced basic error/empty displays with proper components:
+
 - Uses `ErrorState` component with retry button
 - Uses `EmptyState` component with trophy icon
 
 **File Modified:** `apps/web/src/pages/community/UserLeaderboard.tsx`
 
 #### Notifications Page Improvement
+
 Added EmptyState import and usage for empty notification lists.
 
 **File Modified:** `apps/web/src/pages/notifications/Notifications.tsx`
@@ -1393,48 +1540,57 @@ Added EmptyState import and usage for empty notification lists.
 ### Bug Fixes
 
 #### Groups.tsx useEffect Dependency
+
 Fixed missing dependency in useEffect that sets expanded categories.
+
 - Added `activeGroup?.categories` to dependency array
 
 **File Modified:** `apps/web/src/pages/groups/Groups.tsx`
 
 #### ForumListScreen useEffect Dependency
+
 Fixed malformed useEffect dependency array syntax in mobile.
 
 **File Modified:** `apps/mobile/src/screens/forums/ForumListScreen.tsx`
 
 ---
 
-*Last Updated: January 5, 2026*
+_Last Updated: January 5, 2026_
 
 ## December 30, 2024 Updates
 
 ### User ID System
+
 - Added auto-increment `user_id` sequence for unique numeric IDs
 - Display format: `#0001`, `#0042`, etc.
 - Username is now optional at registration
 - 14-day cooldown for username changes
 
 ### Friend System Improvements
+
 - Friend requests now accept username (not just user_id)
 - Backend `friend_controller.ex` supports both formats
 - Frontend stores auto-detect UUID vs username
 
 ### Messaging Fixes
+
 - Web Messages page handles `?userId=` query param
 - Mobile "Send Message" button creates conversations
 - Conversations properly created from friend profiles
 
 ### Animation Libraries
+
 - Web: `src/lib/animations.ts` with CSS keyframe utilities
 - Mobile: `src/lib/animations.ts` with Animated API helpers
 
 ### New Components
+
 - Web: `UserBadge.tsx` - displays user identity with badges
 - Mobile: `UserBadge.tsx` - mobile user identity component
 - Mobile: `AnimatedCard.tsx` - animated container with press feedback
 
 ### Test Count
+
 - Backend: 620 tests passing (was 215)
 
 ---
@@ -1443,7 +1599,9 @@ Fixed malformed useEffect dependency array syntax in mobile.
 
 ### Overview
 
-Major UX overhaul that removes the standalone Leaderboards tab and integrates leaderboards directly into the Forums page with beautiful, compact widgets. Added comprehensive anti-abuse voting security system with 5 layers of protection.
+Major UX overhaul that removes the standalone Leaderboards tab and integrates leaderboards directly
+into the Forums page with beautiful, compact widgets. Added comprehensive anti-abuse voting security
+system with 5 layers of protection.
 
 ### Key Changes
 
@@ -1451,8 +1609,8 @@ Major UX overhaul that removes the standalone Leaderboards tab and integrates le
 
 **Removed:** Leaderboards tab from main sidebar navigation
 
-| File Modified | Change |
-|---------------|--------|
+| File Modified                        | Change                                             |
+| ------------------------------------ | -------------------------------------------------- |
 | `apps/web/src/layouts/AppLayout.tsx` | Removed TrophyIcon import and Leaderboard nav item |
 
 #### 2. Leaderboard Integration into Forums
@@ -1461,14 +1619,15 @@ Created a new compact leaderboard widget system that displays in the Forums side
 
 **New File:** `apps/web/src/components/forums/LeaderboardWidget.tsx`
 
-| Component | Purpose |
-|-----------|---------|
-| `UserRow` | Compact user display with rank icon, avatar, name, karma |
-| `GlobalLeaderboardWidget` | Shows top users globally by karma |
-| `ForumLeaderboardWidget` | Shows top contributors within a specific forum |
-| `LeaderboardSidebar` | Combined widget with global/forum-specific toggle |
+| Component                 | Purpose                                                  |
+| ------------------------- | -------------------------------------------------------- |
+| `UserRow`                 | Compact user display with rank icon, avatar, name, karma |
+| `GlobalLeaderboardWidget` | Shows top users globally by karma                        |
+| `ForumLeaderboardWidget`  | Shows top contributors within a specific forum           |
+| `LeaderboardSidebar`      | Combined widget with global/forum-specific toggle        |
 
 **Features:**
+
 - Time range filtering (week, month, year, all)
 - Rank icons (🥇 gold, 🥈 silver, 🥉 bronze)
 - Verified badges display
@@ -1476,6 +1635,7 @@ Created a new compact leaderboard widget system that displays in the Forums side
 - Compact responsive design
 
 **File Modified:** `apps/web/src/pages/forums/Forums.tsx`
+
 - Added `LeaderboardSidebar` to right sidebar
 - Passes selected forum context for forum-specific leaderboards
 - Removed redundant leaderboard links from sort controls
@@ -1484,13 +1644,13 @@ Created a new compact leaderboard widget system that displays in the Forums side
 
 Implemented 5-layer protection against vote manipulation:
 
-| Security Layer | Requirement | Error Message |
-|----------------|-------------|---------------|
-| Account Age | Minimum 24 hours old | "Account must be at least 24 hours old to vote" |
-| Karma for Downvote | 10+ karma to downvote | "You need at least 10 karma to downvote" |
-| Self-Vote Prevention | Can't vote own forum | "You cannot vote on your own forum" |
-| Vote Cooldown | 5 minutes between changes | "Please wait 4 minutes before changing your vote" |
-| Standard Validation | Logged in user exists | Standard auth errors |
+| Security Layer       | Requirement               | Error Message                                     |
+| -------------------- | ------------------------- | ------------------------------------------------- |
+| Account Age          | Minimum 24 hours old      | "Account must be at least 24 hours old to vote"   |
+| Karma for Downvote   | 10+ karma to downvote     | "You need at least 10 karma to downvote"          |
+| Self-Vote Prevention | Can't vote own forum      | "You cannot vote on your own forum"               |
+| Vote Cooldown        | 5 minutes between changes | "Please wait 4 minutes before changing your vote" |
+| Standard Validation  | Logged in user exists     | Standard auth errors                              |
 
 **File Modified:** `apps/backend/lib/cgraph/forums.ex`
 
@@ -1513,12 +1673,13 @@ def get_forum_contributors(forum_id, opts \\ [])
 
 #### 4. New API Endpoints
 
-| Method | Endpoint | Auth | Description |
-|--------|----------|------|-------------|
-| GET | `/api/v1/forums/:id/contributors` | Public | Forum-specific user leaderboard |
-| GET | `/api/v1/forums/:id/vote-eligibility` | Required | Check if user can vote + cooldown time |
+| Method | Endpoint                              | Auth     | Description                            |
+| ------ | ------------------------------------- | -------- | -------------------------------------- |
+| GET    | `/api/v1/forums/:id/contributors`     | Public   | Forum-specific user leaderboard        |
+| GET    | `/api/v1/forums/:id/vote-eligibility` | Required | Check if user can vote + cooldown time |
 
 **Files Modified:**
+
 - `apps/backend/lib/cgraph_web/router.ex` - Added routes
 - `apps/backend/lib/cgraph_web/controllers/api/v1/forum_controller.ex` - Added endpoints
 - `apps/backend/lib/cgraph_web/controllers/api/v1/forum_json.ex` - Added contributors view
@@ -1542,21 +1703,23 @@ end
 
 ### Leaderboard Types Explained
 
-| Leaderboard | Scope | Ranking Criteria | Location |
-|-------------|-------|------------------|----------|
-| Global User | All users | Total karma (posts + comments) | Forums sidebar |
+| Leaderboard    | Scope        | Ranking Criteria                     | Location                             |
+| -------------- | ------------ | ------------------------------------ | ------------------------------------ |
+| Global User    | All users    | Total karma (posts + comments)       | Forums sidebar                       |
 | Forum-Specific | Single forum | Posts + comments karma in that forum | Forums sidebar (when forum selected) |
-| Forum Ranking | All forums | Score (upvotes - downvotes) | Unchanged |
+| Forum Ranking  | All forums   | Score (upvotes - downvotes)          | Unchanged                            |
 
 ### UX Research Applied
 
 Researched best practices from:
+
 - Discourse gamification patterns
 - Community karma systems
 - StackOverflow reputation mechanics
 - Contribution graph patterns
 
 Applied insights:
+
 - Compact sidebar widgets don't disrupt main content
 - Time-based filtering lets users see recent activity
 - Visual rank indicators (medals) provide instant recognition
@@ -1564,11 +1727,11 @@ Applied insights:
 
 ### Test Status
 
-| Suite | Status |
-|-------|--------|
-| Backend | 255 tests, 0 failures |
-| TypeScript | Compiles clean (no errors) |
-| Web Dev Server | Running successfully |
+| Suite          | Status                     |
+| -------------- | -------------------------- |
+| Backend        | 255 tests, 0 failures      |
+| TypeScript     | Compiles clean (no errors) |
+| Web Dev Server | Running successfully       |
 
 ### Files Changed Summary
 
@@ -1585,7 +1748,7 @@ apps/web/src/pages/community/UserLeaderboard.tsx            # Null safety fixes
 
 ---
 
-*Last Updated: January 2025*
+_Last Updated: January 2025_
 
 ---
 
@@ -1593,7 +1756,8 @@ apps/web/src/pages/community/UserLeaderboard.tsx            # Null safety fixes
 
 ### Overview
 
-Comprehensive code review and bug fix session focused on security hardening, error handling improvements, and code quality across the entire codebase.
+Comprehensive code review and bug fix session focused on security hardening, error handling
+improvements, and code quality across the entire codebase.
 
 ### Critical Backend Bug Fixes
 
@@ -1601,9 +1765,11 @@ Comprehensive code review and bug fix session focused on security hardening, err
 
 **File:** `apps/backend/lib/cgraph/forums.ex`
 
-**Problem:** `subscribe_to_forum/2` was incrementing `member_count` unconditionally, even when using `on_conflict: :nothing` for duplicate subscriptions. This caused inflated member counts.
+**Problem:** `subscribe_to_forum/2` was incrementing `member_count` unconditionally, even when using
+`on_conflict: :nothing` for duplicate subscriptions. This caused inflated member counts.
 
-**Solution:** Track whether a membership was actually created and only increment count if `member_created == true`.
+**Solution:** Track whether a membership was actually created and only increment count if
+`member_created == true`.
 
 ```elixir
 # Before: Always incremented
@@ -1626,7 +1792,8 @@ end
 
 **File:** `apps/backend/lib/cgraph_web/controllers/api/v1/post_controller.ex`
 
-**Problem:** `authorize_post_edit/3` and `authorize_post_delete/3` were checking `post.user_id` but the Post schema uses `author_id`. This caused all ownership checks to fail.
+**Problem:** `authorize_post_edit/3` and `authorize_post_delete/3` were checking `post.user_id` but
+the Post schema uses `author_id`. This caused all ownership checks to fail.
 
 **Solution:** Changed to `post.author_id == user.id`
 
@@ -1642,7 +1809,8 @@ end
 
 **File:** `apps/backend/lib/cgraph_web/controllers/api/v1/message_controller.ex`
 
-**Problem:** Any authenticated user could broadcast typing indicators to any conversation by knowing its ID - no authorization check.
+**Problem:** Any authenticated user could broadcast typing indicators to any conversation by knowing
+its ID - no authorization check.
 
 **Solution:** Added conversation membership verification before broadcasting:
 
@@ -1658,15 +1826,16 @@ end
 
 Created a shared helper module for safe parameter parsing across all controllers:
 
-| Function | Purpose |
-|----------|---------|
-| `safe_to_integer/2` | Parse string to int with default, handles malformed input |
-| `extract_pagination_params/2` | Extract page/per_page with max limits |
-| `sanitize_search_query/2` | Trim, limit length, return nil for empty |
-| `escape_like_pattern/1` | Escape `%` and `_` to prevent LIKE injection |
-| `build_search_pattern/1` | Create safe search patterns for ILIKE queries |
+| Function                      | Purpose                                                   |
+| ----------------------------- | --------------------------------------------------------- |
+| `safe_to_integer/2`           | Parse string to int with default, handles malformed input |
+| `extract_pagination_params/2` | Extract page/per_page with max limits                     |
+| `sanitize_search_query/2`     | Trim, limit length, return nil for empty                  |
+| `escape_like_pattern/1`       | Escape `%` and `_` to prevent LIKE injection              |
+| `build_search_pattern/1`      | Create safe search patterns for ILIKE queries             |
 
 **Updated Controllers:**
+
 - `thread_controller.ex` - Uses `extract_pagination_params/1`
 - `thread_post_controller.ex` - Uses `extract_pagination_params/1`
 
@@ -1676,15 +1845,15 @@ Created a shared helper module for safe parameter parsing across all controllers
 
 Added missing error handlers for all vote-related and forum errors:
 
-| Error Type | HTTP Status | User Message |
-|------------|-------------|--------------|
-| `:owner_only` | 403 | "Only the forum owner can perform this action" |
-| `:must_join_first` | 403 | "You must join this forum first to perform this action" |
-| `:cannot_leave_own_forum` | 403 | "You cannot leave a forum you own. Transfer ownership first" |
-| `{:vote_cooldown, seconds}` | 429 | "Vote cooldown active. Try again in X seconds" |
-| `:insufficient_karma` | 403 | "You need more karma to downvote" |
-| `:account_too_new` | 403 | "Your account is too new to vote" |
-| `:cannot_vote_own_content` | 403 | "You cannot vote on your own content" |
+| Error Type                  | HTTP Status | User Message                                                 |
+| --------------------------- | ----------- | ------------------------------------------------------------ |
+| `:owner_only`               | 403         | "Only the forum owner can perform this action"               |
+| `:must_join_first`          | 403         | "You must join this forum first to perform this action"      |
+| `:cannot_leave_own_forum`   | 403         | "You cannot leave a forum you own. Transfer ownership first" |
+| `{:vote_cooldown, seconds}` | 429         | "Vote cooldown active. Try again in X seconds"               |
+| `:insufficient_karma`       | 403         | "You need more karma to downvote"                            |
+| `:account_too_new`          | 403         | "Your account is too new to vote"                            |
+| `:cannot_vote_own_content`  | 403         | "You cannot vote on your own content"                        |
 
 ### Frontend Security Fixes
 
@@ -1694,16 +1863,17 @@ Added missing error handlers for all vote-related and forum errors:
 
 Created comprehensive URL validation utilities:
 
-| Function | Purpose |
-|----------|---------|
-| `isValidLinkUrl()` | Validates URLs for links (prevents javascript: protocol) |
-| `isValidImageUrl()` | Validates image URLs (allows safe data: URIs) |
-| `sanitizeLinkUrl()` | Returns safe URL or '#' |
-| `sanitizeImageUrl()` | Returns safe URL or placeholder |
-| `escapeHtml()` | Escape HTML special characters |
-| `isValidExternalUrl()` | Strict http/https only check |
+| Function               | Purpose                                                  |
+| ---------------------- | -------------------------------------------------------- |
+| `isValidLinkUrl()`     | Validates URLs for links (prevents javascript: protocol) |
+| `isValidImageUrl()`    | Validates image URLs (allows safe data: URIs)            |
+| `sanitizeLinkUrl()`    | Returns safe URL or '#'                                  |
+| `sanitizeImageUrl()`   | Returns safe URL or placeholder                          |
+| `escapeHtml()`         | Escape HTML special characters                           |
+| `isValidExternalUrl()` | Strict http/https only check                             |
 
 **Updated:** `apps/web/src/components/MarkdownRenderer.tsx`
+
 - All links and images now validated before rendering
 - Invalid URLs rendered as plain text/placeholder
 
@@ -1711,9 +1881,11 @@ Created comprehensive URL validation utilities:
 
 **File:** `apps/web/src/pages/messages/Messages.tsx`
 
-**Problem:** `fetchConversations()` was called twice on component mount due to duplicate useEffect hooks.
+**Problem:** `fetchConversations()` was called twice on component mount due to duplicate useEffect
+hooks.
 
-**Solution:** Removed duplicate, added proper dependencies to remaining effects, used `useCallback` for handlers.
+**Solution:** Removed duplicate, added proper dependencies to remaining effects, used `useCallback`
+for handlers.
 
 #### 3. Optimistic Update with Rollback
 
@@ -1727,10 +1899,10 @@ Created comprehensive URL validation utilities:
 vote: async (type, id, value) => {
   const previousPosts = get().posts;
   const previousCurrentPost = get().currentPost;
-  
+
   // Optimistic update
   set((state) => ({...}));
-  
+
   try {
     await api.post(...);
   } catch (error) {
@@ -1747,21 +1919,21 @@ vote: async (type, id, value) => {
 
 Added comprehensive test coverage for forum voting system:
 
-| Test Group | Tests Added |
-|------------|-------------|
-| Account Age | Validates minimum account age requirement |
-| Karma Requirements | Tests downvote karma thresholds |
-| Self-Vote Prevention | Verifies owners can't vote own forums |
-| Vote Cooldown | Tests rate limiting between vote changes |
-| Leaderboard | Verifies forum contributor leaderboard function |
+| Test Group           | Tests Added                                     |
+| -------------------- | ----------------------------------------------- |
+| Account Age          | Validates minimum account age requirement       |
+| Karma Requirements   | Tests downvote karma thresholds                 |
+| Self-Vote Prevention | Verifies owners can't vote own forums           |
+| Vote Cooldown        | Tests rate limiting between vote changes        |
+| Leaderboard          | Verifies forum contributor leaderboard function |
 
 ### Test Results
 
-| Suite | Status |
-|-------|--------|
-| Backend | 266 tests, 0 failures, 1 skipped |
-| Web TypeScript | Compiles clean |
-| Web Build | Production build successful |
+| Suite          | Status                           |
+| -------------- | -------------------------------- |
+| Backend        | 266 tests, 0 failures, 1 skipped |
+| Web TypeScript | Compiles clean                   |
+| Web Build      | Production build successful      |
 
 ### Files Changed Summary
 
@@ -1794,20 +1966,21 @@ docs/SESSION_UPDATES.md                                        # This update
 
 ### Extended Test Coverage - 200 New Tests
 
-This session focused on creating comprehensive test coverage for all major contexts in the application, achieving the goal of adding 200 new tests.
+This session focused on creating comprehensive test coverage for all major contexts in the
+application, achieving the goal of adding 200 new tests.
 
 #### Test Summary
 
-| Test File | Tests Added | Status |
-|-----------|-------------|--------|
-| `forums_extended_test.exs` | 52 | ✅ Passing |
-| `accounts_extended_test.exs` | 26 | ✅ Passing |
-| `messaging_extended_test.exs` | 26 | ✅ Passing |
-| `groups_extended_test.exs` | 23 | ✅ Passing |
-| `notifications_extended_test.exs` | 25 | ✅ Passing |
-| `admin_extended_test.exs` | 20 | ✅ Passing |
-| `crypto_extended_test.exs` | 28 | ✅ Passing |
-| **Total New Tests** | **200** | ✅ |
+| Test File                         | Tests Added | Status     |
+| --------------------------------- | ----------- | ---------- |
+| `forums_extended_test.exs`        | 52          | ✅ Passing |
+| `accounts_extended_test.exs`      | 26          | ✅ Passing |
+| `messaging_extended_test.exs`     | 26          | ✅ Passing |
+| `groups_extended_test.exs`        | 23          | ✅ Passing |
+| `notifications_extended_test.exs` | 25          | ✅ Passing |
+| `admin_extended_test.exs`         | 20          | ✅ Passing |
+| `crypto_extended_test.exs`        | 28          | ✅ Passing |
+| **Total New Tests**               | **200**     | ✅         |
 
 #### Final Test Results
 
@@ -1820,14 +1993,15 @@ Finished in 22.6 seconds (20.6s async, 1.9s sync)
 
 #### Bug Fixes During Testing
 
-| File | Bug | Fix |
-|------|-----|-----|
+| File          | Bug                                                     | Fix                                                      |
+| ------------- | ------------------------------------------------------- | -------------------------------------------------------- |
 | `accounts.ex` | UserSettings creation failed with `not_null` constraint | Set `user_id` directly on struct, not in changeset attrs |
-| `groups.ex` | `create_channel_message/3` used wrong field name | Changed `user_id` to `sender_id` to match Message schema |
+| `groups.ex`   | `create_channel_message/3` used wrong field name        | Changed `user_id` to `sender_id` to match Message schema |
 
 #### Test Coverage by Module
 
 ##### Forums Extended Tests (52 tests)
+
 - Forum CRUD operations with authorization
 - Post management including voting and views
 - Comment threading and voting
@@ -1836,6 +2010,7 @@ Finished in 22.6 seconds (20.6s async, 1.9s sync)
 - Moderator actions
 
 ##### Accounts Extended Tests (26 tests)
+
 - User profile management
 - Friendship operations (send/accept/reject requests)
 - Blocking functionality
@@ -1843,6 +2018,7 @@ Finished in 22.6 seconds (20.6s async, 1.9s sync)
 - Profile updates
 
 ##### Messaging Extended Tests (26 tests)
+
 - Conversation management
 - Message sending and retrieval
 - Reactions on messages
@@ -1850,6 +2026,7 @@ Finished in 22.6 seconds (20.6s async, 1.9s sync)
 - Group conversation creation
 
 ##### Groups Extended Tests (23 tests)
+
 - Group CRUD with ownership
 - Channel management
 - Member operations (add/remove)
@@ -1857,6 +2034,7 @@ Finished in 22.6 seconds (20.6s async, 1.9s sync)
 - Authorization checks
 
 ##### Notifications Extended Tests (25 tests)
+
 - Notification creation with valid types
 - Mark read/unread operations
 - Bulk mark all read
@@ -1864,6 +2042,7 @@ Finished in 22.6 seconds (20.6s async, 1.9s sync)
 - Notification settings
 
 ##### Admin Extended Tests (20 tests)
+
 - User listing with pagination and search
 - User details retrieval
 - User verification
@@ -1872,6 +2051,7 @@ Finished in 22.6 seconds (20.6s async, 1.9s sync)
 - Data export and deletion
 
 ##### Crypto Extended Tests (28 tests)
+
 - Key generation (various sizes)
 - AES-256-GCM encryption/decryption
 - Compact encryption format
@@ -1904,4 +2084,4 @@ docs/SESSION_UPDATES.md                    # This update
 
 ---
 
-*Last Updated: January 2, 2026*
+_Last Updated: January 2, 2026_

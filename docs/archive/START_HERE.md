@@ -20,13 +20,15 @@ CGraph is an all-in-one open-source communication platform featuring:
 
 - CI builds backend/web Docker images to validate health checks on every PR.
 - Security workflow runs gitleaks, hadolint, Syft SBOM + Grype scans, Sobelow, and pnpm audit.
-- Context7 MCP helper documented in `.vscode/mcp.json` for assisted research (provide your own API key).
+- Context7 MCP helper documented in `.vscode/mcp.json` for assisted research (provide your own API
+  key).
 
 ### How to use Context7 MCP
 
 - Purpose: assistant for research/summaries; code changes stay under your control.
 - Provide your `CONTEXT7_API_KEY` when prompted by your MCP-enabled client (not stored in repo/CI).
-- Good asks: summarize long files, draft release notes, suggest tests or scan allowlists; then review before committing.
+- Good asks: summarize long files, draft release notes, suggest tests or scan allowlists; then
+  review before committing.
 
 ---
 

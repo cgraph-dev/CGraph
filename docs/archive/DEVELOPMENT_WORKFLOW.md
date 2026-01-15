@@ -1,22 +1,24 @@
 # CGraph Development Workflow Guide
 
 > **Last Updated**: January 9, 2026
-> 
-> **Status**: ✅ Backend: 216 tests passing | ✅ Web: Builds successfully | ✅ Mobile: TypeScript compiles | ✅ All APIs working
+>
+> **Status**: ✅ Backend: 216 tests passing | ✅ Web: Builds successfully | ✅ Mobile: TypeScript
+> compiles | ✅ All APIs working
 
-This document contains all commands to test, run, and develop CGraph - a real-time communication platform combining organized group chat with community-driven forums.
+This document contains all commands to test, run, and develop CGraph - a real-time communication
+platform combining organized group chat with community-driven forums.
 
 ---
 
 ## Current System Status
 
-| Component | Status | Test Results | Notes |
-|-----------|--------|--------------|-------|
-| **Backend (Elixir/Phoenix)** | ✅ Working | 216 tests, 0 failures | All tests passing |
-| **Web Frontend (React/Vite)** | ✅ Working | Builds in 3.5s | ESLint 9 config added |
-| **Mobile (React Native/Expo)** | ✅ Compiles | TypeScript passes | Ready for development |
-| **Database (PostgreSQL)** | ✅ Running | All migrations applied | Docker container |
-| **API Authentication** | ✅ Working | JWT + Wallet auth | Guardian integration |
+| Component                      | Status      | Test Results           | Notes                 |
+| ------------------------------ | ----------- | ---------------------- | --------------------- |
+| **Backend (Elixir/Phoenix)**   | ✅ Working  | 216 tests, 0 failures  | All tests passing     |
+| **Web Frontend (React/Vite)**  | ✅ Working  | Builds in 3.5s         | ESLint 9 config added |
+| **Mobile (React Native/Expo)** | ✅ Compiles | TypeScript passes      | Ready for development |
+| **Database (PostgreSQL)**      | ✅ Running  | All migrations applied | Docker container      |
+| **API Authentication**         | ✅ Working  | JWT + Wallet auth      | Guardian integration  |
 
 ---
 
@@ -62,17 +64,18 @@ cd apps/mobile && npx expo start    # Mobile: Expo DevTools
 
 ### Prerequisites
 
-| Tool | Version | Installation |
-|------|---------|--------------|
-| **Node.js** | 22+ | `asdf install nodejs 22.11.0` |
-| **pnpm** | 10+ | `npm install -g pnpm` |
-| **Elixir** | 1.19+ | `asdf install elixir 1.19.4-otp-28` |
-| **Erlang** | 28+ | `asdf install erlang 28.3` |
-| **PostgreSQL** | 16+ | `docker-compose up -d postgres` or local install |
-| **Redis** | 7+ | `docker-compose up -d redis` or local install |
-| **Docker** | Latest | [Docker Install](https://docs.docker.com/get-docker/) |
+| Tool           | Version | Installation                                          |
+| -------------- | ------- | ----------------------------------------------------- |
+| **Node.js**    | 22+     | `asdf install nodejs 22.11.0`                         |
+| **pnpm**       | 10+     | `npm install -g pnpm`                                 |
+| **Elixir**     | 1.19+   | `asdf install elixir 1.19.4-otp-28`                   |
+| **Erlang**     | 28+     | `asdf install erlang 28.3`                            |
+| **PostgreSQL** | 16+     | `docker-compose up -d postgres` or local install      |
+| **Redis**      | 7+      | `docker-compose up -d redis` or local install         |
+| **Docker**     | Latest  | [Docker Install](https://docs.docker.com/get-docker/) |
 
-> **Note:** We recommend using [asdf](https://asdf-vm.com/) v0.18+ for managing Erlang, Elixir, and Node.js versions. See the [Quickstart Guide](docs/QUICKSTART.md) for installation instructions.
+> **Note:** We recommend using [asdf](https://asdf-vm.com/) v0.18+ for managing Erlang, Elixir, and
+> Node.js versions. See the [Quickstart Guide](docs/QUICKSTART.md) for installation instructions.
 
 ### Initial Setup
 
@@ -101,6 +104,7 @@ cd ../web && npm run typecheck
 ### Environment Variables
 
 **Backend** (`apps/backend/config/dev.exs` & `config/runtime.exs`):
+
 ```elixir
 # Database
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/cgraph_dev
@@ -118,6 +122,7 @@ AWS_S3_BUCKET=cgraph-dev
 ```
 
 **Frontend** (`apps/web/.env`):
+
 ```env
 VITE_API_URL=http://localhost:4000
 VITE_WS_URL=ws://localhost:4000/socket
@@ -465,10 +470,10 @@ Scan the QR code with Expo Go to view components on your device.
 
 Stories use the `.stories.tsx` extension:
 
-| Platform | Story Location |
-|----------|----------------|
-| Web | `apps/web/src/components/*.stories.tsx` |
-| Mobile | `apps/mobile/src/components/stories/*.stories.tsx` |
+| Platform | Story Location                                     |
+| -------- | -------------------------------------------------- |
+| Web      | `apps/web/src/components/*.stories.tsx`            |
+| Mobile   | `apps/mobile/src/components/stories/*.stories.tsx` |
 
 ### Storybook Version
 
@@ -480,23 +485,23 @@ We use Storybook **8.6.15** — the latest stable release with full addon suppor
 
 ### Local Services
 
-| Service | URL | Notes |
-|---------|-----|-------|
-| **Backend API** | http://localhost:4000 | Phoenix server |
-| **Web Frontend** | http://localhost:3000 | Vite dev server |
-| **Storybook** | http://localhost:6006 | Component documentation |
-| **API Docs** | http://localhost:4000/dev/dashboard | Phoenix dashboard |
-| **WebSocket** | ws://localhost:4000/socket | Phoenix channels |
+| Service          | URL                                 | Notes                   |
+| ---------------- | ----------------------------------- | ----------------------- |
+| **Backend API**  | http://localhost:4000               | Phoenix server          |
+| **Web Frontend** | http://localhost:3000               | Vite dev server         |
+| **Storybook**    | http://localhost:6006               | Component documentation |
+| **API Docs**     | http://localhost:4000/dev/dashboard | Phoenix dashboard       |
+| **WebSocket**    | ws://localhost:4000/socket          | Phoenix channels        |
 
 ### Docker Services (when running)
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| **PostgreSQL** | localhost:5432 | `postgres:postgres` |
-| **Redis** | localhost:6379 | - |
-| **pgAdmin** | http://localhost:5050 | `admin@admin.com:admin` |
-| **Redis Commander** | http://localhost:8081 | - |
-| **Mailhog** | http://localhost:8025 | Email testing UI |
+| Service             | URL                   | Credentials             |
+| ------------------- | --------------------- | ----------------------- |
+| **PostgreSQL**      | localhost:5432        | `postgres:postgres`     |
+| **Redis**           | localhost:6379        | -                       |
+| **pgAdmin**         | http://localhost:5050 | `admin@admin.com:admin` |
+| **Redis Commander** | http://localhost:8081 | -                       |
+| **Mailhog**         | http://localhost:8025 | Email testing UI        |
 
 ### API Testing Tools
 
@@ -560,16 +565,18 @@ CGraph/
 ### ✅ Completed (~85%)
 
 #### Backend Modules
-| Module | Description | Status |
-|--------|-------------|--------|
-| **accounts/** | User auth, sessions, wallets, friends | ✅ Complete |
-| **messaging/** | DMs, reactions, read receipts | ✅ Complete |
-| **forums/** | Posts, comments, voting, moderation | ✅ Complete |
-| **groups/** | Organized groups, channels, roles | ✅ Complete |
-| **notifications/** | Push & in-app notifications | ✅ Complete |
+
+| Module             | Description                             | Status      |
+| ------------------ | --------------------------------------- | ----------- |
+| **accounts/**      | User auth, sessions, wallets, friends   | ✅ Complete |
+| **messaging/**     | DMs, reactions, read receipts           | ✅ Complete |
+| **forums/**        | Posts, comments, voting, moderation     | ✅ Complete |
+| **groups/**        | Organized groups, channels, roles       | ✅ Complete |
+| **notifications/** | Push & in-app notifications             | ✅ Complete |
 | **Infrastructure** | Caching, jobs, rate limiting, telemetry | ✅ Complete |
 
 #### API Endpoints
+
 - ✅ Auth (register, login, wallet, password reset)
 - ✅ Users (profile, settings, avatar)
 - ✅ Conversations & Messages
@@ -579,6 +586,7 @@ CGraph/
 - ✅ WebSocket channels for real-time
 
 #### Web Frontend
+
 - ✅ Authentication pages (Login, Register, Forgot Password)
 - ✅ Messages page with conversations
 - ✅ Groups with channels
@@ -588,6 +596,7 @@ CGraph/
 - ✅ Phoenix socket integration
 
 #### Mobile App
+
 - ✅ Full navigation structure
 - ✅ Auth screens
 - ✅ Messages/Conversations
@@ -668,6 +677,7 @@ git status | grep -E '\.(pem|key|crt|env)$' && echo "WARNING: Sensitive files!" 
 ### Security Reminders
 
 **NEVER commit these files:**
+
 - `.env` files (use `.env.example` as templates)
 - `*.pem`, `*.key`, `*.crt` files
 - Keystore files (`*.jks`, `*.keystore`)
@@ -682,43 +692,43 @@ The `.gitignore` is configured to exclude all sensitive patterns automatically.
 
 ### 🔴 Not Started (Priority: High)
 
-| Feature | Description | Files Needed |
-|---------|-------------|--------------|
-| **Voice/Video Calls** | LiveKit/Jitsi integration | New module, WebRTC setup |
-| **AI Features** | Message summarization, smart search | New Oban workers |
-| **ActivityPub** | Federation with Mastodon | Full new module |
-| **Admin Dashboard UI** | Admin panel frontend | `apps/web/src/pages/Admin/` |
+| Feature                | Description                         | Files Needed                |
+| ---------------------- | ----------------------------------- | --------------------------- |
+| **Voice/Video Calls**  | LiveKit/Jitsi integration           | New module, WebRTC setup    |
+| **AI Features**        | Message summarization, smart search | New Oban workers            |
+| **ActivityPub**        | Federation with Mastodon            | Full new module             |
+| **Admin Dashboard UI** | Admin panel frontend                | `apps/web/src/pages/Admin/` |
 
 ### 🟡 Partially Complete (Priority: Medium)
 
-| Feature | Status | What's Left |
-|---------|--------|-------------|
-| **E2E Encryption** | Schema exists | Full Double Ratchet protocol implementation |
-| **Polls** | Schema exists (`poll.ex`) | Controller, endpoints, UI |
-| **Custom Emoji** | Schema exists | Upload endpoints, picker UI |
-| **Pinned Posts** | ✅ COMPLETE | Backend endpoints + web/mobile UI |
-| **Payment/Stripe** | Architecture defined | Implementation |
+| Feature            | Status                    | What's Left                                 |
+| ------------------ | ------------------------- | ------------------------------------------- |
+| **E2E Encryption** | Schema exists             | Full Double Ratchet protocol implementation |
+| **Polls**          | Schema exists (`poll.ex`) | Controller, endpoints, UI                   |
+| **Custom Emoji**   | Schema exists             | Upload endpoints, picker UI                 |
+| **Pinned Posts**   | ✅ COMPLETE               | Backend endpoints + web/mobile UI           |
+| **Payment/Stripe** | Architecture defined      | Implementation                              |
 
 ### 🟢 Polish & Testing (Priority: Medium)
 
-| Task | Description | Status |
-|------|-------------|--------|
-| **Test Coverage** | Backend & frontend test completion | ⏳ |
-| **Error Handling** | Comprehensive error states in UI | ✅ ErrorState, EmptyState components |
-| **Loading States** | Skeleton loaders, optimistic updates | ✅ Web + Mobile skeletons |
-| **Accessibility** | ARIA labels, keyboard navigation | ✅ Skip links, ARIA labels, focus rings |
-| **i18n** | Internationalization setup | ⏳ |
-| **Dark Mode** | Complete dark theme support | ✅ |
-| **Toast Notifications** | User feedback system | ✅ Toast component |
+| Task                    | Description                          | Status                                  |
+| ----------------------- | ------------------------------------ | --------------------------------------- |
+| **Test Coverage**       | Backend & frontend test completion   | ⏳                                      |
+| **Error Handling**      | Comprehensive error states in UI     | ✅ ErrorState, EmptyState components    |
+| **Loading States**      | Skeleton loaders, optimistic updates | ✅ Web + Mobile skeletons               |
+| **Accessibility**       | ARIA labels, keyboard navigation     | ✅ Skip links, ARIA labels, focus rings |
+| **i18n**                | Internationalization setup           | ⏳                                      |
+| **Dark Mode**           | Complete dark theme support          | ✅                                      |
+| **Toast Notifications** | User feedback system                 | ✅ Toast component                      |
 
 ### 🔵 Infrastructure (Priority: Low)
 
-| Task | Description |
-|------|-------------|
-| **PgBouncer** | Connection pooling for production |
-| **Multi-region** | Geographic distribution |
-| **Meilisearch** | Full-text search upgrade |
-| **Self-hosting docs** | Complete Docker deployment guide |
+| Task                  | Description                       |
+| --------------------- | --------------------------------- |
+| **PgBouncer**         | Connection pooling for production |
+| **Multi-region**      | Geographic distribution           |
+| **Meilisearch**       | Full-text search upgrade          |
+| **Self-hosting docs** | Complete Docker deployment guide  |
 
 ---
 
@@ -773,6 +783,7 @@ The `.gitignore` is configured to exclude all sensitive patterns automatically.
 ### Common Issues
 
 **Database connection failed**
+
 ```bash
 # Ensure PostgreSQL is running
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres
@@ -781,6 +792,7 @@ psql -U cgraph -h localhost -p 5432 -d cgraph_dev  # Password: cgraph_dev_passwo
 ```
 
 **Redis connection failed**
+
 ```bash
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d redis
 redis-cli ping  # Should return PONG
@@ -789,6 +801,7 @@ redis-cli INFO | head -5
 ```
 
 **Compilation errors after pulling**
+
 ```bash
 cd apps/backend
 mix deps.get
@@ -796,6 +809,7 @@ mix compile --force
 ```
 
 **Frontend build issues**
+
 ```bash
 rm -rf node_modules
 npm install
@@ -803,6 +817,7 @@ cd apps/web && rm -rf node_modules && npm install
 ```
 
 **Port already in use**
+
 ```bash
 # Find process using port
 lsof -i :4000
@@ -814,8 +829,10 @@ kill -9 <PID>
 The following issues were identified and fixed during development setup:
 
 #### 1. Database Credential Mismatch
-**Symptom**: `connection refused` or `authentication failed` errors
-**Fix**: Updated `apps/backend/config/dev.exs` to use Docker container credentials:
+
+**Symptom**: `connection refused` or `authentication failed` errors **Fix**: Updated
+`apps/backend/config/dev.exs` to use Docker container credentials:
+
 ```elixir
 config :cgraph, Cgraph.Repo,
   username: "cgraph",
@@ -825,35 +842,43 @@ config :cgraph, Cgraph.Repo,
 ```
 
 #### 2. Missing Database Columns
-**Symptom**: `ERROR 42703 (undefined_column) column u0.status_message does not exist`
-**Fix**: Created migration `20251228234501_add_missing_user_fields.exs`:
+
+**Symptom**: `ERROR 42703 (undefined_column) column u0.status_message does not exist` **Fix**:
+Created migration `20251228234501_add_missing_user_fields.exs`:
+
 ```bash
 cd apps/backend
 mix ecto.migrate
 ```
 
 #### 3. Missing AuthJSON Module
-**Symptom**: `no "auth_response" json template defined for CgraphWeb.API.V1.AuthJSON`
-**Fix**: Created `lib/cgraph_web/controllers/api/v1/auth_json.ex` with proper JSON rendering functions.
+
+**Symptom**: `no "auth_response" json template defined for CgraphWeb.API.V1.AuthJSON` **Fix**:
+Created `lib/cgraph_web/controllers/api/v1/auth_json.ex` with proper JSON rendering functions.
 
 #### 4. Presence Module Callbacks
-**Symptom**: `undefined callback function init/1` for Cgraph.Presence
-**Fix**: Added required callback to `lib/cgraph/presence.ex`:
+
+**Symptom**: `undefined callback function init/1` for Cgraph.Presence **Fix**: Added required
+callback to `lib/cgraph/presence.ex`:
+
 ```elixir
 @impl true
 def init(_opts), do: {:ok, %{}}
 ```
 
 #### 5. DateTime Precision Mismatch
-**Symptom**: `microseconds are not supported` Ecto errors
-**Fix**: Changed all schemas from `:utc_datetime` to `:utc_datetime_usec`:
+
+**Symptom**: `microseconds are not supported` Ecto errors **Fix**: Changed all schemas from
+`:utc_datetime` to `:utc_datetime_usec`:
+
 ```elixir
 @timestamps_opts [type: :utc_datetime_usec]
 ```
 
 #### 6. Oban Background Jobs
-**Symptom**: Missing Oban tables
-**Fix**: Created migration `20251228231006_add_oban_jobs.exs`:
+
+**Symptom**: Missing Oban tables **Fix**: Created migration `20251228231006_add_oban_jobs.exs`:
+
 ```elixir
 def up, do: Oban.Migration.up(version: 12)
 def down, do: Oban.Migration.down(version: 1)
@@ -900,6 +925,7 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:4000/api/v1/users/me
 Use this checklist when reviewing the frontend UI at http://localhost:3000:
 
 ### Authentication Flow
+
 - [ ] Login page renders correctly with email/password fields
 - [ ] "Connect Wallet" button present for MetaMask login
 - [ ] Registration page with username, email, password
@@ -908,6 +934,7 @@ Use this checklist when reviewing the frontend UI at http://localhost:3000:
 - [ ] Loading spinners during auth
 
 ### Messages Section (`/messages`)
+
 - [ ] Conversations list sidebar
 - [ ] Search/filter conversations
 - [ ] New conversation button
@@ -918,6 +945,7 @@ Use this checklist when reviewing the frontend UI at http://localhost:3000:
 - [ ] Message reactions
 
 ### Groups Section (`/groups`)
+
 - [ ] Groups list sidebar
 - [ ] Channel list within groups
 - [ ] Group settings/members
@@ -926,6 +954,7 @@ Use this checklist when reviewing the frontend UI at http://localhost:3000:
 - [ ] Invite system
 
 ### Forums Section (`/forums`)
+
 - [ ] Forum categories list
 - [ ] Posts with upvote/downvote
 - [ ] Comments on posts
@@ -934,6 +963,7 @@ Use this checklist when reviewing the frontend UI at http://localhost:3000:
 - [ ] Moderator actions
 
 ### Settings Section (`/settings`)
+
 - [ ] Profile editing
 - [ ] Avatar upload
 - [ ] Notification preferences
@@ -943,6 +973,7 @@ Use this checklist when reviewing the frontend UI at http://localhost:3000:
 - [ ] Connected wallets
 
 ### General UI
+
 - [ ] Dark theme consistency
 - [ ] Responsive design (mobile)
 - [ ] Navigation highlighting
@@ -1007,8 +1038,9 @@ This section documents all the fixes applied to get the test suite passing.
 **Solution:** Added configuration option to disable rate limiting in test environment.
 
 **Files Changed:**
+
 - `lib/cgraph/rate_limiter.ex` - Added `enabled?/0` function
-- `lib/cgraph_web/plugs/rate_limiter_v2.ex` - Added bypass when disabled  
+- `lib/cgraph_web/plugs/rate_limiter_v2.ex` - Added bypass when disabled
 - `config/test.exs` - Added `config :cgraph, Cgraph.RateLimiter, enabled: false`
 
 ### 2. Push Token Platform Mapping
@@ -1018,6 +1050,7 @@ This section documents all the fixes applied to get the test suite passing.
 **Solution:** Added platform mapping in controller: ios→apns, android→fcm.
 
 **Files Changed:**
+
 - `lib/cgraph_web/controllers/api/v1/push_token_controller.ex` - Platform mapping added
 - `lib/cgraph_web/controllers/api/v1/push_token_json.ex` - Removed non-existent `device_name` field
 
@@ -1028,6 +1061,7 @@ This section documents all the fixes applied to get the test suite passing.
 **Solution:** Changed to find-or-create pattern.
 
 **Files Changed:**
+
 - `lib/cgraph/notifications/notifications.ex` - Replaced upsert with explicit check
 
 ### 4. HTTP Status Code Corrections
@@ -1037,19 +1071,23 @@ This section documents all the fixes applied to get the test suite passing.
 **Solution:** Changed `:bad_request` to `:unprocessable_entity` for validation errors.
 
 **Files Changed:**
-- `lib/cgraph_web/controllers/fallback_controller.ex` - Fixed `:token_required` and `:invalid_platform` handlers
+
+- `lib/cgraph_web/controllers/fallback_controller.ex` - Fixed `:token_required` and
+  `:invalid_platform` handlers
 
 ### 5. Test Assertion Fixes
 
 **Problem:** Various tests had incorrect expectations.
 
 **Fixes Applied:**
+
 - Invite join test: Changed expected status from 200 to 201 (Created)
 - Username uniqueness test: Fixed error response path (`["error"]["details"]["username"]`)
 - User profile test: Added bio update after creation (registration doesn't include bio)
 - Reaction test: Fixed `add_reaction` argument order and used API-based setup
 
 **Files Changed:**
+
 - `test/cgraph_web/controllers/api/v1/channel_role_invite_test.exs`
 - `test/cgraph_web/controllers/api/v1/user_controller_test.exs`
 - `test/cgraph_web/controllers/api/v1/misc_controllers_test.exs`
@@ -1061,45 +1099,51 @@ This section documents all the fixes applied to get the test suite passing.
 **Solution:** Created `eslint.config.js` with proper TypeScript and React rules.
 
 **Files Created:**
+
 - `apps/web/eslint.config.js`
 
-> 📖 **For detailed technical documentation of each fix, see [docs/BUGFIX_LOG.md](docs/BUGFIX_LOG.md)**
+> 📖 **For detailed technical documentation of each fix, see
+> [docs/BUGFIX_LOG.md](docs/BUGFIX_LOG.md)**
 
 ---
 
 ## Development Priority Matrix
 
 ### Immediate (This Sprint)
-| Task | Effort | Impact |
-|------|--------|--------|
-| Test coverage for existing code | High | High |
-| Error handling polish | Medium | High |
-| Loading states & skeletons | Medium | Medium |
-| Form validation feedback | Low | Medium |
+
+| Task                            | Effort | Impact |
+| ------------------------------- | ------ | ------ |
+| Test coverage for existing code | High   | High   |
+| Error handling polish           | Medium | High   |
+| Loading states & skeletons      | Medium | Medium |
+| Form validation feedback        | Low    | Medium |
 
 ### Short-term (Next Sprint)
-| Task | Effort | Impact |
-|------|--------|--------|
-| Admin dashboard UI | High | High |
+
+| Task                 | Effort | Impact |
+| -------------------- | ------ | ------ |
+| Admin dashboard UI   | High   | High   |
 | Polls implementation | Medium | Medium |
-| Custom emoji upload | Medium | Low |
-| Pinned messages | Low | Medium |
+| Custom emoji upload  | Medium | Low    |
+| Pinned messages      | Low    | Medium |
 
 ### Medium-term (Month)
-| Task | Effort | Impact |
-|------|--------|--------|
-| E2E encryption | Very High | High |
-| Voice/video calls | Very High | High |
-| i18n/localization | High | Medium |
-| Accessibility audit | Medium | Medium |
+
+| Task                | Effort    | Impact |
+| ------------------- | --------- | ------ |
+| E2E encryption      | Very High | High   |
+| Voice/video calls   | Very High | High   |
+| i18n/localization   | High      | Medium |
+| Accessibility audit | Medium    | Medium |
 
 ### Long-term (Quarter)
-| Task | Effort | Impact |
-|------|--------|--------|
-| AI features | Very High | High |
-| ActivityPub federation | Very High | Medium |
-| Multi-region deployment | High | Medium |
+
+| Task                    | Effort    | Impact |
+| ----------------------- | --------- | ------ |
+| AI features             | Very High | High   |
+| ActivityPub federation  | Very High | Medium |
+| Multi-region deployment | High      | Medium |
 
 ---
 
-*Generated for the CGraph development team. Keep this document updated as the project evolves.*
+_Generated for the CGraph development team. Keep this document updated as the project evolves._

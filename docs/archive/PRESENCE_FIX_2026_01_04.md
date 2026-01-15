@@ -5,11 +5,15 @@
 The online/offline status was showing incorrect data due to a fundamental architectural flaw:
 
 ### Root Cause
-1. **Database `users.status` field was NEVER updated** when users connected/disconnected from WebSocket
-2. **Mobile and Web used this stale database field as a fallback** when Phoenix Presence returned false
+
+1. **Database `users.status` field was NEVER updated** when users connected/disconnected from
+   WebSocket
+2. **Mobile and Web used this stale database field as a fallback** when Phoenix Presence returned
+   false
 3. **Result**: Users appeared "online" indefinitely, even after disconnecting
 
 ### Why This Happened
+
 - Database status was meant for "away", "busy", "invisible" custom statuses
 - It was incorrectly being used as an online/offline indicator
 - Phoenix Presence is the ONLY source of truth for actual WebSocket connection status
@@ -18,11 +22,13 @@ The online/offline status was showing incorrect data due to a fundamental archit
 ## Solution
 
 ### Removed Database Status Fallback
+
 **Phoenix Presence is now the single source of truth for online status.**
 
 #### Mobile Changes (`apps/mobile/src/screens/messages/ConversationScreen.tsx`)
 
 **Before:**
+
 ```typescript
 // Check online status from multiple sources:
 // 1. Real-time presence (most accurate if available)
@@ -33,6 +39,7 @@ const isOnline = presenceOnline || apiStatus === 'online'; // ❌ WRONG!
 ```
 
 **After:**
+
 ```typescript
 // Use ONLY Phoenix Presence for online status (single source of truth)
 // Database status field is never updated and shows stale data
@@ -43,34 +50,37 @@ setIsOtherUserOnline(presenceOnline); // ✅ CORRECT!
 #### Web Changes (`apps/web/src/pages/messages/Messages.tsx`)
 
 **Before:**
+
 ```typescript
 const isOnline = otherParticipant?.user.status === 'online'; // ❌ Stale data
 ```
 
 **After:**
+
 ```typescript
 // Integrated with Phoenix Presence for real-time tracking
 const [onlineStatus, setOnlineStatus] = useState<Record<string, boolean>>({});
 
 useEffect(() => {
   const unsubscribe = socketManager.onStatusChange((convId, userId, isOnline) => {
-    setOnlineStatus(prev => ({
+    setOnlineStatus((prev) => ({
       ...prev,
-      [`${convId}-${userId}`]: isOnline
+      [`${convId}-${userId}`]: isOnline,
     }));
   });
   return unsubscribe;
 }, []);
 
 // In ConversationItem component:
-const isOnline = otherParticipant 
-  ? onlineStatus[`${conversation.id}-${otherParticipant.userId}`] || false 
+const isOnline = otherParticipant
+  ? onlineStatus[`${conversation.id}-${otherParticipant.userId}`] || false
   : false; // ✅ CORRECT!
 ```
 
 #### Friends Page Changes (`apps/web/src/pages/friends/Friends.tsx`)
 
 **Disabled "Online" filter tab** until global presence tracking is implemented:
+
 ```typescript
 const tabs = [
   { id: 'all' as Tab, label: 'All', count: friends.length },
@@ -84,6 +94,7 @@ const tabs = [
 ## How Phoenix Presence Works
 
 ### Architecture
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    PRESENCE FLOW                             │
@@ -115,7 +126,7 @@ const tabs = [
 ```elixir
 def join("conversation:" <> conversation_id, _params, socket) do
   # ... authorization checks ...
-  
+
   send(self(), :after_join)
   {:ok, socket}
 end
@@ -123,7 +134,7 @@ end
 def handle_info(:after_join, socket) do
   user = socket.assigns.user
   conversation_id = socket.assigns.conversation_id
-  
+
   # Track user presence in this conversation
   {:ok, _} = Presence.track(socket, user.id, %{
     user_id: user.id,
@@ -131,7 +142,7 @@ def handle_info(:after_join, socket) do
     online_at: DateTime.utc_now(),
     typing: false
   })
-  
+
   {:noreply, socket}
 end
 ```
@@ -141,14 +152,14 @@ end
 ```typescript
 class SocketManager {
   private onlineUsers: Map<string, Set<string>> = new Map();
-  
+
   joinConversation(conversationId: string): Channel | null {
     const channel = this.socket.channel(`conversation:${conversationId}`, {});
     const presence = new Presence(channel);
-    
+
     // Initialize online users set
     this.onlineUsers.set(conversationId, new Set());
-    
+
     // Handle presence sync (initial state)
     presence.onSync(() => {
       const onlineSet = new Set<string>();
@@ -158,22 +169,22 @@ class SocketManager {
       });
       this.onlineUsers.set(conversationId, onlineSet);
     });
-    
+
     // Handle join events
     presence.onJoin((id: string) => {
       this.onlineUsers.get(conversationId)?.add(id);
       this.notifyStatusChange(conversationId, id, true);
     });
-    
+
     // Handle leave events
     presence.onLeave((id: string) => {
       this.onlineUsers.get(conversationId)?.delete(id);
       this.notifyStatusChange(conversationId, id, false);
     });
-    
+
     return channel;
   }
-  
+
   isUserOnline(conversationId: string, userId: string): boolean {
     return this.onlineUsers.get(conversationId)?.has(userId) || false;
   }
@@ -183,20 +194,25 @@ class SocketManager {
 ## What About Database Status Field?
 
 ### Keep It For Custom Statuses
+
 The `users.status` field should be used ONLY for:
+
 - "away" - User manually set status
 - "busy" - Do not disturb mode
 - "invisible" - User wants to appear offline
 - Custom status messages
 
 ### Don't Use It For Online/Offline
+
 **NEVER** use `users.status` to determine if a user is connected:
+
 - ❌ `if (user.status === 'online')`
 - ✅ `if (socketManager.isUserOnline(conversationId, userId))`
 
 ## Testing Results
 
 ### Before Fix
+
 ```
 User A disconnects from WebSocket
 → Mobile still shows "Online" ❌
@@ -207,6 +223,7 @@ User A disconnects from WebSocket
 ```
 
 ### After Fix
+
 ```
 User A disconnects from WebSocket
 → Presence.onLeave() fires
@@ -220,9 +237,11 @@ User A disconnects from WebSocket
 ## Future Enhancements
 
 ### Global Presence Tracking
+
 For features like "Online Friends" list:
 
 1. **Track users globally** in addition to per-conversation:
+
 ```elixir
 # In user_socket.ex after authentication
 Presence.track(socket, "users:global", user.id, %{
@@ -233,6 +252,7 @@ Presence.track(socket, "users:global", user.id, %{
 ```
 
 2. **Subscribe to global presence** in frontend:
+
 ```typescript
 const globalChannel = socket.channel('users:global', {});
 const globalPresence = new Presence(globalChannel);
@@ -248,13 +268,17 @@ globalPresence.onSync(() => {
 ## Files Changed
 
 ### Mobile
+
 - `apps/mobile/src/screens/messages/ConversationScreen.tsx` - Removed database status fallback
 
 ### Web
-- `apps/web/src/pages/messages/Messages.tsx` - Integrated presence tracking with status change listeners
+
+- `apps/web/src/pages/messages/Messages.tsx` - Integrated presence tracking with status change
+  listeners
 - `apps/web/src/pages/friends/Friends.tsx` - Disabled "Online" filter tab
 
 ### Documentation
+
 - `docs/PRESENCE_FIX_2026_01_04.md` - This document
 
 ## Verification Checklist

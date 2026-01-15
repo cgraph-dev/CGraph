@@ -42,11 +42,11 @@ cgraph/
 
 ### Package Categories
 
-| Category | Purpose | Examples |
-|----------|---------|----------|
-| `apps/` | Deployable artifacts | `backend`, `web`, `mobile` |
-| `packages/` | Shared libraries | `core`, `ui`, `utils` |
-| `tools/` | Development utilities | Scripts, generators |
+| Category    | Purpose               | Examples                   |
+| ----------- | --------------------- | -------------------------- |
+| `apps/`     | Deployable artifacts  | `backend`, `web`, `mobile` |
+| `packages/` | Shared libraries      | `core`, `ui`, `utils`      |
+| `tools/`    | Development utilities | Scripts, generators        |
 
 ---
 
@@ -58,20 +58,21 @@ cgraph/
 - **Format**: `@cgraph/{name}` (lowercase, kebab-case)
 
 Examples:
+
 - `@cgraph/core`
 - `@cgraph/ui`
 - `@cgraph/shared-types`
 
 ### File Naming
 
-| Type | Convention | Example |
-|------|------------|---------|
-| Components | PascalCase | `UserProfile.tsx` |
-| Hooks | camelCase with `use` | `useAuth.ts` |
-| Utilities | camelCase | `formatDate.ts` |
-| Types | PascalCase | `User.types.ts` |
-| Tests | Same as source + `.test` | `UserProfile.test.tsx` |
-| Constants | SCREAMING_SNAKE | `API_ENDPOINTS.ts` |
+| Type       | Convention               | Example                |
+| ---------- | ------------------------ | ---------------------- |
+| Components | PascalCase               | `UserProfile.tsx`      |
+| Hooks      | camelCase with `use`     | `useAuth.ts`           |
+| Utilities  | camelCase                | `formatDate.ts`        |
+| Types      | PascalCase               | `User.types.ts`        |
+| Tests      | Same as source + `.test` | `UserProfile.test.tsx` |
+| Constants  | SCREAMING_SNAKE          | `API_ENDPOINTS.ts`     |
 
 ### Branch Naming
 
@@ -80,6 +81,7 @@ Examples:
 ```
 
 Types:
+
 - `feature/` - New features
 - `fix/` - Bug fixes
 - `refactor/` - Code refactoring
@@ -87,6 +89,7 @@ Types:
 - `chore/` - Maintenance
 
 Examples:
+
 - `feature/CG-123-add-voice-messages`
 - `fix/CG-456-message-sync-issue`
 
@@ -103,6 +106,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/):
 ```
 
 Types:
+
 - `feat` - New feature
 - `fix` - Bug fix
 - `docs` - Documentation
@@ -113,6 +117,7 @@ Types:
 - `perf` - Performance improvement
 
 Examples:
+
 ```
 feat(messaging): add voice message support
 
@@ -147,11 +152,11 @@ Use workspace protocol for internal packages:
 
 ### Dependency Update Policy
 
-| Type | Frequency | Automation |
-|------|-----------|------------|
-| Security patches | Immediately | Dependabot |
-| Minor updates | Weekly | Dependabot PRs |
-| Major updates | Monthly review | Manual |
+| Type             | Frequency      | Automation     |
+| ---------------- | -------------- | -------------- |
+| Security patches | Immediately    | Dependabot     |
+| Minor updates    | Weekly         | Dependabot PRs |
+| Major updates    | Monthly review | Manual         |
 
 ---
 
@@ -178,12 +183,12 @@ Use workspace protocol for internal packages:
 
 ### Review Requirements
 
-| Area | Required Reviewers | Auto-merge |
-|------|-------------------|------------|
-| `apps/backend/` | 1 backend + 1 any | No |
-| `apps/web/` | 1 frontend + 1 any | No |
-| `packages/` | 2 core team | No |
-| `docs/` | 1 any | Yes (if docs only) |
+| Area            | Required Reviewers | Auto-merge         |
+| --------------- | ------------------ | ------------------ |
+| `apps/backend/` | 1 backend + 1 any  | No                 |
+| `apps/web/`     | 1 frontend + 1 any | No                 |
+| `packages/`     | 2 core team        | No                 |
+| `docs/`         | 1 any              | Yes (if docs only) |
 
 ---
 
@@ -223,22 +228,22 @@ pnpm version {major|minor|patch}
 
 ### Coverage Requirements
 
-| Package | Minimum Coverage |
-|---------|-----------------|
-| `packages/core/` | 80% |
-| `packages/utils/` | 90% |
-| `apps/backend/` | 75% |
-| `apps/web/` | 70% |
-| `apps/mobile/` | 60% |
+| Package           | Minimum Coverage |
+| ----------------- | ---------------- |
+| `packages/core/`  | 80%              |
+| `packages/utils/` | 90%              |
+| `apps/backend/`   | 75%              |
+| `apps/web/`       | 70%              |
+| `apps/mobile/`    | 60%              |
 
 ### Test Categories
 
-| Type | Location | When to Run |
-|------|----------|-------------|
-| Unit | `*.test.ts` | Every commit |
-| Integration | `*.integration.test.ts` | PR merge |
-| E2E | `e2e/` | Nightly + release |
-| Visual | `*.visual.test.ts` | PR merge |
+| Type        | Location                | When to Run       |
+| ----------- | ----------------------- | ----------------- |
+| Unit        | `*.test.ts`             | Every commit      |
+| Integration | `*.integration.test.ts` | PR merge          |
+| E2E         | `e2e/`                  | Nightly + release |
+| Visual      | `*.visual.test.ts`      | PR merge          |
 
 ### Testing Patterns
 
@@ -249,10 +254,10 @@ describe('UserService', () => {
     it('should create user with valid email', async () => {
       // Arrange
       const userData = { email: 'test@example.com', name: 'Test' };
-      
+
       // Act
       const user = await userService.createUser(userData);
-      
+
       // Assert
       expect(user.email).toBe('test@example.com');
     });
@@ -271,21 +276,23 @@ describe('UserService', () => {
 ### Code Documentation
 
 **Required for:**
+
 - All exported functions/classes
 - Complex business logic
 - Non-obvious implementations
 
 **JSDoc Standard:**
-```typescript
+
+````typescript
 /**
  * Encrypts a message using Signal Protocol.
- * 
+ *
  * @param content - The plain text content to encrypt
  * @param recipientId - The recipient's user ID
  * @param options - Encryption options
  * @returns The encrypted message payload
  * @throws {EncryptionError} If encryption fails
- * 
+ *
  * @example
  * ```typescript
  * const encrypted = await encryptMessage('Hello', 'user-123');
@@ -298,7 +305,7 @@ export async function encryptMessage(
 ): Promise<EncryptedPayload> {
   // ...
 }
-```
+````
 
 ### README Requirements
 
@@ -318,15 +325,19 @@ Major architectural decisions must be documented in `/docs/architecture/decision
 # ADR-{number}: {Title}
 
 ## Status
+
 Proposed | Accepted | Deprecated | Superseded
 
 ## Context
+
 What is the issue that we're seeing that is motivating this decision?
 
 ## Decision
+
 What is the change that we're proposing and/or doing?
 
 ## Consequences
+
 What becomes easier or more difficult to do because of this change?
 ```
 
@@ -391,11 +402,11 @@ export class NotFoundError extends DomainError {
 
 ### Bundle Size Limits
 
-| Package | Max Size (gzipped) |
-|---------|-------------------|
-| `@cgraph/core` | 50KB |
-| `@cgraph/ui` | 100KB |
-| `apps/web` (initial) | 200KB |
+| Package              | Max Size (gzipped) |
+| -------------------- | ------------------ |
+| `@cgraph/core`       | 50KB               |
+| `@cgraph/ui`         | 100KB              |
+| `apps/web` (initial) | 200KB              |
 
 ### Performance Patterns
 
@@ -406,4 +417,4 @@ export class NotFoundError extends DomainError {
 
 ---
 
-*Last updated: January 2026*
+_Last updated: January 2026_
