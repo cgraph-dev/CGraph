@@ -24,18 +24,18 @@
 
 ## Why CGraph?
 
-| Feature                   |           CGraph            |    Competitors    |
-| ------------------------- | :-------------------------: | :---------------: |
-| **End-to-End Encryption** |      ✅ Double Ratchet      |     ⚠️ Varies     |
-| **Open Source**           |         ✅ 100% MIT         |  ⚠️ Partial/None  |
-| **Web3/Wallet Auth**      |          ✅ Native          |        ❌         |
-| **Community Forums**      |         ✅ Built-in         |        ❌         |
-| **Gamification**          | ✅ XP, Achievements, Quests |        ❌         |
-| **No Phone Required**     |             ✅              | ⚠️ Often required |
-| **Self-Hostable**         |       ✅ Full control       |    ⚠️ Limited     |
-| **Role Permissions**      |         ✅ Granular         |     ⚠️ Basic      |
+| Feature                   |              CGraph              |    Competitors    |
+| ------------------------- | :------------------------------: | :---------------: |
+| **End-to-End Encryption** |        ✅ Double Ratchet         |     ⚠️ Varies     |
+| **Open Source**           |           ✅ 100% MIT            |  ⚠️ Partial/None  |
+| **Web3/Wallet Auth**      |            ✅ Native             |        ❌         |
+| **Community Forums**      |           ✅ Built-in            |        ❌         |
+| **Gamification**          |   ✅ XP, Achievements, Quests    |        ❌         |
+| **No Phone Required**     |                ✅                | ⚠️ Often required |
+| **Self-Hostable**         |         ✅ Full control          |    ⚠️ Limited     |
+| **Role Permissions**      |           ✅ Granular            |     ⚠️ Basic      |
 | **Referral System**       | ✅ Tiered rewards & leaderboards |        ❌         |
-| **Offline Support**       | ✅ Full queue & auto-sync   |     ⚠️ Limited    |
+| **Offline Support**       |    ✅ Full queue & auto-sync     |    ⚠️ Limited     |
 
 CGraph combines the best of modern communication platforms—real-time messaging, organized servers,
 rich forums, end-to-end encryption, and gamification—all in one self-hostable package.
@@ -164,13 +164,35 @@ rich forums, end-to-end encryption, and gamification—all in one self-hostable 
 
 ### Prerequisites
 
-| Tool       | Version | Installation                               |
-| ---------- | ------- | ------------------------------------------ |
-| Node.js    | 22+     | [nodejs.org](https://nodejs.org)           |
-| pnpm       | 10+     | `npm install -g pnpm`                      |
-| Elixir     | 1.17+   | [elixir-lang.org](https://elixir-lang.org) |
-| PostgreSQL | 16+     | [postgresql.org](https://postgresql.org)   |
-| Redis      | 7+      | [redis.io](https://redis.io)               |
+| Tool       | Version | Installation                        |
+| ---------- | ------- | ----------------------------------- |
+| Node.js    | 22+     | `asdf install nodejs 22.11.0`       |
+| pnpm       | 10+     | `npm install -g pnpm`               |
+| Elixir     | 1.19+   | `asdf install elixir 1.19.4-otp-28` |
+| Erlang     | 28+     | `asdf install erlang 28.3`          |
+| PostgreSQL | 16+     | Docker or local install             |
+| Redis      | 7+      | Docker or local install             |
+
+> **Recommended:** Use [asdf](https://asdf-vm.com/) for version management. Run `asdf install` in
+> the project root to install exact versions from `.tool-versions`.
+
+### Environment Variables
+
+**Backend** (`apps/backend/.env`):
+
+```bash
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/cgraph_dev
+REDIS_URL=redis://localhost:6379
+GUARDIAN_SECRET_KEY=your-secret-key-here
+SECRET_KEY_BASE=your-phoenix-secret-key
+```
+
+**Frontend** (`apps/web/.env`):
+
+```bash
+VITE_API_URL=http://localhost:4000
+VITE_WS_URL=ws://localhost:4000/socket
+```
 
 ### Quick Start
 
@@ -194,13 +216,43 @@ cd apps/web
 pnpm dev
 ```
 
-The API runs at `http://localhost:4000` and the web app at `http://localhost:3000`.
+### Development URLs
 
-### Docker
+| Service     | URL                   | Notes                      |
+| ----------- | --------------------- | -------------------------- |
+| Backend API | http://localhost:4000 | Phoenix server             |
+| Web App     | http://localhost:3000 | Vite dev server            |
+| PostgreSQL  | localhost:5432        | Default: postgres/postgres |
+| Redis       | localhost:6379        |                            |
+| Storybook   | http://localhost:6006 | `pnpm storybook`           |
+
+### Docker Development
 
 ```bash
+# Start database services only
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres redis
+
+# Start full stack
 cp .env.example .env
 docker-compose up -d
+
+# View logs
+docker-compose logs -f backend
+
+# Stop services
+docker-compose down
+```
+
+### Database Commands
+
+```bash
+cd apps/backend
+
+mix ecto.setup      # Create + migrate + seed
+mix ecto.migrate    # Run pending migrations
+mix ecto.rollback   # Undo last migration
+mix ecto.reset      # Drop + create + migrate + seed
+mix ecto.gen.migration <name>  # Generate new migration
 ```
 
 ---
@@ -287,14 +339,18 @@ Documentation is auto-generated from code comments using TypeDoc and OpenAPI spe
 ## CI & Security Tooling
 
 - CI builds backend and web Docker images each PR to catch Dockerfile/healthcheck regressions early.
-- Security workflow runs gitleaks, hadolint (backend/web Dockerfiles), Sobelow, pnpm audit, Syft SBOM, and Grype vulnerability scans with artifacts; see `.github/workflows/ci.yml`.
-- Context7 MCP helper is configured in `.vscode/mcp.json`; provide your own `CONTEXT7_API_KEY` when prompted.
+- Security workflow runs gitleaks, hadolint (backend/web Dockerfiles), Sobelow, pnpm audit, Syft
+  SBOM, and Grype vulnerability scans with artifacts; see `.github/workflows/ci.yml`.
+- Context7 MCP helper is configured in `.vscode/mcp.json`; provide your own `CONTEXT7_API_KEY` when
+  prompted.
 
 ### Using the Context7 MCP helper
 
 - Purpose: quick research/summarization aid; not a runtime dependency.
-- Setup: supply your Context7 API key when prompted by your MCP-enabled client (stored locally, not in repo/CI).
-- Usage examples: ask it to summarize long docs, draft changelog/release note text, outline tests, or suggest scan tuning (e.g., gitleaks allowlists). Review and commit changes yourself.
+- Setup: supply your Context7 API key when prompted by your MCP-enabled client (stored locally, not
+  in repo/CI).
+- Usage examples: ask it to summarize long docs, draft changelog/release note text, outline tests,
+  or suggest scan tuning (e.g., gitleaks allowlists). Review and commit changes yourself.
 
 ---
 
