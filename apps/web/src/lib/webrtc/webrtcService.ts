@@ -111,8 +111,13 @@ export class WebRTCManager {
       this.state.localStream = this.localStream;
       this.state.isVideoEnabled = options.video ?? true;
 
+      // Ensure socket is connected
+      if (!this.socket) {
+        throw new Error('WebRTC socket not initialized');
+      }
+
       // Join signaling channel
-      this.channel = this.socket!.channel('call:lobby', {});
+      this.channel = this.socket.channel('call:lobby', {});
       await this.joinChannel();
 
       // Create call room
@@ -126,7 +131,10 @@ export class WebRTCManager {
       this.state.status = 'ringing';
 
       // Join the room channel
-      this.channel = this.socket!.channel(`call:${roomId}`, {});
+      if (!this.socket) {
+        throw new Error('WebRTC socket not initialized');
+      }
+      this.channel = this.socket.channel(`call:${roomId}`, {});
       await this.joinChannel();
       this.setupChannelHandlers();
 
@@ -155,8 +163,13 @@ export class WebRTCManager {
       this.state.roomId = roomId;
       this.state.status = 'connecting';
 
+      // Ensure socket is connected
+      if (!this.socket) {
+        throw new Error('WebRTC socket not initialized');
+      }
+
       // Join the room channel
-      this.channel = this.socket!.channel(`call:${roomId}`, {});
+      this.channel = this.socket.channel(`call:${roomId}`, {});
       await this.joinChannel();
       this.setupChannelHandlers();
 
@@ -243,7 +256,7 @@ export class WebRTCManager {
       // Replace video track in all peer connections
       const screenTrack = screenStream.getVideoTracks()[0];
       if (!screenTrack) return false;
-      
+
       this.peerConnections.forEach((pc) => {
         const sender = pc.getSenders().find((s) => s.track?.kind === 'video');
         if (sender) {
@@ -283,6 +296,9 @@ export class WebRTCManager {
   // Private methods
 
   private async joinChannel(): Promise<void> {
+    if (!this.channel) {
+      throw new Error('Channel not initialized');
+    }
     return new Promise((resolve, reject) => {
       this.channel!.join()
         .receive('ok', () => resolve())
@@ -291,6 +307,9 @@ export class WebRTCManager {
   }
 
   private async pushToChannel(event: string, payload: Record<string, unknown>): Promise<unknown> {
+    if (!this.channel) {
+      throw new Error('Channel not initialized');
+    }
     return new Promise((resolve, reject) => {
       this.channel!.push(event, payload)
         .receive('ok', (response) => resolve(response))
@@ -314,9 +333,7 @@ export class WebRTCManager {
     // Handle participant leaving
     this.channel.on('user_left', (data: unknown) => {
       const payload = data as { user_id: string };
-      this.state.participants = this.state.participants.filter(
-        (p) => p.userId !== payload.user_id
-      );
+      this.state.participants = this.state.participants.filter((p) => p.userId !== payload.user_id);
       this.peerConnections.get(payload.user_id)?.close();
       this.peerConnections.delete(payload.user_id);
       this.state.remoteStreams.delete(payload.user_id);
@@ -324,17 +341,16 @@ export class WebRTCManager {
     });
 
     // Handle incoming offer
-    this.channel.on(
-      'offer',
-      async (data: unknown) => {
-        const payload = data as { from: string; sdp: RTCSessionDescriptionInit };
-        const pc = await this.createPeerConnection(payload.from, false);
-        await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        this.channel!.push('answer', { to: payload.from, sdp: answer });
+    this.channel.on('offer', async (data: unknown) => {
+      const payload = data as { from: string; sdp: RTCSessionDescriptionInit };
+      const pc = await this.createPeerConnection(payload.from, false);
+      await pc.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+      const answer = await pc.createAnswer();
+      await pc.setLocalDescription(answer);
+      if (this.channel) {
+        this.channel.push('answer', { to: payload.from, sdp: answer });
       }
-    );
+    });
 
     // Handle incoming answer
     this.channel.on('answer', async (data: unknown) => {
@@ -346,16 +362,13 @@ export class WebRTCManager {
     });
 
     // Handle ICE candidate
-    this.channel.on(
-      'ice_candidate',
-      async (data: unknown) => {
-        const payload = data as { from: string; candidate: RTCIceCandidateInit };
-        const pc = this.peerConnections.get(payload.from);
-        if (pc && payload.candidate) {
-          await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
-        }
+    this.channel.on('ice_candidate', async (data: unknown) => {
+      const payload = data as { from: string; candidate: RTCIceCandidateInit };
+      const pc = this.peerConnections.get(payload.from);
+      if (pc && payload.candidate) {
+        await pc.addIceCandidate(new RTCIceCandidate(payload.candidate));
       }
-    );
+    });
 
     // Handle call ended
     this.channel.on('call_ended', (data: unknown) => {
@@ -381,8 +394,8 @@ export class WebRTCManager {
 
     // Handle ICE candidates
     pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        this.channel!.push('ice_candidate', {
+      if (event.candidate && this.channel) {
+        this.channel.push('ice_candidate', {
           to: userId,
           candidate: event.candidate.toJSON(),
         });
@@ -410,7 +423,9 @@ export class WebRTCManager {
     if (initiator) {
       const offer = await pc.createOffer();
       await pc.setLocalDescription(offer);
-      this.channel!.push('offer', { to: userId, sdp: offer });
+      if (this.channel) {
+        this.channel.push('offer', { to: userId, sdp: offer });
+      }
     }
 
     return pc;

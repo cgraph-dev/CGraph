@@ -1,12 +1,12 @@
 /**
  * Web Push Notification Service
- * 
+ *
  * Handles browser push notification registration:
  * - Service worker registration
  * - Permission requests
  * - Push subscription management
  * - Backend token synchronization
- * 
+ *
  * @version 0.9.0
  */
 
@@ -26,18 +26,20 @@ export interface WebPushState {
 
 // VAPID public key - should match backend configuration
 // This is typically loaded from environment or API
-const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY || 
-  'BN5xGM3G2_gwHZ8SvYjLwUjvKpyjH0U4uU9bMNr-SvEXr2pNz2aLvDI3OvHF8OvP0XXXX'; // Placeholder
+const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+
+// Validate VAPID key is configured in production
+if (!VAPID_PUBLIC_KEY && import.meta.env.PROD) {
+  console.error(
+    '[WebPush] VITE_VAPID_PUBLIC_KEY is not configured. Push notifications will not work.'
+  );
+}
 
 /**
  * Check if push notifications are supported in the browser
  */
 export function isPushSupported(): boolean {
-  return (
-    'serviceWorker' in navigator &&
-    'PushManager' in window &&
-    'Notification' in window
-  );
+  return 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
 }
 
 /**
@@ -63,9 +65,7 @@ export async function getPushState(): Promise<WebPushState> {
   }
 
   const registration = await navigator.serviceWorker.getRegistration();
-  const subscription = registration 
-    ? await registration.pushManager.getSubscription()
-    : null;
+  const subscription = registration ? await registration.pushManager.getSubscription() : null;
 
   return {
     supported: true,
@@ -87,12 +87,12 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
     const registration = await navigator.serviceWorker.register('/sw.js', {
       scope: '/',
     });
-    
+
     console.log('[WebPush] Service worker registered:', registration.scope);
-    
+
     // Wait for the service worker to be ready
     await navigator.serviceWorker.ready;
-    
+
     return registration;
   } catch (error) {
     console.error('[WebPush] Service worker registration failed:', error);
@@ -119,17 +119,15 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
  */
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
-  
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
-  
+
   for (let i = 0; i < rawData.length; ++i) {
     outputArray[i] = rawData.charCodeAt(i);
   }
-  
+
   return outputArray;
 }
 
@@ -140,13 +138,18 @@ export async function subscribeToPush(
   registration: ServiceWorkerRegistration
 ): Promise<PushSubscription | null> {
   try {
+    if (!VAPID_PUBLIC_KEY) {
+      console.error('[WebPush] VAPID public key not configured');
+      return null;
+    }
+
     const vapidPublicKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
-    
+
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
       applicationServerKey: vapidPublicKey as BufferSource,
     });
-    
+
     console.log('[WebPush] Push subscription created');
     return subscription;
   } catch (error) {
@@ -188,13 +191,13 @@ export async function registerPushWithBackend(
   try {
     // Convert subscription to JSON for backend
     const subscriptionData = subscription.toJSON();
-    
+
     // The token for web push is the endpoint URL + keys
     const token = JSON.stringify({
       endpoint: subscriptionData.endpoint,
       keys: subscriptionData.keys,
     });
-    
+
     const response = await api.post('/api/v1/push-tokens', {
       token,
       platform: 'web',
@@ -221,16 +224,14 @@ export async function registerPushWithBackend(
 /**
  * Unregister push subscription from the backend
  */
-export async function unregisterPushFromBackend(
-  subscription: PushSubscription
-): Promise<boolean> {
+export async function unregisterPushFromBackend(subscription: PushSubscription): Promise<boolean> {
   try {
     const subscriptionData = subscription.toJSON();
     const token = JSON.stringify({
       endpoint: subscriptionData.endpoint,
       keys: subscriptionData.keys,
     });
-    
+
     await api.delete(`/api/v1/push-tokens/${encodeURIComponent(token)}`);
     console.log('[WebPush] Token unregistered from backend');
     return true;
@@ -301,12 +302,12 @@ export async function unregisterFromPushNotifications(): Promise<boolean> {
 function getDeviceId(): string {
   const storageKey = 'cgraph_device_id';
   let deviceId = localStorage.getItem(storageKey);
-  
+
   if (!deviceId) {
     deviceId = `web-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
     localStorage.setItem(storageKey, deviceId);
   }
-  
+
   return deviceId;
 }
 
@@ -315,13 +316,13 @@ function getDeviceId(): string {
  */
 function getBrowserName(): string {
   const ua = navigator.userAgent;
-  
+
   if (ua.includes('Firefox')) return 'Firefox';
   if (ua.includes('Edg')) return 'Edge';
   if (ua.includes('Chrome')) return 'Chrome';
   if (ua.includes('Safari')) return 'Safari';
   if (ua.includes('Opera') || ua.includes('OPR')) return 'Opera';
-  
+
   return 'Web Browser';
 }
 
@@ -330,7 +331,7 @@ function getBrowserName(): string {
  */
 export function shouldPromptForPush(): boolean {
   if (!isPushSupported()) return false;
-  
+
   const permission = Notification.permission;
   return permission === 'default';
 }
@@ -340,16 +341,16 @@ export function shouldPromptForPush(): boolean {
  */
 export async function showTestNotification(): Promise<boolean> {
   if (!isPushSupported()) return false;
-  
+
   if (Notification.permission !== 'granted') {
     await requestNotificationPermission();
   }
-  
+
   if (Notification.permission !== 'granted') return false;
-  
+
   const registration = await navigator.serviceWorker.getRegistration();
   if (!registration) return false;
-  
+
   await registration.showNotification('CGraph', {
     body: 'Push notifications are working!',
     icon: '/icon-192x192.png',
@@ -360,7 +361,7 @@ export async function showTestNotification(): Promise<boolean> {
       type: 'test',
     },
   });
-  
+
   return true;
 }
 

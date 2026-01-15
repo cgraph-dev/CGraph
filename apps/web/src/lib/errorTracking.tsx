@@ -1,9 +1,9 @@
 /**
  * Error Tracking Service
- * 
+ *
  * Production-ready error tracking infrastructure that integrates with
  * external services like Sentry, LogRocket, or custom backends.
- * 
+ *
  * Features:
  * - Automatic error capture with context
  * - User context enrichment
@@ -12,7 +12,7 @@
  * - Rate limiting to prevent flooding
  * - PII stripping for privacy compliance
  * - Offline error queuing with retry
- * 
+ *
  * @module lib/errorTracking
  * @version 1.0.0
  * @since v0.7.58
@@ -149,21 +149,21 @@ function stripPiiFromString(value: string): string {
  */
 function stripPii(obj: unknown, depth = 0): unknown {
   if (depth > 10) return '[MAX_DEPTH]';
-  
+
   if (obj === null || obj === undefined) return obj;
-  
+
   if (typeof obj === 'string') {
     return stripPiiFromString(obj);
   }
-  
+
   if (Array.isArray(obj)) {
-    return obj.map(item => stripPii(item, depth + 1));
+    return obj.map((item) => stripPii(item, depth + 1));
   }
-  
+
   if (typeof obj === 'object') {
     const result: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(obj)) {
-      if (SENSITIVE_KEYS.some(sk => key.toLowerCase().includes(sk))) {
+      if (SENSITIVE_KEYS.some((sk) => key.toLowerCase().includes(sk))) {
         result[key] = '[REDACTED]';
       } else {
         result[key] = stripPii(value, depth + 1);
@@ -171,7 +171,7 @@ function stripPii(obj: unknown, depth = 0): unknown {
     }
     return result;
   }
-  
+
   return obj;
 }
 
@@ -187,14 +187,14 @@ export function addBreadcrumb(breadcrumb: Omit<Breadcrumb, 'timestamp'>): void {
     ...breadcrumb,
     timestamp: Date.now(),
   };
-  
+
   breadcrumbs.push(crumb);
-  
+
   // Keep only the most recent breadcrumbs
   if (breadcrumbs.length > CONFIG.maxBreadcrumbs) {
     breadcrumbs.shift();
   }
-  
+
   if (CONFIG.debug) {
     console.debug('[ErrorTracking] Breadcrumb:', crumb);
   }
@@ -216,7 +216,7 @@ export function clearBreadcrumbs(): void {
  */
 export function setUser(context: UserContext | null): void {
   userContext = context;
-  
+
   if (CONFIG.debug) {
     console.debug('[ErrorTracking] User context set:', context ? { id: context.id } : null);
   }
@@ -235,20 +235,20 @@ export function clearUser(): void {
 
 function isRateLimited(): boolean {
   const now = Date.now();
-  
+
   // Reset counter every minute
   if (now - errorCountResetTime > 60000) {
     errorCount = 0;
     errorCountResetTime = now;
   }
-  
+
   if (errorCount >= CONFIG.maxErrorsPerMinute) {
     if (CONFIG.debug) {
       console.warn('[ErrorTracking] Rate limit exceeded, error not tracked');
     }
     return true;
   }
-  
+
   errorCount++;
   return false;
 }
@@ -263,12 +263,12 @@ function generateErrorId(): string {
 
 async function processQueue(): Promise<void> {
   if (isProcessingQueue || errorQueue.length === 0) return;
-  
+
   isProcessingQueue = true;
-  
+
   try {
     const errors = [...errorQueue];
-    
+
     for (const queuedError of errors) {
       if (queuedError.retryCount >= CONFIG.maxRetries) {
         // Remove after max retries
@@ -276,7 +276,7 @@ async function processQueue(): Promise<void> {
         if (index > -1) errorQueue.splice(index, 1);
         continue;
       }
-      
+
       try {
         await sendErrorToBackend(queuedError);
         // Remove on success
@@ -297,8 +297,12 @@ async function sendErrorToBackend(error: QueuedError): Promise<void> {
   // to avoid Vite import analysis errors when Sentry is not installed.
   if (CONFIG.sentryDsn && typeof window !== 'undefined') {
     try {
-      // Use Function constructor to create a truly dynamic import that Vite won't analyze
-      // This allows the app to work without @sentry/react installed
+      // SECURITY NOTE: This uses Function constructor for truly dynamic imports.
+      // This is intentional and safe because:
+      // 1. The specifier '@sentry/react' is hardcoded, not user-controlled
+      // 2. This allows optional Sentry integration without build-time dependency
+      // 3. CSP should allow 'unsafe-eval' only if Sentry is used
+      // If CSP is strict, use conditional build flags instead.
       const dynamicImport = new Function('specifier', 'return import(specifier)');
       const Sentry = await dynamicImport('@sentry/react');
       Sentry.captureException(new Error(error.error), {
@@ -314,7 +318,7 @@ async function sendErrorToBackend(error: QueuedError): Promise<void> {
       // @sentry/react is not in dependencies. Continue with custom backend.
     }
   }
-  
+
   // Send to our backend
   await api.post(CONFIG.errorEndpoint, {
     error_id: error.id,
@@ -339,18 +343,15 @@ async function sendErrorToBackend(error: QueuedError): Promise<void> {
 /**
  * Capture an error with context
  */
-export function captureError(
-  error: Error | string,
-  context: ErrorContext = {}
-): string | null {
+export function captureError(error: Error | string, context: ErrorContext = {}): string | null {
   if (!CONFIG.enabled && !CONFIG.debug) return null;
   if (isRateLimited()) return null;
-  
+
   const errorMessage = error instanceof Error ? error.message : error;
   const errorStack = error instanceof Error ? error.stack : undefined;
-  
+
   const errorId = generateErrorId();
-  
+
   const queuedError: QueuedError = {
     id: errorId,
     error: stripPiiFromString(errorMessage),
@@ -366,7 +367,7 @@ export function captureError(
     url: typeof window !== 'undefined' ? window.location.href : '',
     userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
   };
-  
+
   if (CONFIG.debug) {
     console.error('[ErrorTracking] Captured error:', {
       id: errorId,
@@ -375,15 +376,15 @@ export function captureError(
     });
     return errorId;
   }
-  
+
   // Queue for sending
   errorQueue.push(queuedError);
-  
+
   // Try to send immediately
   processQueue().catch(() => {
     // Will retry later
   });
-  
+
   return errorId;
 }
 
@@ -425,13 +426,13 @@ const activeTransactions: Map<string, Transaction> = new Map();
  */
 export function startTransaction(name: string): string {
   const txId = `tx_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
-  
+
   activeTransactions.set(txId, {
     name,
     startTime: performance.now(),
     spans: [],
   });
-  
+
   return txId;
 }
 
@@ -441,7 +442,7 @@ export function startTransaction(name: string): string {
 export function startSpan(txId: string, spanName: string): void {
   const tx = activeTransactions.get(txId);
   if (!tx) return;
-  
+
   tx.spans.push({
     name: spanName,
     startTime: performance.now(),
@@ -454,7 +455,7 @@ export function startSpan(txId: string, spanName: string): void {
 export function endSpan(txId: string): void {
   const tx = activeTransactions.get(txId);
   if (!tx) return;
-  
+
   const currentSpan = tx.spans[tx.spans.length - 1];
   if (currentSpan && !currentSpan.endTime) {
     currentSpan.endTime = performance.now();
@@ -467,20 +468,20 @@ export function endSpan(txId: string): void {
 export function finishTransaction(txId: string, report = false): void {
   const tx = activeTransactions.get(txId);
   if (!tx) return;
-  
+
   const duration = performance.now() - tx.startTime;
-  
+
   if (CONFIG.debug) {
     console.debug('[ErrorTracking] Transaction finished:', {
       name: tx.name,
       duration: `${duration.toFixed(2)}ms`,
-      spans: tx.spans.map(s => ({
+      spans: tx.spans.map((s) => ({
         name: s.name,
         duration: s.endTime ? `${(s.endTime - s.startTime).toFixed(2)}ms` : 'incomplete',
       })),
     });
   }
-  
+
   if (report && CONFIG.enabled) {
     // Report slow transactions
     if (duration > 3000) {
@@ -491,7 +492,7 @@ export function finishTransaction(txId: string, report = false): void {
       });
     }
   }
-  
+
   activeTransactions.delete(txId);
 }
 
@@ -504,7 +505,7 @@ export function finishTransaction(txId: string, report = false): void {
  */
 export function initErrorTracking(): void {
   if (typeof window === 'undefined') return;
-  
+
   // Unhandled errors
   window.addEventListener('error', (event) => {
     captureError(event.error || event.message, {
@@ -517,19 +518,17 @@ export function initErrorTracking(): void {
       },
     });
   });
-  
+
   // Unhandled promise rejections
   window.addEventListener('unhandledrejection', (event) => {
-    const error = event.reason instanceof Error
-      ? event.reason
-      : new Error(String(event.reason));
-    
+    const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+
     captureError(error, {
       component: 'global',
       action: 'unhandled_rejection',
     });
   });
-  
+
   // Track navigation
   if ('navigation' in performance) {
     addBreadcrumb({
@@ -538,10 +537,10 @@ export function initErrorTracking(): void {
       data: { url: window.location.href },
     });
   }
-  
+
   // Start queue processor
   setInterval(processQueue, CONFIG.retryInterval);
-  
+
   if (CONFIG.debug) {
     console.info('[ErrorTracking] Initialized');
   }
