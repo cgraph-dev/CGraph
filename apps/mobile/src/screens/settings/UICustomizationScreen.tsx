@@ -32,7 +32,11 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useCustomization } from '@/contexts/CustomizationContext';
-import useCustomizationStore, { useIsDirty, useCanUndo, useCanRedo } from '@/stores/customizationStore';
+import useCustomizationStore, {
+  useIsDirty,
+  useCanUndo,
+  useCanRedo,
+} from '@/stores/customizationStore';
 import { PRESET_THEMES } from '@/lib/customization/PresetThemes';
 import type { ThemeConfig, ColorShade } from '@/lib/customization/CustomizationEngine';
 import { SettingsStackParamList } from '@/types';
@@ -41,7 +45,7 @@ type Props = {
   navigation: NativeStackNavigationProp<SettingsStackParamList, 'UICustomization'>;
 };
 
-type TabId = 'colors' | 'typography' | 'layout' | 'effects' | 'animations';
+type TabId = 'colors' | 'typography' | 'layout' | 'effects' | 'animations' | 'accessibility';
 
 // ============================================================================
 // HAPTIC HELPERS
@@ -121,14 +125,25 @@ interface SliderRowProps {
   onValueChange: (value: number) => void;
 }
 
-function SliderRow({ label, value, min, max, step = 1, suffix = '', onValueChange }: SliderRowProps) {
+function SliderRow({
+  label,
+  value,
+  min,
+  max,
+  step = 1,
+  suffix = '',
+  onValueChange,
+}: SliderRowProps) {
   const percentage = ((value - min) / (max - min)) * 100;
 
   return (
     <View style={styles.optionRowVertical}>
       <View style={styles.sliderHeader}>
         <Text style={styles.optionLabel}>{label}</Text>
-        <Text style={styles.sliderValue}>{value}{suffix}</Text>
+        <Text style={styles.sliderValue}>
+          {value}
+          {suffix}
+        </Text>
       </View>
       <View style={styles.sliderContainer}>
         <View style={styles.sliderTrack}>
@@ -323,28 +338,24 @@ export default function UICustomizationScreen({ navigation }: Props) {
     try {
       await saveTheme();
       Alert.alert('Success', 'Theme saved successfully!');
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to save theme');
     }
   }, [saveTheme]);
 
   const handleReset = useCallback(() => {
     haptic.medium();
-    Alert.alert(
-      'Reset Theme',
-      'Reset to default theme? This cannot be undone.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Reset',
-          style: 'destructive',
-          onPress: () => {
-            resetTheme();
-            haptic.success();
-          },
+    Alert.alert('Reset Theme', 'Reset to default theme? This cannot be undone.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Reset',
+        style: 'destructive',
+        onPress: () => {
+          resetTheme();
+          haptic.success();
         },
-      ]
-    );
+      },
+    ]);
   }, [resetTheme]);
 
   const handleExport = useCallback(async () => {
@@ -355,7 +366,7 @@ export default function UICustomizationScreen({ navigation }: Props) {
         message: json,
         title: `${theme.name} Theme`,
       });
-    } catch (error) {
+    } catch (_error) {
       Alert.alert('Error', 'Failed to export theme');
     }
   }, [exportTheme, theme.name]);
@@ -375,7 +386,7 @@ export default function UICustomizationScreen({ navigation }: Props) {
                 importTheme(json);
                 haptic.success();
                 Alert.alert('Success', 'Theme imported successfully!');
-              } catch (error) {
+              } catch (_error) {
                 Alert.alert('Error', 'Invalid theme JSON');
               }
             }
@@ -411,6 +422,7 @@ export default function UICustomizationScreen({ navigation }: Props) {
     { id: 'layout', label: 'Layout', icon: 'grid' },
     { id: 'effects', label: 'Effects', icon: 'sparkles' },
     { id: 'animations', label: 'Motion', icon: 'flash' },
+    { id: 'accessibility', label: 'A11y', icon: 'accessibility' },
   ];
 
   return (
@@ -566,7 +578,70 @@ export default function UICustomizationScreen({ navigation }: Props) {
         {/* Layout Tab */}
         {activeTab === 'layout' && (
           <>
-            <SettingsSection title="Spacing" icon="resize" iconColor="#f59e0b">
+            {/* Density Mode */}
+            <SettingsSection title="Content Density" icon="layers" iconColor="#3b82f6">
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Global Density</Text>
+                <Text style={styles.optionDescription}>Controls spacing throughout the app</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 10 }}
+                >
+                  {(['compact', 'comfortable', 'spacious'] as const).map((density) => (
+                    <TouchableOpacity
+                      key={density}
+                      style={[
+                        styles.densityOption,
+                        theme.layout.density === density && styles.densityOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.medium();
+                        updateTheme({
+                          layout: { ...theme.layout, density },
+                        });
+                      }}
+                    >
+                      <Ionicons
+                        name={
+                          density === 'compact'
+                            ? 'contract'
+                            : density === 'comfortable'
+                              ? 'expand'
+                              : 'resize'
+                        }
+                        size={24}
+                        color={theme.layout.density === density ? '#fff' : '#9ca3af'}
+                      />
+                      <Text
+                        style={[
+                          styles.densityOptionText,
+                          theme.layout.density === density && styles.densityOptionTextSelected,
+                        ]}
+                      >
+                        {density.charAt(0).toUpperCase() + density.slice(1)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </SettingsSection>
+
+            {/* Component Scaling */}
+            <SettingsSection title="Component Scaling" icon="resize" iconColor="#f59e0b">
+              <SliderRow
+                label="UI Scale"
+                value={theme.layout.componentScaling}
+                min={0.8}
+                max={1.5}
+                step={0.05}
+                suffix="x"
+                onValueChange={(value) =>
+                  updateTheme({
+                    layout: { ...theme.layout, componentScaling: value },
+                  })
+                }
+              />
               <SliderRow
                 label="Grid Size"
                 value={theme.spacing.gridSize}
@@ -582,7 +657,178 @@ export default function UICustomizationScreen({ navigation }: Props) {
               />
             </SettingsSection>
 
-            <SettingsSection title="Border Radius" icon="apps" iconColor="#ec4899">
+            {/* View Mode */}
+            <SettingsSection title="View Mode" icon="grid" iconColor="#22c55e">
+              <ToggleRow
+                label="Grid Layout"
+                description="Show content in grid instead of list"
+                value={theme.layout.gridLayout}
+                onToggle={(value) =>
+                  updateTheme({
+                    layout: { ...theme.layout, gridLayout: value },
+                  })
+                }
+              />
+            </SettingsSection>
+
+            {/* Tab Bar Style */}
+            <SettingsSection title="Tab Bar Style" icon="apps" iconColor="#8b5cf6">
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Navigation Style</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 10 }}
+                >
+                  {(['icon-only', 'with-labels', 'hidden'] as const).map((style) => (
+                    <TouchableOpacity
+                      key={style}
+                      style={[
+                        styles.segmentedOption,
+                        theme.layout.tabBarStyle === style && styles.segmentedOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.light();
+                        updateTheme({
+                          layout: { ...theme.layout, tabBarStyle: style },
+                        });
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.segmentedOptionText,
+                          theme.layout.tabBarStyle === style && styles.segmentedOptionTextSelected,
+                        ]}
+                      >
+                        {style === 'icon-only'
+                          ? 'Icons Only'
+                          : style === 'with-labels'
+                            ? 'With Labels'
+                            : 'Hidden'}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </SettingsSection>
+
+            {/* Per-Screen Density */}
+            <SettingsSection title="Per-Screen Density" icon="settings" iconColor="#06b6d4">
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Forums</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 8 }}
+                >
+                  {(['compact', 'comfortable', 'spacious'] as const).map((density) => (
+                    <TouchableOpacity
+                      key={density}
+                      style={[
+                        styles.miniSegmentedOption,
+                        theme.layout.perScreen.forums === density && styles.segmentedOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.light();
+                        updateTheme({
+                          layout: {
+                            ...theme.layout,
+                            perScreen: { ...theme.layout.perScreen, forums: density },
+                          },
+                        });
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.miniSegmentedText,
+                          theme.layout.perScreen.forums === density &&
+                            styles.segmentedOptionTextSelected,
+                        ]}
+                      >
+                        {density.charAt(0).toUpperCase() + density.slice(1)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Chat</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 8 }}
+                >
+                  {(['compact', 'comfortable', 'spacious'] as const).map((density) => (
+                    <TouchableOpacity
+                      key={density}
+                      style={[
+                        styles.miniSegmentedOption,
+                        theme.layout.perScreen.chat === density && styles.segmentedOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.light();
+                        updateTheme({
+                          layout: {
+                            ...theme.layout,
+                            perScreen: { ...theme.layout.perScreen, chat: density },
+                          },
+                        });
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.miniSegmentedText,
+                          theme.layout.perScreen.chat === density &&
+                            styles.segmentedOptionTextSelected,
+                        ]}
+                      >
+                        {density.charAt(0).toUpperCase() + density.slice(1)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Groups</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 8 }}
+                >
+                  {(['compact', 'comfortable', 'spacious'] as const).map((density) => (
+                    <TouchableOpacity
+                      key={density}
+                      style={[
+                        styles.miniSegmentedOption,
+                        theme.layout.perScreen.groups === density && styles.segmentedOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.light();
+                        updateTheme({
+                          layout: {
+                            ...theme.layout,
+                            perScreen: { ...theme.layout.perScreen, groups: density },
+                          },
+                        });
+                      }}
+                    >
+                      <Text
+                        style={[
+                          styles.miniSegmentedText,
+                          theme.layout.perScreen.groups === density &&
+                            styles.segmentedOptionTextSelected,
+                        ]}
+                      >
+                        {density.charAt(0).toUpperCase() + density.slice(1)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </SettingsSection>
+
+            {/* Border Radius */}
+            <SettingsSection title="Border Radius" icon="square" iconColor="#ec4899">
               <SliderRow
                 label="None"
                 value={theme.borderRadius.none}
@@ -695,7 +941,8 @@ export default function UICustomizationScreen({ navigation }: Props) {
                       key={density}
                       style={[
                         styles.segmentedOption,
-                        theme.effects.particles.density === density && styles.segmentedOptionSelected,
+                        theme.effects.particles.density === density &&
+                          styles.segmentedOptionSelected,
                       ]}
                       onPress={() => {
                         haptic.light();
@@ -710,7 +957,8 @@ export default function UICustomizationScreen({ navigation }: Props) {
                       <Text
                         style={[
                           styles.segmentedOptionText,
-                          theme.effects.particles.density === density && styles.segmentedOptionTextSelected,
+                          theme.effects.particles.density === density &&
+                            styles.segmentedOptionTextSelected,
                         ]}
                       >
                         {density.charAt(0).toUpperCase() + density.slice(1)}
@@ -737,13 +985,18 @@ export default function UICustomizationScreen({ navigation }: Props) {
               />
               <View style={styles.optionRowVertical}>
                 <Text style={styles.optionLabel}>Glow Intensity</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 10 }}
+                >
                   {(['off', 'subtle', 'moderate', 'intense'] as const).map((intensity) => (
                     <TouchableOpacity
                       key={intensity}
                       style={[
                         styles.segmentedOption,
-                        theme.effects.glow.intensity === intensity && styles.segmentedOptionSelected,
+                        theme.effects.glow.intensity === intensity &&
+                          styles.segmentedOptionSelected,
                       ]}
                       onPress={() => {
                         haptic.light();
@@ -758,7 +1011,8 @@ export default function UICustomizationScreen({ navigation }: Props) {
                       <Text
                         style={[
                           styles.segmentedOptionText,
-                          theme.effects.glow.intensity === intensity && styles.segmentedOptionTextSelected,
+                          theme.effects.glow.intensity === intensity &&
+                            styles.segmentedOptionTextSelected,
                         ]}
                       >
                         {intensity.charAt(0).toUpperCase() + intensity.slice(1)}
@@ -768,12 +1022,185 @@ export default function UICustomizationScreen({ navigation }: Props) {
                 </ScrollView>
               </View>
             </SettingsSection>
+
+            {/* Border Gradients */}
+            <SettingsSection title="Border Gradients" icon="color-wand" iconColor="#06b6d4">
+              <ToggleRow
+                label="Animated Borders"
+                description="Rainbow gradient borders on cards"
+                value={theme.effects.borderGradients.enabled}
+                onToggle={(value) =>
+                  updateTheme({
+                    effects: {
+                      ...theme.effects,
+                      borderGradients: { ...theme.effects.borderGradients, enabled: value },
+                    },
+                  })
+                }
+              />
+              <SliderRow
+                label="Animation Speed"
+                value={theme.effects.borderGradients.speed}
+                min={0.5}
+                max={2.0}
+                step={0.1}
+                suffix="x"
+                onValueChange={(value) =>
+                  updateTheme({
+                    effects: {
+                      ...theme.effects,
+                      borderGradients: { ...theme.effects.borderGradients, speed: value },
+                    },
+                  })
+                }
+              />
+            </SettingsSection>
+
+            {/* Scanlines */}
+            <SettingsSection title="Scanlines" icon="scan" iconColor="#ef4444">
+              <ToggleRow
+                label="Enable Scanlines"
+                description="Retro CRT monitor effect"
+                value={theme.effects.scanlines.enabled}
+                onToggle={(value) =>
+                  updateTheme({
+                    effects: {
+                      ...theme.effects,
+                      scanlines: { ...theme.effects.scanlines, enabled: value },
+                    },
+                  })
+                }
+              />
+              <SliderRow
+                label="Opacity"
+                value={theme.effects.scanlines.opacity}
+                min={0}
+                max={100}
+                step={5}
+                suffix="%"
+                onValueChange={(value) =>
+                  updateTheme({
+                    effects: {
+                      ...theme.effects,
+                      scanlines: { ...theme.effects.scanlines, opacity: value },
+                    },
+                  })
+                }
+              />
+              <SliderRow
+                label="Speed"
+                value={theme.effects.scanlines.speed}
+                min={1}
+                max={20}
+                step={1}
+                onValueChange={(value) =>
+                  updateTheme({
+                    effects: {
+                      ...theme.effects,
+                      scanlines: { ...theme.effects.scanlines, speed: value },
+                    },
+                  })
+                }
+              />
+            </SettingsSection>
+
+            {/* Glassmorphism Style */}
+            <SettingsSection title="Glassmorphism" icon="albums" iconColor="#a855f7">
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Glass Style</Text>
+                <Text style={styles.optionDescription}>Visual style for glass cards</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 10 }}
+                >
+                  {(['default', 'frosted', 'crystal', 'neon', 'holographic'] as const).map(
+                    (variant) => (
+                      <TouchableOpacity
+                        key={variant}
+                        style={[
+                          styles.glassOption,
+                          theme.effects.glassmorphism === variant && styles.glassOptionSelected,
+                        ]}
+                        onPress={() => {
+                          haptic.medium();
+                          updateTheme({
+                            effects: { ...theme.effects, glassmorphism: variant },
+                          });
+                        }}
+                      >
+                        <Text
+                          style={[
+                            styles.glassOptionText,
+                            theme.effects.glassmorphism === variant &&
+                              styles.glassOptionTextSelected,
+                          ]}
+                        >
+                          {variant.charAt(0).toUpperCase() + variant.slice(1)}
+                        </Text>
+                      </TouchableOpacity>
+                    )
+                  )}
+                </ScrollView>
+              </View>
+            </SettingsSection>
           </>
         )}
 
         {/* Animations Tab */}
         {activeTab === 'animations' && (
           <>
+            {/* Animation Intensity */}
+            <SettingsSection title="Motion Intensity" icon="pulse" iconColor="#f59e0b">
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Overall Intensity</Text>
+                <Text style={styles.optionDescription}>How dramatic animations appear</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 10 }}
+                >
+                  {(['minimal', 'moderate', 'intense'] as const).map((intensity) => (
+                    <TouchableOpacity
+                      key={intensity}
+                      style={[
+                        styles.densityOption,
+                        theme.animations.intensity === intensity && styles.intensityOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.medium();
+                        updateTheme({
+                          animations: { ...theme.animations, intensity },
+                        });
+                      }}
+                    >
+                      <Ionicons
+                        name={
+                          intensity === 'minimal'
+                            ? 'remove-circle'
+                            : intensity === 'moderate'
+                              ? 'ellipse'
+                              : 'flame'
+                        }
+                        size={24}
+                        color={theme.animations.intensity === intensity ? '#fff' : '#9ca3af'}
+                      />
+                      <Text
+                        style={[
+                          styles.densityOptionText,
+                          theme.animations.intensity === intensity &&
+                            styles.densityOptionTextSelected,
+                        ]}
+                      >
+                        {intensity.charAt(0).toUpperCase() + intensity.slice(1)}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </SettingsSection>
+
+            {/* Animation Speed */}
             <SettingsSection title="Animation Speed" icon="speedometer" iconColor="#10b981">
               <SliderRow
                 label="Speed Multiplier"
@@ -790,6 +1217,63 @@ export default function UICustomizationScreen({ navigation }: Props) {
               />
             </SettingsSection>
 
+            {/* Per-Category Toggles */}
+            <SettingsSection title="Animation Categories" icon="toggle" iconColor="#8b5cf6">
+              <ToggleRow
+                label="Screen Transitions"
+                description="Page enter/exit animations"
+                value={theme.animations.categories.screenTransitions}
+                onToggle={(value) =>
+                  updateTheme({
+                    animations: {
+                      ...theme.animations,
+                      categories: { ...theme.animations.categories, screenTransitions: value },
+                    },
+                  })
+                }
+              />
+              <ToggleRow
+                label="Component Entrance"
+                description="Elements appearing on screen"
+                value={theme.animations.categories.componentEntrance}
+                onToggle={(value) =>
+                  updateTheme({
+                    animations: {
+                      ...theme.animations,
+                      categories: { ...theme.animations.categories, componentEntrance: value },
+                    },
+                  })
+                }
+              />
+              <ToggleRow
+                label="Micro-interactions"
+                description="Button presses, toggles, hovers"
+                value={theme.animations.categories.microInteractions}
+                onToggle={(value) =>
+                  updateTheme({
+                    animations: {
+                      ...theme.animations,
+                      categories: { ...theme.animations.categories, microInteractions: value },
+                    },
+                  })
+                }
+              />
+              <ToggleRow
+                label="Particle Effects"
+                description="Background particles and sparkles"
+                value={theme.animations.categories.particleEffects}
+                onToggle={(value) =>
+                  updateTheme({
+                    animations: {
+                      ...theme.animations,
+                      categories: { ...theme.animations.categories, particleEffects: value },
+                    },
+                  })
+                }
+              />
+            </SettingsSection>
+
+            {/* Spring Physics */}
             <SettingsSection title="Spring Physics" icon="leaf" iconColor="#22c55e">
               <SliderRow
                 label="Tension"
@@ -823,6 +1307,7 @@ export default function UICustomizationScreen({ navigation }: Props) {
               />
             </SettingsSection>
 
+            {/* Haptic Feedback */}
             <SettingsSection title="Haptic Feedback" icon="hand-left" iconColor="#ec4899">
               <ToggleRow
                 label="Enable Haptics"
@@ -839,13 +1324,18 @@ export default function UICustomizationScreen({ navigation }: Props) {
               />
               <View style={styles.optionRowVertical}>
                 <Text style={styles.optionLabel}>Haptic Strength</Text>
-                <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 10 }}
+                >
                   {(['off', 'light', 'medium', 'strong'] as const).map((strength) => (
                     <TouchableOpacity
                       key={strength}
                       style={[
                         styles.segmentedOption,
-                        theme.animations.haptics.strength === strength && styles.segmentedOptionSelected,
+                        theme.animations.haptics.strength === strength &&
+                          styles.segmentedOptionSelected,
                       ]}
                       onPress={() => {
                         haptic.light();
@@ -860,7 +1350,8 @@ export default function UICustomizationScreen({ navigation }: Props) {
                       <Text
                         style={[
                           styles.segmentedOptionText,
-                          theme.animations.haptics.strength === strength && styles.segmentedOptionTextSelected,
+                          theme.animations.haptics.strength === strength &&
+                            styles.segmentedOptionTextSelected,
                         ]}
                       >
                         {strength.charAt(0).toUpperCase() + strength.slice(1)}
@@ -869,6 +1360,274 @@ export default function UICustomizationScreen({ navigation }: Props) {
                   ))}
                 </ScrollView>
               </View>
+            </SettingsSection>
+          </>
+        )}
+
+        {/* Accessibility Tab */}
+        {activeTab === 'accessibility' && (
+          <>
+            {/* Accessibility Options */}
+            <SettingsSection title="Accessibility" icon="accessibility" iconColor="#3b82f6">
+              <ToggleRow
+                label="Reduce Motion"
+                description="Minimize animations for sensitive users"
+                value={theme.accessibility.reduceMotion}
+                onToggle={(value) =>
+                  updateTheme({
+                    accessibility: { ...theme.accessibility, reduceMotion: value },
+                  })
+                }
+              />
+              <ToggleRow
+                label="High Contrast"
+                description="Increase text and UI contrast"
+                value={theme.accessibility.highContrast}
+                onToggle={(value) =>
+                  updateTheme({
+                    accessibility: { ...theme.accessibility, highContrast: value },
+                  })
+                }
+              />
+              <ToggleRow
+                label="Large Touch Targets"
+                description="Minimum 44pt touch areas"
+                value={theme.accessibility.increasedTouchTargets}
+                onToggle={(value) =>
+                  updateTheme({
+                    accessibility: { ...theme.accessibility, increasedTouchTargets: value },
+                  })
+                }
+              />
+              <ToggleRow
+                label="Haptic Alternatives"
+                description="Visual feedback when haptics unavailable"
+                value={theme.accessibility.hapticAlternatives}
+                onToggle={(value) =>
+                  updateTheme({
+                    accessibility: { ...theme.accessibility, hapticAlternatives: value },
+                  })
+                }
+              />
+            </SettingsSection>
+
+            {/* Performance Mode */}
+            <SettingsSection title="Performance" icon="speedometer" iconColor="#f59e0b">
+              <View style={styles.optionRowVertical}>
+                <Text style={styles.optionLabel}>Performance Mode</Text>
+                <Text style={styles.optionDescription}>Balance between visuals and speed</Text>
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{ marginTop: 10 }}
+                >
+                  {(['visual-first', 'balanced', 'performance'] as const).map((mode) => (
+                    <TouchableOpacity
+                      key={mode}
+                      style={[
+                        styles.densityOption,
+                        theme.performance.mode === mode && styles.performanceOptionSelected,
+                      ]}
+                      onPress={() => {
+                        haptic.medium();
+                        updateTheme({
+                          performance: { ...theme.performance, mode },
+                        });
+                      }}
+                    >
+                      <Ionicons
+                        name={
+                          mode === 'visual-first'
+                            ? 'sparkles'
+                            : mode === 'balanced'
+                              ? 'scale'
+                              : 'rocket'
+                        }
+                        size={24}
+                        color={theme.performance.mode === mode ? '#fff' : '#9ca3af'}
+                      />
+                      <Text
+                        style={[
+                          styles.densityOptionText,
+                          theme.performance.mode === mode && styles.densityOptionTextSelected,
+                        ]}
+                      >
+                        {mode === 'visual-first'
+                          ? 'Visual'
+                          : mode === 'balanced'
+                            ? 'Balanced'
+                            : 'Fast'}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </SettingsSection>
+
+            {/* Battery Settings */}
+            <SettingsSection title="Battery" icon="battery-charging" iconColor="#22c55e">
+              <ToggleRow
+                label="Battery Saver"
+                description="Reduce effects to save battery"
+                value={theme.performance.batterySaver}
+                onToggle={(value) =>
+                  updateTheme({
+                    performance: { ...theme.performance, batterySaver: value },
+                  })
+                }
+              />
+              <ToggleRow
+                label="Auto-Throttle"
+                description="Auto-reduce effects below 20% battery"
+                value={theme.performance.autoThrottle}
+                onToggle={(value) =>
+                  updateTheme({
+                    performance: { ...theme.performance, autoThrottle: value },
+                  })
+                }
+              />
+            </SettingsSection>
+
+            {/* Quick Presets */}
+            <SettingsSection title="Quick Presets" icon="flash" iconColor="#ec4899">
+              <TouchableOpacity
+                style={styles.presetButton}
+                onPress={() => {
+                  haptic.medium();
+                  updateTheme({
+                    accessibility: {
+                      reduceMotion: true,
+                      highContrast: true,
+                      increasedTouchTargets: true,
+                      hapticAlternatives: true,
+                    },
+                    performance: {
+                      mode: 'performance',
+                      batterySaver: true,
+                      autoThrottle: true,
+                    },
+                    animations: {
+                      ...theme.animations,
+                      speed: 2.0,
+                      intensity: 'minimal',
+                      categories: {
+                        screenTransitions: false,
+                        componentEntrance: false,
+                        microInteractions: true,
+                        particleEffects: false,
+                      },
+                    },
+                    effects: {
+                      ...theme.effects,
+                      particles: { ...theme.effects.particles, enabled: false },
+                      blur: { ...theme.effects.blur, enabled: false },
+                      scanlines: { ...theme.effects.scanlines, enabled: false },
+                    },
+                  });
+                }}
+              >
+                <LinearGradient
+                  colors={['#3b82f6', '#2563eb']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.presetButtonGradient}
+                >
+                  <Ionicons name="accessibility" size={20} color="#fff" />
+                  <Text style={styles.presetButtonText}>Maximum Accessibility</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.presetButton}
+                onPress={() => {
+                  haptic.medium();
+                  updateTheme({
+                    accessibility: {
+                      reduceMotion: false,
+                      highContrast: false,
+                      increasedTouchTargets: false,
+                      hapticAlternatives: false,
+                    },
+                    performance: {
+                      mode: 'visual-first',
+                      batterySaver: false,
+                      autoThrottle: false,
+                    },
+                    animations: {
+                      ...theme.animations,
+                      speed: 1.0,
+                      intensity: 'intense',
+                      categories: {
+                        screenTransitions: true,
+                        componentEntrance: true,
+                        microInteractions: true,
+                        particleEffects: true,
+                      },
+                    },
+                    effects: {
+                      ...theme.effects,
+                      particles: { ...theme.effects.particles, enabled: true, density: 'high' },
+                      blur: { ...theme.effects.blur, enabled: true, intensity: 80 },
+                      glow: { ...theme.effects.glow, enabled: true, intensity: 'intense' },
+                    },
+                  });
+                }}
+              >
+                <LinearGradient
+                  colors={['#8b5cf6', '#7c3aed']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.presetButtonGradient}
+                >
+                  <Ionicons name="sparkles" size={20} color="#fff" />
+                  <Text style={styles.presetButtonText}>Maximum Effects</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.presetButton}
+                onPress={() => {
+                  haptic.medium();
+                  updateTheme({
+                    accessibility: {
+                      reduceMotion: false,
+                      highContrast: false,
+                      increasedTouchTargets: false,
+                      hapticAlternatives: false,
+                    },
+                    performance: {
+                      mode: 'balanced',
+                      batterySaver: false,
+                      autoThrottle: true,
+                    },
+                    animations: {
+                      ...theme.animations,
+                      speed: 1.0,
+                      intensity: 'moderate',
+                      categories: {
+                        screenTransitions: true,
+                        componentEntrance: true,
+                        microInteractions: true,
+                        particleEffects: false,
+                      },
+                    },
+                    effects: {
+                      ...theme.effects,
+                      particles: { ...theme.effects.particles, enabled: false },
+                      blur: { ...theme.effects.blur, enabled: true, intensity: 40 },
+                      glow: { ...theme.effects.glow, enabled: true, intensity: 'subtle' },
+                    },
+                  });
+                }}
+              >
+                <LinearGradient
+                  colors={['#10b981', '#059669']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.presetButtonGradient}
+                >
+                  <Ionicons name="scale" size={20} color="#fff" />
+                  <Text style={styles.presetButtonText}>Balanced Mode</Text>
+                </LinearGradient>
+              </TouchableOpacity>
             </SettingsSection>
           </>
         )}
@@ -1234,6 +1993,84 @@ const styles = StyleSheet.create({
     color: '#9ca3af',
   },
   segmentedOptionTextSelected: {
+    color: '#fff',
+  },
+  densityOption: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    marginRight: 12,
+    minWidth: 100,
+  },
+  densityOptionSelected: {
+    backgroundColor: '#3b82f6',
+  },
+  intensityOptionSelected: {
+    backgroundColor: '#f59e0b',
+  },
+  densityOptionText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#9ca3af',
+    marginTop: 8,
+  },
+  densityOptionTextSelected: {
+    color: '#fff',
+  },
+  miniSegmentedOption: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    marginRight: 8,
+  },
+  miniSegmentedText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#9ca3af',
+  },
+  glassOption: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    marginRight: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
+  },
+  glassOptionSelected: {
+    backgroundColor: 'rgba(168, 85, 247, 0.3)',
+    borderColor: '#a855f7',
+  },
+  glassOptionText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#9ca3af',
+  },
+  glassOptionTextSelected: {
+    color: '#fff',
+  },
+  performanceOptionSelected: {
+    backgroundColor: '#f59e0b',
+  },
+  presetButton: {
+    marginVertical: 6,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+  presetButtonGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    gap: 10,
+  },
+  presetButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
     color: '#fff',
   },
   bottomActions: {

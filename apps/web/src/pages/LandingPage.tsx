@@ -254,7 +254,7 @@ function MatrixRain() {
     <canvas
       ref={canvasRef}
       className="pointer-events-none absolute inset-0"
-      style={{ opacity: 0.15 }}
+      style={{ opacity: 0.35 }}
     />
   );
 }
@@ -295,15 +295,15 @@ function ParticleField() {
     window.addEventListener('resize', resizeCanvas);
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Create particles
-    for (let i = 0; i < 80; i++) {
+    // Create particles - increased count for more dramatic effect
+    for (let i = 0; i < 120; i++) {
       particles.push({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 0.8,
-        vy: (Math.random() - 0.5) * 0.8,
-        size: Math.random() * 3 + 1,
-        opacity: Math.random() * 0.6 + 0.2,
+        vx: (Math.random() - 0.5) * 1.2,
+        vy: (Math.random() - 0.5) * 1.2,
+        size: Math.random() * 4 + 1.5,
+        opacity: Math.random() * 0.7 + 0.3,
         hue: Math.random() * 60 + 120, // Green to cyan range
         pulse: Math.random() * Math.PI * 2,
       });
@@ -315,7 +315,7 @@ function ParticleField() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       particles.forEach((particle) => {
-        // Mouse attraction
+        // Mouse attraction - stronger effect
         const dx = mouseRef.current.x - particle.x;
         const dy = mouseRef.current.y - particle.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -416,9 +416,65 @@ function ScanlineOverlay() {
         }}
       />
       <motion.div
-        className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent"
+        className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"
         animate={{ y: ['0vh', '100vh'] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+      />
+    </div>
+  );
+}
+
+// Floating orb/nebula background effect
+function FloatingOrbs() {
+  return (
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Primary green orb */}
+      <motion.div
+        className="absolute h-[600px] w-[600px] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%)',
+          filter: 'blur(60px)',
+          top: '10%',
+          left: '20%',
+        }}
+        animate={{
+          x: [0, 50, -30, 0],
+          y: [0, -40, 30, 0],
+          scale: [1, 1.1, 0.95, 1],
+        }}
+        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Secondary cyan orb */}
+      <motion.div
+        className="absolute h-[500px] w-[500px] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%)',
+          filter: 'blur(50px)',
+          top: '40%',
+          right: '15%',
+        }}
+        animate={{
+          x: [0, -40, 20, 0],
+          y: [0, 30, -50, 0],
+          scale: [1, 0.9, 1.05, 1],
+        }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+      />
+      {/* Accent purple orb */}
+      <motion.div
+        className="absolute h-[400px] w-[400px] rounded-full"
+        style={{
+          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%)',
+          filter: 'blur(40px)',
+          bottom: '20%',
+          left: '10%',
+        }}
+        animate={{
+          x: [0, 30, -20, 0],
+          y: [0, -30, 40, 0],
+          scale: [1, 1.15, 0.9, 1],
+        }}
+        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
       />
     </div>
   );
@@ -436,7 +492,7 @@ function AnimatedBorder({
     <div className={`group relative ${className}`}>
       <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-purple-500 opacity-0 blur-sm transition-opacity duration-500 group-hover:opacity-100" />
       <div
-        className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-purple-500 opacity-20"
+        className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-purple-500 opacity-30"
         style={{
           backgroundSize: '200% 200%',
           animation: 'gradient-shift 3s ease infinite',
@@ -689,32 +745,33 @@ function HeroSection() {
       {/* Backgrounds */}
       <MatrixRain />
       <ParticleField />
+      <FloatingOrbs />
       <ScanlineOverlay />
 
-      {/* Gradient orbs */}
+      {/* Additional accent orbs with enhanced glow */}
       <motion.div
-        className="absolute left-1/4 top-1/4 h-[500px] w-[500px] rounded-full bg-emerald-600/20 blur-[100px]"
+        className="absolute left-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-emerald-600/25 blur-[120px]"
         animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.2, 0.3, 0.2],
+          scale: [1, 1.3, 1],
+          opacity: [0.25, 0.4, 0.25],
         }}
-        transition={{ duration: 8, repeat: Infinity }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
-        className="absolute bottom-1/4 right-1/4 h-[500px] w-[500px] rounded-full bg-cyan-600/20 blur-[100px]"
+        className="absolute bottom-1/4 right-1/4 h-[550px] w-[550px] rounded-full bg-cyan-600/25 blur-[110px]"
         animate={{
           scale: [1.2, 1, 1.2],
-          opacity: [0.3, 0.2, 0.3],
+          opacity: [0.35, 0.2, 0.35],
         }}
-        transition={{ duration: 8, repeat: Infinity }}
+        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
-        className="absolute right-1/3 top-1/3 h-[300px] w-[300px] rounded-full bg-purple-600/15 blur-[80px]"
+        className="absolute right-1/3 top-1/3 h-[350px] w-[350px] rounded-full bg-purple-600/20 blur-[90px]"
         animate={{
-          x: [0, 50, 0],
-          y: [0, -30, 0],
+          x: [0, 60, 0],
+          y: [0, -40, 0],
         }}
-        transition={{ duration: 10, repeat: Infinity }}
+        transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
       />
 
       <motion.div

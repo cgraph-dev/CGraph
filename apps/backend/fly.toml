@@ -1,4 +1,5 @@
 # CGraph Backend Fly.io Configuration
+# Scale-ready for 10K users
 app = "cgraph-backend"
 primary_region = "fra"  # Frankfurt - close to Supabase Europe region
 kill_signal = "SIGTERM"
@@ -16,30 +17,36 @@ kill_timeout = "30s"
   PORT = "4000"
   ECTO_IPV6 = "true"
   ERL_AFLAGS = "-proto_dist inet6_tcp"
-  ELIXIR_ERL_OPTIONS = "+S 1:1 +SDcpu 1:1 +sbwt very_short +swt very_low"
+  # Optimized BEAM settings for production load
+  # +S 2:2 - Use 2 schedulers (matches 2 CPU cores)
+  # +SDcpu 2:2 - Match scheduler count to CPUs
+  # +sbwt short - Short busy wait threshold for better latency
+  # +swt low - Low scheduler wakeup threshold
+  # +stbt ts - Use time-stealing for load balancing
+  ELIXIR_ERL_OPTIONS = "+S 2:2 +SDcpu 2:2 +sbwt short +swt low +stbt ts"
   ERL_CRASH_DUMP_SECONDS = "10"
 
 [http_service]
   internal_port = 4000
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = false  # Keep machines running for WebSocket connections
   auto_start_machines = true
-  min_machines_running = 1
+  min_machines_running = 2    # Minimum 2 for redundancy, scale to 3+ for 10K
   processes = ["app"]
 
   [http_service.concurrency]
     type = "connections"
-    hard_limit = 1000
-    soft_limit = 800
+    hard_limit = 2000         # Increased for WebSocket scaling
+    soft_limit = 1800
 
   [[http_service.checks]]
-    interval = "30s"
-    timeout = "5s"
-    grace_period = "60s"
+    interval = "15s"          # More frequent health checks
+    timeout = "3s"
+    grace_period = "30s"
     method = "GET"
     path = "/health"
 
 [[vm]]
-  cpu_kind = "shared"
-  cpus = 1
-  memory = "512mb"
+  cpu_kind = "shared"         # Use "performance" for 10K users
+  cpus = 2                    # 2 CPUs for better WebSocket handling
+  memory = "1gb"              # Increase to 2gb for 10K users

@@ -1,9 +1,9 @@
 /**
  * ESLint Configuration for CGraph Mobile App
- * 
+ *
  * Uses the flat config format (ESLint 9+) with TypeScript and React support.
  * Includes strict react-hooks rules to prevent hook ordering violations.
- * 
+ *
  * @since v0.7.29
  */
 import js from '@eslint/js';
@@ -78,35 +78,39 @@ export default tseslint.config(
     },
     rules: {
       // TypeScript rules
-      '@typescript-eslint/no-unused-vars': ['warn', { 
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_',
-      }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-non-null-assertion': 'warn',
       '@typescript-eslint/no-require-imports': 'off',
-      
+
       // React rules - these are critical for preventing hook violations
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       'react/display-name': 'off',
-      
+
       // React Hooks rules - STRICT MODE
       // These rules are essential for preventing "Rendered more hooks than during
       // the previous render" errors by catching hook ordering violations at build time.
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'warn',
-      
+
       // General JavaScript rules
       'no-unused-vars': 'off', // Use TypeScript version instead
       'no-console': ['warn', { allow: ['warn', 'error', 'info'] }],
       'no-debugger': 'warn',
       'no-duplicate-imports': 'error',
       'prefer-const': 'warn',
-      'eqeqeq': ['warn', 'smart'],
-      
+      eqeqeq: ['warn', 'smart'],
+
       // Code style (suggestions only)
-      'curly': ['warn', 'multi-line'],
+      curly: ['warn', 'multi-line'],
       'dot-notation': 'warn',
       'no-var': 'error',
     },
@@ -130,5 +134,5 @@ export default tseslint.config(
       'jest.config.js',
       'app.config.js',
     ],
-  },
+  }
 );
