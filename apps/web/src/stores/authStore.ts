@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools, persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { api } from '@/lib/api';
+import { registerTokenHandlers } from '@/lib/tokenService';
 import { AxiosError } from 'axios';
 
 // Type for API error responses
@@ -444,6 +445,32 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+/**
+ * Register token handlers with tokenService
+ *
+ * CIRCULAR DEPENDENCY FIX:
+ * - api.ts needs access to tokens but can't import authStore (creates circular dep)
+ * - tokenService.ts provides a decoupled interface
+ * - authStore registers its handlers here after initialization
+ * - api.ts calls tokenService functions which delegate to these handlers
+ *
+ * This ensures:
+ * 1. api.ts can initialize before authStore loads
+ * 2. No "Cannot access before initialization" errors in production builds
+ * 3. Token access works correctly once store is ready
+ */
+registerTokenHandlers({
+  getAccessToken: () => useAuthStore.getState().token,
+  getRefreshToken: () => useAuthStore.getState().refreshToken,
+  setTokens: ({ accessToken, refreshToken }) => {
+    useAuthStore.setState({
+      token: accessToken,
+      refreshToken: refreshToken ?? useAuthStore.getState().refreshToken,
+    });
+  },
+  onLogout: () => useAuthStore.getState().logout(),
+});
 
 // Safety timeout: ensure isLoading is set to false within 3 seconds of module load
 // This catches any edge cases where rehydration might not complete

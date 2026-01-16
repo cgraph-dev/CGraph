@@ -1,7 +1,23 @@
 import { createHttpClient, extractApiError, withZod } from '@cgraph/utils';
 import { ZodSchema } from 'zod';
-import { useAuthStore } from '@/stores/authStore';
+import {
+  getAccessToken,
+  getRefreshToken,
+  setTokens as setTokensInStore,
+  triggerLogout,
+} from './tokenService';
 
+/**
+ * API URL Configuration
+ *
+ * PRODUCTION (Vercel): Uses relative paths with rewrites
+ * - VITE_API_URL is empty or '/api' - rewrites handle routing
+ *
+ * DEVELOPMENT: Uses full backend URL
+ * - Vite proxy handles /api -> localhost:4000
+ *
+ * The API endpoints should NOT include /api prefix as it's part of the base URL
+ */
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 // Lazy import socket to avoid circular dependency
@@ -16,21 +32,32 @@ async function reconnectSocket(): Promise<void> {
   }
 }
 
+/**
+ * HTTP Client Instance
+ *
+ * CIRCULAR DEPENDENCY FIX:
+ * - Previously imported useAuthStore directly, causing initialization race condition
+ * - Now uses tokenService.ts which provides lazy-bound token accessors
+ * - authStore registers its handlers with tokenService on initialization
+ * - This breaks the circular dependency: api.ts -> tokenService.ts (no store import)
+ *
+ * PRODUCTION BUILD:
+ * - The "Cannot access 'Ct' before initialization" error was caused by the circular import
+ * - 'Ct' is the minified name of useAuthStore in the production bundle
+ * - This refactor ensures api.ts can initialize before authStore without errors
+ */
 export const api = createHttpClient({
   baseURL: API_URL,
   timeoutMs: 30000,
   withCredentials: true,
-  getAccessToken: () => useAuthStore.getState().token,
-  getRefreshToken: () => useAuthStore.getState().refreshToken,
+  getAccessToken: () => getAccessToken(),
+  getRefreshToken: () => getRefreshToken(),
   setTokens: async ({ accessToken, refreshToken }) => {
-    useAuthStore.setState({
-      token: accessToken,
-      refreshToken: refreshToken ?? useAuthStore.getState().refreshToken,
-    });
+    setTokensInStore({ accessToken, refreshToken: refreshToken ?? null });
     reconnectSocket();
   },
-  onLogout: () => {
-    useAuthStore.getState().logout();
+  onLogout: async () => {
+    await triggerLogout();
     window.location.href = '/login';
   },
   refresh: {

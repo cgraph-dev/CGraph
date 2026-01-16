@@ -5,12 +5,13 @@ import { OAuthButtonGroup } from '@/components/auth/OAuthButtons';
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, getWalletChallenge, loginWithWallet, isLoading, error, clearError } = useAuthStore();
+  const { login, getWalletChallenge, loginWithWallet, isLoading, error, clearError } =
+    useAuthStore();
 
   // Auto-dismiss error after 5 seconds (enough time to read)
   useEffect(() => {
     if (!error) return;
-    
+
     const timer = setTimeout(() => {
       clearError();
     }, 5000);
@@ -28,7 +29,7 @@ export default function Login() {
     try {
       await login(email, password);
       navigate('/messages');
-    } catch (err) {
+    } catch {
       // Error is handled by store
     }
   };
@@ -69,10 +70,9 @@ export default function Login() {
   return (
     <div className="space-y-8">
       {/* Mobile Logo with matrix glow */}
-      <div className="lg:hidden text-center form-field-animate">
-        <Link to="/" className="inline-flex items-center gap-3 group">
-          <div className="h-10 w-10 rounded-lg bg-primary-600 flex items-center justify-center
-                        transition-all duration-300 group-hover:shadow-glow-md group-hover:bg-primary-500">
+      <div className="form-field-animate text-center lg:hidden">
+        <Link to="/" className="group inline-flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600 transition-all duration-300 group-hover:bg-primary-500 group-hover:shadow-glow-md">
             <svg
               className="h-6 w-6 text-white transition-transform duration-300 group-hover:scale-110"
               fill="none"
@@ -87,26 +87,37 @@ export default function Login() {
               />
             </svg>
           </div>
-          <span className="text-2xl font-bold text-white matrix-glow">CGraph</span>
+          <span className="matrix-glow text-2xl font-bold text-white">CGraph</span>
         </Link>
       </div>
 
       {/* Header with subtle animation */}
-      <div className="text-center lg:text-left form-field-animate">
-        <h2 className="text-3xl font-bold text-white matrix-glow">Welcome back</h2>
+      <div className="form-field-animate text-center lg:text-left">
+        <h2 className="matrix-glow text-3xl font-bold text-white">Welcome back</h2>
         <p className="mt-2 text-gray-400">Sign in to your account to continue</p>
       </div>
 
       {/* Error Alert with matrix styling */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-red-400 text-sm 
-                      animate-fade-in backdrop-blur-sm shadow-lg shadow-red-500/10">
+        <div className="animate-fade-in rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400 shadow-lg shadow-red-500/10 backdrop-blur-sm">
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="h-5 w-5 flex-shrink-0"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
-            {error}
+            {/* Defensive rendering to prevent React error #31 when error is an object */}
+            {typeof error === 'string'
+              ? error
+              : (error as { message?: string })?.message || 'An error occurred'}
           </div>
         </div>
       )}
@@ -114,7 +125,7 @@ export default function Login() {
       {/* Login Form with staggered animations */}
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="form-field-animate">
-          <label htmlFor="identifier" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="identifier" className="mb-2 block text-sm font-medium text-gray-300">
             Email or Username
           </label>
           <input
@@ -124,15 +135,13 @@ export default function Login() {
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="username"
-            className="w-full px-4 py-3 bg-dark-800/80 border border-dark-600 rounded-lg text-white 
-                     placeholder-gray-500 matrix-input focus:outline-none focus:ring-2 
-                     focus:ring-primary-500/50 focus:border-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="you@example.com or username"
           />
         </div>
 
         <div className="form-field-animate">
-          <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+          <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-300">
             Password
           </label>
           <div className="relative">
@@ -143,16 +152,13 @@ export default function Login() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="w-full px-4 py-3 bg-dark-800/80 border border-dark-600 rounded-lg text-white 
-                       placeholder-gray-500 matrix-input focus:outline-none focus:ring-2 
-                       focus:ring-primary-500/50 focus:border-primary-500/50 pr-12"
+              className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
               placeholder="••••••••"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary-400 
-                       transition-all duration-200 hover:scale-110"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:scale-110 hover:text-primary-400"
             >
               {showPassword ? (
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -183,22 +189,17 @@ export default function Login() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between form-field-animate">
-          <label className="flex items-center gap-2 cursor-pointer group">
+        <div className="form-field-animate flex items-center justify-between">
+          <label className="group flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
-              className="w-4 h-4 rounded bg-dark-700 border-dark-600 text-primary-500 
-                       focus:ring-primary-500/50 focus:ring-offset-0 transition-all
-                       checked:bg-primary-600 checked:border-primary-600"
+              className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 transition-all checked:border-primary-600 checked:bg-primary-600 focus:ring-primary-500/50 focus:ring-offset-0"
             />
-            <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors">
+            <span className="text-sm text-gray-400 transition-colors group-hover:text-gray-300">
               Remember me
             </span>
           </label>
-          <Link
-            to="/forgot-password"
-            className="text-sm matrix-link"
-          >
+          <Link to="/forgot-password" className="matrix-link text-sm">
             Forgot password?
           </Link>
         </div>
@@ -206,8 +207,7 @@ export default function Login() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full py-3 px-4 matrix-button disabled:opacity-50 disabled:cursor-not-allowed 
-                   text-white font-medium rounded-lg flex items-center justify-center gap-2 form-field-animate"
+          className="matrix-button form-field-animate flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
             <>
@@ -217,8 +217,18 @@ export default function Login() {
           ) : (
             <>
               <span>Sign in</span>
-              <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              <svg
+                className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M14 5l7 7m0 0l-7 7m7-7H3"
+                />
               </svg>
             </>
           )}
@@ -226,12 +236,14 @@ export default function Login() {
       </form>
 
       {/* Divider with matrix styling */}
-      <div className="relative form-field-animate">
+      <div className="form-field-animate relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-dark-600/50" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-4 bg-transparent text-gray-500 backdrop-blur-sm">Or continue with</span>
+          <span className="bg-transparent px-4 text-gray-500 backdrop-blur-sm">
+            Or continue with
+          </span>
         </div>
       </div>
 
@@ -249,12 +261,13 @@ export default function Login() {
       <button
         onClick={handleWalletConnect}
         disabled={isLoading}
-        className="w-full py-3 px-4 bg-dark-800/80 hover:bg-dark-700/80 border border-dark-600 
-                 hover:border-primary-500/30 text-white font-medium rounded-lg 
-                 transition-all duration-300 flex items-center justify-center gap-3 
-                 hover:shadow-glow-sm form-field-animate group"
+        className="form-field-animate group flex w-full items-center justify-center gap-3 rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 font-medium text-white transition-all duration-300 hover:border-primary-500/30 hover:bg-dark-700/80 hover:shadow-glow-sm"
       >
-        <svg className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" viewBox="0 0 40 40" fill="none">
+        <svg
+          className="h-5 w-5 transition-transform duration-300 group-hover:scale-110"
+          viewBox="0 0 40 40"
+          fill="none"
+        >
           <path
             d="M20 40C31.0457 40 40 31.0457 40 20C40 8.9543 31.0457 0 20 0C8.9543 0 0 8.9543 0 20C0 31.0457 8.9543 40 20 40Z"
             fill="#627EEA"
@@ -278,7 +291,7 @@ export default function Login() {
       </button>
 
       {/* Sign Up Link with matrix styling */}
-      <p className="text-center text-gray-400 form-field-animate">
+      <p className="form-field-animate text-center text-gray-400">
         Don't have an account?{' '}
         <Link to="/register" className="matrix-link font-medium">
           Sign up
