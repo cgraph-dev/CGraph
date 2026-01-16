@@ -103,3 +103,4 @@ temp/
 # Private documentation (developer only)
 docs/PrivateFolder/
 .vercel
+.env*.local

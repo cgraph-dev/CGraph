@@ -1,0 +1,16 @@
+# Ignore everything except apps/web and vercel config
+apps/backend/
+apps/mobile/
+docs/
+docs-website/
+infrastructure/
+packages/
+node_modules/
+**/node_modules/
+**/_build/
+**/deps/
+**/.git/
+**/.turbo/
+**/coverage/
+**/dist/
+**/*.log
