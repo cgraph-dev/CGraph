@@ -102,3 +102,4 @@ temp/
 *.tmp
 # Private documentation (developer only)
 docs/PrivateFolder/
+.vercel
