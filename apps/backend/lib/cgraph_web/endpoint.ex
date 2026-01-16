@@ -31,9 +31,9 @@ defmodule CGraphWeb.Endpoint do
         "https://cgraph.vercel.app",
         "https://cgraph-web.vercel.app",
         "https://c-graph.vercel.app",
-        # Vercel preview deployments (wildcard pattern handled by Corsica)
-        ~r/^https:\/\/cgraph-.*\.vercel\.app$/,
-        ~r/^https:\/\/c-graph-.*\.vercel\.app$/
+        # Allow ALL Vercel preview deployments (*.vercel.app)
+        # This covers URLs like c-graph-xyz-team-name.vercel.app
+        ~r/^https:\/\/[a-zA-Z0-9\-]+\.vercel\.app$/
       ]
 
     {nil, false} ->
