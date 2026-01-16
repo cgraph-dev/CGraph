@@ -79,7 +79,7 @@ export class ValidationService {
       if (!/[0-9]/.test(password)) {
         errors.push('Password must contain a number');
       }
-      if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+      if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
         errors.push('Password must contain a special character');
       }
     }

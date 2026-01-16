@@ -214,7 +214,9 @@ export function slugify(text: string): string {
  * Check if running in browser environment
  */
 export function isBrowser(): boolean {
-  return typeof window !== 'undefined' && typeof document !== 'undefined';
+  return typeof globalThis !== 'undefined' && 
+    typeof (globalThis as any).window !== 'undefined' && 
+    typeof (globalThis as any).document !== 'undefined';
 }
 
 /**

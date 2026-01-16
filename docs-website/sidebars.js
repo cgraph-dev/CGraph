@@ -127,6 +127,20 @@ const sidebars = {
       ],
     },
   ],
+  
+  legalSidebar: [
+    {
+      type: 'category',
+      label: 'Legal',
+      collapsed: false,
+      items: [
+        'LEGAL/PRIVACY_POLICY',
+        'LEGAL/TERMS_OF_SERVICE',
+        'LEGAL/COOKIE_POLICY',
+        'LEGAL/GDPR',
+      ],
+    },
+  ],
 };
 
 export default sidebars;

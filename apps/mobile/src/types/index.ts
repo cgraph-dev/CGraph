@@ -321,6 +321,9 @@ export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
   ForgotPassword: undefined;
+  Onboarding: undefined;
+  ResetPassword: { token: string };
+  VerifyEmail: { token: string };
 };
 
 export type MainTabParamList = {
@@ -331,6 +334,15 @@ export type MainTabParamList = {
   GroupsTab: undefined;
   ForumsTab: undefined;
   SettingsTab: undefined;
+};
+
+export type CallsStackParamList = {
+  Call: {
+    recipientId: string;
+    callType: 'audio' | 'video';
+    incoming?: boolean;
+    roomId?: string;
+  };
 };
 
 export type MessagesStackParamList = {
@@ -407,6 +419,9 @@ export type SettingsStackParamList = {
   E2EEVerification: { userId: string; username: string };
   AdminDashboard: undefined;
   ForumReorder: undefined;
+  // Security screens
+  TwoFactorSetup: undefined;
+  BlockedUsers: undefined;
   ExportContent: { type: 'thread' | 'post' | 'conversation'; id: string; title: string };
 };
 

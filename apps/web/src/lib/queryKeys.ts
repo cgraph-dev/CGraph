@@ -32,7 +32,6 @@
  */
 
 // Type definitions for query key structure (for documentation)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type _QueryKeyFactory<T extends Record<string, unknown>> = {
   all: readonly [string];
   lists: () => readonly [string, string];
@@ -40,6 +39,9 @@ type _QueryKeyFactory<T extends Record<string, unknown>> = {
   details: () => readonly [string, string];
   detail: (id: string) => readonly [string, string, string];
 };
+
+// Export to silence unused type warning while keeping for documentation
+export type { _QueryKeyFactory as QueryKeyFactory };
 
 // Filters types
 export interface UserFilters {

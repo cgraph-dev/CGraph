@@ -33,6 +33,9 @@ const Login = lazy(() => import('@/pages/auth/Login'));
 const Register = lazy(() => import('@/pages/auth/Register'));
 const ForgotPassword = lazy(() => import('@/pages/auth/ForgotPassword'));
 const OAuthCallback = lazy(() => import('@/pages/auth/OAuthCallback'));
+const Onboarding = lazy(() => import('@/pages/auth/Onboarding'));
+const ResetPassword = lazy(() => import('@/pages/auth/ResetPassword'));
+const VerifyEmail = lazy(() => import('@/pages/auth/VerifyEmail'));
 
 // Core messaging (most used, higher priority)
 const Messages = lazy(() => import('@/pages/messages/Messages'));
@@ -60,8 +63,13 @@ const PluginMarketplace = lazy(() => import('@/pages/forums/PluginMarketplace'))
 
 // Settings & Profile
 const Settings = lazy(() => import('@/pages/settings/Settings'));
+const TwoFactorSetup = lazy(() => import('@/pages/settings/TwoFactorSetup'));
+const BlockedUsers = lazy(() => import('@/pages/settings/BlockedUsers'));
 const UserProfile = lazy(() => import('@/pages/profile/UserProfile'));
 const UserLeaderboard = lazy(() => import('@/pages/community/UserLeaderboard'));
+
+// Calls (WebRTC)
+const CallScreen = lazy(() => import('@/pages/calls/CallScreen'));
 
 // Premium & Gamification
 const PremiumPage = lazy(() => import('@/pages/premium/PremiumPage'));
@@ -90,6 +98,19 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 // Static pages
 const NotFound = lazy(() => import('@/pages/NotFound'));
 const LandingPage = lazy(() => import('@/pages/LandingPage'));
+
+// Legal pages
+const PrivacyPolicy = lazy(() => import('@/pages/legal/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('@/pages/legal/TermsOfService'));
+const CookiePolicy = lazy(() => import('@/pages/legal/CookiePolicy'));
+const GDPR = lazy(() => import('@/pages/legal/GDPR'));
+
+// Company pages
+const About = lazy(() => import('@/pages/company/About'));
+const Contact = lazy(() => import('@/pages/company/Contact'));
+const Careers = lazy(() => import('@/pages/company/Careers'));
+const Press = lazy(() => import('@/pages/company/Press'));
+const Status = lazy(() => import('@/pages/company/Status'));
 
 // Test pages (dev only, lazy)
 const MatrixTest = lazy(() => import('@/pages/test/MatrixTest'));
@@ -198,6 +219,19 @@ export default function App() {
           element={<LandingPage />}
         />
         
+        {/* Legal pages - public access */}
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfService />} />
+        <Route path="/cookies" element={<CookiePolicy />} />
+        <Route path="/gdpr" element={<GDPR />} />
+        
+        {/* Company pages - public access */}
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/careers" element={<Careers />} />
+        <Route path="/press" element={<Press />} />
+        <Route path="/status" element={<Status />} />
+        
         {/* Auth routes */}
         <Route
           path="/login"
@@ -233,6 +267,18 @@ export default function App() {
         <Route
           path="/auth/oauth/:provider/callback"
           element={<OAuthCallback />}
+        />
+        
+        {/* Password Reset - token-based, no auth needed */}
+        <Route
+          path="/reset-password"
+          element={<ResetPassword />}
+        />
+        
+        {/* Email Verification - token-based, no auth needed */}
+        <Route
+          path="/verify-email"
+          element={<VerifyEmail />}
         />
 
         {/* Protected routes */}
@@ -281,6 +327,8 @@ export default function App() {
           {/* Settings */}
           <Route path="settings" element={<Settings />} />
           <Route path="settings/:section" element={<Settings />} />
+          <Route path="settings/security/2fa-setup" element={<TwoFactorSetup />} />
+          <Route path="settings/privacy/blocked" element={<BlockedUsers />} />
 
           {/* Community */}
           <Route path="community/leaderboard" element={<UserLeaderboard />} />
@@ -314,6 +362,12 @@ export default function App() {
           <Route path="titles" element={<TitlesPage />} />
 
           {/* User Profile */}
+          
+          {/* Voice/Video Calls */}
+          <Route path="call/:recipientId/:callType" element={<CallScreen />} />
+          
+          {/* Onboarding (first-time user experience) */}
+          <Route path="onboarding" element={<Onboarding />} />
           <Route path="user/:userId" element={<UserProfile />} />
           <Route path="u/:userId" element={<UserProfile />} />
 

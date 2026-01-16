@@ -86,7 +86,6 @@ jobs:
         with:
           category: '/language:${{ matrix.language }}'
           upload: true
-          add-snippets: true
 
       - name: Upload CodeQL SARIF
         uses: actions/upload-artifact@v4

@@ -80,6 +80,7 @@ interface TopContributor {
 
 type TimePeriod = 'daily' | 'weekly' | 'monthly' | 'all';
 type LeaderboardType = 'forums' | 'contributors';
+type LeaderboardItem = LeaderboardForum | TopContributor;
 
 // =============================================================================
 // ANIMATED PODIUM COMPONENT
@@ -241,9 +242,9 @@ function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
     if (!item) return null;
 
     const colors = {
-      1: { gradient: ['#FFD700', '#FFA500'], border: '#FFD700', shadow: '#FFD700' },
-      2: { gradient: ['#C0C0C0', '#A0A0A0'], border: '#C0C0C0', shadow: '#C0C0C0' },
-      3: { gradient: ['#CD7F32', '#A0522D'], border: '#CD7F32', shadow: '#CD7F32' },
+      1: { gradient: ['#FFD700', '#FFA500'] as const, border: '#FFD700', shadow: '#FFD700' },
+      2: { gradient: ['#C0C0C0', '#A0A0A0'] as const, border: '#C0C0C0', shadow: '#C0C0C0' },
+      3: { gradient: ['#CD7F32', '#A0522D'] as const, border: '#CD7F32', shadow: '#CD7F32' },
     }[rank]!;
 
     const translateY = anim.interpolate({
@@ -337,7 +338,7 @@ function AnimatedPodium({ items, type, onItemPress }: PodiumProps) {
 
           {/* Pedestal */}
           <LinearGradient
-            colors={[...colors.gradient, colors.gradient[1] + '80']}
+            colors={[colors.gradient[0], colors.gradient[1], colors.gradient[1] + '80'] as const}
             style={[styles.pedestal, { height }]}
           >
             {type === 'contributors' && (
@@ -527,10 +528,10 @@ function AnimatedListItem({ item, index, type, onPress, colors }: ListItemProps)
     ? (item as LeaderboardForum).rank
     : (item as TopContributor).rank;
 
-  const getRankColor = (r: number) => {
-    if (r <= 3) return ['#8B5CF6', '#7C3AED'];
-    if (r <= 10) return ['#3B82F6', '#2563EB'];
-    return ['#6B7280', '#4B5563'];
+  const getRankColor = (r: number): readonly [string, string] => {
+    if (r <= 3) return ['#8B5CF6', '#7C3AED'] as const;
+    if (r <= 10) return ['#3B82F6', '#2563EB'] as const;
+    return ['#6B7280', '#4B5563'] as const;
   };
 
   const getRankChange = (current: number, previous?: number) => {
@@ -1033,7 +1034,7 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
     console.log('Navigate to user:', contributor.user?.username);
   };
 
-  const currentData = activeTab === 'forums' ? forums : contributors;
+  const currentData: LeaderboardItem[] = activeTab === 'forums' ? forums : contributors;
   const topThree = currentData.slice(0, 3);
   const restOfList = currentData.slice(3);
 
@@ -1069,9 +1070,9 @@ export default function ForumLeaderboardScreen({ navigation, route }: Props) {
         />
       )}
 
-      <FlatList
+      <FlatList<LeaderboardItem>
         data={restOfList}
-        keyExtractor={(item) => 'id' in item ? item.id : String(Math.random())}
+        keyExtractor={(item) => item.id}
         renderItem={({ item, index }) => (
           <AnimatedListItem
             item={item}

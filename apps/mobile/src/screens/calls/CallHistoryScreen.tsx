@@ -219,11 +219,11 @@ export default function CallHistoryScreen() {
   const getDirectionIcon = (direction: CallDirection) => {
     switch (direction) {
       case 'incoming':
-        return { name: 'arrow-down-left' as const, color: Colors.primary[500] };
+        return { name: 'arrow-down' as const, color: Colors.primary[500] };
       case 'outgoing':
-        return { name: 'arrow-up-right' as const, color: Colors.blue[500] };
+        return { name: 'arrow-up' as const, color: Colors.blue[500] };
       case 'missed':
-        return { name: 'arrow-down-left' as const, color: Colors.semantic.error };
+        return { name: 'close-circle' as const, color: Colors.semantic.error };
     }
   };
 

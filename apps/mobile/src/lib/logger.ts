@@ -3,6 +3,8 @@
  * Only logs in development mode to prevent sensitive data leakage
  */
 
+import { captureError, addBreadcrumb } from './errorTracking';
+
 const isDev = __DEV__;
 
 export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
@@ -53,7 +55,13 @@ export const createLogger = (namespace: string): Logger => {
       } else {
         // In production, log without sensitive details
         console.error(prefix, 'An error occurred');
-        // TODO: Send to error tracking service (Sentry, etc.)
+        // Send to error tracking service
+        const errorArg = args[0];
+        if (errorArg instanceof Error) {
+          captureError(errorArg, { component: namespace, action: 'logger_error' });
+        } else if (typeof errorArg === 'string') {
+          captureError(new Error(errorArg), { component: namespace, action: 'logger_error' });
+        }
       }
     },
   };

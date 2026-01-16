@@ -240,11 +240,9 @@ export function createLogger(config: Partial<LoggerConfig> = {}): Logger {
 // Helper to safely check NODE_ENV across environments
 const getEnvMode = (): string | undefined => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return typeof (globalThis as any).process !== 'undefined' 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ? (globalThis as any).process.env?.NODE_ENV 
-      : undefined;
+    const g = globalThis as Record<string, unknown>;
+    const proc = g.process as { env?: { NODE_ENV?: string } } | undefined;
+    return proc?.env?.NODE_ENV;
   } catch {
     return undefined;
   }

@@ -119,6 +119,12 @@ const config = {
             label: 'Releases',
           },
           {
+            type: 'docSidebar',
+            sidebarId: 'legalSidebar',
+            position: 'left',
+            label: 'Legal',
+          },
+          {
             href: 'https://github.com/cgraph-dev/CGraph',
             label: 'GitHub',
             position: 'right',
@@ -173,6 +179,27 @@ const config = {
               {
                 label: 'Contributing',
                 to: '/docs/guides/CONTRIBUTING',
+              },
+            ],
+          },
+          {
+            title: 'Legal',
+            items: [
+              {
+                label: 'Privacy Policy',
+                to: '/docs/LEGAL/PRIVACY_POLICY',
+              },
+              {
+                label: 'Terms of Service',
+                to: '/docs/LEGAL/TERMS_OF_SERVICE',
+              },
+              {
+                label: 'Cookie Policy',
+                to: '/docs/LEGAL/COOKIE_POLICY',
+              },
+              {
+                label: 'GDPR',
+                to: '/docs/LEGAL/GDPR',
               },
             ],
           },

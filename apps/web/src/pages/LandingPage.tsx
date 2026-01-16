@@ -449,7 +449,7 @@ function HeroSection() {
         >
           <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
           <span className="text-sm font-medium text-purple-300">
-            v0.9.1 — Signal Protocol E2EE Now Available
+            v0.9.2 — E2EE Video Calls Now Available
           </span>
         </motion.div>
 
@@ -912,6 +912,8 @@ function Footer() {
               <li>
                 <a
                   href="https://docs.cgraph.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 transition-colors hover:text-white"
                 >
                   Documentation
@@ -920,22 +922,23 @@ function Footer() {
               <li>
                 <a
                   href="https://docs.cgraph.org/api"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 transition-colors hover:text-white"
                 >
                   API Reference
                 </a>
               </li>
               <li>
-                <a
-                  href="https://status.cgraph.org"
-                  className="text-gray-400 transition-colors hover:text-white"
-                >
+                <Link to="/status" className="text-gray-400 transition-colors hover:text-white">
                   Status
-                </a>
+                </Link>
               </li>
               <li>
                 <a
                   href="https://blog.cgraph.org"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-gray-400 transition-colors hover:text-white"
                 >
                   Blog
@@ -949,24 +952,24 @@ function Footer() {
             <h4 className="mb-4 font-semibold text-white">Company</h4>
             <ul className="space-y-2">
               <li>
-                <a href="/about" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/about" className="text-gray-400 transition-colors hover:text-white">
                   About
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/careers" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/careers" className="text-gray-400 transition-colors hover:text-white">
                   Careers
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/contact" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/contact" className="text-gray-400 transition-colors hover:text-white">
                   Contact
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/press" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/press" className="text-gray-400 transition-colors hover:text-white">
                   Press
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -976,24 +979,24 @@ function Footer() {
             <h4 className="mb-4 font-semibold text-white">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <a href="/privacy" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/privacy" className="text-gray-400 transition-colors hover:text-white">
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/terms" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/terms" className="text-gray-400 transition-colors hover:text-white">
                   Terms of Service
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/cookies" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/cookies" className="text-gray-400 transition-colors hover:text-white">
                   Cookie Policy
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/gdpr" className="text-gray-400 transition-colors hover:text-white">
+                <Link to="/gdpr" className="text-gray-400 transition-colors hover:text-white">
                   GDPR
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

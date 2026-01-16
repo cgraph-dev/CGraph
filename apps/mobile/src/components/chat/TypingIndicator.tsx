@@ -207,7 +207,7 @@ export default function TypingIndicator({
     };
   }, [style, animations, animConfig]);
 
-  const getAnimatedStyle = (index: number): Animated.AnimatedProps<ViewStyle>['style'] => {
+  const getAnimatedStyle = (index: number): ViewStyle => {
     const anim = animations[index];
 
     switch (style) {

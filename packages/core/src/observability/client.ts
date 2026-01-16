@@ -347,7 +347,7 @@ class ObservabilityClient {
         }
       });
       clsObserver.observe({ entryTypes: ['layout-shift'] });
-    } catch (e) {
+    } catch (_e) {
       // Performance observer not supported
     }
   }

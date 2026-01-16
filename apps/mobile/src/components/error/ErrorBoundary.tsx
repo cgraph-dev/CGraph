@@ -20,6 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { createLogger } from '../../lib/logger';
+import { captureError, addBreadcrumb } from '../../lib/errorTracking';
 
 const logger = createLogger('ErrorBoundary');
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -77,7 +78,19 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       onError(error, errorInfo);
     }
 
-    // TODO: Send to error reporting service (Sentry, Bugsnag, etc.)
+    // Send to error tracking service
+    addBreadcrumb({
+      category: 'error',
+      message: `Error Boundary triggered: ${name}`,
+      level: 'error',
+      data: { componentStack: errorInfo.componentStack?.substring(0, 500) },
+    });
+    captureError(error, {
+      component: name,
+      action: 'error_boundary_catch',
+      level: 'fatal',
+      metadata: { componentStack: errorInfo.componentStack },
+    });
   }
 
   handleRetry = async (): Promise<void> => {

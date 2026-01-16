@@ -194,6 +194,7 @@ export const createSelectors = <T extends object, S extends { getState: () => T 
   const selectors: Record<string, () => unknown> = {};
 
   for (const key of Object.keys(useStore.getState())) {
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- Dynamic hook creation for selector pattern
     selectors[key] = () => useStore((state: T) => state[key as keyof T]);
   }
 

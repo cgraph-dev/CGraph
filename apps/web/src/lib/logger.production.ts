@@ -23,8 +23,10 @@
  * ```
  *
  * @module lib/logger.production
- * @version 1.0.0
+ * @version 1.1.0
  */
+
+import { captureError } from '@/lib/errorTracking';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
@@ -139,8 +141,20 @@ class ProductionLogger {
 
       console.error(this.format('error', message, fullContext));
 
-      // TODO: Send to error tracking service (Sentry, LogRocket, etc.)
-      // this.sendToErrorTracking(message, error, context);
+      // Send to error tracking service
+      if (error instanceof Error) {
+        captureError(error, {
+          component: 'logger',
+          action: 'production_error',
+          metadata: context,
+        });
+      } else if (error) {
+        captureError(new Error(message), {
+          component: 'logger',
+          action: 'production_error',
+          metadata: { ...context, originalError: error },
+        });
+      }
     }
   }
 

@@ -238,7 +238,7 @@ function AnimatedInputField({
           <Text
             style={[
               styles.charCountText,
-              isNearLimit && { color: '#EF4444' },
+              isNearLimit ? { color: '#EF4444' } : undefined,
             ]}
           >
             {value.length}/{maxLength}
