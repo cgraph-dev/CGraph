@@ -17,8 +17,8 @@ const values = [
   },
   {
     icon: '🌐',
-    title: 'Open Source',
-    description: 'Transparency builds trust. Our core protocols and clients are open source, allowing anyone to verify our security claims.',
+    title: 'Transparency',
+    description: 'Transparency builds trust. We are committed to clear communication about our security practices and policies.',
   },
   {
     icon: '🤝',
@@ -44,51 +44,17 @@ const values = [
 
 const team = [
   {
-    name: 'Alexandra Chen',
-    role: 'CEO & Co-Founder',
-    bio: 'Former security engineer at Signal. PhD in Cryptography from Stanford.',
-    avatar: 'AC',
-  },
-  {
-    name: 'Marcus Williams',
-    role: 'CTO & Co-Founder',
-    bio: 'Ex-Discord infrastructure lead. Built systems serving 100M+ users.',
-    avatar: 'MW',
-  },
-  {
-    name: 'Sarah Nakamoto',
-    role: 'Head of Security',
-    bio: 'Led security at Coinbase. Published researcher in post-quantum cryptography.',
-    avatar: 'SN',
-  },
-  {
-    name: 'David Park',
-    role: 'Head of Product',
-    bio: 'Former product lead at Telegram. Passionate about privacy UX.',
-    avatar: 'DP',
-  },
-  {
-    name: 'Elena Rodriguez',
-    role: 'Head of Engineering',
-    bio: 'Ex-Google SRE. Built Phoenix/Elixir systems at scale.',
-    avatar: 'ER',
-  },
-  {
-    name: 'James Liu',
-    role: 'Head of Design',
-    bio: 'Former design lead at Figma. Believer in design systems.',
-    avatar: 'JL',
+    name: 'Burca Lucas',
+    role: 'Founder & Developer',
+    bio: 'Full-stack developer passionate about privacy and secure communication. Building CGraph from Georgia.',
+    avatar: 'BL',
   },
 ];
 
 const milestones = [
-  { year: '2024', event: 'CGraph founded with mission to build privacy-first messaging' },
-  { year: '2024', event: 'Seed funding from privacy-focused investors' },
-  { year: '2025', event: 'Public beta launch with E2E encryption' },
-  { year: '2025', event: 'Mobile apps for iOS and Android released' },
-  { year: '2025', event: 'Forum and community features launched' },
-  { year: '2026', event: 'Signal Protocol integration complete' },
-  { year: '2026', event: 'Reached 100,000+ active users' },
+  { year: '2026', event: 'CGraph founded with mission to build privacy-first messaging' },
+  { year: '2026', event: 'Development of core encryption and messaging features' },
+  { year: '2026', event: 'Forum and community features in development' },
 ];
 
 export default function About() {
@@ -158,9 +124,9 @@ export default function About() {
             viewport={{ once: true }}
             className="mb-12 text-center"
           >
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">Our Team</h2>
+            <h2 className="text-3xl font-bold text-white sm:text-4xl">Meet the Founder</h2>
             <p className="mt-4 text-gray-400">
-              A world-class team with experience from Signal, Discord, Google, and more
+              Building CGraph from Georgia with a passion for privacy and secure communication
             </p>
           </motion.div>
 
@@ -232,7 +198,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* Investors Section */}
+      {/* Vision Section */}
       <section className="bg-gray-950 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -241,16 +207,12 @@ export default function About() {
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">Backed By</h2>
-            <p className="mb-12 text-gray-400">
-              Supported by investors who believe in privacy
+            <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">Our Vision</h2>
+            <p className="mx-auto max-w-2xl text-gray-400">
+              We're building CGraph to prove that privacy and great user experience can coexist.
+              Join us on this journey to create a communication platform that respects your privacy
+              while delivering the features you need.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-12 opacity-60">
-              <div className="text-2xl font-bold text-gray-400">Privacy Capital</div>
-              <div className="text-2xl font-bold text-gray-400">Crypto Ventures</div>
-              <div className="text-2xl font-bold text-gray-400">Open Source Fund</div>
-              <div className="text-2xl font-bold text-gray-400">Digital Rights VC</div>
-            </div>
           </motion.div>
         </div>
       </section>

@@ -10,134 +10,24 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { MarketingLayout } from '@/components/marketing';
 
-const benefits = [
-  {
-    icon: '🌍',
-    title: 'Remote-First',
-    description: 'Work from anywhere in the world. We believe great talent is everywhere.',
-  },
-  {
-    icon: '💰',
-    title: 'Competitive Pay',
-    description: 'Top-of-market compensation with equity for all team members.',
-  },
-  {
-    icon: '🏥',
-    title: 'Health Coverage',
-    description: 'Comprehensive health, dental, and vision insurance for you and your family.',
-  },
-  {
-    icon: '📚',
-    title: 'Learning Budget',
-    description: '$2,500 annual budget for courses, conferences, and books.',
-  },
-  {
-    icon: '🏖️',
-    title: 'Unlimited PTO',
-    description: 'Take the time you need. We trust you to manage your schedule.',
-  },
-  {
-    icon: '🖥️',
-    title: 'Home Office',
-    description: '$1,500 stipend to set up your perfect home workspace.',
-  },
-  {
-    icon: '👶',
-    title: 'Parental Leave',
-    description: '16 weeks paid leave for all parents, regardless of gender.',
-  },
-  {
-    icon: '🧘',
-    title: 'Wellness',
-    description: 'Monthly wellness allowance for gym, meditation, or whatever helps you recharge.',
-  },
+const benefits: Array<{
+  icon: string;
+  title: string;
+  description: string;
+}> = [
+  // Benefits will be listed when we start hiring
 ];
 
-const positions = [
-  {
-    id: 'senior-rust-engineer',
-    title: 'Senior Rust Engineer',
-    department: 'Engineering',
-    location: 'Remote (Global)',
-    type: 'Full-time',
-    description: 'Help build the core encryption and peer-to-peer infrastructure powering CGraph.',
-    requirements: [
-      '5+ years of systems programming experience',
-      'Strong Rust expertise (2+ years)',
-      'Experience with cryptography and security',
-      'Understanding of distributed systems',
-    ],
-  },
-  {
-    id: 'staff-elixir-engineer',
-    title: 'Staff Elixir Engineer',
-    department: 'Engineering',
-    location: 'Remote (Global)',
-    type: 'Full-time',
-    description: 'Architect and scale our real-time backend infrastructure built on Phoenix.',
-    requirements: [
-      '7+ years of backend engineering experience',
-      '3+ years with Elixir/Phoenix',
-      'Experience with real-time systems',
-      'Strong understanding of OTP patterns',
-    ],
-  },
-  {
-    id: 'react-native-engineer',
-    title: 'React Native Engineer',
-    department: 'Engineering',
-    location: 'Remote (Global)',
-    type: 'Full-time',
-    description: 'Build beautiful, performant mobile experiences on iOS and Android.',
-    requirements: [
-      '4+ years of mobile development experience',
-      '2+ years with React Native',
-      'Published apps in App Store and Play Store',
-      'Experience with native modules',
-    ],
-  },
-  {
-    id: 'security-engineer',
-    title: 'Security Engineer',
-    department: 'Security',
-    location: 'Remote (Global)',
-    type: 'Full-time',
-    description: 'Ensure our platform remains secure and conduct security audits.',
-    requirements: [
-      '5+ years in security engineering',
-      'Experience with cryptographic protocols',
-      'Bug bounty or security research background',
-      'Knowledge of compliance frameworks',
-    ],
-  },
-  {
-    id: 'product-designer',
-    title: 'Senior Product Designer',
-    department: 'Design',
-    location: 'Remote (Global)',
-    type: 'Full-time',
-    description: 'Design intuitive interfaces that make privacy accessible to everyone.',
-    requirements: [
-      '5+ years of product design experience',
-      'Strong portfolio of consumer apps',
-      'Experience with design systems',
-      'User research experience',
-    ],
-  },
-  {
-    id: 'devrel-engineer',
-    title: 'Developer Relations Engineer',
-    department: 'Developer Experience',
-    location: 'Remote (Global)',
-    type: 'Full-time',
-    description: 'Build community and help developers integrate with CGraph APIs.',
-    requirements: [
-      'Strong software engineering background',
-      'Excellent communication skills',
-      'Experience creating technical content',
-      'Active in developer communities',
-    ],
-  },
+const positions: Array<{
+  id: string;
+  title: string;
+  department: string;
+  location: string;
+  type: string;
+  description: string;
+  requirements: string[];
+}> = [
+  // No open positions at this time
 ];
 
 const values = [
@@ -146,8 +36,8 @@ const values = [
     description: 'We build systems where privacy is the baseline, not an afterthought.',
   },
   {
-    title: 'Open Source First',
-    description: 'Transparency in code builds trust. We default to open.',
+    title: 'User First',
+    description: 'Every decision is made with our users\' best interests in mind.',
   },
   {
     title: 'User Empowerment',
@@ -155,7 +45,7 @@ const values = [
   },
   {
     title: 'Continuous Learning',
-    description: 'Technology evolves fast. We invest in growth for everyone.',
+    description: 'Technology evolves fast. We invest in growth and improvement.',
   },
 ];
 
@@ -197,6 +87,7 @@ export default function Careers() {
       </section>
 
       {/* Benefits Section */}
+      {benefits.length > 0 && (
       <section className="bg-gray-900 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -227,6 +118,7 @@ export default function Careers() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Open Positions */}
       <section className="bg-gray-950 py-16">
@@ -241,6 +133,21 @@ export default function Careers() {
             <p className="mt-2 text-gray-400">Find your next opportunity</p>
           </motion.div>
 
+          {positions.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="rounded-2xl border border-gray-800 bg-gray-900/50 p-8 text-center"
+            >
+              <div className="mb-4 text-4xl">🚀</div>
+              <h3 className="mb-2 text-xl font-semibold text-white">We're Just Getting Started</h3>
+              <p className="text-gray-400">
+                CGraph is currently a solo project in active development. While we don't have open positions right now,
+                we'd love to hear from passionate people who share our vision for privacy-first communication.
+              </p>
+            </motion.div>
+          ) : (
           <div className="space-y-4">
             {positions.map((position, index) => (
               <motion.div
@@ -287,6 +194,7 @@ export default function Careers() {
               </motion.div>
             ))}
           </div>
+          )}
         </div>
       </section>
 
@@ -319,10 +227,6 @@ export default function Careers() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-500">
             <Link to="/about" className="hover:text-purple-400">Learn more about CGraph →</Link>
-            <span>•</span>
-            <a href="https://github.com/cgraph-org" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400">
-              View our open source work →
-            </a>
           </div>
         </div>
       </section>

@@ -11,56 +11,20 @@ import { MarketingLayout } from '@/components/marketing';
 
 const pressReleases = [
   {
-    date: 'January 2025',
-    title: 'CGraph Launches v0.9 with End-to-End Encrypted Video Calls',
-    summary: 'The latest release brings secure video calling, Matrix protocol integration, and enhanced group messaging features.',
-    link: '#',
-  },
-  {
-    date: 'November 2024',
-    title: 'CGraph Raises Series A to Accelerate Privacy-First Messaging',
-    summary: 'Led by top privacy-focused investors, the funding will expand the engineering team and accelerate mobile development.',
-    link: '#',
-  },
-  {
-    date: 'September 2024',
-    title: 'CGraph Open Sources Core Encryption Library',
-    summary: 'In commitment to transparency, CGraph releases its core cryptographic implementation under the Apache 2.0 license.',
-    link: '#',
-  },
-  {
-    date: 'July 2024',
-    title: 'CGraph Passes Independent Security Audit',
-    summary: 'Third-party security firm confirms CGraph\'s end-to-end encryption implementation meets industry standards.',
+    date: 'January 2026',
+    title: 'CGraph Launches: Privacy-First Messaging Platform',
+    summary: 'Introducing CGraph — a new communication platform combining end-to-end encrypted messaging with community features.',
     link: '#',
   },
 ];
 
-const mediaAppearances = [
-  {
-    outlet: 'Wired',
-    title: 'The New Generation of Privacy-First Messaging Apps',
-    date: 'December 2024',
-    link: '#',
-  },
-  {
-    outlet: 'TechCrunch',
-    title: 'CGraph: Building Signal-Level Security with Modern UX',
-    date: 'November 2024',
-    link: '#',
-  },
-  {
-    outlet: 'The Verge',
-    title: 'Why Encrypted Messaging Matters More Than Ever',
-    date: 'October 2024',
-    link: '#',
-  },
-  {
-    outlet: 'Ars Technica',
-    title: 'Deep Dive: CGraph\'s Encryption Architecture',
-    date: 'September 2024',
-    link: '#',
-  },
+const mediaAppearances: Array<{
+  outlet: string;
+  title: string;
+  date: string;
+  link: string;
+}> = [
+  // Media coverage coming soon
 ];
 
 const brandAssets = [
@@ -91,12 +55,10 @@ const brandAssets = [
 ];
 
 const companyFacts = [
-  { label: 'Founded', value: '2023' },
-  { label: 'Headquarters', value: 'San Francisco, CA (Remote-First)' },
-  { label: 'Team Size', value: '20+ people' },
-  { label: 'Active Users', value: '100,000+' },
-  { label: 'Countries', value: '50+' },
-  { label: 'Messages Sent', value: '10M+ (all encrypted)' },
+  { label: 'Founded', value: '2026' },
+  { label: 'Headquarters', value: 'Georgia' },
+  { label: 'Team Size', value: 'Solo Founder' },
+  { label: 'Stage', value: 'In Development' },
 ];
 
 export default function Press() {
@@ -228,7 +190,8 @@ export default function Press() {
         </div>
       </section>
 
-      {/* Media Coverage */}
+      {/* Media Coverage - Coming Soon */}
+      {mediaAppearances.length > 0 && (
       <section className="bg-gray-950 py-16">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <motion.div
@@ -262,6 +225,7 @@ export default function Press() {
           </div>
         </div>
       </section>
+      )}
 
       {/* Contact Section */}
       <section className="bg-gray-900 py-16">

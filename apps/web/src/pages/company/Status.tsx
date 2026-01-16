@@ -60,38 +60,18 @@ const services = [
   },
 ];
 
-const recentIncidents = [
-  {
-    date: 'January 15, 2025',
-    title: 'Push Notification Delays',
-    status: 'resolved',
-    description: 'Some users experienced delayed push notifications. Issue was identified and resolved within 45 minutes.',
-    duration: '45 minutes',
-  },
-  {
-    date: 'January 8, 2025',
-    title: 'Scheduled Maintenance',
-    status: 'completed',
-    description: 'Planned maintenance window for infrastructure upgrades. All services remained available.',
-    duration: '2 hours',
-  },
-  {
-    date: 'December 20, 2024',
-    title: 'Video Call Quality Issues',
-    status: 'resolved',
-    description: 'Users in certain regions experienced video quality degradation. CDN routing was optimized.',
-    duration: '1 hour',
-  },
+const recentIncidents: Array<{
+  date: string;
+  title: string;
+  status: string;
+  description: string;
+  duration: string;
+}> = [
+  // No incidents to report yet
 ];
 
 const uptimeData = [
-  { month: 'Jul', uptime: 99.98 },
-  { month: 'Aug', uptime: 99.99 },
-  { month: 'Sep', uptime: 99.97 },
-  { month: 'Oct', uptime: 99.99 },
-  { month: 'Nov', uptime: 99.96 },
-  { month: 'Dec', uptime: 99.98 },
-  { month: 'Jan', uptime: 99.97 },
+  { month: 'Jan', uptime: 99.99 },
 ];
 
 function getStatusColor(status: string): string {
@@ -239,7 +219,7 @@ export default function Status() {
             className="mb-8"
           >
             <h2 className="text-xl font-bold text-white">Historical Uptime</h2>
-            <p className="text-sm text-gray-400">Last 90 days average: 99.97%</p>
+            <p className="text-sm text-gray-400">Tracking since January 2026</p>
           </motion.div>
 
           <motion.div
@@ -283,6 +263,18 @@ export default function Status() {
             <h2 className="text-xl font-bold text-white">Recent Incidents</h2>
           </motion.div>
 
+          {recentIncidents.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center"
+            >
+              <div className="mb-2 text-2xl">✅</div>
+              <h3 className="font-medium text-white">No Recent Incidents</h3>
+              <p className="text-sm text-gray-400">All systems have been running smoothly.</p>
+            </motion.div>
+          ) : (
           <div className="space-y-4">
             {recentIncidents.map((incident, index) => (
               <motion.div
@@ -305,6 +297,7 @@ export default function Status() {
               </motion.div>
             ))}
           </div>
+          )}
         </div>
       </section>
 
