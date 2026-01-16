@@ -33,7 +33,8 @@ defmodule CGraphWeb.Endpoint do
         "https://c-graph.vercel.app",
         # Allow ALL Vercel preview deployments (*.vercel.app)
         # This covers URLs like c-graph-xyz-team-name.vercel.app
-        ~r/^https:\/\/[a-zA-Z0-9\-]+\.vercel\.app$/
+        # Pattern includes dots for multi-segment subdomains (e.g., c-graph-abc123-team.vercel.app)
+        ~r/^https:\/\/[a-zA-Z0-9][a-zA-Z0-9\-\.]*\.vercel\.app$/
       ]
 
     {nil, false} ->

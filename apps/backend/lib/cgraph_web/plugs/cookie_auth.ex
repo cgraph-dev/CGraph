@@ -45,7 +45,9 @@ defmodule CGraphWeb.Plugs.CookieAuth do
     [
       http_only: true,
       secure: Mix.env() == :prod,
-      same_site: "Strict",  # Strict mode for better CSRF protection
+      # SameSite=None required for cross-origin requests (Vercel -> Fly.io)
+      # Secure=true is required when using SameSite=None (already set for prod)
+      same_site: "None",
       path: "/"
     ]
   end

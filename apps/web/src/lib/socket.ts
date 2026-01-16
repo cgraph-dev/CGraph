@@ -6,7 +6,27 @@ import { useE2EEStore } from '@/lib/crypto/e2eeStore';
 import { socketLogger as logger } from './logger';
 import { normalizeMessage } from './apiUtils';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'ws://localhost:4000/socket';
+// Build WebSocket URL based on environment
+// Empty string means use current host with /socket path (for Vercel rewrites)
+function getSocketUrl(): string {
+  const envUrl = import.meta.env.VITE_SOCKET_URL ?? import.meta.env.VITE_WS_URL;
+
+  // If explicitly set (not undefined), use it
+  if (envUrl !== undefined && envUrl !== '') {
+    return envUrl;
+  }
+
+  // For production with Vercel rewrites, build URL from current location
+  if (typeof window !== 'undefined') {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    return `${protocol}//${window.location.host}/socket`;
+  }
+
+  // Fallback for SSR or dev
+  return 'ws://localhost:4000/socket';
+}
+
+const SOCKET_URL = getSocketUrl();
 
 class SocketManager {
   private socket: Socket | null = null;
@@ -14,7 +34,9 @@ class SocketManager {
   private presences: Map<string, Presence> = new Map();
   private onlineUsers: Map<string, Set<string>> = new Map(); // conversationId -> Set<userId>
   private reconnectTimer: number | null = null;
-  private statusListeners: Set<(conversationId: string, userId: string, isOnline: boolean) => void> = new Set();
+  private statusListeners: Set<
+    (conversationId: string, userId: string, isOnline: boolean) => void
+  > = new Set();
   private connectionPromise: Promise<void> | null = null;
   // Track last join attempt timestamp per channel to prevent rapid rejoins
   private lastJoinAttempts: Map<string, number> = new Map();
@@ -28,7 +50,7 @@ class SocketManager {
     if (this.connectionPromise) {
       return this.connectionPromise;
     }
-    
+
     const token = useAuthStore.getState().token;
     if (!token) {
       logger.warn('Cannot connect to socket: no auth token');
@@ -72,7 +94,7 @@ class SocketManager {
 
       this.socket.connect();
     });
-    
+
     return this.connectionPromise;
   }
 
@@ -91,31 +113,31 @@ class SocketManager {
   /**
    * Reconnect with a fresh token after token refresh.
    * This is called when the API interceptor refreshes the access token.
-   * 
+   *
    * @returns Promise that resolves when reconnection is complete
    */
   async reconnectWithNewToken(): Promise<void> {
     logger.log('Reconnecting socket with new token...');
-    
+
     // Store current channel topics to rejoin after reconnect
     const channelTopics = Array.from(this.channels.keys());
-    
+
     // Disconnect current socket
     this.disconnect();
-    
+
     // Wait a moment for cleanup
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     // Reconnect with fresh token from store
     await this.connect();
-    
+
     // Rejoin essential channels (user channel and presence lobby)
     const userId = useAuthStore.getState().user?.id;
     if (userId) {
       this.joinUserChannel(userId);
       this.joinPresenceLobby();
     }
-    
+
     logger.log(`Socket reconnected. Previous channels: ${channelTopics.length}`);
   }
 
@@ -136,13 +158,13 @@ class SocketManager {
 
   /**
    * Join the user's personal channel for receiving targeted notifications.
-   * 
+   *
    * This channel receives:
    * - E2EE key revocation events (critical for security)
    * - Friend request notifications
    * - Message previews for push notifications
    * - Account state changes
-   * 
+   *
    * @param userId - Current user's ID
    * @returns Channel instance or null if unable to join
    */
@@ -194,13 +216,13 @@ class SocketManager {
 
   /**
    * Join the global presence lobby for friend online/offline status.
-   * 
+   *
    * This channel receives:
    * - presence_state: Initial list of online friends
    * - friend_online: When a friend comes online
    * - friend_offline: When a friend goes offline
    * - status_update: When a friend changes their status (online/away/busy)
-   * 
+   *
    * @returns Channel instance or null if unable to join
    */
   joinPresenceLobby(): Channel | null {
@@ -225,7 +247,7 @@ class SocketManager {
         onlineFriends.add(id);
         return id;
       });
-      
+
       // Store in a global "lobby" key
       this.onlineUsers.set('lobby', onlineFriends);
       logger.log('Presence sync: online friends count =', onlineFriends.size);
@@ -273,28 +295,28 @@ class SocketManager {
 
   /**
    * Check if a friend is online (global presence check).
-   * 
+   *
    * @param userId - Friend's user ID
    * @returns true if friend is online in the presence lobby
    */
   isFriendOnline(userId: string): boolean {
     const lobbyUsers = this.onlineUsers.get('lobby');
     if (!lobbyUsers) return false;
-    
+
     if (lobbyUsers.has(userId)) return true;
-    
+
     // String comparison fallback
     const userIdStr = String(userId);
     for (const id of lobbyUsers) {
       if (String(id) === userIdStr) return true;
     }
-    
+
     return false;
   }
 
   /**
    * Get list of all online friends.
-   * 
+   *
    * @returns Array of online friend user IDs
    */
   getOnlineFriends(): string[] {
@@ -322,14 +344,16 @@ class SocketManager {
   }
 
   // Subscribe to user status changes
-  onStatusChange(callback: (conversationId: string, userId: string, isOnline: boolean) => void): () => void {
+  onStatusChange(
+    callback: (conversationId: string, userId: string, isOnline: boolean) => void
+  ): () => void {
     this.statusListeners.add(callback);
     return () => this.statusListeners.delete(callback);
   }
 
   // Notify status change listeners
   private notifyStatusChange(conversationId: string, userId: string, isOnline: boolean) {
-    this.statusListeners.forEach(callback => callback(conversationId, userId, isOnline));
+    this.statusListeners.forEach((callback) => callback(conversationId, userId, isOnline));
   }
 
   // Get online users for a conversation
@@ -342,22 +366,22 @@ class SocketManager {
   isUserOnline(conversationId: string, userId: string): boolean {
     const onlineSet = this.onlineUsers.get(conversationId);
     if (!onlineSet || !userId) return false;
-    
+
     // Direct lookup first (most common case)
     if (onlineSet.has(userId)) return true;
-    
+
     // Fallback: Convert both to strings and compare (handles potential type mismatches)
     const userIdStr = String(userId);
     for (const id of onlineSet) {
       if (String(id) === userIdStr) return true;
     }
-    
+
     return false;
   }
 
   /**
    * Join a conversation channel (DMs) with comprehensive lifecycle management.
-   * 
+   *
    * Architectural improvements:
    * - Debounces rapid join attempts to prevent join/leave loops
    * - Validates socket connection state before attempting join
@@ -365,18 +389,18 @@ class SocketManager {
    * - Cleans up stale channels in bad states (closed/errored)
    * - Sets up presence tracking once per channel to prevent duplicate handlers
    * - Implements idempotent handler registration
-   * 
+   *
    * @param conversationId - Conversation ID to join
    * @returns Channel instance or null if unable to join
    */
   joinConversation(conversationId: string): Channel | null {
     const topic = `conversation:${conversationId}`;
-    
+
     // Debouncing: Prevent rapid join attempts (fixes join/leave loops)
     const now = Date.now();
     const lastAttempt = this.lastJoinAttempts.get(topic) || 0;
     const timeSinceLastAttempt = now - lastAttempt;
-    
+
     if (timeSinceLastAttempt < this.JOIN_DEBOUNCE_MS) {
       logger.log(
         `Debouncing join attempt for ${topic}, last attempt was ${timeSinceLastAttempt}ms ago`
@@ -412,7 +436,7 @@ class SocketManager {
       });
       return null;
     }
-    
+
     // Check if socket is actually connected
     if (!this.socket.isConnected()) {
       logger.warn('Socket exists but not connected, waiting...');
@@ -424,18 +448,18 @@ class SocketManager {
 
     const channel = this.socket.channel(topic, {});
     this.channels.set(topic, channel);
-    
+
     // Set up handlers only once per channel
     if (!this.channelHandlersSetUp.has(topic)) {
       this.channelHandlersSetUp.add(topic);
-      
+
       // Set up presence tracking for this channel
       const presence = new Presence(channel);
       this.presences.set(topic, presence);
-      
+
       // Initialize online users set for this conversation
       this.onlineUsers.set(conversationId, new Set());
-      
+
       // Handle presence sync (initial state)
       presence.onSync(() => {
         const onlineSet = new Set<string>();
@@ -443,28 +467,31 @@ class SocketManager {
           onlineSet.add(id);
           return id;
         });
-        
+
         // Compare with previous state and notify changes
         const previousSet = this.onlineUsers.get(conversationId) || new Set();
-        onlineSet.forEach(userId => {
+        onlineSet.forEach((userId) => {
           if (!previousSet.has(userId)) {
             this.notifyStatusChange(conversationId, userId, true);
           }
         });
-        previousSet.forEach(userId => {
+        previousSet.forEach((userId) => {
           if (!onlineSet.has(userId)) {
             this.notifyStatusChange(conversationId, userId, false);
           }
         });
-        
+
         this.onlineUsers.set(conversationId, onlineSet);
         // Only log if there's a meaningful change
-        if (import.meta.env.DEV && (previousSet.size !== onlineSet.size || 
-            Array.from(previousSet).some(u => !onlineSet.has(u)))) {
+        if (
+          import.meta.env.DEV &&
+          (previousSet.size !== onlineSet.size ||
+            Array.from(previousSet).some((u) => !onlineSet.has(u)))
+        ) {
           logger.log(`Presence sync for ${conversationId}:`, Array.from(onlineSet));
         }
       });
-      
+
       // Note: onJoin/onLeave are called for every presence update (including typing changes)
       // We rely primarily on onSync for the authoritative state
       presence.onJoin((id: string) => {
@@ -472,7 +499,7 @@ class SocketManager {
         this.onlineUsers.get(conversationId)?.add(id);
         // Status changes are handled by onSync
       });
-      
+
       presence.onLeave(() => {
         // Status changes are handled by onSync
         // onLeave fires for every presence update, not just when user truly leaves
@@ -500,7 +527,9 @@ class SocketManager {
 
       channel.on('typing', (payload) => {
         const data = payload as { user_id: string; is_typing: boolean; started_at?: string };
-        useChatStore.getState().setTypingUser(conversationId, data.user_id, data.is_typing, data.started_at);
+        useChatStore
+          .getState()
+          .setTypingUser(conversationId, data.user_id, data.is_typing, data.started_at);
       });
 
       channel.on('presence_state', (state) => {
@@ -520,12 +549,9 @@ class SocketManager {
           emoji: string;
           user?: { id: string; username: string; display_name?: string; avatar_url?: string };
         };
-        useChatStore.getState().addReactionToMessage(
-          data.message_id,
-          data.emoji,
-          data.user_id,
-          data.user?.username
-        );
+        useChatStore
+          .getState()
+          .addReactionToMessage(data.message_id, data.emoji, data.user_id, data.user?.username);
       });
 
       channel.on('reaction_removed', (payload) => {
@@ -535,11 +561,9 @@ class SocketManager {
           user_id: string;
           emoji: string;
         };
-        useChatStore.getState().removeReactionFromMessage(
-          data.message_id,
-          data.emoji,
-          data.user_id
-        );
+        useChatStore
+          .getState()
+          .removeReactionFromMessage(data.message_id, data.emoji, data.user_id);
       });
     }
 
@@ -561,14 +585,14 @@ class SocketManager {
 
   /**
    * Leave a conversation channel and clean up all associated state.
-   * 
+   *
    * Properly cleans up:
    * - Channel connection
    * - Presence tracking
    * - Handler registration state
    * - Online user tracking
    * - Join attempt tracking
-   * 
+   *
    * @param conversationId - Conversation ID to leave
    */
   leaveConversation(conversationId: string) {
@@ -663,10 +687,15 @@ class SocketManager {
   }
 
   // Send reaction through socket for real-time updates
-  sendReaction(conversationId: string, messageId: string, emoji: string, action: 'add' | 'remove'): void {
+  sendReaction(
+    conversationId: string,
+    messageId: string,
+    emoji: string,
+    action: 'add' | 'remove'
+  ): void {
     const topic = `conversation:${conversationId}`;
     const channel = this.channels.get(topic);
-    
+
     if (channel?.state === 'joined') {
       // Backend expects separate events: add_reaction or remove_reaction
       const eventName = action === 'add' ? 'add_reaction' : 'remove_reaction';
@@ -693,10 +722,10 @@ class SocketManager {
       await this.connect();
     }
 
-    conversationIds.forEach(convId => {
+    conversationIds.forEach((convId) => {
       const topic = `conversation:${convId}`;
       const existingChannel = this.channels.get(topic);
-      
+
       // Only peek if not already joined
       if (!existingChannel || existingChannel.state !== 'joined') {
         this.joinConversation(convId);

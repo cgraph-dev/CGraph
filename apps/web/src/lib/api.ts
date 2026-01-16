@@ -18,7 +18,9 @@ import {
  *
  * The API endpoints should NOT include /api prefix as it's part of the base URL
  */
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+// Use nullish coalescing (??) to handle empty string correctly
+// Empty string means "use relative paths" for Vercel rewrites
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000';
 
 // Lazy import socket to avoid circular dependency
 async function reconnectSocket(): Promise<void> {
