@@ -55,12 +55,15 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: process.env.VITE_DEV_API_TARGET || 'https://cgraph-backend.fly.dev',
         changeOrigin: true,
+        secure: true,
       },
       '/socket': {
-        target: 'ws://localhost:4000',
+        target: process.env.VITE_DEV_WS_TARGET || 'wss://cgraph-backend.fly.dev',
         ws: true,
+        changeOrigin: true,
+        secure: true,
       },
     },
   },

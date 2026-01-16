@@ -18,13 +18,22 @@ defmodule CGraphWeb.Endpoint do
 
   # CORS origins based on environment. Prefer env; fall back to safe defaults in prod
   # and permissive dev wildcard when unset.
+  # Includes Vercel deployment domains for frontend hosting
   @is_prod Mix.env() == :prod
   @cors_origins (case {System.get_env("CORS_ORIGINS"), @is_prod} do
     {nil, true} ->
       [
+        # Production domains
         "https://cgraph.org",
         "https://www.cgraph.org",
-        "https://app.cgraph.org"
+        "https://app.cgraph.org",
+        # Vercel deployment domains
+        "https://cgraph.vercel.app",
+        "https://cgraph-web.vercel.app",
+        "https://c-graph.vercel.app",
+        # Vercel preview deployments (wildcard pattern handled by Corsica)
+        ~r/^https:\/\/cgraph-.*\.vercel\.app$/,
+        ~r/^https:\/\/c-graph-.*\.vercel\.app$/
       ]
 
     {nil, false} ->

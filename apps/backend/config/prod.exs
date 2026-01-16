@@ -31,9 +31,15 @@ config :cgraph, CGraphWeb.Endpoint,
   # cache_static_manifest not needed for API-only backend
   # force_ssl disabled - Fly.io proxy handles SSL termination
   check_origin: [
+    # Production domains
     "https://cgraph.org",
     "https://www.cgraph.org",
-    "https://*.cgraph.org"
+    "https://*.cgraph.org",
+    # Vercel deployment domains
+    "https://cgraph.vercel.app",
+    "https://cgraph-web.vercel.app",
+    "https://c-graph.vercel.app",
+    "https://*.vercel.app"
   ]
 
 # Use secure cookie settings in production
