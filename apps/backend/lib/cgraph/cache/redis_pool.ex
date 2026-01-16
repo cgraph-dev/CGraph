@@ -36,7 +36,7 @@ defmodule CGraph.Cache.RedisPool do
   require Logger
 
   @pool_size Application.compile_env(:cgraph, [__MODULE__, :pool_size], 20)
-  @redis_url Application.compile_env(:cgraph, :redis_url, "redis://localhost:6379/0")
+  # Redis URL is configured at runtime, not compile time
   # Note: checkout_timeout reserved for future pool timeout config
   @command_timeout 5_000
 
@@ -309,7 +309,7 @@ defmodule CGraph.Cache.RedisPool do
   end
 
   defp redis_child_opts(index) do
-    url = Application.get_env(:cgraph, :redis_url, @redis_url)
+    url = Application.get_env(:cgraph, :redis_url) || "redis://localhost:6379/0"
 
     [
       name: connection_name(index),

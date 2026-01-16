@@ -16,7 +16,8 @@ defmodule CGraph.MixProject do
       deps: deps(),
       listeners: [Phoenix.CodeReloader],
       dialyzer: dialyzer(),
-      test_coverage: [tool: ExCoveralls]
+      test_coverage: [tool: ExCoveralls],
+      releases: releases()
     ]
   end
 
@@ -152,6 +153,15 @@ defmodule CGraph.MixProject do
       plt_core_path: "priv/plts",
       plt_file: {:no_warn, "priv/plts/dialyzer.plt"},
       plt_add_apps: [:mix, :ex_unit]
+    ]
+  end
+
+  defp releases do
+    [
+      cgraph: [
+        include_executables_for: [:unix],
+        validate_compile_env: false
+      ]
     ]
   end
 end

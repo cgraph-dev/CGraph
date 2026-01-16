@@ -1,15 +1,19 @@
 import Config
 
 # Configure your database
-# Matches docker-compose.yml settings
+# Using Supabase PostgreSQL (with IPv6 support for cloud hosting)
 config :cgraph, CGraph.Repo,
-  username: System.get_env("POSTGRES_USER", "cgraph"),
-  password: System.get_env("POSTGRES_PASSWORD", "cgraph_dev_password"),
+  username: System.get_env("POSTGRES_USER", "postgres"),
+  password: System.get_env("POSTGRES_PASSWORD", "postgres"),
   hostname: System.get_env("POSTGRES_HOST", "localhost"),
-  database: System.get_env("POSTGRES_DB", "cgraph_dev"),
+  database: System.get_env("POSTGRES_DB", "postgres"),
+  port: 5432,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  pool_size: String.to_integer(System.get_env("POOL_SIZE", "10")),
+  ssl: if(System.get_env("POSTGRES_HOST", "localhost") != "localhost", do: true, else: false),
+  ssl_opts: if(System.get_env("POSTGRES_HOST", "localhost") != "localhost", do: [verify: :verify_none], else: []),
+  socket_options: if(System.get_env("POSTGRES_HOST", "localhost") != "localhost", do: [:inet6], else: [])
 
 # For development, we disable any cache and enable debugging and code reloading
 # Using 0.0.0.0 to allow connections from mobile devices on the local network

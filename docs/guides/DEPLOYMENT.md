@@ -1,9 +1,47 @@
 # CGraph Deployment Guide
 
 > Comprehensive production deployment documentation  
-> Version 0.7.41 | January 2026
+> Version 0.9.3 | January 2026
 
-This guide covers deploying CGraph to production. Fly.io is the primary platform due to excellent Elixir/OTP support, though concepts translate to other cloud providers.
+This guide covers deploying CGraph to production. Fly.io is the primary platform due to excellent
+Elixir/OTP support, though concepts translate to other cloud providers.
+
+---
+
+## Quick Start (Existing Setup)
+
+The backend is already deployed. Here's our current production setup:
+
+| Component | Service        | Details                               |
+| --------- | -------------- | ------------------------------------- |
+| Backend   | Fly.io         | `cgraph-backend` in Frankfurt (fra)   |
+| Database  | Supabase       | Europe region, PostgreSQL 15          |
+| Redis     | Not configured | Rate limiting uses local ETS fallback |
+
+**Production URLs:**
+
+- API: https://cgraph-backend.fly.dev
+- Health: https://cgraph-backend.fly.dev/health
+- Ready: https://cgraph-backend.fly.dev/ready
+
+**Common Operations:**
+
+```bash
+# Deploy new changes
+cd apps/backend && fly deploy
+
+# View logs
+fly logs -a cgraph-backend
+
+# SSH into running instance
+fly ssh console -a cgraph-backend
+
+# Run migrations
+fly ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
+
+# Check status
+fly status -a cgraph-backend
+```
 
 ---
 
@@ -78,14 +116,14 @@ Our production architecture:
 
 Before deploying, you'll need accounts with:
 
-| Service | Purpose | Free Tier? |
-|---------|---------|------------|
-| [Fly.io](https://fly.io) | Backend hosting | Yes (limited) |
-| [Cloudflare](https://cloudflare.com) | CDN, DNS, Pages | Yes |
-| [Stripe](https://stripe.com) | Payments | Yes (test mode) |
-| [Resend](https://resend.com) | Transactional email | Yes (100/day) |
-| [Sentry](https://sentry.io) | Error tracking | Yes (limited) |
-| [Expo](https://expo.dev) | Push notifications | Yes |
+| Service                              | Purpose             | Free Tier?      |
+| ------------------------------------ | ------------------- | --------------- |
+| [Fly.io](https://fly.io)             | Backend hosting     | Yes (limited)   |
+| [Cloudflare](https://cloudflare.com) | CDN, DNS, Pages     | Yes             |
+| [Stripe](https://stripe.com)         | Payments            | Yes (test mode) |
+| [Resend](https://resend.com)         | Transactional email | Yes (100/day)   |
+| [Sentry](https://sentry.io)          | Error tracking      | Yes (limited)   |
+| [Expo](https://expo.dev)             | Push notifications  | Yes             |
 
 ### Installing CLI Tools
 
@@ -148,56 +186,98 @@ fly launch --no-deploy
 # This creates fly.toml—review and edit it
 ```
 
-Edit `fly.toml`:
+Edit `fly.toml` to match our production configuration:
 
 ```toml
-app = "cgraph-api"
-primary_region = "iad"
+# apps/backend/fly.toml
+app = "cgraph-backend"
+primary_region = "fra"
 
 [build]
-  dockerfile = "../../infrastructure/docker/Dockerfile.backend"
+  dockerfile = "Dockerfile"
 
 [env]
-  PHX_HOST = "api.cgraph.org"
-  PORT = "8080"
+  PHX_HOST = "cgraph-backend.fly.dev"
+  PORT = "4000"
+  DATABASE_SSL = "true"
+  MIX_ENV = "prod"
 
 [http_service]
-  internal_port = 8080
+  internal_port = 4000
   force_https = true
-  auto_stop_machines = false
+  auto_stop_machines = true
   auto_start_machines = true
-  min_machines_running = 2
-  
+  min_machines_running = 0
+
   [http_service.concurrency]
     type = "connections"
     hard_limit = 1000
     soft_limit = 800
 
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
 [[vm]]
   cpu_kind = "shared"
   cpus = 1
-  memory_mb = 1024
+  memory_mb = 512
 ```
+
+> **Note**: The Dockerfile is in `apps/backend/Dockerfile`, not in infrastructure/. This keeps the
+> deployment self-contained.
 
 ### Step 2: Create Database
 
-```bash
-# Create a Postgres cluster
-fly postgres create --name cgraph-db --region iad
-
-# Attach it to your app (creates DATABASE_URL secret)
-fly postgres attach cgraph-db --app cgraph-api
-```
-
-### Step 3: Create Redis
+We're using **Supabase** for the database instead of Fly Postgres:
 
 ```bash
-# Create Redis via Upstash (Fly.io integration)
-fly redis create --name cgraph-redis --region iad
+# 1. Create a Supabase project at https://supabase.com
+# 2. Get your direct connection string from:
+#    Settings → Database → Connection string → Direct connection
 
-# Or use Fly's managed Redis
-fly redis attach cgraph-redis --app cgraph-api
+# Connection string format for Ecto:
+# ecto://postgres:PASSWORD@db.PROJECT.supabase.co:5432/postgres
+
+# Set the DATABASE_URL secret in Fly:
+fly secrets set DATABASE_URL="ecto://postgres:YOUR_PASSWORD@db.PROJECT.supabase.co:5432/postgres"
+fly secrets set DATABASE_SSL="true"
 ```
+
+> **Note**: Use port 5432 (direct connection), not 6543 (pooled connection). The username should be
+> `postgres`, not `postgres.PROJECT`.
+
+### Step 3: Create Redis (Optional)
+
+Redis is **optional** for CGraph. Without it:
+
+- Rate limiting falls back to local ETS (per-machine, not distributed)
+- PubSub uses Phoenix.PubSub (works fine for single node)
+
+To enable distributed rate limiting, use **Upstash Redis**:
+
+```bash
+# Option 1: Via Fly.io integration
+fly redis create --name cgraph-redis --region fra
+
+# Option 2: Via Upstash directly (recommended for more control)
+# 1. Go to https://upstash.com and create a Redis database
+# 2. Choose the region closest to your Fly.io deployment (Europe for fra)
+# 3. Copy the Redis URL
+
+# Set the REDIS_URL secret:
+fly secrets set REDIS_URL="redis://default:PASSWORD@global-logical-turtle-30000.upstash.io:6379"
+```
+
+After setting REDIS_URL, the next deploy will automatically enable:
+
+- Distributed rate limiting across all machines
+- Redis-backed caching for multi-node deployments
+
+**Current Status**: Redis is not configured. Rate limiting uses local ETS.
 
 ### Step 4: Set Secrets
 
@@ -284,7 +364,7 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:15
@@ -295,25 +375,22 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-      
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
       redis:
         image: redis:7
         ports:
           - 6379:6379
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
           elixir-version: '1.15'
           otp-version: '26'
-      
+
       - name: Cache deps
         uses: actions/cache@v3
         with:
@@ -321,26 +398,26 @@ jobs:
             apps/backend/deps
             apps/backend/_build
           key: ${{ runner.os }}-mix-${{ hashFiles('apps/backend/mix.lock') }}
-      
+
       - name: Install dependencies
         working-directory: apps/backend
         run: mix deps.get
-      
+
       - name: Check formatting
         working-directory: apps/backend
         run: mix format --check-formatted
-      
+
       - name: Run Credo
         working-directory: apps/backend
         run: mix credo --strict
-      
+
       - name: Run tests
         working-directory: apps/backend
         env:
           DATABASE_URL: ecto://postgres:postgres@localhost/cgraph_test
           REDIS_URL: redis://localhost:6379
         run: mix test --cover
-      
+
       - name: Check for security issues
         working-directory: apps/backend
         run: mix sobelow --config
@@ -349,21 +426,21 @@ jobs:
     needs: test
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Fly
         uses: superfly/flyctl-actions/setup-flyctl@master
-      
+
       - name: Deploy to Fly.io
         working-directory: apps/backend
         run: flyctl deploy --remote-only
-      
+
       - name: Run migrations
         run: |
           flyctl ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
-      
+
       # Optional: Notify on success via webhook
       # - name: Notify Webhook
       #   if: success()
@@ -393,38 +470,38 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: pnpm/action-setup@v2
         with:
           version: 8
-      
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Lint
         run: pnpm lint
-      
+
       - name: Type check
         run: pnpm typecheck
-      
+
       - name: Run tests
         run: pnpm test --coverage
-      
+
       - name: Build
         run: pnpm build
         env:
           VITE_API_URL: https://api.cgraph.org
           VITE_WS_URL: wss://api.cgraph.org
-      
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
@@ -435,16 +512,16 @@ jobs:
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Download build artifact
         uses: actions/download-artifact@v3
         with:
           name: web-dist
           path: apps/web/dist
-      
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
@@ -463,6 +540,7 @@ jobs:
 We use a **two-phase deployment** for database changes:
 
 **Phase 1: Deploy backward-compatible changes**
+
 ```elixir
 # Add new column as nullable
 def change do
@@ -473,11 +551,13 @@ end
 ```
 
 **Phase 2: Deploy code that uses new column**
+
 ```elixir
 # Now code can write to phone_number
 ```
 
 **Phase 3 (optional): Add constraints**
+
 ```elixir
 # After backfilling data, add NOT NULL if needed
 def change do
@@ -520,7 +600,8 @@ fly ssh console
 
 ## Blue-Green Deployments
 
-Fly.io does this automatically with their rolling deployments, but here's how to do it manually for major changes:
+Fly.io does this automatically with their rolling deployments, but here's how to do it manually for
+major changes:
 
 ### Step 1: Deploy to Canary
 
@@ -577,16 +658,19 @@ fly deploy --image registry.fly.io/cgraph-api:<previous-sha>
 This is trickier. If your migration was destructive:
 
 1. **Stop all traffic** (if critical)
+
    ```bash
    fly scale count 0
    ```
 
 2. **Restore database from backup**
+
    ```bash
    fly postgres restore --time "2024-01-15T14:30:00Z"
    ```
 
 3. **Deploy previous code version**
+
    ```bash
    fly deploy --image registry.fly.io/cgraph-api:<previous-sha>
    ```
@@ -622,13 +706,13 @@ fly scale memory 2048  # 2GB RAM
 
 ### When to Scale What
 
-| Symptom | Solution |
-|---------|----------|
-| High CPU across nodes | Add more machines |
-| High memory on single node | Increase RAM or add machines |
-| Database connection exhausted | Add PgBouncer, increase pool |
-| Slow database queries | Add read replica, optimize queries |
-| Redis memory full | Increase Redis size or add cluster |
+| Symptom                       | Solution                           |
+| ----------------------------- | ---------------------------------- |
+| High CPU across nodes         | Add more machines                  |
+| High memory on single node    | Increase RAM or add machines       |
+| Database connection exhausted | Add PgBouncer, increase pool       |
+| Slow database queries         | Add read replica, optimize queries |
+| Redis memory full             | Increase Redis size or add cluster |
 
 ### Auto-Scaling (Experimental)
 
@@ -638,7 +722,7 @@ fly scale memory 2048  # 2GB RAM
   auto_stop_machines = false  # Keep at least min running
   auto_start_machines = true  # Start more on demand
   min_machines_running = 2
-  
+
   [http_service.concurrency]
     type = "connections"
     hard_limit = 1000  # Start new machine if exceeded
@@ -697,11 +781,11 @@ defmodule CGraph.Telemetry do
       # Phoenix metrics
       summary("phoenix.endpoint.stop.duration", unit: {:native, :millisecond}),
       summary("phoenix.router_dispatch.stop.duration", unit: {:native, :millisecond}),
-      
-      # Database metrics  
+
+      # Database metrics
       summary("cgraph.repo.query.total_time", unit: {:native, :millisecond}),
       counter("cgraph.repo.query.count"),
-      
+
       # Custom business metrics
       counter("cgraph.messages.sent.count"),
       counter("cgraph.users.registered.count"),
@@ -714,7 +798,7 @@ defmodule CGraph.Telemetry do
       {__MODULE__, :count_websockets, []}
     ]
   end
-  
+
   def count_websockets do
     count = Phoenix.PubSub.count_subscribers(CGraph.PubSub, "users:*")
     :telemetry.execute([:cgraph, :websockets, :connected], %{count: count})
@@ -740,12 +824,12 @@ If you want pretty graphs, export metrics to Grafana Cloud:
 
 ### Severity Levels
 
-| Level | Description | Response Time | Example |
-|-------|-------------|---------------|---------|
-| **SEV1** | Complete outage | < 15 min | Site is down |
-| **SEV2** | Major degradation | < 1 hour | Login broken, messages failing |
-| **SEV3** | Minor issue | < 4 hours | Slow response times, UI glitch |
-| **SEV4** | Cosmetic/Low priority | Next business day | Typo, minor styling issue |
+| Level    | Description           | Response Time     | Example                        |
+| -------- | --------------------- | ----------------- | ------------------------------ |
+| **SEV1** | Complete outage       | < 15 min          | Site is down                   |
+| **SEV2** | Major degradation     | < 1 hour          | Login broken, messages failing |
+| **SEV3** | Minor issue           | < 4 hours         | Slow response times, UI glitch |
+| **SEV4** | Cosmetic/Low priority | Next business day | Typo, minor styling issue      |
 
 ### Incident Response Playbook
 
@@ -760,13 +844,14 @@ If you want pretty graphs, export metrics to Grafana Cloud:
    - Database - `fly postgres connect` - Is it reachable?
 
 3. **Mitigate** - Quick fixes:
+
    ```bash
    # Restart all machines
    fly machines restart
-   
+
    # Roll back if recent deploy
    fly deploy --image <previous-sha>
-   
+
    # Scale up if overloaded
    fly scale count 8
    ```
@@ -779,23 +864,25 @@ If you want pretty graphs, export metrics to Grafana Cloud:
 
 ### Common Incidents and Fixes
 
-| Symptom | Likely Cause | Quick Fix |
-|---------|--------------|-----------|
-| 502 errors | App crashed | `fly machines restart` |
-| Very slow | Database overloaded | Check slow queries, add replicas |
-| WebSocket fails | Too many connections | Scale up machines |
-| Can't login | Auth service down | Check Guardian config, secrets |
-| No emails | Resend API issue | Check Resend dashboard |
+| Symptom         | Likely Cause         | Quick Fix                        |
+| --------------- | -------------------- | -------------------------------- |
+| 502 errors      | App crashed          | `fly machines restart`           |
+| Very slow       | Database overloaded  | Check slow queries, add replicas |
+| WebSocket fails | Too many connections | Scale up machines                |
+| Can't login     | Auth service down    | Check Guardian config, secrets   |
+| No emails       | Resend API issue     | Check Resend dashboard           |
 
 ### On-Call Rotation
 
 We use PagerDuty for on-call:
+
 - Week 1: @chen
-- Week 2: @marcus  
+- Week 2: @marcus
 - Week 3: @aisha
 - Week 4: Rotate
 
 On-call responsibilities:
+
 - Respond to SEV1/SEV2 within 15 minutes
 - Have laptop and internet access
 - Know how to deploy/rollback
@@ -803,24 +890,237 @@ On-call responsibilities:
 
 ---
 
+## Deployment Troubleshooting
+
+### Common Issues and Solutions
+
+This section documents issues encountered during deployment and their solutions.
+
+#### 1. Regex CompileError (Unicode Properties)
+
+**Error**: `CompileError: unknown Unicode property: Emoji`
+
+**Cause**: Erlang's regex engine doesn't support `\p{Emoji}` Unicode properties.
+
+**Solution**: Use explicit character class matching instead:
+
+```elixir
+# Before (fails)
+~r/[\p{Emoji}\p{Emoji_Presentation}]/
+
+# After (works)
+~r/[\x{1F300}-\x{1F9FF}\x{2600}-\x{26FF}\x{2700}-\x{27BF}]/
+```
+
+#### 2. NIF/crypto.so Loading Error
+
+**Error**: `Failed to load NIF library ... undefined symbol: EVP_...`
+
+**Cause**: OpenSSL version mismatch between build and runtime Alpine versions.
+
+**Solution**: Use the `hexpm/elixir` Docker image which has pre-compiled crypto NIFs:
+
+```dockerfile
+ARG ELIXIR_VERSION=1.17.3
+ARG OTP_VERSION=27.1.2
+ARG ALPINE_VERSION=3.20.3
+
+FROM hexpm/elixir:${ELIXIR_VERSION}-erlang-${OTP_VERSION}-alpine-${ALPINE_VERSION} AS builder
+```
+
+#### 3. compile_env Validation Error
+
+**Error**: `mix release failed because Config.validate_compile_env!/2`
+
+**Cause**: Runtime configuration using environment variables that differ from compile-time.
+
+**Solution**: Disable compile-time env validation in `mix.exs`:
+
+```elixir
+def project do
+  [
+    # ...
+    releases: [
+      cgraph: [
+        validate_compile_env: false
+      ]
+    ]
+  ]
+end
+```
+
+And remove `compile_env` from modules using runtime config:
+
+```elixir
+# Before
+@redis_url Application.compile_env(:cgraph, :redis_url)
+
+# After
+defp redis_url, do: Application.get_env(:cgraph, :redis_url)
+```
+
+#### 4. Redis Not Available
+
+**Error**: Application crashes when Redis not configured.
+
+**Solution**: Make Redis-dependent services conditional in `application.ex`:
+
+```elixir
+def start(_type, _args) do
+  children = base_children() ++ redis_children()
+  # ...
+end
+
+defp redis_children do
+  if redis_available?() do
+    [
+      {Redix, name: :redix, host: redis_host(), port: redis_port()},
+      CGraph.Redis,
+      CGraph.RateLimiter.Distributed
+    ]
+  else
+    []
+  end
+end
+```
+
+#### 5. DATABASE_URL Format (Supabase)
+
+**Error**: `authentication failed for user "postgres.projectref"`
+
+**Cause**: Supabase pooled connection URLs use a different username format.
+
+**Solution**: For direct connections, use `postgres` as the username:
+
+```bash
+# Direct connection (correct)
+ecto://postgres:PASSWORD@db.PROJECT.supabase.co:5432/postgres
+
+# Pooled connection (port 6543 with transaction mode)
+ecto://postgres.PROJECT:PASSWORD@aws-0-region.pooler.supabase.co:6543/postgres
+```
+
+#### 6. Missing Oban Worker
+
+**Error**: `module CGraph.Workers.CleanupWorker is not available`
+
+**Cause**: Oban cron references a worker that doesn't exist.
+
+**Solution**: Create the missing worker module:
+
+```elixir
+defmodule CGraph.Workers.CleanupWorker do
+  use Oban.Worker, queue: :maintenance
+
+  @impl Oban.Worker
+  def perform(_job) do
+    cleanup_expired_tokens()
+    cleanup_orphaned_attachments()
+    :ok
+  end
+end
+```
+
+#### 7. Phoenix Server Not Starting
+
+**Error**: Health checks fail, no HTTP response.
+
+**Cause**: Missing `server: true` in endpoint configuration.
+
+**Solution**: Set PHX_SERVER=true in Fly.io env or add to endpoint config:
+
+```toml
+# fly.toml
+[env]
+  PHX_SERVER = "true"
+```
+
+#### 8. SSL Redirect Loop
+
+**Error**: 301 redirects to HTTPS in a loop.
+
+**Cause**: `force_ssl: true` in prod.exs when Fly.io already handles SSL.
+
+**Solution**: Remove force_ssl from Phoenix config—Fly.io terminates SSL:
+
+```elixir
+# config/prod.exs
+config :cgraph, CGraphWeb.Endpoint,
+  url: [host: host, port: 443, scheme: "https"],
+  http: [port: port]
+  # Don't add force_ssl - Fly.io handles this
+```
+
+#### 9. ErrorHTML Not Found
+
+**Error**: `Could not render to any format in CGraphWeb.ErrorHTML`
+
+**Cause**: HTML format specified in error config but no ErrorHTML module.
+
+**Solution**: For API-only apps, remove HTML from render_errors:
+
+```elixir
+# config/config.exs
+config :cgraph, CGraphWeb.Endpoint,
+  render_errors: [
+    formats: [json: CGraphWeb.ErrorJSON],
+    layout: false
+  ]
+```
+
+#### 10. Rate Limiting Crash Without Redis
+
+**Error**: `CGraph.RateLimiter: Redis not available`
+
+**Cause**: Rate limiter tries to use Redis even when not configured.
+
+**Solution**: Disable distributed rate limiting in runtime.exs:
+
+```elixir
+unless redis_url do
+  config :cgraph, CGraph.RateLimiter, enabled: false
+end
+```
+
+#### 11. DNS/IPv6 Resolution Issues
+
+**Error**: `nxdomain` or connection timeouts.
+
+**Cause**: IPv6 preferred but not available in container network.
+
+**Solution**: Force IPv4 in socket options:
+
+```elixir
+# config/runtime.exs
+config :cgraph, CGraphWeb.Endpoint,
+  http: [
+    ip: {0, 0, 0, 0},
+    port: port
+  ],
+  socket_options: [:inet]  # Force IPv4
+```
+
+---
+
 ## Cost Optimization
 
 ### Current Monthly Costs (as of Dec 2024)
 
-| Service | Cost | Notes |
-|---------|------|-------|
-| Fly.io Machines (4x shared-cpu-1x) | $23 | ~$6/machine |
-| Fly.io Postgres | $27 | 2GB, HA enabled |
-| Fly.io Redis | $15 | 1GB |
-| Cloudflare Pro | $20 | Could use free tier |
-| Resend | $20 | 50K emails/month |
-| R2 Storage | ~$15 | Varies with usage |
-| Sentry | $0 | Free tier |
-| **Total** | **~$120/month** | For ~5K users |
+| Service                            | Cost            | Notes               |
+| ---------------------------------- | --------------- | ------------------- |
+| Fly.io Machines (4x shared-cpu-1x) | $23             | ~$6/machine         |
+| Fly.io Postgres                    | $27             | 2GB, HA enabled     |
+| Fly.io Redis                       | $15             | 1GB                 |
+| Cloudflare Pro                     | $20             | Could use free tier |
+| Resend                             | $20             | 50K emails/month    |
+| R2 Storage                         | ~$15            | Varies with usage   |
+| Sentry                             | $0              | Free tier           |
+| **Total**                          | **~$120/month** | For ~5K users       |
 
 ### Optimization Tips
 
 **1. Right-size your machines**
+
 ```bash
 # Check actual resource usage
 fly scale show
@@ -831,6 +1131,7 @@ fly scale memory 512
 ```
 
 **2. Use auto-stop for non-production**
+
 ```toml
 # For staging/preview environments
 [http_service]
@@ -839,9 +1140,11 @@ fly scale memory 512
 ```
 
 **3. Use R2 instead of S3**
+
 - Zero egress fees (huge savings for file-heavy apps)
 
 **4. Batch operations**
+
 ```elixir
 # Instead of many small inserts
 Enum.each(items, fn item -> Repo.insert!(item) end)
@@ -851,6 +1154,7 @@ Repo.insert_all(Item, items)
 ```
 
 **5. Cache aggressively**
+
 ```elixir
 # Cache expensive queries
 def get_trending_posts do
@@ -878,15 +1182,15 @@ Before every production deploy:
 
 ## Emergency Contacts
 
-| Issue | Contact |
-|-------|---------|
-| Infrastructure | @chen (Slack, phone in PagerDuty) |
-| Backend/Database | @marcus |
-| Frontend | @aisha |
-| Security | security@cgraph.org |
-| Fly.io Support | support@fly.io |
-| Cloudflare Support | Via dashboard |
+| Issue              | Contact                           |
+| ------------------ | --------------------------------- |
+| Infrastructure     | @chen (Slack, phone in PagerDuty) |
+| Backend/Database   | @marcus                           |
+| Frontend           | @aisha                            |
+| Security           | security@cgraph.org               |
+| Fly.io Support     | support@fly.io                    |
+| Cloudflare Support | Via dashboard                     |
 
 ---
 
-*Last updated: January 2026. If you find something wrong, please fix it and open a PR!*
+_Last updated: January 2026. If you find something wrong, please fix it and open a PR!_

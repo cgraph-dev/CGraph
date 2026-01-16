@@ -9,9 +9,37 @@ All notable changes to CGraph will be documented in this file.
 **🔒 INFRASTRUCTURE: Security CI/CD, Observability Stack, E2E Testing & Developer Experience**
 
 This release implements comprehensive security scanning, production observability, end-to-end
-testing infrastructure, and developer experience improvements.
+testing infrastructure, developer experience improvements, and **production deployment to Fly.io**.
 
 ### 🚀 New Features
+
+#### Production Deployment (Fly.io + Supabase)
+
+| Component             | Details                                                                   |
+| --------------------- | ------------------------------------------------------------------------- |
+| **Fly.io Backend**    | `cgraph-backend` app deployed in Frankfurt (fra) region                   |
+| **Supabase Database** | Europe region PostgreSQL with SSL connection                              |
+| **Health Endpoints**  | `/health` and `/ready` for monitoring and load balancer checks            |
+| **Docker Build**      | Multi-stage build using `hexpm/elixir:1.17.3-erlang-27.1.2-alpine-3.20.3` |
+
+**Production URLs:**
+
+- API: https://cgraph-backend.fly.dev
+- Health: https://cgraph-backend.fly.dev/health
+
+**Deployment Fixes Implemented:**
+
+1. Fixed regex CompileError (Unicode `\p{Emoji}` not supported in Erlang)
+2. Fixed OpenSSL NIF loading (Alpine version mismatch)
+3. Disabled compile_env validation for runtime config
+4. Made Redis services optional in Application supervisor
+5. Fixed DATABASE_URL format for Supabase direct connections
+6. Created missing CleanupWorker for Oban cron jobs
+7. Fixed PHX_SERVER environment variable for release
+8. Removed force_ssl (Fly.io handles SSL termination)
+9. Removed HTML from render_errors (API-only backend)
+10. Disabled rate limiting when Redis not configured
+11. Fixed IPv4 socket options for DNS compatibility
 
 #### Security CI/CD Workflows
 
@@ -63,6 +91,13 @@ testing infrastructure, and developer experience improvements.
 | **Deep Link Handler**     | Centralized routing with URL parsing and navigation |
 
 ### 📁 New Files
+
+**Production Deployment:**
+
+- `apps/backend/fly.toml` - Fly.io deployment configuration
+- `apps/backend/Dockerfile` - Multi-stage Docker build for Fly.io
+- `apps/backend/lib/cgraph/workers/cleanup_worker.ex` - Daily Oban cleanup worker
+- `apps/backend/README.md` - Backend-specific documentation
 
 **CI/CD Workflows:**
 

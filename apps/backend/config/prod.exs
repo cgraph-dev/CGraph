@@ -25,9 +25,11 @@ config :logger, :console,
 config :cgraph, dev_routes: false
 
 # Configure endpoint for production
+# Note: Fly.io handles SSL termination at the proxy level
+# force_ssl is disabled because health checks come via internal HTTP
 config :cgraph, CGraphWeb.Endpoint,
-  cache_static_manifest: "priv/static/cache_manifest.json",
-  force_ssl: [rewrite_on: [:x_forwarded_proto]],
+  # cache_static_manifest not needed for API-only backend
+  # force_ssl disabled - Fly.io proxy handles SSL termination
   check_origin: [
     "https://cgraph.org",
     "https://www.cgraph.org",

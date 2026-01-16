@@ -16,18 +16,33 @@ if config_env() == :prod do
       For example: ecto://USER:PASS@HOST/DATABASE
       """
 
-  maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: []
+  # Force IPv4 for DNS resolution (Fly.io can have issues with external IPv4-only hosts)
+  maybe_ipv6 = if System.get_env("ECTO_IPV6") in ~w(true 1), do: [:inet6], else: [:inet]
+
+  # SSL configuration for cloud databases (Supabase, etc.)
+  ssl_enabled = System.get_env("DATABASE_SSL") in ~w(true 1)
 
   # Pool size optimized for 10K+ concurrent users
   # Recommended: Set POOL_SIZE=50-100 based on instance count
   # Formula: (max_db_connections / app_instances) - 5
   # Consider deploying PgBouncer for connection multiplexing at scale
-  config :cgraph, CGraph.Repo,
+  repo_config = [
     url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "50"),
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "20"),
     queue_target: String.to_integer(System.get_env("POOL_QUEUE_TARGET") || "50"),
     queue_interval: String.to_integer(System.get_env("POOL_QUEUE_INTERVAL") || "1000"),
     socket_options: maybe_ipv6
+  ]
+
+  repo_config = if ssl_enabled do
+    Keyword.merge(repo_config, [
+      ssl: [verify: :verify_none]
+    ])
+  else
+    repo_config
+  end
+
+  config :cgraph, CGraph.Repo, repo_config
 
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
@@ -42,6 +57,7 @@ if config_env() == :prod do
   config :cgraph, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
 
   config :cgraph, CGraphWeb.Endpoint,
+    server: true,
     url: [host: host, port: 443, scheme: "https"],
     http: [
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
@@ -122,27 +138,25 @@ if config_env() == :prod do
 
   config :cgraph, :encryption_key, encryption_key
 
-  # Redis configuration for production (password REQUIRED)
-  redis_url =
-    System.get_env("REDIS_URL") ||
+  # Redis configuration for production (optional, falls back to in-memory)
+  redis_url = System.get_env("REDIS_URL")
+
+  if redis_url do
+    # Validate Redis URL has password in production
+    redis_uri = URI.parse(redis_url)
+    has_password = redis_uri.userinfo != nil and String.contains?(redis_uri.userinfo || "", ":")
+
+    unless has_password do
       raise """
-      environment variable REDIS_URL is missing.
-      For production, use a URL with password: redis://:password@host:6379/0
+      REDIS_URL must include a password in production.
+      Current URL appears to have no password.
+      Use format: redis://:your_secure_password@host:6379/0
       """
+    end
 
-  # Validate Redis URL has password in production
-  redis_uri = URI.parse(redis_url)
-  has_password = redis_uri.userinfo != nil and String.contains?(redis_uri.userinfo || "", ":")
-
-  unless has_password do
-    raise """
-    REDIS_URL must include a password in production.
-    Current URL appears to have no password.
-    Use format: redis://:your_secure_password@host:6379/0
-    """
+    config :cgraph, :redis_url, redis_url
   end
-
-  config :cgraph, :redis_url, redis_url
+  # If no REDIS_URL provided, don't set the config - let it use default from code
 
   # Mark environment as production for conditional logic
   config :cgraph, :env, :prod
@@ -167,10 +181,15 @@ if config_env() == :prod do
     turn_servers: [], # Configure via WEBRTC_TURN_SERVERS if needed
     max_participants: String.to_integer(System.get_env("WEBRTC_MAX_PARTICIPANTS") || "10")
 
-  # Distributed Rate Limiting (Redis-backed)
+  # Distributed Rate Limiting (Redis-backed, disabled if no Redis)
   config :cgraph, CGraph.RateLimiter.Distributed,
-    enabled: true,
+    enabled: redis_url != nil,
     redis_pool: :rate_limiter_pool
+
+  # Also disable the plug-level rate limiter if Redis isn't available
+  unless redis_url do
+    config :cgraph, CGraph.RateLimiter, enabled: false
+  end
 
   # Sampled Presence for Large Channels
   config :cgraph, CGraph.Presence.Sampled,

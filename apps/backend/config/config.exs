@@ -10,7 +10,7 @@ config :cgraph, CGraphWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: CGraphWeb.ErrorHTML, json: CGraphWeb.ErrorJSON],
+    formats: [json: CGraphWeb.ErrorJSON],
     layout: false
   ],
   pubsub_server: CGraph.PubSub,

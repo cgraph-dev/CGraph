@@ -14,7 +14,19 @@ defmodule CGraph.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
+    require Logger
+    Logger.info("[Application] Starting CGraph application...")
+
+    # Check if Redis is available
+    redis_enabled? = redis_available?()
+
+    # Log database URL (masked)
+    db_url = System.get_env("DATABASE_URL") || "NOT SET"
+    masked_url = Regex.replace(~r/:[^:@]+@/, db_url, ":***@")
+    Logger.info("[Application] DATABASE_URL: #{masked_url}")
+    Logger.info("[Application] Redis enabled: #{redis_enabled?}")
+
+    base_children = [
       # Start telemetry reporters
       CGraphWeb.Telemetry,
 
@@ -23,12 +35,6 @@ defmodule CGraph.Application do
 
       # Start the PubSub system
       {Phoenix.PubSub, name: CGraph.PubSub},
-
-      # Start Redis connection pool
-      {Redix, redis_config()},
-
-      # Start Redis GenServer wrapper (for rate limiting, etc.)
-      CGraph.Redis,
 
       # Start Cachex for local caching with memory bounds
       # Default: 100MB limit with LRU eviction (configurable via CACHEX_LIMIT_MB)
@@ -67,9 +73,6 @@ defmodule CGraph.Application do
       # Start sampled presence for large channels
       CGraph.Presence.Sampled,
 
-      # Start distributed rate limiter
-      CGraph.RateLimiter.Distributed,
-
       # Note: Search indexing is handled by Oban workers (SearchIndexWorker)
       # No separate GenServer needed for CGraph.Search.Indexer
 
@@ -83,8 +86,48 @@ defmodule CGraph.Application do
       CGraphWeb.Endpoint
     ]
 
+    # Only add Redis-dependent services if Redis is available
+    redis_children = if redis_enabled? do
+      [
+        # Start Redis connection pool
+        {Redix, redis_config()},
+
+        # Start Redis GenServer wrapper (for rate limiting, etc.)
+        CGraph.Redis,
+
+        # Start distributed rate limiter
+        CGraph.RateLimiter.Distributed
+      ]
+    else
+      require Logger
+      Logger.warning("[Application] Redis not configured - running without Redis-backed services")
+      []
+    end
+
+    # Insert Redis children after PubSub (position 3)
+    children = Enum.take(base_children, 3) ++ redis_children ++ Enum.drop(base_children, 3)
+
+    Logger.info("[Application] Starting #{length(children)} child processes...")
+
     opts = [strategy: :one_for_one, name: CGraph.Supervisor]
-    Supervisor.start_link(children, opts)
+
+    case Supervisor.start_link(children, opts) do
+      {:ok, pid} ->
+        Logger.info("[Application] Supervisor started successfully with PID #{inspect(pid)}")
+        {:ok, pid}
+
+      {:error, reason} ->
+        Logger.error("[Application] Supervisor failed to start: #{inspect(reason)}")
+        {:error, reason}
+    end
+  end
+
+  defp redis_available? do
+    case System.get_env("REDIS_URL") do
+      nil -> false
+      "" -> false
+      url when is_binary(url) -> true
+    end
   end
 
   @impl true
