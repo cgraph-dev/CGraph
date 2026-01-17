@@ -26,10 +26,10 @@ const getApiUrl = () => {
   }
 
   if (IS_PREVIEW) {
-    return process.env.API_URL || 'https://staging-api.cgraph.app';
+    return process.env.API_URL || 'https://cgraph-backend.fly.dev';
   }
 
-  return process.env.API_URL || 'https://api.cgraph.app';
+  return process.env.API_URL || 'https://cgraph-backend.fly.dev';
 };
 
 /**
@@ -42,10 +42,10 @@ const getWsUrl = () => {
   }
 
   if (IS_PREVIEW) {
-    return process.env.WS_URL || 'wss://staging-api.cgraph.app/socket';
+    return process.env.WS_URL || 'wss://cgraph-backend.fly.dev/socket';
   }
 
-  return process.env.WS_URL || 'wss://api.cgraph.app/socket';
+  return process.env.WS_URL || 'wss://cgraph-backend.fly.dev/socket';
 };
 
 /**
