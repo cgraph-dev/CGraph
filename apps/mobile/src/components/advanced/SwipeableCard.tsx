@@ -376,7 +376,7 @@ function ActionButton({ action, index, onPress }: ActionButtonProps) {
         style={[
           styles.actionText,
           { color: action.textColor || '#fff' },
-        ]}}
+        ]}
         onPress={onPress}
       >
         {action.icon}
