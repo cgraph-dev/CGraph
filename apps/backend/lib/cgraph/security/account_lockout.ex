@@ -198,20 +198,40 @@ defmodule CGraph.Security.AccountLockout do
   @impl true
   def init(_opts) do
     config = load_config()
+    redis_available = redis_available?()
+
+    # Create ETS table for fallback storage when Redis isn't available
+    unless redis_available do
+      :ets.new(:account_lockout_cache, [:set, :public, :named_table, read_concurrency: true])
+    end
 
     state = %{
       config: config,
       locks_issued: 0,
-      started_at: DateTime.utc_now()
+      started_at: DateTime.utc_now(),
+      redis_available: redis_available
     }
 
-    Logger.info("AccountLockout started with max_attempts=#{config.max_attempts}")
+    if redis_available do
+      Logger.info("AccountLockout started with max_attempts=#{config.max_attempts} (Redis-backed)")
+    else
+      Logger.info("AccountLockout started with max_attempts=#{config.max_attempts} (ETS fallback - no Redis)")
+    end
+
     {:ok, state}
+  end
+
+  defp redis_available? do
+    case System.get_env("REDIS_URL") do
+      nil -> false
+      "" -> false
+      _url -> Process.whereis(:redix) != nil
+    end
   end
 
   @impl true
   def handle_call({:check_locked, identifier}, _from, state) do
-    result = do_check_locked(identifier, state.config)
+    result = do_check_locked(identifier, state.config, state.redis_available)
     {:reply, result, state}
   end
 
@@ -279,30 +299,30 @@ defmodule CGraph.Security.AccountLockout do
     }
   end
 
-  defp do_check_locked(identifier, _config) do
+  defp do_check_locked(identifier, _config, redis_available) do
     key = lockout_key(identifier)
 
-    case get_from_redis(key) do
+    case get_from_storage(key, redis_available) do
       {:ok, nil} -> :ok
-      {:ok, data} -> evaluate_lockout_status(key, data)
+      {:ok, data} -> evaluate_lockout_status(key, data, redis_available)
       {:error, _} -> :ok
     end
   end
 
-  defp evaluate_lockout_status(key, data) do
+  defp evaluate_lockout_status(key, data, redis_available) do
     case parse_lockout_data(data) do
-      %{locked: true, locked_until: until} -> check_lockout_expiry(key, until)
+      %{locked: true, locked_until: until} -> check_lockout_expiry(key, until, redis_available)
       _ -> :ok
     end
   end
 
-  defp check_lockout_expiry(key, until) do
+  defp check_lockout_expiry(key, until, redis_available) do
     remaining = DateTime.diff(until, DateTime.utc_now())
 
     if remaining > 0 do
       {:locked, remaining}
     else
-      delete_from_redis(key)
+      delete_from_storage(key, redis_available)
       :ok
     end
   end
@@ -446,14 +466,44 @@ defmodule CGraph.Security.AccountLockout do
   defp ip_lockout_key(ip), do: "#{@ip_prefix}#{ip}"
 
   defp increment_attempts(key, window) do
-    case Redix.command(:redix, ["INCR", key]) do
-      {:ok, count} ->
-        # Set expiry only on first attempt
-        if count == 1 do
-          Redix.command(:redix, ["EXPIRE", key, window])
+    redis_avail = redis_available?()
+
+    if redis_avail do
+      try do
+        case Redix.command(:redix, ["INCR", key]) do
+          {:ok, count} ->
+            # Set expiry only on first attempt
+            if count == 1 do
+              Redix.command(:redix, ["EXPIRE", key, window])
+            end
+            count
+          {:error, _} -> 1
         end
-        count
-      {:error, _} -> 1
+      rescue
+        _ -> ets_increment_attempts(key, window)
+      catch
+        :exit, _ -> ets_increment_attempts(key, window)
+      end
+    else
+      ets_increment_attempts(key, window)
+    end
+  end
+
+  defp ets_increment_attempts(key, window) do
+    try do
+      case :ets.lookup(:account_lockout_cache, key) do
+        [{^key, count, _expiry}] ->
+          new_count = count + 1
+          expiry = DateTime.add(DateTime.utc_now(), window, :second)
+          :ets.insert(:account_lockout_cache, {key, new_count, expiry})
+          new_count
+        [] ->
+          expiry = DateTime.add(DateTime.utc_now(), window, :second)
+          :ets.insert(:account_lockout_cache, {key, 1, expiry})
+          1
+      end
+    rescue
+      ArgumentError -> 1
     end
   end
 
@@ -468,9 +518,39 @@ defmodule CGraph.Security.AccountLockout do
 
   defp increment_lock_count(identifier) do
     key = lock_count_key(identifier)
-    # Lock count persists for 24 hours
-    Redix.command(:redix, ["INCR", key])
-    Redix.command(:redix, ["EXPIRE", key, 86_400])
+    redis_avail = redis_available?()
+
+    if redis_avail do
+      try do
+        # Lock count persists for 24 hours
+        Redix.command(:redix, ["INCR", key])
+        Redix.command(:redix, ["EXPIRE", key, 86_400])
+      rescue
+        _ -> ets_increment_lock_count(key)
+      catch
+        :exit, _ -> ets_increment_lock_count(key)
+      end
+    else
+      ets_increment_lock_count(key)
+    end
+  end
+
+  defp ets_increment_lock_count(key) do
+    try do
+      case :ets.lookup(:account_lockout_cache, key) do
+        [{^key, count, _expiry}] ->
+          new_count = count + 1
+          expiry = DateTime.add(DateTime.utc_now(), 86_400, :second)
+          :ets.insert(:account_lockout_cache, {key, new_count, expiry})
+          new_count
+        [] ->
+          expiry = DateTime.add(DateTime.utc_now(), 86_400, :second)
+          :ets.insert(:account_lockout_cache, {key, 1, expiry})
+          1
+      end
+    rescue
+      ArgumentError -> 1
+    end
   end
 
   defp calculate_lockout_duration(lock_count, config) do
@@ -502,18 +582,73 @@ defmodule CGraph.Security.AccountLockout do
     end
   end
 
-  # Redis operations
+  # Storage operations (Redis with ETS fallback)
 
-  defp get_from_redis(key) do
+  defp get_from_storage(key, true = _redis_available) do
     Redix.command(:redix, ["GET", key])
+  rescue
+    _ -> {:ok, nil}
+  catch
+    :exit, _ -> {:ok, nil}
+  end
+
+  defp get_from_storage(key, false = _redis_available) do
+    case :ets.lookup(:account_lockout_cache, key) do
+      [{^key, value, expiry}] ->
+        if DateTime.compare(DateTime.utc_now(), expiry) == :lt do
+          {:ok, value}
+        else
+          :ets.delete(:account_lockout_cache, key)
+          {:ok, nil}
+        end
+      [] -> {:ok, nil}
+    end
+  rescue
+    ArgumentError -> {:ok, nil}
+  end
+
+  defp set_in_storage(key, value, ttl, true = _redis_available) do
+    Redix.command(:redix, ["SETEX", key, ttl, value])
+  rescue
+    _ -> {:error, :redis_unavailable}
+  catch
+    :exit, _ -> {:error, :redis_unavailable}
+  end
+
+  defp set_in_storage(key, value, ttl, false = _redis_available) do
+    expiry = DateTime.add(DateTime.utc_now(), ttl, :second)
+    :ets.insert(:account_lockout_cache, {key, value, expiry})
+    {:ok, "OK"}
+  rescue
+    ArgumentError -> {:error, :ets_unavailable}
+  end
+
+  defp delete_from_storage(key, true = _redis_available) do
+    Redix.command(:redix, ["DEL", key])
+  rescue
+    _ -> {:ok, 0}
+  catch
+    :exit, _ -> {:ok, 0}
+  end
+
+  defp delete_from_storage(key, false = _redis_available) do
+    :ets.delete(:account_lockout_cache, key)
+    {:ok, 1}
+  rescue
+    ArgumentError -> {:ok, 0}
+  end
+
+  # Legacy Redis operations (kept for compatibility but wrapped)
+  defp get_from_redis(key) do
+    get_from_storage(key, redis_available?())
   end
 
   defp set_in_redis(key, value, ttl) do
-    Redix.command(:redix, ["SETEX", key, ttl, value])
+    set_in_storage(key, value, ttl, redis_available?())
   end
 
   defp delete_from_redis(key) do
-    Redix.command(:redix, ["DEL", key])
+    delete_from_storage(key, redis_available?())
   end
 
   # Logging and telemetry
