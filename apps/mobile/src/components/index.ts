@@ -61,6 +61,8 @@ export { default as TypingIndicator } from './conversation/TypingIndicator';
 
 // UI Components - Premium Glassmorphism Design
 export { default as GlassCard } from './ui/GlassCard';
+export { default as GlassCardV2 } from './ui/GlassCardV2';
+export type { GlassVariant, GlassCardV2Props, BorderAnimationMode, PressAnimation } from './ui/GlassCardV2';
 export { default as AnimatedAvatar } from './ui/AnimatedAvatar';
 export { default as BottomSheet } from './ui/BottomSheet';
 export type { BottomSheetProps, SnapPoint } from './ui/BottomSheet';
@@ -68,6 +70,7 @@ export { default as ConfettiCelebration } from './ui/ConfettiCelebration';
 export type { ConfettiCelebrationProps, ConfettiPattern } from './ui/ConfettiCelebration';
 export { default as MarkdownRenderer } from './ui/MarkdownRenderer';
 export type { MarkdownRendererProps } from './ui/MarkdownRenderer';
+export { default as ParticleBackground } from './ui/ParticleBackground';
 export { default as Carousel, ParallaxImage, ScaleItem } from './ui/Carousel';
 export type { CarouselProps, CarouselItem } from './ui/Carousel';
 
@@ -100,6 +103,79 @@ export {
   HolographicNotification,
 } from './enhanced';
 export type { HolographicTheme, HolographicConfig } from './enhanced';
+
+// Advanced Components - Interactive UI Elements
+export {
+  SwipeableCard,
+  SwipeToDelete,
+  SwipeToArchive,
+  MorphingButton,
+  LoadingButton,
+  SubmitButton,
+  ActionButton,
+  PrimaryButton,
+  SecondaryButton,
+  DangerButton,
+  GhostButton,
+  GradientButton,
+  Carousel3D,
+  FluidTabs,
+  DynamicModal,
+  PullToRefresh,
+} from './advanced';
+export type {
+  SwipeableCardProps,
+  SwipeAction,
+  MorphingButtonProps,
+  ButtonShape,
+  ButtonState,
+  ButtonSize,
+  Carousel3DProps,
+  FluidTabsProps,
+  DynamicModalProps,
+  PullToRefreshProps,
+} from './advanced';
+
+// Visualization Components - Data Display
+export {
+  LineChart,
+  BarChart,
+  PieChart,
+  ProgressRing,
+  StackedProgressRing,
+  GaugeRing,
+  StatCounter,
+  StatGroup,
+  ComparisonStat,
+  Countdown,
+  Heatmap,
+} from './visualization';
+export type {
+  ChartProps,
+  LineChartProps,
+  BarChartProps,
+  PieChartProps,
+  DataPoint,
+  ProgressRingProps,
+  StackedProgressRingProps,
+  GaugeRingProps,
+  StatCounterProps,
+  HeatmapProps,
+} from './visualization';
+
+// Input Components - User Input Elements
+export {
+  ColorPicker,
+  Slider,
+  RangeSlider,
+  SliderGroup,
+} from './inputs';
+export type {
+  ColorPickerProps,
+  SliderProps,
+  RangeSliderProps,
+  SliderGroupProps,
+} from './inputs';
 
 // Attachment Picker
 export { default as TelegramAttachmentPicker } from './TelegramAttachmentPicker';
