@@ -30,7 +30,7 @@ export const authApi = {
     password_confirmation: string;
     username: string;
   }) {
-    const response = await api.post('/api/v1/auth/register', data);
+    const response = await api.post('/api/v1/auth/register', { user: data });
     return response.data;
   },
 
