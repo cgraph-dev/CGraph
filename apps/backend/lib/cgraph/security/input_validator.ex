@@ -168,7 +168,8 @@ defmodule CGraph.Security.InputValidator do
   """
   @spec validate_url(String.t(), keyword()) :: {:ok, String.t()} | {:error, validation_error()}
   def validate_url(url, opts \\ []) when is_binary(url) do
-    allow_localhost = Keyword.get(opts, :allow_localhost, Mix.env() == :dev)
+    is_dev = Application.get_env(:cgraph, :env, :prod) == :dev
+    allow_localhost = Keyword.get(opts, :allow_localhost, is_dev)
     allowed_schemes = Keyword.get(opts, :allowed_schemes, ["https", "http"])
     blocked_domains = Keyword.get(opts, :blocked_domains, [])
 

@@ -362,7 +362,8 @@ defmodule CGraph.Encryption do
   end
 
   defp handle_missing_key do
-    if Application.get_env(:cgraph, :env) == :prod or Mix.env() == :prod do
+    env = Application.get_env(:cgraph, :env, :prod)
+    if env == :prod do
       raise """
       ENCRYPTION_KEY environment variable is required in production!
 

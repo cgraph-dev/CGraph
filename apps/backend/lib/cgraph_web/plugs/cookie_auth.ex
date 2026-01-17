@@ -42,9 +42,10 @@ defmodule CGraphWeb.Plugs.CookieAuth do
   end
 
   defp base_opts do
+    is_prod = Application.get_env(:cgraph, :env, :prod) == :prod
     [
       http_only: true,
-      secure: Mix.env() == :prod,
+      secure: is_prod,
       # SameSite=None required for cross-origin requests (Vercel -> Fly.io)
       # Secure=true is required when using SameSite=None (already set for prod)
       same_site: "None",
