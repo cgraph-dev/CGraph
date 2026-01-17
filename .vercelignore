@@ -1,10 +1,17 @@
-# Ignore everything except apps/web and vercel config
+# Vercel ignore file - only upload what's needed for web app build
+
+# Ignore backend and mobile apps
 apps/backend/
 apps/mobile/
+
+# Ignore documentation
 docs/
 docs-website/
+
+# Ignore infrastructure
 infrastructure/
-packages/
+
+# Ignore build artifacts (but NOT apps/web/dist - that's our output!)
 node_modules/
 **/node_modules/
 **/_build/
@@ -12,5 +19,7 @@ node_modules/
 **/.git/
 **/.turbo/
 **/coverage/
-**/dist/
+# Only ignore dist in non-web directories
+packages/**/dist/
+docs-website/dist/
 **/*.log
