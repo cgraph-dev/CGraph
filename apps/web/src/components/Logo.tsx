@@ -20,9 +20,10 @@ export function LogoIcon({
   size = 32,
   className = '',
   animated = false,
-  variant = 'icon',
+  variant: _variant = 'icon',
   color = 'default'
 }: LogoProps) {
+  // _variant is available for future use (full, icon, monochrome)
   const colors = {
     default: {
       primary: '#10b981',    // Emerald

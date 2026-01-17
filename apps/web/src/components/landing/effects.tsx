@@ -5,7 +5,7 @@
  * Compatible with reactbits.dev and 21st.dev patterns.
  */
 
-import { useRef, useEffect, useState, useMemo } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 
 // =============================================================================
@@ -128,6 +128,7 @@ export function ParticleNetwork({
         if (showConnections) {
           for (let j = i + 1; j < particlesRef.current.length; j++) {
             const p2 = particlesRef.current[j];
+            if (!p2) continue;
             const dx = p.x - p2.x;
             const dy = p.y - p2.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
@@ -610,7 +611,7 @@ export function TypingText({
   cursor = true,
 }: TypingTextProps) {
   const [displayText, setDisplayText] = useState('');
-  const [isComplete, setIsComplete] = useState(false);
+  const [_isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout;

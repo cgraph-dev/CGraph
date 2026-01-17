@@ -258,7 +258,7 @@ export const textRevealChar: Variants = {
 
 export const textTypewriter: Variants = {
   hidden: { width: 0 },
-  visible: { width: '100%', transition: { duration: 2, ease: 'steps(40)' } },
+  visible: { width: '100%', transition: { duration: 2, ease: 'linear' } },
 };
 
 // =============================================================================
@@ -300,12 +300,12 @@ export const tiltOnHover = (x: number, y: number) => ({
  */
 export function withDelay(variants: Variants, delay: number): Variants {
   return {
-    hidden: variants.hidden,
+    hidden: variants.hidden ?? {},
     visible: {
-      ...variants.visible,
+      ...(variants.visible ?? {}),
       transition: {
-        ...(typeof variants.visible === 'object' && 'transition' in variants.visible
-          ? variants.visible.transition
+        ...(typeof variants.visible === 'object' && variants.visible && 'transition' in variants.visible
+          ? (variants.visible as Record<string, unknown>).transition as object
           : {}),
         delay,
       },

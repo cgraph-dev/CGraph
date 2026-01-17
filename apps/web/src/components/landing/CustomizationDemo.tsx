@@ -6,7 +6,7 @@
  */
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { AnimatedBorder, TiltCard, GlowText } from './effects';
 import { fadeInUp, springs, staggerContainer } from './animations';
 
