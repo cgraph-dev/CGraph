@@ -337,10 +337,11 @@ defmodule CGraph.Security.AccountLockout do
 
   defp check_ip_lockout_status(ip) do
     key = ip_lockout_key(ip)
+    redis_avail = redis_available?()
 
-    case get_from_redis(key) do
+    case get_from_storage(key, redis_avail) do
       {:ok, nil} -> :ok
-      {:ok, data} -> evaluate_lockout_status(key, data)
+      {:ok, data} -> evaluate_lockout_status(key, data, redis_avail)
       {:error, _} -> :ok
     end
   end
