@@ -53,6 +53,7 @@ config :cgraph, :cookie_options,
 config :swoosh, :api_client, Swoosh.ApiClient.Finch
 
 # Configure Oban for production with more robust settings
+# Optimized for 10,000+ concurrent users
 config :cgraph, Oban,
   repo: CGraph.Repo,
   plugins: [
@@ -60,20 +61,25 @@ config :cgraph, Oban,
     {Oban.Plugins.Cron, crontab: [
       # Daily cleanup jobs
       {"0 3 * * *", CGraph.Workers.CleanupWorker}
-    ]}
+    ]},
+    # Rescue stalled jobs
+    {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}
   ],
   queues: [
-    default: 20,
-    mailers: 10,
-    notifications: 40,
-    critical: 5
+    default: 30,          # Increased for 10K users
+    mailers: 20,          # Handle email bursts
+    notifications: 60,    # High priority for real-time
+    critical: 10,         # Urgent tasks
+    search: 15            # Search indexing
   ]
 
-# Rate limiting settings for production (stricter)
+# Rate limiting settings for production (balanced for 10K users)
 config :cgraph, :rate_limit,
-  auth: [limit: 10, window_ms: 60_000],        # 10 auth attempts per minute
-  api: [limit: 100, window_ms: 60_000],        # 100 API calls per minute
-  upload: [limit: 20, window_ms: 60_000]       # 20 uploads per minute
+  auth: [limit: 10, window_ms: 60_000],        # 10 auth attempts per minute (strict for security)
+  api: [limit: 200, window_ms: 60_000],        # 200 API calls per minute per user
+  upload: [limit: 30, window_ms: 60_000],      # 30 uploads per minute
+  messages: [limit: 60, window_ms: 60_000],    # 60 messages per minute
+  websocket: [limit: 500, window_ms: 60_000]   # 500 WS messages per minute
 
 # Enable Telemetry metrics in production
 config :cgraph, :telemetry_enabled, true

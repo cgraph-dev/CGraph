@@ -26,12 +26,19 @@ if config_env() == :prod do
   # Recommended: Set POOL_SIZE=50-100 based on instance count
   # Formula: (max_db_connections / app_instances) - 5
   # Consider deploying PgBouncer for connection multiplexing at scale
+  # 
+  # For 10K users on 2 instances: 50 connections each = 100 total
+  # Supabase Pro: 500 connections, so 50/instance is safe
   repo_config = [
     url: database_url,
-    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "20"),
-    queue_target: String.to_integer(System.get_env("POOL_QUEUE_TARGET") || "50"),
-    queue_interval: String.to_integer(System.get_env("POOL_QUEUE_INTERVAL") || "1000"),
-    socket_options: maybe_ipv6
+    pool_size: String.to_integer(System.get_env("POOL_SIZE") || "50"),
+    queue_target: String.to_integer(System.get_env("POOL_QUEUE_TARGET") || "100"),
+    queue_interval: String.to_integer(System.get_env("POOL_QUEUE_INTERVAL") || "2000"),
+    socket_options: maybe_ipv6,
+    # Timeout settings for high load
+    timeout: 30_000,
+    connect_timeout: 10_000,
+    handshake_timeout: 10_000
   ]
 
   repo_config = if ssl_enabled do
