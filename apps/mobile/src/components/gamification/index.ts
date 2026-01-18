@@ -28,5 +28,9 @@ export { default as LevelUpModal } from './LevelUpModal';
 export { default as QuestPanel } from './QuestPanel';
 export type { Quest, QuestType, QuestStatus, QuestReward } from './QuestPanel';
 
+// Streak tracking
+export { default as StreakDisplay } from './StreakDisplay';
+export type { StreakDisplayProps } from './StreakDisplay';
+
 // Titles and badges
 export { default as TitleBadge } from './TitleBadge';

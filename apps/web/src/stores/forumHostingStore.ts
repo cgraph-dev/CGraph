@@ -128,6 +128,11 @@ interface ForumHostingState {
   postsMeta: PaginationMeta | null;
   isLoadingPosts: boolean;
 
+  // Members
+  members: ForumMember[];
+  membersMeta: PaginationMeta | null;
+  isLoadingMembers: boolean;
+
   // Actions - Boards
   fetchBoards: (forumId: string) => Promise<void>;
   fetchBoard: (boardId: string) => Promise<Board>;
@@ -152,6 +157,9 @@ interface ForumHostingState {
   updatePost: (threadId: string, postId: string, data: UpdatePostData) => Promise<ThreadPost>;
   deletePost: (threadId: string, postId: string) => Promise<void>;
   votePost: (postId: string, value: 1 | -1) => Promise<void>;
+
+  // Actions - Members
+  fetchMembers: (forumId: string, opts?: MemberListOptions) => Promise<void>;
 }
 
 interface CreateBoardData {
@@ -189,6 +197,14 @@ interface PostListOptions {
   perPage?: number;
 }
 
+interface MemberListOptions {
+  page?: number;
+  perPage?: number;
+  sort?: 'recent' | 'reputation' | 'posts' | 'alphabetical';
+  role?: 'member' | 'moderator' | 'admin' | 'owner';
+  search?: string;
+}
+
 // =============================================================================
 // Store Implementation
 // =============================================================================
@@ -206,6 +222,10 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
   posts: [],
   postsMeta: null,
   isLoadingPosts: false,
+
+  members: [],
+  membersMeta: null,
+  isLoadingMembers: false,
 
   // =========================================================================
   // Boards
@@ -457,6 +477,40 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
     await api.post(`/api/v1/posts/${postId}/vote`, { value });
     // Optimistic update would go here
   },
+
+  // =========================================================================
+  // Members
+  // =========================================================================
+
+  fetchMembers: async (forumId: string, opts: MemberListOptions = {}) => {
+    set({ isLoadingMembers: true });
+    try {
+      const params = new URLSearchParams();
+      if (opts.page) params.append('page', String(opts.page));
+      if (opts.perPage) params.append('per_page', String(opts.perPage));
+      if (opts.sort) params.append('sort', opts.sort);
+      if (opts.role) params.append('role', opts.role);
+      if (opts.search) params.append('search', opts.search);
+
+      const response = await api.get(`/api/v1/forums/${forumId}/members?${params}`);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rawMembers = ensureArray<any>(response.data, 'data');
+      const members = rawMembers.map(mapMemberFromApi);
+      const meta = response.data.meta;
+      set({
+        members,
+        membersMeta: meta ? {
+          page: meta.page || 1,
+          perPage: meta.per_page || 20,
+          total: meta.total || members.length,
+        } : null,
+        isLoadingMembers: false,
+      });
+    } catch (error) {
+      set({ isLoadingMembers: false });
+      throw error;
+    }
+  },
 }));
 
 // =============================================================================
@@ -550,5 +604,24 @@ function mapAuthorFromApi(data: Record<string, unknown>): ThreadAuthor {
     username: data.username as string,
     displayName: (data.display_name as string) || (data.username as string),
     avatarUrl: (data.avatar_url as string) || null,
+  };
+}
+
+function mapMemberFromApi(data: Record<string, unknown>): ForumMember {
+  return {
+    id: data.id as string,
+    forumId: data.forum_id as string,
+    userId: data.user_id as string,
+    displayName: (data.display_name as string) || (data.username as string) || null,
+    title: (data.title as string) || null,
+    signature: (data.signature as string) || null,
+    avatarUrl: (data.avatar_url as string) || null,
+    postCount: (data.post_count as number) || 0,
+    threadCount: (data.thread_count as number) || 0,
+    reputation: (data.reputation as number) || 0,
+    role: (data.role as ForumMember['role']) || 'member',
+    isBanned: (data.is_banned as boolean) || false,
+    joinedAt: (data.joined_at as string) || (data.inserted_at as string) || null,
+    lastVisitAt: (data.last_visit_at as string) || null,
   };
 }

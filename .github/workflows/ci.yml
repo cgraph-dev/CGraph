@@ -273,29 +273,34 @@ jobs:
         with:
           name: backend-cover
           path: cover/backend
-        continue-on-error: true
 
       - name: Download web coverage
         uses: actions/download-artifact@v4
         with:
           name: web-cover
           path: cover/web
-        continue-on-error: true
 
       - name: Download mobile coverage
         uses: actions/download-artifact@v4
         with:
           name: mobile-cover
           path: cover/mobile
-        continue-on-error: true
 
-      - name: Display coverage summary
+      - name: Check coverage thresholds
         run: |
           echo "Coverage Report Summary"
           echo "======================"
           echo "Backend: cover/backend"
           echo "Web: cover/web"
           echo "Mobile: cover/mobile"
+          # Enforce minimum 70% coverage (adjust as needed)
+          if [ -f cover/web/coverage-summary.json ]; then
+            WEB_PCT=$(cat cover/web/coverage-summary.json | jq -r '.total.lines.pct // 0')
+            echo "Web coverage: ${WEB_PCT}%"
+            if (( $(echo "$WEB_PCT < 70" | bc -l) )); then
+              echo "::warning::Web coverage ${WEB_PCT}% is below 70% threshold"
+            fi
+          fi
 
       - name: Upload combined coverage artifacts
         uses: actions/upload-artifact@v4
@@ -359,7 +364,7 @@ jobs:
 
       - name: Run pnpm audit
         run: pnpm audit --audit-level=high
-        continue-on-error: true
+        # Block deploys for high/critical vulnerabilities
 
       - name: Generate SBOM (Syft)
         uses: anchore/sbom-action@v0
@@ -372,8 +377,9 @@ jobs:
         uses: anchore/scan-action@v4
         with:
           sbom: sbom.spdx.json
-          fail-build: false
-        continue-on-error: true
+          fail-build: true
+          severity-cutoff: critical
+        # Block deploys for critical vulnerabilities
 
       - name: Upload security artifacts
         uses: actions/upload-artifact@v4

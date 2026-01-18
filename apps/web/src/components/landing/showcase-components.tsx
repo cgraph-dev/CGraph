@@ -771,19 +771,19 @@ export function TestimonialCarousel({
           className="text-center"
         >
           <blockquote className="mb-6 text-2xl font-light italic text-gray-300">
-            "{testimonials[current].quote}"
+            "{testimonials[current]?.quote}"
           </blockquote>
           <div className="flex items-center justify-center gap-4">
-            {testimonials[current].avatar && (
+            {testimonials[current]?.avatar && (
               <img
-                src={testimonials[current].avatar}
-                alt={testimonials[current].author}
+                src={testimonials[current]?.avatar}
+                alt={testimonials[current]?.author}
                 className="h-12 w-12 rounded-full"
               />
             )}
             <div className="text-left">
-              <div className="font-semibold text-white">{testimonials[current].author}</div>
-              <div className="text-sm text-gray-500">{testimonials[current].role}</div>
+              <div className="font-semibold text-white">{testimonials[current]?.author}</div>
+              <div className="text-sm text-gray-500">{testimonials[current]?.role}</div>
             </div>
           </div>
         </motion.div>

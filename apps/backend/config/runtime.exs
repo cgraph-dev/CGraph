@@ -199,4 +199,30 @@ if config_env() == :prod do
       %{max_size: 100_000, sample_rate: 0.01, batch_interval: 10_000},
       %{max_size: :infinity, sample_rate: 0.001, batch_interval: 30_000}
     ]
+
+  # ==========================================================================
+  # AI Configuration - PLACEHOLDER FOR FUTURE CLAUDE INTEGRATION
+  # ==========================================================================
+  # AI features are not yet implemented. This is a placeholder for future use.
+  # Provider: Claude (Anthropic) - planned features:
+  # - Forum moderation
+  # - Chat experience enhancements
+  # - Content suggestions
+  # - Smart search
+  # See: docs/architecture/AI_INTEGRATION.md
+  # ==========================================================================
+  
+  config :cgraph, CGraph.AI,
+    enabled: false,  # AI features not yet implemented
+    model: "claude-4-opus",
+    provider: "anthropic",
+    # Future features (currently disabled)
+    features: %{
+      forum_moderation: false,
+      chat_suggestions: false,
+      content_moderation: false,
+      smart_search: false
+    }
+
+  IO.puts("[AI] AI features are disabled (placeholder for future Claude integration)")
 end

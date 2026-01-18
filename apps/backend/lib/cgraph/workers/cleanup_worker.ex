@@ -13,7 +13,7 @@ defmodule CGraph.Workers.CleanupWorker do
   require Logger
 
   @impl Oban.Worker
-  def perform(%Oban.Job{args: args}) do
+  def perform(%Oban.Job{args: _args}) do
     Logger.info("[CleanupWorker] Starting daily cleanup...")
 
     with :ok <- cleanup_expired_tokens(),

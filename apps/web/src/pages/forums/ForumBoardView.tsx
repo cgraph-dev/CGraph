@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { useForumHostingStore, Board, Thread } from '@/stores/forumHostingStore';
+import { useForumHostingStore, Board, Thread, ForumMember } from '@/stores/forumHostingStore';
 import { useForumStore, Forum } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import {
@@ -16,6 +16,9 @@ import {
   ArrowUpIcon,
   ArrowDownIcon,
   MapPinIcon,
+  MagnifyingGlassIcon,
+  ShieldCheckIcon,
+  StarIcon,
 } from '@heroicons/react/24/outline';
 
 /**
@@ -36,17 +39,30 @@ export default function ForumBoardView() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
   const { fetchForum, subscribe, unsubscribe, voteForum } = useForumStore();
-  const { boards, threads, fetchBoards, fetchRecentThreads, isLoadingBoards, isLoadingThreads } = useForumHostingStore();
+  const { 
+    boards, threads, members,
+    fetchBoards, fetchRecentThreads, fetchMembers, 
+    isLoadingBoards, isLoadingThreads, isLoadingMembers 
+  } = useForumHostingStore();
 
   const [forum, setForum] = useState<Forum | null>(null);
   const [isLoadingForum, setIsLoadingForum] = useState(true);
   const [activeTab, setActiveTab] = useState<'boards' | 'threads' | 'members'>('boards');
+  const [memberSearch, setMemberSearch] = useState('');
+  const [memberSort, setMemberSort] = useState<'recent' | 'reputation' | 'posts' | 'alphabetical'>('recent');
 
   useEffect(() => {
     if (forumSlug) {
       loadForum();
     }
   }, [forumSlug]);
+
+  // Load members when tab is selected or search/sort changes
+  useEffect(() => {
+    if (activeTab === 'members' && forum) {
+      fetchMembers(forum.id, { sort: memberSort, search: memberSearch || undefined });
+    }
+  }, [activeTab, forum?.id, memberSort, memberSearch]);
 
   const loadForum = async () => {
     if (!forumSlug) return;
@@ -275,10 +291,14 @@ export default function ForumBoardView() {
         )}
 
         {activeTab === 'members' && (
-          <div className="text-center py-12 text-gray-400">
-            <UserIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>Member list coming soon...</p>
-          </div>
+          <MembersList
+            members={members}
+            isLoading={isLoadingMembers}
+            search={memberSearch}
+            onSearchChange={setMemberSearch}
+            sort={memberSort}
+            onSortChange={setMemberSort}
+          />
         )}
       </div>
     </div>
@@ -526,6 +546,142 @@ function ThreadRow({ thread, forumSlug }: ThreadRowProps) {
         ) : (
           <span className="text-gray-500">No replies</span>
         )}
+      </div>
+    </Link>
+  );
+}
+
+// =============================================================================
+// Members List Component
+// =============================================================================
+
+interface MembersListProps {
+  members: ForumMember[];
+  isLoading: boolean;
+  search: string;
+  onSearchChange: (search: string) => void;
+  sort: 'recent' | 'reputation' | 'posts' | 'alphabetical';
+  onSortChange: (sort: 'recent' | 'reputation' | 'posts' | 'alphabetical') => void;
+}
+
+function MembersList({ members, isLoading, search, onSearchChange, sort, onSortChange }: MembersListProps) {
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="animate-pulse bg-dark-700 rounded-lg h-20" />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Search & Sort Controls */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search members..."
+            value={search}
+            onChange={(e) => onSearchChange(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          />
+        </div>
+        <select
+          value={sort}
+          onChange={(e) => onSortChange(e.target.value as typeof sort)}
+          className="px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+        >
+          <option value="recent">Recently Joined</option>
+          <option value="reputation">Reputation</option>
+          <option value="posts">Most Posts</option>
+          <option value="alphabetical">A-Z</option>
+        </select>
+      </div>
+
+      {/* Members Grid */}
+      {members.length === 0 ? (
+        <div className="text-center py-12 text-gray-400">
+          <UserIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+          <p>No members found</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {members.map((member) => (
+            <MemberCard key={member.id} member={member} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface MemberCardProps {
+  member: ForumMember;
+}
+
+function MemberCard({ member }: MemberCardProps) {
+  const roleColors = {
+    owner: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+    admin: 'bg-red-500/20 text-red-400 border-red-500/30',
+    moderator: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+    member: 'bg-dark-600 text-gray-400 border-dark-500',
+  };
+
+  const roleIcons = {
+    owner: StarIcon,
+    admin: ShieldCheckIcon,
+    moderator: ShieldCheckIcon,
+    member: UserIcon,
+  };
+
+  const RoleIcon = roleIcons[member.role];
+
+  return (
+    <Link
+      to={`/profile/${member.userId}`}
+      className="flex items-center gap-4 p-4 bg-dark-700 rounded-lg border border-dark-600 hover:border-primary-500/50 transition-colors"
+    >
+      {/* Avatar */}
+      <div className="flex-shrink-0">
+        {member.avatarUrl ? (
+          <img
+            src={member.avatarUrl}
+            alt={member.displayName || 'User'}
+            className="w-12 h-12 rounded-full object-cover"
+          />
+        ) : (
+          <div className="w-12 h-12 rounded-full bg-dark-600 flex items-center justify-center">
+            <UserIcon className="h-6 w-6 text-gray-400" />
+          </div>
+        )}
+      </div>
+
+      {/* Info */}
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <h3 className="font-medium text-white truncate">
+            {member.displayName || 'Member'}
+          </h3>
+          {member.role !== 'member' && (
+            <span className={`flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border ${roleColors[member.role]}`}>
+              <RoleIcon className="h-3 w-3" />
+              {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+            </span>
+          )}
+        </div>
+        {member.title && (
+          <p className="text-sm text-primary-400">{member.title}</p>
+        )}
+        <div className="flex items-center gap-4 mt-1 text-xs text-gray-400">
+          <span>{member.postCount.toLocaleString()} posts</span>
+          <span>{member.reputation >= 0 ? '+' : ''}{member.reputation} rep</span>
+          {member.joinedAt && (
+            <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
+          )}
+        </div>
       </div>
     </Link>
   );

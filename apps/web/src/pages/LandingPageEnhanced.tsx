@@ -13,7 +13,7 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
-import { LogoIcon, LogoWithText } from '@/components/Logo';
+import { LogoIcon } from '@/components/Logo';
 import {
   ParticleNetwork,
   GradientBackground,
@@ -25,15 +25,12 @@ import {
   Magnetic,
   Spotlight,
   AnimatedCounter,
-  TypingText,
   fadeInUp,
   fadeInLeft,
   fadeInRight,
   scaleInBounce,
   staggerContainer,
   springs,
-  float,
-  pulse,
 } from '@/components/landing';
 import { CustomizationDemo } from '@/components/landing/CustomizationDemo';
 

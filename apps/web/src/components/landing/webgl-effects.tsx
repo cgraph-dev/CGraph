@@ -5,8 +5,7 @@
  * These create stunning visual effects that will impress any developer.
  */
 
-import { useRef, useEffect, useState, useCallback } from 'react';
-import { motion, useMotionValue, useSpring } from 'framer-motion';
+import { useRef, useEffect } from 'react';
 
 // =============================================================================
 // SHADER BACKGROUND
@@ -28,7 +27,7 @@ export function ShaderBackground({
   intensity = 1,
 }: ShaderBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const startTimeRef = useRef(Date.now());
 
   useEffect(() => {
@@ -42,19 +41,19 @@ export function ShaderBackground({
     }
 
     // Parse colors to RGB
-    const parseColor = (hex: string) => {
+    const parseColor = (hex: string): [number, number, number] => {
       const match = hex.match(/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i);
       if (!match) return [0.06, 0.73, 0.51]; // Default emerald
       return [
-        parseInt(match[1], 16) / 255,
-        parseInt(match[2], 16) / 255,
-        parseInt(match[3], 16) / 255,
+        parseInt(match[1]!, 16) / 255,
+        parseInt(match[2]!, 16) / 255,
+        parseInt(match[3]!, 16) / 255,
       ];
     };
 
-    const color1 = parseColor(colors[0] || '#10b981');
-    const color2 = parseColor(colors[1] || '#06b6d4');
-    const color3 = parseColor(colors[2] || '#8b5cf6');
+    const color1 = parseColor(colors[0] ?? '#10b981');
+    const color2 = parseColor(colors[1] ?? '#06b6d4');
+    const color3 = parseColor(colors[2] ?? '#8b5cf6');
 
     // Shader programs based on preset
     const shaderPrograms: Record<string, { vertex: string; fragment: string }> = {
@@ -250,6 +249,7 @@ export function ShaderBackground({
     };
 
     const shaderSrc = shaderPrograms[preset] || shaderPrograms.plasma;
+    if (!shaderSrc) return;
 
     // Create shaders
     const vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -290,9 +290,9 @@ export function ShaderBackground({
     const intensityLocation = gl.getUniformLocation(program, 'intensity');
 
     // Set static uniforms
-    gl.uniform3f(color1Location, color1[0], color1[1], color1[2]);
-    gl.uniform3f(color2Location, color2[0], color2[1], color2[2]);
-    gl.uniform3f(color3Location, color3[0], color3[1], color3[2]);
+    gl.uniform3f(color1Location, color1[0] ?? 0, color1[1] ?? 0, color1[2] ?? 0);
+    gl.uniform3f(color2Location, color2[0] ?? 0, color2[1] ?? 0, color2[2] ?? 0);
+    gl.uniform3f(color3Location, color3[0] ?? 0, color3[1] ?? 0, color3[2] ?? 0);
     gl.uniform1f(intensityLocation, intensity);
 
     // Resize handler
@@ -662,7 +662,7 @@ export function Constellation({
       // Draw connections
       ctx.strokeStyle = color + '30';
       ctx.lineWidth = 0.5;
-      nodes.forEach((node, i) => {
+      nodes.forEach((node) => {
         node.connections.forEach((j) => {
           const other = nodes[j];
           if (!other) return;

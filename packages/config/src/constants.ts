@@ -49,6 +49,41 @@ export const RATE_LIMITS = {
   comments: { max: 30, windowSeconds: 60 },
   auth: { max: 5, windowSeconds: 60 },
   upload: { max: 10, windowSeconds: 60 },
+  ai: { max: 60, windowSeconds: 60 },  // AI requests per minute
+} as const;
+
+// AI Models Configuration
+/**
+ * AI Configuration - Placeholder for Future Features
+ * 
+ * Reserved for future AI-powered features:
+ * - Forum moderation
+ * - Chat experience enhancements
+ * - Content suggestions
+ * - Smart search
+ * 
+ * Provider: Claude (Anthropic) - to be implemented
+ * @see docs/architecture/AI_INTEGRATION.md for implementation plan
+ */
+export const AI_MODELS = {
+  'claude-4-opus': {
+    id: 'claude-4-opus',
+    name: 'Claude 4 Opus',
+    provider: 'anthropic',
+    maxTokens: 200000,
+    costPer1kTokens: 0.015,
+    capabilities: ['chat', 'analysis', 'moderation', 'suggestions'],
+    status: 'planned', // Not yet implemented
+  },
+} as const;
+
+export const DEFAULT_AI_MODEL = 'claude-4-opus';
+
+// AI Feature Tiers (for rate limiting by subscription) - Reserved for future use
+export const AI_TIERS = {
+  free: { requestsPerMinute: 10, tokensPerDay: 10000 },
+  premium: { requestsPerMinute: 60, tokensPerDay: 100000 },
+  enterprise: { requestsPerMinute: 200, tokensPerDay: 1000000 },
 } as const;
 
 // Timeouts (in milliseconds)

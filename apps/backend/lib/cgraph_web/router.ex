@@ -182,6 +182,17 @@ defmodule CGraphWeb.Router do
   scope "/api/v1", CGraphWeb.API.V1 do
     pipe_through [:api, :api_auth]
 
+    # ==========================================================================
+    # AI Endpoints - PLACEHOLDER FOR FUTURE CLAUDE INTEGRATION
+    # ==========================================================================
+    # AI features are not yet implemented. See: docs/architecture/AI_INTEGRATION.md
+    # Planned endpoints (to be implemented with Claude):
+    # - GET  /ai/status        - Check AI service status
+    # - POST /ai/moderate      - Forum moderation
+    # - POST /ai/suggest       - Chat suggestions
+    # - POST /ai/search        - Smart search
+    # ==========================================================================
+
     # Authentication - logout and email verification require auth
     post "/auth/logout", AuthController, :logout
     post "/auth/resend-verification", AuthController, :resend_verification
@@ -213,6 +224,16 @@ defmodule CGraphWeb.Router do
     put "/settings/appearance", SettingsController, :update_appearance
     put "/settings/locale", SettingsController, :update_locale
     post "/settings/reset", SettingsController, :reset
+
+    # ==========================================================================
+    # Theme Endpoints (Global Theme System)
+    # ==========================================================================
+    get "/users/:id/theme", ThemeController, :show
+    put "/users/:id/theme", ThemeController, :update
+    post "/users/:id/theme/reset", ThemeController, :reset
+    post "/users/themes/batch", ThemeController, :batch
+    get "/themes/default", ThemeController, :default
+    get "/themes/presets", ThemeController, :presets
 
     # Global Leaderboard (unified endpoint for all leaderboard types)
     get "/leaderboard", LeaderboardController, :index
@@ -507,6 +528,60 @@ defmodule CGraphWeb.Router do
     get "/premium/features", PremiumController, :features
     post "/premium/subscribe", PremiumController, :subscribe
     post "/premium/cancel", PremiumController, :cancel
+
+    # ========================================
+    # Cosmetics: Avatar Borders
+    # ========================================
+    get "/avatar-borders", CosmeticsController, :list_borders
+    get "/avatar-borders/unlocked", CosmeticsController, :unlocked_borders
+    post "/avatar-borders/:id/equip", CosmeticsController, :equip_border
+    post "/avatar-borders/:id/purchase", CosmeticsController, :purchase_border
+
+    # ========================================
+    # Cosmetics: Profile Themes
+    # ========================================
+    get "/profile-themes", CosmeticsController, :list_profile_themes
+    get "/profile-themes/active", CosmeticsController, :active_profile_theme
+    post "/profile-themes/:id/activate", CosmeticsController, :activate_profile_theme
+    put "/profile-themes/:id/customize", CosmeticsController, :customize_profile_theme
+
+    # ========================================
+    # Cosmetics: Chat Effects
+    # ========================================
+    get "/chat-effects", CosmeticsController, :get_chat_effects
+    post "/chat-effects/sync", CosmeticsController, :sync_chat_effects
+    post "/chat-effects/:id/activate", CosmeticsController, :activate_chat_effect
+
+    # ========================================
+    # Prestige System
+    # ========================================
+    get "/prestige", PrestigeController, :show
+    post "/prestige/reset", PrestigeController, :reset
+    get "/prestige/rewards", PrestigeController, :rewards
+    get "/prestige/leaderboard", PrestigeController, :leaderboard
+
+    # ========================================
+    # Seasonal Events
+    # ========================================
+    get "/events", EventsController, :index
+    get "/events/:id", EventsController, :show
+    get "/events/:id/progress", EventsController, :progress
+    post "/events/:id/join", EventsController, :join
+    post "/events/:id/claim-reward", EventsController, :claim_reward
+    get "/events/:id/leaderboard", EventsController, :leaderboard
+    post "/events/:id/battle-pass/purchase", EventsController, :purchase_battle_pass
+
+    # ========================================
+    # Marketplace
+    # ========================================
+    get "/marketplace", MarketplaceController, :index
+    get "/marketplace/my-listings", MarketplaceController, :my_listings
+    get "/marketplace/history", MarketplaceController, :history
+    get "/marketplace/:id", MarketplaceController, :show
+    post "/marketplace", MarketplaceController, :create
+    put "/marketplace/:id", MarketplaceController, :update
+    delete "/marketplace/:id", MarketplaceController, :delete
+    post "/marketplace/:id/buy", MarketplaceController, :buy
   end
 
   # Admin Dashboard API routes (requires admin role)

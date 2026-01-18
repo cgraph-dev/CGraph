@@ -5,22 +5,61 @@
  * Used in user profiles, chat messages, and leaderboards.
  *
  * Features:
- * - Dynamic animations (shimmer, glow, pulse, rainbow, etc.)
+ * - 25 dynamic animations (shimmer, glow, pulse, rainbow, holographic, etc.)
  * - Rarity-based styling with gradients and glows
  * - Tooltip with title description
  * - Click handler for title shop/selection
+ * - Cross-forum visibility - titles follow user everywhere
  *
- * @version 0.7.52
- * @since 2026-01-05
+ * Animation Types:
+ * - Basic: shimmer, glow, pulse, rainbow, wave, sparkle, bounce, float
+ * - Elemental: fire, ice, electric
+ * - Advanced: holographic, matrix, plasma, crystalline, ethereal
+ * - Cosmic: cosmic, aurora, void
+ * - Premium: lightning, nature, glitch, neon_flicker, inferno, blizzard, storm, divine, shadow
+ *
+ * @version 1.0.0
+ * @since 2026-01-18
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SparklesIcon } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { type Title, type TitleRarity, RARITY_COLORS, getTitleById } from '@/data/titles';
 
 // ==================== TYPE DEFINITIONS ====================
+
+export type TitleAnimationType =
+  | 'shimmer'
+  | 'glow'
+  | 'pulse'
+  | 'rainbow'
+  | 'wave'
+  | 'sparkle'
+  | 'bounce'
+  | 'float'
+  | 'fire'
+  | 'ice'
+  | 'electric'
+  // New animation types (17 additions)
+  | 'holographic'
+  | 'matrix'
+  | 'plasma'
+  | 'crystalline'
+  | 'ethereal'
+  | 'cosmic'
+  | 'lightning'
+  | 'nature'
+  | 'void'
+  | 'aurora'
+  | 'glitch'
+  | 'neon_flicker'
+  | 'inferno'
+  | 'blizzard'
+  | 'storm'
+  | 'divine'
+  | 'shadow';
 
 export interface TitleBadgeProps {
   /** Title ID or Title object to display */
@@ -39,6 +78,7 @@ export interface TitleBadgeProps {
 
 // ==================== ANIMATION KEYFRAMES ====================
 
+// Basic Animations (existing)
 const shimmerAnimation = {
   backgroundPosition: ['200% 0', '-200% 0'],
   transition: {
@@ -116,6 +156,277 @@ const floatAnimation = {
   },
 };
 
+// ==================== NEW ANIMATION KEYFRAMES ====================
+
+// Holographic: 3D prismatic color shift
+const holographicAnimation = {
+  backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+  filter: [
+    'hue-rotate(0deg) brightness(1)',
+    'hue-rotate(180deg) brightness(1.2)',
+    'hue-rotate(360deg) brightness(1)',
+  ],
+  transition: {
+    duration: 4,
+    repeat: Infinity,
+    ease: 'linear' as const,
+  },
+};
+
+// Matrix: Cascading digital characters effect
+const matrixAnimation = {
+  textShadow: [
+    '0 0 5px #00ff00, 0 2px 0 rgba(0,255,0,0.3)',
+    '0 0 10px #00ff00, 0 4px 0 rgba(0,255,0,0.5)',
+    '0 0 5px #00ff00, 0 2px 0 rgba(0,255,0,0.3)',
+  ],
+  opacity: [1, 0.85, 1],
+  transition: {
+    duration: 1.5,
+    repeat: Infinity,
+    ease: 'steps(3)' as const,
+  },
+};
+
+// Plasma: Flowing energy field
+const plasmaAnimation = {
+  backgroundPosition: ['0% 50%', '50% 100%', '100% 50%', '50% 0%', '0% 50%'],
+  boxShadow: [
+    '0 0 10px rgba(139, 92, 246, 0.5)',
+    '0 0 20px rgba(236, 72, 153, 0.5)',
+    '0 0 10px rgba(59, 130, 246, 0.5)',
+    '0 0 20px rgba(139, 92, 246, 0.5)',
+    '0 0 10px rgba(139, 92, 246, 0.5)',
+  ],
+  transition: {
+    duration: 3,
+    repeat: Infinity,
+    ease: 'linear' as const,
+  },
+};
+
+// Crystalline: Growing crystal formations
+const crystallineAnimation = {
+  boxShadow: [
+    '0 0 5px rgba(147, 197, 253, 0.5), inset 0 0 5px rgba(147, 197, 253, 0.2)',
+    '0 0 15px rgba(147, 197, 253, 0.7), inset 0 0 10px rgba(147, 197, 253, 0.4)',
+    '0 0 5px rgba(147, 197, 253, 0.5), inset 0 0 5px rgba(147, 197, 253, 0.2)',
+  ],
+  scale: [1, 1.02, 1],
+  transition: {
+    duration: 2.5,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
+
+// Ethereal: Ghost-like fade in/out
+const etherealAnimation = {
+  opacity: [0.6, 1, 0.6],
+  filter: ['blur(0px)', 'blur(0.5px)', 'blur(0px)'],
+  y: [0, -2, 0],
+  transition: {
+    duration: 3,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
+
+// Cosmic: Starfield background
+const cosmicAnimation = {
+  backgroundPosition: ['0% 0%', '100% 100%'],
+  boxShadow: [
+    '0 0 10px rgba(99, 102, 241, 0.4)',
+    '0 0 20px rgba(99, 102, 241, 0.6), 0 0 30px rgba(168, 85, 247, 0.4)',
+    '0 0 10px rgba(99, 102, 241, 0.4)',
+  ],
+  transition: {
+    duration: 8,
+    repeat: Infinity,
+    ease: 'linear' as const,
+  },
+};
+
+// Lightning: Random electric arcs
+const lightningAnimation = {
+  boxShadow: [
+    '0 0 5px rgba(234, 179, 8, 0.3)',
+    '0 0 20px rgba(234, 179, 8, 0.8), 0 0 40px rgba(234, 179, 8, 0.4)',
+    '0 0 5px rgba(234, 179, 8, 0.3)',
+    '0 0 25px rgba(234, 179, 8, 0.9), 0 0 50px rgba(234, 179, 8, 0.5)',
+    '0 0 5px rgba(234, 179, 8, 0.3)',
+  ],
+  opacity: [1, 1, 0.9, 1, 1],
+  transition: {
+    duration: 0.8,
+    repeat: Infinity,
+    ease: 'linear' as const,
+    times: [0, 0.1, 0.2, 0.3, 1],
+  },
+};
+
+// Nature: Growing vines/leaves
+const natureAnimation = {
+  boxShadow: [
+    '0 0 8px rgba(34, 197, 94, 0.4)',
+    '0 0 16px rgba(34, 197, 94, 0.6), 0 0 24px rgba(74, 222, 128, 0.3)',
+    '0 0 8px rgba(34, 197, 94, 0.4)',
+  ],
+  scale: [1, 1.03, 1],
+  transition: {
+    duration: 3,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
+
+// Void: Black hole distortion
+const voidAnimation = {
+  boxShadow: [
+    '0 0 10px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(139, 92, 246, 0.3)',
+    '0 0 20px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(139, 92, 246, 0.5)',
+    '0 0 10px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(139, 92, 246, 0.3)',
+  ],
+  scale: [1, 0.98, 1.02, 1],
+  transition: {
+    duration: 4,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
+
+// Aurora: Northern lights effect
+const auroraAnimation = {
+  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+  boxShadow: [
+    '0 0 10px rgba(34, 211, 238, 0.4)',
+    '0 0 15px rgba(74, 222, 128, 0.5)',
+    '0 0 10px rgba(168, 85, 247, 0.4)',
+    '0 0 15px rgba(34, 211, 238, 0.5)',
+    '0 0 10px rgba(34, 211, 238, 0.4)',
+  ],
+  transition: {
+    duration: 5,
+    repeat: Infinity,
+    ease: 'linear' as const,
+  },
+};
+
+// Glitch: Digital corruption
+const glitchAnimation = {
+  x: [0, -2, 2, -1, 0],
+  textShadow: [
+    '0 0 0 transparent',
+    '2px 0 0 rgba(255, 0, 0, 0.5), -2px 0 0 rgba(0, 255, 255, 0.5)',
+    '-2px 0 0 rgba(255, 0, 0, 0.5), 2px 0 0 rgba(0, 255, 255, 0.5)',
+    '0 0 0 transparent',
+    '0 0 0 transparent',
+  ],
+  transition: {
+    duration: 0.5,
+    repeat: Infinity,
+    repeatDelay: 2,
+    ease: 'linear' as const,
+  },
+};
+
+// Neon flicker: Neon sign effect
+const neonFlickerAnimation = {
+  opacity: [1, 0.8, 1, 1, 0.9, 1],
+  boxShadow: [
+    '0 0 10px rgba(236, 72, 153, 0.8)',
+    '0 0 5px rgba(236, 72, 153, 0.4)',
+    '0 0 15px rgba(236, 72, 153, 1)',
+    '0 0 10px rgba(236, 72, 153, 0.8)',
+    '0 0 5px rgba(236, 72, 153, 0.6)',
+    '0 0 10px rgba(236, 72, 153, 0.8)',
+  ],
+  transition: {
+    duration: 2,
+    repeat: Infinity,
+    ease: 'linear' as const,
+    times: [0, 0.1, 0.2, 0.5, 0.8, 1],
+  },
+};
+
+// Inferno: Intense fire particles
+const infernoAnimation = {
+  boxShadow: [
+    '0 0 10px rgba(239, 68, 68, 0.6), 0 -5px 15px rgba(251, 146, 60, 0.4)',
+    '0 0 20px rgba(239, 68, 68, 0.8), 0 -8px 25px rgba(251, 146, 60, 0.6)',
+    '0 0 10px rgba(239, 68, 68, 0.6), 0 -5px 15px rgba(251, 146, 60, 0.4)',
+  ],
+  y: [0, -1, 0],
+  transition: {
+    duration: 1.5,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
+
+// Blizzard: Swirling ice/snow
+const blizzardAnimation = {
+  boxShadow: [
+    '0 0 10px rgba(147, 197, 253, 0.5), 0 0 20px rgba(219, 234, 254, 0.3)',
+    '0 0 15px rgba(147, 197, 253, 0.7), 0 0 30px rgba(219, 234, 254, 0.5)',
+    '0 0 10px rgba(147, 197, 253, 0.5), 0 0 20px rgba(219, 234, 254, 0.3)',
+  ],
+  scale: [1, 1.01, 0.99, 1],
+  transition: {
+    duration: 2,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
+
+// Storm: Lightning + clouds
+const stormAnimation = {
+  boxShadow: [
+    '0 0 10px rgba(100, 116, 139, 0.5)',
+    '0 0 25px rgba(234, 179, 8, 0.8), 0 0 40px rgba(100, 116, 139, 0.6)',
+    '0 0 10px rgba(100, 116, 139, 0.5)',
+    '0 0 15px rgba(100, 116, 139, 0.6)',
+  ],
+  opacity: [1, 1, 0.95, 1],
+  transition: {
+    duration: 1.5,
+    repeat: Infinity,
+    ease: 'linear' as const,
+    times: [0, 0.15, 0.2, 1],
+  },
+};
+
+// Divine: Golden rays + particles
+const divineAnimation = {
+  boxShadow: [
+    '0 0 15px rgba(251, 191, 36, 0.5), 0 0 30px rgba(251, 191, 36, 0.3)',
+    '0 0 25px rgba(251, 191, 36, 0.7), 0 0 50px rgba(251, 191, 36, 0.4)',
+    '0 0 15px rgba(251, 191, 36, 0.5), 0 0 30px rgba(251, 191, 36, 0.3)',
+  ],
+  filter: ['brightness(1)', 'brightness(1.2)', 'brightness(1)'],
+  transition: {
+    duration: 2.5,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
+
+// Shadow: Dark wisps + smoke
+const shadowAnimation = {
+  boxShadow: [
+    '0 0 10px rgba(0, 0, 0, 0.7), 0 5px 15px rgba(0, 0, 0, 0.5)',
+    '0 0 20px rgba(0, 0, 0, 0.9), 0 8px 25px rgba(0, 0, 0, 0.7)',
+    '0 0 10px rgba(0, 0, 0, 0.7), 0 5px 15px rgba(0, 0, 0, 0.5)',
+  ],
+  y: [0, 1, 0],
+  opacity: [0.9, 1, 0.9],
+  transition: {
+    duration: 3,
+    repeat: Infinity,
+    ease: 'easeInOut' as const,
+  },
+};
+
 // ==================== SIZE CONFIGURATIONS ====================
 
 const SIZE_CLASSES = {
@@ -163,10 +474,11 @@ export function TitleBadge({
   const gradient = RARITY_GRADIENTS[titleData.rarity];
 
   // Get animation based on title configuration
-  const getAnimation = () => {
+  const getAnimation = useCallback(() => {
     if (!animated) return {};
 
-    switch (titleData.animation.type) {
+    switch (titleData.animation.type as TitleAnimationType) {
+      // Basic animations
       case 'shimmer':
         return shimmerAnimation;
       case 'glow':
@@ -183,16 +495,55 @@ export function TitleBadge({
         return bounceAnimation;
       case 'float':
         return floatAnimation;
+
+      // Elemental animations
       case 'fire':
         return glowAnimation('rgba(239, 68, 68, 0.6)');
       case 'ice':
         return glowAnimation('rgba(59, 130, 246, 0.6)');
       case 'electric':
         return glowAnimation('rgba(234, 179, 8, 0.6)');
+
+      // New advanced animations
+      case 'holographic':
+        return holographicAnimation;
+      case 'matrix':
+        return matrixAnimation;
+      case 'plasma':
+        return plasmaAnimation;
+      case 'crystalline':
+        return crystallineAnimation;
+      case 'ethereal':
+        return etherealAnimation;
+      case 'cosmic':
+        return cosmicAnimation;
+      case 'lightning':
+        return lightningAnimation;
+      case 'nature':
+        return natureAnimation;
+      case 'void':
+        return voidAnimation;
+      case 'aurora':
+        return auroraAnimation;
+      case 'glitch':
+        return glitchAnimation;
+      case 'neon_flicker':
+        return neonFlickerAnimation;
+      case 'inferno':
+        return infernoAnimation;
+      case 'blizzard':
+        return blizzardAnimation;
+      case 'storm':
+        return stormAnimation;
+      case 'divine':
+        return divineAnimation;
+      case 'shadow':
+        return shadowAnimation;
+
       default:
         return {};
     }
-  };
+  }, [animated, titleData.animation.type, rarityColor.glow]);
 
   // Shimmer gradient for shimmer animation
   const shimmerStyle =

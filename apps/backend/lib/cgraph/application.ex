@@ -86,7 +86,8 @@ defmodule CGraph.Application do
       CGraphWeb.Endpoint
     ]
 
-    # Only add Redis-dependent services if Redis is available
+    # Rate limiter ETS fallback is always needed, so start it unconditionally
+    # Redis services only start if Redis is available
     redis_children = if redis_enabled? do
       [
         # Start Redis connection pool
@@ -95,13 +96,16 @@ defmodule CGraph.Application do
         # Start Redis GenServer wrapper (for rate limiting, etc.)
         CGraph.Redis,
 
-        # Start distributed rate limiter
+        # Start distributed rate limiter (with Redis backend)
         CGraph.RateLimiter.Distributed
       ]
     else
       require Logger
-      Logger.warning("[Application] Redis not configured - running without Redis-backed services")
-      []
+      Logger.warning("[Application] Redis not configured - running with ETS-only rate limiting")
+      [
+        # Start distributed rate limiter (ETS-only mode)
+        CGraph.RateLimiter.Distributed
+      ]
     end
 
     # Insert Redis children after PubSub (position 3)

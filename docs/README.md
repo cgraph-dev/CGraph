@@ -7,7 +7,15 @@ developers, operators, and contributors.
 
 ---
 
-## 📚 Documentation Index
+## � Project Status
+
+| Document                                | Description                                  |
+| --------------------------------------- | -------------------------------------------- |
+| [**Project Status**](PROJECT_STATUS.md) | Feature tracking, architecture, and roadmap  |
+
+---
+
+## �📚 Documentation Index
 
 ### Getting Started
 
@@ -36,14 +44,15 @@ developers, operators, and contributors.
 
 ### Architecture
 
-| Document                                                          | Description                     |
-| ----------------------------------------------------------------- | ------------------------------- |
-| [Architecture Overview](architecture/ARCHITECTURE.md)             | System architecture             |
-| [Database Design](architecture/DATABASE.md)                       | Schema and data model           |
-| [Database Scaling](architecture/DATABASE_SCALING.md)              | Scaling strategies              |
-| [Presence System](architecture/PRESENCE_ARCHITECTURE.md)          | Real-time presence architecture |
-| [Real-time Communication](architecture/REALTIME_COMMUNICATION.md) | WebSocket implementation        |
-| [Technical Overview](architecture/TECHNICAL_OVERVIEW.md)          | Technical deep-dive             |
+| Document                                                          | Description                        |
+| ----------------------------------------------------------------- | ---------------------------------- |
+| [Architecture Overview](architecture/ARCHITECTURE.md)             | System architecture                |
+| [Database Design](architecture/DATABASE.md)                       | Schema and data model              |
+| [Database Scaling](architecture/DATABASE_SCALING.md)              | Scaling strategies                 |
+| [Presence System](architecture/PRESENCE_ARCHITECTURE.md)          | Real-time presence architecture    |
+| [Real-time Communication](architecture/REALTIME_COMMUNICATION.md) | WebSocket implementation           |
+| [Technical Overview](architecture/TECHNICAL_OVERVIEW.md)          | Technical deep-dive                |
+| [AI Integration](architecture/AI_INTEGRATION.md)                  | Future AI features (Claude)        |
 
 ---
 

@@ -15,6 +15,11 @@ defmodule CGraphWeb.UserSocket do
   channel "user:*", CGraphWeb.UserChannel
   channel "presence:*", CGraphWeb.PresenceChannel
   channel "call:*", CGraphWeb.CallChannel
+  
+  # Gamification Channels
+  channel "gamification:*", CGraphWeb.GamificationChannel
+  channel "marketplace:*", CGraphWeb.MarketplaceChannel
+  channel "events:*", CGraphWeb.EventsChannel
 
   @impl true
   def connect(%{"token" => token}, socket, _connect_info) do

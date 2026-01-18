@@ -39,6 +39,10 @@ import type { Sticker } from '@/data/stickers';
 
 import { themeEngine } from '@/lib/ai/ThemeEngine';
 
+// Theme system integration
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
+
 // ============================================================================
 // TYPE-SAFE REACTION AGGREGATION UTILITIES
 // ============================================================================
@@ -486,21 +490,12 @@ export default function Conversation() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            <div className="h-12 w-12 rounded-full overflow-hidden bg-gradient-to-br from-primary-500 to-purple-600 p-0.5">
-              <div className="h-full w-full rounded-full overflow-hidden bg-dark-800">
-                {otherParticipant?.user?.avatarUrl ? (
-                  <img
-                    src={otherParticipant.user.avatarUrl}
-                    alt={conversationName}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center text-lg font-bold text-gradient bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent">
-                    {conversationName.charAt(0).toUpperCase()}
-                  </div>
-                )}
-              </div>
-            </div>
+            <ThemedAvatar
+              src={otherParticipant?.user?.avatarUrl}
+              alt={conversationName}
+              size="large"
+              userTheme={(otherParticipant?.user as any)?.theme}
+            />
             {isOtherUserOnline && (
               <motion.div
                 className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-dark-900 shadow-lg"
@@ -1169,23 +1164,13 @@ function MessageBubble({
       {!isOwn && (
         <div className="w-8 flex-shrink-0">
           {showAvatar && (
-            <button
+            <ThemedAvatar
+              src={message.sender?.avatarUrl}
+              alt={message.sender?.displayName || message.sender?.username || 'User'}
+              size="small"
+              userTheme={message.senderTheme}
               onClick={() => message.sender?.id && onAvatarClick?.(message.sender.id)}
-              className="h-8 w-8 rounded-full overflow-hidden bg-dark-600 cursor-pointer hover:ring-2 hover:ring-primary-500/50 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500"
-              title={`View ${message.sender?.displayName || message.sender?.username || 'user'}'s profile`}
-            >
-              {message.sender?.avatarUrl ? (
-                <img
-                  src={message.sender.avatarUrl}
-                  alt={message.sender?.displayName || message.sender?.username || 'User'}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <div className="h-full w-full flex items-center justify-center text-sm font-bold text-gray-400">
-                  {(message.sender?.displayName || message.sender?.username || 'U').charAt(0).toUpperCase()}
-                </div>
-              )}
-            </button>
+            />
           )}
         </div>
       )}

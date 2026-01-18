@@ -24,10 +24,54 @@ export interface Title {
   isLimited?: boolean;
 }
 
+/**
+ * Title Animation Types - 25 unique animation effects
+ * Organized by complexity: Basic → Advanced → Elemental → Cosmic
+ */
+export type TitleAnimationType =
+  // No animation
+  | 'none'
+  // Basic animations (free tier)
+  | 'shimmer'
+  | 'glow'
+  | 'pulse'
+  | 'float'
+  | 'bounce'
+  // Advanced animations (uncommon+)
+  | 'rainbow'
+  | 'wave'
+  | 'sparkle'
+  | 'holographic'
+  | 'matrix'
+  | 'glitch'
+  | 'neon_flicker'
+  // Elemental animations (rare+)
+  | 'fire'
+  | 'ice'
+  | 'electric'
+  | 'nature'
+  | 'storm'
+  // Cosmic animations (epic+)
+  | 'plasma'
+  | 'crystalline'
+  | 'ethereal'
+  | 'cosmic'
+  | 'void'
+  | 'aurora'
+  // Divine animations (legendary+)
+  | 'divine'
+  | 'shadow'
+  | 'inferno'
+  | 'blizzard';
+
 export interface TitleAnimation {
-  type: 'none' | 'shimmer' | 'glow' | 'pulse' | 'rainbow' | 'wave' | 'sparkle' | 'fire' | 'ice' | 'electric' | 'float' | 'bounce';
-  speed: number; // seconds
+  type: TitleAnimationType;
+  speed: number; // seconds (0.5 - 5)
   intensity: number; // 0-100
+  /** Optional particle effects for advanced animations */
+  particles?: boolean;
+  /** Optional glow color override */
+  glowColor?: string;
 }
 
 // Rarity color schemes

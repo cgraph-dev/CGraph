@@ -1,0 +1,171 @@
+# CGraph CDN Configuration (Cloudflare)
+# =============================================================================
+# This configuration file documents the recommended CDN settings for CGraph.
+# Apply these settings in the Cloudflare dashboard or via API.
+# =============================================================================
+
+# =============================================================================
+# Page Rules / Cache Rules
+# =============================================================================
+
+# Static Assets - Aggressive Caching
+# Pattern: /assets/*
+# - Cache Level: Cache Everything
+# - Edge Cache TTL: 1 year
+# - Browser Cache TTL: 1 year
+# - Origin Cache Control: On
+
+# API Endpoints - No Caching
+# Pattern: /api/*
+# - Cache Level: Bypass
+# - SSL: Full (Strict)
+# - Always Use HTTPS: On
+
+# WebSocket - No Caching
+# Pattern: /socket/*
+# - Cache Level: Bypass
+# - WebSockets: On
+# - SSL: Full (Strict)
+
+# HTML Pages - Smart Caching
+# Pattern: *.html
+# - Cache Level: Standard
+# - Edge Cache TTL: 1 hour
+# - Browser Cache TTL: 0 (revalidate)
+# - Bypass Cache on Cookie: cf_clearance, __cf_bm
+
+# =============================================================================
+# Transform Rules (HTTP Response Headers)
+# =============================================================================
+
+# Headers configuration (grouped by purpose)
+headers:
+  # Security Headers (all responses)
+  security:
+    - "X-Content-Type-Options: nosniff"
+    - "X-Frame-Options: DENY"
+    - "X-XSS-Protection: 1; mode=block"
+    - "Referrer-Policy: strict-origin-when-cross-origin"
+    - "Permissions-Policy: camera=(), microphone=(), geolocation=()"
+
+  # CORS Headers (API responses)
+  # Applied to: /api/*
+  cors:
+    - "Access-Control-Allow-Origin: https://cgraph.org"
+    - "Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS"
+    - "Access-Control-Allow-Headers: Content-Type, Authorization"
+    - "Access-Control-Max-Age: 86400"
+
+  # Cache Headers (static assets)
+  # Applied to: /assets/*
+  cache:
+    - "Cache-Control: public, max-age=31536000, immutable"
+
+# =============================================================================
+# WAF Rules (Web Application Firewall)
+# =============================================================================
+
+# Block SQL Injection attempts
+# Rule: Match OWASP SQLi patterns
+# Action: Block
+
+# Block XSS attempts
+# Rule: Match OWASP XSS patterns
+# Action: Block
+
+# Rate Limiting - API
+# Pattern: /api/*
+# - Requests per 10 seconds: 100
+# - Requests per minute: 600
+# - Action: Challenge (then block if exceeded)
+
+# Rate Limiting - Auth
+# Pattern: /api/v1/auth/*
+# - Requests per minute: 10
+# - Action: Block
+
+# Rate Limiting - AI Endpoints
+# Pattern: /api/v1/ai/*
+# - Requests per minute: 60
+# - Action: Block
+
+# =============================================================================
+# Bot Management
+# =============================================================================
+
+# Block bad bots
+# - Block known malicious user agents
+# - Challenge suspected bots
+# - Allow verified bots (Googlebot, etc.)
+
+# JavaScript Detection
+# - Challenge requests that fail JS verification
+
+# =============================================================================
+# Performance Settings
+# =============================================================================
+
+# Auto Minify: On
+# - JavaScript: On
+# - CSS: On
+# - HTML: On
+
+# Brotli Compression: On
+
+# Early Hints: On
+
+# HTTP/3 (QUIC): On
+
+# 0-RTT Connection Resumption: On
+
+# Rocket Loader: Off (causes issues with React apps)
+
+# =============================================================================
+# SSL/TLS Settings
+# =============================================================================
+
+# SSL Mode: Full (Strict)
+# Min TLS Version: 1.2
+# TLS 1.3: On
+# Automatic HTTPS Rewrites: On
+# Always Use HTTPS: On
+# HSTS: On (max-age=31536000; includeSubDomains; preload)
+
+# =============================================================================
+# Speed Optimizations
+# =============================================================================
+
+# Polish (Image Optimization): Lossless
+# Mirage: On (adaptive image loading)
+# Argo Smart Routing: On (paid feature)
+
+# =============================================================================
+# Firewall Events / Monitoring
+# =============================================================================
+
+# Log all WAF triggers to:
+# - Cloudflare Analytics
+# - External SIEM (via Logpush if using Enterprise)
+
+# Alert thresholds:
+# - > 100 blocked requests/minute: Email alert
+# - > 1000 blocked requests/minute: PagerDuty alert
+# - DDoS detected: Immediate notification
+
+# =============================================================================
+# Origin Server Settings
+# =============================================================================
+
+# Origin: cgraph-backend.fly.dev
+# Port: 443
+# Protocol: HTTPS
+
+# Health Check:
+# - Path: /health
+# - Interval: 60 seconds
+# - Timeout: 5 seconds
+# - Unhealthy threshold: 3
+
+# Load Balancing (if multiple origins):
+# - Method: Least Connections
+# - Session Affinity: By Cookie (for WebSocket stability)

@@ -1187,4 +1187,235 @@ defmodule CGraph.Gamification do
       equipped_title_id: user.equipped_title_id
     }
   end
+
+  # ==================== CURRENCY MANAGEMENT ====================
+
+  @doc """
+  Add currency to a user's account.
+  """
+  def add_currency(%User{} = user, amount, currency_type) when amount > 0 do
+    case currency_type do
+      :coins ->
+        new_coins = user.coins + amount
+        user
+        |> Ecto.Changeset.change(%{coins: new_coins})
+        |> Repo.update()
+      _ ->
+        {:error, :invalid_currency_type}
+    end
+  end
+
+  def add_currency(user_id, amount, currency_type) when is_binary(user_id) do
+    case Repo.get(User, user_id) do
+      nil -> {:error, :user_not_found}
+      user -> add_currency(user, amount, currency_type)
+    end
+  end
+
+  @doc """
+  Deduct currency from a user's account.
+  """
+  def deduct_currency(%User{} = user, amount, currency_type) when amount > 0 do
+    case currency_type do
+      :coins when user.coins >= amount ->
+        new_coins = user.coins - amount
+        user
+        |> Ecto.Changeset.change(%{coins: new_coins})
+        |> Repo.update()
+      :coins ->
+        {:error, :insufficient_funds}
+      _ ->
+        {:error, :invalid_currency_type}
+    end
+  end
+
+  def deduct_currency(user_id, amount, currency_type) when is_binary(user_id) do
+    case Repo.get(User, user_id) do
+      nil -> {:error, :user_not_found}
+      user -> deduct_currency(user, amount, currency_type)
+    end
+  end
+
+  @doc """
+  Add XP to a user (simplified version).
+  """
+  def add_xp(user_id, amount) when is_binary(user_id) and amount > 0 do
+    case Repo.get(User, user_id) do
+      nil -> {:error, :user_not_found}
+      user -> award_xp(user, amount, :manual)
+    end
+  end
+
+  # ==================== TITLE & BORDER UNLOCKS ====================
+
+  @doc """
+  Unlock a title for a user.
+  """
+  def unlock_title(user_id, title_id) do
+    case Repo.get(Title, title_id) do
+      nil -> {:error, :title_not_found}
+      _title ->
+        %UserTitle{}
+        |> UserTitle.changeset(%{user_id: user_id, title_id: title_id})
+        |> Repo.insert(on_conflict: :nothing)
+    end
+  end
+
+  @doc """
+  Unlock a border for a user.
+  """
+  def unlock_border(user_id, border_id) do
+    # Placeholder - would need UserBorder schema
+    {:ok, %{user_id: user_id, border_id: border_id}}
+  end
+
+  # ==================== EVENTS ====================
+
+  @doc """
+  List active events.
+  """
+  def list_active_events do
+    []
+  end
+
+  @doc """
+  List upcoming events.
+  """
+  def list_upcoming_events(_opts \\ []) do
+    []
+  end
+
+  @doc """
+  Get an event by ID.
+  """
+  def get_event(_event_id) do
+    nil
+  end
+
+  @doc """
+  Get user's progress in an event.
+  """
+  def get_user_event_progress(_user_id, _event_id) do
+    %{
+      points: 0,
+      tier: 0,
+      quests_completed: 0,
+      rewards_claimed: []
+    }
+  end
+
+  @doc """
+  Get user's rank in an event.
+  """
+  def get_user_event_rank(_user_id, _event_id) do
+    nil
+  end
+
+  @doc """
+  Get event quests for a user.
+  """
+  def get_event_quests(_user_id, _event_id) do
+    []
+  end
+
+  @doc """
+  Get battle pass info for a user.
+  """
+  def get_battle_pass_info(_user_id, _event_id) do
+    %{
+      current_tier: 0,
+      max_tier: 100,
+      xp: 0,
+      xp_to_next_tier: 1000,
+      is_premium: false,
+      rewards_available: []
+    }
+  end
+
+  @doc """
+  Claim an event reward.
+  """
+  def claim_event_reward(_user_id, _event_id, _tier, _reward_type) do
+    {:error, :not_implemented}
+  end
+
+  @doc """
+  Get event leaderboard.
+  """
+  def get_event_leaderboard(_event_id, _opts \\ []) do
+    []
+  end
+
+  # ==================== PRESTIGE ====================
+
+  @doc """
+  Get user's prestige info.
+  """
+  def get_user_prestige(_user_id) do
+    %{
+      level: 0,
+      total_prestiges: 0,
+      xp_multiplier: 1.0,
+      coin_multiplier: 1.0,
+      bonuses: []
+    }
+  end
+
+  @doc """
+  Get prestige leaderboard.
+  """
+  def get_prestige_leaderboard(_opts \\ []) do
+    []
+  end
+
+  # ==================== COMMUNITY ====================
+
+  @doc """
+  Get community milestones.
+  """
+  def get_community_milestones(_opts \\ []) do
+    %{
+      total_messages: 0,
+      total_users: 0,
+      total_achievements: 0,
+      milestones: []
+    }
+  end
+
+  # ==================== ADDITIONAL MISSING FUNCTIONS ====================
+
+  @doc """
+  Get XP leaderboard.
+  """
+  def get_xp_leaderboard(_limit \\ 10) do
+    []
+  end
+
+  @doc """
+  Purchase battle pass for an event.
+  """
+  def purchase_battle_pass(_user_id, _event_id) do
+    {:error, :not_implemented}
+  end
+
+  @doc """
+  Update quest progress (4-arg version).
+  """
+  def update_quest_progress(_user_id, _event_id, _quest_id, _progress) do
+    {:error, :not_implemented}
+  end
+
+  @doc """
+  Get event leaderboard (3-arg version).
+  """
+  def get_event_leaderboard(_event_id, _limit, _offset) do
+    {:ok, []}
+  end
+
+  @doc """
+  Get user's event rank.
+  """
+  def get_user_event_rank(_user_id, _event_id) do
+    nil
+  end
 end

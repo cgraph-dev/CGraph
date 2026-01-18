@@ -2,6 +2,7 @@ import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 
 // ============================================================================
 // LAYOUTS - Eagerly loaded (always needed)
@@ -63,6 +64,7 @@ const PluginMarketplace = lazy(() => import('@/pages/forums/PluginMarketplace'))
 
 // Settings & Profile
 const Settings = lazy(() => import('@/pages/settings/Settings'));
+const ThemeCustomization = lazy(() => import('@/pages/settings/ThemeCustomization'));
 const TwoFactorSetup = lazy(() => import('@/pages/settings/TwoFactorSetup'));
 const BlockedUsers = lazy(() => import('@/pages/settings/BlockedUsers'));
 const UserProfile = lazy(() => import('@/pages/profile/UserProfile'));
@@ -97,7 +99,7 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 
 // Static pages
 const NotFound = lazy(() => import('@/pages/NotFound'));
-const LandingPage = lazy(() => import('@/pages/LandingPageUltimate'));
+const LandingPage = lazy(() => import('@/pages/LandingPageOptimized'));
 
 // Legal pages
 const PrivacyPolicy = lazy(() => import('@/pages/legal/PrivacyPolicy'));
@@ -120,15 +122,17 @@ const EnhancedDemo = lazy(() => import('@/pages/test/EnhancedDemo'));
 function AuthInitializer({ children }: { children: React.ReactNode }) {
   const checkAuth = useAuthStore((state) => state.checkAuth);
   const token = useAuthStore((state) => state.token);
+  const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const fetchGamificationData = useGamificationStore((state) => state.fetchGamificationData);
+  const { theme, syncWithServer } = useThemeStore();
 
   useEffect(() => {
     // Run auth check in background - don't block rendering
     if (import.meta.env.DEV) {
       console.log('[AuthInitializer] Starting auth check, hasToken:', !!token);
     }
-    
+
     checkAuth().catch((error) => {
       console.error('[AuthInitializer] Auth check failed:', error);
     }).finally(() => {
@@ -146,6 +150,33 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       }
       fetchGamificationData().catch((error) => {
         console.error('[AuthInitializer] Gamification fetch failed:', error);
+      });
+    }
+  }, [isAuthenticated, fetchGamificationData]);
+
+  // Apply global theme CSS variables
+  useEffect(() => {
+    const colors = THEME_COLORS[theme.colorPreset];
+    const root = document.documentElement;
+
+    root.style.setProperty('--theme-primary', colors.primary);
+    root.style.setProperty('--theme-secondary', colors.secondary);
+    root.style.setProperty('--theme-glow', colors.glow);
+    root.style.setProperty('--theme-gradient', colors.gradient);
+
+    if (import.meta.env.DEV) {
+      console.log('[ThemeSystem] Applied theme:', theme.colorPreset, colors);
+    }
+  }, [theme.colorPreset]);
+
+  // Sync theme with server when user logs in
+  useEffect(() => {
+    if (isAuthenticated && user?.id) {
+      if (import.meta.env.DEV) {
+        console.log('[ThemeSystem] Syncing theme with server for user:', user.id);
+      }
+      syncWithServer(user.id).catch((error) => {
+        console.error('[ThemeSystem] Theme sync failed:', error);
       });
     }
   }, [isAuthenticated, fetchGamificationData]);
@@ -327,6 +358,7 @@ export default function App() {
           {/* Settings */}
           <Route path="settings" element={<Settings />} />
           <Route path="settings/:section" element={<Settings />} />
+          <Route path="settings/theme" element={<ThemeCustomization />} />
           <Route path="settings/security/2fa-setup" element={<TwoFactorSetup />} />
           <Route path="settings/privacy/blocked" element={<BlockedUsers />} />
 

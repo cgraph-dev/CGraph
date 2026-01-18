@@ -694,4 +694,14 @@ defmodule CGraph.Notifications do
       created_at: n.inserted_at
     }
   end
+
+  @doc """
+  Simple send function for admin marketplace notifications.
+  """
+  def send(user_id, type, data) when is_binary(user_id) or is_integer(user_id) do
+    case CGraph.Repo.get(User, user_id) do
+      nil -> {:error, :user_not_found}
+      user -> notify(user, type, to_string(type), data: data)
+    end
+  end
 end

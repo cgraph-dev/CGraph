@@ -18,6 +18,26 @@ interface EnvConfig {
   wsUrl: string;
   apiVersion: string;
   
+  // AI Configuration - Placeholder for future Claude integration
+  // @see docs/architecture/AI_INTEGRATION.md for implementation plan
+  ai: {
+    enabled: boolean; // Currently disabled - future feature
+    model: 'claude-4-opus'; // Claude will be the only supported model
+    endpoint?: string;
+    maxTokens: number;
+    temperature: number;
+    features: {
+      forumModeration: boolean;    // Future: AI-powered forum moderation
+      chatSuggestions: boolean;    // Future: Smart chat suggestions
+      contentModeration: boolean;  // Future: Content moderation
+      smartSearch: boolean;        // Future: AI-enhanced search
+    };
+    rateLimits: {
+      requestsPerMinute: number;
+      tokensPerDay: number;
+    };
+  };
+  
   // Features
   features: {
     groups: boolean;
@@ -27,6 +47,7 @@ interface EnvConfig {
     walletConnect: boolean;
     web3Auth: boolean;
     notifications: boolean;
+    aiAssistant: boolean;  // Master toggle for AI features
   };
   
   // Third-party
@@ -79,6 +100,25 @@ const devConfig: EnvConfig = {
   wsUrl: 'ws://localhost:4000/socket',
   apiVersion: 'v1',
   
+  // AI - Disabled placeholder for future Claude integration
+  ai: {
+    enabled: false, // AI features not yet implemented
+    model: 'claude-4-opus',
+    endpoint: undefined,
+    maxTokens: 200000,
+    temperature: 0.7,
+    features: {
+      forumModeration: false,
+      chatSuggestions: false,
+      contentModeration: false,
+      smartSearch: false,
+    },
+    rateLimits: {
+      requestsPerMinute: 10,
+      tokensPerDay: 10000,
+    },
+  },
+  
   features: {
     groups: true,
     forums: true,
@@ -87,6 +127,7 @@ const devConfig: EnvConfig = {
     walletConnect: true,
     web3Auth: true,
     notifications: true,
+    aiAssistant: true,
   },
   
   maxUploadSize: 100 * 1024 * 1024,
@@ -106,6 +147,25 @@ const stagingConfig: EnvConfig = {
   wsUrl: 'wss://staging-api.cgraph.io/socket',
   apiVersion: 'v1',
   
+  // AI - Disabled placeholder for future Claude integration
+  ai: {
+    enabled: false, // AI features not yet implemented
+    model: 'claude-4-opus',
+    endpoint: undefined,
+    maxTokens: 200000,
+    temperature: 0.7,
+    features: {
+      forumModeration: false,
+      chatSuggestions: false,
+      contentModeration: false,
+      smartSearch: false,
+    },
+    rateLimits: {
+      requestsPerMinute: 60,
+      tokensPerDay: 100000,
+    },
+  },
+  
   features: {
     groups: true,
     forums: true,
@@ -114,6 +174,7 @@ const stagingConfig: EnvConfig = {
     walletConnect: true,
     web3Auth: true,
     notifications: true,
+    aiAssistant: true,
   },
   
   sentryDsn: getEnvVar('SENTRY_DSN'),
@@ -137,6 +198,25 @@ const prodConfig: EnvConfig = {
   wsUrl: 'wss://api.cgraph.io/socket',
   apiVersion: 'v1',
   
+  // AI - Disabled placeholder for future Claude integration
+  ai: {
+    enabled: false, // AI features not yet implemented
+    model: 'claude-4-opus',
+    endpoint: undefined,
+    maxTokens: 200000,
+    temperature: 0.5,
+    features: {
+      forumModeration: false,
+      chatSuggestions: false,
+      contentModeration: false,
+      smartSearch: false,
+    },
+    rateLimits: {
+      requestsPerMinute: 200,
+      tokensPerDay: 1000000,
+    },
+  },
+  
   features: {
     groups: true,
     forums: true,
@@ -145,6 +225,7 @@ const prodConfig: EnvConfig = {
     walletConnect: true,
     web3Auth: true,
     notifications: true,
+    aiAssistant: true,
   },
   
   sentryDsn: getEnvVar('SENTRY_DSN'),

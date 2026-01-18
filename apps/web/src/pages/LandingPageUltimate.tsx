@@ -6,17 +6,15 @@
  * cursor trails, text scramble, scroll-driven animations, and more.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
-import { LogoIcon, LogoWithText } from '@/components/Logo';
+import { LogoIcon } from '@/components/Logo';
 
 // Import all effects
 import {
   // Basic effects
-  ParticleNetwork,
-  GradientBackground,
   GridBackground,
   Scanlines,
   GlowText,
@@ -24,8 +22,6 @@ import {
   TiltCard,
   Magnetic,
   Spotlight,
-  AnimatedCounter,
-  TypingText,
 
   // Advanced effects
   NoiseOverlay,
@@ -39,7 +35,6 @@ import {
   Float3D,
   HolographicCard,
   InfiniteMarquee,
-  VelocityText,
   ParallaxScene,
 
   // WebGL effects
