@@ -155,10 +155,10 @@ defmodule CGraph.Application do
       backoff_max: 5_000
     ]
 
-    # Upstash requires SSL/TLS
+    # Upstash requires SSL/TLS - ssl: true enables SSL
     if is_upstash do
       Keyword.merge(base_config, [
-        ssl: [verify: :verify_none],
+        ssl: true,
         socket_opts: [:inet6]
       ])
     else
