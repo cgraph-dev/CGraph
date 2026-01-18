@@ -70,36 +70,78 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    chunkSizeWarningLimit: 600,
+    // Increase limit to avoid warnings for expected large chunks
+    chunkSizeWarningLimit: 1500,
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Core React
-          'react-vendor': ['react', 'react-dom'],
+        // Use function for more granular control over chunking
+        manualChunks: (id: string) => {
+          // Core React - small and critical
+          if (id.includes('node_modules/react/') || id.includes('node_modules/react-dom/')) {
+            return 'react-vendor';
+          }
           // Routing
-          'router': ['react-router-dom'],
-          // UI Components
-          'radix-ui': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-avatar',
-            '@radix-ui/react-scroll-area',
-            '@radix-ui/react-separator',
-          ],
-          'headless-ui': ['@headlessui/react'],
-          // Animation
-          'animation': ['framer-motion'],
-          // Data fetching & state
-          'data': ['@tanstack/react-query', 'zustand', 'axios'],
+          if (id.includes('react-router')) {
+            return 'router';
+          }
+          // Radix UI components
+          if (id.includes('@radix-ui')) {
+            return 'radix-ui';
+          }
+          // Headless UI
+          if (id.includes('@headlessui')) {
+            return 'headless-ui';
+          }
+          // Animation libraries
+          if (id.includes('framer-motion')) {
+            return 'animation';
+          }
+          // TanStack Query
+          if (id.includes('@tanstack')) {
+            return 'tanstack';
+          }
+          // State management
+          if (id.includes('zustand')) {
+            return 'state';
+          }
+          // Web3 - split into separate chunks for lazy loading
+          if (id.includes('wagmi') || id.includes('@wagmi')) {
+            return 'web3-wagmi';
+          }
+          if (id.includes('viem')) {
+            return 'web3-viem';
+          }
+          // Markdown rendering
+          if (
+            id.includes('react-markdown') ||
+            id.includes('remark') ||
+            id.includes('rehype') ||
+            id.includes('unified') ||
+            id.includes('mdast') ||
+            id.includes('hast') ||
+            id.includes('micromark')
+          ) {
+            return 'markdown';
+          }
           // Utilities
-          'utils': ['date-fns', 'clsx', 'tailwind-merge', 'lodash.debounce'],
-          // Markdown & content
-          'markdown': ['react-markdown', 'remark-gfm', 'dompurify'],
-          // Web3 (lazy loaded)
-          'web3': ['wagmi', 'viem', '@wagmi/connectors'],
+          if (id.includes('date-fns')) {
+            return 'utils-date';
+          }
+          if (id.includes('lodash')) {
+            return 'utils-lodash';
+          }
+          // Icons
+          if (id.includes('lucide-react') || id.includes('@heroicons')) {
+            return 'icons';
+          }
+          // DOMPurify and sanitization
+          if (id.includes('dompurify')) {
+            return 'sanitize';
+          }
+          // Axios
+          if (id.includes('axios')) {
+            return 'http';
+          }
         },
       },
     },
