@@ -64,12 +64,30 @@ defmodule CGraphWeb.API.V1.AuthController do
       ip_address = get_client_ip(conn)
       lockout_key = String.downcase(normalized_identifier)
 
-      case AccountLockout.check_locked(lockout_key) do
+      case safe_check_locked(lockout_key) do
         {:locked, remaining} -> respond_locked(conn, remaining)
         :ok -> attempt_authentication(conn, normalized_identifier, normalized_password, lockout_key, ip_address)
       end
     else
       {:error, %Ecto.Changeset{} = changeset} -> {:error, changeset}
+    end
+  end
+
+  # Safe wrapper for AccountLockout.check_locked that handles GenServer being unavailable
+  defp safe_check_locked(lockout_key) do
+    try do
+      AccountLockout.check_locked(lockout_key)
+    catch
+      :exit, {:noproc, _} ->
+        # AccountLockout GenServer not running, proceed without lockout checking
+        require Logger
+        Logger.warning("AccountLockout GenServer not running, skipping lockout check")
+        :ok
+      :exit, {:timeout, _} ->
+        # Timeout, proceed without lockout checking
+        require Logger
+        Logger.warning("AccountLockout timeout, skipping lockout check")
+        :ok
     end
   end
 
@@ -94,13 +112,22 @@ defmodule CGraphWeb.API.V1.AuthController do
   end
 
   defp handle_successful_login(conn, user, lockout_key) do
-    AccountLockout.clear_attempts(lockout_key)
+    safe_clear_attempts(lockout_key)
 
     with {:ok, tokens} <- Guardian.generate_tokens(user),
          {:ok, _session} <- Accounts.create_session(user, conn) do
       conn
       |> maybe_set_cookies(tokens)
       |> render(:auth_response, user: user, tokens: tokens)
+    end
+  end
+
+  # Safe wrapper for AccountLockout.clear_attempts
+  defp safe_clear_attempts(lockout_key) do
+    try do
+      AccountLockout.clear_attempts(lockout_key)
+    catch
+      :exit, _ -> :ok
     end
   end
 
@@ -114,9 +141,18 @@ defmodule CGraphWeb.API.V1.AuthController do
   end
 
   defp handle_failed_login(conn, lockout_key, ip_address) do
-    case AccountLockout.record_failed_attempt(lockout_key, ip_address: ip_address) do
+    case safe_record_failed_attempt(lockout_key, ip_address) do
       {:locked, duration} -> respond_account_locked(conn, duration)
       :ok -> respond_invalid_credentials(conn)
+    end
+  end
+
+  # Safe wrapper for AccountLockout.record_failed_attempt
+  defp safe_record_failed_attempt(lockout_key, ip_address) do
+    try do
+      AccountLockout.record_failed_attempt(lockout_key, ip_address: ip_address)
+    catch
+      :exit, _ -> :ok
     end
   end
 
