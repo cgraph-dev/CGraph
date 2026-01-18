@@ -157,10 +157,7 @@ defmodule CGraph.Application do
 
     # Upstash requires SSL/TLS - ssl: true enables SSL
     if is_upstash do
-      Keyword.merge(base_config, [
-        ssl: true,
-        socket_opts: [:inet6]
-      ])
+      Keyword.put(base_config, :ssl, true)
     else
       base_config
     end
