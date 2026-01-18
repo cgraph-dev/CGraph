@@ -201,16 +201,18 @@ export {
 } from './animations';
 
 // =============================================================================
-// DEMO COMPONENTS
+// DEMO COMPONENTS (use dynamic imports for code-splitting)
 // =============================================================================
 
-export { CustomizationDemo } from './CustomizationDemo';
+// CustomizationDemo is dynamically imported in LandingPageOptimized
+// Use: const CustomizationDemo = lazy(() => import('./CustomizationDemo'));
 
 // =============================================================================
-// SHOWCASE SECTIONS
+// SHOWCASE SECTIONS (use dynamic imports for code-splitting)
 // =============================================================================
 
-export { ForumShowcase } from './ForumShowcase';
+// ForumShowcase is dynamically imported in LandingPageOptimized
+// Use: const ForumShowcase = lazy(() => import('./ForumShowcase'));
 
 // =============================================================================
 // RE-EXPORTS FOR CONVENIENCE

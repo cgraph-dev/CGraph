@@ -70,11 +70,36 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
+          // Core React
+          'react-vendor': ['react', 'react-dom'],
+          // Routing
+          'router': ['react-router-dom'],
+          // UI Components
+          'radix-ui': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-popover',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-tooltip',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-scroll-area',
+            '@radix-ui/react-separator',
+          ],
+          'headless-ui': ['@headlessui/react'],
+          // Animation
+          'animation': ['framer-motion'],
+          // Data fetching & state
+          'data': ['@tanstack/react-query', 'zustand', 'axios'],
+          // Utilities
+          'utils': ['date-fns', 'clsx', 'tailwind-merge', 'lodash.debounce'],
+          // Markdown & content
+          'markdown': ['react-markdown', 'remark-gfm', 'dompurify'],
+          // Web3 (lazy loaded)
+          'web3': ['wagmi', 'viem', '@wagmi/connectors'],
         },
       },
     },
