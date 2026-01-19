@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { getAvatarBorderStyle } from '@/hooks/useCustomizationApplication';
 
 type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -10,6 +11,7 @@ interface AvatarProps {
   className?: string;
   badge?: ReactNode;
   status?: 'online' | 'offline' | 'away' | 'busy';
+  borderId?: string | null;
 }
 
 /**
@@ -23,6 +25,7 @@ export default function Avatar({
   className = '',
   badge,
   status,
+  borderId,
 }: AvatarProps) {
   const sizeStyles: Record<AvatarSize, { container: string; text: string; status: string }> = {
     xs: { container: 'h-6 w-6', text: 'text-[10px]', status: 'h-2 w-2' },
@@ -41,7 +44,10 @@ export default function Avatar({
 
   const getInitials = (name: string) => {
     if (!name) return '?';
-    const parts = name.trim().split(' ').filter(p => p.length > 0);
+    const parts = name
+      .trim()
+      .split(' ')
+      .filter((p) => p.length > 0);
     if (parts.length >= 2 && parts[0]?.[0] && parts[1]?.[0]) {
       return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     }
@@ -76,19 +82,18 @@ export default function Avatar({
     return colors[Math.abs(hash) % colors.length];
   };
 
+  const borderStyle = borderId ? getAvatarBorderStyle(borderId) : { className: '' };
+
   return (
     <div className={`relative inline-block ${className}`}>
       <div
-        className={`${sizeStyles[size].container} rounded-full overflow-hidden flex items-center justify-center ${
+        className={`${sizeStyles[size].container} flex items-center justify-center overflow-hidden rounded-full ${
           !src ? getColorFromName(name) : 'bg-dark-600'
-        }`}
+        } ${borderStyle.className}`}
+        style={borderStyle.style}
       >
         {src ? (
-          <img
-            src={src}
-            alt={alt || name}
-            className="w-full h-full object-cover"
-          />
+          <img src={src} alt={alt || name} className="h-full w-full object-cover" />
         ) : (
           <span className={`font-semibold text-white ${sizeStyles[size].text}`}>
             {getInitials(name)}
@@ -104,11 +109,7 @@ export default function Avatar({
       )}
 
       {/* Badge */}
-      {badge && (
-        <span className="absolute -top-1 -right-1">
-          {badge}
-        </span>
-      )}
+      {badge && <span className="absolute -right-1 -top-1">{badge}</span>}
     </div>
   );
 }
@@ -138,7 +139,7 @@ export function AvatarGroup({ children, max = 5, size = 'md' }: AvatarGroupProps
       {visibleAvatars.map((child, index) => (
         <div
           key={index}
-          className={`relative ring-2 ring-dark-800 rounded-full ${index > 0 ? overlapStyles[size] : ''}`}
+          className={`relative rounded-full ring-2 ring-dark-800 ${index > 0 ? overlapStyles[size] : ''}`}
           style={{ zIndex: visibleAvatars.length - index }}
         >
           {child}
@@ -146,7 +147,7 @@ export function AvatarGroup({ children, max = 5, size = 'md' }: AvatarGroupProps
       ))}
       {overflowCount > 0 && (
         <div
-          className={`${overlapStyles[size]} relative ring-2 ring-dark-800 rounded-full`}
+          className={`${overlapStyles[size]} relative rounded-full ring-2 ring-dark-800`}
           style={{ zIndex: 0 }}
         >
           <Avatar name={`+${overflowCount}`} size={size} />

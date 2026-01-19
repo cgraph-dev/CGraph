@@ -4,7 +4,9 @@ import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
+import { useCustomizationApplication } from '@/hooks/useCustomizationApplication';
 import '@/themes/theme-globals.css';
+import '@/styles/customization-effects.css';
 
 // ============================================================================
 // LAYOUTS - Eagerly loaded (always needed)
@@ -128,6 +130,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const fetchGamificationData = useGamificationStore((state) => state.fetchGamificationData);
   const { theme, syncWithServer } = useThemeStore();
+
+  // Apply customization settings to UI
+  useCustomizationApplication();
 
   useEffect(() => {
     // Run auth check in background - don't block rendering
