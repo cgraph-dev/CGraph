@@ -142,10 +142,9 @@ defmodule CGraph.Application do
 
   defp redis_config do
     redis_url = System.get_env("REDIS_URL", "redis://localhost:6379/0")
+    is_fly_upstash = String.contains?(redis_url, "upstash.io")
 
-    # Fly.io's Upstash Redis uses private IPv6 network - no SSL needed
-    # Connection is already secured through Fly's internal network
-    [
+    base_config = [
       name: :redix,
       host: redis_host(redis_url),
       port: redis_port(redis_url),
@@ -155,6 +154,14 @@ defmodule CGraph.Application do
       backoff_initial: 200,
       backoff_max: 5_000
     ]
+
+    # Fly.io's Upstash Redis uses private IPv6 network
+    # Must use inet6 socket option for DNS resolution
+    if is_fly_upstash do
+      Keyword.put(base_config, :socket_opts, [:inet6])
+    else
+      base_config
+    end
   end
 
   defp redis_host(url) do
