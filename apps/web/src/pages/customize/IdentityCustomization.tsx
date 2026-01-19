@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircleIcon,
@@ -11,6 +11,8 @@ import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/sol
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
+import { useCustomizationStore } from '@/stores/customizationStore';
+import toast from 'react-hot-toast';
 
 /**
  * IdentityCustomization Component
@@ -82,58 +84,321 @@ const RARITIES: { value: Rarity; label: string; color: string }[] = [
 
 const MOCK_BORDERS: Border[] = [
   // Common borders
-  { id: 'b1', name: 'Classic Silver', rarity: 'common', animation: 'none', colors: ['#C0C0C0'], unlocked: true },
-  { id: 'b2', name: 'Basic Gold', rarity: 'common', animation: 'none', colors: ['#FFD700'], unlocked: true },
-  { id: 'b3', name: 'Simple Blue', rarity: 'common', animation: 'none', colors: ['#4169E1'], unlocked: true },
-  { id: 'b4', name: 'Forest Green', rarity: 'common', animation: 'none', colors: ['#228B22'], unlocked: true },
+  {
+    id: 'b1',
+    name: 'Classic Silver',
+    rarity: 'common',
+    animation: 'none',
+    colors: ['#C0C0C0'],
+    unlocked: true,
+  },
+  {
+    id: 'b2',
+    name: 'Basic Gold',
+    rarity: 'common',
+    animation: 'none',
+    colors: ['#FFD700'],
+    unlocked: true,
+  },
+  {
+    id: 'b3',
+    name: 'Simple Blue',
+    rarity: 'common',
+    animation: 'none',
+    colors: ['#4169E1'],
+    unlocked: true,
+  },
+  {
+    id: 'b4',
+    name: 'Forest Green',
+    rarity: 'common',
+    animation: 'none',
+    colors: ['#228B22'],
+    unlocked: true,
+  },
   // Rare borders
-  { id: 'b5', name: 'Pulsing Cyan', rarity: 'rare', animation: 'pulse', colors: ['#00FFFF', '#0080FF'], unlocked: true },
-  { id: 'b6', name: 'Rotating Purple', rarity: 'rare', animation: 'rotate', colors: ['#9B59B6', '#E74C3C'], unlocked: true },
-  { id: 'b7', name: 'Neon Pink', rarity: 'rare', animation: 'glow', colors: ['#FF1493', '#FF69B4'], unlocked: false, unlockRequirement: 'Reach Level 10' },
-  { id: 'b8', name: 'Electric Yellow', rarity: 'rare', animation: 'spark', colors: ['#FFFF00', '#FFD700'], unlocked: true },
+  {
+    id: 'b5',
+    name: 'Pulsing Cyan',
+    rarity: 'rare',
+    animation: 'pulse',
+    colors: ['#00FFFF', '#0080FF'],
+    unlocked: true,
+  },
+  {
+    id: 'b6',
+    name: 'Rotating Purple',
+    rarity: 'rare',
+    animation: 'rotate',
+    colors: ['#9B59B6', '#E74C3C'],
+    unlocked: true,
+  },
+  {
+    id: 'b7',
+    name: 'Neon Pink',
+    rarity: 'rare',
+    animation: 'glow',
+    colors: ['#FF1493', '#FF69B4'],
+    unlocked: false,
+    unlockRequirement: 'Reach Level 10',
+  },
+  {
+    id: 'b8',
+    name: 'Electric Yellow',
+    rarity: 'rare',
+    animation: 'spark',
+    colors: ['#FFFF00', '#FFD700'],
+    unlocked: true,
+  },
   // Epic borders
-  { id: 'b9', name: 'Cosmic Gradient', rarity: 'epic', animation: 'gradient-rotate', colors: ['#667eea', '#764ba2', '#f093fb'], unlocked: true },
-  { id: 'b10', name: 'Fire Blaze', rarity: 'epic', animation: 'flame', colors: ['#FF4500', '#FF6347', '#FFD700'], unlocked: false, unlockRequirement: 'Complete 50 Quests' },
-  { id: 'b11', name: 'Ice Crystal', rarity: 'epic', animation: 'shimmer', colors: ['#00CED1', '#4682B4', '#FFFFFF'], unlocked: true },
-  { id: 'b12', name: 'Toxic Waste', rarity: 'epic', animation: 'drip', colors: ['#39FF14', '#00FF00', '#7FFF00'], unlocked: false, unlockRequirement: 'Win 25 PvP Matches' },
+  {
+    id: 'b9',
+    name: 'Cosmic Gradient',
+    rarity: 'epic',
+    animation: 'gradient-rotate',
+    colors: ['#667eea', '#764ba2', '#f093fb'],
+    unlocked: true,
+  },
+  {
+    id: 'b10',
+    name: 'Fire Blaze',
+    rarity: 'epic',
+    animation: 'flame',
+    colors: ['#FF4500', '#FF6347', '#FFD700'],
+    unlocked: false,
+    unlockRequirement: 'Complete 50 Quests',
+  },
+  {
+    id: 'b11',
+    name: 'Ice Crystal',
+    rarity: 'epic',
+    animation: 'shimmer',
+    colors: ['#00CED1', '#4682B4', '#FFFFFF'],
+    unlocked: true,
+  },
+  {
+    id: 'b12',
+    name: 'Toxic Waste',
+    rarity: 'epic',
+    animation: 'drip',
+    colors: ['#39FF14', '#00FF00', '#7FFF00'],
+    unlocked: false,
+    unlockRequirement: 'Win 25 PvP Matches',
+  },
   // Legendary borders
-  { id: 'b13', name: 'Dragon Soul', rarity: 'legendary', animation: 'particles', colors: ['#DC143C', '#FF4500', '#FFD700'], unlocked: false, unlockRequirement: 'Reach Level 50' },
-  { id: 'b14', name: 'Celestial Aurora', rarity: 'legendary', animation: 'aurora', colors: ['#9B30FF', '#00BFFF', '#00FF7F'], unlocked: false, unlockRequirement: 'Collect 100 Achievements' },
-  { id: 'b15', name: 'Shadow Void', rarity: 'legendary', animation: 'void', colors: ['#000000', '#4B0082', '#8B00FF'], unlocked: true },
-  { id: 'b16', name: 'Golden Phoenix', rarity: 'legendary', animation: 'phoenix', colors: ['#FFD700', '#FF8C00', '#FF4500'], unlocked: false, unlockRequirement: 'Prestige 1' },
+  {
+    id: 'b13',
+    name: 'Dragon Soul',
+    rarity: 'legendary',
+    animation: 'particles',
+    colors: ['#DC143C', '#FF4500', '#FFD700'],
+    unlocked: false,
+    unlockRequirement: 'Reach Level 50',
+  },
+  {
+    id: 'b14',
+    name: 'Celestial Aurora',
+    rarity: 'legendary',
+    animation: 'aurora',
+    colors: ['#9B30FF', '#00BFFF', '#00FF7F'],
+    unlocked: false,
+    unlockRequirement: 'Collect 100 Achievements',
+  },
+  {
+    id: 'b15',
+    name: 'Shadow Void',
+    rarity: 'legendary',
+    animation: 'void',
+    colors: ['#000000', '#4B0082', '#8B00FF'],
+    unlocked: true,
+  },
+  {
+    id: 'b16',
+    name: 'Golden Phoenix',
+    rarity: 'legendary',
+    animation: 'phoenix',
+    colors: ['#FFD700', '#FF8C00', '#FF4500'],
+    unlocked: false,
+    unlockRequirement: 'Prestige 1',
+  },
   // Mythic borders
-  { id: 'b17', name: 'Reality Breaker', rarity: 'mythic', animation: 'reality-warp', colors: ['#FF00FF', '#00FFFF', '#FFFF00', '#FF0000'], unlocked: false, unlockRequirement: 'Prestige 10' },
-  { id: 'b18', name: 'Infinite Cosmos', rarity: 'mythic', animation: 'galaxy', colors: ['#000428', '#004e92', '#9B30FF'], unlocked: false, unlockRequirement: 'Top 10 Global Leaderboard' },
+  {
+    id: 'b17',
+    name: 'Reality Breaker',
+    rarity: 'mythic',
+    animation: 'reality-warp',
+    colors: ['#FF00FF', '#00FFFF', '#FFFF00', '#FF0000'],
+    unlocked: false,
+    unlockRequirement: 'Prestige 10',
+  },
+  {
+    id: 'b18',
+    name: 'Infinite Cosmos',
+    rarity: 'mythic',
+    animation: 'galaxy',
+    colors: ['#000428', '#004e92', '#9B30FF'],
+    unlocked: false,
+    unlockRequirement: 'Top 10 Global Leaderboard',
+  },
 ];
 
 const MOCK_TITLES: Title[] = [
   { id: 't1', name: 'Newbie', animation: 'none', gradient: 'text-gray-400', unlocked: true },
   { id: 't2', name: 'Adventurer', animation: 'fade', gradient: 'text-blue-400', unlocked: true },
-  { id: 't3', name: 'Veteran', animation: 'glow', gradient: 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent', unlocked: true },
-  { id: 't4', name: 'Elite', animation: 'pulse', gradient: 'bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent', unlocked: false, unlockRequirement: 'Reach Level 25' },
-  { id: 't5', name: 'Legend', animation: 'shimmer', gradient: 'bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent', unlocked: false, unlockRequirement: 'Complete 100 Quests' },
-  { id: 't6', name: 'Mythic Hero', animation: 'rainbow', gradient: 'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent', unlocked: false, unlockRequirement: 'Prestige 5' },
+  {
+    id: 't3',
+    name: 'Veteran',
+    animation: 'glow',
+    gradient: 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent',
+    unlocked: true,
+  },
+  {
+    id: 't4',
+    name: 'Elite',
+    animation: 'pulse',
+    gradient: 'bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent',
+    unlocked: false,
+    unlockRequirement: 'Reach Level 25',
+  },
+  {
+    id: 't5',
+    name: 'Legend',
+    animation: 'shimmer',
+    gradient: 'bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent',
+    unlocked: false,
+    unlockRequirement: 'Complete 100 Quests',
+  },
+  {
+    id: 't6',
+    name: 'Mythic Hero',
+    animation: 'rainbow',
+    gradient:
+      'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent',
+    unlocked: false,
+    unlockRequirement: 'Prestige 5',
+  },
 ];
 
 const MOCK_BADGES: Badge[] = [
-  { id: 'badge1', name: 'Early Adopter', description: 'Joined in the first month', icon: '🌟', rarity: 'rare', unlocked: true },
-  { id: 'badge2', name: 'Forum Master', description: 'Created 100 posts', icon: '📝', rarity: 'epic', unlocked: true },
-  { id: 'badge3', name: 'Friend Magnet', description: 'Have 50 friends', icon: '👥', rarity: 'rare', unlocked: true },
-  { id: 'badge4', name: 'Streak King', description: '30 day login streak', icon: '🔥', rarity: 'legendary', unlocked: false, unlockRequirement: '30 day streak' },
-  { id: 'badge5', name: 'Achievement Hunter', description: 'Unlock 50 achievements', icon: '🏆', rarity: 'epic', unlocked: false, unlockRequirement: '50 achievements' },
-  { id: 'badge6', name: 'Helpful Hero', description: 'Receive 100 upvotes', icon: '💖', rarity: 'rare', unlocked: true },
-  { id: 'badge7', name: 'Bug Squasher', description: 'Report 10 bugs', icon: '🐛', rarity: 'common', unlocked: true },
-  { id: 'badge8', name: 'Beta Tester', description: 'Test new features', icon: '🧪', rarity: 'legendary', unlocked: false, unlockRequirement: 'Join beta program' },
+  {
+    id: 'badge1',
+    name: 'Early Adopter',
+    description: 'Joined in the first month',
+    icon: '🌟',
+    rarity: 'rare',
+    unlocked: true,
+  },
+  {
+    id: 'badge2',
+    name: 'Forum Master',
+    description: 'Created 100 posts',
+    icon: '📝',
+    rarity: 'epic',
+    unlocked: true,
+  },
+  {
+    id: 'badge3',
+    name: 'Friend Magnet',
+    description: 'Have 50 friends',
+    icon: '👥',
+    rarity: 'rare',
+    unlocked: true,
+  },
+  {
+    id: 'badge4',
+    name: 'Streak King',
+    description: '30 day login streak',
+    icon: '🔥',
+    rarity: 'legendary',
+    unlocked: false,
+    unlockRequirement: '30 day streak',
+  },
+  {
+    id: 'badge5',
+    name: 'Achievement Hunter',
+    description: 'Unlock 50 achievements',
+    icon: '🏆',
+    rarity: 'epic',
+    unlocked: false,
+    unlockRequirement: '50 achievements',
+  },
+  {
+    id: 'badge6',
+    name: 'Helpful Hero',
+    description: 'Receive 100 upvotes',
+    icon: '💖',
+    rarity: 'rare',
+    unlocked: true,
+  },
+  {
+    id: 'badge7',
+    name: 'Bug Squasher',
+    description: 'Report 10 bugs',
+    icon: '🐛',
+    rarity: 'common',
+    unlocked: true,
+  },
+  {
+    id: 'badge8',
+    name: 'Beta Tester',
+    description: 'Test new features',
+    icon: '🧪',
+    rarity: 'legendary',
+    unlocked: false,
+    unlockRequirement: 'Join beta program',
+  },
 ];
 
 const PROFILE_LAYOUTS: ProfileLayout[] = [
-  { id: 'layout1', name: 'Classic', description: 'Traditional vertical layout', preview: 'classic', unlocked: true },
-  { id: 'layout2', name: 'Modern', description: 'Split panel design', preview: 'modern', unlocked: true },
-  { id: 'layout3', name: 'Compact', description: 'Minimalist single column', preview: 'compact', unlocked: true },
-  { id: 'layout4', name: 'Showcase', description: 'Large badges display', preview: 'showcase', unlocked: false },
-  { id: 'layout5', name: 'Gaming', description: 'Stats-focused layout', preview: 'gaming', unlocked: false },
-  { id: 'layout6', name: 'Professional', description: 'Clean business style', preview: 'professional', unlocked: false },
-  { id: 'layout7', name: 'Artistic', description: 'Creative asymmetric', preview: 'artistic', unlocked: false },
+  {
+    id: 'layout1',
+    name: 'Classic',
+    description: 'Traditional vertical layout',
+    preview: 'classic',
+    unlocked: true,
+  },
+  {
+    id: 'layout2',
+    name: 'Modern',
+    description: 'Split panel design',
+    preview: 'modern',
+    unlocked: true,
+  },
+  {
+    id: 'layout3',
+    name: 'Compact',
+    description: 'Minimalist single column',
+    preview: 'compact',
+    unlocked: true,
+  },
+  {
+    id: 'layout4',
+    name: 'Showcase',
+    description: 'Large badges display',
+    preview: 'showcase',
+    unlocked: false,
+  },
+  {
+    id: 'layout5',
+    name: 'Gaming',
+    description: 'Stats-focused layout',
+    preview: 'gaming',
+    unlocked: false,
+  },
+  {
+    id: 'layout6',
+    name: 'Professional',
+    description: 'Clean business style',
+    preview: 'professional',
+    unlocked: false,
+  },
+  {
+    id: 'layout7',
+    name: 'Artistic',
+    description: 'Creative asymmetric',
+    preview: 'artistic',
+    unlocked: false,
+  },
 ];
 
 // ==================== MAIN COMPONENT ====================
@@ -141,14 +406,30 @@ const PROFILE_LAYOUTS: ProfileLayout[] = [
 export default function IdentityCustomization() {
   const { user } = useAuthStore();
   const { level } = useGamificationStore();
+  const {
+    avatarBorder,
+    title,
+    equippedBadges,
+    profileLayout,
+    isSaving,
+    error,
+    fetchCustomizations,
+    saveCustomizations,
+    updateIdentity,
+  } = useCustomizationStore();
 
-  const [activeSection, setActiveSection] = useState<'borders' | 'titles' | 'badges' | 'layouts'>('borders');
+  const [activeSection, setActiveSection] = useState<'borders' | 'titles' | 'badges' | 'layouts'>(
+    'borders'
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRarity, setSelectedRarity] = useState<Rarity | 'all'>('all');
-  const [selectedBorder, setSelectedBorder] = useState<string | null>('b1');
-  const [selectedTitle, setSelectedTitle] = useState<string | null>('t1');
-  const [equippedBadges, setEquippedBadges] = useState<string[]>(['badge1', 'badge2', 'badge3']);
-  const [selectedLayout, setSelectedLayout] = useState<string>('layout1');
+
+  // Fetch customizations on mount
+  useEffect(() => {
+    if (user?.id) {
+      fetchCustomizations(user.id);
+    }
+  }, [user?.id, fetchCustomizations]);
 
   // Filter borders by search and rarity
   const filteredBorders = MOCK_BORDERS.filter((border) => {
@@ -170,23 +451,42 @@ export default function IdentityCustomization() {
   });
 
   const handleEquipBorder = (borderId: string) => {
-    setSelectedBorder(borderId);
+    updateIdentity('avatarBorder', borderId);
   };
 
   const handleEquipTitle = (titleId: string) => {
-    setSelectedTitle(titleId);
+    updateIdentity('title', titleId);
   };
 
   const handleToggleBadge = (badgeId: string) => {
     if (equippedBadges.includes(badgeId)) {
-      setEquippedBadges(equippedBadges.filter((id) => id !== badgeId));
+      updateIdentity(
+        'equippedBadges',
+        equippedBadges.filter((id) => id !== badgeId)
+      );
     } else if (equippedBadges.length < 5) {
-      setEquippedBadges([...equippedBadges, badgeId]);
+      updateIdentity('equippedBadges', [...equippedBadges, badgeId]);
+    } else {
+      toast.error('Maximum 5 badges can be equipped');
     }
   };
 
   const handleSelectLayout = (layoutId: string) => {
-    setSelectedLayout(layoutId);
+    updateIdentity('profileLayout', layoutId);
+  };
+
+  const handleSaveChanges = async () => {
+    if (!user?.id) {
+      toast.error('User not authenticated');
+      return;
+    }
+
+    try {
+      await saveCustomizations(user.id);
+      toast.success('Identity customizations saved successfully!');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to save customizations');
+    }
   };
 
   const getRarityColor = (rarity: Rarity): string => {
@@ -207,7 +507,7 @@ export default function IdentityCustomization() {
           <button
             key={section.id}
             onClick={() => setActiveSection(section.id as typeof activeSection)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            className={`rounded-lg px-4 py-2 font-medium transition-all ${
               activeSection === section.id
                 ? 'bg-primary-600 text-white'
                 : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
@@ -222,14 +522,14 @@ export default function IdentityCustomization() {
       {/* Search Bar (for borders, titles, badges) */}
       {activeSection !== 'layouts' && (
         <div className="flex gap-3">
-          <div className="flex-1 relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={`Search ${activeSection}...`}
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-white placeholder:text-white/40 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
             />
           </div>
 
@@ -238,7 +538,7 @@ export default function IdentityCustomization() {
             <select
               value={selectedRarity}
               onChange={(e) => setSelectedRarity(e.target.value as Rarity | 'all')}
-              className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+              className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
             >
               <option value="all">All Rarities</option>
               {RARITIES.map((rarity) => (
@@ -263,7 +563,7 @@ export default function IdentityCustomization() {
           {activeSection === 'borders' && (
             <BordersSection
               borders={filteredBorders}
-              selectedBorder={selectedBorder}
+              selectedBorder={avatarBorder}
               onEquip={handleEquipBorder}
               getRarityColor={getRarityColor}
             />
@@ -272,7 +572,7 @@ export default function IdentityCustomization() {
           {activeSection === 'titles' && (
             <TitlesSection
               titles={filteredTitles}
-              selectedTitle={selectedTitle}
+              selectedTitle={title}
               onEquip={handleEquipTitle}
             />
           )}
@@ -289,7 +589,7 @@ export default function IdentityCustomization() {
           {activeSection === 'layouts' && (
             <LayoutsSection
               layouts={PROFILE_LAYOUTS}
-              selectedLayout={selectedLayout}
+              selectedLayout={profileLayout}
               onSelect={handleSelectLayout}
             />
           )}
@@ -297,11 +597,48 @@ export default function IdentityCustomization() {
       </AnimatePresence>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t border-white/10">
-        <button className="px-6 py-3 rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 text-white font-semibold hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-500/25">
-          Save Changes
+      <div className="flex justify-end border-t border-white/10 pt-4">
+        <button
+          onClick={handleSaveChanges}
+          disabled={isSaving}
+          className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg shadow-primary-500/25 transition-all hover:from-primary-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isSaving ? (
+            <>
+              <svg
+                className="h-5 w-5 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Saving...
+            </>
+          ) : (
+            'Save Changes'
+          )}
         </button>
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+          {error}
+        </div>
+      )}
     </div>
   );
 }
@@ -329,34 +666,37 @@ function BordersSection({ borders, selectedBorder, onEquip, getRarityColor }: Bo
             variant={border.unlocked ? 'crystal' : 'frost'}
             glow={selectedBorder === border.id}
             glowColor={border.unlocked ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 cursor-pointer transition-all ${
-              border.unlocked ? 'hover:scale-105' : 'opacity-60 cursor-not-allowed'
+            className={`relative cursor-pointer p-4 transition-all ${
+              border.unlocked ? 'hover:scale-105' : 'cursor-not-allowed opacity-60'
             }`}
             onClick={() => border.unlocked && onEquip(border.id)}
           >
             {/* Border Preview */}
-            <div className="aspect-square rounded-full bg-gradient-to-br from-dark-700 to-dark-800 mb-3 relative overflow-hidden">
+            <div className="relative mb-3 aspect-square overflow-hidden rounded-full bg-gradient-to-br from-dark-700 to-dark-800">
               <div
                 className="absolute inset-0 rounded-full border-4"
                 style={{
                   borderColor: border.colors[0],
-                  background: border.colors.length > 1 ? `linear-gradient(135deg, ${border.colors.join(', ')})` : undefined,
+                  background:
+                    border.colors.length > 1
+                      ? `linear-gradient(135deg, ${border.colors.join(', ')})`
+                      : undefined,
                   backgroundClip: 'border-box',
                 }}
               />
               {/* Mock avatar */}
-              <div className="absolute inset-2 rounded-full bg-dark-600 flex items-center justify-center text-2xl">
+              <div className="absolute inset-2 flex items-center justify-center rounded-full bg-dark-600 text-2xl">
                 👤
               </div>
             </div>
 
             {/* Border Name */}
-            <h4 className="text-sm font-semibold text-white text-center mb-1 truncate">
+            <h4 className="mb-1 truncate text-center text-sm font-semibold text-white">
               {border.name}
             </h4>
 
             {/* Rarity */}
-            <p className={`text-xs text-center mb-2 ${getRarityColor(border.rarity)}`}>
+            <p className={`mb-2 text-center text-xs ${getRarityColor(border.rarity)}`}>
               {border.rarity.charAt(0).toUpperCase() + border.rarity.slice(1)}
             </p>
 
@@ -371,9 +711,9 @@ function BordersSection({ borders, selectedBorder, onEquip, getRarityColor }: Bo
                 <div className="text-center text-xs text-white/60">Click to equip</div>
               )
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-xl backdrop-blur-sm">
-                <LockClosedIcon className="h-8 w-8 text-white/40 mb-2" />
-                <p className="text-xs text-white/60 text-center px-2">{border.unlockRequirement}</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
+                <LockClosedIcon className="mb-2 h-8 w-8 text-white/40" />
+                <p className="px-2 text-center text-xs text-white/60">{border.unlockRequirement}</p>
               </div>
             )}
           </GlassCard>
@@ -381,7 +721,7 @@ function BordersSection({ borders, selectedBorder, onEquip, getRarityColor }: Bo
       ))}
 
       {borders.length === 0 && (
-        <div className="col-span-4 text-center py-12 text-white/60">
+        <div className="col-span-4 py-12 text-center text-white/60">
           No borders found matching your search.
         </div>
       )}
@@ -409,33 +749,31 @@ function TitlesSection({ titles, selectedTitle, onEquip }: TitlesSectionProps) {
             variant={title.unlocked ? 'neon' : 'frost'}
             glow={selectedTitle === title.id}
             glowColor={title.unlocked ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 cursor-pointer transition-all ${
-              title.unlocked ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+            className={`relative cursor-pointer p-4 transition-all ${
+              title.unlocked ? 'hover:scale-[1.02]' : 'cursor-not-allowed opacity-60'
             }`}
             onClick={() => title.unlocked && onEquip(title.id)}
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h4 className={`text-lg font-bold mb-1 ${title.gradient}`}>
-                  {title.name}
-                </h4>
+                <h4 className={`mb-1 text-lg font-bold ${title.gradient}`}>{title.name}</h4>
                 <p className="text-xs text-white/60">Animation: {title.animation}</p>
               </div>
 
               <div className="flex items-center gap-3">
                 {title.unlocked ? (
                   selectedTitle === title.id ? (
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/30">
+                    <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
                       <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
                       <span className="text-sm font-medium text-green-400">Equipped</span>
                     </div>
                   ) : (
-                    <button className="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium transition-colors">
+                    <button className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
                       Equip
                     </button>
                   )
                 ) : (
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
                     <LockClosedIcon className="h-5 w-5 text-white/40" />
                     <span className="text-sm text-white/60">{title.unlockRequirement}</span>
                   </div>
@@ -447,9 +785,7 @@ function TitlesSection({ titles, selectedTitle, onEquip }: TitlesSectionProps) {
       ))}
 
       {titles.length === 0 && (
-        <div className="text-center py-12 text-white/60">
-          No titles found matching your search.
-        </div>
+        <div className="py-12 text-center text-white/60">No titles found matching your search.</div>
       )}
     </div>
   );
@@ -467,7 +803,7 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
     <div>
       {/* Equipped Badges Display */}
       <GlassCard variant="holographic" className="mb-6 p-6">
-        <div className="flex items-center gap-3 mb-4">
+        <div className="mb-4 flex items-center gap-3">
           <SparklesIcon className="h-6 w-6 text-primary-400" />
           <h3 className="text-lg font-bold text-white">Equipped Badges</h3>
           <span className="text-sm text-white/60">({equippedBadges.length}/5)</span>
@@ -481,20 +817,20 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
             return (
               <div
                 key={index}
-                className="aspect-square rounded-xl bg-white/5 border-2 border-dashed border-white/20 flex items-center justify-center relative group"
+                className="group relative flex aspect-square items-center justify-center rounded-xl border-2 border-dashed border-white/20 bg-white/5"
               >
                 {badge ? (
                   <>
                     <span className="text-4xl">{badge.icon}</span>
                     <button
                       onClick={() => onToggle(badge.id)}
-                      className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
                   </>
                 ) : (
-                  <span className="text-white/30 text-xs">Empty</span>
+                  <span className="text-xs text-white/30">Empty</span>
                 )}
               </div>
             );
@@ -506,7 +842,7 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
       <div className="grid grid-cols-3 gap-4">
         {badges.map((badge, index) => {
           const isEquipped = equippedBadges.includes(badge.id);
-          const canEquip = badge.unlocked && (!isEquipped && equippedBadges.length < 5);
+          const canEquip = badge.unlocked && !isEquipped && equippedBadges.length < 5;
 
           return (
             <motion.div
@@ -520,25 +856,29 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
                 glow={isEquipped}
                 glowColor={isEquipped ? 'rgba(34, 197, 94, 0.3)' : undefined}
                 className={`relative p-4 transition-all ${
-                  canEquip ? 'cursor-pointer hover:scale-105' : isEquipped ? 'cursor-pointer' : 'opacity-60 cursor-not-allowed'
+                  canEquip
+                    ? 'cursor-pointer hover:scale-105'
+                    : isEquipped
+                      ? 'cursor-pointer'
+                      : 'cursor-not-allowed opacity-60'
                 }`}
                 onClick={() => (badge.unlocked ? onToggle(badge.id) : null)}
               >
                 {/* Badge Icon */}
-                <div className="text-5xl text-center mb-3">{badge.icon}</div>
+                <div className="mb-3 text-center text-5xl">{badge.icon}</div>
 
                 {/* Badge Name */}
-                <h4 className="text-sm font-semibold text-white text-center mb-1 truncate">
+                <h4 className="mb-1 truncate text-center text-sm font-semibold text-white">
                   {badge.name}
                 </h4>
 
                 {/* Badge Description */}
-                <p className="text-xs text-white/60 text-center mb-2 line-clamp-2">
+                <p className="mb-2 line-clamp-2 text-center text-xs text-white/60">
                   {badge.description}
                 </p>
 
                 {/* Rarity */}
-                <p className={`text-xs text-center mb-2 ${getRarityColor(badge.rarity)}`}>
+                <p className={`mb-2 text-center text-xs ${getRarityColor(badge.rarity)}`}>
                   {badge.rarity.charAt(0).toUpperCase() + badge.rarity.slice(1)}
                 </p>
 
@@ -553,9 +893,11 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
                     <div className="text-center text-xs text-primary-400">Click to equip</div>
                   )
                 ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-xl backdrop-blur-sm">
-                    <LockClosedIcon className="h-8 w-8 text-white/40 mb-2" />
-                    <p className="text-xs text-white/60 text-center px-2">{badge.unlockRequirement}</p>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
+                    <LockClosedIcon className="mb-2 h-8 w-8 text-white/40" />
+                    <p className="px-2 text-center text-xs text-white/60">
+                      {badge.unlockRequirement}
+                    </p>
                   </div>
                 )}
               </GlassCard>
@@ -564,7 +906,7 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
         })}
 
         {badges.length === 0 && (
-          <div className="col-span-3 text-center py-12 text-white/60">
+          <div className="col-span-3 py-12 text-center text-white/60">
             No badges found matching your search.
           </div>
         )}
@@ -594,38 +936,40 @@ function LayoutsSection({ layouts, selectedLayout, onSelect }: LayoutsSectionPro
             glow={selectedLayout === layout.id}
             glowColor={selectedLayout === layout.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative p-6 transition-all ${
-              layout.unlocked ? 'cursor-pointer hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+              layout.unlocked
+                ? 'cursor-pointer hover:scale-[1.02]'
+                : 'cursor-not-allowed opacity-60'
             }`}
             onClick={() => layout.unlocked && onSelect(layout.id)}
           >
             {/* Layout Preview */}
-            <div className="aspect-video rounded-lg bg-gradient-to-br from-dark-700 to-dark-800 mb-4 flex items-center justify-center">
+            <div className="mb-4 flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-dark-700 to-dark-800">
               <span className="text-4xl">🎨</span>
             </div>
 
             {/* Layout Name */}
-            <h4 className="text-lg font-bold text-white mb-2">{layout.name}</h4>
+            <h4 className="mb-2 text-lg font-bold text-white">{layout.name}</h4>
 
             {/* Layout Description */}
-            <p className="text-sm text-white/60 mb-4">{layout.description}</p>
+            <p className="mb-4 text-sm text-white/60">{layout.description}</p>
 
             {/* Status */}
             {layout.unlocked ? (
               selectedLayout === layout.id ? (
-                <div className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/30">
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
                   <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
                   <span className="text-sm font-medium text-green-400">Active</span>
                 </div>
               ) : (
-                <button className="w-full px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium transition-colors">
+                <button className="w-full rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
                   Apply Layout
                 </button>
               )
             ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-xl backdrop-blur-sm">
+              <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
                 <div className="text-center">
-                  <LockClosedIcon className="h-12 w-12 text-white/40 mb-3 mx-auto" />
-                  <p className="text-sm text-white/60 px-4">Unlock at Level 30</p>
+                  <LockClosedIcon className="mx-auto mb-3 h-12 w-12 text-white/40" />
+                  <p className="px-4 text-sm text-white/60">Unlock at Level 30</p>
                 </div>
               </div>
             )}

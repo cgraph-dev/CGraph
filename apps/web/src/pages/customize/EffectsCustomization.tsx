@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircleIcon,
@@ -10,6 +10,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
+import { useAuthStore } from '@/stores/authStore';
+import { useCustomizationStore } from '@/stores/customizationStore';
+import toast from 'react-hot-toast';
 
 /**
  * EffectsCustomization Component
@@ -182,7 +185,7 @@ const PARTICLE_EFFECTS: ParticleEffect[] = [
     density: 'low',
     performance: 'light',
     unlocked: false,
-    unlockRequirement: 'Valentine\'s Event',
+    unlockRequirement: "Valentine's Event",
   },
 ];
 
@@ -258,7 +261,8 @@ const BACKGROUND_EFFECTS: BackgroundEffect[] = [
     id: 'bg-mesh',
     name: 'Mesh Gradient',
     description: 'Modern mesh pattern',
-    preview: 'radial-gradient(at 0% 0%, #667eea 0%, transparent 50%), radial-gradient(at 100% 100%, #764ba2 0%, transparent 50%)',
+    preview:
+      'radial-gradient(at 0% 0%, #667eea 0%, transparent 50%), radial-gradient(at 100% 100%, #764ba2 0%, transparent 50%)',
     animated: false,
     performance: 'light',
     unlocked: true,
@@ -359,32 +363,80 @@ const ANIMATION_SETS: AnimationSet[] = [
 // ==================== MAIN COMPONENT ====================
 
 export default function EffectsCustomization() {
+  const { user } = useAuthStore();
+  const {
+    particleEffect,
+    backgroundEffect,
+    animationSpeed,
+    isSaving,
+    error,
+    fetchCustomizations,
+    saveCustomizations,
+    updateEffects,
+  } = useCustomizationStore();
+
   const [activeCategory, setActiveCategory] = useState<EffectCategory>('particles');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedParticle, setSelectedParticle] = useState<string>('particle-none');
-  const [selectedBackground, setSelectedBackground] = useState<string>('bg-solid');
-  const [selectedAnimation, setSelectedAnimation] = useState<string>('anim-normal');
+
+  // Fetch customizations on mount
+  useEffect(() => {
+    if (user?.id) {
+      fetchCustomizations(user.id);
+    }
+  }, [user?.id, fetchCustomizations]);
+
+  const handleSaveEffectsSettings = async () => {
+    if (!user?.id) {
+      toast.error('User not authenticated');
+      return;
+    }
+
+    try {
+      await saveCustomizations(user.id);
+      toast.success('Effects settings saved successfully!');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to save effects settings');
+    }
+  };
 
   const categories = [
-    { id: 'particles' as EffectCategory, label: 'Particle Effects', icon: SparklesIcon, count: PARTICLE_EFFECTS.length },
-    { id: 'backgrounds' as EffectCategory, label: 'Background Effects', icon: PhotoIcon, count: BACKGROUND_EFFECTS.length },
-    { id: 'animations' as EffectCategory, label: 'UI Animations', icon: BeakerIcon, count: ANIMATION_SETS.length },
+    {
+      id: 'particles' as EffectCategory,
+      label: 'Particle Effects',
+      icon: SparklesIcon,
+      count: PARTICLE_EFFECTS.length,
+    },
+    {
+      id: 'backgrounds' as EffectCategory,
+      label: 'Background Effects',
+      icon: PhotoIcon,
+      count: BACKGROUND_EFFECTS.length,
+    },
+    {
+      id: 'animations' as EffectCategory,
+      label: 'UI Animations',
+      icon: BeakerIcon,
+      count: ANIMATION_SETS.length,
+    },
   ];
 
   // Filter items by search
   const getFilteredItems = () => {
     const query = searchQuery.toLowerCase();
     if (activeCategory === 'particles') {
-      return PARTICLE_EFFECTS.filter((item) =>
-        item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
+      return PARTICLE_EFFECTS.filter(
+        (item) =>
+          item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
       );
     } else if (activeCategory === 'backgrounds') {
-      return BACKGROUND_EFFECTS.filter((item) =>
-        item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
+      return BACKGROUND_EFFECTS.filter(
+        (item) =>
+          item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
       );
     } else {
-      return ANIMATION_SETS.filter((item) =>
-        item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
+      return ANIMATION_SETS.filter(
+        (item) =>
+          item.name.toLowerCase().includes(query) || item.description.toLowerCase().includes(query)
       );
     }
   };
@@ -401,7 +453,7 @@ export default function EffectsCustomization() {
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
                 activeCategory === category.id
                   ? 'bg-primary-600 text-white'
                   : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
@@ -417,13 +469,13 @@ export default function EffectsCustomization() {
 
       {/* Search Bar */}
       <div className="relative">
-        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+        <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={`Search ${activeCategory}...`}
-          className="w-full pl-10 pr-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          className="w-full rounded-lg border border-white/10 bg-white/5 py-2 pl-10 pr-4 text-white placeholder:text-white/40 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
@@ -439,29 +491,29 @@ export default function EffectsCustomization() {
           {activeCategory === 'particles' && (
             <ParticleEffectsSection
               particles={filteredItems as ParticleEffect[]}
-              selectedParticle={selectedParticle}
-              onSelect={setSelectedParticle}
+              selectedParticle={particleEffect}
+              onSelect={(id) => updateEffects('particleEffect', id)}
             />
           )}
 
           {activeCategory === 'backgrounds' && (
             <BackgroundEffectsSection
               backgrounds={filteredItems as BackgroundEffect[]}
-              selectedBackground={selectedBackground}
-              onSelect={setSelectedBackground}
+              selectedBackground={backgroundEffect}
+              onSelect={(id) => updateEffects('backgroundEffect', id)}
             />
           )}
 
           {activeCategory === 'animations' && (
             <AnimationSetsSection
               animations={filteredItems as AnimationSet[]}
-              selectedAnimation={selectedAnimation}
-              onSelect={setSelectedAnimation}
+              selectedAnimation={animationSpeed}
+              onSelect={(id) => updateEffects('animationSpeed', id)}
             />
           )}
 
           {filteredItems.length === 0 && (
-            <div className="text-center py-12 text-white/60">
+            <div className="py-12 text-center text-white/60">
               No effects found matching your search.
             </div>
           )}
@@ -469,11 +521,48 @@ export default function EffectsCustomization() {
       </AnimatePresence>
 
       {/* Save Button */}
-      <div className="flex justify-end pt-4 border-t border-white/10">
-        <button className="px-6 py-3 rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 text-white font-semibold hover:from-primary-700 hover:to-purple-700 transition-all shadow-lg shadow-primary-500/25">
-          Save Effects Settings
+      <div className="flex justify-end border-t border-white/10 pt-4">
+        <button
+          onClick={handleSaveEffectsSettings}
+          disabled={isSaving}
+          className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg shadow-primary-500/25 transition-all hover:from-primary-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isSaving ? (
+            <>
+              <svg
+                className="h-5 w-5 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Saving...
+            </>
+          ) : (
+            'Save Effects Settings'
+          )}
         </button>
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+          {error}
+        </div>
+      )}
     </div>
   );
 }
@@ -486,7 +575,11 @@ interface ParticleEffectsSectionProps {
   onSelect: (id: string) => void;
 }
 
-function ParticleEffectsSection({ particles, selectedParticle, onSelect }: ParticleEffectsSectionProps) {
+function ParticleEffectsSection({
+  particles,
+  selectedParticle,
+  onSelect,
+}: ParticleEffectsSectionProps) {
   const getPerformanceColor = (performance: string) => {
     switch (performance) {
       case 'light':
@@ -510,23 +603,27 @@ function ParticleEffectsSection({ particles, selectedParticle, onSelect }: Parti
           transition={{ delay: index * 0.03 }}
         >
           <GlassCard
-            variant={particle.unlocked ? (selectedParticle === particle.id ? 'neon' : 'crystal') : 'frost'}
+            variant={
+              particle.unlocked ? (selectedParticle === particle.id ? 'neon' : 'crystal') : 'frost'
+            }
             glow={selectedParticle === particle.id}
             glowColor={selectedParticle === particle.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative p-4 transition-all ${
-              particle.unlocked ? 'cursor-pointer hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+              particle.unlocked
+                ? 'cursor-pointer hover:scale-[1.02]'
+                : 'cursor-not-allowed opacity-60'
             }`}
             onClick={() => particle.unlocked && onSelect(particle.id)}
           >
             {/* Particle Preview */}
-            <div className="h-32 rounded-lg bg-gradient-to-br from-dark-700 to-dark-800 mb-3 relative overflow-hidden">
+            <div className="relative mb-3 h-32 overflow-hidden rounded-lg bg-gradient-to-br from-dark-700 to-dark-800">
               {/* Animated particle simulation */}
               {particle.type === 'snow' && (
                 <>
                   {[...Array(8)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="absolute w-1 h-1 bg-white rounded-full"
+                      className="absolute h-1 w-1 rounded-full bg-white"
                       animate={{
                         y: ['-10%', '110%'],
                         x: [Math.random() * 100 + '%', Math.random() * 100 + '%'],
@@ -546,7 +643,7 @@ function ParticleEffectsSection({ particles, selectedParticle, onSelect }: Parti
                   {[...Array(12)].map((_, i) => (
                     <motion.div
                       key={i}
-                      className="absolute w-1 h-1 bg-white rounded-full"
+                      className="absolute h-1 w-1 rounded-full bg-white"
                       style={{
                         top: Math.random() * 100 + '%',
                         left: Math.random() * 100 + '%',
@@ -618,19 +715,19 @@ function ParticleEffectsSection({ particles, selectedParticle, onSelect }: Parti
 
             {/* Premium Badge */}
             {particle.isPremium && (
-              <div className="absolute top-2 right-2 px-2 py-0.5 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 text-xs font-bold text-white">
+              <div className="absolute right-2 top-2 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 px-2 py-0.5 text-xs font-bold text-white">
                 PRO
               </div>
             )}
 
             {/* Particle Name */}
-            <h4 className="text-sm font-semibold text-white mb-1">{particle.name}</h4>
+            <h4 className="mb-1 text-sm font-semibold text-white">{particle.name}</h4>
 
             {/* Description */}
-            <p className="text-xs text-white/60 mb-2">{particle.description}</p>
+            <p className="mb-2 text-xs text-white/60">{particle.description}</p>
 
             {/* Performance Indicator */}
-            <div className="flex items-center justify-between text-xs mb-3">
+            <div className="mb-3 flex items-center justify-between text-xs">
               <span className="text-white/60">Performance:</span>
               <span className={`font-medium ${getPerformanceColor(particle.performance)}`}>
                 {particle.performance.toUpperCase()}
@@ -640,19 +737,21 @@ function ParticleEffectsSection({ particles, selectedParticle, onSelect }: Parti
             {/* Status */}
             {particle.unlocked ? (
               selectedParticle === particle.id ? (
-                <div className="flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/20 border border-green-500/30">
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-3 py-1.5">
                   <CheckCircleIconSolid className="h-4 w-4 text-green-400" />
                   <span className="text-xs font-medium text-green-400">Active</span>
                 </div>
               ) : (
-                <button className="w-full px-3 py-1.5 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium transition-colors">
+                <button className="w-full rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-700">
                   Apply
                 </button>
               )
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-xl backdrop-blur-sm">
-                <LockClosedIcon className="h-8 w-8 text-white/40 mb-2" />
-                <p className="text-xs text-white/60 text-center px-2">{particle.unlockRequirement}</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
+                <LockClosedIcon className="mb-2 h-8 w-8 text-white/40" />
+                <p className="px-2 text-center text-xs text-white/60">
+                  {particle.unlockRequirement}
+                </p>
               </div>
             )}
           </GlassCard>
@@ -668,7 +767,11 @@ interface BackgroundEffectsSectionProps {
   onSelect: (id: string) => void;
 }
 
-function BackgroundEffectsSection({ backgrounds, selectedBackground, onSelect }: BackgroundEffectsSectionProps) {
+function BackgroundEffectsSection({
+  backgrounds,
+  selectedBackground,
+  onSelect,
+}: BackgroundEffectsSectionProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
       {backgrounds.map((bg, index) => (
@@ -683,13 +786,13 @@ function BackgroundEffectsSection({ backgrounds, selectedBackground, onSelect }:
             glow={selectedBackground === bg.id}
             glowColor={selectedBackground === bg.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative p-4 transition-all ${
-              bg.unlocked ? 'cursor-pointer hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+              bg.unlocked ? 'cursor-pointer hover:scale-[1.02]' : 'cursor-not-allowed opacity-60'
             }`}
             onClick={() => bg.unlocked && onSelect(bg.id)}
           >
             {/* Background Preview */}
             <motion.div
-              className="h-40 rounded-lg mb-3 relative overflow-hidden"
+              className="relative mb-3 h-40 overflow-hidden rounded-lg"
               style={{ background: bg.preview }}
               animate={
                 bg.animated
@@ -701,22 +804,24 @@ function BackgroundEffectsSection({ backgrounds, selectedBackground, onSelect }:
               transition={bg.animated ? { duration: 10, repeat: Infinity } : {}}
             >
               {bg.animated && (
-                <div className="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-sm text-xs text-white">
+                <div className="absolute left-2 top-2 rounded-full bg-black/40 px-2 py-0.5 text-xs text-white backdrop-blur-sm">
                   Animated
                 </div>
               )}
             </motion.div>
 
             {/* Background Name */}
-            <h4 className="text-sm font-semibold text-white mb-1">{bg.name}</h4>
+            <h4 className="mb-1 text-sm font-semibold text-white">{bg.name}</h4>
 
             {/* Description */}
-            <p className="text-xs text-white/60 mb-2">{bg.description}</p>
+            <p className="mb-2 text-xs text-white/60">{bg.description}</p>
 
             {/* Performance */}
-            <div className="flex items-center justify-between text-xs mb-3">
+            <div className="mb-3 flex items-center justify-between text-xs">
               <span className="text-white/60">Performance:</span>
-              <span className={`font-medium ${bg.performance === 'light' ? 'text-green-400' : bg.performance === 'medium' ? 'text-yellow-400' : 'text-red-400'}`}>
+              <span
+                className={`font-medium ${bg.performance === 'light' ? 'text-green-400' : bg.performance === 'medium' ? 'text-yellow-400' : 'text-red-400'}`}
+              >
                 {bg.performance.toUpperCase()}
               </span>
             </div>
@@ -724,19 +829,19 @@ function BackgroundEffectsSection({ backgrounds, selectedBackground, onSelect }:
             {/* Status */}
             {bg.unlocked ? (
               selectedBackground === bg.id ? (
-                <div className="flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-green-500/20 border border-green-500/30">
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-3 py-2">
                   <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
                   <span className="text-sm font-medium text-green-400">Active</span>
                 </div>
               ) : (
-                <button className="w-full px-3 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium transition-colors">
+                <button className="w-full rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
                   Apply
                 </button>
               )
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 rounded-xl backdrop-blur-sm">
-                <LockClosedIcon className="h-8 w-8 text-white/40 mb-2" />
-                <p className="text-xs text-white/60 text-center px-2">{bg.unlockRequirement}</p>
+              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
+                <LockClosedIcon className="mb-2 h-8 w-8 text-white/40" />
+                <p className="px-2 text-center text-xs text-white/60">{bg.unlockRequirement}</p>
               </div>
             )}
           </GlassCard>
@@ -752,7 +857,11 @@ interface AnimationSetsSectionProps {
   onSelect: (id: string) => void;
 }
 
-function AnimationSetsSection({ animations, selectedAnimation, onSelect }: AnimationSetsSectionProps) {
+function AnimationSetsSection({
+  animations,
+  selectedAnimation,
+  onSelect,
+}: AnimationSetsSectionProps) {
   return (
     <div className="space-y-3">
       {animations.map((anim, index) => (
@@ -767,32 +876,41 @@ function AnimationSetsSection({ animations, selectedAnimation, onSelect }: Anima
             glow={selectedAnimation === anim.id}
             glowColor={selectedAnimation === anim.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative p-4 transition-all ${
-              anim.unlocked ? 'cursor-pointer hover:scale-[1.01]' : 'opacity-60 cursor-not-allowed'
+              anim.unlocked ? 'cursor-pointer hover:scale-[1.01]' : 'cursor-not-allowed opacity-60'
             }`}
             onClick={() => anim.unlocked && onSelect(anim.id)}
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <h4 className="text-base font-bold text-white mb-1">{anim.name}</h4>
-                <p className="text-sm text-white/60 mb-2">{anim.description}</p>
+                <h4 className="mb-1 text-base font-bold text-white">{anim.name}</h4>
+                <p className="mb-2 text-sm text-white/60">{anim.description}</p>
                 <div className="flex items-center gap-4 text-xs">
                   <span className="text-white/60">
-                    Speed: <span className="text-primary-400 font-medium">{anim.speed}</span>
+                    Speed: <span className="font-medium text-primary-400">{anim.speed}</span>
                   </span>
                   <span className="text-white/60">
-                    Easing: <span className="text-primary-400 font-medium">{anim.easing}</span>
+                    Easing: <span className="font-medium text-primary-400">{anim.easing}</span>
                   </span>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 {/* Animation Preview */}
-                <div className="w-32 h-16 bg-dark-800 rounded-lg flex items-center justify-center overflow-hidden">
+                <div className="flex h-16 w-32 items-center justify-center overflow-hidden rounded-lg bg-dark-800">
                   <motion.div
-                    className="w-8 h-8 rounded-lg bg-primary-600"
+                    className="h-8 w-8 rounded-lg bg-primary-600"
                     animate={{ x: [-20, 20, -20] }}
                     transition={{
-                      duration: anim.speed === 'instant' ? 0 : anim.speed === 'fast' ? 0.3 : anim.speed === 'normal' ? 0.5 : anim.speed === 'smooth' ? 0.7 : 1,
+                      duration:
+                        anim.speed === 'instant'
+                          ? 0
+                          : anim.speed === 'fast'
+                            ? 0.3
+                            : anim.speed === 'normal'
+                              ? 0.5
+                              : anim.speed === 'smooth'
+                                ? 0.7
+                                : 1,
                       ease: anim.easing,
                       repeat: Infinity,
                       repeatDelay: 0.5,
@@ -803,17 +921,17 @@ function AnimationSetsSection({ animations, selectedAnimation, onSelect }: Anima
                 {/* Status Button */}
                 {anim.unlocked ? (
                   selectedAnimation === anim.id ? (
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-green-500/20 border border-green-500/30">
+                    <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
                       <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
                       <span className="text-sm font-medium text-green-400">Active</span>
                     </div>
                   ) : (
-                    <button className="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium transition-colors">
+                    <button className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
                       Apply
                     </button>
                   )
                 ) : (
-                  <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10">
+                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
                     <LockClosedIcon className="h-5 w-5 text-white/40" />
                     <span className="text-sm text-white/60">{anim.unlockRequirement}</span>
                   </div>

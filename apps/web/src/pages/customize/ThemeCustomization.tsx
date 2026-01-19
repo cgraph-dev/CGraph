@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircleIcon,
@@ -11,6 +11,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
+import { useAuthStore } from '@/stores/authStore';
+import { useCustomizationStore } from '@/stores/customizationStore';
+import toast from 'react-hot-toast';
 
 /**
  * ThemeCustomization Component
@@ -361,14 +364,36 @@ const MOCK_THEMES: Theme[] = [
 // ==================== MAIN COMPONENT ====================
 
 export default function ThemeCustomization() {
+  const { user } = useAuthStore();
+  const {
+    profileTheme,
+    chatTheme,
+    forumTheme,
+    appTheme,
+    isSaving,
+    error,
+    fetchCustomizations,
+    saveCustomizations,
+    updateTheme,
+  } = useCustomizationStore();
+
   const [activeCategory, setActiveCategory] = useState<ThemeCategory>('profile');
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedThemes, setSelectedThemes] = useState<Record<ThemeCategory, string>>({
-    profile: 'profile-default',
-    chat: 'chat-default',
-    forum: 'forum-default',
-    app: 'app-dark',
-  });
+
+  // Fetch customizations on mount
+  useEffect(() => {
+    if (user?.id) {
+      fetchCustomizations(user.id);
+    }
+  }, [user?.id, fetchCustomizations]);
+
+  // Create selectedThemes object from store state
+  const selectedThemes: Record<ThemeCategory, string> = {
+    profile: profileTheme,
+    chat: chatTheme,
+    forum: forumTheme || 'forum-default',
+    app: appTheme,
+  };
 
   const categories = [
     { id: 'profile' as ThemeCategory, label: 'Profile Themes', icon: SwatchIcon, count: 6 },
@@ -387,10 +412,34 @@ export default function ThemeCustomization() {
   });
 
   const handleApplyTheme = (themeId: string, category: ThemeCategory) => {
-    setSelectedThemes((prev) => ({
-      ...prev,
-      [category]: themeId,
-    }));
+    switch (category) {
+      case 'profile':
+        updateTheme('profileTheme', themeId);
+        break;
+      case 'chat':
+        updateTheme('chatTheme', themeId);
+        break;
+      case 'forum':
+        updateTheme('forumTheme', themeId);
+        break;
+      case 'app':
+        updateTheme('appTheme', themeId);
+        break;
+    }
+  };
+
+  const handleSaveThemes = async () => {
+    if (!user?.id) {
+      toast.error('User not authenticated');
+      return;
+    }
+
+    try {
+      await saveCustomizations(user.id);
+      toast.success('Theme settings saved successfully!');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to save themes');
+    }
   };
 
   const isThemeActive = (themeId: string, category: ThemeCategory) => {
@@ -480,10 +529,47 @@ export default function ThemeCustomization() {
 
       {/* Save Button */}
       <div className="flex justify-end border-t border-white/10 pt-4">
-        <button className="rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg shadow-primary-500/25 transition-all hover:from-primary-700 hover:to-purple-700">
-          Save Theme Settings
+        <button
+          onClick={handleSaveThemes}
+          disabled={isSaving}
+          className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary-600 to-purple-600 px-6 py-3 font-semibold text-white shadow-lg shadow-primary-500/25 transition-all hover:from-primary-700 hover:to-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isSaving ? (
+            <>
+              <svg
+                className="h-5 w-5 animate-spin"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Saving...
+            </>
+          ) : (
+            'Save Theme Settings'
+          )}
         </button>
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
+          {error}
+        </div>
+      )}
     </div>
   );
 }

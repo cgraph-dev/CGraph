@@ -26,6 +26,11 @@ import { useGamificationStore } from '@/stores/gamificationStore';
  *
  * This replaces the old /gamification routes and consolidates all
  * progression features into the Customize hub.
+ *
+ * NOTE: This page uses real data from useGamificationStore (level, xp, karma).
+ * Achievements, leaderboards, and quests are currently using mock data
+ * until the backend APIs are implemented. These will be replaced with
+ * real API calls in Phase 3+.
  */
 
 // ==================== TYPE DEFINITIONS ====================
@@ -84,8 +89,10 @@ interface DailyReward {
   };
 }
 
-// ==================== MOCK DATA ====================
+// ==================== MOCK DATA (TO BE REPLACED WITH REAL API) ====================
 
+// Note: These are placeholder achievements. In production, these should come from the backend API
+// TODO: Create achievements API endpoints and replace this mock data
 const MOCK_ACHIEVEMENTS: Achievement[] = [
   {
     id: 'ach1',
@@ -273,19 +280,35 @@ export default function ProgressionCustomization() {
   const [searchQuery, setSearchQuery] = useState('');
 
   const categories = [
-    { id: 'achievements' as ProgressionCategory, label: 'Achievements', icon: TrophyIcon, count: MOCK_ACHIEVEMENTS.length },
-    { id: 'leaderboards' as ProgressionCategory, label: 'Leaderboards', icon: ChartBarIcon, count: MOCK_LEADERBOARD.length },
-    { id: 'quests' as ProgressionCategory, label: 'Quests', icon: SparklesIcon, count: MOCK_QUESTS.filter(q => !q.completed).length },
+    {
+      id: 'achievements' as ProgressionCategory,
+      label: 'Achievements',
+      icon: TrophyIcon,
+      count: MOCK_ACHIEVEMENTS.length,
+    },
+    {
+      id: 'leaderboards' as ProgressionCategory,
+      label: 'Leaderboards',
+      icon: ChartBarIcon,
+      count: MOCK_LEADERBOARD.length,
+    },
+    {
+      id: 'quests' as ProgressionCategory,
+      label: 'Quests',
+      icon: SparklesIcon,
+      count: MOCK_QUESTS.filter((q) => !q.completed).length,
+    },
     { id: 'rewards' as ProgressionCategory, label: 'Daily Rewards', icon: GiftIcon, count: 7 },
   ];
 
   // Calculate current streak
-  const currentStreak = MOCK_DAILY_REWARDS.filter(r => r.claimed).length;
+  const currentStreak = MOCK_DAILY_REWARDS.filter((r) => r.claimed).length;
 
   // Filter achievements by search
-  const filteredAchievements = MOCK_ACHIEVEMENTS.filter((ach) =>
-    ach.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    ach.description.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredAchievements = MOCK_ACHIEVEMENTS.filter(
+    (ach) =>
+      ach.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      ach.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -294,7 +317,7 @@ export default function ProgressionCustomization() {
       <div className="grid grid-cols-3 gap-4">
         <GlassCard variant="holographic" className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500 to-orange-500">
               <StarIcon className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -306,7 +329,7 @@ export default function ProgressionCustomization() {
 
         <GlassCard variant="holographic" className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-pink-500">
               <BoltIcon className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -318,7 +341,7 @@ export default function ProgressionCustomization() {
 
         <GlassCard variant="holographic" className="p-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-cyan-500">
               <FireIcon className="h-6 w-6 text-white" />
             </div>
             <div>
@@ -337,7 +360,7 @@ export default function ProgressionCustomization() {
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
                 activeCategory === category.id
                   ? 'bg-primary-600 text-white'
                   : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
@@ -361,7 +384,7 @@ export default function ProgressionCustomization() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search achievements..."
-            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white placeholder:text-white/40 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
           />
         </div>
       )}
@@ -387,9 +410,7 @@ export default function ProgressionCustomization() {
             />
           )}
 
-          {activeCategory === 'quests' && (
-            <QuestsSection quests={MOCK_QUESTS} />
-          )}
+          {activeCategory === 'quests' && <QuestsSection quests={MOCK_QUESTS} />}
 
           {activeCategory === 'rewards' && (
             <DailyRewardsSection rewards={MOCK_DAILY_REWARDS} currentStreak={currentStreak} />
@@ -438,14 +459,18 @@ function AchievementsSection({ achievements }: AchievementsSectionProps) {
             className={`relative p-4 ${achievement.unlocked ? '' : 'opacity-70'}`}
           >
             {/* Achievement Icon */}
-            <div className="flex items-start gap-3 mb-3">
-              <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${getRarityColor(achievement.rarity)} flex items-center justify-center text-3xl`}>
+            <div className="mb-3 flex items-start gap-3">
+              <div
+                className={`h-16 w-16 rounded-xl bg-gradient-to-br ${getRarityColor(achievement.rarity)} flex items-center justify-center text-3xl`}
+              >
                 {achievement.icon}
               </div>
               <div className="flex-1">
-                <h4 className="text-base font-bold text-white mb-1">{achievement.name}</h4>
-                <p className="text-xs text-white/60 mb-1">{achievement.description}</p>
-                <span className={`text-xs font-medium ${achievement.rarity === 'legendary' ? 'text-yellow-400' : achievement.rarity === 'epic' ? 'text-purple-400' : achievement.rarity === 'rare' ? 'text-blue-400' : 'text-gray-400'}`}>
+                <h4 className="mb-1 text-base font-bold text-white">{achievement.name}</h4>
+                <p className="mb-1 text-xs text-white/60">{achievement.description}</p>
+                <span
+                  className={`text-xs font-medium ${achievement.rarity === 'legendary' ? 'text-yellow-400' : achievement.rarity === 'epic' ? 'text-purple-400' : achievement.rarity === 'rare' ? 'text-blue-400' : 'text-gray-400'}`}
+                >
                   {achievement.rarity.toUpperCase()}
                 </span>
               </div>
@@ -454,15 +479,19 @@ function AchievementsSection({ achievements }: AchievementsSectionProps) {
             {/* Progress Bar */}
             {!achievement.unlocked && (
               <div className="mb-3">
-                <div className="flex justify-between text-xs text-white/60 mb-1">
+                <div className="mb-1 flex justify-between text-xs text-white/60">
                   <span>Progress</span>
-                  <span>{achievement.progress}/{achievement.maxProgress}</span>
+                  <span>
+                    {achievement.progress}/{achievement.maxProgress}
+                  </span>
                 </div>
-                <div className="h-2 bg-dark-700 rounded-full overflow-hidden">
+                <div className="h-2 overflow-hidden rounded-full bg-dark-700">
                   <motion.div
                     className="h-full bg-gradient-to-r from-primary-600 to-purple-600"
                     initial={{ width: 0 }}
-                    animate={{ width: `${(achievement.progress / achievement.maxProgress) * 100}%` }}
+                    animate={{
+                      width: `${(achievement.progress / achievement.maxProgress) * 100}%`,
+                    }}
                     transition={{ duration: 1, delay: index * 0.05 }}
                   />
                 </div>
@@ -470,21 +499,21 @@ function AchievementsSection({ achievements }: AchievementsSectionProps) {
             )}
 
             {/* Rewards */}
-            <div className="flex items-center justify-between pt-3 border-t border-white/10">
+            <div className="flex items-center justify-between border-t border-white/10 pt-3">
               <div className="flex items-center gap-2 text-xs">
                 <span className="text-white/60">Reward:</span>
-                <span className="text-yellow-400 font-medium">+{achievement.reward.xp} XP</span>
+                <span className="font-medium text-yellow-400">+{achievement.reward.xp} XP</span>
                 {achievement.reward.coins && (
-                  <span className="text-blue-400 font-medium">+{achievement.reward.coins} Coins</span>
+                  <span className="font-medium text-blue-400">
+                    +{achievement.reward.coins} Coins
+                  </span>
                 )}
               </div>
-              {achievement.unlocked && (
-                <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
-              )}
+              {achievement.unlocked && <CheckCircleIconSolid className="h-5 w-5 text-green-400" />}
             </div>
 
             {achievement.reward.item && (
-              <div className="mt-2 px-2 py-1 rounded bg-purple-500/20 border border-purple-500/30 text-xs text-purple-300 text-center">
+              <div className="mt-2 rounded border border-purple-500/30 bg-purple-500/20 px-2 py-1 text-center text-xs text-purple-300">
                 🎁 {achievement.reward.item}
               </div>
             )}
@@ -510,7 +539,7 @@ function LeaderboardsSection({ entries, leaderboardType, onTypeChange }: Leaderb
           <button
             key={type}
             onClick={() => onTypeChange(type as typeof leaderboardType)}
-            className={`px-4 py-2 rounded-lg font-medium transition-all ${
+            className={`rounded-lg px-4 py-2 font-medium transition-all ${
               leaderboardType === type
                 ? 'bg-primary-600 text-white'
                 : 'bg-white/5 text-white/60 hover:bg-white/10'
@@ -538,14 +567,14 @@ function LeaderboardsSection({ entries, leaderboardType, onTypeChange }: Leaderb
               <div className="flex items-center gap-4">
                 {/* Rank Badge */}
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ${
+                  className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${
                     entry.rank === 1
                       ? 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-white'
                       : entry.rank === 2
-                      ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-white'
-                      : entry.rank === 3
-                      ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white'
-                      : 'bg-dark-700 text-white/60'
+                        ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-white'
+                        : entry.rank === 3
+                          ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white'
+                          : 'bg-dark-700 text-white/60'
                   }`}
                 >
                   #{entry.rank}
@@ -556,7 +585,9 @@ function LeaderboardsSection({ entries, leaderboardType, onTypeChange }: Leaderb
                   <p className="font-medium text-white">
                     {entry.displayName}
                     {entry.isCurrentUser && (
-                      <span className="ml-2 px-2 py-0.5 rounded-full bg-primary-600 text-xs">You</span>
+                      <span className="ml-2 rounded-full bg-primary-600 px-2 py-0.5 text-xs">
+                        You
+                      </span>
                     )}
                   </p>
                   <p className="text-sm text-white/60">@{entry.username}</p>
@@ -616,30 +647,34 @@ function QuestsSection({ quests }: QuestsSectionProps) {
           >
             <div className="flex items-start gap-3">
               {/* Quest Type Badge */}
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getQuestColor(quest.type)} flex items-center justify-center text-white font-bold text-sm flex-shrink-0`}>
+              <div
+                className={`h-12 w-12 rounded-xl bg-gradient-to-br ${getQuestColor(quest.type)} flex flex-shrink-0 items-center justify-center text-sm font-bold text-white`}
+              >
                 {quest.type === 'daily' ? 'D' : quest.type === 'weekly' ? 'W' : 'S'}
               </div>
 
               <div className="flex-1">
                 {/* Quest Info */}
-                <div className="flex items-start justify-between mb-2">
+                <div className="mb-2 flex items-start justify-between">
                   <div>
                     <h4 className="text-base font-bold text-white">{quest.name}</h4>
                     <p className="text-sm text-white/60">{quest.description}</p>
                   </div>
                   {quest.completed && (
-                    <CheckCircleIconSolid className="h-6 w-6 text-green-400 flex-shrink-0" />
+                    <CheckCircleIconSolid className="h-6 w-6 flex-shrink-0 text-green-400" />
                   )}
                 </div>
 
                 {/* Progress Bar */}
                 {!quest.completed && (
                   <div className="mb-2">
-                    <div className="flex justify-between text-xs text-white/60 mb-1">
+                    <div className="mb-1 flex justify-between text-xs text-white/60">
                       <span>Progress</span>
-                      <span>{quest.progress}/{quest.maxProgress}</span>
+                      <span>
+                        {quest.progress}/{quest.maxProgress}
+                      </span>
                     </div>
-                    <div className="h-2 bg-dark-700 rounded-full overflow-hidden">
+                    <div className="h-2 overflow-hidden rounded-full bg-dark-700">
                       <motion.div
                         className={`h-full bg-gradient-to-r ${getQuestColor(quest.type)}`}
                         initial={{ width: 0 }}
@@ -653,13 +688,15 @@ function QuestsSection({ quests }: QuestsSectionProps) {
                 {/* Footer */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 text-xs">
-                    <span className="text-yellow-400 font-medium">+{quest.reward.xp} XP</span>
+                    <span className="font-medium text-yellow-400">+{quest.reward.xp} XP</span>
                     {quest.reward.coins && (
-                      <span className="text-blue-400 font-medium">+{quest.reward.coins} Coins</span>
+                      <span className="font-medium text-blue-400">+{quest.reward.coins} Coins</span>
                     )}
                   </div>
                   {quest.expiresAt && !quest.completed && (
-                    <span className="text-xs text-red-400">{formatTimeRemaining(quest.expiresAt)}</span>
+                    <span className="text-xs text-red-400">
+                      {formatTimeRemaining(quest.expiresAt)}
+                    </span>
                   )}
                 </div>
               </div>
@@ -681,14 +718,14 @@ function DailyRewardsSection({ rewards, currentStreak }: DailyRewardsSectionProp
     <div className="space-y-6">
       {/* Streak Display */}
       <GlassCard variant="holographic" className="p-6 text-center">
-        <div className="flex items-center justify-center gap-3 mb-2">
+        <div className="mb-2 flex items-center justify-center gap-3">
           <FireIcon className="h-12 w-12 text-orange-500" />
           <div>
             <p className="text-4xl font-bold text-white">{currentStreak}</p>
             <p className="text-sm text-white/60">Day Streak</p>
           </div>
         </div>
-        <p className="text-white/60 text-sm">Keep logging in daily to maintain your streak!</p>
+        <p className="text-sm text-white/60">Keep logging in daily to maintain your streak!</p>
       </GlassCard>
 
       {/* Reward Calendar */}
@@ -701,40 +738,44 @@ function DailyRewardsSection({ rewards, currentStreak }: DailyRewardsSectionProp
             transition={{ delay: index * 0.05 }}
           >
             <GlassCard
-              variant={reward.claimed ? 'neon' : reward.day === currentStreak + 1 ? 'holographic' : 'crystal'}
+              variant={
+                reward.claimed
+                  ? 'neon'
+                  : reward.day === currentStreak + 1
+                    ? 'holographic'
+                    : 'crystal'
+              }
               glow={reward.day === currentStreak + 1}
               className={`relative p-4 text-center ${reward.claimed ? 'opacity-70' : ''}`}
             >
               {/* Day Number */}
-              <div className="text-2xl font-bold text-white mb-2">
-                Day {reward.day}
-              </div>
+              <div className="mb-2 text-2xl font-bold text-white">Day {reward.day}</div>
 
               {/* Reward Icon */}
-              <div className="text-3xl mb-2">
+              <div className="mb-2 text-3xl">
                 {reward.reward.item ? '🎁' : reward.day === 7 ? '💎' : '🪙'}
               </div>
 
               {/* Rewards */}
-              <div className="text-xs space-y-1">
+              <div className="space-y-1 text-xs">
                 {reward.reward.xp && (
-                  <p className="text-yellow-400 font-medium">+{reward.reward.xp} XP</p>
+                  <p className="font-medium text-yellow-400">+{reward.reward.xp} XP</p>
                 )}
                 {reward.reward.coins && (
-                  <p className="text-blue-400 font-medium">+{reward.reward.coins} Coins</p>
+                  <p className="font-medium text-blue-400">+{reward.reward.coins} Coins</p>
                 )}
                 {reward.reward.item && (
-                  <p className="text-purple-400 font-medium">{reward.reward.item}</p>
+                  <p className="font-medium text-purple-400">{reward.reward.item}</p>
                 )}
               </div>
 
               {/* Status */}
               {reward.claimed ? (
                 <div className="mt-2">
-                  <CheckCircleIconSolid className="h-5 w-5 text-green-400 mx-auto" />
+                  <CheckCircleIconSolid className="mx-auto h-5 w-5 text-green-400" />
                 </div>
               ) : reward.day === currentStreak + 1 ? (
-                <button className="mt-2 w-full px-2 py-1 rounded bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium transition-colors">
+                <button className="mt-2 w-full rounded bg-primary-600 px-2 py-1 text-xs font-medium text-white transition-colors hover:bg-primary-700">
                   Claim
                 </button>
               ) : (
