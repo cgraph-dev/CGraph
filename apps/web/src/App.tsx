@@ -252,6 +252,24 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+// Profile redirect - waits for auth state before redirecting to user's profile
+function ProfileRedirectRoute() {
+  const { user, isAuthenticated } = useAuthStore();
+
+  // If not authenticated, redirect to login
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // If user is loaded and has an ID, redirect to their profile
+  if (user?.id) {
+    return <Navigate to={`/user/${user.id}`} replace />;
+  }
+
+  // While loading, show loading spinner
+  return <PageLoader />;
+}
+
 export default function App() {
   return (
     <AuthInitializer>
@@ -396,14 +414,23 @@ export default function App() {
             <Route path="customize/:category" element={<Customize />} />
 
             {/* Profile - quick access to own profile */}
-            <Route path="profile" element={<Navigate to={`/user/${useAuthStore.getState().user?.id}`} replace />} />
+            <Route path="profile" element={<ProfileRedirectRoute />} />
 
             {/* Redirects for old gamification routes */}
             <Route path="leaderboard" element={<Navigate to="/customize/progression" replace />} />
             <Route path="gamification" element={<Navigate to="/customize/progression" replace />} />
-            <Route path="gamification/achievements" element={<Navigate to="/customize/progression" replace />} />
-            <Route path="gamification/quests" element={<Navigate to="/customize/progression" replace />} />
-            <Route path="gamification/titles" element={<Navigate to="/customize/identity" replace />} />
+            <Route
+              path="gamification/achievements"
+              element={<Navigate to="/customize/progression" replace />}
+            />
+            <Route
+              path="gamification/quests"
+              element={<Navigate to="/customize/progression" replace />}
+            />
+            <Route
+              path="gamification/titles"
+              element={<Navigate to="/customize/identity" replace />}
+            />
             <Route path="achievements" element={<Navigate to="/customize/progression" replace />} />
             <Route path="quests" element={<Navigate to="/customize/progression" replace />} />
             <Route path="titles" element={<Navigate to="/customize/identity" replace />} />

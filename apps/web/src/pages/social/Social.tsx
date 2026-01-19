@@ -149,10 +149,13 @@ export default function Social() {
     friends,
     pendingRequests,
     sentRequests,
+    isLoading,
+    error,
     fetchFriends,
     fetchPendingRequests,
     acceptRequest,
     declineRequest,
+    clearError,
   } = useFriendStore();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -165,9 +168,10 @@ export default function Social() {
   }, [fetchFriends, fetchPendingRequests]);
 
   // Filter friends by search
-  const filteredFriends = friends.filter((friend) =>
-    friend.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    friend.displayName?.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredFriends = friends.filter(
+    (friend) =>
+      friend.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      friend.displayName?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Filter notifications
@@ -178,9 +182,10 @@ export default function Social() {
     setSearchQuery(query);
     if (query.length > 0) {
       // Filter mock results by query
-      const filtered = MOCK_SEARCH_RESULTS.filter((result) =>
-        result.name.toLowerCase().includes(query.toLowerCase()) ||
-        result.description.toLowerCase().includes(query.toLowerCase())
+      const filtered = MOCK_SEARCH_RESULTS.filter(
+        (result) =>
+          result.name.toLowerCase().includes(query.toLowerCase()) ||
+          result.description.toLowerCase().includes(query.toLowerCase())
       );
       setSearchResults(filtered);
     } else {
@@ -200,16 +205,21 @@ export default function Social() {
 
   const tabs = [
     { id: 'friends' as SocialTab, label: 'Friends', icon: UsersIcon, count: friends.length },
-    { id: 'notifications' as SocialTab, label: 'Notifications', icon: BellIcon, count: unreadNotifications.length },
+    {
+      id: 'notifications' as SocialTab,
+      label: 'Notifications',
+      icon: BellIcon,
+      count: unreadNotifications.length,
+    },
     { id: 'discover' as SocialTab, label: 'Discover', icon: MagnifyingGlassIcon, count: 0 },
   ];
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
+    <div className="flex h-full flex-col overflow-hidden bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
       {/* Header with Tabs */}
       <div className="flex-shrink-0 border-b border-white/10 bg-dark-900/80 backdrop-blur-xl">
         <div className="px-6 py-4">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <h1 className="text-2xl font-bold text-white">Social Hub</h1>
           </div>
 
@@ -222,7 +232,7 @@ export default function Social() {
                 <button
                   key={tabItem.id}
                   onClick={() => navigate(`/social/${tabItem.id}`)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all relative ${
+                  className={`relative flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-all ${
                     isActive
                       ? 'bg-primary-600 text-white'
                       : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
@@ -234,7 +244,7 @@ export default function Social() {
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="px-2 py-0.5 rounded-full bg-red-600 text-xs font-bold text-white"
+                      className="rounded-full bg-red-600 px-2 py-0.5 text-xs font-bold text-white"
                     >
                       {tabItem.count > 99 ? '99+' : tabItem.count}
                     </motion.span>
@@ -266,6 +276,13 @@ export default function Social() {
                 onSearchChange={setSearchQuery}
                 onAcceptRequest={acceptRequest}
                 onDeclineRequest={declineRequest}
+                isLoading={isLoading}
+                error={error}
+                onRetry={() => {
+                  clearError();
+                  fetchFriends();
+                  fetchPendingRequests();
+                }}
               />
             )}
 
@@ -301,6 +318,9 @@ interface FriendsTabProps {
   onSearchChange: (query: string) => void;
   onAcceptRequest: (requestId: string) => void;
   onDeclineRequest: (requestId: string) => void;
+  isLoading?: boolean;
+  error?: string | null;
+  onRetry?: () => void;
 }
 
 function FriendsTab({
@@ -311,27 +331,62 @@ function FriendsTab({
   onSearchChange,
   onAcceptRequest,
   onDeclineRequest,
+  isLoading,
+  error,
+  onRetry,
 }: FriendsTabProps) {
   const navigate = useNavigate();
+
+  // Show error state with retry button
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <GlassCard variant="frosted" className="max-w-md p-8 text-center">
+          <div className="mb-4 text-5xl text-red-400">⚠️</div>
+          <h3 className="mb-2 text-xl font-bold text-white">Something went wrong</h3>
+          <p className="mb-6 text-gray-400">{error}</p>
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className="rounded-lg bg-primary-600 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-700"
+            >
+              Try Again
+            </button>
+          )}
+        </GlassCard>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (isLoading && friends.length === 0 && pendingRequests.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+        <p className="text-gray-400">Loading friends...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       {/* Search Bar */}
       <div className="relative">
-        <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+        <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search friends..."
-          className="w-full pl-10 pr-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder:text-white/40 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+          aria-label="Search friends"
+          className="w-full rounded-lg border border-white/10 bg-white/5 py-3 pl-10 pr-4 text-white placeholder:text-white/40 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
         />
       </div>
 
       {/* Pending Requests */}
       {pendingRequests.length > 0 && (
         <div>
-          <h3 className="text-lg font-bold text-white mb-3">
+          <h3 className="mb-3 text-lg font-bold text-white">
             Pending Requests ({pendingRequests.length})
           </h3>
           <div className="space-y-2">
@@ -345,7 +400,7 @@ function FriendsTab({
                 <GlassCard variant="neon" glow className="p-4">
                   <div className="flex items-center gap-3">
                     <UserProfileCard userId={request.user?.id || ''} trigger="both">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium cursor-pointer">
+                      <div className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 font-medium text-white">
                         {request.user?.username?.charAt(0).toUpperCase() || '?'}
                       </div>
                     </UserProfileCard>
@@ -367,7 +422,7 @@ function FriendsTab({
                           onAcceptRequest(request.id);
                           HapticFeedback.success();
                         }}
-                        className="p-2 rounded-lg bg-green-600 hover:bg-green-700 text-white transition-colors"
+                        className="rounded-lg bg-green-600 p-2 text-white transition-colors hover:bg-green-700"
                         title="Accept"
                       >
                         <CheckIcon className="h-5 w-5" />
@@ -379,7 +434,7 @@ function FriendsTab({
                           onDeclineRequest(request.id);
                           HapticFeedback.medium();
                         }}
-                        className="p-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors"
+                        className="rounded-lg bg-red-600 p-2 text-white transition-colors hover:bg-red-700"
                         title="Decline"
                       >
                         <XMarkIcon className="h-5 w-5" />
@@ -395,12 +450,10 @@ function FriendsTab({
 
       {/* Friends List */}
       <div>
-        <h3 className="text-lg font-bold text-white mb-3">
-          All Friends ({friends.length})
-        </h3>
+        <h3 className="mb-3 text-lg font-bold text-white">All Friends ({friends.length})</h3>
         {friends.length === 0 ? (
           <GlassCard variant="frost" className="p-8 text-center">
-            <UsersIcon className="h-12 w-12 text-white/40 mx-auto mb-3" />
+            <UsersIcon className="mx-auto mb-3 h-12 w-12 text-white/40" />
             <p className="text-white/60">No friends yet. Start adding friends to see them here!</p>
           </GlassCard>
         ) : (
@@ -412,7 +465,10 @@ function FriendsTab({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.03 }}
               >
-                <GlassCard variant="crystal" className="p-4 hover:scale-[1.01] transition-transform cursor-pointer group">
+                <GlassCard
+                  variant="crystal"
+                  className="group cursor-pointer p-4 transition-transform hover:scale-[1.01]"
+                >
                   <div className="flex items-center gap-3">
                     <UserProfileCard userId={friend.id} trigger="both">
                       <div className="relative flex-shrink-0">
@@ -423,7 +479,7 @@ function FriendsTab({
                             className="h-12 w-12 rounded-full object-cover ring-2 ring-dark-700"
                           />
                         ) : (
-                          <div className="h-12 w-12 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium ring-2 ring-dark-700">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 font-medium text-white ring-2 ring-dark-700">
                             {friend.username.charAt(0).toUpperCase()}
                           </div>
                         )}
@@ -433,11 +489,11 @@ function FriendsTab({
                       </div>
                     </UserProfileCard>
 
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-white truncate">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-white">
                         {friend.displayName || friend.username}
                       </p>
-                      <p className="text-sm text-white/60 truncate">@{friend.username}</p>
+                      <p className="truncate text-sm text-white/60">@{friend.username}</p>
                     </div>
 
                     <motion.button
@@ -448,7 +504,7 @@ function FriendsTab({
                         navigate(`/messages?user=${friend.id}`);
                         HapticFeedback.medium();
                       }}
-                      className="p-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="rounded-lg bg-primary-600 p-2 text-white opacity-0 transition-opacity hover:bg-primary-700 group-hover:opacity-100"
                       title="Send Message"
                     >
                       <ChatBubbleLeftRightIcon className="h-5 w-5" />
@@ -512,7 +568,7 @@ function NotificationsTab({ notifications, onMarkAsRead, onMarkAllAsRead }: Noti
         {unreadCount > 0 && (
           <button
             onClick={onMarkAllAsRead}
-            className="px-4 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium transition-colors"
+            className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
           >
             Mark All as Read
           </button>
@@ -522,7 +578,7 @@ function NotificationsTab({ notifications, onMarkAsRead, onMarkAllAsRead }: Noti
       {/* Notifications List */}
       {notifications.length === 0 ? (
         <GlassCard variant="frost" className="p-8 text-center">
-          <BellIconSolid className="h-12 w-12 text-white/40 mx-auto mb-3" />
+          <BellIconSolid className="mx-auto mb-3 h-12 w-12 text-white/40" />
           <p className="text-white/60">No notifications yet</p>
         </GlassCard>
       ) : (
@@ -537,7 +593,7 @@ function NotificationsTab({ notifications, onMarkAsRead, onMarkAllAsRead }: Noti
               <GlassCard
                 variant={notification.read ? 'frost' : 'neon'}
                 glow={!notification.read}
-                className={`p-4 cursor-pointer hover:scale-[1.01] transition-transform ${
+                className={`cursor-pointer p-4 transition-transform hover:scale-[1.01] ${
                   notification.read ? 'opacity-60' : ''
                 }`}
                 onClick={() => {
@@ -548,20 +604,20 @@ function NotificationsTab({ notifications, onMarkAsRead, onMarkAllAsRead }: Noti
                 }}
               >
                 <div className="flex items-start gap-3">
-                  <div className="text-3xl flex-shrink-0">
+                  <div className="flex-shrink-0 text-3xl">
                     {getNotificationIcon(notification.type)}
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-start justify-between mb-1">
+                    <div className="mb-1 flex items-start justify-between">
                       <h4 className="font-medium text-white">{notification.title}</h4>
-                      <span className="text-xs text-white/60 flex-shrink-0 ml-2">
+                      <span className="ml-2 flex-shrink-0 text-xs text-white/60">
                         {formatTimeAgo(notification.timestamp)}
                       </span>
                     </div>
                     <p className="text-sm text-white/60">{notification.message}</p>
                   </div>
                   {!notification.read && (
-                    <div className="w-2 h-2 rounded-full bg-primary-500 flex-shrink-0 mt-2" />
+                    <div className="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-primary-500" />
                   )}
                 </div>
               </GlassCard>
@@ -599,13 +655,13 @@ function DiscoverTab({ searchQuery, searchResults, onSearchChange }: DiscoverTab
     <div className="space-y-6">
       {/* Search Bar */}
       <div className="relative">
-        <MagnifyingGlassIcon className="absolute left-4 top-1/2 -translate-y-1/2 h-6 w-6 text-white/40" />
+        <MagnifyingGlassIcon className="absolute left-4 top-1/2 h-6 w-6 -translate-y-1/2 text-white/40" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search users, forums, and groups..."
-          className="w-full pl-14 pr-4 py-4 rounded-lg bg-white/5 border border-white/10 text-white text-lg placeholder:text-white/40 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500"
+          className="w-full rounded-lg border border-white/10 bg-white/5 py-4 pl-14 pr-4 text-lg text-white placeholder:text-white/40 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
           autoFocus
         />
       </div>
@@ -613,8 +669,8 @@ function DiscoverTab({ searchQuery, searchResults, onSearchChange }: DiscoverTab
       {/* Search Results */}
       {searchQuery.length === 0 ? (
         <GlassCard variant="frost" className="p-12 text-center">
-          <MagnifyingGlassIcon className="h-16 w-16 text-white/40 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-white mb-2">Discover CGraph</h3>
+          <MagnifyingGlassIcon className="mx-auto mb-4 h-16 w-16 text-white/40" />
+          <h3 className="mb-2 text-xl font-bold text-white">Discover CGraph</h3>
           <p className="text-white/60">Search for users, forums, and groups to connect with</p>
         </GlassCard>
       ) : searchResults.length === 0 ? (
@@ -623,9 +679,7 @@ function DiscoverTab({ searchQuery, searchResults, onSearchChange }: DiscoverTab
         </GlassCard>
       ) : (
         <div className="space-y-2">
-          <h3 className="text-lg font-bold text-white mb-3">
-            {searchResults.length} Results
-          </h3>
+          <h3 className="mb-3 text-lg font-bold text-white">{searchResults.length} Results</h3>
           {searchResults.map((result, index) => (
             <motion.div
               key={result.id}
@@ -635,7 +689,7 @@ function DiscoverTab({ searchQuery, searchResults, onSearchChange }: DiscoverTab
             >
               <GlassCard
                 variant="crystal"
-                className="p-4 hover:scale-[1.01] transition-transform cursor-pointer"
+                className="cursor-pointer p-4 transition-transform hover:scale-[1.01]"
                 onClick={() => {
                   if (result.type === 'user') {
                     navigate(`/user/${result.id}`);
@@ -647,14 +701,12 @@ function DiscoverTab({ searchQuery, searchResults, onSearchChange }: DiscoverTab
                 }}
               >
                 <div className="flex items-center gap-3">
-                  <div className="text-3xl flex-shrink-0">
-                    {getResultIcon(result.type)}
-                  </div>
+                  <div className="flex-shrink-0 text-3xl">{getResultIcon(result.type)}</div>
                   <div className="flex-1">
                     <h4 className="font-medium text-white">{result.name}</h4>
                     <p className="text-sm text-white/60">{result.description}</p>
                     {result.memberCount && (
-                      <p className="text-xs text-white/40 mt-1">
+                      <p className="mt-1 text-xs text-white/40">
                         {result.memberCount.toLocaleString()} members
                       </p>
                     )}
@@ -667,7 +719,7 @@ function DiscoverTab({ searchQuery, searchResults, onSearchChange }: DiscoverTab
                         e.stopPropagation();
                         HapticFeedback.medium();
                       }}
-                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                         result.isJoined
                           ? 'bg-white/10 text-white hover:bg-white/20'
                           : 'bg-primary-600 text-white hover:bg-primary-700'

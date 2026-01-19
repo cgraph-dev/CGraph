@@ -182,6 +182,8 @@ interface GamificationState {
   level: number;
   currentXP: number;
   totalXP: number;
+  xp: number; // Alias for totalXP for backward compatibility
+  karma: number; // User reputation
 
   // Achievements
   achievements: Achievement[];
@@ -194,6 +196,12 @@ interface GamificationState {
   // Titles & Cosmetics
   availableTitles: UserTitle[];
   equippedTitle: UserTitle | null;
+  // Aliases for TitleSelection component
+  titles: UserTitle[];
+  equippedTitleId: string | null;
+
+  // Badges (based on achievements)
+  equippedBadges: string[]; // Array of achievement IDs used as badges
 
   // Lore
   loreEntries: LoreEntry[];
@@ -217,6 +225,8 @@ interface GamificationState {
   completeQuest: (questId: string) => Promise<void>;
   updateQuestProgress: (questId: string, objectiveId: string, value: number) => void;
   equipTitle: (titleId: string) => Promise<void>;
+  equipBadge: (badgeId: string) => Promise<void>;
+  unequipBadge: (badgeId: string) => Promise<void>;
   unlockLoreEntry: (entryId: string) => Promise<void>;
   checkDailyLogin: () => Promise<void>;
 }
@@ -241,6 +251,55 @@ export const useGamificationStore = create<GamificationState>()(
       lastLoginDate: null,
       isLoading: false,
       isLoadingAchievements: false,
+
+      // Alias properties for backward compatibility
+      get xp() {
+        return get().totalXP;
+      },
+      karma: 0,
+      get titles() {
+        return get().availableTitles;
+      },
+      get equippedTitleId() {
+        return get().equippedTitle?.id || null;
+      },
+      equippedBadges: [],
+
+      // Badge management functions
+      equipBadge: async (badgeId: string) => {
+        const { equippedBadges, achievements } = get();
+        const achievement = achievements.find((a) => a.id === badgeId);
+        if (!achievement || !achievement.unlocked) {
+          console.error('Cannot equip badge: Achievement not found or not unlocked');
+          return;
+        }
+        if (equippedBadges.length >= 3) {
+          console.error('Cannot equip more than 3 badges');
+          return;
+        }
+        if (equippedBadges.includes(badgeId)) {
+          return; // Already equipped
+        }
+        try {
+          await api.post(`/api/v1/gamification/badges/${badgeId}/equip`);
+          set({ equippedBadges: [...equippedBadges, badgeId] });
+        } catch (error) {
+          console.error('Failed to equip badge:', error);
+        }
+      },
+
+      unequipBadge: async (badgeId: string) => {
+        const { equippedBadges } = get();
+        if (!equippedBadges.includes(badgeId)) {
+          return; // Not equipped
+        }
+        try {
+          await api.post(`/api/v1/gamification/badges/${badgeId}/unequip`);
+          set({ equippedBadges: equippedBadges.filter((id) => id !== badgeId) });
+        } catch (error) {
+          console.error('Failed to unequip badge:', error);
+        }
+      },
 
       /**
        * Fetch all gamification data for the current user
@@ -286,13 +345,20 @@ export const useGamificationStore = create<GamificationState>()(
                 description: (questData.description || q.description) as string,
                 type: (questData.type || q.type) as string,
                 xpReward: (questData.xp_reward || q.xp_reward || 0) as number,
-                objectives: (((questData.objectives as Record<string, unknown>)?.objectives || []) as Record<string, unknown>[]).map((obj) => ({
+                objectives: (
+                  ((questData.objectives as Record<string, unknown>)?.objectives || []) as Record<
+                    string,
+                    unknown
+                  >[]
+                ).map((obj) => ({
                   id: obj.id as string,
                   description: obj.description as string,
                   type: obj.type as string,
                   targetValue: obj.target as number,
                   currentValue: (q.progress as Record<string, number>)?.[obj.id as string] || 0,
-                  completed: ((q.progress as Record<string, number>)?.[obj.id as string] || 0) >= (obj.target as number),
+                  completed:
+                    ((q.progress as Record<string, number>)?.[obj.id as string] || 0) >=
+                    (obj.target as number),
                 })),
                 expiresAt: q.expires_at as string,
                 completed: (q.completed || false) as boolean,
@@ -350,22 +416,23 @@ export const useGamificationStore = create<GamificationState>()(
             api.get('/api/v1/quests/daily'),
             api.get('/api/v1/quests/weekly'),
           ]);
-          
+
           const activeQuests = activeRes.data?.data || [];
           const dailyQuests = dailyRes.data?.data || [];
           const weeklyQuests = weeklyRes.data?.data || [];
-          
+
           // Combine all quests, filtering for accepted ones
           const allActive = [
             ...activeQuests,
             ...dailyQuests.filter((q: Record<string, unknown>) => q.accepted),
             ...weeklyQuests.filter((q: Record<string, unknown>) => q.accepted),
           ];
-          
+
           set({
             activeQuests: allActive.map((q: Record<string, unknown>) => {
               const quest = (q.quest || q) as Record<string, unknown>;
-              const rawObjectives = (quest.objectives as { objectives?: unknown[] })?.objectives || [];
+              const rawObjectives =
+                (quest.objectives as { objectives?: unknown[] })?.objectives || [];
               return {
                 id: (q.id || quest.id) as string,
                 title: quest.title as string,
@@ -384,7 +451,7 @@ export const useGamificationStore = create<GamificationState>()(
                   };
                 }),
                 expiresAt: q.expires_at as string,
-                completed: q.completed as boolean || false,
+                completed: (q.completed as boolean) || false,
                 completedAt: q.completed_at as string | undefined,
               };
             }),
@@ -428,7 +495,9 @@ export const useGamificationStore = create<GamificationState>()(
           // Level up modal/celebration can be triggered here
         }
 
-        console.log(`[Gamification] +${amount} XP from ${source} | Total: ${newTotalXP} | Level: ${newLevel}`);
+        console.log(
+          `[Gamification] +${amount} XP from ${source} | Total: ${newTotalXP} | Level: ${newLevel}`
+        );
       },
 
       /**
@@ -437,20 +506,26 @@ export const useGamificationStore = create<GamificationState>()(
        */
       unlockAchievement: async (achievementId: string) => {
         const { achievements, recentlyUnlocked } = get();
-        const achievement = achievements.find(a => a.id === achievementId);
+        const achievement = achievements.find((a) => a.id === achievementId);
 
         if (!achievement || achievement.unlocked) return;
 
         try {
-          const response = await api.post(`/api/v1/gamification/achievements/${achievementId}/unlock`);
+          const response = await api.post(
+            `/api/v1/gamification/achievements/${achievementId}/unlock`
+          );
           const result = response.data;
 
           if (result.success && result.unlocked) {
             // Update local achievement state
             set({
-              achievements: achievements.map(a =>
+              achievements: achievements.map((a) =>
                 a.id === achievementId
-                  ? { ...a, unlocked: true, unlockedAt: result.unlocked_at || new Date().toISOString() }
+                  ? {
+                      ...a,
+                      unlocked: true,
+                      unlockedAt: result.unlocked_at || new Date().toISOString(),
+                    }
                   : a
               ),
               recentlyUnlocked: [...recentlyUnlocked, achievement].slice(-5),
@@ -468,7 +543,9 @@ export const useGamificationStore = create<GamificationState>()(
 
             console.log(`[Gamification] Achievement unlocked: ${achievement.title}`);
           } else {
-            console.log(`[Gamification] Achievement not ready: ${achievement.title} - ${result.message}`);
+            console.log(
+              `[Gamification] Achievement not ready: ${achievement.title} - ${result.message}`
+            );
           }
         } catch (error) {
           console.error('[Gamification] Failed to unlock achievement:', error);
@@ -480,7 +557,7 @@ export const useGamificationStore = create<GamificationState>()(
        */
       completeQuest: async (questId: string) => {
         const { activeQuests } = get();
-        const quest = activeQuests.find(q => q.id === questId);
+        const quest = activeQuests.find((q) => q.id === questId);
 
         if (!quest || quest.completed) return;
 
@@ -490,14 +567,16 @@ export const useGamificationStore = create<GamificationState>()(
 
           // Move to completed
           set({
-            activeQuests: activeQuests.filter(q => q.id !== questId),
+            activeQuests: activeQuests.filter((q) => q.id !== questId),
             completedQuests: [
               ...get().completedQuests,
-              { ...quest, completed: true, completedAt: new Date().toISOString() }
+              { ...quest, completed: true, completedAt: new Date().toISOString() },
             ],
           });
 
-          console.log(`[Gamification] Quest completed: ${quest.title}, XP: ${rewards?.xp}, Coins: ${rewards?.coins}`);
+          console.log(
+            `[Gamification] Quest completed: ${quest.title}, XP: ${rewards?.xp}, Coins: ${rewards?.coins}`
+          );
         } catch (error) {
           console.error('[Gamification] Failed to complete quest:', error);
         }
@@ -510,11 +589,11 @@ export const useGamificationStore = create<GamificationState>()(
         const { activeQuests } = get();
 
         set({
-          activeQuests: activeQuests.map(quest =>
+          activeQuests: activeQuests.map((quest) =>
             quest.id === questId
               ? {
                   ...quest,
-                  objectives: quest.objectives.map(obj =>
+                  objectives: quest.objectives.map((obj) =>
                     obj.id === objectiveId
                       ? {
                           ...obj,
@@ -537,11 +616,11 @@ export const useGamificationStore = create<GamificationState>()(
           await api.post(`/api/v1/titles/${titleId}/equip`);
 
           const { availableTitles } = get();
-          const title = availableTitles.find(t => t.id === titleId);
+          const title = availableTitles.find((t) => t.id === titleId);
 
           set({
             equippedTitle: title || null,
-            availableTitles: availableTitles.map(t => ({
+            availableTitles: availableTitles.map((t) => ({
               ...t,
               isEquipped: t.id === titleId,
             })),
@@ -577,7 +656,9 @@ export const useGamificationStore = create<GamificationState>()(
             loginStreak: data.streak_days || data.streak || get().loginStreak + 1,
           });
 
-          console.log(`[Gamification] Daily login claimed! Streak: ${data.streak_days}, Coins: ${data.coins_earned}`);
+          console.log(
+            `[Gamification] Daily login claimed! Streak: ${data.streak_days}, Coins: ${data.coins_earned}`
+          );
         } catch (error) {
           // Already claimed or other error - update last login date anyway
           set({ lastLoginDate: today });

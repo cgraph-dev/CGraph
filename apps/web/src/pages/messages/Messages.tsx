@@ -5,6 +5,7 @@ import { useChatStore, Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { socketManager } from '@/lib/socket';
 import { formatTimeAgo } from '@/lib/utils';
+import { toast } from '@/components/Toast';
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -20,7 +21,8 @@ export default function Messages() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { conversations, isLoadingConversations, fetchConversations, createConversation } = useChatStore();
+  const { conversations, isLoadingConversations, fetchConversations, createConversation } =
+    useChatStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -29,12 +31,12 @@ export default function Messages() {
   // Track online status changes for all conversations
   useEffect(() => {
     const unsubscribe = socketManager.onStatusChange((convId, userId, isOnline) => {
-      setOnlineStatus(prev => ({
+      setOnlineStatus((prev) => ({
         ...prev,
-        [`${convId}-${userId}`]: isOnline
+        [`${convId}-${userId}`]: isOnline,
       }));
     });
-    
+
     return unsubscribe;
   }, []);
 
@@ -44,21 +46,23 @@ export default function Messages() {
       // Get initial presence state from socket manager
       const allStatuses = socketManager.getAllOnlineStatuses();
       const statusMap: Record<string, boolean> = {};
-      
-      conversations.forEach(conv => {
+
+      conversations.forEach((conv) => {
         const onlineUsers = allStatuses.get(conv.id);
         if (onlineUsers) {
-          const otherParticipant = conv.participants.find(p => p.userId !== user?.id);
+          const otherParticipant = conv.participants.find((p) => p.userId !== user?.id);
           if (otherParticipant) {
-            statusMap[`${conv.id}-${otherParticipant.userId}`] = onlineUsers.has(otherParticipant.userId);
+            statusMap[`${conv.id}-${otherParticipant.userId}`] = onlineUsers.has(
+              otherParticipant.userId
+            );
           }
         }
       });
-      
+
       setOnlineStatus(statusMap);
-      
+
       // Peek at all conversations to get presence updates
-      const conversationIds = conversations.map(c => c.id);
+      const conversationIds = conversations.map((c) => c.id);
       socketManager.peekConversationsPresence(conversationIds);
     }
   }, [conversations, user?.id]);
@@ -79,30 +83,34 @@ export default function Messages() {
   }, [fetchConversations]);
 
   // Memoized handler for starting conversation with user
-  const handleStartConversationWithUser = useCallback(async (userId: string) => {
-    // Check if conversation already exists with this user
-    const existingConv = conversations.find((conv) => {
-      if (conv.type !== 'direct') return false;
-      return conv.participants.some((p) => p.userId === userId);
-    });
+  const handleStartConversationWithUser = useCallback(
+    async (userId: string) => {
+      // Check if conversation already exists with this user
+      const existingConv = conversations.find((conv) => {
+        if (conv.type !== 'direct') return false;
+        return conv.participants.some((p) => p.userId === userId);
+      });
 
-    if (existingConv) {
-      navigate(`/messages/${existingConv.id}`, { replace: true });
-      return;
-    }
+      if (existingConv) {
+        navigate(`/messages/${existingConv.id}`, { replace: true });
+        return;
+      }
 
-    // Create new conversation
-    setIsCreatingConversation(true);
-    try {
-      const newConv = await createConversation([userId]);
-      navigate(`/messages/${newConv.id}`, { replace: true });
-    } catch (error) {
-      console.error('Failed to create conversation:', error);
-      navigate('/messages', { replace: true });
-    } finally {
-      setIsCreatingConversation(false);
-    }
-  }, [conversations, createConversation, navigate]);
+      // Create new conversation
+      setIsCreatingConversation(true);
+      try {
+        const newConv = await createConversation([userId]);
+        navigate(`/messages/${newConv.id}`, { replace: true });
+      } catch (error) {
+        console.error('Failed to create conversation:', error);
+        toast.error('Failed to start conversation. Please try again.');
+        navigate('/messages', { replace: true });
+      } finally {
+        setIsCreatingConversation(false);
+      }
+    },
+    [conversations, createConversation, navigate]
+  );
 
   // Handle userId query param (from friends page)
   useEffect(() => {
@@ -119,21 +127,21 @@ export default function Messages() {
   });
 
   return (
-    <div className="flex flex-1 h-full max-h-screen overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
+    <div className="flex h-full max-h-screen flex-1 overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Conversations Sidebar - Next Gen */}
-      <div className="w-80 bg-dark-900/50 backdrop-blur-xl border-r border-primary-500/20 flex flex-col h-full relative">
+      <div className="relative flex h-full w-80 flex-col border-r border-primary-500/20 bg-dark-900/50 backdrop-blur-xl">
         {/* Ambient glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
         {/* Header */}
-        <div className="p-4 border-b border-primary-500/20 relative z-10">
+        <div className="relative z-10 border-b border-primary-500/20 p-4">
           <motion.div
-            className="flex items-center justify-between mb-4"
+            className="mb-4 flex items-center justify-between"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent flex items-center gap-2">
+            <h2 className="flex items-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
               <ChatBubbleLeftRightIcon className="h-6 w-6 text-primary-400" />
               Messages
             </h2>
@@ -144,16 +152,18 @@ export default function Messages() {
                   HapticFeedback.light();
                 }}
                 disabled={isRefreshing}
-                className="p-2 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all disabled:opacity-50 group"
+                className="group rounded-xl p-2 text-gray-400 transition-all hover:bg-primary-500/20 hover:text-primary-400 disabled:opacity-50"
                 title="Refresh conversations"
                 whileHover={{ scale: 1.1, rotate: 180 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''} group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]`} />
+                <ArrowPathIcon
+                  className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''} group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]`}
+                />
               </motion.button>
               <motion.button
                 onClick={() => HapticFeedback.medium()}
-                className="p-2 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all group"
+                className="group rounded-xl p-2 text-gray-400 transition-all hover:bg-primary-500/20 hover:text-primary-400"
                 title="New conversation"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -170,7 +180,7 @@ export default function Messages() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+            <div className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2">
               <MagnifyingGlassIcon className="h-4 w-4 text-primary-400" />
             </div>
             <input
@@ -178,13 +188,14 @@ export default function Messages() {
               placeholder="Search conversations..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 bg-dark-800/50 border border-primary-500/30 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all backdrop-blur-sm"
+              aria-label="Search conversations"
+              className="w-full rounded-xl border border-primary-500/30 bg-dark-800/50 py-2.5 pl-9 pr-4 text-sm text-white placeholder-gray-500 backdrop-blur-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
             />
           </motion.div>
         </div>
 
         {/* Conversations List */}
-        <div className="flex-1 overflow-y-auto min-h-0 relative z-10">
+        <div className="relative z-10 min-h-0 flex-1 overflow-y-auto">
           {isLoadingConversations && conversations.length === 0 ? (
             <motion.div
               className="flex items-center justify-center py-12"
@@ -202,13 +213,13 @@ export default function Messages() {
             </motion.div>
           ) : filteredConversations.length === 0 ? (
             <motion.div
-              className="text-center py-12 px-4"
+              className="px-4 py-12 text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <div className="relative inline-block mb-4">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary-500/20 to-purple-500/20 flex items-center justify-center mx-auto backdrop-blur-sm border border-primary-500/30">
+              <div className="relative mb-4 inline-block">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-primary-500/30 bg-gradient-to-br from-primary-500/20 to-purple-500/20 backdrop-blur-sm">
                   <UserIcon className="h-8 w-8 text-primary-400" />
                 </div>
                 <motion.div
@@ -217,12 +228,10 @@ export default function Messages() {
                   transition={{ duration: 2, repeat: Infinity }}
                 />
               </div>
-              <p className="text-lg font-semibold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent">
+              <p className="bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-lg font-semibold text-transparent">
                 {searchQuery ? 'No conversations found' : 'No messages yet'}
               </p>
-              <p className="text-sm text-gray-500 mt-2">
-                Start a new conversation to get started
-              </p>
+              <p className="mt-2 text-sm text-gray-500">Start a new conversation to get started</p>
             </motion.div>
           ) : (
             <motion.div
@@ -251,12 +260,12 @@ export default function Messages() {
       </div>
 
       {/* Conversation Content */}
-      <div className="flex-1 flex flex-col h-full min-w-0">
+      <div className="flex h-full min-w-0 flex-1 flex-col">
         {conversationId ? (
           <Outlet />
         ) : (
           <motion.div
-            className="flex-1 flex items-center justify-center bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative overflow-hidden"
+            className="relative flex flex-1 items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -265,7 +274,7 @@ export default function Messages() {
             {[...Array(8)].map((_, i) => (
               <motion.div
                 key={i}
-                className="absolute w-1 h-1 rounded-full bg-primary-400"
+                className="absolute h-1 w-1 rounded-full bg-primary-400"
                 style={{
                   left: `${Math.random() * 100}%`,
                   top: `${Math.random() * 100}%`,
@@ -285,13 +294,13 @@ export default function Messages() {
             ))}
 
             <motion.div
-              className="text-center relative z-10"
+              className="relative z-10 text-center"
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               transition={{ type: 'spring', stiffness: 200, damping: 20 }}
             >
-              <div className="relative inline-block mb-6">
-                <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center mx-auto backdrop-blur-sm border border-primary-500/30 shadow-2xl">
+              <div className="relative mb-6 inline-block">
+                <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl border border-primary-500/30 bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-pink-500/20 shadow-2xl backdrop-blur-sm">
                   <ChatBubbleLeftRightIcon className="h-12 w-12 text-primary-400" />
                 </div>
                 <motion.div
@@ -313,11 +322,11 @@ export default function Messages() {
                 />
               </div>
 
-              <h3 className="text-3xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-3 flex items-center justify-center gap-2">
+              <h3 className="mb-3 flex items-center justify-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
                 Your Messages
-                <SparklesIcon className="h-6 w-6 text-primary-400 animate-pulse" />
+                <SparklesIcon className="h-6 w-6 animate-pulse text-primary-400" />
               </h3>
-              <p className="text-gray-400 max-w-md text-lg">
+              <p className="max-w-md text-lg text-gray-400">
                 Select a conversation or start a new one to begin messaging
               </p>
 
@@ -326,7 +335,7 @@ export default function Messages() {
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                <div className="h-2 w-2 rounded-full bg-primary-500 animate-pulse" />
+                <div className="h-2 w-2 animate-pulse rounded-full bg-primary-500" />
                 End-to-end encrypted
               </motion.div>
             </motion.div>
@@ -343,7 +352,11 @@ function getConversationName(conv: Conversation, currentUserId: string): string 
   if (conv.type === 'direct') {
     const otherParticipant = conv.participants.find((p) => p.userId !== currentUserId);
     if (otherParticipant) {
-      return otherParticipant.nickname || otherParticipant.user.displayName || otherParticipant.user.username;
+      return (
+        otherParticipant.nickname ||
+        otherParticipant.user.displayName ||
+        otherParticipant.user.username
+      );
     }
   }
   return 'Unknown';
@@ -378,13 +391,17 @@ function ConversationItem({
   const avatar = getConversationAvatar(conversation, currentUserId);
   const otherParticipant = conversation.participants.find((p) => p.userId !== currentUserId);
   // Use Phoenix Presence for real-time online status (single source of truth)
-  const isOnline = otherParticipant ? onlineStatus[`${conversation.id}-${otherParticipant.userId}`] || false : false;
+  const isOnline = otherParticipant
+    ? onlineStatus[`${conversation.id}-${otherParticipant.userId}`] || false
+    : false;
 
   return (
     <NavLink
       to={`/messages/${conversation.id}`}
-      className={`flex items-center gap-3 px-4 py-3 transition-all duration-200 group relative ${
-        isActive ? 'bg-primary-500/10 border-l-2 border-primary-500' : 'border-l-2 border-transparent hover:bg-primary-500/5'
+      className={`group relative flex items-center gap-3 px-4 py-3 transition-all duration-200 ${
+        isActive
+          ? 'border-l-2 border-primary-500 bg-primary-500/10'
+          : 'border-l-2 border-transparent hover:bg-primary-500/5'
       }`}
       onMouseEnter={() => {
         setIsHovered(true);
@@ -403,22 +420,24 @@ function ConversationItem({
       )}
       {/* Avatar with gradient border */}
       <motion.div
-        className="relative flex-shrink-0 z-10"
+        className="relative z-10 flex-shrink-0"
         whileHover={{ scale: 1.08 }}
         transition={{ type: 'spring', stiffness: 400, damping: 25 }}
       >
-        <div className={`h-12 w-12 rounded-full overflow-hidden p-0.5 transition-all duration-200 ${
-          isActive
-            ? 'bg-gradient-to-br from-primary-500 to-purple-600'
-            : isHovered
-            ? 'bg-gradient-to-br from-primary-500/50 to-purple-600/50'
-            : 'bg-dark-700'
-        }`}>
-          <div className="h-full w-full rounded-full overflow-hidden bg-dark-800">
+        <div
+          className={`h-12 w-12 overflow-hidden rounded-full p-0.5 transition-all duration-200 ${
+            isActive
+              ? 'bg-gradient-to-br from-primary-500 to-purple-600'
+              : isHovered
+                ? 'bg-gradient-to-br from-primary-500/50 to-purple-600/50'
+                : 'bg-dark-700'
+          }`}
+        >
+          <div className="h-full w-full overflow-hidden rounded-full bg-dark-800">
             {avatar ? (
               <img src={avatar} alt={name} className="h-full w-full object-cover" />
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-sm font-bold bg-gradient-to-br from-primary-400 to-purple-400 bg-clip-text text-transparent">
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-400 to-purple-400 bg-clip-text text-sm font-bold text-transparent">
                 {name.charAt(0).toUpperCase()}
               </div>
             )}
@@ -426,12 +445,9 @@ function ConversationItem({
         </div>
         {conversation.type === 'direct' && isOnline && (
           <motion.div
-            className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-dark-900 shadow-lg"
+            className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-dark-900 bg-green-500 shadow-lg"
             animate={{
-              boxShadow: [
-                '0 0 0 0 rgba(34, 197, 94, 0.7)',
-                '0 0 0 6px rgba(34, 197, 94, 0)',
-              ],
+              boxShadow: ['0 0 0 0 rgba(34, 197, 94, 0.7)', '0 0 0 6px rgba(34, 197, 94, 0)'],
             }}
             transition={{ duration: 2, repeat: Infinity }}
           />
@@ -439,31 +455,35 @@ function ConversationItem({
       </motion.div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0 relative z-10">
+      <div className="relative z-10 min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <span className={`font-semibold truncate transition-colors ${
-            conversation.unreadCount > 0
-              ? 'text-white'
-              : isActive
-              ? 'text-primary-300'
-              : 'text-gray-300'
-          }`}>
+          <span
+            className={`truncate font-semibold transition-colors ${
+              conversation.unreadCount > 0
+                ? 'text-white'
+                : isActive
+                  ? 'text-primary-300'
+                  : 'text-gray-300'
+            }`}
+          >
             {name}
           </span>
           {conversation.lastMessage && (
-            <span className={`text-xs flex-shrink-0 transition-colors ${
-              isActive ? 'text-primary-400' : 'text-gray-500'
-            }`}>
+            <span
+              className={`flex-shrink-0 text-xs transition-colors ${
+                isActive ? 'text-primary-400' : 'text-gray-500'
+              }`}
+            >
               {formatTimeAgo(conversation.lastMessage.createdAt, { addSuffix: false })}
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2 mt-1">
-          <p className={`text-sm truncate transition-colors ${
-            conversation.unreadCount > 0
-              ? 'text-gray-300 font-medium'
-              : 'text-gray-500'
-          }`}>
+        <div className="mt-1 flex items-center gap-2">
+          <p
+            className={`truncate text-sm transition-colors ${
+              conversation.unreadCount > 0 ? 'font-medium text-gray-300' : 'text-gray-500'
+            }`}
+          >
             {conversation.lastMessage?.content || 'No messages yet'}
           </p>
           <AnimatePresence>
@@ -472,7 +492,7 @@ function ConversationItem({
                 initial={{ scale: 0, rotate: -180 }}
                 animate={{ scale: 1, rotate: 0 }}
                 exit={{ scale: 0, rotate: 180 }}
-                className="flex-shrink-0 h-5 min-w-[20px] px-1.5 rounded-full bg-gradient-to-r from-primary-600 to-purple-600 text-xs font-bold flex items-center justify-center text-white shadow-lg"
+                className="flex h-5 min-w-[20px] flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-primary-600 to-purple-600 px-1.5 text-xs font-bold text-white shadow-lg"
                 style={{
                   boxShadow: '0 0 15px rgba(16, 185, 129, 0.5)',
                 }}

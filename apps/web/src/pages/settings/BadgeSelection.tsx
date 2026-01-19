@@ -4,6 +4,7 @@ import { Award, Lock, Search, Sparkles, Trophy, Star, Shield, Crown } from 'luci
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useAuthStore } from '@/stores/authStore';
 import VisibilityBadge from '@/components/settings/VisibilityBadge';
+import { toast } from '@/components/Toast';
 
 /**
  * Badge Selection Page
@@ -24,24 +25,25 @@ export default function BadgeSelection() {
   const badges = useMemo(() => {
     return achievements.map((achievement) => ({
       id: achievement.id,
-      name: achievement.name,
+      name: achievement.title, // Achievement uses 'title', map to 'name' for badges
       description: achievement.description,
       icon: achievement.icon,
       category: achievement.category,
       rarity: achievement.rarity,
-      isUnlocked: achievement.isUnlocked,
-      isPremium: achievement.tier === 'premium',
+      isUnlocked: achievement.unlocked, // Achievement uses 'unlocked', map to 'isUnlocked'
+      isPremium: achievement.rarity === 'legendary' || achievement.rarity === 'epic',
       unlockedAt: achievement.unlockedAt,
       progress: achievement.progress,
-      requirement: achievement.requirement,
+      requirement: achievement.maxProgress,
     }));
   }, [achievements]);
 
   // Filter badges
   const filteredBadges = useMemo(() => {
     return badges.filter((badge) => {
-      const matchesSearch = badge.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           badge.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        badge.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        badge.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || badge.category === selectedCategory;
       const matchesRarity = selectedRarity === 'all' || badge.rarity === selectedRarity;
 
@@ -63,24 +65,27 @@ export default function BadgeSelection() {
     return grouped;
   }, [filteredBadges]);
 
-  const userIsPremium = user?.subscription?.tier === 'pro' ||
-                        user?.subscription?.tier === 'business';
+  const userIsPremium =
+    user?.subscription?.tier === 'pro' || user?.subscription?.tier === 'business';
 
   const handleEquipBadge = async (badgeId: string) => {
     try {
       // Maximum 5 badges can be equipped
       if (equippedBadges.length >= 5 && !equippedBadges.includes(badgeId)) {
-        alert('You can only equip up to 5 badges. Unequip one first.');
+        toast.warning('You can only equip up to 5 badges. Unequip one first.');
         return;
       }
 
       if (equippedBadges.includes(badgeId)) {
         await unequipBadge(badgeId);
+        toast.success('Badge unequipped!');
       } else {
         await equipBadge(badgeId);
+        toast.success('Badge equipped!');
       }
     } catch (error) {
       console.error('Failed to equip/unequip badge:', error);
+      toast.error('Failed to update badge. Please try again.');
     }
   };
 
@@ -120,11 +125,11 @@ export default function BadgeSelection() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="mx-auto max-w-7xl p-6">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Award className="w-8 h-8 text-purple-500" />
+        <div className="mb-2 flex items-center gap-3">
+          <Award className="h-8 w-8 text-purple-500" />
           <h1 className="text-3xl font-bold">Badges</h1>
           <VisibilityBadge visible="others" />
         </div>
@@ -136,12 +141,12 @@ export default function BadgeSelection() {
       {/* Currently Equipped */}
       {equippedBadges.length > 0 && (
         <motion.div
-          className="mb-6 p-6 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg"
+          className="mb-6 rounded-lg border border-purple-500/30 bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-6"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <div>
-            <h3 className="text-sm font-semibold text-gray-400 mb-3">
+            <h3 className="mb-3 text-sm font-semibold text-gray-400">
               Currently Equipped ({equippedBadges.length}/5)
             </h3>
             <div className="flex flex-wrap gap-3">
@@ -152,7 +157,7 @@ export default function BadgeSelection() {
                 return (
                   <motion.div
                     key={badgeId}
-                    className="flex items-center gap-2 px-3 py-2 bg-gray-800 rounded-lg border border-purple-500/50"
+                    className="flex items-center gap-2 rounded-lg border border-purple-500/50 bg-gray-800 px-3 py-2"
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
@@ -161,7 +166,7 @@ export default function BadgeSelection() {
                     <span className="text-sm font-medium">{badge.name}</span>
                     <button
                       onClick={() => handleEquipBadge(badgeId)}
-                      className="ml-2 text-gray-400 hover:text-red-500 transition-colors"
+                      className="ml-2 text-gray-400 transition-colors hover:text-red-500"
                     >
                       ×
                     </button>
@@ -177,13 +182,13 @@ export default function BadgeSelection() {
       <div className="mb-6 space-y-4">
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
           <input
             type="text"
             placeholder="Search badges..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 py-3 pl-10 pr-4 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
           />
         </div>
 
@@ -191,7 +196,7 @@ export default function BadgeSelection() {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               selectedCategory === 'all'
                 ? 'bg-purple-500 text-white'
                 : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
@@ -205,13 +210,13 @@ export default function BadgeSelection() {
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+                className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
                   selectedCategory === category
                     ? 'bg-purple-500 text-white'
                     : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
                 }`}
               >
-                <Icon className="w-4 h-4" />
+                <Icon className="h-4 w-4" />
                 {getCategoryLabel(category)}
               </button>
             );
@@ -222,7 +227,7 @@ export default function BadgeSelection() {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedRarity('all')}
-            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+            className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
               selectedRarity === 'all'
                 ? 'bg-purple-500 text-white'
                 : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
@@ -234,7 +239,7 @@ export default function BadgeSelection() {
             <button
               key={rarity}
               onClick={() => setSelectedRarity(rarity)}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors capitalize ${
+              className={`rounded-lg px-3 py-1 text-sm font-medium capitalize transition-colors ${
                 selectedRarity === rarity
                   ? `bg-${getRarityColor(rarity).split('-')[1]}-500 text-white`
                   : `${getRarityColor(rarity)} bg-gray-800 hover:bg-gray-700`
@@ -255,13 +260,13 @@ export default function BadgeSelection() {
 
           return (
             <div key={category}>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Icon className="w-6 h-6" />
+              <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
+                <Icon className="h-6 w-6" />
                 {getCategoryLabel(category)}
-                <span className="text-sm text-gray-400 font-normal">({categoryBadges.length})</span>
+                <span className="text-sm font-normal text-gray-400">({categoryBadges.length})</span>
               </h2>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+              <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                 {categoryBadges.map((badge) => (
                   <BadgeCard
                     key={badge.id}
@@ -278,8 +283,8 @@ export default function BadgeSelection() {
         })}
 
         {filteredBadges.length === 0 && (
-          <div className="text-center py-12">
-            <Search className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <div className="py-12 text-center">
+            <Search className="mx-auto mb-4 h-16 w-16 text-gray-600" />
             <p className="text-gray-400">No badges found matching your search.</p>
           </div>
         )}
@@ -289,23 +294,23 @@ export default function BadgeSelection() {
       <AnimatePresence>
         {previewBadge && (
           <motion.div
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setPreviewBadge(null)}
           >
             <motion.div
-              className="bg-gray-900 rounded-lg p-6 max-w-md w-full border border-gray-700"
+              className="w-full max-w-md rounded-lg border border-gray-700 bg-gray-900 p-6"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="text-center mb-4">
-                <div className="text-6xl mb-3">{previewBadge.icon}</div>
-                <h3 className="text-xl font-bold mb-2">{previewBadge.name}</h3>
-                <p className="text-sm text-gray-400 mb-4">{previewBadge.description}</p>
+              <div className="mb-4 text-center">
+                <div className="mb-3 text-6xl">{previewBadge.icon}</div>
+                <h3 className="mb-2 text-xl font-bold">{previewBadge.name}</h3>
+                <p className="mb-4 text-sm text-gray-400">{previewBadge.description}</p>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-center gap-2 text-sm">
@@ -323,12 +328,12 @@ export default function BadgeSelection() {
 
                   {!previewBadge.isUnlocked && previewBadge.progress !== undefined && (
                     <div className="mt-2">
-                      <div className="text-sm text-gray-400 mb-1">
+                      <div className="mb-1 text-sm text-gray-400">
                         Progress: {Math.round(previewBadge.progress)}%
                       </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2">
+                      <div className="h-2 w-full rounded-full bg-gray-700">
                         <div
-                          className="bg-purple-500 h-2 rounded-full transition-all"
+                          className="h-2 rounded-full bg-purple-500 transition-all"
                           style={{ width: `${previewBadge.progress}%` }}
                         />
                       </div>
@@ -339,7 +344,7 @@ export default function BadgeSelection() {
 
               <button
                 onClick={() => setPreviewBadge(null)}
-                className="w-full px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+                className="w-full rounded-lg bg-purple-500 px-4 py-2 text-white transition-colors hover:bg-purple-600"
               >
                 Close
               </button>
@@ -367,16 +372,16 @@ function BadgeCard({ badge, isEquipped, onEquip, onPreview, userIsPremium }: Bad
     <motion.div
       className={`relative overflow-hidden rounded-lg border-2 transition-all duration-300 ${
         isEquipped
-          ? 'border-purple-500 shadow-lg shadow-purple-500/50 bg-gray-900'
-          : 'border-gray-700 hover:border-gray-600 bg-gray-800/50'
+          ? 'border-purple-500 bg-gray-900 shadow-lg shadow-purple-500/50'
+          : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
       } ${!isUnlocked ? 'opacity-50' : ''}`}
       whileHover={{ scale: isLocked ? 1 : 1.05 }}
     >
       <div className="p-4">
         {/* Badge Icon */}
-        <div className="text-center mb-3">
-          <div className="text-5xl mb-2">{badge.icon}</div>
-          <h4 className="font-semibold text-white text-sm line-clamp-1">{badge.name}</h4>
+        <div className="mb-3 text-center">
+          <div className="mb-2 text-5xl">{badge.icon}</div>
+          <h4 className="line-clamp-1 text-sm font-semibold text-white">{badge.name}</h4>
           <span className={`text-xs capitalize ${getRarityColor(badge.rarity)}`}>
             {badge.rarity}
           </span>
@@ -386,22 +391,22 @@ function BadgeCard({ badge, isEquipped, onEquip, onPreview, userIsPremium }: Bad
         <div className="flex gap-2">
           <button
             onClick={onPreview}
-            className="flex-1 px-2 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded transition-colors"
+            className="flex-1 rounded bg-gray-700 px-2 py-1.5 text-xs text-white transition-colors hover:bg-gray-600"
           >
             View
           </button>
 
           {isLocked ? (
             <button
-              className="flex-1 px-2 py-1.5 bg-yellow-500/20 text-yellow-500 text-xs rounded flex items-center justify-center gap-1"
+              className="flex flex-1 items-center justify-center gap-1 rounded bg-yellow-500/20 px-2 py-1.5 text-xs text-yellow-500"
               disabled
             >
-              <Lock className="w-3 h-3" />
+              <Lock className="h-3 w-3" />
               Premium
             </button>
           ) : !isUnlocked ? (
             <button
-              className="flex-1 px-2 py-1.5 bg-blue-500/20 text-blue-500 text-xs rounded"
+              className="flex-1 rounded bg-blue-500/20 px-2 py-1.5 text-xs text-blue-500"
               disabled
             >
               Locked
@@ -409,15 +414,15 @@ function BadgeCard({ badge, isEquipped, onEquip, onPreview, userIsPremium }: Bad
           ) : isEquipped ? (
             <button
               onClick={onEquip}
-              className="flex-1 px-2 py-1.5 bg-purple-500 text-white text-xs rounded flex items-center justify-center gap-1"
+              className="flex flex-1 items-center justify-center gap-1 rounded bg-purple-500 px-2 py-1.5 text-xs text-white"
             >
-              <Sparkles className="w-3 h-3" />
+              <Sparkles className="h-3 w-3" />
               Equipped
             </button>
           ) : (
             <button
               onClick={onEquip}
-              className="flex-1 px-2 py-1.5 bg-purple-500 hover:bg-purple-600 text-white text-xs rounded transition-colors"
+              className="flex-1 rounded bg-purple-500 px-2 py-1.5 text-xs text-white transition-colors hover:bg-purple-600"
             >
               Equip
             </button>
@@ -427,9 +432,9 @@ function BadgeCard({ badge, isEquipped, onEquip, onPreview, userIsPremium }: Bad
 
       {/* Premium Overlay */}
       {isLocked && (
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="text-center">
-            <Lock className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+            <Lock className="mx-auto mb-2 h-8 w-8 text-yellow-500" />
             <p className="text-xs font-semibold text-white">Premium</p>
           </div>
         </div>
@@ -438,12 +443,12 @@ function BadgeCard({ badge, isEquipped, onEquip, onPreview, userIsPremium }: Bad
       {/* Equipped Indicator */}
       {isEquipped && (
         <motion.div
-          className="absolute top-1 right-1"
+          className="absolute right-1 top-1"
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
-          <Sparkles className="w-5 h-5 text-purple-500 fill-purple-500/20" />
+          <Sparkles className="h-5 w-5 fill-purple-500/20 text-purple-500" />
         </motion.div>
       )}
 

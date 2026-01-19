@@ -5,6 +5,7 @@ import { useGamificationStore } from '@/stores/gamificationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { TitleBadge } from '@/components/gamification/TitleBadge';
 import VisibilityBadge from '@/components/settings/VisibilityBadge';
+import { toast } from '@/components/Toast';
 import type { Title, TitleCategory, TitleRarity } from '@/data/titles';
 
 /**
@@ -25,8 +26,9 @@ export default function TitleSelection() {
   // Filter titles
   const filteredTitles = useMemo(() => {
     return titles.filter((title) => {
-      const matchesSearch = title.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           title.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch =
+        title.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        title.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = selectedCategory === 'all' || title.category === selectedCategory;
       const matchesRarity = selectedRarity === 'all' || title.rarity === selectedRarity;
 
@@ -51,16 +53,16 @@ export default function TitleSelection() {
     return grouped;
   }, [filteredTitles]);
 
-  const userIsPremium = user?.subscription?.tier === 'pro' ||
-                        user?.subscription?.tier === 'business';
+  const userIsPremium =
+    user?.subscription?.tier === 'pro' || user?.subscription?.tier === 'business';
 
   const handleEquipTitle = async (titleId: string) => {
     try {
       await equipTitle(titleId);
-      // Show success notification
+      toast.success('Title equipped successfully!');
     } catch (error) {
       console.error('Failed to equip title:', error);
-      // Show error notification
+      toast.error('Failed to equip title. Please try again.');
     }
   };
 
@@ -101,11 +103,11 @@ export default function TitleSelection() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6">
+    <div className="mx-auto max-w-7xl p-6">
       {/* Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <Crown className="w-8 h-8 text-yellow-500" />
+        <div className="mb-2 flex items-center gap-3">
+          <Crown className="h-8 w-8 text-yellow-500" />
           <h1 className="text-3xl font-bold">Titles</h1>
           <VisibilityBadge visible="others" />
         </div>
@@ -117,13 +119,13 @@ export default function TitleSelection() {
       {/* Currently Equipped */}
       {equippedTitleId && (
         <motion.div
-          className="mb-6 p-6 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-lg"
+          className="mb-6 rounded-lg border border-purple-500/30 bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-6"
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-semibold text-gray-400 mb-2">Currently Equipped</h3>
+              <h3 className="mb-2 text-sm font-semibold text-gray-400">Currently Equipped</h3>
               <div className="flex items-center gap-3">
                 <span className="text-lg font-semibold">{user?.displayName || 'User'}</span>
                 <TitleBadge titleId={equippedTitleId} />
@@ -131,7 +133,7 @@ export default function TitleSelection() {
             </div>
             <button
               onClick={() => equipTitle('')}
-              className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors text-sm"
+              className="rounded-lg bg-gray-700 px-4 py-2 text-sm text-white transition-colors hover:bg-gray-600"
             >
               Unequip
             </button>
@@ -143,13 +145,13 @@ export default function TitleSelection() {
       <div className="mb-6 space-y-4">
         {/* Search Bar */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
           <input
             type="text"
             placeholder="Search titles..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 py-3 pl-10 pr-4 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
           />
         </div>
 
@@ -157,7 +159,7 @@ export default function TitleSelection() {
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedCategory('all')}
-            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`rounded-lg px-4 py-2 font-medium transition-colors ${
               selectedCategory === 'all'
                 ? 'bg-purple-500 text-white'
                 : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
@@ -165,30 +167,32 @@ export default function TitleSelection() {
           >
             All
           </button>
-          {(['achievement', 'premium', 'event', 'leaderboard', 'special'] as TitleCategory[]).map((category) => {
-            const Icon = getCategoryIcon(category);
-            return (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                  selectedCategory === category
-                    ? 'bg-purple-500 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                }`}
-              >
-                <Icon className="w-4 h-4" />
-                {getCategoryLabel(category)}
-              </button>
-            );
-          })}
+          {(['achievement', 'premium', 'event', 'leaderboard', 'special'] as TitleCategory[]).map(
+            (category) => {
+              const Icon = getCategoryIcon(category);
+              return (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
+                    selectedCategory === category
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {getCategoryLabel(category)}
+                </button>
+              );
+            }
+          )}
         </div>
 
         {/* Rarity Filters */}
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedRarity('all')}
-            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
+            className={`rounded-lg px-3 py-1 text-sm font-medium transition-colors ${
               selectedRarity === 'all'
                 ? 'bg-purple-500 text-white'
                 : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
@@ -196,11 +200,13 @@ export default function TitleSelection() {
           >
             All Rarities
           </button>
-          {(['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'unique'] as TitleRarity[]).map((rarity) => (
+          {(
+            ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'unique'] as TitleRarity[]
+          ).map((rarity) => (
             <button
               key={rarity}
               onClick={() => setSelectedRarity(rarity)}
-              className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors capitalize ${
+              className={`rounded-lg px-3 py-1 text-sm font-medium capitalize transition-colors ${
                 selectedRarity === rarity
                   ? `bg-${getRarityColor(rarity).split('-')[1]}-500 text-white`
                   : `${getRarityColor(rarity)} bg-gray-800 hover:bg-gray-700`
@@ -221,13 +227,13 @@ export default function TitleSelection() {
 
           return (
             <div key={category}>
-              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <Icon className="w-6 h-6" />
+              <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
+                <Icon className="h-6 w-6" />
                 {getCategoryLabel(category as TitleCategory)}
-                <span className="text-sm text-gray-400 font-normal">({categoryTitles.length})</span>
+                <span className="text-sm font-normal text-gray-400">({categoryTitles.length})</span>
               </h2>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {categoryTitles.map((title) => (
                   <TitleCard
                     key={title.id}
@@ -244,8 +250,8 @@ export default function TitleSelection() {
         })}
 
         {filteredTitles.length === 0 && (
-          <div className="text-center py-12">
-            <Search className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+          <div className="py-12 text-center">
+            <Search className="mx-auto mb-4 h-16 w-16 text-gray-600" />
             <p className="text-gray-400">No titles found matching your search.</p>
           </div>
         )}
@@ -255,27 +261,27 @@ export default function TitleSelection() {
       <AnimatePresence>
         {previewTitle && (
           <motion.div
-            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setPreviewTitle(null)}
           >
             <motion.div
-              className="bg-gray-900 rounded-lg p-6 max-w-md w-full border border-gray-700"
+              className="w-full max-w-md rounded-lg border border-gray-700 bg-gray-900 p-6"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-xl font-bold mb-4">Title Preview</h3>
+              <h3 className="mb-4 text-xl font-bold">Title Preview</h3>
 
-              <div className="mb-4 p-4 bg-gray-800 rounded-lg flex items-center justify-center gap-3">
+              <div className="mb-4 flex items-center justify-center gap-3 rounded-lg bg-gray-800 p-4">
                 <span className="text-lg font-semibold">{user?.displayName || 'User'}</span>
                 <TitleBadge titleId={previewTitle.id} />
               </div>
 
-              <div className="space-y-2 mb-4">
+              <div className="mb-4 space-y-2">
                 <p className="text-sm text-gray-400">{previewTitle.description}</p>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="capitalize text-gray-400">Rarity:</span>
@@ -295,7 +301,7 @@ export default function TitleSelection() {
 
               <button
                 onClick={() => setPreviewTitle(null)}
-                className="w-full px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg transition-colors"
+                className="w-full rounded-lg bg-purple-500 px-4 py-2 text-white transition-colors hover:bg-purple-600"
               >
                 Close
               </button>
@@ -323,8 +329,8 @@ function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: Tit
     <motion.div
       className={`relative overflow-hidden rounded-lg border-2 transition-all duration-300 ${
         isEquipped
-          ? 'border-purple-500 shadow-lg shadow-purple-500/50 bg-gray-900'
-          : 'border-gray-700 hover:border-gray-600 bg-gray-800/50'
+          ? 'border-purple-500 bg-gray-900 shadow-lg shadow-purple-500/50'
+          : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
       }`}
       whileHover={{ scale: isLocked ? 1 : 1.02 }}
     >
@@ -335,39 +341,41 @@ function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: Tit
         </div>
 
         {/* Title Info */}
-        <div className="text-center mb-3">
-          <h4 className="font-semibold text-white mb-1">{title.name}</h4>
-          <p className="text-xs text-gray-400 line-clamp-2">{title.description}</p>
+        <div className="mb-3 text-center">
+          <h4 className="mb-1 font-semibold text-white">{title.name}</h4>
+          <p className="line-clamp-2 text-xs text-gray-400">{title.description}</p>
         </div>
 
         {/* Meta Info */}
-        <div className="flex items-center justify-between text-xs mb-3">
-          <span className={`capitalize ${title.rarity === 'common' ? 'text-gray-400' : `text-${title.rarity}-400`}`}>
+        <div className="mb-3 flex items-center justify-between text-xs">
+          <span
+            className={`capitalize ${title.rarity === 'common' ? 'text-gray-400' : `text-${title.rarity}-400`}`}
+          >
             {title.rarity}
           </span>
-          <span className="text-gray-500 capitalize">{title.category}</span>
+          <span className="capitalize text-gray-500">{title.category}</span>
         </div>
 
         {/* Actions */}
         <div className="flex gap-2">
           <button
             onClick={onPreview}
-            className="flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white text-sm rounded-lg transition-colors"
+            className="flex-1 rounded-lg bg-gray-700 px-3 py-2 text-sm text-white transition-colors hover:bg-gray-600"
           >
             Preview
           </button>
 
           {isLocked ? (
             <button
-              className="flex-1 px-3 py-2 bg-yellow-500/20 text-yellow-500 text-sm rounded-lg flex items-center justify-center gap-1"
+              className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-yellow-500/20 px-3 py-2 text-sm text-yellow-500"
               disabled
             >
-              <Lock className="w-4 h-4" />
+              <Lock className="h-4 w-4" />
               Premium
             </button>
           ) : !isUnlocked ? (
             <button
-              className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-500 text-sm rounded-lg"
+              className="flex-1 rounded-lg bg-blue-500/20 px-3 py-2 text-sm text-blue-500"
               disabled
             >
               Locked
@@ -375,15 +383,15 @@ function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: Tit
           ) : isEquipped ? (
             <button
               onClick={onEquip}
-              className="flex-1 px-3 py-2 bg-purple-500 text-white text-sm rounded-lg flex items-center justify-center gap-1"
+              className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-purple-500 px-3 py-2 text-sm text-white"
             >
-              <Sparkles className="w-4 h-4" />
+              <Sparkles className="h-4 w-4" />
               Equipped
             </button>
           ) : (
             <button
               onClick={onEquip}
-              className="flex-1 px-3 py-2 bg-purple-500 hover:bg-purple-600 text-white text-sm rounded-lg transition-colors"
+              className="flex-1 rounded-lg bg-purple-500 px-3 py-2 text-sm text-white transition-colors hover:bg-purple-600"
             >
               Equip
             </button>
@@ -393,9 +401,9 @@ function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: Tit
 
       {/* Premium Overlay */}
       {isLocked && (
-        <div className="absolute inset-0 bg-black/60 flex items-center justify-center backdrop-blur-sm">
+        <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="text-center">
-            <Lock className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+            <Lock className="mx-auto mb-2 h-8 w-8 text-yellow-500" />
             <p className="text-xs font-semibold text-white">Premium Required</p>
           </div>
         </div>
@@ -404,12 +412,12 @@ function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: Tit
       {/* Equipped Indicator */}
       {isEquipped && (
         <motion.div
-          className="absolute top-2 right-2"
+          className="absolute right-2 top-2"
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
-          <Sparkles className="w-6 h-6 text-purple-500 fill-purple-500/20" />
+          <Sparkles className="h-6 w-6 fill-purple-500/20 text-purple-500" />
         </motion.div>
       )}
     </motion.div>

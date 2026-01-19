@@ -10,9 +10,8 @@ import {
   ShieldExclamationIcon,
 } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/GlassCard';
-import { ProfileCard, type ProfileCardUser } from './ProfileCard';
+import { type ProfileCardUser } from './ProfileCard';
 import { useAuthStore } from '@/stores/authStore';
-import { useFriendStore } from '@/stores/friendStore';
 
 /**
  * UserProfileCard Component
@@ -56,28 +55,28 @@ function MiniProfileCard({ user, onViewProfile, onMessage }: MiniProfileCardProp
   return (
     <div className="w-[300px] p-4">
       {/* Avatar with border */}
-      <div className="flex flex-col items-center mb-3">
+      <div className="mb-3 flex flex-col items-center">
         <div className="relative">
           <img
             src={user.avatarUrl}
             alt={user.displayName}
-            className="h-20 w-20 rounded-full object-cover border-2 border-primary-500/50"
+            className="h-20 w-20 rounded-full border-2 border-primary-500/50 object-cover"
           />
           {/* Online indicator */}
           {user.isOnline && (
-            <div className="absolute bottom-0 right-0 h-5 w-5 rounded-full bg-green-500 border-2 border-dark-800" />
+            <div className="absolute bottom-0 right-0 h-5 w-5 rounded-full border-2 border-dark-800 bg-green-500" />
           )}
         </div>
       </div>
 
       {/* Username + Title */}
-      <div className="text-center mb-3">
-        <h3 className="text-base font-bold text-white truncate">{user.displayName}</h3>
+      <div className="mb-3 text-center">
+        <h3 className="truncate text-base font-bold text-white">{user.displayName}</h3>
         <p className="text-xs text-white/60">@{user.username}</p>
       </div>
 
       {/* Quick Stats */}
-      <div className="flex items-center justify-center gap-4 mb-3 text-xs">
+      <div className="mb-3 flex items-center justify-center gap-4 text-xs">
         <div className="text-center">
           <div className="font-semibold text-white">Level {user.level}</div>
           <div className="text-white/60">XP</div>
@@ -91,7 +90,7 @@ function MiniProfileCard({ user, onViewProfile, onMessage }: MiniProfileCardProp
 
       {/* Mutual Friends */}
       {user.mutualFriends && user.mutualFriends.length > 0 && (
-        <div className="mb-3 text-xs text-center">
+        <div className="mb-3 text-center text-xs">
           <span className="text-white/60">
             {user.mutualFriends.length} mutual friend{user.mutualFriends.length !== 1 ? 's' : ''}
           </span>
@@ -103,13 +102,13 @@ function MiniProfileCard({ user, onViewProfile, onMessage }: MiniProfileCardProp
         <div className="flex gap-2">
           <button
             onClick={onMessage}
-            className="flex-1 px-3 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium transition-colors"
+            className="flex-1 rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
           >
             Message
           </button>
           <button
             onClick={onViewProfile}
-            className="flex-1 px-3 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors"
+            className="flex-1 rounded-lg bg-white/10 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20"
           >
             View Profile
           </button>
@@ -119,7 +118,7 @@ function MiniProfileCard({ user, onViewProfile, onMessage }: MiniProfileCardProp
       {isOwnProfile && (
         <button
           onClick={onViewProfile}
-          className="w-full px-3 py-2 rounded-lg bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium transition-colors"
+          className="w-full rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
         >
           View Profile
         </button>
@@ -141,35 +140,35 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
   const isOwnProfile = user.id === currentUser?.id;
 
   return (
-    <div className="w-[600px] max-h-[80vh] overflow-y-auto">
+    <div className="max-h-[80vh] w-[600px] overflow-y-auto">
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-4 right-4 z-10 p-2 rounded-lg bg-black/20 hover:bg-black/40 text-white/70 hover:text-white transition-colors"
+        className="absolute right-4 top-4 z-10 rounded-lg bg-black/20 p-2 text-white/70 transition-colors hover:bg-black/40 hover:text-white"
         aria-label="Close"
       >
         <XMarkIcon className="h-5 w-5" />
       </button>
 
       {/* Banner Background */}
-      <div className="h-32 bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-pink-500/20 rounded-t-2xl" />
+      <div className="h-32 rounded-t-2xl bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-pink-500/20" />
 
       {/* Profile Content */}
       <div className="px-6 pb-6">
         {/* Avatar */}
-        <div className="flex items-start gap-4 -mt-12 mb-4">
+        <div className="-mt-12 mb-4 flex items-start gap-4">
           <div className="relative">
             <img
               src={user.avatarUrl}
               alt={user.displayName}
-              className="h-24 w-24 rounded-full object-cover border-4 border-dark-800"
+              className="h-24 w-24 rounded-full border-4 border-dark-800 object-cover"
             />
             {user.isOnline && (
-              <div className="absolute bottom-1 right-1 h-6 w-6 rounded-full bg-green-500 border-2 border-dark-800" />
+              <div className="absolute bottom-1 right-1 h-6 w-6 rounded-full border-2 border-dark-800 bg-green-500" />
             )}
           </div>
 
-          <div className="flex-1 mt-12">
+          <div className="mt-12 flex-1">
             <h2 className="text-2xl font-bold text-white">{user.displayName}</h2>
             <p className="text-sm text-white/60">@{user.username}</p>
           </div>
@@ -177,7 +176,7 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
 
         {/* Bio */}
         {user.bio && (
-          <div className="mb-4 p-3 rounded-lg bg-white/5">
+          <div className="mb-4 rounded-lg bg-white/5 p-3">
             <p className="text-sm text-white/80">{user.bio}</p>
           </div>
         )}
@@ -185,14 +184,14 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
         {/* Top Badges */}
         {user.equippedBadges && user.equippedBadges.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm font-semibold text-white/70 mb-2">Equipped Badges</h3>
+            <h3 className="mb-2 text-sm font-semibold text-white/70">Equipped Badges</h3>
             <div className="flex gap-2">
               {user.equippedBadges.slice(0, 3).map((badge) => (
                 <div
                   key={badge.id}
-                  className="px-3 py-1 rounded-lg bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 text-xs font-medium text-yellow-400"
+                  className="rounded-lg border border-yellow-500/30 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 px-3 py-1 text-xs font-medium text-yellow-400"
                 >
-                  {badge.name}
+                  {badge.title || badge.id}
                 </div>
               ))}
             </div>
@@ -200,20 +199,20 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
         )}
 
         {/* Quick Stats Grid */}
-        <div className="grid grid-cols-4 gap-3 mb-4">
-          <div className="p-3 rounded-lg bg-white/5 text-center">
+        <div className="mb-4 grid grid-cols-4 gap-3">
+          <div className="rounded-lg bg-white/5 p-3 text-center">
             <div className="text-lg font-bold text-white">{user.karma.toLocaleString()}</div>
             <div className="text-xs text-white/60">Karma</div>
           </div>
-          <div className="p-3 rounded-lg bg-white/5 text-center">
+          <div className="rounded-lg bg-white/5 p-3 text-center">
             <div className="text-lg font-bold text-white">{user.streak}</div>
             <div className="text-xs text-white/60">Streak</div>
           </div>
-          <div className="p-3 rounded-lg bg-white/5 text-center">
+          <div className="rounded-lg bg-white/5 p-3 text-center">
             <div className="text-lg font-bold text-white">{user.postCount || 0}</div>
             <div className="text-xs text-white/60">Posts</div>
           </div>
-          <div className="p-3 rounded-lg bg-white/5 text-center">
+          <div className="rounded-lg bg-white/5 p-3 text-center">
             <div className="text-lg font-bold text-white">{user.friendCount || 0}</div>
             <div className="text-xs text-white/60">Friends</div>
           </div>
@@ -222,7 +221,7 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
         {/* Mutual Friends */}
         {mutualFriends.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm font-semibold text-white/70 mb-2">Mutual Friends</h3>
+            <h3 className="mb-2 text-sm font-semibold text-white/70">Mutual Friends</h3>
             <div className="flex -space-x-2">
               {mutualFriends.slice(0, 5).map((friend) => (
                 <img
@@ -234,7 +233,7 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
                 />
               ))}
               {mutualFriends.length > 5 && (
-                <div className="h-8 w-8 rounded-full border-2 border-dark-800 bg-white/10 flex items-center justify-center text-xs text-white">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-dark-800 bg-white/10 text-xs text-white">
                   +{mutualFriends.length - 5}
                 </div>
               )}
@@ -245,10 +244,10 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
         {/* Shared Forums */}
         {user.forumsInCommon && user.forumsInCommon.length > 0 && (
           <div className="mb-4">
-            <h3 className="text-sm font-semibold text-white/70 mb-2">Shared Forums</h3>
+            <h3 className="mb-2 text-sm font-semibold text-white/70">Shared Forums</h3>
             <div className="flex flex-wrap gap-2">
               {user.forumsInCommon.slice(0, 3).map((forum) => (
-                <span key={forum.id} className="text-xs px-2 py-1 rounded bg-white/5 text-white/60">
+                <span key={forum.id} className="rounded bg-white/5 px-2 py-1 text-xs text-white/60">
                   {forum.name}
                 </span>
               ))}
@@ -262,12 +261,12 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
             <>
               <Link
                 to={`/messages?userId=${user.id}`}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-primary-600 hover:bg-primary-700 text-white font-medium transition-colors"
+                className="flex items-center justify-center gap-2 rounded-lg bg-primary-600 px-4 py-3 font-medium text-white transition-colors hover:bg-primary-700"
               >
                 <ChatBubbleLeftRightIcon className="h-5 w-5" />
                 <span>Send Message</span>
               </Link>
-              <button className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition-colors">
+              <button className="flex items-center justify-center gap-2 rounded-lg bg-white/10 px-4 py-3 font-medium text-white transition-colors hover:bg-white/20">
                 <UserPlusIcon className="h-5 w-5" />
                 <span>Add Friend</span>
               </button>
@@ -276,14 +275,14 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
 
           <Link
             to={`/user/${user.id}`}
-            className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/20 text-white font-medium transition-colors col-span-2"
+            className="col-span-2 flex items-center justify-center gap-2 rounded-lg bg-white/10 px-4 py-3 font-medium text-white transition-colors hover:bg-white/20"
           >
             <EyeIcon className="h-5 w-5" />
             <span>View Full Profile</span>
           </Link>
 
           {!isOwnProfile && (
-            <button className="flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-400 font-medium transition-colors col-span-2">
+            <button className="col-span-2 flex items-center justify-center gap-2 rounded-lg bg-red-600/20 px-4 py-3 font-medium text-red-400 transition-colors hover:bg-red-600/30">
               <ShieldExclamationIcon className="h-5 w-5" />
               <span>Block User</span>
             </button>
@@ -307,11 +306,12 @@ export default function UserProfileCard({
 }: UserProfileCardProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [cardVariant, setCardVariant] = useState<'mini' | 'full'>(variant);
-  const hoverTimeout = useRef<NodeJS.Timeout>();
+  const hoverTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
-  const { mutualFriends } = useFriendStore();
+  // Note: mutualFriends would need to be fetched per-user in a real implementation
+  const mutualFriends: Array<{ id: string; username: string; avatarUrl?: string }> = [];
 
   // Calculate card position relative to trigger element
   useEffect(() => {
@@ -337,7 +337,8 @@ export default function UserProfileCard({
     if (hoverTimeout.current) {
       clearTimeout(hoverTimeout.current);
     }
-    if (cardVariant === 'mini' && trigger === 'hover') {
+    // Close mini card on mouse leave for both 'hover' and 'both' triggers
+    if (cardVariant === 'mini' && (trigger === 'hover' || trigger === 'both')) {
       setIsOpen(false);
     }
   };
@@ -355,10 +356,18 @@ export default function UserProfileCard({
   };
 
   const handleViewProfile = () => {
+    if (!userId || userId === 'undefined' || userId === 'null') {
+      console.warn('UserProfileCard: Cannot view profile - invalid userId');
+      return;
+    }
     window.location.href = `/user/${userId}`;
   };
 
   const handleMessage = () => {
+    if (!userId || userId === 'undefined' || userId === 'null') {
+      console.warn('UserProfileCard: Cannot message - invalid userId');
+      return;
+    }
     window.location.href = `/messages?userId=${userId}`;
   };
 
@@ -400,7 +409,7 @@ export default function UserProfileCard({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={handleClose}
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+                className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
               />
             )}
 
@@ -414,7 +423,7 @@ export default function UserProfileCard({
                 className={`fixed z-50 ${
                   cardVariant === 'mini'
                     ? 'pointer-events-auto'
-                    : 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
+                    : 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
                 }`}
                 style={
                   cardVariant === 'mini'

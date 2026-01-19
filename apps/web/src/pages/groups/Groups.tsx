@@ -18,7 +18,8 @@ import {
 
 export default function Groups() {
   const { groupId, channelId } = useParams();
-  const { groups, isLoadingGroups: _isLoadingGroups, fetchGroups, fetchGroup, setActiveGroup, setActiveChannel } = useGroupStore();
+  const { groups, isLoadingGroups, fetchGroups, fetchGroup, setActiveGroup, setActiveChannel } =
+    useGroupStore();
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -59,12 +60,22 @@ export default function Groups() {
   }, [activeGroup?.id, activeGroup?.categories]);
 
   return (
-    <div className="flex flex-1 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative overflow-hidden">
+    <div className="relative flex flex-1 overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
+      {/* Loading state */}
+      {isLoadingGroups && groups.length === 0 && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center bg-dark-900/80 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-4">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
+            <span className="text-sm text-gray-400">Loading servers...</span>
+          </div>
+        </div>
+      )}
+
       {/* Ambient particles */}
       {[...Array(6)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-0.5 h-0.5 rounded-full bg-primary-400 pointer-events-none z-0"
+          className="pointer-events-none absolute z-0 h-0.5 w-0.5 rounded-full bg-primary-400"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -84,9 +95,9 @@ export default function Groups() {
       ))}
 
       {/* Server List */}
-      <div className="w-[72px] bg-dark-900/50 backdrop-blur-xl border-r border-primary-500/20 py-3 flex flex-col items-center gap-2 overflow-y-auto relative z-10">
+      <div className="relative z-10 flex w-[72px] flex-col items-center gap-2 overflow-y-auto border-r border-primary-500/20 bg-dark-900/50 py-3 backdrop-blur-xl">
         {/* Ambient glow */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
         {/* Home/DMs button */}
         <motion.div
@@ -97,24 +108,24 @@ export default function Groups() {
           <NavLink
             to="/messages"
             onClick={() => HapticFeedback.medium()}
-            className="relative group"
+            className="group relative"
           >
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="h-12 w-12 rounded-2xl bg-dark-700 group-hover:bg-primary-600 group-hover:rounded-xl flex items-center justify-center transition-all duration-200 relative z-10"
+              className="relative z-10 flex h-12 w-12 items-center justify-center rounded-2xl bg-dark-700 transition-all duration-200 group-hover:rounded-xl group-hover:bg-primary-600"
               style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
             >
               <ChatBubbleLeftRightIcon className="h-6 w-6 text-white" />
             </motion.div>
             <motion.div
-              className="absolute inset-0 rounded-2xl bg-primary-600/20 opacity-0 group-hover:opacity-100 blur-lg pointer-events-none"
+              className="pointer-events-none absolute inset-0 rounded-2xl bg-primary-600/20 opacity-0 blur-lg group-hover:opacity-100"
               transition={{ duration: 0.3 }}
             />
           </NavLink>
         </motion.div>
 
-        <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-primary-500/30 to-transparent rounded-full mx-auto" />
+        <div className="mx-auto h-0.5 w-8 rounded-full bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
 
         {/* Server list */}
         {groups.map((group, index) => (
@@ -138,12 +149,13 @@ export default function Groups() {
           onClick={() => HapticFeedback.medium()}
           whileHover={{ scale: 1.05, rotate: 90 }}
           whileTap={{ scale: 0.95 }}
-          className="h-12 w-12 rounded-2xl bg-dark-700 hover:bg-gradient-to-br hover:from-green-600 hover:to-green-700 hover:rounded-xl flex items-center justify-center transition-all duration-200 relative group"
+          aria-label="Create new server"
+          className="group relative flex h-12 w-12 items-center justify-center rounded-2xl bg-dark-700 transition-all duration-200 hover:rounded-xl hover:bg-gradient-to-br hover:from-green-600 hover:to-green-700"
           style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
         >
-          <PlusIcon className="h-6 w-6 text-green-400 group-hover:text-white transition-colors" />
+          <PlusIcon className="h-6 w-6 text-green-400 transition-colors group-hover:text-white" />
           <motion.div
-            className="absolute inset-0 rounded-2xl bg-green-600/20 opacity-0 group-hover:opacity-100 blur-lg pointer-events-none"
+            className="pointer-events-none absolute inset-0 rounded-2xl bg-green-600/20 opacity-0 blur-lg group-hover:opacity-100"
             transition={{ duration: 0.3 }}
           />
         </motion.button>
@@ -151,9 +163,9 @@ export default function Groups() {
 
       {/* Channel List */}
       {activeGroup ? (
-        <div className="w-60 bg-dark-800/50 backdrop-blur-xl border-r border-primary-500/20 flex flex-col relative z-10">
+        <div className="relative z-10 flex w-60 flex-col border-r border-primary-500/20 bg-dark-800/50 backdrop-blur-xl">
           {/* Ambient glow */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
           {/* Server Header */}
           <motion.div
@@ -163,9 +175,9 @@ export default function Groups() {
           >
             <motion.div
               whileHover={{ backgroundColor: 'rgba(31, 41, 55, 0.5)' }}
-              className="h-12 px-4 flex items-center justify-between border-b border-primary-500/20 cursor-pointer transition-colors"
+              className="flex h-12 cursor-pointer items-center justify-between border-b border-primary-500/20 px-4 transition-colors"
             >
-              <h2 className="font-semibold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent truncate">
+              <h2 className="truncate bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text font-semibold text-transparent">
                 {activeGroup.name}
               </h2>
               <motion.div whileHover={{ rotate: 180 }} transition={{ duration: 0.3 }}>
@@ -175,7 +187,7 @@ export default function Groups() {
           </motion.div>
 
           {/* Channels */}
-          <div className="flex-1 overflow-y-auto py-3 space-y-0.5 relative z-10">
+          <div className="relative z-10 flex-1 space-y-0.5 overflow-y-auto py-3">
             {activeGroup.categories?.map((category, catIndex) => (
               <motion.div
                 key={category.id}
@@ -196,7 +208,7 @@ export default function Groups() {
                   }}
                   whileHover={{ backgroundColor: 'rgba(31, 41, 55, 0.3)' }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full px-2 py-1 flex items-center gap-0.5 text-xs font-semibold text-primary-400 uppercase tracking-wide transition-all rounded"
+                  className="flex w-full items-center gap-0.5 rounded px-2 py-1 text-xs font-semibold uppercase tracking-wide text-primary-400 transition-all"
                 >
                   <motion.div
                     animate={{ rotate: expandedCategories.has(category.id) ? 0 : -90 }}
@@ -272,14 +284,14 @@ export default function Groups() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="h-14 px-2 bg-dark-900/80 backdrop-blur-sm border-t border-primary-500/20 flex items-center gap-2 relative z-10"
+            className="relative z-10 flex h-14 items-center gap-2 border-t border-primary-500/20 bg-dark-900/80 px-2 backdrop-blur-sm"
           >
             <motion.div
               whileHover={{ backgroundColor: 'rgba(31, 41, 55, 0.5)' }}
               whileTap={{ scale: 0.98 }}
-              className="flex-1 flex items-center gap-2 p-1 rounded cursor-pointer transition-colors"
+              className="flex flex-1 cursor-pointer items-center gap-2 rounded p-1 transition-colors"
             >
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center relative">
+              <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700">
                 <span className="text-sm font-bold">U</span>
                 <motion.div
                   className="absolute inset-0 rounded-full border-2 border-primary-500/50"
@@ -292,47 +304,47 @@ export default function Groups() {
                   transition={{ duration: 2, repeat: Infinity }}
                 />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent truncate">
+              <div className="min-w-0 flex-1">
+                <p className="truncate bg-gradient-to-r from-white to-primary-100 bg-clip-text text-sm font-medium text-transparent">
                   User
                 </p>
-                <p className="text-xs text-primary-400 truncate">Online</p>
+                <p className="truncate text-xs text-primary-400">Online</p>
               </div>
             </motion.div>
             <motion.button
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => HapticFeedback.light()}
-              className="p-1.5 rounded-lg bg-dark-700/50 hover:bg-dark-600 text-gray-400 hover:text-primary-400 transition-colors"
+              className="rounded-lg bg-dark-700/50 p-1.5 text-gray-400 transition-colors hover:bg-dark-600 hover:text-primary-400"
             >
               <Cog6ToothIcon className="h-5 w-5" />
             </motion.button>
           </motion.div>
         </div>
       ) : (
-        <div className="w-60 bg-dark-800/50 backdrop-blur-xl border-r border-primary-500/20 flex flex-col relative z-10">
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+        <div className="relative z-10 flex w-60 flex-col border-r border-primary-500/20 bg-dark-800/50 backdrop-blur-xl">
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="h-12 px-4 flex items-center border-b border-primary-500/20 relative z-10"
+            className="relative z-10 flex h-12 items-center border-b border-primary-500/20 px-4"
           >
-            <h2 className="font-semibold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent">
+            <h2 className="bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text font-semibold text-transparent">
               Select a server
             </h2>
           </motion.div>
-          <div className="flex-1 flex items-center justify-center relative z-10">
+          <div className="relative z-10 flex flex-1 items-center justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2 }}
-              className="text-center p-4"
+              className="p-4 text-center"
             >
               <motion.div
                 animate={{ rotate: [0, 5, -5, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
               >
-                <UserGroupIcon className="h-12 w-12 mx-auto text-primary-400 mb-3" />
+                <UserGroupIcon className="mx-auto mb-3 h-12 w-12 text-primary-400" />
               </motion.div>
               <p className="text-gray-400">Select a server to view channels</p>
             </motion.div>
@@ -341,23 +353,28 @@ export default function Groups() {
       )}
 
       {/* Channel Content */}
-      <div className="flex-1 flex flex-col bg-transparent relative z-10">
+      <div className="relative z-10 flex flex-1 flex-col bg-transparent">
         {channelId ? (
           <Outlet />
         ) : groupId ? (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-1 items-center justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             >
-              <GlassCard variant="holographic" glow glowColor="rgba(16, 185, 129, 0.3)" className="p-12 text-center">
+              <GlassCard
+                variant="holographic"
+                glow
+                glowColor="rgba(16, 185, 129, 0.3)"
+                className="p-12 text-center"
+              >
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0], y: [0, -5, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                  className="relative inline-block mb-4"
+                  className="relative mb-4 inline-block"
                 >
-                  <HashtagIcon className="h-16 w-16 mx-auto text-primary-400" />
+                  <HashtagIcon className="mx-auto h-16 w-16 text-primary-400" />
                   <motion.div
                     className="absolute inset-0 rounded-full border-2 border-primary-500/30"
                     animate={{
@@ -367,7 +384,7 @@ export default function Groups() {
                     transition={{ duration: 3, repeat: Infinity }}
                   />
                 </motion.div>
-                <h3 className="text-xl font-semibold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-2">
+                <h3 className="mb-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-xl font-semibold text-transparent">
                   Welcome to {activeGroup?.name}
                 </h3>
                 <p className="text-gray-400">Select a channel to start chatting</p>
@@ -375,18 +392,23 @@ export default function Groups() {
             </motion.div>
           </div>
         ) : (
-          <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-1 items-center justify-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             >
-              <GlassCard variant="holographic" glow glowColor="rgba(16, 185, 129, 0.3)" className="p-16 text-center">
+              <GlassCard
+                variant="holographic"
+                glow
+                glowColor="rgba(16, 185, 129, 0.3)"
+                className="p-16 text-center"
+              >
                 {/* Floating particles */}
                 {[...Array(6)].map((_, i) => (
                   <motion.div
                     key={i}
-                    className="absolute w-1 h-1 rounded-full bg-primary-400"
+                    className="absolute h-1 w-1 rounded-full bg-primary-400"
                     style={{
                       left: `${50 + Math.cos((i * Math.PI * 2) / 6) * 20}%`,
                       top: `${40 + Math.sin((i * Math.PI * 2) / 6) * 20}%`,
@@ -405,9 +427,9 @@ export default function Groups() {
                 <motion.div
                   animate={{ rotate: [0, 5, -5, 0], scale: [1, 1.05, 1] }}
                   transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                  className="relative inline-block mb-4"
+                  className="relative mb-4 inline-block"
                 >
-                  <UserGroupIcon className="h-20 w-20 mx-auto text-primary-400" />
+                  <UserGroupIcon className="mx-auto h-20 w-20 text-primary-400" />
                   <motion.div
                     className="absolute inset-0 rounded-full border-2 border-primary-500/30"
                     animate={{
@@ -417,10 +439,10 @@ export default function Groups() {
                     transition={{ duration: 3, repeat: Infinity }}
                   />
                 </motion.div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-2">
+                <h3 className="mb-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
                   Welcome to Groups
                 </h3>
-                <p className="text-gray-400 max-w-md">
+                <p className="max-w-md text-gray-400">
                   Select a server from the sidebar or create a new one to get started
                 </p>
               </GlassCard>
@@ -438,11 +460,11 @@ function ServerIcon({ group, isActive }: { group: Group; isActive: boolean }) {
     <NavLink
       to={`/groups/${group.id}/channels/${group.channels?.[0]?.id || ''}`}
       onClick={() => HapticFeedback.medium()}
-      className="relative group"
+      className="group relative"
     >
       {/* Active indicator */}
       <motion.div
-        className="absolute left-0 top-1/2 -translate-x-1 -translate-y-1/2 w-1 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-600"
+        className="absolute left-0 top-1/2 w-1 -translate-x-1 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-600"
         animate={{
           height: isActive ? 40 : 0,
         }}
@@ -456,13 +478,9 @@ function ServerIcon({ group, isActive }: { group: Group; isActive: boolean }) {
       />
 
       {/* Icon */}
-      <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="relative"
-      >
+      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative">
         <div
-          className={`h-12 w-12 flex items-center justify-center transition-all overflow-hidden relative z-10 ${
+          className={`relative z-10 flex h-12 w-12 items-center justify-center overflow-hidden transition-all ${
             isActive
               ? 'rounded-xl bg-gradient-to-br from-primary-600 to-primary-700'
               : 'rounded-2xl bg-dark-700 group-hover:rounded-xl group-hover:bg-primary-600'
@@ -476,12 +494,14 @@ function ServerIcon({ group, isActive }: { group: Group; isActive: boolean }) {
           {group.iconUrl ? (
             <img src={group.iconUrl} alt={group.name} className="h-full w-full object-cover" />
           ) : (
-            <span className="text-lg font-bold text-white">{group.name.charAt(0).toUpperCase()}</span>
+            <span className="text-lg font-bold text-white">
+              {group.name.charAt(0).toUpperCase()}
+            </span>
           )}
         </div>
         {/* Hover glow */}
         <motion.div
-          className="absolute inset-0 rounded-2xl bg-primary-600/20 opacity-0 group-hover:opacity-100 blur-lg pointer-events-none"
+          className="pointer-events-none absolute inset-0 rounded-2xl bg-primary-600/20 opacity-0 blur-lg group-hover:opacity-100"
           transition={{ duration: 0.3 }}
         />
       </motion.div>
@@ -520,37 +540,29 @@ function ChannelItem({
     <NavLink
       to={`/groups/${groupId}/channels/${channel.id}`}
       onClick={() => HapticFeedback.light()}
-      className="mx-2 relative"
+      className="relative mx-2"
     >
       <motion.div
         whileHover={{ scale: 1.02, x: 2 }}
         whileTap={{ scale: 0.98 }}
-        className={`px-2 py-1.5 rounded flex items-center gap-1.5 transition-all relative z-10 ${
+        className={`relative z-10 flex items-center gap-1.5 rounded px-2 py-1.5 transition-all ${
           isActive
             ? 'bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent text-white'
-            : 'text-gray-400 hover:text-gray-200 hover:bg-dark-700/50'
+            : 'text-gray-400 hover:bg-dark-700/50 hover:text-gray-200'
         }`}
-        style={
-          isActive
-            ? { boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)' }
-            : {}
-        }
+        style={isActive ? { boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)' } : {}}
       >
         {isActive && (
           <motion.div
             layoutId={`activeChannel-${groupId}`}
-            className="absolute -left-2 top-1/2 -translate-y-1/2 w-0.5 h-6 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-600"
+            className="absolute -left-2 top-1/2 h-6 w-0.5 -translate-y-1/2 rounded-r-full bg-gradient-to-b from-primary-400 to-purple-600"
             style={{ boxShadow: '0 0 8px rgba(16, 185, 129, 0.6)' }}
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
           />
         )}
         <Icon
           className={`h-5 w-5 flex-shrink-0 ${isActive ? 'text-primary-400' : ''}`}
-          style={
-            isActive
-              ? { filter: 'drop-shadow(0 0 4px rgba(16, 185, 129, 0.4))' }
-              : {}
-          }
+          style={isActive ? { filter: 'drop-shadow(0 0 4px rgba(16, 185, 129, 0.4))' } : {}}
         />
         <span className={`truncate ${isActive ? 'font-medium' : ''}`}>{channel.name}</span>
         <AnimatePresence>
@@ -560,7 +572,7 @@ function ChannelItem({
               animate={{ scale: 1, rotate: 0 }}
               exit={{ scale: 0, rotate: 180 }}
               transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-              className="ml-auto h-4 min-w-[16px] px-1 rounded-full bg-gradient-to-r from-red-600 to-pink-600 text-xs font-bold flex items-center justify-center text-white"
+              className="ml-auto flex h-4 min-w-[16px] items-center justify-center rounded-full bg-gradient-to-r from-red-600 to-pink-600 px-1 text-xs font-bold text-white"
               style={{ boxShadow: '0 0 10px rgba(239, 68, 68, 0.5)' }}
             >
               {channel.unreadCount > 99 ? '99+' : channel.unreadCount}
