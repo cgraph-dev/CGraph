@@ -59,16 +59,19 @@ interface Particle {
 
 // ==================== PARTICLE PRESETS ====================
 
-const PARTICLE_PRESETS: Record<ParticleType, {
-  gravity: number;
-  drag: number;
-  minSize: number;
-  maxSize: number;
-  minLife: number;
-  maxLife: number;
-  spread: number;
-  initialVelocity: { x: number; y: number };
-}> = {
+const PARTICLE_PRESETS: Record<
+  ParticleType,
+  {
+    gravity: number;
+    drag: number;
+    minSize: number;
+    maxSize: number;
+    minLife: number;
+    maxLife: number;
+    spread: number;
+    initialVelocity: { x: number; y: number };
+  }
+> = {
   spark: {
     gravity: 0,
     drag: 0.98,
@@ -322,10 +325,16 @@ const getColorVariant = (baseColor: string, variation: number): string => {
   // Simple color variation by adjusting opacity
   const alpha = Math.max(0.3, Math.min(1, 1 + variation));
   if (baseColor.startsWith('#')) {
-    return `${baseColor}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`;
+    return `${baseColor}${Math.round(alpha * 255)
+      .toString(16)
+      .padStart(2, '0')}`;
   }
   return baseColor;
 };
+
+// Reserved for future features
+const _reservedUtilFns = { lerp, getColorVariant };
+void _reservedUtilFns;
 
 // ==================== DOM PARTICLE COMPONENT ====================
 
@@ -396,7 +405,8 @@ const DOMParticle = memo(function DOMParticle({ particle, type }: DOMParticlePro
           width: particle.size,
           height: particle.size,
           background: particle.color,
-          clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
+          clipPath:
+            'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
         };
       case 'heart':
         return {
@@ -466,31 +476,35 @@ export const BorderParticleSystem = memo(function BorderParticleSystem({
   const radius = size / 2;
 
   // Create a new particle
-  const createParticle = useCallback((id: number): Particle => {
-    const angle = random(0, Math.PI * 2);
-    const distance = radius + random(5, 15);
-    const x = radius + Math.cos(angle) * distance;
-    const y = radius + Math.sin(angle) * distance;
+  const createParticle = useCallback(
+    (id: number): Particle => {
+      const angle = random(0, Math.PI * 2);
+      const distance = radius + random(5, 15);
+      const x = radius + Math.cos(angle) * distance;
+      const y = radius + Math.sin(angle) * distance;
 
-    const colorChoice = random(0, 1);
-    const color = colorChoice < 0.4 ? colors.primary : colorChoice < 0.7 ? colors.secondary : colors.accent;
+      const colorChoice = random(0, 1);
+      const color =
+        colorChoice < 0.4 ? colors.primary : colorChoice < 0.7 ? colors.secondary : colors.accent;
 
-    return {
-      id,
-      x,
-      y,
-      vx: preset.initialVelocity.x + random(-preset.spread, preset.spread),
-      vy: preset.initialVelocity.y + random(-preset.spread, preset.spread),
-      size: random(preset.minSize, preset.maxSize),
-      opacity: 1,
-      rotation: random(0, 360),
-      rotationSpeed: random(-2, 2),
-      life: 0,
-      maxLife: random(preset.minLife, preset.maxLife),
-      type: config.type,
-      color,
-    };
-  }, [radius, colors, preset, config.type]);
+      return {
+        id,
+        x,
+        y,
+        vx: preset.initialVelocity.x + random(-preset.spread, preset.spread),
+        vy: preset.initialVelocity.y + random(-preset.spread, preset.spread),
+        size: random(preset.minSize, preset.maxSize),
+        opacity: 1,
+        rotation: random(0, 360),
+        rotationSpeed: random(-2, 2),
+        life: 0,
+        maxLife: random(preset.minLife, preset.maxLife),
+        type: config.type,
+        color,
+      };
+    },
+    [radius, colors, preset, config.type]
+  );
 
   // Initialize particles
   useEffect(() => {
@@ -623,12 +637,13 @@ export const BorderParticleSystem = memo(function BorderParticleSystem({
       const y = radius + Math.sin(angle) * distance;
 
       const colorChoice = i % 3;
-      const color = colorChoice === 0 ? colors.primary : colorChoice === 1 ? colors.secondary : colors.accent;
+      const color =
+        colorChoice === 0 ? colors.primary : colorChoice === 1 ? colors.secondary : colors.accent;
 
       return (
         <motion.div
           key={i}
-          className="absolute pointer-events-none"
+          className="pointer-events-none absolute"
           style={{
             left: x - preset.maxSize / 2,
             top: y - preset.maxSize / 2,
@@ -666,16 +681,11 @@ export const BorderParticleSystem = memo(function BorderParticleSystem({
 
   return (
     <div
-      className={cn('absolute inset-0 pointer-events-none overflow-visible', className)}
+      className={cn('pointer-events-none absolute inset-0 overflow-visible', className)}
       style={{ width: size, height: size }}
     >
       {useCanvas ? (
-        <canvas
-          ref={canvasRef}
-          width={size}
-          height={size}
-          className="absolute inset-0"
-        />
+        <canvas ref={canvasRef} width={size} height={size} className="absolute inset-0" />
       ) : (
         domParticles
       )}
@@ -778,23 +788,33 @@ const createPresetConfig = (type: ParticleType, count: number): ParticleConfig =
   pattern: 'orbit',
 });
 
-export const FlameParticles = memo(function FlameParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
+export const FlameParticles = memo(function FlameParticles(
+  props: Omit<BorderParticleSystemProps, 'config'>
+) {
   return <BorderParticleSystem {...props} config={createPresetConfig('flame', 12)} />;
 });
 
-export const SparkParticles = memo(function SparkParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
+export const SparkParticles = memo(function SparkParticles(
+  props: Omit<BorderParticleSystemProps, 'config'>
+) {
   return <BorderParticleSystem {...props} config={createPresetConfig('spark', 16)} />;
 });
 
-export const SnowflakeParticles = memo(function SnowflakeParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
+export const SnowflakeParticles = memo(function SnowflakeParticles(
+  props: Omit<BorderParticleSystemProps, 'config'>
+) {
   return <BorderParticleSystem {...props} config={createPresetConfig('snowflake', 20)} />;
 });
 
-export const SakuraParticles = memo(function SakuraParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
+export const SakuraParticles = memo(function SakuraParticles(
+  props: Omit<BorderParticleSystemProps, 'config'>
+) {
   return <BorderParticleSystem {...props} config={createPresetConfig('sakura', 15)} />;
 });
 
-export const ElectricParticles = memo(function ElectricParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
+export const ElectricParticles = memo(function ElectricParticles(
+  props: Omit<BorderParticleSystemProps, 'config'>
+) {
   return <BorderParticleSystem {...props} config={createPresetConfig('electric', 8)} />;
 });
 

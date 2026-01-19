@@ -8,7 +8,17 @@ import {
   ArrowPathIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline';
-import { useThemeStore, THEME_COLORS, type ThemeColorPreset, type AvatarBorderType, type ChatBubbleStylePreset, type EffectPreset } from '@/stores/themeStore';
+
+// Reserved for future use
+void useMemo;
+import {
+  useThemeStore,
+  THEME_COLORS,
+  type ThemeColorPreset,
+  type AvatarBorderType,
+  type ChatBubbleStylePreset,
+  type EffectPreset,
+} from '@/stores/themeStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from './ThemedAvatar';
 import { ThemedChatBubble } from './ThemedChatBubble';
@@ -17,7 +27,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 /**
  * ThemeCustomizer Component
- * 
+ *
  * Comprehensive theme customization panel with live preview.
  * Features:
  * - Color preset selection with visual swatches
@@ -42,7 +52,7 @@ const tabs = [
   { id: 'effects', label: 'Effects', icon: AdjustmentsHorizontalIcon },
 ] as const;
 
-type TabId = typeof tabs[number]['id'];
+type TabId = (typeof tabs)[number]['id'];
 
 // Border types with tier requirements
 const avatarBorderOptions: Array<{
@@ -84,17 +94,32 @@ const effectOptions: Array<{
   tier: 'free' | 'premium' | 'elite';
 }> = [
   { value: 'minimal', label: 'Minimal', description: 'Clean and simple', tier: 'free' },
-  { value: 'glassmorphism', label: 'Glassmorphism', description: 'Frosted glass effect', tier: 'free' },
+  {
+    value: 'glassmorphism',
+    label: 'Glassmorphism',
+    description: 'Frosted glass effect',
+    tier: 'free',
+  },
   { value: 'neon', label: 'Neon', description: 'Vibrant glow effects', tier: 'premium' },
   { value: 'aurora', label: 'Aurora', description: 'Flowing color waves', tier: 'premium' },
-  { value: 'cyberpunk', label: 'Cyberpunk', description: 'Futuristic tech aesthetic', tier: 'elite' },
-  { value: 'holographic', label: 'Holographic', description: 'Rainbow light effects', tier: 'elite' },
+  {
+    value: 'cyberpunk',
+    label: 'Cyberpunk',
+    description: 'Futuristic tech aesthetic',
+    tier: 'elite',
+  },
+  {
+    value: 'holographic',
+    label: 'Holographic',
+    description: 'Rainbow light effects',
+    tier: 'elite',
+  },
 ];
 
 export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProps) {
   const [activeTab, setActiveTab] = useState<TabId>('colors');
   const [showPreview, setShowPreview] = useState(true);
-  
+
   const {
     theme,
     updateTheme,
@@ -109,25 +134,37 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
     applyPreset,
   } = useThemeStore();
 
-  const handleColorSelect = useCallback((preset: ThemeColorPreset) => {
-    setColorPreset(preset);
-    HapticFeedback.light();
-  }, [setColorPreset]);
+  const handleColorSelect = useCallback(
+    (preset: ThemeColorPreset) => {
+      setColorPreset(preset);
+      HapticFeedback.light();
+    },
+    [setColorPreset]
+  );
 
-  const handleBorderSelect = useCallback((border: AvatarBorderType) => {
-    setAvatarBorder(border);
-    HapticFeedback.medium();
-  }, [setAvatarBorder]);
+  const handleBorderSelect = useCallback(
+    (border: AvatarBorderType) => {
+      setAvatarBorder(border);
+      HapticFeedback.medium();
+    },
+    [setAvatarBorder]
+  );
 
-  const handleBubbleStyleSelect = useCallback((style: ChatBubbleStylePreset) => {
-    setChatBubbleStyle(style);
-    HapticFeedback.light();
-  }, [setChatBubbleStyle]);
+  const handleBubbleStyleSelect = useCallback(
+    (style: ChatBubbleStylePreset) => {
+      setChatBubbleStyle(style);
+      HapticFeedback.light();
+    },
+    [setChatBubbleStyle]
+  );
 
-  const handleEffectSelect = useCallback((effect: EffectPreset) => {
-    setEffect(effect);
-    HapticFeedback.medium();
-  }, [setEffect]);
+  const handleEffectSelect = useCallback(
+    (effect: EffectPreset) => {
+      setEffect(effect);
+      HapticFeedback.medium();
+    },
+    [setEffect]
+  );
 
   // Quick presets
   const quickPresets = [
@@ -140,24 +177,22 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
 
   return (
     <div className={`w-full max-w-4xl ${className}`}>
-      <GlassCard variant="crystal" glow className="p-0 overflow-hidden">
+      <GlassCard variant="crystal" glow className="overflow-hidden p-0">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-700/50">
+        <div className="flex items-center justify-between border-b border-gray-700/50 p-6">
           <div>
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-white">
               <SwatchIcon className="h-6 w-6 text-primary-400" />
               Theme Customizer
             </h2>
-            <p className="text-sm text-gray-400 mt-1">
-              Personalize your CGraph experience
-            </p>
+            <p className="mt-1 text-sm text-gray-400">Personalize your CGraph experience</p>
           </div>
           <div className="flex items-center gap-3">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowPreview(!showPreview)}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`rounded-lg p-2 transition-colors ${
                 showPreview ? 'bg-primary-600 text-white' : 'bg-dark-700 text-gray-400'
               }`}
             >
@@ -170,7 +205,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                 resetTheme();
                 HapticFeedback.warning();
               }}
-              className="p-2 rounded-lg bg-dark-700 text-gray-400 hover:text-white transition-colors"
+              className="rounded-lg bg-dark-700 p-2 text-gray-400 transition-colors hover:text-white"
             >
               <ArrowPathIcon className="h-5 w-5" />
             </motion.button>
@@ -179,7 +214,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={onClose}
-                className="px-4 py-2 rounded-lg bg-dark-700 text-gray-300 hover:text-white transition-colors"
+                className="rounded-lg bg-dark-700 px-4 py-2 text-gray-300 transition-colors hover:text-white"
               >
                 Done
               </motion.button>
@@ -197,9 +232,9 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                   whileHover={{ x: 4 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-colors ${
+                  className={`flex w-full items-center gap-3 rounded-xl px-4 py-3 text-left transition-colors ${
                     activeTab === tab.id
-                      ? 'bg-primary-600/20 text-primary-400 border border-primary-500/30'
+                      ? 'border border-primary-500/30 bg-primary-600/20 text-primary-400'
                       : 'text-gray-400 hover:bg-dark-700 hover:text-white'
                   }`}
                 >
@@ -211,7 +246,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
 
             {/* Quick Presets */}
             <div className="mt-8">
-              <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
+              <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
                 Quick Presets
               </h4>
               <div className="space-y-2">
@@ -224,7 +259,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                       applyPreset(preset.value);
                       HapticFeedback.success();
                     }}
-                    className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-400 hover:bg-dark-700 hover:text-white transition-colors"
+                    className="w-full rounded-lg px-3 py-2 text-left text-sm text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
                   >
                     {preset.name}
                   </motion.button>
@@ -293,25 +328,21 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                 initial={{ width: 0, opacity: 0 }}
                 animate={{ width: 320, opacity: 1 }}
                 exit={{ width: 0, opacity: 0 }}
-                className="border-l border-gray-700/50 p-6 overflow-hidden"
+                className="overflow-hidden border-l border-gray-700/50 p-6"
               >
-                <h4 className="text-sm font-semibold text-gray-400 mb-4">Live Preview</h4>
-                
+                <h4 className="mb-4 text-sm font-semibold text-gray-400">Live Preview</h4>
+
                 {/* Avatar Preview */}
                 <div className="mb-6">
-                  <p className="text-xs text-gray-500 mb-2">Avatar</p>
+                  <p className="mb-2 text-xs text-gray-500">Avatar</p>
                   <div className="flex justify-center">
-                    <ThemedAvatar
-                      src="/placeholder-avatar.jpg"
-                      alt="Preview"
-                      size="xlarge"
-                    />
+                    <ThemedAvatar src="/placeholder-avatar.jpg" alt="Preview" size="xlarge" />
                   </div>
                 </div>
 
                 {/* Chat Preview */}
                 <div className="space-y-3">
-                  <p className="text-xs text-gray-500 mb-2">Chat Bubbles</p>
+                  <p className="mb-2 text-xs text-gray-500">Chat Bubbles</p>
                   <ThemedChatBubble
                     message="Hey! How's it going? 👋"
                     timestamp="2:34 PM"
@@ -343,7 +374,10 @@ function ColorTab({
   selectedColor: ThemeColorPreset;
   onSelectColor: (color: ThemeColorPreset) => void;
 }) {
-  const colors = Object.entries(THEME_COLORS) as [ThemeColorPreset, typeof THEME_COLORS[ThemeColorPreset]][];
+  const colors = Object.entries(THEME_COLORS) as [
+    ThemeColorPreset,
+    (typeof THEME_COLORS)[ThemeColorPreset],
+  ][];
 
   return (
     <motion.div
@@ -351,10 +385,8 @@ function ColorTab({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <h3 className="text-lg font-semibold text-white mb-4">Color Presets</h3>
-      <p className="text-sm text-gray-400 mb-6">
-        Choose a color theme that represents your style
-      </p>
+      <h3 className="mb-4 text-lg font-semibold text-white">Color Presets</h3>
+      <p className="mb-6 text-sm text-gray-400">Choose a color theme that represents your style</p>
 
       <div className="grid grid-cols-4 gap-4">
         {colors.map(([preset, config]) => (
@@ -363,14 +395,14 @@ function ColorTab({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onSelectColor(preset)}
-            className={`relative p-4 rounded-xl transition-all ${
+            className={`relative rounded-xl p-4 transition-all ${
               selectedColor === preset
                 ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800'
                 : 'hover:bg-dark-700'
             }`}
           >
             <div
-              className="w-full aspect-square rounded-lg mb-2"
+              className="mb-2 aspect-square w-full rounded-lg"
               style={{
                 background: `linear-gradient(135deg, ${config.primary}, ${config.secondary})`,
                 boxShadow: `0 4px 20px ${config.glow}`,
@@ -381,7 +413,7 @@ function ColorTab({
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white flex items-center justify-center"
+                className="absolute right-2 top-2 flex h-5 w-5 items-center justify-center rounded-full bg-white"
               >
                 <CheckIcon className="h-3 w-3 text-dark-900" />
               </motion.div>
@@ -415,13 +447,11 @@ function AvatarTab({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <h3 className="text-lg font-semibold text-white mb-4">Avatar Border</h3>
-      <p className="text-sm text-gray-400 mb-6">
-        Customize how your avatar appears to others
-      </p>
+      <h3 className="mb-4 text-lg font-semibold text-white">Avatar Border</h3>
+      <p className="mb-6 text-sm text-gray-400">Customize how your avatar appears to others</p>
 
       {/* Border Types */}
-      <div className="grid grid-cols-5 gap-3 mb-8">
+      <div className="mb-8 grid grid-cols-5 gap-3">
         {avatarBorderOptions.map((option) => {
           const isPremium = option.tier !== 'free';
           const isSelected = selectedBorder === option.value;
@@ -432,11 +462,11 @@ function AvatarTab({
               whileTap={{ scale: 0.95 }}
               onClick={() => !isPremium && onSelectBorder(option.value)}
               disabled={isPremium}
-              className={`relative p-3 rounded-xl transition-all ${
+              className={`relative rounded-xl p-3 transition-all ${
                 isSelected
-                  ? 'ring-2 ring-primary-500 bg-primary-600/20'
+                  ? 'bg-primary-600/20 ring-2 ring-primary-500'
                   : 'bg-dark-700 hover:bg-dark-600'
-              } ${isPremium ? 'opacity-60 cursor-not-allowed' : ''}`}
+              } ${isPremium ? 'cursor-not-allowed opacity-60' : ''}`}
             >
               <div className="text-center">
                 <span className="text-sm font-medium text-gray-300">{option.label}</span>
@@ -464,7 +494,7 @@ function AvatarTab({
 
       {/* Border Color */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-gray-400 mb-3">Border Color</h4>
+        <h4 className="mb-3 text-sm font-semibold text-gray-400">Border Color</h4>
         <div className="flex flex-wrap gap-2">
           {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map((preset) => (
             <motion.button
@@ -472,8 +502,10 @@ function AvatarTab({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => onSelectColor(preset)}
-              className={`w-8 h-8 rounded-full ${
-                selectedColor === preset ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800' : ''
+              className={`h-8 w-8 rounded-full ${
+                selectedColor === preset
+                  ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800'
+                  : ''
               }`}
               style={{ backgroundColor: THEME_COLORS[preset].primary }}
             />
@@ -482,7 +514,7 @@ function AvatarTab({
       </div>
 
       {/* Glow Toggle */}
-      <div className="flex items-center justify-between p-4 rounded-xl bg-dark-700">
+      <div className="flex items-center justify-between rounded-xl bg-dark-700 p-4">
         <div>
           <span className="font-medium text-white">Glow Effect</span>
           <p className="text-xs text-gray-400">Add ambient glow around your avatar</p>
@@ -490,13 +522,13 @@ function AvatarTab({
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={onToggleGlow}
-          className={`w-12 h-6 rounded-full transition-colors ${
+          className={`h-6 w-12 rounded-full transition-colors ${
             glowEnabled ? 'bg-primary-600' : 'bg-dark-600'
           }`}
         >
           <motion.div
             animate={{ x: glowEnabled ? 24 : 0 }}
-            className="w-6 h-6 rounded-full bg-white shadow-lg"
+            className="h-6 w-6 rounded-full bg-white shadow-lg"
           />
         </motion.button>
       </div>
@@ -533,16 +565,16 @@ function BubblesTab({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <h3 className="text-lg font-semibold text-white mb-4">Chat Bubbles</h3>
-      <p className="text-sm text-gray-400 mb-6">
+      <h3 className="mb-4 text-lg font-semibold text-white">Chat Bubbles</h3>
+      <p className="mb-6 text-sm text-gray-400">
         Customize your message appearance in conversations
       </p>
 
       {/* Bubble Styles */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="mb-6 grid grid-cols-4 gap-3">
         {bubbleStyleOptions.map((option) => {
           const isPremium = option.tier !== 'free';
-          
+
           return (
             <motion.button
               key={option.value}
@@ -550,9 +582,9 @@ function BubblesTab({
               whileTap={{ scale: 0.95 }}
               onClick={() => !isPremium && onSelectStyle(option.value)}
               disabled={isPremium}
-              className={`p-3 rounded-xl text-center transition-all ${
+              className={`rounded-xl p-3 text-center transition-all ${
                 selectedStyle === option.value
-                  ? 'ring-2 ring-primary-500 bg-primary-600/20'
+                  ? 'bg-primary-600/20 ring-2 ring-primary-500'
                   : 'bg-dark-700 hover:bg-dark-600'
               } ${isPremium ? 'opacity-60' : ''}`}
             >
@@ -569,7 +601,7 @@ function BubblesTab({
 
       {/* Bubble Color */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-gray-400 mb-3">Bubble Color</h4>
+        <h4 className="mb-3 text-sm font-semibold text-gray-400">Bubble Color</h4>
         <div className="flex flex-wrap gap-2">
           {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map((preset) => (
             <motion.button
@@ -577,8 +609,10 @@ function BubblesTab({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => onSelectColor(preset)}
-              className={`w-8 h-8 rounded-full ${
-                selectedColor === preset ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800' : ''
+              className={`h-8 w-8 rounded-full ${
+                selectedColor === preset
+                  ? 'ring-2 ring-white ring-offset-2 ring-offset-dark-800'
+                  : ''
               }`}
               style={{ backgroundColor: THEME_COLORS[preset].primary }}
             />
@@ -589,7 +623,7 @@ function BubblesTab({
       {/* Advanced Settings */}
       <div className="space-y-4">
         <h4 className="text-sm font-semibold text-gray-400">Advanced Settings</h4>
-        
+
         {/* Border Radius Slider */}
         <div>
           <label className="text-xs text-gray-500">Border Radius: {bubbleSettings.radius}px</label>
@@ -605,7 +639,9 @@ function BubblesTab({
 
         {/* Shadow Intensity Slider */}
         <div>
-          <label className="text-xs text-gray-500">Shadow Intensity: {bubbleSettings.shadow}%</label>
+          <label className="text-xs text-gray-500">
+            Shadow Intensity: {bubbleSettings.shadow}%
+          </label>
           <input
             type="range"
             min="0"
@@ -627,8 +663,8 @@ function BubblesTab({
               key={toggle.key}
               whileTap={{ scale: 0.95 }}
               onClick={() => onUpdateSettings({ [toggle.key]: !toggle.value })}
-              className={`p-3 rounded-xl text-center transition-all ${
-                toggle.value ? 'bg-primary-600/20 border border-primary-500/50' : 'bg-dark-700'
+              className={`rounded-xl p-3 text-center transition-all ${
+                toggle.value ? 'border border-primary-500/50 bg-primary-600/20' : 'bg-dark-700'
               }`}
             >
               <span className="text-xs font-medium text-gray-300">{toggle.label}</span>
@@ -662,16 +698,14 @@ function EffectsTab({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <h3 className="text-lg font-semibold text-white mb-4">Visual Effects</h3>
-      <p className="text-sm text-gray-400 mb-6">
-        Add special effects to enhance your experience
-      </p>
+      <h3 className="mb-4 text-lg font-semibold text-white">Visual Effects</h3>
+      <p className="mb-6 text-sm text-gray-400">Add special effects to enhance your experience</p>
 
       {/* Effect Presets */}
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="mb-8 grid grid-cols-2 gap-4">
         {effectOptions.map((option) => {
           const isPremium = option.tier !== 'free';
-          
+
           return (
             <motion.button
               key={option.value}
@@ -679,13 +713,13 @@ function EffectsTab({
               whileTap={{ scale: 0.98 }}
               onClick={() => !isPremium && onSelectEffect(option.value)}
               disabled={isPremium}
-              className={`p-4 rounded-xl text-left transition-all ${
+              className={`rounded-xl p-4 text-left transition-all ${
                 selectedEffect === option.value
-                  ? 'ring-2 ring-primary-500 bg-primary-600/20'
+                  ? 'bg-primary-600/20 ring-2 ring-primary-500'
                   : 'bg-dark-700 hover:bg-dark-600'
               } ${isPremium ? 'opacity-60' : ''}`}
             >
-              <div className="flex items-center justify-between mb-2">
+              <div className="mb-2 flex items-center justify-between">
                 <span className="font-medium text-white">{option.label}</span>
                 <TierBadge tier={option.tier} />
               </div>
@@ -697,14 +731,14 @@ function EffectsTab({
 
       {/* Animation Speed */}
       <div className="mb-6">
-        <h4 className="text-sm font-semibold text-gray-400 mb-3">Animation Speed</h4>
+        <h4 className="mb-3 text-sm font-semibold text-gray-400">Animation Speed</h4>
         <div className="flex gap-3">
           {(['slow', 'normal', 'fast'] as const).map((speed) => (
             <motion.button
               key={speed}
               whileTap={{ scale: 0.95 }}
               onClick={() => onSetSpeed(speed)}
-              className={`flex-1 py-2 px-4 rounded-xl text-center capitalize transition-all ${
+              className={`flex-1 rounded-xl px-4 py-2 text-center capitalize transition-all ${
                 animationSpeed === speed
                   ? 'bg-primary-600 text-white'
                   : 'bg-dark-700 text-gray-400 hover:text-white'
@@ -717,7 +751,7 @@ function EffectsTab({
       </div>
 
       {/* Particles Toggle */}
-      <div className="flex items-center justify-between p-4 rounded-xl bg-dark-700">
+      <div className="flex items-center justify-between rounded-xl bg-dark-700 p-4">
         <div>
           <span className="font-medium text-white">Particle Effects</span>
           <p className="text-xs text-gray-400">Show floating particles in animations</p>
@@ -725,13 +759,13 @@ function EffectsTab({
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={onToggleParticles}
-          className={`w-12 h-6 rounded-full transition-colors ${
+          className={`h-6 w-12 rounded-full transition-colors ${
             particlesEnabled ? 'bg-primary-600' : 'bg-dark-600'
           }`}
         >
           <motion.div
             animate={{ x: particlesEnabled ? 24 : 0 }}
-            className="w-6 h-6 rounded-full bg-white shadow-lg"
+            className="h-6 w-6 rounded-full bg-white shadow-lg"
           />
         </motion.button>
       </div>

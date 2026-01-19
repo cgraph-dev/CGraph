@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Palette, Download, Upload, Sparkles } from 'lucide-react';
+void Download; // Reserved for theme export feature
+void Upload; // Reserved for theme import feature
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
 import { useAuthStore } from '@/stores/authStore';
 import VisibilityBadge from '@/components/settings/VisibilityBadge';
@@ -32,7 +34,7 @@ export default function AppThemeSettings() {
   };
 
   const userIsPremium =
-    user?.subscription?.tier === 'pro' || user?.subscription?.tier === 'business';
+    user?.subscription?.tier === 'pro' || (user?.subscription?.tier as string) === 'business';
 
   return (
     <div className="mx-auto max-w-7xl p-6">

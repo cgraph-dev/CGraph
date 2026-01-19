@@ -420,7 +420,7 @@ export function withDelay(variants: Variants, delay: number): Variants {
           delay,
         },
       };
-    } else {
+    } else if (variant) {
       newVariants[key] = variant;
     }
   });
@@ -442,7 +442,10 @@ export function createSpring(stiffness: number, damping: number): Transition {
 /**
  * Creates a custom tween transition
  */
-export function createTween(duration: number, easing: keyof typeof easings = 'easeInOut'): Transition {
+export function createTween(
+  duration: number,
+  easing: keyof typeof easings = 'easeInOut'
+): Transition {
   return {
     duration,
     ease: easings[easing],
@@ -471,12 +474,7 @@ export const gpuAccelerated = {
  * Animation-safe CSS properties
  * These won't cause layout thrashing
  */
-export const safeCSSProps = [
-  'transform',
-  'opacity',
-  'filter',
-  'backdrop-filter',
-] as const;
+export const safeCSSProps = ['transform', 'opacity', 'filter', 'backdrop-filter'] as const;
 
 // ==================== ACCESSIBILITY ====================
 

@@ -4,7 +4,7 @@ import { Socket, Channel } from 'phoenix';
 
 /**
  * Gamification WebSocket Hook
- * 
+ *
  * Provides real-time updates for:
  * - XP/Level gains
  * - Achievement unlocks
@@ -12,7 +12,7 @@ import { Socket, Channel } from 'phoenix';
  * - Prestige updates
  * - Event progress
  * - Marketplace notifications
- * 
+ *
  * Designed for scale with:
  * - Automatic reconnection with exponential backoff
  * - Message queuing during disconnection
@@ -97,7 +97,7 @@ interface GamificationSocketStore {
   state: GamificationState;
   listeners: Map<string, Set<(data: unknown) => void>>;
   messageQueue: Array<{ event: string; payload: unknown }>;
-  
+
   // Actions
   connect: (token: string, userId: string) => void;
   disconnect: () => void;
@@ -131,7 +131,8 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
 
     const socket = new Socket(SOCKET_URL, {
       params: { token },
-      reconnectAfterMs: (tries) => RECONNECT_DELAYS[Math.min(tries - 1, RECONNECT_DELAYS.length - 1)],
+      reconnectAfterMs: (tries) =>
+        RECONNECT_DELAYS[Math.min(tries - 1, RECONNECT_DELAYS.length - 1)] ?? 10000,
       heartbeatIntervalMs: 30000,
     });
 
@@ -154,23 +155,24 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
 
     channel
       .join()
-      .receive('ok', (response) => {
+      .receive('ok', (response: unknown) => {
         console.log('[GamificationSocket] Joined successfully', response);
         set((state) => ({
           state: { ...state.state, connected: true, lastError: null },
         }));
-        
+
         // Flush queued messages
         const queue = get().messageQueue;
         queue.forEach(({ event, payload }) => {
-          channel.push(event, payload);
+          channel.push(event, payload as Record<string, unknown>);
         });
         set({ messageQueue: [] });
       })
-      .receive('error', (error) => {
+      .receive('error', (err: unknown) => {
+        const error = err as Record<string, unknown>;
         console.error('[GamificationSocket] Join failed:', error);
         set((state) => ({
-          state: { ...state.state, lastError: error.reason || 'Join failed' },
+          state: { ...state.state, lastError: (error.reason as string) || 'Join failed' },
         }));
       });
 
@@ -193,16 +195,17 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
     ];
 
     events.forEach((event) => {
-      channel.on(event, (payload) => {
+      channel.on(event, (p: unknown) => {
+        const payload = p as Record<string, unknown>;
         // Update internal state for initial_state
         if (event === 'initial_state') {
           set((state) => ({
             state: {
               ...state.state,
-              xp: payload.xp ?? state.state.xp,
-              level: payload.level ?? state.state.level,
-              coins: payload.coins ?? state.state.coins,
-              streakDays: payload.streak_days ?? state.state.streakDays,
+              xp: (payload.xp as number) ?? state.state.xp,
+              level: (payload.level as number) ?? state.state.level,
+              coins: (payload.coins as number) ?? state.state.coins,
+              streakDays: (payload.streak_days as number) ?? state.state.streakDays,
             },
           }));
         }
@@ -226,15 +229,15 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
 
   disconnect: () => {
     const { socket, channel } = get();
-    
+
     if (channel) {
       channel.leave();
     }
-    
+
     if (socket) {
       socket.disconnect();
     }
-    
+
     set({
       socket: null,
       channel: null,
@@ -244,11 +247,11 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
 
   subscribe: (event: string, callback: (data: unknown) => void) => {
     const listeners = get().listeners;
-    
+
     if (!listeners.has(event)) {
       listeners.set(event, new Set());
     }
-    
+
     listeners.get(event)!.add(callback);
     set({ listeners: new Map(listeners) });
 
@@ -268,7 +271,7 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
 
   getState: async () => {
     const { channel, state } = get();
-    
+
     if (!channel) {
       return state;
     }
@@ -276,13 +279,14 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
     return new Promise((resolve) => {
       channel
         .push('get_state', {})
-        .receive('ok', (response) => {
+        .receive('ok', (res: unknown) => {
+          const response = res as Record<string, unknown>;
           const newState = {
             ...state,
-            xp: response.xp ?? state.xp,
-            level: response.level ?? state.level,
-            coins: response.coins ?? state.coins,
-            streakDays: response.streak_days ?? state.streakDays,
+            xp: (response.xp as number) ?? state.xp,
+            level: (response.level as number) ?? state.level,
+            coins: (response.coins as number) ?? state.coins,
+            streakDays: (response.streak_days as number) ?? state.streakDays,
           };
           set({ state: newState });
           resolve(newState);
@@ -304,24 +308,21 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
 
 export function useGamificationSocket(token: string | null, userId: string | null) {
   const { connect, disconnect, state } = useGamificationSocketStore();
-  
+
   useEffect(() => {
     if (token && userId) {
       connect(token, userId);
     }
-    
+
     return () => {
       disconnect();
     };
   }, [token, userId, connect, disconnect]);
-  
+
   return state;
 }
 
-export function useGamificationEvent<T = unknown>(
-  event: string,
-  callback: (data: T) => void
-) {
+export function useGamificationEvent<T = unknown>(event: string, callback: (data: T) => void) {
   const subscribe = useGamificationSocketStore((state) => state.subscribe);
   const callbackRef = useRef(callback);
   callbackRef.current = callback;
@@ -330,7 +331,7 @@ export function useGamificationEvent<T = unknown>(
     const unsubscribe = subscribe(event, (data) => {
       callbackRef.current(data as T);
     });
-    
+
     return unsubscribe;
   }, [event, subscribe]);
 }
@@ -339,7 +340,9 @@ export function useXPUpdates(callback: (data: XPGainEvent) => void) {
   useGamificationEvent('xp_gained', callback);
 }
 
-export function useLevelUp(callback: (data: { oldLevel: number; newLevel: number; rewards: unknown[] }) => void) {
+export function useLevelUp(
+  callback: (data: { oldLevel: number; newLevel: number; rewards: unknown[] }) => void
+) {
   useGamificationEvent('level_up', callback);
 }
 
@@ -359,30 +362,32 @@ export function useEventProgress(callback: (data: EventProgressEvent) => void) {
   useGamificationEvent('event_progress', callback);
 }
 
-export function useEventMilestone(callback: (data: { eventId: string; milestone: number; reward: unknown }) => void) {
+export function useEventMilestone(
+  callback: (data: { eventId: string; milestone: number; reward: unknown }) => void
+) {
   useGamificationEvent('event_milestone', callback);
 }
 
-export function useEventAnnouncements(
-  callbacks: {
-    onStart?: (data: { eventId: string; name: string }) => void;
-    onEndingSoon?: (data: { eventId: string; hoursRemaining: number }) => void;
-    onEnd?: (data: { eventId: string; name: string }) => void;
-  }
-) {
+export function useEventAnnouncements(callbacks: {
+  onStart?: (data: { eventId: string; name: string }) => void;
+  onEndingSoon?: (data: { eventId: string; hoursRemaining: number }) => void;
+  onEnd?: (data: { eventId: string; name: string }) => void;
+}) {
   useGamificationEvent('event_started', callbacks.onStart || (() => {}));
   useGamificationEvent('event_ending_soon', callbacks.onEndingSoon || (() => {}));
   useGamificationEvent('event_ended', callbacks.onEnd || (() => {}));
 }
 
-export function useMarketplaceNotifications(callback: (data: MarketplaceNotificationEvent) => void) {
-  useGamificationEvent('listing_sold', (data) => 
+export function useMarketplaceNotifications(
+  callback: (data: MarketplaceNotificationEvent) => void
+) {
+  useGamificationEvent('listing_sold', (data) =>
     callback({ type: 'listing_sold', data: data as Record<string, unknown> })
   );
-  useGamificationEvent('item_purchased', (data) => 
+  useGamificationEvent('item_purchased', (data) =>
     callback({ type: 'purchase_complete', data: data as Record<string, unknown> })
   );
-  useGamificationEvent('price_alert', (data) => 
+  useGamificationEvent('price_alert', (data) =>
     callback({ type: 'price_drop', data: data as Record<string, unknown> })
   );
 }
@@ -390,19 +395,22 @@ export function useMarketplaceNotifications(callback: (data: MarketplaceNotifica
 // ==================== NOTIFICATION TOAST HOOK ====================
 
 export function useGamificationToasts() {
-  const showToast = useCallback((
-    type: 'xp' | 'level' | 'achievement' | 'cosmetic' | 'prestige' | 'event',
-    data: unknown
-  ) => {
-    // This should integrate with your toast/notification system
-    // For now, dispatch a custom event that can be caught by a toast provider
-    window.dispatchEvent(new CustomEvent('gamification:toast', {
-      detail: { type, data }
-    }));
-  }, []);
+  const showToast = useCallback(
+    (type: 'xp' | 'level' | 'achievement' | 'cosmetic' | 'prestige' | 'event', data: unknown) => {
+      // This should integrate with your toast/notification system
+      // For now, dispatch a custom event that can be caught by a toast provider
+      window.dispatchEvent(
+        new CustomEvent('gamification:toast', {
+          detail: { type, data },
+        })
+      );
+    },
+    []
+  );
 
   useXPUpdates((data) => {
-    if (data.amount >= 100) { // Only show for significant gains
+    if (data.amount >= 100) {
+      // Only show for significant gains
       showToast('xp', data);
     }
     if (data.levelUp) {

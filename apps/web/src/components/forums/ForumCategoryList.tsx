@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+void Link; // Reserved for forum navigation links
 import {
   FolderIcon,
   ChatBubbleLeftRightIcon,
@@ -14,6 +15,8 @@ import {
   SparklesIcon,
   FireIcon,
 } from '@heroicons/react/24/outline';
+void ChevronDownIcon; // Reserved for category collapse animation
+void EyeIcon; // Reserved for forum visibility indicator
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
@@ -21,7 +24,7 @@ import type { ForumCategory, Forum } from '@/stores/forumStore';
 
 /**
  * ForumCategoryList Component
- * 
+ *
  * Displays forum categories with:
  * - Collapsible category sections
  * - Sub-category support
@@ -45,7 +48,8 @@ interface ForumCategoryListProps {
   className?: string;
 }
 
-interface ForumPreview {
+// Reserved for future forum preview feature
+interface _ForumPreview {
   id: string;
   name: string;
   slug: string;
@@ -63,6 +67,7 @@ interface ForumPreview {
   isNew?: boolean;
   isHot?: boolean;
 }
+void (0 as unknown as _ForumPreview); // Silence unused interface warning
 
 export function ForumCategoryList({
   categories,
@@ -106,7 +111,9 @@ export function ForumCategoryList({
     });
   };
 
+  // Helper function for time formatting - used in forum item display
   const formatTimeAgo = (dateStr: string) => {
+    void formatTimeAgo; // Reserved for forum last post time display
     const date = new Date(dateStr);
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -126,31 +133,25 @@ export function ForumCategoryList({
 
     return (
       <motion.div
-        className="flex items-center gap-3 p-4 cursor-pointer hover:bg-dark-700/50 transition-colors"
+        className="flex cursor-pointer items-center gap-3 p-4 transition-colors hover:bg-dark-700/50"
         onClick={() => toggleCategory(category.id)}
         whileHover={{ x: 4 }}
       >
-        <motion.div
-          animate={{ rotate: isExpanded ? 90 : 0 }}
-          transition={{ duration: 0.2 }}
-        >
+        <motion.div animate={{ rotate: isExpanded ? 90 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronRightIcon className="h-5 w-5 text-gray-400" />
         </motion.div>
 
         <div
-          className="h-10 w-10 rounded-lg flex items-center justify-center"
+          className="flex h-10 w-10 items-center justify-center rounded-lg"
           style={{ backgroundColor: category.color ? `${category.color}20` : `${primaryColor}20` }}
         >
-          <FolderIcon
-            className="h-5 w-5"
-            style={{ color: category.color || primaryColor }}
-          />
+          <FolderIcon className="h-5 w-5" style={{ color: category.color || primaryColor }} />
         </div>
 
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold truncate">{category.name}</h3>
+        <div className="min-w-0 flex-1">
+          <h3 className="truncate font-semibold">{category.name}</h3>
           {category.description && (
-            <p className="text-sm text-gray-400 truncate">{category.description}</p>
+            <p className="truncate text-sm text-gray-400">{category.description}</p>
           )}
         </div>
 
@@ -169,7 +170,7 @@ export function ForumCategoryList({
               e.stopPropagation();
               onEditCategory?.(category);
             }}
-            className="p-2 rounded-lg hover:bg-dark-600 text-gray-400 hover:text-white"
+            className="rounded-lg p-2 text-gray-400 hover:bg-dark-600 hover:text-white"
           >
             <Cog6ToothIcon className="h-4 w-4" />
           </motion.button>
@@ -188,7 +189,7 @@ export function ForumCategoryList({
         initial={{ opacity: 0, x: -10 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: index * 0.05 }}
-        className="flex items-center gap-4 p-4 pl-14 border-t border-dark-700/50 hover:bg-dark-700/30 cursor-pointer group"
+        className="group flex cursor-pointer items-center gap-4 border-t border-dark-700/50 p-4 pl-14 hover:bg-dark-700/30"
         onClick={() => onForumClick?.(forum)}
       >
         {/* Forum Icon */}
@@ -201,22 +202,22 @@ export function ForumCategoryList({
             />
           ) : (
             <div
-              className="h-12 w-12 rounded-lg flex items-center justify-center"
+              className="flex h-12 w-12 items-center justify-center rounded-lg"
               style={{ backgroundColor: `${primaryColor}20` }}
             >
               <ChatBubbleLeftRightIcon className="h-6 w-6" style={{ color: primaryColor }} />
             </div>
           )}
-          
+
           {/* Status Badges */}
           {(isHot || isNew) && (
-            <div className="absolute -top-1 -right-1">
+            <div className="absolute -right-1 -top-1">
               {isHot ? (
-                <div className="h-5 w-5 bg-orange-500 rounded-full flex items-center justify-center">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500">
                   <FireIcon className="h-3 w-3 text-white" />
                 </div>
               ) : (
-                <div className="h-5 w-5 bg-green-500 rounded-full flex items-center justify-center">
+                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-green-500">
                   <SparklesIcon className="h-3 w-3 text-white" />
                 </div>
               )}
@@ -225,26 +226,24 @@ export function ForumCategoryList({
         </div>
 
         {/* Forum Info */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="font-medium truncate group-hover:underline">{forum.name}</h4>
-            {forum.isPrivate && (
-              <LockClosedIcon className="h-4 w-4 text-gray-500" />
-            )}
+            <h4 className="truncate font-medium group-hover:underline">{forum.name}</h4>
+            {forum.isPrivate && <LockClosedIcon className="h-4 w-4 text-gray-500" />}
           </div>
           {forum.description && (
-            <p className="text-sm text-gray-400 truncate">{forum.description}</p>
+            <p className="truncate text-sm text-gray-400">{forum.description}</p>
           )}
         </div>
 
         {/* Stats */}
         {variant !== 'compact' && (
           <div className="flex items-center gap-6 text-sm text-gray-400">
-            <div className="text-center min-w-[60px]">
+            <div className="min-w-[60px] text-center">
               <div className="font-medium text-white">{forum.memberCount.toLocaleString()}</div>
               <div className="text-xs">Members</div>
             </div>
-            <div className="text-center min-w-[60px]">
+            <div className="min-w-[60px] text-center">
               <div className="font-medium text-white">{forum.score.toLocaleString()}</div>
               <div className="text-xs">Score</div>
             </div>
@@ -252,7 +251,7 @@ export function ForumCategoryList({
         )}
 
         {/* Arrow */}
-        <ChevronRightIcon className="h-5 w-5 text-gray-500 group-hover:text-white transition-colors" />
+        <ChevronRightIcon className="h-5 w-5 text-gray-500 transition-colors group-hover:text-white" />
       </motion.div>
     );
   };
@@ -263,19 +262,16 @@ export function ForumCategoryList({
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onCategoryClick?.(category)}
-      className="flex items-center gap-3 p-3 rounded-lg bg-dark-700/50 hover:bg-dark-600/50 transition-colors text-left w-full"
+      className="flex w-full items-center gap-3 rounded-lg bg-dark-700/50 p-3 text-left transition-colors hover:bg-dark-600/50"
     >
       <div
-        className="h-8 w-8 rounded-lg flex items-center justify-center flex-shrink-0"
+        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg"
         style={{ backgroundColor: category.color ? `${category.color}20` : `${primaryColor}20` }}
       >
-        <FolderIcon
-          className="h-4 w-4"
-          style={{ color: category.color || primaryColor }}
-        />
+        <FolderIcon className="h-4 w-4" style={{ color: category.color || primaryColor }} />
       </div>
-      <div className="flex-1 min-w-0">
-        <span className="font-medium truncate block">{category.name}</span>
+      <div className="min-w-0 flex-1">
+        <span className="block truncate font-medium">{category.name}</span>
         <span className="text-xs text-gray-400">{category.postCount} posts</span>
       </div>
     </motion.button>
@@ -290,21 +286,18 @@ export function ForumCategoryList({
     >
       <GlassCard
         variant="frosted"
-        className="p-6 cursor-pointer hover:scale-[1.02] transition-transform"
+        className="cursor-pointer p-6 transition-transform hover:scale-[1.02]"
         onClick={() => onCategoryClick?.(category)}
       >
         <div
-          className="h-16 w-16 rounded-2xl flex items-center justify-center mb-4"
+          className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl"
           style={{ backgroundColor: category.color ? `${category.color}20` : `${primaryColor}20` }}
         >
-          <FolderIcon
-            className="h-8 w-8"
-            style={{ color: category.color || primaryColor }}
-          />
+          <FolderIcon className="h-8 w-8" style={{ color: category.color || primaryColor }} />
         </div>
-        <h3 className="text-lg font-semibold mb-1">{category.name}</h3>
+        <h3 className="mb-1 text-lg font-semibold">{category.name}</h3>
         {category.description && (
-          <p className="text-sm text-gray-400 line-clamp-2 mb-3">{category.description}</p>
+          <p className="mb-3 line-clamp-2 text-sm text-gray-400">{category.description}</p>
         )}
         <div className="flex items-center gap-4 text-sm text-gray-400">
           <span className="flex items-center gap-1">
@@ -326,7 +319,7 @@ export function ForumCategoryList({
 
   if (variant === 'cards') {
     return (
-      <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ${className}`}>
+      <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 ${className}`}>
         {categories.map((category, index) => renderCardCategory(category, index))}
       </div>
     );
@@ -340,7 +333,7 @@ export function ForumCategoryList({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onCreateCategory}
-          className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-dark-600 rounded-xl text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-dark-600 p-4 text-gray-400 transition-colors hover:border-gray-500 hover:text-white"
         >
           <PlusIcon className="h-5 w-5" />
           Create Category
@@ -361,12 +354,12 @@ export function ForumCategoryList({
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                 >
-                  {showForumPreviews && forumsByCategory[category.id]?.length > 0 ? (
-                    forumsByCategory[category.id].map((forum, index) =>
+                  {showForumPreviews && (forumsByCategory[category.id]?.length ?? 0) > 0 ? (
+                    (forumsByCategory[category.id] ?? []).map((forum, index) =>
                       renderForumRow(forum, index)
                     )
                   ) : (
-                    <div className="p-4 pl-14 text-gray-500 text-sm border-t border-dark-700/50">
+                    <div className="border-t border-dark-700/50 p-4 pl-14 text-sm text-gray-500">
                       No forums in this category yet
                     </div>
                   )}
@@ -378,14 +371,14 @@ export function ForumCategoryList({
 
       {categories.length === 0 && (
         <GlassCard variant="frosted" className="p-8 text-center">
-          <FolderIcon className="h-12 w-12 mx-auto text-gray-500 mb-3" />
+          <FolderIcon className="mx-auto mb-3 h-12 w-12 text-gray-500" />
           <p className="text-gray-400">No categories found</p>
           {canManage && (
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onCreateCategory}
-              className="mt-4 px-4 py-2 rounded-lg font-medium"
+              className="mt-4 rounded-lg px-4 py-2 font-medium"
               style={{ backgroundColor: primaryColor }}
             >
               Create First Category

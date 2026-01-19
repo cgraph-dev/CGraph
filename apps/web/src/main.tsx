@@ -2,6 +2,8 @@ if (import.meta.env.DEV) {
   console.log('[CGraph] Module loading - start');
 }
 
+import React, { Suspense } from 'react';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider, onlineManager } from '@tanstack/react-query';
 import { persistQueryClient } from '@tanstack/react-query-persist-client';

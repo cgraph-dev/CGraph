@@ -121,6 +121,7 @@ const Status = lazy(() => import('@/pages/company/Status'));
 // Test pages (dev only, lazy)
 const MatrixTest = lazy(() => import('@/pages/test/MatrixTest'));
 const EnhancedDemo = lazy(() => import('@/pages/test/EnhancedDemo'));
+const ThemeApplicationTest = lazy(() => import('@/pages/test/ThemeApplicationTest'));
 
 // Initialize auth check on app load - non-blocking
 function AuthInitializer({ children }: { children: React.ReactNode }) {
@@ -276,6 +277,9 @@ export default function App() {
 
           {/* Enhanced Components Demo */}
           <Route path="/test/enhanced" element={<EnhancedDemo />} />
+
+          {/* Theme Application Test */}
+          <Route path="/test/theme" element={<ThemeApplicationTest />} />
 
           {/* Public landing page - shown to unauthenticated visitors */}
           <Route path="/" element={<LandingPage />} />

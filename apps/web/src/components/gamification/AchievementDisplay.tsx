@@ -10,15 +10,27 @@ import {
   MagnifyingGlassIcon,
   ChevronDownIcon,
 } from '@heroicons/react/24/outline';
-import { StarIcon as StarIconSolid, TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';
+import {
+  StarIcon as StarIconSolid,
+  TrophyIcon as TrophyIconSolid,
+} from '@heroicons/react/24/solid';
+
+// Reserved for future features
+const _reservedIcons = { StarIcon };
+void _reservedIcons;
+
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
-import type { Achievement, AchievementCategory, AchievementRarity } from '@/features/gamification/stores/types';
+import type {
+  Achievement,
+  AchievementCategory,
+  AchievementRarity,
+} from '@/features/gamification/stores/types';
 
 /**
  * AchievementDisplay Component
- * 
+ *
  * Showcases user achievements with:
  * - Grid/list view modes
  * - Category filtering
@@ -100,9 +112,7 @@ export function AchievementDisplay({
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
-        (a) =>
-          a.name.toLowerCase().includes(query) ||
-          a.description.toLowerCase().includes(query)
+        (a) => a.name.toLowerCase().includes(query) || a.description.toLowerCase().includes(query)
       );
     }
 
@@ -211,9 +221,9 @@ export function AchievementDisplay({
 
           <div className="relative p-4">
             {/* Icon */}
-            <div className="flex items-start justify-between mb-3">
+            <div className="mb-3 flex items-start justify-between">
               <div
-                className="h-14 w-14 rounded-xl flex items-center justify-center relative"
+                className="relative flex h-14 w-14 items-center justify-center rounded-xl"
                 style={{
                   backgroundColor: `${RARITY_COLORS[achievement.rarity]}20`,
                 }}
@@ -231,7 +241,7 @@ export function AchievementDisplay({
                   />
                 )}
                 {!unlocked && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-dark-900/50 rounded-xl">
+                  <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-dark-900/50">
                     <LockClosedIcon className="h-5 w-5 text-gray-400" />
                   </div>
                 )}
@@ -239,7 +249,7 @@ export function AchievementDisplay({
 
               {/* Rarity Badge */}
               <span
-                className="px-2 py-0.5 rounded-full text-xs font-medium capitalize"
+                className="rounded-full px-2 py-0.5 text-xs font-medium capitalize"
                 style={{
                   backgroundColor: `${RARITY_COLORS[achievement.rarity]}20`,
                   color: RARITY_COLORS[achievement.rarity],
@@ -250,21 +260,19 @@ export function AchievementDisplay({
             </div>
 
             {/* Info */}
-            <h4 className="font-semibold mb-1">{achievement.name}</h4>
-            <p className="text-sm text-gray-400 line-clamp-2 mb-3">
-              {achievement.description}
-            </p>
+            <h4 className="mb-1 font-semibold">{achievement.name}</h4>
+            <p className="mb-3 line-clamp-2 text-sm text-gray-400">{achievement.description}</p>
 
             {/* Progress Bar */}
             {showProgress && !unlocked && achievement.targetProgress && (
               <div className="mb-3">
-                <div className="flex justify-between text-xs mb-1">
+                <div className="mb-1 flex justify-between text-xs">
                   <span className="text-gray-400">Progress</span>
                   <span style={{ color: RARITY_COLORS[achievement.rarity] }}>
                     {achievement.currentProgress || 0}/{achievement.targetProgress}
                   </span>
                 </div>
-                <div className="h-2 bg-dark-700 rounded-full overflow-hidden">
+                <div className="h-2 overflow-hidden rounded-full bg-dark-700">
                   <motion.div
                     className="h-full rounded-full"
                     style={{ backgroundColor: RARITY_COLORS[achievement.rarity] }}
@@ -297,7 +305,7 @@ export function AchievementDisplay({
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute top-3 right-3"
+                className="absolute right-3 top-3"
               >
                 <CheckCircleIcon className="h-6 w-6 text-green-500" />
               </motion.div>
@@ -319,13 +327,13 @@ export function AchievementDisplay({
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: index * 0.03 }}
         onClick={() => handleClick(achievement)}
-        className={`flex items-center gap-4 p-4 border-b border-dark-700 cursor-pointer hover:bg-dark-700/50 transition-colors ${
+        className={`flex cursor-pointer items-center gap-4 border-b border-dark-700 p-4 transition-colors hover:bg-dark-700/50 ${
           !unlocked ? 'opacity-70' : ''
         }`}
       >
         {/* Icon */}
         <div
-          className="h-12 w-12 rounded-lg flex items-center justify-center relative flex-shrink-0"
+          className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg"
           style={{ backgroundColor: `${RARITY_COLORS[achievement.rarity]}20` }}
         >
           {achievement.iconUrl ? (
@@ -335,24 +343,21 @@ export function AchievementDisplay({
               className={`h-8 w-8 ${!unlocked ? 'grayscale' : ''}`}
             />
           ) : (
-            <TrophyIcon
-              className="h-6 w-6"
-              style={{ color: RARITY_COLORS[achievement.rarity] }}
-            />
+            <TrophyIcon className="h-6 w-6" style={{ color: RARITY_COLORS[achievement.rarity] }} />
           )}
           {!unlocked && (
-            <div className="absolute inset-0 flex items-center justify-center bg-dark-900/50 rounded-lg">
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-dark-900/50">
               <LockClosedIcon className="h-4 w-4 text-gray-400" />
             </div>
           )}
         </div>
 
         {/* Info */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h4 className="font-medium truncate">{achievement.name}</h4>
+            <h4 className="truncate font-medium">{achievement.name}</h4>
             <span
-              className="px-1.5 py-0.5 rounded text-xs font-medium capitalize"
+              className="rounded px-1.5 py-0.5 text-xs font-medium capitalize"
               style={{
                 backgroundColor: `${RARITY_COLORS[achievement.rarity]}20`,
                 color: RARITY_COLORS[achievement.rarity],
@@ -361,16 +366,14 @@ export function AchievementDisplay({
               {achievement.rarity}
             </span>
           </div>
-          <p className="text-sm text-gray-400 truncate">{achievement.description}</p>
+          <p className="truncate text-sm text-gray-400">{achievement.description}</p>
         </div>
 
         {/* Progress / Status */}
         <div className="flex items-center gap-3">
           {!unlocked && showProgress && achievement.targetProgress && (
             <div className="text-right">
-              <div className="text-sm font-medium">
-                {Math.round(progress)}%
-              </div>
+              <div className="text-sm font-medium">{Math.round(progress)}%</div>
               <div className="text-xs text-gray-400">
                 {achievement.currentProgress || 0}/{achievement.targetProgress}
               </div>
@@ -385,45 +388,44 @@ export function AchievementDisplay({
   return (
     <div className={className}>
       {/* Stats Summary */}
-      <GlassCard variant="frosted" className="p-4 mb-4">
+      <GlassCard variant="frosted" className="mb-4 p-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h3 className="text-lg font-semibold mb-1">Achievements</h3>
+            <h3 className="mb-1 text-lg font-semibold">Achievements</h3>
             <p className="text-sm text-gray-400">
               {stats.unlocked} of {stats.total} unlocked
             </p>
           </div>
           <div className="flex items-center gap-3">
-            {(['legendary', 'epic', 'rare', 'uncommon', 'common'] as AchievementRarity[]).map((rarity) => (
-              <div
-                key={rarity}
-                className="flex items-center gap-1"
-                title={`${rarity}: ${stats.byRarity[rarity].unlocked}/${stats.byRarity[rarity].total}`}
-              >
-                <StarIconSolid
-                  className="h-4 w-4"
-                  style={{ color: RARITY_COLORS[rarity] }}
-                />
-                <span className="text-sm">
-                  {stats.byRarity[rarity].unlocked}/{stats.byRarity[rarity].total}
-                </span>
-              </div>
-            ))}
+            {(['legendary', 'epic', 'rare', 'uncommon', 'common'] as AchievementRarity[]).map(
+              (rarity) => (
+                <div
+                  key={rarity}
+                  className="flex items-center gap-1"
+                  title={`${rarity}: ${stats.byRarity[rarity].unlocked}/${stats.byRarity[rarity].total}`}
+                >
+                  <StarIconSolid className="h-4 w-4" style={{ color: RARITY_COLORS[rarity] }} />
+                  <span className="text-sm">
+                    {stats.byRarity[rarity].unlocked}/{stats.byRarity[rarity].total}
+                  </span>
+                </div>
+              )
+            )}
           </div>
         </div>
       </GlassCard>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 mb-4">
+      <div className="mb-4 flex flex-wrap items-center gap-3">
         {/* Search */}
-        <div className="relative flex-1 min-w-[200px]">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <div className="relative min-w-[200px] flex-1">
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search achievements..."
-            className="w-full pl-10 pr-4 py-2 bg-dark-700 rounded-lg outline-none focus:ring-2"
+            className="w-full rounded-lg bg-dark-700 py-2 pl-10 pr-4 outline-none focus:ring-2"
             style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
           />
         </div>
@@ -432,11 +434,13 @@ export function AchievementDisplay({
         <div className="relative">
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center gap-2 px-4 py-2 bg-dark-700 rounded-lg hover:bg-dark-600"
+            className="flex items-center gap-2 rounded-lg bg-dark-700 px-4 py-2 hover:bg-dark-600"
           >
             <FunnelIcon className="h-5 w-5" />
             <span className="capitalize">{selectedCategory}</span>
-            <ChevronDownIcon className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-180' : ''}`} />
+            <ChevronDownIcon
+              className={`h-4 w-4 transition-transform ${showFilters ? 'rotate-180' : ''}`}
+            />
           </button>
 
           <AnimatePresence>
@@ -445,19 +449,35 @@ export function AchievementDisplay({
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 mt-1 w-48 bg-dark-700 rounded-lg shadow-xl border border-dark-600 py-1 z-50"
+                className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-dark-600 bg-dark-700 py-1 shadow-xl"
               >
                 <button
-                  onClick={() => { setSelectedCategory('all'); setShowFilters(false); }}
+                  onClick={() => {
+                    setSelectedCategory('all');
+                    setShowFilters(false);
+                  }}
                   className={`w-full px-4 py-2 text-left hover:bg-dark-600 ${selectedCategory === 'all' ? 'text-white' : 'text-gray-400'}`}
                 >
                   All Categories
                 </button>
-                {(['social', 'messaging', 'groups', 'forums', 'gaming', 'special', 'seasonal'] as AchievementCategory[]).map((cat) => (
+                {(
+                  [
+                    'social',
+                    'messaging',
+                    'groups',
+                    'forums',
+                    'gaming',
+                    'special',
+                    'seasonal',
+                  ] as AchievementCategory[]
+                ).map((cat) => (
                   <button
                     key={cat}
-                    onClick={() => { setSelectedCategory(cat); setShowFilters(false); }}
-                    className={`w-full flex items-center gap-2 px-4 py-2 text-left hover:bg-dark-600 capitalize ${selectedCategory === cat ? 'text-white' : 'text-gray-400'}`}
+                    onClick={() => {
+                      setSelectedCategory(cat);
+                      setShowFilters(false);
+                    }}
+                    className={`flex w-full items-center gap-2 px-4 py-2 text-left capitalize hover:bg-dark-600 ${selectedCategory === cat ? 'text-white' : 'text-gray-400'}`}
                   >
                     {CATEGORY_ICONS[cat]}
                     {cat}
@@ -472,7 +492,7 @@ export function AchievementDisplay({
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-          className="px-4 py-2 bg-dark-700 rounded-lg outline-none"
+          className="rounded-lg bg-dark-700 px-4 py-2 outline-none"
         >
           <option value="rarity">By Rarity</option>
           <option value="recent">Recently Unlocked</option>
@@ -482,21 +502,19 @@ export function AchievementDisplay({
 
       {/* Achievement Grid/List */}
       {variant === 'grid' ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredAchievements.map((achievement, index) =>
             renderAchievementCard(achievement, index)
           )}
         </div>
       ) : variant === 'list' ? (
         <GlassCard variant="frosted" className="overflow-hidden">
-          {filteredAchievements.map((achievement, index) =>
-            renderListItem(achievement, index)
-          )}
+          {filteredAchievements.map((achievement, index) => renderListItem(achievement, index))}
         </GlassCard>
       ) : (
         <div className="flex gap-3 overflow-x-auto pb-2">
           {filteredAchievements.map((achievement, index) => (
-            <div key={achievement.id} className="flex-shrink-0 w-64">
+            <div key={achievement.id} className="w-64 flex-shrink-0">
               {renderAchievementCard(achievement, index)}
             </div>
           ))}
@@ -505,7 +523,7 @@ export function AchievementDisplay({
 
       {filteredAchievements.length === 0 && (
         <GlassCard variant="frosted" className="p-8 text-center">
-          <TrophyIcon className="h-12 w-12 mx-auto text-gray-500 mb-3" />
+          <TrophyIcon className="mx-auto mb-3 h-12 w-12 text-gray-500" />
           <p className="text-gray-400">No achievements found</p>
         </GlassCard>
       )}
@@ -517,7 +535,7 @@ export function AchievementDisplay({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
             onClick={() => setSelectedAchievement(null)}
           >
             <motion.div
@@ -525,12 +543,12 @@ export function AchievementDisplay({
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="max-w-md w-full"
+              className="w-full max-w-md"
             >
               <GlassCard variant="neon" className="p-6">
                 <div className="text-center">
                   <div
-                    className="h-20 w-20 rounded-2xl flex items-center justify-center mx-auto mb-4"
+                    className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-2xl"
                     style={{
                       backgroundColor: `${RARITY_COLORS[selectedAchievement.rarity]}20`,
                     }}
@@ -550,7 +568,7 @@ export function AchievementDisplay({
                   </div>
 
                   <span
-                    className="inline-block px-3 py-1 rounded-full text-sm font-medium capitalize mb-3"
+                    className="mb-3 inline-block rounded-full px-3 py-1 text-sm font-medium capitalize"
                     style={{
                       backgroundColor: `${RARITY_COLORS[selectedAchievement.rarity]}20`,
                       color: RARITY_COLORS[selectedAchievement.rarity],
@@ -559,13 +577,13 @@ export function AchievementDisplay({
                     {selectedAchievement.rarity}
                   </span>
 
-                  <h3 className="text-xl font-bold mb-2">{selectedAchievement.name}</h3>
-                  <p className="text-gray-400 mb-4">{selectedAchievement.description}</p>
+                  <h3 className="mb-2 text-xl font-bold">{selectedAchievement.name}</h3>
+                  <p className="mb-4 text-gray-400">{selectedAchievement.description}</p>
 
                   {/* Progress */}
                   {selectedAchievement.targetProgress && !isUnlocked(selectedAchievement) && (
                     <div className="mb-4">
-                      <div className="h-3 bg-dark-700 rounded-full overflow-hidden">
+                      <div className="h-3 overflow-hidden rounded-full bg-dark-700">
                         <motion.div
                           className="h-full rounded-full"
                           style={{ backgroundColor: RARITY_COLORS[selectedAchievement.rarity] }}
@@ -573,8 +591,9 @@ export function AchievementDisplay({
                           animate={{ width: `${getProgress(selectedAchievement)}%` }}
                         />
                       </div>
-                      <p className="text-sm text-gray-400 mt-2">
-                        {selectedAchievement.currentProgress || 0} / {selectedAchievement.targetProgress}
+                      <p className="mt-2 text-sm text-gray-400">
+                        {selectedAchievement.currentProgress || 0} /{' '}
+                        {selectedAchievement.targetProgress}
                       </p>
                     </div>
                   )}
@@ -600,7 +619,7 @@ export function AchievementDisplay({
                   </div>
 
                   {isUnlocked(selectedAchievement) && selectedAchievement.unlockedAt && (
-                    <p className="text-sm text-gray-500 mt-4">
+                    <p className="mt-4 text-sm text-gray-500">
                       Unlocked on {new Date(selectedAchievement.unlockedAt).toLocaleDateString()}
                     </p>
                   )}

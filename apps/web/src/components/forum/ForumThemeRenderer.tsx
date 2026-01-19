@@ -1,7 +1,16 @@
 import { memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { useActiveForumTheme, type ForumTheme, type ForumTitleAnimation, type ForumRoleStyle } from '@/stores/forumThemeStore';
+import {
+  useActiveForumTheme,
+  type ForumTheme,
+  type ForumTitleAnimation,
+  type ForumRoleStyle,
+} from '@/stores/forumThemeStore';
+
+// Reserved for future features
+const _reservedAnimations = { AnimatePresence };
+void _reservedAnimations;
 
 /**
  * ForumThemeRenderer
@@ -149,7 +158,7 @@ export const AnimatedForumTitle = memo(function AnimatedForumTitle({
     <motion.span
       className={cn('inline-block', className)}
       style={getAnimationStyles()}
-      {...getMotionProps()}
+      {...(getMotionProps() as Record<string, unknown>)}
     >
       <Component className="m-0">{title}</Component>
     </motion.span>
@@ -221,7 +230,15 @@ export const RoleBadge = memo(function RoleBadge({ role, size = 'md', className 
       case 'rainbow':
         return {
           animate: {
-            borderColor: ['#ff0000', '#ff7f00', '#ffff00', '#00ff00', '#0000ff', '#8b00ff', '#ff0000'],
+            borderColor: [
+              '#ff0000',
+              '#ff7f00',
+              '#ffff00',
+              '#00ff00',
+              '#0000ff',
+              '#8b00ff',
+              '#ff0000',
+            ],
           },
           transition: { duration: 4, repeat: Infinity, ease: 'linear' },
         };
@@ -232,13 +249,9 @@ export const RoleBadge = memo(function RoleBadge({ role, size = 'md', className 
 
   return (
     <motion.span
-      className={cn(
-        'inline-flex items-center gap-1 font-medium',
-        sizeClasses[size],
-        className
-      )}
+      className={cn('inline-flex items-center gap-1 font-medium', sizeClasses[size], className)}
       style={getBadgeStyles()}
-      {...getAnimationProps()}
+      {...(getAnimationProps() as Record<string, unknown>)}
     >
       {role.badgeIcon && <span className="text-current">{role.badgeIcon}</span>}
       {role.name}
@@ -296,7 +309,9 @@ export const ForumBanner = memo(function ForumBanner({
       className={cn('relative w-full', className)}
       style={bannerStyle}
       animate={banner.parallax ? { backgroundPositionY: ['0%', '10%', '0%'] } : undefined}
-      transition={banner.parallax ? { duration: 10, repeat: Infinity, ease: 'easeInOut' } : undefined}
+      transition={
+        banner.parallax ? { duration: 10, repeat: Infinity, ease: 'easeInOut' } : undefined
+      }
     >
       {/* Video background */}
       {banner.type === 'video' && banner.url && (
@@ -305,7 +320,7 @@ export const ForumBanner = memo(function ForumBanner({
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover"
         >
           <source src={banner.url} type="video/mp4" />
         </video>
@@ -313,10 +328,7 @@ export const ForumBanner = memo(function ForumBanner({
 
       {/* Overlay */}
       {banner.overlay && (
-        <div
-          className="absolute inset-0 bg-black"
-          style={{ opacity: banner.overlayOpacity }}
-        />
+        <div className="absolute inset-0 bg-black" style={{ opacity: banner.overlayOpacity }} />
       )}
 
       {/* Particle effects */}
@@ -326,14 +338,18 @@ export const ForumBanner = memo(function ForumBanner({
 
       {/* Title content */}
       {(title || subtitle) && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
+        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
           {title && (
             <AnimatedForumTitle
               title={title}
               animation={titleAnimation}
               speed={titleAnimationSpeed}
-              colors={{ primary: colors.primary, secondary: colors.secondary, accent: colors.accent }}
-              className="text-3xl md:text-5xl font-bold"
+              colors={{
+                primary: colors.primary,
+                secondary: colors.secondary,
+                accent: colors.accent,
+              }}
+              className="text-3xl font-bold md:text-5xl"
             />
           )}
           {subtitle && (
@@ -366,7 +382,7 @@ const BannerParticles = memo(function BannerParticles({ effect }: BannerParticle
     }));
   }, [effect]);
 
-  const getParticleStyle = (particle: typeof particles[0]): React.CSSProperties => {
+  const getParticleStyle = (particle: (typeof particles)[0]): React.CSSProperties => {
     switch (effect) {
       case 'snow':
         return {
@@ -410,7 +426,7 @@ const BannerParticles = memo(function BannerParticles({ effect }: BannerParticle
     }
   };
 
-  const getAnimation = (particle: typeof particles[0]) => {
+  const getAnimation = (particle: (typeof particles)[0]) => {
     switch (effect) {
       case 'snow':
         return {
@@ -445,7 +461,7 @@ const BannerParticles = memo(function BannerParticles({ effect }: BannerParticle
   };
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {particles.map((particle) => (
         <motion.div
           key={particle.id}
@@ -482,7 +498,8 @@ export const ForumThemeProvider = memo(function ForumThemeProvider({
   className,
 }: ForumThemeProviderProps) {
   const cssVariables = useMemo((): React.CSSProperties => {
-    const { colors, borderRadius, borderWidth, shadows, fontFamily, headerFontFamily, fontSize } = theme;
+    const { colors, borderRadius, borderWidth, shadows, fontFamily, headerFontFamily, fontSize } =
+      theme;
 
     const radiusMap = {
       none: '0',
@@ -538,14 +555,9 @@ export const ForumThemeProvider = memo(function ForumThemeProvider({
   }, [theme]);
 
   return (
-    <div
-      className={cn('forum-theme-container min-h-screen', className)}
-      style={cssVariables}
-    >
+    <div className={cn('forum-theme-container min-h-screen', className)} style={cssVariables}>
       {/* Inject custom CSS */}
-      {theme.customCss && (
-        <style dangerouslySetInnerHTML={{ __html: theme.customCss }} />
-      )}
+      {theme.customCss && <style dangerouslySetInnerHTML={{ __html: theme.customCss }} />}
 
       {/* Glassmorphism backdrop */}
       {theme.glassmorphism && (

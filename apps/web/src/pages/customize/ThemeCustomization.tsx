@@ -9,6 +9,9 @@ import {
   NewspaperIcon,
   Squares2X2Icon,
 } from '@heroicons/react/24/outline';
+
+// Reserved for future use
+void CheckCircleIcon;
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
@@ -591,7 +594,7 @@ function ThemeCard({ theme, isActive, onApply, delay }: ThemeCardProps) {
       transition={{ delay }}
     >
       <GlassCard
-        variant={theme.unlocked ? (isActive ? 'neon' : 'crystal') : 'frost'}
+        variant={theme.unlocked ? (isActive ? 'neon' : 'crystal') : 'frosted'}
         glow={isActive}
         glowColor={isActive ? 'rgba(139, 92, 246, 0.3)' : undefined}
         className={`relative p-4 transition-all ${

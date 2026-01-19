@@ -8,6 +8,10 @@ import {
   PhotoIcon,
   BeakerIcon,
 } from '@heroicons/react/24/outline';
+
+// Reserved for future use
+const _reservedIcons = { CheckCircleIcon };
+void _reservedIcons;
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
@@ -604,7 +608,11 @@ function ParticleEffectsSection({
         >
           <GlassCard
             variant={
-              particle.unlocked ? (selectedParticle === particle.id ? 'neon' : 'crystal') : 'frost'
+              particle.unlocked
+                ? selectedParticle === particle.id
+                  ? 'neon'
+                  : 'crystal'
+                : ('frosted' as const)
             }
             glow={selectedParticle === particle.id}
             glowColor={selectedParticle === particle.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
@@ -782,7 +790,13 @@ function BackgroundEffectsSection({
           transition={{ delay: index * 0.04 }}
         >
           <GlassCard
-            variant={bg.unlocked ? (selectedBackground === bg.id ? 'neon' : 'crystal') : 'frost'}
+            variant={
+              bg.unlocked
+                ? selectedBackground === bg.id
+                  ? 'neon'
+                  : 'crystal'
+                : ('frosted' as const)
+            }
             glow={selectedBackground === bg.id}
             glowColor={selectedBackground === bg.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative p-4 transition-all ${
@@ -872,7 +886,13 @@ function AnimationSetsSection({
           transition={{ delay: index * 0.03 }}
         >
           <GlassCard
-            variant={anim.unlocked ? (selectedAnimation === anim.id ? 'neon' : 'crystal') : 'frost'}
+            variant={
+              anim.unlocked
+                ? selectedAnimation === anim.id
+                  ? 'neon'
+                  : 'crystal'
+                : ('frosted' as const)
+            }
             glow={selectedAnimation === anim.id}
             glowColor={selectedAnimation === anim.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative p-4 transition-all ${
@@ -911,7 +931,7 @@ function AnimationSetsSection({
                               : anim.speed === 'smooth'
                                 ? 0.7
                                 : 1,
-                      ease: anim.easing,
+                      ease: anim.easing as import('framer-motion').Easing,
                       repeat: Infinity,
                       repeatDelay: 0.5,
                     }}

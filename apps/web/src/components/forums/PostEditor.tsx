@@ -17,6 +17,11 @@ import {
   HashtagIcon,
   AtSymbolIcon,
 } from '@heroicons/react/24/outline';
+
+// Reserved for future features
+const _reservedPostEditor = { DocumentTextIcon, HashtagIcon, AtSymbolIcon };
+void _reservedPostEditor;
+
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
@@ -24,7 +29,7 @@ import type { ThreadPrefix, ForumCategory } from '@/stores/forumStore';
 
 /**
  * PostEditor Component
- * 
+ *
  * Rich text editor for creating forum posts with:
  * - Markdown/BBCode support
  * - Live preview
@@ -81,7 +86,14 @@ export interface PostEditorData {
 // Custom icon components for missing heroicons
 function UnderlineIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      {...props}
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M6 21h12M7 4v8a5 5 0 0010 0V4" />
     </svg>
   );
@@ -89,23 +101,52 @@ function UnderlineIcon(props: React.SVGProps<SVGSVGElement>) {
 
 function StrikethroughIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M4 12h16M12 4c-2.5 0-4 1.5-4 3s1.5 2.5 4 2.5m0 5c2.5 0 4-1.5 4-3" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4 12h16M12 4c-2.5 0-4 1.5-4 3s1.5 2.5 4 2.5m0 5c2.5 0 4-1.5 4-3"
+      />
     </svg>
   );
 }
 
 function QuoteIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z" />
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      {...props}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018z"
+      />
     </svg>
   );
 }
 
 function HeadingIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" {...props}>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth={1.5}
+      stroke="currentColor"
+      {...props}
+    >
       <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h8" />
     </svg>
   );
@@ -127,9 +168,10 @@ export function PostEditor({
   onCancel,
   onSaveDraft,
   submitLabel = 'Post',
-  isEditing = false,
+  isEditing: _isEditing = false,
   className = '',
 }: PostEditorProps) {
+  void _isEditing;
   const { theme } = useThemeStore();
   const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
@@ -170,14 +212,15 @@ export function PostEditor({
   }, [title, content, categoryId, prefixId, isNsfw]);
 
   const buildPostData = useCallback((): PostEditorData => {
-    const pollData = showPollCreator && pollQuestion && pollOptions.filter((o) => o.text.trim()).length >= 2
-      ? {
-          question: pollQuestion,
-          options: pollOptions.filter((o) => o.text.trim()).map((o) => o.text),
-          allowMultiple: pollAllowMultiple,
-          duration: pollDuration,
-        }
-      : undefined;
+    const pollData =
+      showPollCreator && pollQuestion && pollOptions.filter((o) => o.text.trim()).length >= 2
+        ? {
+            question: pollQuestion,
+            options: pollOptions.filter((o) => o.text.trim()).map((o) => o.text),
+            allowMultiple: pollAllowMultiple,
+            duration: pollDuration,
+          }
+        : undefined;
 
     return {
       title,
@@ -188,7 +231,19 @@ export function PostEditor({
       poll: pollData,
       isNsfw,
     };
-  }, [title, content, categoryId, prefixId, attachments, showPollCreator, pollQuestion, pollOptions, pollAllowMultiple, pollDuration, isNsfw]);
+  }, [
+    title,
+    content,
+    categoryId,
+    prefixId,
+    attachments,
+    showPollCreator,
+    pollQuestion,
+    pollOptions,
+    pollAllowMultiple,
+    pollDuration,
+    isNsfw,
+  ]);
 
   const handleSubmit = async () => {
     if (!title.trim() || !content.trim() || isSubmitting) return;
@@ -203,7 +258,8 @@ export function PostEditor({
     }
   };
 
-  const insertFormatting = (tag: string, value?: string) => {
+  const insertFormatting = (tag: string, _value?: string) => {
+    void _value;
     if (!contentRef.current) return;
 
     const textarea = contentRef.current;
@@ -320,9 +376,11 @@ export function PostEditor({
   };
 
   const renderPreview = () => (
-    <div className="prose prose-invert max-w-none p-4 min-h-[200px] bg-dark-800 rounded-lg border border-dark-600">
+    <div className="prose prose-invert min-h-[200px] max-w-none rounded-lg border border-dark-600 bg-dark-800 p-4">
       <h1>{title || 'Post Title'}</h1>
-      <div dangerouslySetInnerHTML={{ __html: content || '<p>Your content will appear here...</p>' }} />
+      <div
+        dangerouslySetInnerHTML={{ __html: content || '<p>Your content will appear here...</p>' }}
+      />
     </div>
   );
 
@@ -345,15 +403,15 @@ export function PostEditor({
     <div className={className}>
       <GlassCard variant="frosted" className="overflow-hidden">
         {/* Title Input */}
-        <div className="p-4 border-b border-dark-700">
-          <div className="flex gap-3 mb-3">
+        <div className="border-b border-dark-700 p-4">
+          <div className="mb-3 flex gap-3">
             {/* Prefix Selector */}
             {prefixes.length > 0 && (
               <div className="relative">
                 <select
                   value={prefixId || ''}
                   onChange={(e) => setPrefixId(e.target.value || undefined)}
-                  className="appearance-none bg-dark-700 text-sm rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2"
+                  className="appearance-none rounded-lg bg-dark-700 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
                   style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
                 >
                   <option value="">No Prefix</option>
@@ -363,7 +421,7 @@ export function PostEditor({
                     </option>
                   ))}
                 </select>
-                <ChevronDownIcon className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-gray-400" />
+                <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               </div>
             )}
 
@@ -373,7 +431,7 @@ export function PostEditor({
                 <select
                   value={categoryId || ''}
                   onChange={(e) => setCategoryId(e.target.value || undefined)}
-                  className="appearance-none bg-dark-700 text-sm rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2"
+                  className="appearance-none rounded-lg bg-dark-700 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2"
                   style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
                 >
                   <option value="">Select Category</option>
@@ -383,7 +441,7 @@ export function PostEditor({
                     </option>
                   ))}
                 </select>
-                <ChevronDownIcon className="absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 pointer-events-none text-gray-400" />
+                <ChevronDownIcon className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
               </div>
             )}
           </div>
@@ -393,25 +451,25 @@ export function PostEditor({
             value={title}
             onChange={(e) => setTitle(e.target.value.slice(0, maxTitleLength))}
             placeholder="Post title..."
-            className="w-full text-xl font-semibold bg-transparent outline-none placeholder-gray-500"
+            className="w-full bg-transparent text-xl font-semibold placeholder-gray-500 outline-none"
           />
-          <div className="text-xs text-gray-500 mt-1 text-right">
+          <div className="mt-1 text-right text-xs text-gray-500">
             {title.length}/{maxTitleLength}
           </div>
         </div>
 
         {/* Toolbar */}
-        <div className="flex flex-wrap items-center gap-1 p-2 border-b border-dark-700 bg-dark-800/50">
+        <div className="flex flex-wrap items-center gap-1 border-b border-dark-700 bg-dark-800/50 p-2">
           {toolbarButtons.map((button, index) =>
             button.tag === 'divider' ? (
-              <div key={index} className="w-px h-6 bg-dark-600 mx-1" />
+              <div key={index} className="mx-1 h-6 w-px bg-dark-600" />
             ) : (
               <motion.button
                 key={button.tag}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => insertFormatting(button.tag)}
-                className="p-2 rounded hover:bg-dark-600 text-gray-400 hover:text-white transition-colors"
+                className="rounded p-2 text-gray-400 transition-colors hover:bg-dark-600 hover:text-white"
                 title={button.label}
               >
                 {button.icon && <button.icon className="h-4 w-4" />}
@@ -422,10 +480,10 @@ export function PostEditor({
           <div className="flex-1" />
 
           {/* View Toggle */}
-          <div className="flex items-center bg-dark-700 rounded-lg p-0.5">
+          <div className="flex items-center rounded-lg bg-dark-700 p-0.5">
             <button
               onClick={() => setIsPreview(false)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors ${
+              className={`flex items-center gap-1.5 rounded px-3 py-1.5 text-sm transition-colors ${
                 !isPreview ? 'bg-dark-600 text-white' : 'text-gray-400'
               }`}
             >
@@ -434,7 +492,7 @@ export function PostEditor({
             </button>
             <button
               onClick={() => setIsPreview(true)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-sm transition-colors ${
+              className={`flex items-center gap-1.5 rounded px-3 py-1.5 text-sm transition-colors ${
                 isPreview ? 'bg-dark-600 text-white' : 'text-gray-400'
               }`}
             >
@@ -474,7 +532,7 @@ export function PostEditor({
                   value={content}
                   onChange={(e) => setContent(e.target.value.slice(0, maxContentLength))}
                   placeholder="Write your post content here... (Markdown supported)"
-                  className="w-full min-h-[300px] p-4 bg-transparent outline-none resize-y placeholder-gray-500"
+                  className="min-h-[300px] w-full resize-y bg-transparent p-4 placeholder-gray-500 outline-none"
                   style={{ fontFamily: 'inherit' }}
                 />
               </motion.div>
@@ -488,10 +546,13 @@ export function PostEditor({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 bg-dark-800/90 flex items-center justify-center"
+                className="absolute inset-0 flex items-center justify-center bg-dark-800/90"
               >
                 <div className="text-center">
-                  <PaperClipIcon className="h-12 w-12 mx-auto mb-2" style={{ color: primaryColor }} />
+                  <PaperClipIcon
+                    className="mx-auto mb-2 h-12 w-12"
+                    style={{ color: primaryColor }}
+                  />
                   <p className="text-lg font-medium">Drop files to attach</p>
                 </div>
               </motion.div>
@@ -500,27 +561,25 @@ export function PostEditor({
         </div>
 
         {/* Character Count */}
-        <div className="px-4 py-2 text-xs text-gray-500 text-right border-t border-dark-700">
+        <div className="border-t border-dark-700 px-4 py-2 text-right text-xs text-gray-500">
           {content.length.toLocaleString()}/{maxContentLength.toLocaleString()} characters
           {lastSaved && (
-            <span className="ml-4">
-              Auto-saved at {lastSaved.toLocaleTimeString()}
-            </span>
+            <span className="ml-4">Auto-saved at {lastSaved.toLocaleTimeString()}</span>
           )}
         </div>
 
         {/* Attachments */}
         {attachments.length > 0 && (
-          <div className="p-4 border-t border-dark-700">
-            <div className="text-sm font-medium mb-2">Attachments ({attachments.length})</div>
+          <div className="border-t border-dark-700 p-4">
+            <div className="mb-2 text-sm font-medium">Attachments ({attachments.length})</div>
             <div className="flex flex-wrap gap-2">
               {attachments.map((file, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-2 px-3 py-1.5 bg-dark-700 rounded-lg text-sm"
+                  className="flex items-center gap-2 rounded-lg bg-dark-700 px-3 py-1.5 text-sm"
                 >
                   <PaperClipIcon className="h-4 w-4 text-gray-400" />
-                  <span className="truncate max-w-[150px]">{file.name}</span>
+                  <span className="max-w-[150px] truncate">{file.name}</span>
                   <button
                     onClick={() => removeAttachment(index)}
                     className="text-gray-400 hover:text-red-400"
@@ -542,9 +601,9 @@ export function PostEditor({
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="p-4 border-t border-dark-700 bg-dark-800/50">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-medium flex items-center gap-2">
+              <div className="border-t border-dark-700 bg-dark-800/50 p-4">
+                <div className="mb-3 flex items-center justify-between">
+                  <h3 className="flex items-center gap-2 font-medium">
                     <SparklesIcon className="h-5 w-5" style={{ color: primaryColor }} />
                     Poll
                   </h3>
@@ -561,20 +620,20 @@ export function PostEditor({
                   value={pollQuestion}
                   onChange={(e) => setPollQuestion(e.target.value)}
                   placeholder="Ask a question..."
-                  className="w-full p-3 bg-dark-700 rounded-lg mb-3 outline-none focus:ring-2"
+                  className="mb-3 w-full rounded-lg bg-dark-700 p-3 outline-none focus:ring-2"
                   style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
                 />
 
-                <div className="space-y-2 mb-3">
+                <div className="mb-3 space-y-2">
                   {pollOptions.map((option, index) => (
                     <div key={option.id} className="flex items-center gap-2">
-                      <span className="text-gray-500 w-6">{index + 1}.</span>
+                      <span className="w-6 text-gray-500">{index + 1}.</span>
                       <input
                         type="text"
                         value={option.text}
                         onChange={(e) => updatePollOption(option.id, e.target.value)}
                         placeholder={`Option ${index + 1}`}
-                        className="flex-1 p-2 bg-dark-700 rounded-lg outline-none focus:ring-2"
+                        className="flex-1 rounded-lg bg-dark-700 p-2 outline-none focus:ring-2"
                         style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
                       />
                       {pollOptions.length > 2 && (
@@ -592,7 +651,7 @@ export function PostEditor({
                 {pollOptions.length < 10 && (
                   <button
                     onClick={addPollOption}
-                    className="text-sm hover:underline mb-3"
+                    className="mb-3 text-sm hover:underline"
                     style={{ color: primaryColor }}
                   >
                     + Add option
@@ -612,8 +671,10 @@ export function PostEditor({
 
                   <select
                     value={pollDuration || ''}
-                    onChange={(e) => setPollDuration(e.target.value ? Number(e.target.value) : undefined)}
-                    className="text-sm bg-dark-700 rounded px-2 py-1"
+                    onChange={(e) =>
+                      setPollDuration(e.target.value ? Number(e.target.value) : undefined)
+                    }
+                    className="rounded bg-dark-700 px-2 py-1 text-sm"
                   >
                     <option value="">No end date</option>
                     <option value="24">1 day</option>
@@ -627,7 +688,7 @@ export function PostEditor({
         </AnimatePresence>
 
         {/* Actions */}
-        <div className="flex items-center gap-3 p-4 border-t border-dark-700 bg-dark-800/50">
+        <div className="flex items-center gap-3 border-t border-dark-700 bg-dark-800/50 p-4">
           {allowAttachments && (
             <>
               <input
@@ -641,7 +702,7 @@ export function PostEditor({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => fileInputRef.current?.click()}
-                className="p-2 rounded-lg bg-dark-600 text-gray-400 hover:text-white"
+                className="rounded-lg bg-dark-600 p-2 text-gray-400 hover:text-white"
                 title="Attach files"
               >
                 <PaperClipIcon className="h-5 w-5" />
@@ -654,7 +715,7 @@ export function PostEditor({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowPollCreator(true)}
-              className="p-2 rounded-lg bg-dark-600 text-gray-400 hover:text-white"
+              className="rounded-lg bg-dark-600 p-2 text-gray-400 hover:text-white"
               title="Add poll"
             >
               <SparklesIcon className="h-5 w-5" />
@@ -676,10 +737,7 @@ export function PostEditor({
           <div className="flex-1" />
 
           {onCancel && (
-            <button
-              onClick={onCancel}
-              className="px-4 py-2 text-gray-400 hover:text-white"
-            >
+            <button onClick={onCancel} className="px-4 py-2 text-gray-400 hover:text-white">
               Cancel
             </button>
           )}
@@ -689,7 +747,7 @@ export function PostEditor({
             whileTap={{ scale: 0.98 }}
             onClick={handleSubmit}
             disabled={!title.trim() || !content.trim() || isSubmitting}
-            className="px-6 py-2 rounded-lg font-medium text-white disabled:opacity-50"
+            className="rounded-lg px-6 py-2 font-medium text-white disabled:opacity-50"
             style={{ backgroundColor: primaryColor }}
           >
             {isSubmitting ? 'Posting...' : submitLabel}

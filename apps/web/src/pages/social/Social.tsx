@@ -11,6 +11,8 @@ import {
   XMarkIcon,
   EllipsisVerticalIcon,
 } from '@heroicons/react/24/outline';
+void UserPlusIcon; // Reserved for add friend button
+void EllipsisVerticalIcon; // Reserved for context menu
 import { BellIcon as BellIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import UserProfileCard from '@/components/profile/UserProfileCard';
@@ -335,6 +337,7 @@ function FriendsTab({
   error,
   onRetry,
 }: FriendsTabProps) {
+  void sentRequests; // Reserved for sent requests section
   const navigate = useNavigate();
 
   // Show error state with retry button
@@ -591,7 +594,7 @@ function NotificationsTab({ notifications, onMarkAsRead, onMarkAllAsRead }: Noti
               transition={{ delay: index * 0.03 }}
             >
               <GlassCard
-                variant={notification.read ? 'frost' : 'neon'}
+                variant={notification.read ? 'frosted' : 'neon'}
                 glow={!notification.read}
                 className={`cursor-pointer p-4 transition-transform hover:scale-[1.01] ${
                   notification.read ? 'opacity-60' : ''

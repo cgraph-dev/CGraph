@@ -113,7 +113,8 @@ export function useCustomizationApplication() {
     }
 
     // Apply animation speed
-    const speedMultiplier = ANIMATION_SPEEDS[animationSpeed] || '1';
+    const speedKey = animationSpeed as keyof typeof ANIMATION_SPEEDS;
+    const speedMultiplier = ANIMATION_SPEEDS[speedKey] || '1';
     root.style.setProperty('--animation-speed', speedMultiplier);
 
     // Apply particle effect class

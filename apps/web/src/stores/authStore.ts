@@ -45,6 +45,13 @@ export interface User {
   usernameNextChangeAt: string | null;
   createdAt: string;
 
+  // Profile fields
+  bio?: string;
+  location?: string;
+  website?: string;
+  occupation?: string;
+  bannerUrl?: string | null;
+
   // Gamification fields
   level?: number;
   xp?: number;
@@ -53,6 +60,13 @@ export interface User {
   badges?: string[];
   streak?: number;
   coins?: number;
+
+  // Subscription/Premium info
+  subscription?: {
+    tier?: 'free' | 'plus' | 'pro' | 'premium';
+    status?: 'active' | 'inactive' | 'cancelled';
+    expiresAt?: string;
+  } | null;
 }
 
 // Map API user response to frontend User type

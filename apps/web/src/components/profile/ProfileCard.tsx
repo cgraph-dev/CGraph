@@ -9,7 +9,6 @@ import {
   useProfileCardConfig,
   type ProfileTheme,
   type ProfileCardConfig,
-  type ProfileCardLayout,
   type ProfileHoverEffect,
 } from '@/stores/profileThemeStore';
 import type { Achievement } from '@/stores/gamificationStore';
@@ -124,7 +123,11 @@ const getHoverVariants = (effect: ProfileHoverEffect) => {
         tap: { scale: 0.98 },
       };
     default:
-      return {};
+      return {
+        initial: { scale: 1 },
+        hover: { scale: 1 },
+        tap: { scale: 1 },
+      };
   }
 };
 
@@ -164,7 +167,7 @@ export const ProfileCard = memo(function ProfileCard({
     } as React.CSSProperties;
   }, [theme]);
 
-  const hoverVariants = theme ? getHoverVariants(theme.hoverEffect) : {};
+  const hoverVariants = theme ? getHoverVariants(theme.hoverEffect) : undefined;
 
   if (!config) {
     return null;
@@ -172,11 +175,7 @@ export const ProfileCard = memo(function ProfileCard({
 
   return (
     <motion.div
-      className={cn(
-        'relative overflow-hidden cursor-pointer',
-        sizeConfig.padding,
-        className
-      )}
+      className={cn('relative cursor-pointer overflow-hidden', sizeConfig.padding, className)}
       style={cardStyle}
       variants={hoverVariants}
       initial="initial"
@@ -211,7 +210,7 @@ export const ProfileCard = memo(function ProfileCard({
       {/* Online status indicator */}
       {user.isOnline && (
         <div
-          className="absolute top-2 right-2 w-3 h-3 rounded-full bg-green-500"
+          className="absolute right-2 top-2 h-3 w-3 rounded-full bg-green-500"
           style={{ boxShadow: '0 0 8px #22c55e' }}
         />
       )}
@@ -228,7 +227,12 @@ interface LayoutProps {
   theme: ProfileTheme | null;
 }
 
-const MinimalLayout = memo(function MinimalLayout({ user, config, sizeConfig, theme }: LayoutProps) {
+const MinimalLayout = memo(function MinimalLayout({
+  user,
+  config,
+  sizeConfig,
+  theme: _theme,
+}: LayoutProps) {
   return (
     <div className="flex items-center gap-3">
       <AvatarBorderRenderer
@@ -237,31 +241,26 @@ const MinimalLayout = memo(function MinimalLayout({ user, config, sizeConfig, th
         size={sizeConfig.avatar}
         interactive={false}
       />
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className={cn('font-semibold truncate', sizeConfig.titleSize)}>
+          <span className={cn('truncate font-semibold', sizeConfig.titleSize)}>
             {user.displayName}
           </span>
         </div>
         {config.showTitle && user.equippedTitle && (
-          <TitleBadge
-            titleData={{
-              id: user.equippedTitle.id,
-              name: user.equippedTitle.name,
-              rarity: user.equippedTitle.rarity as any,
-              animation: user.equippedTitle.animation as any,
-              color: user.equippedTitle.color,
-            }}
-            size="sm"
-            animated
-          />
+          <TitleBadge title={user.equippedTitle.id} size="sm" animated />
         )}
       </div>
     </div>
   );
 });
 
-const CompactLayout = memo(function CompactLayout({ user, config, sizeConfig, theme }: LayoutProps) {
+const CompactLayout = memo(function CompactLayout({
+  user,
+  config,
+  sizeConfig,
+  theme,
+}: LayoutProps) {
   return (
     <div className="flex items-center gap-3">
       <div className="relative">
@@ -273,7 +272,7 @@ const CompactLayout = memo(function CompactLayout({ user, config, sizeConfig, th
         />
         {config.showLevel && (
           <div
-            className="absolute -bottom-1 -right-1 text-xs font-bold px-1.5 py-0.5 rounded"
+            className="absolute -bottom-1 -right-1 rounded px-1.5 py-0.5 text-xs font-bold"
             style={{
               backgroundColor: theme?.colors.accent || '#22c55e',
               color: '#000',
@@ -283,27 +282,17 @@ const CompactLayout = memo(function CompactLayout({ user, config, sizeConfig, th
           </div>
         )}
       </div>
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <span className={cn('font-semibold truncate', sizeConfig.titleSize)}>
+          <span className={cn('truncate font-semibold', sizeConfig.titleSize)}>
             {user.displayName}
           </span>
         </div>
         {config.showTitle && user.equippedTitle && (
-          <TitleBadge
-            titleData={{
-              id: user.equippedTitle.id,
-              name: user.equippedTitle.name,
-              rarity: user.equippedTitle.rarity as any,
-              animation: user.equippedTitle.animation as any,
-              color: user.equippedTitle.color,
-            }}
-            size="sm"
-            animated
-          />
+          <TitleBadge title={user.equippedTitle.id} size="sm" animated />
         )}
         {config.showBadges && user.equippedBadges && user.equippedBadges.length > 0 && (
-          <div className="flex gap-1 mt-1">
+          <div className="mt-1 flex gap-1">
             {user.equippedBadges.slice(0, config.maxBadges).map((badge) => (
               <AnimatedBadgeWithTooltip
                 key={badge.id}
@@ -319,7 +308,12 @@ const CompactLayout = memo(function CompactLayout({ user, config, sizeConfig, th
   );
 });
 
-const DetailedLayout = memo(function DetailedLayout({ user, config, sizeConfig, theme }: LayoutProps) {
+const DetailedLayout = memo(function DetailedLayout({
+  user,
+  config,
+  sizeConfig,
+  theme,
+}: LayoutProps) {
   const xpPercentage = (user.xp / user.xpToNextLevel) * 100;
 
   return (
@@ -332,30 +326,16 @@ const DetailedLayout = memo(function DetailedLayout({ user, config, sizeConfig, 
           size={sizeConfig.avatar}
           interactive={false}
         />
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className={cn('font-bold', sizeConfig.titleSize)}>
-              {user.displayName}
-            </span>
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className={cn('font-bold', sizeConfig.titleSize)}>{user.displayName}</span>
             <span className="text-sm opacity-60">@{user.username}</span>
           </div>
           {config.showTitle && user.equippedTitle && (
-            <TitleBadge
-              titleData={{
-                id: user.equippedTitle.id,
-                name: user.equippedTitle.name,
-                rarity: user.equippedTitle.rarity as any,
-                animation: user.equippedTitle.animation as any,
-                color: user.equippedTitle.color,
-              }}
-              size="sm"
-              animated
-            />
+            <TitleBadge title={user.equippedTitle.id} size="sm" animated />
           )}
           {config.showBio && user.bio && (
-            <p className={cn('mt-2 opacity-80 line-clamp-2', sizeConfig.textSize)}>
-              {user.bio}
-            </p>
+            <p className={cn('mt-2 line-clamp-2 opacity-80', sizeConfig.textSize)}>{user.bio}</p>
           )}
         </div>
       </div>
@@ -365,10 +345,12 @@ const DetailedLayout = memo(function DetailedLayout({ user, config, sizeConfig, 
         <div className="space-y-1">
           <div className="flex justify-between text-sm">
             <span>Level {user.level}</span>
-            <span>{user.xp.toLocaleString()} / {user.xpToNextLevel.toLocaleString()} XP</span>
+            <span>
+              {user.xp.toLocaleString()} / {user.xpToNextLevel.toLocaleString()} XP
+            </span>
           </div>
           <div
-            className="h-2 rounded-full overflow-hidden"
+            className="h-2 overflow-hidden rounded-full"
             style={{ backgroundColor: theme?.colors.accent + '33' || '#22c55e33' }}
           >
             <motion.div
@@ -398,7 +380,7 @@ const DetailedLayout = memo(function DetailedLayout({ user, config, sizeConfig, 
 
       {/* Badges */}
       {config.showBadges && user.equippedBadges && user.equippedBadges.length > 0 && (
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex flex-wrap gap-2">
           {user.equippedBadges.slice(0, config.maxBadges).map((badge) => (
             <AnimatedBadgeWithTooltip
               key={badge.id}
@@ -419,7 +401,7 @@ const DetailedLayout = memo(function DetailedLayout({ user, config, sizeConfig, 
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm opacity-60 hover:opacity-100 transition-opacity"
+              className="text-sm opacity-60 transition-opacity hover:opacity-100"
             >
               {link.platform}
             </a>
@@ -445,7 +427,7 @@ const GamingLayout = memo(function GamingLayout({ user, config, sizeConfig, them
             interactive={false}
           />
           <div
-            className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-sm font-bold"
+            className="absolute -bottom-2 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-sm font-bold"
             style={{
               background: `linear-gradient(135deg, ${theme?.colors.primary || '#22c55e'}, ${theme?.colors.accent || '#4ade80'})`,
               boxShadow: `0 0 12px ${theme?.colors.accent || '#22c55e'}`,
@@ -457,23 +439,16 @@ const GamingLayout = memo(function GamingLayout({ user, config, sizeConfig, them
         <div className="flex-1">
           <div className={cn('font-bold', sizeConfig.titleSize)}>{user.displayName}</div>
           {config.showTitle && user.equippedTitle && (
-            <TitleBadge
-              titleData={{
-                id: user.equippedTitle.id,
-                name: user.equippedTitle.name,
-                rarity: user.equippedTitle.rarity as any,
-                animation: user.equippedTitle.animation as any,
-                color: user.equippedTitle.color,
-              }}
-              size="sm"
-              animated
-            />
+            <TitleBadge title={user.equippedTitle.id} size="sm" animated />
           )}
         </div>
       </div>
 
       {/* XP Bar */}
-      <div className="relative h-4 rounded-full overflow-hidden" style={{ backgroundColor: '#1a1a2e' }}>
+      <div
+        className="relative h-4 overflow-hidden rounded-full"
+        style={{ backgroundColor: '#1a1a2e' }}
+      >
         <motion.div
           className="absolute inset-y-0 left-0"
           style={{
@@ -491,16 +466,31 @@ const GamingLayout = memo(function GamingLayout({ user, config, sizeConfig, them
       {/* Stats */}
       {config.showStats && (
         <div className="grid grid-cols-3 gap-2">
-          <div className="text-center p-2 rounded" style={{ backgroundColor: theme?.colors.surface + '80' }}>
-            <div className="text-lg font-bold" style={{ color: theme?.colors.accent }}>{user.karma}</div>
+          <div
+            className="rounded p-2 text-center"
+            style={{ backgroundColor: theme?.colors.surface + '80' }}
+          >
+            <div className="text-lg font-bold" style={{ color: theme?.colors.accent }}>
+              {user.karma}
+            </div>
             <div className="text-xs opacity-60">KARMA</div>
           </div>
-          <div className="text-center p-2 rounded" style={{ backgroundColor: theme?.colors.surface + '80' }}>
-            <div className="text-lg font-bold" style={{ color: theme?.colors.accent }}>{user.streak}🔥</div>
+          <div
+            className="rounded p-2 text-center"
+            style={{ backgroundColor: theme?.colors.surface + '80' }}
+          >
+            <div className="text-lg font-bold" style={{ color: theme?.colors.accent }}>
+              {user.streak}🔥
+            </div>
             <div className="text-xs opacity-60">STREAK</div>
           </div>
-          <div className="text-center p-2 rounded" style={{ backgroundColor: theme?.colors.surface + '80' }}>
-            <div className="text-lg font-bold" style={{ color: theme?.colors.accent }}>{user.postCount || 0}</div>
+          <div
+            className="rounded p-2 text-center"
+            style={{ backgroundColor: theme?.colors.surface + '80' }}
+          >
+            <div className="text-lg font-bold" style={{ color: theme?.colors.accent }}>
+              {user.postCount || 0}
+            </div>
             <div className="text-xs opacity-60">POSTS</div>
           </div>
         </div>
@@ -508,7 +498,7 @@ const GamingLayout = memo(function GamingLayout({ user, config, sizeConfig, them
 
       {/* Achievements */}
       {config.showAchievements && user.equippedBadges && user.equippedBadges.length > 0 && (
-        <div className="flex gap-2 justify-center">
+        <div className="flex justify-center gap-2">
           {user.equippedBadges.slice(0, 5).map((badge) => (
             <AnimatedBadgeWithTooltip
               key={badge.id}
@@ -537,17 +527,7 @@ const SocialLayout = memo(function SocialLayout({ user, config, sizeConfig, them
         <div className="flex-1">
           <div className={cn('font-semibold', sizeConfig.titleSize)}>{user.displayName}</div>
           {config.showTitle && user.equippedTitle && (
-            <TitleBadge
-              titleData={{
-                id: user.equippedTitle.id,
-                name: user.equippedTitle.name,
-                rarity: user.equippedTitle.rarity as any,
-                animation: user.equippedTitle.animation as any,
-                color: user.equippedTitle.color,
-              }}
-              size="sm"
-              animated
-            />
+            <TitleBadge title={user.equippedTitle.id} size="sm" animated />
           )}
         </div>
       </div>
@@ -560,20 +540,20 @@ const SocialLayout = memo(function SocialLayout({ user, config, sizeConfig, them
       {/* Mutual Friends */}
       {config.showMutualFriends && user.mutualFriends && user.mutualFriends.length > 0 && (
         <div>
-          <div className="text-xs opacity-60 mb-1">{user.mutualFriends.length} mutual friends</div>
+          <div className="mb-1 text-xs opacity-60">{user.mutualFriends.length} mutual friends</div>
           <div className="flex -space-x-2">
             {user.mutualFriends.slice(0, 5).map((friend) => (
               <img
                 key={friend.id}
                 src={friend.avatarUrl}
                 alt={friend.username}
-                className="w-6 h-6 rounded-full border-2"
+                className="h-6 w-6 rounded-full border-2"
                 style={{ borderColor: theme?.colors.surface }}
               />
             ))}
             {user.mutualFriends.length > 5 && (
               <div
-                className="w-6 h-6 rounded-full flex items-center justify-center text-xs"
+                className="flex h-6 w-6 items-center justify-center rounded-full text-xs"
                 style={{ backgroundColor: theme?.colors.accent, color: '#000' }}
               >
                 +{user.mutualFriends.length - 5}
@@ -586,13 +566,18 @@ const SocialLayout = memo(function SocialLayout({ user, config, sizeConfig, them
       {/* Forums in Common */}
       {config.showForumsInCommon && user.forumsInCommon && user.forumsInCommon.length > 0 && (
         <div>
-          <div className="text-xs opacity-60 mb-1">{user.forumsInCommon.length} forums in common</div>
-          <div className="flex gap-1 flex-wrap">
+          <div className="mb-1 text-xs opacity-60">
+            {user.forumsInCommon.length} forums in common
+          </div>
+          <div className="flex flex-wrap gap-1">
             {user.forumsInCommon.slice(0, 3).map((forum) => (
               <span
                 key={forum.id}
-                className="text-xs px-2 py-0.5 rounded"
-                style={{ backgroundColor: theme?.colors.accent + '22', color: theme?.colors.accent }}
+                className="rounded px-2 py-0.5 text-xs"
+                style={{
+                  backgroundColor: theme?.colors.accent + '22',
+                  color: theme?.colors.accent,
+                }}
               >
                 {forum.name}
               </span>
@@ -603,15 +588,18 @@ const SocialLayout = memo(function SocialLayout({ user, config, sizeConfig, them
 
       {/* Recent Activity */}
       {config.showRecentActivity && user.recentActivity && user.recentActivity.length > 0 && (
-        <div className="text-xs opacity-60">
-          Last active: {user.recentActivity[0].description}
-        </div>
+        <div className="text-xs opacity-60">Last active: {user.recentActivity[0]?.description}</div>
       )}
     </div>
   );
 });
 
-const CreatorLayout = memo(function CreatorLayout({ user, config, sizeConfig, theme }: LayoutProps) {
+const CreatorLayout = memo(function CreatorLayout({
+  user,
+  config,
+  sizeConfig,
+  theme,
+}: LayoutProps) {
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -623,20 +611,10 @@ const CreatorLayout = memo(function CreatorLayout({ user, config, sizeConfig, th
           interactive={false}
           className="mx-auto"
         />
-        <div className={cn('font-bold mt-2', sizeConfig.titleSize)}>{user.displayName}</div>
+        <div className={cn('mt-2 font-bold', sizeConfig.titleSize)}>{user.displayName}</div>
         {config.showTitle && user.equippedTitle && (
           <div className="flex justify-center">
-            <TitleBadge
-              titleData={{
-                id: user.equippedTitle.id,
-                name: user.equippedTitle.name,
-                rarity: user.equippedTitle.rarity as any,
-                animation: user.equippedTitle.animation as any,
-                color: user.equippedTitle.color,
-              }}
-              size="md"
-              animated
-            />
+            <TitleBadge title={user.equippedTitle.id} size="md" animated />
           </div>
         )}
       </div>
@@ -672,7 +650,7 @@ const CreatorLayout = memo(function CreatorLayout({ user, config, sizeConfig, th
 
       {/* Badges */}
       {config.showBadges && user.equippedBadges && user.equippedBadges.length > 0 && (
-        <div className="flex gap-2 justify-center flex-wrap">
+        <div className="flex flex-wrap justify-center gap-2">
           {user.equippedBadges.slice(0, config.maxBadges).map((badge) => (
             <AnimatedBadgeWithTooltip
               key={badge.id}
@@ -686,14 +664,14 @@ const CreatorLayout = memo(function CreatorLayout({ user, config, sizeConfig, th
 
       {/* Social Links */}
       {config.showSocialLinks && user.socialLinks && user.socialLinks.length > 0 && (
-        <div className="flex gap-3 justify-center">
+        <div className="flex justify-center gap-3">
           {user.socialLinks.map((link) => (
             <a
               key={link.platform}
               href={link.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-2 rounded-full transition-colors"
+              className="rounded-full p-2 transition-colors"
               style={{
                 backgroundColor: theme?.colors.accent + '22',
                 color: theme?.colors.accent,
@@ -719,9 +697,10 @@ interface StatItemProps {
 
 const StatItem = memo(function StatItem({ label, value, suffix = '', color }: StatItemProps) {
   return (
-    <div className="p-2 rounded" style={{ backgroundColor: color + '11' }}>
+    <div className="rounded p-2" style={{ backgroundColor: color + '11' }}>
       <div className="font-bold" style={{ color }}>
-        {value.toLocaleString()}{suffix}
+        {value.toLocaleString()}
+        {suffix}
       </div>
       <div className="text-xs opacity-60">{label}</div>
     </div>

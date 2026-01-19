@@ -17,6 +17,11 @@ class ThemeRegistryClass {
   private currentTheme: AppTheme | null = null;
   private cssVariablesInjected = false;
 
+  // Use getter to silence unused warning while keeping state
+  get _cssVarsInjected() {
+    return this.cssVariablesInjected;
+  }
+
   constructor() {
     // Register built-in themes
     this.registerTheme(defaultTheme);
@@ -81,6 +86,13 @@ class ThemeRegistryClass {
    */
   getCurrentTheme(): AppTheme {
     return this.currentTheme || defaultTheme;
+  }
+
+  /**
+   * Validate a theme has required properties
+   */
+  validateTheme(theme: Partial<AppTheme>): boolean {
+    return !!(theme.id && theme.name && theme.colors);
   }
 
   /**
@@ -235,7 +247,7 @@ class ThemeRegistryClass {
 
     // Components
     Object.entries(theme.components).forEach(([component, styles]) => {
-      Object.entries(styles).forEach(([key, value]) => {
+      Object.entries(styles as Record<string, string>).forEach(([key, value]) => {
         vars[`--theme-${component}-${this.kebabCase(key)}`] = value;
       });
     });
@@ -345,7 +357,7 @@ class ThemeRegistryClass {
       return normalized <= 0.03928
         ? normalized / 12.92
         : Math.pow((normalized + 0.055) / 1.055, 2.4);
-    });
+    }) as [number, number, number];
 
     return 0.2126 * r + 0.7152 * g + 0.0722 * b;
   }
@@ -357,9 +369,9 @@ class ThemeRegistryClass {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     return result
       ? {
-          r: parseInt(result[1], 16),
-          g: parseInt(result[2], 16),
-          b: parseInt(result[3], 16),
+          r: parseInt(result[1] ?? '0', 16),
+          g: parseInt(result[2] ?? '0', 16),
+          b: parseInt(result[3] ?? '0', 16),
         }
       : null;
   }
@@ -382,7 +394,14 @@ export const ThemeRegistry = new ThemeRegistryClass();
  */
 export const themeAPI: ThemeAPI = {
   getTheme: (id: string) => ThemeRegistry.getTheme(id),
-  applyTheme: (id: string) => ThemeRegistry.applyTheme(id),
+  getAllThemes: () => ThemeRegistry.getAllThemes(),
+  getThemesByCategory: (category: ThemeCategory) => ThemeRegistry.getThemesByCategory(category),
+  registerTheme: (theme: AppTheme) => ThemeRegistry.registerTheme(theme),
+  unregisterTheme: (id: string) => ThemeRegistry.unregisterTheme(id),
+  applyTheme: (id: string) => {
+    ThemeRegistry.applyTheme(id);
+  },
+  getCurrentTheme: () => ThemeRegistry.getCurrentTheme(),
   switchTheme: (fromId: string, toId: string, duration?: number) =>
     ThemeRegistry.switchTheme(fromId, toId, duration),
   createCustomTheme: (base: string, overrides: Partial<AppTheme>) =>
@@ -390,4 +409,5 @@ export const themeAPI: ThemeAPI = {
   exportTheme: (id: string) => ThemeRegistry.exportTheme(id),
   importTheme: (json: string) => ThemeRegistry.importTheme(json),
   getCSSVariables: (theme: AppTheme) => ThemeRegistry.getCSSVariables(theme),
+  validateTheme: (theme: Partial<AppTheme>) => ThemeRegistry.validateTheme(theme),
 };

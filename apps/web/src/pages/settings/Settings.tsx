@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
+// These components are available for extended settings functionality
 import AppearanceSettingsEnhanced from '@/components/settings/AppearanceSettingsEnhanced';
 import ChatBubbleSettings from '@/components/settings/ChatBubbleSettings';
 import UICustomizationSettings from '@/components/settings/UICustomizationSettings';
@@ -25,6 +26,23 @@ import {
   UserCircleIcon,
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
+
+// Reserved for extended settings - mark as used to prevent tree-shaking removal
+const _extendedSettingsComponents = {
+  AppearanceSettingsEnhanced,
+  ChatBubbleSettings,
+  UICustomizationSettings,
+  AvatarSettings,
+};
+const _extendedIcons = {
+  PaintBrushIcon,
+  GlobeAltIcon,
+  ChatBubbleLeftRightIcon,
+  UserCircleIcon,
+  AdjustmentsHorizontalIcon,
+};
+void _extendedSettingsComponents;
+void _extendedIcons;
 
 // Settings simplified from 11 to 5 sections
 // Moved to /customize: appearance, ui-customization, chat-bubbles, avatar

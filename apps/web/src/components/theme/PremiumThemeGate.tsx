@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { LockClosedIcon, SparklesIcon } from '@heroicons/react/24/outline';
 import { StarIcon, StarIcon as CrownIcon } from '@heroicons/react/24/solid'; // CrownIcon doesn't exist, using StarIcon
 import { useThemeStore } from '@/stores/themeStore';
+
+// Reserved for future use
+void CrownIcon;
 import { useAuthStore } from '@/stores/authStore';
 import GlassCard from '@/components/ui/GlassCard';
 

@@ -7,6 +7,10 @@ import {
   SparklesIcon,
   XMarkIcon,
 } from '@heroicons/react/24/outline';
+
+// Reserved for future use
+const _reservedIcons = { CheckCircleIcon };
+void _reservedIcons;
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
@@ -405,7 +409,8 @@ const PROFILE_LAYOUTS: ProfileLayout[] = [
 
 export default function IdentityCustomization() {
   const { user } = useAuthStore();
-  const { level } = useGamificationStore();
+  const { level: _level } = useGamificationStore();
+  void _level; // Reserved for future use
   const {
     avatarBorder,
     title,
@@ -663,7 +668,7 @@ function BordersSection({ borders, selectedBorder, onEquip, getRarityColor }: Bo
           transition={{ delay: index * 0.02 }}
         >
           <GlassCard
-            variant={border.unlocked ? 'crystal' : 'frost'}
+            variant={border.unlocked ? 'crystal' : ('frosted' as const)}
             glow={selectedBorder === border.id}
             glowColor={border.unlocked ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative cursor-pointer p-4 transition-all ${
@@ -746,7 +751,7 @@ function TitlesSection({ titles, selectedTitle, onEquip }: TitlesSectionProps) {
           transition={{ delay: index * 0.03 }}
         >
           <GlassCard
-            variant={title.unlocked ? 'neon' : 'frost'}
+            variant={title.unlocked ? 'neon' : ('frosted' as const)}
             glow={selectedTitle === title.id}
             glowColor={title.unlocked ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative cursor-pointer p-4 transition-all ${
@@ -852,7 +857,7 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
               transition={{ delay: index * 0.02 }}
             >
               <GlassCard
-                variant={badge.unlocked ? 'crystal' : 'frost'}
+                variant={badge.unlocked ? 'crystal' : ('frosted' as const)}
                 glow={isEquipped}
                 glowColor={isEquipped ? 'rgba(34, 197, 94, 0.3)' : undefined}
                 className={`relative p-4 transition-all ${
@@ -932,7 +937,7 @@ function LayoutsSection({ layouts, selectedLayout, onSelect }: LayoutsSectionPro
           transition={{ delay: index * 0.05 }}
         >
           <GlassCard
-            variant={layout.unlocked ? 'neon' : 'frost'}
+            variant={layout.unlocked ? 'neon' : ('frosted' as const)}
             glow={selectedLayout === layout.id}
             glowColor={selectedLayout === layout.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative p-6 transition-all ${

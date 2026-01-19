@@ -1,10 +1,18 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useMarketplaceStore, ItemType, SortOption, MarketplaceListing } from '@/stores/marketplaceStore';
+import {
+  useMarketplaceStore,
+  ItemType,
+  SortOption,
+  MarketplaceListing,
+} from '@/stores/marketplaceStore';
+
+// Reserved for future use
+void useMemo;
 
 /**
  * Marketplace Page Component
- * 
+ *
  * Full-featured marketplace UI with:
  * - Browse listings with filters
  * - Create new listings
@@ -12,7 +20,7 @@ import { useMarketplaceStore, ItemType, SortOption, MarketplaceListing } from '@
  * - View price history
  * - My listings management
  * - Transaction history
- * 
+ *
  * Designed for scale with:
  * - Virtual scrolling for large lists
  * - Optimistic updates
@@ -50,31 +58,29 @@ export function MarketplacePage() {
   return (
     <div className="min-h-screen bg-black/95 text-white">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-black/80 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="sticky top-0 z-20 border-b border-white/10 bg-black/80 backdrop-blur-xl">
+        <div className="mx-auto max-w-7xl px-6 py-6">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
+              <h1 className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 bg-clip-text text-3xl font-bold text-transparent">
                 Marketplace
               </h1>
-              <p className="text-sm text-gray-400 mt-1">
-                Trade cosmetics with other players
-              </p>
+              <p className="mt-1 text-sm text-gray-400">Trade cosmetics with other players</p>
             </div>
-            
+
             <MarketplaceStats />
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-2 mt-6">
+          <div className="mt-6 flex gap-2">
             {(['browse', 'my-listings', 'history', 'create'] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                className={`rounded-lg px-5 py-2.5 text-sm font-medium transition-all ${
                   activeTab === tab
-                    ? 'bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-orange-400 border border-orange-500/30'
-                    : 'bg-white/5 text-gray-400 hover:text-white border border-transparent hover:border-white/10'
+                    ? 'border border-orange-500/30 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-orange-400'
+                    : 'border border-transparent bg-white/5 text-gray-400 hover:border-white/10 hover:text-white'
                 }`}
               >
                 {tab === 'browse' && '🔍 Browse'}
@@ -88,7 +94,7 @@ export function MarketplacePage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="mx-auto max-w-7xl px-6 py-8">
         <AnimatePresence mode="wait">
           {activeTab === 'browse' && (
             <motion.div
@@ -100,7 +106,7 @@ export function MarketplacePage() {
               <BrowseSection />
             </motion.div>
           )}
-          
+
           {activeTab === 'my-listings' && (
             <motion.div
               key="my-listings"
@@ -111,7 +117,7 @@ export function MarketplacePage() {
               <MyListingsSection />
             </motion.div>
           )}
-          
+
           {activeTab === 'history' && (
             <motion.div
               key="history"
@@ -122,7 +128,7 @@ export function MarketplacePage() {
               <HistorySection />
             </motion.div>
           )}
-          
+
           {activeTab === 'create' && (
             <motion.div
               key="create"
@@ -191,12 +197,12 @@ function BrowseSection() {
   return (
     <div className="space-y-6">
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+      <div className="flex flex-wrap items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4">
         {/* Type Filter */}
         <select
           value={filters.type || ''}
           onChange={(e) => setFilters({ type: (e.target.value as ItemType) || undefined })}
-          className="px-4 py-2 bg-black/50 border border-white/10 rounded-lg text-white"
+          className="rounded-lg border border-white/10 bg-black/50 px-4 py-2 text-white"
         >
           <option value="">All Types</option>
           {itemTypes.map((type) => (
@@ -210,7 +216,7 @@ function BrowseSection() {
         <select
           value={filters.rarity || ''}
           onChange={(e) => setFilters({ rarity: e.target.value || undefined })}
-          className="px-4 py-2 bg-black/50 border border-white/10 rounded-lg text-white"
+          className="rounded-lg border border-white/10 bg-black/50 px-4 py-2 text-white"
         >
           <option value="">All Rarities</option>
           <option value="common">Common</option>
@@ -228,7 +234,7 @@ function BrowseSection() {
             placeholder="Min"
             value={filters.minPrice || ''}
             onChange={(e) => setFilters({ minPrice: Number(e.target.value) || undefined })}
-            className="w-24 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white"
+            className="w-24 rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white"
           />
           <span className="text-gray-500">—</span>
           <input
@@ -236,7 +242,7 @@ function BrowseSection() {
             placeholder="Max"
             value={filters.maxPrice || ''}
             onChange={(e) => setFilters({ maxPrice: Number(e.target.value) || undefined })}
-            className="w-24 px-3 py-2 bg-black/50 border border-white/10 rounded-lg text-white"
+            className="w-24 rounded-lg border border-white/10 bg-black/50 px-3 py-2 text-white"
           />
         </div>
 
@@ -244,7 +250,7 @@ function BrowseSection() {
         <select
           value={filters.sort}
           onChange={(e) => setFilters({ sort: e.target.value as SortOption })}
-          className="px-4 py-2 bg-black/50 border border-white/10 rounded-lg text-white"
+          className="rounded-lg border border-white/10 bg-black/50 px-4 py-2 text-white"
         >
           <option value="newest">Newest First</option>
           <option value="oldest">Oldest First</option>
@@ -256,14 +262,14 @@ function BrowseSection() {
         {/* Clear */}
         <button
           onClick={clearFilters}
-          className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+          className="px-4 py-2 text-gray-400 transition-colors hover:text-white"
         >
           Clear Filters
         </button>
       </div>
 
       {/* Listings Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {listings.map((listing) => (
           <ListingCard
             key={listing.id}
@@ -276,7 +282,7 @@ function BrowseSection() {
       {/* Loading State */}
       {isLoading && (
         <div className="flex justify-center py-8">
-          <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
         </div>
       )}
 
@@ -285,7 +291,7 @@ function BrowseSection() {
         <div className="flex justify-center">
           <button
             onClick={handleLoadMore}
-            className="px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg transition-colors"
+            className="rounded-lg border border-white/10 bg-white/5 px-6 py-3 transition-colors hover:bg-white/10"
           >
             Load More
           </button>
@@ -294,9 +300,9 @@ function BrowseSection() {
 
       {/* Empty State */}
       {!isLoading && listings.length === 0 && (
-        <div className="text-center py-16">
-          <div className="text-4xl mb-4">🏪</div>
-          <h3 className="text-xl font-medium mb-2">No listings found</h3>
+        <div className="py-16 text-center">
+          <div className="mb-4 text-4xl">🏪</div>
+          <h3 className="mb-2 text-xl font-medium">No listings found</h3>
           <p className="text-gray-500">Try adjusting your filters</p>
         </div>
       )}
@@ -304,10 +310,7 @@ function BrowseSection() {
       {/* Listing Detail Modal */}
       <AnimatePresence>
         {selectedListing && (
-          <ListingDetailModal
-            listing={selectedListing}
-            onClose={() => setSelectedListing(null)}
-          />
+          <ListingDetailModal listing={selectedListing} onClose={() => setSelectedListing(null)} />
         )}
       </AnimatePresence>
     </div>
@@ -329,16 +332,15 @@ function ListingCard({ listing, onClick }: ListingCardProps) {
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
       onClick={onClick}
-      className="group relative bg-white/5 rounded-xl border border-white/10 overflow-hidden cursor-pointer 
-                 hover:border-orange-500/30 transition-all"
+      className="group relative cursor-pointer overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all hover:border-orange-500/30"
     >
       {/* Preview Image */}
-      <div className="aspect-square bg-black/30 flex items-center justify-center p-6">
+      <div className="flex aspect-square items-center justify-center bg-black/30 p-6">
         {listing.itemPreviewUrl ? (
           <img
             src={listing.itemPreviewUrl}
             alt={listing.itemName}
-            className="max-w-full max-h-full object-contain"
+            className="max-h-full max-w-full object-contain"
           />
         ) : (
           <div className="text-5xl opacity-50">
@@ -353,9 +355,11 @@ function ListingCard({ listing, onClick }: ListingCardProps) {
 
       {/* Info */}
       <div className="p-4">
-        <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-medium truncate">{listing.itemName}</h3>
-          <span className={`px-2 py-0.5 rounded-full text-xs ${RARITY_COLORS[listing.itemRarity] || RARITY_COLORS.common}`}>
+        <div className="mb-2 flex items-start justify-between gap-2">
+          <h3 className="truncate font-medium">{listing.itemName}</h3>
+          <span
+            className={`rounded-full px-2 py-0.5 text-xs ${RARITY_COLORS[listing.itemRarity] || RARITY_COLORS.common}`}
+          >
             {listing.itemRarity}
           </span>
         </div>
@@ -370,22 +374,20 @@ function ListingCard({ listing, onClick }: ListingCardProps) {
         </div>
 
         {listing.seller && (
-          <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
+          <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-3">
             <img
               src={listing.seller.avatarUrl || '/default-avatar.png'}
               alt={listing.seller.displayName}
-              className="w-6 h-6 rounded-full"
+              className="h-6 w-6 rounded-full"
             />
-            <span className="text-xs text-gray-500 truncate">
-              {listing.seller.displayName}
-            </span>
+            <span className="truncate text-xs text-gray-500">{listing.seller.displayName}</span>
           </div>
         )}
       </div>
 
       {/* Trade Badge */}
       {listing.acceptsTrades && (
-        <div className="absolute top-3 left-3 px-2 py-1 bg-green-500/20 text-green-400 rounded-full text-xs">
+        <div className="absolute left-3 top-3 rounded-full bg-green-500/20 px-2 py-1 text-xs text-green-400">
           🔄 Open to Trades
         </div>
       )}
@@ -417,23 +419,23 @@ function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-lg bg-gray-900 rounded-2xl border border-white/10 overflow-hidden"
+        className="w-full max-w-lg overflow-hidden rounded-2xl border border-white/10 bg-gray-900"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Preview */}
-        <div className="aspect-video bg-black/50 flex items-center justify-center p-8">
+        <div className="flex aspect-video items-center justify-center bg-black/50 p-8">
           {listing.itemPreviewUrl ? (
             <img
               src={listing.itemPreviewUrl}
               alt={listing.itemName}
-              className="max-w-full max-h-full object-contain"
+              className="max-h-full max-w-full object-contain"
             />
           ) : (
             <div className="text-8xl opacity-30">
@@ -446,23 +448,23 @@ function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
 
         {/* Details */}
         <div className="p-6">
-          <div className="flex items-start justify-between mb-4">
+          <div className="mb-4 flex items-start justify-between">
             <div>
               <h2 className="text-xl font-bold">{listing.itemName}</h2>
               <p className="text-sm text-gray-500">{ITEM_TYPE_LABELS[listing.itemType]}</p>
             </div>
-            <span className={`px-3 py-1 rounded-full text-sm ${RARITY_COLORS[listing.itemRarity]}`}>
+            <span className={`rounded-full px-3 py-1 text-sm ${RARITY_COLORS[listing.itemRarity]}`}>
               {listing.itemRarity}
             </span>
           </div>
 
           {/* Seller Info */}
           {listing.seller && (
-            <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg mb-4">
+            <div className="mb-4 flex items-center gap-3 rounded-lg bg-white/5 p-3">
               <img
                 src={listing.seller.avatarUrl || '/default-avatar.png'}
                 alt={listing.seller.displayName}
-                className="w-10 h-10 rounded-full"
+                className="h-10 w-10 rounded-full"
               />
               <div>
                 <p className="font-medium">{listing.seller.displayName}</p>
@@ -472,7 +474,7 @@ function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
           )}
 
           {/* Price */}
-          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg mb-6">
+          <div className="mb-6 flex items-center justify-between rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 p-4">
             <span className="text-gray-400">Price</span>
             <span className="text-2xl font-bold text-yellow-400">
               {listing.price.toLocaleString()} {listing.currency === 'gems' ? '💎' : '🪙'}
@@ -484,12 +486,12 @@ function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowConfirm(true)}
-                className="flex-1 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg font-medium hover:opacity-90 transition-opacity"
+                className="flex-1 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 py-3 font-medium transition-opacity hover:opacity-90"
               >
                 Buy Now
               </button>
               {listing.acceptsTrades && (
-                <button className="px-6 py-3 bg-white/10 rounded-lg font-medium hover:bg-white/20 transition-colors">
+                <button className="rounded-lg bg-white/10 px-6 py-3 font-medium transition-colors hover:bg-white/20">
                   Make Offer
                 </button>
               )}
@@ -497,19 +499,21 @@ function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
           ) : (
             <div className="space-y-3">
               <p className="text-center text-gray-400">
-                Confirm purchase for <span className="text-yellow-400 font-bold">{listing.price.toLocaleString()}</span> coins?
+                Confirm purchase for{' '}
+                <span className="font-bold text-yellow-400">{listing.price.toLocaleString()}</span>{' '}
+                coins?
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowConfirm(false)}
-                  className="flex-1 py-3 bg-white/10 rounded-lg font-medium hover:bg-white/20 transition-colors"
+                  className="flex-1 rounded-lg bg-white/10 py-3 font-medium transition-colors hover:bg-white/20"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handlePurchase}
                   disabled={isPurchasing}
-                  className="flex-1 py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+                  className="flex-1 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 py-3 font-medium transition-opacity hover:opacity-90 disabled:opacity-50"
                 >
                   {isPurchasing ? 'Processing...' : 'Confirm Purchase'}
                 </button>
@@ -521,7 +525,7 @@ function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/70 transition-colors"
+          className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 transition-colors hover:bg-black/70"
         >
           ✕
         </button>
@@ -534,6 +538,7 @@ function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
 
 function MyListingsSection() {
   const { myListings, fetchMyListings, cancelListing, updateListing } = useMarketplaceStore();
+  void updateListing; // Reserved for future edit functionality
 
   useEffect(() => {
     fetchMyListings('active');
@@ -557,12 +562,12 @@ function MyListingsSection() {
           {myListings.map((listing) => (
             <div
               key={listing.id}
-              className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10"
+              className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4"
             >
               {/* Preview */}
-              <div className="w-16 h-16 bg-black/30 rounded-lg flex items-center justify-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-black/30">
                 {listing.itemPreviewUrl ? (
-                  <img src={listing.itemPreviewUrl} alt="" className="w-12 h-12 object-contain" />
+                  <img src={listing.itemPreviewUrl} alt="" className="h-12 w-12 object-contain" />
                 ) : (
                   <span className="text-2xl opacity-50">🎨</span>
                 )}
@@ -576,9 +581,7 @@ function MyListingsSection() {
 
               {/* Price */}
               <div className="text-right">
-                <p className="font-bold text-yellow-400">
-                  {listing.price.toLocaleString()} 🪙
-                </p>
+                <p className="font-bold text-yellow-400">{listing.price.toLocaleString()} 🪙</p>
                 <p className="text-xs text-gray-500">
                   Listed {new Date(listing.listedAt).toLocaleDateString()}
                 </p>
@@ -588,7 +591,7 @@ function MyListingsSection() {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleCancel(listing.id)}
-                  className="px-4 py-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
+                  className="rounded-lg px-4 py-2 text-red-400 transition-colors hover:bg-red-500/10"
                 >
                   Cancel
                 </button>
@@ -597,9 +600,9 @@ function MyListingsSection() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-white/5 rounded-xl">
-          <div className="text-4xl mb-4">📦</div>
-          <h3 className="text-xl font-medium mb-2">No active listings</h3>
+        <div className="rounded-xl bg-white/5 py-16 text-center">
+          <div className="mb-4 text-4xl">📦</div>
+          <h3 className="mb-2 text-xl font-medium">No active listings</h3>
           <p className="text-gray-500">Create a listing to start selling</p>
         </div>
       )}
@@ -620,26 +623,22 @@ function HistorySection() {
     <div className="space-y-6">
       {/* Summary Stats */}
       {userTotals && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 bg-white/5 rounded-xl">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="rounded-xl bg-white/5 p-4">
             <p className="text-xs text-gray-500">Total Sold</p>
-            <p className="text-2xl font-bold text-green-400">
-              {userTotals.sells.count}
-            </p>
+            <p className="text-2xl font-bold text-green-400">{userTotals.sells.count}</p>
           </div>
-          <div className="p-4 bg-white/5 rounded-xl">
+          <div className="rounded-xl bg-white/5 p-4">
             <p className="text-xs text-gray-500">Revenue</p>
             <p className="text-2xl font-bold text-yellow-400">
               {userTotals.sells.proceeds.toLocaleString()} 🪙
             </p>
           </div>
-          <div className="p-4 bg-white/5 rounded-xl">
+          <div className="rounded-xl bg-white/5 p-4">
             <p className="text-xs text-gray-500">Total Bought</p>
-            <p className="text-2xl font-bold text-blue-400">
-              {userTotals.buys.count}
-            </p>
+            <p className="text-2xl font-bold text-blue-400">{userTotals.buys.count}</p>
           </div>
-          <div className="p-4 bg-white/5 rounded-xl">
+          <div className="rounded-xl bg-white/5 p-4">
             <p className="text-xs text-gray-500">Spent</p>
             <p className="text-2xl font-bold text-red-400">
               {userTotals.buys.total.toLocaleString()} 🪙
@@ -653,10 +652,10 @@ function HistorySection() {
         {transactionHistory.map((tx) => (
           <div
             key={tx.id}
-            className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10"
+            className="flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4"
           >
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${
                 tx.transactionType === 'sell' ? 'bg-green-500/20' : 'bg-blue-500/20'
               }`}
             >
@@ -683,9 +682,9 @@ function HistorySection() {
         ))}
 
         {transactionHistory.length === 0 && (
-          <div className="text-center py-16 bg-white/5 rounded-xl">
-            <div className="text-4xl mb-4">📜</div>
-            <h3 className="text-xl font-medium mb-2">No transactions yet</h3>
+          <div className="rounded-xl bg-white/5 py-16 text-center">
+            <div className="mb-4 text-4xl">📜</div>
+            <h3 className="mb-2 text-xl font-medium">No transactions yet</h3>
             <p className="text-gray-500">Your buy and sell history will appear here</p>
           </div>
         )}
@@ -698,7 +697,7 @@ function HistorySection() {
 
 function CreateListingSection() {
   const { createListing, isCreating, getPriceRecommendation } = useMarketplaceStore();
-  
+
   const [formData, setFormData] = useState({
     itemType: '' as ItemType | '',
     itemId: '',
@@ -707,13 +706,11 @@ function CreateListingSection() {
     acceptsTrades: false,
   });
 
-  const recommendation = formData.itemType
-    ? getPriceRecommendation('rare')
-    : null;
+  const recommendation = formData.itemType ? getPriceRecommendation('rare') : null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.itemType || !formData.itemId || !formData.price) {
       return;
     }
@@ -739,38 +736,36 @@ function CreateListingSection() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white/5 rounded-2xl border border-white/10 p-8">
-        <h2 className="text-2xl font-bold mb-6">Create New Listing</h2>
+    <div className="mx-auto max-w-2xl">
+      <div className="rounded-2xl border border-white/10 bg-white/5 p-8">
+        <h2 className="mb-6 text-2xl font-bold">Create New Listing</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Item Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Item Type
-            </label>
+            <label className="mb-2 block text-sm font-medium text-gray-400">Item Type</label>
             <select
               value={formData.itemType}
               onChange={(e) => setFormData({ ...formData, itemType: e.target.value as ItemType })}
-              className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
+              className="w-full rounded-lg border border-white/10 bg-black/50 px-4 py-3 text-white"
               required
             >
               <option value="">Select type...</option>
               {Object.entries(ITEM_TYPE_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
+                <option key={value} value={value}>
+                  {label}
+                </option>
               ))}
             </select>
           </div>
 
           {/* Item Selection */}
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Select Item
-            </label>
+            <label className="mb-2 block text-sm font-medium text-gray-400">Select Item</label>
             <select
               value={formData.itemId}
               onChange={(e) => setFormData({ ...formData, itemId: e.target.value })}
-              className="w-full px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
+              className="w-full rounded-lg border border-white/10 bg-black/50 px-4 py-3 text-white"
               required
             >
               <option value="">Select item...</option>
@@ -781,31 +776,32 @@ function CreateListingSection() {
 
           {/* Price */}
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">
-              Price
-            </label>
+            <label className="mb-2 block text-sm font-medium text-gray-400">Price</label>
             <div className="flex gap-3">
               <input
                 type="number"
                 value={formData.price || ''}
                 onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
                 placeholder="Enter price..."
-                className="flex-1 px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
+                className="flex-1 rounded-lg border border-white/10 bg-black/50 px-4 py-3 text-white"
                 required
                 min={1}
               />
               <select
                 value={formData.currency}
-                onChange={(e) => setFormData({ ...formData, currency: e.target.value as 'coins' | 'gems' })}
-                className="px-4 py-3 bg-black/50 border border-white/10 rounded-lg text-white"
+                onChange={(e) =>
+                  setFormData({ ...formData, currency: e.target.value as 'coins' | 'gems' })
+                }
+                className="rounded-lg border border-white/10 bg-black/50 px-4 py-3 text-white"
               >
                 <option value="coins">🪙 Coins</option>
                 <option value="gems">💎 Gems</option>
               </select>
             </div>
             {recommendation && (
-              <p className="text-xs text-gray-500 mt-2">
-                Suggested: {recommendation.min.toLocaleString()} — {recommendation.max.toLocaleString()} coins
+              <p className="mt-2 text-xs text-gray-500">
+                Suggested: {recommendation.min.toLocaleString()} —{' '}
+                {recommendation.max.toLocaleString()} coins
               </p>
             )}
           </div>
@@ -817,7 +813,7 @@ function CreateListingSection() {
               id="acceptsTrades"
               checked={formData.acceptsTrades}
               onChange={(e) => setFormData({ ...formData, acceptsTrades: e.target.checked })}
-              className="w-5 h-5 rounded bg-black/50 border-white/20"
+              className="h-5 w-5 rounded border-white/20 bg-black/50"
             />
             <label htmlFor="acceptsTrades" className="text-sm">
               Accept trade offers for this item
@@ -825,7 +821,7 @@ function CreateListingSection() {
           </div>
 
           {/* Fee Notice */}
-          <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+          <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-4">
             <p className="text-sm text-yellow-400">
               ⚠️ A 5% transaction fee will be deducted when your item sells
             </p>
@@ -835,8 +831,7 @@ function CreateListingSection() {
           <button
             type="submit"
             disabled={isCreating || !formData.itemType || !formData.itemId || !formData.price}
-            className="w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg font-medium 
-                       hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 py-4 font-medium transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isCreating ? 'Creating Listing...' : 'Create Listing'}
           </button>

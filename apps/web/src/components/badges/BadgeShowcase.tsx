@@ -73,8 +73,8 @@ function EmptySlot({ size, onClick, isEditable, index }: EmptySlotProps) {
         'flex items-center justify-center',
         'transition-colors duration-200',
         isEditable
-          ? 'border-gray-600 hover:border-primary-500/50 hover:bg-primary-500/10 cursor-pointer'
-          : 'border-gray-700/50 cursor-default'
+          ? 'cursor-pointer border-gray-600 hover:border-primary-500/50 hover:bg-primary-500/10'
+          : 'cursor-default border-gray-700/50'
       )}
       style={{ width: size, height: size }}
       onClick={isEditable ? onClick : undefined}
@@ -84,9 +84,7 @@ function EmptySlot({ size, onClick, isEditable, index }: EmptySlotProps) {
       whileHover={isEditable ? { scale: 1.05, borderColor: 'rgba(16, 185, 129, 0.5)' } : undefined}
       whileTap={isEditable ? { scale: 0.95 } : undefined}
     >
-      {isEditable && (
-        <PlusIcon className="w-5 h-5 text-gray-500 group-hover:text-primary-400" />
-      )}
+      {isEditable && <PlusIcon className="h-5 w-5 text-gray-500 group-hover:text-primary-400" />}
     </motion.button>
   );
 }
@@ -132,8 +130,8 @@ function BadgeSlot({ badge, size, isEditable, onUnequip, index }: BadgeSlotProps
         {isEditable && isHovered && (
           <motion.button
             className={cn(
-              'absolute -top-1 -right-1 z-10',
-              'w-5 h-5 rounded-full',
+              'absolute -right-1 -top-1 z-10',
+              'h-5 w-5 rounded-full',
               'bg-red-500 hover:bg-red-600',
               'flex items-center justify-center',
               'shadow-lg shadow-black/50'
@@ -145,7 +143,7 @@ function BadgeSlot({ badge, size, isEditable, onUnequip, index }: BadgeSlotProps
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <XMarkIcon className="w-3 h-3 text-white" />
+            <XMarkIcon className="h-3 w-3 text-white" />
           </motion.button>
         )}
       </AnimatePresence>
@@ -160,7 +158,7 @@ export function BadgeShowcase({
   availableBadges = [],
   onEquipBadge,
   onUnequipBadge,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
   onReorderBadges: _onReorderBadges,
   isEditable = false,
   maxSlots = 5,
@@ -192,8 +190,8 @@ export function BadgeShowcase({
     <div className={cn('relative', className)}>
       {/* Title */}
       {showTitle && (
-        <div className="flex items-center gap-2 mb-3">
-          <SparklesIcon className="w-4 h-4 text-primary-400" />
+        <div className="mb-3 flex items-center gap-2">
+          <SparklesIcon className="h-4 w-4 text-primary-400" />
           <h3 className="text-sm font-semibold text-gray-300">Badge Showcase</h3>
           <span className="text-xs text-gray-500">
             ({equippedBadges.length}/{maxSlots})
@@ -255,7 +253,7 @@ export function BadgeShowcase({
             <motion.div
               className={cn(
                 'relative z-10 w-full max-w-lg',
-                'bg-dark-800 rounded-2xl',
+                'rounded-2xl bg-dark-800',
                 'border border-white/10',
                 'shadow-2xl shadow-black/50',
                 'overflow-hidden'
@@ -265,35 +263,35 @@ export function BadgeShowcase({
               exit={{ scale: 0.9, y: 20 }}
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-4 border-b border-white/10">
+              <div className="flex items-center justify-between border-b border-white/10 p-4">
                 <div className="flex items-center gap-2">
-                  <SparklesIcon className="w-5 h-5 text-primary-400" />
+                  <SparklesIcon className="h-5 w-5 text-primary-400" />
                   <h2 className="text-lg font-bold text-white">Select Badge</h2>
                 </div>
                 <button
-                  className="p-1 rounded-lg hover:bg-white/10 transition-colors"
+                  className="rounded-lg p-1 transition-colors hover:bg-white/10"
                   onClick={() => setIsPickerOpen(false)}
                 >
-                  <XMarkIcon className="w-5 h-5 text-gray-400" />
+                  <XMarkIcon className="h-5 w-5 text-gray-400" />
                 </button>
               </div>
 
               {/* Badge grid */}
-              <div className="p-4 max-h-[400px] overflow-y-auto">
+              <div className="max-h-[400px] overflow-y-auto p-4">
                 {unequippedBadges.length === 0 ? (
-                  <div className="text-center py-8">
+                  <div className="py-8 text-center">
                     <p className="text-gray-400">No more badges available</p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="mt-1 text-sm text-gray-500">
                       Unlock more achievements to equip them here
                     </p>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-3">
+                  <div className="grid grid-cols-4 gap-3 sm:grid-cols-5">
                     {unequippedBadges.map((badge) => (
                       <motion.button
                         key={badge.id}
                         className={cn(
-                          'p-2 rounded-xl',
+                          'rounded-xl p-2',
                           'bg-dark-700/50 hover:bg-dark-600/50',
                           'border border-transparent hover:border-primary-500/30',
                           'transition-colors'
@@ -308,7 +306,7 @@ export function BadgeShowcase({
                           animated
                           showProgress={false}
                         />
-                        <p className="text-[10px] text-gray-400 mt-1 truncate text-center">
+                        <p className="mt-1 truncate text-center text-[10px] text-gray-400">
                           {badge.title}
                         </p>
                       </motion.button>
@@ -318,8 +316,8 @@ export function BadgeShowcase({
               </div>
 
               {/* Footer hint */}
-              <div className="px-4 py-3 bg-dark-700/50 border-t border-white/10">
-                <p className="text-xs text-gray-500 text-center">
+              <div className="border-t border-white/10 bg-dark-700/50 px-4 py-3">
+                <p className="text-center text-xs text-gray-500">
                   Equipped badges are visible on your profile across all forums
                 </p>
               </div>
@@ -365,18 +363,13 @@ export function CompactBadgeShowcase({
           transition={{ delay: index * 0.05 }}
           style={{ marginLeft: index > 0 ? -8 : 0 }}
         >
-          <AnimatedBadgeWithTooltip
-            achievement={badge}
-            size={size}
-            animated
-            showProgress={false}
-          />
+          <AnimatedBadgeWithTooltip achievement={badge} size={size} animated showProgress={false} />
         </motion.div>
       ))}
 
       {hiddenCount > 0 && (
         <motion.span
-          className="text-xs text-gray-400 ml-1"
+          className="ml-1 text-xs text-gray-400"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >

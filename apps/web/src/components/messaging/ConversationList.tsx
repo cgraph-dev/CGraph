@@ -2,6 +2,9 @@ import { useMemo, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { format, isToday, isYesterday, formatDistanceToNow } from 'date-fns';
+
+// Reserved for future use
+void formatDistanceToNow;
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -9,7 +12,7 @@ import {
   UserGroupIcon,
   ArchiveBoxIcon,
   BellSlashIcon,
-  PinIcon,
+  BookmarkIcon as PinIcon,
   EllipsisHorizontalIcon,
 } from '@heroicons/react/24/outline';
 import { useChatStore, type Conversation } from '@/stores/chatStore';
@@ -21,7 +24,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 /**
  * ConversationList Component
- * 
+ *
  * Displays all conversations with filtering and organization.
  * Features:
  * - Search conversations
@@ -59,9 +62,10 @@ export function ConversationList({ className = '' }: ConversationListProps) {
     // Apply search
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter((conv) =>
-        getConversationName(conv, user?.id).toLowerCase().includes(query) ||
-        conv.lastMessage?.content.toLowerCase().includes(query)
+      result = result.filter(
+        (conv) =>
+          getConversationName(conv, user?.id).toLowerCase().includes(query) ||
+          conv.lastMessage?.content.toLowerCase().includes(query)
       );
     }
 
@@ -99,22 +103,25 @@ export function ConversationList({ className = '' }: ConversationListProps) {
     };
   }, [filteredConversations]);
 
-  const handleConversationClick = useCallback((conv: Conversation) => {
-    HapticFeedback.light();
-    navigate(`/messages/${conv.id}`);
-  }, [navigate]);
+  const handleConversationClick = useCallback(
+    (conv: Conversation) => {
+      HapticFeedback.light();
+      navigate(`/messages/${conv.id}`);
+    },
+    [navigate]
+  );
 
   return (
-    <div className={`flex flex-col h-full ${className}`}>
+    <div className={`flex h-full flex-col ${className}`}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-700/50">
-        <div className="flex items-center justify-between mb-4">
+      <div className="border-b border-gray-700/50 p-4">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-bold text-white">Messages</h2>
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowNewChat(true)}
-            className="p-2 rounded-xl bg-primary-600 text-white"
+            className="rounded-xl bg-primary-600 p-2 text-white"
             style={{ backgroundColor: colors.primary }}
           >
             <PlusIcon className="h-5 w-5" />
@@ -123,18 +130,18 @@ export function ConversationList({ className = '' }: ConversationListProps) {
 
         {/* Search */}
         <div className="relative">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search messages..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-dark-800 border border-gray-700/50 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none text-sm"
+            className="w-full rounded-xl border border-gray-700/50 bg-dark-800 py-2 pl-9 pr-4 text-sm text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none"
           />
         </div>
 
         {/* Filters */}
-        <div className="flex gap-2 mt-3">
+        <div className="mt-3 flex gap-2">
           {[
             { id: 'all' as FilterType, label: 'All' },
             { id: 'direct' as FilterType, label: 'Direct' },
@@ -145,7 +152,7 @@ export function ConversationList({ className = '' }: ConversationListProps) {
               key={f.id}
               whileTap={{ scale: 0.95 }}
               onClick={() => setFilter(f.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
                 filter === f.id
                   ? 'bg-primary-600/20 text-primary-400'
                   : 'bg-dark-700 text-gray-400 hover:text-white'
@@ -162,7 +169,7 @@ export function ConversationList({ className = '' }: ConversationListProps) {
         {/* Pinned */}
         {pinnedConversations.length > 0 && (
           <div className="py-2">
-            <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-2">
+            <div className="flex items-center gap-2 px-4 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500">
               <PinIcon className="h-3 w-3" />
               Pinned
             </div>
@@ -182,7 +189,7 @@ export function ConversationList({ className = '' }: ConversationListProps) {
         {regularConversations.length > 0 && (
           <div className="py-2">
             {pinnedConversations.length > 0 && (
-              <div className="px-4 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              <div className="px-4 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500">
                 All Messages
               </div>
             )}
@@ -200,12 +207,12 @@ export function ConversationList({ className = '' }: ConversationListProps) {
 
         {/* Empty State */}
         {filteredConversations.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full p-8">
-            <ChatBubbleLeftRightIcon className="h-16 w-16 text-gray-600 mb-4" />
+          <div className="flex h-full flex-col items-center justify-center p-8">
+            <ChatBubbleLeftRightIcon className="mb-4 h-16 w-16 text-gray-600" />
             <h3 className="text-lg font-semibold text-gray-400">
               {searchQuery ? 'No matches found' : 'No conversations yet'}
             </h3>
-            <p className="text-gray-500 text-sm text-center mt-1">
+            <p className="mt-1 text-center text-sm text-gray-500">
               {searchQuery
                 ? 'Try a different search term'
                 : 'Start a new conversation to connect with others'}
@@ -215,7 +222,7 @@ export function ConversationList({ className = '' }: ConversationListProps) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setShowNewChat(true)}
-                className="mt-4 px-4 py-2 rounded-xl bg-primary-600 text-white font-medium"
+                className="mt-4 rounded-xl bg-primary-600 px-4 py-2 font-medium text-white"
               >
                 Start a Conversation
               </motion.button>
@@ -226,9 +233,7 @@ export function ConversationList({ className = '' }: ConversationListProps) {
 
       {/* New Chat Modal */}
       <AnimatePresence>
-        {showNewChat && (
-          <NewChatModal onClose={() => setShowNewChat(false)} />
-        )}
+        {showNewChat && <NewChatModal onClose={() => setShowNewChat(false)} />}
       </AnimatePresence>
     </div>
   );
@@ -260,8 +265,8 @@ function ConversationItem({
     typingUsers.length === 1
       ? `${typingUsers[0]} is typing...`
       : typingUsers.length > 1
-      ? 'Several people are typing...'
-      : null;
+        ? 'Several people are typing...'
+        : null;
 
   return (
     <NavLink to={`/messages/${conversation.id}`}>
@@ -269,10 +274,8 @@ function ConversationItem({
         <motion.div
           whileHover={{ x: 2 }}
           onClick={onClick}
-          className={`relative flex items-center gap-3 px-4 py-3 cursor-pointer transition-colors ${
-            isActive
-              ? 'bg-primary-600/10 border-l-2 border-primary-500'
-              : 'hover:bg-dark-700/50'
+          className={`relative flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors ${
+            isActive ? 'border-l-2 border-primary-500 bg-primary-600/10' : 'hover:bg-dark-700/50'
           }`}
           onMouseEnter={() => setShowMenu(true)}
           onMouseLeave={() => setShowMenu(false)}
@@ -280,33 +283,29 @@ function ConversationItem({
           {/* Avatar */}
           <div className="relative flex-shrink-0">
             {conversation.isGroup ? (
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary-600 to-purple-600 flex items-center justify-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-purple-600">
                 <UserGroupIcon className="h-6 w-6 text-white" />
               </div>
             ) : (
-              <ThemedAvatar
-                src={avatarUrl}
-                alt={name}
-                size="medium"
-              />
+              <ThemedAvatar src={avatarUrl} alt={name} size="medium" />
             )}
             {isOnline && !conversation.isGroup && (
-              <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-green-500 border-2 border-dark-900" />
+              <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-dark-900 bg-green-500" />
             )}
           </div>
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center justify-between">
-              <span className="font-semibold text-white truncate">{name}</span>
+              <span className="truncate font-semibold text-white">{name}</span>
               <span className="text-xs text-gray-500">{lastMessageTime}</span>
             </div>
 
-            <div className="flex items-center justify-between mt-0.5">
+            <div className="mt-0.5 flex items-center justify-between">
               {typingText ? (
-                <span className="text-sm text-primary-400 truncate">{typingText}</span>
+                <span className="truncate text-sm text-primary-400">{typingText}</span>
               ) : (
-                <span className="text-sm text-gray-400 truncate">
+                <span className="truncate text-sm text-gray-400">
                   {conversation.lastMessage?.content || 'No messages yet'}
                 </span>
               )}
@@ -315,7 +314,7 @@ function ConversationItem({
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="ml-2 min-w-[20px] h-5 px-1.5 rounded-full bg-primary-600 flex items-center justify-center"
+                  className="ml-2 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary-600 px-1.5"
                 >
                   <span className="text-[10px] font-bold text-white">
                     {conversation.unreadCount > 99 ? '99+' : conversation.unreadCount}
@@ -370,7 +369,7 @@ function ConversationMenu({
           e.preventDefault();
           setShowDropdown(!showDropdown);
         }}
-        className="p-1 rounded hover:bg-dark-600"
+        className="rounded p-1 hover:bg-dark-600"
       >
         <EllipsisHorizontalIcon className="h-5 w-5 text-gray-400" />
       </motion.button>
@@ -381,26 +380,26 @@ function ConversationMenu({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute right-0 top-full mt-1 w-40 rounded-xl bg-dark-800 border border-gray-700 shadow-xl py-1 z-50"
+            className="absolute right-0 top-full z-50 mt-1 w-40 rounded-xl border border-gray-700 bg-dark-800 py-1 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => onAction('pin')}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-dark-700"
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-dark-700"
             >
               <PinIcon className="h-4 w-4" />
               {conversation.isPinned ? 'Unpin' : 'Pin'}
             </button>
             <button
               onClick={() => onAction('mute')}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-dark-700"
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-dark-700"
             >
               <BellSlashIcon className="h-4 w-4" />
               {conversation.isMuted ? 'Unmute' : 'Mute'}
             </button>
             <button
               onClick={() => onAction('archive')}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-dark-700"
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-gray-300 hover:bg-dark-700"
             >
               <ArchiveBoxIcon className="h-4 w-4" />
               Archive
@@ -417,6 +416,7 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const navigate = useNavigate();
+  void navigate; // Reserved for navigation after chat creation
 
   // Mock users - would come from API
   const users = [
@@ -443,7 +443,7 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
@@ -454,24 +454,24 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <GlassCard variant="crystal" glow className="p-6">
-          <h2 className="text-xl font-bold text-white mb-4">New Conversation</h2>
+          <h2 className="mb-4 text-xl font-bold text-white">New Conversation</h2>
 
           {/* Search */}
           <div className="relative mb-4">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search users..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+              className="w-full rounded-xl border border-gray-700 bg-dark-800 py-2 pl-9 pr-4 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
               autoFocus
             />
           </div>
 
           {/* Selected Users */}
           {selectedUsers.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="mb-4 flex flex-wrap gap-2">
               {selectedUsers.map((userId) => {
                 const user = users.find((u) => u.id === userId);
                 if (!user) return null;
@@ -480,7 +480,7 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
                     key={userId}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="flex items-center gap-1 px-2 py-1 rounded-full bg-primary-600/20 text-primary-400 text-sm"
+                    className="flex items-center gap-1 rounded-full bg-primary-600/20 px-2 py-1 text-sm text-primary-400"
                   >
                     <span>{user.displayName}</span>
                     <button
@@ -496,7 +496,7 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
           )}
 
           {/* User List */}
-          <div className="max-h-60 overflow-y-auto space-y-1">
+          <div className="max-h-60 space-y-1 overflow-y-auto">
             {filteredUsers.map((user) => (
               <motion.button
                 key={user.id}
@@ -508,20 +508,14 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
                       : [...prev, user.id]
                   );
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-colors ${
-                  selectedUsers.includes(user.id)
-                    ? 'bg-primary-600/20'
-                    : 'hover:bg-dark-700'
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 transition-colors ${
+                  selectedUsers.includes(user.id) ? 'bg-primary-600/20' : 'hover:bg-dark-700'
                 }`}
               >
                 <div className="relative">
-                  <ThemedAvatar
-                    src={user.avatarUrl}
-                    alt={user.displayName}
-                    size="small"
-                  />
+                  <ThemedAvatar src={user.avatarUrl} alt={user.displayName} size="small" />
                   {user.status === 'online' && (
-                    <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-500 border border-dark-900" />
+                    <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-dark-900 bg-green-500" />
                   )}
                 </div>
                 <div className="flex-1 text-left">
@@ -529,8 +523,8 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
                   <p className="text-xs text-gray-400">@{user.username}</p>
                 </div>
                 {selectedUsers.includes(user.id) && (
-                  <div className="w-5 h-5 rounded-full bg-primary-600 flex items-center justify-center">
-                    <span className="text-white text-xs">✓</span>
+                  <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-600">
+                    <span className="text-xs text-white">✓</span>
                   </div>
                 )}
               </motion.button>
@@ -538,10 +532,10 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-3 mt-4">
+          <div className="mt-4 flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-2 rounded-xl bg-dark-700 text-gray-300 hover:bg-dark-600"
+              className="flex-1 rounded-xl bg-dark-700 py-2 text-gray-300 hover:bg-dark-600"
             >
               Cancel
             </button>
@@ -550,7 +544,7 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
               whileTap={{ scale: 0.98 }}
               onClick={handleStartChat}
               disabled={selectedUsers.length === 0}
-              className="flex-1 py-2 rounded-xl bg-primary-600 text-white font-semibold disabled:opacity-50"
+              className="flex-1 rounded-xl bg-primary-600 py-2 font-semibold text-white disabled:opacity-50"
             >
               {selectedUsers.length > 1 ? 'Create Group' : 'Start Chat'}
             </motion.button>

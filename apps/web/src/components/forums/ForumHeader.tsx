@@ -16,6 +16,10 @@ import {
   PhotoIcon,
   PencilIcon,
 } from '@heroicons/react/24/outline';
+
+// Reserved for future features
+const _reservedForumHeader = { React, useRef, DocumentTextIcon, ChatBubbleLeftIcon, StarIcon };
+void _reservedForumHeader;
 import {
   ArrowUpIcon as ArrowUpIconSolid,
   ArrowDownIcon as ArrowDownIconSolid,
@@ -28,7 +32,7 @@ import type { Forum } from '@/stores/forumStore';
 
 /**
  * ForumHeader Component
- * 
+ *
  * Forum header with banner and key information:
  * - Customizable banner image
  * - Forum icon with upload option
@@ -142,10 +146,10 @@ export function ForumHeader({
         whileTap={{ scale: 0.9 }}
         onClick={() => handleVote(1)}
         disabled={isVoting}
-        className={`p-2 rounded-lg transition-colors ${
+        className={`rounded-lg p-2 transition-colors ${
           forum.userVote === 1
             ? 'bg-green-500/20 text-green-500'
-            : 'hover:bg-dark-600 text-gray-400'
+            : 'text-gray-400 hover:bg-dark-600'
         }`}
       >
         {forum.userVote === 1 ? (
@@ -155,7 +159,7 @@ export function ForumHeader({
         )}
       </motion.button>
       <span
-        className={`font-bold text-lg ${
+        className={`text-lg font-bold ${
           forum.score > 0 ? 'text-green-500' : forum.score < 0 ? 'text-red-500' : 'text-gray-400'
         }`}
       >
@@ -166,10 +170,8 @@ export function ForumHeader({
         whileTap={{ scale: 0.9 }}
         onClick={() => handleVote(-1)}
         disabled={isVoting}
-        className={`p-2 rounded-lg transition-colors ${
-          forum.userVote === -1
-            ? 'bg-red-500/20 text-red-500'
-            : 'hover:bg-dark-600 text-gray-400'
+        className={`rounded-lg p-2 transition-colors ${
+          forum.userVote === -1 ? 'bg-red-500/20 text-red-500' : 'text-gray-400 hover:bg-dark-600'
         }`}
       >
         {forum.userVote === -1 ? (
@@ -205,7 +207,7 @@ export function ForumHeader({
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={onCreatePost}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium"
+          className="flex items-center gap-2 rounded-lg px-4 py-2 font-medium"
           style={{ backgroundColor: primaryColor }}
         >
           <PlusIcon className="h-5 w-5" />
@@ -218,10 +220,8 @@ export function ForumHeader({
         whileTap={{ scale: 0.98 }}
         onClick={handleJoin}
         disabled={isJoining}
-        className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
-          isMember
-            ? 'bg-dark-600 text-gray-300 hover:bg-red-500/20 hover:text-red-400'
-            : ''
+        className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
+          isMember ? 'bg-dark-600 text-gray-300 hover:bg-red-500/20 hover:text-red-400' : ''
         }`}
         style={!isMember ? { backgroundColor: primaryColor } : {}}
       >
@@ -234,18 +234,14 @@ export function ForumHeader({
         whileTap={{ scale: 0.95 }}
         onClick={handleSubscribe}
         disabled={isSubscribing}
-        className={`p-2 rounded-lg transition-colors ${
+        className={`rounded-lg p-2 transition-colors ${
           isSubscribed
             ? 'bg-amber-500/20 text-amber-400'
             : 'bg-dark-600 text-gray-400 hover:text-white'
         }`}
         title={isSubscribed ? 'Unsubscribe' : 'Subscribe'}
       >
-        {isSubscribed ? (
-          <BellSlashIcon className="h-5 w-5" />
-        ) : (
-          <BellIcon className="h-5 w-5" />
-        )}
+        {isSubscribed ? <BellSlashIcon className="h-5 w-5" /> : <BellIcon className="h-5 w-5" />}
       </motion.button>
 
       <div className="relative">
@@ -253,7 +249,7 @@ export function ForumHeader({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowMoreMenu(!showMoreMenu)}
-          className="p-2 rounded-lg bg-dark-600 text-gray-400 hover:text-white"
+          className="rounded-lg bg-dark-600 p-2 text-gray-400 hover:text-white"
         >
           <EllipsisHorizontalIcon className="h-5 w-5" />
         </motion.button>
@@ -264,11 +260,11 @@ export function ForumHeader({
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute right-0 mt-1 w-48 bg-dark-700 rounded-lg shadow-xl border border-dark-600 py-1 z-50"
+              className="absolute right-0 z-50 mt-1 w-48 rounded-lg border border-dark-600 bg-dark-700 py-1 shadow-xl"
             >
               <button
                 onClick={copyLink}
-                className="w-full flex items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
               >
                 <ShareIcon className="h-4 w-4" />
                 Share
@@ -279,7 +275,7 @@ export function ForumHeader({
                     onSettings?.();
                     setShowMoreMenu(false);
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                  className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
                 >
                   <Cog6ToothIcon className="h-4 w-4" />
                   Settings
@@ -297,7 +293,7 @@ export function ForumHeader({
     return (
       <GlassCard variant="frosted" className={`p-4 ${className}`}>
         <div className="flex items-center gap-4">
-          <div className="relative group">
+          <div className="group relative">
             {forum.iconUrl ? (
               <img
                 src={forum.iconUrl}
@@ -306,7 +302,7 @@ export function ForumHeader({
               />
             ) : (
               <div
-                className="h-12 w-12 rounded-xl flex items-center justify-center text-lg font-bold"
+                className="flex h-12 w-12 items-center justify-center rounded-xl text-lg font-bold"
                 style={{ backgroundColor: `${primaryColor}30`, color: primaryColor }}
               >
                 {forum.name.charAt(0).toUpperCase()}
@@ -314,8 +310,8 @@ export function ForumHeader({
             )}
           </div>
 
-          <div className="flex-1 min-w-0">
-            <h2 className="font-semibold truncate">{forum.name}</h2>
+          <div className="min-w-0 flex-1">
+            <h2 className="truncate font-semibold">{forum.name}</h2>
             <p className="text-sm text-gray-400">{formatNumber(forum.memberCount)} members</p>
           </div>
 
@@ -324,7 +320,7 @@ export function ForumHeader({
             whileTap={{ scale: 0.98 }}
             onClick={handleJoin}
             disabled={isJoining}
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium ${
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium ${
               isMember ? 'bg-dark-600 text-gray-300' : ''
             }`}
             style={!isMember ? { backgroundColor: primaryColor } : {}}
@@ -341,16 +337,16 @@ export function ForumHeader({
     return (
       <div className={`relative ${className}`}>
         {/* Banner */}
-        <div className="relative h-64 md:h-80 overflow-hidden rounded-b-3xl">
+        <div className="relative h-64 overflow-hidden rounded-b-3xl md:h-80">
           {forum.bannerUrl ? (
             <img
               src={forum.bannerUrl}
               alt={`${forum.name} banner`}
-              className="w-full h-full object-cover"
+              className="h-full w-full object-cover"
             />
           ) : (
             <div
-              className="w-full h-full"
+              className="h-full w-full"
               style={{
                 background: `linear-gradient(135deg, ${primaryColor}40 0%, ${THEME_COLORS[theme.colorPreset]?.secondary || '#059669'}40 100%)`,
               }}
@@ -364,7 +360,7 @@ export function ForumHeader({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onEditBanner}
-              className="absolute top-4 right-4 flex items-center gap-2 px-4 py-2 bg-dark-800/80 backdrop-blur-sm rounded-lg text-sm hover:bg-dark-700"
+              className="absolute right-4 top-4 flex items-center gap-2 rounded-lg bg-dark-800/80 px-4 py-2 text-sm backdrop-blur-sm hover:bg-dark-700"
             >
               <PhotoIcon className="h-4 w-4" />
               Edit Banner
@@ -374,30 +370,30 @@ export function ForumHeader({
 
         {/* Content */}
         <div className="relative -mt-24 px-6">
-          <div className="flex flex-col md:flex-row items-start gap-6">
+          <div className="flex flex-col items-start gap-6 md:flex-row">
             {/* Forum Icon */}
-            <div className="relative group">
+            <div className="group relative">
               {forum.iconUrl ? (
                 <img
                   src={forum.iconUrl}
                   alt={forum.name}
-                  className="h-32 w-32 rounded-2xl object-cover border-4 border-dark-900 shadow-xl"
+                  className="h-32 w-32 rounded-2xl border-4 border-dark-900 object-cover shadow-xl"
                 />
               ) : (
                 <div
-                  className="h-32 w-32 rounded-2xl flex items-center justify-center text-4xl font-bold border-4 border-dark-900 shadow-xl"
+                  className="flex h-32 w-32 items-center justify-center rounded-2xl border-4 border-dark-900 text-4xl font-bold shadow-xl"
                   style={{ backgroundColor: `${primaryColor}30`, color: primaryColor }}
                 >
                   {forum.name.charAt(0).toUpperCase()}
                 </div>
               )}
-              
+
               {canManage && onEditIcon && (
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={onEditIcon}
-                  className="absolute -bottom-2 -right-2 p-2 bg-dark-700 rounded-full border border-dark-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -bottom-2 -right-2 rounded-full border border-dark-600 bg-dark-700 p-2 opacity-0 transition-opacity group-hover:opacity-100"
                 >
                   <PencilIcon className="h-4 w-4" />
                 </motion.button>
@@ -405,12 +401,12 @@ export function ForumHeader({
             </div>
 
             {/* Info */}
-            <div className="flex-1 min-w-0 pt-4">
-              <div className="flex flex-col md:flex-row md:items-start gap-4">
+            <div className="min-w-0 flex-1 pt-4">
+              <div className="flex flex-col gap-4 md:flex-row md:items-start">
                 <div className="flex-1">
-                  <h1 className="text-3xl font-bold mb-2">{forum.name}</h1>
+                  <h1 className="mb-2 text-3xl font-bold">{forum.name}</h1>
                   {forum.description && (
-                    <p className="text-gray-400 max-w-2xl">{forum.description}</p>
+                    <p className="max-w-2xl text-gray-400">{forum.description}</p>
                   )}
                   <div className="mt-3">{renderStats()}</div>
                 </div>
@@ -436,7 +432,7 @@ export function ForumHeader({
           <img
             src={forum.bannerUrl}
             alt={`${forum.name} banner`}
-            className="w-full h-full object-cover"
+            className="h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-dark-800 to-transparent" />
         </div>
@@ -448,7 +444,7 @@ export function ForumHeader({
           {onVote && renderVoteButtons()}
 
           {/* Forum Icon */}
-          <div className="relative group flex-shrink-0">
+          <div className="group relative flex-shrink-0">
             {forum.iconUrl ? (
               <img
                 src={forum.iconUrl}
@@ -457,7 +453,7 @@ export function ForumHeader({
               />
             ) : (
               <div
-                className="h-16 w-16 rounded-xl flex items-center justify-center text-2xl font-bold"
+                className="flex h-16 w-16 items-center justify-center rounded-xl text-2xl font-bold"
                 style={{ backgroundColor: `${primaryColor}30`, color: primaryColor }}
               >
                 {forum.name.charAt(0).toUpperCase()}
@@ -466,10 +462,10 @@ export function ForumHeader({
           </div>
 
           {/* Info */}
-          <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold mb-1">{forum.name}</h1>
+          <div className="min-w-0 flex-1">
+            <h1 className="mb-1 text-2xl font-bold">{forum.name}</h1>
             {forum.description && (
-              <p className="text-gray-400 text-sm mb-3 line-clamp-2">{forum.description}</p>
+              <p className="mb-3 line-clamp-2 text-sm text-gray-400">{forum.description}</p>
             )}
             {renderStats()}
           </div>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import {
@@ -11,7 +11,6 @@ import {
   StarIcon,
   MapPinIcon,
   LockClosedIcon,
-  ClockIcon,
   ArrowsPointingOutIcon,
   ArrowsPointingInIcon,
   ChevronUpIcon,
@@ -30,11 +29,11 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatTimeAgo } from '@/lib/utils';
-import type { Post, Comment, ThreadPrefix, Poll } from '@/stores/forumStore';
+import type { Post, Comment, ThreadPrefix } from '@/stores/forumStore';
 
 /**
  * ThreadView Component
- * 
+ *
  * Comprehensive thread viewing experience with:
  * - Original post display with full content
  * - Virtualized comment list for performance
@@ -77,8 +76,8 @@ export function ThreadView({
   onVote,
   onComment,
   onBookmark,
-  onShare,
-  onSubscribe,
+  onShare: _onShare,
+  onSubscribe: _onSubscribe,
   onRate,
   onPin,
   onLock,
@@ -86,15 +85,15 @@ export function ThreadView({
   onEdit,
   onReport,
   isBookmarked = false,
-  isSubscribed = false,
+  isSubscribed: _isSubscribed = false,
   canModerate = false,
   canEdit = false,
   variant = 'default',
 }: ThreadViewProps) {
-  const { user } = useAuthStore();
+  const { user: _user } = useAuthStore();
   const { theme } = useThemeStore();
   const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
-  
+
   const parentRef = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);
   const [showCommentForm, setShowCommentForm] = useState(false);
@@ -127,7 +126,11 @@ export function ThreadView({
     await onVote('post', post.id, newValue);
   };
 
-  const handleCommentVote = async (commentId: string, value: 1 | -1, currentVote: 1 | -1 | null) => {
+  const handleCommentVote = async (
+    commentId: string,
+    value: 1 | -1,
+    currentVote: 1 | -1 | null
+  ) => {
     HapticFeedback.light();
     const newValue = currentVote === value ? null : value;
     await onVote('comment', commentId, newValue);
@@ -160,7 +163,7 @@ export function ThreadView({
 
   const renderPrefix = (prefix: ThreadPrefix) => (
     <span
-      className="px-2 py-0.5 text-xs font-semibold rounded-full mr-2"
+      className="mr-2 rounded-full px-2 py-0.5 text-xs font-semibold"
       style={{
         backgroundColor: `${prefix.color}20`,
         color: prefix.color,
@@ -197,25 +200,21 @@ export function ThreadView({
           </motion.button>
         );
       })}
-      {post.ratingCount && (
-        <span className="text-xs text-gray-500 ml-1">
-          ({post.ratingCount})
-        </span>
-      )}
+      {post.ratingCount && <span className="ml-1 text-xs text-gray-500">({post.ratingCount})</span>}
     </div>
   );
 
   const renderPost = () => (
-    <GlassCard variant="frosted" className="p-6 mb-4">
+    <GlassCard variant="frosted" className="mb-4 p-6">
       {/* Post Header */}
       <div className="flex items-start gap-4">
         {/* Vote Sidebar */}
-        <div className="flex flex-col items-center gap-1 min-w-[60px]">
+        <div className="flex min-w-[60px] flex-col items-center gap-1">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => handleVote(1)}
-            className={`p-1 rounded ${post.myVote === 1 ? 'text-green-500' : 'text-gray-400 hover:text-green-400'}`}
+            className={`rounded p-1 ${post.myVote === 1 ? 'text-green-500' : 'text-gray-400 hover:text-green-400'}`}
           >
             {post.myVote === 1 ? (
               <ArrowUpIconSolid className="h-6 w-6" />
@@ -224,7 +223,7 @@ export function ThreadView({
             )}
           </motion.button>
           <span
-            className="font-bold text-lg"
+            className="text-lg font-bold"
             style={{ color: post.score > 0 ? '#22c55e' : post.score < 0 ? '#ef4444' : 'inherit' }}
           >
             {post.score}
@@ -233,7 +232,7 @@ export function ThreadView({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => handleVote(-1)}
-            className={`p-1 rounded ${post.myVote === -1 ? 'text-red-500' : 'text-gray-400 hover:text-red-400'}`}
+            className={`rounded p-1 ${post.myVote === -1 ? 'text-red-500' : 'text-gray-400 hover:text-red-400'}`}
           >
             {post.myVote === -1 ? (
               <ArrowDownIconSolid className="h-6 w-6" />
@@ -244,9 +243,9 @@ export function ThreadView({
         </div>
 
         {/* Post Content */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {/* Meta Info */}
-          <div className="flex flex-wrap items-center gap-2 mb-2">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
             {post.prefix && renderPrefix(post.prefix)}
             {post.isPinned && (
               <span className="flex items-center gap-1 text-xs text-amber-500">
@@ -263,10 +262,10 @@ export function ThreadView({
           </div>
 
           {/* Title */}
-          <h1 className="text-2xl font-bold mb-3">{post.title}</h1>
+          <h1 className="mb-3 text-2xl font-bold">{post.title}</h1>
 
           {/* Author Info */}
-          <div className="flex items-center gap-3 mb-4">
+          <div className="mb-4 flex items-center gap-3">
             <img
               src={post.author.avatarUrl || '/default-avatar.png'}
               alt={post.author.displayName || post.author.username || 'User'}
@@ -278,7 +277,7 @@ export function ThreadView({
                   {post.author.displayName || post.author.username}
                 </span>
                 {post.author.reputation && (
-                  <span className="text-xs px-1.5 py-0.5 bg-purple-500/20 text-purple-400 rounded">
+                  <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-xs text-purple-400">
                     {post.author.reputation} karma
                   </span>
                 )}
@@ -293,8 +292,8 @@ export function ThreadView({
           </div>
 
           {/* Content */}
-          <div 
-            className={`prose prose-invert max-w-none ${!isExpanded && variant !== 'expanded' ? 'max-h-96 overflow-hidden relative' : ''}`}
+          <div
+            className={`prose prose-invert max-w-none ${!isExpanded && variant !== 'expanded' ? 'relative max-h-96 overflow-hidden' : ''}`}
           >
             <div dangerouslySetInnerHTML={{ __html: post.content }} />
             {!isExpanded && variant !== 'expanded' && (
@@ -305,7 +304,7 @@ export function ThreadView({
           {variant !== 'expanded' && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="flex items-center gap-1 text-sm mt-2 hover:underline"
+              className="mt-2 flex items-center gap-1 text-sm hover:underline"
               style={{ color: primaryColor }}
             >
               {isExpanded ? (
@@ -324,14 +323,14 @@ export function ThreadView({
 
           {/* Poll if present */}
           {post.poll && (
-            <div className="mt-4 p-4 bg-dark-700/50 rounded-lg border border-dark-600">
-              <h3 className="font-medium mb-3">{post.poll.question}</h3>
+            <div className="mt-4 rounded-lg border border-dark-600 bg-dark-700/50 p-4">
+              <h3 className="mb-3 font-medium">{post.poll.question}</h3>
               {/* Poll rendering would go here */}
             </div>
           )}
 
           {/* Stats Bar */}
-          <div className="flex flex-wrap items-center gap-4 mt-4 pt-4 border-t border-dark-700 text-sm text-gray-400">
+          <div className="mt-4 flex flex-wrap items-center gap-4 border-t border-dark-700 pt-4 text-sm text-gray-400">
             <span className="flex items-center gap-1">
               <EyeIcon className="h-4 w-4" />
               {post.views.toLocaleString()} views
@@ -344,13 +343,13 @@ export function ThreadView({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2 mt-4">
+          <div className="mt-4 flex flex-wrap items-center gap-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowCommentForm(!showCommentForm)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
-              style={{ 
+              className="flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium"
+              style={{
                 backgroundColor: `${primaryColor}20`,
                 color: primaryColor,
               }}
@@ -363,8 +362,10 @@ export function ThreadView({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={onBookmark}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm ${
-                isBookmarked ? 'bg-amber-500/20 text-amber-400' : 'bg-dark-600 text-gray-300 hover:bg-dark-500'
+              className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm ${
+                isBookmarked
+                  ? 'bg-amber-500/20 text-amber-400'
+                  : 'bg-dark-600 text-gray-300 hover:bg-dark-500'
               }`}
             >
               {isBookmarked ? (
@@ -380,7 +381,7 @@ export function ThreadView({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setShowShareMenu(!showShareMenu)}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm bg-dark-600 text-gray-300 hover:bg-dark-500"
+                className="flex items-center gap-2 rounded-lg bg-dark-600 px-4 py-2 text-sm text-gray-300 hover:bg-dark-500"
               >
                 <ShareIcon className="h-4 w-4" />
                 Share
@@ -392,7 +393,7 @@ export function ThreadView({
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="absolute top-full left-0 mt-1 w-48 bg-dark-700 rounded-lg shadow-xl border border-dark-600 py-1 z-50"
+                    className="absolute left-0 top-full z-50 mt-1 w-48 rounded-lg border border-dark-600 bg-dark-700 py-1 shadow-xl"
                   >
                     <button
                       onClick={copyLink}
@@ -402,7 +403,10 @@ export function ThreadView({
                     </button>
                     <button
                       onClick={() => {
-                        window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}`, '_blank');
+                        window.open(
+                          `https://twitter.com/intent/tweet?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(post.title)}`,
+                          '_blank'
+                        );
                         setShowShareMenu(false);
                       }}
                       className="w-full px-4 py-2 text-left text-sm hover:bg-dark-600"
@@ -420,7 +424,7 @@ export function ThreadView({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowMoreMenu(!showMoreMenu)}
-                  className="p-2 rounded-lg bg-dark-600 text-gray-300 hover:bg-dark-500"
+                  className="rounded-lg bg-dark-600 p-2 text-gray-300 hover:bg-dark-500"
                 >
                   •••
                 </motion.button>
@@ -431,12 +435,15 @@ export function ThreadView({
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute top-full right-0 mt-1 w-48 bg-dark-700 rounded-lg shadow-xl border border-dark-600 py-1 z-50"
+                      className="absolute right-0 top-full z-50 mt-1 w-48 rounded-lg border border-dark-600 bg-dark-700 py-1 shadow-xl"
                     >
                       {canEdit && (
                         <button
-                          onClick={() => { onEdit?.(); setShowMoreMenu(false); }}
-                          className="w-full flex items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                          onClick={() => {
+                            onEdit?.();
+                            setShowMoreMenu(false);
+                          }}
+                          className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
                         >
                           <PencilIcon className="h-4 w-4" />
                           Edit
@@ -445,23 +452,32 @@ export function ThreadView({
                       {canModerate && (
                         <>
                           <button
-                            onClick={() => { onPin?.(); setShowMoreMenu(false); }}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                            onClick={() => {
+                              onPin?.();
+                              setShowMoreMenu(false);
+                            }}
+                            className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
                           >
                             <MapPinIcon className="h-4 w-4" />
                             {post.isPinned ? 'Unpin' : 'Pin'}
                           </button>
                           <button
-                            onClick={() => { onLock?.(); setShowMoreMenu(false); }}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                            onClick={() => {
+                              onLock?.();
+                              setShowMoreMenu(false);
+                            }}
+                            className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
                           >
                             <LockClosedIcon className="h-4 w-4" />
                             {post.isLocked ? 'Unlock' : 'Lock'}
                           </button>
                           <hr className="my-1 border-dark-600" />
                           <button
-                            onClick={() => { onDelete?.(); setShowMoreMenu(false); }}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-left text-sm text-red-400 hover:bg-dark-600"
+                            onClick={() => {
+                              onDelete?.();
+                              setShowMoreMenu(false);
+                            }}
+                            className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm text-red-400 hover:bg-dark-600"
                           >
                             <TrashIcon className="h-4 w-4" />
                             Delete
@@ -469,8 +485,11 @@ export function ThreadView({
                         </>
                       )}
                       <button
-                        onClick={() => { onReport?.(); setShowMoreMenu(false); }}
-                        className="w-full flex items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
+                        onClick={() => {
+                          onReport?.();
+                          setShowMoreMenu(false);
+                        }}
+                        className="flex w-full items-center gap-2 px-4 py-2 text-left text-sm hover:bg-dark-600"
                       >
                         <FlagIcon className="h-4 w-4" />
                         Report
@@ -495,11 +514,11 @@ export function ThreadView({
                   value={commentContent}
                   onChange={(e) => setCommentContent(e.target.value)}
                   placeholder="Write a comment..."
-                  className="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg resize-none focus:outline-none focus:border-primary"
+                  className="focus:border-primary w-full resize-none rounded-lg border border-dark-600 bg-dark-700 p-3 focus:outline-none"
                   rows={4}
                   style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
                 />
-                <div className="flex justify-end gap-2 mt-2">
+                <div className="mt-2 flex justify-end gap-2">
                   <button
                     onClick={() => setShowCommentForm(false)}
                     className="px-4 py-2 text-sm text-gray-400 hover:text-white"
@@ -511,7 +530,7 @@ export function ThreadView({
                     whileTap={{ scale: 0.98 }}
                     onClick={handleSubmitComment}
                     disabled={!commentContent.trim() || isSubmitting}
-                    className="px-4 py-2 text-sm font-medium rounded-lg disabled:opacity-50"
+                    className="rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
                     style={{
                       backgroundColor: primaryColor,
                       color: 'white',
@@ -535,54 +554,54 @@ export function ThreadView({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
     >
-      <GlassCard 
-        variant={comment.isBestAnswer ? 'neon' : 'frosted'} 
-        className={`p-4 mb-2 ${comment.isBestAnswer ? 'border-2 border-green-500' : ''}`}
+      <GlassCard
+        variant={comment.isBestAnswer ? 'neon' : 'frosted'}
+        className={`mb-2 p-4 ${comment.isBestAnswer ? 'border-2 border-green-500' : ''}`}
       >
         <div className="flex gap-3">
           {/* Vote buttons */}
           <div className="flex flex-col items-center gap-0.5">
             <button
-              onClick={() => handleCommentVote(comment.id, 1, comment.userVote)}
-              className={comment.userVote === 1 ? 'text-green-500' : 'text-gray-500 hover:text-green-400'}
+              onClick={() => handleCommentVote(comment.id, 1, comment.userVote ?? null)}
+              className={
+                comment.userVote === 1 ? 'text-green-500' : 'text-gray-500 hover:text-green-400'
+              }
             >
               <ChevronUpIcon className="h-5 w-5" />
             </button>
             <span className="text-sm font-medium">{comment.score}</span>
             <button
-              onClick={() => handleCommentVote(comment.id, -1, comment.userVote)}
-              className={comment.userVote === -1 ? 'text-red-500' : 'text-gray-500 hover:text-red-400'}
+              onClick={() => handleCommentVote(comment.id, -1, comment.userVote ?? null)}
+              className={
+                comment.userVote === -1 ? 'text-red-500' : 'text-gray-500 hover:text-red-400'
+              }
             >
               <ChevronUpIcon className="h-5 w-5 rotate-180" />
             </button>
           </div>
 
           {/* Comment content */}
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             {comment.isBestAnswer && (
-              <div className="flex items-center gap-1 text-green-500 text-sm font-medium mb-2">
+              <div className="mb-2 flex items-center gap-1 text-sm font-medium text-green-500">
                 <StarIconSolid className="h-4 w-4" />
                 Best Answer
               </div>
             )}
-            
-            <div className="flex items-center gap-2 mb-2">
+
+            <div className="mb-2 flex items-center gap-2">
               <img
                 src={comment.author.avatarUrl || '/default-avatar.png'}
-                alt={comment.author.displayName || comment.author.username}
+                alt={comment.author.displayName ?? comment.author.username ?? 'User'}
                 className="h-6 w-6 rounded-full"
               />
-              <span className="font-medium text-sm">
+              <span className="text-sm font-medium">
                 {comment.author.displayName || comment.author.username}
               </span>
-              <span className="text-xs text-gray-500">
-                {formatTimeAgo(comment.createdAt)}
-              </span>
+              <span className="text-xs text-gray-500">{formatTimeAgo(comment.createdAt)}</span>
             </div>
 
-            <div className="prose prose-invert prose-sm max-w-none">
-              {comment.content}
-            </div>
+            <div className="prose prose-invert prose-sm max-w-none">{comment.content}</div>
           </div>
         </div>
       </GlassCard>
@@ -592,17 +611,17 @@ export function ThreadView({
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <GlassCard variant="frosted" className="p-6 animate-pulse">
+        <GlassCard variant="frosted" className="animate-pulse p-6">
           <div className="flex gap-4">
             <div className="w-16 space-y-2">
-              <div className="h-6 w-6 bg-dark-700 rounded mx-auto" />
-              <div className="h-4 w-10 bg-dark-700 rounded mx-auto" />
-              <div className="h-6 w-6 bg-dark-700 rounded mx-auto" />
+              <div className="mx-auto h-6 w-6 rounded bg-dark-700" />
+              <div className="mx-auto h-4 w-10 rounded bg-dark-700" />
+              <div className="mx-auto h-6 w-6 rounded bg-dark-700" />
             </div>
             <div className="flex-1 space-y-3">
-              <div className="h-8 w-3/4 bg-dark-700 rounded" />
-              <div className="h-4 w-1/2 bg-dark-700 rounded" />
-              <div className="h-32 bg-dark-700 rounded" />
+              <div className="h-8 w-3/4 rounded bg-dark-700" />
+              <div className="h-4 w-1/2 rounded bg-dark-700" />
+              <div className="h-32 rounded bg-dark-700" />
             </div>
           </div>
         </GlassCard>
@@ -616,13 +635,13 @@ export function ThreadView({
 
       {/* Comments Section */}
       <div>
-        <h2 className="text-lg font-semibold mb-4">
+        <h2 className="mb-4 text-lg font-semibold">
           {comments.length} Comment{comments.length !== 1 ? 's' : ''}
         </h2>
 
         <div
           ref={parentRef}
-          className="h-[600px] overflow-y-auto scrollbar-thin scrollbar-thumb-dark-600"
+          className="scrollbar-thin scrollbar-thumb-dark-600 h-[600px] overflow-y-auto"
         >
           <div
             style={{
@@ -633,6 +652,7 @@ export function ThreadView({
           >
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const comment = sortedComments[virtualRow.index];
+              if (!comment) return null;
               return (
                 <div
                   key={virtualRow.key}
@@ -653,7 +673,7 @@ export function ThreadView({
 
         {comments.length === 0 && (
           <GlassCard variant="frosted" className="p-8 text-center">
-            <ChatBubbleLeftIcon className="h-12 w-12 mx-auto text-gray-500 mb-3" />
+            <ChatBubbleLeftIcon className="mx-auto mb-3 h-12 w-12 text-gray-500" />
             <p className="text-gray-400">No comments yet. Be the first to comment!</p>
           </GlassCard>
         )}

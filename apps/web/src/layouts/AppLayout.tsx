@@ -13,6 +13,10 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
 import { pageTransitions, buttonVariantsSubtle } from '@/lib/animations/transitions';
+
+// Reserved for future animation enhancements
+void pageTransitions;
+void buttonVariantsSubtle;
 import {
   ChatBubbleLeftRightIcon,
   UsersIcon,

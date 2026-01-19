@@ -86,37 +86,37 @@ export interface MarketplaceState {
   selectedListing: MarketplaceListing | null;
   priceHistory: Array<{ price: number; soldAt: string }>;
   recommendedPrice: PriceRecommendation | null;
-  
+
   // User's listings
   myListings: MarketplaceListing[];
   transactionHistory: Array<MarketplaceListing & { transactionType: 'buy' | 'sell' }>;
   userTotals: UserTotals | null;
-  
+
   // Stats
   stats: MarketplaceStats | null;
-  
+
   // Filters
   filters: MarketplaceFilters;
-  
+
   // Pagination
   hasMore: boolean;
   currentOffset: number;
-  
+
   // Loading states
   isLoading: boolean;
   isCreating: boolean;
   isPurchasing: boolean;
-  
+
   // Available filter options
   itemTypes: ItemType[];
   currencyTypes: CurrencyType[];
-  
+
   // Actions
   fetchListings: (reset?: boolean) => Promise<void>;
   fetchListing: (listingId: string) => Promise<void>;
   fetchMyListings: (status?: ListingStatus) => Promise<void>;
   fetchHistory: (type?: 'buys' | 'sells') => Promise<void>;
-  
+
   createListing: (params: {
     itemType: ItemType;
     itemId: string;
@@ -124,15 +124,17 @@ export interface MarketplaceState {
     currency?: CurrencyType;
     acceptsTrades?: boolean;
   }) => Promise<{ success: boolean; listing?: MarketplaceListing; listingFee?: number }>;
-  
+
   updateListing: (listingId: string, price: number) => Promise<{ success: boolean }>;
   cancelListing: (listingId: string) => Promise<{ success: boolean }>;
-  purchaseListing: (listingId: string) => Promise<{ success: boolean; fee?: number; sellerReceived?: number }>;
-  
+  purchaseListing: (
+    listingId: string
+  ) => Promise<{ success: boolean; fee?: number; sellerReceived?: number }>;
+
   // Filter actions
   setFilters: (filters: Partial<MarketplaceFilters>) => void;
   clearFilters: () => void;
-  
+
   // Helpers
   getPriceRecommendation: (rarity: string) => PriceRecommendation;
 }
@@ -180,7 +182,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
       fetchListings: async (reset = false) => {
         const state = get();
         const offset = reset ? 0 : state.currentOffset;
-        
+
         set({ isLoading: true });
         try {
           const params: Record<string, string | number | undefined> = {
@@ -188,15 +190,15 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             limit: 20,
             sort: state.filters.sort,
           };
-          
+
           if (state.filters.type) params.type = state.filters.type;
           if (state.filters.rarity) params.rarity = state.filters.rarity;
           if (state.filters.currency) params.currency = state.filters.currency;
           if (state.filters.minPrice) params.min_price = state.filters.minPrice;
           if (state.filters.maxPrice) params.max_price = state.filters.maxPrice;
-          
+
           const response = await api.get('/api/v1/marketplace', { params });
-          
+
           if (response.data) {
             const newListings = response.data.listings || [];
             set({
@@ -272,11 +274,11 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             currency: params.currency ?? 'coins',
             accepts_trades: params.acceptsTrades ?? false,
           });
-          
+
           if (response.data?.success) {
             // Refresh my listings
             await get().fetchMyListings();
-            
+
             return {
               success: true,
               listing: response.data.listing,
@@ -298,9 +300,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           if (response.data?.success) {
             // Update local state
             set((state) => ({
-              myListings: state.myListings.map((l) =>
-                l.id === listingId ? { ...l, price } : l
-              ),
+              myListings: state.myListings.map((l) => (l.id === listingId ? { ...l, price } : l)),
             }));
             return { success: true };
           }
@@ -338,7 +338,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
               listings: state.listings.filter((l) => l.id !== listingId),
               selectedListing: null,
             }));
-            
+
             return {
               success: true,
               fee: response.data.fee,
@@ -367,8 +367,8 @@ export const useMarketplaceStore = create<MarketplaceState>()(
         get().fetchListings(true);
       },
 
-      getPriceRecommendation: (rarity: string) => {
-        return PRICE_RECOMMENDATIONS[rarity.toLowerCase()] ?? PRICE_RECOMMENDATIONS.common;
+      getPriceRecommendation: (rarity: string): PriceRecommendation => {
+        return PRICE_RECOMMENDATIONS[rarity.toLowerCase()] ?? PRICE_RECOMMENDATIONS['common']!;
       },
     }),
     {

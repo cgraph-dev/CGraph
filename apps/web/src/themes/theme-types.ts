@@ -24,6 +24,7 @@ export type ThemeCategory =
   | 'modern' // Modern/sleek themes
   | 'retro' // Retro/vintage themes
   | 'fantasy' // Fantasy/magical themes
+  | 'special' // Special/unique themes
   | 'custom'; // User-created themes
 
 // =============================================================================
@@ -292,7 +293,15 @@ export interface MatrixThemeConfig {
   matrixTheme: MatrixTheme;
   opacity: number;
   layer: 'background' | 'foreground' | 'overlay';
-  interactionEnabled: boolean;
+  interactionEnabled?: boolean;
+  speed?: number;
+  density?: number;
+  fontSize?: number;
+  columns?: 'auto' | number;
+  characters?: 'katakana' | 'latin' | 'binary' | 'custom';
+  glowEffect?: boolean;
+  trailLength?: number;
+  fadeSpeed?: number;
 }
 
 // =============================================================================

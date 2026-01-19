@@ -11,6 +11,10 @@ import {
   GiftIcon,
   CheckCircleIcon as CheckCircleIconOutline,
 } from '@heroicons/react/24/outline';
+
+// Reserved for future use
+const _reservedIcons = { UserGroupIcon, CheckCircleIconOutline };
+void _reservedIcons;
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useGamificationStore } from '@/stores/gamificationStore';
@@ -274,7 +278,8 @@ const MOCK_DAILY_REWARDS: DailyReward[] = [
 // ==================== MAIN COMPONENT ====================
 
 export default function ProgressionCustomization() {
-  const { level, xp, karma } = useGamificationStore();
+  const { level, xp, karma: _karma } = useGamificationStore();
+  void _karma; // Reserved for future use
   const [activeCategory, setActiveCategory] = useState<ProgressionCategory>('achievements');
   const [leaderboardType, setLeaderboardType] = useState<'global' | 'friends' | 'weekly'>('global');
   const [searchQuery, setSearchQuery] = useState('');
@@ -453,7 +458,7 @@ function AchievementsSection({ achievements }: AchievementsSectionProps) {
           transition={{ delay: index * 0.03 }}
         >
           <GlassCard
-            variant={achievement.unlocked ? 'neon' : 'frost'}
+            variant={achievement.unlocked ? 'neon' : ('frosted' as const)}
             glow={achievement.unlocked}
             glowColor={achievement.unlocked ? 'rgba(139, 92, 246, 0.3)' : undefined}
             className={`relative p-4 ${achievement.unlocked ? '' : 'opacity-70'}`}

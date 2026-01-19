@@ -14,12 +14,15 @@ import {
   LockClosedIcon,
   SparklesIcon,
 } from '@heroicons/react/24/outline';
+void ChevronRightIcon; // Reserved for collapsed category indicator
+void Cog6ToothIcon; // Reserved for channel settings
+void LockClosedIcon; // Reserved for private channel indicator
 import { useGroupStore, type Channel, type ChannelCategory } from '@/stores/groupStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 /**
  * ChannelList Component
- * 
+ *
  * Displays channels organized by categories with animations.
  * Features:
  * - Collapsible categories
@@ -53,6 +56,7 @@ const channelTypeColors = {
 export function ChannelList({ className = '' }: ChannelListProps) {
   const { groupId, channelId } = useParams();
   const { groups, setActiveChannel } = useGroupStore();
+  void setActiveChannel; // Reserved for channel selection handler
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [showCreateModal, setShowCreateModal] = useState<string | null>(null); // categoryId or 'uncategorized'
@@ -68,8 +72,8 @@ export function ChannelList({ className = '' }: ChannelListProps) {
 
   if (!activeGroup) {
     return (
-      <div className={`flex items-center justify-center h-full ${className}`}>
-        <p className="text-gray-500 text-sm">Select a group</p>
+      <div className={`flex h-full items-center justify-center ${className}`}>
+        <p className="text-sm text-gray-500">Select a group</p>
       </div>
     );
   }
@@ -91,16 +95,12 @@ export function ChannelList({ className = '' }: ChannelListProps) {
   const uncategorizedChannels = activeGroup.channels?.filter((c) => !c.categoryId) || [];
 
   return (
-    <div className={`py-2 space-y-1 ${className}`}>
+    <div className={`space-y-1 py-2 ${className}`}>
       {/* Uncategorized channels */}
       {uncategorizedChannels.length > 0 && (
-        <div className="px-2 mb-2">
+        <div className="mb-2 px-2">
           {uncategorizedChannels.map((channel) => (
-            <ChannelItem
-              key={channel.id}
-              channel={channel}
-              isActive={channel.id === channelId}
-            />
+            <ChannelItem key={channel.id} channel={channel} isActive={channel.id === channelId} />
           ))}
         </div>
       )}
@@ -154,13 +154,10 @@ function CategorySection({
         onClick={onToggle}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="w-full flex items-center justify-between px-1 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider hover:text-gray-300 transition-colors group"
+        className="group flex w-full items-center justify-between px-1 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500 transition-colors hover:text-gray-300"
       >
         <div className="flex items-center gap-1">
-          <motion.div
-            animate={{ rotate: isExpanded ? 0 : -90 }}
-            transition={{ duration: 0.2 }}
-          >
+          <motion.div animate={{ rotate: isExpanded ? 0 : -90 }} transition={{ duration: 0.2 }}>
             <ChevronDownIcon className="h-3 w-3" />
           </motion.div>
           <span>{category.name}</span>
@@ -176,7 +173,7 @@ function CategorySection({
                 e.stopPropagation();
                 onCreateChannel();
               }}
-              className="p-0.5 rounded hover:bg-dark-700"
+              className="rounded p-0.5 hover:bg-dark-700"
             >
               <PlusIcon className="h-4 w-4 text-gray-400 hover:text-white" />
             </motion.button>
@@ -209,13 +206,7 @@ function CategorySection({
 }
 
 // Channel Item Component
-function ChannelItem({
-  channel,
-  isActive,
-}: {
-  channel: Channel;
-  isActive: boolean;
-}) {
+function ChannelItem({ channel, isActive }: { channel: Channel; isActive: boolean }) {
   const { groupId } = useParams();
 
   const Icon = channelTypeIcons[channel.type] || HashtagIcon;
@@ -230,7 +221,7 @@ function ChannelItem({
         <motion.div
           whileHover={{ x: 2 }}
           whileTap={{ scale: 0.98 }}
-          className={`flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors ${
+          className={`flex items-center gap-2 rounded-lg px-2 py-1.5 transition-colors ${
             routeActive || isActive
               ? 'bg-primary-600/20 text-white'
               : 'text-gray-400 hover:bg-dark-700 hover:text-gray-200'
@@ -240,20 +231,18 @@ function ChannelItem({
           <Icon className={`h-5 w-5 flex-shrink-0 ${routeActive ? 'text-white' : iconColor}`} />
 
           {/* Channel name */}
-          <span className="flex-1 truncate text-sm font-medium">
-            {channel.name}
-          </span>
+          <span className="flex-1 truncate text-sm font-medium">{channel.name}</span>
 
           {/* NSFW badge */}
           {channel.isNsfw && (
-            <span className="px-1.5 py-0.5 text-[10px] font-bold bg-red-500/20 text-red-400 rounded">
+            <span className="rounded bg-red-500/20 px-1.5 py-0.5 text-[10px] font-bold text-red-400">
               NSFW
             </span>
           )}
 
           {/* Private indicator */}
           {channel.type === 'text' && (
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <span className="opacity-0 transition-opacity group-hover:opacity-100">
               {/* Add lock icon for private channels if needed */}
             </span>
           )}
@@ -263,7 +252,7 @@ function ChannelItem({
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              className="min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 flex items-center justify-center"
+              className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1.5"
             >
               <span className="text-[10px] font-bold text-white">
                 {channel.unreadCount > 99 ? '99+' : channel.unreadCount}
@@ -321,43 +310,41 @@ function CreateChannelModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-md bg-dark-900 rounded-2xl p-6 border border-gray-700"
+        className="w-full max-w-md rounded-2xl border border-gray-700 bg-dark-900 p-6"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="text-center mb-6">
-          <SparklesIcon className="h-10 w-10 text-primary-400 mx-auto mb-3" />
+        <div className="mb-6 text-center">
+          <SparklesIcon className="mx-auto mb-3 h-10 w-10 text-primary-400" />
           <h2 className="text-xl font-bold text-white">Create Channel</h2>
-          <p className="text-gray-400 text-sm mt-1">
-            Add a new channel to your group
-          </p>
+          <p className="mt-1 text-sm text-gray-400">Add a new channel to your group</p>
         </div>
 
         <div className="space-y-4">
           {/* Channel Type */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Channel Type
-            </label>
+            <label className="mb-2 block text-sm font-medium text-gray-300">Channel Type</label>
             <div className="grid grid-cols-5 gap-2">
               {channelTypes.map(({ value, label, icon: Icon }) => (
                 <motion.button
                   key={value}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setType(value)}
-                  className={`p-3 rounded-xl flex flex-col items-center gap-1 transition-all ${
+                  className={`flex flex-col items-center gap-1 rounded-xl p-3 transition-all ${
                     type === value
-                      ? 'bg-primary-600/20 border border-primary-500'
-                      : 'bg-dark-800 border border-transparent hover:border-gray-700'
+                      ? 'border border-primary-500 bg-primary-600/20'
+                      : 'border border-transparent bg-dark-800 hover:border-gray-700'
                   }`}
                 >
-                  <Icon className={`h-5 w-5 ${type === value ? 'text-primary-400' : 'text-gray-400'}`} />
+                  <Icon
+                    className={`h-5 w-5 ${type === value ? 'text-primary-400' : 'text-gray-400'}`}
+                  />
                   <span className="text-xs text-gray-300">{label}</span>
                 </motion.button>
               ))}
@@ -366,9 +353,7 @@ function CreateChannelModal({
 
           {/* Channel Name */}
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Channel Name
-            </label>
+            <label className="mb-2 block text-sm font-medium text-gray-300">Channel Name</label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2">
                 {React.createElement(channelTypeIcons[type], {
@@ -380,38 +365,36 @@ function CreateChannelModal({
                 value={name}
                 onChange={(e) => setName(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
                 placeholder="general"
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-xl border border-gray-700 bg-dark-800 py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
               />
             </div>
           </div>
 
           {/* NSFW Toggle */}
-          <div className="flex items-center justify-between p-4 rounded-xl bg-dark-800">
+          <div className="flex items-center justify-between rounded-xl bg-dark-800 p-4">
             <div>
               <span className="font-medium text-white">Age-Restricted</span>
-              <p className="text-xs text-gray-400">
-                Only members 18+ can view this channel
-              </p>
+              <p className="text-xs text-gray-400">Only members 18+ can view this channel</p>
             </div>
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsNsfw(!isNsfw)}
-              className={`w-12 h-6 rounded-full transition-colors ${
+              className={`h-6 w-12 rounded-full transition-colors ${
                 isNsfw ? 'bg-red-600' : 'bg-dark-600'
               }`}
             >
               <motion.div
                 animate={{ x: isNsfw ? 24 : 0 }}
-                className="w-6 h-6 rounded-full bg-white shadow-lg"
+                className="h-6 w-6 rounded-full bg-white shadow-lg"
               />
             </motion.button>
           </div>
         </div>
 
-        <div className="flex gap-3 mt-6">
+        <div className="mt-6 flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-3 rounded-xl bg-dark-700 text-gray-300 hover:bg-dark-600 transition-colors"
+            className="flex-1 rounded-xl bg-dark-700 py-3 text-gray-300 transition-colors hover:bg-dark-600"
           >
             Cancel
           </button>
@@ -420,7 +403,7 @@ function CreateChannelModal({
             whileTap={{ scale: 0.98 }}
             onClick={handleCreate}
             disabled={!name.trim() || isCreating}
-            className="flex-1 py-3 rounded-xl bg-primary-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 rounded-xl bg-primary-600 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isCreating ? 'Creating...' : 'Create Channel'}
           </motion.button>

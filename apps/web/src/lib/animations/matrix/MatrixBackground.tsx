@@ -26,6 +26,7 @@
  * ```
  */
 
+import React, { memo, forwardRef, useMemo, useImperativeHandle } from 'react';
 import type { MatrixConfig, MatrixTheme, ThemePreset, DeepPartial } from './types';
 import { useMatrix, useMatrixThemes } from './useMatrix';
 import { PRESET_HIGH_QUALITY, PRESET_POWER_SAVER, PRESET_MINIMAL, PRESET_INTENSE } from './config';

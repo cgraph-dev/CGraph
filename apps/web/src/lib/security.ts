@@ -76,8 +76,7 @@ export function isTrustedDomain(url: string, trustedDomains: string[]): boolean 
   try {
     const parsed = new URL(url);
     return trustedDomains.some(
-      (domain) =>
-        parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
+      (domain) => parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
     );
   } catch {
     return false;
@@ -102,7 +101,7 @@ export function getCsrfToken(): string | null {
 
   // Try cookie
   const match = document.cookie.match(new RegExp(`${CSRF_TOKEN_KEY}=([^;]+)`));
-  return match ? match[1] : null;
+  return match ? (match[1] ?? null) : null;
 }
 
 /**
@@ -122,10 +121,7 @@ export function addCsrfHeader(headers: Headers | Record<string, string>): void {
 /**
  * Create fetch wrapper with CSRF protection
  */
-export function secureFetch(
-  url: string,
-  options: RequestInit = {}
-): Promise<Response> {
+export function secureFetch(url: string, options: RequestInit = {}): Promise<Response> {
   const headers = new Headers(options.headers);
 
   // Add CSRF token for non-GET requests
@@ -161,11 +157,7 @@ interface StoredItem<T> {
 /**
  * Securely store data in localStorage
  */
-export function secureStore<T>(
-  key: string,
-  value: T,
-  options: StorageOptions = {}
-): void {
+export function secureStore<T>(key: string, value: T, options: StorageOptions = {}): void {
   const prefixedKey = STORAGE_PREFIX + key;
   const item: StoredItem<T> = {
     value,
@@ -218,9 +210,7 @@ export function secureRemove(key: string): void {
  * Clear all CGraph stored items
  */
 export function secureClear(): void {
-  const keys = Object.keys(localStorage).filter((k) =>
-    k.startsWith(STORAGE_PREFIX)
-  );
+  const keys = Object.keys(localStorage).filter((k) => k.startsWith(STORAGE_PREFIX));
   keys.forEach((k) => localStorage.removeItem(k));
 }
 
@@ -276,17 +266,11 @@ export function checkPasswordStrength(password: string): PasswordStrength {
     suggestions.push('Avoid common patterns');
   }
 
-  const labels: PasswordStrength['label'][] = [
-    'weak',
-    'fair',
-    'good',
-    'strong',
-    'excellent',
-  ];
+  const labels: PasswordStrength['label'][] = ['weak', 'fair', 'good', 'strong', 'excellent'];
 
   return {
     score: Math.max(0, Math.min(4, score)),
-    label: labels[Math.max(0, Math.min(4, score))],
+    label: labels[Math.max(0, Math.min(4, score))] ?? 'weak',
     suggestions,
   };
 }
@@ -305,11 +289,7 @@ const rateLimitStore = new Map<string, RateLimitEntry>();
 /**
  * Check if action is rate limited
  */
-export function isRateLimited(
-  key: string,
-  limit: number,
-  windowMs: number
-): boolean {
+export function isRateLimited(key: string, limit: number, windowMs: number): boolean {
   const now = Date.now();
   const entry = rateLimitStore.get(key);
 
@@ -409,8 +389,7 @@ export async function checkSecurityHeaders(
     const headers = response.headers;
 
     const hasHSTS = headers.has('Strict-Transport-Security');
-    const hasCSP =
-      headers.has('Content-Security-Policy') || hasContentSecurityPolicy();
+    const hasCSP = headers.has('Content-Security-Policy') || hasContentSecurityPolicy();
     const hasXFrameOptions = headers.has('X-Frame-Options');
     const hasXContentTypeOptions = headers.has('X-Content-Type-Options');
 

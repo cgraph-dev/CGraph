@@ -12,7 +12,6 @@ import {
   HashtagIcon,
   ArrowRightOnRectangleIcon,
   ExclamationTriangleIcon,
-  CheckIcon,
 } from '@heroicons/react/24/outline';
 import { useGroupStore, type Group } from '@/stores/groupStore';
 import { RoleManager } from './RoleManager';
@@ -22,7 +21,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 /**
  * GroupSettings Component
- * 
+ *
  * Comprehensive group settings interface.
  * Features:
  * - Overview settings (name, description, icon, banner)
@@ -48,9 +47,9 @@ const settingsTabs = [
   { id: 'danger', label: 'Danger Zone', icon: ExclamationTriangleIcon },
 ] as const;
 
-type TabId = typeof settingsTabs[number]['id'];
+type TabId = (typeof settingsTabs)[number]['id'];
 
-export function GroupSettings({ groupId, onClose }: GroupSettingsProps) {
+export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps) {
   const navigate = useNavigate();
   const { groups, leaveGroup } = useGroupStore();
 
@@ -109,7 +108,7 @@ export function GroupSettings({ groupId, onClose }: GroupSettingsProps) {
 
   if (!activeGroup) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <p className="text-gray-500">Group not found</p>
       </div>
     );
@@ -118,25 +117,25 @@ export function GroupSettings({ groupId, onClose }: GroupSettingsProps) {
   return (
     <div className="flex h-full bg-dark-900">
       {/* Sidebar */}
-      <div className="w-56 bg-dark-800/50 border-r border-gray-700/50 p-4">
-        <div className="flex items-center gap-3 mb-6 pb-4 border-b border-gray-700/50">
-          <div className="w-10 h-10 rounded-xl overflow-hidden">
+      <div className="w-56 border-r border-gray-700/50 bg-dark-800/50 p-4">
+        <div className="mb-6 flex items-center gap-3 border-b border-gray-700/50 pb-4">
+          <div className="h-10 w-10 overflow-hidden rounded-xl">
             {activeGroup.iconUrl ? (
               <img
                 src={activeGroup.iconUrl}
                 alt={activeGroup.name}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
                 <span className="font-bold text-white">
                   {activeGroup.name.slice(0, 2).toUpperCase()}
                 </span>
               </div>
             )}
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-white truncate">{activeGroup.name}</h3>
+          <div className="min-w-0 flex-1">
+            <h3 className="truncate font-semibold text-white">{activeGroup.name}</h3>
             <p className="text-xs text-gray-400">Group Settings</p>
           </div>
         </div>
@@ -148,12 +147,12 @@ export function GroupSettings({ groupId, onClose }: GroupSettingsProps) {
               whileHover={{ x: 2 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors ${
                 activeTab === tab.id
                   ? 'bg-primary-600/20 text-primary-400'
                   : tab.id === 'danger'
-                  ? 'text-red-400 hover:bg-red-500/10'
-                  : 'text-gray-400 hover:bg-dark-700 hover:text-white'
+                    ? 'text-red-400 hover:bg-red-500/10'
+                    : 'text-gray-400 hover:bg-dark-700 hover:text-white'
               }`}
             >
               <tab.icon className="h-5 w-5" />
@@ -190,21 +189,15 @@ export function GroupSettings({ groupId, onClose }: GroupSettingsProps) {
             </motion.div>
           )}
 
-          {activeTab === 'members' && (
-            <MembersTab key="members" groupId={groupId} />
-          )}
+          {activeTab === 'members' && <MembersTab key="members" groupId={groupId} />}
 
           {activeTab === 'invites' && (
             <InvitesTab key="invites" groupId={groupId} groupName={activeGroup.name} />
           )}
 
-          {activeTab === 'channels' && (
-            <ChannelsTab key="channels" groupId={groupId} />
-          )}
+          {activeTab === 'channels' && <ChannelsTab key="channels" groupId={groupId} />}
 
-          {activeTab === 'notifications' && (
-            <NotificationsTab key="notifications" />
-          )}
+          {activeTab === 'notifications' && <NotificationsTab key="notifications" />}
 
           {activeTab === 'danger' && (
             <DangerTab
@@ -224,10 +217,10 @@ export function GroupSettings({ groupId, onClose }: GroupSettingsProps) {
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 100, opacity: 0 }}
-            className="fixed bottom-0 left-0 right-0 p-4 bg-dark-900/90 backdrop-blur-sm border-t border-gray-700/50"
+            className="fixed bottom-0 left-0 right-0 border-t border-gray-700/50 bg-dark-900/90 p-4 backdrop-blur-sm"
           >
-            <div className="max-w-2xl mx-auto flex items-center justify-between">
-              <p className="text-gray-400 text-sm">You have unsaved changes</p>
+            <div className="mx-auto flex max-w-2xl items-center justify-between">
+              <p className="text-sm text-gray-400">You have unsaved changes</p>
               <div className="flex gap-3">
                 <button
                   onClick={() => {
@@ -238,7 +231,7 @@ export function GroupSettings({ groupId, onClose }: GroupSettingsProps) {
                     });
                     setHasChanges(false);
                   }}
-                  className="px-4 py-2 rounded-lg bg-dark-700 text-gray-300 hover:bg-dark-600"
+                  className="rounded-lg bg-dark-700 px-4 py-2 text-gray-300 hover:bg-dark-600"
                 >
                   Reset
                 </button>
@@ -247,7 +240,7 @@ export function GroupSettings({ groupId, onClose }: GroupSettingsProps) {
                   whileTap={{ scale: 0.98 }}
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="px-6 py-2 rounded-lg bg-primary-600 text-white font-semibold flex items-center gap-2"
+                  className="flex items-center gap-2 rounded-lg bg-primary-600 px-6 py-2 font-semibold text-white"
                 >
                   {isSaving ? 'Saving...' : 'Save Changes'}
                 </motion.button>
@@ -306,31 +299,27 @@ function OverviewTab({
       className="max-w-2xl space-y-6"
     >
       <div>
-        <h2 className="text-2xl font-bold text-white mb-2">Overview</h2>
+        <h2 className="mb-2 text-2xl font-bold text-white">Overview</h2>
         <p className="text-gray-400">Configure your group's basic settings</p>
       </div>
 
       {/* Banner & Icon */}
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="font-semibold text-white mb-4">Group Appearance</h3>
-        
+        <h3 className="mb-4 font-semibold text-white">Group Appearance</h3>
+
         {/* Banner */}
-        <div className="relative h-32 rounded-xl overflow-hidden mb-4 bg-dark-700">
+        <div className="relative mb-4 h-32 overflow-hidden rounded-xl bg-dark-700">
           {group.bannerUrl ? (
-            <img
-              src={group.bannerUrl}
-              alt=""
-              className="w-full h-full object-cover"
-            />
+            <img src={group.bannerUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="w-full h-full flex items-center justify-center">
+            <div className="flex h-full w-full items-center justify-center">
               <PhotoIcon className="h-12 w-12 text-gray-600" />
             </div>
           )}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="absolute bottom-2 right-2 px-3 py-1.5 rounded-lg bg-dark-900/80 text-white text-sm flex items-center gap-2"
+            className="absolute bottom-2 right-2 flex items-center gap-2 rounded-lg bg-dark-900/80 px-3 py-1.5 text-sm text-white"
           >
             <PhotoIcon className="h-4 w-4" />
             Change Banner
@@ -339,15 +328,11 @@ function OverviewTab({
 
         {/* Icon */}
         <div className="flex items-center gap-4">
-          <div className="w-20 h-20 rounded-2xl overflow-hidden bg-dark-700">
+          <div className="h-20 w-20 overflow-hidden rounded-2xl bg-dark-700">
             {group.iconUrl ? (
-              <img
-                src={group.iconUrl}
-                alt=""
-                className="w-full h-full object-cover"
-              />
+              <img src={group.iconUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
                 <span className="text-2xl font-bold text-white">
                   {group.name.slice(0, 2).toUpperCase()}
                 </span>
@@ -358,44 +343,40 @@ function OverviewTab({
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="px-4 py-2 rounded-lg bg-primary-600/20 text-primary-400 text-sm font-medium"
+              className="rounded-lg bg-primary-600/20 px-4 py-2 text-sm font-medium text-primary-400"
             >
               Upload Icon
             </motion.button>
-            <p className="text-xs text-gray-500 mt-1">Recommended: 512x512</p>
+            <p className="mt-1 text-xs text-gray-500">Recommended: 512x512</p>
           </div>
         </div>
       </GlassCard>
 
       {/* Basic Info */}
-      <GlassCard variant="frosted" className="p-6 space-y-4">
+      <GlassCard variant="frosted" className="space-y-4 p-6">
         <h3 className="font-semibold text-white">Basic Information</h3>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Group Name
-          </label>
+          <label className="mb-2 block text-sm font-medium text-gray-300">Group Name</label>
           <input
             type="text"
             value={formData.name}
             onChange={(e) => onChange({ ...formData, name: e.target.value })}
-            className="w-full px-4 py-2 rounded-lg bg-dark-800 border border-gray-700 text-white focus:border-primary-500 focus:outline-none"
+            className="w-full rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Description
-          </label>
+          <label className="mb-2 block text-sm font-medium text-gray-300">Description</label>
           <textarea
             value={formData.description}
             onChange={(e) => onChange({ ...formData, description: e.target.value })}
             rows={4}
-            className="w-full px-4 py-2 rounded-lg bg-dark-800 border border-gray-700 text-white focus:border-primary-500 focus:outline-none resize-none"
+            className="w-full resize-none rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
           />
         </div>
 
-        <div className="flex items-center justify-between p-4 rounded-lg bg-dark-800">
+        <div className="flex items-center justify-between rounded-lg bg-dark-800 p-4">
           <div>
             <span className="font-medium text-white">Public Group</span>
             <p className="text-xs text-gray-400">Anyone can discover and join</p>
@@ -403,13 +384,13 @@ function OverviewTab({
           <motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => onChange({ ...formData, isPublic: !formData.isPublic })}
-            className={`w-12 h-6 rounded-full transition-colors ${
+            className={`h-6 w-12 rounded-full transition-colors ${
               formData.isPublic ? 'bg-primary-600' : 'bg-dark-600'
             }`}
           >
             <motion.div
               animate={{ x: formData.isPublic ? 24 : 0 }}
-              className="w-6 h-6 rounded-full bg-white shadow-lg"
+              className="h-6 w-6 rounded-full bg-white shadow-lg"
             />
           </motion.button>
         </div>
@@ -419,14 +400,14 @@ function OverviewTab({
 }
 
 // Placeholder tabs
-function MembersTab({ groupId }: { groupId: string }) {
+function MembersTab({ groupId: _groupId }: { groupId: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <h2 className="text-2xl font-bold text-white mb-4">Members</h2>
+      <h2 className="mb-4 text-2xl font-bold text-white">Members</h2>
       <p className="text-gray-400">Manage group members and their roles.</p>
       {/* TODO: Implement member management */}
     </motion.div>
@@ -435,14 +416,14 @@ function MembersTab({ groupId }: { groupId: string }) {
 
 function InvitesTab({ groupId, groupName }: { groupId: string; groupName: string }) {
   const [showModal, setShowModal] = useState(false);
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white">Invites</h2>
           <p className="text-gray-400">Manage invitation links for your group.</p>
@@ -451,7 +432,7 @@ function InvitesTab({ groupId, groupName }: { groupId: string; groupName: string
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setShowModal(true)}
-          className="px-4 py-2 rounded-lg bg-primary-600 text-white font-semibold"
+          className="rounded-lg bg-primary-600 px-4 py-2 font-semibold text-white"
         >
           Create Invite
         </motion.button>
@@ -470,14 +451,14 @@ function InvitesTab({ groupId, groupName }: { groupId: string; groupName: string
   );
 }
 
-function ChannelsTab({ groupId }: { groupId: string }) {
+function ChannelsTab({ groupId: _groupId }: { groupId: string }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <h2 className="text-2xl font-bold text-white mb-4">Channels</h2>
+      <h2 className="mb-4 text-2xl font-bold text-white">Channels</h2>
       <p className="text-gray-400">Manage channels and categories.</p>
       {/* TODO: Implement channel management */}
     </motion.div>
@@ -491,7 +472,7 @@ function NotificationsTab() {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
     >
-      <h2 className="text-2xl font-bold text-white mb-4">Notifications</h2>
+      <h2 className="mb-4 text-2xl font-bold text-white">Notifications</h2>
       <p className="text-gray-400">Configure notification preferences for this group.</p>
       {/* TODO: Implement notification settings */}
     </motion.div>
@@ -514,25 +495,23 @@ function DangerTab({
       exit={{ opacity: 0, y: -20 }}
       className="max-w-2xl"
     >
-      <h2 className="text-2xl font-bold text-red-400 mb-2">Danger Zone</h2>
-      <p className="text-gray-400 mb-6">
+      <h2 className="mb-2 text-2xl font-bold text-red-400">Danger Zone</h2>
+      <p className="mb-6 text-gray-400">
         These actions are irreversible. Please proceed with caution.
       </p>
 
       <div className="space-y-4">
-        <GlassCard variant="frosted" className="p-4 border border-red-500/30">
+        <GlassCard variant="frosted" className="border border-red-500/30 p-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-white">Leave Group</h3>
-              <p className="text-sm text-gray-400">
-                You will need an invite to rejoin.
-              </p>
+              <p className="text-sm text-gray-400">You will need an invite to rejoin.</p>
             </div>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={onLeave}
-              className="px-4 py-2 rounded-lg bg-red-500/10 text-red-400 hover:bg-red-500/20 flex items-center gap-2"
+              className="flex items-center gap-2 rounded-lg bg-red-500/10 px-4 py-2 text-red-400 hover:bg-red-500/20"
             >
               <ArrowRightOnRectangleIcon className="h-5 w-5" />
               Leave
@@ -541,7 +520,7 @@ function DangerTab({
         </GlassCard>
 
         {isOwner && (
-          <GlassCard variant="frosted" className="p-4 border border-red-500/50">
+          <GlassCard variant="frosted" className="border border-red-500/50 p-4">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-semibold text-white">Delete Group</h3>
@@ -553,7 +532,7 @@ function DangerTab({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onDelete}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white font-semibold flex items-center gap-2"
+                className="flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 font-semibold text-white"
               >
                 <TrashIcon className="h-5 w-5" />
                 Delete
@@ -587,25 +566,25 @@ function ConfirmModal({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="w-full max-w-md bg-dark-900 rounded-2xl p-6 border border-gray-700"
+        className="w-full max-w-md rounded-2xl border border-gray-700 bg-dark-900 p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className={`text-xl font-bold ${danger ? 'text-red-400' : 'text-white'} mb-2`}>
           {title}
         </h2>
-        <p className="text-gray-400 mb-6">{message}</p>
+        <p className="mb-6 text-gray-400">{message}</p>
 
         <div className="flex gap-3">
           <button
             onClick={onClose}
-            className="flex-1 py-3 rounded-xl bg-dark-700 text-gray-300 hover:bg-dark-600 transition-colors"
+            className="flex-1 rounded-xl bg-dark-700 py-3 text-gray-300 transition-colors hover:bg-dark-600"
           >
             Cancel
           </button>
@@ -613,10 +592,8 @@ function ConfirmModal({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={onConfirm}
-            className={`flex-1 py-3 rounded-xl font-semibold ${
-              danger
-                ? 'bg-red-600 text-white'
-                : 'bg-primary-600 text-white'
+            className={`flex-1 rounded-xl py-3 font-semibold ${
+              danger ? 'bg-red-600 text-white' : 'bg-primary-600 text-white'
             }`}
           >
             {confirmLabel}

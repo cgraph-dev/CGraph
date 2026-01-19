@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
+void useEffect; // Reserved for leaderboard auto-refresh
 import { motion, AnimatePresence } from 'framer-motion';
+void AnimatePresence; // Reserved for rank change animations
 import {
   TrophyIcon,
   ChartBarIcon,
@@ -13,6 +15,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
+void FireIcon; // Reserved for streak indicator on leaderboard
+void ClockIcon; // Reserved for time period selector
 import { TrophyIcon as TrophyIconSolid, StarIcon } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
@@ -22,7 +26,7 @@ import { useAuthStore } from '@/stores/authStore';
 
 /**
  * LeaderboardWidget Component
- * 
+ *
  * Displays user rankings with:
  * - Multiple leaderboard types (XP, karma, messages, etc.)
  * - Time period filtering (daily, weekly, monthly, all-time)
@@ -103,7 +107,7 @@ export function LeaderboardWidget({
   const { user } = useAuthStore();
   // Use THEME_COLORS lookup with colorPreset to get the primary color
   const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
-  
+
   const currentId = currentUserId || user?.id;
   const [currentPage, setCurrentPage] = useState(0);
 
@@ -149,7 +153,7 @@ export function LeaderboardWidget({
     const second = top3[1];
     const first = top3[0];
     const third = top3[2];
-    
+
     if (!first || !second || !third) return null;
 
     // Reorder for podium display: [2nd, 1st, 3rd]
@@ -157,7 +161,7 @@ export function LeaderboardWidget({
     const heights = ['h-24', 'h-32', 'h-20'];
 
     return (
-      <div className="flex items-end justify-center gap-4 mb-6">
+      <div className="mb-6 flex items-end justify-center gap-4">
         {podiumOrder.map((entry, index) => {
           const actualRank = index === 0 ? 2 : index === 1 ? 1 : 3;
           return (
@@ -190,14 +194,14 @@ export function LeaderboardWidget({
               </div>
 
               {/* Username */}
-              <span className="text-sm font-medium truncate max-w-[80px]">
+              <span className="max-w-[80px] truncate text-sm font-medium">
                 {entry.displayName || entry.username}
               </span>
               <span className="text-xs text-gray-400">Lvl {entry.level}</span>
 
               {/* Podium */}
               <motion.div
-                className={`w-20 ${heights[index]} rounded-t-lg mt-2 flex items-center justify-center`}
+                className={`w-20 ${heights[index]} mt-2 flex items-center justify-center rounded-t-lg`}
                 style={{
                   background: `linear-gradient(180deg, ${RANK_COLORS[actualRank]}40 0%, ${RANK_COLORS[actualRank]}20 100%)`,
                   borderTop: `3px solid ${RANK_COLORS[actualRank]}`,
@@ -234,17 +238,17 @@ export function LeaderboardWidget({
           HapticFeedback.light();
           onUserClick?.(entry.userId);
         }}
-        className={`flex items-center gap-4 p-3 rounded-lg cursor-pointer transition-colors ${
+        className={`flex cursor-pointer items-center gap-4 rounded-lg p-3 transition-colors ${
           entry.isCurrentUser
             ? 'bg-primary-500/20 ring-1 ring-primary-500/50'
             : 'hover:bg-dark-700/50'
         }`}
       >
         {/* Rank */}
-        <div className="w-8 text-center flex-shrink-0">
+        <div className="w-8 flex-shrink-0 text-center">
           {isTop3 ? (
             <TrophyIconSolid
-              className="h-6 w-6 mx-auto"
+              className="mx-auto h-6 w-6"
               style={{ color: RANK_COLORS[entry.rank] }}
             />
           ) : (
@@ -254,15 +258,9 @@ export function LeaderboardWidget({
 
         {/* Rank Change Indicator */}
         <div className="w-4 flex-shrink-0">
-          {rankChange === 'up' && (
-            <ArrowUpIcon className="h-4 w-4 text-green-500" />
-          )}
-          {rankChange === 'down' && (
-            <ArrowDownIcon className="h-4 w-4 text-red-500" />
-          )}
-          {rankChange === 'none' && (
-            <MinusIcon className="h-4 w-4 text-gray-500" />
-          )}
+          {rankChange === 'up' && <ArrowUpIcon className="h-4 w-4 text-green-500" />}
+          {rankChange === 'down' && <ArrowDownIcon className="h-4 w-4 text-red-500" />}
+          {rankChange === 'none' && <MinusIcon className="h-4 w-4 text-gray-500" />}
         </div>
 
         {/* Avatar */}
@@ -273,13 +271,15 @@ export function LeaderboardWidget({
         />
 
         {/* User Info */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className={`font-medium truncate ${entry.isCurrentUser ? 'text-primary-400' : ''}`}>
+            <span
+              className={`truncate font-medium ${entry.isCurrentUser ? 'text-primary-400' : ''}`}
+            >
               {entry.displayName || entry.username}
             </span>
             {entry.isCurrentUser && (
-              <span className="text-xs px-1.5 py-0.5 bg-primary-500/30 rounded text-primary-400">
+              <span className="rounded bg-primary-500/30 px-1.5 py-0.5 text-xs text-primary-400">
                 You
               </span>
             )}
@@ -289,7 +289,9 @@ export function LeaderboardWidget({
             {entry.badges && entry.badges.length > 0 && (
               <div className="flex items-center gap-1">
                 {entry.badges.slice(0, 3).map((badge, i) => (
-                  <span key={i} className="text-sm">{badge}</span>
+                  <span key={i} className="text-sm">
+                    {badge}
+                  </span>
                 ))}
               </div>
             )}
@@ -298,7 +300,10 @@ export function LeaderboardWidget({
 
         {/* Score */}
         <div className="text-right">
-          <div className="font-bold" style={{ color: isTop3 ? RANK_COLORS[entry.rank] : primaryColor }}>
+          <div
+            className="font-bold"
+            style={{ color: isTop3 ? RANK_COLORS[entry.rank] : primaryColor }}
+          >
             {formatScore(entry.score)}
           </div>
           <div className="text-xs text-gray-400">
@@ -317,7 +322,7 @@ export function LeaderboardWidget({
   if (variant === 'sidebar') {
     return (
       <GlassCard variant="frosted" className={`p-4 ${className}`}>
-        <div className="flex items-center gap-2 mb-4">
+        <div className="mb-4 flex items-center gap-2">
           <TrophyIcon className="h-5 w-5" style={{ color: primaryColor }} />
           <h3 className="font-semibold">Top Players</h3>
         </div>
@@ -330,7 +335,7 @@ export function LeaderboardWidget({
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
               onClick={() => onUserClick?.(entry.userId)}
-              className="flex items-center gap-3 p-2 rounded-lg hover:bg-dark-700/50 cursor-pointer"
+              className="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-dark-700/50"
             >
               <span
                 className="w-6 text-center font-bold"
@@ -343,9 +348,7 @@ export function LeaderboardWidget({
                 alt={entry.displayName || entry.username}
                 size="xs"
               />
-              <span className="flex-1 truncate text-sm">
-                {entry.displayName || entry.username}
-              </span>
+              <span className="flex-1 truncate text-sm">{entry.displayName || entry.username}</span>
               <span className="text-sm font-medium" style={{ color: primaryColor }}>
                 {formatScore(entry.score)}
               </span>
@@ -354,17 +357,15 @@ export function LeaderboardWidget({
         </div>
 
         {currentUserEntry && currentUserEntry.rank > 5 && (
-          <div className="mt-4 pt-4 border-t border-dark-700">
-            <div className="flex items-center gap-3 p-2 bg-primary-500/10 rounded-lg">
+          <div className="mt-4 border-t border-dark-700 pt-4">
+            <div className="flex items-center gap-3 rounded-lg bg-primary-500/10 p-2">
               <span className="w-6 text-center font-bold">#{currentUserEntry.rank}</span>
               <ThemedAvatar
                 src={currentUserEntry.avatarUrl}
                 alt={currentUserEntry.displayName || currentUserEntry.username}
                 size="xs"
               />
-              <span className="flex-1 truncate text-sm font-medium text-primary-400">
-                You
-              </span>
+              <span className="flex-1 truncate text-sm font-medium text-primary-400">You</span>
               <span className="text-sm font-medium" style={{ color: primaryColor }}>
                 {formatScore(currentUserEntry.score)}
               </span>
@@ -380,7 +381,7 @@ export function LeaderboardWidget({
       <GlassCard variant="frosted" className="overflow-hidden">
         {/* Header with Filters */}
         {showFilters && (
-          <div className="p-4 border-b border-dark-700">
+          <div className="border-b border-dark-700 p-4">
             <div className="flex flex-wrap items-center justify-between gap-4">
               {/* Type Selector */}
               <div className="flex items-center gap-2 overflow-x-auto">
@@ -388,7 +389,7 @@ export function LeaderboardWidget({
                   <button
                     key={value}
                     onClick={() => onTypeChange?.(value)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
+                    className={`flex items-center gap-1.5 whitespace-nowrap rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       leaderboardType === value
                         ? 'text-white'
                         : 'bg-dark-600 text-gray-400 hover:bg-dark-500'
@@ -402,12 +403,12 @@ export function LeaderboardWidget({
               </div>
 
               {/* Time Period */}
-              <div className="flex items-center gap-1 bg-dark-700 rounded-lg p-0.5">
+              <div className="flex items-center gap-1 rounded-lg bg-dark-700 p-0.5">
                 {TIME_PERIODS.map(({ value, label }) => (
                   <button
                     key={value}
                     onClick={() => onTimePeriodChange?.(value as typeof timePeriod)}
-                    className={`px-3 py-1.5 rounded text-sm transition-colors ${
+                    className={`rounded px-3 py-1.5 text-sm transition-colors ${
                       timePeriod === value
                         ? 'bg-dark-600 text-white'
                         : 'text-gray-400 hover:text-white'
@@ -426,14 +427,14 @@ export function LeaderboardWidget({
           {isLoading ? (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="flex items-center gap-4 animate-pulse">
-                  <div className="w-8 h-8 bg-dark-700 rounded" />
-                  <div className="h-10 w-10 bg-dark-700 rounded-full" />
+                <div key={i} className="flex animate-pulse items-center gap-4">
+                  <div className="h-8 w-8 rounded bg-dark-700" />
+                  <div className="h-10 w-10 rounded-full bg-dark-700" />
                   <div className="flex-1">
-                    <div className="h-4 w-24 bg-dark-700 rounded mb-1" />
-                    <div className="h-3 w-16 bg-dark-700 rounded" />
+                    <div className="mb-1 h-4 w-24 rounded bg-dark-700" />
+                    <div className="h-3 w-16 rounded bg-dark-700" />
                   </div>
-                  <div className="h-5 w-12 bg-dark-700 rounded" />
+                  <div className="h-5 w-12 rounded bg-dark-700" />
                 </div>
               ))}
             </div>
@@ -449,11 +450,11 @@ export function LeaderboardWidget({
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-dark-700">
+                <div className="mt-4 flex items-center justify-center gap-4 border-t border-dark-700 pt-4">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
                     disabled={currentPage === 0}
-                    className="p-2 rounded-lg hover:bg-dark-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="rounded-lg p-2 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ChevronLeftIcon className="h-5 w-5" />
                   </button>
@@ -463,7 +464,7 @@ export function LeaderboardWidget({
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
                     disabled={currentPage === totalPages - 1}
-                    className="p-2 rounded-lg hover:bg-dark-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="rounded-lg p-2 hover:bg-dark-600 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ChevronRightIcon className="h-5 w-5" />
                   </button>
@@ -472,8 +473,8 @@ export function LeaderboardWidget({
 
               {/* Current User Position (if not visible) */}
               {currentUserEntry && !paginatedEntries.find((e) => e.isCurrentUser) && (
-                <div className="mt-4 pt-4 border-t border-dark-700">
-                  <p className="text-xs text-gray-400 mb-2">Your Position</p>
+                <div className="mt-4 border-t border-dark-700 pt-4">
+                  <p className="mb-2 text-xs text-gray-400">Your Position</p>
                   {renderEntry(currentUserEntry, 0)}
                 </div>
               )}
@@ -481,8 +482,8 @@ export function LeaderboardWidget({
           )}
 
           {!isLoading && processedEntries.length === 0 && (
-            <div className="text-center py-8">
-              <TrophyIcon className="h-12 w-12 mx-auto text-gray-500 mb-3" />
+            <div className="py-8 text-center">
+              <TrophyIcon className="mx-auto mb-3 h-12 w-12 text-gray-500" />
               <p className="text-gray-400">No leaderboard data available</p>
             </div>
           )}

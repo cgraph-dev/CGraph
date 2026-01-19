@@ -15,9 +15,12 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import confetti from 'canvas-confetti';
 
+// Reserved for future use
+void LockClosedIcon;
+
 /**
  * DailyRewards Component
- * 
+ *
  * Daily login reward calendar with:
  * - 7-day reward cycle
  * - Progressive rewards
@@ -86,6 +89,8 @@ export function DailyRewards({
 
   const [isClaiming, setIsClaiming] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  void showConfetti;
+  void setShowConfetti; // Reserved for confetti animation
   const [claimedReward, setClaimedReward] = useState<DailyReward | null>(null);
 
   // Calculate time until next claim
@@ -159,25 +164,27 @@ export function DailyRewards({
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: index * 0.05 }}
-        className={`relative flex flex-col items-center p-3 rounded-xl transition-all ${
+        className={`relative flex flex-col items-center rounded-xl p-3 transition-all ${
           isToday && canClaim
-            ? 'ring-2 ring-offset-2 ring-offset-dark-800 bg-gradient-to-br from-amber-500/20 to-orange-500/20'
+            ? 'bg-gradient-to-br from-amber-500/20 to-orange-500/20 ring-2 ring-offset-2 ring-offset-dark-800'
             : isClaimed
-            ? 'bg-dark-700/50 opacity-60'
-            : isLocked
-            ? 'bg-dark-800'
-            : 'bg-dark-700'
+              ? 'bg-dark-700/50 opacity-60'
+              : isLocked
+                ? 'bg-dark-800'
+                : 'bg-dark-700'
         }`}
-        style={isToday && canClaim ? { '--tw-ring-color': primaryColor } as React.CSSProperties : {}}
+        style={
+          isToday && canClaim ? ({ '--tw-ring-color': primaryColor } as React.CSSProperties) : {}
+        }
       >
         {/* Day Badge */}
         <div
-          className={`absolute -top-2 -right-2 h-6 w-6 rounded-full flex items-center justify-center text-xs font-bold ${
+          className={`absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
             isClaimed
               ? 'bg-green-500 text-white'
               : isToday
-              ? 'text-white'
-              : 'bg-dark-600 text-gray-400'
+                ? 'text-white'
+                : 'bg-dark-600 text-gray-400'
           }`}
           style={isToday && !isClaimed ? { backgroundColor: primaryColor } : {}}
         >
@@ -185,30 +192,26 @@ export function DailyRewards({
         </div>
 
         {/* Icon */}
-        <div className="h-10 w-10 rounded-lg flex items-center justify-center mb-2 relative">
+        <div className="relative mb-2 flex h-10 w-10 items-center justify-center rounded-lg">
           {reward.special?.icon ? (
             <span className="text-2xl">{reward.special.icon}</span>
           ) : (
             <GiftIcon
               className={`h-6 w-6 ${
-                isClaimed
-                  ? 'text-gray-500'
-                  : isLocked
-                  ? 'text-gray-600'
-                  : 'text-amber-500'
+                isClaimed ? 'text-gray-500' : isLocked ? 'text-gray-600' : 'text-amber-500'
               }`}
             />
           )}
 
           {isPremiumLocked && (
-            <div className="absolute inset-0 flex items-center justify-center bg-dark-900/70 rounded-lg">
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-dark-900/70">
               <StarIcon className="h-4 w-4 text-amber-500" />
             </div>
           )}
         </div>
 
         {/* Rewards */}
-        <div className="text-center space-y-0.5">
+        <div className="space-y-0.5 text-center">
           <div className="flex items-center gap-1 text-xs">
             <SparklesIcon className="h-3 w-3 text-purple-400" />
             <span>{reward.xp}</span>
@@ -223,7 +226,7 @@ export function DailyRewards({
 
         {/* Premium indicator */}
         {reward.isPremium && (
-          <div className="absolute -top-1 left-1/2 -translate-x-1/2 px-1.5 py-0.5 bg-amber-500 text-black text-[10px] font-bold rounded">
+          <div className="absolute -top-1 left-1/2 -translate-x-1/2 rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-bold text-black">
             VIP
           </div>
         )}
@@ -239,7 +242,7 @@ export function DailyRewards({
             <motion.div
               animate={canClaim ? { scale: [1, 1.1, 1] } : {}}
               transition={{ duration: 1.5, repeat: Infinity }}
-              className={`h-12 w-12 rounded-xl flex items-center justify-center ${
+              className={`flex h-12 w-12 items-center justify-center rounded-xl ${
                 canClaim ? 'bg-gradient-to-br from-amber-500 to-orange-500' : 'bg-dark-700'
               }`}
             >
@@ -256,8 +259,7 @@ export function DailyRewards({
               <div className="text-sm text-gray-400">
                 {canClaim ? (
                   <span className="flex items-center gap-1">
-                    <SparklesIcon className="h-4 w-4 text-purple-400" />
-                    +{todayReward.xp} XP
+                    <SparklesIcon className="h-4 w-4 text-purple-400" />+{todayReward.xp} XP
                     {todayReward.coins && ` · +${todayReward.coins} coins`}
                   </span>
                 ) : (
@@ -273,7 +275,7 @@ export function DailyRewards({
               whileTap={{ scale: 0.95 }}
               onClick={handleClaim}
               disabled={isClaiming}
-              className="px-4 py-2 rounded-lg font-medium"
+              className="rounded-lg px-4 py-2 font-medium"
               style={{ backgroundColor: primaryColor }}
             >
               {isClaiming ? 'Claiming...' : 'Claim'}
@@ -288,18 +290,18 @@ export function DailyRewards({
     <div className={className}>
       <GlassCard variant="frosted" className="overflow-hidden">
         {/* Header */}
-        <div className="p-4 border-b border-dark-700">
+        <div className="border-b border-dark-700 p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <motion.div
                 animate={canClaim ? { rotate: [0, -10, 10, -10, 0] } : {}}
                 transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
-                className="h-12 w-12 rounded-xl flex items-center justify-center bg-gradient-to-br from-amber-500 to-orange-500"
+                className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500 to-orange-500"
               >
                 <GiftIconSolid className="h-6 w-6 text-white" />
               </motion.div>
               <div>
-                <h2 className="font-semibold text-lg">Daily Rewards</h2>
+                <h2 className="text-lg font-semibold">Daily Rewards</h2>
                 <p className="text-sm text-gray-400">Day {currentDay} of 7</p>
               </div>
             </div>
@@ -325,7 +327,7 @@ export function DailyRewards({
           <GlassCard variant="crystal" className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-sm text-gray-400 mb-1">Today's Reward</div>
+                <div className="mb-1 text-sm text-gray-400">Today's Reward</div>
                 <div className="flex items-center gap-4">
                   <span className="flex items-center gap-1 text-lg font-bold">
                     <SparklesIcon className="h-5 w-5 text-purple-400" />
@@ -339,7 +341,7 @@ export function DailyRewards({
                   )}
                 </div>
                 {todayReward.special && (
-                  <div className="flex items-center gap-2 mt-2 text-sm">
+                  <div className="mt-2 flex items-center gap-2 text-sm">
                     <span>{todayReward.special.icon}</span>
                     <span className="text-amber-400">{todayReward.special.name}</span>
                   </div>
@@ -352,7 +354,7 @@ export function DailyRewards({
                   whileTap={{ scale: 0.98 }}
                   onClick={handleClaim}
                   disabled={isClaiming}
-                  className="px-6 py-3 rounded-xl font-medium text-white flex items-center gap-2"
+                  className="flex items-center gap-2 rounded-xl px-6 py-3 font-medium text-white"
                   style={{ backgroundColor: primaryColor }}
                 >
                   <GiftIcon className="h-5 w-5" />
@@ -373,7 +375,7 @@ export function DailyRewards({
         {/* Premium Bonus */}
         {!isPremium && (
           <div className="px-4 pb-4">
-            <div className="flex items-center justify-between p-3 bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/30 rounded-lg">
+            <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-orange-500/10 p-3">
               <div className="flex items-center gap-3">
                 <StarIcon className="h-6 w-6 text-amber-500" />
                 <div>
@@ -389,14 +391,14 @@ export function DailyRewards({
         {/* Monthly Progress */}
         {monthlyReward && (
           <div className="px-4 pb-4">
-            <div className="p-4 bg-dark-700/50 rounded-lg">
-              <div className="flex items-center justify-between mb-2">
+            <div className="rounded-lg bg-dark-700/50 p-4">
+              <div className="mb-2 flex items-center justify-between">
                 <span className="text-sm text-gray-400">Monthly Reward Progress</span>
                 <span className="text-sm font-medium">
                   {monthlyProgress}/{monthlyReward.daysRequired} days
                 </span>
               </div>
-              <div className="h-2 bg-dark-600 rounded-full overflow-hidden mb-3">
+              <div className="mb-3 h-2 overflow-hidden rounded-full bg-dark-600">
                 <motion.div
                   className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
                   initial={{ width: 0 }}
@@ -416,7 +418,7 @@ export function DailyRewards({
           <div className="px-4 pb-4">
             <button
               onClick={onClaimWithAd}
-              className="w-full flex items-center justify-center gap-2 p-3 border border-dashed border-dark-600 rounded-lg text-gray-400 hover:text-white hover:border-gray-500 transition-colors"
+              className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-dark-600 p-3 text-gray-400 transition-colors hover:border-gray-500 hover:text-white"
             >
               <ArrowPathIcon className="h-5 w-5" />
               Watch ad for 2x reward
@@ -432,7 +434,7 @@ export function DailyRewards({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           >
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
@@ -443,20 +445,18 @@ export function DailyRewards({
               <motion.div
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 1, repeat: Infinity }}
-                className="text-6xl mb-4"
+                className="mb-4 text-6xl"
               >
                 🎁
               </motion.div>
-              <h2 className="text-2xl font-bold mb-2">Reward Claimed!</h2>
+              <h2 className="mb-2 text-2xl font-bold">Reward Claimed!</h2>
               <div className="flex items-center justify-center gap-4">
                 <span className="flex items-center gap-1 text-xl text-purple-400">
-                  <SparklesIcon className="h-6 w-6" />
-                  +{claimedReward.xp} XP
+                  <SparklesIcon className="h-6 w-6" />+{claimedReward.xp} XP
                 </span>
                 {claimedReward.coins && (
                   <span className="flex items-center gap-1 text-xl text-amber-400">
-                    <span>🪙</span>
-                    +{claimedReward.coins}
+                    <span>🪙</span>+{claimedReward.coins}
                   </span>
                 )}
               </div>

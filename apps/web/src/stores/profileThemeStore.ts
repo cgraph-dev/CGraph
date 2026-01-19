@@ -48,9 +48,21 @@ export type ProfileCardLayout =
   | 'creator'
   | 'custom';
 
-export type ProfileBackgroundType = 'color' | 'gradient' | 'image' | 'video' | 'animated' | 'particles';
+export type ProfileBackgroundType =
+  | 'color'
+  | 'gradient'
+  | 'image'
+  | 'video'
+  | 'animated'
+  | 'particles';
 
-export type ProfileHoverEffect = 'none' | 'scale' | 'tilt' | 'glow' | 'particles' | 'border-animate';
+export type ProfileHoverEffect =
+  | 'none'
+  | 'scale'
+  | 'tilt'
+  | 'glow'
+  | 'particles'
+  | 'border-animate';
 
 export interface ProfileThemeColors {
   primary: string;
@@ -117,7 +129,10 @@ export interface ProfileCardConfig {
 
 // ==================== THEME PRESETS ====================
 
-export const PROFILE_THEME_PRESETS: Record<ProfileThemePreset, Omit<ProfileTheme, 'id' | 'createdAt' | 'updatedAt'>> = {
+export const PROFILE_THEME_PRESETS: Record<
+  ProfileThemePreset,
+  Omit<ProfileTheme, 'id' | 'createdAt' | 'updatedAt'>
+> = {
   'minimalist-dark': {
     name: 'Minimalist Dark',
     preset: 'minimalist-dark',
@@ -900,6 +915,16 @@ export const PROFILE_CARD_CONFIGS: Record<ProfileCardLayout, ProfileCardConfig> 
 
 // ==================== STORE STATE ====================
 
+export interface ProfileThemePresetItem {
+  id: string;
+  name: string;
+  description?: string;
+  category?: string;
+  colors?: ProfileThemeColors;
+  backgroundConfig?: ProfileBackground;
+  rarity?: 'common' | 'rare' | 'epic' | 'legendary';
+}
+
 export interface ProfileThemeState {
   // Current user's profile theme
   theme: ProfileTheme | null;
@@ -912,10 +937,15 @@ export interface ProfileThemeState {
   previewTheme: ProfileTheme | null;
   isPreviewMode: boolean;
 
+  // Preset management (for CosmeticsSettingsPanel)
+  presets: ProfileThemePresetItem[];
+  activePresetId: string | null;
+
   // Actions
   loadTheme: () => Promise<void>;
   saveTheme: (updates: Partial<ProfileTheme>) => Promise<void>;
   applyPreset: (preset: ProfileThemePreset) => void;
+  activatePreset: (id: string) => void;
   setCardLayout: (layout: ProfileCardLayout) => void;
   updateCardConfig: (config: Partial<ProfileCardConfig>) => void;
   updateColors: (colors: Partial<ProfileThemeColors>) => void;
@@ -926,6 +956,35 @@ export interface ProfileThemeState {
 }
 
 // ==================== STORE IMPLEMENTATION ====================
+
+// Generate presets array from PROFILE_THEME_PRESETS
+const generatePresets = (): ProfileThemePresetItem[] => {
+  return Object.entries(PROFILE_THEME_PRESETS).map(([key, preset]) => ({
+    id: key,
+    name: preset.name,
+    description: `${preset.cardLayout} layout with ${preset.hoverEffect} hover effect`,
+    category: key.includes('dark')
+      ? 'Dark'
+      : key.includes('light')
+        ? 'Light'
+        : key.includes('cyberpunk') || key.includes('neon')
+          ? 'Futuristic'
+          : key.includes('matrix') || key.includes('hacker')
+            ? 'Tech'
+            : key.includes('synthwave') || key.includes('retro')
+              ? 'Retro'
+              : 'General',
+    colors: preset.colors,
+    backgroundConfig: preset.background,
+    rarity: key.includes('mythic')
+      ? ('legendary' as const)
+      : key.includes('legendary')
+        ? ('epic' as const)
+        : key.includes('premium')
+          ? ('rare' as const)
+          : ('common' as const),
+  }));
+};
 
 export const useProfileThemeStore = create<ProfileThemeState>()(
   persist(
@@ -938,12 +997,17 @@ export const useProfileThemeStore = create<ProfileThemeState>()(
       previewTheme: null,
       isPreviewMode: false,
 
+      // Preset management
+      presets: generatePresets(),
+      activePresetId: null,
+
       loadTheme: async () => {
         set({ isLoading: true, error: null });
         try {
           const response = await api.get('/api/v1/users/me/profile-theme');
           const theme = response.data;
-          const cardConfig = PROFILE_CARD_CONFIGS[theme.cardLayout] || PROFILE_CARD_CONFIGS.detailed;
+          const layoutKey = (theme.cardLayout as ProfileCardLayout) || 'detailed';
+          const cardConfig = PROFILE_CARD_CONFIGS[layoutKey] || PROFILE_CARD_CONFIGS.detailed;
           set({ theme, cardConfig, isLoading: false });
         } catch (error) {
           // Use default theme
@@ -954,6 +1018,14 @@ export const useProfileThemeStore = create<ProfileThemeState>()(
             updatedAt: new Date().toISOString(),
           };
           set({ theme: defaultTheme, isLoading: false });
+        }
+      },
+
+      activatePreset: (id: string) => {
+        const presetKey = Object.keys(PROFILE_THEME_PRESETS).find((k) => k === id);
+        if (presetKey) {
+          get().applyPreset(presetKey as ProfileThemePreset);
+          set({ activePresetId: id });
         }
       },
 

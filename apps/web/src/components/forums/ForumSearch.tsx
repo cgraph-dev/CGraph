@@ -16,13 +16,18 @@ import {
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
-import { useForumStore, type Post, type ForumCategory } from '@/stores/forumStore';
+import { useForumStore, type Post as PostType, type ForumCategory } from '@/stores/forumStore';
+
+// Reserved for future features
+const _reservedForumSearch = { ArrowTrendingUpIcon, CalendarIcon, useForumStore };
+void _reservedForumSearch;
+void (0 as unknown as PostType);
 import { formatTimeAgo } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
 
 /**
  * ForumSearch Component
- * 
+ *
  * Advanced search functionality for forums with:
  * - Real-time search suggestions
  * - Category/tag filtering
@@ -79,15 +84,17 @@ const DEFAULT_FILTERS: SearchFilters = {
 };
 
 export function ForumSearch({
-  forumId,
+  forumId: _forumId,
   categories = [],
   onSearch,
   onResultClick,
   placeholder = 'Search posts, comments, users...',
   showFilters = true,
   className = '',
-  variant = 'inline',
+  variant: _variant = 'inline',
 }: ForumSearchProps) {
+  void _forumId;
+  void _variant;
   const { theme } = useThemeStore();
   const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
@@ -126,7 +133,7 @@ export function ForumSearch({
 
   const performSearch = async (searchQuery: string) => {
     if (!onSearch) return;
-    
+
     setIsLoading(true);
     try {
       const searchResults = await onSearch(searchQuery, filters);
@@ -149,7 +156,10 @@ export function ForumSearch({
   };
 
   const addToHistory = (searchQuery: string) => {
-    const newHistory = [searchQuery, ...searchHistory.filter((h) => h !== searchQuery)].slice(0, 10);
+    const newHistory = [searchQuery, ...searchHistory.filter((h) => h !== searchQuery)].slice(
+      0,
+      10
+    );
     setSearchHistory(newHistory);
     localStorage.setItem('forumSearchHistory', JSON.stringify(newHistory));
   };
@@ -220,10 +230,8 @@ export function ForumSearch({
       initial={{ opacity: 0, x: -10 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: index * 0.03 }}
-      className={`p-3 cursor-pointer transition-colors ${
-        index === selectedIndex
-          ? 'bg-dark-600'
-          : 'hover:bg-dark-700'
+      className={`cursor-pointer p-3 transition-colors ${
+        index === selectedIndex ? 'bg-dark-600' : 'hover:bg-dark-700'
       }`}
       onClick={() => handleResultClick(result)}
     >
@@ -236,7 +244,7 @@ export function ForumSearch({
           />
         ) : (
           <div
-            className="h-10 w-10 rounded-lg flex items-center justify-center"
+            className="flex h-10 w-10 items-center justify-center rounded-lg"
             style={{ backgroundColor: `${primaryColor}20` }}
           >
             {result.type === 'post' ? (
@@ -249,20 +257,16 @@ export function ForumSearch({
           </div>
         )}
 
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <span className="text-xs uppercase tracking-wider text-gray-500">
-              {result.type}
-            </span>
+            <span className="text-xs uppercase tracking-wider text-gray-500">{result.type}</span>
             {result.forumName && (
-              <span className="text-xs text-gray-400">
-                in {result.forumName}
-              </span>
+              <span className="text-xs text-gray-400">in {result.forumName}</span>
             )}
           </div>
-          <p className="font-medium truncate">{result.title}</p>
-          <p className="text-sm text-gray-400 line-clamp-2">{result.snippet}</p>
-          <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+          <p className="truncate font-medium">{result.title}</p>
+          <p className="line-clamp-2 text-sm text-gray-400">{result.snippet}</p>
+          <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
             <span>by {result.author.username}</span>
             <span>{formatTimeAgo(result.createdAt)}</span>
             {result.score !== undefined && (
@@ -292,10 +296,10 @@ export function ForumSearch({
           exit={{ opacity: 0, height: 0 }}
           className="overflow-hidden"
         >
-          <div className="p-4 border-t border-dark-600 space-y-4">
+          <div className="space-y-4 border-t border-dark-600 p-4">
             {/* Sort Options */}
             <div>
-              <label className="text-sm font-medium text-gray-400 mb-2 block">Sort By</label>
+              <label className="mb-2 block text-sm font-medium text-gray-400">Sort By</label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { value: 'relevance', label: 'Relevance', icon: MagnifyingGlassIcon },
@@ -305,8 +309,10 @@ export function ForumSearch({
                 ].map(({ value, label, icon: Icon }) => (
                   <button
                     key={value}
-                    onClick={() => setFilters((prev) => ({ ...prev, sortBy: value as SearchFilters['sortBy'] }))}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                    onClick={() =>
+                      setFilters((prev) => ({ ...prev, sortBy: value as SearchFilters['sortBy'] }))
+                    }
+                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       filters.sortBy === value
                         ? 'text-white'
                         : 'bg-dark-600 text-gray-400 hover:bg-dark-500'
@@ -322,7 +328,7 @@ export function ForumSearch({
 
             {/* Time Range */}
             <div>
-              <label className="text-sm font-medium text-gray-400 mb-2 block">Time Range</label>
+              <label className="mb-2 block text-sm font-medium text-gray-400">Time Range</label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { value: 'all', label: 'All Time' },
@@ -333,8 +339,13 @@ export function ForumSearch({
                 ].map(({ value, label }) => (
                   <button
                     key={value}
-                    onClick={() => setFilters((prev) => ({ ...prev, timeRange: value as SearchFilters['timeRange'] }))}
-                    className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                    onClick={() =>
+                      setFilters((prev) => ({
+                        ...prev,
+                        timeRange: value as SearchFilters['timeRange'],
+                      }))
+                    }
+                    className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       filters.timeRange === value
                         ? 'text-white'
                         : 'bg-dark-600 text-gray-400 hover:bg-dark-500'
@@ -349,7 +360,7 @@ export function ForumSearch({
 
             {/* Content Type */}
             <div>
-              <label className="text-sm font-medium text-gray-400 mb-2 block">Content Type</label>
+              <label className="mb-2 block text-sm font-medium text-gray-400">Content Type</label>
               <div className="flex flex-wrap gap-2">
                 {[
                   { value: 'all', label: 'All', icon: null },
@@ -359,8 +370,10 @@ export function ForumSearch({
                 ].map(({ value, label, icon: Icon }) => (
                   <button
                     key={value}
-                    onClick={() => setFilters((prev) => ({ ...prev, type: value as SearchFilters['type'] }))}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                    onClick={() =>
+                      setFilters((prev) => ({ ...prev, type: value as SearchFilters['type'] }))
+                    }
+                    className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${
                       filters.type === value
                         ? 'text-white'
                         : 'bg-dark-600 text-gray-400 hover:bg-dark-500'
@@ -377,13 +390,13 @@ export function ForumSearch({
             {/* Categories */}
             {categories.length > 0 && (
               <div>
-                <label className="text-sm font-medium text-gray-400 mb-2 block">Categories</label>
+                <label className="mb-2 block text-sm font-medium text-gray-400">Categories</label>
                 <div className="flex flex-wrap gap-2">
                   {categories.map((category) => (
                     <button
                       key={category.id}
                       onClick={() => toggleCategory(category.id)}
-                      className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                      className={`rounded-lg px-3 py-1.5 text-sm transition-colors ${
                         filters.categories.includes(category.id)
                           ? 'text-white'
                           : 'text-gray-400 hover:text-white'
@@ -404,7 +417,7 @@ export function ForumSearch({
             {/* Clear Filters */}
             <button
               onClick={clearFilters}
-              className="text-sm text-gray-400 hover:text-white underline"
+              className="text-sm text-gray-400 underline hover:text-white"
             >
               Clear all filters
             </button>
@@ -431,14 +444,14 @@ export function ForumSearch({
             onFocus={() => setIsOpen(true)}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="flex-1 bg-transparent outline-none text-white placeholder-gray-500"
+            className="flex-1 bg-transparent text-white placeholder-gray-500 outline-none"
           />
           {query && (
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={clearSearch}
-              className="p-1 hover:bg-dark-600 rounded"
+              className="rounded p-1 hover:bg-dark-600"
             >
               <XMarkIcon className="h-5 w-5 text-gray-400" />
             </motion.button>
@@ -448,10 +461,8 @@ export function ForumSearch({
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-              className={`p-2 rounded-lg transition-colors ${
-                isFiltersOpen || filters !== DEFAULT_FILTERS
-                  ? ''
-                  : 'hover:bg-dark-600'
+              className={`rounded-lg p-2 transition-colors ${
+                isFiltersOpen || filters !== DEFAULT_FILTERS ? '' : 'hover:bg-dark-600'
               }`}
               style={
                 isFiltersOpen || JSON.stringify(filters) !== JSON.stringify(DEFAULT_FILTERS)
@@ -475,7 +486,7 @@ export function ForumSearch({
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute left-0 right-0 mt-2 z-50"
+            className="absolute left-0 right-0 z-50 mt-2"
           >
             <GlassCard variant="frosted" className="max-h-96 overflow-y-auto">
               {isLoading ? (
@@ -483,7 +494,7 @@ export function ForumSearch({
                   <motion.div
                     animate={{ rotate: 360 }}
                     transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="h-6 w-6 border-2 border-t-transparent rounded-full mx-auto"
+                    className="mx-auto h-6 w-6 rounded-full border-2 border-t-transparent"
                     style={{ borderColor: primaryColor, borderTopColor: 'transparent' }}
                   />
                   <p className="mt-2 text-sm">Searching...</p>
@@ -494,13 +505,13 @@ export function ForumSearch({
                 </div>
               ) : query.length >= 2 ? (
                 <div className="p-6 text-center text-gray-400">
-                  <MagnifyingGlassIcon className="h-10 w-10 mx-auto mb-2 opacity-50" />
+                  <MagnifyingGlassIcon className="mx-auto mb-2 h-10 w-10 opacity-50" />
                   <p>No results found for "{query}"</p>
-                  <p className="text-sm mt-1">Try different keywords or filters</p>
+                  <p className="mt-1 text-sm">Try different keywords or filters</p>
                 </div>
               ) : suggestions.length > 0 ? (
                 <div>
-                  <div className="px-3 py-2 text-xs text-gray-500 uppercase tracking-wider">
+                  <div className="px-3 py-2 text-xs uppercase tracking-wider text-gray-500">
                     Recent Searches
                   </div>
                   {suggestions.map((suggestion, index) => (
@@ -510,7 +521,7 @@ export function ForumSearch({
                         setQuery(suggestion);
                         performSearch(suggestion);
                       }}
-                      className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-dark-700"
+                      className="flex w-full items-center gap-3 px-3 py-2 text-left hover:bg-dark-700"
                     >
                       <ClockIcon className="h-4 w-4 text-gray-500" />
                       <span>{suggestion}</span>

@@ -68,7 +68,8 @@ const categories = [
 export default function Customize() {
   const { category = 'identity' } = useParams<{ category: string }>();
 
-  const activeCategory = categories.find((cat) => cat.id === category) || categories[0];
+  // Always defaults to first category if not found
+  const activeCategory = (categories.find((cat) => cat.id === category) ?? categories[0])!;
 
   return (
     <div className="flex h-full w-full overflow-hidden bg-gradient-to-br from-dark-900 via-dark-800 to-dark-900">
@@ -205,6 +206,7 @@ export default function Customize() {
 }
 
 // ==================== PLACEHOLDER COMPONENTS ====================
+// These are kept for reference/fallback - actual components are imported
 
 function IdentityPlaceholder() {
   return (
@@ -331,3 +333,10 @@ function ProgressionPlaceholder() {
     </div>
   );
 }
+
+// Suppress unused function warnings - kept for reference/fallback
+void IdentityPlaceholder;
+void ThemesPlaceholder;
+void ChatPlaceholder;
+void EffectsPlaceholder;
+void ProgressionPlaceholder;

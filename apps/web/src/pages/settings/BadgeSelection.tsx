@@ -56,17 +56,18 @@ export default function BadgeSelection() {
     const grouped: Record<string, any[]> = {};
 
     filteredBadges.forEach((badge) => {
-      if (!grouped[badge.category]) {
-        grouped[badge.category] = [];
+      const category = badge.category ?? 'other';
+      if (!grouped[category]) {
+        grouped[category] = [];
       }
-      grouped[badge.category].push(badge);
+      grouped[category]!.push(badge);
     });
 
     return grouped;
   }, [filteredBadges]);
 
   const userIsPremium =
-    user?.subscription?.tier === 'pro' || user?.subscription?.tier === 'business';
+    user?.subscription?.tier === 'pro' || (user?.subscription?.tier as string) === 'business';
 
   const handleEquipBadge = async (badgeId: string) => {
     try {
@@ -121,7 +122,19 @@ export default function BadgeSelection() {
       legendary: 'text-yellow-400 border-yellow-600',
       mythic: 'text-pink-400 border-pink-600',
     };
-    return colors[rarity] || colors.common;
+    return colors[rarity] ?? colors['common']!;
+  };
+
+  const getRarityBgColor = (rarity: string) => {
+    const colors: Record<string, string> = {
+      common: 'bg-gray-500',
+      uncommon: 'bg-green-500',
+      rare: 'bg-blue-500',
+      epic: 'bg-purple-500',
+      legendary: 'bg-yellow-500',
+      mythic: 'bg-pink-500',
+    };
+    return colors[rarity] ?? 'bg-gray-500';
   };
 
   return (
@@ -241,7 +254,7 @@ export default function BadgeSelection() {
               onClick={() => setSelectedRarity(rarity)}
               className={`rounded-lg px-3 py-1 text-sm font-medium capitalize transition-colors ${
                 selectedRarity === rarity
-                  ? `bg-${getRarityColor(rarity).split('-')[1]}-500 text-white`
+                  ? `${getRarityBgColor(rarity)} text-white`
                   : `${getRarityColor(rarity)} bg-gray-800 hover:bg-gray-700`
               }`}
             >

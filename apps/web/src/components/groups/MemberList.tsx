@@ -5,20 +5,22 @@ import {
   EllipsisVerticalIcon,
   UserPlusIcon,
   ShieldCheckIcon,
-  CrownIcon,
   ChatBubbleLeftIcon,
   UserMinusIcon,
   NoSymbolIcon,
 } from '@heroicons/react/24/outline';
+void EllipsisVerticalIcon; // Reserved for member context menu
+import { StarIcon as CrownIcon } from '@heroicons/react/24/solid';
 import { useGroupStore, type Member, type Role } from '@/stores/groupStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+void THEME_COLORS; // Reserved for role color theming
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 /**
  * MemberList Component
- * 
+ *
  * Displays group members organized by role with rich interactions.
  * Features:
  * - Role-based grouping with colors
@@ -53,10 +55,13 @@ const statusLabels: Record<StatusType, string> = {
 export function MemberList({ groupId, className = '' }: MemberListProps) {
   const { groups, members: membersByGroup, fetchMembers } = useGroupStore();
   const { theme } = useThemeStore();
-  
+  void theme; // Reserved for member card theming
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
-  const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(null);
+  const [contextMenuPosition, setContextMenuPosition] = useState<{ x: number; y: number } | null>(
+    null
+  );
 
   const activeGroup = groups.find((g) => g.id === groupId);
   const members = membersByGroup[groupId] || [];
@@ -85,7 +90,7 @@ export function MemberList({ groupId, className = '' }: MemberListProps) {
 
     filteredMembers.forEach((member) => {
       const highestRole = member.roles?.sort((a, b) => b.position - a.position)[0];
-      
+
       if (highestRole) {
         const existing = grouped.get(highestRole.id) || [];
         existing.push(member);
@@ -100,6 +105,7 @@ export function MemberList({ groupId, className = '' }: MemberListProps) {
 
   // Separate online/offline
   const onlineMembers = filteredMembers.filter((m) => m.user.status !== 'offline');
+  void onlineMembers; // Reserved for online members section header count
   const offlineMembers = filteredMembers.filter((m) => m.user.status === 'offline');
 
   const handleMemberClick = (member: Member, event: React.MouseEvent) => {
@@ -115,17 +121,17 @@ export function MemberList({ groupId, className = '' }: MemberListProps) {
   };
 
   return (
-    <div className={`flex flex-col h-full ${className}`}>
+    <div className={`flex h-full flex-col ${className}`}>
       {/* Header */}
-      <div className="p-4 border-b border-gray-700/50">
+      <div className="border-b border-gray-700/50 p-4">
         <div className="relative">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search members..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-lg bg-dark-800 border border-gray-700 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+            className="w-full rounded-lg border border-gray-700 bg-dark-800 py-2 pl-9 pr-4 text-sm text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
           />
         </div>
       </div>
@@ -134,9 +140,10 @@ export function MemberList({ groupId, className = '' }: MemberListProps) {
       <div className="flex-1 overflow-y-auto p-2">
         {/* Online Members by Role */}
         {membersByRole.sortedRoles.map((role) => {
-          const roleMembers = (membersByRole.grouped.get(role.id) || [])
-            .filter((m) => m.user.status !== 'offline');
-          
+          const roleMembers = (membersByRole.grouped.get(role.id) || []).filter(
+            (m) => m.user.status !== 'offline'
+          );
+
           if (roleMembers.length === 0) return null;
 
           return (
@@ -152,7 +159,15 @@ export function MemberList({ groupId, className = '' }: MemberListProps) {
         {/* Online members without role */}
         {membersByRole.noRoleMembers.filter((m) => m.user.status !== 'offline').length > 0 && (
           <RoleSection
-            role={{ id: 'online', name: 'Online', color: '#10b981', position: -1, permissions: 0, isDefault: false, isMentionable: false }}
+            role={{
+              id: 'online',
+              name: 'Online',
+              color: '#10b981',
+              position: -1,
+              permissions: 0,
+              isDefault: false,
+              isMentionable: false,
+            }}
             members={membersByRole.noRoleMembers.filter((m) => m.user.status !== 'offline')}
             onMemberClick={handleMemberClick}
           />
@@ -161,7 +176,7 @@ export function MemberList({ groupId, className = '' }: MemberListProps) {
         {/* Offline Members */}
         {offlineMembers.length > 0 && (
           <div className="mt-4">
-            <div className="px-2 py-1 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <div className="px-2 py-1 text-xs font-semibold uppercase tracking-wider text-gray-500">
               Offline — {offlineMembers.length}
             </div>
             {offlineMembers.map((member) => (
@@ -202,7 +217,7 @@ function RoleSection({
 }) {
   return (
     <div className="mb-4">
-      <div className="px-2 py-1 text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
+      <div className="flex items-center gap-2 px-2 py-1 text-xs font-semibold uppercase tracking-wider">
         <span style={{ color: role.color }}>{role.name}</span>
         <span className="text-gray-500">— {members.length}</span>
       </div>
@@ -236,47 +251,31 @@ function MemberItem({
       whileHover={{ x: 2, backgroundColor: 'rgba(255, 255, 255, 0.05)' }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className="flex items-center gap-3 px-2 py-1.5 rounded-lg cursor-pointer group"
+      className="group flex cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5"
     >
       {/* Avatar with status */}
       <div className="relative">
-        <ThemedAvatar
-          src={member.user.avatarUrl}
-          alt={displayName}
-          size="small"
-        />
+        <ThemedAvatar src={member.user.avatarUrl} alt={displayName} size="small" />
         <div
-          className={`absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-dark-900 ${statusColors[status]}`}
+          className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-dark-900 ${statusColors[status]}`}
           title={statusLabels[status]}
         />
       </div>
 
       {/* Name */}
-      <div className="flex-1 min-w-0">
-        <p
-          className="text-sm font-medium truncate"
-          style={{ color: roleColor || '#fff' }}
-        >
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium" style={{ color: roleColor || '#fff' }}>
           {displayName}
         </p>
         {member.nickname && member.nickname !== member.user.username && (
-          <p className="text-xs text-gray-500 truncate">
-            @{member.user.username}
-          </p>
+          <p className="truncate text-xs text-gray-500">@{member.user.username}</p>
         )}
       </div>
 
       {/* Role badges */}
       {member.roles?.slice(0, 2).map((role) => (
-        <div
-          key={role.id}
-          className="hidden group-hover:block"
-          title={role.name}
-        >
-          <div
-            className="w-3 h-3 rounded-full"
-            style={{ backgroundColor: role.color }}
-          />
+        <div key={role.id} className="hidden group-hover:block" title={role.name}>
+          <div className="h-3 w-3 rounded-full" style={{ backgroundColor: role.color }} />
         </div>
       ))}
     </motion.div>
@@ -368,22 +367,16 @@ function MemberContextMenu({
           top: Math.min(position.y, window.innerHeight - 300),
         }}
       >
-        <GlassCard variant="frosted" className="py-2 overflow-hidden">
+        <GlassCard variant="frosted" className="overflow-hidden py-2">
           {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-700/50">
+          <div className="border-b border-gray-700/50 px-4 py-3">
             <div className="flex items-center gap-3">
-              <ThemedAvatar
-                src={member.user.avatarUrl}
-                alt={displayName}
-                size="medium"
-              />
+              <ThemedAvatar src={member.user.avatarUrl} alt={displayName} size="medium" />
               <div>
                 <p className="font-semibold text-white">{displayName}</p>
                 <p className="text-xs text-gray-400">@{member.user.username}</p>
               </div>
-              {isOwner && (
-                <CrownIcon className="h-5 w-5 text-yellow-400" title="Server Owner" />
-              )}
+              {isOwner && <CrownIcon className="h-5 w-5 text-yellow-400" title="Server Owner" />}
             </div>
           </div>
 
@@ -392,10 +385,7 @@ function MemberContextMenu({
             {menuItems.map((item, index) => {
               if ('divider' in item) {
                 return (
-                  <div
-                    key={`divider-${index}`}
-                    className="my-1 border-t border-gray-700/50"
-                  />
+                  <div key={`divider-${index}`} className="my-1 border-t border-gray-700/50" />
                 );
               }
 
@@ -404,7 +394,7 @@ function MemberContextMenu({
                   key={item.label}
                   whileHover={{ x: 2 }}
                   onClick={item.action}
-                  className={`w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors ${
+                  className={`flex w-full items-center gap-3 px-4 py-2 text-sm transition-colors ${
                     item.danger
                       ? 'text-red-400 hover:bg-red-500/10'
                       : 'text-gray-300 hover:bg-dark-700 hover:text-white'

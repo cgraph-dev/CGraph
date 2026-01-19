@@ -191,7 +191,7 @@ function getLuminance(r: number, g: number, b: number): number {
   const [rs, gs, bs] = [r, g, b].map((c) => {
     const sRGB = c / 255;
     return sRGB <= 0.03928 ? sRGB / 12.92 : Math.pow((sRGB + 0.055) / 1.055, 2.4);
-  });
+  }) as [number, number, number];
   return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
 }
 
@@ -305,7 +305,8 @@ export function createAriaLabel(
 export function createSkipLink(targetId: string, label = 'Skip to main content'): HTMLElement {
   const link = document.createElement('a');
   link.href = `#${targetId}`;
-  link.className = 'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-md';
+  link.className =
+    'sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary-600 focus:text-white focus:rounded-md';
   link.textContent = label;
 
   link.addEventListener('click', (e) => {

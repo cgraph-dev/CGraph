@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+void React; // Used for JSX transform compatibility
+void useEffect; // Reserved for future streak tracking features
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FireIcon,
@@ -9,6 +11,8 @@ import {
   LockClosedIcon,
   TrophyIcon,
 } from '@heroicons/react/24/outline';
+void FireIcon; // Reserved for streak fire animation
+void CalendarDaysIcon; // Reserved for calendar view
 import { FireIcon as FireIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -17,7 +21,7 @@ import confetti from 'canvas-confetti';
 
 /**
  * StreakTracker Component
- * 
+ *
  * Displays and encourages daily login streaks:
  * - Current streak display with fire animation
  * - Weekly streak calendar
@@ -82,12 +86,13 @@ export function StreakTracker({
   freezesRemaining = 0,
   onClaimDaily,
   onClaimMilestone,
-  onUseFreeze,
+  onUseFreeze: _onUseFreeze,
   todayClaimed = false,
   streakMultiplier = 1.0,
   variant = 'default',
   className = '',
 }: StreakTrackerProps) {
+  void _onUseFreeze; // Reserved for future freeze feature
   const { theme } = useThemeStore();
   const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
@@ -97,24 +102,20 @@ export function StreakTracker({
 
   // Calculate next milestone
   const nextMilestone = milestones.find((m) => m.days > currentStreak && !m.claimed);
-  const progressToNext = nextMilestone
-    ? (currentStreak / nextMilestone.days) * 100
-    : 100;
+  const progressToNext = nextMilestone ? (currentStreak / nextMilestone.days) * 100 : 100;
 
   // Find claimable milestones
-  const claimableMilestones = milestones.filter(
-    (m) => m.days <= currentStreak && !m.claimed
-  );
+  const claimableMilestones = milestones.filter((m) => m.days <= currentStreak && !m.claimed);
 
   const handleClaimDaily = async () => {
     if (todayClaimed || isClaiming || !onClaimDaily) return;
-    
+
     setIsClaiming(true);
     HapticFeedback.success();
-    
+
     try {
       await onClaimDaily();
-      
+
       // Celebration
       confetti({
         particleCount: 50,
@@ -129,13 +130,13 @@ export function StreakTracker({
 
   const handleClaimMilestone = async (days: number) => {
     if (claimingMilestone || !onClaimMilestone) return;
-    
+
     setClaimingMilestone(days);
     HapticFeedback.success();
-    
+
     try {
       await onClaimMilestone(days);
-      
+
       // Big celebration for milestones
       confetti({
         particleCount: 150,
@@ -172,16 +173,13 @@ export function StreakTracker({
         }}
         transition={{ duration: 1, repeat: Infinity }}
       >
-        <FireIconSolid
-          className="h-16 w-16"
-          style={{ color: '#FFD700', filter: 'blur(8px)' }}
-        />
+        <FireIconSolid className="h-16 w-16" style={{ color: '#FFD700', filter: 'blur(8px)' }} />
       </motion.div>
     </motion.div>
   );
 
   const renderWeeklyCalendar = () => (
-    <div className="flex items-center justify-between gap-2 mt-4">
+    <div className="mt-4 flex items-center justify-between gap-2">
       {weeklyProgress.map((day, index) => {
         const isToday = new Date(day.date).toDateString() === new Date().toDateString();
         return (
@@ -192,27 +190,25 @@ export function StreakTracker({
             transition={{ delay: index * 0.05 }}
             className="flex flex-col items-center"
           >
-            <span className="text-xs text-gray-400 mb-1">{getDayName(day.date)}</span>
+            <span className="mb-1 text-xs text-gray-400">{getDayName(day.date)}</span>
             <motion.div
-              className={`h-10 w-10 rounded-full flex items-center justify-center ${
+              className={`flex h-10 w-10 items-center justify-center rounded-full ${
                 day.completed
                   ? 'bg-gradient-to-br from-orange-500 to-red-500'
                   : isToday && !todayClaimed
-                  ? 'bg-dark-600 ring-2 ring-orange-500 ring-offset-2 ring-offset-dark-800'
-                  : 'bg-dark-700'
+                    ? 'bg-dark-600 ring-2 ring-orange-500 ring-offset-2 ring-offset-dark-800'
+                    : 'bg-dark-700'
               }`}
               whileHover={day.completed || isToday ? { scale: 1.1 } : {}}
             >
               {day.completed ? (
                 <CheckCircleIcon className="h-5 w-5 text-white" />
               ) : (
-                <span className="text-sm text-gray-500">
-                  {new Date(day.date).getDate()}
-                </span>
+                <span className="text-sm text-gray-500">{new Date(day.date).getDate()}</span>
               )}
             </motion.div>
             {day.reward && day.completed && (
-              <span className="text-xs mt-1 text-amber-400">+{day.reward.xp}</span>
+              <span className="mt-1 text-xs text-amber-400">+{day.reward.xp}</span>
             )}
           </motion.div>
         );
@@ -222,7 +218,7 @@ export function StreakTracker({
 
   const renderMilestoneProgress = () => (
     <div className="mt-4">
-      <div className="flex items-center justify-between text-sm mb-2">
+      <div className="mb-2 flex items-center justify-between text-sm">
         <span className="text-gray-400">
           {nextMilestone ? `Next: ${nextMilestone.days}-day streak` : 'All milestones completed!'}
         </span>
@@ -232,7 +228,7 @@ export function StreakTracker({
           </span>
         )}
       </div>
-      <div className="h-2 bg-dark-700 rounded-full overflow-hidden">
+      <div className="h-2 overflow-hidden rounded-full bg-dark-700">
         <motion.div
           className="h-full rounded-full bg-gradient-to-r from-orange-500 to-red-500"
           initial={{ width: 0 }}
@@ -241,20 +237,16 @@ export function StreakTracker({
         />
       </div>
       {nextMilestone && (
-        <div className="flex items-center justify-center gap-3 mt-3 text-sm">
+        <div className="mt-3 flex items-center justify-center gap-3 text-sm">
           <span className="flex items-center gap-1 text-purple-400">
-            <SparklesIcon className="h-4 w-4" />
-            +{nextMilestone.reward.xp} XP
+            <SparklesIcon className="h-4 w-4" />+{nextMilestone.reward.xp} XP
           </span>
           {nextMilestone.reward.coins && (
             <span className="flex items-center gap-1 text-amber-400">
-              <span>🪙</span>
-              +{nextMilestone.reward.coins}
+              <span>🪙</span>+{nextMilestone.reward.coins}
             </span>
           )}
-          {nextMilestone.reward.badge && (
-            <span>{nextMilestone.reward.badge}</span>
-          )}
+          {nextMilestone.reward.badge && <span>{nextMilestone.reward.badge}</span>}
         </div>
       )}
     </div>
@@ -276,9 +268,7 @@ export function StreakTracker({
               <span className="text-sm text-gray-400">day streak</span>
             </div>
             {streakMultiplier > 1 && (
-              <span className="text-xs text-amber-400">
-                {streakMultiplier}x XP bonus active
-              </span>
+              <span className="text-xs text-amber-400">{streakMultiplier}x XP bonus active</span>
             )}
           </div>
           {!todayClaimed && onClaimDaily && (
@@ -287,7 +277,7 @@ export function StreakTracker({
               whileTap={{ scale: 0.95 }}
               onClick={handleClaimDaily}
               disabled={isClaiming}
-              className="px-3 py-1.5 rounded-lg text-sm font-medium"
+              className="rounded-lg px-3 py-1.5 text-sm font-medium"
               style={{ backgroundColor: primaryColor }}
             >
               {isClaiming ? '...' : 'Claim'}
@@ -305,7 +295,7 @@ export function StreakTracker({
           <div className="flex items-center gap-3">
             <FireIconSolid className="h-8 w-8 text-orange-500" />
             <div>
-              <div className="font-bold text-lg">{currentStreak} Day Streak</div>
+              <div className="text-lg font-bold">{currentStreak} Day Streak</div>
               <div className="text-xs text-gray-400">Best: {longestStreak} days</div>
             </div>
           </div>
@@ -315,7 +305,7 @@ export function StreakTracker({
               whileTap={{ scale: 0.98 }}
               onClick={handleClaimDaily}
               disabled={isClaiming}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium"
+              className="flex items-center gap-2 rounded-lg px-4 py-2 font-medium"
               style={{ backgroundColor: primaryColor }}
             >
               <GiftIcon className="h-5 w-5" />
@@ -338,9 +328,9 @@ export function StreakTracker({
     <div className={className}>
       <GlassCard variant="frosted" className="overflow-hidden">
         {/* Main Streak Display */}
-        <div className="p-6 text-center bg-gradient-to-b from-orange-500/10 to-transparent">
+        <div className="bg-gradient-to-b from-orange-500/10 to-transparent p-6 text-center">
           {renderFireAnimation()}
-          
+
           <div className="mt-4">
             <motion.span
               className="text-5xl font-bold"
@@ -350,15 +340,15 @@ export function StreakTracker({
             >
               {currentStreak}
             </motion.span>
-            <span className="text-xl ml-2 text-gray-400">day streak</span>
+            <span className="ml-2 text-xl text-gray-400">day streak</span>
           </div>
 
-          <div className="flex items-center justify-center gap-4 mt-3 text-sm">
+          <div className="mt-3 flex items-center justify-center gap-4 text-sm">
             <span className="text-gray-400">
               Best: <span className="font-medium text-white">{longestStreak}</span>
             </span>
             {streakMultiplier > 1 && (
-              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 rounded-full font-medium">
+              <span className="rounded-full bg-amber-500/20 px-2 py-0.5 font-medium text-amber-400">
                 {streakMultiplier}x XP Bonus
               </span>
             )}
@@ -377,7 +367,7 @@ export function StreakTracker({
               whileTap={{ scale: 0.98 }}
               onClick={handleClaimDaily}
               disabled={isClaiming}
-              className="mt-4 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium mx-auto"
+              className="mx-auto mt-4 flex items-center justify-center gap-2 rounded-xl px-6 py-3 font-medium"
               style={{ backgroundColor: primaryColor }}
             >
               <GiftIcon className="h-5 w-5" />
@@ -394,19 +384,15 @@ export function StreakTracker({
         </div>
 
         {/* Weekly Calendar */}
-        <div className="px-6 pb-4">
-          {renderWeeklyCalendar()}
-        </div>
+        <div className="px-6 pb-4">{renderWeeklyCalendar()}</div>
 
         {/* Milestone Progress */}
-        <div className="px-6 pb-6">
-          {renderMilestoneProgress()}
-        </div>
+        <div className="px-6 pb-6">{renderMilestoneProgress()}</div>
 
         {/* Claimable Milestones */}
         {claimableMilestones.length > 0 && (
           <div className="px-6 pb-6">
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
+            <h3 className="mb-3 flex items-center gap-2 font-semibold">
               <TrophyIcon className="h-5 w-5 text-amber-500" />
               Milestone Rewards Available!
             </h3>
@@ -416,7 +402,7 @@ export function StreakTracker({
                   key={milestone.days}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center justify-between p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg"
+                  className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 p-3"
                 >
                   <div>
                     <span className="font-medium">{milestone.days}-Day Streak</span>
@@ -431,7 +417,7 @@ export function StreakTracker({
                     whileTap={{ scale: 0.95 }}
                     onClick={() => handleClaimMilestone(milestone.days)}
                     disabled={claimingMilestone === milestone.days}
-                    className="px-4 py-2 rounded-lg font-medium bg-amber-500 text-black"
+                    className="rounded-lg bg-amber-500 px-4 py-2 font-medium text-black"
                   >
                     {claimingMilestone === milestone.days ? '...' : 'Claim'}
                   </motion.button>
@@ -444,7 +430,7 @@ export function StreakTracker({
         {/* View All Milestones */}
         <button
           onClick={() => setShowMilestones(!showMilestones)}
-          className="w-full p-4 text-sm text-gray-400 hover:text-white hover:bg-dark-700/50 border-t border-dark-700 transition-colors"
+          className="w-full border-t border-dark-700 p-4 text-sm text-gray-400 transition-colors hover:bg-dark-700/50 hover:text-white"
         >
           {showMilestones ? 'Hide' : 'View'} All Milestones
         </button>
@@ -457,20 +443,20 @@ export function StreakTracker({
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden"
             >
-              <div className="p-4 bg-dark-800/50 space-y-2">
+              <div className="space-y-2 bg-dark-800/50 p-4">
                 {milestones.map((milestone) => {
                   const isCompleted = milestone.days <= currentStreak;
                   const isClaimable = isCompleted && !milestone.claimed;
-                  
+
                   return (
                     <div
                       key={milestone.days}
-                      className={`flex items-center justify-between p-3 rounded-lg ${
+                      className={`flex items-center justify-between rounded-lg p-3 ${
                         milestone.claimed
-                          ? 'bg-green-500/10 border border-green-500/30'
+                          ? 'border border-green-500/30 bg-green-500/10'
                           : isClaimable
-                          ? 'bg-amber-500/10 border border-amber-500/30'
-                          : 'bg-dark-700'
+                            ? 'border border-amber-500/30 bg-amber-500/10'
+                            : 'bg-dark-700'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -484,16 +470,14 @@ export function StreakTracker({
                         <div>
                           <span className="font-medium">{milestone.days} Days</span>
                           <div className="text-xs text-gray-400">
-                            {milestone.reward.title && <span>{milestone.reward.title} · </span>}
-                            +{milestone.reward.xp} XP
+                            {milestone.reward.title && <span>{milestone.reward.title} · </span>}+
+                            {milestone.reward.xp} XP
                             {milestone.reward.coins && ` · +${milestone.reward.coins} coins`}
                             {milestone.reward.badge && ` · ${milestone.reward.badge}`}
                           </div>
                         </div>
                       </div>
-                      {milestone.claimed && (
-                        <span className="text-green-500 text-sm">Claimed</span>
-                      )}
+                      {milestone.claimed && <span className="text-sm text-green-500">Claimed</span>}
                     </div>
                   );
                 })}

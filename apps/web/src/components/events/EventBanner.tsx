@@ -1,17 +1,32 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
-import { useSeasonalEventStore, SeasonalEvent, EventReward, BattlePassTier } from '@/stores/seasonalEventStore';
+import {
+  useSeasonalEventStore,
+  SeasonalEvent,
+  EventReward,
+  BattlePassTier,
+} from '@/stores/seasonalEventStore';
+
+// Reserved for future features
+const _reservedImports = {
+  React,
+  useCallback,
+  useMotionValue,
+  useTransform,
+  useSeasonalEventStore,
+};
+void _reservedImports;
 
 /**
  * Event Banner System
- * 
+ *
  * Dynamic event UI components with:
  * - Animated event banners
  * - Real-time countdown timers
  * - Battle pass progress
  * - Leaderboard display
  * - Quest tracking
- * 
+ *
  * Scale features:
  * - Lazy loading for off-screen elements
  * - Progressive image loading
@@ -62,7 +77,7 @@ function normalizeTiers(tiers: BattlePassTier[]): BattlePassTierExtended[] {
       id: index + 1,
       claimed: false,
       // Provide singular accessors with icon based on type
-      freeReward: freeReward 
+      freeReward: freeReward
         ? { ...freeReward, icon: getRewardIcon(freeReward) }
         : { id: '', name: 'Reward', type: 'xp' as const, icon: '🎁' },
       premiumReward: premiumReward
@@ -127,13 +142,12 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         onClick={onClick}
-        className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 
-                   rounded-lg border border-purple-500/30 cursor-pointer hover:border-purple-500/50 transition-colors"
+        className="flex cursor-pointer items-center gap-3 rounded-lg border border-purple-500/30 bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-3 transition-colors hover:border-purple-500/50"
       >
         <span className="text-xl">{getEventEmoji(event.type)}</span>
-        <span className="text-sm font-medium truncate">{event.name}</span>
+        <span className="truncate text-sm font-medium">{event.name}</span>
         {timeRemaining && (
-          <span className="text-xs text-gray-400 ml-auto">
+          <span className="ml-auto text-xs text-gray-400">
             {timeRemaining.days}d {timeRemaining.hours}h
           </span>
         )}
@@ -148,7 +162,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         onClick={onClick}
-        className="relative overflow-hidden rounded-xl cursor-pointer group"
+        className="group relative cursor-pointer overflow-hidden rounded-xl"
       >
         {/* Background */}
         <div
@@ -157,9 +171,9 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
             background: `linear-gradient(135deg, ${event.colors?.primary || '#8B5CF6'}40, ${event.colors?.secondary || '#EC4899'}40)`,
           }}
         />
-        
+
         {/* Content */}
-        <div className="relative p-4 flex items-center gap-4">
+        <div className="relative flex items-center gap-4 p-4">
           <div className="text-3xl">{getEventEmoji(event.type)}</div>
           <div className="flex-1">
             <h3 className="font-bold text-white">{event.name}</h3>
@@ -169,7 +183,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
               </p>
             )}
           </div>
-          <div className="text-2xl opacity-50 group-hover:opacity-100 transition-opacity">→</div>
+          <div className="text-2xl opacity-50 transition-opacity group-hover:opacity-100">→</div>
         </div>
       </motion.div>
     );
@@ -182,7 +196,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
       initial={{ opacity: 0, y: -30 }}
       animate={{ opacity: 1, y: 0 }}
       onClick={onClick}
-      className="relative overflow-hidden rounded-2xl cursor-pointer group"
+      className="group relative cursor-pointer overflow-hidden rounded-2xl"
     >
       {/* Animated Background */}
       <div
@@ -191,16 +205,16 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
           background: `linear-gradient(135deg, ${event.colors?.primary || '#8B5CF6'}, ${event.colors?.secondary || '#EC4899'})`,
         }}
       />
-      
+
       {/* Animated particles */}
       <EventParticles eventType={event.type} />
 
       {/* Content */}
-      <div className="relative p-8 flex items-center gap-6">
+      <div className="relative flex items-center gap-6 p-8">
         {/* Event Icon */}
         <motion.div
           className="text-6xl"
-          animate={{ 
+          animate={{
             scale: [1, 1.1, 1],
             rotate: [0, 5, -5, 0],
           }}
@@ -216,8 +230,8 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
         {/* Event Info */}
         <div className="flex-1">
           <motion.h2
-            className="text-3xl font-bold text-white mb-2"
-            animate={{ 
+            className="mb-2 text-3xl font-bold text-white"
+            animate={{
               textShadow: [
                 '0 0 20px rgba(255,255,255,0.5)',
                 '0 0 40px rgba(255,255,255,0.8)',
@@ -228,13 +242,11 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
           >
             {event.name}
           </motion.h2>
-          {event.description && (
-            <p className="text-white/80 mb-3">{event.description}</p>
-          )}
-          
+          {event.description && <p className="mb-3 text-white/80">{event.description}</p>}
+
           {/* XP Multiplier Badge */}
           {event.multipliers?.xp && event.multipliers.xp > 1 && (
-            <span className="inline-block px-3 py-1 bg-yellow-500/30 rounded-full text-sm font-bold text-yellow-300">
+            <span className="inline-block rounded-full bg-yellow-500/30 px-3 py-1 text-sm font-bold text-yellow-300">
               {event.multipliers.xp}x XP Bonus
             </span>
           )}
@@ -243,7 +255,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
         {/* Countdown */}
         {timeRemaining && (
           <div className="text-center">
-            <p className="text-xs uppercase tracking-wider text-white/60 mb-2">Ends In</p>
+            <p className="mb-2 text-xs uppercase tracking-wider text-white/60">Ends In</p>
             <div className="flex gap-2">
               <CountdownUnit value={timeRemaining.days} label="Days" />
               <CountdownUnit value={timeRemaining.hours} label="Hours" />
@@ -254,7 +266,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
 
         {/* CTA Arrow */}
         <motion.div
-          className="text-4xl text-white/50 group-hover:text-white transition-colors"
+          className="text-4xl text-white/50 transition-colors group-hover:text-white"
           animate={{ x: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
         >
@@ -287,11 +299,11 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
         key={value}
         initial={{ y: -10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="w-12 h-12 bg-black/30 rounded-lg flex items-center justify-center text-2xl font-bold text-white"
+        className="flex h-12 w-12 items-center justify-center rounded-lg bg-black/30 text-2xl font-bold text-white"
       >
         {String(value).padStart(2, '0')}
       </motion.div>
-      <p className="text-xs text-white/60 mt-1">{label}</p>
+      <p className="mt-1 text-xs text-white/60">{label}</p>
     </div>
   );
 }
@@ -312,7 +324,7 @@ function EventParticles({ eventType }: { eventType: string }) {
   }, [eventType]);
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="pointer-events-none absolute inset-0 overflow-hidden">
       {particles.current.map((particle) => (
         <motion.div
           key={particle.id}
@@ -395,45 +407,44 @@ export function BattlePassProgress({
   const progressInCurrentTier = (currentXP % xpPerTier) / xpPerTier;
 
   return (
-    <div className="bg-white/5 rounded-2xl p-6 border border-white/10">
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-xl font-bold text-white">Battle Pass</h3>
           <p className="text-sm text-gray-400">
             Tier {currentTier} • {Math.floor(progressInCurrentTier * 100)}% to next tier
           </p>
         </div>
-        
+
         {!isPremium && (
           <motion.button
             onClick={onUpgrade}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-lg font-medium"
+            className="rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-2 font-medium"
           >
             ⭐ Upgrade to Premium
           </motion.button>
         )}
-        
+
         {isPremium && (
-          <span className="px-4 py-2 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 
-                          border border-yellow-500/30 rounded-lg text-yellow-400 font-medium">
+          <span className="rounded-lg border border-yellow-500/30 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 px-4 py-2 font-medium text-yellow-400">
             ⭐ Premium
           </span>
         )}
       </div>
 
       {/* XP Progress Bar */}
-      <div className="relative h-3 bg-black/30 rounded-full mb-6 overflow-hidden">
+      <div className="relative mb-6 h-3 overflow-hidden rounded-full bg-black/30">
         <motion.div
-          className="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+          className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
           initial={{ width: 0 }}
           animate={{ width: `${progressInCurrentTier * 100}%` }}
           transition={{ duration: 0.5, ease: 'easeOut' }}
         />
         <motion.div
-          className="absolute inset-y-0 left-0 bg-white/30 rounded-full"
+          className="absolute inset-y-0 left-0 rounded-full bg-white/30"
           style={{ width: `${progressInCurrentTier * 100}%` }}
           animate={{ opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 1.5, repeat: Infinity }}
@@ -443,7 +454,7 @@ export function BattlePassProgress({
       {/* Tiers Track */}
       <div
         ref={progressRef}
-        className="flex gap-4 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-white/10"
+        className="scrollbar-thin scrollbar-thumb-white/10 flex gap-4 overflow-x-auto pb-4"
         style={{ scrollBehavior: 'smooth' }}
       >
         {tiers.map((tier, index) => {
@@ -457,41 +468,41 @@ export function BattlePassProgress({
               key={tier.id}
               data-tier={index + 1}
               layout
-              className={`flex-shrink-0 w-28 ${!isVisible ? 'invisible' : ''}`}
+              className={`w-28 flex-shrink-0 ${!isVisible ? 'invisible' : ''}`}
             >
               <div
-                className={`relative p-3 rounded-xl border transition-all ${
+                className={`relative rounded-xl border p-3 transition-all ${
                   isCurrent
                     ? 'border-purple-500 bg-purple-500/20'
                     : isUnlocked
-                    ? 'border-green-500/30 bg-green-500/10'
-                    : 'border-white/10 bg-white/5'
+                      ? 'border-green-500/30 bg-green-500/10'
+                      : 'border-white/10 bg-white/5'
                 }`}
               >
                 {/* Tier Number */}
-                <div className="text-center mb-2">
-                  <span className={`text-xs font-medium ${isCurrent ? 'text-purple-400' : 'text-gray-500'}`}>
+                <div className="mb-2 text-center">
+                  <span
+                    className={`text-xs font-medium ${isCurrent ? 'text-purple-400' : 'text-gray-500'}`}
+                  >
                     Tier {index + 1}
                   </span>
                 </div>
 
                 {/* Free Reward */}
-                <div className="text-center mb-2">
+                <div className="mb-2 text-center">
                   <span className="text-2xl">{tier.freeReward.icon}</span>
-                  <p className="text-xs text-gray-400 truncate">{tier.freeReward.name}</p>
+                  <p className="truncate text-xs text-gray-400">{tier.freeReward.name}</p>
                 </div>
 
                 {/* Premium Reward */}
                 <div
-                  className={`text-center p-2 rounded-lg ${
+                  className={`rounded-lg p-2 text-center ${
                     isPremium ? 'bg-yellow-500/10' : 'bg-black/20'
                   }`}
                 >
                   <span className="text-2xl">{tier.premiumReward.icon}</span>
-                  <p className="text-xs text-gray-400 truncate">{tier.premiumReward.name}</p>
-                  {!isPremium && (
-                    <span className="text-xs text-yellow-400">⭐ Premium</span>
-                  )}
+                  <p className="truncate text-xs text-gray-400">{tier.premiumReward.name}</p>
+                  {!isPremium && <span className="text-xs text-yellow-400">⭐ Premium</span>}
                 </div>
 
                 {/* Claim Button */}
@@ -500,8 +511,7 @@ export function BattlePassProgress({
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     onClick={() => onClaimReward?.(tier.id)}
-                    className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full 
-                               flex items-center justify-center text-white text-sm font-bold"
+                    className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-green-500 text-sm font-bold text-white"
                   >
                     ✓
                   </motion.button>
@@ -509,7 +519,7 @@ export function BattlePassProgress({
 
                 {/* Lock overlay */}
                 {!isUnlocked && !isCurrent && (
-                  <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
+                  <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/50">
                     <span className="text-2xl">🔒</span>
                   </div>
                 )}
@@ -550,21 +560,21 @@ export function EventLeaderboard({
   hasMore,
 }: EventLeaderboardProps) {
   return (
-    <div className="bg-white/5 rounded-2xl border border-white/10 overflow-hidden">
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
       {/* Header */}
-      <div className="p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border-b border-white/10">
+      <div className="border-b border-white/10 bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-4">
         <h3 className="text-lg font-bold text-white">🏆 Leaderboard</h3>
       </div>
 
       {/* Top 3 Podium */}
       {entries.length >= 3 && entries[0] && entries[1] && entries[2] && (
-        <div className="flex items-end justify-center gap-4 p-6 border-b border-white/10">
+        <div className="flex items-end justify-center gap-4 border-b border-white/10 p-6">
           {/* Second Place */}
           <LeaderboardPodium entry={entries[1]} position={2} />
-          
+
           {/* First Place */}
           <LeaderboardPodium entry={entries[0]} position={1} />
-          
+
           {/* Third Place */}
           <LeaderboardPodium entry={entries[2]} position={3} />
         </div>
@@ -581,15 +591,13 @@ export function EventLeaderboard({
             } transition-colors`}
           >
             {/* Rank */}
-            <div className="w-8 text-center font-bold text-gray-500">
-              #{entry.rank}
-            </div>
+            <div className="w-8 text-center font-bold text-gray-500">#{entry.rank}</div>
 
             {/* Avatar */}
             <img
               src={entry.avatarUrl || '/default-avatar.png'}
               alt={entry.displayName}
-              className="w-10 h-10 rounded-full"
+              className="h-10 w-10 rounded-full"
             />
 
             {/* Name */}
@@ -602,7 +610,9 @@ export function EventLeaderboard({
             <div className="text-right">
               <p className="font-bold text-white">{entry.score.toLocaleString()}</p>
               {entry.change !== undefined && (
-                <p className={`text-xs ${entry.change > 0 ? 'text-green-400' : entry.change < 0 ? 'text-red-400' : 'text-gray-500'}`}>
+                <p
+                  className={`text-xs ${entry.change > 0 ? 'text-green-400' : entry.change < 0 ? 'text-red-400' : 'text-gray-500'}`}
+                >
                   {entry.change > 0 ? '▲' : entry.change < 0 ? '▼' : '–'} {Math.abs(entry.change)}
                 </p>
               )}
@@ -613,11 +623,11 @@ export function EventLeaderboard({
 
       {/* Load More */}
       {hasMore && (
-        <div className="p-4 border-t border-white/10">
+        <div className="border-t border-white/10 p-4">
           <button
             onClick={onLoadMore}
             disabled={isLoading}
-            className="w-full py-2 text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+            className="w-full py-2 text-gray-400 transition-colors hover:text-white disabled:opacity-50"
           >
             {isLoading ? 'Loading...' : 'Load More'}
           </button>
@@ -629,13 +639,7 @@ export function EventLeaderboard({
 
 // ==================== PODIUM ENTRY ====================
 
-function LeaderboardPodium({
-  entry,
-  position,
-}: {
-  entry: LeaderboardEntry;
-  position: 1 | 2 | 3;
-}) {
+function LeaderboardPodium({ entry, position }: { entry: LeaderboardEntry; position: 1 | 2 | 3 }) {
   const heights = { 1: 'h-32', 2: 'h-24', 3: 'h-20' };
   const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
   const colors = {
@@ -656,8 +660,12 @@ function LeaderboardPodium({
         <img
           src={entry.avatarUrl || '/default-avatar.png'}
           alt={entry.displayName}
-          className={`w-16 h-16 rounded-full border-4 ${
-            position === 1 ? 'border-yellow-500' : position === 2 ? 'border-gray-400' : 'border-orange-600'
+          className={`h-16 w-16 rounded-full border-4 ${
+            position === 1
+              ? 'border-yellow-500'
+              : position === 2
+                ? 'border-gray-400'
+                : 'border-orange-600'
           }`}
         />
         <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-2xl">
@@ -666,15 +674,15 @@ function LeaderboardPodium({
       </div>
 
       {/* Name */}
-      <p className="font-medium text-white text-sm truncate max-w-24">
-        {entry.displayName}
-      </p>
-      
+      <p className="max-w-24 truncate text-sm font-medium text-white">{entry.displayName}</p>
+
       {/* Score */}
       <p className="text-xs text-gray-400">{entry.score.toLocaleString()}</p>
 
       {/* Podium */}
-      <div className={`mt-2 ${heights[position]} w-20 bg-gradient-to-t ${colors[position]} rounded-t-lg`} />
+      <div
+        className={`mt-2 ${heights[position]} w-20 bg-gradient-to-t ${colors[position]} rounded-t-lg`}
+      />
     </motion.div>
   );
 }
@@ -706,25 +714,21 @@ interface QuestTrackerProps {
 export function QuestTracker({ quests, onClaimReward }: QuestTrackerProps) {
   const [filter, setFilter] = useState<'all' | 'daily' | 'weekly' | 'event'>('all');
 
-  const filteredQuests = quests.filter(
-    (q) => filter === 'all' || q.type === filter
-  );
+  const filteredQuests = quests.filter((q) => filter === 'all' || q.type === filter);
 
   return (
-    <div className="bg-white/5 rounded-2xl border border-white/10">
+    <div className="rounded-2xl border border-white/10 bg-white/5">
       {/* Header */}
-      <div className="p-4 border-b border-white/10">
+      <div className="border-b border-white/10 p-4">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-bold text-white">📋 Quests</h3>
-          <div className="flex gap-1 bg-black/30 rounded-lg p-1">
+          <div className="flex gap-1 rounded-lg bg-black/30 p-1">
             {(['all', 'daily', 'weekly', 'event'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-3 py-1 text-xs font-medium rounded transition-colors ${
-                  filter === f
-                    ? 'bg-white/10 text-white'
-                    : 'text-gray-500 hover:text-white'
+                className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
+                  filter === f ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-white'
                 }`}
               >
                 {f.charAt(0).toUpperCase() + f.slice(1)}
@@ -749,10 +753,8 @@ export function QuestTracker({ quests, onClaimReward }: QuestTrackerProps) {
               <div className="flex items-start gap-4">
                 {/* Status */}
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                    quest.completed
-                      ? 'bg-green-500/20 text-green-400'
-                      : 'bg-white/10 text-white'
+                  className={`flex h-10 w-10 items-center justify-center rounded-full ${
+                    quest.completed ? 'bg-green-500/20 text-green-400' : 'bg-white/10 text-white'
                   }`}
                 >
                   {quest.completed ? '✓' : `${Math.floor((quest.progress / quest.target) * 100)}%`}
@@ -760,33 +762,33 @@ export function QuestTracker({ quests, onClaimReward }: QuestTrackerProps) {
 
                 {/* Info */}
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
+                  <div className="mb-1 flex items-center gap-2">
                     <h4 className="font-medium text-white">{quest.title}</h4>
                     <span
-                      className={`px-2 py-0.5 text-xs rounded-full ${
+                      className={`rounded-full px-2 py-0.5 text-xs ${
                         quest.type === 'daily'
                           ? 'bg-blue-500/20 text-blue-400'
                           : quest.type === 'weekly'
-                          ? 'bg-purple-500/20 text-purple-400'
-                          : 'bg-pink-500/20 text-pink-400'
+                            ? 'bg-purple-500/20 text-purple-400'
+                            : 'bg-pink-500/20 text-pink-400'
                       }`}
                     >
                       {quest.type}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-500 mb-2">{quest.description}</p>
+                  <p className="mb-2 text-sm text-gray-500">{quest.description}</p>
 
                   {/* Progress Bar */}
                   {!quest.completed && (
-                    <div className="relative h-2 bg-black/30 rounded-full overflow-hidden">
+                    <div className="relative h-2 overflow-hidden rounded-full bg-black/30">
                       <motion.div
-                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                        className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500"
                         initial={{ width: 0 }}
                         animate={{ width: `${(quest.progress / quest.target) * 100}%` }}
                       />
                     </div>
                   )}
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="mt-1 text-xs text-gray-500">
                     {quest.progress}/{quest.target}
                   </p>
                 </div>
@@ -795,7 +797,7 @@ export function QuestTracker({ quests, onClaimReward }: QuestTrackerProps) {
                 <div className="text-center">
                   <span className="text-2xl">{quest.reward.icon}</span>
                   <p className="text-xs text-gray-400">+{quest.reward.amount}</p>
-                  
+
                   {quest.completed && !quest.claimed && (
                     <motion.button
                       initial={{ scale: 0 }}
@@ -803,7 +805,7 @@ export function QuestTracker({ quests, onClaimReward }: QuestTrackerProps) {
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => onClaimReward?.(quest.id)}
-                      className="mt-2 px-3 py-1 bg-green-500 rounded-lg text-xs font-medium text-white"
+                      className="mt-2 rounded-lg bg-green-500 px-3 py-1 text-xs font-medium text-white"
                     >
                       Claim
                     </motion.button>

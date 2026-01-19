@@ -1,12 +1,12 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Crown, Lock, Search, Sparkles, TrendingUp, Calendar, Trophy, Star } from 'lucide-react';
+import { Lock, Search, Sparkles } from 'lucide-react';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useAuthStore } from '@/stores/authStore';
 import { TitleBadge } from '@/components/gamification/TitleBadge';
 import VisibilityBadge from '@/components/settings/VisibilityBadge';
 import { toast } from '@/components/Toast';
-import type { Title, TitleCategory, TitleRarity } from '@/data/titles';
+import type { TitleRarity } from '@/data/titles';
 
 /**
  * Title Selection Page
@@ -19,42 +19,29 @@ export default function TitleSelection() {
   const { titles, equippedTitleId, equipTitle } = useGamificationStore();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<TitleCategory | 'all'>('all');
   const [selectedRarity, setSelectedRarity] = useState<TitleRarity | 'all'>('all');
-  const [previewTitle, setPreviewTitle] = useState<Title | null>(null);
+  const [previewTitle, setPreviewTitle] = useState<{
+    id: string;
+    name: string;
+    description: string;
+    color: string;
+    rarity: string;
+  } | null>(null);
 
-  // Filter titles
+  // Filter titles - UserTitle from store doesn't have 'category' so we filter only by search and rarity
   const filteredTitles = useMemo(() => {
     return titles.filter((title) => {
       const matchesSearch =
         title.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         title.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesCategory = selectedCategory === 'all' || title.category === selectedCategory;
       const matchesRarity = selectedRarity === 'all' || title.rarity === selectedRarity;
 
-      return matchesSearch && matchesCategory && matchesRarity;
+      return matchesSearch && matchesRarity;
     });
-  }, [titles, searchQuery, selectedCategory, selectedRarity]);
+  }, [titles, searchQuery, selectedRarity]);
 
-  // Group titles by category
-  const titlesByCategory = useMemo(() => {
-    const grouped: Record<TitleCategory, Title[]> = {
-      achievement: [],
-      premium: [],
-      event: [],
-      leaderboard: [],
-      special: [],
-    };
-
-    filteredTitles.forEach((title) => {
-      grouped[title.category].push(title);
-    });
-
-    return grouped;
-  }, [filteredTitles]);
-
-  const userIsPremium =
-    user?.subscription?.tier === 'pro' || user?.subscription?.tier === 'business';
+  // Skip category grouping since UserTitle doesn't have category - just use flat list
+  const userIsPremium = user?.isPremium || false;
 
   const handleEquipTitle = async (titleId: string) => {
     try {
@@ -66,31 +53,8 @@ export default function TitleSelection() {
     }
   };
 
-  const getCategoryIcon = (category: TitleCategory) => {
-    const icons = {
-      achievement: Trophy,
-      premium: Crown,
-      event: Calendar,
-      leaderboard: TrendingUp,
-      special: Star,
-    };
-    return icons[category];
-  };
-
-  const getCategoryLabel = (category: TitleCategory | 'all') => {
-    const labels = {
-      all: 'All Titles',
-      achievement: 'Achievements',
-      premium: 'Premium',
-      event: 'Events',
-      leaderboard: 'Leaderboard',
-      special: 'Special',
-    };
-    return labels[category];
-  };
-
   const getRarityColor = (rarity: TitleRarity) => {
-    const colors = {
+    const colors: Record<TitleRarity, string> = {
       common: 'text-gray-400 border-gray-600',
       uncommon: 'text-green-400 border-green-600',
       rare: 'text-blue-400 border-blue-600',
@@ -99,7 +63,7 @@ export default function TitleSelection() {
       mythic: 'text-pink-400 border-pink-600',
       unique: 'text-cyan-400 border-cyan-600',
     };
-    return colors[rarity];
+    return colors[rarity] ?? 'text-gray-400';
   };
 
   return (
@@ -107,7 +71,7 @@ export default function TitleSelection() {
       {/* Header */}
       <div className="mb-8">
         <div className="mb-2 flex items-center gap-3">
-          <Crown className="h-8 w-8 text-yellow-500" />
+          <Sparkles className="h-8 w-8 text-yellow-500" />
           <h1 className="text-3xl font-bold">Titles</h1>
           <VisibilityBadge visible="others" />
         </div>
@@ -128,7 +92,7 @@ export default function TitleSelection() {
               <h3 className="mb-2 text-sm font-semibold text-gray-400">Currently Equipped</h3>
               <div className="flex items-center gap-3">
                 <span className="text-lg font-semibold">{user?.displayName || 'User'}</span>
-                <TitleBadge titleId={equippedTitleId} />
+                <TitleBadge title={equippedTitleId} />
               </div>
             </div>
             <button
@@ -155,38 +119,8 @@ export default function TitleSelection() {
           />
         </div>
 
-        {/* Category Filters */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`rounded-lg px-4 py-2 font-medium transition-colors ${
-              selectedCategory === 'all'
-                ? 'bg-purple-500 text-white'
-                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-            }`}
-          >
-            All
-          </button>
-          {(['achievement', 'premium', 'event', 'leaderboard', 'special'] as TitleCategory[]).map(
-            (category) => {
-              const Icon = getCategoryIcon(category);
-              return (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
-                    selectedCategory === category
-                      ? 'bg-purple-500 text-white'
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                  }`}
-                >
-                  <Icon className="h-4 w-4" />
-                  {getCategoryLabel(category)}
-                </button>
-              );
-            }
-          )}
-        </div>
+        {/* Category Filters - Disabled since UserTitle doesn't have category */}
+        {/* <div className="flex flex-wrap gap-2">...</div> */}
 
         {/* Rarity Filters */}
         <div className="flex flex-wrap gap-2">
@@ -218,38 +152,30 @@ export default function TitleSelection() {
         </div>
       </div>
 
-      {/* Title Grid by Category */}
+      {/* Title Grid */}
       <div className="space-y-8">
-        {Object.entries(titlesByCategory).map(([category, categoryTitles]) => {
-          if (categoryTitles.length === 0) return null;
+        {filteredTitles.length > 0 ? (
+          <div>
+            <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
+              <Sparkles className="h-6 w-6" />
+              All Titles
+              <span className="text-sm font-normal text-gray-400">({filteredTitles.length})</span>
+            </h2>
 
-          const Icon = getCategoryIcon(category as TitleCategory);
-
-          return (
-            <div key={category}>
-              <h2 className="mb-4 flex items-center gap-2 text-xl font-bold">
-                <Icon className="h-6 w-6" />
-                {getCategoryLabel(category as TitleCategory)}
-                <span className="text-sm font-normal text-gray-400">({categoryTitles.length})</span>
-              </h2>
-
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {categoryTitles.map((title) => (
-                  <TitleCard
-                    key={title.id}
-                    title={title}
-                    isEquipped={equippedTitleId === title.id}
-                    onEquip={() => handleEquipTitle(title.id)}
-                    onPreview={() => setPreviewTitle(title)}
-                    userIsPremium={userIsPremium}
-                  />
-                ))}
-              </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {filteredTitles.map((title) => (
+                <TitleCard
+                  key={title.id}
+                  title={title}
+                  isEquipped={equippedTitleId === title.id}
+                  onEquip={() => handleEquipTitle(title.id)}
+                  onPreview={() => setPreviewTitle(title)}
+                  userIsPremium={userIsPremium}
+                />
+              ))}
             </div>
-          );
-        })}
-
-        {filteredTitles.length === 0 && (
+          </div>
+        ) : (
           <div className="py-12 text-center">
             <Search className="mx-auto mb-4 h-16 w-16 text-gray-600" />
             <p className="text-gray-400">No titles found matching your search.</p>
@@ -278,25 +204,17 @@ export default function TitleSelection() {
 
               <div className="mb-4 flex items-center justify-center gap-3 rounded-lg bg-gray-800 p-4">
                 <span className="text-lg font-semibold">{user?.displayName || 'User'}</span>
-                <TitleBadge titleId={previewTitle.id} />
+                <TitleBadge title={previewTitle.id} />
               </div>
 
               <div className="mb-4 space-y-2">
                 <p className="text-sm text-gray-400">{previewTitle.description}</p>
                 <div className="flex items-center gap-2 text-sm">
                   <span className="capitalize text-gray-400">Rarity:</span>
-                  <span className={getRarityColor(previewTitle.rarity)}>{previewTitle.rarity}</span>
+                  <span className={getRarityColor(previewTitle.rarity as TitleRarity)}>
+                    {previewTitle.rarity}
+                  </span>
                 </div>
-                {previewTitle.unlockRequirement && (
-                  <div className="text-sm text-gray-400">
-                    <strong>Unlock:</strong> {previewTitle.unlockRequirement}
-                  </div>
-                )}
-                {previewTitle.coinPrice && (
-                  <div className="text-sm text-gray-400">
-                    <strong>Price:</strong> {previewTitle.coinPrice} coins
-                  </div>
-                )}
               </div>
 
               <button
@@ -314,16 +232,28 @@ export default function TitleSelection() {
 }
 
 interface TitleCardProps {
-  title: Title;
+  title: {
+    id: string;
+    name: string;
+    description: string;
+    color: string;
+    rarity: string;
+    unlocked?: boolean;
+  };
   isEquipped: boolean;
   onEquip: () => void;
   onPreview: () => void;
   userIsPremium: boolean;
 }
 
-function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: TitleCardProps) {
-  const isLocked = title.isPremium && !userIsPremium;
-  const isUnlocked = title.isUnlocked !== false; // Default to unlocked if not specified
+function TitleCard({
+  title,
+  isEquipped,
+  onEquip,
+  onPreview,
+  userIsPremium: _userIsPremium,
+}: TitleCardProps) {
+  const isUnlocked = title.unlocked !== false; // Default to unlocked if not specified
 
   return (
     <motion.div
@@ -332,12 +262,12 @@ function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: Tit
           ? 'border-purple-500 bg-gray-900 shadow-lg shadow-purple-500/50'
           : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
       }`}
-      whileHover={{ scale: isLocked ? 1 : 1.02 }}
+      whileHover={{ scale: isUnlocked ? 1.02 : 1 }}
     >
       <div className="p-4">
         {/* Title Preview */}
         <div className="mb-3 flex items-center justify-center py-2">
-          <TitleBadge titleId={title.id} />
+          <TitleBadge title={title.id} />
         </div>
 
         {/* Title Info */}
@@ -349,11 +279,10 @@ function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: Tit
         {/* Meta Info */}
         <div className="mb-3 flex items-center justify-between text-xs">
           <span
-            className={`capitalize ${title.rarity === 'common' ? 'text-gray-400' : `text-${title.rarity}-400`}`}
+            className={`capitalize ${title.rarity === 'common' ? 'text-gray-400' : 'text-purple-400'}`}
           >
             {title.rarity}
           </span>
-          <span className="capitalize text-gray-500">{title.category}</span>
         </div>
 
         {/* Actions */}
@@ -365,15 +294,7 @@ function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: Tit
             Preview
           </button>
 
-          {isLocked ? (
-            <button
-              className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-yellow-500/20 px-3 py-2 text-sm text-yellow-500"
-              disabled
-            >
-              <Lock className="h-4 w-4" />
-              Premium
-            </button>
-          ) : !isUnlocked ? (
+          {!isUnlocked ? (
             <button
               className="flex-1 rounded-lg bg-blue-500/20 px-3 py-2 text-sm text-blue-500"
               disabled
@@ -399,12 +320,12 @@ function TitleCard({ title, isEquipped, onEquip, onPreview, userIsPremium }: Tit
         </div>
       </div>
 
-      {/* Premium Overlay */}
-      {isLocked && (
+      {/* Locked Overlay */}
+      {!isUnlocked && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="text-center">
             <Lock className="mx-auto mb-2 h-8 w-8 text-yellow-500" />
-            <p className="text-xs font-semibold text-white">Premium Required</p>
+            <p className="text-xs font-semibold text-white">Locked</p>
           </div>
         </div>
       )}

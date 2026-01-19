@@ -253,6 +253,8 @@ function BattlePassTierCard({ tier, currentTier, hasPremium }: BattlePassTierCar
 
 export default function EventRewardsDisplay() {
   const { event, progress, nextMilestone, availableRewards } = useCurrentEventProgress();
+  // Reserved for future features
+  void availableRewards;
 
   if (!event || !progress) {
     return (

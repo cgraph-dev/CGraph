@@ -15,9 +15,12 @@ import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
+// Reserved for future use
+void ThemedAvatar;
+
 /**
  * GroupList Component
- * 
+ *
  * Displays all groups the user is a member of with rich visual effects.
  * Features:
  * - Animated group cards with hover effects
@@ -40,7 +43,7 @@ export function GroupList({
 }: GroupListProps) {
   const navigate = useNavigate();
   const { groups, isLoadingGroups } = useGroupStore();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
 
@@ -50,14 +53,17 @@ export function GroupList({
       group.description?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleGroupClick = useCallback((groupId: string) => {
-    HapticFeedback.light();
-    navigate(`/groups/${groupId}`);
-  }, [navigate]);
+  const handleGroupClick = useCallback(
+    (groupId: string) => {
+      HapticFeedback.light();
+      navigate(`/groups/${groupId}`);
+    },
+    [navigate]
+  );
 
   if (variant === 'sidebar') {
     return (
-      <div className={`w-[72px] flex flex-col items-center py-3 gap-2 ${className}`}>
+      <div className={`flex w-[72px] flex-col items-center gap-2 py-3 ${className}`}>
         {/* Groups */}
         {filteredGroups.map((group, index) => (
           <motion.div
@@ -71,7 +77,7 @@ export function GroupList({
         ))}
 
         {/* Separator */}
-        <div className="w-8 h-0.5 bg-gradient-to-r from-transparent via-primary-500/30 to-transparent rounded-full" />
+        <div className="h-0.5 w-8 rounded-full bg-gradient-to-r from-transparent via-primary-500/30 to-transparent" />
 
         {/* Create/Join */}
         {showCreate && (
@@ -79,17 +85,15 @@ export function GroupList({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowCreateModal(true)}
-            className="h-12 w-12 rounded-2xl bg-dark-700 hover:bg-primary-600 hover:rounded-xl flex items-center justify-center transition-all duration-200 group"
+            className="group flex h-12 w-12 items-center justify-center rounded-2xl bg-dark-700 transition-all duration-200 hover:rounded-xl hover:bg-primary-600"
             style={{ boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)' }}
           >
-            <PlusIcon className="h-6 w-6 text-primary-400 group-hover:text-white transition-colors" />
+            <PlusIcon className="h-6 w-6 text-primary-400 transition-colors group-hover:text-white" />
           </motion.button>
         )}
 
         <AnimatePresence>
-          {showCreateModal && (
-            <CreateGroupModal onClose={() => setShowCreateModal(false)} />
-          )}
+          {showCreateModal && <CreateGroupModal onClose={() => setShowCreateModal(false)} />}
         </AnimatePresence>
       </div>
     );
@@ -101,28 +105,28 @@ export function GroupList({
         {/* Search */}
         <div className="mb-6">
           <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search groups..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+              className="w-full rounded-xl border border-gray-700 bg-dark-800 py-3 pl-10 pr-4 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
             />
           </div>
         </div>
 
         {/* Loading */}
         {isLoadingGroups && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="aspect-square rounded-2xl bg-dark-800 animate-pulse" />
+              <div key={i} className="aspect-square animate-pulse rounded-2xl bg-dark-800" />
             ))}
           </div>
         )}
 
         {/* Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
           {filteredGroups.map((group, index) => (
             <motion.div
               key={group.id}
@@ -142,20 +146,18 @@ export function GroupList({
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setShowCreateModal(true)}
-              className="aspect-square rounded-2xl border-2 border-dashed border-gray-700 hover:border-primary-500 flex flex-col items-center justify-center gap-3 transition-colors"
+              className="flex aspect-square flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-700 transition-colors hover:border-primary-500"
             >
-              <div className="p-4 rounded-full bg-dark-700">
+              <div className="rounded-full bg-dark-700 p-4">
                 <PlusIcon className="h-8 w-8 text-gray-400" />
               </div>
-              <span className="text-gray-400 font-medium">Create Group</span>
+              <span className="font-medium text-gray-400">Create Group</span>
             </motion.button>
           )}
         </div>
 
         <AnimatePresence>
-          {showCreateModal && (
-            <CreateGroupModal onClose={() => setShowCreateModal(false)} />
-          )}
+          {showCreateModal && <CreateGroupModal onClose={() => setShowCreateModal(false)} />}
         </AnimatePresence>
       </div>
     );
@@ -181,6 +183,7 @@ export function GroupList({
 // Group Icon for sidebar
 function GroupIcon({ group, onClick }: { group: Group; onClick: () => void }) {
   const isActive = false; // TODO: Connect to router state
+  void isActive;
 
   return (
     <NavLink
@@ -189,7 +192,7 @@ function GroupIcon({ group, onClick }: { group: Group; onClick: () => void }) {
         HapticFeedback.medium();
         onClick();
       }}
-      className="relative group"
+      className="group relative"
     >
       {({ isActive: routeActive }) => (
         <>
@@ -200,36 +203,30 @@ function GroupIcon({ group, onClick }: { group: Group; onClick: () => void }) {
               height: routeActive ? 40 : 8,
               opacity: routeActive ? 1 : 0.5,
             }}
-            className="absolute -left-3 top-1/2 -translate-y-1/2 w-1 bg-white rounded-r-full"
+            className="absolute -left-3 top-1/2 w-1 -translate-y-1/2 rounded-r-full bg-white"
           />
 
           {/* Icon */}
           <motion.div
             whileHover={{ scale: 1.05, borderRadius: '35%' }}
             whileTap={{ scale: 0.95 }}
-            className="relative h-12 w-12 rounded-full bg-dark-700 overflow-hidden transition-all duration-200"
+            className="relative h-12 w-12 overflow-hidden rounded-full bg-dark-700 transition-all duration-200"
             style={{
               borderRadius: routeActive ? '35%' : '50%',
               boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
             }}
           >
             {group.iconUrl ? (
-              <img
-                src={group.iconUrl}
-                alt={group.name}
-                className="w-full h-full object-cover"
-              />
+              <img src={group.iconUrl} alt={group.name} className="h-full w-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
-                <span className="text-white font-bold">
-                  {group.name.slice(0, 2).toUpperCase()}
-                </span>
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
+                <span className="font-bold text-white">{group.name.slice(0, 2).toUpperCase()}</span>
               </div>
             )}
 
             {/* Online indicator */}
             {group.onlineMemberCount > 0 && (
-              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500 border-2 border-dark-900 flex items-center justify-center">
+              <div className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border-2 border-dark-900 bg-green-500">
                 <span className="text-[8px] font-bold text-white">
                   {group.onlineMemberCount > 99 ? '99+' : group.onlineMemberCount}
                 </span>
@@ -241,7 +238,7 @@ function GroupIcon({ group, onClick }: { group: Group; onClick: () => void }) {
           <motion.div
             initial={{ opacity: 0, x: -10 }}
             whileHover={{ opacity: 1, x: 0 }}
-            className="absolute left-full ml-4 top-1/2 -translate-y-1/2 px-3 py-2 rounded-lg bg-dark-800 text-white text-sm font-medium shadow-xl pointer-events-none whitespace-nowrap z-50"
+            className="pointer-events-none absolute left-full top-1/2 z-50 ml-4 -translate-y-1/2 whitespace-nowrap rounded-lg bg-dark-800 px-3 py-2 text-sm font-medium text-white shadow-xl"
           >
             {group.name}
             <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-dark-800" />
@@ -265,27 +262,19 @@ function GroupCard({ group, onClick }: { group: Group; onClick: () => void }) {
         {/* Banner */}
         <div className="relative h-24">
           {group.bannerUrl ? (
-            <img
-              src={group.bannerUrl}
-              alt=""
-              className="w-full h-full object-cover"
-            />
+            <img src={group.bannerUrl} alt="" className="h-full w-full object-cover" />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary-600/50 to-purple-600/50" />
+            <div className="h-full w-full bg-gradient-to-br from-primary-600/50 to-purple-600/50" />
           )}
           <div className="absolute inset-0 bg-gradient-to-t from-dark-900 to-transparent" />
 
           {/* Icon */}
           <div className="absolute -bottom-8 left-4">
-            <div className="w-16 h-16 rounded-2xl overflow-hidden border-4 border-dark-900 bg-dark-800">
+            <div className="h-16 w-16 overflow-hidden rounded-2xl border-4 border-dark-900 bg-dark-800">
               {group.iconUrl ? (
-                <img
-                  src={group.iconUrl}
-                  alt={group.name}
-                  className="w-full h-full object-cover"
-                />
+                <img src={group.iconUrl} alt={group.name} className="h-full w-full object-cover" />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
+                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
                   <span className="text-xl font-bold text-white">
                     {group.name.slice(0, 2).toUpperCase()}
                   </span>
@@ -295,14 +284,14 @@ function GroupCard({ group, onClick }: { group: Group; onClick: () => void }) {
           </div>
 
           {/* Public/Private badge */}
-          <div className="absolute top-2 right-2">
+          <div className="absolute right-2 top-2">
             {group.isPublic ? (
-              <div className="px-2 py-1 rounded-full bg-green-500/20 text-green-400 text-xs font-medium flex items-center gap-1">
+              <div className="flex items-center gap-1 rounded-full bg-green-500/20 px-2 py-1 text-xs font-medium text-green-400">
                 <GlobeAltIcon className="h-3 w-3" />
                 Public
               </div>
             ) : (
-              <div className="px-2 py-1 rounded-full bg-yellow-500/20 text-yellow-400 text-xs font-medium flex items-center gap-1">
+              <div className="flex items-center gap-1 rounded-full bg-yellow-500/20 px-2 py-1 text-xs font-medium text-yellow-400">
                 <LockClosedIcon className="h-3 w-3" />
                 Private
               </div>
@@ -311,22 +300,20 @@ function GroupCard({ group, onClick }: { group: Group; onClick: () => void }) {
         </div>
 
         {/* Content */}
-        <div className="pt-10 p-4">
-          <h3 className="font-bold text-white truncate">{group.name}</h3>
+        <div className="p-4 pt-10">
+          <h3 className="truncate font-bold text-white">{group.name}</h3>
           {group.description && (
-            <p className="text-sm text-gray-400 line-clamp-2 mt-1">
-              {group.description}
-            </p>
+            <p className="mt-1 line-clamp-2 text-sm text-gray-400">{group.description}</p>
           )}
 
-          <div className="flex items-center gap-4 mt-3 text-xs text-gray-500">
+          <div className="mt-3 flex items-center gap-4 text-xs text-gray-500">
             <div className="flex items-center gap-1">
               <UserGroupIcon className="h-4 w-4" />
               <span>{group.memberCount} members</span>
             </div>
             {group.onlineMemberCount > 0 && (
               <div className="flex items-center gap-1">
-                <div className="w-2 h-2 rounded-full bg-green-500" />
+                <div className="h-2 w-2 rounded-full bg-green-500" />
                 <span>{group.onlineMemberCount} online</span>
               </div>
             )}
@@ -349,15 +336,11 @@ function GroupListItem({ group, onClick }: { group: Group; onClick: () => void }
       <GlassCard variant="frosted" className="p-4">
         <div className="flex items-center gap-4">
           {/* Icon */}
-          <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0">
+          <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-xl">
             {group.iconUrl ? (
-              <img
-                src={group.iconUrl}
-                alt={group.name}
-                className="w-full h-full object-cover"
-              />
+              <img src={group.iconUrl} alt={group.name} className="h-full w-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
+              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-600 to-purple-600">
                 <span className="text-lg font-bold text-white">
                   {group.name.slice(0, 2).toUpperCase()}
                 </span>
@@ -366,23 +349,21 @@ function GroupListItem({ group, onClick }: { group: Group; onClick: () => void }
           </div>
 
           {/* Info */}
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="font-bold text-white truncate">{group.name}</h3>
+              <h3 className="truncate font-bold text-white">{group.name}</h3>
               {!group.isPublic && (
-                <LockClosedIcon className="h-4 w-4 text-yellow-400 flex-shrink-0" />
+                <LockClosedIcon className="h-4 w-4 flex-shrink-0 text-yellow-400" />
               )}
             </div>
             {group.description && (
-              <p className="text-sm text-gray-400 truncate mt-0.5">
-                {group.description}
-              </p>
+              <p className="mt-0.5 truncate text-sm text-gray-400">{group.description}</p>
             )}
-            <div className="flex items-center gap-3 mt-2 text-xs text-gray-500">
+            <div className="mt-2 flex items-center gap-3 text-xs text-gray-500">
               <span>{group.memberCount} members</span>
               {group.onlineMemberCount > 0 && (
                 <span className="flex items-center gap-1">
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                  <div className="h-1.5 w-1.5 rounded-full bg-green-500" />
                   {group.onlineMemberCount} online
                 </span>
               )}
@@ -407,7 +388,7 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
 
   const handleCreate = async () => {
     if (!name.trim()) return;
-    
+
     setIsCreating(true);
     try {
       const group = await createGroup({
@@ -431,7 +412,7 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
@@ -442,36 +423,34 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <GlassCard variant="crystal" glow className="p-6">
-          <div className="text-center mb-6">
+          <div className="mb-6 text-center">
             <motion.div
               animate={{ rotate: [0, 10, -10, 0] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="inline-block mb-4"
+              className="mb-4 inline-block"
             >
               <SparklesIcon className="h-12 w-12 text-primary-400" />
             </motion.div>
             <h2 className="text-xl font-bold text-white">Create a Group</h2>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="mt-1 text-sm text-gray-400">
               Build your community with friends and like-minded people
             </p>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
-                Group Name
-              </label>
+              <label className="mb-2 block text-sm font-medium text-gray-300">Group Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="My Awesome Group"
-                className="w-full px-4 py-3 rounded-xl bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
+                className="w-full rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-300">
                 Description (optional)
               </label>
               <textarea
@@ -479,11 +458,11 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What's your group about?"
                 rows={3}
-                className="w-full px-4 py-3 rounded-xl bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none resize-none"
+                className="w-full resize-none rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
               />
             </div>
 
-            <div className="flex items-center justify-between p-4 rounded-xl bg-dark-800">
+            <div className="flex items-center justify-between rounded-xl bg-dark-800 p-4">
               <div>
                 <span className="font-medium text-white">Public Group</span>
                 <p className="text-xs text-gray-400">Anyone can discover and join</p>
@@ -491,22 +470,22 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
               <motion.button
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setIsPublic(!isPublic)}
-                className={`w-12 h-6 rounded-full transition-colors ${
+                className={`h-6 w-12 rounded-full transition-colors ${
                   isPublic ? 'bg-primary-600' : 'bg-dark-600'
                 }`}
               >
                 <motion.div
                   animate={{ x: isPublic ? 24 : 0 }}
-                  className="w-6 h-6 rounded-full bg-white shadow-lg"
+                  className="h-6 w-6 rounded-full bg-white shadow-lg"
                 />
               </motion.button>
             </div>
           </div>
 
-          <div className="flex gap-3 mt-6">
+          <div className="mt-6 flex gap-3">
             <button
               onClick={onClose}
-              className="flex-1 py-3 rounded-xl bg-dark-700 text-gray-300 hover:bg-dark-600 transition-colors"
+              className="flex-1 rounded-xl bg-dark-700 py-3 text-gray-300 transition-colors hover:bg-dark-600"
             >
               Cancel
             </button>
@@ -515,7 +494,7 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
               whileTap={{ scale: 0.98 }}
               onClick={handleCreate}
               disabled={!name.trim() || isCreating}
-              className="flex-1 py-3 rounded-xl bg-primary-600 text-white font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 rounded-xl bg-primary-600 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isCreating ? 'Creating...' : 'Create Group'}
             </motion.button>

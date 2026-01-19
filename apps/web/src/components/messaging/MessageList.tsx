@@ -2,10 +2,7 @@ import { useMemo, useRef, useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import {
-  ArrowPathIcon,
-  ChatBubbleLeftIcon,
-} from '@heroicons/react/24/outline';
+import { ArrowPathIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
@@ -13,11 +10,10 @@ import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import MessageReactions from '@/components/chat/MessageReactions';
 import RichMediaEmbed from '@/components/chat/RichMediaEmbed';
 import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
-import GlassCard from '@/components/ui/GlassCard';
 
 /**
  * MessageList Component
- * 
+ *
  * Virtualized message list with rich features.
  * Features:
  * - Virtual scrolling for performance
@@ -43,7 +39,16 @@ interface Message {
     displayName: string | null;
     avatarUrl: string | null;
   };
-  messageType: 'text' | 'image' | 'video' | 'file' | 'audio' | 'voice' | 'sticker' | 'gif' | 'system';
+  messageType:
+    | 'text'
+    | 'image'
+    | 'video'
+    | 'file'
+    | 'audio'
+    | 'voice'
+    | 'sticker'
+    | 'gif'
+    | 'system';
   metadata?: Record<string, unknown>;
   replyTo?: Message | null;
   reactions?: Array<{
@@ -85,7 +90,7 @@ export function MessageList({
   className = '',
 }: MessageListProps) {
   const { user } = useAuthStore();
-  const { theme } = useThemeStore();
+  useThemeStore(); // Keep hook call for reactivity, theme accessed via CSS vars
 
   const parentRef = useRef<HTMLDivElement>(null);
   const [isNearBottom, setIsNearBottom] = useState(true);
@@ -103,7 +108,7 @@ export function MessageList({
     let lastAuthorId: string | null = null;
     let hasAddedUnreadMarker = false;
 
-    messages.forEach((message, index) => {
+    messages.forEach((message) => {
       const messageDate = new Date(message.createdAt);
 
       // Add unread marker
@@ -128,7 +133,7 @@ export function MessageList({
         lastDate &&
         messageDate.getTime() - lastDate.getTime() < 5 * 60 * 1000; // 5 minutes
 
-      items.push({ type: 'message', message, isGrouped });
+      items.push({ type: 'message', message, isGrouped: isGrouped ?? false });
 
       lastDate = messageDate;
       lastAuthorId = message.authorId;
@@ -143,9 +148,11 @@ export function MessageList({
     getScrollElement: () => parentRef.current,
     estimateSize: (index) => {
       const item = processedItems[index];
+      if (!item) return 72;
       if (item.type === 'date') return 40;
       if (item.type === 'unread') return 32;
-      return item.isGrouped ? 48 : 72;
+      if (item.type === 'message') return item.isGrouped ? 48 : 72;
+      return 72;
     },
     overscan: 10,
   });
@@ -191,7 +198,7 @@ export function MessageList({
   };
 
   return (
-    <div className={`relative flex flex-col h-full ${className}`}>
+    <div className={`relative flex h-full flex-col ${className}`}>
       {/* Loading indicator */}
       {isLoading && (
         <div className="flex items-center justify-center py-4">
@@ -220,6 +227,7 @@ export function MessageList({
         >
           {rowVirtualizer.getVirtualItems().map((virtualRow) => {
             const item = processedItems[virtualRow.index];
+            if (!item) return null;
 
             return (
               <div
@@ -278,7 +286,7 @@ export function MessageList({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={scrollToBottom}
-            className="absolute bottom-20 right-6 p-3 rounded-full bg-primary-600 text-white shadow-lg"
+            className="absolute bottom-20 right-6 rounded-full bg-primary-600 p-3 text-white shadow-lg"
           >
             <ChatBubbleLeftIcon className="h-5 w-5" />
           </motion.button>
@@ -287,9 +295,9 @@ export function MessageList({
 
       {/* Empty state */}
       {messages.length === 0 && !isLoading && (
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex flex-1 items-center justify-center">
           <div className="text-center">
-            <ChatBubbleLeftIcon className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+            <ChatBubbleLeftIcon className="mx-auto mb-4 h-16 w-16 text-gray-600" />
             <h3 className="text-lg font-semibold text-gray-400">No messages yet</h3>
             <p className="text-gray-500">Start the conversation!</p>
           </div>
@@ -300,18 +308,12 @@ export function MessageList({
 }
 
 // Date Separator Component
-function DateSeparator({
-  date,
-  formatDate,
-}: {
-  date: Date;
-  formatDate: (date: Date) => string;
-}) {
+function DateSeparator({ date, formatDate }: { date: Date; formatDate: (date: Date) => string }) {
   return (
     <div className="flex items-center gap-4 py-2">
-      <div className="flex-1 h-px bg-gray-700/50" />
+      <div className="h-px flex-1 bg-gray-700/50" />
       <span className="text-xs font-medium text-gray-500">{formatDate(date)}</span>
-      <div className="flex-1 h-px bg-gray-700/50" />
+      <div className="h-px flex-1 bg-gray-700/50" />
     </div>
   );
 }
@@ -320,9 +322,9 @@ function DateSeparator({
 function UnreadMarker() {
   return (
     <div className="flex items-center gap-4 py-2">
-      <div className="flex-1 h-px bg-red-500/50" />
+      <div className="h-px flex-1 bg-red-500/50" />
       <span className="text-xs font-medium text-red-400">New Messages</span>
-      <div className="flex-1 h-px bg-red-500/50" />
+      <div className="h-px flex-1 bg-red-500/50" />
     </div>
   );
 }
@@ -354,13 +356,13 @@ function MessageItem({
   if (message.messageType === 'system') {
     return (
       <div className="flex items-center justify-center py-2">
-        <span className="text-xs text-gray-500 italic">{message.content}</span>
+        <span className="text-xs italic text-gray-500">{message.content}</span>
       </div>
     );
   }
 
   return (
-    <AnimatedMessageWrapper delay={0}>
+    <AnimatedMessageWrapper isOwnMessage={isOwn} index={0}>
       <div
         className={`group relative flex gap-3 py-1 ${isGrouped ? 'pl-14' : ''}`}
         onMouseEnter={() => setShowActions(true)}
@@ -368,37 +370,33 @@ function MessageItem({
       >
         {/* Avatar */}
         {!isGrouped && (
-          <div className="flex-shrink-0 w-10">
-            <ThemedAvatar
-              src={message.author.avatarUrl}
-              alt={displayName}
-              size="medium"
-            />
+          <div className="w-10 flex-shrink-0">
+            <ThemedAvatar src={message.author.avatarUrl} alt={displayName} size="medium" />
           </div>
         )}
 
         {/* Message Content */}
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {/* Header */}
           {!isGrouped && (
-            <div className="flex items-center gap-2 mb-1">
+            <div className="mb-1 flex items-center gap-2">
               <span className="font-semibold text-white">{displayName}</span>
               <span className="text-xs text-gray-500">{timestamp}</span>
-              {message.isEdited && (
-                <span className="text-xs text-gray-500">(edited)</span>
-              )}
+              {message.isEdited && <span className="text-xs text-gray-500">(edited)</span>}
             </div>
           )}
 
           {/* Reply Preview */}
-          {message.replyTo && (
-            <div className="flex items-center gap-2 mb-1 pl-2 border-l-2 border-gray-600 text-sm text-gray-400">
+          {message.replyTo ? (
+            <div className="mb-1 flex items-center gap-2 border-l-2 border-gray-600 pl-2 text-sm text-gray-400">
               <span className="font-medium">
-                {message.replyTo.author.displayName || message.replyTo.author.username}
+                {(message.replyTo as Message).author?.displayName ||
+                  (message.replyTo as Message).author?.username ||
+                  'Unknown'}
               </span>
-              <span className="truncate">{message.replyTo.content}</span>
+              <span className="truncate">{(message.replyTo as Message).content}</span>
             </div>
-          )}
+          ) : null}
 
           {/* Message Bubble */}
           {message.messageType === 'text' && (
@@ -412,25 +410,28 @@ function MessageItem({
           )}
 
           {/* Rich Media */}
-          {message.metadata?.url && (
-            <RichMediaEmbed url={message.metadata.url as string} />
-          )}
+          {typeof message.metadata?.url === 'string' ? (
+            <RichMediaEmbed content={message.metadata.url} isOwnMessage={isOwn} />
+          ) : null}
 
           {/* Sticker */}
-          {message.messageType === 'sticker' && message.metadata?.sticker && (
+          {message.messageType === 'sticker' && message.metadata?.sticker ? (
             <img
               src={(message.metadata.sticker as { url: string }).url}
               alt="Sticker"
-              className="w-32 h-32 object-contain"
+              className="h-32 w-32 object-contain"
             />
-          )}
+          ) : null}
 
           {/* Reactions */}
           {message.reactions && message.reactions.length > 0 && (
             <div className="mt-1">
               <MessageReactions
+                messageId={message.id}
                 reactions={message.reactions}
-                onReact={(emoji) => onReact?.(message.id, emoji)}
+                onAddReaction={(msgId: string, emoji: string) => onReact?.(msgId, emoji)}
+                onRemoveReaction={(msgId: string, emoji: string) => onReact?.(msgId, emoji)}
+                currentUserId={message.authorId}
               />
             </div>
           )}
@@ -443,18 +444,10 @@ function MessageItem({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="absolute right-0 top-0 flex gap-1 bg-dark-800 rounded-lg border border-gray-700 p-1"
+              className="absolute right-0 top-0 flex gap-1 rounded-lg border border-gray-700 bg-dark-800 p-1"
             >
-              <ActionButton
-                emoji="😀"
-                label="React"
-                onClick={() => onReact?.(message.id, '👍')}
-              />
-              <ActionButton
-                emoji="↩️"
-                label="Reply"
-                onClick={() => onReply?.(message)}
-              />
+              <ActionButton emoji="😀" label="React" onClick={() => onReact?.(message.id, '👍')} />
+              <ActionButton emoji="↩️" label="Reply" onClick={() => onReply?.(message)} />
               {isOwn && (
                 <>
                   <ActionButton
@@ -462,11 +455,7 @@ function MessageItem({
                     label="Edit"
                     onClick={() => onEdit?.(message.id, message.content)}
                   />
-                  <ActionButton
-                    emoji="🗑️"
-                    label="Delete"
-                    onClick={() => onDelete?.(message.id)}
-                  />
+                  <ActionButton emoji="🗑️" label="Delete" onClick={() => onDelete?.(message.id)} />
                 </>
               )}
             </motion.div>
@@ -492,7 +481,7 @@ function ActionButton({
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
       onClick={onClick}
-      className="p-1.5 rounded hover:bg-dark-700 text-gray-400"
+      className="rounded p-1.5 text-gray-400 hover:bg-dark-700"
       title={label}
     >
       <span className="text-sm">{emoji}</span>
@@ -506,8 +495,8 @@ function TypingIndicator({ users }: { users: string[] }) {
     users.length === 1
       ? `${users[0]} is typing...`
       : users.length === 2
-      ? `${users[0]} and ${users[1]} are typing...`
-      : `${users[0]} and ${users.length - 1} others are typing...`;
+        ? `${users[0]} and ${users[1]} are typing...`
+        : `${users[0]} and ${users.length - 1} others are typing...`;
 
   return (
     <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -515,7 +504,7 @@ function TypingIndicator({ users }: { users: string[] }) {
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className="w-2 h-2 rounded-full bg-gray-400"
+            className="h-2 w-2 rounded-full bg-gray-400"
             animate={{
               y: [0, -4, 0],
             }}

@@ -17,10 +17,15 @@ import GlassCard from '@/components/ui/GlassCard';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { StickerPicker } from '@/components/chat/StickerPicker';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import type { Sticker } from '@/data/stickers';
+
+// Reserved for extended input features
+const _reservedIcons = { PaperClipIcon, AtSymbolIcon };
+void _reservedIcons;
 
 /**
  * MessageInput Component
- * 
+ *
  * Rich message input with multiple media types and features.
  * Features:
  * - Text input with auto-resize
@@ -60,8 +65,8 @@ interface MessageInputProps {
 type AttachmentMode = 'none' | 'file' | 'emoji' | 'sticker' | 'gif' | 'voice';
 
 export function MessageInput({
-  conversationId,
-  channelId,
+  conversationId: _conversationId,
+  channelId: _channelId,
   replyTo,
   onSend,
   onCancelReply,
@@ -70,6 +75,10 @@ export function MessageInput({
   disabled = false,
   className = '',
 }: MessageInputProps) {
+  // Reserved for channel-specific features
+  void _conversationId;
+  void _channelId;
+
   const { theme } = useThemeStore();
   const colors = THEME_COLORS[theme.colorPreset];
 
@@ -111,21 +120,24 @@ export function MessageInput({
   }, [onTyping]);
 
   // Handle message change
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    setMessage(value);
-    handleTyping();
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      setMessage(value);
+      handleTyping();
 
-    // Check for @mentions
-    const lastAtSymbol = value.lastIndexOf('@');
-    if (lastAtSymbol !== -1 && lastAtSymbol >= value.lastIndexOf(' ')) {
-      const query = value.slice(lastAtSymbol + 1);
-      setMentionQuery(query);
-      setShowMentions(true);
-    } else {
-      setShowMentions(false);
-    }
-  }, [handleTyping]);
+      // Check for @mentions
+      const lastAtSymbol = value.lastIndexOf('@');
+      if (lastAtSymbol !== -1 && lastAtSymbol >= value.lastIndexOf(' ')) {
+        const query = value.slice(lastAtSymbol + 1);
+        setMentionQuery(query);
+        setShowMentions(true);
+      } else {
+        setShowMentions(false);
+      }
+    },
+    [handleTyping]
+  );
 
   // Handle send
   const handleSend = useCallback(() => {
@@ -145,12 +157,15 @@ export function MessageInput({
   }, [message, attachments, replyTo, onSend, onTyping]);
 
   // Handle key press
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  }, [handleSend]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSend();
+      }
+    },
+    [handleSend]
+  );
 
   // Handle file selection
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -173,26 +188,41 @@ export function MessageInput({
   }, []);
 
   // Handle voice message
-  const handleVoiceMessage = useCallback((audioBlob: Blob) => {
-    onSend({
-      content: '',
-      type: 'voice',
-      metadata: { audio: audioBlob },
-    });
-    setIsRecording(false);
-    HapticFeedback.success();
-  }, [onSend]);
+  const handleVoiceMessage = useCallback(
+    (data: { blob: Blob; duration: number; waveform: number[] }) => {
+      onSend({
+        content: '',
+        type: 'voice',
+        metadata: {
+          audio: data.blob,
+          duration: data.duration,
+          waveform: data.waveform,
+        },
+      });
+      setIsRecording(false);
+      HapticFeedback.success();
+    },
+    [onSend]
+  );
 
   // Handle sticker select
-  const handleStickerSelect = useCallback((sticker: { id: string; name: string; url: string }) => {
-    onSend({
-      content: '',
-      type: 'sticker',
-      metadata: { sticker },
-    });
-    setAttachmentMode('none');
-    HapticFeedback.medium();
-  }, [onSend]);
+  const handleStickerSelect = useCallback(
+    (sticker: Sticker) => {
+      onSend({
+        content: '',
+        type: 'sticker',
+        metadata: {
+          stickerId: sticker.id,
+          stickerName: sticker.name,
+          stickerEmoji: sticker.emoji,
+          stickerPackId: sticker.packId,
+        },
+      });
+      setAttachmentMode('none');
+      HapticFeedback.medium();
+    },
+    [onSend]
+  );
 
   return (
     <div
@@ -209,18 +239,16 @@ export function MessageInput({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="flex items-center gap-2 px-4 py-2 bg-dark-800/50 border-l-2 border-primary-500 mb-2 rounded-lg">
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-primary-400 font-medium">
-                  Replying to {replyTo.author}
-                </p>
-                <p className="text-sm text-gray-400 truncate">{replyTo.content}</p>
+            <div className="mb-2 flex items-center gap-2 rounded-lg border-l-2 border-primary-500 bg-dark-800/50 px-4 py-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-primary-400">Replying to {replyTo.author}</p>
+                <p className="truncate text-sm text-gray-400">{replyTo.content}</p>
               </div>
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={onCancelReply}
-                className="p-1 rounded-full hover:bg-dark-700"
+                className="rounded-full p-1 hover:bg-dark-700"
               >
                 <XMarkIcon className="h-4 w-4 text-gray-400" />
               </motion.button>
@@ -238,13 +266,13 @@ export function MessageInput({
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <div className="flex flex-wrap gap-2 px-4 py-2 bg-dark-800/30 rounded-t-xl">
+            <div className="flex flex-wrap gap-2 rounded-t-xl bg-dark-800/30 px-4 py-2">
               {attachments.map((file, index) => (
                 <motion.div
                   key={index}
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="relative group"
+                  className="group relative"
                 >
                   {file.type.startsWith('image/') ? (
                     <img
@@ -253,14 +281,14 @@ export function MessageInput({
                       className="h-16 w-16 rounded-lg object-cover"
                     />
                   ) : (
-                    <div className="h-16 w-16 rounded-lg bg-dark-700 flex items-center justify-center">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-dark-700">
                       <DocumentIcon className="h-8 w-8 text-gray-400" />
                     </div>
                   )}
                   <motion.button
                     whileTap={{ scale: 0.9 }}
                     onClick={() => removeAttachment(index)}
-                    className="absolute -top-1 -right-1 p-1 rounded-full bg-red-500 text-white opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -right-1 -top-1 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
                   >
                     <XMarkIcon className="h-3 w-3" />
                   </motion.button>
@@ -280,7 +308,7 @@ export function MessageInput({
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => setAttachmentMode(attachmentMode === 'file' ? 'none' : 'file')}
-              className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-white transition-colors"
+              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
             >
               <PlusCircleIcon className="h-6 w-6" />
             </motion.button>
@@ -292,14 +320,14 @@ export function MessageInput({
                   initial={{ opacity: 0, y: 10, scale: 0.95 }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute bottom-full left-0 mb-2 p-2 rounded-xl bg-dark-800 border border-gray-700 shadow-xl"
+                  className="absolute bottom-full left-0 mb-2 rounded-xl border border-gray-700 bg-dark-800 p-2 shadow-xl"
                 >
                   <div className="flex gap-2">
                     <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => fileInputRef.current?.click()}
-                      className="p-3 rounded-xl bg-blue-500/20 text-blue-400 hover:bg-blue-500/30"
+                      className="rounded-xl bg-blue-500/20 p-3 text-blue-400 hover:bg-blue-500/30"
                     >
                       <PhotoIcon className="h-6 w-6" />
                     </motion.button>
@@ -307,7 +335,7 @@ export function MessageInput({
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => fileInputRef.current?.click()}
-                      className="p-3 rounded-xl bg-green-500/20 text-green-400 hover:bg-green-500/30"
+                      className="rounded-xl bg-green-500/20 p-3 text-green-400 hover:bg-green-500/30"
                     >
                       <DocumentIcon className="h-6 w-6" />
                     </motion.button>
@@ -315,7 +343,7 @@ export function MessageInput({
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.9 }}
                       onClick={() => setAttachmentMode('gif')}
-                      className="p-3 rounded-xl bg-purple-500/20 text-purple-400 hover:bg-purple-500/30"
+                      className="rounded-xl bg-purple-500/20 p-3 text-purple-400 hover:bg-purple-500/30"
                     >
                       <GifIcon className="h-6 w-6" />
                     </motion.button>
@@ -326,7 +354,7 @@ export function MessageInput({
           </div>
 
           {/* Text Input */}
-          <div className="flex-1 relative">
+          <div className="relative flex-1">
             <textarea
               ref={inputRef}
               value={message}
@@ -335,7 +363,7 @@ export function MessageInput({
               placeholder={placeholder}
               disabled={disabled || isRecording}
               rows={1}
-              className="w-full px-4 py-2 rounded-xl bg-dark-800/50 border border-gray-700/50 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none resize-none"
+              className="w-full resize-none rounded-xl border border-gray-700/50 bg-dark-800/50 px-4 py-2 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none"
               style={{ maxHeight: '150px' }}
             />
 
@@ -361,7 +389,7 @@ export function MessageInput({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setAttachmentMode(attachmentMode === 'emoji' ? 'none' : 'emoji')}
-            className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-yellow-400 transition-colors"
+            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-yellow-400"
           >
             <FaceSmileIcon className="h-6 w-6" />
           </motion.button>
@@ -371,7 +399,7 @@ export function MessageInput({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setAttachmentMode(attachmentMode === 'sticker' ? 'none' : 'sticker')}
-            className="p-2 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-purple-400 transition-colors"
+            className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-purple-400"
           >
             <span className="text-lg">🎨</span>
           </motion.button>
@@ -381,10 +409,10 @@ export function MessageInput({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsRecording(!isRecording)}
-            className={`p-2 rounded-lg transition-colors ${
+            className={`rounded-lg p-2 transition-colors ${
               isRecording
                 ? 'bg-red-500 text-white'
-                : 'hover:bg-dark-700 text-gray-400 hover:text-white'
+                : 'text-gray-400 hover:bg-dark-700 hover:text-white'
             }`}
           >
             <MicrophoneIcon className="h-6 w-6" />
@@ -396,7 +424,7 @@ export function MessageInput({
             whileTap={{ scale: 0.9 }}
             onClick={handleSend}
             disabled={disabled || (!message.trim() && attachments.length === 0)}
-            className="p-2 rounded-xl bg-primary-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-xl bg-primary-600 p-2 text-white disabled:cursor-not-allowed disabled:opacity-50"
             style={{ backgroundColor: colors.primary }}
           >
             <PaperAirplaneIcon className="h-6 w-6" />
@@ -411,7 +439,7 @@ export function MessageInput({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="absolute inset-0 flex items-center justify-center bg-dark-900/90 backdrop-blur-sm rounded-xl"
+            className="absolute inset-0 flex items-center justify-center rounded-xl bg-dark-900/90 backdrop-blur-sm"
           >
             <VoiceMessageRecorder
               onComplete={handleVoiceMessage}
@@ -433,6 +461,7 @@ export function MessageInput({
             <StickerPicker
               onSelect={handleStickerSelect}
               onClose={() => setAttachmentMode('none')}
+              isOpen={attachmentMode === 'sticker'}
             />
           </motion.div>
         )}
@@ -454,20 +483,23 @@ export function MessageInput({
 function MentionAutocomplete({
   query,
   onSelect,
-  onClose,
+  onClose: _onClose,
 }: {
   query: string;
   onSelect: (mention: string) => void;
   onClose: () => void;
 }) {
+  // Reserved for dismissing on outside click
+  void _onClose;
   // Mock users - would come from store/API
   const users = [
     { id: '1', username: 'alice', displayName: 'Alice' },
     { id: '2', username: 'bob', displayName: 'Bob' },
     { id: '3', username: 'charlie', displayName: 'Charlie' },
-  ].filter((u) =>
-    u.username.toLowerCase().includes(query.toLowerCase()) ||
-    u.displayName.toLowerCase().includes(query.toLowerCase())
+  ].filter(
+    (u) =>
+      u.username.toLowerCase().includes(query.toLowerCase()) ||
+      u.displayName.toLowerCase().includes(query.toLowerCase())
   );
 
   if (users.length === 0) return null;
@@ -477,19 +509,17 @@ function MentionAutocomplete({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 10 }}
-      className="absolute bottom-full left-0 right-0 mb-2 p-2 rounded-xl bg-dark-800 border border-gray-700 shadow-xl max-h-40 overflow-y-auto"
+      className="absolute bottom-full left-0 right-0 mb-2 max-h-40 overflow-y-auto rounded-xl border border-gray-700 bg-dark-800 p-2 shadow-xl"
     >
       {users.map((user) => (
         <motion.button
           key={user.id}
           whileHover={{ x: 2 }}
           onClick={() => onSelect(user.username)}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left hover:bg-dark-700"
+          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-dark-700"
         >
-          <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">
-              {user.displayName[0]}
-            </span>
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600">
+            <span className="text-sm font-bold text-white">{user.displayName[0]}</span>
           </div>
           <div>
             <p className="text-sm font-medium text-white">{user.displayName}</p>

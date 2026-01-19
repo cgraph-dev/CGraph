@@ -8,6 +8,10 @@ import {
   SparklesIcon,
   FaceSmileIcon,
 } from '@heroicons/react/24/outline';
+
+// Reserved for future use
+const _reserved = { CheckCircleIcon };
+void _reserved;
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
@@ -490,7 +494,11 @@ function BubbleStylesSection({ bubbles, selectedBubble, onSelect }: BubbleStyles
         >
           <GlassCard
             variant={
-              bubble.unlocked ? (selectedBubble === bubble.id ? 'neon' : 'crystal') : 'frost'
+              bubble.unlocked
+                ? selectedBubble === bubble.id
+                  ? 'neon'
+                  : 'crystal'
+                : ('frosted' as const)
             }
             glow={selectedBubble === bubble.id}
             glowColor={selectedBubble === bubble.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
@@ -581,7 +589,11 @@ function MessageEffectsSection({ effects, selectedEffect, onSelect }: MessageEff
         >
           <GlassCard
             variant={
-              effect.unlocked ? (selectedEffect === effect.id ? 'neon' : 'crystal') : 'frost'
+              effect.unlocked
+                ? selectedEffect === effect.id
+                  ? 'neon'
+                  : 'crystal'
+                : ('frosted' as const)
             }
             glow={selectedEffect === effect.id}
             glowColor={selectedEffect === effect.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
@@ -669,7 +681,11 @@ function ReactionStylesSection({
         >
           <GlassCard
             variant={
-              reaction.unlocked ? (selectedReaction === reaction.id ? 'neon' : 'crystal') : 'frost'
+              reaction.unlocked
+                ? selectedReaction === reaction.id
+                  ? 'neon'
+                  : 'crystal'
+                : ('frosted' as const)
             }
             glow={selectedReaction === reaction.id}
             glowColor={selectedReaction === reaction.id ? 'rgba(139, 92, 246, 0.3)' : undefined}

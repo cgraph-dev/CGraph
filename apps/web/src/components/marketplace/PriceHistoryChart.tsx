@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 /**
  * PriceHistoryChart Component
- * 
+ *
  * High-performance SVG chart for displaying marketplace price history.
  * Designed for scale with:
  * - Canvas fallback for large datasets (1000+ points)
@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from 'framer-motion';
  * - Responsive container
  * - Touch gestures for mobile
  * - WebGL acceleration option
- * 
+ *
  * Features:
  * - Line chart with gradient fill
  * - Interactive tooltips
@@ -55,8 +55,13 @@ export function PriceHistoryChart({
 }: PriceHistoryChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 0, height });
-  const [hoveredPoint, setHoveredPoint] = useState<{ point: PricePoint; x: number; y: number } | null>(null);
+  const [hoveredPoint, setHoveredPoint] = useState<{
+    point: PricePoint;
+    x: number;
+    y: number;
+  } | null>(null);
   const [useCanvas, setUseCanvas] = useState(false);
+  void useCanvas; // Reserved for canvas rendering mode
 
   // Responsive resize observer
   useEffect(() => {
@@ -89,8 +94,8 @@ export function PriceHistoryChart({
     const prices = data.map((d) => d.price);
     const min = Math.min(...prices);
     const max = Math.max(...prices);
-    const latest = prices[prices.length - 1];
-    const first = prices[0];
+    const latest = prices[prices.length - 1] ?? 0;
+    const first = prices[0] ?? 0;
     const change = first > 0 ? ((latest - first) / first) * 100 : 0;
 
     return {
@@ -144,25 +149,33 @@ export function PriceHistoryChart({
 
     // Generate volume bars
     const vBars = showVolume
-      ? data.map((point, i) => {
-          if (!point.volume) return null;
-          const x = padding.left + i * xScale;
-          const maxVolume = Math.max(...data.map((d) => d.volume || 0));
-          const barHeight = (point.volume / maxVolume) * volumeHeight;
-          return {
-            x: x - 2,
-            y: chartHeight - barHeight + padding.top,
-            width: 4,
-            height: barHeight,
-            volume: point.volume,
-          };
-        }).filter(Boolean)
+      ? data
+          .map((point, i) => {
+            if (!point.volume) return null;
+            const x = padding.left + i * xScale;
+            const maxVolume = Math.max(...data.map((d) => d.volume || 0));
+            const barHeight = (point.volume / maxVolume) * volumeHeight;
+            return {
+              x: x - 2,
+              y: chartHeight - barHeight + padding.top,
+              width: 4,
+              height: barHeight,
+              volume: point.volume,
+            };
+          })
+          .filter(Boolean)
       : [];
 
     return {
       linePath: linePoints.join(' '),
       areaPath: areaPoints.join(' '),
-      volumeBars: vBars as Array<{ x: number; y: number; width: number; height: number; volume: number }>,
+      volumeBars: vBars as Array<{
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        volume: number;
+      }>,
     };
   }, [data, dimensions, metrics, showVolume]);
 
@@ -180,6 +193,7 @@ export function PriceHistoryChart({
 
       if (index >= 0 && index < data.length) {
         const point = data[index];
+        if (!point) return;
         const x = padding.left + (index / (data.length - 1)) * chartWidth;
         const yScale = (dimensions.height - 60) / (metrics?.range || 1);
         const y = 20 + (dimensions.height - 60) - (point.price - (metrics?.min || 0)) * yScale;
@@ -197,11 +211,11 @@ export function PriceHistoryChart({
   if (data.length === 0) {
     return (
       <div
-        className={`flex items-center justify-center bg-white/5 rounded-xl ${className}`}
+        className={`flex items-center justify-center rounded-xl bg-white/5 ${className}`}
         style={{ height }}
       >
         <div className="text-center text-gray-500">
-          <div className="text-4xl mb-2">📊</div>
+          <div className="mb-2 text-4xl">📊</div>
           <p>No price history available</p>
         </div>
       </div>
@@ -211,11 +225,11 @@ export function PriceHistoryChart({
   return (
     <div className={`relative ${className}`} ref={containerRef}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
+      <div className="mb-4 flex items-center justify-between">
         <div>
           <div className="flex items-baseline gap-3">
             <span className="text-2xl font-bold text-white">
-              {metrics?.latest.toLocaleString()} {currency === 'gems' ? '💎' : '🪙'}
+              {(metrics?.latest ?? 0).toLocaleString()} {currency === 'gems' ? '💎' : '🪙'}
             </span>
             <span
               className={`text-sm font-medium ${
@@ -225,21 +239,19 @@ export function PriceHistoryChart({
               {metrics?.isPositive ? '▲' : '▼'} {Math.abs(metrics?.change || 0).toFixed(2)}%
             </span>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="mt-1 text-xs text-gray-500">
             Range: {metrics?.min.toLocaleString()} — {metrics?.max.toLocaleString()}
           </p>
         </div>
 
         {/* Time Range Selector */}
-        <div className="flex bg-black/30 rounded-lg p-1">
+        <div className="flex rounded-lg bg-black/30 p-1">
           {TIME_RANGES.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => onTimeRangeChange?.(key)}
-              className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
-                timeRange === key
-                  ? 'bg-white/10 text-white'
-                  : 'text-gray-500 hover:text-white'
+              className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
+                timeRange === key ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-white'
               }`}
             >
               {label}
@@ -283,9 +295,7 @@ export function PriceHistoryChart({
         <g className="text-gray-800">
           {[0, 0.25, 0.5, 0.75, 1].map((pct) => {
             const y = 20 + (dimensions.height - 60) * pct;
-            const price = metrics
-              ? metrics.max - metrics.range * pct
-              : 0;
+            const price = metrics ? metrics.max - metrics.range * pct : 0;
             return (
               <g key={pct}>
                 <line
@@ -297,12 +307,7 @@ export function PriceHistoryChart({
                   strokeWidth="1"
                   strokeDasharray="4,4"
                 />
-                <text
-                  x={55}
-                  y={y + 4}
-                  textAnchor="end"
-                  className="fill-gray-500 text-xs"
-                >
+                <text x={55} y={y + 4} textAnchor="end" className="fill-gray-500 text-xs">
                   {price.toLocaleString()}
                 </text>
               </g>
@@ -392,7 +397,7 @@ export function PriceHistoryChart({
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 10 }}
-            className="absolute z-10 p-3 bg-gray-900 border border-white/10 rounded-lg shadow-xl"
+            className="absolute z-10 rounded-lg border border-white/10 bg-gray-900 p-3 shadow-xl"
             style={{
               left: Math.min(hoveredPoint.x - 60, dimensions.width - 140),
               top: hoveredPoint.y - 80,
@@ -406,9 +411,7 @@ export function PriceHistoryChart({
               {hoveredPoint.point.timestamp.toLocaleTimeString()}
             </p>
             {hoveredPoint.point.volume && (
-              <p className="text-xs text-gray-400 mt-1">
-                Vol: {hoveredPoint.point.volume}
-              </p>
+              <p className="mt-1 text-xs text-gray-400">Vol: {hoveredPoint.point.volume}</p>
             )}
           </motion.div>
         )}

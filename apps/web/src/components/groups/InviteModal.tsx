@@ -8,17 +8,18 @@ import {
   TrashIcon,
   PlusIcon,
   UserGroupIcon,
-  InfinityIcon,
-  CalendarDaysIcon,
 } from '@heroicons/react/24/outline';
 import { useGroupStore } from '@/stores/groupStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
+// Reserved for future use
+void useGroupStore;
+
 /**
  * InviteModal Component
- * 
+ *
  * Generate and manage group invite links.
  * Features:
  * - Create invites with expiration
@@ -69,7 +70,8 @@ const MAX_USES_OPTIONS = [
   { value: 100, label: '100 uses' },
 ];
 
-export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
+export function InviteModal({ groupId: _groupId, groupName, onClose }: InviteModalProps) {
+  void _groupId; // Reserved for future API integration
   const { theme } = useThemeStore();
   const colors = THEME_COLORS[theme.colorPreset];
 
@@ -99,16 +101,14 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
       // TODO: Call API to create invite
       const mockCode = Math.random().toString(36).substring(2, 10);
       const mockUrl = `https://cgraph.app/invite/${mockCode}`;
-      
+
       const newInvite: Invite = {
         id: Date.now().toString(),
         code: mockCode,
         url: mockUrl,
         maxUses,
         uses: 0,
-        expiresAt: expiration
-          ? new Date(Date.now() + expiration * 1000).toISOString()
-          : null,
+        expiresAt: expiration ? new Date(Date.now() + expiration * 1000).toISOString() : null,
         createdBy: { id: 'me', username: 'You' },
         createdAt: new Date().toISOString(),
       };
@@ -135,18 +135,21 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
     }
   }, []);
 
-  const handleDeleteInvite = useCallback((inviteId: string) => {
-    setInvites(invites.filter((i) => i.id !== inviteId));
-    HapticFeedback.warning();
-    // TODO: Call API to delete invite
-  }, [invites]);
+  const handleDeleteInvite = useCallback(
+    (inviteId: string) => {
+      setInvites(invites.filter((i) => i.id !== inviteId));
+      HapticFeedback.warning();
+      // TODO: Call API to delete invite
+    },
+    [invites]
+  );
 
   const formatExpiration = (expiresAt: string | null) => {
     if (!expiresAt) return 'Never expires';
     const date = new Date(expiresAt);
     const now = new Date();
     const diff = date.getTime() - now.getTime();
-    
+
     if (diff < 0) return 'Expired';
     if (diff < 3600000) return `${Math.floor(diff / 60000)} minutes`;
     if (diff < 86400000) return `${Math.floor(diff / 3600000)} hours`;
@@ -158,7 +161,7 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <motion.div
@@ -168,14 +171,11 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
         className="w-full max-w-lg"
         onClick={(e) => e.stopPropagation()}
       >
-        <GlassCard variant="crystal" glow className="p-0 overflow-hidden">
+        <GlassCard variant="crystal" glow className="overflow-hidden p-0">
           {/* Header */}
-          <div className="p-6 border-b border-gray-700/50">
+          <div className="border-b border-gray-700/50 p-6">
             <div className="flex items-center gap-3">
-              <div
-                className="p-3 rounded-xl"
-                style={{ backgroundColor: colors.primary + '20' }}
-              >
+              <div className="rounded-xl p-3" style={{ backgroundColor: colors.primary + '20' }}>
                 <LinkIcon className="h-6 w-6" style={{ color: colors.primary }} />
               </div>
               <div>
@@ -185,7 +185,7 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 mt-4">
+            <div className="mt-4 flex gap-2">
               {[
                 { id: 'create', label: 'Create Invite' },
                 { id: 'manage', label: 'Manage Invites' },
@@ -194,7 +194,7 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
                   key={tab.id}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setActiveTab(tab.id as 'create' | 'manage')}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                     activeTab === tab.id
                       ? 'bg-primary-600 text-white'
                       : 'bg-dark-700 text-gray-400 hover:text-white'
@@ -217,17 +217,19 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
                   exit={{ opacity: 0, x: 20 }}
                 >
                   {/* Settings */}
-                  <div className="space-y-4 mb-6">
+                  <div className="mb-6 space-y-4">
                     {/* Expiration */}
                     <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                      <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-300">
                         <ClockIcon className="h-4 w-4" />
                         Expire after
                       </label>
                       <select
                         value={expiration ?? ''}
-                        onChange={(e) => setExpiration(e.target.value ? Number(e.target.value) : null)}
-                        className="w-full px-4 py-2 rounded-lg bg-dark-800 border border-gray-700 text-white focus:border-primary-500 focus:outline-none"
+                        onChange={(e) =>
+                          setExpiration(e.target.value ? Number(e.target.value) : null)
+                        }
+                        className="w-full rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
                       >
                         {EXPIRATION_OPTIONS.map((opt) => (
                           <option key={opt.label} value={opt.value ?? ''}>
@@ -239,14 +241,14 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
 
                     {/* Max Uses */}
                     <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+                      <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-300">
                         <UserGroupIcon className="h-4 w-4" />
                         Max number of uses
                       </label>
                       <select
                         value={maxUses ?? ''}
                         onChange={(e) => setMaxUses(e.target.value ? Number(e.target.value) : null)}
-                        className="w-full px-4 py-2 rounded-lg bg-dark-800 border border-gray-700 text-white focus:border-primary-500 focus:outline-none"
+                        className="w-full rounded-lg border border-gray-700 bg-dark-800 px-4 py-2 text-white focus:border-primary-500 focus:outline-none"
                       >
                         {MAX_USES_OPTIONS.map((opt) => (
                           <option key={opt.label} value={opt.value ?? ''}>
@@ -263,7 +265,7 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
                     whileTap={{ scale: 0.98 }}
                     onClick={handleGenerateInvite}
                     disabled={isGenerating}
-                    className="w-full py-3 rounded-xl bg-primary-600 text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-600 py-3 font-semibold text-white disabled:opacity-50"
                   >
                     <PlusIcon className="h-5 w-5" />
                     {isGenerating ? 'Generating...' : 'Generate New Link'}
@@ -283,13 +285,13 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
                             type="text"
                             value={inviteLink}
                             readOnly
-                            className="flex-1 px-4 py-3 rounded-xl bg-dark-800 border border-gray-700 text-white text-sm"
+                            className="flex-1 rounded-xl border border-gray-700 bg-dark-800 px-4 py-3 text-sm text-white"
                           />
                           <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleCopyLink(inviteLink)}
-                            className="p-3 rounded-xl bg-primary-600 text-white"
+                            className="rounded-xl bg-primary-600 p-3 text-white"
                           >
                             {copied ? (
                               <CheckIcon className="h-5 w-5" />
@@ -311,8 +313,8 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
                   className="space-y-3"
                 >
                   {invites.length === 0 ? (
-                    <div className="text-center py-8">
-                      <LinkIcon className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+                    <div className="py-8 text-center">
+                      <LinkIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
                       <p className="text-gray-400">No active invites</p>
                     </div>
                   ) : (
@@ -321,24 +323,22 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
                         key={invite.id}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="p-4 rounded-xl bg-dark-800 border border-gray-700"
+                        className="rounded-xl border border-gray-700 bg-dark-800 p-4"
                       >
                         <div className="flex items-start justify-between">
-                          <div className="flex-1 min-w-0">
+                          <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <code className="text-primary-400 font-mono">
-                                {invite.code}
-                              </code>
+                              <code className="font-mono text-primary-400">{invite.code}</code>
                               <motion.button
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => handleCopyLink(invite.url)}
-                                className="p-1 rounded hover:bg-dark-700"
+                                className="rounded p-1 hover:bg-dark-700"
                               >
                                 <ClipboardDocumentIcon className="h-4 w-4 text-gray-400" />
                               </motion.button>
                             </div>
 
-                            <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+                            <div className="mt-2 flex items-center gap-4 text-xs text-gray-500">
                               <span className="flex items-center gap-1">
                                 <UserGroupIcon className="h-3 w-3" />
                                 {invite.uses}
@@ -350,7 +350,7 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
                               </span>
                             </div>
 
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="mt-1 text-xs text-gray-500">
                               Created by {invite.createdBy.username}
                             </p>
                           </div>
@@ -359,7 +359,7 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
                             onClick={() => handleDeleteInvite(invite.id)}
-                            className="p-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400"
+                            className="rounded-lg p-2 text-gray-400 hover:bg-red-500/10 hover:text-red-400"
                           >
                             <TrashIcon className="h-4 w-4" />
                           </motion.button>
@@ -373,10 +373,10 @@ export function InviteModal({ groupId, groupName, onClose }: InviteModalProps) {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t border-gray-700/50">
+          <div className="border-t border-gray-700/50 p-4">
             <button
               onClick={onClose}
-              className="w-full py-2 rounded-lg bg-dark-700 text-gray-300 hover:bg-dark-600 transition-colors"
+              className="w-full rounded-lg bg-dark-700 py-2 text-gray-300 transition-colors hover:bg-dark-600"
             >
               Close
             </button>

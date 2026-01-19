@@ -287,7 +287,10 @@ export const BUBBLE_STYLE_PRESETS: Record<BubbleStyle, Omit<BubbleStyleConfig, '
   },
 };
 
-export const TYPING_INDICATOR_PRESETS: Record<TypingIndicator, Omit<TypingIndicatorConfig, 'style'>> = {
+export const TYPING_INDICATOR_PRESETS: Record<
+  TypingIndicator,
+  Omit<TypingIndicatorConfig, 'style'>
+> = {
   dots: { color: '#888888', speed: 'normal', size: 'md' },
   wave: { color: '#22c55e', speed: 'normal', size: 'md' },
   bounce: { color: '#3b82f6', speed: 'fast', size: 'sm' },
@@ -300,8 +303,20 @@ export const TYPING_INDICATOR_PRESETS: Record<TypingIndicator, Omit<TypingIndica
 
 export const SOUND_EFFECT_LIBRARY: ChatSoundEffect[] = [
   { id: 'message-sent', name: 'Message Sent', url: '/sounds/send.mp3', volume: 0.5, enabled: true },
-  { id: 'message-received', name: 'Message Received', url: '/sounds/receive.mp3', volume: 0.5, enabled: true },
-  { id: 'notification', name: 'Notification', url: '/sounds/notification.mp3', volume: 0.7, enabled: true },
+  {
+    id: 'message-received',
+    name: 'Message Received',
+    url: '/sounds/receive.mp3',
+    volume: 0.5,
+    enabled: true,
+  },
+  {
+    id: 'notification',
+    name: 'Notification',
+    url: '/sounds/notification.mp3',
+    volume: 0.7,
+    enabled: true,
+  },
   { id: 'mention', name: 'Mention', url: '/sounds/mention.mp3', volume: 0.8, enabled: true },
   { id: 'typing', name: 'Typing', url: '/sounds/typing.mp3', volume: 0.3, enabled: false },
   { id: 'reaction', name: 'Reaction', url: '/sounds/pop.mp3', volume: 0.4, enabled: true },
@@ -312,6 +327,26 @@ export const SOUND_EFFECT_LIBRARY: ChatSoundEffect[] = [
 ];
 
 // ==================== STATE INTERFACE ====================
+
+export interface MessageEffectItem {
+  id: MessageEffect;
+  name: string;
+  icon?: string;
+  description?: string;
+}
+
+export interface BubbleStyleItem {
+  id: BubbleStyle;
+  name: string;
+  borderRadius?: number | string;
+  gradient?: string;
+  glowColor?: string;
+}
+
+export interface TypingIndicatorItem {
+  id: TypingIndicator;
+  name: string;
+}
 
 export interface ChatEffectsState {
   // User's active effects
@@ -342,12 +377,22 @@ export interface ChatEffectsState {
   lastSyncedAt: string | null;
   isSyncing: boolean;
 
+  // Available effects for CosmeticsSettingsPanel
+  messageEffects: MessageEffectItem[];
+  bubbleStyles: BubbleStyleItem[];
+  typingIndicators: TypingIndicatorItem[];
+
   // Actions
   setMessageEffect: (effect: MessageEffect, config?: Partial<MessageEffectConfig>) => void;
   setBubbleStyle: (style: BubbleStyle, config?: Partial<BubbleStyleConfig>) => void;
   setEmojiPack: (pack: EmojiPack) => void;
   setTypingIndicator: (style: TypingIndicator, config?: Partial<TypingIndicatorConfig>) => void;
   setReactionConfig: (config: Partial<ReactionConfig>) => void;
+
+  // Activation actions for CosmeticsSettingsPanel
+  activateEffect: (id: MessageEffect) => void;
+  activateBubbleStyle: (id: BubbleStyle) => void;
+  activateTypingIndicator: (id: TypingIndicator) => void;
 
   // Sound actions
   setSoundEffect: (id: string, updates: Partial<ChatSoundEffect>) => void;
@@ -376,6 +421,53 @@ export interface ChatEffectsState {
 
 // ==================== STORE IMPLEMENTATION ====================
 
+// Available effects data for CosmeticsSettingsPanel
+const MESSAGE_EFFECTS_LIST: MessageEffectItem[] = [
+  { id: 'none', name: 'None', icon: '🚫', description: 'No effect' },
+  { id: 'confetti', name: 'Confetti', icon: '🎊', description: 'Celebration confetti' },
+  { id: 'fireworks', name: 'Fireworks', icon: '🎆', description: 'Explosive fireworks' },
+  { id: 'sparkle', name: 'Sparkle', icon: '✨', description: 'Magical sparkles' },
+  { id: 'rainbow', name: 'Rainbow', icon: '🌈', description: 'Rainbow trail' },
+  { id: 'hearts', name: 'Hearts', icon: '💕', description: 'Floating hearts' },
+  { id: 'stars', name: 'Stars', icon: '⭐', description: 'Star burst' },
+  { id: 'snow', name: 'Snow', icon: '❄️', description: 'Falling snowflakes' },
+  { id: 'fire', name: 'Fire', icon: '🔥', description: 'Burning flames' },
+  { id: 'electric', name: 'Electric', icon: '⚡', description: 'Electric sparks' },
+  { id: 'glitch', name: 'Glitch', icon: '📺', description: 'Digital glitch' },
+  { id: 'matrix', name: 'Matrix', icon: '💚', description: 'Matrix code rain' },
+  { id: 'bubble', name: 'Bubble', icon: '🫧', description: 'Rising bubbles' },
+  { id: 'fade-in', name: 'Fade In', icon: '👻', description: 'Smooth fade' },
+  { id: 'neon-glow', name: 'Neon Glow', icon: '💡', description: 'Neon lighting' },
+];
+
+const BUBBLE_STYLES_LIST: BubbleStyleItem[] = [
+  { id: 'default', name: 'Default', borderRadius: 16 },
+  { id: 'rounded', name: 'Rounded', borderRadius: 32 },
+  { id: 'square', name: 'Square', borderRadius: 4 },
+  { id: 'cloud', name: 'Cloud', borderRadius: '24px 24px 24px 4px' },
+  { id: 'neon', name: 'Neon', borderRadius: 16, glowColor: '#00ff00' },
+  { id: 'glass', name: 'Glass', borderRadius: 16, gradient: 'rgba(255,255,255,0.1)' },
+  {
+    id: 'gradient',
+    name: 'Gradient',
+    borderRadius: 16,
+    gradient: 'linear-gradient(135deg, #667eea, #764ba2)',
+  },
+  { id: 'comic', name: 'Comic', borderRadius: 8 },
+  { id: 'retro', name: 'Retro', borderRadius: 0 },
+  { id: 'futuristic', name: 'Futuristic', borderRadius: '0 16px 0 16px', glowColor: '#00ffff' },
+];
+
+const TYPING_INDICATORS_LIST: TypingIndicatorItem[] = [
+  { id: 'dots', name: 'Bouncing Dots' },
+  { id: 'wave', name: 'Wave Animation' },
+  { id: 'bounce', name: 'Bounce' },
+  { id: 'pulse', name: 'Pulse' },
+  { id: 'typing-text', name: 'Typing Text' },
+  { id: 'pencil', name: 'Pencil Icon' },
+  { id: 'speech-bubble', name: 'Speech Bubble' },
+];
+
 export const useChatEffectsStore = create<ChatEffectsState>()(
   persist(
     (set, get) => ({
@@ -383,7 +475,9 @@ export const useChatEffectsStore = create<ChatEffectsState>()(
       activeMessageEffect: { effect: 'fade-in', intensity: 'low', duration: 400 },
       activeBubbleStyle: BUBBLE_STYLE_PRESETS.default as BubbleStyleConfig & { style: BubbleStyle },
       activeEmojiPack: 'default',
-      activeTypingIndicator: TYPING_INDICATOR_PRESETS.dots as TypingIndicatorConfig & { style: TypingIndicator },
+      activeTypingIndicator: TYPING_INDICATOR_PRESETS.dots as TypingIndicatorConfig & {
+        style: TypingIndicator;
+      },
       activeReactionConfig: { animation: 'pop', scale: 1.2, duration: 300, sound: true },
 
       // Sound defaults
@@ -406,6 +500,24 @@ export const useChatEffectsStore = create<ChatEffectsState>()(
       // Sync
       lastSyncedAt: null,
       isSyncing: false,
+
+      // Available effects for CosmeticsSettingsPanel
+      messageEffects: MESSAGE_EFFECTS_LIST,
+      bubbleStyles: BUBBLE_STYLES_LIST,
+      typingIndicators: TYPING_INDICATORS_LIST,
+
+      // Activation actions for CosmeticsSettingsPanel
+      activateEffect: (id: MessageEffect) => {
+        get().setMessageEffect(id);
+      },
+
+      activateBubbleStyle: (id: BubbleStyle) => {
+        get().setBubbleStyle(id);
+      },
+
+      activateTypingIndicator: (id: TypingIndicator) => {
+        get().setTypingIndicator(id);
+      },
 
       // Message effect actions
       setMessageEffect: (effect, config) => {
@@ -607,11 +719,9 @@ export const useChatEffectsStore = create<ChatEffectsState>()(
 export const useActiveMessageEffect = () =>
   useChatEffectsStore((state) => state.activeMessageEffect);
 
-export const useActiveBubbleStyle = () =>
-  useChatEffectsStore((state) => state.activeBubbleStyle);
+export const useActiveBubbleStyle = () => useChatEffectsStore((state) => state.activeBubbleStyle);
 
-export const useActiveEmojiPack = () =>
-  useChatEffectsStore((state) => state.activeEmojiPack);
+export const useActiveEmojiPack = () => useChatEffectsStore((state) => state.activeEmojiPack);
 
 export const useChatSoundSettings = () =>
   useChatEffectsStore((state) => ({
