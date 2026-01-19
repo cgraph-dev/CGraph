@@ -1,0 +1,374 @@
+/**
+ * Global Theme System Styles
+ *
+ * CSS variables, theme transitions, and theme-specific effects
+ */
+
+/* =============================================================================
+   CSS VARIABLES SETUP
+   ============================================================================= */
+
+:root {
+  /* Default theme variables will be injected by ThemeRegistry */
+  /* These are fallback values */
+
+  /* Colors */
+  --theme-color-primary: #10b981;
+  --theme-color-primary-dark: #059669;
+  --theme-color-primary-light: #34d399;
+  --theme-color-background: #0f172a;
+  --theme-color-text-primary: #f1f5f9;
+
+  /* Typography */
+  --theme-font-primary: 'Inter', sans-serif;
+  --theme-font-size-base: 1rem;
+  --theme-font-weight-normal: 400;
+
+  /* Layout */
+  --theme-radius-md: 0.5rem;
+  --theme-spacing-md: 1rem;
+  --theme-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --theme-transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Theme transition duration */
+  --theme-transition-duration: 300ms;
+}
+
+/* =============================================================================
+   THEME TRANSITIONS
+   ============================================================================= */
+
+.theme-transitioning {
+  /* Smooth color transitions during theme switch */
+  * {
+    transition:
+      background-color var(--theme-transition-duration) ease-in-out,
+      color var(--theme-transition-duration) ease-in-out,
+      border-color var(--theme-transition-duration) ease-in-out,
+      box-shadow var(--theme-transition-duration) ease-in-out !important;
+  }
+}
+
+/* =============================================================================
+   MATRIX THEME SPECIFIC STYLES
+   ============================================================================= */
+
+.theme-matrix {
+  /* Matrix-specific overrides */
+  font-family: var(--theme-font-primary);
+  background-color: #000000;
+  color: #39ff14;
+}
+
+.theme-matrix * {
+  /* Terminal-style text rendering */
+  text-rendering: optimizeSpeed;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Matrix scrollbar */
+.theme-matrix ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.theme-matrix ::-webkit-scrollbar-track {
+  background: #000000;
+  border: 1px solid #00aa22;
+}
+
+.theme-matrix ::-webkit-scrollbar-thumb {
+  background: #00cc33;
+  border-radius: 0;
+}
+
+.theme-matrix ::-webkit-scrollbar-thumb:hover {
+  background: #39ff14;
+}
+
+/* Matrix selection */
+.theme-matrix ::selection {
+  background: rgba(57, 255, 20, 0.3);
+  color: #ffffff;
+}
+
+/* =============================================================================
+   THEME EFFECTS
+   ============================================================================= */
+
+/* Scanlines effect */
+.theme-effect-scanlines::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.1) 0px,
+    rgba(0, 0, 0, 0.1) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  opacity: 0.3;
+}
+
+/* Vignette effect */
+.theme-effect-vignette::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9998;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 0%,
+    transparent 50%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
+}
+
+/* Chromatic aberration effect */
+.theme-effect-chromatic {
+  position: relative;
+}
+
+.theme-effect-chromatic::before {
+  content: attr(data-text);
+  position: absolute;
+  left: -2px;
+  text-shadow: 2px 0 red;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.theme-effect-chromatic::after {
+  content: attr(data-text);
+  position: absolute;
+  left: 2px;
+  text-shadow: -2px 0 cyan;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* =============================================================================
+   MATRIX BACKGROUND CONTAINER
+   ============================================================================= */
+
+#matrix-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--matrix-opacity, 0.3);
+}
+
+/* =============================================================================
+   GLOW EFFECTS
+   ============================================================================= */
+
+.theme-glow-text {
+  text-shadow:
+    0 0 10px var(--theme-color-primary-glow),
+    0 0 20px var(--theme-color-primary-glow),
+    0 0 30px var(--theme-color-primary-glow);
+}
+
+.theme-glow-border {
+  box-shadow:
+    0 0 10px var(--theme-color-primary-glow),
+    0 0 20px var(--theme-color-primary-glow),
+    inset 0 0 10px var(--theme-color-primary-glow);
+}
+
+/* =============================================================================
+   COMPONENT THEME VARIABLES
+   ============================================================================= */
+
+/* Buttons */
+.theme-button-primary {
+  background: var(--theme-button-primary);
+  color: white;
+  border: none;
+  transition: var(--theme-transition-base);
+}
+
+.theme-button-primary:hover {
+  background: var(--theme-button-primary-hover);
+  box-shadow: var(--theme-shadow-glow);
+}
+
+/* Cards */
+.theme-card {
+  background: var(--theme-card-background);
+  border: 1px solid var(--theme-card-border);
+  border-radius: var(--theme-radius-lg);
+  box-shadow: var(--theme-card-shadow);
+  transition: var(--theme-transition-base);
+}
+
+.theme-card:hover {
+  border-color: var(--theme-card-hover);
+  box-shadow: var(--theme-shadow-glow);
+}
+
+/* Inputs */
+.theme-input {
+  background: var(--theme-input-background);
+  border: 1px solid var(--theme-input-border);
+  color: var(--theme-input-text);
+  border-radius: var(--theme-radius-md);
+  padding: var(--theme-spacing-sm) var(--theme-spacing-md);
+  transition: var(--theme-transition-base);
+}
+
+.theme-input::placeholder {
+  color: var(--theme-input-placeholder);
+}
+
+.theme-input:focus {
+  outline: none;
+  border-color: var(--theme-input-focus);
+  box-shadow: 0 0 0 3px var(--theme-color-primary-glow);
+}
+
+/* Navbar */
+.theme-navbar {
+  background: var(--theme-navbar-background);
+  color: var(--theme-navbar-text);
+}
+
+.theme-navbar-item {
+  color: var(--theme-navbar-text);
+  transition: var(--theme-transition-base);
+}
+
+.theme-navbar-item:hover {
+  background: var(--theme-navbar-hover-background);
+}
+
+.theme-navbar-item.active {
+  background: var(--theme-navbar-active-background);
+  color: var(--theme-navbar-active-text);
+}
+
+/* Modals */
+.theme-modal {
+  background: var(--theme-modal-background);
+  border: 1px solid var(--theme-modal-border);
+  border-radius: var(--theme-radius-xl);
+  box-shadow: var(--theme-shadow-xl);
+}
+
+.theme-modal-overlay {
+  background: var(--theme-modal-overlay);
+  backdrop-filter: blur(8px);
+}
+
+/* Notifications */
+.theme-notification {
+  background: var(--theme-notification-background);
+  border: 1px solid var(--theme-notification-border);
+  border-radius: var(--theme-radius-md);
+  box-shadow: var(--theme-shadow-lg);
+}
+
+.theme-notification.success {
+  border-color: var(--theme-notification-success);
+}
+
+.theme-notification.warning {
+  border-color: var(--theme-notification-warning);
+}
+
+.theme-notification.error {
+  border-color: var(--theme-notification-error);
+}
+
+.theme-notification.info {
+  border-color: var(--theme-notification-info);
+}
+
+/* =============================================================================
+   ACCESSIBILITY
+   ============================================================================= */
+
+/* High contrast mode */
+.theme-high-contrast {
+  --theme-color-text-primary: #ffffff;
+  --theme-color-background: #000000;
+  --theme-color-border: #ffffff;
+}
+
+/* Focus indicators */
+.theme-focus-visible:focus-visible {
+  outline: 3px solid var(--theme-color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .theme-transitioning * {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .theme-effect-scanlines::before,
+  .theme-effect-vignette::after {
+    display: none;
+  }
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  :root {
+    --theme-font-size-base: 0.9rem;
+    --theme-spacing-md: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --theme-font-size-base: 0.85rem;
+    --theme-spacing-md: 0.5rem;
+  }
+}
+
+/* =============================================================================
+   THEME PREVIEW MODE
+   ============================================================================= */
+
+.theme-preview-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--theme-radius-lg);
+  border: 2px solid var(--theme-color-border);
+}
+
+.theme-preview-container::before {
+  content: 'PREVIEW';
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--theme-color-primary);
+  color: var(--theme-color-text-inverse);
+  padding: 4px 8px;
+  border-radius: var(--theme-radius-sm);
+  font-size: 10px;
+  font-weight: 700;
+  z-index: 10;
+  opacity: 0.8;
+}

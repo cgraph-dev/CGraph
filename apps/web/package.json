@@ -37,6 +37,7 @@
     "@tanstack/react-query-persist-client": "^5.90.18",
     "@tanstack/react-virtual": "^3.13.0",
     "@wagmi/connectors": "5.7.7",
+    "@wagmi/core": "2.16.4",
     "axios": "^1.9.0",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",

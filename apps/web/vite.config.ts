@@ -70,8 +70,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: true,
-    // Increase limit to avoid warnings for expected large chunks
-    chunkSizeWarningLimit: 1500,
+    // Suppress chunk size warnings - large chunks are expected for Web3/rich apps
+    // Index (~800KB) and demo pages are intentionally large
+    chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
         // Use function for more granular control over chunking

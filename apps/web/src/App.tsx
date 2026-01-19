@@ -3,6 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { ThemeRegistry } from '@/themes/ThemeRegistry';
+import '@/themes/theme-globals.css';
 
 // ============================================================================
 // LAYOUTS - Eagerly loaded (always needed)
@@ -15,10 +17,10 @@ import AuthLayout from '@/layouts/AuthLayout';
 // ============================================================================
 function PageLoader() {
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
+    <div className="flex min-h-screen items-center justify-center bg-gray-900">
       <div className="flex flex-col items-center gap-4">
-        <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-        <span className="text-gray-400 text-sm">Loading...</span>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
+        <span className="text-sm text-gray-400">Loading...</span>
       </div>
     </div>
   );
@@ -65,6 +67,7 @@ const PluginMarketplace = lazy(() => import('@/pages/forums/PluginMarketplace'))
 // Settings & Profile
 const Settings = lazy(() => import('@/pages/settings/Settings'));
 const ThemeCustomization = lazy(() => import('@/pages/settings/ThemeCustomization'));
+const AppThemeSettings = lazy(() => import('@/pages/settings/AppThemeSettings'));
 const TwoFactorSetup = lazy(() => import('@/pages/settings/TwoFactorSetup'));
 const BlockedUsers = lazy(() => import('@/pages/settings/BlockedUsers'));
 const UserProfile = lazy(() => import('@/pages/profile/UserProfile'));
@@ -133,13 +136,15 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       console.log('[AuthInitializer] Starting auth check, hasToken:', !!token);
     }
 
-    checkAuth().catch((error) => {
-      console.error('[AuthInitializer] Auth check failed:', error);
-    }).finally(() => {
-      if (import.meta.env.DEV) {
-        console.log('[AuthInitializer] Auth check complete');
-      }
-    });
+    checkAuth()
+      .catch((error) => {
+        console.error('[AuthInitializer] Auth check failed:', error);
+      })
+      .finally(() => {
+        if (import.meta.env.DEV) {
+          console.log('[AuthInitializer] Auth check complete');
+        }
+      });
   }, [checkAuth, token]);
 
   // Fetch gamification data when authenticated
@@ -154,18 +159,24 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
     }
   }, [isAuthenticated, fetchGamificationData]);
 
-  // Apply global theme CSS variables
+  // Apply global theme CSS variables (both app theme and user customizations)
   useEffect(() => {
+    // Apply app-wide theme (default, matrix, etc.)
+    const appThemeId = localStorage.getItem('cgraph-app-theme') || 'default';
+    ThemeRegistry.applyTheme(appThemeId);
+
+    // Also apply user customization colors on top
     const colors = THEME_COLORS[theme.colorPreset];
     const root = document.documentElement;
 
-    root.style.setProperty('--theme-primary', colors.primary);
-    root.style.setProperty('--theme-secondary', colors.secondary);
-    root.style.setProperty('--theme-glow', colors.glow);
-    root.style.setProperty('--theme-gradient', colors.gradient);
+    root.style.setProperty('--user-theme-primary', colors.primary);
+    root.style.setProperty('--user-theme-secondary', colors.secondary);
+    root.style.setProperty('--user-theme-glow', colors.glow);
+    root.style.setProperty('--user-theme-gradient', colors.gradient);
 
     if (import.meta.env.DEV) {
-      console.log('[ThemeSystem] Applied theme:', theme.colorPreset, colors);
+      console.log('[ThemeSystem] Applied app theme:', appThemeId);
+      console.log('[ThemeSystem] Applied user customizations:', theme.colorPreset, colors);
     }
   }, [theme.colorPreset]);
 
@@ -238,185 +249,174 @@ export default function App() {
     <AuthInitializer>
       <Suspense fallback={<PageLoader />}>
         <Routes>
-        {/* Test route for Matrix animation */}
-        <Route path="/test/matrix" element={<MatrixTest />} />
-        
-        {/* Enhanced Components Demo */}
-        <Route path="/test/enhanced" element={<EnhancedDemo />} />
-        
-        {/* Public landing page - shown to unauthenticated visitors */}
-        <Route
-          path="/"
-          element={<LandingPage />}
-        />
-        
-        {/* Legal pages - public access */}
-        <Route path="/privacy" element={<PrivacyPolicy />} />
-        <Route path="/terms" element={<TermsOfService />} />
-        <Route path="/cookies" element={<CookiePolicy />} />
-        <Route path="/gdpr" element={<GDPR />} />
-        
-        {/* Company pages - public access */}
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/careers" element={<Careers />} />
-        <Route path="/press" element={<Press />} />
-        <Route path="/status" element={<Status />} />
-        
-        {/* Auth routes */}
-        <Route
-          path="/login"
-          element={
-            <PublicRoute>
-              <AuthLayout>
-                <Login />
-              </AuthLayout>
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <PublicRoute>
-              <AuthLayout>
-                <Register />
-              </AuthLayout>
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/forgot-password"
-          element={
-            <PublicRoute>
-              <AuthLayout>
-                <ForgotPassword />
-              </AuthLayout>
-            </PublicRoute>
-          }
-        />
-        {/* OAuth callback - doesn't need layout */}
-        <Route
-          path="/auth/oauth/:provider/callback"
-          element={<OAuthCallback />}
-        />
-        
-        {/* Password Reset - token-based, no auth needed */}
-        <Route
-          path="/reset-password"
-          element={<ResetPassword />}
-        />
-        
-        {/* Email Verification - token-based, no auth needed */}
-        <Route
-          path="/verify-email"
-          element={<VerifyEmail />}
-        />
+          {/* Test route for Matrix animation */}
+          <Route path="/test/matrix" element={<MatrixTest />} />
 
-        {/* Protected routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <AppLayout />
-            </ProtectedRoute>
-          }
-        >
-          {/* Messages (DMs) */}
-          <Route path="messages" element={<Messages />}>
-            <Route path=":conversationId" element={<Conversation />} />
-          </Route>
+          {/* Enhanced Components Demo */}
+          <Route path="/test/enhanced" element={<EnhancedDemo />} />
 
-          {/* Friends */}
-          <Route path="friends" element={<Friends />} />
+          {/* Public landing page - shown to unauthenticated visitors */}
+          <Route path="/" element={<LandingPage />} />
 
-          {/* Notifications */}
-          <Route path="notifications" element={<Notifications />} />
+          {/* Legal pages - public access */}
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/cookies" element={<CookiePolicy />} />
+          <Route path="/gdpr" element={<GDPR />} />
 
-          {/* Search */}
-          <Route path="search" element={<Search />} />
+          {/* Company pages - public access */}
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/press" element={<Press />} />
+          <Route path="/status" element={<Status />} />
 
-          {/* Groups */}
-          <Route path="groups" element={<Groups />}>
-            <Route path=":groupId/channels/:channelId" element={<GroupChannel />} />
-          </Route>
-
-          {/* Forums */}
-          <Route path="forums" element={<Forums />} />
-          <Route path="forums/leaderboard" element={<ForumLeaderboard />} />
-          <Route path="forums/create" element={<CreateForum />} />
-          <Route path="forums/plugins" element={<PluginMarketplace />} />
-          <Route path="forums/:forumSlug" element={<ForumBoardView />} />
-          <Route path="forums/:forumSlug/posts" element={<Forums />} />
-          <Route path="forums/:forumSlug/create-post" element={<CreatePost />} />
-          <Route path="forums/:forumSlug/settings" element={<ForumSettings />} />
-          <Route path="forums/:forumSlug/admin" element={<ForumAdmin />} />
-          <Route path="forums/:forumSlug/post/:postId" element={<ForumPost />} />
-          <Route path="forums/:forumSlug/boards/:boardSlug" element={<ForumBoardView />} />
-          <Route path="forums/:forumSlug/threads/:threadId" element={<ForumPost />} />
-          <Route path="forums/:forumSlug/plugins" element={<PluginMarketplace />} />
-
-          {/* Settings */}
-          <Route path="settings" element={<Settings />} />
-          <Route path="settings/:section" element={<Settings />} />
-          <Route path="settings/theme" element={<ThemeCustomization />} />
-          <Route path="settings/security/2fa-setup" element={<TwoFactorSetup />} />
-          <Route path="settings/privacy/blocked" element={<BlockedUsers />} />
-
-          {/* Community */}
-          <Route path="community/leaderboard" element={<UserLeaderboard />} />
-
-          {/* Members */}
-          <Route path="members" element={<MemberList />} />
-          <Route path="members/online" element={<WhosOnline />} />
-
-          {/* Calendar */}
-          <Route path="calendar" element={<CalendarPage />} />
-          <Route path="calendar/events" element={<CalendarPage />} />
-
-          {/* Referrals */}
-          <Route path="referrals" element={<ReferralPage />} />
-          <Route path="referrals/history" element={<ReferralPage />} />
-
-          {/* Premium & Coins */}
-          <Route path="premium" element={<PremiumPage />} />
-          <Route path="premium/coins" element={<CoinShop />} />
-
-          {/* Gamification Leaderboard */}
-          <Route path="leaderboard" element={<LeaderboardPage />} />
-
-          {/* Gamification Hub & Pages */}
-          <Route path="gamification" element={<GamificationHubPage />} />
-          <Route path="gamification/achievements" element={<AchievementsPage />} />
-          <Route path="gamification/quests" element={<QuestsPage />} />
-          <Route path="gamification/titles" element={<TitlesPage />} />
-          <Route path="achievements" element={<AchievementsPage />} />
-          <Route path="quests" element={<QuestsPage />} />
-          <Route path="titles" element={<TitlesPage />} />
-
-          {/* User Profile */}
-          
-          {/* Voice/Video Calls */}
-          <Route path="call/:recipientId/:callType" element={<CallScreen />} />
-          
-          {/* Onboarding (first-time user experience) */}
-          <Route path="onboarding" element={<Onboarding />} />
-          <Route path="user/:userId" element={<UserProfile />} />
-          <Route path="u/:userId" element={<UserProfile />} />
-
-          {/* Admin Dashboard - requires admin role */}
+          {/* Auth routes */}
           <Route
-            path="admin/*"
+            path="/login"
             element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
+              <PublicRoute>
+                <AuthLayout>
+                  <Login />
+                </AuthLayout>
+              </PublicRoute>
             }
           />
-        </Route>
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <AuthLayout>
+                  <Register />
+                </AuthLayout>
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <PublicRoute>
+                <AuthLayout>
+                  <ForgotPassword />
+                </AuthLayout>
+              </PublicRoute>
+            }
+          />
+          {/* OAuth callback - doesn't need layout */}
+          <Route path="/auth/oauth/:provider/callback" element={<OAuthCallback />} />
 
-        {/* 404 */}
-        <Route path="*" element={<NotFound />} />
-      </Routes>
+          {/* Password Reset - token-based, no auth needed */}
+          <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* Email Verification - token-based, no auth needed */}
+          <Route path="/verify-email" element={<VerifyEmail />} />
+
+          {/* Protected routes */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <AppLayout />
+              </ProtectedRoute>
+            }
+          >
+            {/* Messages (DMs) */}
+            <Route path="messages" element={<Messages />}>
+              <Route path=":conversationId" element={<Conversation />} />
+            </Route>
+
+            {/* Friends */}
+            <Route path="friends" element={<Friends />} />
+
+            {/* Notifications */}
+            <Route path="notifications" element={<Notifications />} />
+
+            {/* Search */}
+            <Route path="search" element={<Search />} />
+
+            {/* Groups */}
+            <Route path="groups" element={<Groups />}>
+              <Route path=":groupId/channels/:channelId" element={<GroupChannel />} />
+            </Route>
+
+            {/* Forums */}
+            <Route path="forums" element={<Forums />} />
+            <Route path="forums/leaderboard" element={<ForumLeaderboard />} />
+            <Route path="forums/create" element={<CreateForum />} />
+            <Route path="forums/plugins" element={<PluginMarketplace />} />
+            <Route path="forums/:forumSlug" element={<ForumBoardView />} />
+            <Route path="forums/:forumSlug/posts" element={<Forums />} />
+            <Route path="forums/:forumSlug/create-post" element={<CreatePost />} />
+            <Route path="forums/:forumSlug/settings" element={<ForumSettings />} />
+            <Route path="forums/:forumSlug/admin" element={<ForumAdmin />} />
+            <Route path="forums/:forumSlug/post/:postId" element={<ForumPost />} />
+            <Route path="forums/:forumSlug/boards/:boardSlug" element={<ForumBoardView />} />
+            <Route path="forums/:forumSlug/threads/:threadId" element={<ForumPost />} />
+            <Route path="forums/:forumSlug/plugins" element={<PluginMarketplace />} />
+
+            {/* Settings */}
+            <Route path="settings" element={<Settings />} />
+            <Route path="settings/:section" element={<Settings />} />
+            <Route path="settings/theme" element={<ThemeCustomization />} />
+            <Route path="settings/app-theme" element={<AppThemeSettings />} />
+            <Route path="settings/security/2fa-setup" element={<TwoFactorSetup />} />
+            <Route path="settings/privacy/blocked" element={<BlockedUsers />} />
+
+            {/* Community */}
+            <Route path="community/leaderboard" element={<UserLeaderboard />} />
+
+            {/* Members */}
+            <Route path="members" element={<MemberList />} />
+            <Route path="members/online" element={<WhosOnline />} />
+
+            {/* Calendar */}
+            <Route path="calendar" element={<CalendarPage />} />
+            <Route path="calendar/events" element={<CalendarPage />} />
+
+            {/* Referrals */}
+            <Route path="referrals" element={<ReferralPage />} />
+            <Route path="referrals/history" element={<ReferralPage />} />
+
+            {/* Premium & Coins */}
+            <Route path="premium" element={<PremiumPage />} />
+            <Route path="premium/coins" element={<CoinShop />} />
+
+            {/* Gamification Leaderboard */}
+            <Route path="leaderboard" element={<LeaderboardPage />} />
+
+            {/* Gamification Hub & Pages */}
+            <Route path="gamification" element={<GamificationHubPage />} />
+            <Route path="gamification/achievements" element={<AchievementsPage />} />
+            <Route path="gamification/quests" element={<QuestsPage />} />
+            <Route path="gamification/titles" element={<TitlesPage />} />
+            <Route path="achievements" element={<AchievementsPage />} />
+            <Route path="quests" element={<QuestsPage />} />
+            <Route path="titles" element={<TitlesPage />} />
+
+            {/* User Profile */}
+
+            {/* Voice/Video Calls */}
+            <Route path="call/:recipientId/:callType" element={<CallScreen />} />
+
+            {/* Onboarding (first-time user experience) */}
+            <Route path="onboarding" element={<Onboarding />} />
+            <Route path="user/:userId" element={<UserProfile />} />
+            <Route path="u/:userId" element={<UserProfile />} />
+
+            {/* Admin Dashboard - requires admin role */}
+            <Route
+              path="admin/*"
+              element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              }
+            />
+          </Route>
+
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
       </Suspense>
     </AuthInitializer>
   );

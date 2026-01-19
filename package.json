@@ -47,13 +47,15 @@
     "typescript-eslint": "^8.32.0"
   },
   "engines": {
-    "node": "22.x",
+    "node": "20.x",
     "pnpm": ">=10.0.0"
   },
   "pnpm": {
     "overrides": {
       "react": "19.1.0",
-      "react-dom": "19.1.0"
+      "react-dom": "19.1.0",
+      "@wagmi/core": "2.16.4",
+      "@wagmi/connectors": "5.7.7"
     }
   },
   "packageManager": "pnpm@10.26.2",
