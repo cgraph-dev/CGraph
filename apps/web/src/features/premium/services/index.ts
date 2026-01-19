@@ -6,26 +6,24 @@
 
 // API endpoints for premium
 export const premiumApi = {
-  // Subscription
+  // Premium subscription (separate /premium routes)
   getSubscriptionStatus: () => '/api/v1/premium/status',
-  getSubscriptionPlans: () => '/api/v1/premium/plans',
-  subscribe: (planId: string) => `/api/v1/premium/subscribe/${planId}`,
+  getSubscriptionTiers: () => '/api/v1/premium/tiers',
+  getFeatures: () => '/api/v1/premium/features',
+  subscribe: () => '/api/v1/premium/subscribe', // POST with { tier } in body
   cancelSubscription: () => '/api/v1/premium/cancel',
-  updatePaymentMethod: () => '/api/v1/premium/payment-method',
   
-  // Coins
-  getCoinBalance: () => '/api/v1/premium/coins',
-  getCoinPackages: () => '/api/v1/premium/coins/packages',
-  purchaseCoins: (packageId: string) => `/api/v1/premium/coins/purchase/${packageId}`,
+  // Coins (separate /coins routes)
+  getCoinBalance: () => '/api/v1/coins',
+  getCoinHistory: () => '/api/v1/coins/history',
+  getCoinPackages: () => '/api/v1/coins/packages',
+  getEarnMethods: () => '/api/v1/coins/earn',
   
-  // Shop
-  getShopItems: () => '/api/v1/premium/shop',
-  purchaseShopItem: (itemId: string) => `/api/v1/premium/shop/${itemId}/purchase`,
-  getInventory: () => '/api/v1/premium/inventory',
-  
-  // History
-  getPurchaseHistory: () => '/api/v1/premium/history',
-  getInvoice: (purchaseId: string) => `/api/v1/premium/history/${purchaseId}/invoice`,
+  // Shop (separate /shop routes)
+  getShopItems: () => '/api/v1/shop',
+  getShopCategories: () => '/api/v1/shop/categories',
+  purchaseShopItem: (itemId: string) => `/api/v1/shop/${itemId}/purchase`,
+  getShopPurchases: () => '/api/v1/shop/purchases',
 };
 
 // Subscription tier features

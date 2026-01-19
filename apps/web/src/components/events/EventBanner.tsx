@@ -19,6 +19,59 @@ import { useSeasonalEventStore, SeasonalEvent, EventReward, BattlePassTier } fro
  * - Throttled re-renders
  */
 
+// ==================== TIER HELPER TYPES ====================
+
+// Extended reward with icon support (for display purposes)
+interface DisplayReward extends EventReward {
+  icon?: string;
+}
+
+// Extended tier type that includes singular reward accessors for backward compatibility
+interface BattlePassTierExtended extends Omit<BattlePassTier, 'freeRewards' | 'premiumRewards'> {
+  id: number;
+  claimed?: boolean;
+  freeReward: DisplayReward;
+  premiumReward: DisplayReward;
+  freeRewards: EventReward[];
+  premiumRewards: EventReward[];
+}
+
+// Icon mapping based on reward type
+const REWARD_TYPE_ICONS: Record<EventReward['type'], string> = {
+  coins: '🪙',
+  gems: '💎',
+  xp: '⭐',
+  title: '🏷️',
+  border: '🖼️',
+  effect: '✨',
+  badge: '🎖️',
+};
+
+// Helper to get icon for a reward
+function getRewardIcon(reward: EventReward): string {
+  return REWARD_TYPE_ICONS[reward.type] || '🎁';
+}
+
+// Helper to transform tiers into extended format with singular reward accessors
+function normalizeTiers(tiers: BattlePassTier[]): BattlePassTierExtended[] {
+  return tiers.map((tier, index) => {
+    const freeReward = tier.freeRewards?.[0];
+    const premiumReward = tier.premiumRewards?.[0];
+    return {
+      ...tier,
+      id: index + 1,
+      claimed: false,
+      // Provide singular accessors with icon based on type
+      freeReward: freeReward 
+        ? { ...freeReward, icon: getRewardIcon(freeReward) }
+        : { id: '', name: 'Reward', type: 'xp' as const, icon: '🎁' },
+      premiumReward: premiumReward
+        ? { ...premiumReward, icon: getRewardIcon(premiumReward) }
+        : { id: '', name: 'Premium Reward', type: 'gems' as const, icon: '⭐' },
+    };
+  });
+}
+
 // ==================== EVENT BANNER ====================
 
 interface EventBannerProps {
@@ -77,7 +130,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
         className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 
                    rounded-lg border border-purple-500/30 cursor-pointer hover:border-purple-500/50 transition-colors"
       >
-        <span className="text-xl">{getEventEmoji(event.eventType)}</span>
+        <span className="text-xl">{getEventEmoji(event.type)}</span>
         <span className="text-sm font-medium truncate">{event.name}</span>
         {timeRemaining && (
           <span className="text-xs text-gray-400 ml-auto">
@@ -101,13 +154,13 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(135deg, ${event.config.primaryColor || '#8B5CF6'}40, ${event.config.secondaryColor || '#EC4899'}40)`,
+            background: `linear-gradient(135deg, ${event.colors?.primary || '#8B5CF6'}40, ${event.colors?.secondary || '#EC4899'}40)`,
           }}
         />
         
         {/* Content */}
         <div className="relative p-4 flex items-center gap-4">
-          <div className="text-3xl">{getEventEmoji(event.eventType)}</div>
+          <div className="text-3xl">{getEventEmoji(event.type)}</div>
           <div className="flex-1">
             <h3 className="font-bold text-white">{event.name}</h3>
             {timeRemaining && (
@@ -135,12 +188,12 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
       <div
         className="absolute inset-0"
         style={{
-          background: `linear-gradient(135deg, ${event.config.primaryColor || '#8B5CF6'}, ${event.config.secondaryColor || '#EC4899'})`,
+          background: `linear-gradient(135deg, ${event.colors?.primary || '#8B5CF6'}, ${event.colors?.secondary || '#EC4899'})`,
         }}
       />
       
       {/* Animated particles */}
-      <EventParticles eventType={event.eventType} />
+      <EventParticles eventType={event.type} />
 
       {/* Content */}
       <div className="relative p-8 flex items-center gap-6">
@@ -157,7 +210,7 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
             ease: 'easeInOut',
           }}
         >
-          {getEventEmoji(event.eventType)}
+          {getEventEmoji(event.type)}
         </motion.div>
 
         {/* Event Info */}
@@ -180,9 +233,9 @@ export function EventBanner({ event, variant = 'full', onClick }: EventBannerPro
           )}
           
           {/* XP Multiplier Badge */}
-          {event.config.xpMultiplier > 1 && (
+          {event.multipliers?.xp && event.multipliers.xp > 1 && (
             <span className="inline-block px-3 py-1 bg-yellow-500/30 rounded-full text-sm font-bold text-yellow-300">
-              {event.config.xpMultiplier}x XP Bonus
+              {event.multipliers.xp}x XP Bonus
             </span>
           )}
         </div>
@@ -297,7 +350,7 @@ interface BattlePassProgressProps {
 }
 
 export function BattlePassProgress({
-  tiers,
+  tiers: rawTiers,
   currentTier,
   currentXP,
   xpPerTier,
@@ -305,6 +358,8 @@ export function BattlePassProgress({
   onClaimReward,
   onUpgrade,
 }: BattlePassProgressProps) {
+  // Normalize tiers to have both singular and plural reward accessors
+  const tiers = normalizeTiers(rawTiers);
   const progressRef = useRef<HTMLDivElement>(null);
   const [visibleRange, setVisibleRange] = useState({ start: 0, end: 10 });
 
@@ -502,7 +557,7 @@ export function EventLeaderboard({
       </div>
 
       {/* Top 3 Podium */}
-      {entries.length >= 3 && (
+      {entries.length >= 3 && entries[0] && entries[1] && entries[2] && (
         <div className="flex items-end justify-center gap-4 p-6 border-b border-white/10">
           {/* Second Place */}
           <LeaderboardPodium entry={entries[1]} position={2} />

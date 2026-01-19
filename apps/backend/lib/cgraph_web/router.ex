@@ -479,6 +479,8 @@ defmodule CGraphWeb.Router do
 
     # User gamification stats
     get "/gamification/stats", GamificationController, :stats
+    # Alias for frontend compatibility
+    get "/gamification/progress", GamificationController, :stats
     get "/gamification/level-info", GamificationController, :level_info
     get "/gamification/xp/history", GamificationController, :xp_history
 
@@ -491,7 +493,10 @@ defmodule CGraphWeb.Router do
     get "/gamification/leaderboard/:category", GamificationController, :leaderboard
 
     # Streaks
+    get "/gamification/streak", GamificationController, :streak_info
     post "/gamification/streak/claim", GamificationController, :claim_streak
+    # Alias for frontend compatibility (checkin = claim)
+    post "/gamification/streak/checkin", GamificationController, :claim_streak
 
     # Quests
     get "/quests", QuestController, :index
@@ -536,6 +541,8 @@ defmodule CGraphWeb.Router do
     get "/avatar-borders/unlocked", CosmeticsController, :unlocked_borders
     post "/avatar-borders/:id/equip", CosmeticsController, :equip_border
     post "/avatar-borders/:id/purchase", CosmeticsController, :purchase_border
+    # Alias for frontend compatibility
+    post "/avatar-borders/:id/unlock", CosmeticsController, :purchase_border
 
     # ========================================
     # Cosmetics: Profile Themes

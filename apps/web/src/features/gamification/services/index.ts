@@ -6,33 +6,42 @@
 
 // API endpoints for gamification
 export const gamificationApi = {
-  // XP & Levels
-  getProgress: () => '/api/v1/gamification/progress',
-  getLeaderboard: (type: 'weekly' | 'monthly' | 'allTime') => `/api/v1/gamification/leaderboard?type=${type}`,
+  // XP & Levels (gamification routes)
+  getProgress: () => '/api/v1/gamification/stats',
+  getLeaderboard: (type: 'weekly' | 'monthly' | 'allTime') => `/api/v1/gamification/leaderboard/${type}`,
+  getLevelInfo: () => '/api/v1/gamification/level-info',
+  getXpHistory: () => '/api/v1/gamification/xp/history',
   
   // Achievements
   getAchievements: () => '/api/v1/gamification/achievements',
   getAchievement: (id: string) => `/api/v1/gamification/achievements/${id}`,
   unlockAchievement: (id: string) => `/api/v1/gamification/achievements/${id}/unlock`,
   
-  // Quests
-  getQuests: () => '/api/v1/gamification/quests',
-  getActiveQuests: () => '/api/v1/gamification/quests/active',
-  completeQuest: (id: string) => `/api/v1/gamification/quests/${id}/complete`,
-  claimQuestReward: (id: string) => `/api/v1/gamification/quests/${id}/claim`,
+  // Quests (separate /quests routes)
+  getQuests: () => '/api/v1/quests',
+  getActiveQuests: () => '/api/v1/quests/active',
+  getDailyQuests: () => '/api/v1/quests/daily',
+  getWeeklyQuests: () => '/api/v1/quests/weekly',
+  getQuest: (id: string) => `/api/v1/quests/${id}`,
+  acceptQuest: (id: string) => `/api/v1/quests/${id}/accept`,
+  claimQuestReward: (id: string) => `/api/v1/quests/${id}/claim`,
   
-  // Titles
-  getTitles: () => '/api/v1/gamification/titles',
-  equipTitle: (id: string) => `/api/v1/gamification/titles/${id}/equip`,
-  unequipTitle: () => '/api/v1/gamification/titles/unequip',
+  // Titles (separate /titles routes)
+  getTitles: () => '/api/v1/titles',
+  getOwnedTitles: () => '/api/v1/titles/owned',
+  equipTitle: (id: string) => `/api/v1/titles/${id}/equip`,
+  unequipTitle: () => '/api/v1/titles/unequip',
+  purchaseTitle: (id: string) => `/api/v1/titles/${id}/purchase`,
   
-  // Shop
-  getShopItems: () => '/api/v1/gamification/shop',
-  purchaseItem: (id: string) => `/api/v1/gamification/shop/${id}/purchase`,
+  // Shop (separate /shop routes)
+  getShopItems: () => '/api/v1/shop',
+  getShopCategories: () => '/api/v1/shop/categories',
+  getShopPurchases: () => '/api/v1/shop/purchases',
+  getShopItem: (id: string) => `/api/v1/shop/${id}`,
+  purchaseItem: (id: string) => `/api/v1/shop/${id}/purchase`,
   
   // Streaks
-  getStreak: () => '/api/v1/gamification/streak',
-  checkIn: () => '/api/v1/gamification/streak/checkin',
+  claimStreak: () => '/api/v1/gamification/streak/claim',
 };
 
 // XP reward values for different actions

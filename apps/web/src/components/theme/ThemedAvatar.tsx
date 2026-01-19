@@ -5,13 +5,15 @@ import type { UserTheme } from '@/stores/themeStore';
 interface ThemedAvatarProps {
   src?: string | null;
   alt?: string;
-  size?: 'small' | 'medium' | 'large' | 'xlarge';
+  size?: 'xs' | 'small' | 'medium' | 'large' | 'xlarge';
   className?: string;
   userTheme?: Partial<UserTheme>; // For displaying other users' avatars with their theme
   onClick?: () => void;
+  style?: React.CSSProperties;
 }
 
 const sizeMap = {
+  xs: 'w-6 h-6',
   small: 'w-8 h-8',
   medium: 'w-12 h-12',
   large: 'w-16 h-16',
@@ -19,6 +21,7 @@ const sizeMap = {
 };
 
 const borderWidthMap = {
+  xs: 1,
   small: 2,
   medium: 3,
   large: 4,
@@ -32,6 +35,7 @@ export function ThemedAvatar({
   className = '',
   userTheme,
   onClick,
+  style,
 }: ThemedAvatarProps) {
   const currentUserTheme = useThemeStore((state) => state.theme);
 
@@ -130,6 +134,7 @@ export function ThemedAvatar({
       }`}
       style={{
         border: theme.avatarBorder !== 'none' ? `${borderWidth}px solid ${colors.primary}` : 'none',
+        ...style,
       }}
       animate={hasAnimation ? animation : undefined}
       transition={

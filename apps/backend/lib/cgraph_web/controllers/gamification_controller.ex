@@ -126,6 +126,34 @@ defmodule CGraphWeb.GamificationController do
   end
 
   @doc """
+  GET /api/v1/gamification/streak
+  Get current user's streak information.
+  """
+  def streak_info(conn, _params) do
+    user = conn.assigns.current_user
+    today = Date.utc_today()
+    
+    already_claimed = user.daily_bonus_claimed_at == today
+    can_claim = !already_claimed
+    
+    conn
+    |> put_status(:ok)
+    |> json(%{
+      streak_days: user.streak_days || 0,
+      streak_last_claimed: user.streak_last_claimed,
+      streak_longest: user.streak_longest || 0,
+      daily_bonus_claimed_today: already_claimed,
+      can_claim: can_claim,
+      next_bonus: calculate_next_bonus(user.streak_days || 0, can_claim)
+    })
+  end
+
+  defp calculate_next_bonus(current_streak, can_claim) do
+    next_streak = if can_claim, do: current_streak + 1, else: current_streak
+    min(10 + (next_streak * 5), 100)
+  end
+
+  @doc """
   POST /api/v1/gamification/streak/claim
   Claim daily login streak bonus.
   """

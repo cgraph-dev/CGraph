@@ -16,7 +16,7 @@ import {
 } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import type { ForumCategory, Forum } from '@/stores/forumStore';
 
 /**
@@ -77,7 +77,7 @@ export function ForumCategoryList({
   className = '',
 }: ForumCategoryListProps) {
   const { theme } = useThemeStore();
-  const primaryColor = theme.colors.primary;
+  const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(categories.map((c) => c.id))

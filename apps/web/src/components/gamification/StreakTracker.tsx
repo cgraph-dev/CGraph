@@ -12,7 +12,7 @@ import {
 import { FireIcon as FireIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import confetti from 'canvas-confetti';
 
 /**
@@ -89,7 +89,7 @@ export function StreakTracker({
   className = '',
 }: StreakTrackerProps) {
   const { theme } = useThemeStore();
-  const primaryColor = theme.colors.primary;
+  const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
   const [isClaiming, setIsClaiming] = useState(false);
   const [showMilestones, setShowMilestones] = useState(false);

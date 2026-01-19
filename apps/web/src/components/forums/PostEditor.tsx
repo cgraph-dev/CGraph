@@ -19,7 +19,7 @@ import {
 } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import type { ThreadPrefix, ForumCategory } from '@/stores/forumStore';
 
 /**
@@ -131,7 +131,7 @@ export function PostEditor({
   className = '',
 }: PostEditorProps) {
   const { theme } = useThemeStore();
-  const primaryColor = theme.colors.primary;
+  const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);

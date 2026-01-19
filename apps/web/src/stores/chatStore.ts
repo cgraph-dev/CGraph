@@ -66,6 +66,8 @@ export interface Conversation {
   participants: ConversationParticipant[];
   lastMessage: Message | null;
   unreadCount: number;
+  isGroup?: boolean;    // Convenience property (derived from type === 'group')
+  isPinned?: boolean;   // Whether the conversation is pinned
   createdAt: string;
   updatedAt: string;
 }

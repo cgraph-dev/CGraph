@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useFriendStore } from '@/stores/friendStore';
 import { socketManager } from '@/lib/socket';
 import { api } from '@/lib/api';
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
@@ -42,6 +43,12 @@ import { themeEngine } from '@/lib/ai/ThemeEngine';
 // Theme system integration
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
+
+// Profile card integration
+import UserProfileCard from '@/components/profile/UserProfileCard';
+
+// Chat info panel
+import ChatInfoPanel from '@/components/chat/ChatInfoPanel';
 
 // ============================================================================
 // TYPE-SAFE REACTION AGGREGATION UTILITIES
@@ -137,6 +144,7 @@ export default function Conversation() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { friends, fetchFriends } = useFriendStore();
   const {
     conversations,
     messages,
@@ -163,6 +171,7 @@ export default function Conversation() {
   // ====== NEXT GEN UI CUSTOMIZATION STATE ======
   const [showSettings, setShowSettings] = useState(false);
   const [showE2EETester, setShowE2EETester] = useState(false);
+  const [showInfoPanel, setShowInfoPanel] = useState(false);
   const [uiPreferences, setUiPreferences] = useState({
     glassEffect: 'holographic' as 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic',
     animationIntensity: 'high' as 'low' | 'medium' | 'high',
@@ -173,6 +182,13 @@ export default function Conversation() {
     voiceVisualizerTheme: 'matrix-green' as 'matrix-green' | 'cyber-blue' | 'neon-pink' | 'amber',
     messageEntranceAnimation: 'slide' as 'slide' | 'scale' | 'fade' | 'bounce',
   });
+
+  // Fetch friends list for mutual friends calculation
+  useEffect(() => {
+    if (friends.length === 0) {
+      fetchFriends();
+    }
+  }, [friends.length, fetchFriends]);
   
   // Refresh handler
   const handleRefresh = useCallback(async () => {
@@ -220,6 +236,25 @@ export default function Conversation() {
 
   // Track online status of the other participant
   const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
+  
+  // Calculate mutual friends from the friends list
+  // A mutual friend is someone who is friends with both the current user AND the other participant
+  const mutualFriends = useMemo(() => {
+    if (!otherParticipantUserId || friends.length === 0) return [];
+    
+    // For now, we'll show friends that are in common
+    // In a real implementation, we'd need to fetch the other user's friends list
+    // and compute the intersection. For MVP, show if the other participant is a friend
+    const isFriend = friends.some(f => f.id === otherParticipantUserId || f.friendId === otherParticipantUserId);
+    
+    // Return formatted mutual friends data
+    // The ChatInfoPanel expects: { id, username, avatarUrl }
+    return friends.slice(0, 3).map(f => ({
+      id: f.id || f.friendId,
+      username: f.displayName || f.username || 'Friend',
+      avatarUrl: f.avatarUrl,
+    }));
+  }, [friends, otherParticipantUserId]);
   
   // Subscribe to presence changes
   useEffect(() => {
@@ -441,7 +476,9 @@ export default function Conversation() {
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 h-full max-h-screen overflow-hidden relative">
+    <div className="flex-1 flex h-full max-h-screen overflow-hidden relative">
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 h-full overflow-hidden relative">
       {/* Ambient Background Effects - Optimized */}
       {uiPreferences.showParticles && (
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
@@ -485,30 +522,36 @@ export default function Conversation() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <motion.div
-            className="relative"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
+          <UserProfileCard
+            userId={otherParticipant?.user?.id || ''}
+            trigger="both"
+            className="cursor-pointer"
           >
-            <ThemedAvatar
-              src={otherParticipant?.user?.avatarUrl}
-              alt={conversationName}
-              size="large"
-              userTheme={(otherParticipant?.user as any)?.theme}
-            />
-            {isOtherUserOnline && (
-              <motion.div
-                className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-dark-900 shadow-lg"
-                animate={{
-                  boxShadow: [
-                    '0 0 0 0 rgba(34, 197, 94, 0.7)',
-                    '0 0 0 6px rgba(34, 197, 94, 0)',
-                  ],
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
+            <motion.div
+              className="relative"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ThemedAvatar
+                src={otherParticipant?.user?.avatarUrl}
+                alt={conversationName}
+                size="large"
+                userTheme={(otherParticipant?.user as any)?.theme}
               />
-            )}
-          </motion.div>
+              {isOtherUserOnline && (
+                <motion.div
+                  className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-green-500 border-2 border-dark-900 shadow-lg"
+                  animate={{
+                    boxShadow: [
+                      '0 0 0 0 rgba(34, 197, 94, 0.7)',
+                      '0 0 0 6px rgba(34, 197, 94, 0)',
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              )}
+            </motion.div>
+          </UserProfileCard>
           <div>
             <h2 className="font-bold text-white text-lg flex items-center gap-2">
               {conversationName}
@@ -602,11 +645,16 @@ export default function Conversation() {
           </motion.button>
 
           <motion.button
-            onClick={() => uiPreferences.enableHaptic && HapticFeedback.medium()}
-            className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-all duration-200"
+            onClick={() => {
+              setShowInfoPanel(!showInfoPanel);
+              if (uiPreferences.enableHaptic) HapticFeedback.medium();
+            }}
+            className={`p-2 rounded-lg hover:bg-white/10 transition-all duration-200 ${
+              showInfoPanel ? 'bg-primary-500/20 text-primary-400' : 'text-gray-400 hover:text-white'
+            }`}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            title="Conversation info"
+            title="Toggle user info panel"
           >
             <InformationCircleIcon className="h-5 w-5" />
           </motion.button>
@@ -1111,6 +1159,35 @@ export default function Conversation() {
           />
         )}
       </AnimatePresence>
+      </div>
+
+      {/* User Info Panel (Right Sidebar) */}
+      <AnimatePresence>
+        {showInfoPanel && otherParticipant && conversationId && (
+          <ChatInfoPanel
+            userId={otherParticipant?.user?.id || ''}
+            conversationId={conversationId}
+            user={{
+              id: otherParticipant?.user?.id || '',
+              username: otherParticipant?.user?.username || 'Unknown',
+              displayName: otherParticipant?.user?.displayName || otherParticipant?.user?.username,
+              avatarUrl: otherParticipant?.user?.avatarUrl,
+              level: (otherParticipant?.user as any)?.level || 1,
+              xp: (otherParticipant?.user as any)?.xp || 0,
+              karma: (otherParticipant?.user as any)?.karma || 0,
+              streak: (otherParticipant?.user as any)?.streak || 0,
+              onlineStatus: isOtherUserOnline ? 'online' : 'offline',
+              lastSeenAt: otherParticipant?.user?.lastSeenAt,
+              bio: (otherParticipant?.user as any)?.bio,
+              badges: (otherParticipant?.user as any)?.badges || [],
+              theme: (otherParticipant?.user as any)?.theme,
+            }}
+            mutualFriends={mutualFriends}
+            sharedForums={(otherParticipant?.user as any)?.sharedForums || []}
+            onClose={() => setShowInfoPanel(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1163,14 +1240,19 @@ function MessageBubble({
       {/* Avatar */}
       {!isOwn && (
         <div className="w-8 flex-shrink-0">
-          {showAvatar && (
-            <ThemedAvatar
-              src={message.sender?.avatarUrl}
-              alt={message.sender?.displayName || message.sender?.username || 'User'}
-              size="small"
-              userTheme={message.senderTheme}
-              onClick={() => message.sender?.id && onAvatarClick?.(message.sender.id)}
-            />
+          {showAvatar && message.sender?.id && (
+            <UserProfileCard
+              userId={message.sender.id}
+              trigger="both"
+              className="cursor-pointer"
+            >
+              <ThemedAvatar
+                src={message.sender?.avatarUrl}
+                alt={message.sender?.displayName || message.sender?.username || 'User'}
+                size="small"
+                userTheme={message.senderTheme}
+              />
+            </UserProfileCard>
           )}
         </div>
       )}

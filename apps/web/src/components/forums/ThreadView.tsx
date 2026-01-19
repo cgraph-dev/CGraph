@@ -27,7 +27,7 @@ import {
 } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatTimeAgo } from '@/lib/utils';
 import type { Post, Comment, ThreadPrefix, Poll } from '@/stores/forumStore';
@@ -93,7 +93,7 @@ export function ThreadView({
 }: ThreadViewProps) {
   const { user } = useAuthStore();
   const { theme } = useThemeStore();
-  const primaryColor = theme.colors.primary;
+  const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
   
   const parentRef = useRef<HTMLDivElement>(null);
   const [isExpanded, setIsExpanded] = useState(false);

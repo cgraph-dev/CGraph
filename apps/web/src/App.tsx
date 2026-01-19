@@ -68,6 +68,8 @@ const PluginMarketplace = lazy(() => import('@/pages/forums/PluginMarketplace'))
 const Settings = lazy(() => import('@/pages/settings/Settings'));
 const ThemeCustomization = lazy(() => import('@/pages/settings/ThemeCustomization'));
 const AppThemeSettings = lazy(() => import('@/pages/settings/AppThemeSettings'));
+const TitleSelection = lazy(() => import('@/pages/settings/TitleSelection'));
+const BadgeSelection = lazy(() => import('@/pages/settings/BadgeSelection'));
 const TwoFactorSetup = lazy(() => import('@/pages/settings/TwoFactorSetup'));
 const BlockedUsers = lazy(() => import('@/pages/settings/BlockedUsers'));
 const UserProfile = lazy(() => import('@/pages/profile/UserProfile'));
@@ -86,6 +88,12 @@ const GamificationHubPage = lazy(() => import('@/pages/gamification/Gamification
 const AchievementsPage = lazy(() => import('@/pages/gamification/AchievementsPage'));
 const QuestsPage = lazy(() => import('@/pages/gamification/QuestsPage'));
 const TitlesPage = lazy(() => import('@/pages/gamification/TitlesPage'));
+
+// Customize Hub
+const Customize = lazy(() => import('@/pages/customize/Customize'));
+
+// Social Hub
+const Social = lazy(() => import('@/pages/social/Social'));
 
 // Members & Community
 const MemberList = lazy(() => import('@/pages/members/MemberList'));
@@ -325,14 +333,14 @@ export default function App() {
               <Route path=":conversationId" element={<Conversation />} />
             </Route>
 
-            {/* Friends */}
-            <Route path="friends" element={<Friends />} />
+            {/* Social Hub - consolidates friends, notifications, search */}
+            <Route path="social" element={<Navigate to="/social/friends" replace />} />
+            <Route path="social/:tab" element={<Social />} />
 
-            {/* Notifications */}
-            <Route path="notifications" element={<Notifications />} />
-
-            {/* Search */}
-            <Route path="search" element={<Search />} />
+            {/* Redirects for old routes */}
+            <Route path="friends" element={<Navigate to="/social/friends" replace />} />
+            <Route path="notifications" element={<Navigate to="/social/notifications" replace />} />
+            <Route path="search" element={<Navigate to="/social/discover" replace />} />
 
             {/* Groups */}
             <Route path="groups" element={<Groups />}>
@@ -359,6 +367,8 @@ export default function App() {
             <Route path="settings/:section" element={<Settings />} />
             <Route path="settings/theme" element={<ThemeCustomization />} />
             <Route path="settings/app-theme" element={<AppThemeSettings />} />
+            <Route path="settings/titles" element={<TitleSelection />} />
+            <Route path="settings/badges" element={<BadgeSelection />} />
             <Route path="settings/security/2fa-setup" element={<TwoFactorSetup />} />
             <Route path="settings/privacy/blocked" element={<BlockedUsers />} />
 
@@ -381,17 +391,22 @@ export default function App() {
             <Route path="premium" element={<PremiumPage />} />
             <Route path="premium/coins" element={<CoinShop />} />
 
-            {/* Gamification Leaderboard */}
-            <Route path="leaderboard" element={<LeaderboardPage />} />
+            {/* Customize Hub - all personalization in one place */}
+            <Route path="customize" element={<Navigate to="/customize/identity" replace />} />
+            <Route path="customize/:category" element={<Customize />} />
 
-            {/* Gamification Hub & Pages */}
-            <Route path="gamification" element={<GamificationHubPage />} />
-            <Route path="gamification/achievements" element={<AchievementsPage />} />
-            <Route path="gamification/quests" element={<QuestsPage />} />
-            <Route path="gamification/titles" element={<TitlesPage />} />
-            <Route path="achievements" element={<AchievementsPage />} />
-            <Route path="quests" element={<QuestsPage />} />
-            <Route path="titles" element={<TitlesPage />} />
+            {/* Profile - quick access to own profile */}
+            <Route path="profile" element={<Navigate to={`/user/${useAuthStore.getState().user?.id}`} replace />} />
+
+            {/* Redirects for old gamification routes */}
+            <Route path="leaderboard" element={<Navigate to="/customize/progression" replace />} />
+            <Route path="gamification" element={<Navigate to="/customize/progression" replace />} />
+            <Route path="gamification/achievements" element={<Navigate to="/customize/progression" replace />} />
+            <Route path="gamification/quests" element={<Navigate to="/customize/progression" replace />} />
+            <Route path="gamification/titles" element={<Navigate to="/customize/identity" replace />} />
+            <Route path="achievements" element={<Navigate to="/customize/progression" replace />} />
+            <Route path="quests" element={<Navigate to="/customize/progression" replace />} />
+            <Route path="titles" element={<Navigate to="/customize/identity" replace />} />
 
             {/* User Profile */}
 

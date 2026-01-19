@@ -301,9 +301,11 @@ export interface Comment {
   downvotes: number;
   score: number;
   myVote: 1 | -1 | null;
+  userVote?: 1 | -1 | null;  // Alias for myVote for compatibility
   isCollapsed: boolean;
   depth: number;
   children: Comment[];
+  isBestAnswer?: boolean;  // Mark as accepted/best answer
   // MyBB Features
   attachments?: PostAttachment[];
   editHistory?: PostEditHistory[];

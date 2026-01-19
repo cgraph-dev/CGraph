@@ -290,6 +290,15 @@ export class HapticFeedback {
   }
 
   /**
+   * Warning pattern (softer than error)
+   */
+  static warning(): void {
+    if (this.isSupported) {
+      navigator.vibrate([30, 20, 30]);
+    }
+  }
+
+  /**
    * Selection pattern (like iOS picker)
    */
   static selection(): void {

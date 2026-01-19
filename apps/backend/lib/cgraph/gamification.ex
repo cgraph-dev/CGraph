@@ -1275,40 +1275,86 @@ defmodule CGraph.Gamification do
   List active events.
   """
   def list_active_events do
-    []
+    alias CGraph.Gamification.SeasonalEvent
+    
+    now = DateTime.utc_now()
+    
+    query = from e in SeasonalEvent,
+      where: e.is_active == true,
+      where: e.starts_at <= ^now,
+      where: e.ends_at > ^now,
+      order_by: [asc: e.sort_order, desc: e.featured]
+    
+    Repo.all(query)
   end
 
   @doc """
   List upcoming events.
   """
-  def list_upcoming_events(_opts \\ []) do
-    []
+  def list_upcoming_events(days \\ 7) do
+    alias CGraph.Gamification.SeasonalEvent
+    
+    now = DateTime.utc_now()
+    future = DateTime.add(now, days * 24 * 60 * 60, :second)
+    
+    query = from e in SeasonalEvent,
+      where: e.is_active == true,
+      where: e.starts_at > ^now,
+      where: e.starts_at <= ^future,
+      order_by: [asc: e.starts_at]
+    
+    Repo.all(query)
   end
 
   @doc """
   Get an event by ID.
   """
-  def get_event(_event_id) do
-    nil
+  def get_event(event_id) do
+    alias CGraph.Gamification.SeasonalEvent
+    Repo.get(SeasonalEvent, event_id)
   end
 
   @doc """
   Get user's progress in an event.
   """
-  def get_user_event_progress(_user_id, _event_id) do
-    %{
-      points: 0,
-      tier: 0,
-      quests_completed: 0,
-      rewards_claimed: []
-    }
+  def get_user_event_progress(user_id, event_id) do
+    alias CGraph.Gamification.UserEventProgress
+    
+    case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
+      nil -> 
+        {:error, :not_found}
+      progress ->
+        {:ok, %{
+          joined: true,
+          event_points: progress.event_points || 0,
+          battle_pass_tier: progress.battle_pass_tier || 0,
+          has_battle_pass: progress.has_battle_pass || false,
+          quests_completed: length(progress.quests_completed || []),
+          rewards_claimed: progress.rewards_claimed || [],
+          leaderboard_points: progress.leaderboard_points || 0
+        }}
+    end
   end
 
   @doc """
   Get user's rank in an event.
   """
-  def get_user_event_rank(_user_id, _event_id) do
-    nil
+  def get_user_event_rank(user_id, event_id) do
+    alias CGraph.Gamification.UserEventProgress
+    
+    query = """
+    SELECT rank FROM (
+      SELECT user_id, RANK() OVER (ORDER BY leaderboard_points DESC) as rank
+      FROM user_event_progress
+      WHERE seasonal_event_id = $1
+    ) ranked
+    WHERE user_id = $2
+    """
+    
+    case Repo.query(query, [Ecto.UUID.dump!(event_id), Ecto.UUID.dump!(user_id)]) do
+      {:ok, %{rows: [[rank]]}} -> {:ok, rank}
+      _ -> {:ok, nil}
+    end
   end
 
   @doc """
@@ -1321,29 +1367,107 @@ defmodule CGraph.Gamification do
   @doc """
   Get battle pass info for a user.
   """
-  def get_battle_pass_info(_user_id, _event_id) do
-    %{
-      current_tier: 0,
-      max_tier: 100,
-      xp: 0,
-      xp_to_next_tier: 1000,
-      is_premium: false,
-      rewards_available: []
-    }
+  def get_battle_pass_info(event_id, user_id) do
+    alias CGraph.Gamification.{SeasonalEvent, UserEventProgress}
+    
+    case {Repo.get(SeasonalEvent, event_id), Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id)} do
+      {nil, _} -> 
+        {:error, :event_not_found}
+      {event, nil} ->
+        {:ok, %{
+          current_tier: 0,
+          max_tier: length(event.battle_pass_tiers || []),
+          xp: 0,
+          xp_to_next_tier: 1000,
+          is_premium: false,
+          rewards_available: [],
+          tiers: event.battle_pass_tiers || []
+        }}
+      {event, progress} ->
+        {:ok, %{
+          current_tier: progress.battle_pass_tier || 0,
+          max_tier: length(event.battle_pass_tiers || []),
+          xp: progress.battle_pass_xp || 0,
+          xp_to_next_tier: calculate_xp_to_next_tier(progress.battle_pass_xp || 0),
+          is_premium: progress.has_battle_pass || false,
+          rewards_available: get_available_tier_rewards(progress, event),
+          tiers: event.battle_pass_tiers || []
+        }}
+    end
+  end
+  
+  defp calculate_xp_to_next_tier(current_xp) do
+    xp_per_tier = 1000
+    tier = div(current_xp, xp_per_tier)
+    next_tier_xp = (tier + 1) * xp_per_tier
+    next_tier_xp - current_xp
+  end
+  
+  defp get_available_tier_rewards(progress, event) do
+    tiers = event.battle_pass_tiers || []
+    current_tier = progress.battle_pass_tier || 0
+    claimed_free = progress.claimed_free_rewards || []
+    claimed_premium = progress.claimed_premium_rewards || []
+    
+    0..current_tier
+    |> Enum.flat_map(fn tier_idx ->
+      tier_data = Enum.at(tiers, tier_idx) || %{}
+      free_rewards = if tier_idx in claimed_free, do: [], else: tier_data["free_rewards"] || []
+      premium_rewards = if progress.has_battle_pass and tier_idx not in claimed_premium do
+        tier_data["premium_rewards"] || []
+      else
+        []
+      end
+      free_rewards ++ premium_rewards
+    end)
   end
 
   @doc """
   Claim an event reward.
   """
-  def claim_event_reward(_user_id, _event_id, _tier, _reward_type) do
-    {:error, :not_implemented}
+  def claim_event_reward(user_id, event_id, tier, reward_type) do
+    alias CGraph.Gamification.UserEventProgress
+    
+    case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
+      nil -> 
+        {:error, :not_joined}
+      progress when progress.battle_pass_tier < tier ->
+        {:error, :tier_not_reached}
+      progress ->
+        case reward_type do
+          "free" ->
+            if tier in (progress.claimed_free_rewards || []) do
+              {:error, :already_claimed}
+            else
+              new_claimed = [tier | progress.claimed_free_rewards || []]
+              {:ok, _} = progress
+              |> Ecto.Changeset.change(%{claimed_free_rewards: new_claimed})
+              |> Repo.update()
+              {:ok, %{tier: tier, type: "free", claimed: true}}
+            end
+          "premium" when progress.has_battle_pass ->
+            if tier in (progress.claimed_premium_rewards || []) do
+              {:error, :already_claimed}
+            else
+              new_claimed = [tier | progress.claimed_premium_rewards || []]
+              {:ok, _} = progress
+              |> Ecto.Changeset.change(%{claimed_premium_rewards: new_claimed})
+              |> Repo.update()
+              {:ok, %{tier: tier, type: "premium", claimed: true}}
+            end
+          "premium" ->
+            {:error, :no_battle_pass}
+          _ ->
+            {:error, :invalid_reward_type}
+        end
+    end
   end
 
   @doc """
-  Get event leaderboard.
+  Get event leaderboard (2-arg version for backward compatibility).
   """
-  def get_event_leaderboard(_event_id, _opts \\ []) do
-    []
+  def get_event_leaderboard(event_id, limit) when is_integer(limit) do
+    get_event_leaderboard(event_id, limit, 0)
   end
 
   # ==================== PRESTIGE ====================
@@ -1351,14 +1475,38 @@ defmodule CGraph.Gamification do
   @doc """
   Get user's prestige info.
   """
-  def get_user_prestige(_user_id) do
-    %{
-      level: 0,
-      total_prestiges: 0,
-      xp_multiplier: 1.0,
-      coin_multiplier: 1.0,
-      bonuses: []
-    }
+  def get_user_prestige(user_id) do
+    alias CGraph.Gamification.UserPrestige
+    
+    case Repo.get_by(UserPrestige, user_id: user_id) do
+      nil ->
+        {:ok, %{
+          level: 0,
+          total_prestiges: 0,
+          xp_multiplier: 1.0,
+          coin_multiplier: 1.0,
+          karma_multiplier: 1.0,
+          bonuses: [],
+          prestige_xp: 0,
+          xp_to_next: UserPrestige.xp_required_for_prestige(0)
+        }}
+      prestige ->
+        {:ok, %{
+          level: prestige.prestige_level,
+          total_prestiges: prestige.total_resets || 0,
+          xp_multiplier: 1.0 + (prestige.xp_bonus || 0.0),
+          coin_multiplier: 1.0 + (prestige.coin_bonus || 0.0),
+          karma_multiplier: 1.0 + (prestige.karma_bonus || 0.0),
+          bonuses: [
+            %{type: "xp", value: prestige.xp_bonus || 0.0},
+            %{type: "coins", value: prestige.coin_bonus || 0.0},
+            %{type: "karma", value: prestige.karma_bonus || 0.0},
+            %{type: "drop_rate", value: prestige.drop_rate_bonus || 0.0}
+          ],
+          prestige_xp: prestige.prestige_xp,
+          xp_to_next: UserPrestige.xp_required_for_prestige(prestige.prestige_level)
+        }}
+    end
   end
 
   @doc """
@@ -1373,13 +1521,42 @@ defmodule CGraph.Gamification do
   @doc """
   Get community milestones.
   """
-  def get_community_milestones(_opts \\ []) do
-    %{
-      total_messages: 0,
-      total_users: 0,
-      total_achievements: 0,
-      milestones: []
-    }
+  def get_community_milestones(event_id) when is_binary(event_id) do
+    alias CGraph.Gamification.{SeasonalEvent, UserEventProgress}
+    
+    # Get event to retrieve milestone config
+    case Repo.get(SeasonalEvent, event_id) do
+      nil -> 
+        {:ok, %{current_total: 0, milestones: [], next_milestone: nil}}
+      event ->
+        # Calculate total points from all participants
+        total_query = from p in UserEventProgress,
+          where: p.seasonal_event_id == ^event_id,
+          select: sum(p.event_points)
+        
+        total_points = Repo.one(total_query) || 0
+        
+        milestones = event.milestone_rewards || []
+        
+        # Find the next uncompleted milestone
+        next_milestone = Enum.find(milestones, fn m -> 
+          m["points_required"] > total_points 
+        end)
+        
+        {:ok, %{
+          current_total: total_points,
+          milestones: milestones,
+          next_milestone: next_milestone
+        }}
+    end
+  end
+  
+  def get_community_milestones(_opts) do
+    {:ok, %{
+      current_total: 0,
+      milestones: [],
+      next_milestone: nil
+    }}
   end
 
   # ==================== ADDITIONAL MISSING FUNCTIONS ====================
@@ -1394,28 +1571,91 @@ defmodule CGraph.Gamification do
   @doc """
   Purchase battle pass for an event.
   """
-  def purchase_battle_pass(_user_id, _event_id) do
-    {:error, :not_implemented}
+  def purchase_battle_pass(user_id, event_id) do
+    alias CGraph.Gamification.{SeasonalEvent, UserEventProgress}
+    
+    with event when not is_nil(event) <- Repo.get(SeasonalEvent, event_id),
+         true <- event.has_battle_pass,
+         progress when not is_nil(progress) <- Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id),
+         false <- progress.has_battle_pass,
+         {:ok, _} <- deduct_currency(user_id, "gems", event.battle_pass_cost) do
+      
+      {:ok, updated} = progress
+      |> UserEventProgress.purchase_battle_pass_changeset()
+      |> Repo.update()
+      
+      {:ok, %{
+        success: true,
+        has_battle_pass: true,
+        tier: updated.battle_pass_tier
+      }}
+    else
+      nil -> {:error, :not_found}
+      false -> {:error, :no_battle_pass_available}
+      true -> {:error, :already_purchased}
+      {:error, reason} -> {:error, reason}
+    end
   end
 
   @doc """
   Update quest progress (4-arg version).
   """
-  def update_quest_progress(_user_id, _event_id, _quest_id, _progress) do
-    {:error, :not_implemented}
+  def update_quest_progress(user_id, event_id, quest_id, progress_increment) do
+    alias CGraph.Gamification.UserEventProgress
+    
+    case Repo.get_by(UserEventProgress, user_id: user_id, seasonal_event_id: event_id) do
+      nil -> 
+        {:error, :not_joined}
+      progress ->
+        # Check if quest is already completed
+        if quest_id in (progress.quests_completed || []) do
+          {:ok, %{quest_id: quest_id, status: :already_completed}}
+        else
+          # For now, mark as completed immediately
+          # In a full implementation, you'd track incremental progress
+          new_completed = [quest_id | progress.quests_completed || []]
+          new_points = (progress.event_points || 0) + progress_increment
+          
+          {:ok, _} = progress
+          |> Ecto.Changeset.change(%{
+            quests_completed: new_completed,
+            event_points: new_points,
+            leaderboard_points: (progress.leaderboard_points || 0) + progress_increment
+          })
+          |> Repo.update()
+          
+          {:ok, %{quest_id: quest_id, status: :completed, points_earned: progress_increment}}
+        end
+    end
   end
 
   @doc """
   Get event leaderboard (3-arg version).
   """
-  def get_event_leaderboard(_event_id, _limit, _offset) do
-    {:ok, []}
-  end
-
-  @doc """
-  Get user's event rank.
-  """
-  def get_user_event_rank(_user_id, _event_id) do
-    nil
+  def get_event_leaderboard(event_id, limit, offset) when is_integer(limit) do
+    alias CGraph.Gamification.UserEventProgress
+    
+    query = from p in UserEventProgress,
+      join: u in assoc(p, :user),
+      where: p.seasonal_event_id == ^event_id,
+      order_by: [desc: p.leaderboard_points],
+      limit: ^limit,
+      offset: ^offset,
+      select: %{
+        user_id: u.id,
+        username: u.username,
+        display_name: u.display_name,
+        avatar_url: u.avatar_url,
+        points: p.leaderboard_points,
+        battle_pass_tier: p.battle_pass_tier
+      }
+    
+    entries = Repo.all(query)
+    
+    entries_with_rank = entries
+    |> Enum.with_index(offset + 1)
+    |> Enum.map(fn {entry, rank} -> Map.put(entry, :rank, rank) end)
+    
+    entries_with_rank
   end
 end

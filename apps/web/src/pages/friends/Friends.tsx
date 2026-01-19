@@ -4,6 +4,7 @@ import { extractErrorMessage } from '@/lib/apiUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import UserProfileCard from '@/components/profile/UserProfileCard';
 import {
   UserPlusIcon,
   UserMinusIcon,
@@ -576,33 +577,39 @@ function FriendListItem({
       )}
 
       {/* Avatar */}
-      <div className="relative flex-shrink-0">
-        {friend.avatarUrl ? (
-          <img
-            src={friend.avatarUrl}
-            alt={friend.username}
-            className="h-10 w-10 rounded-full object-cover ring-2 ring-dark-700"
+      <UserProfileCard
+        userId={friend.id}
+        trigger="both"
+        className="cursor-pointer"
+      >
+        <div className="relative flex-shrink-0">
+          {friend.avatarUrl ? (
+            <img
+              src={friend.avatarUrl}
+              alt={friend.username}
+              className="h-10 w-10 rounded-full object-cover ring-2 ring-dark-700"
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium ring-2 ring-dark-700">
+              {friend.username.charAt(0).toUpperCase()}
+            </div>
+          )}
+          <motion.span
+            className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ${statusColor} ring-2 ring-dark-900`}
+            animate={
+              friend.status === 'online'
+                ? {
+                    boxShadow: [
+                      '0 0 0 0 rgba(34, 197, 94, 0.7)',
+                      '0 0 0 4px rgba(34, 197, 94, 0)',
+                    ],
+                  }
+                : {}
+            }
+            transition={friend.status === 'online' ? { duration: 2, repeat: Infinity } : {}}
           />
-        ) : (
-          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium ring-2 ring-dark-700">
-            {friend.username.charAt(0).toUpperCase()}
-          </div>
-        )}
-        <motion.span
-          className={`absolute bottom-0 right-0 h-3 w-3 rounded-full ${statusColor} ring-2 ring-dark-900`}
-          animate={
-            friend.status === 'online'
-              ? {
-                  boxShadow: [
-                    '0 0 0 0 rgba(34, 197, 94, 0.7)',
-                    '0 0 0 4px rgba(34, 197, 94, 0)',
-                  ],
-                }
-              : {}
-          }
-          transition={friend.status === 'online' ? { duration: 2, repeat: Infinity } : {}}
-        />
-      </div>
+        </div>
+      </UserProfileCard>
 
       {/* Info */}
       <div className="flex-1 min-w-0">
@@ -728,24 +735,30 @@ function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequest
 
         <div className="flex items-center justify-between p-3 relative z-10">
           <div className="flex items-center gap-3">
-            <motion.div
-              whileHover={{ scale: 1.1, rotate: 5 }}
-              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            <UserProfileCard
+              userId={request.user?.id || ''}
+              trigger="both"
+              className="cursor-pointer"
             >
-              {avatarUrl ? (
-                <div className="p-0.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full">
-                  <img
-                    src={avatarUrl}
-                    alt={username}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium">
-                  {username.charAt(0).toUpperCase()}
-                </div>
-              )}
-            </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
+                {avatarUrl ? (
+                  <div className="p-0.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full">
+                    <img
+                      src={avatarUrl}
+                      alt={username}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium">
+                    {username.charAt(0).toUpperCase()}
+                  </div>
+                )}
+              </motion.div>
+            </UserProfileCard>
             <div>
               <p className="font-medium bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
                 {displayName}

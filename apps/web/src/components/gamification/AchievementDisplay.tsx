@@ -13,7 +13,7 @@ import {
 import { StarIcon as StarIconSolid, TrophyIcon as TrophyIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import type { Achievement, AchievementCategory, AchievementRarity } from '@/features/gamification/stores/types';
 
 /**
@@ -77,7 +77,7 @@ export function AchievementDisplay({
   className = '',
 }: AchievementDisplayProps) {
   const { theme } = useThemeStore();
-  const primaryColor = theme.colors.primary;
+  const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
   const [selectedCategory, setSelectedCategory] = useState<AchievementCategory | 'all'>('all');
   const [sortBy, setSortBy] = useState<'rarity' | 'recent' | 'progress'>('rarity');

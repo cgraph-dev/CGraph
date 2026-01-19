@@ -11,7 +11,6 @@ import {
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
 import { useGroupStore, type Group } from '@/stores/groupStore';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -41,8 +40,6 @@ export function GroupList({
 }: GroupListProps) {
   const navigate = useNavigate();
   const { groups, isLoadingGroups } = useGroupStore();
-  const { theme } = useThemeStore();
-  const colors = THEME_COLORS[theme.colorPreset];
   
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);

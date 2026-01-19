@@ -336,9 +336,36 @@ function ModerationQueueItem({ item }: { item: ModerationItem }) {
 
 // ==================== EVENTS MANAGEMENT ====================
 
+interface EventData {
+  id: number;
+  name: string;
+  status: 'active' | 'scheduled' | 'draft' | 'ended';
+  participants: number;
+}
+
+const PLACEHOLDER_EVENTS: EventData[] = [
+  { id: 1, name: 'Winter Wonderland 2026', status: 'active', participants: 4521 },
+  { id: 2, name: "Valentine's Day Special", status: 'scheduled', participants: 0 },
+  { id: 3, name: 'Anniversary Celebration', status: 'draft', participants: 0 },
+];
+
 function EventsManagement() {
-  const [events, setEvents] = useState<any[]>([]);
+  const [events, setEvents] = useState<EventData[]>(PLACEHOLDER_EVENTS);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string>('All');
+
+  // Filter events based on active filter
+  const filteredEvents = useMemo(() => {
+    if (activeFilter === 'All') return events;
+    return events.filter((e) => e.status === activeFilter.toLowerCase());
+  }, [events, activeFilter]);
+
+  // Add new event handler (for future implementation)
+  const handleAddEvent = useCallback((newEvent: Omit<EventData, 'id'>) => {
+    const id = Math.max(0, ...events.map((e) => e.id)) + 1;
+    setEvents((prev) => [...prev, { ...newEvent, id }]);
+    setShowCreateModal(false);
+  }, [events]);
 
   return (
     <motion.div
@@ -362,7 +389,12 @@ function EventsManagement() {
         {['All', 'Active', 'Scheduled', 'Draft', 'Ended'].map((filter) => (
           <button
             key={filter}
-            className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm transition-colors"
+            onClick={() => setActiveFilter(filter)}
+            className={`px-4 py-2 rounded-lg text-sm transition-colors ${
+              activeFilter === filter
+                ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                : 'bg-white/5 hover:bg-white/10'
+            }`}
           >
             {filter}
           </button>
@@ -371,42 +403,131 @@ function EventsManagement() {
 
       {/* Events List */}
       <div className="space-y-4">
-        {/* Placeholder events */}
-        {[
-          { id: 1, name: 'Winter Wonderland 2026', status: 'active', participants: 4521 },
-          { id: 2, name: 'Valentine\'s Day Special', status: 'scheduled', participants: 0 },
-          { id: 3, name: 'Anniversary Celebration', status: 'draft', participants: 0 },
-        ].map((event) => (
-          <div
-            key={event.id}
-            className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10 hover:border-purple-500/30 transition-colors cursor-pointer"
-          >
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-2xl">
-              🎉
-            </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-white">{event.name}</h3>
-              <p className="text-sm text-gray-500">
-                {event.participants.toLocaleString()} participants
-              </p>
-            </div>
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-medium ${
-                event.status === 'active'
-                  ? 'bg-green-500/20 text-green-400'
-                  : event.status === 'scheduled'
-                  ? 'bg-blue-500/20 text-blue-400'
-                  : 'bg-gray-500/20 text-gray-400'
-              }`}
+        {filteredEvents.length === 0 ? (
+          <div className="text-center py-12 text-gray-500">
+            No events found for this filter
+          </div>
+        ) : (
+          filteredEvents.map((event) => (
+            <div
+              key={event.id}
+              className="flex items-center gap-4 p-4 bg-white/5 rounded-xl border border-white/10 hover:border-purple-500/30 transition-colors cursor-pointer"
             >
-              {event.status}
-            </span>
-            <button className="px-4 py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors">
-              Manage
+              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center text-2xl">
+                🎉
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-white">{event.name}</h3>
+                <p className="text-sm text-gray-500">
+                  {event.participants.toLocaleString()} participants
+                </p>
+              </div>
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  event.status === 'active'
+                    ? 'bg-green-500/20 text-green-400'
+                    : event.status === 'scheduled'
+                    ? 'bg-blue-500/20 text-blue-400'
+                    : 'bg-gray-500/20 text-gray-400'
+                }`}
+              >
+                {event.status}
+              </span>
+              <button className="px-4 py-2 bg-white/10 rounded-lg text-sm hover:bg-white/20 transition-colors">
+                Manage
+              </button>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Create Event Modal */}
+      <AnimatePresence>
+        {showCreateModal && (
+          <CreateEventModal
+            onClose={() => setShowCreateModal(false)}
+            onSubmit={handleAddEvent}
+          />
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+}
+
+// ==================== CREATE EVENT MODAL ====================
+
+interface CreateEventModalProps {
+  onClose: () => void;
+  onSubmit: (event: Omit<EventData, 'id'>) => void;
+}
+
+function CreateEventModal({ onClose, onSubmit }: CreateEventModalProps) {
+  const [name, setName] = useState('');
+  const [status, setStatus] = useState<EventData['status']>('draft');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+    onSubmit({ name: name.trim(), status, participants: 0 });
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-gray-900 rounded-2xl border border-white/10 p-6 w-full max-w-md"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h2 className="text-xl font-bold mb-4">Create New Event</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Event Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-purple-500"
+              placeholder="Enter event name..."
+              autoFocus
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Initial Status</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value as EventData['status'])}
+              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-purple-500"
+            >
+              <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
+              <option value="active">Active</option>
+            </select>
+          </div>
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg font-medium hover:opacity-90 transition-opacity"
+            >
+              Create Event
             </button>
           </div>
-        ))}
-      </div>
+        </form>
+      </motion.div>
     </motion.div>
   );
 }

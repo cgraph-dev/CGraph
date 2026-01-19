@@ -244,8 +244,8 @@ defmodule CGraphWeb.EventsChannel do
     case Gamification.update_quest_progress(user_id, event_id, quest_id, progress) do
       {:ok, result} ->
         # Check if quest completed
-        if result.completed do
-          push(socket, "quest_completed", %{quest_id: quest_id, rewards: result.rewards})
+        if result.status == :completed do
+          push(socket, "quest_completed", %{quest_id: quest_id, rewards: %{points: result.points_earned}})
         end
         {:reply, {:ok, result}, socket}
       {:error, reason} ->

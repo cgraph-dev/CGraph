@@ -5,16 +5,24 @@
 import { API_URL } from '@/services/api';
 
 export const premiumApi = {
+  // Premium subscription
   getSubscriptionStatus: () => `${API_URL}/api/v1/premium/status`,
-  getSubscriptionPlans: () => `${API_URL}/api/v1/premium/plans`,
-  subscribe: (planId: string) => `${API_URL}/api/v1/premium/subscribe/${planId}`,
+  getSubscriptionTiers: () => `${API_URL}/api/v1/premium/tiers`,
+  getFeatures: () => `${API_URL}/api/v1/premium/features`,
+  subscribe: () => `${API_URL}/api/v1/premium/subscribe`, // POST with { tier } in body
   cancelSubscription: () => `${API_URL}/api/v1/premium/cancel`,
-  getCoinBalance: () => `${API_URL}/api/v1/premium/coins`,
-  getCoinPackages: () => `${API_URL}/api/v1/premium/coins/packages`,
-  purchaseCoins: (packageId: string) => `${API_URL}/api/v1/premium/coins/purchase/${packageId}`,
-  getShopItems: () => `${API_URL}/api/v1/premium/shop`,
-  purchaseShopItem: (itemId: string) => `${API_URL}/api/v1/premium/shop/${itemId}/purchase`,
-  getInventory: () => `${API_URL}/api/v1/premium/inventory`,
+  
+  // Coins (separate /coins routes)
+  getCoinBalance: () => `${API_URL}/api/v1/coins`,
+  getCoinHistory: () => `${API_URL}/api/v1/coins/history`,
+  getCoinPackages: () => `${API_URL}/api/v1/coins/packages`,
+  getEarnMethods: () => `${API_URL}/api/v1/coins/earn`,
+  
+  // Shop (separate /shop routes)
+  getShopItems: () => `${API_URL}/api/v1/shop`,
+  getShopItem: (itemId: string) => `${API_URL}/api/v1/shop/${itemId}`,
+  purchaseShopItem: (itemId: string) => `${API_URL}/api/v1/shop/${itemId}/purchase`,
+  getShopPurchases: () => `${API_URL}/api/v1/shop/purchases`,
 };
 
 export const TIER_FEATURES = {

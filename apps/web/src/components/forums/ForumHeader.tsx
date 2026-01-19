@@ -23,7 +23,7 @@ import {
 } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import type { Forum } from '@/stores/forumStore';
 
 /**
@@ -77,7 +77,7 @@ export function ForumHeader({
   className = '',
 }: ForumHeaderProps) {
   const { theme } = useThemeStore();
-  const primaryColor = theme.colors.primary;
+  const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
@@ -352,7 +352,7 @@ export function ForumHeader({
             <div
               className="w-full h-full"
               style={{
-                background: `linear-gradient(135deg, ${primaryColor}40 0%, ${theme.colors.secondary}40 100%)`,
+                background: `linear-gradient(135deg, ${primaryColor}40 0%, ${THEME_COLORS[theme.colorPreset]?.secondary || '#059669'}40 100%)`,
               }}
             />
           )}

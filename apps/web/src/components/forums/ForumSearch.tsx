@@ -15,7 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useForumStore, type Post, type ForumCategory } from '@/stores/forumStore';
 import { formatTimeAgo } from '@/lib/utils';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -89,7 +89,7 @@ export function ForumSearch({
   variant = 'inline',
 }: ForumSearchProps) {
   const { theme } = useThemeStore();
-  const primaryColor = theme.colors.primary;
+  const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);

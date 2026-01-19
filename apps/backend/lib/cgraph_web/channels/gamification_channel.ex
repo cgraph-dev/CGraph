@@ -190,10 +190,8 @@ defmodule CGraphWeb.GamificationChannel do
 
   # Client requests prestige info
   def handle_in("get_prestige", _params, socket) do
-    case Gamification.get_user_prestige(socket.assigns.current_user.id) do
-      {:ok, prestige} -> {:reply, {:ok, prestige}, socket}
-      {:error, _} -> {:reply, {:ok, %{prestige_level: 0, current_xp: 0}}, socket}
-    end
+    {:ok, prestige} = Gamification.get_user_prestige(socket.assigns.current_user.id)
+    {:reply, {:ok, prestige}, socket}
   end
 
   # Client subscribes to marketplace item price alerts

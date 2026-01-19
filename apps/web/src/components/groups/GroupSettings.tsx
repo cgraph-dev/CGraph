@@ -15,7 +15,6 @@ import {
   CheckIcon,
 } from '@heroicons/react/24/outline';
 import { useGroupStore, type Group } from '@/stores/groupStore';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { RoleManager } from './RoleManager';
 import { InviteModal } from './InviteModal';
 import GlassCard from '@/components/ui/GlassCard';
@@ -54,8 +53,6 @@ type TabId = typeof settingsTabs[number]['id'];
 export function GroupSettings({ groupId, onClose }: GroupSettingsProps) {
   const navigate = useNavigate();
   const { groups, leaveGroup } = useGroupStore();
-  const { theme } = useThemeStore();
-  const colors = THEME_COLORS[theme.colorPreset];
 
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);

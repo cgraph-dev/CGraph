@@ -15,7 +15,6 @@ import {
   SparklesIcon,
 } from '@heroicons/react/24/outline';
 import { useGroupStore, type Channel, type ChannelCategory } from '@/stores/groupStore';
-import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 /**
@@ -54,8 +53,6 @@ const channelTypeColors = {
 export function ChannelList({ className = '' }: ChannelListProps) {
   const { groupId, channelId } = useParams();
   const { groups, setActiveChannel } = useGroupStore();
-  const { theme } = useThemeStore();
-  const colors = THEME_COLORS[theme.colorPreset];
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [showCreateModal, setShowCreateModal] = useState<string | null>(null); // categoryId or 'uncategorized'
@@ -220,8 +217,6 @@ function ChannelItem({
   isActive: boolean;
 }) {
   const { groupId } = useParams();
-  const { theme } = useThemeStore();
-  const colors = THEME_COLORS[theme.colorPreset];
 
   const Icon = channelTypeIcons[channel.type] || HashtagIcon;
   const iconColor = channelTypeColors[channel.type] || 'text-gray-400';

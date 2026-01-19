@@ -229,6 +229,87 @@ const PARTICLE_PRESETS: Record<ParticleType, {
     spread: 0.6,
     initialVelocity: { x: 0, y: 0 },
   },
+  // Additional particle types to complete ParticleType coverage
+  circle: {
+    gravity: 0,
+    drag: 0.98,
+    minSize: 4,
+    maxSize: 10,
+    minLife: 1,
+    maxLife: 2,
+    spread: 0.5,
+    initialVelocity: { x: 0, y: 0 },
+  },
+  square: {
+    gravity: 0,
+    drag: 0.97,
+    minSize: 4,
+    maxSize: 8,
+    minLife: 1,
+    maxLife: 2,
+    spread: 0.4,
+    initialVelocity: { x: 0, y: 0 },
+  },
+  sparkle: {
+    gravity: 0,
+    drag: 0.98,
+    minSize: 3,
+    maxSize: 6,
+    minLife: 0.5,
+    maxLife: 1.5,
+    spread: 0.6,
+    initialVelocity: { x: 0, y: 0 },
+  },
+  petal: {
+    gravity: 0.01,
+    drag: 0.995,
+    minSize: 5,
+    maxSize: 10,
+    minLife: 3,
+    maxLife: 5,
+    spread: 0.7,
+    initialVelocity: { x: 0.4, y: 0.2 },
+  },
+  lightning: {
+    gravity: 0,
+    drag: 0.85,
+    minSize: 2,
+    maxSize: 15,
+    minLife: 0.05,
+    maxLife: 0.15,
+    spread: 1,
+    initialVelocity: { x: 0, y: 0 },
+  },
+  triangle: {
+    gravity: 0,
+    drag: 0.98,
+    minSize: 5,
+    maxSize: 10,
+    minLife: 1.5,
+    maxLife: 2.5,
+    spread: 0.4,
+    initialVelocity: { x: 0, y: 0 },
+  },
+  hexagon: {
+    gravity: 0,
+    drag: 0.98,
+    minSize: 6,
+    maxSize: 12,
+    minLife: 2,
+    maxLife: 3,
+    spread: 0.3,
+    initialVelocity: { x: 0, y: 0 },
+  },
+  custom: {
+    gravity: 0,
+    drag: 0.98,
+    minSize: 4,
+    maxSize: 10,
+    minLife: 1,
+    maxLife: 2,
+    spread: 0.5,
+    initialVelocity: { x: 0, y: 0 },
+  },
 };
 
 // ==================== UTILITY FUNCTIONS ====================
@@ -479,7 +560,7 @@ export const BorderParticleSystem = memo(function BorderParticleSystem({
             ctx.shadowBlur = particle.size;
             ctx.fill();
             break;
-          case 'flame':
+          case 'flame': {
             const gradient = ctx.createLinearGradient(0, particle.size, 0, -particle.size);
             gradient.addColorStop(0, particle.color);
             gradient.addColorStop(0.5, '#FFA500');
@@ -489,6 +570,7 @@ export const BorderParticleSystem = memo(function BorderParticleSystem({
             ctx.fillStyle = gradient;
             ctx.fill();
             break;
+          }
           case 'snowflake':
             ctx.beginPath();
             ctx.arc(0, 0, particle.size / 2, 0, Math.PI * 2);
@@ -607,7 +689,7 @@ function getAnimationForType(
   type: ParticleType,
   index: number,
   total: number,
-  colors: { primary: string; secondary: string; accent: string },
+  _colors: { primary: string; secondary: string; accent: string },
   speed: number
 ) {
   const delay = (index / total) * 2;
@@ -677,31 +759,43 @@ function getAnimationForType(
     default:
       return {
         rotate: [0, 360],
-        transition: { duration: 4 / speed, repeat: Infinity, ease: 'linear', delay },
+        transition: { duration: 4 / speed, repeat: Infinity, ease: 'linear' as const, delay },
       };
   }
 }
 
 // ==================== PRESET WRAPPERS ====================
 
+// Default config values for preset wrappers
+const createPresetConfig = (type: ParticleType, count: number): ParticleConfig => ({
+  type,
+  count,
+  size: PARTICLE_PRESETS[type]?.maxSize || 8,
+  color: '#ffffff',
+  opacity: 1,
+  speed: 1,
+  direction: 'random',
+  pattern: 'orbit',
+});
+
 export const FlameParticles = memo(function FlameParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
-  return <BorderParticleSystem {...props} config={{ type: 'flame', count: 12 }} />;
+  return <BorderParticleSystem {...props} config={createPresetConfig('flame', 12)} />;
 });
 
 export const SparkParticles = memo(function SparkParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
-  return <BorderParticleSystem {...props} config={{ type: 'spark', count: 16 }} />;
+  return <BorderParticleSystem {...props} config={createPresetConfig('spark', 16)} />;
 });
 
 export const SnowflakeParticles = memo(function SnowflakeParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
-  return <BorderParticleSystem {...props} config={{ type: 'snowflake', count: 20 }} />;
+  return <BorderParticleSystem {...props} config={createPresetConfig('snowflake', 20)} />;
 });
 
 export const SakuraParticles = memo(function SakuraParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
-  return <BorderParticleSystem {...props} config={{ type: 'sakura', count: 15 }} />;
+  return <BorderParticleSystem {...props} config={createPresetConfig('sakura', 15)} />;
 });
 
 export const ElectricParticles = memo(function ElectricParticles(props: Omit<BorderParticleSystemProps, 'config'>) {
-  return <BorderParticleSystem {...props} config={{ type: 'electric', count: 8 }} />;
+  return <BorderParticleSystem {...props} config={createPresetConfig('electric', 8)} />;
 });
 
 export default BorderParticleSystem;

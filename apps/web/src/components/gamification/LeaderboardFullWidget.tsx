@@ -15,9 +15,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { TrophyIcon as TrophyIconSolid, StarIcon } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
-import ThemedAvatar from '@/components/ui/ThemedAvatar';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useAuthStore } from '@/stores/authStore';
 
 /**
@@ -101,7 +101,8 @@ export function LeaderboardWidget({
 }: LeaderboardWidgetProps) {
   const { theme } = useThemeStore();
   const { user } = useAuthStore();
-  const primaryColor = theme.colors.primary;
+  // Use THEME_COLORS lookup with colorPreset to get the primary color
+  const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
   
   const currentId = currentUserId || user?.id;
   const [currentPage, setCurrentPage] = useState(0);
@@ -144,8 +145,15 @@ export function LeaderboardWidget({
     const top3 = processedEntries.slice(0, 3);
     if (top3.length < 3) return null;
 
+    // Ensure all entries exist before rendering podium
+    const second = top3[1];
+    const first = top3[0];
+    const third = top3[2];
+    
+    if (!first || !second || !third) return null;
+
     // Reorder for podium display: [2nd, 1st, 3rd]
-    const podiumOrder = [top3[1], top3[0], top3[2]];
+    const podiumOrder = [second, first, third];
     const heights = ['h-24', 'h-32', 'h-20'];
 
     return (
@@ -166,7 +174,7 @@ export function LeaderboardWidget({
                 <ThemedAvatar
                   src={entry.avatarUrl}
                   alt={entry.displayName || entry.username}
-                  size={index === 1 ? 'lg' : 'md'}
+                  size={index === 1 ? 'large' : 'medium'}
                   className="ring-2"
                   style={{ '--tw-ring-color': RANK_COLORS[actualRank] } as React.CSSProperties}
                 />
@@ -261,7 +269,7 @@ export function LeaderboardWidget({
         <ThemedAvatar
           src={entry.avatarUrl}
           alt={entry.displayName || entry.username}
-          size="sm"
+          size="small"
         />
 
         {/* User Info */}

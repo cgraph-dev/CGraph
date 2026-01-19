@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, NavLink } from 'react-router-dom';
+import { useParams, NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { api } from '@/lib/api';
@@ -26,18 +26,15 @@ import {
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 
+// Settings simplified from 11 to 5 sections
+// Moved to /customize: appearance, ui-customization, chat-bubbles, avatar
+// Removed: language (use browser default), sessions (view in security)
 const settingsSections = [
-  { id: 'account', label: 'Account', icon: UserIcon },
-  { id: 'security', label: 'Security', icon: ShieldCheckIcon },
-  { id: 'notifications', label: 'Notifications', icon: BellIcon },
-  { id: 'appearance', label: 'Appearance', icon: PaintBrushIcon },
-  { id: 'ui-customization', label: 'UI Customization', icon: AdjustmentsHorizontalIcon },
-  { id: 'chat-bubbles', label: 'Chat Bubbles', icon: ChatBubbleLeftRightIcon },
-  { id: 'avatar', label: 'Avatar & Profile', icon: UserCircleIcon },
-  { id: 'language', label: 'Language', icon: GlobeAltIcon },
-  { id: 'sessions', label: 'Sessions', icon: DevicePhoneMobileIcon },
-  { id: 'privacy', label: 'Privacy', icon: KeyIcon },
-  { id: 'billing', label: 'Billing', icon: CreditCardIcon },
+  { id: 'account', label: 'Account', icon: UserIcon, description: 'Email, username, password' },
+  { id: 'security', label: 'Security', icon: ShieldCheckIcon, description: '2FA, sessions, API keys' },
+  { id: 'notifications', label: 'Notifications', icon: BellIcon, description: 'Push, email, preferences' },
+  { id: 'privacy', label: 'Privacy', icon: KeyIcon, description: 'Visibility, blocked users' },
+  { id: 'billing', label: 'Billing', icon: CreditCardIcon, description: 'Subscription, payment methods' },
 ];
 
 export default function Settings() {
@@ -122,7 +119,7 @@ export default function Settings() {
 
                       {/* Icon with glow */}
                       <item.icon
-                        className={`h-5 w-5 relative z-10 transition-all duration-200 ${
+                        className={`h-5 w-5 relative z-10 flex-shrink-0 transition-all duration-200 ${
                           isActive ? 'text-primary-400' : 'group-hover:scale-110'
                         }`}
                         style={
@@ -131,7 +128,12 @@ export default function Settings() {
                             : {}
                         }
                       />
-                      <span className="relative z-10 font-medium">{item.label}</span>
+                      <div className="relative z-10 flex-1">
+                        <div className="font-medium">{item.label}</div>
+                        <div className="text-xs text-white/40 group-hover:text-white/60 transition-colors">
+                          {item.description}
+                        </div>
+                      </div>
 
                       {/* Active indicator */}
                       {isActive && (
@@ -166,14 +168,16 @@ export default function Settings() {
             {section === 'account' && <AccountSettings key="account" />}
             {section === 'security' && <SecuritySettings key="security" />}
             {section === 'notifications' && <NotificationSettings key="notifications" />}
-            {section === 'appearance' && <AppearanceSettingsEnhanced key="appearance" />}
-            {section === 'ui-customization' && <UICustomizationSettings key="ui-customization" />}
-            {section === 'chat-bubbles' && <ChatBubbleSettings key="chat-bubbles" />}
-            {section === 'avatar' && <AvatarSettings key="avatar" />}
-            {section === 'language' && <LanguageSettings key="language" />}
-            {section === 'sessions' && <SessionsSettings key="sessions" />}
             {section === 'privacy' && <PrivacySettings key="privacy" />}
             {section === 'billing' && <BillingSettings key="billing" />}
+
+            {/* Redirects for removed sections - now in /customize */}
+            {section === 'appearance' && <RedirectToCustomize section="themes" />}
+            {section === 'ui-customization' && <RedirectToCustomize section="effects" />}
+            {section === 'chat-bubbles' && <RedirectToCustomize section="chat" />}
+            {section === 'avatar' && <RedirectToCustomize section="identity" />}
+            {section === 'language' && <LanguageSettings key="language" />}
+            {section === 'sessions' && <SessionsSettings key="sessions" />}
           </AnimatePresence>
         </motion.div>
       </div>
@@ -1254,3 +1258,37 @@ function BillingSettings() {
     </motion.div>
   );
 }
+
+// Redirect component for moved settings sections
+function RedirectToCustomize({ section }: { section: string }) {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect after a brief delay to show the message
+    const timer = setTimeout(() => {
+      navigate(`/customize/${section}`);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [navigate, section]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -20 }}
+      transition={{ duration: 0.3 }}
+      className="flex items-center justify-center h-full"
+    >
+      <GlassCard variant="holographic" className="p-8 text-center max-w-md">
+        <SparklesIcon className="h-16 w-16 text-primary-400 mx-auto mb-4" />
+        <h2 className="text-2xl font-bold text-white mb-2">Moved to Customize!</h2>
+        <p className="text-white/60 mb-4">
+          This setting has been moved to the new Customize hub for better organization.
+        </p>
+        <p className="text-sm text-white/40">Redirecting you now...</p>
+      </GlassCard>
+    </motion.div>
+  );
+}
+

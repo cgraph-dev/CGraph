@@ -12,28 +12,23 @@ import ShaderBackground from '@/components/shaders/ShaderBackground';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
+import { pageTransitions, buttonVariantsSubtle } from '@/lib/animations/transitions';
 import {
   ChatBubbleLeftRightIcon,
-  UserGroupIcon,
   UsersIcon,
-  MagnifyingGlassIcon,
   NewspaperIcon,
+  PaintBrushIcon,
+  UserCircleIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
-  BellIcon,
-  TrophyIcon,
-  SparklesIcon,
 } from '@heroicons/react/24/outline';
 import {
   ChatBubbleLeftRightIcon as ChatBubbleLeftRightIconSolid,
-  UserGroupIcon as UserGroupIconSolid,
   UsersIcon as UsersIconSolid,
-  MagnifyingGlassIcon as MagnifyingGlassIconSolid,
   NewspaperIcon as NewspaperIconSolid,
+  PaintBrushIcon as PaintBrushIconSolid,
+  UserCircleIcon as UserCircleIconSolid,
   Cog6ToothIcon as Cog6ToothIconSolid,
-  BellIcon as BellIconSolid,
-  TrophyIcon as TrophyIconSolid,
-  SparklesIcon as SparklesIconSolid,
 } from '@heroicons/react/24/solid';
 
 const navItems = [
@@ -44,28 +39,10 @@ const navItems = [
     activeIcon: ChatBubbleLeftRightIconSolid,
   },
   {
-    path: '/friends',
-    label: 'Friends',
+    path: '/social',
+    label: 'Social',
     icon: UsersIcon,
     activeIcon: UsersIconSolid,
-  },
-  {
-    path: '/notifications',
-    label: 'Notifications',
-    icon: BellIcon,
-    activeIcon: BellIconSolid,
-  },
-  {
-    path: '/search',
-    label: 'Search',
-    icon: MagnifyingGlassIcon,
-    activeIcon: MagnifyingGlassIconSolid,
-  },
-  {
-    path: '/groups',
-    label: 'Groups',
-    icon: UserGroupIcon,
-    activeIcon: UserGroupIconSolid,
   },
   {
     path: '/forums',
@@ -74,16 +51,16 @@ const navItems = [
     activeIcon: NewspaperIconSolid,
   },
   {
-    path: '/gamification',
-    label: 'Rewards',
-    icon: SparklesIcon,
-    activeIcon: SparklesIconSolid,
+    path: '/customize',
+    label: 'Customize',
+    icon: PaintBrushIcon,
+    activeIcon: PaintBrushIconSolid,
   },
   {
-    path: '/leaderboard',
-    label: 'Leaderboard',
-    icon: TrophyIcon,
-    activeIcon: TrophyIconSolid,
+    path: '/profile',
+    label: 'Profile',
+    icon: UserCircleIcon,
+    activeIcon: UserCircleIconSolid,
   },
   {
     path: '/settings',
@@ -318,9 +295,9 @@ export default function AppLayout() {
                       )}
                     </AnimatePresence>
 
-                    {/* Badge for notifications */}
+                    {/* Badge for social (notifications) */}
                     <AnimatePresence>
-                      {item.path === '/notifications' && unreadCount > 0 && (
+                      {item.path === '/social' && unreadCount > 0 && (
                         <motion.span
                           initial={{ scale: 0, rotate: -180 }}
                           animate={{ scale: 1, rotate: 0 }}

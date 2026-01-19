@@ -12,7 +12,7 @@ import {
 import { GiftIcon as GiftIconSolid, StarIcon } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useThemeStore } from '@/stores/themeStore';
+import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import confetti from 'canvas-confetti';
 
 /**
@@ -82,7 +82,7 @@ export function DailyRewards({
   className = '',
 }: DailyRewardsProps) {
   const { theme } = useThemeStore();
-  const primaryColor = theme.colors.primary;
+  const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
   const [isClaiming, setIsClaiming] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -116,8 +116,11 @@ export function DailyRewards({
   }, [nextClaimTime]);
 
   // Get today's reward
-  const todayReward = useMemo(() => {
-    return rewards.find((r) => r.day === currentDay) || rewards[0];
+  const todayReward = useMemo((): DailyReward => {
+    const effectiveRewards = rewards.length > 0 ? rewards : DEFAULT_REWARDS;
+    const found = effectiveRewards.find((r) => r.day === currentDay);
+    // Fallback ensures we always have a valid reward
+    return found ?? effectiveRewards[0] ?? { day: 1, xp: 50, coins: 10 };
   }, [rewards, currentDay]);
 
   const handleClaim = async () => {

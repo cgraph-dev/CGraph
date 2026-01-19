@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Palette, Download, Upload, Sparkles } from 'lucide-react';
 import { ThemeSwitcher } from '@/components/theme/ThemeSwitcher';
 import { useAuthStore } from '@/stores/authStore';
+import VisibilityBadge from '@/components/settings/VisibilityBadge';
 
 /**
  * App Theme Settings Page
@@ -40,6 +41,7 @@ export default function AppThemeSettings() {
         <div className="mb-2 flex items-center gap-3">
           <Palette className="h-8 w-8 text-purple-500" />
           <h1 className="text-3xl font-bold">App Theme</h1>
+          <VisibilityBadge visible="local" />
         </div>
         <p className="text-gray-400">
           Transform your entire CGraph experience with app-wide themes
