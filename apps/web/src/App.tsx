@@ -44,10 +44,7 @@ const VerifyEmail = lazy(() => import('@/pages/auth/VerifyEmail'));
 const Messages = lazy(() => import('@/pages/messages/Messages'));
 const Conversation = lazy(() => import('@/pages/messages/Conversation'));
 
-// Social features
-const Friends = lazy(() => import('@/pages/friends/Friends'));
-const Search = lazy(() => import('@/pages/search/Search'));
-const Notifications = lazy(() => import('@/pages/notifications/Notifications'));
+// Social features (Friends, Search, Notifications moved to Social hub)
 
 // Groups (complex, lazy load)
 const Groups = lazy(() => import('@/pages/groups/Groups'));
@@ -81,13 +78,7 @@ const CallScreen = lazy(() => import('@/pages/calls/CallScreen'));
 // Premium & Gamification
 const PremiumPage = lazy(() => import('@/pages/premium/PremiumPage'));
 const CoinShop = lazy(() => import('@/pages/premium/CoinShop'));
-const LeaderboardPage = lazy(() => import('@/pages/leaderboard/LeaderboardPage'));
-
-// Gamification Hub & Pages
-const GamificationHubPage = lazy(() => import('@/pages/gamification/GamificationHubPage'));
-const AchievementsPage = lazy(() => import('@/pages/gamification/AchievementsPage'));
-const QuestsPage = lazy(() => import('@/pages/gamification/QuestsPage'));
-const TitlesPage = lazy(() => import('@/pages/gamification/TitlesPage'));
+// Gamification (LeaderboardPage and gamification hub pages moved to /customize/progression)
 
 // Customize Hub
 const Customize = lazy(() => import('@/pages/customize/Customize'));
@@ -110,7 +101,7 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 
 // Static pages
 const NotFound = lazy(() => import('@/pages/NotFound'));
-const LandingPage = lazy(() => import('@/pages/LandingPageOptimized'));
+const LandingPage = lazy(() => import('@/pages/LandingPageGSAP'));
 
 // Legal pages
 const PrivacyPolicy = lazy(() => import('@/pages/legal/PrivacyPolicy'));

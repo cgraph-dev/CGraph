@@ -97,6 +97,10 @@ export default defineConfig({
           if (id.includes('framer-motion')) {
             return 'animation';
           }
+          // GSAP animation library
+          if (id.includes('gsap')) {
+            return 'animation-gsap';
+          }
           // TanStack Query
           if (id.includes('@tanstack')) {
             return 'tanstack';

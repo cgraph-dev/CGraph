@@ -82,28 +82,25 @@ function RewardCard({ reward, size = 'md', showLabel = true }: RewardCardProps) 
     : 'from-white/5 to-white/10 border-white/20';
 
   return (
-    <motion.div
-      whileHover={{ scale: 1.05 }}
-      className="flex flex-col items-center gap-2"
-    >
+    <motion.div whileHover={{ scale: 1.05 }} className="flex flex-col items-center gap-2">
       <div
-        className={`${sizeClasses[size]} rounded-xl bg-gradient-to-br ${rarityColor} border flex items-center justify-center relative overflow-hidden`}
+        className={`${sizeClasses[size]} rounded-xl bg-gradient-to-br ${rarityColor} relative flex items-center justify-center overflow-hidden border`}
       >
         {reward.previewUrl ? (
-          <img src={reward.previewUrl} alt={reward.name} className="w-full h-full object-cover" />
+          <img src={reward.previewUrl} alt={reward.name} className="h-full w-full object-cover" />
         ) : (
           <div className={iconSizes[size]}>
             <RewardIcon reward={reward} />
           </div>
         )}
         {reward.amount && (
-          <div className="absolute bottom-1 right-1 px-1.5 py-0.5 bg-black/70 rounded text-xs font-bold text-white">
+          <div className="absolute bottom-1 right-1 rounded bg-black/70 px-1.5 py-0.5 text-xs font-bold text-white">
             {reward.amount}
           </div>
         )}
       </div>
       {showLabel && (
-        <span className="text-xs text-center text-white/70 max-w-[80px] truncate">
+        <span className="max-w-[80px] truncate text-center text-xs text-white/70">
           {reward.name}
         </span>
       )}
@@ -132,41 +129,41 @@ function MilestoneCard({
   const canClaim = isUnlocked && !isClaimed;
 
   return (
-    <GlassCard variant="frost" className="p-4">
+    <GlassCard variant="frosted" className="p-4">
       <div className="flex items-start gap-4">
         {/* Progress indicator */}
         <div className="flex-shrink-0">
           {isClaimed ? (
-            <div className="h-12 w-12 rounded-full bg-green-500/20 border-2 border-green-500 flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-green-500 bg-green-500/20">
               <CheckCircleIcon className="h-6 w-6 text-green-500" />
             </div>
           ) : isUnlocked ? (
-            <div className="h-12 w-12 rounded-full bg-yellow-500/20 border-2 border-yellow-500 flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-yellow-500 bg-yellow-500/20">
               <TrophyIcon className="h-6 w-6 text-yellow-500" />
             </div>
           ) : (
-            <div className="h-12 w-12 rounded-full bg-white/5 border-2 border-white/20 flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-white/20 bg-white/5">
               <LockClosedIcon className="h-5 w-5 text-white/40" />
             </div>
           )}
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-4 mb-2">
+        <div className="min-w-0 flex-1">
+          <div className="mb-2 flex items-start justify-between gap-4">
             <div>
               <h4 className="text-sm font-semibold text-white">
                 {milestone.pointsRequired.toLocaleString()} Points
               </h4>
               {milestone.description && (
-                <p className="text-xs text-white/60 mt-0.5">{milestone.description}</p>
+                <p className="mt-0.5 text-xs text-white/60">{milestone.description}</p>
               )}
             </div>
             {canClaim && (
               <button
                 onClick={onClaim}
                 disabled={isClaiming}
-                className="px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm font-semibold transition-all disabled:opacity-50"
+                className="rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 px-4 py-2 text-sm font-semibold text-white transition-all hover:from-yellow-600 hover:to-orange-600 disabled:opacity-50"
               >
                 {isClaiming ? 'Claiming...' : 'Claim'}
               </button>
@@ -174,7 +171,7 @@ function MilestoneCard({
           </div>
 
           {/* Rewards */}
-          <div className="flex flex-wrap gap-3 mt-3">
+          <div className="mt-3 flex flex-wrap gap-3">
             {milestone.rewards.map((reward) => (
               <RewardCard key={reward.id} reward={reward} size="sm" showLabel={false} />
             ))}
@@ -199,30 +196,30 @@ function BattlePassTierCard({ tier, currentTier, hasPremium }: BattlePassTierCar
 
   return (
     <div
-      className={`relative p-4 rounded-xl border ${
+      className={`relative rounded-xl border p-4 ${
         isCurrent
-          ? 'bg-gradient-to-br from-yellow-500/10 to-orange-500/10 border-yellow-500/50'
+          ? 'border-yellow-500/50 bg-gradient-to-br from-yellow-500/10 to-orange-500/10'
           : isUnlocked
-          ? 'bg-white/5 border-white/20'
-          : 'bg-white/5 border-white/10 opacity-50'
+            ? 'border-white/20 bg-white/5'
+            : 'border-white/10 bg-white/5 opacity-50'
       }`}
     >
       {/* Tier number */}
-      <div className="text-center mb-3">
+      <div className="mb-3 text-center">
         <div
-          className={`inline-flex items-center justify-center h-10 w-10 rounded-full font-bold ${
+          className={`inline-flex h-10 w-10 items-center justify-center rounded-full font-bold ${
             isUnlocked ? 'bg-yellow-500/20 text-yellow-400' : 'bg-white/10 text-white/40'
           }`}
         >
           {tier.tier}
         </div>
-        <div className="text-xs text-white/60 mt-1">{tier.xpRequired.toLocaleString()} XP</div>
+        <div className="mt-1 text-xs text-white/60">{tier.xpRequired.toLocaleString()} XP</div>
       </div>
 
       {/* Free rewards */}
       <div className="mb-3">
-        <div className="text-xs font-semibold text-white/70 mb-2">Free</div>
-        <div className="flex flex-wrap gap-2 justify-center">
+        <div className="mb-2 text-xs font-semibold text-white/70">Free</div>
+        <div className="flex flex-wrap justify-center gap-2">
           {tier.freeRewards.map((reward) => (
             <RewardCard key={reward.id} reward={reward} size="sm" showLabel={false} />
           ))}
@@ -232,13 +229,13 @@ function BattlePassTierCard({ tier, currentTier, hasPremium }: BattlePassTierCar
       {/* Premium rewards */}
       {tier.premiumRewards.length > 0 && (
         <div>
-          <div className="text-xs font-semibold text-yellow-400 mb-2 flex items-center gap-1 justify-center">
+          <div className="mb-2 flex items-center justify-center gap-1 text-xs font-semibold text-yellow-400">
             <StarIcon className="h-3 w-3" />
             <span>Premium</span>
           </div>
-          <div className="flex flex-wrap gap-2 justify-center relative">
+          <div className="relative flex flex-wrap justify-center gap-2">
             {!hasPremium && (
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm rounded-lg flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/60 backdrop-blur-sm">
                 <LockClosedIcon className="h-5 w-5 text-white/60" />
               </div>
             )}
@@ -259,8 +256,8 @@ export default function EventRewardsDisplay() {
 
   if (!event || !progress) {
     return (
-      <div className="text-center py-12 text-white/60">
-        <TrophyIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+      <div className="py-12 text-center text-white/60">
+        <TrophyIcon className="mx-auto mb-4 h-12 w-12 opacity-50" />
         <p>Join an event to view rewards</p>
       </div>
     );
@@ -271,7 +268,7 @@ export default function EventRewardsDisplay() {
       {/* Milestones */}
       {event.milestoneRewards && event.milestoneRewards.length > 0 && (
         <div>
-          <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-white">
             <TrophyIcon className="h-5 w-5" />
             <span>Event Milestones</span>
           </h3>
@@ -291,18 +288,18 @@ export default function EventRewardsDisplay() {
       {/* Battle Pass */}
       {event.hasBattlePass && event.battlePassTiers && (
         <div>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-lg font-bold text-white">
               <StarIcon className="h-5 w-5 text-yellow-400" />
               <span>Battle Pass</span>
             </h3>
             {!progress.hasBattlePass && (
-              <button className="px-4 py-2 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white text-sm font-semibold transition-all">
+              <button className="rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 px-4 py-2 text-sm font-semibold text-white transition-all hover:from-yellow-600 hover:to-orange-600">
                 Unlock Premium ({event.battlePassCost} coins)
               </button>
             )}
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
             {event.battlePassTiers.map((tier) => (
               <BattlePassTierCard
                 key={tier.tier}
@@ -321,13 +318,14 @@ export default function EventRewardsDisplay() {
           <div className="flex items-center gap-3">
             <TrophyIcon className="h-8 w-8 text-yellow-400" />
             <div className="flex-1">
-              <div className="text-sm font-semibold text-white mb-1">Next Milestone</div>
+              <div className="mb-1 text-sm font-semibold text-white">Next Milestone</div>
               <div className="text-xs text-white/70">
-                {progress.eventPoints.toLocaleString()} / {nextMilestone.pointsRequired.toLocaleString()} points
+                {progress.eventPoints.toLocaleString()} /{' '}
+                {nextMilestone.pointsRequired.toLocaleString()} points
               </div>
-              <div className="w-full bg-white/10 rounded-full h-2 mt-2">
+              <div className="mt-2 h-2 w-full rounded-full bg-white/10">
                 <div
-                  className="bg-gradient-to-r from-yellow-500 to-orange-500 h-2 rounded-full transition-all"
+                  className="h-2 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 transition-all"
                   style={{
                     width: `${Math.min(100, (progress.eventPoints / nextMilestone.pointsRequired) * 100)}%`,
                   }}

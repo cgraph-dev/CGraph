@@ -1,21 +1,21 @@
 /**
  * Matrix Cipher Background Animation - React Component
- * 
+ *
  * @description Ready-to-use React component for the Matrix rain background.
  * Drop-in component with sensible defaults and full customization support.
- * 
+ *
  * @version 1.0.0
  * @since v0.6.3
  * @author CGraph Development Team
- * 
+ *
  * @example
  * ```tsx
  * // Basic usage
  * <MatrixBackground />
- * 
+ *
  * // With custom theme
  * <MatrixBackground theme="cyber-blue" />
- * 
+ *
  * // Full customization
  * <MatrixBackground
  *   theme="matrix-green"
@@ -26,20 +26,9 @@
  * ```
  */
 
-import React, { forwardRef, useImperativeHandle, memo, useMemo } from 'react';
-import type {
-  MatrixConfig,
-  MatrixTheme,
-  ThemePreset,
-  DeepPartial,
-} from './types';
+import type { MatrixConfig, MatrixTheme, ThemePreset, DeepPartial } from './types';
 import { useMatrix, useMatrixThemes } from './useMatrix';
-import {
-  PRESET_HIGH_QUALITY,
-  PRESET_POWER_SAVER,
-  PRESET_MINIMAL,
-  PRESET_INTENSE,
-} from './config';
+import { PRESET_HIGH_QUALITY, PRESET_POWER_SAVER, PRESET_MINIMAL, PRESET_INTENSE } from './config';
 
 // =============================================================================
 // TYPES
@@ -50,49 +39,49 @@ export type IntensityPreset = 'low' | 'medium' | 'high' | 'ultra';
 export interface MatrixBackgroundProps {
   /** Theme preset name or custom theme object */
   theme?: ThemePreset | MatrixTheme;
-  
+
   /** Intensity preset for quick configuration */
   intensity?: IntensityPreset;
-  
+
   /** Custom configuration overrides */
   config?: DeepPartial<MatrixConfig>;
-  
+
   /** Whether to start automatically (default: true) */
   autoStart?: boolean;
-  
+
   /** Pause when tab is not visible (default: true) */
   pauseOnHidden?: boolean;
-  
+
   /** Additional CSS class names */
   className?: string;
-  
+
   /** Inline styles */
   style?: React.CSSProperties;
-  
+
   /** Called when animation is ready */
   onReady?: () => void;
-  
+
   /** Called when animation starts */
   onStart?: () => void;
-  
+
   /** Called when animation stops */
   onStop?: () => void;
-  
+
   /** Called on error */
   onError?: (error: Error) => void;
-  
+
   /** Show debug overlay */
   debug?: boolean;
-  
+
   /** Render as fixed fullscreen background */
   fullscreen?: boolean;
-  
+
   /** Z-index for positioning */
   zIndex?: number;
-  
+
   /** Opacity of the entire effect */
   opacity?: number;
-  
+
   /** Disable pointer events (default: true for backgrounds) */
   noPointerEvents?: boolean;
 }
@@ -135,11 +124,11 @@ const INTENSITY_CONFIGS: Record<IntensityPreset, DeepPartial<MatrixConfig>> = {
 
 /**
  * Matrix Background Component
- * 
+ *
  * A performant, customizable Matrix rain background effect.
  */
-export const MatrixBackground = memo(forwardRef<MatrixBackgroundRef, MatrixBackgroundProps>(
-  function MatrixBackground(props, ref) {
+export const MatrixBackground = memo(
+  forwardRef<MatrixBackgroundRef, MatrixBackgroundProps>(function MatrixBackground(props, ref) {
     const {
       theme = 'matrix-green',
       intensity = 'medium',
@@ -158,15 +147,15 @@ export const MatrixBackground = memo(forwardRef<MatrixBackgroundRef, MatrixBackg
       opacity = 1,
       noPointerEvents = true,
     } = props;
-    
+
     // Get theme utilities
     const { getTheme } = useMatrixThemes();
-    
+
     // Build configuration
     const config = useMemo((): DeepPartial<MatrixConfig> => {
       const intensityConfig = INTENSITY_CONFIGS[intensity] || {};
       const resolvedTheme = typeof theme === 'string' ? getTheme(theme) : theme;
-      
+
       return {
         ...intensityConfig,
         ...userConfig,
@@ -179,7 +168,7 @@ export const MatrixBackground = memo(forwardRef<MatrixBackgroundRef, MatrixBackg
         },
       };
     }, [theme, intensity, userConfig, debug, getTheme]);
-    
+
     // Initialize Matrix hook
     const {
       canvasRef,
@@ -206,43 +195,55 @@ export const MatrixBackground = memo(forwardRef<MatrixBackgroundRef, MatrixBackg
         onError,
       },
     });
-    
+
     // Expose methods via ref
-    useImperativeHandle(ref, () => ({
-      start,
-      stop,
-      pause,
-      resume,
-      toggle,
-      setTheme: setThemeInternal,
-      updateConfig,
-      isRunning,
-      fps,
-    }), [start, stop, pause, resume, toggle, setThemeInternal, updateConfig, isRunning, fps]);
-    
+    useImperativeHandle(
+      ref,
+      () => ({
+        start,
+        stop,
+        pause,
+        resume,
+        toggle,
+        setTheme: setThemeInternal,
+        updateConfig,
+        isRunning,
+        fps,
+      }),
+      [start, stop, pause, resume, toggle, setThemeInternal, updateConfig, isRunning, fps]
+    );
+
     // Build styles
-    const containerStyle = useMemo((): React.CSSProperties => ({
-      ...(fullscreen ? {
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-      } : {}),
-      zIndex,
-      opacity,
-      pointerEvents: noPointerEvents ? 'none' : 'auto',
-      overflow: 'hidden',
-      ...style,
-    }), [fullscreen, zIndex, opacity, noPointerEvents, style]);
-    
-    const canvasStyle = useMemo((): React.CSSProperties => ({
-      display: 'block',
-      width: '100%',
-      height: '100%',
-      backgroundColor: '#000', // Ensure black background for Matrix rain
-    }), []);
-    
+    const containerStyle = useMemo(
+      (): React.CSSProperties => ({
+        ...(fullscreen
+          ? {
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }
+          : {}),
+        zIndex,
+        opacity,
+        pointerEvents: noPointerEvents ? 'none' : 'auto',
+        overflow: 'hidden',
+        ...style,
+      }),
+      [fullscreen, zIndex, opacity, noPointerEvents, style]
+    );
+
+    const canvasStyle = useMemo(
+      (): React.CSSProperties => ({
+        display: 'block',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#000', // Ensure black background for Matrix rain
+      }),
+      []
+    );
+
     return (
       <div
         className={`matrix-background ${className}`.trim()}
@@ -250,15 +251,11 @@ export const MatrixBackground = memo(forwardRef<MatrixBackgroundRef, MatrixBackg
         aria-hidden="true"
         data-state={state.state}
       >
-        <canvas
-          ref={canvasRef}
-          style={canvasStyle}
-          aria-label="Matrix animation background"
-        />
+        <canvas ref={canvasRef} style={canvasStyle} aria-label="Matrix animation background" />
       </div>
     );
-  }
-));
+  })
+);
 
 // =============================================================================
 // SPECIALIZED VARIANTS
@@ -272,7 +269,7 @@ export const MatrixAuthBackground = memo(function MatrixAuthBackground(
   props: Omit<MatrixBackgroundProps, 'intensity'> & { opacity?: number }
 ) {
   const { zIndex = -10, opacity = 0.5, ...rest } = props;
-  
+
   return (
     <MatrixBackground
       {...rest}

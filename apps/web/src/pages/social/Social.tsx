@@ -452,7 +452,7 @@ function FriendsTab({
       <div>
         <h3 className="mb-3 text-lg font-bold text-white">All Friends ({friends.length})</h3>
         {friends.length === 0 ? (
-          <GlassCard variant="frost" className="p-8 text-center">
+          <GlassCard variant="frosted" className="p-8 text-center">
             <UsersIcon className="mx-auto mb-3 h-12 w-12 text-white/40" />
             <p className="text-white/60">No friends yet. Start adding friends to see them here!</p>
           </GlassCard>
@@ -577,7 +577,7 @@ function NotificationsTab({ notifications, onMarkAsRead, onMarkAllAsRead }: Noti
 
       {/* Notifications List */}
       {notifications.length === 0 ? (
-        <GlassCard variant="frost" className="p-8 text-center">
+        <GlassCard variant="frosted" className="p-8 text-center">
           <BellIconSolid className="mx-auto mb-3 h-12 w-12 text-white/40" />
           <p className="text-white/60">No notifications yet</p>
         </GlassCard>
@@ -668,13 +668,13 @@ function DiscoverTab({ searchQuery, searchResults, onSearchChange }: DiscoverTab
 
       {/* Search Results */}
       {searchQuery.length === 0 ? (
-        <GlassCard variant="frost" className="p-12 text-center">
+        <GlassCard variant="frosted" className="p-12 text-center">
           <MagnifyingGlassIcon className="mx-auto mb-4 h-16 w-16 text-white/40" />
           <h3 className="mb-2 text-xl font-bold text-white">Discover CGraph</h3>
           <p className="text-white/60">Search for users, forums, and groups to connect with</p>
         </GlassCard>
       ) : searchResults.length === 0 ? (
-        <GlassCard variant="frost" className="p-8 text-center">
+        <GlassCard variant="frosted" className="p-8 text-center">
           <p className="text-white/60">No results found for "{searchQuery}"</p>
         </GlassCard>
       ) : (
