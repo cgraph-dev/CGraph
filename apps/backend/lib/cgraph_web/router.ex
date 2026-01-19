@@ -245,6 +245,12 @@ defmodule CGraphWeb.Router do
     get "/users/:id/presence", UserController, :presence
     post "/users/presence/bulk", UserController, :bulk_presence
 
+    # User Customizations (avatar borders, titles, themes, effects)
+    get "/users/:id/customizations", CustomizationController, :show
+    put "/users/:id/customizations", CustomizationController, :update
+    patch "/users/:id/customizations", CustomizationController, :patch
+    delete "/users/:id/customizations", CustomizationController, :delete
+
     # Direct Messages (1:1)
     resources "/conversations", ConversationController, only: [:index, :show, :create] do
       # Mark entire conversation as read
