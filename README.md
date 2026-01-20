@@ -9,11 +9,11 @@
 #### Real-time messaging • Community forums • End-to-end encryption • Web3 authentication • Gamification
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-0.9.2-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.4-green.svg)](CHANGELOG.md)
 [![Tests](https://img.shields.io/badge/tests-1030%20passing-brightgreen.svg)](#testing)
 [![Elixir](https://img.shields.io/badge/elixir-1.17+-purple.svg)](https://elixir-lang.org/)
 
-**Current version:** 0.9.2 (January 2026)
+**Current version:** 0.9.4 (January 2026)
 
 [🌐 Website](https://www.cgraph.org) · [📚 Documentation](docs/) · [🔌 API Reference](docs/API.md) ·
 [🤝 Contributing](CONTRIBUTING.md)

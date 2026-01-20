@@ -9,8 +9,7 @@ CGraph is an enterprise messaging platform combining real-time chat, community f
 decentralized identity. Features include Signal Protocol encryption (X3DH + AES-256-GCM), Ethereum
 wallet authentication, voice/video calls, and a karma-based forum system.
 
-**Version**: 0.9.3  
-**Last Updated**: January 2026
+**Version**: 0.9.4 **Last Updated**: January 2026
 
 ## Key Features
 

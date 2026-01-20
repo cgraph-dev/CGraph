@@ -4,45 +4,59 @@ info:
   description: |
     CGraph is a modern communication platform combining messaging, groups, and forums
     with end-to-end encryption and Web3 wallet integration.
-    
+
     ## Authentication
-    
+
     Authentication uses HTTP-only cookies for enhanced security:
     - Access tokens are set as HTTP-only cookies (15 min expiry)
     - Refresh tokens are set as HTTP-only cookies (7 day expiry)
     - All API requests automatically include cookies via `withCredentials: true`
-    
+
     For WebSocket connections, a session token is provided via the auth endpoints
     and passed as a query parameter.
-    
+
     Legacy Bearer token authentication is still supported for backwards compatibility:
     ```
     Authorization: Bearer <your-token>
     ```
-    
+
     Obtain tokens via `/api/v1/auth/login` or `/api/v1/auth/register`.
-    
+
     ## End-to-End Encryption (v0.9.0+)
-    
+
     CGraph implements Signal Protocol-inspired E2EE:
     - X3DH for initial key agreement
     - Double Ratchet for forward secrecy
     - AES-256-GCM for message encryption
-    
+
     See the E2EE endpoints under `/api/v1/e2ee/*` for key management.
-    
-    ## Rate Limiting
-    
-    - Default: 100 requests/minute per IP
-    - Authenticated: 300 requests/minute per user
-    - Upload endpoints: 10 requests/minute
-    
+
+    ## Rate Limiting (v0.9.4 Updates)
+
+    Three-tier rate limiting system:
+    - **Strict** (auth endpoints): 5 requests/minute per IP
+    - **Standard**: 100 requests/minute (unauthenticated), 300 (authenticated)
+    - **Relaxed** (public read-only): 500 requests/minute
+
     Rate limit headers are included in all responses:
     - `X-RateLimit-Limit`
     - `X-RateLimit-Remaining`
     - `X-RateLimit-Reset`
-    
-  version: 0.9.1
+
+    ## v0.9.4 New Features
+
+    - **Customization Persistence**: Complete backend for avatar borders, themes, chat effects
+    - **Event Reward Distribution**: Automatic reward delivery when events end
+    - **Email Rate Limiting**: 10 emails/hour per user with Redis-backed tracking
+    - **WebSocket Token Expiration**: Periodic validation every 5 minutes
+    - **RSS Feeds**: Complete RSS 2.0 and Atom 1.0 feeds for forums
+    - **Forum Hierarchy**: Nested subforum support with tree navigation
+    - **Secondary Groups**: Multiple group membership with auto-assignment rules
+    - **Oban Dead Letter Queue**: Failed job retention for debugging
+
+    See full documentation at: https://docs.cgraph.org/api/v0.9.4
+
+  version: 0.9.4
   contact:
     name: CGraph Support
     email: support@cgraph.org
