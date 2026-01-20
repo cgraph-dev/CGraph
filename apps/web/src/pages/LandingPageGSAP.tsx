@@ -229,54 +229,93 @@ const Navigation = memo(function Navigation() {
 
   useEffect(() => {
     if (navRef.current) {
-      gsap.from(navRef.current, {
-        y: -100,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-      });
+      // Use fromTo for explicit control over start and end states
+      gsap.fromTo(
+        navRef.current,
+        { y: -100, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: 'power3.out' }
+      );
     }
   }, []);
 
   return (
     <nav
       ref={navRef}
-      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
-        scrolled ? 'border-b border-white/5 bg-gray-950/80 backdrop-blur-xl' : 'bg-transparent'
+      className={`fixed left-0 right-0 top-0 z-[100] transition-all duration-500 ${
+        scrolled
+          ? 'border-b border-white/10 bg-gray-950/60 shadow-lg shadow-black/20 backdrop-blur-xl'
+          : 'bg-gray-950/20 backdrop-blur-sm'
       }`}
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <LogoIcon size={32} animated />
-            <span className="text-xl font-bold text-white">CGraph</span>
-          </Link>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Link to="/" className="flex items-center gap-3">
+              <LogoIcon size={32} animated />
+              <span className="bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-xl font-bold text-transparent">
+                CGraph
+              </span>
+            </Link>
+          </motion.div>
 
           {/* Desktop Nav */}
           <div className="hidden items-center gap-8 md:flex">
-            {['Features', 'Security', 'Pricing'].map((item) => (
-              <a
+            {['Features', 'Security', 'Pricing'].map((item, index) => (
+              <motion.a
                 key={item}
                 href={`#${item.toLowerCase()}`}
-                className="text-sm text-gray-400 transition-colors hover:text-white"
+                className="relative text-sm text-gray-400 transition-colors hover:text-white"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 + index * 0.1, duration: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {item}
-              </a>
+                <motion.span
+                  className="absolute -bottom-1 left-0 h-0.5 w-0 bg-gradient-to-r from-emerald-400 to-cyan-400"
+                  whileHover={{ width: '100%' }}
+                  transition={{ duration: 0.2 }}
+                />
+              </motion.a>
             ))}
           </div>
 
           {/* CTA */}
           <div className="hidden items-center gap-4 md:flex">
-            <Link to="/login" className="text-sm text-gray-400 hover:text-white">
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6, duration: 0.5 }}
             >
-              Get Started
-            </Link>
+              <Link
+                to="/login"
+                className="text-sm text-gray-400 transition-all duration-300 hover:text-white"
+              >
+                Sign In
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.7, duration: 0.5 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Link
+                to="/register"
+                className="rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/25 transition-all duration-300 hover:shadow-emerald-500/40"
+              >
+                Get Started
+              </Link>
+            </motion.div>
           </div>
 
           {/* Mobile menu button */}

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { api } from '@/lib/api';
 
 /**
  * Chat Bubble Customization Store
@@ -95,23 +96,30 @@ const defaultChatBubbleStyle: ChatBubbleStyle = {
 
 interface ChatBubbleStore {
   style: ChatBubbleStyle;
+  isLoading: boolean;
+  isSaving: boolean;
   updateStyle: <K extends keyof ChatBubbleStyle>(key: K, value: ChatBubbleStyle[K]) => void;
   updateMultiple: (updates: Partial<ChatBubbleStyle>) => void;
   resetStyle: () => void;
   applyPreset: (preset: 'default' | 'minimal' | 'modern' | 'retro' | 'bubble' | 'glass') => void;
   exportStyle: () => string;
   importStyle: (json: string) => void;
+  syncToBackend: () => Promise<void>;
+  fetchFromBackend: () => Promise<void>;
 }
 
 export const useChatBubbleStore = create<ChatBubbleStore>()(
   persist(
     (set, get) => ({
       style: defaultChatBubbleStyle,
+      isLoading: false,
+      isSaving: false,
 
       updateStyle: (key, value) => {
         set((state) => ({
           style: { ...state.style, [key]: value },
         }));
+        // Auto-sync to backend after update (debounced in component)
       },
 
       updateMultiple: (updates) => {
@@ -228,6 +236,38 @@ export const useChatBubbleStore = create<ChatBubbleStore>()(
           }));
         } catch (error) {
           console.error('Failed to import chat bubble style:', error);
+        }
+      },
+
+      syncToBackend: async () => {
+        const { style } = get();
+        set({ isSaving: true });
+        try {
+          await api.patch('/api/v1/users/me/preferences/chat-bubble', { style });
+        } catch (error) {
+          console.warn('Failed to sync chat bubble style to backend:', error);
+          // Fail silently - local storage will persist
+        } finally {
+          set({ isSaving: false });
+        }
+      },
+
+      fetchFromBackend: async () => {
+        set({ isLoading: true });
+        try {
+          const response = await api.get('/api/v1/users/me/preferences/chat-bubble');
+          if (response.data?.style) {
+            set({
+              style: { ...defaultChatBubbleStyle, ...response.data.style },
+              isLoading: false,
+            });
+          } else {
+            set({ isLoading: false });
+          }
+        } catch (error) {
+          console.warn('Failed to fetch chat bubble style from backend:', error);
+          set({ isLoading: false });
+          // Use local storage fallback
         }
       },
     }),

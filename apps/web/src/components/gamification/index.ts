@@ -31,5 +31,18 @@ export { default as DailyRewards, DailyRewards as DailyRewardsComponent } from '
 // Titles & Badges
 export { TitleBadge, type TitleBadgeProps } from './TitleBadge';
 
+// User Stars (Post Count Indicators)
+export {
+  UserStars,
+  UserStarsBadge,
+  UserStarsTierList,
+  getTierForPostCount,
+  getProgressToNextTier,
+  getPostsToNextTier,
+  USER_TIERS,
+  type UserStarsProps,
+  type UserStarsTier,
+} from './UserStars';
+
 // Re-export types
 export type { AchievementNotificationData } from './AchievementNotification';

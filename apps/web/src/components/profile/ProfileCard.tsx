@@ -30,6 +30,7 @@ export interface ProfileCardUser {
   username: string;
   displayName: string;
   avatarUrl: string;
+  avatarBorderId?: string;
   bio?: string;
   // Gamification
   level: number;

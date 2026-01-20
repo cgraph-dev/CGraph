@@ -12,6 +12,9 @@ import {
 import GlassCard from '@/components/ui/GlassCard';
 import { type ProfileCardUser } from './ProfileCard';
 import { useAuthStore } from '@/stores/authStore';
+import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
+import { useAvatarBorderStore } from '@/stores/avatarBorderStore';
+import { getBorderById } from '@/data/avatar-borders';
 
 /**
  * UserProfileCard Component
@@ -50,17 +53,28 @@ interface MiniProfileCardProps {
 
 function MiniProfileCard({ user, onViewProfile, onMessage }: MiniProfileCardProps) {
   const { user: currentUser } = useAuthStore();
+  const { getEquippedBorder } = useAvatarBorderStore();
   const isOwnProfile = user.id === currentUser?.id;
+
+  // Get the user's equipped border - for own profile use store, for others use their avatarBorderId
+  const userBorder = isOwnProfile
+    ? getEquippedBorder()
+    : user.avatarBorderId
+      ? getBorderById(user.avatarBorderId)
+      : undefined;
 
   return (
     <div className="w-[300px] p-4">
-      {/* Avatar with border */}
+      {/* Avatar with animated border */}
       <div className="mb-3 flex flex-col items-center">
         <div className="relative">
-          <img
+          <AvatarBorderRenderer
             src={user.avatarUrl}
             alt={user.displayName}
-            className="h-20 w-20 rounded-full border-2 border-primary-500/50 object-cover"
+            size={80}
+            border={userBorder}
+            showParticles={true}
+            interactive={true}
           />
           {/* Online indicator */}
           {user.isOnline && (
@@ -137,7 +151,15 @@ interface FullProfileCardProps {
 
 function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps) {
   const { user: currentUser } = useAuthStore();
+  const { getEquippedBorder } = useAvatarBorderStore();
   const isOwnProfile = user.id === currentUser?.id;
+
+  // Get the user's equipped border - for own profile use store, for others use their avatarBorderId
+  const userBorder = isOwnProfile
+    ? getEquippedBorder()
+    : user.avatarBorderId
+      ? getBorderById(user.avatarBorderId)
+      : undefined;
 
   return (
     <div className="max-h-[80vh] w-[600px] overflow-y-auto">
@@ -155,13 +177,16 @@ function FullProfileCard({ user, mutualFriends, onClose }: FullProfileCardProps)
 
       {/* Profile Content */}
       <div className="px-6 pb-6">
-        {/* Avatar */}
+        {/* Avatar with animated border */}
         <div className="-mt-12 mb-4 flex items-start gap-4">
           <div className="relative">
-            <img
+            <AvatarBorderRenderer
               src={user.avatarUrl}
               alt={user.displayName}
-              className="h-24 w-24 rounded-full border-4 border-dark-800 object-cover"
+              size={96}
+              border={userBorder}
+              showParticles={true}
+              interactive={true}
             />
             {user.isOnline && (
               <div className="absolute bottom-1 right-1 h-6 w-6 rounded-full border-2 border-dark-800 bg-green-500" />

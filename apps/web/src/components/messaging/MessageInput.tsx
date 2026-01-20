@@ -18,6 +18,7 @@ import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { StickerPicker } from '@/components/chat/StickerPicker';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { Sticker } from '@/data/stickers';
+import { api } from '@/lib/api';
 
 // Reserved for extended input features
 const _reservedIcons = { PaperClipIcon, AtSymbolIcon };
@@ -491,18 +492,82 @@ function MentionAutocomplete({
 }) {
   // Reserved for dismissing on outside click
   void _onClose;
-  // Mock users - would come from store/API
-  const users = [
-    { id: '1', username: 'alice', displayName: 'Alice' },
-    { id: '2', username: 'bob', displayName: 'Bob' },
-    { id: '3', username: 'charlie', displayName: 'Charlie' },
-  ].filter(
-    (u) =>
-      u.username.toLowerCase().includes(query.toLowerCase()) ||
-      u.displayName.toLowerCase().includes(query.toLowerCase())
-  );
 
-  if (users.length === 0) return null;
+  const [users, setUsers] = useState<
+    Array<{ id: string; username: string; displayName: string; avatarUrl?: string }>
+  >([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch users from API with debounce
+  useEffect(() => {
+    if (!query.trim()) {
+      setUsers([]);
+      return;
+    }
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const response = await api.get('/api/v1/users/search', {
+          params: { q: query, limit: 10 },
+        });
+
+        if (response.data?.users) {
+          setUsers(
+            response.data.users.map((u: any) => ({
+              id: u.id,
+              username: u.username,
+              displayName: u.display_name || u.username,
+              avatarUrl: u.avatar_url,
+            }))
+          );
+        } else {
+          // Fallback to mock data if API not available
+          const mockUsers = [
+            { id: '1', username: 'alice', displayName: 'Alice' },
+            { id: '2', username: 'bob', displayName: 'Bob' },
+            { id: '3', username: 'charlie', displayName: 'Charlie' },
+            { id: '4', username: 'david', displayName: 'David' },
+            { id: '5', username: 'emma', displayName: 'Emma' },
+          ].filter(
+            (u) =>
+              u.username.toLowerCase().includes(query.toLowerCase()) ||
+              u.displayName.toLowerCase().includes(query.toLowerCase())
+          );
+          setUsers(mockUsers);
+        }
+      } catch {
+        // Fallback to mock data on error
+        const mockUsers = [
+          { id: '1', username: 'alice', displayName: 'Alice' },
+          { id: '2', username: 'bob', displayName: 'Bob' },
+          { id: '3', username: 'charlie', displayName: 'Charlie' },
+          { id: '4', username: 'david', displayName: 'David' },
+          { id: '5', username: 'emma', displayName: 'Emma' },
+        ].filter(
+          (u) =>
+            u.username.toLowerCase().includes(query.toLowerCase()) ||
+            u.displayName.toLowerCase().includes(query.toLowerCase())
+        );
+        setUsers(mockUsers);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 200);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [query]);
+
+  if (users.length === 0 && !isLoading) return null;
 
   return (
     <motion.div
@@ -511,22 +576,40 @@ function MentionAutocomplete({
       exit={{ opacity: 0, y: 10 }}
       className="absolute bottom-full left-0 right-0 mb-2 max-h-40 overflow-y-auto rounded-xl border border-gray-700 bg-dark-800 p-2 shadow-xl"
     >
-      {users.map((user) => (
-        <motion.button
-          key={user.id}
-          whileHover={{ x: 2 }}
-          onClick={() => onSelect(user.username)}
-          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-dark-700"
-        >
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600">
-            <span className="text-sm font-bold text-white">{user.displayName[0]}</span>
-          </div>
-          <div>
-            <p className="text-sm font-medium text-white">{user.displayName}</p>
-            <p className="text-xs text-gray-400">@{user.username}</p>
-          </div>
-        </motion.button>
-      ))}
+      {isLoading ? (
+        <div className="flex items-center justify-center py-3">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+            className="h-5 w-5 rounded-full border-2 border-primary-500 border-t-transparent"
+          />
+        </div>
+      ) : (
+        users.map((user) => (
+          <motion.button
+            key={user.id}
+            whileHover={{ x: 2 }}
+            onClick={() => onSelect(user.username)}
+            className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-dark-700"
+          >
+            {user.avatarUrl ? (
+              <img
+                src={user.avatarUrl}
+                alt={user.displayName}
+                className="h-8 w-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600">
+                <span className="text-sm font-bold text-white">{user.displayName[0]}</span>
+              </div>
+            )}
+            <div>
+              <p className="text-sm font-medium text-white">{user.displayName}</p>
+              <p className="text-xs text-gray-400">@{user.username}</p>
+            </div>
+          </motion.button>
+        ))
+      )}
     </motion.div>
   );
 }

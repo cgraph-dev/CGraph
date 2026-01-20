@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import {
@@ -17,6 +17,9 @@ import {
   PencilIcon,
   TrashIcon,
   FlagIcon,
+  ListBulletIcon,
+  Bars3BottomLeftIcon,
+  DocumentArrowDownIcon,
 } from '@heroicons/react/24/outline';
 import {
   ArrowUpIcon as ArrowUpIconSolid,
@@ -29,6 +32,8 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatTimeAgo } from '@/lib/utils';
+import { UserStars } from '@/components/gamification/UserStars';
+import { ThreadedCommentTree } from './ThreadedCommentTree';
 import type { Post, Comment, ThreadPrefix } from '@/stores/forumStore';
 
 /**
@@ -45,7 +50,13 @@ import type { Post, Comment, ThreadPrefix } from '@/stores/forumStore';
  * - Share options
  * - Reply quick-action
  * - Moderation actions for privileged users
+ * - View mode toggle (linear/threaded)
+ * - User stars/post count indicators
+ * - Export/print functionality
  */
+
+// View modes for comment display
+export type CommentViewMode = 'linear' | 'threaded';
 
 interface ThreadViewProps {
   post: Post;
@@ -62,11 +73,16 @@ interface ThreadViewProps {
   onDelete?: () => Promise<void>;
   onEdit?: () => void;
   onReport?: () => void;
+  onExport?: () => void;
+  onMarkBestAnswer?: (commentId: string) => void;
   isBookmarked?: boolean;
   isSubscribed?: boolean;
   canModerate?: boolean;
   canEdit?: boolean;
+  canMarkBestAnswer?: boolean;
   variant?: 'default' | 'compact' | 'expanded';
+  /** Initial view mode - persisted to localStorage */
+  defaultViewMode?: CommentViewMode;
 }
 
 export function ThreadView({
@@ -84,13 +100,17 @@ export function ThreadView({
   onDelete,
   onEdit,
   onReport,
+  onExport,
+  onMarkBestAnswer,
   isBookmarked = false,
   isSubscribed: _isSubscribed = false,
   canModerate = false,
   canEdit = false,
+  canMarkBestAnswer = false,
   variant = 'default',
+  defaultViewMode = 'linear',
 }: ThreadViewProps) {
-  const { user: _user } = useAuthStore();
+  const { user } = useAuthStore();
   const { theme } = useThemeStore();
   const primaryColor = THEME_COLORS[theme.colorPreset]?.primary || '#10B981';
 
@@ -102,6 +122,36 @@ export function ThreadView({
   const [hoveredRating, setHoveredRating] = useState(0);
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [replyToId, setReplyToId] = useState<string | undefined>(undefined);
+
+  // View mode state - persisted to localStorage
+  const [viewMode, setViewMode] = useState<CommentViewMode>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('cgraph_thread_view_mode');
+      if (saved === 'linear' || saved === 'threaded') {
+        return saved;
+      }
+    }
+    return defaultViewMode;
+  });
+
+  // Persist view mode changes
+  const handleViewModeChange = useCallback((mode: CommentViewMode) => {
+    setViewMode(mode);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cgraph_thread_view_mode', mode);
+    }
+  }, []);
+
+  // Handle reply to specific comment
+  const handleReplyTo = useCallback((parentId: string) => {
+    setReplyToId(parentId);
+    setShowCommentForm(true);
+    // Scroll to comment form
+    setTimeout(() => {
+      document.getElementById('comment-form')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }, []);
 
   // Sort comments - best answers first, then by score
   const sortedComments = useMemo(() => {
@@ -141,13 +191,22 @@ export function ThreadView({
     setIsSubmitting(true);
     HapticFeedback.success();
     try {
-      await onComment(commentContent.trim());
+      await onComment(commentContent.trim(), replyToId);
       setCommentContent('');
       setShowCommentForm(false);
+      setReplyToId(undefined);
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  // Handle comment vote for threaded view
+  const handleThreadedVote = useCallback(
+    async (commentId: string, value: 1 | -1 | null, _currentVote: 1 | -1 | null) => {
+      await onVote('comment', commentId, value);
+    },
+    [onVote]
+  );
 
   const handleRate = async (rating: number) => {
     if (!onRate) return;
@@ -276,10 +335,13 @@ export function ThreadView({
                 <span className="font-medium">
                   {post.author.displayName || post.author.username}
                 </span>
-                {post.author.reputation && (
-                  <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-xs text-purple-400">
-                    {post.author.reputation} karma
-                  </span>
+                {post.author.reputation !== undefined && (
+                  <>
+                    <UserStars postCount={post.author.reputation} size="xs" showLabel={false} />
+                    <span className="rounded bg-purple-500/20 px-1.5 py-0.5 text-xs text-purple-400">
+                      {post.author.reputation} karma
+                    </span>
+                  </>
                 )}
               </div>
               <span className="text-xs text-gray-500">
@@ -635,41 +697,122 @@ export function ThreadView({
 
       {/* Comments Section */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold">
-          {comments.length} Comment{comments.length !== 1 ? 's' : ''}
-        </h2>
+        {/* Comments Header with View Mode Toggle */}
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold">
+            {comments.length} Comment{comments.length !== 1 ? 's' : ''}
+          </h2>
 
-        <div
-          ref={parentRef}
-          className="scrollbar-thin scrollbar-thumb-dark-600 h-[600px] overflow-y-auto"
-        >
-          <div
-            style={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
-              width: '100%',
-              position: 'relative',
-            }}
-          >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const comment = sortedComments[virtualRow.index];
-              if (!comment) return null;
-              return (
-                <div
-                  key={virtualRow.key}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    transform: `translateY(${virtualRow.start}px)`,
-                  }}
-                >
-                  {renderComment(comment, virtualRow.index)}
-                </div>
-              );
-            })}
+          <div className="flex items-center gap-2">
+            {/* Export Button */}
+            {onExport && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onExport}
+                className="flex items-center gap-1 rounded-lg bg-dark-600 px-3 py-1.5 text-sm text-gray-400 hover:bg-dark-500 hover:text-white"
+                title="Export thread"
+              >
+                <DocumentArrowDownIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Export</span>
+              </motion.button>
+            )}
+
+            {/* View Mode Toggle */}
+            <div className="flex rounded-lg border border-dark-600 bg-dark-700/50 p-0.5">
+              <button
+                onClick={() => handleViewModeChange('linear')}
+                className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors ${
+                  viewMode === 'linear'
+                    ? 'bg-dark-600 text-white'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+                title="Linear view - comments in order"
+              >
+                <ListBulletIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Linear</span>
+              </button>
+              <button
+                onClick={() => handleViewModeChange('threaded')}
+                className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors ${
+                  viewMode === 'threaded'
+                    ? 'bg-dark-600 text-white'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+                title="Threaded view - nested replies"
+              >
+                <Bars3BottomLeftIcon className="h-4 w-4" />
+                <span className="hidden sm:inline">Threaded</span>
+              </button>
+            </div>
           </div>
         </div>
+
+        {/* Reply-To Indicator */}
+        <AnimatePresence>
+          {replyToId && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="mb-3 flex items-center gap-2 rounded-lg border border-primary-500/30 bg-primary-500/10 px-3 py-2 text-sm"
+            >
+              <span className="text-gray-400">Replying to comment</span>
+              <button
+                onClick={() => setReplyToId(undefined)}
+                className="ml-auto text-gray-400 hover:text-white"
+              >
+                ✕ Cancel
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Comments Display - Linear or Threaded */}
+        {viewMode === 'threaded' ? (
+          <ThreadedCommentTree
+            comments={comments}
+            currentUserId={user?.id}
+            onVote={handleThreadedVote}
+            onReply={handleReplyTo}
+            onMarkBestAnswer={onMarkBestAnswer}
+            canMarkBestAnswer={canMarkBestAnswer}
+            primaryColor={primaryColor}
+          />
+        ) : (
+          /* Linear View with Virtualization */
+          <div
+            ref={parentRef}
+            className="scrollbar-thin scrollbar-thumb-dark-600 h-[600px] overflow-y-auto"
+          >
+            <div
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const comment = sortedComments[virtualRow.index];
+                if (!comment) return null;
+                return (
+                  <div
+                    key={virtualRow.key}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                  >
+                    {renderComment(comment, virtualRow.index)}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {comments.length === 0 && (
           <GlassCard variant="frosted" className="p-8 text-center">

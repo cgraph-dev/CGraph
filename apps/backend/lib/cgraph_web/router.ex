@@ -167,6 +167,54 @@ defmodule CGraphWeb.Router do
 
     # Public post feed (aggregated from all public forums)
     get "/posts/feed", PostController, :feed
+
+    # ==========================================================================
+    # RSS/Atom Feeds - Public syndication for forum content
+    # ==========================================================================
+    # Supports both RSS 2.0 (default) and Atom 1.0 (via ?format=atom)
+    # All feeds are cached for 5 minutes for CDN optimization
+    # ==========================================================================
+    
+    # Global activity feed
+    get "/rss/global/activity", RssController, :global_activity
+    
+    # Forum-level feeds
+    get "/rss/forums/:forum_id/threads", RssController, :forum_threads
+    get "/rss/forums/:forum_id/posts", RssController, :forum_posts
+    
+    # Board-level feeds
+    get "/rss/boards/:board_id/threads", RssController, :board_threads
+    
+    # Thread-level feeds
+    get "/rss/threads/:thread_id/posts", RssController, :thread_posts
+    
+    # User activity feeds
+    get "/rss/users/:user_id/activity", RssController, :user_activity
+
+    # ==========================================================================
+    # Web Push - VAPID key and status (public for browser subscription)
+    # ==========================================================================
+    get "/web-push/vapid-key", WebPushController, :vapid_key
+    get "/web-push/status", WebPushController, :status
+
+    # ==========================================================================
+    # Custom Emojis - Public read access
+    # ==========================================================================
+    get "/emojis", CustomEmojiController, :index
+    get "/emojis/categories", CustomEmojiController, :categories
+    get "/emojis/search", CustomEmojiController, :search
+    get "/emojis/popular", CustomEmojiController, :popular
+    get "/emojis/:id", CustomEmojiController, :show
+
+    # ==========================================================================
+    # Forum Hierarchy - Public tree navigation
+    # ==========================================================================
+    get "/forums/tree", ForumHierarchyController, :tree
+    get "/forums/roots", ForumHierarchyController, :roots
+    get "/forums/:id/subtree", ForumHierarchyController, :subtree
+    get "/forums/:id/children", ForumHierarchyController, :children
+    get "/forums/:id/ancestors", ForumHierarchyController, :ancestors
+    get "/forums/:id/breadcrumbs", ForumHierarchyController, :breadcrumbs
   end
 
   # Telemetry endpoints (relaxed rate limiting, minimal auth)
@@ -290,6 +338,14 @@ defmodule CGraphWeb.Router do
     # Vote eligibility check
     get "/forums/vote-eligibility", ForumController, :vote_eligibility
 
+    # ==========================================================================
+    # Forum Hierarchy - Authenticated operations
+    # ==========================================================================
+    put "/forums/:id/move", ForumHierarchyController, :move
+    put "/forums/:id/reorder", ForumHierarchyController, :reorder
+    put "/forums/:id/hierarchy", ForumHierarchyController, :update_hierarchy
+    post "/forums/:id/create_subforum", ForumHierarchyController, :create_subforum
+
     resources "/forums", ForumController, except: [:index, :show] do
       resources "/posts", PostController do
         post "/vote", PostController, :vote
@@ -307,6 +363,13 @@ defmodule CGraphWeb.Router do
       get "/vote", ForumController, :get_vote
       delete "/vote", ForumController, :remove_vote
 
+      # Forum permissions
+      get "/permissions", PermissionsController, :forum_permissions
+      put "/permissions", PermissionsController, :update_forum_permissions
+      delete "/permissions/:group_id", PermissionsController, :delete_forum_permission
+      get "/permission-templates", PermissionsController, :list_templates
+      post "/permission-templates", PermissionsController, :create_template
+
       # MyBB-style boards
       resources "/boards", BoardController, except: [:new, :edit] do
         get "/by-slug/:slug", BoardController, :show_by_slug
@@ -320,6 +383,20 @@ defmodule CGraphWeb.Router do
         post "/toggle", PluginController, :toggle
       end
     end
+
+    # ==========================================================================
+    # Board Permissions
+    # ==========================================================================
+    get "/boards/:board_id/permissions", PermissionsController, :board_permissions
+    put "/boards/:board_id/permissions", PermissionsController, :update_board_permissions
+    delete "/boards/:board_id/permissions/:group_id", PermissionsController, :delete_board_permission
+    post "/boards/:board_id/apply-template", PermissionsController, :apply_template_to_board
+    get "/boards/:board_id/check-permission", PermissionsController, :check_board_permission
+    get "/boards/:board_id/my-permissions", PermissionsController, :my_board_permissions
+
+    # System permission templates
+    get "/permission-templates", PermissionsController, :list_system_templates
+    delete "/permission-templates/:id", PermissionsController, :delete_template
 
     # Boards -> Threads (nested outside forums for cleaner URLs)
     resources "/boards", BoardController, only: [] do
@@ -352,6 +429,25 @@ defmodule CGraphWeb.Router do
     get "/voice-messages/:id/waveform", VoiceMessageController, :waveform
     delete "/voice-messages/:id", VoiceMessageController, :delete
 
+    # ==========================================================================
+    # Secondary Groups & Auto-Assignment Rules
+    # ==========================================================================
+    
+    # Member groups
+    get "/forums/:forum_id/members/:member_id/groups", SecondaryGroupsController, :member_groups
+    get "/forums/:forum_id/my-groups", SecondaryGroupsController, :my_groups
+    post "/forums/:forum_id/members/:member_id/secondary-groups", SecondaryGroupsController, :add_secondary_group
+    delete "/forums/:forum_id/members/:member_id/secondary-groups/:group_id", SecondaryGroupsController, :remove_secondary_group
+    put "/forums/:forum_id/members/:member_id/display-group", SecondaryGroupsController, :set_display_group
+    
+    # Auto-assignment rules
+    get "/forums/:forum_id/group-rules", SecondaryGroupsController, :list_rules
+    post "/forums/:forum_id/groups/:group_id/rules", SecondaryGroupsController, :create_rule
+    post "/forums/:forum_id/evaluate-rules", SecondaryGroupsController, :evaluate_rules
+    put "/group-rules/:id", SecondaryGroupsController, :update_rule
+    delete "/group-rules/:id", SecondaryGroupsController, :delete_rule
+    get "/group-rules/templates", SecondaryGroupsController, :rule_templates
+
     # End-to-End Encryption (E2EE) Key Management
     # Note: Specific routes must come before parameterized routes
     post "/e2ee/keys", E2EEController, :register_keys
@@ -377,6 +473,24 @@ defmodule CGraphWeb.Router do
     # Push notification tokens
     post "/push-tokens", PushTokenController, :create
     delete "/push-tokens/:token", PushTokenController, :delete
+
+    # Web Push subscriptions (authenticated)
+    post "/web-push/subscribe", WebPushController, :subscribe
+    delete "/web-push/unsubscribe", WebPushController, :unsubscribe
+    post "/web-push/test", WebPushController, :test
+
+    # Custom Emojis (authenticated - create, favorites, usage)
+    get "/emojis/favorites", CustomEmojiController, :favorites
+    get "/emojis/recent", CustomEmojiController, :recent
+    post "/emojis", CustomEmojiController, :create
+    put "/emojis/:id", CustomEmojiController, :update
+    delete "/emojis/:id", CustomEmojiController, :delete
+    post "/emojis/:id/use", CustomEmojiController, :use
+    post "/emojis/:id/favorite", CustomEmojiController, :add_favorite
+    delete "/emojis/:id/favorite", CustomEmojiController, :remove_favorite
+    post "/emojis/categories", CustomEmojiController, :create_category
+    put "/emojis/categories/:id", CustomEmojiController, :update_category
+    delete "/emojis/categories/:id", CustomEmojiController, :delete_category
 
     # Friends - specific routes MUST come before resources to avoid being matched as :show
     get "/friends/requests", FriendController, :requests
@@ -630,6 +744,11 @@ defmodule CGraphWeb.Router do
     # GDPR / User data
     post "/users/:id/export", AdminController, :export_user_data
     delete "/users/:id/data", AdminController, :delete_user_data
+
+    # Custom Emoji Moderation
+    get "/emojis/pending", CustomEmojiController, :pending
+    post "/emojis/:id/approve", CustomEmojiController, :approve
+    post "/emojis/:id/reject", CustomEmojiController, :reject
   end
 
   # Admin/Moderator API routes - MUST use :api_admin for proper authorization

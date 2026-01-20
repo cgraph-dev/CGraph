@@ -62,6 +62,7 @@ const ForumSettings = lazy(() => import('@/pages/forums/ForumSettings'));
 const ForumBoardView = lazy(() => import('@/pages/forums/ForumBoardView'));
 const ForumAdmin = lazy(() => import('@/pages/forums/ForumAdmin'));
 const PluginMarketplace = lazy(() => import('@/pages/forums/PluginMarketplace'));
+const ModerationQueue = lazy(() => import('@/pages/forums/ModerationQueue'));
 
 // Settings & Profile
 const Settings = lazy(() => import('@/pages/settings/Settings'));
@@ -370,6 +371,7 @@ export default function App() {
             <Route path="forums/leaderboard" element={<ForumLeaderboard />} />
             <Route path="forums/create" element={<CreateForum />} />
             <Route path="forums/plugins" element={<PluginMarketplace />} />
+            <Route path="forums/moderation" element={<ModerationQueue />} />
             <Route path="forums/:forumSlug" element={<ForumBoardView />} />
             <Route path="forums/:forumSlug/posts" element={<Forums />} />
             <Route path="forums/:forumSlug/create-post" element={<CreatePost />} />

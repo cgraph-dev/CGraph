@@ -70,7 +70,16 @@ export interface ChannelMessage {
   channelId: string;
   authorId: string;
   content: string;
-  messageType: 'text' | 'image' | 'video' | 'file' | 'audio' | 'voice' | 'sticker' | 'gif' | 'system';
+  messageType:
+    | 'text'
+    | 'image'
+    | 'video'
+    | 'file'
+    | 'audio'
+    | 'voice'
+    | 'sticker'
+    | 'gif'
+    | 'system';
   replyToId: string | null;
   replyTo: ChannelMessage | null;
   isPinned: boolean;
@@ -114,6 +123,16 @@ export interface GroupState {
   createGroup: (data: { name: string; description?: string; isPublic?: boolean }) => Promise<Group>;
   joinGroup: (inviteCode: string) => Promise<void>;
   leaveGroup: (groupId: string) => Promise<void>;
+  updateGroup: (
+    groupId: string,
+    data: Partial<Pick<Group, 'name' | 'description' | 'isPublic' | 'iconUrl' | 'bannerUrl'>>
+  ) => Promise<Group>;
+  deleteGroup: (groupId: string) => Promise<void>;
+  updateChannelOrder: (groupId: string, channelIds: string[]) => Promise<void>;
+  createInvite: (
+    groupId: string,
+    options?: { maxUses?: number; expiresIn?: number }
+  ) => Promise<{ code: string; expiresAt: string }>;
 }
 
 export const useGroupStore = create<GroupState>((set, get) => ({
@@ -289,5 +308,47 @@ export const useGroupStore = create<GroupState>((set, get) => ({
       groups: state.groups.filter((g) => g.id !== groupId),
       activeGroupId: state.activeGroupId === groupId ? null : state.activeGroupId,
     }));
+  },
+
+  updateGroup: async (groupId: string, data) => {
+    const response = await api.patch(`/api/v1/groups/${groupId}`, data);
+    const updatedGroup = ensureObject<Group>(response.data, 'group');
+    if (updatedGroup) {
+      set((state) => ({
+        groups: state.groups.map((g) => (g.id === groupId ? updatedGroup : g)),
+      }));
+      return updatedGroup;
+    }
+    throw new Error('Failed to update group');
+  },
+
+  deleteGroup: async (groupId: string) => {
+    await api.delete(`/api/v1/groups/${groupId}`);
+    set((state) => ({
+      groups: state.groups.filter((g) => g.id !== groupId),
+      activeGroupId: state.activeGroupId === groupId ? null : state.activeGroupId,
+    }));
+  },
+
+  updateChannelOrder: async (groupId: string, channelIds: string[]) => {
+    await api.patch(`/api/v1/groups/${groupId}/channels/order`, { channel_ids: channelIds });
+    // Optimistic update - reorder channels locally
+    set((state) => ({
+      groups: state.groups.map((g) => {
+        if (g.id !== groupId) return g;
+        const orderedChannels = channelIds
+          .map((id) => g.channels.find((c) => c.id === id))
+          .filter((c): c is Channel => c !== undefined);
+        return { ...g, channels: orderedChannels };
+      }),
+    }));
+  },
+
+  createInvite: async (groupId: string, options = {}) => {
+    const response = await api.post(`/api/v1/groups/${groupId}/invites`, {
+      max_uses: options.maxUses,
+      expires_in: options.expiresIn,
+    });
+    return response.data.invite as { code: string; expiresAt: string };
   },
 }));

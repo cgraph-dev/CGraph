@@ -24,15 +24,38 @@ export interface WebPushState {
   registered: boolean;
 }
 
-// VAPID public key - should match backend configuration
-// This is typically loaded from environment or API
+// VAPID public key - loaded from environment or fetched from API
 const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
 
-// Validate VAPID key is configured in production
-if (!VAPID_PUBLIC_KEY && import.meta.env.PROD) {
-  console.error(
-    '[WebPush] VITE_VAPID_PUBLIC_KEY is not configured. Push notifications will not work.'
-  );
+// Cache for VAPID key fetched from API
+let cachedVapidKey: string | null = null;
+
+/**
+ * Get VAPID public key (from env or API)
+ */
+async function getVapidPublicKey(): Promise<string | null> {
+  // Return env key if available
+  if (VAPID_PUBLIC_KEY) {
+    return VAPID_PUBLIC_KEY;
+  }
+
+  // Return cached key
+  if (cachedVapidKey) {
+    return cachedVapidKey;
+  }
+
+  // Fetch from backend
+  try {
+    const response = await api.get('/api/v1/web-push/vapid-key');
+    if (response.data?.data?.vapid_public_key) {
+      cachedVapidKey = response.data.data.vapid_public_key;
+      return cachedVapidKey;
+    }
+  } catch (error) {
+    console.error('[WebPush] Failed to fetch VAPID key from backend:', error);
+  }
+
+  return null;
 }
 
 /**
@@ -138,12 +161,13 @@ export async function subscribeToPush(
   registration: ServiceWorkerRegistration
 ): Promise<PushSubscription | null> {
   try {
-    if (!VAPID_PUBLIC_KEY) {
-      console.error('[WebPush] VAPID public key not configured');
+    const vapidKey = await getVapidPublicKey();
+    if (!vapidKey) {
+      console.error('[WebPush] VAPID public key not available');
       return null;
     }
 
-    const vapidPublicKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+    const vapidPublicKey = urlBase64ToUint8Array(vapidKey);
 
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
@@ -192,15 +216,12 @@ export async function registerPushWithBackend(
     // Convert subscription to JSON for backend
     const subscriptionData = subscription.toJSON();
 
-    // The token for web push is the endpoint URL + keys
-    const token = JSON.stringify({
-      endpoint: subscriptionData.endpoint,
-      keys: subscriptionData.keys,
-    });
-
-    const response = await api.post('/api/v1/push-tokens', {
-      token,
-      platform: 'web',
+    const response = await api.post('/api/v1/web-push/subscribe', {
+      subscription: {
+        endpoint: subscriptionData.endpoint,
+        keys: subscriptionData.keys,
+        expirationTime: subscriptionData.expirationTime,
+      },
       device_id: getDeviceId(),
       device_name: getBrowserName(),
     });
@@ -227,12 +248,10 @@ export async function registerPushWithBackend(
 export async function unregisterPushFromBackend(subscription: PushSubscription): Promise<boolean> {
   try {
     const subscriptionData = subscription.toJSON();
-    const token = JSON.stringify({
-      endpoint: subscriptionData.endpoint,
-      keys: subscriptionData.keys,
-    });
 
-    await api.delete(`/api/v1/push-tokens/${encodeURIComponent(token)}`);
+    await api.delete('/api/v1/web-push/unsubscribe', {
+      data: { endpoint: subscriptionData.endpoint },
+    });
     console.log('[WebPush] Token unregistered from backend');
     return true;
   } catch (error) {

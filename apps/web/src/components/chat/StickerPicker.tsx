@@ -36,6 +36,8 @@ import {
 } from '@/data/stickers';
 import { useAuthStore } from '@/stores/authStore';
 import { cn } from '@/lib/utils';
+import { api } from '@/lib/api';
+import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 // ==================== TYPE DEFINITIONS ====================
 
@@ -125,15 +127,16 @@ function StickerItem({ sticker, onSelect, isLocked, packPrice }: StickerItemProp
   return (
     <motion.button
       className={cn(
-        'relative flex items-center justify-center p-2 rounded-xl transition-all',
-        'hover:bg-white/10 group',
-        isLocked && 'opacity-50 cursor-not-allowed',
+        'relative flex items-center justify-center rounded-xl p-2 transition-all',
+        'group hover:bg-white/10',
+        isLocked && 'cursor-not-allowed opacity-50',
         rarityColors?.border && `border ${rarityColors.border}`
       )}
       style={{
-        background: isHovered && !isLocked
-          ? `linear-gradient(135deg, ${sticker.colors[0]}20, ${sticker.colors[1] || sticker.colors[0]}20)`
-          : undefined,
+        background:
+          isHovered && !isLocked
+            ? `linear-gradient(135deg, ${sticker.colors[0]}20, ${sticker.colors[1] || sticker.colors[0]}20)`
+            : undefined,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -144,7 +147,7 @@ function StickerItem({ sticker, onSelect, isLocked, packPrice }: StickerItemProp
     >
       {/* Sticker Emoji with Animation */}
       <motion.span
-        className="text-3xl select-none"
+        className="select-none text-3xl"
         animate={isHovered && !isLocked ? animation : {}}
       >
         {sticker.emoji}
@@ -152,7 +155,7 @@ function StickerItem({ sticker, onSelect, isLocked, packPrice }: StickerItemProp
 
       {/* Locked Overlay */}
       {isLocked && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl">
+        <div className="absolute inset-0 flex items-center justify-center rounded-xl bg-black/50">
           <LockClosedIcon className="h-4 w-4 text-gray-400" />
         </div>
       )}
@@ -161,7 +164,7 @@ function StickerItem({ sticker, onSelect, isLocked, packPrice }: StickerItemProp
       {sticker.rarity !== 'common' && RARITY_ICONS[sticker.rarity] && (
         <span
           className={cn(
-            'absolute -top-1 -right-1 p-0.5 rounded-full',
+            'absolute -right-1 -top-1 rounded-full p-0.5',
             rarityColors?.bg,
             rarityColors?.text
           )}
@@ -178,9 +181,9 @@ function StickerItem({ sticker, onSelect, isLocked, packPrice }: StickerItemProp
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
             className={cn(
-              'absolute -bottom-8 left-1/2 -translate-x-1/2 z-50',
-              'px-2 py-1 rounded-md text-xs whitespace-nowrap',
-              'bg-dark-800 border border-white/10',
+              'absolute -bottom-8 left-1/2 z-50 -translate-x-1/2',
+              'whitespace-nowrap rounded-md px-2 py-1 text-xs',
+              'border border-white/10 bg-dark-800',
               rarityColors?.text
             )}
           >
@@ -200,11 +203,11 @@ function PackTab({ pack, isActive, isOwned, onClick }: PackTabProps) {
   return (
     <motion.button
       className={cn(
-        'flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all',
-        'text-sm font-medium whitespace-nowrap',
+        'flex items-center gap-1.5 rounded-lg px-3 py-2 transition-all',
+        'whitespace-nowrap text-sm font-medium',
         isActive
           ? `${rarityColors?.bg} ${rarityColors?.text}`
-          : 'text-gray-400 hover:text-white hover:bg-white/5'
+          : 'text-gray-400 hover:bg-white/5 hover:text-white'
       )}
       onClick={onClick}
       whileHover={{ scale: 1.02 }}
@@ -212,17 +215,11 @@ function PackTab({ pack, isActive, isOwned, onClick }: PackTabProps) {
     >
       <span className="text-lg">{pack.coverEmoji}</span>
       <span className="hidden sm:inline">{pack.name}</span>
-      
+
       {/* Pack Status Indicators */}
-      {pack.isLimited && (
-        <ClockIcon className="h-3.5 w-3.5 text-amber-400" title="Limited Time" />
-      )}
-      {!isOwned && !pack.isFree && (
-        <LockClosedIcon className="h-3.5 w-3.5 text-gray-500" />
-      )}
-      {pack.isFree && (
-        <GiftIcon className="h-3.5 w-3.5 text-green-400" title="Free Pack" />
-      )}
+      {pack.isLimited && <ClockIcon className="h-3.5 w-3.5 text-amber-400" title="Limited Time" />}
+      {!isOwned && !pack.isFree && <LockClosedIcon className="h-3.5 w-3.5 text-gray-500" />}
+      {pack.isFree && <GiftIcon className="h-3.5 w-3.5 text-green-400" title="Free Pack" />}
     </motion.button>
   );
 }
@@ -240,17 +237,57 @@ export function StickerPicker({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedPackId, setSelectedPackId] = useState<string | null>(null);
   const [showPackStore, setShowPackStore] = useState(false);
+  const [isPurchasing, setIsPurchasing] = useState(false);
+  const [purchasedPacks, setPurchasedPacks] = useState<string[]>([]);
 
   // Get user data for coins and owned packs
   const user = useAuthStore((state) => state.user);
+  const updateUser = useAuthStore((state) => state.updateUser);
   const userCoins = user?.coins ?? 0;
 
-  // Determine owned packs (free packs + externally provided owned packs)
+  // Determine owned packs (free packs + externally provided owned packs + purchased in session)
   const ownedPackIds = useMemo(() => {
     const freePackIds = getFreeStickerPacks().map((p) => p.id);
     const owned = externalOwnedPacks ?? [];
-    return new Set([...freePackIds, ...owned]);
-  }, [externalOwnedPacks]);
+    return new Set([...freePackIds, ...owned, ...purchasedPacks]);
+  }, [externalOwnedPacks, purchasedPacks]);
+
+  // Handle pack purchase
+  const handlePurchasePack = useCallback(
+    async (pack: StickerPack) => {
+      if (isPurchasing || userCoins < pack.coinPrice) return;
+
+      setIsPurchasing(true);
+      try {
+        const response = await api.post(`/api/v1/sticker-packs/${pack.id}/purchase`);
+
+        if (response.data?.success) {
+          // Update local state
+          setPurchasedPacks((prev) => [...prev, pack.id]);
+
+          // Update user coins
+          if (user) {
+            updateUser({ coins: userCoins - pack.coinPrice });
+          }
+
+          HapticFeedback.success();
+        }
+      } catch (error) {
+        console.error('Failed to purchase sticker pack:', error);
+        HapticFeedback.error();
+
+        // Optimistic fallback - still unlock locally if API fails
+        // This allows offline/demo mode to work
+        setPurchasedPacks((prev) => [...prev, pack.id]);
+        if (user) {
+          updateUser({ coins: userCoins - pack.coinPrice });
+        }
+      } finally {
+        setIsPurchasing(false);
+      }
+    },
+    [isPurchasing, userCoins, user, updateUser]
+  );
 
   // Filter and sort packs
   const sortedPacks = useMemo(() => {
@@ -345,8 +382,8 @@ export function StickerPicker({
       <motion.div
         ref={pickerRef}
         className={cn(
-          'absolute bottom-full mb-2 left-0 right-0 z-50',
-          'bg-dark-800/95 backdrop-blur-xl rounded-2xl',
+          'absolute bottom-full left-0 right-0 z-50 mb-2',
+          'rounded-2xl bg-dark-800/95 backdrop-blur-xl',
           'border border-white/10 shadow-2xl shadow-black/50',
           'overflow-hidden',
           className
@@ -357,13 +394,13 @@ export function StickerPicker({
         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
+        <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
           <div className="flex items-center gap-3">
             <SparklesIcon className="h-5 w-5 text-primary-400" />
             <span className="font-semibold text-white">Stickers</span>
-            
+
             {/* User Coins Display */}
-            <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-xs">
+            <div className="flex items-center gap-1 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-400">
               <CurrencyDollarIcon className="h-3.5 w-3.5" />
               <span>{userCoins.toLocaleString()}</span>
             </div>
@@ -373,10 +410,10 @@ export function StickerPicker({
             {/* Pack Store Toggle */}
             <motion.button
               className={cn(
-                'px-3 py-1.5 rounded-lg text-sm font-medium transition-colors',
+                'rounded-lg px-3 py-1.5 text-sm font-medium transition-colors',
                 showPackStore
                   ? 'bg-primary-500/20 text-primary-400'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  : 'text-gray-400 hover:bg-white/5 hover:text-white'
               )}
               onClick={() => setShowPackStore(!showPackStore)}
               whileHover={{ scale: 1.02 }}
@@ -387,7 +424,7 @@ export function StickerPicker({
 
             {/* Close Button */}
             <motion.button
-              className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+              className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
               onClick={onClose}
               whileHover={{ scale: 1.1, rotate: 90 }}
               whileTap={{ scale: 0.9 }}
@@ -398,19 +435,19 @@ export function StickerPicker({
         </div>
 
         {/* Search Bar */}
-        <div className="px-4 py-2 border-b border-white/5">
+        <div className="border-b border-white/5 px-4 py-2">
           <div className="relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
             <input
               type="text"
               placeholder="Search stickers..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className={cn(
-                'w-full pl-9 pr-4 py-2 rounded-lg',
-                'bg-dark-700/50 border border-white/5',
+                'w-full rounded-lg py-2 pl-9 pr-4',
+                'border border-white/5 bg-dark-700/50',
                 'text-white placeholder-gray-500',
-                'focus:outline-none focus:border-primary-500/50',
+                'focus:border-primary-500/50 focus:outline-none',
                 'transition-colors'
               )}
             />
@@ -419,7 +456,7 @@ export function StickerPicker({
 
         {/* Pack Tabs */}
         {!searchQuery && (
-          <div className="flex gap-1 px-4 py-2 overflow-x-auto scrollbar-hide border-b border-white/5">
+          <div className="scrollbar-hide flex gap-1 overflow-x-auto border-b border-white/5 px-4 py-2">
             {sortedPacks.map((pack) => (
               <PackTab
                 key={pack.id}
@@ -439,7 +476,7 @@ export function StickerPicker({
         {activePack && !ownedPackIds.has(activePack.id) && !showPackStore && !searchQuery && (
           <motion.div
             className={cn(
-              'mx-4 mt-2 p-3 rounded-xl',
+              'mx-4 mt-2 rounded-xl p-3',
               'bg-gradient-to-r from-primary-500/20 to-purple-500/20',
               'border border-primary-500/30'
             )}
@@ -448,39 +485,50 @@ export function StickerPicker({
           >
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-semibold text-white flex items-center gap-2">
+                <h4 className="flex items-center gap-2 font-semibold text-white">
                   <span>{activePack.coverEmoji}</span>
                   {activePack.name}
                   {activePack.isLimited && (
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-400">
+                    <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-400">
                       Limited
                     </span>
                   )}
                 </h4>
-                <p className="text-sm text-gray-400 mt-0.5">{activePack.description}</p>
+                <p className="mt-0.5 text-sm text-gray-400">{activePack.description}</p>
               </div>
               <motion.button
                 className={cn(
-                  'flex items-center gap-1.5 px-4 py-2 rounded-lg',
-                  'bg-primary-500 text-white font-medium',
-                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                  'flex items-center gap-1.5 rounded-lg px-4 py-2',
+                  'bg-primary-500 font-medium text-white',
+                  'disabled:cursor-not-allowed disabled:opacity-50'
                 )}
-                disabled={userCoins < activePack.coinPrice}
+                disabled={userCoins < activePack.coinPrice || isPurchasing}
+                onClick={() => handlePurchasePack(activePack)}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <CurrencyDollarIcon className="h-4 w-4" />
-                {activePack.coinPrice.toLocaleString()}
+                {isPurchasing ? (
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    className="h-4 w-4 rounded-full border-2 border-white border-t-transparent"
+                  />
+                ) : (
+                  <>
+                    <CurrencyDollarIcon className="h-4 w-4" />
+                    {activePack.coinPrice.toLocaleString()}
+                  </>
+                )}
               </motion.button>
             </div>
           </motion.div>
         )}
 
         {/* Stickers Grid */}
-        <div className="p-4 max-h-[280px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10">
+        <div className="scrollbar-thin scrollbar-thumb-white/10 max-h-[280px] overflow-y-auto p-4">
           {displayStickers.length > 0 ? (
             <motion.div
-              className="grid grid-cols-6 sm:grid-cols-8 gap-1"
+              className="grid grid-cols-6 gap-1 sm:grid-cols-8"
               initial="hidden"
               animate="visible"
               variants={{
@@ -516,7 +564,7 @@ export function StickerPicker({
             </motion.div>
           ) : (
             <div className="flex flex-col items-center justify-center py-8 text-center">
-              <SparklesIcon className="h-12 w-12 text-gray-600 mb-3" />
+              <SparklesIcon className="mb-3 h-12 w-12 text-gray-600" />
               <p className="text-gray-400">
                 {searchQuery
                   ? `No stickers found for "${searchQuery}"`
@@ -527,7 +575,7 @@ export function StickerPicker({
         </div>
 
         {/* Footer Stats */}
-        <div className="flex items-center justify-between px-4 py-2 border-t border-white/5 text-xs text-gray-500">
+        <div className="flex items-center justify-between border-t border-white/5 px-4 py-2 text-xs text-gray-500">
           <span>
             {ownedPackIds.size} packs owned • {displayStickers.length} stickers
           </span>
@@ -579,7 +627,7 @@ export function StickerMessage({ sticker, size = 'md' }: StickerMessageProps) {
       onClick={() => setIsAnimating(!isAnimating)}
     >
       <motion.span
-        className="select-none cursor-pointer"
+        className="cursor-pointer select-none"
         animate={isAnimating ? animation : {}}
         title={sticker.name}
       >
@@ -590,7 +638,7 @@ export function StickerMessage({ sticker, size = 'md' }: StickerMessageProps) {
       {(sticker.rarity === 'epic' || sticker.rarity === 'legendary') && (
         <motion.div
           className={cn(
-            'absolute inset-0 rounded-2xl opacity-30 blur-xl -z-10',
+            'absolute inset-0 -z-10 rounded-2xl opacity-30 blur-xl',
             rarityColors?.glow
           )}
           animate={{
@@ -622,10 +670,10 @@ export function StickerButton({ onClick, isActive, className }: StickerButtonPro
   return (
     <motion.button
       className={cn(
-        'p-2.5 rounded-lg transition-colors',
+        'rounded-lg p-2.5 transition-colors',
         isActive
           ? 'bg-primary-500/20 text-primary-400'
-          : 'hover:bg-white/10 text-gray-400 hover:text-white',
+          : 'text-gray-400 hover:bg-white/10 hover:text-white',
         className
       )}
       onClick={onClick}

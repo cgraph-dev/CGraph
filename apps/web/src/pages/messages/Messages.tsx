@@ -13,8 +13,10 @@ import {
   ArrowPathIcon,
   SparklesIcon,
   ChatBubbleLeftRightIcon,
+  MagnifyingGlassPlusIcon,
 } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { MessageSearch } from '@/components/messages/MessageSearch';
 
 export default function Messages() {
   const { conversationId } = useParams();
@@ -27,6 +29,16 @@ export default function Messages() {
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [onlineStatus, setOnlineStatus] = useState<Record<string, boolean>>({});
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Handle search result click - navigate to conversation and scroll to message
+  const handleSearchResultClick = useCallback(
+    (convId: string, messageId: string) => {
+      setIsSearchOpen(false);
+      navigate(`/messages/${convId}?scrollTo=${messageId}`);
+    },
+    [navigate]
+  );
 
   // Track online status changes for all conversations
   useEffect(() => {
@@ -146,6 +158,18 @@ export default function Messages() {
               Messages
             </h2>
             <div className="flex items-center gap-1">
+              <motion.button
+                onClick={() => {
+                  setIsSearchOpen(true);
+                  HapticFeedback.light();
+                }}
+                className="group rounded-xl p-2 text-gray-400 transition-all hover:bg-primary-500/20 hover:text-primary-400"
+                title="Search messages"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <MagnifyingGlassPlusIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              </motion.button>
               <motion.button
                 onClick={() => {
                   handleRefresh();
@@ -342,6 +366,13 @@ export default function Messages() {
           </motion.div>
         )}
       </div>
+
+      {/* Message Search Modal */}
+      <MessageSearch
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onResultClick={handleSearchResultClick}
+      />
     </div>
   );
 }

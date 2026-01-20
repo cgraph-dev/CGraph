@@ -90,9 +90,29 @@ defmodule CGraph.Forums.Forum do
     # Soft delete
     field :deleted_at, :utc_datetime
 
+    # Hierarchy (infinite nesting support)
+    field :display_order, :integer, default: 0
+    field :path, :string, default: "/"
+    field :depth, :integer, default: 0
+    field :show_in_navigation, :boolean, default: true
+    field :collapsed_by_default, :boolean, default: false
+    field :forum_type, :string, default: "forum"  # "category", "forum", "link"
+    field :redirect_url, :string
+    field :redirect_count, :integer, default: 0
+    field :inherit_permissions, :boolean, default: true
+
+    # Aggregate stats (including sub-forums)
+    field :total_thread_count, :integer, default: 0
+    field :total_post_count, :integer, default: 0
+    field :total_member_count, :integer, default: 0
+
     # Relationships
     belongs_to :owner, CGraph.Accounts.User
     belongs_to :theme, CGraph.Forums.ForumTheme
+    belongs_to :parent_forum, __MODULE__
+
+    # Hierarchy relationships
+    has_many :sub_forums, __MODULE__, foreign_key: :parent_forum_id
 
     # Reddit-style posts (if used for simple reddit-like mode)
     has_many :posts, CGraph.Forums.Post
@@ -189,6 +209,45 @@ defmodule CGraph.Forums.Forum do
     |> sanitize_html()
   end
 
+  @doc """
+  Changeset for hierarchy operations (moving forums, reordering).
+  """
+  def hierarchy_changeset(forum, attrs) do
+    forum
+    |> cast(attrs, [
+      :parent_forum_id, :display_order, :show_in_navigation,
+      :collapsed_by_default, :forum_type, :redirect_url, :inherit_permissions
+    ])
+    |> validate_inclusion(:forum_type, ["category", "forum", "link"])
+    |> validate_redirect_url()
+    |> validate_not_self_parent()
+    |> foreign_key_constraint(:parent_forum_id)
+  end
+
+  @doc """
+  Validate that forum is not set as its own parent.
+  """
+  defp validate_not_self_parent(changeset) do
+    case {get_field(changeset, :id), get_change(changeset, :parent_forum_id)} do
+      {id, parent_id} when id == parent_id and not is_nil(id) ->
+        add_error(changeset, :parent_forum_id, "cannot be the forum itself")
+      _ ->
+        changeset
+    end
+  end
+
+  @doc """
+  Validate redirect URL is present for link-type forums.
+  """
+  defp validate_redirect_url(changeset) do
+    case get_field(changeset, :forum_type) do
+      "link" ->
+        validate_required(changeset, [:redirect_url])
+      _ ->
+        changeset
+    end
+  end
+
   # Only generate slug from name if slug not already provided
   defp maybe_generate_slug(changeset) do
     # If slug is already set (either provided or from previous change), don't override
@@ -223,5 +282,148 @@ defmodule CGraph.Forums.Forum do
   defp sanitize_html(changeset) do
     # In production, use HtmlSanitizeEx or similar
     changeset
+  end
+
+  # =============================================================================
+  # HIERARCHY QUERIES
+  # =============================================================================
+
+  import Ecto.Query
+
+  @doc """
+  Query for root-level forums only (no parent).
+  """
+  def root_forums_query do
+    from f in __MODULE__,
+      where: is_nil(f.parent_forum_id) and is_nil(f.deleted_at),
+      order_by: [asc: f.display_order, asc: f.name]
+  end
+
+  @doc """
+  Query for sub-forums of a given parent.
+  """
+  def sub_forums_query(parent_id) do
+    from f in __MODULE__,
+      where: f.parent_forum_id == ^parent_id and is_nil(f.deleted_at),
+      order_by: [asc: f.display_order, asc: f.name]
+  end
+
+  @doc """
+  Query for forums at a specific depth level.
+  """
+  def at_depth_query(depth) do
+    from f in __MODULE__,
+      where: f.depth == ^depth and is_nil(f.deleted_at),
+      order_by: [asc: f.display_order, asc: f.name]
+  end
+
+  @doc """
+  Query for all forums in a subtree (using materialized path).
+  """
+  def subtree_query(forum_path) do
+    pattern = forum_path <> "%"
+    from f in __MODULE__,
+      where: like(f.path, ^pattern) and is_nil(f.deleted_at),
+      order_by: [asc: f.depth, asc: f.display_order, asc: f.name]
+  end
+
+  @doc """
+  Query for visible forums in navigation.
+  """
+  def navigation_query do
+    from f in __MODULE__,
+      where: f.show_in_navigation == true and is_nil(f.deleted_at),
+      order_by: [asc: f.depth, asc: f.display_order, asc: f.name]
+  end
+
+  @doc """
+  Preload hierarchy relationships.
+  """
+  def with_hierarchy(query) do
+    from q in query,
+      preload: [:parent_forum, :sub_forums]
+  end
+
+  @doc """
+  Build a nested tree structure from flat forum list.
+  Returns forums organized by parent_id for efficient tree building.
+  """
+  def build_tree(forums) do
+    forums_by_parent =
+      forums
+      |> Enum.group_by(& &1.parent_forum_id)
+
+    root_forums = Map.get(forums_by_parent, nil, [])
+    build_tree_recursive(root_forums, forums_by_parent)
+  end
+
+  defp build_tree_recursive(forums, forums_by_parent) do
+    Enum.map(forums, fn forum ->
+      children = Map.get(forums_by_parent, forum.id, [])
+      Map.put(forum, :children, build_tree_recursive(children, forums_by_parent))
+    end)
+  end
+
+  @doc """
+  Get breadcrumb path for a forum.
+  Returns list of {id, name, slug} tuples from root to current forum.
+  """
+  def get_breadcrumbs(forum, repo) do
+    ancestors = get_ancestors(forum, repo)
+    Enum.map(ancestors ++ [forum], fn f ->
+      %{id: f.id, name: f.name, slug: f.slug}
+    end)
+  end
+
+  @doc """
+  Get all ancestor forums.
+  """
+  def get_ancestors(%{parent_forum_id: nil}, _repo), do: []
+  def get_ancestors(%{parent_forum_id: parent_id}, repo) do
+    # Use recursive CTE for efficient ancestor lookup
+    query = """
+    WITH RECURSIVE ancestors AS (
+      SELECT id, name, slug, depth, parent_forum_id
+      FROM forums
+      WHERE id = $1
+
+      UNION ALL
+
+      SELECT p.id, p.name, p.slug, p.depth, p.parent_forum_id
+      FROM forums p
+      INNER JOIN ancestors a ON p.id = a.parent_forum_id
+    )
+    SELECT id, name, slug, depth FROM ancestors
+    WHERE id != $1
+    ORDER BY depth ASC
+    """
+
+    case repo.query(query, [Ecto.UUID.dump!(parent_id) |> elem(1)]) do
+      {:ok, %{rows: rows}} ->
+        Enum.map(rows, fn [id, name, slug, depth] ->
+          %{
+            id: Ecto.UUID.cast!(id),
+            name: name,
+            slug: slug,
+            depth: depth
+          }
+        end)
+      _ ->
+        []
+    end
+  end
+
+  @doc """
+  Check if forum is an ancestor of another forum.
+  """
+  def is_ancestor?(potential_ancestor, forum) do
+    String.starts_with?(forum.path || "", potential_ancestor.path || "")
+  end
+
+  @doc """
+  Check if forum is a descendant of another forum.
+  """
+  def is_descendant?(potential_descendant, forum) do
+    String.starts_with?(potential_descendant.path || "", forum.path || "")
   end
 end

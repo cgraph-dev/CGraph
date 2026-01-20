@@ -51,7 +51,7 @@ type TabId = (typeof settingsTabs)[number]['id'];
 
 export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps) {
   const navigate = useNavigate();
-  const { groups, leaveGroup } = useGroupStore();
+  const { groups, leaveGroup, updateGroup, deleteGroup } = useGroupStore();
 
   const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
@@ -71,8 +71,11 @@ export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      // TODO: Call API to update group
-      console.log('Saving group settings:', formData);
+      await updateGroup(groupId, {
+        name: formData.name,
+        description: formData.description || null,
+        isPublic: formData.isPublic,
+      });
       setHasChanges(false);
       HapticFeedback.success();
     } catch (error) {
@@ -96,8 +99,7 @@ export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps
 
   const handleDelete = async () => {
     try {
-      // TODO: Call API to delete group
-      console.log('Deleting group:', groupId);
+      await deleteGroup(groupId);
       HapticFeedback.warning();
       navigate('/groups');
     } catch (error) {
