@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to CGraph</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    .header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .logo {
+      font-size: 48px;
+      font-weight: bold;
+      color: white;
+      margin-bottom: 10px;
+    }
+    .tagline {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 16px;
+    }
+    .content {
+      padding: 40px 30px;
+    }
+    .greeting {
+      font-size: 24px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+    }
+    .message {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #555;
+      margin-bottom: 30px;
+    }
+    .cta-button {
+      display: inline-block;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+      transition: transform 0.2s;
+    }
+    .cta-button:hover {
+      transform: translateY(-2px);
+    }
+    .features {
+      margin: 30px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
+    }
+    .feature {
+      display: flex;
+      align-items: start;
+      margin-bottom: 15px;
+    }
+    .feature-icon {
+      font-size: 24px;
+      margin-right: 12px;
+    }
+    .feature-text {
+      flex: 1;
+    }
+    .feature-title {
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+    .feature-desc {
+      font-size: 14px;
+      color: #666;
+    }
+    .footer {
+      padding: 30px;
+      text-align: center;
+      background: #f8f9fa;
+      border-top: 1px solid #e0e0e0;
+    }
+    .footer-text {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 10px;
+    }
+    .social-links {
+      margin-top: 20px;
+    }
+    .social-link {
+      display: inline-block;
+      margin: 0 8px;
+      color: #667eea;
+      text-decoration: none;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">CGraph</div>
+      <div class="tagline">Next-Generation Community Platform</div>
+    </div>
+
+    <div class="content">
+      <div class="greeting">Welcome, <%= @user_name %>! 🎉</div>
+
+      <div class="message">
+        We're thrilled to have you join the CGraph community! Your account has been successfully created, and you're all set to explore everything our platform has to offer.
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="<%= @app_url %>" class="cta-button">Get Started Now</a>
+      </div>
+
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">💬</div>
+          <div class="feature-text">
+            <div class="feature-title">Real-Time Messaging</div>
+            <div class="feature-desc">Connect with friends through instant messages, voice, and video calls</div>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🏆</div>
+          <div class="feature-text">
+            <div class="feature-title">Gamification & Achievements</div>
+            <div class="feature-desc">Earn XP, unlock achievements, and climb the leaderboards</div>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🎨</div>
+          <div class="feature-text">
+            <div class="feature-title">Deep Customization</div>
+            <div class="feature-desc">Personalize your profile with themes, avatar borders, and effects</div>
+          </div>
+        </div>
+
+        <div class="feature">
+          <div class="feature-icon">🔒</div>
+          <div class="feature-text">
+            <div class="feature-title">End-to-End Encryption</div>
+            <div class="feature-desc">Your conversations are protected with Signal Protocol encryption</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="message">
+        Need help getting started? Check out our <a href="<%= @app_url %>/help" style="color: #667eea;">Quick Start Guide</a> or reach out to our support team anytime.
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-text">
+        You're receiving this email because you signed up for CGraph.
+      </div>
+      <div class="footer-text">
+        © <%= DateTime.utc_now().year %> CGraph. All rights reserved.
+      </div>
+      <div class="social-links">
+        <a href="<%= @app_url %>/about" class="social-link">About</a>
+        <a href="<%= @app_url %>/privacy" class="social-link">Privacy</a>
+        <a href="<%= @app_url %>/terms" class="social-link">Terms</a>
+        <a href="<%= @app_url %>/contact" class="social-link">Contact</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
