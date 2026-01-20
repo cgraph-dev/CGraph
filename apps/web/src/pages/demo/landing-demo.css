@@ -6,7 +6,7 @@
    ========================================================================== */
 @font-face {
   font-family: 'Robert';
-  src: url('/src/assets/fonts/robert-regular.woff2') format('woff2');
+  src: url('../../assets/fonts/robert-regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -14,7 +14,7 @@
 
 @font-face {
   font-family: 'Robert';
-  src: url('/src/assets/fonts/robert-medium.woff2') format('woff2');
+  src: url('../../assets/fonts/robert-medium.woff2') format('woff2');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -22,7 +22,7 @@
 
 @font-face {
   font-family: 'Zentry';
-  src: url('/src/assets/fonts/zentry-regular.woff2') format('woff2');
+  src: url('../../assets/fonts/zentry-regular.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -30,7 +30,7 @@
 
 @font-face {
   font-family: 'General';
-  src: url('/src/assets/fonts/general.woff2') format('woff2');
+  src: url('../../assets/fonts/general.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
