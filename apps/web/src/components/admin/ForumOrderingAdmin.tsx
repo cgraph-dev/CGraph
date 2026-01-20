@@ -30,7 +30,7 @@ import {
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
 } from '@heroicons/react/24/outline';
-import { useToast } from '../../hooks/useToast';
+import { useToast } from '@/hooks/useToast';
 
 // =============================================================================
 // TYPES

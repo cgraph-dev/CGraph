@@ -1,0 +1,10 @@
+# Images Directory
+#
+# Organize images by feature/section:
+# images/
+# ├── hero/           - Hero section backgrounds
+# ├── features/       - Feature section graphics  
+# ├── logos/          - Brand logos and marks
+# ├── backgrounds/    - Background patterns/textures
+# ├── avatars/        - User avatar placeholders
+# └── screenshots/    - App screenshots

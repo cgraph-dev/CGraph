@@ -170,14 +170,17 @@ defmodule CGraph.Workers.EmailDigestWorker do
     limit = Keyword.get(opts, :limit, 5)
 
     # Query trending posts from forums the user is interested in
+    # ✅ PERFORMANCE FIX: Join with forums table to avoid N+1 query
     from(p in "forum_posts",
+      join: f in "forums",
+      on: p.forum_id == f.id,
       where: p.inserted_at >= ^since,
       order_by: [desc: fragment("(upvotes - downvotes) + (? * 0.1)", p.view_count)],
       limit: ^limit,
       select: %{
         id: p.id,
         title: p.title,
-        forum_slug: fragment("'general'"),
+        forum_slug: f.slug,
         replies: fragment("COALESCE(?, 0)", p.comment_count),
         views: p.view_count
       }

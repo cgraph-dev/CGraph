@@ -42,8 +42,24 @@ if config_env() == :prod do
   ]
 
   repo_config = if ssl_enabled do
+    # Parse hostname from DATABASE_URL for SSL verification
+    hostname =
+      database_url
+      |> URI.parse()
+      |> Map.get(:host)
+      |> to_charlist()
+
     Keyword.merge(repo_config, [
-      ssl: [verify: :verify_none]
+      ssl: [
+        verify: :verify_peer,
+        cacertfile: CAStore.file_path(),
+        server_name_indication: hostname,
+        customize_hostname_check: [
+          match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+        ],
+        depth: 3,
+        fail_if_no_peer_cert: true
+      ]
     ])
   else
     repo_config

@@ -3017,10 +3017,10 @@ defmodule CGraph.Forums do
   # ============================================================================
 
   @doc """
-  List recent threads across an entire forum (all boards).
+  List recent threads across an entire forum (all boards) with pagination.
   Used for RSS feed generation.
   """
-  def list_forum_threads(forum_id, opts \\ []) do
+  def list_forum_threads_for_rss(forum_id, opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     per_page = Keyword.get(opts, :per_page, 20)
 

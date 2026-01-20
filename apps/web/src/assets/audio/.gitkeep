@@ -1,0 +1,18 @@
+# Audio Directory
+#
+# Place audio files here:
+# - .mp3 (wide compatibility)
+# - .ogg (better for web)
+# - .wav (uncompressed)
+#
+# Example structure:
+# audio/
+# ├── notifications/
+# │   ├── message.mp3
+# │   ├── call.mp3
+# │   └── alert.mp3
+# ├── ui/
+# │   ├── click.mp3
+# │   └── hover.mp3
+# └── music/
+#     └── background.mp3

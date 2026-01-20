@@ -1,0 +1,21 @@
+# Icons Directory
+#
+# Place icon files here:
+# - .svg (recommended - scalable)
+# - .png (for raster icons)
+# - Icon font files
+#
+# Example structure:
+# icons/
+# ├── social/
+# │   ├── twitter.svg
+# │   ├── github.svg
+# │   └── discord.svg
+# ├── ui/
+# │   ├── menu.svg
+# │   ├── close.svg
+# │   └── arrow-right.svg
+# └── features/
+#     ├── encryption.svg
+#     ├── messaging.svg
+#     └── forums.svg

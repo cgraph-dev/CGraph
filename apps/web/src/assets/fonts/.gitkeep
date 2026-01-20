@@ -1,0 +1,18 @@
+# Custom Fonts Directory
+# 
+# Place custom font files here:
+# - .woff2 (recommended)
+# - .woff
+# - .ttf
+# - .otf
+#
+# Example structure:
+# fonts/
+# ├── outfit/
+# │   ├── Outfit-Regular.woff2
+# │   ├── Outfit-Medium.woff2
+# │   ├── Outfit-Bold.woff2
+# │   └── Outfit-Black.woff2
+# └── jetbrains-mono/
+#     ├── JetBrainsMono-Regular.woff2
+#     └── JetBrainsMono-Medium.woff2

@@ -387,12 +387,20 @@ defmodule CGraph.Mailer do
   defp validate_user_email(%User{email_verified_at: nil, email: _}), do: {:error, :email_not_verified}
   defp validate_user_email(%User{}), do: :ok
 
-  defp check_rate_limit(_user, opts) do
+  defp check_rate_limit(user, opts) do
     if Keyword.get(opts, :bypass_rate_limit, false) do
       :ok
     else
-      # Rate limiting handled at controller layer via RateLimiter plug
-      :ok
+      # ✅ SECURITY FIX: Rate limit emails to prevent abuse
+      # Limit: 10 emails per hour per user
+      case Hammer.check_rate("email:#{user.id}", :timer.hours(1), 10) do
+        {:allow, _count} ->
+          :ok
+
+        {:deny, _limit} ->
+          Logger.warning("Email rate limit exceeded for user #{user.id}")
+          {:error, :rate_limited}
+      end
     end
   end
 

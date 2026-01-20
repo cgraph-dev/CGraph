@@ -1,0 +1,16 @@
+# Files Directory
+#
+# Place other static files here:
+# - .pdf (documents)
+# - .json (data files)
+# - .txt (text files)
+#
+# Example structure:
+# files/
+# ├── documents/
+# │   ├── privacy-policy.pdf
+# │   └── terms-of-service.pdf
+# ├── data/
+# │   └── sample-data.json
+# └── downloads/
+#     └── brand-kit.zip

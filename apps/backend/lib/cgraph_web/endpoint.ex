@@ -16,34 +16,6 @@ defmodule CGraphWeb.Endpoint do
     secure: Mix.env() == :prod
   ]
 
-  # CORS origins based on environment. Prefer env; fall back to safe defaults in prod
-  # and permissive dev wildcard when unset.
-  # Includes Vercel deployment domains for frontend hosting
-  @is_prod Mix.env() == :prod
-  @cors_origins (case {System.get_env("CORS_ORIGINS"), @is_prod} do
-    {nil, true} ->
-      [
-        # Production domains
-        "https://cgraph.org",
-        "https://www.cgraph.org",
-        "https://app.cgraph.org",
-        # Vercel deployment domains
-        "https://cgraph.vercel.app",
-        "https://cgraph-web.vercel.app",
-        "https://c-graph.vercel.app",
-        # Allow ALL Vercel preview deployments (*.vercel.app)
-        # This covers URLs like c-graph-xyz-team-name.vercel.app
-        # Pattern includes dots for multi-segment subdomains (e.g., c-graph-abc123-team.vercel.app)
-        ~r/^https:\/\/[a-zA-Z0-9][a-zA-Z0-9\-\.]*\.vercel\.app$/
-      ]
-
-    {nil, false} ->
-      "*"
-
-    {origins, _} ->
-      String.split(origins, ",", trim: true)
-  end)
-
   # Max request body size (bytes). Override with MAX_BODY_BYTES env.
   @max_body_bytes (case System.get_env("MAX_BODY_BYTES") do
     nil -> 10_000_000
@@ -95,13 +67,9 @@ defmodule CGraphWeb.Endpoint do
   plug Plug.Head
   plug Plug.Session, @session_options
 
-  # CORS handling
-  plug Corsica,
-    origins: @cors_origins,
-    allow_headers: ["authorization", "content-type", "x-requested-with", "idempotency-key", "x-api-version"],
-    allow_methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allow_credentials: true,
-    max_age: 86_400
+  # CORS handling with runtime configuration
+  # Uses custom plug to read CORS_ORIGINS at runtime (not compile time)
+  plug CGraphWeb.Plugs.Cors
 
   plug CGraphWeb.Router
 end

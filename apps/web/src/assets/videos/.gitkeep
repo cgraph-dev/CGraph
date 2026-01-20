@@ -1,0 +1,18 @@
+# Videos Directory
+#
+# Place video files here:
+# - .mp4 (H.264 - wide compatibility)
+# - .webm (VP9 - better compression)
+#
+# Recommended: Provide both formats for browser compatibility
+#
+# Example structure:
+# videos/
+# ├── hero-background.mp4
+# ├── hero-background.webm
+# ├── demo/
+# │   ├── feature-demo.mp4
+# │   └── feature-demo.webm
+# └── landing/
+#     ├── intro.mp4
+#     └── intro.webm

@@ -19,7 +19,7 @@
 import { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DocumentArrowDownIcon, XMarkIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
-import { useToast } from '../../hooks/useToast';
+import { useToast } from '@/hooks/useToast';
 
 // =============================================================================
 // TYPES
