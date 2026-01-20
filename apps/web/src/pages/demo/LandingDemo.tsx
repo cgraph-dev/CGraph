@@ -140,7 +140,64 @@ const footerLinks = {
   ],
 };
 
-const securityFeatures = ['🔒', '🛡️', '🔑', '✓', '🔏', '🧩', '⚡', '🌐', '🔐'];
+const securityFeatures = [
+  { icon: '🔒', title: 'Zero-Knowledge', description: 'We cannot read your messages' },
+  { icon: '🛡️', title: 'X3DH Protocol', description: 'Industry-standard key exchange' },
+  { icon: '🔑', title: 'Double Ratchet', description: 'Forward secrecy per message' },
+  { icon: '📱', title: 'Multi-Device', description: 'Seamless sync everywhere' },
+  { icon: '🔏', title: 'HTTP-Only', description: 'XSS-resistant sessions' },
+  { icon: '✅', title: 'Open Source', description: 'Transparent & auditable' },
+  { icon: '⚡', title: 'Zero Latency', description: 'Real-time message delivery' },
+  { icon: '🌐', title: 'Global CDN', description: 'Fast anywhere in the world' },
+  { icon: '🧩', title: 'Modular Design', description: 'Extensible architecture' },
+];
+
+// =============================================================================
+// SECURITY ICON WITH PREVIEW
+// =============================================================================
+
+function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState<'top' | 'bottom'>('top');
+
+  useEffect(() => {
+    if (isHovered && cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      const spaceAbove = rect.top;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setPosition(spaceAbove > spaceBelow ? 'top' : 'bottom');
+    }
+  }, [isHovered]);
+
+  return (
+    <div
+      ref={cardRef}
+      className="about__icon-item"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {feature.icon}
+
+      {/* Preview Tooltip */}
+      {isHovered && (
+        <div
+          className={`security-preview ${position === 'top' ? 'security-preview--top' : 'security-preview--bottom'}`}
+        >
+          <div className="security-preview__glow" />
+          <div className="security-preview__content">
+            <div className="security-preview__icon">{feature.icon}</div>
+            <div className="security-preview__info">
+              <h4 className="security-preview__title">{feature.title}</h4>
+              <p className="security-preview__desc">{feature.description}</p>
+            </div>
+          </div>
+          <div className="security-preview__arrow" />
+        </div>
+      )}
+    </div>
+  );
+}
 
 // =============================================================================
 // GAMELAND-STYLE PRELOADER COMPONENT
@@ -525,6 +582,8 @@ export default function LandingDemo() {
   const statsRef = useRef<HTMLDivElement>(null);
   const aboutRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const aboutVisualRef = useRef<HTMLDivElement>(null);
+  const aboutGlowRef = useRef<HTMLDivElement>(null);
 
   // Scroll handler for nav visibility
   useEffect(() => {
@@ -539,6 +598,46 @@ export default function LandingDemo() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Cursor-following glow effect for about section
+  useEffect(() => {
+    const visual = aboutVisualRef.current;
+    const glow = aboutGlowRef.current;
+    if (!visual || !glow) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = visual.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      // Offset from center (like original TiltCard3D)
+      gsap.to(glow, {
+        x: x - centerX,
+        y: y - centerY,
+        opacity: 0.8,
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(glow, {
+        opacity: 0,
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+    };
+
+    visual.addEventListener('mousemove', handleMouseMove);
+    visual.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      visual.removeEventListener('mousemove', handleMouseMove);
+      visual.removeEventListener('mouseleave', handleMouseLeave);
+    };
   }, []);
 
   // GSAP animations after preload (non-hero elements - hero is animated by preloader)
@@ -704,13 +803,15 @@ export default function LandingDemo() {
             <SwapButton mainText="Security Details" altText="Learn More" />
           </div>
 
-          <div className="about__visual">
+          <div ref={aboutVisualRef} className="about__visual">
             <div className="about__orb" />
+            <div
+              ref={aboutGlowRef}
+              className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 blur-3xl"
+            />
             <div className="about__icon-grid">
-              {securityFeatures.map((icon, i) => (
-                <div key={i} className="about__icon-item">
-                  {icon}
-                </div>
+              {securityFeatures.map((feature, i) => (
+                <SecurityIconCard key={i} feature={feature} />
               ))}
             </div>
           </div>
