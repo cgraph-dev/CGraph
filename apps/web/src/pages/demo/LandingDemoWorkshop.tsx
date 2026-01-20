@@ -1,7 +1,7 @@
 /**
- * CGraph Landing Page Demo - GAMELAND Style
+ * CGraph Landing Page Workshop - GAMELAND Style
  *
- * This is a demo page to preview the GAMELAND-inspired design:
+ * This is a workshop page for continued customization:
  * - Preloader with animated loading bar
  * - Video hero section with clip-path masks
  * - Purple/lime/black color scheme
@@ -9,14 +9,14 @@
  * - 3D tilt cards with glare effect
  * - Scroll-triggered GSAP animations
  *
- * Visit /demo/landing to preview
+ * Visit /demo/workshop to preview
  */
 
 import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import './landing-demo.css';
+import './landing-demo-workshop.css';
 
 // Lazy load showcase components
 const CustomizationDemo = lazy(() =>
@@ -725,7 +725,7 @@ function SwapButton({
 // MAIN COMPONENT
 // =============================================================================
 
-export default function LandingDemo() {
+export default function LandingDemoWorkshop() {
   const [preloading, setPreloading] = useState(true);
   const [navHidden, setNavHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);

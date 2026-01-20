@@ -4,6 +4,62 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.4] - 2026-01-20
+
+**🎨 LANDING PAGE: Premium GAMELAND-Style Landing with Custom Fonts & Immersive Preloader**
+
+This release introduces a completely redesigned landing page with GSAP animations, custom premium
+fonts, and an immersive 3D preloader experience.
+
+### 🚀 New Features
+
+#### Premium Landing Page
+
+| Feature             | Description                                                                   |
+| ------------------- | ----------------------------------------------------------------------------- |
+| **GAMELAND Design** | Inspired by award-winning gaming sites with purple/lime/black color scheme    |
+| **Custom Fonts**    | Zentry (titles), Robert (body), General (utility) premium font integration    |
+| **3D Preloader**    | Immersive loading experience with terrain grid, particles, and glitch effects |
+| **GSAP Animations** | Scroll-triggered animations, parallax effects, and smooth transitions         |
+
+#### Preloader Features
+
+| Effect                   | Description                                                              |
+| ------------------------ | ------------------------------------------------------------------------ |
+| **3D Terrain Grid**      | Perspective scrolling grid floor covering 130% viewport                  |
+| **Animated CGRAPH Text** | Letter-by-letter 3D entrance with floating, glitch, and gradient effects |
+| **Star Field**           | 50 twinkling stars with randomized positions and timing                  |
+| **Energy Particles**     | 30 vertical beams rising with glowing orb tips                           |
+| **Interactive Cursor**   | Mouse-following glow effect with pulsing inner core                      |
+| **5 Floating Orbs**      | Enhanced orbs with new colors (pink, cyan) and dynamic movement          |
+| **Glitch Status Text**   | "GENERATING NEW CONNECTION" with RGB split glitch animation              |
+
+#### Custom Font Integration
+
+| Font        | Usage                                                        |
+| ----------- | ------------------------------------------------------------ |
+| **Zentry**  | Hero titles, section headings, stats values, preloader brand |
+| **Robert**  | Eyebrows, card titles, stats labels, body text               |
+| **General** | Available for future use                                     |
+
+#### Route Updates
+
+| Route            | Page                | Purpose                                   |
+| ---------------- | ------------------- | ----------------------------------------- |
+| `/`              | LandingDemo         | Official GAMELAND-style landing page      |
+| `/demo/workshop` | LandingDemoWorkshop | Editable copy for continued customization |
+
+### 📁 Files Added/Modified
+
+- `apps/web/src/pages/demo/LandingDemo.tsx` - Main landing page component
+- `apps/web/src/pages/demo/landing-demo.css` - Landing page styles (~2000 lines)
+- `apps/web/src/pages/demo/LandingDemoWorkshop.tsx` - Workshop copy for customization
+- `apps/web/src/pages/demo/landing-demo-workshop.css` - Workshop styles
+- `apps/web/src/assets/fonts/` - Custom font files (robert, zentry, general)
+- `apps/web/src/App.tsx` - Updated routes
+
+---
+
 ## [0.9.3] - 2026-01-15
 
 **🔒 INFRASTRUCTURE: Security CI/CD, Observability Stack, E2E Testing & Developer Experience**

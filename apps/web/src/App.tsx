@@ -126,6 +126,7 @@ const ThemeApplicationTest = lazy(() => import('@/pages/test/ThemeApplicationTes
 
 // Demo pages
 const LandingDemo = lazy(() => import('@/pages/demo/LandingDemo'));
+const LandingDemoWorkshop = lazy(() => import('@/pages/demo/LandingDemoWorkshop'));
 
 // Initialize auth check on app load - non-blocking
 function AuthInitializer({ children }: { children: React.ReactNode }) {
@@ -285,11 +286,11 @@ export default function App() {
           {/* Theme Application Test */}
           <Route path="/test/theme" element={<ThemeApplicationTest />} />
 
-          {/* Demo: GAMELAND-style landing page */}
-          <Route path="/demo/landing" element={<LandingDemo />} />
+          {/* Demo: Workshop page for continued customization */}
+          <Route path="/demo/workshop" element={<LandingDemoWorkshop />} />
 
-          {/* Public landing page - shown to unauthenticated visitors */}
-          <Route path="/" element={<LandingPage />} />
+          {/* Public landing page - GAMELAND-style */}
+          <Route path="/" element={<LandingDemo />} />
 
           {/* Legal pages - public access */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
