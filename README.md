@@ -166,11 +166,11 @@ rich forums, end-to-end encryption, and gamification—all in one self-hostable 
 
 | Tool       | Version | Installation                        |
 | ---------- | ------- | ----------------------------------- |
-| Node.js    | 22+     | `asdf install nodejs 22.11.0`       |
-| pnpm       | 10+     | `npm install -g pnpm`               |
-| Elixir     | 1.19+   | `asdf install elixir 1.19.4-otp-28` |
-| Erlang     | 28+     | `asdf install erlang 28.3`          |
-| PostgreSQL | 16+     | Docker or local install             |
+| Node.js    | 18+     | `asdf install nodejs 22.11.0`       |
+| pnpm       | 9+      | `npm install -g pnpm`               |
+| Elixir     | 1.17+   | `asdf install elixir 1.17.3-otp-26` |
+| Erlang     | 26+     | `asdf install erlang 26.2`          |
+| PostgreSQL | 15+     | Docker or local install             |
 | Redis      | 7+      | Docker or local install             |
 
 > **Recommended:** Use [asdf](https://asdf-vm.com/) for version management. Run `asdf install` in

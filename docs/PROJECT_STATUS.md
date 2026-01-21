@@ -1,6 +1,6 @@
 # CGraph Project Status
 
-> **Version: 0.9.2** | Last Updated: January 2026
+> **Version: 0.9.4** | Last Updated: January 2026
 
 This document consolidates the project status, feature tracking, and development roadmap.
 
@@ -19,18 +19,18 @@ Coverage:           ~74%
 
 ### Category Breakdown
 
-| Category           | Total | Done | Complete |
-| ------------------ | ----- | ---- | -------- |
-| Core Forums        | 15    | 12   | 80%      |
-| Private Messages   | 12    | 10   | 83%      |
-| User System        | 15    | 10   | 67%      |
-| Moderation         | 15    | 14   | 93%      |
-| Calendar/Events    | 9     | 9    | 100%     |
-| Announcements      | 6     | 5    | 83%      |
-| Reputation         | 8     | 6    | 75%      |
-| Referrals          | 4     | 4    | 100%     |
-| Search             | 10    | 8    | 80%      |
-| Formatting         | 10    | 8    | 80%      |
+| Category         | Total | Done | Complete |
+| ---------------- | ----- | ---- | -------- |
+| Core Forums      | 15    | 12   | 80%      |
+| Private Messages | 12    | 10   | 83%      |
+| User System      | 15    | 10   | 67%      |
+| Moderation       | 15    | 14   | 93%      |
+| Calendar/Events  | 9     | 9    | 100%     |
+| Announcements    | 6     | 5    | 83%      |
+| Reputation       | 8     | 6    | 75%      |
+| Referrals        | 4     | 4    | 100%     |
+| Search           | 10    | 8    | 80%      |
+| Formatting       | 10    | 8    | 80%      |
 
 ---
 
