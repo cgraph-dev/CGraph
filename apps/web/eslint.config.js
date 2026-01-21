@@ -7,6 +7,13 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
+  // React Hooks plugin - use flat config compatible approach
+  {
+    plugins: {
+      'react-hooks': reactHooks,
+    },
+    rules: reactHooks.configs.recommended.rules,
+  },
   {
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
@@ -64,21 +71,25 @@ export default tseslint.config(
     },
     plugins: {
       react,
-      'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
     rules: {
       // TypeScript rules
-      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
-      
+
       // React rules
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-      'react-hooks/rules-of-hooks': 'error',
-      'react-hooks/exhaustive-deps': 'warn',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      
+
       // General
       'no-unused-vars': 'off',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
@@ -91,5 +102,5 @@ export default tseslint.config(
   },
   {
     ignores: ['dist/', 'node_modules/', '*.config.js', '*.config.ts', 'coverage/'],
-  },
+  }
 );

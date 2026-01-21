@@ -112,8 +112,7 @@ export function ForumCategoryList({
   };
 
   // Helper function for time formatting - used in forum item display
-  const formatTimeAgo = (dateStr: string) => {
-    void formatTimeAgo; // Reserved for forum last post time display
+  const _formatTimeAgo = (dateStr: string) => {
     const date = new Date(dateStr);
     const now = new Date();
     const diff = now.getTime() - date.getTime();

@@ -1,6 +1,6 @@
 /**
  * ProfileThemeCard Component
- * 
+ *
  * Profile theme preview card with animated backgrounds,
  * particles, tier badges, and holographic shine effects.
  */
@@ -8,8 +8,8 @@
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { LockClosedIcon, CheckIcon } from '@heroicons/react/24/solid';
 import { useState, useRef, useEffect } from 'react';
-import { 
-  type ProfileThemeConfig, 
+import {
+  type ProfileThemeConfig,
   TIER_COLORS,
   BACKGROUND_ANIMATIONS,
   PARTICLE_CONFIGS,
@@ -53,15 +53,17 @@ export default function ProfileThemeCard({
   };
 
   // Generate particles
-  const [particles, setParticles] = useState<Array<{
-    id: number;
-    x: number;
-    y: number;
-    size: number;
-    delay: number;
-    duration: number;
-    color: string;
-  }>>([]);
+  const [particles, setParticles] = useState<
+    Array<{
+      id: number;
+      x: number;
+      y: number;
+      size: number;
+      delay: number;
+      duration: number;
+      color: string;
+    }>
+  >([]);
 
   useEffect(() => {
     if (!showParticles || theme.particleType === 'none') {
@@ -77,7 +79,9 @@ export default function ProfileThemeCard({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: particleConfig.size.min + Math.random() * (particleConfig.size.max - particleConfig.size.min),
+      size:
+        particleConfig.size.min +
+        Math.random() * (particleConfig.size.max - particleConfig.size.min),
       delay: Math.random() * 3,
       duration: 2 + Math.random() * 3,
       color: colors[i % colors.length] || '#ffffff',
@@ -152,11 +156,11 @@ export default function ProfileThemeCard({
     }
   };
 
-  // Particle animation based on type
-  const getParticleAnimation = (_particle: typeof particles[0]) => {
+  // Particle animation based on type - particle param reserved for future per-particle customization
+  const getParticleAnimation = (/* particle: typeof particles[0] */) => {
     const config = PARTICLE_CONFIGS[theme.particleType];
     const baseY = config.velocity.y.min < 0 ? -30 : 30;
-    
+
     return {
       y: [0, baseY, 0],
       x: [0, (Math.random() - 0.5) * 20, 0],
@@ -176,18 +180,11 @@ export default function ProfileThemeCard({
       role="button"
       tabIndex={canInteract ? 0 : -1}
       onKeyDown={(e) => e.key === 'Enter' && canInteract && onSelect()}
-      className={`
-        relative w-full aspect-[3/4] rounded-2xl overflow-hidden
-        transition-all duration-300 group
-        ${canInteract ? 'cursor-pointer' : 'cursor-not-allowed'}
-        ${isSelected ? 'ring-2 ring-white shadow-2xl' : 'hover:ring-1 hover:ring-white/30'}
-      `}
+      className={`group relative aspect-[3/4] w-full overflow-hidden rounded-2xl transition-all duration-300 ${canInteract ? 'cursor-pointer' : 'cursor-not-allowed'} ${isSelected ? 'shadow-2xl ring-2 ring-white' : 'hover:ring-1 hover:ring-white/30'} `}
       whileHover={canInteract ? { scale: 1.02, y: -4 } : {}}
       whileTap={canInteract ? { scale: 0.98 } : {}}
       style={{
-        boxShadow: isSelected && theme.glowEnabled
-          ? `0 0 30px ${theme.glowColor}60`
-          : undefined,
+        boxShadow: isSelected && theme.glowEnabled ? `0 0 30px ${theme.glowColor}60` : undefined,
       }}
     >
       {/* Background gradient with animation */}
@@ -202,12 +199,12 @@ export default function ProfileThemeCard({
 
       {/* Overlay effect */}
       {theme.overlayType !== 'none' && (
-        <div className="absolute inset-0 pointer-events-none" style={getOverlayStyles()} />
+        <div className="pointer-events-none absolute inset-0" style={getOverlayStyles()} />
       )}
 
       {/* Particles */}
       {showParticles && particles.length > 0 && (
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
           {particles.map((particle) => (
             <motion.div
               key={particle.id}
@@ -235,7 +232,7 @@ export default function ProfileThemeCard({
       {/* Glow effect */}
       {theme.glowEnabled && isHovered && (
         <motion.div
-          className="absolute inset-0 pointer-events-none"
+          className="pointer-events-none absolute inset-0"
           style={{
             background: `radial-gradient(circle at 50% 50%, ${theme.glowColor}30, transparent 70%)`,
           }}
@@ -247,7 +244,7 @@ export default function ProfileThemeCard({
       {/* Holographic shine on hover */}
       {isHovered && (
         <motion.div
-          className="absolute inset-0 pointer-events-none"
+          className="pointer-events-none absolute inset-0"
           style={{
             background: `linear-gradient(
               135deg,
@@ -266,12 +263,9 @@ export default function ProfileThemeCard({
       {/* Content overlay */}
       <div className="absolute inset-0 flex flex-col justify-between p-3">
         {/* Top: Tier badge */}
-        <div className="flex justify-between items-start">
+        <div className="flex items-start justify-between">
           <motion.div
-            className={`
-              px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
-              ${tierColor.bg} ${tierColor.text} border ${tierColor.border}
-            `}
+            className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${tierColor.bg} ${tierColor.text} border ${tierColor.border} `}
             style={{
               boxShadow: `0 0 10px ${tierColor.glow}`,
             }}
@@ -282,7 +276,7 @@ export default function ProfileThemeCard({
 
           {/* Category icon */}
           <motion.div
-            className="w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center text-lg"
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-black/30 text-lg backdrop-blur-sm"
             whileHover={{ scale: 1.1, rotate: 10 }}
           >
             {theme.category === '8bit' && '🎮'}
@@ -295,22 +289,24 @@ export default function ProfileThemeCard({
         </div>
 
         {/* Center: Preview avatar */}
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex flex-1 items-center justify-center">
           <motion.div
-            className="w-16 h-16 rounded-full bg-dark-900/80 border-2 flex items-center justify-center"
+            className="flex h-16 w-16 items-center justify-center rounded-full border-2 bg-dark-900/80"
             style={{
               borderColor: theme.accentPrimary,
-              boxShadow: theme.glowEnabled 
-                ? `0 0 20px ${theme.accentPrimary}60` 
-                : undefined,
+              boxShadow: theme.glowEnabled ? `0 0 20px ${theme.accentPrimary}60` : undefined,
             }}
-            animate={theme.glowEnabled ? {
-              boxShadow: [
-                `0 0 10px ${theme.accentPrimary}40`,
-                `0 0 25px ${theme.accentPrimary}60`,
-                `0 0 10px ${theme.accentPrimary}40`,
-              ],
-            } : {}}
+            animate={
+              theme.glowEnabled
+                ? {
+                    boxShadow: [
+                      `0 0 10px ${theme.accentPrimary}40`,
+                      `0 0 25px ${theme.accentPrimary}60`,
+                      `0 0 10px ${theme.accentPrimary}40`,
+                    ],
+                  }
+                : {}
+            }
             transition={{ duration: 2, repeat: Infinity }}
           >
             <span className="text-2xl">👤</span>
@@ -318,17 +314,11 @@ export default function ProfileThemeCard({
         </div>
 
         {/* Bottom: Theme name and description */}
-        <div className="bg-black/40 backdrop-blur-sm rounded-lg p-2">
-          <h3 
-            className="font-bold text-sm truncate"
-            style={{ color: theme.textColor }}
-          >
+        <div className="rounded-lg bg-black/40 p-2 backdrop-blur-sm">
+          <h3 className="truncate text-sm font-bold" style={{ color: theme.textColor }}>
             {theme.name}
           </h3>
-          <p 
-            className="text-[10px] opacity-70 truncate"
-            style={{ color: theme.textColor }}
-          >
+          <p className="truncate text-[10px] opacity-70" style={{ color: theme.textColor }}>
             {theme.description}
           </p>
         </div>
@@ -336,17 +326,17 @@ export default function ProfileThemeCard({
 
       {/* Lock overlay */}
       {!theme.unlocked && (
-        <motion.div 
-          className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center"
+        <motion.div
+          className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-[2px]"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <LockClosedIcon className="w-8 h-8 text-white/70 mb-2" />
-          <span className="text-xs text-white/80 font-medium">
+          <LockClosedIcon className="mb-2 h-8 w-8 text-white/70" />
+          <span className="text-xs font-medium text-white/80">
             {theme.unlockLevel ? `Level ${theme.unlockLevel}` : 'Locked'}
           </span>
           {theme.unlockRequirement && (
-            <span className="text-[10px] text-white/60 text-center px-4 mt-1">
+            <span className="mt-1 px-4 text-center text-[10px] text-white/60">
               {theme.unlockRequirement}
             </span>
           )}
@@ -358,27 +348,27 @@ export default function ProfileThemeCard({
         <>
           {/* Corner brackets */}
           <motion.div
-            className="absolute top-1 left-1 w-4 h-4 border-t-2 border-l-2 rounded-tl-lg"
+            className="absolute left-1 top-1 h-4 w-4 rounded-tl-lg border-l-2 border-t-2"
             style={{ borderColor: theme.accentPrimary }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
           />
           <motion.div
-            className="absolute top-1 right-1 w-4 h-4 border-t-2 border-r-2 rounded-tr-lg"
+            className="absolute right-1 top-1 h-4 w-4 rounded-tr-lg border-r-2 border-t-2"
             style={{ borderColor: theme.accentPrimary }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.05 }}
           />
           <motion.div
-            className="absolute bottom-1 left-1 w-4 h-4 border-b-2 border-l-2 rounded-bl-lg"
+            className="absolute bottom-1 left-1 h-4 w-4 rounded-bl-lg border-b-2 border-l-2"
             style={{ borderColor: theme.accentPrimary }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.1 }}
           />
           <motion.div
-            className="absolute bottom-1 right-1 w-4 h-4 border-b-2 border-r-2 rounded-br-lg"
+            className="absolute bottom-1 right-1 h-4 w-4 rounded-br-lg border-b-2 border-r-2"
             style={{ borderColor: theme.accentPrimary }}
             initial={{ opacity: 0, scale: 0 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -387,15 +377,15 @@ export default function ProfileThemeCard({
 
           {/* Checkmark badge */}
           <motion.div
-            className="absolute -top-2 -right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-lg"
-            style={{ 
+            className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full shadow-lg"
+            style={{
               backgroundColor: theme.accentPrimary,
               boxShadow: `0 0 15px ${theme.accentPrimary}`,
             }}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
           >
-            <CheckIcon className="w-4 h-4 text-white" />
+            <CheckIcon className="h-4 w-4 text-white" />
           </motion.div>
         </>
       )}
@@ -421,9 +411,5 @@ export function ProfileThemeGrid({
     4: 'grid-cols-4',
   };
 
-  return (
-    <div className={`grid ${colClasses[columns]} gap-4 ${className}`}>
-      {children}
-    </div>
-  );
+  return <div className={`grid ${colClasses[columns]} gap-4 ${className}`}>{children}</div>;
 }

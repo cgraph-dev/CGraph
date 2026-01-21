@@ -853,7 +853,7 @@ function useCustomEmojis(forumId?: string) {
         const filtered = prev.filter((e) => e.id !== emoji.id);
         return [emoji, ...filtered].slice(0, 20);
       });
-    } catch (err) {
+    } catch (_err) {
       // Silent fail - usage tracking is not critical
     }
   }, []);
@@ -895,7 +895,7 @@ function useEmojiSearch(emojis: CustomEmoji[], forumId?: string) {
 
         const response = await api.get('/api/v1/emojis/search', { params });
         setSearchResults(response.data?.data || []);
-      } catch (err) {
+      } catch (_err) {
         // Fall back to local search
         const term = debouncedSearch.toLowerCase();
         const results = emojis.filter(

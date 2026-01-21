@@ -7,7 +7,16 @@
  */
 
 import { useRef, useEffect, useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, useScroll, useVelocity, useAnimationFrame, Variants } from 'framer-motion';
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  useScroll,
+  useVelocity,
+  useAnimationFrame,
+  Variants,
+} from 'framer-motion';
 
 // =============================================================================
 // NOISE & SHADER-LIKE EFFECTS
@@ -31,7 +40,8 @@ export function NoiseOverlay({ opacity = 0.05, speed = 0.3, grain = 'medium' }: 
     if (!ctx) return;
 
     let animationId: number;
-    let frame = 0;
+    // Frame counter reserved for future animation timing
+    const _frame = 0;
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -63,9 +73,12 @@ export function NoiseOverlay({ opacity = 0.05, speed = 0.3, grain = 'medium' }: 
       animationId = requestAnimationFrame(generateNoise);
     };
 
-    const interval = setInterval(() => {
-      generateNoise();
-    }, 1000 / (speed * 30));
+    const interval = setInterval(
+      () => {
+        generateNoise();
+      },
+      1000 / (speed * 30)
+    );
 
     return () => {
       window.removeEventListener('resize', resize);
@@ -94,7 +107,12 @@ interface ChromaticTextProps {
   animated?: boolean;
 }
 
-export function ChromaticText({ children, className = '', intensity = 2, animated = true }: ChromaticTextProps) {
+export function ChromaticText({
+  children,
+  className = '',
+  intensity = 2,
+  animated = true,
+}: ChromaticTextProps) {
   const [offset, setOffset] = useState({ x: intensity, y: intensity / 2 });
 
   useEffect(() => {
@@ -107,7 +125,7 @@ export function ChromaticText({ children, className = '', intensity = 2, animate
       time += 0.02;
       setOffset({
         x: Math.sin(time) * intensity,
-        y: Math.cos(time * 0.7) * intensity / 2,
+        y: (Math.cos(time * 0.7) * intensity) / 2,
       });
       animationId = requestAnimationFrame(animate);
     };
@@ -149,7 +167,12 @@ interface DistortionWaveProps {
   speed?: number;
 }
 
-export function DistortionWave({ children, className = '', intensity = 5, speed = 2 }: DistortionWaveProps) {
+export function DistortionWave({
+  children,
+  className = '',
+  intensity = 5,
+  speed = 2,
+}: DistortionWaveProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState('');
 
@@ -211,14 +234,25 @@ interface ParallaxSceneProps {
   intensity?: number;
 }
 
-export function ParallaxScene({ children, className = '', mouseTracking = true, intensity = 20 }: ParallaxSceneProps) {
+export function ParallaxScene({
+  children,
+  className = '',
+  mouseTracking = true,
+  intensity = 20,
+}: ParallaxSceneProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
   const springConfig = { damping: 25, stiffness: 150 };
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [intensity, -intensity]), springConfig);
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-intensity, intensity]), springConfig);
+  const rotateX = useSpring(
+    useTransform(mouseY, [-0.5, 0.5], [intensity, -intensity]),
+    springConfig
+  );
+  const rotateY = useSpring(
+    useTransform(mouseX, [-0.5, 0.5], [-intensity, intensity]),
+    springConfig
+  );
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!containerRef.current || !mouseTracking) return;
@@ -307,7 +341,12 @@ interface MorphingBlobProps {
   speed?: number;
 }
 
-export function MorphingBlob({ color = '#10b981', size = 400, className = '', speed = 8 }: MorphingBlobProps) {
+export function MorphingBlob({
+  color = '#10b981',
+  size = 400,
+  className = '',
+  speed = 8,
+}: MorphingBlobProps) {
   const paths = [
     'M440,320c0,110.5-89.5,200-200,200s-200-89.5-200-200s89.5-200,200-200S440,209.5,440,320z',
     'M415.7,293.4c20.3,98.6-42.4,188.6-140.1,201.5c-97.6,12.9-175.3-56.4-195.7-155c-20.3-98.6,42.4-188.6,140.1-201.5C317.6,125.5,395.3,194.8,415.7,293.4z',
@@ -702,7 +741,11 @@ interface SpotlightRevealProps {
   spotlightSize?: number;
 }
 
-export function SpotlightReveal({ children, className = '', spotlightSize = 300 }: SpotlightRevealProps) {
+export function SpotlightReveal({
+  children,
+  className = '',
+  spotlightSize = 300,
+}: SpotlightRevealProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
@@ -847,7 +890,7 @@ export function HolographicCard({ children, className = '' }: HolographicCardPro
     >
       {/* Rainbow holographic effect */}
       <div
-        className="pointer-events-none absolute inset-0 rounded-inherit opacity-50"
+        className="rounded-inherit pointer-events-none absolute inset-0 opacity-50"
         style={{
           background: `
             linear-gradient(
@@ -872,7 +915,7 @@ export function HolographicCard({ children, className = '' }: HolographicCardPro
 
       {/* Glare effect */}
       <div
-        className="pointer-events-none absolute inset-0 rounded-inherit"
+        className="rounded-inherit pointer-events-none absolute inset-0"
         style={{
           background: `radial-gradient(circle at ${glarePos.x}% ${glarePos.y}%, rgba(255,255,255,0.4) 0%, transparent 60%)`,
           borderRadius: 'inherit',

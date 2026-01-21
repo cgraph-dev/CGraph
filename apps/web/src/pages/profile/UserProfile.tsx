@@ -100,24 +100,7 @@ export default function UserProfile() {
     loginStreak: myStreak,
   } = useGamificationStore();
 
-  // Guard against undefined/invalid userId - redirect to home
-  if (!userId || userId === 'undefined' || userId === 'null') {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-dark-900 p-8">
-        <GlassCard variant="frosted" className="max-w-md p-8 text-center">
-          <h2 className="mb-4 text-xl font-bold text-white">Failed to load user profile</h2>
-          <p className="mb-6 text-gray-400">The user profile could not be found or is invalid.</p>
-          <button
-            onClick={() => navigate(-1)}
-            className="rounded-lg bg-primary-600 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-700"
-          >
-            Go Back
-          </button>
-        </GlassCard>
-      </div>
-    );
-  }
-
+  // All hooks must be declared before any conditional returns (Rules of Hooks)
   const [profile, setProfile] = useState<UserProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -304,6 +287,25 @@ export default function UserProfile() {
     fetchProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
+
+  // Guard against undefined/invalid userId - show error UI
+  // (Moved after all hooks to comply with Rules of Hooks)
+  if (!userId || userId === 'undefined' || userId === 'null') {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-dark-900 p-8">
+        <GlassCard variant="frosted" className="max-w-md p-8 text-center">
+          <h2 className="mb-4 text-xl font-bold text-white">Failed to load user profile</h2>
+          <p className="mb-6 text-gray-400">The user profile could not be found or is invalid.</p>
+          <button
+            onClick={() => navigate(-1)}
+            className="rounded-lg bg-primary-600 px-6 py-3 font-medium text-white transition-colors hover:bg-primary-700"
+          >
+            Go Back
+          </button>
+        </GlassCard>
+      </div>
+    );
+  }
 
   const handleSendRequest = async () => {
     if (!profile) return;

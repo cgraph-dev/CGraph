@@ -16,8 +16,16 @@ import { cn } from '@/lib/utils';
 // TYPES
 // =============================================================================
 
-export interface GlassCardProps extends Omit<HTMLAttributes<HTMLDivElement>, 
-  'children' | 'onDrag' | 'onDragEnd' | 'onDragStart' | 'onAnimationStart' | 'onAnimationEnd' | 'onAnimationIteration'> {
+export interface GlassCardProps extends Omit<
+  HTMLAttributes<HTMLDivElement>,
+  | 'children'
+  | 'onDrag'
+  | 'onDragEnd'
+  | 'onDragStart'
+  | 'onAnimationStart'
+  | 'onAnimationEnd'
+  | 'onAnimationIteration'
+> {
   children: ReactNode;
   variant?: 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic';
   intensity?: 'subtle' | 'medium' | 'strong';
@@ -69,7 +77,7 @@ const variantStyles = {
 export default function GlassCard({
   children,
   variant = 'default',
-  intensity = 'medium',
+  intensity: _intensity = 'medium',
   glow = false,
   glowColor = 'rgba(16, 185, 129, 0.5)',
   hover3D = true,
@@ -162,10 +170,11 @@ export default function GlassCard({
       {/* Border gradient overlay */}
       {borderGradient && (
         <div
-          className="absolute inset-0 rounded-2xl -z-10"
+          className="absolute inset-0 -z-10 rounded-2xl"
           style={{
             padding: '2px',
-            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(139, 92, 246, 0.5), rgba(236, 72, 153, 0.5))',
+            background:
+              'linear-gradient(135deg, rgba(16, 185, 129, 0.5), rgba(139, 92, 246, 0.5), rgba(236, 72, 153, 0.5))',
             WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
             WebkitMaskComposite: 'xor',
             maskComposite: 'exclude',
@@ -179,7 +188,8 @@ export default function GlassCard({
           <div
             className="absolute inset-0 animate-shimmer"
             style={{
-              background: 'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
+              background:
+                'linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent)',
               backgroundSize: '200% 100%',
             }}
           />
@@ -192,7 +202,7 @@ export default function GlassCard({
           {[...Array(12)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 rounded-full bg-primary-400"
+              className="absolute h-1 w-1 rounded-full bg-primary-400"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -228,10 +238,7 @@ export default function GlassCard({
       )}
 
       {/* Border */}
-      <div
-        className="absolute inset-0 rounded-2xl pointer-events-none"
-        style={{ border }}
-      />
+      <div className="pointer-events-none absolute inset-0 rounded-2xl" style={{ border }} />
 
       {/* Content */}
       <div className="relative z-10">{children}</div>
@@ -239,7 +246,7 @@ export default function GlassCard({
       {/* Inner glow highlight */}
       {isHovered && glow && (
         <div
-          className="absolute inset-0 rounded-2xl pointer-events-none"
+          className="pointer-events-none absolute inset-0 rounded-2xl"
           style={{
             background: `radial-gradient(circle at ${mouseX.get() * 50 + 50}% ${mouseY.get() * 50 + 50}%, ${glowColor}, transparent 70%)`,
             opacity: 0.2,
@@ -256,34 +263,29 @@ export default function GlassCard({
 
 export function GlassCardNeon({ children, className, ...props }: Omit<GlassCardProps, 'variant'>) {
   return (
-    <GlassCard
-      variant="neon"
-      glow
-      borderGradient
-      shimmer
-      className={className}
-      {...props}
-    >
+    <GlassCard variant="neon" glow borderGradient shimmer className={className} {...props}>
       {children}
     </GlassCard>
   );
 }
 
-export function GlassCardHolographic({ children, className, ...props }: Omit<GlassCardProps, 'variant'>) {
+export function GlassCardHolographic({
+  children,
+  className,
+  ...props
+}: Omit<GlassCardProps, 'variant'>) {
   return (
-    <GlassCard
-      variant="holographic"
-      hover3D
-      particles
-      className={className}
-      {...props}
-    >
+    <GlassCard variant="holographic" hover3D particles className={className} {...props}>
       {children}
     </GlassCard>
   );
 }
 
-export function GlassCardCrystal({ children, className, ...props }: Omit<GlassCardProps, 'variant'>) {
+export function GlassCardCrystal({
+  children,
+  className,
+  ...props
+}: Omit<GlassCardProps, 'variant'>) {
   return (
     <GlassCard
       variant="crystal"

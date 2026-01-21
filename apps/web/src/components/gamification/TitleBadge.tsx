@@ -89,11 +89,7 @@ const shimmerAnimation = {
 };
 
 const glowAnimation = (glowColor: string) => ({
-  boxShadow: [
-    `0 0 5px ${glowColor}`,
-    `0 0 15px ${glowColor}`,
-    `0 0 5px ${glowColor}`,
-  ],
+  boxShadow: [`0 0 5px ${glowColor}`, `0 0 15px ${glowColor}`, `0 0 5px ${glowColor}`],
   transition: {
     duration: 2,
     repeat: Infinity,
@@ -468,14 +464,14 @@ export function TitleBadge({
     return title;
   }, [title]);
 
-  if (!titleData) return null;
-
-  const rarityColor = RARITY_COLORS[titleData.rarity];
-  const gradient = RARITY_GRADIENTS[titleData.rarity];
+  // Compute derived values (safe even if titleData is null)
+  const rarityColor = titleData ? RARITY_COLORS[titleData.rarity] : RARITY_COLORS.common;
+  const gradient = titleData ? RARITY_GRADIENTS[titleData.rarity] : RARITY_GRADIENTS.common;
 
   // Get animation based on title configuration
+  // Must be called unconditionally (Rules of Hooks)
   const getAnimation = useCallback(() => {
-    if (!animated) return {};
+    if (!animated || !titleData) return {};
 
     switch (titleData.animation.type as TitleAnimationType) {
       // Basic animations
@@ -543,7 +539,10 @@ export function TitleBadge({
       default:
         return {};
     }
-  }, [animated, titleData.animation.type, rarityColor.glow]);
+  }, [animated, titleData?.animation?.type, rarityColor.glow]);
+
+  // Early return after all hooks (Rules of Hooks compliance)
+  if (!titleData) return null;
 
   // Shimmer gradient for shimmer animation
   const shimmerStyle =
@@ -558,7 +557,8 @@ export function TitleBadge({
   const rainbowStyle =
     titleData.animation.type === 'rainbow' && animated
       ? {
-          background: 'linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000)',
+          background:
+            'linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000)',
           backgroundSize: '400% 100%',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
@@ -575,14 +575,15 @@ export function TitleBadge({
           onClick ? 'cursor-pointer' : 'cursor-default',
           // Base styling
           `bg-gradient-to-r ${gradient}`,
-          'text-white border-white/20',
+          'border-white/20 text-white',
           className
         )}
         style={{
           ...shimmerStyle,
-          boxShadow: animated && titleData.animation.type === 'glow' 
-            ? `0 0 10px ${rarityColor.glow}` 
-            : undefined,
+          boxShadow:
+            animated && titleData.animation.type === 'glow'
+              ? `0 0 10px ${rarityColor.glow}`
+              : undefined,
         }}
         animate={getAnimation()}
         whileHover={onClick ? { scale: 1.05 } : undefined}
@@ -592,14 +593,14 @@ export function TitleBadge({
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Sparkle icon for legendary+ */}
-        {(titleData.rarity === 'legendary' || titleData.rarity === 'mythic' || titleData.rarity === 'unique') && (
-          <motion.span
-            animate={sparkleAnimation}
-          >
+        {(titleData.rarity === 'legendary' ||
+          titleData.rarity === 'mythic' ||
+          titleData.rarity === 'unique') && (
+          <motion.span animate={sparkleAnimation}>
             <SparklesIcon className="h-3 w-3" />
           </motion.span>
         )}
-        
+
         {/* Title Text */}
         <span style={rainbowStyle}>{titleData.displayName}</span>
       </motion.button>
@@ -612,8 +613,8 @@ export function TitleBadge({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 5, scale: 0.95 }}
             className={cn(
-              'absolute bottom-full left-1/2 -translate-x-1/2 mb-2 z-50',
-              'px-3 py-2 rounded-lg',
+              'absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2',
+              'rounded-lg px-3 py-2',
               'bg-dark-800/95 backdrop-blur-xl',
               'border border-white/10',
               'shadow-xl shadow-black/50',
@@ -622,9 +623,9 @@ export function TitleBadge({
             )}
           >
             <div className="text-center">
-              <p className="font-semibold text-white text-sm">{titleData.name}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{titleData.description}</p>
-              <div className="flex items-center justify-center gap-1 mt-1">
+              <p className="text-sm font-semibold text-white">{titleData.name}</p>
+              <p className="mt-0.5 text-xs text-gray-400">{titleData.description}</p>
+              <div className="mt-1 flex items-center justify-center gap-1">
                 <span
                   className="text-xs font-medium capitalize"
                   style={{ color: rarityColor.primary }}
@@ -632,16 +633,16 @@ export function TitleBadge({
                   {titleData.rarity}
                 </span>
                 <span className="text-gray-600">•</span>
-                <span className="text-xs text-gray-500 capitalize">{titleData.category}</span>
+                <span className="text-xs capitalize text-gray-500">{titleData.category}</span>
               </div>
               {titleData.unlockRequirement && (
-                <p className="text-[10px] text-gray-500 mt-1 italic">
+                <p className="mt-1 text-[10px] italic text-gray-500">
                   {titleData.unlockRequirement}
                 </p>
               )}
             </div>
             {/* Tooltip arrow */}
-            <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-dark-800/95" />
+            <div className="absolute left-1/2 top-full -translate-x-1/2 border-4 border-transparent border-t-dark-800/95" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -669,9 +670,9 @@ export function ProfileTitleDisplay({
       return (
         <motion.button
           className={cn(
-            'inline-flex items-center gap-1 px-2 py-0.5 rounded-md',
-            'text-xs text-gray-500 border border-dashed border-gray-600',
-            'hover:border-primary-500/50 hover:text-primary-400 transition-colors',
+            'inline-flex items-center gap-1 rounded-md px-2 py-0.5',
+            'border border-dashed border-gray-600 text-xs text-gray-500',
+            'transition-colors hover:border-primary-500/50 hover:text-primary-400',
             className
           )}
           onClick={onChangeTitle}

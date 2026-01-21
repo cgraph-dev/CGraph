@@ -18,7 +18,8 @@ import {
 
 export default function GroupChannel() {
   const { groupId, channelId } = useParams<{ groupId: string; channelId: string }>();
-  const { user: _user } = useAuthStore();
+  // useAuthStore available for future permission checks
+  const _authStore = useAuthStore();
   const {
     groups,
     channelMessages,
@@ -149,64 +150,66 @@ export default function GroupChannel() {
 
   if (!channel) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex">
+    <div className="flex flex-1">
       {/* Main content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-1 flex-col">
         {/* Header */}
-        <header className="h-12 px-4 border-b border-dark-700 flex items-center justify-between bg-dark-800">
+        <header className="flex h-12 items-center justify-between border-b border-dark-700 bg-dark-800 px-4">
           <div className="flex items-center gap-2">
             <HashtagIcon className="h-5 w-5 text-gray-400" />
             <span className="font-semibold text-white">{channel.name}</span>
             {channel.topic && (
               <>
-                <div className="w-px h-5 bg-dark-600 mx-2" />
-                <span className="text-sm text-gray-400 truncate max-w-md">{channel.topic}</span>
+                <div className="mx-2 h-5 w-px bg-dark-600" />
+                <span className="max-w-md truncate text-sm text-gray-400">{channel.topic}</span>
               </>
             )}
           </div>
 
           <div className="flex items-center gap-1">
-            <button className="p-1.5 rounded hover:bg-dark-700 text-gray-400 hover:text-white transition-colors">
+            <button className="rounded p-1.5 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white">
               <BellIcon className="h-5 w-5" />
             </button>
-            <button className="p-1.5 rounded hover:bg-dark-700 text-gray-400 hover:text-white transition-colors">
+            <button className="rounded p-1.5 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white">
               <BookmarkIcon className="h-5 w-5" />
             </button>
             <button
               onClick={() => setShowMembers(!showMembers)}
-              className={`p-1.5 rounded transition-colors ${
-                showMembers ? 'bg-dark-600 text-white' : 'hover:bg-dark-700 text-gray-400 hover:text-white'
+              className={`rounded p-1.5 transition-colors ${
+                showMembers
+                  ? 'bg-dark-600 text-white'
+                  : 'text-gray-400 hover:bg-dark-700 hover:text-white'
               }`}
             >
               <UserGroupIcon className="h-5 w-5" />
             </button>
             <div className="relative mx-2">
-              <MagnifyingGlassIcon className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+              <MagnifyingGlassIcon className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search"
-                className="w-36 pl-8 pr-2 py-1 bg-dark-900 rounded text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                className="w-36 rounded bg-dark-900 py-1 pl-8 pr-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
               />
             </div>
           </div>
         </header>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 space-y-4 overflow-y-auto p-4">
           {/* Welcome message */}
           {messages.length === 0 && !isLoadingMessages && (
-            <div className="text-center py-8">
-              <div className="h-16 w-16 rounded-full bg-dark-700 flex items-center justify-center mx-auto mb-4">
+            <div className="py-8 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-dark-700">
                 <HashtagIcon className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-1">Welcome to #{channel.name}!</h3>
+              <h3 className="mb-1 text-xl font-bold text-white">Welcome to #{channel.name}!</h3>
               <p className="text-gray-400">This is the start of the #{channel.name} channel.</p>
             </div>
           )}
@@ -228,18 +231,19 @@ export default function GroupChannel() {
           {groupedMessages.map((group, groupIndex) => (
             <div key={groupIndex}>
               {/* Date header */}
-              <div className="flex items-center gap-4 my-4">
-                <div className="flex-1 h-px bg-dark-700" />
-                <span className="text-xs text-gray-500 font-medium">{formatDateHeader(group.date)}</span>
-                <div className="flex-1 h-px bg-dark-700" />
+              <div className="my-4 flex items-center gap-4">
+                <div className="h-px flex-1 bg-dark-700" />
+                <span className="text-xs font-medium text-gray-500">
+                  {formatDateHeader(group.date)}
+                </span>
+                <div className="h-px flex-1 bg-dark-700" />
               </div>
 
               {/* Messages */}
               <div className="space-y-4">
                 {group.messages.map((message, msgIndex) => {
                   const showHeader =
-                    msgIndex === 0 ||
-                    group.messages[msgIndex - 1]?.authorId !== message.authorId;
+                    msgIndex === 0 || group.messages[msgIndex - 1]?.authorId !== message.authorId;
 
                   return (
                     <ChannelMessageItem
@@ -258,9 +262,18 @@ export default function GroupChannel() {
           {typing.length > 0 && (
             <div className="flex items-center gap-2 px-4">
               <div className="flex space-x-1">
-                <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <div className="h-2 w-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                <div
+                  className="h-2 w-2 animate-bounce rounded-full bg-gray-400"
+                  style={{ animationDelay: '0ms' }}
+                />
+                <div
+                  className="h-2 w-2 animate-bounce rounded-full bg-gray-400"
+                  style={{ animationDelay: '150ms' }}
+                />
+                <div
+                  className="h-2 w-2 animate-bounce rounded-full bg-gray-400"
+                  style={{ animationDelay: '300ms' }}
+                />
               </div>
               <span className="text-sm text-gray-400">
                 {typing.length === 1 ? 'Someone is typing...' : 'Several people are typing...'}
@@ -273,31 +286,36 @@ export default function GroupChannel() {
 
         {/* Reply preview */}
         {replyTo && (
-          <div className="px-4 py-2 bg-dark-800 border-t border-dark-700 flex items-center justify-between">
+          <div className="flex items-center justify-between border-t border-dark-700 bg-dark-800 px-4 py-2">
             <div className="flex items-center gap-2">
-              <div className="w-1 h-8 bg-primary-500 rounded-full" />
+              <div className="h-8 w-1 rounded-full bg-primary-500" />
               <div>
                 <p className="text-xs text-primary-400">
                   Replying to {replyTo.author.displayName || replyTo.author.username || 'Unknown'}
                 </p>
-                <p className="text-sm text-gray-400 truncate max-w-md">{replyTo.content}</p>
+                <p className="max-w-md truncate text-sm text-gray-400">{replyTo.content}</p>
               </div>
             </div>
             <button
               onClick={() => setReplyTo(null)}
-              className="p-1 hover:bg-dark-700 rounded text-gray-400 hover:text-white"
+              className="rounded p-1 text-gray-400 hover:bg-dark-700 hover:text-white"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
         )}
 
         {/* Input */}
-        <div className="p-4 border-t border-dark-700">
-          <div className="flex items-end gap-2 bg-dark-700 rounded-lg px-4 py-2">
-            <button className="p-1 text-gray-400 hover:text-white transition-colors">
+        <div className="border-t border-dark-700 p-4">
+          <div className="flex items-end gap-2 rounded-lg bg-dark-700 px-4 py-2">
+            <button className="p-1 text-gray-400 transition-colors hover:text-white">
               <PaperClipIcon className="h-5 w-5" />
             </button>
 
@@ -310,18 +328,18 @@ export default function GroupChannel() {
               onKeyDown={handleKeyPress}
               placeholder={`Message #${channel.name}`}
               rows={1}
-              className="flex-1 bg-transparent text-white placeholder-gray-500 resize-none focus:outline-none max-h-32"
+              className="max-h-32 flex-1 resize-none bg-transparent text-white placeholder-gray-500 focus:outline-none"
               style={{ minHeight: '24px' }}
             />
 
-            <button className="p-1 text-gray-400 hover:text-white transition-colors">
+            <button className="p-1 text-gray-400 transition-colors hover:text-white">
               <FaceSmileIcon className="h-5 w-5" />
             </button>
 
             <button
               onClick={handleSend}
               disabled={!messageInput.trim() || isSending}
-              className="p-1 text-primary-400 hover:text-primary-300 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1 text-primary-400 transition-colors hover:text-primary-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <PaperAirplaneIcon className="h-5 w-5" />
             </button>
@@ -331,11 +349,11 @@ export default function GroupChannel() {
 
       {/* Members sidebar */}
       {showMembers && (
-        <div className="w-60 bg-dark-800 border-l border-dark-700 overflow-y-auto">
+        <div className="w-60 overflow-y-auto border-l border-dark-700 bg-dark-800">
           {/* Online members */}
           {onlineMembers.length > 0 && (
             <div className="p-3">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
+              <h3 className="mb-2 text-xs font-semibold uppercase text-gray-400">
                 Online — {onlineMembers.length}
               </h3>
               <div className="space-y-0.5">
@@ -349,7 +367,7 @@ export default function GroupChannel() {
           {/* Offline members */}
           {offlineMembers.length > 0 && (
             <div className="p-3">
-              <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2">
+              <h3 className="mb-2 text-xs font-semibold uppercase text-gray-400">
                 Offline — {offlineMembers.length}
               </h3>
               <div className="space-y-0.5">
@@ -386,7 +404,7 @@ function ChannelMessageItem({
       {/* Avatar or spacer */}
       <div className="w-10 flex-shrink-0">
         {showHeader && (
-          <div className="h-10 w-10 rounded-full overflow-hidden bg-dark-600">
+          <div className="h-10 w-10 overflow-hidden rounded-full bg-dark-600">
             {message.author.avatarUrl ? (
               <img
                 src={message.author.avatarUrl}
@@ -394,8 +412,10 @@ function ChannelMessageItem({
                 className="h-full w-full object-cover"
               />
             ) : (
-              <div className="h-full w-full flex items-center justify-center text-lg font-bold text-gray-400">
-                {(message.author.username || message.author.displayName || '?').charAt(0).toUpperCase()}
+              <div className="flex h-full w-full items-center justify-center text-lg font-bold text-gray-400">
+                {(message.author.username || message.author.displayName || '?')
+                  .charAt(0)
+                  .toUpperCase()}
               </div>
             )}
           </div>
@@ -403,11 +423,11 @@ function ChannelMessageItem({
       </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         {showHeader && (
-          <div className="flex items-baseline gap-2 mb-0.5">
+          <div className="mb-0.5 flex items-baseline gap-2">
             <span
-              className="font-medium hover:underline cursor-pointer"
+              className="cursor-pointer font-medium hover:underline"
               style={{ color: message.author.member?.roles?.[0]?.color || '#ffffff' }}
             >
               {message.author.displayName || message.author.username || 'Unknown User'}
@@ -420,26 +440,33 @@ function ChannelMessageItem({
 
         {/* Reply preview */}
         {message.replyTo && (
-          <div className="flex items-center gap-1 mb-1 text-xs text-gray-400">
+          <div className="mb-1 flex items-center gap-1 text-xs text-gray-400">
             <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+              />
             </svg>
-            <span className="text-primary-400">{message.replyTo.author.username || message.replyTo.author.displayName || 'Unknown'}</span>
-            <span className="truncate max-w-xs">{message.replyTo.content}</span>
+            <span className="text-primary-400">
+              {message.replyTo.author.username || message.replyTo.author.displayName || 'Unknown'}
+            </span>
+            <span className="max-w-xs truncate">{message.replyTo.content}</span>
           </div>
         )}
 
-        <p className="text-gray-100 whitespace-pre-wrap break-words">{message.content}</p>
+        <p className="whitespace-pre-wrap break-words text-gray-100">{message.content}</p>
 
         {/* Reactions */}
         {message.reactions.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-1">
+          <div className="mt-1 flex flex-wrap gap-1">
             {message.reactions.map((reaction, i) => (
               <button
                 key={i}
-                className={`px-2 py-0.5 rounded text-xs flex items-center gap-1 transition-colors ${
+                className={`flex items-center gap-1 rounded px-2 py-0.5 text-xs transition-colors ${
                   reaction.hasReacted
-                    ? 'bg-primary-600/30 border border-primary-500/50'
+                    ? 'border border-primary-500/50 bg-primary-600/30'
                     : 'bg-dark-700 hover:bg-dark-600'
                 }`}
               >
@@ -455,16 +482,25 @@ function ChannelMessageItem({
 
       {/* Actions */}
       {showActions && (
-        <div className="absolute right-4 -top-4 flex items-center gap-0.5 bg-dark-700 rounded border border-dark-600 shadow-lg">
-          <button className="p-1.5 hover:bg-dark-600 text-gray-400 hover:text-white" title="React">
+        <div className="absolute -top-4 right-4 flex items-center gap-0.5 rounded border border-dark-600 bg-dark-700 shadow-lg">
+          <button className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white" title="React">
             <FaceSmileIcon className="h-4 w-4" />
           </button>
-          <button onClick={onReply} className="p-1.5 hover:bg-dark-600 text-gray-400 hover:text-white" title="Reply">
+          <button
+            onClick={onReply}
+            className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white"
+            title="Reply"
+          >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+              />
             </svg>
           </button>
-          <button className="p-1.5 hover:bg-dark-600 text-gray-400 hover:text-white" title="More">
+          <button className="p-1.5 text-gray-400 hover:bg-dark-600 hover:text-white" title="More">
             <EllipsisVerticalIcon className="h-4 w-4" />
           </button>
         </div>
@@ -478,9 +514,11 @@ function MemberItem({ member, isOffline = false }: { member: Member; isOffline?:
   const roleColor = member.roles?.[0]?.color;
 
   return (
-    <div className={`flex items-center gap-2 p-1.5 rounded hover:bg-dark-700 cursor-pointer ${isOffline ? 'opacity-60' : ''}`}>
+    <div
+      className={`flex cursor-pointer items-center gap-2 rounded p-1.5 hover:bg-dark-700 ${isOffline ? 'opacity-60' : ''}`}
+    >
       <div className="relative">
-        <div className="h-8 w-8 rounded-full overflow-hidden bg-dark-600">
+        <div className="h-8 w-8 overflow-hidden rounded-full bg-dark-600">
           {member.user.avatarUrl ? (
             <img
               src={member.user.avatarUrl}
@@ -488,17 +526,17 @@ function MemberItem({ member, isOffline = false }: { member: Member; isOffline?:
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="h-full w-full flex items-center justify-center text-sm font-bold text-gray-400">
+            <div className="flex h-full w-full items-center justify-center text-sm font-bold text-gray-400">
               {(member.user.username || member.user.displayName || '?').charAt(0).toUpperCase()}
             </div>
           )}
         </div>
         {!isOffline && (
-          <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-dark-800" />
+          <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-dark-800 bg-green-500" />
         )}
       </div>
       <span
-        className="text-sm truncate"
+        className="truncate text-sm"
         style={{ color: roleColor || (isOffline ? '#6b7280' : '#ffffff') }}
       >
         {member.nickname || member.user.displayName || member.user.username || 'Unknown User'}

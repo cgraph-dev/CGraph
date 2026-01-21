@@ -35,14 +35,16 @@ export function ParticleNetwork({
 }: ParticleConfig) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mouseRef = useRef({ x: 0, y: 0 });
-  const particlesRef = useRef<Array<{
-    x: number;
-    y: number;
-    vx: number;
-    vy: number;
-    size: number;
-    opacity: number;
-  }>>([]);
+  const particlesRef = useRef<
+    Array<{
+      x: number;
+      y: number;
+      vx: number;
+      vy: number;
+      size: number;
+      opacity: number;
+    }>
+  >([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -216,7 +218,11 @@ export function GradientOrb({
 export function GradientBackground() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <GradientOrb color="rgba(16, 185, 129, 0.15)" size={600} position={{ top: '10%', left: '20%' }} />
+      <GradientOrb
+        color="rgba(16, 185, 129, 0.15)"
+        size={600}
+        position={{ top: '10%', left: '20%' }}
+      />
       <GradientOrb
         color="rgba(6, 182, 212, 0.12)"
         size={500}
@@ -353,7 +359,10 @@ export function GlowText({
       >
         {children}
       </span>
-      <span className="relative bg-clip-text text-transparent" style={{ backgroundImage: gradient }}>
+      <span
+        className="relative bg-clip-text text-transparent"
+        style={{ backgroundImage: gradient }}
+      >
         {children}
       </span>
     </span>
@@ -404,10 +413,7 @@ export function AnimatedBorder({
         }}
       />
       {/* Content container */}
-      <div
-        className="relative bg-gray-900/90 backdrop-blur-xl"
-        style={{ borderRadius }}
-      >
+      <div className="relative bg-gray-900/90 backdrop-blur-xl" style={{ borderRadius }}>
         {children}
       </div>
     </div>
@@ -484,7 +490,7 @@ export function TiltCard({
         {/* Glare effect */}
         {glare && (
           <motion.div
-            className="pointer-events-none absolute inset-0 rounded-inherit"
+            className="rounded-inherit pointer-events-none absolute inset-0"
             style={{
               background: `radial-gradient(circle at ${glareX} ${glareY}, rgba(255,255,255,0.15) 0%, transparent 60%)`,
               borderRadius: 'inherit',
@@ -614,7 +620,6 @@ export function TypingText({
   const [_isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
     let charIndex = 0;
 
     const startTyping = () => {
@@ -631,7 +636,7 @@ export function TypingText({
       return interval;
     };
 
-    timeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       const interval = startTyping();
       return () => clearInterval(interval);
     }, delay);

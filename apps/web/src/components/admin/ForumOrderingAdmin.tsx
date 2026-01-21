@@ -465,7 +465,7 @@ export const ForumOrderingAdmin = memo(function ForumOrderingAdmin({
       setHistory([]);
       setHistoryIndex(-1);
       showToast?.({ type: 'success', message: 'Order saved successfully!' });
-    } catch (error) {
+    } catch (_error) {
       showToast?.({ type: 'error', message: 'Failed to save order. Please try again.' });
       // Rollback
       setItems(originalItemsRef.current);

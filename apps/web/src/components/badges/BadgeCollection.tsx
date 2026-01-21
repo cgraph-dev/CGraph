@@ -30,7 +30,11 @@ import {
 } from '@heroicons/react/24/outline';
 import { cn } from '@/lib/utils';
 import { AnimatedBadgeWithTooltip, RARITY_COLORS } from './AnimatedBadge';
-import type { Achievement, AchievementCategory, AchievementRarity } from '@/stores/gamificationStore';
+import type {
+  Achievement,
+  AchievementCategory,
+  AchievementRarity,
+} from '@/stores/gamificationStore';
 
 // ==================== TYPE DEFINITIONS ====================
 
@@ -75,7 +79,14 @@ const CATEGORY_LABELS: Record<AchievementCategory, string> = {
 
 // ==================== RARITY BADGES ====================
 
-const RARITY_ORDER: AchievementRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
+const RARITY_ORDER: AchievementRarity[] = [
+  'common',
+  'uncommon',
+  'rare',
+  'epic',
+  'legendary',
+  'mythic',
+];
 
 // ==================== FILTER STATE ====================
 
@@ -165,8 +176,7 @@ export function BadgeCollection({
       const search = filters.search.toLowerCase();
       result = result.filter(
         (a) =>
-          a.title.toLowerCase().includes(search) ||
-          a.description.toLowerCase().includes(search)
+          a.title.toLowerCase().includes(search) || a.description.toLowerCase().includes(search)
       );
     }
 
@@ -177,10 +187,11 @@ export function BadgeCollection({
           return a.title.localeCompare(b.title);
         case 'rarity':
           return RARITY_ORDER.indexOf(b.rarity) - RARITY_ORDER.indexOf(a.rarity);
-        case 'progress':
+        case 'progress': {
           const progA = a.maxProgress > 0 ? a.progress / a.maxProgress : 0;
           const progB = b.maxProgress > 0 ? b.progress / b.maxProgress : 0;
           return progB - progA;
+        }
         case 'unlocked':
           if (a.unlocked !== b.unlocked) return a.unlocked ? -1 : 1;
           return 0;
@@ -200,19 +211,16 @@ export function BadgeCollection({
     return { total, unlocked, percentage };
   }, [achievements]);
 
-  const updateFilter = useCallback(
-    <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
-      setFilters((prev) => ({ ...prev, [key]: value }));
-    },
-    []
-  );
+  const updateFilter = useCallback(<K extends keyof FilterState>(key: K, value: FilterState[K]) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  }, []);
 
   return (
     <div className={cn('space-y-4', className)}>
       {/* Header stats */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <TrophyIcon className="w-6 h-6 text-amber-400" />
+          <TrophyIcon className="h-6 w-6 text-amber-400" />
           <div>
             <h2 className="text-lg font-bold text-white">Achievements</h2>
             <p className="text-sm text-gray-400">
@@ -222,7 +230,7 @@ export function BadgeCollection({
         </div>
 
         {/* Progress bar */}
-        <div className="w-32 h-2 bg-dark-700 rounded-full overflow-hidden">
+        <div className="h-2 w-32 overflow-hidden rounded-full bg-dark-700">
           <motion.div
             className="h-full bg-gradient-to-r from-primary-500 to-primary-400"
             initial={{ width: 0 }}
@@ -237,18 +245,18 @@ export function BadgeCollection({
         <div className="flex flex-wrap items-center gap-3">
           {/* Search */}
           {showSearch && (
-            <div className="relative flex-1 min-w-[200px]">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+            <div className="relative min-w-[200px] flex-1">
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search achievements..."
                 value={filters.search}
                 onChange={(e) => updateFilter('search', e.target.value)}
                 className={cn(
-                  'w-full pl-9 pr-4 py-2 rounded-lg',
-                  'bg-dark-700/50 border border-white/10',
+                  'w-full rounded-lg py-2 pl-9 pr-4',
+                  'border border-white/10 bg-dark-700/50',
                   'text-white placeholder-gray-500',
-                  'focus:outline-none focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500/50',
+                  'focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50',
                   'transition-all'
                 )}
               />
@@ -261,8 +269,8 @@ export function BadgeCollection({
               value={filters.rarity}
               onChange={(e) => updateFilter('rarity', e.target.value as AchievementRarity | 'all')}
               className={cn(
-                'px-3 py-2 rounded-lg',
-                'bg-dark-700/50 border border-white/10',
+                'rounded-lg px-3 py-2',
+                'border border-white/10 bg-dark-700/50',
                 'text-white',
                 'focus:outline-none focus:ring-2 focus:ring-primary-500/50',
                 'cursor-pointer'
@@ -283,8 +291,8 @@ export function BadgeCollection({
               value={filters.status}
               onChange={(e) => updateFilter('status', e.target.value as FilterState['status'])}
               className={cn(
-                'px-3 py-2 rounded-lg',
-                'bg-dark-700/50 border border-white/10',
+                'rounded-lg px-3 py-2',
+                'border border-white/10 bg-dark-700/50',
                 'text-white',
                 'focus:outline-none focus:ring-2 focus:ring-primary-500/50',
                 'cursor-pointer'
@@ -303,8 +311,8 @@ export function BadgeCollection({
               value={filters.sort}
               onChange={(e) => updateFilter('sort', e.target.value as SortOption)}
               className={cn(
-                'px-3 py-2 rounded-lg',
-                'bg-dark-700/50 border border-white/10',
+                'rounded-lg px-3 py-2',
+                'border border-white/10 bg-dark-700/50',
                 'text-white',
                 'focus:outline-none focus:ring-2 focus:ring-primary-500/50',
                 'cursor-pointer'
@@ -320,7 +328,7 @@ export function BadgeCollection({
       )}
 
       {/* Category tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+      <div className="scrollbar-hide flex items-center gap-2 overflow-x-auto pb-2">
         <CategoryTab
           label="All"
           icon={SparklesIcon}
@@ -348,7 +356,7 @@ export function BadgeCollection({
       <div
         className={cn(
           layout === 'grid'
-            ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4'
+            ? 'grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5'
             : 'space-y-3'
         )}
       >
@@ -362,9 +370,7 @@ export function BadgeCollection({
               isEquipped={equippedBadgeIds.includes(achievement.id)}
               onClick={() => onAchievementClick?.(achievement)}
               onEquip={
-                achievement.unlocked && onEquipBadge
-                  ? () => onEquipBadge(achievement)
-                  : undefined
+                achievement.unlocked && onEquipBadge ? () => onEquipBadge(achievement) : undefined
               }
             />
           ))}
@@ -373,15 +379,11 @@ export function BadgeCollection({
 
       {/* Empty state */}
       {filteredAchievements.length === 0 && (
-        <motion.div
-          className="text-center py-12"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-        >
-          <QuestionMarkCircleIcon className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+        <motion.div className="py-12 text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <QuestionMarkCircleIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
           <p className="text-gray-400">No achievements match your filters</p>
           <button
-            className="text-primary-400 hover:text-primary-300 text-sm mt-2"
+            className="mt-2 text-sm text-primary-400 hover:text-primary-300"
             onClick={() =>
               setFilters({
                 category: 'all',
@@ -414,18 +416,18 @@ function CategoryTab({ label, icon: Icon, isActive, count, onClick }: CategoryTa
   return (
     <motion.button
       className={cn(
-        'flex items-center gap-2 px-4 py-2 rounded-xl',
-        'text-sm font-medium whitespace-nowrap',
+        'flex items-center gap-2 rounded-xl px-4 py-2',
+        'whitespace-nowrap text-sm font-medium',
         'transition-colors',
         isActive
-          ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-          : 'bg-dark-700/50 text-gray-400 border border-transparent hover:bg-dark-600/50 hover:text-white'
+          ? 'border border-primary-500/30 bg-primary-500/20 text-primary-400'
+          : 'border border-transparent bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white'
       )}
       onClick={onClick}
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
-      <Icon className="w-4 h-4" />
+      <Icon className="h-4 w-4" />
       <span>{label}</span>
       <span className="text-xs opacity-60">
         {count.unlocked}/{count.total}
@@ -454,18 +456,17 @@ function AchievementCard({
   onEquip,
 }: AchievementCardProps) {
   const colors = RARITY_COLORS[achievement.rarity];
-  const progress = achievement.maxProgress > 0
-    ? (achievement.progress / achievement.maxProgress) * 100
-    : 0;
+  const progress =
+    achievement.maxProgress > 0 ? (achievement.progress / achievement.maxProgress) * 100 : 0;
 
   if (layout === 'list') {
     return (
       <motion.div
         className={cn(
-          'flex items-center gap-4 p-4 rounded-xl',
-          'bg-dark-800/50 border border-white/5',
-          'hover:bg-dark-700/50 hover:border-white/10',
-          'transition-all cursor-pointer'
+          'flex items-center gap-4 rounded-xl p-4',
+          'border border-white/5 bg-dark-800/50',
+          'hover:border-white/10 hover:bg-dark-700/50',
+          'cursor-pointer transition-all'
         )}
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -480,30 +481,30 @@ function AchievementCard({
           showProgress
         />
 
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className={cn(
-              'font-semibold truncate',
-              achievement.unlocked ? 'text-white' : 'text-gray-400'
-            )}>
-              {achievement.unlocked || !achievement.isHidden
-                ? achievement.title
-                : '???'}
+            <h3
+              className={cn(
+                'truncate font-semibold',
+                achievement.unlocked ? 'text-white' : 'text-gray-400'
+              )}
+            >
+              {achievement.unlocked || !achievement.isHidden ? achievement.title : '???'}
             </h3>
             {isEquipped && (
-              <span className="text-xs px-1.5 py-0.5 rounded bg-primary-500/20 text-primary-400">
+              <span className="rounded bg-primary-500/20 px-1.5 py-0.5 text-xs text-primary-400">
                 Equipped
               </span>
             )}
           </div>
-          <p className="text-sm text-gray-500 truncate">
+          <p className="truncate text-sm text-gray-500">
             {achievement.unlocked || !achievement.isHidden
               ? achievement.description
               : 'Hidden achievement'}
           </p>
           {!achievement.unlocked && achievement.maxProgress > 1 && (
             <div className="mt-2 flex items-center gap-2">
-              <div className="flex-1 h-1.5 bg-dark-600 rounded-full overflow-hidden">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-dark-600">
                 <div
                   className="h-full rounded-full transition-all"
                   style={{
@@ -521,7 +522,7 @@ function AchievementCard({
 
         <div className="flex items-center gap-3">
           <span
-            className="text-xs font-medium uppercase px-2 py-1 rounded-lg"
+            className="rounded-lg px-2 py-1 text-xs font-medium uppercase"
             style={{
               backgroundColor: `${colors.primary}20`,
               color: colors.primary,
@@ -533,9 +534,9 @@ function AchievementCard({
           {achievement.unlocked && onEquip && !isEquipped && (
             <motion.button
               className={cn(
-                'px-3 py-1.5 rounded-lg text-sm font-medium',
+                'rounded-lg px-3 py-1.5 text-sm font-medium',
                 'bg-primary-500/20 text-primary-400',
-                'hover:bg-primary-500/30 transition-colors'
+                'transition-colors hover:bg-primary-500/30'
               )}
               onClick={(e) => {
                 e.stopPropagation();
@@ -556,10 +557,10 @@ function AchievementCard({
   return (
     <motion.div
       className={cn(
-        'relative p-4 rounded-xl',
-        'bg-dark-800/50 border border-white/5',
-        'hover:bg-dark-700/50 hover:border-white/10',
-        'transition-all cursor-pointer',
+        'relative rounded-xl p-4',
+        'border border-white/5 bg-dark-800/50',
+        'hover:border-white/10 hover:bg-dark-700/50',
+        'cursor-pointer transition-all',
         'flex flex-col items-center text-center'
       )}
       initial={{ opacity: 0, scale: 0.9 }}
@@ -570,8 +571,8 @@ function AchievementCard({
     >
       {/* Equipped indicator */}
       {isEquipped && (
-        <div className="absolute top-2 right-2">
-          <CheckCircleIcon className="w-4 h-4 text-primary-400" />
+        <div className="absolute right-2 top-2">
+          <CheckCircleIcon className="h-4 w-4 text-primary-400" />
         </div>
       )}
 
@@ -584,16 +585,18 @@ function AchievementCard({
       />
 
       {/* Title */}
-      <h3 className={cn(
-        'mt-3 font-semibold text-sm truncate w-full',
-        achievement.unlocked ? 'text-white' : 'text-gray-400'
-      )}>
+      <h3
+        className={cn(
+          'mt-3 w-full truncate text-sm font-semibold',
+          achievement.unlocked ? 'text-white' : 'text-gray-400'
+        )}
+      >
         {achievement.unlocked || !achievement.isHidden ? achievement.title : '???'}
       </h3>
 
       {/* Rarity */}
       <span
-        className="mt-1 text-[10px] font-medium uppercase px-1.5 py-0.5 rounded"
+        className="mt-1 rounded px-1.5 py-0.5 text-[10px] font-medium uppercase"
         style={{
           backgroundColor: `${colors.primary}20`,
           color: colors.primary,
@@ -604,8 +607,8 @@ function AchievementCard({
 
       {/* Progress bar (if in progress) */}
       {!achievement.unlocked && achievement.maxProgress > 1 && progress > 0 && (
-        <div className="w-full mt-2">
-          <div className="h-1 bg-dark-600 rounded-full overflow-hidden">
+        <div className="mt-2 w-full">
+          <div className="h-1 overflow-hidden rounded-full bg-dark-600">
             <div
               className="h-full rounded-full transition-all"
               style={{
@@ -614,7 +617,7 @@ function AchievementCard({
               }}
             />
           </div>
-          <span className="text-[10px] text-gray-500 mt-0.5">
+          <span className="mt-0.5 text-[10px] text-gray-500">
             {achievement.progress}/{achievement.maxProgress}
           </span>
         </div>

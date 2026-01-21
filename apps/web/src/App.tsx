@@ -294,6 +294,9 @@ export default function App() {
           {/* Public landing page - GAMELAND-style */}
           <Route path="/" element={<LandingDemo />} />
 
+          {/* Alternative GSAP landing page */}
+          <Route path="/landing" element={<LandingPage />} />
+
           {/* Legal pages - public access */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />

@@ -1552,12 +1552,13 @@ function MessageBubble({
  *
  * @param messageId - The ID of the message to react to
  * @param emoji - The emoji to add as reaction
- * @param _conversationId - Reserved for conversation context (unused currently)
+ * @param conversationId - Reserved for conversation-specific reaction handling
  */
 async function handleAddReaction(
   messageId: string,
   emoji: string,
-  _conversationId?: string
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  conversationId?: string
 ): Promise<void> {
   try {
     const { addReaction } = useChatStore.getState();

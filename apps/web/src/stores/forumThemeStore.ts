@@ -41,14 +41,7 @@ export type ForumTitleAnimation =
   | 'neon-flicker'
   | 'matrix';
 
-export type RoleBadgeStyle =
-  | 'none'
-  | 'pill'
-  | 'shield'
-  | 'crown'
-  | 'star'
-  | 'diamond'
-  | 'custom';
+export type RoleBadgeStyle = 'none' | 'pill' | 'shield' | 'crown' | 'star' | 'diamond' | 'custom';
 
 export interface ForumThemeColors {
   // Primary colors
@@ -132,7 +125,10 @@ export interface ForumTheme {
 
 // ==================== PRESET THEMES ====================
 
-export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>> = {
+export const FORUM_THEME_PRESETS: Record<
+  ForumThemePreset,
+  Omit<ForumTheme, 'id' | 'createdAt' | 'updatedAt' | 'createdBy'>
+> = {
   'classic-mybb': {
     name: 'Classic MyBB',
     preset: 'classic-mybb',
@@ -176,9 +172,30 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
     },
     roleStyles: [
       { id: 'member', name: 'Member', color: '#616161', badgeStyle: 'none', glowEffect: false },
-      { id: 'mod', name: 'Moderator', color: '#388E3C', badgeStyle: 'shield', glowEffect: false, animation: 'none' },
-      { id: 'admin', name: 'Admin', color: '#D32F2F', badgeStyle: 'crown', glowEffect: true, animation: 'pulse' },
-      { id: 'owner', name: 'Owner', color: '#7B1FA2', badgeStyle: 'diamond', glowEffect: true, animation: 'shimmer' },
+      {
+        id: 'mod',
+        name: 'Moderator',
+        color: '#388E3C',
+        badgeStyle: 'shield',
+        glowEffect: false,
+        animation: 'none',
+      },
+      {
+        id: 'admin',
+        name: 'Admin',
+        color: '#D32F2F',
+        badgeStyle: 'crown',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'owner',
+        name: 'Owner',
+        color: '#7B1FA2',
+        badgeStyle: 'diamond',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
     ],
     customCss: '',
     isPublic: true,
@@ -228,15 +245,36 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
     },
     roleStyles: [
       { id: 'member', name: 'Member', color: '#B3B3B3', badgeStyle: 'pill', glowEffect: false },
-      { id: 'mod', name: 'Moderator', color: '#03DAC6', badgeStyle: 'shield', glowEffect: true, animation: 'pulse' },
-      { id: 'admin', name: 'Admin', color: '#CF6679', badgeStyle: 'crown', glowEffect: true, animation: 'shimmer' },
-      { id: 'owner', name: 'Owner', color: '#BB86FC', badgeStyle: 'diamond', glowEffect: true, animation: 'rainbow' },
+      {
+        id: 'mod',
+        name: 'Moderator',
+        color: '#03DAC6',
+        badgeStyle: 'shield',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'admin',
+        name: 'Admin',
+        color: '#CF6679',
+        badgeStyle: 'crown',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
+      {
+        id: 'owner',
+        name: 'Owner',
+        color: '#BB86FC',
+        badgeStyle: 'diamond',
+        glowEffect: true,
+        animation: 'rainbow',
+      },
     ],
     customCss: '',
     isPublic: true,
   },
 
-  'cyberpunk': {
+  cyberpunk: {
     name: 'Cyberpunk 2077',
     preset: 'cyberpunk',
     colors: {
@@ -280,9 +318,30 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
     },
     roleStyles: [
       { id: 'member', name: 'Citizen', color: '#888899', badgeStyle: 'pill', glowEffect: false },
-      { id: 'mod', name: 'NetRunner', color: '#00FF88', badgeStyle: 'shield', glowEffect: true, animation: 'pulse' },
-      { id: 'admin', name: 'Corpo', color: '#FF00FF', badgeStyle: 'star', glowEffect: true, animation: 'shimmer' },
-      { id: 'owner', name: 'Legend', color: '#FCEE0A', badgeStyle: 'diamond', glowEffect: true, animation: 'rainbow' },
+      {
+        id: 'mod',
+        name: 'NetRunner',
+        color: '#00FF88',
+        badgeStyle: 'shield',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'admin',
+        name: 'Corpo',
+        color: '#FF00FF',
+        badgeStyle: 'star',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
+      {
+        id: 'owner',
+        name: 'Legend',
+        color: '#FCEE0A',
+        badgeStyle: 'diamond',
+        glowEffect: true,
+        animation: 'rainbow',
+      },
     ],
     customCss: `
       /* Cyberpunk scanlines */
@@ -348,10 +407,37 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
       height: 200,
     },
     roleStyles: [
-      { id: 'member', name: 'Adventurer', color: '#5D4037', badgeStyle: 'shield', glowEffect: false },
-      { id: 'mod', name: 'Knight', color: '#228B22', badgeStyle: 'shield', glowEffect: false, animation: 'none' },
-      { id: 'admin', name: 'Archmage', color: '#8B0000', badgeStyle: 'star', glowEffect: true, animation: 'pulse' },
-      { id: 'owner', name: 'Guild Master', color: '#DAA520', badgeStyle: 'crown', glowEffect: true, animation: 'shimmer' },
+      {
+        id: 'member',
+        name: 'Adventurer',
+        color: '#5D4037',
+        badgeStyle: 'shield',
+        glowEffect: false,
+      },
+      {
+        id: 'mod',
+        name: 'Knight',
+        color: '#228B22',
+        badgeStyle: 'shield',
+        glowEffect: false,
+        animation: 'none',
+      },
+      {
+        id: 'admin',
+        name: 'Archmage',
+        color: '#8B0000',
+        badgeStyle: 'star',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'owner',
+        name: 'Guild Master',
+        color: '#DAA520',
+        badgeStyle: 'crown',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
     ],
     customCss: '',
     isPublic: true,
@@ -452,9 +538,30 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
     },
     roleStyles: [
       { id: 'member', name: 'Player 1', color: '#888899', badgeStyle: 'pill', glowEffect: false },
-      { id: 'mod', name: 'Game Master', color: '#00FF80', badgeStyle: 'star', glowEffect: true, animation: 'pulse' },
-      { id: 'admin', name: 'Boss', color: '#FF0080', badgeStyle: 'crown', glowEffect: true, animation: 'pulse' },
-      { id: 'owner', name: 'Final Boss', color: '#FFFF00', badgeStyle: 'crown', glowEffect: true, animation: 'rainbow' },
+      {
+        id: 'mod',
+        name: 'Game Master',
+        color: '#00FF80',
+        badgeStyle: 'star',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'admin',
+        name: 'Boss',
+        color: '#FF0080',
+        badgeStyle: 'crown',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'owner',
+        name: 'Final Boss',
+        color: '#FFFF00',
+        badgeStyle: 'crown',
+        glowEffect: true,
+        animation: 'rainbow',
+      },
     ],
     customCss: `
       /* Pixel-perfect borders */
@@ -507,9 +614,30 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
     },
     roleStyles: [
       { id: 'member', name: 'Bluepill', color: '#008F11', badgeStyle: 'pill', glowEffect: false },
-      { id: 'mod', name: 'Operator', color: '#00FF41', badgeStyle: 'shield', glowEffect: true, animation: 'pulse' },
-      { id: 'admin', name: 'The One', color: '#FFFFFF', badgeStyle: 'star', glowEffect: true, animation: 'shimmer' },
-      { id: 'owner', name: 'Architect', color: '#00FFFF', badgeStyle: 'diamond', glowEffect: true, animation: 'rainbow' },
+      {
+        id: 'mod',
+        name: 'Operator',
+        color: '#00FF41',
+        badgeStyle: 'shield',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'admin',
+        name: 'The One',
+        color: '#FFFFFF',
+        badgeStyle: 'star',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
+      {
+        id: 'owner',
+        name: 'Architect',
+        color: '#00FFFF',
+        badgeStyle: 'diamond',
+        glowEffect: true,
+        animation: 'rainbow',
+      },
     ],
     customCss: `
       /* Matrix rain effect handled by particle system */
@@ -560,9 +688,30 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
     },
     roleStyles: [
       { id: 'member', name: 'Member', color: '#AA8899', badgeStyle: 'pill', glowEffect: false },
-      { id: 'mod', name: 'Guardian', color: '#6BCB77', badgeStyle: 'shield', glowEffect: true, animation: 'pulse' },
-      { id: 'admin', name: 'Sentinel', color: '#FF6B6B', badgeStyle: 'star', glowEffect: true, animation: 'shimmer' },
-      { id: 'owner', name: 'Luminary', color: '#FFD93D', badgeStyle: 'crown', glowEffect: true, animation: 'rainbow' },
+      {
+        id: 'mod',
+        name: 'Guardian',
+        color: '#6BCB77',
+        badgeStyle: 'shield',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'admin',
+        name: 'Sentinel',
+        color: '#FF6B6B',
+        badgeStyle: 'star',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
+      {
+        id: 'owner',
+        name: 'Luminary',
+        color: '#FFD93D',
+        badgeStyle: 'crown',
+        glowEffect: true,
+        animation: 'rainbow',
+      },
     ],
     customCss: '',
     isPublic: true,
@@ -612,15 +761,36 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
     },
     roleStyles: [
       { id: 'member', name: 'Wanderer', color: '#4A6FA5', badgeStyle: 'pill', glowEffect: false },
-      { id: 'mod', name: 'Frostguard', color: '#48CAE4', badgeStyle: 'shield', glowEffect: true, animation: 'pulse' },
-      { id: 'admin', name: 'Ice Warden', color: '#90E0EF', badgeStyle: 'star', glowEffect: true, animation: 'shimmer' },
-      { id: 'owner', name: 'Frost King', color: '#CAF0F8', badgeStyle: 'crown', glowEffect: true, animation: 'shimmer' },
+      {
+        id: 'mod',
+        name: 'Frostguard',
+        color: '#48CAE4',
+        badgeStyle: 'shield',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'admin',
+        name: 'Ice Warden',
+        color: '#90E0EF',
+        badgeStyle: 'star',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
+      {
+        id: 'owner',
+        name: 'Frost King',
+        color: '#CAF0F8',
+        badgeStyle: 'crown',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
     ],
     customCss: '',
     isPublic: true,
   },
 
-  'volcanic': {
+  volcanic: {
     name: 'Volcanic',
     preset: 'volcanic',
     colors: {
@@ -664,15 +834,36 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
     },
     roleStyles: [
       { id: 'member', name: 'Ash Walker', color: '#8B4513', badgeStyle: 'pill', glowEffect: false },
-      { id: 'mod', name: 'Flame Keeper', color: '#FF6B00', badgeStyle: 'shield', glowEffect: true, animation: 'pulse' },
-      { id: 'admin', name: 'Inferno Lord', color: '#FF4500', badgeStyle: 'star', glowEffect: true, animation: 'shimmer' },
-      { id: 'owner', name: 'Volcano King', color: '#FFD700', badgeStyle: 'crown', glowEffect: true, animation: 'rainbow' },
+      {
+        id: 'mod',
+        name: 'Flame Keeper',
+        color: '#FF6B00',
+        badgeStyle: 'shield',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'admin',
+        name: 'Inferno Lord',
+        color: '#FF4500',
+        badgeStyle: 'star',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
+      {
+        id: 'owner',
+        name: 'Volcano King',
+        color: '#FFD700',
+        badgeStyle: 'crown',
+        glowEffect: true,
+        animation: 'rainbow',
+      },
     ],
     customCss: '',
     isPublic: true,
   },
 
-  'custom': {
+  custom: {
     name: 'Custom Theme',
     preset: 'custom',
     colors: {
@@ -715,9 +906,30 @@ export const FORUM_THEME_PRESETS: Record<ForumThemePreset, Omit<ForumTheme, 'id'
     },
     roleStyles: [
       { id: 'member', name: 'Member', color: '#a3a3a3', badgeStyle: 'none', glowEffect: false },
-      { id: 'mod', name: 'Moderator', color: '#22c55e', badgeStyle: 'shield', glowEffect: true, animation: 'pulse' },
-      { id: 'admin', name: 'Admin', color: '#ef4444', badgeStyle: 'crown', glowEffect: true, animation: 'shimmer' },
-      { id: 'owner', name: 'Owner', color: '#eab308', badgeStyle: 'diamond', glowEffect: true, animation: 'rainbow' },
+      {
+        id: 'mod',
+        name: 'Moderator',
+        color: '#22c55e',
+        badgeStyle: 'shield',
+        glowEffect: true,
+        animation: 'pulse',
+      },
+      {
+        id: 'admin',
+        name: 'Admin',
+        color: '#ef4444',
+        badgeStyle: 'crown',
+        glowEffect: true,
+        animation: 'shimmer',
+      },
+      {
+        id: 'owner',
+        name: 'Owner',
+        color: '#eab308',
+        badgeStyle: 'diamond',
+        glowEffect: true,
+        animation: 'rainbow',
+      },
     ],
     customCss: '',
     isPublic: false,
@@ -773,7 +985,7 @@ export const useForumThemeStore = create<ForumThemeState>()(
         try {
           const response = await api.get(`/api/v1/forums/${forumId}/theme`);
           set({ activeTheme: response.data, isLoading: false });
-        } catch (error) {
+        } catch (_error) {
           // Use default theme if API fails
           const defaultTheme: ForumTheme = {
             id: `${forumId}-default`,
@@ -799,7 +1011,7 @@ export const useForumThemeStore = create<ForumThemeState>()(
           };
           await api.put(`/api/v1/forums/${forumId}/theme`, updatedTheme);
           set({ activeTheme: updatedTheme, isSaving: false });
-        } catch (error) {
+        } catch (_error) {
           // Apply optimistically
           set((state) => ({
             activeTheme: state.activeTheme ? { ...state.activeTheme, ...themeUpdates } : null,

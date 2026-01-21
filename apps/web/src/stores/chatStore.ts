@@ -490,7 +490,7 @@ export const useChatStore = create<ChatState>()(
               conv.id === conversationId ? { ...conv, unreadCount: 0 } : conv
             ),
           }));
-        } catch (error) {
+        } catch (_error) {
           // Ignore read receipt errors
         }
       },

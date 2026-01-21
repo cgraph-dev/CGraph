@@ -1,6 +1,6 @@
 /**
  * Animation Presets Library
- * 
+ *
  * Centralized animation configurations for consistent, smooth animations
  * across the entire application. Matches the landing page's animation quality.
  */
@@ -109,7 +109,14 @@ export const entranceVariants: Record<string, Variants> = {
   },
   blur: {
     hidden: { opacity: 0, filter: 'blur(10px)' },
-    visible: { opacity: 1, filter: 'blur(0px)', transition: { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number] } },
+    visible: {
+      opacity: 1,
+      filter: 'blur(0px)',
+      transition: {
+        duration: 0.5,
+        ease: [0.25, 0.46, 0.45, 0.94] as [number, number, number, number],
+      },
+    },
   },
 };
 
@@ -118,17 +125,37 @@ export const entranceVariants: Record<string, Variants> = {
 // =============================================================================
 
 // Chat bubble style types - matches app bubble IDs
-export type ChatBubbleStyleId = 
-  | 'bubble-default' | 'bubble-pill' | 'bubble-sharp' | 'bubble-telegram' 
-  | 'bubble-imessage' | 'bubble-discord' | 'bubble-whatsapp' | 'bubble-retro'
-  | 'bubble-neon' | 'bubble-minimal' | 'bubble-cloud' | 'bubble-modern'
-  | 'rounded' | 'sharp' | 'cloud' | 'modern' | 'retro' | 'default';
+export type ChatBubbleStyleId =
+  | 'bubble-default'
+  | 'bubble-pill'
+  | 'bubble-sharp'
+  | 'bubble-telegram'
+  | 'bubble-imessage'
+  | 'bubble-discord'
+  | 'bubble-whatsapp'
+  | 'bubble-retro'
+  | 'bubble-neon'
+  | 'bubble-minimal'
+  | 'bubble-cloud'
+  | 'bubble-modern'
+  | 'rounded'
+  | 'sharp'
+  | 'cloud'
+  | 'modern'
+  | 'retro'
+  | 'default';
 
-export const chatBubbleAnimations: Record<string, (isOwn: boolean, delay: number) => {
-  initial: TargetAndTransition;
-  animate: TargetAndTransition;
-  transition: Transition;
-}> = {
+export const chatBubbleAnimations: Record<
+  string,
+  (
+    isOwn: boolean,
+    delay: number
+  ) => {
+    initial: TargetAndTransition;
+    animate: TargetAndTransition;
+    transition: Transition;
+  }
+> = {
   // Standard style names
   rounded: (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, scale: 0.8, y: 20 },
@@ -160,7 +187,7 @@ export const chatBubbleAnimations: Record<string, (isOwn: boolean, delay: number
     animate: { opacity: 1, y: 0 },
     transition: { delay, ...springs.default },
   }),
-  
+
   // App-specific bubble IDs (mapped to animations)
   'bubble-default': (_isOwn: boolean, delay: number) => ({
     initial: { opacity: 0, scale: 0.8, y: 20 },
@@ -238,7 +265,7 @@ export const hoverAnimations = {
     whileTap: { scale: 0.95 },
   },
   glow: (color: string) => ({
-    whileHover: { 
+    whileHover: {
       boxShadow: `0 0 30px ${color}60`,
       transition: springs.snappy,
     },
@@ -257,10 +284,11 @@ export const hoverAnimations = {
 // =============================================================================
 
 export const createPulseAnimation = (color: string, intensity: 'subtle' | 'strong' = 'subtle') => {
-  const values = intensity === 'subtle' 
-    ? { min: 10, max: 20, opacity: ['30', '50', '30'] }
-    : { min: 15, max: 30, opacity: ['40', '60', '40'] };
-  
+  const values =
+    intensity === 'subtle'
+      ? { min: 10, max: 20, opacity: ['30', '50', '30'] }
+      : { min: 15, max: 30, opacity: ['40', '60', '40'] };
+
   return {
     animate: {
       boxShadow: [
@@ -287,11 +315,7 @@ export const createFireAnimation = (colors: string[]) => ({
 
 export const createElectricAnimation = (color: string) => ({
   animate: {
-    boxShadow: [
-      `0 0 5px ${color}`,
-      `0 0 20px ${color}, 0 0 40px ${color}80`,
-      `0 0 5px ${color}`,
-    ],
+    boxShadow: [`0 0 5px ${color}`, `0 0 20px ${color}, 0 0 40px ${color}80`, `0 0 5px ${color}`],
   },
   transition: { duration: 0.1, repeat: Infinity, repeatDelay: 0.5 },
 });
@@ -363,7 +387,7 @@ export const backgroundAnimations = {
     },
     transition: { duration: 6, repeat: Infinity, ease: 'linear' as const },
   }),
-  pulse: (_color: string) => ({
+  pulse: (/* color: string - reserved for color-based pulse variants */) => ({
     animate: {
       opacity: [0.5, 0.8, 0.5],
       scale: [1, 1.02, 1],
@@ -379,7 +403,10 @@ export const backgroundAnimations = {
 /**
  * Get a staggered delay for child elements
  */
-export const getStaggerDelay = (index: number, config: keyof typeof staggerConfigs = 'standard') => {
+export const getStaggerDelay = (
+  index: number,
+  config: keyof typeof staggerConfigs = 'standard'
+) => {
   const stagger = staggerConfigs[config];
   return stagger.delayChildren + index * stagger.staggerChildren;
 };

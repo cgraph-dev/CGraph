@@ -1009,7 +1009,7 @@ export const useProfileThemeStore = create<ProfileThemeState>()(
           const layoutKey = (theme.cardLayout as ProfileCardLayout) || 'detailed';
           const cardConfig = PROFILE_CARD_CONFIGS[layoutKey] || PROFILE_CARD_CONFIGS.detailed;
           set({ theme, cardConfig, isLoading: false });
-        } catch (error) {
+        } catch (_error) {
           // Use default theme
           const defaultTheme: ProfileTheme = {
             id: 'default',
@@ -1042,7 +1042,7 @@ export const useProfileThemeStore = create<ProfileThemeState>()(
           };
           await api.put('/api/v1/users/me/profile-theme', updatedTheme);
           set({ theme: updatedTheme, isSaving: false });
-        } catch (error) {
+        } catch (_error) {
           // Apply optimistically
           set((state) => ({
             theme: state.theme ? { ...state.theme, ...updates } : null,
