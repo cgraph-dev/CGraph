@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircleIcon,
@@ -6,6 +6,7 @@ import {
   MagnifyingGlassIcon,
   SparklesIcon,
   XMarkIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 
 // Reserved for future use
@@ -16,7 +17,29 @@ import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useCustomizationStore } from '@/stores/customizationStore';
+import { useCustomizationStoreV2, type AvatarBorderType } from '@/stores/customizationStoreV2';
 import toast from 'react-hot-toast';
+
+// Import border collections
+import {
+  ALL_BORDERS,
+  BORDER_THEMES,
+  getBordersByTheme,
+  type BorderTheme,
+  type BorderRarity,
+  RARITY_COLORS as _RARITY_COLORS,
+  RARITY_ORDER as _RARITY_ORDER,
+} from '@/data/borderCollections';
+
+// Reserved for future use
+void _RARITY_COLORS;
+void _RARITY_ORDER;
+
+// Import reusable components (reserved for future modular refactoring)
+import _ThemeGridPicker from '@/components/customize/ThemeGridPicker';
+import ThemedBorderCard, { BorderCardGrid as _BorderCardGrid } from '@/components/customize/ThemedBorderCard';
+void _ThemeGridPicker;
+void _BorderCardGrid;
 
 /**
  * IdentityCustomization Component
@@ -407,6 +430,28 @@ const PROFILE_LAYOUTS: ProfileLayout[] = [
 
 // ==================== MAIN COMPONENT ====================
 
+// Border ID to V2 avatar border type mapping
+const BORDER_ID_TO_V2_TYPE: Record<string, AvatarBorderType> = {
+  'b1': 'static',
+  'b2': 'static',
+  'b3': 'static',
+  'b4': 'static',
+  'b5': 'pulse',
+  'b6': 'rotate',
+  'b7': 'glow',
+  'b8': 'electric',
+  'b9': 'rotate',
+  'b10': 'fire',
+  'b11': 'ice',
+  'b12': 'glow',
+  'b13': 'fire',
+  'b14': 'legendary',
+  'b15': 'mythic',
+  'b16': 'fire',
+  'b17': 'mythic',
+  'b18': 'legendary',
+};
+
 export default function IdentityCustomization() {
   const { user } = useAuthStore();
   const { level: _level } = useGamificationStore();
@@ -423,18 +468,25 @@ export default function IdentityCustomization() {
     updateIdentity,
   } = useCustomizationStore();
 
+  // V2 store for live preview sync
+  const v2Store = useCustomizationStoreV2();
+
   const [activeSection, setActiveSection] = useState<'borders' | 'titles' | 'badges' | 'layouts'>(
     'borders'
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRarity, setSelectedRarity] = useState<Rarity | 'all'>('all');
+  
+  // Track if user is previewing a locked/premium item
+  const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
 
   // Fetch customizations on mount
   useEffect(() => {
     if (user?.id) {
       fetchCustomizations(user.id);
     }
-  }, [user?.id, fetchCustomizations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
 
   // Filter borders by search and rarity
   const filteredBorders = MOCK_BORDERS.filter((border) => {
@@ -455,34 +507,114 @@ export default function IdentityCustomization() {
     return matchesSearch && matchesRarity;
   });
 
-  const handleEquipBorder = (borderId: string) => {
+  // Sync border selection to V2 store for live preview
+  const syncBorderToV2 = useCallback((borderId: string) => {
+    const v2Type = BORDER_ID_TO_V2_TYPE[borderId];
+    if (v2Type) {
+      v2Store.setAvatarBorder(v2Type);
+    }
+    v2Store.selectBorderId(borderId);
+  }, [v2Store]);
+
+  // Sync title selection to V2 store for live preview
+  const syncTitleToV2 = useCallback((titleId: string | null) => {
+    v2Store.setEquippedTitle(titleId);
+  }, [v2Store]);
+
+  // Preview a locked/premium item without saving
+  const handlePreviewItem = useCallback((itemId: string, type: 'border' | 'title') => {
+    setPreviewingLockedItem(itemId);
+    if (type === 'border') {
+      syncBorderToV2(itemId);
+    } else if (type === 'title') {
+      syncTitleToV2(itemId);
+    }
+    toast('👁️ Previewing item - Purchase premium to save', {
+      icon: '✨',
+      duration: 3000,
+    });
+  }, [syncBorderToV2, syncTitleToV2]);
+
+  // Clear preview when changing sections
+  const clearPreview = useCallback(() => {
+    if (previewingLockedItem) {
+      setPreviewingLockedItem(null);
+      // Restore original selections
+      if (avatarBorder) syncBorderToV2(avatarBorder);
+      if (title) syncTitleToV2(title);
+    }
+  }, [previewingLockedItem, avatarBorder, title, syncBorderToV2, syncTitleToV2]);
+
+  const handleEquipBorder = (borderId: string, border: Border) => {
+    // Check if item is locked
+    if (!border.unlocked) {
+      handlePreviewItem(borderId, 'border');
+      return;
+    }
+    
+    clearPreview();
     updateIdentity('avatarBorder', borderId);
+    syncBorderToV2(borderId);
   };
 
-  const handleEquipTitle = (titleId: string) => {
+  const handleEquipTitle = (titleId: string, titleItem: Title) => {
+    // Check if item is locked
+    if (!titleItem.unlocked) {
+      handlePreviewItem(titleId, 'title');
+      return;
+    }
+    
+    clearPreview();
     updateIdentity('title', titleId);
+    syncTitleToV2(titleId);
   };
 
-  const handleToggleBadge = (badgeId: string) => {
+  const handleToggleBadge = (badgeId: string, badge: Badge) => {
+    // Check if item is locked
+    if (!badge.unlocked) {
+      toast.error(`Unlock required: ${badge.unlockRequirement}`);
+      return;
+    }
+    
     if (equippedBadges.includes(badgeId)) {
-      updateIdentity(
-        'equippedBadges',
-        equippedBadges.filter((id) => id !== badgeId)
-      );
+      const newBadges = equippedBadges.filter((id) => id !== badgeId);
+      updateIdentity('equippedBadges', newBadges);
+      v2Store.setEquippedBadges(newBadges);
     } else if (equippedBadges.length < 5) {
-      updateIdentity('equippedBadges', [...equippedBadges, badgeId]);
+      const newBadges = [...equippedBadges, badgeId];
+      updateIdentity('equippedBadges', newBadges);
+      v2Store.setEquippedBadges(newBadges);
     } else {
       toast.error('Maximum 5 badges can be equipped');
     }
   };
 
-  const handleSelectLayout = (layoutId: string) => {
+  const handleSelectLayout = (layoutId: string, layout: ProfileLayout) => {
+    // Check if item is locked
+    if (!layout.unlocked) {
+      toast('👁️ Previewing layout - Premium required to use', {
+        icon: '✨',
+        duration: 3000,
+      });
+      return;
+    }
+    
     updateIdentity('profileLayout', layoutId);
+    v2Store.setProfileCardStyle(layoutId as any);
   };
 
   const handleSaveChanges = async () => {
     if (!user?.id) {
       toast.error('User not authenticated');
+      return;
+    }
+
+    // Check if user is trying to save a previewing locked item
+    if (previewingLockedItem) {
+      toast.error('🔒 Premium item selected! Purchase premium to save these customizations.', {
+        duration: 4000,
+        icon: '💎',
+      });
       return;
     }
 
@@ -569,8 +701,8 @@ export default function IdentityCustomization() {
             <BordersSection
               borders={filteredBorders}
               selectedBorder={avatarBorder}
+              previewingBorder={previewingLockedItem}
               onEquip={handleEquipBorder}
-              getRarityColor={getRarityColor}
             />
           )}
 
@@ -578,6 +710,7 @@ export default function IdentityCustomization() {
             <TitlesSection
               titles={filteredTitles}
               selectedTitle={title}
+              previewingTitle={previewingLockedItem}
               onEquip={handleEquipTitle}
             />
           )}
@@ -653,82 +786,179 @@ export default function IdentityCustomization() {
 interface BordersSectionProps {
   borders: Border[];
   selectedBorder: string | null;
-  onEquip: (borderId: string) => void;
-  getRarityColor: (rarity: Rarity) => string;
+  previewingBorder: string | null;
+  onEquip: (borderId: string, border: Border) => void;
+  // Reserved for future use when we add rarity-based styling
 }
 
-function BordersSection({ borders, selectedBorder, onEquip, getRarityColor }: BordersSectionProps) {
+function BordersSection({ borders, selectedBorder, previewingBorder, onEquip }: BordersSectionProps) {
+  const [selectedTheme, setSelectedTheme] = useState<BorderTheme | 'all'>('all');
+  const [showAnimations, setShowAnimations] = useState(true);
+  
+  // Get borders from the new collection system
+  const themedBorders = useMemo(() => {
+    if (selectedTheme === 'all') {
+      return ALL_BORDERS;
+    }
+    return getBordersByTheme(selectedTheme);
+  }, [selectedTheme]);
+  
+  // Filter by search query from parent (using the borders prop for search results)
+  const displayBorders = useMemo(() => {
+    // If there's a search active (borders.length < total), use that
+    if (borders.length < MOCK_BORDERS.length) {
+      // Map old borders to new format for display
+      return borders.map(b => ({
+        ...themedBorders.find(tb => tb.name.toLowerCase().includes(b.name.toLowerCase())) || {
+          id: b.id,
+          name: b.name,
+          theme: 'elemental' as BorderTheme,
+          rarity: b.rarity as BorderRarity,
+          animationType: b.animation as any,
+          colors: b.colors,
+          isPremium: !b.unlocked,
+          unlocked: b.unlocked,
+          unlockRequirement: b.unlockRequirement,
+          description: `${b.rarity} border`,
+        },
+      }));
+    }
+    return themedBorders;
+  }, [borders, themedBorders]);
+  
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {borders.map((border, index) => (
-        <motion.div
-          key={border.id}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: index * 0.02 }}
+    <div className="space-y-6">
+      {/* Theme Category Selector */}
+      <div className="flex flex-wrap gap-2">
+        <motion.button
+          onClick={() => setSelectedTheme('all')}
+          className={`
+            flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm
+            transition-all duration-200
+            ${selectedTheme === 'all' 
+              ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white shadow-lg shadow-primary-500/25' 
+              : 'bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white border border-white/10'
+            }
+          `}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <GlassCard
-            variant={border.unlocked ? 'crystal' : ('frosted' as const)}
-            glow={selectedBorder === border.id}
-            glowColor={border.unlocked ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative cursor-pointer p-4 transition-all ${
-              border.unlocked ? 'hover:scale-105' : 'cursor-not-allowed opacity-60'
-            }`}
-            onClick={() => border.unlocked && onEquip(border.id)}
+          <span>✨</span>
+          <span>All Borders</span>
+          <span className="text-xs opacity-70">({ALL_BORDERS.length})</span>
+        </motion.button>
+        
+        {BORDER_THEMES.map((theme) => (
+          <motion.button
+            key={theme.id}
+            onClick={() => setSelectedTheme(theme.id)}
+            className={`
+              flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm
+              transition-all duration-200
+              ${selectedTheme === theme.id 
+                ? 'text-white shadow-lg' 
+                : 'bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white border border-white/10'
+              }
+            `}
+            style={{
+              background: selectedTheme === theme.id 
+                ? `linear-gradient(135deg, ${theme.accentColor}cc, ${theme.accentColor}66)`
+                : undefined,
+              boxShadow: selectedTheme === theme.id 
+                ? `0 4px 20px ${theme.accentColor}40`
+                : undefined,
+            }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
           >
-            {/* Border Preview */}
-            <div className="relative mb-3 aspect-square overflow-hidden rounded-full bg-gradient-to-br from-dark-700 to-dark-800">
-              <div
-                className="absolute inset-0 rounded-full border-4"
-                style={{
-                  borderColor: border.colors[0],
-                  background:
-                    border.colors.length > 1
-                      ? `linear-gradient(135deg, ${border.colors.join(', ')})`
-                      : undefined,
-                  backgroundClip: 'border-box',
-                }}
-              />
-              {/* Mock avatar */}
-              <div className="absolute inset-2 flex items-center justify-center rounded-full bg-dark-600 text-2xl">
-                👤
-              </div>
-            </div>
-
-            {/* Border Name */}
-            <h4 className="mb-1 truncate text-center text-sm font-semibold text-white">
-              {border.name}
-            </h4>
-
-            {/* Rarity */}
-            <p className={`mb-2 text-center text-xs ${getRarityColor(border.rarity)}`}>
-              {border.rarity.charAt(0).toUpperCase() + border.rarity.slice(1)}
-            </p>
-
-            {/* Status Indicator */}
-            {border.unlocked ? (
-              selectedBorder === border.id ? (
-                <div className="flex items-center justify-center gap-1 text-xs text-green-400">
-                  <CheckCircleIconSolid className="h-4 w-4" />
-                  <span>Equipped</span>
-                </div>
-              ) : (
-                <div className="text-center text-xs text-white/60">Click to equip</div>
-              )
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
-                <LockClosedIcon className="mb-2 h-8 w-8 text-white/40" />
-                <p className="px-2 text-center text-xs text-white/60">{border.unlockRequirement}</p>
-              </div>
-            )}
-          </GlassCard>
-        </motion.div>
-      ))}
-
-      {borders.length === 0 && (
-        <div className="col-span-4 py-12 text-center text-white/60">
-          No borders found matching your search.
+            <span>{theme.icon}</span>
+            <span>{theme.name}</span>
+            <span className="text-xs opacity-70">({theme.borderCount})</span>
+          </motion.button>
+        ))}
+      </div>
+      
+      {/* Controls Row */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showAnimations}
+              onChange={(e) => setShowAnimations(e.target.checked)}
+              className="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+            />
+            Show Animations
+          </label>
         </div>
+        <div className="text-sm text-gray-500">
+          Showing {displayBorders.length} borders
+        </div>
+      </div>
+      
+      {/* Borders Grid */}
+      <motion.div 
+        className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
+        layout
+      >
+        <AnimatePresence mode="popLayout">
+          {displayBorders.map((border, index) => {
+            const isSelected = selectedBorder === border.id;
+            const isPreviewing = previewingBorder === border.id;
+            
+            return (
+              <motion.div
+                key={border.id}
+                layout
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ 
+                  delay: Math.min(index * 0.02, 0.3),
+                  layout: { duration: 0.3 }
+                }}
+              >
+                <ThemedBorderCard
+                  border={border}
+                  isSelected={isSelected || isPreviewing}
+                  onSelect={() => {
+                    // Map to old border format for handler
+                    const oldBorder: Border = {
+                      id: border.id,
+                      name: border.name,
+                      rarity: border.rarity === 'free' ? 'common' : border.rarity as Rarity,
+                      animation: border.animationType,
+                      colors: border.colors,
+                      unlocked: border.unlocked,
+                      unlockRequirement: border.unlockRequirement,
+                    };
+                    onEquip(border.id, oldBorder);
+                  }}
+                  showAnimation={showAnimations}
+                  size="md"
+                  allowPreview={true}
+                />
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+      </motion.div>
+
+      {displayBorders.length === 0 && (
+        <motion.div 
+          className="col-span-full py-16 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <div className="text-4xl mb-4">🔍</div>
+          <p className="text-gray-400">No borders found matching your filters.</p>
+          <button 
+            onClick={() => setSelectedTheme('all')}
+            className="mt-4 text-primary-400 hover:text-primary-300 text-sm"
+          >
+            View all borders
+          </button>
+        </motion.div>
       )}
     </div>
   );
@@ -737,13 +967,19 @@ function BordersSection({ borders, selectedBorder, onEquip, getRarityColor }: Bo
 interface TitlesSectionProps {
   titles: Title[];
   selectedTitle: string | null;
-  onEquip: (titleId: string) => void;
+  previewingTitle: string | null;
+  onEquip: (titleId: string, title: Title) => void;
 }
 
-function TitlesSection({ titles, selectedTitle, onEquip }: TitlesSectionProps) {
+function TitlesSection({ titles, selectedTitle, previewingTitle, onEquip }: TitlesSectionProps) {
   return (
     <div className="space-y-3">
-      {titles.map((title, index) => (
+      {titles.map((title, index) => {
+        const isSelected = selectedTitle === title.id;
+        const isPreviewing = previewingTitle === title.id;
+        const isActive = isSelected || isPreviewing;
+        
+        return (
         <motion.div
           key={title.id}
           initial={{ opacity: 0, x: -20 }}
@@ -751,14 +987,20 @@ function TitlesSection({ titles, selectedTitle, onEquip }: TitlesSectionProps) {
           transition={{ delay: index * 0.03 }}
         >
           <GlassCard
-            variant={title.unlocked ? 'neon' : ('frosted' as const)}
-            glow={selectedTitle === title.id}
-            glowColor={title.unlocked ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative cursor-pointer p-4 transition-all ${
-              title.unlocked ? 'hover:scale-[1.02]' : 'cursor-not-allowed opacity-60'
-            }`}
-            onClick={() => title.unlocked && onEquip(title.id)}
+            variant={isActive ? 'neon' : 'crystal'}
+            glow={isActive}
+            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.3)' : isSelected ? 'rgba(139, 92, 246, 0.3)' : undefined}
+            className={`relative cursor-pointer p-4 transition-all hover:scale-[1.02]`}
+            onClick={() => onEquip(title.id, title)}
           >
+            {/* Preview indicator for locked items */}
+            {isPreviewing && (
+              <div className="absolute right-4 top-4 z-10 flex items-center gap-1 rounded-full bg-yellow-500 px-2 py-0.5 text-[10px] font-bold text-black">
+                <EyeIcon className="h-3 w-3" />
+                Preview
+              </div>
+            )}
+            
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <h4 className={`mb-1 text-lg font-bold ${title.gradient}`}>{title.name}</h4>
@@ -767,7 +1009,7 @@ function TitlesSection({ titles, selectedTitle, onEquip }: TitlesSectionProps) {
 
               <div className="flex items-center gap-3">
                 {title.unlocked ? (
-                  selectedTitle === title.id ? (
+                  isSelected ? (
                     <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
                       <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
                       <span className="text-sm font-medium text-green-400">Equipped</span>
@@ -777,17 +1019,29 @@ function TitlesSection({ titles, selectedTitle, onEquip }: TitlesSectionProps) {
                       Equip
                     </button>
                   )
+                ) : isPreviewing ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-4 py-2">
+                    <EyeIcon className="h-5 w-5 text-yellow-400" />
+                    <span className="text-sm font-medium text-yellow-400">Previewing</span>
+                  </div>
                 ) : (
                   <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
-                    <LockClosedIcon className="h-5 w-5 text-white/40" />
-                    <span className="text-sm text-white/60">{title.unlockRequirement}</span>
+                    <EyeIcon className="h-5 w-5 text-white/40" />
+                    <span className="text-sm text-white/60">Preview</span>
                   </div>
                 )}
               </div>
             </div>
+            
+            {/* Unlock requirement hint */}
+            {!title.unlocked && !isPreviewing && (
+              <div className="mt-2 text-xs text-white/40">
+                🔒 {title.unlockRequirement}
+              </div>
+            )}
           </GlassCard>
         </motion.div>
-      ))}
+      )})}
 
       {titles.length === 0 && (
         <div className="py-12 text-center text-white/60">No titles found matching your search.</div>
@@ -799,7 +1053,7 @@ function TitlesSection({ titles, selectedTitle, onEquip }: TitlesSectionProps) {
 interface BadgesSectionProps {
   badges: Badge[];
   equippedBadges: string[];
-  onToggle: (badgeId: string) => void;
+  onToggle: (badgeId: string, badge: Badge) => void;
   getRarityColor: (rarity: Rarity) => string;
 }
 
@@ -828,7 +1082,7 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
                   <>
                     <span className="text-4xl">{badge.icon}</span>
                     <button
-                      onClick={() => onToggle(badge.id)}
+                      onClick={() => onToggle(badge.id, badge)}
                       className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
                     >
                       <XMarkIcon className="h-4 w-4" />
@@ -867,7 +1121,7 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
                       ? 'cursor-pointer'
                       : 'cursor-not-allowed opacity-60'
                 }`}
-                onClick={() => (badge.unlocked ? onToggle(badge.id) : null)}
+                onClick={() => onToggle(badge.id, badge)}
               >
                 {/* Badge Icon */}
                 <div className="mb-3 text-center text-5xl">{badge.icon}</div>
@@ -923,7 +1177,7 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
 interface LayoutsSectionProps {
   layouts: ProfileLayout[];
   selectedLayout: string;
-  onSelect: (layoutId: string) => void;
+  onSelect: (layoutId: string, layout: ProfileLayout) => void;
 }
 
 function LayoutsSection({ layouts, selectedLayout, onSelect }: LayoutsSectionProps) {
@@ -940,12 +1194,8 @@ function LayoutsSection({ layouts, selectedLayout, onSelect }: LayoutsSectionPro
             variant={layout.unlocked ? 'neon' : ('frosted' as const)}
             glow={selectedLayout === layout.id}
             glowColor={selectedLayout === layout.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-6 transition-all ${
-              layout.unlocked
-                ? 'cursor-pointer hover:scale-[1.02]'
-                : 'cursor-not-allowed opacity-60'
-            }`}
-            onClick={() => layout.unlocked && onSelect(layout.id)}
+            className={`relative cursor-pointer p-6 transition-all hover:scale-[1.02]`}
+            onClick={() => onSelect(layout.id, layout)}
           >
             {/* Layout Preview */}
             <div className="mb-4 flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-dark-700 to-dark-800">

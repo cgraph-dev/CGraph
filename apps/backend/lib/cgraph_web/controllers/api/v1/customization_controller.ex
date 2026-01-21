@@ -1,4 +1,4 @@
-defmodule CGraphWeb.CustomizationController do
+defmodule CGraphWeb.API.V1.CustomizationController do
   use CGraphWeb, :controller
 
   alias CGraph.Customizations

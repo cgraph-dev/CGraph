@@ -15,40 +15,40 @@ defmodule CGraph.Repo.Migrations.AddForumHierarchy do
     # Add hierarchy fields to forums table
     alter table(:forums) do
       # Parent forum reference for hierarchy
-      add :parent_forum_id, references(:forums, type: :binary_id, on_delete: :nilify_all)
+      add_if_not_exists :parent_forum_id, references(:forums, type: :binary_id, on_delete: :nilify_all)
 
-      # Display order within parent
-      add :display_order, :integer, default: 0
+      # Display order within parent - SKIP: already added in 20260121000001
+      # add :display_order, :integer, default: 0
 
       # Materialized path for efficient tree operations (e.g., "/root-id/parent-id/this-id")
       # Allows O(1) ancestor lookups and efficient subtree queries
-      add :path, :string, default: "/"
+      add_if_not_exists :path, :string, default: "/"
 
       # Depth level for easy depth-limiting (0 = root forum)
-      add :depth, :integer, default: 0
+      add_if_not_exists :depth, :integer, default: 0
 
       # Whether this forum is visible in hierarchy navigation
-      add :show_in_navigation, :boolean, default: true
+      add_if_not_exists :show_in_navigation, :boolean, default: true
 
       # Collapsed by default in navigation (useful for large hierarchies)
-      add :collapsed_by_default, :boolean, default: false
+      add_if_not_exists :collapsed_by_default, :boolean, default: false
 
       # Forum type: 'category' (no posts, just organizes sub-forums), 'forum' (normal), 'link' (redirect)
-      add :forum_type, :string, default: "forum"
+      add_if_not_exists :forum_type, :string, default: "forum"
 
       # Redirect URL for link-type forums
-      add :redirect_url, :string
+      add_if_not_exists :redirect_url, :string
 
       # Number of redirects for link-type forums
-      add :redirect_count, :integer, default: 0
+      add_if_not_exists :redirect_count, :integer, default: 0
 
       # Inherit permissions from parent
-      add :inherit_permissions, :boolean, default: true
+      add_if_not_exists :inherit_permissions, :boolean, default: true
 
       # Aggregate stats including sub-forums
-      add :total_thread_count, :integer, default: 0
-      add :total_post_count, :integer, default: 0
-      add :total_member_count, :integer, default: 0
+      add_if_not_exists :total_thread_count, :integer, default: 0
+      add_if_not_exists :total_post_count, :integer, default: 0
+      add_if_not_exists :total_member_count, :integer, default: 0
     end
 
     # Index for parent lookups

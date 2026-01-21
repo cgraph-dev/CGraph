@@ -285,6 +285,54 @@ defmodule CGraph.Forums do
   end
 
   @doc """
+  Count forums a user has joined (as member, not owner).
+  Used for tier-based forum join limits.
+  """
+  def count_user_joined_forums(user_id) do
+    Repo.aggregate(
+      from(m in ForumMember,
+        where: m.user_id == ^user_id,
+        join: f in Forum, on: f.id == m.forum_id,
+        where: is_nil(f.deleted_at)
+      ),
+      :count,
+      :id
+    )
+  end
+
+  @doc """
+  Count threads created by user today.
+  Used for tier-based daily thread limits.
+  """
+  def count_user_threads_today(user_id) do
+    today_start = Date.utc_today() |> DateTime.new!(~T[00:00:00], "Etc/UTC")
+    
+    Repo.aggregate(
+      from(t in Thread,
+        where: t.user_id == ^user_id and t.inserted_at >= ^today_start
+      ),
+      :count,
+      :id
+    )
+  end
+
+  @doc """
+  Count posts created by user today.
+  Used for tier-based daily post limits.
+  """
+  def count_user_posts_today(user_id) do
+    today_start = Date.utc_today() |> DateTime.new!(~T[00:00:00], "Etc/UTC")
+    
+    Repo.aggregate(
+      from(p in ThreadPost,
+        where: p.user_id == ^user_id and p.inserted_at >= ^today_start
+      ),
+      :count,
+      :id
+    )
+  end
+
+  @doc """
   Create a forum.
   """
   def create_forum(user, attrs) do
@@ -518,6 +566,94 @@ defmodule CGraph.Forums do
       from p in Post,
         join: f in Forum, on: p.forum_id == f.id,
         where: f.is_public == true
+
+    total = Repo.aggregate(total_query, :count, :id)
+
+    posts = query
+      |> limit(^per_page)
+      |> offset(^((page - 1) * per_page))
+      |> Repo.all()
+      |> maybe_add_user_votes(user_id)
+
+    meta = %{page: page, per_page: per_page, total: total}
+    {posts, meta}
+  end
+
+  @doc """
+  List home feed - posts from forums the user has joined.
+  
+  This is a personalized feed showing content from subscribed/joined forums.
+  For unauthenticated users, returns an empty list.
+  """
+  def list_home_feed(nil, _opts), do: {[], %{page: 1, per_page: 25, total: 0}}
+  def list_home_feed(user, opts) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 25)
+    sort = Keyword.get(opts, :sort, "hot")
+    time_range = Keyword.get(opts, :time_range, "day")
+
+    # Get IDs of forums the user has joined
+    joined_forum_ids = from(m in ForumMember,
+      where: m.user_id == ^user.id,
+      select: m.forum_id
+    ) |> Repo.all()
+
+    if Enum.empty?(joined_forum_ids) do
+      {[], %{page: page, per_page: per_page, total: 0}}
+    else
+      query = from p in Post,
+        join: f in Forum, on: p.forum_id == f.id,
+        where: p.forum_id in ^joined_forum_ids,
+        where: is_nil(f.deleted_at),
+        preload: [:author, :category, forum: []]
+
+      query = query
+        |> maybe_apply_time_filter(sort, time_range)
+        |> apply_feed_sort(sort)
+
+      total_query = from p in Post,
+        where: p.forum_id in ^joined_forum_ids
+
+      total = Repo.aggregate(total_query, :count, :id)
+
+      posts = query
+        |> limit(^per_page)
+        |> offset(^((page - 1) * per_page))
+        |> Repo.all()
+        |> maybe_add_user_votes(user.id)
+
+      meta = %{page: page, per_page: per_page, total: total}
+      {posts, meta}
+    end
+  end
+
+  @doc """
+  List popular feed - trending posts from all public forums.
+  Uses a combination of score and recency for ranking.
+  """
+  def list_popular_feed(opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 25)
+    time_range = Keyword.get(opts, :time_range, "day")
+    user_id = Keyword.get(opts, :user_id)
+
+    # Get posts from last time_range sorted by hot score
+    time_filter = time_range_to_filter(time_range) || time_range_to_filter("day")
+
+    query = from p in Post,
+      join: f in Forum, on: p.forum_id == f.id,
+      where: f.is_public == true,
+      where: is_nil(f.deleted_at),
+      where: p.inserted_at >= ^time_filter,
+      # Hot ranking algorithm (Reddit-style)
+      order_by: [desc: fragment("? / POWER(EXTRACT(EPOCH FROM (NOW() - ?))/3600 + 2, 1.8)", p.score, p.inserted_at)],
+      preload: [:author, :category, forum: []]
+
+    total_query = from p in Post,
+      join: f in Forum, on: p.forum_id == f.id,
+      where: f.is_public == true,
+      where: is_nil(f.deleted_at),
+      where: p.inserted_at >= ^time_filter
 
     total = Repo.aggregate(total_query, :count, :id)
 

@@ -231,4 +231,16 @@ defmodule CGraph.Storage do
         {:error, :invalid_file}
     end
   end
+
+  @doc """
+  Gets total storage usage for a user in bytes.
+  
+  TODO: Implement proper file tracking per user.
+  Currently returns 0 as a placeholder.
+  """
+  @spec get_user_usage(String.t()) :: integer()
+  def get_user_usage(_user_id) do
+    # TODO: Track user file uploads in database and sum their sizes
+    0
+  end
 end

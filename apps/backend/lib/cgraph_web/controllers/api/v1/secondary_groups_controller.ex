@@ -1,4 +1,4 @@
-defmodule CGraphWeb.Api.V1.SecondaryGroupsController do
+defmodule CGraphWeb.API.V1.SecondaryGroupsController do
   @moduledoc """
   Controller for managing secondary groups and auto-assignment rules.
 

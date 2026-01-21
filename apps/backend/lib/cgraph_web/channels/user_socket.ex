@@ -21,6 +21,10 @@ defmodule CGraphWeb.UserSocket do
   channel "marketplace:*", CGraphWeb.MarketplaceChannel
   channel "events:*", CGraphWeb.EventsChannel
 
+  # Forum Channels
+  channel "forum:*", CGraphWeb.ForumChannel
+  channel "thread:*", CGraphWeb.ThreadChannel
+
   @impl true
   def connect(%{"token" => token}, socket, _connect_info) do
     case verify_token(token) do

@@ -188,7 +188,8 @@ export default function Conversation() {
     if (friends.length === 0) {
       fetchFriends();
     }
-  }, [friends.length, fetchFriends]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [friends.length]);
 
   // Refresh handler
   const handleRefresh = useCallback(async () => {
@@ -293,7 +294,8 @@ export default function Conversation() {
       setActiveConversation(null);
       socketManager.leaveConversation(conversationId);
     };
-  }, [conversationId, setActiveConversation, fetchMessages, markAsRead]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId]);
 
   // Scroll to bottom on new messages
   useEffect(() => {

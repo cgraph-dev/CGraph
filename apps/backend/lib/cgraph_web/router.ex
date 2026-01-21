@@ -154,10 +154,16 @@ defmodule CGraphWeb.Router do
   scope "/api/v1", CGraphWeb.API.V1 do
     pipe_through :api_relaxed
 
+    # Subscription tiers - public info
+    get "/tiers", TierController, :index
+    get "/tiers/compare", TierController, :compare
+    get "/tiers/:tier", TierController, :show
+
     # Public forum browsing - forums are public by default
     get "/forums", ForumController, :index
     get "/forums/leaderboard", ForumController, :leaderboard
     get "/forums/top", ForumController, :top
+    get "/forums/feed/popular", ForumController, :popular_feed
     get "/forums/:id", ForumController, :show
     get "/forums/:id/contributors", ForumController, :contributors
 
@@ -229,6 +235,13 @@ defmodule CGraphWeb.Router do
   # Authenticated API routes
   scope "/api/v1", CGraphWeb.API.V1 do
     pipe_through [:api, :api_auth]
+
+    # ==========================================================================
+    # Tier Limits & Subscription Features
+    # ==========================================================================
+    get "/tiers/me", TierController, :my_tier
+    get "/tiers/check/:action", TierController, :check_action
+    get "/tiers/features/:feature", TierController, :check_feature
 
     # ==========================================================================
     # AI Endpoints - PLACEHOLDER FOR FUTURE CLAUDE INTEGRATION
@@ -334,6 +347,9 @@ defmodule CGraphWeb.Router do
 
     # Forums (Reddit-style discovery + MyBB-style hosting)
     # Note: GET /forums, /forums/:id, /forums/leaderboard, /forums/top are public (no auth required)
+
+    # Home feed - posts from forums the user has joined (requires auth)
+    get "/forums/feed/home", ForumController, :home_feed
 
     # Vote eligibility check
     get "/forums/vote-eligibility", ForumController, :vote_eligibility

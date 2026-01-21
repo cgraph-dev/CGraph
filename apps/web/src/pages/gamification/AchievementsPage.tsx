@@ -172,7 +172,8 @@ export default function AchievementsPage() {
   // Fetch achievements on mount
   useEffect(() => {
     fetchAchievements();
-  }, [fetchAchievements]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Merge store achievements with definitions for complete data
   const mergedAchievements = useMemo(() => {

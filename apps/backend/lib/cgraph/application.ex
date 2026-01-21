@@ -118,12 +118,31 @@ defmodule CGraph.Application do
     case Supervisor.start_link(children, opts) do
       {:ok, pid} ->
         Logger.info("[Application] Supervisor started successfully with PID #{inspect(pid)}")
+        
+        # Initialize tier limits cache after Repo is started
+        init_tier_limits_cache()
+        
         {:ok, pid}
 
       {:error, reason} ->
         Logger.error("[Application] Supervisor failed to start: #{inspect(reason)}")
         {:error, reason}
     end
+  end
+
+  defp init_tier_limits_cache do
+    require Logger
+    # Initialize tier limits ETS cache for fast lookups
+    # This is done in a spawn to not block startup if DB isn't ready yet
+    spawn(fn ->
+      Process.sleep(1000)  # Wait for Repo to fully initialize
+      try do
+        CGraph.Subscriptions.TierLimits.init_cache()
+        Logger.info("[Application] Tier limits cache initialized")
+      rescue
+        e -> Logger.warning("[Application] Failed to init tier cache: #{inspect(e)}")
+      end
+    end)
   end
 
   defp redis_available? do

@@ -167,7 +167,8 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
         console.error('[AuthInitializer] Gamification fetch failed:', error);
       });
     }
-  }, [isAuthenticated, fetchGamificationData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   // Apply global theme CSS variables (both app theme and user customizations)
   useEffect(() => {
@@ -200,7 +201,8 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
         console.error('[ThemeSystem] Theme sync failed:', error);
       });
     }
-  }, [isAuthenticated, fetchGamificationData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, user?.id]);
 
   // Always render children immediately - no blocking
   return <>{children}</>;

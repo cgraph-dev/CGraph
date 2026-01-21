@@ -1,4 +1,4 @@
-defmodule CGraphWeb.Api.V1.ForumHierarchyController do
+defmodule CGraphWeb.API.V1.ForumHierarchyController do
   @moduledoc """
   Controller for forum hierarchy operations.
 

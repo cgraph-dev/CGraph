@@ -13,3 +13,5 @@ export { useWindowSize } from './useWindowSize';
 export { useCopyToClipboard } from './useCopyToClipboard';
 export { usePresence, useUserOnline } from './usePresence';
 export { useToast, type ToastOptions, type UseToastReturn } from './useToast';
+export { useForumSocket, type UseForumSocketOptions, type UseForumSocketReturn } from './useForumSocket';
+export { useThreadSocket, type UseThreadSocketOptions, type UseThreadSocketReturn } from './useThreadSocket';

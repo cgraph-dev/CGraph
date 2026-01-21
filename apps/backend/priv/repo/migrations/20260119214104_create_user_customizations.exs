@@ -32,6 +32,5 @@ defmodule CGraph.Repo.Migrations.CreateUserCustomizations do
     end
 
     create unique_index(:user_customizations, [:user_id])
-    create index(:user_customizations, [:user_id])
   end
 end

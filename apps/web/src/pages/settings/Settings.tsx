@@ -562,7 +562,8 @@ function NotificationSettings() {
       const state = await webPush.getPushState();
       setPushState(state);
     });
-  }, [fetchSettings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleToggle = useCallback(
     async (key: keyof typeof settings.notifications, value: boolean) => {
@@ -903,7 +904,8 @@ function SessionsSettings() {
 
   useEffect(() => {
     fetchSessions();
-  }, [fetchSessions]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const revokeSession = async (sessionId: string) => {
     setIsRevoking(sessionId);

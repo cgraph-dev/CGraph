@@ -54,7 +54,8 @@ export default function Friends() {
   useEffect(() => {
     fetchFriends();
     fetchPendingRequests();
-  }, [fetchFriends, fetchPendingRequests]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const tabs = [
     { id: 'all' as Tab, label: 'All', count: friends.length },

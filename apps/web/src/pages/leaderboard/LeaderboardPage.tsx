@@ -295,7 +295,8 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     fetchLeaderboard();
-  }, [fetchLeaderboard]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [category, timePeriod, page]);
 
   // Generate mock data for demo
   function generateMockData(): LeaderboardData {

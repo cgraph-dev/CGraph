@@ -68,11 +68,11 @@ defmodule CGraph.Repo.Migrations.AddPostIconsAndForumOrdering do
 
     create_if_not_exists index(:forums, [:display_order])
 
-    alter table(:categories) do
+    alter table(:forum_categories) do
       add_if_not_exists :display_order, :integer, default: 0
     end
 
-    create_if_not_exists index(:categories, [:display_order])
+    create_if_not_exists index(:forum_categories, [:display_order])
 
     # =========================================================================
     # Seed some default global post icons
@@ -111,8 +111,8 @@ defmodule CGraph.Repo.Migrations.AddPostIconsAndForumOrdering do
       remove_if_exists :icon_id, :binary_id
     end
 
-    # Remove display_order from categories
-    alter table(:categories) do
+    # Remove display_order from forum_categories
+    alter table(:forum_categories) do
       remove_if_exists :display_order, :integer
     end
 

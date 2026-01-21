@@ -70,14 +70,16 @@ export default function ForumPost() {
       fetchPost(postId);
       fetchComments(postId);
     }
-  }, [postId, fetchPost, fetchComments]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postId]);
 
   // Fetch forum data for moderation permissions
   useEffect(() => {
     if (forumSlug && (!currentForum || currentForum.slug !== forumSlug)) {
       fetchForum(forumSlug);
     }
-  }, [forumSlug, currentForum, fetchForum]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [forumSlug, currentForum?.slug]);
 
   const handleVote = async (type: 'post' | 'comment', id: string, value: 1 | -1, currentVote: 1 | -1 | null) => {
     const newValue = currentVote === value ? null : value;

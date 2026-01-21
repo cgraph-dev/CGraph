@@ -286,13 +286,102 @@ export function useGroupChannel(groupId: string, channelId: string) {
 
 /**
  * Hook for forum real-time updates.
+ * Provides presence tracking, new thread notifications, and stats updates.
  */
 export function useForumChannel(forumSlug: string) {
   const topic = `forum:${forumSlug}`;
+  const [stats, setStats] = useState<{ member_count: number; online_count: number; thread_count: number } | null>(null);
   
-  return useRealtimeChannel(topic, {
-    events: ['new_post', 'post_updated', 'post_deleted', 'new_reply', 'vote_updated'],
+  const channel = useRealtimeChannel(topic, {
+    trackPresence: true,
+    events: [
+      'new_thread',
+      'thread_updated', 
+      'thread_deleted',
+      'member_joined',
+      'member_left',
+      'stats_update',
+      'new_post',
+      'post_updated',
+      'post_deleted',
+      'vote_updated',
+    ],
+    onEvent: (event) => {
+      if (event.event === 'stats_update') {
+        setStats(event.payload as typeof stats);
+      }
+    },
   });
+
+  return {
+    ...channel,
+    stats,
+  };
+}
+
+/**
+ * Hook for thread-level real-time updates.
+ * Provides typing indicators, comments, voting, and viewer tracking.
+ */
+export function useThreadChannel(threadId: string) {
+  const topic = `thread:${threadId}`;
+  const [viewers, setViewers] = useState<string[]>([]);
+  const [votes, setVotes] = useState<{ upvotes: number; downvotes: number } | null>(null);
+
+  const channel = useRealtimeChannel(topic, {
+    trackPresence: true,
+    events: [
+      'typing',
+      'new_comment',
+      'comment_updated',
+      'comment_deleted',
+      'vote_update',
+      'viewer_joined',
+      'viewer_left',
+      'poll_vote',
+    ],
+    onEvent: (event) => {
+      if (event.event === 'vote_update') {
+        const payload = event.payload as { upvotes: number; downvotes: number };
+        setVotes(payload);
+      }
+    },
+    onJoin: (response) => {
+      const resp = response as { viewers?: string[]; votes?: { upvotes: number; downvotes: number } };
+      if (resp.viewers) setViewers(resp.viewers);
+      if (resp.votes) setVotes(resp.votes);
+    },
+  });
+
+  // Send typing indicator
+  const sendTyping = useCallback(() => {
+    channel.push('typing', {});
+  }, [channel]);
+
+  // Vote on thread
+  const vote = useCallback((value: 1 | -1) => {
+    return channel.push<{ upvotes: number; downvotes: number }>('vote', { value });
+  }, [channel]);
+
+  // Post a comment
+  const postComment = useCallback((content: string, parentId?: string) => {
+    return channel.push('new_comment', { content, parent_id: parentId });
+  }, [channel]);
+
+  // Vote on a poll option
+  const votePoll = useCallback((pollId: string, optionId: string) => {
+    return channel.push('vote_poll', { poll_id: pollId, option_id: optionId });
+  }, [channel]);
+
+  return {
+    ...channel,
+    viewers,
+    votes,
+    sendTyping,
+    vote,
+    postComment,
+    votePoll,
+  };
 }
 
 export default useRealtimeChannel;

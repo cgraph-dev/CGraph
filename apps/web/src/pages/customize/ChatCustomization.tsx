@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircleIcon,
@@ -7,6 +7,8 @@ import {
   ChatBubbleLeftRightIcon,
   SparklesIcon,
   FaceSmileIcon,
+  EyeIcon,
+  AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
 
 // Reserved for future use
@@ -16,7 +18,39 @@ import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/sol
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
 import { useCustomizationStore } from '@/stores/customizationStore';
+import { useCustomizationStoreV2, type ChatBubbleStyle } from '@/stores/customizationStoreV2';
 import toast from 'react-hot-toast';
+
+// Import reusable customization controls
+import RangeSliderControl from '@/components/customize/RangeSliderControl';
+import AnimatedToggle from '@/components/customize/AnimatedToggle';
+
+// Mapping from V1 bubble IDs to V2 ChatBubbleStyle
+const BUBBLE_ID_TO_V2_STYLE: Record<string, ChatBubbleStyle> = {
+  'bubble-default': 'rounded',
+  'bubble-pill': 'rounded',
+  'bubble-sharp': 'sharp',
+  'bubble-telegram': 'modern',
+  'bubble-discord': 'modern',
+  'bubble-imessage': 'cloud',
+  'bubble-minimal': 'default',
+  'bubble-neon': 'modern',
+  'bubble-gradient': 'modern',
+  'bubble-glass': 'modern',
+  'bubble-retro': 'retro',
+  'bubble-cloud': 'cloud',
+};
+
+// Mapping from V1 effect IDs to V2 BubbleAnimation
+const EFFECT_ID_TO_V2_ANIMATION: Record<string, 'none' | 'slide' | 'fade' | 'scale' | 'bounce' | 'flip'> = {
+  'effect-none': 'none',
+  'effect-bounce': 'bounce',
+  'effect-slide': 'slide',
+  'effect-fade': 'fade',
+  'effect-scale': 'scale',
+  'effect-pop': 'scale',
+  'effect-rotate': 'flip',
+};
 
 /**
  * ChatCustomization Component
@@ -36,7 +70,7 @@ import toast from 'react-hot-toast';
 
 // ==================== TYPE DEFINITIONS ====================
 
-type ChatCategory = 'bubbles' | 'effects' | 'reactions';
+type ChatCategory = 'bubbles' | 'effects' | 'reactions' | 'advanced';
 
 interface BubbleStyle {
   id: string;
@@ -282,19 +316,87 @@ export default function ChatCustomization() {
     updateChatStyle,
   } = useCustomizationStore();
 
+  // V2 store for live preview sync
+  const { setChatBubbleStyle, setBubbleAnimation } = useCustomizationStoreV2();
+  
+  // Fine-grained chat controls
+  const [bubbleBorderRadius, setBubbleBorderRadius] = useState(16);
+  const [bubbleShadowIntensity, setBubbleShadowIntensity] = useState(50);
+  const [enableGlassEffect, setEnableGlassEffect] = useState(false);
+  const [enableBubbleTail, setEnableBubbleTail] = useState(true);
+  const [enableHoverEffects, setEnableHoverEffects] = useState(true);
+
   const [activeCategory, setActiveCategory] = useState<ChatCategory>('bubbles');
   const [searchQuery, setSearchQuery] = useState('');
+  const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
+
+  // Sync bubble style to V2 store for live preview
+  const syncBubbleToV2 = useCallback((bubbleId: string) => {
+    const v2Style = BUBBLE_ID_TO_V2_STYLE[bubbleId] || 'default';
+    setChatBubbleStyle(v2Style);
+  }, [setChatBubbleStyle]);
+
+  // Sync message effect to V2 store for live preview
+  const syncEffectToV2 = useCallback((effectId: string) => {
+    const v2Animation = EFFECT_ID_TO_V2_ANIMATION[effectId] || 'none';
+    setBubbleAnimation(v2Animation);
+  }, [setBubbleAnimation]);
 
   // Fetch customizations on mount
   useEffect(() => {
     if (user?.id) {
       fetchCustomizations(user.id);
     }
-  }, [user?.id, fetchCustomizations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // Sync current selection to V2 store on mount
+  useEffect(() => {
+    if (bubbleStyle) {
+      syncBubbleToV2(bubbleStyle);
+    }
+    if (messageEffect) {
+      syncEffectToV2(messageEffect);
+    }
+  }, [bubbleStyle, messageEffect, syncBubbleToV2, syncEffectToV2]);
+
+  // Handle preview for locked items
+  const handlePreviewItem = (category: 'bubble' | 'effect' | 'reaction', id: string, isUnlocked: boolean) => {
+    if (category === 'bubble') {
+      updateChatStyle('bubbleStyle', id);
+      syncBubbleToV2(id);
+      if (!isUnlocked) {
+        setPreviewingLockedItem(id);
+      } else {
+        setPreviewingLockedItem(null);
+      }
+    } else if (category === 'effect') {
+      updateChatStyle('messageEffect', id);
+      syncEffectToV2(id);
+      if (!isUnlocked) {
+        setPreviewingLockedItem(id);
+      } else {
+        setPreviewingLockedItem(null);
+      }
+    } else {
+      updateChatStyle('reactionStyle', id);
+      if (!isUnlocked) {
+        setPreviewingLockedItem(id);
+      } else {
+        setPreviewingLockedItem(null);
+      }
+    }
+  };
 
   const handleSaveChatSettings = async () => {
     if (!user?.id) {
       toast.error('User not authenticated');
+      return;
+    }
+
+    // Block save if previewing a locked item
+    if (previewingLockedItem) {
+      toast.error('Please purchase premium to save this customization, or select an unlocked item.');
       return;
     }
 
@@ -324,6 +426,12 @@ export default function ChatCustomization() {
       label: 'Reaction Styles',
       icon: FaceSmileIcon,
       count: REACTION_STYLES.length,
+    },
+    {
+      id: 'advanced' as ChatCategory,
+      label: 'Fine Controls',
+      icon: AdjustmentsHorizontalIcon,
+      count: 5,
     },
   ];
 
@@ -399,7 +507,8 @@ export default function ChatCustomization() {
             <BubbleStylesSection
               bubbles={filteredItems as BubbleStyle[]}
               selectedBubble={bubbleStyle}
-              onSelect={(id) => updateChatStyle('bubbleStyle', id)}
+              previewingLockedItem={previewingLockedItem}
+              onSelect={(id, isUnlocked) => handlePreviewItem('bubble', id, isUnlocked)}
             />
           )}
 
@@ -407,7 +516,8 @@ export default function ChatCustomization() {
             <MessageEffectsSection
               effects={filteredItems as MessageEffect[]}
               selectedEffect={messageEffect}
-              onSelect={(id) => updateChatStyle('messageEffect', id)}
+              previewingLockedItem={previewingLockedItem}
+              onSelect={(id, isUnlocked) => handlePreviewItem('effect', id, isUnlocked)}
             />
           )}
 
@@ -415,11 +525,30 @@ export default function ChatCustomization() {
             <ReactionStylesSection
               reactions={filteredItems as ReactionStyle[]}
               selectedReaction={reactionStyle}
-              onSelect={(id) => updateChatStyle('reactionStyle', id)}
+              previewingLockedItem={previewingLockedItem}
+              onSelect={(id, isUnlocked) => handlePreviewItem('reaction', id, isUnlocked)}
             />
           )}
 
-          {filteredItems.length === 0 && (
+          {activeCategory === 'advanced' && (
+            <AdvancedControlsSection
+              bubbleBorderRadius={bubbleBorderRadius}
+              onBorderRadiusChange={setBubbleBorderRadius}
+              bubbleShadowIntensity={bubbleShadowIntensity}
+              onShadowIntensityChange={setBubbleShadowIntensity}
+              enableGlassEffect={enableGlassEffect}
+              onGlassEffectChange={setEnableGlassEffect}
+              enableBubbleTail={enableBubbleTail}
+              onBubbleTailChange={(val) => {
+                setEnableBubbleTail(val);
+                // V2 sync for bubble tail (method may not exist in all store versions)
+              }}
+              enableHoverEffects={enableHoverEffects}
+              onHoverEffectsChange={setEnableHoverEffects}
+            />
+          )}
+
+          {filteredItems.length === 0 && activeCategory !== 'advanced' && (
             <div className="py-12 text-center text-white/60">
               No items found matching your search.
             </div>
@@ -479,13 +608,16 @@ export default function ChatCustomization() {
 interface BubbleStylesSectionProps {
   bubbles: BubbleStyle[];
   selectedBubble: string;
-  onSelect: (id: string) => void;
+  previewingLockedItem: string | null;
+  onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
-function BubbleStylesSection({ bubbles, selectedBubble, onSelect }: BubbleStylesSectionProps) {
+function BubbleStylesSection({ bubbles, selectedBubble, previewingLockedItem, onSelect }: BubbleStylesSectionProps) {
   return (
     <div className="grid grid-cols-3 gap-4">
-      {bubbles.map((bubble, index) => (
+      {bubbles.map((bubble, index) => {
+        const isPreviewing = previewingLockedItem === bubble.id;
+        return (
         <motion.div
           key={bubble.id}
           initial={{ opacity: 0, scale: 0.9 }}
@@ -494,20 +626,18 @@ function BubbleStylesSection({ bubbles, selectedBubble, onSelect }: BubbleStyles
         >
           <GlassCard
             variant={
-              bubble.unlocked
-                ? selectedBubble === bubble.id
-                  ? 'neon'
-                  : 'crystal'
-                : ('frosted' as const)
+              selectedBubble === bubble.id || isPreviewing
+                ? 'neon'
+                : bubble.unlocked
+                  ? 'crystal'
+                  : 'frosted'
             }
-            glow={selectedBubble === bubble.id}
-            glowColor={selectedBubble === bubble.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 transition-all ${
-              bubble.unlocked
-                ? 'cursor-pointer hover:scale-[1.02]'
-                : 'cursor-not-allowed opacity-60'
+            glow={selectedBubble === bubble.id || isPreviewing}
+            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.4)' : selectedBubble === bubble.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
+            className={`relative p-4 transition-all cursor-pointer hover:scale-[1.02] ${
+              isPreviewing ? 'ring-2 ring-yellow-500' : ''
             }`}
-            onClick={() => bubble.unlocked && onSelect(bubble.id)}
+            onClick={() => onSelect(bubble.id, bubble.unlocked)}
           >
             {/* Bubble Preview */}
             <div className="mb-3 flex h-32 items-center justify-center">
@@ -558,15 +688,24 @@ function BubbleStylesSection({ bubbles, selectedBubble, onSelect }: BubbleStyles
                   Apply
                 </button>
               )
+            ) : isPreviewing ? (
+              <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-1.5">
+                <EyeIcon className="h-4 w-4 text-yellow-400" />
+                <span className="text-xs font-medium text-yellow-400">Previewing</span>
+              </div>
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
-                <LockClosedIcon className="mb-2 h-8 w-8 text-white/40" />
-                <p className="px-2 text-center text-xs text-white/60">{bubble.unlockRequirement}</p>
+              <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
+                <div className="flex items-center gap-1">
+                  <LockClosedIcon className="h-4 w-4 text-white/40" />
+                  <span className="text-xs text-white/60">Click to Preview</span>
+                </div>
+                <p className="mt-1 text-center text-xs text-white/40">{bubble.unlockRequirement}</p>
               </div>
             )}
           </GlassCard>
         </motion.div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -574,13 +713,16 @@ function BubbleStylesSection({ bubbles, selectedBubble, onSelect }: BubbleStyles
 interface MessageEffectsSectionProps {
   effects: MessageEffect[];
   selectedEffect: string;
-  onSelect: (id: string) => void;
+  previewingLockedItem: string | null;
+  onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
-function MessageEffectsSection({ effects, selectedEffect, onSelect }: MessageEffectsSectionProps) {
+function MessageEffectsSection({ effects, selectedEffect, previewingLockedItem, onSelect }: MessageEffectsSectionProps) {
   return (
     <div className="space-y-3">
-      {effects.map((effect, index) => (
+      {effects.map((effect, index) => {
+        const isPreviewing = previewingLockedItem === effect.id;
+        return (
         <motion.div
           key={effect.id}
           initial={{ opacity: 0, x: -20 }}
@@ -589,20 +731,18 @@ function MessageEffectsSection({ effects, selectedEffect, onSelect }: MessageEff
         >
           <GlassCard
             variant={
-              effect.unlocked
-                ? selectedEffect === effect.id
-                  ? 'neon'
-                  : 'crystal'
-                : ('frosted' as const)
+              selectedEffect === effect.id || isPreviewing
+                ? 'neon'
+                : effect.unlocked
+                  ? 'crystal'
+                  : 'frosted'
             }
-            glow={selectedEffect === effect.id}
-            glowColor={selectedEffect === effect.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 transition-all ${
-              effect.unlocked
-                ? 'cursor-pointer hover:scale-[1.01]'
-                : 'cursor-not-allowed opacity-60'
+            glow={selectedEffect === effect.id || isPreviewing}
+            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.4)' : selectedEffect === effect.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
+            className={`relative p-4 transition-all cursor-pointer hover:scale-[1.01] ${
+              isPreviewing ? 'ring-2 ring-yellow-500' : ''
             }`}
-            onClick={() => effect.unlocked && onSelect(effect.id)}
+            onClick={() => onSelect(effect.id, effect.unlocked)}
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
@@ -644,17 +784,23 @@ function MessageEffectsSection({ effects, selectedEffect, onSelect }: MessageEff
                       Apply
                     </button>
                   )
+                ) : isPreviewing ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-4 py-2">
+                    <EyeIcon className="h-5 w-5 text-yellow-400" />
+                    <span className="text-sm font-medium text-yellow-400">Previewing</span>
+                  </div>
                 ) : (
                   <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
                     <LockClosedIcon className="h-5 w-5 text-white/40" />
-                    <span className="text-sm text-white/60">{effect.unlockRequirement}</span>
+                    <span className="text-sm text-white/60">Click to Preview</span>
                   </div>
                 )}
               </div>
             </div>
           </GlassCard>
         </motion.div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -662,17 +808,21 @@ function MessageEffectsSection({ effects, selectedEffect, onSelect }: MessageEff
 interface ReactionStylesSectionProps {
   reactions: ReactionStyle[];
   selectedReaction: string;
-  onSelect: (id: string) => void;
+  previewingLockedItem: string | null;
+  onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
 function ReactionStylesSection({
   reactions,
   selectedReaction,
+  previewingLockedItem,
   onSelect,
 }: ReactionStylesSectionProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
-      {reactions.map((reaction, index) => (
+      {reactions.map((reaction, index) => {
+        const isPreviewing = previewingLockedItem === reaction.id;
+        return (
         <motion.div
           key={reaction.id}
           initial={{ opacity: 0, scale: 0.9 }}
@@ -681,20 +831,18 @@ function ReactionStylesSection({
         >
           <GlassCard
             variant={
-              reaction.unlocked
-                ? selectedReaction === reaction.id
-                  ? 'neon'
-                  : 'crystal'
-                : ('frosted' as const)
+              selectedReaction === reaction.id || isPreviewing
+                ? 'neon'
+                : reaction.unlocked
+                  ? 'crystal'
+                  : 'frosted'
             }
-            glow={selectedReaction === reaction.id}
-            glowColor={selectedReaction === reaction.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 transition-all ${
-              reaction.unlocked
-                ? 'cursor-pointer hover:scale-[1.02]'
-                : 'cursor-not-allowed opacity-60'
+            glow={selectedReaction === reaction.id || isPreviewing}
+            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.4)' : selectedReaction === reaction.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
+            className={`relative p-4 transition-all cursor-pointer hover:scale-[1.02] ${
+              isPreviewing ? 'ring-2 ring-yellow-500' : ''
             }`}
-            onClick={() => reaction.unlocked && onSelect(reaction.id)}
+            onClick={() => onSelect(reaction.id, reaction.unlocked)}
           >
             {/* Reaction Preview */}
             <div className="mb-3 flex h-32 items-center justify-center">
@@ -739,17 +887,200 @@ function ReactionStylesSection({
                   Apply
                 </button>
               )
+            ) : isPreviewing ? (
+              <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-2">
+                <EyeIcon className="h-5 w-5 text-yellow-400" />
+                <span className="text-sm font-medium text-yellow-400">Previewing</span>
+              </div>
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
-                <LockClosedIcon className="mb-2 h-8 w-8 text-white/40" />
-                <p className="px-2 text-center text-xs text-white/60">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                <div className="flex items-center gap-1">
+                  <LockClosedIcon className="h-4 w-4 text-white/40" />
+                  <span className="text-xs text-white/60">Click to Preview</span>
+                </div>
+                <p className="mt-1 text-center text-xs text-white/40">
                   {reaction.unlockRequirement}
                 </p>
               </div>
             )}
           </GlassCard>
         </motion.div>
-      ))}
+        );
+      })}
+    </div>
+  );
+}
+
+// ==================== ADVANCED CONTROLS SECTION ====================
+
+interface AdvancedControlsSectionProps {
+  bubbleBorderRadius: number;
+  onBorderRadiusChange: (value: number) => void;
+  bubbleShadowIntensity: number;
+  onShadowIntensityChange: (value: number) => void;
+  enableGlassEffect: boolean;
+  onGlassEffectChange: (value: boolean) => void;
+  enableBubbleTail: boolean;
+  onBubbleTailChange: (value: boolean) => void;
+  enableHoverEffects: boolean;
+  onHoverEffectsChange: (value: boolean) => void;
+}
+
+function AdvancedControlsSection({
+  bubbleBorderRadius,
+  onBorderRadiusChange,
+  bubbleShadowIntensity,
+  onShadowIntensityChange,
+  enableGlassEffect,
+  onGlassEffectChange,
+  enableBubbleTail,
+  onBubbleTailChange,
+  enableHoverEffects,
+  onHoverEffectsChange,
+}: AdvancedControlsSectionProps) {
+  const shadowValue = `0 ${2 + bubbleShadowIntensity / 10}px ${8 + bubbleShadowIntensity / 5}px rgba(0, 0, 0, ${bubbleShadowIntensity / 200})`;
+  
+  return (
+    <div className="space-y-6">
+      {/* Live Preview */}
+      <GlassCard variant="neon" className="p-6">
+        <h3 className="mb-4 flex items-center gap-2 text-lg font-bold text-white">
+          <SparklesIcon className="h-5 w-5 text-primary-400" />
+          Live Preview
+        </h3>
+        
+        <div className="flex justify-center gap-4">
+          {/* Sent Message */}
+          <motion.div
+            className="relative max-w-[200px]"
+            whileHover={enableHoverEffects ? { scale: 1.02, y: -2 } : undefined}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          >
+            <div
+              className={`px-4 py-2 text-sm text-white ${enableGlassEffect ? 'backdrop-blur-md bg-primary-600/70 border border-white/20' : 'bg-primary-600'}`}
+              style={{
+                borderRadius: `${bubbleBorderRadius}px`,
+                boxShadow: shadowValue,
+              }}
+            >
+              Your message looks like this!
+            </div>
+            {enableBubbleTail && (
+              <div
+                className="absolute -bottom-1 right-3 h-3 w-3 rotate-45 bg-primary-600"
+                style={{ 
+                  borderRadius: `0 0 ${bubbleBorderRadius / 4}px 0`,
+                  boxShadow: '2px 2px 4px rgba(0,0,0,0.1)',
+                }}
+              />
+            )}
+          </motion.div>
+          
+          {/* Received Message */}
+          <motion.div
+            className="relative max-w-[200px]"
+            whileHover={enableHoverEffects ? { scale: 1.02, y: -2 } : undefined}
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          >
+            <div
+              className={`px-4 py-2 text-sm text-white ${enableGlassEffect ? 'backdrop-blur-md bg-dark-600/70 border border-white/10' : 'bg-dark-600'}`}
+              style={{
+                borderRadius: `${bubbleBorderRadius}px`,
+                boxShadow: shadowValue,
+              }}
+            >
+              Reply bubble preview
+            </div>
+            {enableBubbleTail && (
+              <div
+                className="absolute -bottom-1 left-3 h-3 w-3 rotate-45 bg-dark-600"
+                style={{ 
+                  borderRadius: `0 0 0 ${bubbleBorderRadius / 4}px`,
+                  boxShadow: '-2px 2px 4px rgba(0,0,0,0.1)',
+                }}
+              />
+            )}
+          </motion.div>
+        </div>
+      </GlassCard>
+      
+      {/* Slider Controls */}
+      <GlassCard variant="frosted" className="p-6">
+        <h3 className="mb-6 flex items-center gap-2 text-lg font-bold text-white">
+          <AdjustmentsHorizontalIcon className="h-5 w-5 text-cyan-400" />
+          Fine-Tune Controls
+        </h3>
+        
+        <div className="space-y-6">
+          <RangeSliderControl
+            label="Border Radius"
+            value={bubbleBorderRadius}
+            onChange={onBorderRadiusChange}
+            min={0}
+            max={50}
+            unit="px"
+            color="#8B5CF6"
+          />
+          
+          <RangeSliderControl
+            label="Shadow Intensity"
+            value={bubbleShadowIntensity}
+            onChange={onShadowIntensityChange}
+            min={0}
+            max={100}
+            unit="%"
+            color="#F59E0B"
+          />
+        </div>
+      </GlassCard>
+      
+      {/* Toggle Controls */}
+      <GlassCard variant="frosted" className="p-6">
+        <h3 className="mb-6 flex items-center gap-2 text-lg font-bold text-white">
+          <SparklesIcon className="h-5 w-5 text-pink-400" />
+          Visual Effects
+        </h3>
+        
+        <div className="space-y-4">
+          <AnimatedToggle
+            label="Glassmorphic Effect"
+            description="Adds a frosted glass background to bubbles"
+            checked={enableGlassEffect}
+            onChange={onGlassEffectChange}
+          />
+          
+          <AnimatedToggle
+            label="Bubble Tail"
+            description="Show speech bubble tail pointer"
+            checked={enableBubbleTail}
+            onChange={onBubbleTailChange}
+          />
+          
+          <AnimatedToggle
+            label="Hover Effects"
+            description="Lift and scale bubbles on hover"
+            checked={enableHoverEffects}
+            onChange={onHoverEffectsChange}
+          />
+        </div>
+      </GlassCard>
+      
+      {/* Entrance Animation Picker */}
+      <GlassCard variant="frosted" className="p-6">
+        <h3 className="mb-4 text-lg font-bold text-white">Entrance Animation</h3>
+        <div className="grid grid-cols-3 gap-3">
+          {['slide', 'fade', 'scale', 'bounce', 'flip', 'none'].map((anim) => (
+            <motion.button
+              key={anim}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="rounded-lg bg-white/5 p-3 text-center text-sm font-medium text-white/80 transition-all hover:bg-white/10 hover:text-white"
+            >
+              {anim.charAt(0).toUpperCase() + anim.slice(1)}
+            </motion.button>
+          ))}
+        </div>
+      </GlassCard>
     </div>
   );
 }

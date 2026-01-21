@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircleIcon,
@@ -7,6 +7,7 @@ import {
   SparklesIcon,
   PhotoIcon,
   BeakerIcon,
+  EyeIcon,
 } from '@heroicons/react/24/outline';
 
 // Reserved for future use
@@ -16,7 +17,24 @@ import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/sol
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
 import { useCustomizationStore } from '@/stores/customizationStore';
+import { useCustomizationStoreV2, type EffectPreset } from '@/stores/customizationStoreV2';
 import toast from 'react-hot-toast';
+
+// Mapping from V1 particle IDs to V2 EffectPreset
+const PARTICLE_ID_TO_V2_EFFECT: Record<string, EffectPreset> = {
+  'particle-none': 'minimal',
+  'particle-snow': 'glassmorphism',
+  'particle-confetti': 'neon',
+  'particle-stars': 'aurora',
+  'particle-bubbles': 'glassmorphism',
+  'particle-aurora': 'aurora',
+  'particle-neon': 'neon',
+  'particle-matrix': 'cyberpunk',
+  'particle-cyber': 'cyberpunk',
+  'particle-hologram': 'holographic',
+  'particle-fire': 'neon',
+  'particle-storm': 'aurora',
+};
 
 /**
  * EffectsCustomization Component
@@ -379,19 +397,81 @@ export default function EffectsCustomization() {
     updateEffects,
   } = useCustomizationStore();
 
+  // V2 store for live preview sync
+  const { setEffect, updateSettings } = useCustomizationStoreV2();
+
   const [activeCategory, setActiveCategory] = useState<EffectCategory>('particles');
   const [searchQuery, setSearchQuery] = useState('');
+  const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
+
+  // Sync particle effect to V2 store for live preview
+  const syncParticleToV2 = useCallback((particleId: string) => {
+    const v2Effect = PARTICLE_ID_TO_V2_EFFECT[particleId] || 'minimal';
+    setEffect(v2Effect);
+    // Use updateSettings instead of toggle to prevent infinite loop
+    updateSettings({ particlesEnabled: particleId !== 'particle-none' });
+  }, [setEffect, updateSettings]);
+
+  // Sync background effect to V2 store for live preview
+  const syncBackgroundToV2 = useCallback((bgId: string) => {
+    // Background effects map to animated background - use updateSettings instead of toggle
+    const isAnimated = BACKGROUND_EFFECTS.find(bg => bg.id === bgId)?.animated || false;
+    updateSettings({ animatedBackground: isAnimated });
+  }, [updateSettings]);
 
   // Fetch customizations on mount
   useEffect(() => {
     if (user?.id) {
       fetchCustomizations(user.id);
     }
-  }, [user?.id, fetchCustomizations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
+  // Sync current selection to V2 store on mount
+  useEffect(() => {
+    if (particleEffect) {
+      const v2Effect = PARTICLE_ID_TO_V2_EFFECT[particleEffect] || 'minimal';
+      setEffect(v2Effect);
+    }
+  }, [particleEffect, setEffect]);
+
+  // Handle preview for locked items
+  const handlePreviewItem = (category: 'particle' | 'background' | 'animation', id: string, isUnlocked: boolean) => {
+    if (category === 'particle') {
+      updateEffects('particleEffect', id);
+      syncParticleToV2(id);
+      if (!isUnlocked) {
+        setPreviewingLockedItem(id);
+      } else {
+        setPreviewingLockedItem(null);
+      }
+    } else if (category === 'background') {
+      updateEffects('backgroundEffect', id);
+      syncBackgroundToV2(id);
+      if (!isUnlocked) {
+        setPreviewingLockedItem(id);
+      } else {
+        setPreviewingLockedItem(null);
+      }
+    } else {
+      updateEffects('animationSpeed', id);
+      if (!isUnlocked) {
+        setPreviewingLockedItem(id);
+      } else {
+        setPreviewingLockedItem(null);
+      }
+    }
+  };
 
   const handleSaveEffectsSettings = async () => {
     if (!user?.id) {
       toast.error('User not authenticated');
+      return;
+    }
+
+    // Block save if previewing a locked item
+    if (previewingLockedItem) {
+      toast.error('Please purchase premium to save this effect, or select an unlocked item.');
       return;
     }
 
@@ -496,7 +576,8 @@ export default function EffectsCustomization() {
             <ParticleEffectsSection
               particles={filteredItems as ParticleEffect[]}
               selectedParticle={particleEffect}
-              onSelect={(id) => updateEffects('particleEffect', id)}
+              previewingLockedItem={previewingLockedItem}
+              onSelect={(id, isUnlocked) => handlePreviewItem('particle', id, isUnlocked)}
             />
           )}
 
@@ -504,7 +585,8 @@ export default function EffectsCustomization() {
             <BackgroundEffectsSection
               backgrounds={filteredItems as BackgroundEffect[]}
               selectedBackground={backgroundEffect}
-              onSelect={(id) => updateEffects('backgroundEffect', id)}
+              previewingLockedItem={previewingLockedItem}
+              onSelect={(id, isUnlocked) => handlePreviewItem('background', id, isUnlocked)}
             />
           )}
 
@@ -512,7 +594,8 @@ export default function EffectsCustomization() {
             <AnimationSetsSection
               animations={filteredItems as AnimationSet[]}
               selectedAnimation={animationSpeed}
-              onSelect={(id) => updateEffects('animationSpeed', id)}
+              previewingLockedItem={previewingLockedItem}
+              onSelect={(id, isUnlocked) => handlePreviewItem('animation', id, isUnlocked)}
             />
           )}
 
@@ -576,12 +659,14 @@ export default function EffectsCustomization() {
 interface ParticleEffectsSectionProps {
   particles: ParticleEffect[];
   selectedParticle: string;
-  onSelect: (id: string) => void;
+  previewingLockedItem: string | null;
+  onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
 function ParticleEffectsSection({
   particles,
   selectedParticle,
+  previewingLockedItem,
   onSelect,
 }: ParticleEffectsSectionProps) {
   const getPerformanceColor = (performance: string) => {
@@ -599,7 +684,9 @@ function ParticleEffectsSection({
 
   return (
     <div className="grid grid-cols-3 gap-4">
-      {particles.map((particle, index) => (
+      {particles.map((particle, index) => {
+        const isPreviewing = previewingLockedItem === particle.id;
+        return (
         <motion.div
           key={particle.id}
           initial={{ opacity: 0, scale: 0.9 }}
@@ -608,20 +695,18 @@ function ParticleEffectsSection({
         >
           <GlassCard
             variant={
-              particle.unlocked
-                ? selectedParticle === particle.id
-                  ? 'neon'
-                  : 'crystal'
-                : ('frosted' as const)
+              selectedParticle === particle.id || isPreviewing
+                ? 'neon'
+                : particle.unlocked
+                  ? 'crystal'
+                  : 'frosted'
             }
-            glow={selectedParticle === particle.id}
-            glowColor={selectedParticle === particle.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 transition-all ${
-              particle.unlocked
-                ? 'cursor-pointer hover:scale-[1.02]'
-                : 'cursor-not-allowed opacity-60'
+            glow={selectedParticle === particle.id || isPreviewing}
+            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.4)' : selectedParticle === particle.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
+            className={`relative p-4 transition-all cursor-pointer hover:scale-[1.02] ${
+              isPreviewing ? 'ring-2 ring-yellow-500' : ''
             }`}
-            onClick={() => particle.unlocked && onSelect(particle.id)}
+            onClick={() => onSelect(particle.id, particle.unlocked)}
           >
             {/* Particle Preview */}
             <div className="relative mb-3 h-32 overflow-hidden rounded-lg bg-gradient-to-br from-dark-700 to-dark-800">
@@ -754,17 +839,26 @@ function ParticleEffectsSection({
                   Apply
                 </button>
               )
+            ) : isPreviewing ? (
+              <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-1.5">
+                <EyeIcon className="h-4 w-4 text-yellow-400" />
+                <span className="text-xs font-medium text-yellow-400">Previewing</span>
+              </div>
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
-                <LockClosedIcon className="mb-2 h-8 w-8 text-white/40" />
-                <p className="px-2 text-center text-xs text-white/60">
+              <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
+                <div className="flex items-center gap-1">
+                  <LockClosedIcon className="h-4 w-4 text-white/40" />
+                  <span className="text-xs text-white/60">Click to Preview</span>
+                </div>
+                <p className="mt-1 text-center text-xs text-white/40">
                   {particle.unlockRequirement}
                 </p>
               </div>
             )}
           </GlassCard>
         </motion.div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -772,17 +866,21 @@ function ParticleEffectsSection({
 interface BackgroundEffectsSectionProps {
   backgrounds: BackgroundEffect[];
   selectedBackground: string;
-  onSelect: (id: string) => void;
+  previewingLockedItem: string | null;
+  onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
 function BackgroundEffectsSection({
   backgrounds,
   selectedBackground,
+  previewingLockedItem,
   onSelect,
 }: BackgroundEffectsSectionProps) {
   return (
     <div className="grid grid-cols-2 gap-4">
-      {backgrounds.map((bg, index) => (
+      {backgrounds.map((bg, index) => {
+        const isPreviewing = previewingLockedItem === bg.id;
+        return (
         <motion.div
           key={bg.id}
           initial={{ opacity: 0, scale: 0.9 }}
@@ -791,18 +889,18 @@ function BackgroundEffectsSection({
         >
           <GlassCard
             variant={
-              bg.unlocked
-                ? selectedBackground === bg.id
-                  ? 'neon'
-                  : 'crystal'
-                : ('frosted' as const)
+              selectedBackground === bg.id || isPreviewing
+                ? 'neon'
+                : bg.unlocked
+                  ? 'crystal'
+                  : 'frosted'
             }
-            glow={selectedBackground === bg.id}
-            glowColor={selectedBackground === bg.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 transition-all ${
-              bg.unlocked ? 'cursor-pointer hover:scale-[1.02]' : 'cursor-not-allowed opacity-60'
+            glow={selectedBackground === bg.id || isPreviewing}
+            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.4)' : selectedBackground === bg.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
+            className={`relative p-4 transition-all cursor-pointer hover:scale-[1.02] ${
+              isPreviewing ? 'ring-2 ring-yellow-500' : ''
             }`}
-            onClick={() => bg.unlocked && onSelect(bg.id)}
+            onClick={() => onSelect(bg.id, bg.unlocked)}
           >
             {/* Background Preview */}
             <motion.div
@@ -852,15 +950,24 @@ function BackgroundEffectsSection({
                   Apply
                 </button>
               )
+            ) : isPreviewing ? (
+              <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-2">
+                <EyeIcon className="h-5 w-5 text-yellow-400" />
+                <span className="text-sm font-medium text-yellow-400">Previewing</span>
+              </div>
             ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl bg-black/60 backdrop-blur-sm">
-                <LockClosedIcon className="mb-2 h-8 w-8 text-white/40" />
-                <p className="px-2 text-center text-xs text-white/60">{bg.unlockRequirement}</p>
+              <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                <div className="flex items-center gap-1">
+                  <LockClosedIcon className="h-4 w-4 text-white/40" />
+                  <span className="text-xs text-white/60">Click to Preview</span>
+                </div>
+                <p className="mt-1 text-center text-xs text-white/40">{bg.unlockRequirement}</p>
               </div>
             )}
           </GlassCard>
         </motion.div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -868,17 +975,21 @@ function BackgroundEffectsSection({
 interface AnimationSetsSectionProps {
   animations: AnimationSet[];
   selectedAnimation: string;
-  onSelect: (id: string) => void;
+  previewingLockedItem: string | null;
+  onSelect: (id: string, isUnlocked: boolean) => void;
 }
 
 function AnimationSetsSection({
   animations,
   selectedAnimation,
+  previewingLockedItem,
   onSelect,
 }: AnimationSetsSectionProps) {
   return (
     <div className="space-y-3">
-      {animations.map((anim, index) => (
+      {animations.map((anim, index) => {
+        const isPreviewing = previewingLockedItem === anim.id;
+        return (
         <motion.div
           key={anim.id}
           initial={{ opacity: 0, x: -20 }}
@@ -887,18 +998,18 @@ function AnimationSetsSection({
         >
           <GlassCard
             variant={
-              anim.unlocked
-                ? selectedAnimation === anim.id
-                  ? 'neon'
-                  : 'crystal'
-                : ('frosted' as const)
+              selectedAnimation === anim.id || isPreviewing
+                ? 'neon'
+                : anim.unlocked
+                  ? 'crystal'
+                  : 'frosted'
             }
-            glow={selectedAnimation === anim.id}
-            glowColor={selectedAnimation === anim.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 transition-all ${
-              anim.unlocked ? 'cursor-pointer hover:scale-[1.01]' : 'cursor-not-allowed opacity-60'
+            glow={selectedAnimation === anim.id || isPreviewing}
+            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.4)' : selectedAnimation === anim.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
+            className={`relative p-4 transition-all cursor-pointer hover:scale-[1.01] ${
+              isPreviewing ? 'ring-2 ring-yellow-500' : ''
             }`}
-            onClick={() => anim.unlocked && onSelect(anim.id)}
+            onClick={() => onSelect(anim.id, anim.unlocked)}
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
@@ -950,17 +1061,23 @@ function AnimationSetsSection({
                       Apply
                     </button>
                   )
+                ) : isPreviewing ? (
+                  <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-4 py-2">
+                    <EyeIcon className="h-5 w-5 text-yellow-400" />
+                    <span className="text-sm font-medium text-yellow-400">Previewing</span>
+                  </div>
                 ) : (
                   <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
                     <LockClosedIcon className="h-5 w-5 text-white/40" />
-                    <span className="text-sm text-white/60">{anim.unlockRequirement}</span>
+                    <span className="text-sm text-white/60">Click to Preview</span>
                   </div>
                 )}
               </div>
             </div>
           </GlassCard>
         </motion.div>
-      ))}
+        );
+      })}
     </div>
   );
 }

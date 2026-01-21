@@ -24,7 +24,8 @@ export default function Groups() {
 
   useEffect(() => {
     fetchGroups();
-  }, [fetchGroups]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fetch full group data when selected
   useEffect(() => {
@@ -35,7 +36,8 @@ export default function Groups() {
     if (channelId) {
       setActiveChannel(channelId);
     }
-  }, [groupId, channelId, setActiveGroup, setActiveChannel, fetchGroup]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupId, channelId]);
 
   const activeGroup = groups.find((g) => g.id === groupId);
 

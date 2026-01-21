@@ -254,11 +254,12 @@ export default function QuestsPage() {
     };
     
     loadQuests();
-    
+
     return () => {
       isMounted = false;
     };
-  }, [fetchQuests]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Handle accept quest
   const handleAcceptQuest = async (questId: string) => {

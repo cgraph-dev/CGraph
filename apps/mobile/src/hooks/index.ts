@@ -27,7 +27,8 @@ export {
   useRealtimeChannel, 
   useConversationChannel, 
   useGroupChannel, 
-  useForumChannel 
+  useForumChannel,
+  useThreadChannel
 } from './useRealtimeChannel';
 export { useReferrals } from './useReferrals';
 export { useE2EE } from './useE2EE';

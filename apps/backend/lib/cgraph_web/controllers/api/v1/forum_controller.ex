@@ -12,6 +12,7 @@ defmodule CGraphWeb.API.V1.ForumController do
   use CGraphWeb, :controller
 
   import CGraphWeb.Helpers.ParamParser
+  alias CGraph.Subscriptions.TierLimits
 
   alias CGraph.Forums
   alias CGraphWeb.Validation.ForumParams
@@ -32,6 +33,63 @@ defmodule CGraphWeb.API.V1.ForumController do
 
     {forums, meta} = Forums.list_forums_for_user(user, page: page, per_page: per_page)
     render(conn, :index, forums: forums, meta: meta)
+  end
+
+  @doc """
+  Get home feed - posts from forums the user has joined.
+  GET /api/v1/forums/feed/home
+  
+  Requires authentication. Returns posts from forums the user has joined,
+  sorted by the specified algorithm.
+  
+  Query params:
+  - page: Page number (default: 1)
+  - per_page: Items per page (default: 25, max: 50)
+  - sort: hot, new, top (default: hot)
+  - time_range: hour, day, week, month, year, all (default: day)
+  """
+  def home_feed(conn, params) do
+    user = conn.assigns.current_user
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 25, min: 1, max: @max_per_page)
+    sort = Map.get(params, "sort", "hot")
+    time_range = Map.get(params, "time_range", "day")
+
+    {posts, meta} = Forums.list_home_feed(user,
+      page: page,
+      per_page: per_page,
+      sort: sort,
+      time_range: time_range
+    )
+
+    render(conn, :feed, posts: posts, meta: meta, feed_type: "home")
+  end
+
+  @doc """
+  Get popular feed - trending posts from all public forums.
+  GET /api/v1/forums/feed/popular
+  
+  Public endpoint. Returns trending posts from all public forums.
+  
+  Query params:
+  - page: Page number (default: 1)
+  - per_page: Items per page (default: 25, max: 50)
+  - time_range: hour, day, week, month, year (default: day)
+  """
+  def popular_feed(conn, params) do
+    user = Map.get(conn.assigns, :current_user)
+    page = parse_int(params["page"], 1, min: 1)
+    per_page = parse_int(params["per_page"], 25, min: 1, max: @max_per_page)
+    time_range = Map.get(params, "time_range", "day")
+
+    {posts, meta} = Forums.list_popular_feed(
+      page: page,
+      per_page: per_page,
+      time_range: time_range,
+      user_id: user && user.id
+    )
+
+    render(conn, :feed, posts: posts, meta: meta, feed_type: "popular")
   end
 
   @doc """
@@ -422,31 +480,20 @@ defmodule CGraphWeb.API.V1.ForumController do
 
   defp authorize_forum_creation(user) do
     # Check user's subscription tier and forum count limits
-    # Tier limits:
-    # - free: 1 forum
-    # - starter: 3 forums
-    # - pro: 10 forums
-    # - business: unlimited
-    user_tier = Map.get(user, :subscription_tier) || "free"
-    owned_forums_count = Forums.count_user_forums(user.id)
+    # Uses database-driven tier limits with override support
+    case TierLimits.can_create_forum?(user) do
+      true -> :ok
+      false ->
+        tier_name = TierLimits.get_user_tier(user)
+        max_forums = TierLimits.get_effective_limit(user, :max_forums_owned)
+        owned_forums_count = Forums.count_user_forums(user.id)
 
-    max_forums = case user_tier do
-      "business" -> :infinity
-      "pro" -> 50
-      "starter" -> 10
-      _ -> 5  # free tier
-    end
-
-    cond do
-      max_forums == :infinity -> :ok
-      owned_forums_count < max_forums -> :ok
-      true ->
         {:error, %{
           code: :forum_limit_reached,
-          message: "You've reached your forum limit (#{max_forums}). Upgrade your subscription to create more forums.",
+          message: "You've reached your forum limit (#{max_forums || "0"}). Upgrade your subscription to create more forums.",
           current_count: owned_forums_count,
           max_allowed: max_forums,
-          tier: user_tier
+          tier: tier_name
         }}
     end
   end

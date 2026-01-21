@@ -6,6 +6,128 @@ import { useE2EEStore } from '@/lib/crypto/e2eeStore';
 import { socketLogger as logger } from './logger';
 import { normalizeMessage } from './apiUtils';
 
+// ============================================================================
+// Forum/Thread WebSocket Types
+// ============================================================================
+
+export interface ForumThreadPayload {
+  id: string;
+  title: string;
+  slug: string;
+  author_id: string;
+  author_username: string;
+  author_avatar?: string;
+  preview?: string;
+  created_at: string;
+  is_pinned: boolean;
+  is_locked: boolean;
+}
+
+export interface ForumUserPayload {
+  id: string;
+  username: string;
+  display_name?: string;
+  avatar_url?: string;
+}
+
+export interface ForumStatsPayload {
+  member_count: number;
+  post_count: number;
+  thread_count: number;
+  online_count?: number;
+}
+
+export interface ForumPresenceMeta {
+  username: string;
+  display_name?: string;
+  avatar_url?: string;
+  online_at: string;
+  is_member: boolean;
+}
+
+export interface ForumPresenceMember {
+  user_id: string;
+  username: string;
+  display_name?: string;
+  avatar_url?: string;
+  online_at: string;
+  is_member: boolean;
+}
+
+export interface ThreadCommentPayload {
+  id: string;
+  content: string;
+  author_id: string;
+  author_username?: string;
+  author_display_name?: string;
+  author_avatar?: string;
+  parent_id?: string;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  created_at: string;
+  updated_at?: string;
+}
+
+export interface ThreadVotePayload {
+  thread_id: string;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+  view_count?: number;
+  comment_count?: number;
+  online_count?: number;
+}
+
+export interface CommentVotePayload {
+  comment_id: string;
+  upvotes: number;
+  downvotes: number;
+  score: number;
+}
+
+export interface ThreadTypingPayload {
+  user_id: string;
+  username: string;
+  display_name?: string;
+  is_typing: boolean;
+  started_at?: string;
+}
+
+export interface ThreadPollOption {
+  id: string;
+  text: string;
+  vote_count: number;
+}
+
+export interface ThreadPollData {
+  id: string;
+  question: string;
+  options: ThreadPollOption[];
+  total_votes: number;
+  ends_at?: string;
+}
+
+export interface ThreadPollPayload {
+  thread_id: string;
+  poll: ThreadPollData;
+}
+
+export interface ThreadPresenceMeta {
+  username: string;
+  display_name?: string;
+  avatar_url?: string;
+  typing: boolean;
+}
+
+export interface ThreadViewerPayload {
+  user_id: string;
+  username: string;
+  display_name?: string;
+  avatar_url?: string;
+  typing: boolean;
+}
+
 // Build WebSocket URL based on environment
 // Empty string means use current host with /socket path (for Vercel rewrites)
 function getSocketUrl(): string {
@@ -675,6 +797,520 @@ class SocketManager {
       channel.leave();
       this.channels.delete(topic);
     }
+  }
+
+  // ============================================================================
+  // Forum Channels
+  // ============================================================================
+
+  /**
+   * Forum event callbacks interface
+   */
+  private forumCallbacks: Map<string, {
+    onNewThread?: (thread: ForumThreadPayload) => void;
+    onThreadPinned?: (data: { thread_id: string; is_pinned: boolean }) => void;
+    onThreadLocked?: (data: { thread_id: string; is_locked: boolean }) => void;
+    onThreadDeleted?: (data: { thread_id: string }) => void;
+    onMemberJoined?: (user: ForumUserPayload) => void;
+    onMemberLeft?: (data: { user_id: string }) => void;
+    onStatsUpdate?: (stats: ForumStatsPayload) => void;
+    onPresenceSync?: (members: ForumPresenceMember[]) => void;
+  }> = new Map();
+
+  /**
+   * Thread event callbacks interface
+   */
+  private threadCallbacks: Map<string, {
+    onNewComment?: (comment: ThreadCommentPayload) => void;
+    onCommentEdited?: (comment: ThreadCommentPayload) => void;
+    onCommentDeleted?: (data: { comment_id: string }) => void;
+    onVoteChanged?: (data: ThreadVotePayload) => void;
+    onCommentVoteChanged?: (data: CommentVotePayload) => void;
+    onTyping?: (data: ThreadTypingPayload) => void;
+    onPollUpdated?: (data: ThreadPollPayload) => void;
+    onThreadStatusChanged?: (data: { thread_id: string; is_locked: boolean; is_pinned: boolean }) => void;
+    onPresenceSync?: (viewers: ThreadViewerPayload[]) => void;
+  }> = new Map();
+
+  /**
+   * Join a forum channel for real-time updates.
+   *
+   * Receives:
+   * - new_thread: When a new thread is posted
+   * - thread_pinned: When a thread is pinned/unpinned
+   * - thread_locked: When a thread is locked/unlocked
+   * - thread_deleted: When a thread is deleted
+   * - member_joined: When a new member joins
+   * - member_left: When a member leaves
+   * - stats_update: Forum stats changes
+   * - presence_state: Who's viewing the forum
+   *
+   * @param forumId - Forum ID to join
+   * @param callbacks - Optional callbacks for forum events
+   * @returns Channel instance or null if unable to join
+   */
+  joinForum(forumId: string, callbacks?: {
+    onNewThread?: (thread: ForumThreadPayload) => void;
+    onThreadPinned?: (data: { thread_id: string; is_pinned: boolean }) => void;
+    onThreadLocked?: (data: { thread_id: string; is_locked: boolean }) => void;
+    onThreadDeleted?: (data: { thread_id: string }) => void;
+    onMemberJoined?: (user: ForumUserPayload) => void;
+    onMemberLeft?: (data: { user_id: string }) => void;
+    onStatsUpdate?: (stats: ForumStatsPayload) => void;
+    onPresenceSync?: (members: ForumPresenceMember[]) => void;
+  }): Channel | null {
+    const topic = `forum:${forumId}`;
+
+    // Store callbacks for this forum
+    if (callbacks) {
+      this.forumCallbacks.set(forumId, callbacks);
+    }
+
+    // Return existing channel if already joined
+    const existingChannel = this.channels.get(topic);
+    if (existingChannel) {
+      const state = existingChannel.state;
+      if (state === 'joined' || state === 'joining') {
+        return existingChannel;
+      }
+      // Clean up bad state channel
+      this.channels.delete(topic);
+      this.channelHandlersSetUp.delete(topic);
+      this.presences.delete(topic);
+    }
+
+    if (!this.socket?.isConnected()) {
+      logger.warn('Cannot join forum: socket not connected');
+      return null;
+    }
+
+    const channel = this.socket.channel(topic, {});
+    this.channels.set(topic, channel);
+
+    // Set up handlers only once
+    if (!this.channelHandlersSetUp.has(topic)) {
+      this.channelHandlersSetUp.add(topic);
+
+      // Set up presence tracking
+      const presence = new Presence(channel);
+      this.presences.set(topic, presence);
+
+      presence.onSync(() => {
+        const members: ForumPresenceMember[] = [];
+        presence.list((userId: string, { metas }: { metas: ForumPresenceMeta[] }) => {
+          const meta = metas[0];
+          members.push({
+            user_id: userId,
+            username: meta.username,
+            display_name: meta.display_name,
+            avatar_url: meta.avatar_url,
+            online_at: meta.online_at,
+            is_member: meta.is_member
+          });
+          return userId;
+        });
+
+        const cbs = this.forumCallbacks.get(forumId);
+        cbs?.onPresenceSync?.(members);
+      });
+
+      // Forum event handlers
+      channel.on('new_thread', (payload) => {
+        const data = payload as { thread: ForumThreadPayload };
+        const cbs = this.forumCallbacks.get(forumId);
+        cbs?.onNewThread?.(data.thread);
+      });
+
+      channel.on('thread_pinned', (payload) => {
+        const data = payload as { thread_id: string; is_pinned: boolean };
+        const cbs = this.forumCallbacks.get(forumId);
+        cbs?.onThreadPinned?.(data);
+      });
+
+      channel.on('thread_locked', (payload) => {
+        const data = payload as { thread_id: string; is_locked: boolean };
+        const cbs = this.forumCallbacks.get(forumId);
+        cbs?.onThreadLocked?.(data);
+      });
+
+      channel.on('thread_deleted', (payload) => {
+        const data = payload as { thread_id: string };
+        const cbs = this.forumCallbacks.get(forumId);
+        cbs?.onThreadDeleted?.(data);
+      });
+
+      channel.on('member_joined', (payload) => {
+        const data = payload as { user: ForumUserPayload };
+        const cbs = this.forumCallbacks.get(forumId);
+        cbs?.onMemberJoined?.(data.user);
+      });
+
+      channel.on('member_left', (payload) => {
+        const data = payload as { user_id: string };
+        const cbs = this.forumCallbacks.get(forumId);
+        cbs?.onMemberLeft?.(data);
+      });
+
+      channel.on('stats_update', (payload) => {
+        const data = payload as ForumStatsPayload;
+        const cbs = this.forumCallbacks.get(forumId);
+        cbs?.onStatsUpdate?.(data);
+      });
+
+      channel.on('forum_stats', (payload) => {
+        const data = payload as ForumStatsPayload;
+        const cbs = this.forumCallbacks.get(forumId);
+        cbs?.onStatsUpdate?.(data);
+      });
+    }
+
+    channel
+      .join()
+      .receive('ok', () => {
+        logger.log(`Joined forum channel: ${forumId}`);
+      })
+      .receive('error', (resp: unknown) => {
+        logger.error(`Failed to join forum channel ${forumId}:`, resp);
+        this.channels.delete(topic);
+        this.channelHandlersSetUp.delete(topic);
+        this.forumCallbacks.delete(forumId);
+      });
+
+    return channel;
+  }
+
+  /**
+   * Leave a forum channel and clean up.
+   */
+  leaveForum(forumId: string) {
+    const topic = `forum:${forumId}`;
+    const channel = this.channels.get(topic);
+    if (channel) {
+      logger.log(`Leaving forum: ${forumId}`);
+      channel.leave();
+      this.channels.delete(topic);
+      this.channelHandlersSetUp.delete(topic);
+      this.presences.delete(topic);
+      this.forumCallbacks.delete(forumId);
+    }
+  }
+
+  /**
+   * Subscribe to a forum via WebSocket.
+   */
+  subscribeToForum(forumId: string): Promise<{ subscribed: boolean }> {
+    const topic = `forum:${forumId}`;
+    const channel = this.channels.get(topic);
+    
+    if (!channel || channel.state !== 'joined') {
+      return Promise.reject(new Error('Not connected to forum channel'));
+    }
+
+    return new Promise((resolve, reject) => {
+      channel
+        .push('subscribe', {})
+        .receive('ok', (resp: { subscribed: boolean }) => resolve(resp))
+        .receive('error', (resp: unknown) => reject(resp));
+    });
+  }
+
+  /**
+   * Unsubscribe from a forum via WebSocket.
+   */
+  unsubscribeFromForum(forumId: string): Promise<{ subscribed: boolean }> {
+    const topic = `forum:${forumId}`;
+    const channel = this.channels.get(topic);
+    
+    if (!channel || channel.state !== 'joined') {
+      return Promise.reject(new Error('Not connected to forum channel'));
+    }
+
+    return new Promise((resolve, reject) => {
+      channel
+        .push('unsubscribe', {})
+        .receive('ok', (resp: { subscribed: boolean }) => resolve(resp))
+        .receive('error', (resp: unknown) => reject(resp));
+    });
+  }
+
+  // ============================================================================
+  // Thread Channels
+  // ============================================================================
+
+  /**
+   * Join a thread channel for real-time updates.
+   *
+   * Receives:
+   * - new_comment: When a new comment is posted
+   * - comment_edited: When a comment is edited
+   * - comment_deleted: When a comment is deleted
+   * - vote_changed: When thread votes change
+   * - comment_vote_changed: When comment votes change
+   * - typing: When someone is typing a comment
+   * - poll_updated: When poll votes change
+   * - thread_status_changed: When thread is locked/pinned
+   * - presence_state: Who's viewing the thread
+   *
+   * @param threadId - Thread ID to join
+   * @param callbacks - Optional callbacks for thread events
+   * @returns Channel instance or null if unable to join
+   */
+  joinThread(threadId: string, callbacks?: {
+    onNewComment?: (comment: ThreadCommentPayload) => void;
+    onCommentEdited?: (comment: ThreadCommentPayload) => void;
+    onCommentDeleted?: (data: { comment_id: string }) => void;
+    onVoteChanged?: (data: ThreadVotePayload) => void;
+    onCommentVoteChanged?: (data: CommentVotePayload) => void;
+    onTyping?: (data: ThreadTypingPayload) => void;
+    onPollUpdated?: (data: ThreadPollPayload) => void;
+    onThreadStatusChanged?: (data: { thread_id: string; is_locked: boolean; is_pinned: boolean }) => void;
+    onPresenceSync?: (viewers: ThreadViewerPayload[]) => void;
+  }): Channel | null {
+    const topic = `thread:${threadId}`;
+
+    // Store callbacks for this thread
+    if (callbacks) {
+      this.threadCallbacks.set(threadId, callbacks);
+    }
+
+    // Return existing channel if already joined
+    const existingChannel = this.channels.get(topic);
+    if (existingChannel) {
+      const state = existingChannel.state;
+      if (state === 'joined' || state === 'joining') {
+        return existingChannel;
+      }
+      // Clean up bad state channel
+      this.channels.delete(topic);
+      this.channelHandlersSetUp.delete(topic);
+      this.presences.delete(topic);
+    }
+
+    if (!this.socket?.isConnected()) {
+      logger.warn('Cannot join thread: socket not connected');
+      return null;
+    }
+
+    const channel = this.socket.channel(topic, {});
+    this.channels.set(topic, channel);
+
+    // Set up handlers only once
+    if (!this.channelHandlersSetUp.has(topic)) {
+      this.channelHandlersSetUp.add(topic);
+
+      // Set up presence tracking
+      const presence = new Presence(channel);
+      this.presences.set(topic, presence);
+
+      presence.onSync(() => {
+        const viewers: ThreadViewerPayload[] = [];
+        presence.list((userId: string, { metas }: { metas: ThreadPresenceMeta[] }) => {
+          const meta = metas[0];
+          viewers.push({
+            user_id: userId,
+            username: meta.username,
+            display_name: meta.display_name,
+            avatar_url: meta.avatar_url,
+            typing: meta.typing
+          });
+          return userId;
+        });
+
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onPresenceSync?.(viewers);
+      });
+
+      // Thread event handlers
+      channel.on('new_comment', (payload) => {
+        const data = payload as { comment: ThreadCommentPayload };
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onNewComment?.(data.comment);
+      });
+
+      channel.on('comment_edited', (payload) => {
+        const data = payload as { comment: ThreadCommentPayload };
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onCommentEdited?.(data.comment);
+      });
+
+      channel.on('comment_deleted', (payload) => {
+        const data = payload as { comment_id: string };
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onCommentDeleted?.(data);
+      });
+
+      channel.on('vote_changed', (payload) => {
+        const data = payload as ThreadVotePayload;
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onVoteChanged?.(data);
+      });
+
+      channel.on('comment_vote_changed', (payload) => {
+        const data = payload as CommentVotePayload;
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onCommentVoteChanged?.(data);
+      });
+
+      channel.on('typing', (payload) => {
+        const data = payload as ThreadTypingPayload;
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onTyping?.(data);
+      });
+
+      channel.on('poll_updated', (payload) => {
+        const data = payload as ThreadPollPayload;
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onPollUpdated?.(data);
+      });
+
+      channel.on('thread_status_changed', (payload) => {
+        const data = payload as { thread_id: string; is_locked: boolean; is_pinned: boolean };
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onThreadStatusChanged?.(data);
+      });
+
+      channel.on('thread_stats', (payload) => {
+        const data = payload as ThreadVotePayload;
+        const cbs = this.threadCallbacks.get(threadId);
+        cbs?.onVoteChanged?.(data);
+      });
+    }
+
+    channel
+      .join()
+      .receive('ok', () => {
+        logger.log(`Joined thread channel: ${threadId}`);
+      })
+      .receive('error', (resp: unknown) => {
+        logger.error(`Failed to join thread channel ${threadId}:`, resp);
+        this.channels.delete(topic);
+        this.channelHandlersSetUp.delete(topic);
+        this.threadCallbacks.delete(threadId);
+      });
+
+    return channel;
+  }
+
+  /**
+   * Leave a thread channel and clean up.
+   */
+  leaveThread(threadId: string) {
+    const topic = `thread:${threadId}`;
+    const channel = this.channels.get(topic);
+    if (channel) {
+      logger.log(`Leaving thread: ${threadId}`);
+      channel.leave();
+      this.channels.delete(topic);
+      this.channelHandlersSetUp.delete(topic);
+      this.presences.delete(topic);
+      this.threadCallbacks.delete(threadId);
+    }
+  }
+
+  /**
+   * Vote on a thread via WebSocket for instant feedback.
+   */
+  voteOnThread(threadId: string, value: 1 | -1 | 0): Promise<ThreadVotePayload> {
+    const topic = `thread:${threadId}`;
+    const channel = this.channels.get(topic);
+    
+    if (!channel || channel.state !== 'joined') {
+      return Promise.reject(new Error('Not connected to thread channel'));
+    }
+
+    return new Promise((resolve, reject) => {
+      channel
+        .push('vote', { value })
+        .receive('ok', (resp: ThreadVotePayload) => resolve(resp))
+        .receive('error', (resp: unknown) => reject(resp));
+    });
+  }
+
+  /**
+   * Vote on a comment via WebSocket.
+   */
+  voteOnComment(threadId: string, commentId: string, value: 1 | -1 | 0): Promise<CommentVotePayload> {
+    const topic = `thread:${threadId}`;
+    const channel = this.channels.get(topic);
+    
+    if (!channel || channel.state !== 'joined') {
+      return Promise.reject(new Error('Not connected to thread channel'));
+    }
+
+    return new Promise((resolve, reject) => {
+      channel
+        .push('vote_comment', { comment_id: commentId, value })
+        .receive('ok', (resp: CommentVotePayload) => resolve(resp))
+        .receive('error', (resp: unknown) => reject(resp));
+    });
+  }
+
+  /**
+   * Send a comment via WebSocket.
+   */
+  sendComment(threadId: string, content: string, parentId?: string): Promise<{ comment_id: string }> {
+    const topic = `thread:${threadId}`;
+    const channel = this.channels.get(topic);
+    
+    if (!channel || channel.state !== 'joined') {
+      return Promise.reject(new Error('Not connected to thread channel'));
+    }
+
+    return new Promise((resolve, reject) => {
+      channel
+        .push('new_comment', { content, parent_id: parentId })
+        .receive('ok', (resp: { comment_id: string }) => resolve(resp))
+        .receive('error', (resp: unknown) => reject(resp));
+    });
+  }
+
+  /**
+   * Send typing indicator for thread comments.
+   */
+  sendThreadTyping(threadId: string, isTyping: boolean) {
+    const topic = `thread:${threadId}`;
+    const channel = this.channels.get(topic);
+    if (channel?.state === 'joined') {
+      channel.push('typing', { typing: isTyping, is_typing: isTyping });
+    }
+  }
+
+  /**
+   * Vote on a poll option via WebSocket.
+   */
+  voteOnPoll(threadId: string, optionId: string): Promise<{ poll: ThreadPollData }> {
+    const topic = `thread:${threadId}`;
+    const channel = this.channels.get(topic);
+    
+    if (!channel || channel.state !== 'joined') {
+      return Promise.reject(new Error('Not connected to thread channel'));
+    }
+
+    return new Promise((resolve, reject) => {
+      channel
+        .push('vote_poll', { option_id: optionId })
+        .receive('ok', (resp: { poll: ThreadPollData }) => resolve(resp))
+        .receive('error', (resp: unknown) => reject(resp));
+    });
+  }
+
+  /**
+   * Get list of viewers in a thread.
+   */
+  getThreadViewers(threadId: string): Promise<{ viewers: ThreadViewerPayload[] }> {
+    const topic = `thread:${threadId}`;
+    const channel = this.channels.get(topic);
+    
+    if (!channel || channel.state !== 'joined') {
+      return Promise.reject(new Error('Not connected to thread channel'));
+    }
+
+    return new Promise((resolve, reject) => {
+      channel
+        .push('get_viewers', {})
+        .receive('ok', (resp: { viewers: ThreadViewerPayload[] }) => resolve(resp))
+        .receive('error', (resp: unknown) => reject(resp));
+    });
   }
 
   // Send typing indicator

@@ -53,6 +53,79 @@ defmodule CGraphWeb.API.V1.ForumJSON do
   end
 
   @doc """
+  Render feed (home or popular).
+  """
+  def feed(%{posts: posts, meta: meta, feed_type: feed_type}) do
+    %{
+      data: Enum.map(posts, &post_data/1),
+      meta: meta,
+      feed_type: feed_type
+    }
+  end
+
+  @doc """
+  Render post data for feeds.
+  """
+  def post_data(post) do
+    %{
+      id: post.id,
+      title: post.title,
+      body: post.body,
+      url: Map.get(post, :url),
+      type: Map.get(post, :post_type, "text"),
+      score: Map.get(post, :score, 0),
+      upvotes: Map.get(post, :upvotes, 0),
+      downvotes: Map.get(post, :downvotes, 0),
+      comment_count: Map.get(post, :comment_count, 0),
+      is_nsfw: Map.get(post, :is_nsfw, false),
+      is_spoiler: Map.get(post, :is_spoiler, false),
+      is_pinned: Map.get(post, :is_pinned, false),
+      is_locked: Map.get(post, :is_locked, false),
+      flair_text: Map.get(post, :flair_text),
+      flair_color: Map.get(post, :flair_color),
+      user_vote: Map.get(post, :user_vote, 0),
+      author: render_author(post.author),
+      forum: render_post_forum(Map.get(post, :forum)),
+      category: render_post_category(Map.get(post, :category)),
+      thumbnail_url: Map.get(post, :thumbnail_url),
+      created_at: post.inserted_at,
+      updated_at: post.updated_at
+    }
+  end
+
+  defp render_author(nil), do: nil
+  defp render_author(%Ecto.Association.NotLoaded{}), do: nil
+  defp render_author(author) do
+    %{
+      id: author.id,
+      username: author.username,
+      display_name: author.display_name,
+      avatar_url: author.avatar_url
+    }
+  end
+
+  defp render_post_forum(nil), do: nil
+  defp render_post_forum(%Ecto.Association.NotLoaded{}), do: nil
+  defp render_post_forum(forum) do
+    %{
+      id: forum.id,
+      name: forum.name,
+      slug: forum.slug,
+      icon: forum.icon_url
+    }
+  end
+
+  defp render_post_category(nil), do: nil
+  defp render_post_category(%Ecto.Association.NotLoaded{}), do: nil
+  defp render_post_category(category) do
+    %{
+      id: category.id,
+      name: category.name,
+      slug: category.slug
+    }
+  end
+
+  @doc """
   Render forum data with categories and stats.
   """
   def forum_data(forum) do

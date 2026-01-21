@@ -1,4 +1,4 @@
-defmodule CGraphWeb.Api.V1.PermissionsController do
+defmodule CGraphWeb.API.V1.PermissionsController do
   @moduledoc """
   Controller for managing forum and board permissions.
 

@@ -63,3 +63,9 @@ export {
 export { Switch } from './switch';
 export { Separator } from './separator';
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs';
+
+// Enhanced Animation Components
+export { default as TiltCard, MiniTiltCard } from './TiltCard';
+export { default as GlowText, FireText, ElectricText, RainbowText } from './GlowText';
+export { default as AnimatedBorder, BadgeBorder, NeonBorder } from './AnimatedBorder';
+export { default as GamingStatsGrid, AnimatedCounter, XPProgressBar, StatCard } from './GamingStatsGrid';

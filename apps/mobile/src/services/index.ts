@@ -21,6 +21,7 @@ export * as notificationsService from './notificationsService';
 export * as groupsService from './groupsService';
 export * as gamificationService from './gamificationService';
 export * as referralService from './referralService';
+export * as tierService from './tierService';
 
 // Push Notifications
 export * from './pushNotifications';

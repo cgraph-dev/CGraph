@@ -1,12 +1,12 @@
 import Config
 
 # Configure your database
-# Using Supabase PostgreSQL (with IPv6 support for cloud hosting)
+# Using Docker PostgreSQL (cgraph user by default, matches docker-compose.yml)
 config :cgraph, CGraph.Repo,
-  username: System.get_env("POSTGRES_USER", "postgres"),
-  password: System.get_env("POSTGRES_PASSWORD", "postgres"),
+  username: System.get_env("POSTGRES_USER", "cgraph"),
+  password: System.get_env("POSTGRES_PASSWORD", "cgraph_dev_password"),
   hostname: System.get_env("POSTGRES_HOST", "localhost"),
-  database: System.get_env("POSTGRES_DB", "postgres"),
+  database: System.get_env("POSTGRES_DB", "cgraph_dev"),
   port: 5432,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,

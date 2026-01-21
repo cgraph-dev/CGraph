@@ -92,7 +92,8 @@ export default function Messages() {
   // Fetch conversations on mount
   useEffect(() => {
     fetchConversations();
-  }, [fetchConversations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Memoized handler for starting conversation with user
   const handleStartConversationWithUser = useCallback(

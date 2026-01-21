@@ -302,7 +302,8 @@ export default function UserProfile() {
     }
 
     fetchProfile();
-  }, [userId, isOwnProfile, myLevel, myTotalXP, myStreak, totalUnlocked]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   const handleSendRequest = async () => {
     if (!profile) return;
@@ -589,7 +590,7 @@ export default function UserProfile() {
           >
             <AnimatedAvatar
               src={profile.avatarUrl || undefined}
-              alt={profile.displayName || profile.username}
+              alt={profile.displayName || profile.username || 'User'}
               size="2xl"
               showStatus={true}
               statusType={profile.status}

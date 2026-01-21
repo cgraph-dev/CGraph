@@ -501,7 +501,7 @@ export default function AnimatedAvatar({
                 className="text-white font-bold"
                 style={{ fontSize: config.text }}
               >
-                {fallbackText || alt.charAt(0).toUpperCase()}
+                {fallbackText || (alt ? alt.charAt(0).toUpperCase() : '?')}
               </span>
             </div>
           )}
