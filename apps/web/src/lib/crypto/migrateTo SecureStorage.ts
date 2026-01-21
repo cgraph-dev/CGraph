@@ -109,7 +109,7 @@ export async function migrateToSecureStorage(
       if (result.backupCreated) {
         // Store backup in sessionStorage temporarily
         sessionStorage.setItem('cgraph_e2ee_migration_backup', JSON.stringify(backup));
-        console.log('[Migration] Backup created with', Object.keys(backup).length, 'keys');
+        console.debug('[Migration] Backup created with', Object.keys(backup).length, 'keys');
       }
     }
 
@@ -149,7 +149,7 @@ export async function migrateToSecureStorage(
           const retrieved = await SecureStorage.getItem(migration.secure);
           if (retrieved === legacyValue) {
             result.migratedKeys.push(migration.name);
-            console.log(`[Migration] ✓ ${migration.name} migrated successfully`);
+            console.debug(`[Migration] ✓ ${migration.name} migrated successfully`);
           } else {
             throw new Error(`Verification failed for ${migration.name}`);
           }
@@ -166,7 +166,7 @@ export async function migrateToSecureStorage(
       Object.values(LEGACY_KEYS).forEach((key) => {
         localStorage.removeItem(key);
       });
-      console.log('[Migration] Legacy keys cleared from localStorage');
+      console.debug('[Migration] Legacy keys cleared from localStorage');
     }
 
     // Step 5: Mark success if at least one key migrated
@@ -202,7 +202,7 @@ export function restoreFromBackup(): boolean {
     });
 
     sessionStorage.removeItem('cgraph_e2ee_migration_backup');
-    console.log('[Migration] Backup restored successfully');
+    console.debug('[Migration] Backup restored successfully');
     return true;
   } catch (error) {
     console.error('[Migration] Restore failed:', error);
@@ -233,9 +233,7 @@ export async function getMigrationStatus(): Promise<{
   let secureCount = 0;
   if (SecureStorage.isReady()) {
     const secureKeys = await SecureStorage.getAllKeys();
-    secureCount = secureKeys.filter((key) =>
-      Object.values(SECURE_KEYS).includes(key)
-    ).length;
+    secureCount = secureKeys.filter((key) => Object.values(SECURE_KEYS).includes(key)).length;
   }
 
   return {

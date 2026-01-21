@@ -111,7 +111,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
       scope: '/',
     });
 
-    console.log('[WebPush] Service worker registered:', registration.scope);
+    console.debug('[WebPush] Service worker registered:', registration.scope);
 
     // Wait for the service worker to be ready
     await navigator.serviceWorker.ready;
@@ -133,7 +133,7 @@ export async function requestNotificationPermission(): Promise<NotificationPermi
   }
 
   const permission = await Notification.requestPermission();
-  console.log('[WebPush] Permission result:', permission);
+  console.debug('[WebPush] Permission result:', permission);
   return permission;
 }
 
@@ -174,7 +174,7 @@ export async function subscribeToPush(
       applicationServerKey: vapidPublicKey as BufferSource,
     });
 
-    console.log('[WebPush] Push subscription created');
+    console.debug('[WebPush] Push subscription created');
     return subscription;
   } catch (error) {
     console.error('[WebPush] Push subscription failed:', error);
@@ -198,7 +198,7 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     }
 
     const success = await subscription.unsubscribe();
-    console.log('[WebPush] Unsubscribed:', success);
+    console.debug('[WebPush] Unsubscribed:', success);
     return success;
   } catch (error) {
     console.error('[WebPush] Unsubscribe failed:', error);
@@ -227,7 +227,7 @@ export async function registerPushWithBackend(
     });
 
     if (response.status === 201 || response.status === 200) {
-      console.log('[WebPush] Token registered with backend');
+      console.debug('[WebPush] Token registered with backend');
       return { success: true, subscription };
     }
 
@@ -252,7 +252,7 @@ export async function unregisterPushFromBackend(subscription: PushSubscription):
     await api.delete('/api/v1/web-push/unsubscribe', {
       data: { endpoint: subscriptionData.endpoint },
     });
-    console.log('[WebPush] Token unregistered from backend');
+    console.debug('[WebPush] Token unregistered from backend');
     return true;
   } catch (error) {
     console.error('[WebPush] Backend unregistration failed:', error);

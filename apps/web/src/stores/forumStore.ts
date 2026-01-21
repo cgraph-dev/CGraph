@@ -301,11 +301,11 @@ export interface Comment {
   downvotes: number;
   score: number;
   myVote: 1 | -1 | null;
-  userVote?: 1 | -1 | null;  // Alias for myVote for compatibility
+  userVote?: 1 | -1 | null; // Alias for myVote for compatibility
   isCollapsed: boolean;
   depth: number;
   children: Comment[];
-  isBestAnswer?: boolean;  // Mark as accepted/best answer
+  isBestAnswer?: boolean; // Mark as accepted/best answer
   // MyBB Features
   attachments?: PostAttachment[];
   editHistory?: PostEditHistory[];
@@ -459,9 +459,15 @@ export interface ForumState {
   closePoll: (pollId: string) => Promise<void>;
 
   // Subscriptions
-  subscribeThread: (threadId: string, notificationMode: Subscription['notificationMode']) => Promise<void>;
+  subscribeThread: (
+    threadId: string,
+    notificationMode: Subscription['notificationMode']
+  ) => Promise<void>;
   unsubscribeThread: (threadId: string) => Promise<void>;
-  updateSubscription: (subscriptionId: string, notificationMode: Subscription['notificationMode']) => Promise<void>;
+  updateSubscription: (
+    subscriptionId: string,
+    notificationMode: Subscription['notificationMode']
+  ) => Promise<void>;
   fetchSubscriptions: () => Promise<void>;
 
   // User Groups
@@ -613,9 +619,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
         params.time = timeRange;
       }
 
-      const endpoint = forumSlug
-        ? `/api/v1/forums/${forumSlug}/posts`
-        : '/api/v1/posts/feed';
+      const endpoint = forumSlug ? `/api/v1/forums/${forumSlug}/posts` : '/api/v1/posts/feed';
 
       const response = await api.get(endpoint, { params });
       const newPosts = ensureArray<Post>(response.data, 'posts');
@@ -808,7 +812,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
   voteForum: async (forumId: string, value: 1 | -1) => {
     const response = await api.post(`/api/v1/forums/${forumId}/vote`, { value });
     const result = response.data;
-    
+
     // Update forum in all lists
     const updateForum = (forum: Forum) => {
       if (forum.id !== forumId) return forum;
@@ -820,7 +824,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
         userVote: result.forum.user_vote,
       };
     };
-    
+
     set((state) => ({
       forums: state.forums.map(updateForum),
       leaderboard: state.leaderboard.map(updateForum),
@@ -834,12 +838,11 @@ export const useForumStore = create<ForumState>((set, get) => ({
       const response = await api.get('/api/v1/forums/leaderboard', {
         params: { sort, page, per_page: 25 },
       });
-      
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const rawForums = ensureArray<any>(response.data, 'data');
       const forums = rawForums.map(mapForumFromApi);
       const meta = response.data.meta;
-      
+
       set({
         leaderboard: page === 1 ? forums : [...get().leaderboard, ...forums],
         leaderboardMeta: {
@@ -860,8 +863,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
     const response = await api.get('/api/v1/forums/top', {
       params: { limit, sort },
     });
-    
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
     const rawForums = ensureArray<any>(response.data, 'data');
     const forums = rawForums.map(mapForumFromApi);
     set({ topForums: forums });
@@ -939,12 +941,11 @@ export const useForumStore = create<ForumState>((set, get) => ({
     try {
       await api.post(`/api/v1/forums/${forumId}/posts/${postId}/pin`);
       set((state) => ({
-        posts: state.posts.map((p) =>
-          p.id === postId ? { ...p, isPinned: true } : p
-        ),
-        currentPost: state.currentPost?.id === postId
-          ? { ...state.currentPost, isPinned: true }
-          : state.currentPost,
+        posts: state.posts.map((p) => (p.id === postId ? { ...p, isPinned: true } : p)),
+        currentPost:
+          state.currentPost?.id === postId
+            ? { ...state.currentPost, isPinned: true }
+            : state.currentPost,
       }));
     } catch (error) {
       console.error('[forumStore] pinPost error:', error);
@@ -956,12 +957,11 @@ export const useForumStore = create<ForumState>((set, get) => ({
     try {
       await api.delete(`/api/v1/forums/${forumId}/posts/${postId}/pin`);
       set((state) => ({
-        posts: state.posts.map((p) =>
-          p.id === postId ? { ...p, isPinned: false } : p
-        ),
-        currentPost: state.currentPost?.id === postId
-          ? { ...state.currentPost, isPinned: false }
-          : state.currentPost,
+        posts: state.posts.map((p) => (p.id === postId ? { ...p, isPinned: false } : p)),
+        currentPost:
+          state.currentPost?.id === postId
+            ? { ...state.currentPost, isPinned: false }
+            : state.currentPost,
       }));
     } catch (error) {
       console.error('[forumStore] unpinPost error:', error);
@@ -973,12 +973,11 @@ export const useForumStore = create<ForumState>((set, get) => ({
     try {
       await api.post(`/api/v1/forums/${forumId}/posts/${postId}/lock`);
       set((state) => ({
-        posts: state.posts.map((p) =>
-          p.id === postId ? { ...p, isLocked: true } : p
-        ),
-        currentPost: state.currentPost?.id === postId
-          ? { ...state.currentPost, isLocked: true }
-          : state.currentPost,
+        posts: state.posts.map((p) => (p.id === postId ? { ...p, isLocked: true } : p)),
+        currentPost:
+          state.currentPost?.id === postId
+            ? { ...state.currentPost, isLocked: true }
+            : state.currentPost,
       }));
     } catch (error) {
       console.error('[forumStore] lockPost error:', error);
@@ -990,12 +989,11 @@ export const useForumStore = create<ForumState>((set, get) => ({
     try {
       await api.delete(`/api/v1/forums/${forumId}/posts/${postId}/lock`);
       set((state) => ({
-        posts: state.posts.map((p) =>
-          p.id === postId ? { ...p, isLocked: false } : p
-        ),
-        currentPost: state.currentPost?.id === postId
-          ? { ...state.currentPost, isLocked: false }
-          : state.currentPost,
+        posts: state.posts.map((p) => (p.id === postId ? { ...p, isLocked: false } : p)),
+        currentPost:
+          state.currentPost?.id === postId
+            ? { ...state.currentPost, isLocked: false }
+            : state.currentPost,
       }));
     } catch (error) {
       console.error('[forumStore] unlockPost error:', error);
@@ -1069,12 +1067,23 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         posts: state.posts.map((p) =>
           p.id === threadId
-            ? { ...p, rating: result.average_rating, ratingCount: result.rating_count, myRating: rating }
+            ? {
+                ...p,
+                rating: result.average_rating,
+                ratingCount: result.rating_count,
+                myRating: rating,
+              }
             : p
         ),
-        currentPost: state.currentPost?.id === threadId
-          ? { ...state.currentPost, rating: result.average_rating, ratingCount: result.rating_count, myRating: rating }
-          : state.currentPost,
+        currentPost:
+          state.currentPost?.id === threadId
+            ? {
+                ...state.currentPost,
+                rating: result.average_rating,
+                ratingCount: result.rating_count,
+                myRating: rating,
+              }
+            : state.currentPost,
       }));
     } catch (error) {
       console.error('[forumStore] rateThread error:', error);
@@ -1491,9 +1500,10 @@ export const useForumStore = create<ForumState>((set, get) => ({
         posts: state.posts.map((p) =>
           p.id === threadId ? { ...p, isLocked: true, isClosed: true } : p
         ),
-        currentPost: state.currentPost?.id === threadId
-          ? { ...state.currentPost, isLocked: true, isClosed: true }
-          : state.currentPost,
+        currentPost:
+          state.currentPost?.id === threadId
+            ? { ...state.currentPost, isLocked: true, isClosed: true }
+            : state.currentPost,
       }));
     } catch (error) {
       console.error('[forumStore] closeThread error:', error);
@@ -1507,9 +1517,10 @@ export const useForumStore = create<ForumState>((set, get) => ({
         posts: state.posts.map((p) =>
           p.id === threadId ? { ...p, isLocked: false, isClosed: false } : p
         ),
-        currentPost: state.currentPost?.id === threadId
-          ? { ...state.currentPost, isLocked: false, isClosed: false }
-          : state.currentPost,
+        currentPost:
+          state.currentPost?.id === threadId
+            ? { ...state.currentPost, isLocked: false, isClosed: false }
+            : state.currentPost,
       }));
     } catch (error) {
       console.error('[forumStore] reopenThread error:', error);
@@ -1544,7 +1555,7 @@ function mapForumFromApi(data: Record<string, unknown>): Forum {
     moderators: [],
     isSubscribed: (data.is_subscribed as boolean) || false,
     isMember: (data.is_member as boolean) || false,
-    ownerId: owner?.id as string | null || null,
+    ownerId: (owner?.id as string | null) || null,
     createdAt: data.created_at as string,
   };
 }

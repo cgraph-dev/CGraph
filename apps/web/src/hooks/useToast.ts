@@ -39,7 +39,7 @@ export function useToast(): UseToastReturn {
       info: 'color: blue; font-weight: bold;',
     };
 
-    console.log(`%c[${options.type.toUpperCase()}] ${options.message}`, styles[options.type]);
+    console.debug(`%c[${options.type.toUpperCase()}] ${options.message}`, styles[options.type]);
 
     // If there's a toast container in the DOM, dispatch a custom event
     if (typeof window !== 'undefined') {

@@ -393,7 +393,7 @@ export const useAuthStore = create<AuthState>()(
           } catch (error) {
             // Clear invalid/stale auth on any error
             if (import.meta.env.DEV) {
-              console.log('[AuthStore] checkAuth failed - clearing auth:', error);
+              console.debug('[AuthStore] checkAuth failed - clearing auth:', error);
             }
             set({
               user: null,
@@ -417,11 +417,11 @@ export const useAuthStore = create<AuthState>()(
         // Critical: Handle rehydration to fix isLoading state
         onRehydrateStorage: () => {
           if (import.meta.env.DEV) {
-            console.log('[AuthStore] onRehydrateStorage called');
+            console.debug('[AuthStore] onRehydrateStorage called');
           }
           return (state, error) => {
             if (import.meta.env.DEV) {
-              console.log('[AuthStore] Rehydration callback - state:', !!state, 'error:', error);
+              console.debug('[AuthStore] Rehydration callback - state:', !!state, 'error:', error);
             }
             if (error) {
               console.error('Auth store rehydration failed:', error);
@@ -437,7 +437,7 @@ export const useAuthStore = create<AuthState>()(
               // Rehydration successful - mark loading as complete
               // Don't block on token validation - let the app render
               if (import.meta.env.DEV) {
-                console.log('[AuthStore] Rehydration complete - hasToken:', !!state.token);
+                console.debug('[AuthStore] Rehydration complete - hasToken:', !!state.token);
               }
               useAuthStore.setState({
                 isLoading: false, // Never block - checkAuth runs in background
@@ -445,7 +445,7 @@ export const useAuthStore = create<AuthState>()(
             } else {
               // No state to rehydrate
               if (import.meta.env.DEV) {
-                console.log('[AuthStore] No state to rehydrate');
+                console.debug('[AuthStore] No state to rehydrate');
               }
               useAuthStore.setState({ isLoading: false });
             }

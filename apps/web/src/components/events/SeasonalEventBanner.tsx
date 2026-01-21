@@ -58,7 +58,7 @@ export default function SeasonalEventBanner({
     const result = await joinEvent(featuredEvent.id);
     if (result.success) {
       // Could show a success toast here
-      console.log('Joined event successfully');
+      console.debug('Joined event successfully');
     }
   };
 
@@ -86,13 +86,13 @@ export default function SeasonalEventBanner({
                   className="h-10 w-10 rounded-lg object-cover"
                 />
               )}
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <SparklesIcon className="h-4 w-4 text-yellow-400" />
-                  <span className="font-semibold text-white truncate">{featuredEvent.name}</span>
+                  <span className="truncate font-semibold text-white">{featuredEvent.name}</span>
                 </div>
                 {timeRemaining && (
-                  <div className="flex items-center gap-1.5 mt-1 text-xs text-white/70">
+                  <div className="mt-1 flex items-center gap-1.5 text-xs text-white/70">
                     <ClockIcon className="h-3.5 w-3.5" />
                     <span>
                       {timeRemaining.days}d {timeRemaining.hours}h {timeRemaining.minutes}m left
@@ -103,7 +103,7 @@ export default function SeasonalEventBanner({
               <button
                 onClick={handleJoin}
                 disabled={isJoining}
-                className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors disabled:opacity-50"
+                className="rounded-lg bg-white/10 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-white/20 disabled:opacity-50"
               >
                 {isJoining ? 'Joining...' : 'Join'}
               </button>
@@ -129,7 +129,7 @@ export default function SeasonalEventBanner({
               <img
                 src={featuredEvent.bannerUrl}
                 alt={featuredEvent.name}
-                className="w-full h-full object-cover opacity-30"
+                className="h-full w-full object-cover opacity-30"
               />
               <div
                 className="absolute inset-0"
@@ -146,7 +146,7 @@ export default function SeasonalEventBanner({
             {showDismiss && onDismiss && (
               <button
                 onClick={onDismiss}
-                className="absolute top-4 right-4 p-2 rounded-lg bg-black/20 hover:bg-black/40 text-white/70 hover:text-white transition-colors"
+                className="absolute right-4 top-4 rounded-lg bg-black/20 p-2 text-white/70 transition-colors hover:bg-black/40 hover:text-white"
                 aria-label="Dismiss"
               >
                 <XMarkIcon className="h-5 w-5" />
@@ -154,44 +154,48 @@ export default function SeasonalEventBanner({
             )}
 
             {/* Event header */}
-            <div className="flex items-start gap-4 mb-4">
+            <div className="mb-4 flex items-start gap-4">
               {featuredEvent.iconUrl && (
                 <img
                   src={featuredEvent.iconUrl}
                   alt={featuredEvent.name}
-                  className="h-16 w-16 rounded-xl object-cover border-2 border-white/20"
+                  className="h-16 w-16 rounded-xl border-2 border-white/20 object-cover"
                 />
               )}
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="mb-1 flex items-center gap-2">
                   <SparklesIcon className="h-5 w-5 text-yellow-400" />
-                  <span className="text-xs font-semibold text-yellow-400 uppercase tracking-wider">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-yellow-400">
                     {featuredEvent.type.replace('_', ' ')}
                   </span>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-2">{featuredEvent.name}</h3>
-                <p className="text-white/80 text-sm leading-relaxed">{featuredEvent.description}</p>
+                <h3 className="mb-2 text-2xl font-bold text-white">{featuredEvent.name}</h3>
+                <p className="text-sm leading-relaxed text-white/80">{featuredEvent.description}</p>
               </div>
             </div>
 
             {/* Stats row */}
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="mb-4 grid grid-cols-3 gap-4">
               {/* Time remaining */}
               {timeRemaining && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                   <ClockIcon className={`h-5 w-5 ${isEnding ? 'text-red-400' : 'text-blue-400'}`} />
                   <div>
-                    <div className={`text-sm font-semibold ${isEnding ? 'text-red-400' : 'text-white'}`}>
+                    <div
+                      className={`text-sm font-semibold ${isEnding ? 'text-red-400' : 'text-white'}`}
+                    >
                       {timeRemaining.days}d {timeRemaining.hours}h {timeRemaining.minutes}m
                     </div>
-                    <div className="text-xs text-white/60">{isEnding ? 'Ending soon!' : 'Time left'}</div>
+                    <div className="text-xs text-white/60">
+                      {isEnding ? 'Ending soon!' : 'Time left'}
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Battle pass */}
               {featuredEvent.hasBattlePass && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                   <TrophyIcon className="h-5 w-5 text-purple-400" />
                   <div>
                     <div className="text-sm font-semibold text-white">
@@ -204,7 +208,7 @@ export default function SeasonalEventBanner({
 
               {/* Leaderboard */}
               {featuredEvent.hasLeaderboard && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2">
                   <TrophyIcon className="h-5 w-5 text-yellow-400" />
                   <div>
                     <div className="text-sm font-semibold text-white">Leaderboard</div>
@@ -219,16 +223,14 @@ export default function SeasonalEventBanner({
               <button
                 onClick={handleJoin}
                 disabled={isJoining}
-                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white transition-all disabled:opacity-50"
+                className="flex-1 rounded-lg px-6 py-3 font-semibold text-white transition-all disabled:opacity-50"
                 style={{
                   background: `linear-gradient(135deg, ${featuredEvent.colors.primary} 0%, ${featuredEvent.colors.secondary} 100%)`,
                 }}
               >
                 {isJoining ? 'Joining...' : 'Join Event'}
               </button>
-              <button
-                className="px-6 py-3 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 font-semibold text-white transition-colors"
-              >
+              <button className="rounded-lg border border-white/20 bg-white/10 px-6 py-3 font-semibold text-white transition-colors hover:bg-white/20">
                 View Details
               </button>
             </div>
@@ -240,8 +242,10 @@ export default function SeasonalEventBanner({
                 <span className="text-xs text-white/70">
                   Active bonuses:
                   {featuredEvent.multipliers.xp > 1 && ` ${featuredEvent.multipliers.xp}x XP`}
-                  {featuredEvent.multipliers.coins > 1 && ` ${featuredEvent.multipliers.coins}x Coins`}
-                  {featuredEvent.multipliers.karma > 1 && ` ${featuredEvent.multipliers.karma}x Karma`}
+                  {featuredEvent.multipliers.coins > 1 &&
+                    ` ${featuredEvent.multipliers.coins}x Coins`}
+                  {featuredEvent.multipliers.karma > 1 &&
+                    ` ${featuredEvent.multipliers.karma}x Karma`}
                 </span>
               </div>
             )}

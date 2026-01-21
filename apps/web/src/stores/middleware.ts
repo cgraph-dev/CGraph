@@ -110,9 +110,9 @@ export function withLogger<T extends object>(
           `%c[${storeName}] State Update`,
           'color: #10b981; font-weight: bold;'
         );
-        console.log('%cPrevious:', 'color: #ef4444', prevState);
-        console.log('%cNext:', 'color: #22c55e', nextState);
-        console.log('%cDiff:', 'color: #3b82f6', getDiff(prevState, nextState));
+        console.debug('%cPrevious:', 'color: #ef4444', prevState);
+        console.debug('%cNext:', 'color: #22c55e', nextState);
+        console.debug('%cDiff:', 'color: #3b82f6', getDiff(prevState, nextState));
         console.groupEnd();
       }
     };

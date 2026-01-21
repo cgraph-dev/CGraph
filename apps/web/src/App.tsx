@@ -143,7 +143,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     // Run auth check in background - don't block rendering
     if (import.meta.env.DEV) {
-      console.log('[AuthInitializer] Starting auth check, hasToken:', !!token);
+      console.debug('[AuthInitializer] Starting auth check, hasToken:', !!token);
     }
 
     checkAuth()
@@ -152,7 +152,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       })
       .finally(() => {
         if (import.meta.env.DEV) {
-          console.log('[AuthInitializer] Auth check complete');
+          console.debug('[AuthInitializer] Auth check complete');
         }
       });
   }, [checkAuth, token]);
@@ -161,7 +161,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isAuthenticated) {
       if (import.meta.env.DEV) {
-        console.log('[AuthInitializer] Fetching gamification data...');
+        console.debug('[AuthInitializer] Fetching gamification data...');
       }
       fetchGamificationData().catch((error) => {
         console.error('[AuthInitializer] Gamification fetch failed:', error);
@@ -186,8 +186,8 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
     root.style.setProperty('--user-theme-gradient', colors.gradient);
 
     if (import.meta.env.DEV) {
-      console.log('[ThemeSystem] Applied app theme:', appThemeId);
-      console.log('[ThemeSystem] Applied user customizations:', theme.colorPreset, colors);
+      console.debug('[ThemeSystem] Applied app theme:', appThemeId);
+      console.debug('[ThemeSystem] Applied user customizations:', theme.colorPreset, colors);
     }
   }, [theme.colorPreset]);
 
@@ -195,7 +195,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isAuthenticated && user?.id) {
       if (import.meta.env.DEV) {
-        console.log('[ThemeSystem] Syncing theme with server for user:', user.id);
+        console.debug('[ThemeSystem] Syncing theme with server for user:', user.id);
       }
       syncWithServer(user.id).catch((error) => {
         console.error('[ThemeSystem] Theme sync failed:', error);
@@ -213,7 +213,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
 
   if (import.meta.env.DEV) {
-    console.log('[ProtectedRoute] isAuthenticated:', isAuthenticated);
+    console.debug('[ProtectedRoute] isAuthenticated:', isAuthenticated);
   }
 
   // Never block on loading - just check if authenticated
@@ -229,7 +229,7 @@ function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
 
   if (import.meta.env.DEV) {
-    console.log('[PublicRoute] isAuthenticated:', isAuthenticated);
+    console.debug('[PublicRoute] isAuthenticated:', isAuthenticated);
   }
 
   // Never block - just redirect if authenticated

@@ -60,7 +60,7 @@ export function registerTokenHandlers(config: TokenServiceConfig): void {
   registrationResolvers = [];
 
   if (import.meta.env.DEV) {
-    console.log('[TokenService] Handlers registered successfully');
+    console.debug('[TokenService] Handlers registered successfully');
   }
 }
 

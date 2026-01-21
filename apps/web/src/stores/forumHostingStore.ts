@@ -235,7 +235,7 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
     set({ isLoadingBoards: true });
     try {
       const response = await api.get(`/api/v1/forums/${forumId}/boards`);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const rawBoards = ensureArray<any>(response.data, 'data');
       const boards = rawBoards.map(mapBoardFromApi);
       set({ boards, isLoadingBoards: false });
@@ -301,7 +301,7 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
       const response = await api.get(`/api/v1/forums/${forumId}/threads`, {
         params: { limit, sort: 'latest' },
       });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const rawThreads = ensureArray<any>(response.data, 'data');
       const threads = rawThreads.map(mapThreadFromApi);
       set({ threads, isLoadingThreads: false });
@@ -321,7 +321,7 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
       if (opts?.sort) params.set('sort', opts.sort);
 
       const response = await api.get(`/api/v1/boards/${boardId}/threads?${params}`);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const rawThreads = ensureArray<any>(response.data, 'data');
       const threads = rawThreads.map(mapThreadFromApi);
       const meta = response.data.meta as PaginationMeta;
@@ -384,9 +384,7 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
   pinThread: async (threadId: string, pinned: boolean) => {
     await api.post(`/api/v1/threads/${threadId}/pin`, { pinned });
     set((state) => ({
-      threads: state.threads.map((t) =>
-        t.id === threadId ? { ...t, isPinned: pinned } : t
-      ),
+      threads: state.threads.map((t) => (t.id === threadId ? { ...t, isPinned: pinned } : t)),
       currentThread:
         state.currentThread?.id === threadId
           ? { ...state.currentThread, isPinned: pinned }
@@ -397,9 +395,7 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
   lockThread: async (threadId: string, locked: boolean) => {
     await api.post(`/api/v1/threads/${threadId}/lock`, { locked });
     set((state) => ({
-      threads: state.threads.map((t) =>
-        t.id === threadId ? { ...t, isLocked: locked } : t
-      ),
+      threads: state.threads.map((t) => (t.id === threadId ? { ...t, isLocked: locked } : t)),
       currentThread:
         state.currentThread?.id === threadId
           ? { ...state.currentThread, isLocked: locked }
@@ -424,7 +420,7 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
       if (opts?.perPage) params.set('per_page', String(opts.perPage));
 
       const response = await api.get(`/api/v1/threads/${threadId}/posts?${params}`);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const rawPosts = ensureArray<any>(response.data, 'data');
       const posts = rawPosts.map(mapPostFromApi);
       const meta = response.data.meta as PaginationMeta;
@@ -493,17 +489,19 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
       if (opts.search) params.append('search', opts.search);
 
       const response = await api.get(`/api/v1/forums/${forumId}/members?${params}`);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const rawMembers = ensureArray<any>(response.data, 'data');
       const members = rawMembers.map(mapMemberFromApi);
       const meta = response.data.meta;
       set({
         members,
-        membersMeta: meta ? {
-          page: meta.page || 1,
-          perPage: meta.per_page || 20,
-          total: meta.total || members.length,
-        } : null,
+        membersMeta: meta
+          ? {
+              page: meta.page || 1,
+              perPage: meta.per_page || 20,
+              total: meta.total || members.length,
+            }
+          : null,
         isLoadingMembers: false,
       });
     } catch (error) {
@@ -543,8 +541,10 @@ function mapBoardFromApi(data: Record<string, unknown>): Board {
 function mapThreadFromApi(data: Record<string, unknown>): Thread {
   const insertedAt = data.inserted_at as string;
   const lastPostAt = (data.last_post_at as string) || null;
-  const lastPoster = data.last_poster ? mapAuthorFromApi(data.last_poster as Record<string, unknown>) : null;
-  
+  const lastPoster = data.last_poster
+    ? mapAuthorFromApi(data.last_poster as Record<string, unknown>)
+    : null;
+
   return {
     id: data.id as string,
     boardId: data.board_id as string,

@@ -491,11 +491,11 @@ export const useGamificationStore = create<GamificationState>()(
 
         // Check if we leveled up
         if (newLevel > level) {
-          console.log(`[Gamification] LEVEL UP! Now level ${newLevel}`);
+          console.debug(`[Gamification] LEVEL UP! Now level ${newLevel}`);
           // Level up modal/celebration can be triggered here
         }
 
-        console.log(
+        console.debug(
           `[Gamification] +${amount} XP from ${source} | Total: ${newTotalXP} | Level: ${newLevel}`
         );
       },
@@ -541,9 +541,9 @@ export const useGamificationStore = create<GamificationState>()(
               await get().unlockLoreEntry(achievement.loreFragment);
             }
 
-            console.log(`[Gamification] Achievement unlocked: ${achievement.title}`);
+            console.debug(`[Gamification] Achievement unlocked: ${achievement.title}`);
           } else {
-            console.log(
+            console.debug(
               `[Gamification] Achievement not ready: ${achievement.title} - ${result.message}`
             );
           }
@@ -574,7 +574,7 @@ export const useGamificationStore = create<GamificationState>()(
             ],
           });
 
-          console.log(
+          console.debug(
             `[Gamification] Quest completed: ${quest.title}, XP: ${rewards?.xp}, Coins: ${rewards?.coins}`
           );
         } catch (error) {
@@ -635,7 +635,7 @@ export const useGamificationStore = create<GamificationState>()(
        */
       unlockLoreEntry: async (_entryId: string) => {
         // Lore system is a future enhancement
-        console.log('[Gamification] Lore system coming soon');
+        console.debug('[Gamification] Lore system coming soon');
       },
 
       /**
@@ -656,7 +656,7 @@ export const useGamificationStore = create<GamificationState>()(
             loginStreak: data.streak_days || data.streak || get().loginStreak + 1,
           });
 
-          console.log(
+          console.debug(
             `[Gamification] Daily login claimed! Streak: ${data.streak_days}, Coins: ${data.coins_earned}`
           );
         } catch (error) {

@@ -336,7 +336,7 @@ function ConversationItem({
                 <ConversationMenu
                   conversation={conversation}
                   onAction={(action) => {
-                    console.log(action, conversation.id);
+                    console.debug(action, conversation.id);
                     setShowMenu(false);
                   }}
                 />

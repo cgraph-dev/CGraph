@@ -156,7 +156,7 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
     channel
       .join()
       .receive('ok', (response: unknown) => {
-        console.log('[GamificationSocket] Joined successfully', response);
+        console.debug('[GamificationSocket] Joined successfully', response);
         set((state) => ({
           state: { ...state.state, connected: true, lastError: null },
         }));

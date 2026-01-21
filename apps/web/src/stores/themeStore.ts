@@ -164,97 +164,100 @@ const defaultTheme: UserTheme = {
 };
 
 // Theme color definitions
-export const THEME_COLORS: Record<ThemeColorPreset, {
-  primary: string;
-  secondary: string;
-  glow: string;
-  name: string;
-  gradient: string;
-}> = {
+export const THEME_COLORS: Record<
+  ThemeColorPreset,
+  {
+    primary: string;
+    secondary: string;
+    glow: string;
+    name: string;
+    gradient: string;
+  }
+> = {
   emerald: {
     primary: '#10b981',
     secondary: '#34d399',
     glow: 'rgba(16, 185, 129, 0.5)',
     name: 'Emerald',
-    gradient: 'from-emerald-500 to-emerald-600'
+    gradient: 'from-emerald-500 to-emerald-600',
   },
   purple: {
     primary: '#8b5cf6',
     secondary: '#a78bfa',
     glow: 'rgba(139, 92, 246, 0.5)',
     name: 'Purple',
-    gradient: 'from-purple-500 to-purple-600'
+    gradient: 'from-purple-500 to-purple-600',
   },
   cyan: {
     primary: '#06b6d4',
     secondary: '#22d3ee',
     glow: 'rgba(6, 182, 212, 0.5)',
     name: 'Cyan',
-    gradient: 'from-cyan-500 to-cyan-600'
+    gradient: 'from-cyan-500 to-cyan-600',
   },
   orange: {
     primary: '#f97316',
     secondary: '#fb923c',
     glow: 'rgba(249, 115, 22, 0.5)',
     name: 'Orange',
-    gradient: 'from-orange-500 to-orange-600'
+    gradient: 'from-orange-500 to-orange-600',
   },
   pink: {
     primary: '#ec4899',
     secondary: '#f472b6',
     glow: 'rgba(236, 72, 153, 0.5)',
     name: 'Pink',
-    gradient: 'from-pink-500 to-pink-600'
+    gradient: 'from-pink-500 to-pink-600',
   },
   gold: {
     primary: '#eab308',
     secondary: '#facc15',
     glow: 'rgba(234, 179, 8, 0.5)',
     name: 'Gold',
-    gradient: 'from-yellow-500 to-yellow-600'
+    gradient: 'from-yellow-500 to-yellow-600',
   },
   crimson: {
     primary: '#dc2626',
     secondary: '#f87171',
     glow: 'rgba(220, 38, 38, 0.5)',
     name: 'Crimson',
-    gradient: 'from-red-500 to-red-600'
+    gradient: 'from-red-500 to-red-600',
   },
   arctic: {
     primary: '#38bdf8',
     secondary: '#7dd3fc',
     glow: 'rgba(56, 189, 248, 0.5)',
     name: 'Arctic',
-    gradient: 'from-sky-400 to-sky-500'
+    gradient: 'from-sky-400 to-sky-500',
   },
   sunset: {
     primary: '#f59e0b',
     secondary: '#f97316',
     glow: 'rgba(245, 158, 11, 0.5)',
     name: 'Sunset',
-    gradient: 'from-amber-500 to-orange-500'
+    gradient: 'from-amber-500 to-orange-500',
   },
   midnight: {
     primary: '#4c1d95',
     secondary: '#6b21a8',
     glow: 'rgba(76, 29, 149, 0.5)',
     name: 'Midnight',
-    gradient: 'from-purple-900 to-purple-800'
+    gradient: 'from-purple-900 to-purple-800',
   },
   forest: {
     primary: '#059669',
     secondary: '#10b981',
     glow: 'rgba(5, 150, 105, 0.5)',
     name: 'Forest',
-    gradient: 'from-emerald-600 to-emerald-500'
+    gradient: 'from-emerald-600 to-emerald-500',
   },
   ocean: {
     primary: '#0284c7',
     secondary: '#0ea5e9',
     glow: 'rgba(2, 132, 199, 0.5)',
     name: 'Ocean',
-    gradient: 'from-sky-600 to-sky-500'
-  }
+    gradient: 'from-sky-600 to-sky-500',
+  },
 };
 
 interface ThemeStore {
@@ -284,7 +287,7 @@ interface ThemeStore {
   saveToServer: (userId: string) => Promise<void>;
 
   // Helper methods
-  getThemeColors: () => typeof THEME_COLORS[ThemeColorPreset];
+  getThemeColors: () => (typeof THEME_COLORS)[ThemeColorPreset];
   getChatBubbleCSS: () => Record<string, string>;
   getAvatarBorderCSS: () => Record<string, string>;
 }
@@ -501,7 +504,7 @@ export const useThemeStore = create<ThemeStore>()(
       syncWithServer: async (userId) => {
         try {
           // TODO: Implement API call to fetch user theme from server
-          console.log('Syncing theme with server for user:', userId);
+          console.debug('Syncing theme with server for user:', userId);
           // const response = await api.get(`/api/v1/users/${userId}/theme`);
           // if (response.data) {
           //   set({ theme: { ...defaultTheme, ...response.data } });
@@ -514,7 +517,7 @@ export const useThemeStore = create<ThemeStore>()(
       saveToServer: async (userId) => {
         try {
           // TODO: Implement API call to save user theme to server
-          console.log('Saving theme to server for user:', userId);
+          console.debug('Saving theme to server for user:', userId);
           // await api.put(`/api/v1/users/${userId}/theme`, get().theme);
         } catch (error) {
           console.error('Failed to save theme to server:', error);
@@ -533,9 +536,10 @@ export const useThemeStore = create<ThemeStore>()(
         return {
           backgroundColor: colors.primary,
           borderRadius: `${theme.bubbleBorderRadius}px`,
-          boxShadow: theme.bubbleShadowIntensity > 0
-            ? `0 2px ${theme.bubbleShadowIntensity}px ${colors.glow}`
-            : 'none',
+          boxShadow:
+            theme.bubbleShadowIntensity > 0
+              ? `0 2px ${theme.bubbleShadowIntensity}px ${colors.glow}`
+              : 'none',
           backdropFilter: theme.bubbleGlassEffect ? 'blur(10px)' : 'none',
         };
       },

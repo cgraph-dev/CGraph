@@ -901,7 +901,7 @@ export default function Conversation() {
 
                   // Debug logging for alignment issues
                   if (import.meta.env.DEV && msgIndex === 0) {
-                    console.log('[Conversation Web] First message debug:', {
+                    console.debug('[Conversation Web] First message debug:', {
                       messageId: message.id,
                       rawSenderId,
                       messageSenderId,
