@@ -1437,15 +1437,15 @@ export default function LandingPage() {
         </Link>
 
         <div className="gl-nav__links">
-          <a href="#features" className="gl-nav__link">
+          <Link to="/features" className="gl-nav__link">
             Features
-          </a>
-          <a href="#security" className="gl-nav__link">
+          </Link>
+          <Link to="/security" className="gl-nav__link">
             Security
-          </a>
-          <a href="#pricing" className="gl-nav__link">
+          </Link>
+          <Link to="/pricing" className="gl-nav__link">
             Pricing
-          </a>
+          </Link>
         </div>
 
         <SignInButton />
