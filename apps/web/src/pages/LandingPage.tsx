@@ -1415,7 +1415,7 @@ export default function LandingPage() {
 
       {/* Navigation */}
       <nav className={`gl-nav ${navHidden ? 'hidden' : ''} ${navScrolled ? 'scrolled' : ''}`}>
-        <Link to="/demo/landing" className="gl-nav__logo">
+        <Link to="/" className="gl-nav__logo">
           <span>⬡</span>
           CGraph
         </Link>
