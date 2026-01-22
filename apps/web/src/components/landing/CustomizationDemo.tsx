@@ -20,10 +20,28 @@ import type { BorderTheme } from '@/types/avatar-borders';
 // TYPES
 // =============================================================================
 
-type ThemePreset = 'emerald' | 'purple' | 'cyan' | 'orange' | 'pink' | 'gold' | 'crimson' | 'arctic';
+type ThemePreset =
+  | 'emerald'
+  | 'purple'
+  | 'cyan'
+  | 'orange'
+  | 'pink'
+  | 'gold'
+  | 'crimson'
+  | 'arctic';
 type EffectPreset = 'glassmorphism' | 'neon' | 'holographic' | 'minimal' | 'aurora' | 'cyberpunk';
 type AnimationSpeed = 'slow' | 'normal' | 'fast';
-type AvatarBorderType = 'none' | 'static' | 'glow' | 'pulse' | 'rotate' | 'fire' | 'ice' | 'electric' | 'legendary' | 'mythic';
+type AvatarBorderType =
+  | 'none'
+  | 'static'
+  | 'glow'
+  | 'pulse'
+  | 'rotate'
+  | 'fire'
+  | 'ice'
+  | 'electric'
+  | 'legendary'
+  | 'mythic';
 type ChatBubbleStyle = 'default' | 'rounded' | 'sharp' | 'cloud' | 'modern' | 'retro';
 type ProfileCardStyle = 'minimal' | 'detailed' | 'compact' | 'expanded' | 'gaming';
 
@@ -66,22 +84,53 @@ type DemoPanel = 'theme' | 'avatar' | 'chat' | 'profile';
 // THEME COLORS
 // =============================================================================
 
-const themeColors: Record<ThemePreset, { primary: string; secondary: string; glow: string; name: string }> = {
-  emerald: { primary: '#10b981', secondary: '#34d399', glow: 'rgba(16, 185, 129, 0.5)', name: 'Emerald' },
-  purple: { primary: '#8b5cf6', secondary: '#a78bfa', glow: 'rgba(139, 92, 246, 0.5)', name: 'Purple' },
+const themeColors: Record<
+  ThemePreset,
+  { primary: string; secondary: string; glow: string; name: string }
+> = {
+  emerald: {
+    primary: '#10b981',
+    secondary: '#34d399',
+    glow: 'rgba(16, 185, 129, 0.5)',
+    name: 'Emerald',
+  },
+  purple: {
+    primary: '#8b5cf6',
+    secondary: '#a78bfa',
+    glow: 'rgba(139, 92, 246, 0.5)',
+    name: 'Purple',
+  },
   cyan: { primary: '#06b6d4', secondary: '#22d3ee', glow: 'rgba(6, 182, 212, 0.5)', name: 'Cyan' },
-  orange: { primary: '#f97316', secondary: '#fb923c', glow: 'rgba(249, 115, 22, 0.5)', name: 'Orange' },
+  orange: {
+    primary: '#f97316',
+    secondary: '#fb923c',
+    glow: 'rgba(249, 115, 22, 0.5)',
+    name: 'Orange',
+  },
   pink: { primary: '#ec4899', secondary: '#f472b6', glow: 'rgba(236, 72, 153, 0.5)', name: 'Pink' },
   gold: { primary: '#eab308', secondary: '#facc15', glow: 'rgba(234, 179, 8, 0.5)', name: 'Gold' },
-  crimson: { primary: '#dc2626', secondary: '#f87171', glow: 'rgba(220, 38, 38, 0.5)', name: 'Crimson' },
-  arctic: { primary: '#38bdf8', secondary: '#7dd3fc', glow: 'rgba(56, 189, 248, 0.5)', name: 'Arctic' },
+  crimson: {
+    primary: '#dc2626',
+    secondary: '#f87171',
+    glow: 'rgba(220, 38, 38, 0.5)',
+    name: 'Crimson',
+  },
+  arctic: {
+    primary: '#38bdf8',
+    secondary: '#7dd3fc',
+    glow: 'rgba(56, 189, 248, 0.5)',
+    name: 'Arctic',
+  },
 };
 
 // =============================================================================
 // AVATAR BORDER DEFINITIONS
 // =============================================================================
 
-const avatarBorders: Record<AvatarBorderType, { name: string; description: string; premium: boolean; rarity?: string }> = {
+const avatarBorders: Record<
+  AvatarBorderType,
+  { name: string; description: string; premium: boolean; rarity?: string }
+> = {
   none: { name: 'None', description: 'No border', premium: false },
   static: { name: 'Static', description: 'Simple colored border', premium: false },
   glow: { name: 'Glow', description: 'Soft glowing effect', premium: false },
@@ -89,9 +138,24 @@ const avatarBorders: Record<AvatarBorderType, { name: string; description: strin
   rotate: { name: 'Orbit', description: 'Rotating gradient ring', premium: true, rarity: 'Rare' },
   fire: { name: 'Inferno', description: 'Animated flame effect', premium: true, rarity: 'Epic' },
   ice: { name: 'Frost', description: 'Crystalline ice particles', premium: true, rarity: 'Epic' },
-  electric: { name: 'Storm', description: 'Electric sparks and arcs', premium: true, rarity: 'Epic' },
-  legendary: { name: 'Legendary', description: 'Multi-layered animated aura', premium: true, rarity: 'Legendary' },
-  mythic: { name: 'Mythic', description: 'Reality-bending void effect', premium: true, rarity: 'Mythic' },
+  electric: {
+    name: 'Storm',
+    description: 'Electric sparks and arcs',
+    premium: true,
+    rarity: 'Epic',
+  },
+  legendary: {
+    name: 'Legendary',
+    description: 'Multi-layered animated aura',
+    premium: true,
+    rarity: 'Legendary',
+  },
+  mythic: {
+    name: 'Mythic',
+    description: 'Reality-bending void effect',
+    premium: true,
+    rarity: 'Mythic',
+  },
 };
 
 const rarityColors: Record<string, string> = {
@@ -412,7 +476,8 @@ const AnimatedAvatar = memo(function AnimatedAvatar({
                 key={i}
                 className="absolute h-1 w-1 rounded-full"
                 style={{
-                  background: i % 3 === 0 ? '#fff' : i % 3 === 1 ? colors.primary : colors.secondary,
+                  background:
+                    i % 3 === 0 ? '#fff' : i % 3 === 1 ? colors.primary : colors.secondary,
                   left: '50%',
                   top: '50%',
                   boxShadow: `0 0 8px ${colors.glow}`,
@@ -517,17 +582,23 @@ const ProfileThemeCard: React.FC<{
 }> = ({ theme, isSelected, isHovered, onSelect, onHover, delay }) => {
   const getTierColor = (tier: string) => {
     switch (tier) {
-      case 'elite': return '#ec4899';
-      case 'premium': return '#8b5cf6';
-      default: return '#10b981';
+      case 'elite':
+        return '#ec4899';
+      case 'premium':
+        return '#8b5cf6';
+      default:
+        return '#10b981';
     }
   };
 
   const getTierLabel = (tier: string) => {
     switch (tier) {
-      case 'elite': return 'ELITE';
-      case 'premium': return 'PRO';
-      default: return 'FREE';
+      case 'elite':
+        return 'ELITE';
+      case 'premium':
+        return 'PRO';
+      default:
+        return 'FREE';
     }
   };
 
@@ -566,7 +637,8 @@ const ProfileThemeCard: React.FC<{
         <motion.div
           className="pointer-events-none absolute inset-0"
           style={{
-            background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
+            background:
+              'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
           }}
           animate={{ x: ['-100%', '200%'] }}
           transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
@@ -589,33 +661,34 @@ const ProfileThemeCard: React.FC<{
       )}
 
       {/* Animated Particles */}
-      {theme.effects.particles && [...Array(theme.effects.particles.count)].map((_, i) => {
-        const startX = Math.random() * 100;
-        const particleType = theme.effects.particles?.type || 'pixel';
-        return (
-          <motion.div
-            key={i}
-            className="pointer-events-none absolute text-xs"
-            style={{
-              color: theme.effects.glow || '#ffffff',
-              left: `${startX}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [-10, -60, -10],
-              opacity: [0, 0.8, 0],
-              scale: [0, 1, 0],
-            }}
-            transition={{
-              duration: 3,
-              repeat: Infinity,
-              delay: i * 0.2,
-            }}
-          >
-            {getParticleSymbol(particleType)}
-          </motion.div>
-        );
-      })}
+      {theme.effects.particles &&
+        [...Array(theme.effects.particles.count)].map((_, i) => {
+          const startX = Math.random() * 100;
+          const particleType = theme.effects.particles?.type || 'pixel';
+          return (
+            <motion.div
+              key={i}
+              className="pointer-events-none absolute text-xs"
+              style={{
+                color: theme.effects.glow || '#ffffff',
+                left: `${startX}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [-10, -60, -10],
+                opacity: [0, 0.8, 0],
+                scale: [0, 1, 0],
+              }}
+              transition={{
+                duration: 3,
+                repeat: Infinity,
+                delay: i * 0.2,
+              }}
+            >
+              {getParticleSymbol(particleType)}
+            </motion.div>
+          );
+        })}
 
       {/* Selection Border */}
       {isSelected && (
@@ -676,7 +749,10 @@ const ProfileThemeCard: React.FC<{
           >
             <div className="text-center">
               <div className="text-xs font-semibold text-white">{theme.name}</div>
-              <div className="mt-1 text-[9px] font-bold" style={{ color: getTierColor(theme.tier) }}>
+              <div
+                className="mt-1 text-[9px] font-bold"
+                style={{ color: getTierColor(theme.tier) }}
+              >
                 {getTierLabel(theme.tier)} TIER
               </div>
             </div>
@@ -687,7 +763,11 @@ const ProfileThemeCard: React.FC<{
   );
 };
 
-function ProfileThemeShowcase({ theme, selectedThemeId, onThemeSelect }: ProfileThemeShowcaseProps) {
+function ProfileThemeShowcase({
+  theme,
+  selectedThemeId,
+  onThemeSelect,
+}: ProfileThemeShowcaseProps) {
   const [hoveredTheme, setHoveredTheme] = useState<string | null>(null);
 
   // Define all theme categories with 3 tiers each
@@ -933,18 +1013,15 @@ function ProfileThemeShowcase({ theme, selectedThemeId, onThemeSelect }: Profile
   };
 
   // Get themes for current category
-  const currentCategoryThemes = themesByCategory[theme as keyof typeof themesByCategory] || themesByCategory['8bit'];
+  const currentCategoryThemes =
+    themesByCategory[theme as keyof typeof themesByCategory] || themesByCategory['8bit'];
 
   if (!currentCategoryThemes) {
     return null;
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="w-full"
-    >
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full">
       <div className="rounded-xl border border-white/10 bg-gradient-to-br from-gray-900/50 to-gray-800/50 p-4 backdrop-blur-sm">
         <div className="mb-3 text-center text-xs font-medium text-gray-400">
           Next-Gen Profile Themes • Click to select
@@ -973,9 +1050,16 @@ function ProfileThemeShowcase({ theme, selectedThemeId, onThemeSelect }: Profile
 // PREVIEW COMPONENTS
 // =============================================================================
 
-function AvatarPreview({ state, onChange: _onChange }: { state: DemoState; onChange?: (updates: Partial<DemoState>) => void }) {
+function AvatarPreview({
+  state,
+  onChange: _onChange,
+}: {
+  state: DemoState;
+  onChange?: (updates: Partial<DemoState>) => void;
+}) {
   const colors = themeColors[state.theme];
-  const speedMultiplier = state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1;
+  const speedMultiplier =
+    state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1;
 
   // Get selected themed border if one is selected
   const selectedBorder = state.selectedBorderId ? getBorderById(state.selectedBorderId) : null;
@@ -990,13 +1074,17 @@ function AvatarPreview({ state, onChange: _onChange }: { state: DemoState; onCha
         backdropFilter: state.blurEnabled ? 'blur(20px)' : 'none',
         boxShadow: state.glowEnabled ? `0 0 40px ${colors.glow}` : 'none',
       }}
-      animate={state.glowEnabled ? {
-        boxShadow: [
-          `0 0 30px ${colors.glow}`,
-          `0 0 50px ${colors.glow}`,
-          `0 0 30px ${colors.glow}`,
-        ],
-      } : {}}
+      animate={
+        state.glowEnabled
+          ? {
+              boxShadow: [
+                `0 0 30px ${colors.glow}`,
+                `0 0 50px ${colors.glow}`,
+                `0 0 30px ${colors.glow}`,
+              ],
+            }
+          : {}
+      }
       transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
     >
       {/* Particles overlay */}
@@ -1028,7 +1116,7 @@ function AvatarPreview({ state, onChange: _onChange }: { state: DemoState; onCha
 
       <div className="relative z-10 flex flex-col items-center">
         {/* Large Avatar with Border */}
-        <div className="mb-6 relative">
+        <div className="relative mb-6">
           <AnimatedAvatar
             borderType={avatarBorderType as AvatarBorderType}
             borderColor={state.avatarBorderColor}
@@ -1039,7 +1127,7 @@ function AvatarPreview({ state, onChange: _onChange }: { state: DemoState; onCha
           {/* Themed Border Overlay - shows selected themed border */}
           {selectedBorder && (
             <motion.div
-              className="absolute inset-0 rounded-full pointer-events-none"
+              className="pointer-events-none absolute inset-0 rounded-full"
               style={{
                 background: `linear-gradient(135deg, ${selectedBorder.primaryColor}40, ${selectedBorder.secondaryColor || selectedBorder.primaryColor}40)`,
                 border: `4px solid ${selectedBorder.primaryColor}`,
@@ -1051,7 +1139,10 @@ function AvatarPreview({ state, onChange: _onChange }: { state: DemoState; onCha
                   `0 0 30px ${selectedBorder.primaryColor}90`,
                   `0 0 15px ${selectedBorder.primaryColor}60`,
                 ],
-                rotate: selectedBorder.type.includes('ring') || selectedBorder.type.includes('rotating') ? 360 : 0,
+                rotate:
+                  selectedBorder.type.includes('ring') || selectedBorder.type.includes('rotating')
+                    ? 360
+                    : 0,
               }}
               transition={{
                 boxShadow: { duration: 2 * speedMultiplier, repeat: Infinity },
@@ -1061,29 +1152,170 @@ function AvatarPreview({ state, onChange: _onChange }: { state: DemoState; onCha
           )}
         </div>
 
-        {/* User Info */}
-        <div className="text-center mb-6">
-          <h3 className="text-2xl font-bold text-white mb-1">CGraph User</h3>
-          <p className="text-sm text-gray-400">Level 42 • Legendary</p>
+        {/* User Info with Title */}
+        <div className="mb-4 text-center">
+          <h3 className="mb-1 text-2xl font-bold text-white">CGraph User</h3>
+          {/* Animated Title Badge */}
+          <motion.div
+            className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium"
+            style={{
+              background: `linear-gradient(135deg, ${colors.primary}30, ${colors.secondary}20)`,
+              border: `1px solid ${colors.primary}50`,
+              color: colors.primary,
+            }}
+            animate={{
+              boxShadow: [
+                `0 0 10px ${colors.glow}`,
+                `0 0 20px ${colors.glow}`,
+                `0 0 10px ${colors.glow}`,
+              ],
+            }}
+            transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
+          >
+            <span className="text-xs">👑</span>
+            <span>Legendary Champion</span>
+          </motion.div>
+          <p className="mt-2 text-sm text-gray-400">Level 42 • 12.5k XP</p>
         </div>
 
-        {/* Size Options Display */}
-        <div className="mt-6 flex gap-4">
-          {(['small', 'medium', 'large'] as const).map((size) => (
-            <motion.div
-              key={size}
-              className="flex flex-col items-center gap-2"
-              whileHover={{ scale: 1.05 }}
-            >
-              <AnimatedAvatar
-                borderType={state.avatarBorder}
-                borderColor={state.avatarBorderColor}
-                size={size}
-                speedMultiplier={speedMultiplier}
-              />
-              <span className="text-xs text-gray-400 capitalize">{size}</span>
-            </motion.div>
-          ))}
+        {/* Equipped Badges Display - with rarity animations */}
+        <div className="mb-4 flex justify-center gap-2">
+          {[
+            {
+              emoji: '🛡️',
+              name: 'Guardian Shield',
+              rarity: 'legendary' as const,
+              description: 'Protected 1000+ users',
+            },
+            {
+              emoji: '⚔️',
+              name: 'Blade Master',
+              rarity: 'epic' as const,
+              description: 'Top 100 Contributors',
+            },
+            {
+              emoji: '🎩',
+              name: 'Arcane Sage',
+              rarity: 'mythic' as const,
+              description: 'Answered 500+ questions',
+            },
+            {
+              emoji: '👑',
+              name: 'Royal Crown',
+              rarity: 'legendary' as const,
+              description: 'Community Leader',
+            },
+          ].map((badge, i) => {
+            const getBadgeGlow = (rarity: string) => {
+              switch (rarity) {
+                case 'mythic':
+                  return '#ec4899';
+                case 'legendary':
+                  return '#f59e0b';
+                case 'epic':
+                  return '#8b5cf6';
+                case 'rare':
+                  return '#3b82f6';
+                case 'uncommon':
+                  return '#10b981';
+                default:
+                  return '#6b7280';
+              }
+            };
+            const glowColor = getBadgeGlow(badge.rarity);
+
+            return (
+              <motion.div
+                key={badge.name}
+                className="group relative"
+                initial={{ opacity: 0, scale: 0, rotate: -180 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                transition={{ delay: i * 0.1, type: 'spring', stiffness: 250 }}
+                whileHover={{ scale: 1.15, rotate: 5, zIndex: 10 }}
+              >
+                {/* Rotating glow ring */}
+                <motion.div
+                  className="absolute inset-[-4px] rounded-full opacity-0 group-hover:opacity-100"
+                  style={{
+                    background: `conic-gradient(from 0deg, ${glowColor}, transparent, ${glowColor})`,
+                  }}
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
+                />
+
+                <motion.div
+                  className="relative flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-gray-700 to-gray-800 text-xl"
+                  animate={{
+                    boxShadow: [
+                      `0 0 8px ${glowColor}40, 0 0 16px ${glowColor}20`,
+                      `0 0 16px ${glowColor}80, 0 0 32px ${glowColor}40`,
+                      `0 0 8px ${glowColor}40, 0 0 16px ${glowColor}20`,
+                    ],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {badge.emoji}
+
+                  {/* Orbiting particles for epic+ badges */}
+                  {(badge.rarity === 'epic' ||
+                    badge.rarity === 'legendary' ||
+                    badge.rarity === 'mythic') && (
+                    <>
+                      {[0, 1, 2].map((particleIdx) => (
+                        <motion.div
+                          key={particleIdx}
+                          className="pointer-events-none absolute h-1 w-1 rounded-full"
+                          style={{
+                            background: glowColor,
+                            boxShadow: `0 0 4px ${glowColor}`,
+                          }}
+                          animate={{
+                            rotate: [particleIdx * 120, particleIdx * 120 + 360],
+                          }}
+                          transition={{
+                            duration: badge.rarity === 'mythic' ? 2 : 3,
+                            repeat: Infinity,
+                            ease: 'linear',
+                          }}
+                          initial={{
+                            x: 0,
+                            y: -22,
+                          }}
+                        />
+                      ))}
+                    </>
+                  )}
+                </motion.div>
+
+                {/* Tooltip with rarity */}
+                <div className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-2 -translate-x-1/2 whitespace-nowrap rounded-lg border border-white/10 bg-gray-900/95 px-2 py-1.5 text-center opacity-0 transition-opacity group-hover:opacity-100">
+                  <div className="text-xs font-semibold text-white">{badge.name}</div>
+                  <div className="text-[10px] font-medium capitalize" style={{ color: glowColor }}>
+                    {badge.rarity}
+                  </div>
+                  <div className="mt-0.5 text-[9px] text-gray-400">{badge.description}</div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* User Stats */}
+        <div className="flex justify-center gap-6 text-center">
+          <div>
+            <div className="text-lg font-bold text-white">1.2k</div>
+            <div className="text-xs text-gray-500">Posts</div>
+          </div>
+          <div>
+            <div className="text-lg font-bold text-white">847</div>
+            <div className="text-xs text-gray-500">Friends</div>
+          </div>
+          <div>
+            <div className="text-lg font-bold" style={{ color: colors.primary }}>
+              +2.4k
+            </div>
+            <div className="text-xs text-gray-500">Karma</div>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -1097,48 +1329,239 @@ function getProfileThemeConfig(themeId: string | undefined): ProfileThemeConfig 
   // Theme configurations from ProfileThemeShowcase
   const allThemes: Record<string, ProfileThemeConfig[]> = {
     '8bit': [
-      { id: '8bit-arcade', name: 'Arcade', icon: '🕹️', tier: 'free', background: { type: 'gradient', colors: ['#1a1a2e', '#16213e'] }, effects: { particles: { count: 12, type: 'pixel', behavior: 'rain' }, overlay: 'scanlines', glow: '#00ff00' }, previewDescription: 'Retro pixels' },
-      { id: '8bit-neon', name: 'Neon', icon: '🌃', tier: 'premium', background: { type: 'gradient', colors: ['#0f0f0f', '#1a0033', '#330066'] }, effects: { particles: { count: 18, type: 'neon', behavior: 'float' }, overlay: 'holographic', glow: '#ff00ff' }, previewDescription: 'Neon glow' },
-      { id: '8bit-dream', name: 'Dreams', icon: '👾', tier: 'elite', background: { type: 'animated', colors: ['#ff006e', '#8338ec', '#3a86ff'] }, effects: { particles: { count: 24, type: 'pixel', behavior: 'cascade' }, overlay: 'scanlines', glow: '#00ffff' }, previewDescription: 'Pixel cascade' },
+      {
+        id: '8bit-arcade',
+        name: 'Arcade',
+        icon: '🕹️',
+        tier: 'free',
+        background: { type: 'gradient', colors: ['#1a1a2e', '#16213e'] },
+        effects: {
+          particles: { count: 12, type: 'pixel', behavior: 'rain' },
+          overlay: 'scanlines',
+          glow: '#00ff00',
+        },
+        previewDescription: 'Retro pixels',
+      },
+      {
+        id: '8bit-neon',
+        name: 'Neon',
+        icon: '🌃',
+        tier: 'premium',
+        background: { type: 'gradient', colors: ['#0f0f0f', '#1a0033', '#330066'] },
+        effects: {
+          particles: { count: 18, type: 'neon', behavior: 'float' },
+          overlay: 'holographic',
+          glow: '#ff00ff',
+        },
+        previewDescription: 'Neon glow',
+      },
+      {
+        id: '8bit-dream',
+        name: 'Dreams',
+        icon: '👾',
+        tier: 'elite',
+        background: { type: 'animated', colors: ['#ff006e', '#8338ec', '#3a86ff'] },
+        effects: {
+          particles: { count: 24, type: 'pixel', behavior: 'cascade' },
+          overlay: 'scanlines',
+          glow: '#00ffff',
+        },
+        previewDescription: 'Pixel cascade',
+      },
     ],
     japanese: [
-      { id: 'jp-zen', name: 'Zen', icon: '🎋', tier: 'free', background: { type: 'gradient', colors: ['#1a3a2e', '#2d5a4a'] }, effects: { particles: { count: 10, type: 'petal', behavior: 'float' }, glow: '#4ade80' }, previewDescription: 'Zen vibes' },
-      { id: 'jp-sakura', name: 'Sakura', icon: '🌸', tier: 'premium', background: { type: 'gradient', colors: ['#ffc0cb', '#ffb3d9'] }, effects: { particles: { count: 20, type: 'petal', behavior: 'cascade' }, glow: '#ec4899' }, previewDescription: 'Petal rain' },
-      { id: 'jp-wave', name: 'Wave', icon: '🌊', tier: 'elite', background: { type: 'animated', colors: ['#1e40af', '#3b82f6', '#60a5fa'] }, effects: { particles: { count: 30, type: 'energy', behavior: 'burst' }, overlay: 'holographic', glow: '#3b82f6' }, previewDescription: 'Energy burst' },
+      {
+        id: 'jp-zen',
+        name: 'Zen',
+        icon: '🎋',
+        tier: 'free',
+        background: { type: 'gradient', colors: ['#1a3a2e', '#2d5a4a'] },
+        effects: { particles: { count: 10, type: 'petal', behavior: 'float' }, glow: '#4ade80' },
+        previewDescription: 'Zen vibes',
+      },
+      {
+        id: 'jp-sakura',
+        name: 'Sakura',
+        icon: '🌸',
+        tier: 'premium',
+        background: { type: 'gradient', colors: ['#ffc0cb', '#ffb3d9'] },
+        effects: { particles: { count: 20, type: 'petal', behavior: 'cascade' }, glow: '#ec4899' },
+        previewDescription: 'Petal rain',
+      },
+      {
+        id: 'jp-wave',
+        name: 'Wave',
+        icon: '🌊',
+        tier: 'elite',
+        background: { type: 'animated', colors: ['#1e40af', '#3b82f6', '#60a5fa'] },
+        effects: {
+          particles: { count: 30, type: 'energy', behavior: 'burst' },
+          overlay: 'holographic',
+          glow: '#3b82f6',
+        },
+        previewDescription: 'Energy burst',
+      },
     ],
     anime: [
-      { id: 'anime-power', name: 'Power', icon: '⚡', tier: 'free', background: { type: 'gradient', colors: ['#fbbf24', '#f59e0b'] }, effects: { particles: { count: 15, type: 'energy', behavior: 'burst' }, glow: '#fbbf24' }, previewDescription: 'Power up' },
-      { id: 'anime-mystic', name: 'Mystic', icon: '✨', tier: 'premium', background: { type: 'gradient', colors: ['#7c3aed', '#8b5cf6'] }, effects: { particles: { count: 25, type: 'stars', behavior: 'float' }, overlay: 'holographic', glow: '#8b5cf6' }, previewDescription: 'Star magic' },
-      { id: 'anime-hero', name: 'Hero', icon: '🔥', tier: 'elite', background: { type: 'animated', colors: ['#dc2626', '#ef4444', '#f97316'] }, effects: { particles: { count: 35, type: 'energy', behavior: 'cascade' }, glow: '#dc2626' }, previewDescription: 'Flame aura' },
+      {
+        id: 'anime-power',
+        name: 'Power',
+        icon: '⚡',
+        tier: 'free',
+        background: { type: 'gradient', colors: ['#fbbf24', '#f59e0b'] },
+        effects: { particles: { count: 15, type: 'energy', behavior: 'burst' }, glow: '#fbbf24' },
+        previewDescription: 'Power up',
+      },
+      {
+        id: 'anime-mystic',
+        name: 'Mystic',
+        icon: '✨',
+        tier: 'premium',
+        background: { type: 'gradient', colors: ['#7c3aed', '#8b5cf6'] },
+        effects: {
+          particles: { count: 25, type: 'stars', behavior: 'float' },
+          overlay: 'holographic',
+          glow: '#8b5cf6',
+        },
+        previewDescription: 'Star magic',
+      },
+      {
+        id: 'anime-hero',
+        name: 'Hero',
+        icon: '🔥',
+        tier: 'elite',
+        background: { type: 'animated', colors: ['#dc2626', '#ef4444', '#f97316'] },
+        effects: { particles: { count: 35, type: 'energy', behavior: 'cascade' }, glow: '#dc2626' },
+        previewDescription: 'Flame aura',
+      },
     ],
     cyberpunk: [
-      { id: 'cyber-city', name: 'City', icon: '🌆', tier: 'free', background: { type: 'gradient', colors: ['#1e1e2e', '#2e1e3e'] }, effects: { particles: { count: 12, type: 'neon', behavior: 'rain' }, overlay: 'scanlines', glow: '#00ffff' }, previewDescription: 'Neon rain' },
-      { id: 'cyber-matrix', name: 'Matrix', icon: '💻', tier: 'premium', background: { type: 'gradient', colors: ['#000000', '#003300'] }, effects: { particles: { count: 28, type: 'pixel', behavior: 'cascade' }, overlay: 'scanlines', glow: '#00ff00' }, previewDescription: 'Code rain' },
-      { id: 'cyber-holo', name: 'Holo', icon: '🔮', tier: 'elite', background: { type: 'animated', colors: ['#ff00ff', '#00ffff', '#ffff00'] }, effects: { particles: { count: 32, type: 'neon', behavior: 'float' }, overlay: 'holographic', glow: '#ff00ff' }, previewDescription: 'Holo shift' },
+      {
+        id: 'cyber-city',
+        name: 'City',
+        icon: '🌆',
+        tier: 'free',
+        background: { type: 'gradient', colors: ['#1e1e2e', '#2e1e3e'] },
+        effects: {
+          particles: { count: 12, type: 'neon', behavior: 'rain' },
+          overlay: 'scanlines',
+          glow: '#00ffff',
+        },
+        previewDescription: 'Neon rain',
+      },
+      {
+        id: 'cyber-matrix',
+        name: 'Matrix',
+        icon: '💻',
+        tier: 'premium',
+        background: { type: 'gradient', colors: ['#000000', '#003300'] },
+        effects: {
+          particles: { count: 28, type: 'pixel', behavior: 'cascade' },
+          overlay: 'scanlines',
+          glow: '#00ff00',
+        },
+        previewDescription: 'Code rain',
+      },
+      {
+        id: 'cyber-holo',
+        name: 'Holo',
+        icon: '🔮',
+        tier: 'elite',
+        background: { type: 'animated', colors: ['#ff00ff', '#00ffff', '#ffff00'] },
+        effects: {
+          particles: { count: 32, type: 'neon', behavior: 'float' },
+          overlay: 'holographic',
+          glow: '#ff00ff',
+        },
+        previewDescription: 'Holo shift',
+      },
     ],
     gothic: [
-      { id: 'goth-dark', name: 'Dark', icon: '🌑', tier: 'free', background: { type: 'gradient', colors: ['#0a0a0a', '#1a1a1a'] }, effects: { particles: { count: 8, type: 'smoke', behavior: 'float' }, glow: '#4b0082' }, previewDescription: 'Dark mist' },
-      { id: 'goth-blood', name: 'Blood', icon: '🩸', tier: 'premium', background: { type: 'gradient', colors: ['#1a0000', '#4d0000'] }, effects: { particles: { count: 15, type: 'energy', behavior: 'rain' }, glow: '#dc2626' }, previewDescription: 'Blood rain' },
-      { id: 'goth-void', name: 'Void', icon: '🌌', tier: 'elite', background: { type: 'animated', colors: ['#000000', '#1a0033', '#0d0015'] }, effects: { particles: { count: 25, type: 'stars', behavior: 'float' }, overlay: 'holographic', glow: '#8b5cf6' }, previewDescription: 'Void space' },
+      {
+        id: 'goth-dark',
+        name: 'Dark',
+        icon: '🌑',
+        tier: 'free',
+        background: { type: 'gradient', colors: ['#0a0a0a', '#1a1a1a'] },
+        effects: { particles: { count: 8, type: 'smoke', behavior: 'float' }, glow: '#4b0082' },
+        previewDescription: 'Dark mist',
+      },
+      {
+        id: 'goth-blood',
+        name: 'Blood',
+        icon: '🩸',
+        tier: 'premium',
+        background: { type: 'gradient', colors: ['#1a0000', '#4d0000'] },
+        effects: { particles: { count: 15, type: 'energy', behavior: 'rain' }, glow: '#dc2626' },
+        previewDescription: 'Blood rain',
+      },
+      {
+        id: 'goth-void',
+        name: 'Void',
+        icon: '🌌',
+        tier: 'elite',
+        background: { type: 'animated', colors: ['#000000', '#1a0033', '#0d0015'] },
+        effects: {
+          particles: { count: 25, type: 'stars', behavior: 'float' },
+          overlay: 'holographic',
+          glow: '#8b5cf6',
+        },
+        previewDescription: 'Void space',
+      },
     ],
     kawaii: [
-      { id: 'kawaii-sweet', name: 'Sweet', icon: '🍬', tier: 'free', background: { type: 'gradient', colors: ['#ffc0cb', '#ffb3d9'] }, effects: { particles: { count: 12, type: 'hearts', behavior: 'float' }, glow: '#ec4899' }, previewDescription: 'Sweet hearts' },
-      { id: 'kawaii-dream', name: 'Dream', icon: '💖', tier: 'premium', background: { type: 'gradient', colors: ['#b3e0ff', '#ffffb3', '#ffb3d9'] }, effects: { particles: { count: 20, type: 'stars', behavior: 'float' }, glow: '#a855f7' }, previewDescription: 'Dream stars' },
-      { id: 'kawaii-magic', name: 'Magic', icon: '✨', tier: 'elite', background: { type: 'animated', colors: ['#ff69b4', '#9370db', '#87ceeb'] }, effects: { particles: { count: 30, type: 'sparkles', behavior: 'cascade' }, overlay: 'holographic', glow: '#ec4899' }, previewDescription: 'Sparkle magic' },
+      {
+        id: 'kawaii-sweet',
+        name: 'Sweet',
+        icon: '🍬',
+        tier: 'free',
+        background: { type: 'gradient', colors: ['#ffc0cb', '#ffb3d9'] },
+        effects: { particles: { count: 12, type: 'hearts', behavior: 'float' }, glow: '#ec4899' },
+        previewDescription: 'Sweet hearts',
+      },
+      {
+        id: 'kawaii-dream',
+        name: 'Dream',
+        icon: '💖',
+        tier: 'premium',
+        background: { type: 'gradient', colors: ['#b3e0ff', '#ffffb3', '#ffb3d9'] },
+        effects: { particles: { count: 20, type: 'stars', behavior: 'float' }, glow: '#a855f7' },
+        previewDescription: 'Dream stars',
+      },
+      {
+        id: 'kawaii-magic',
+        name: 'Magic',
+        icon: '✨',
+        tier: 'elite',
+        background: { type: 'animated', colors: ['#ff69b4', '#9370db', '#87ceeb'] },
+        effects: {
+          particles: { count: 30, type: 'sparkles', behavior: 'cascade' },
+          overlay: 'holographic',
+          glow: '#ec4899',
+        },
+        previewDescription: 'Sparkle magic',
+      },
     ],
   };
 
   for (const themes of Object.values(allThemes)) {
-    const found = themes.find(t => t.id === themeId);
+    const found = themes.find((t) => t.id === themeId);
     if (found) return found;
   }
 
   return null;
 }
 
-function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onChange: (updates: Partial<DemoState>) => void }) {
+function ProfilePreview({
+  state,
+  onChange: _onChange,
+}: {
+  state: DemoState;
+  onChange: (updates: Partial<DemoState>) => void;
+}) {
   const colors = themeColors[state.theme];
-  const speedMultiplier = state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1;
+  const speedMultiplier =
+    state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1;
 
   // Get selected profile theme configuration
   const selectedTheme = getProfileThemeConfig(state.selectedProfileThemeId);
@@ -1151,7 +1574,7 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
       name: 'Guardian Shield',
       rarity: 'legendary',
       description: 'Protected 1000+ users',
-      theme: 'defensive'
+      theme: 'defensive',
     },
     {
       id: '2',
@@ -1159,7 +1582,7 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
       name: 'Blade Master',
       rarity: 'epic',
       description: 'Top 100 Contributors',
-      theme: 'combat'
+      theme: 'combat',
     },
     {
       id: '3',
@@ -1167,7 +1590,7 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
       name: 'Arcane Sage',
       rarity: 'mythic',
       description: 'Answered 500+ questions',
-      theme: 'magic'
+      theme: 'magic',
     },
     {
       id: '4',
@@ -1175,18 +1598,24 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
       name: 'Royal Crown',
       rarity: 'legendary',
       description: 'Community Leader',
-      theme: 'prestige'
+      theme: 'prestige',
     },
   ];
 
   const getBadgeGlow = (rarity: string) => {
     switch (rarity) {
-      case 'mythic': return '#ec4899'; // Pink for mythic
-      case 'legendary': return '#f59e0b'; // Gold for legendary
-      case 'epic': return '#8b5cf6'; // Purple for epic
-      case 'rare': return '#3b82f6'; // Blue for rare
-      case 'uncommon': return '#10b981'; // Green for uncommon
-      default: return '#6b7280'; // Gray for common
+      case 'mythic':
+        return '#ec4899'; // Pink for mythic
+      case 'legendary':
+        return '#f59e0b'; // Gold for legendary
+      case 'epic':
+        return '#8b5cf6'; // Purple for epic
+      case 'rare':
+        return '#3b82f6'; // Blue for rare
+      case 'uncommon':
+        return '#10b981'; // Green for uncommon
+      default:
+        return '#6b7280'; // Gray for common
     }
   };
 
@@ -1194,12 +1623,12 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
   const backgroundStyle = selectedTheme
     ? `linear-gradient(135deg, ${selectedTheme.background.colors.join(', ')})`
     : state.effect === 'glassmorphism'
-    ? 'rgba(17, 24, 39, 0.7)'
-    : state.effect === 'neon'
-    ? 'rgba(0, 0, 0, 0.9)'
-    : state.effect === 'holographic'
-    ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(30, 41, 59, 0.8))'
-    : 'rgba(17, 24, 39, 0.95)';
+      ? 'rgba(17, 24, 39, 0.7)'
+      : state.effect === 'neon'
+        ? 'rgba(0, 0, 0, 0.9)'
+        : state.effect === 'holographic'
+          ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(30, 41, 59, 0.8))'
+          : 'rgba(17, 24, 39, 0.95)';
 
   const glowColor = selectedTheme?.effects.glow || colors.glow;
   const particleCount = selectedTheme?.effects.particles?.count || 15;
@@ -1212,13 +1641,17 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
         backdropFilter: state.blurEnabled ? 'blur(20px)' : 'none',
         boxShadow: state.glowEnabled || selectedTheme ? `0 0 40px ${glowColor}` : 'none',
       }}
-      animate={state.glowEnabled || selectedTheme ? {
-        boxShadow: [
-          `0 0 30px ${glowColor}`,
-          `0 0 50px ${glowColor}`,
-          `0 0 30px ${glowColor}`,
-        ],
-      } : {}}
+      animate={
+        state.glowEnabled || selectedTheme
+          ? {
+              boxShadow: [
+                `0 0 30px ${glowColor}`,
+                `0 0 50px ${glowColor}`,
+                `0 0 30px ${glowColor}`,
+              ],
+            }
+          : {}
+      }
       transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
     >
       {/* Particles overlay */}
@@ -1326,7 +1759,8 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
             <motion.div
               className="pointer-events-none absolute inset-0 opacity-30"
               style={{
-                background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
+                background:
+                  'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%)',
                 backgroundSize: '200% 200%',
               }}
               animate={{ backgroundPosition: ['0% 0%', '200% 200%'] }}
@@ -1334,7 +1768,7 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
             />
 
             {/* Header */}
-            <div className="flex items-start gap-4 mb-4">
+            <div className="mb-4 flex items-start gap-4">
               <motion.div
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ type: 'spring', stiffness: 300 }}
@@ -1402,7 +1836,9 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
                     </span>
                   </motion.div>
                 </div>
-                <p className="text-sm text-gray-400 mb-2">Full-stack developer & community enthusiast</p>
+                <p className="mb-2 text-sm text-gray-400">
+                  Full-stack developer & community enthusiast
+                </p>
                 {state.showStatus && (
                   <div className="flex items-center gap-1.5 text-sm text-emerald-400">
                     <motion.span
@@ -1424,7 +1860,7 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="mb-4 grid grid-cols-3 gap-3">
               {[
                 { label: 'Level', value: '42' },
                 { label: 'Posts', value: '1.2K' },
@@ -1513,9 +1949,12 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
                       </motion.div>
 
                       {/* Enhanced tooltip */}
-                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-black/95 px-3 py-1.5 opacity-0 transition-opacity group-hover:opacity-100 backdrop-blur-sm">
+                      <div className="absolute -top-10 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-black/95 px-3 py-1.5 opacity-0 backdrop-blur-sm transition-opacity group-hover:opacity-100">
                         <div className="text-xs font-bold text-white">{badge.name}</div>
-                        <div className="text-[9px] capitalize" style={{ color: getBadgeGlow(badge.rarity) }}>
+                        <div
+                          className="text-[9px] capitalize"
+                          style={{ color: getBadgeGlow(badge.rarity) }}
+                        >
                           {badge.rarity}
                         </div>
                       </div>
@@ -1582,17 +2021,19 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
 
             {/* Content */}
             <div className="text-center">
-              <h3 className="text-xl font-bold text-white mb-1">CGraph User</h3>
-              <p className="text-sm text-gray-400 mb-3">Full-stack developer & community enthusiast</p>
+              <h3 className="mb-1 text-xl font-bold text-white">CGraph User</h3>
+              <p className="mb-3 text-sm text-gray-400">
+                Full-stack developer & community enthusiast
+              </p>
               {state.showStatus && (
-                <div className="flex items-center justify-center gap-1.5 text-sm text-emerald-400 mb-3">
+                <div className="mb-3 flex items-center justify-center gap-1.5 text-sm text-emerald-400">
                   <span className="h-2 w-2 rounded-full bg-emerald-400"></span>
                   Online
                 </div>
               )}
 
               {/* Stats */}
-              <div className="grid grid-cols-4 gap-2 mb-4">
+              <div className="mb-4 grid grid-cols-4 gap-2">
                 {[
                   { label: 'Level', value: '42' },
                   { label: 'Posts', value: '1.2K' },
@@ -1633,7 +2074,7 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
           <div>
             {/* Gaming-style header with XP bar */}
             <div className="mb-4">
-              <div className="flex items-center gap-4 mb-3">
+              <div className="mb-3 flex items-center gap-4">
                 <AnimatedAvatar
                   borderType={state.avatarBorder}
                   borderColor={state.avatarBorderColor}
@@ -1641,9 +2082,11 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
                   speedMultiplier={speedMultiplier}
                 />
                 <div className="flex-1">
-                  <h3 className="text-lg font-bold text-white mb-1">CGraph User</h3>
+                  <h3 className="mb-1 text-lg font-bold text-white">CGraph User</h3>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold" style={{ color: colors.primary }}>Level 42</span>
+                    <span className="text-sm font-bold" style={{ color: colors.primary }}>
+                      Level 42
+                    </span>
                     <span className="text-xs text-gray-500">•</span>
                     <span className="text-xs text-gray-400">Legendary Tier</span>
                   </div>
@@ -1671,7 +2114,7 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
             </div>
 
             {/* Gaming Stats Grid */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
+            <div className="mb-4 grid grid-cols-2 gap-2">
               {[
                 { icon: '⚔️', label: 'Victories', value: '234' },
                 { icon: '🎯', label: 'Accuracy', value: '92%' },
@@ -1743,7 +2186,8 @@ function ProfilePreview({ state, onChange: _onChange }: { state: DemoState; onCh
 function ChatPreview({ state }: { state: DemoState }) {
   const colors = themeColors[state.theme];
   const bubbleColors = themeColors[state.chatBubbleColor];
-  const speedMultiplier = state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1;
+  const speedMultiplier =
+    state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1;
 
   const getBubbleAnimation = (isOwn: boolean, index: number) => {
     const delay = index * 0.1;
@@ -1798,7 +2242,9 @@ function ChatPreview({ state }: { state: DemoState }) {
         return {
           ...baseStyle,
           borderRadius: '20px',
-          boxShadow: isOwn ? `0 4px 12px ${bubbleColors.primary}40` : `0 2px 8px ${colors.primary}20`,
+          boxShadow: isOwn
+            ? `0 4px 12px ${bubbleColors.primary}40`
+            : `0 2px 8px ${colors.primary}20`,
         };
       case 'sharp':
         return {
@@ -1838,27 +2284,32 @@ function ChatPreview({ state }: { state: DemoState }) {
     <motion.div
       className="relative overflow-hidden rounded-2xl border border-white/10"
       style={{
-        background: state.effect === 'glassmorphism'
-          ? 'rgba(17, 24, 39, 0.7)'
-          : state.effect === 'neon'
-          ? 'rgba(0, 0, 0, 0.9)'
-          : state.effect === 'holographic'
-          ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(30, 41, 59, 0.8))'
-          : state.effect === 'aurora'
-          ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.9), rgba(30, 58, 59, 0.8))'
-          : state.effect === 'cyberpunk'
-          ? 'rgba(10, 10, 20, 0.95)'
-          : 'rgba(17, 24, 39, 0.95)',
+        background:
+          state.effect === 'glassmorphism'
+            ? 'rgba(17, 24, 39, 0.7)'
+            : state.effect === 'neon'
+              ? 'rgba(0, 0, 0, 0.9)'
+              : state.effect === 'holographic'
+                ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.8), rgba(30, 41, 59, 0.8))'
+                : state.effect === 'aurora'
+                  ? 'linear-gradient(135deg, rgba(17, 24, 39, 0.9), rgba(30, 58, 59, 0.8))'
+                  : state.effect === 'cyberpunk'
+                    ? 'rgba(10, 10, 20, 0.95)'
+                    : 'rgba(17, 24, 39, 0.95)',
         backdropFilter: state.blurEnabled ? 'blur(20px)' : 'none',
         boxShadow: state.glowEnabled ? `0 0 40px ${colors.glow}` : 'none',
       }}
-      animate={state.glowEnabled ? {
-        boxShadow: [
-          `0 0 30px ${colors.glow}`,
-          `0 0 50px ${colors.glow}`,
-          `0 0 30px ${colors.glow}`,
-        ],
-      } : {}}
+      animate={
+        state.glowEnabled
+          ? {
+              boxShadow: [
+                `0 0 30px ${colors.glow}`,
+                `0 0 50px ${colors.glow}`,
+                `0 0 30px ${colors.glow}`,
+              ],
+            }
+          : {}
+      }
       transition={{ duration: 2 * speedMultiplier, repeat: Infinity }}
     >
       {/* Particles overlay */}
@@ -2035,7 +2486,16 @@ function ThemeControlPanel({
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-400">Effect Style</label>
         <div className="grid grid-cols-3 gap-2">
-          {(['glassmorphism', 'neon', 'holographic', 'minimal', 'aurora', 'cyberpunk'] as EffectPreset[]).map((effect) => (
+          {(
+            [
+              'glassmorphism',
+              'neon',
+              'holographic',
+              'minimal',
+              'aurora',
+              'cyberpunk',
+            ] as EffectPreset[]
+          ).map((effect) => (
             <motion.button
               key={effect}
               className={`rounded-lg border px-2 py-1.5 text-xs capitalize transition-all ${
@@ -2119,77 +2579,105 @@ function ThemeControlPanel({
           <span className="ml-2 text-[10px] text-emerald-400">NEW: 150+ Animated Borders!</span>
         </label>
         <p className="mb-3 text-xs text-gray-500">
-          Select a theme collection, then choose a border. Your selection applies across avatar, profile, and chat.
+          Select a theme collection, then choose a border. Your selection applies across avatar,
+          profile, and chat.
         </p>
         <div className="space-y-3">
           {/* Theme selector grid */}
           <div className="grid grid-cols-3 gap-2">
-            {(['8bit', 'japanese', 'anime', 'cyberpunk', 'gothic', 'kawaii'] as BorderTheme[]).map((theme) => {
-              const themeBorders = getBordersByTheme(theme);
-              const isSelected = state.selectedBorderTheme === theme;
+            {(['8bit', 'japanese', 'anime', 'cyberpunk', 'gothic', 'kawaii'] as BorderTheme[]).map(
+              (theme) => {
+                const themeBorders = getBordersByTheme(theme);
+                const isSelected = state.selectedBorderTheme === theme;
 
-              // Get theme icon and colors
-              const themeConfigMap: Record<string, { icon: string; color: string; bgGrad: string }> = {
-                '8bit': { icon: '🕹️', color: '#00ff00', bgGrad: 'from-green-900/20 to-green-800/20' },
-                'japanese': { icon: '🌸', color: '#ff6b9d', bgGrad: 'from-pink-900/20 to-pink-800/20' },
-                'anime': { icon: '⚡', color: '#667eea', bgGrad: 'from-purple-900/20 to-purple-800/20' },
-                'cyberpunk': { icon: '🌆', color: '#00f5ff', bgGrad: 'from-cyan-900/20 to-cyan-800/20' },
-                'gothic': { icon: '🦇', color: '#8b0000', bgGrad: 'from-red-900/20 to-red-800/20' },
-                'kawaii': { icon: '🌈', color: '#ffb3d9', bgGrad: 'from-pink-900/20 to-pink-700/20' },
-              };
-              const themeConfig = themeConfigMap[theme] || { icon: '✨', color: '#ffffff', bgGrad: 'from-gray-900/20 to-gray-800/20' };
+                // Get theme icon and colors
+                const themeConfigMap: Record<
+                  string,
+                  { icon: string; color: string; bgGrad: string }
+                > = {
+                  '8bit': {
+                    icon: '🕹️',
+                    color: '#00ff00',
+                    bgGrad: 'from-green-900/20 to-green-800/20',
+                  },
+                  japanese: {
+                    icon: '🌸',
+                    color: '#ff6b9d',
+                    bgGrad: 'from-pink-900/20 to-pink-800/20',
+                  },
+                  anime: {
+                    icon: '⚡',
+                    color: '#667eea',
+                    bgGrad: 'from-purple-900/20 to-purple-800/20',
+                  },
+                  cyberpunk: {
+                    icon: '🌆',
+                    color: '#00f5ff',
+                    bgGrad: 'from-cyan-900/20 to-cyan-800/20',
+                  },
+                  gothic: { icon: '🦇', color: '#8b0000', bgGrad: 'from-red-900/20 to-red-800/20' },
+                  kawaii: {
+                    icon: '🌈',
+                    color: '#ffb3d9',
+                    bgGrad: 'from-pink-900/20 to-pink-700/20',
+                  },
+                };
+                const themeConfig = themeConfigMap[theme] || {
+                  icon: '✨',
+                  color: '#ffffff',
+                  bgGrad: 'from-gray-900/20 to-gray-800/20',
+                };
 
-              return (
-                <motion.button
-                  key={theme}
-                  className={`relative overflow-hidden rounded-lg border p-3 text-left transition-all ${
-                    isSelected
-                      ? 'border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10'
-                      : 'border-white/10 bg-gradient-to-br hover:border-white/30'
-                  } ${themeConfig.bgGrad}`}
-                  onClick={() => onChange({ selectedBorderTheme: theme })}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {/* Animated glow on selection */}
-                  {isSelected && (
-                    <motion.div
-                      className="absolute inset-0 -z-10"
-                      animate={{
-                        boxShadow: [
-                          `inset 0 0 20px ${themeConfig.color}30`,
-                          `inset 0 0 40px ${themeConfig.color}50`,
-                          `inset 0 0 20px ${themeConfig.color}30`,
-                        ],
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                  )}
+                return (
+                  <motion.button
+                    key={theme}
+                    className={`relative overflow-hidden rounded-lg border p-3 text-left transition-all ${
+                      isSelected
+                        ? 'border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10'
+                        : 'border-white/10 bg-gradient-to-br hover:border-white/30'
+                    } ${themeConfig.bgGrad}`}
+                    onClick={() => onChange({ selectedBorderTheme: theme })}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {/* Animated glow on selection */}
+                    {isSelected && (
+                      <motion.div
+                        className="absolute inset-0 -z-10"
+                        animate={{
+                          boxShadow: [
+                            `inset 0 0 20px ${themeConfig.color}30`,
+                            `inset 0 0 40px ${themeConfig.color}50`,
+                            `inset 0 0 20px ${themeConfig.color}30`,
+                          ],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    )}
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{themeConfig.icon}</span>
-                    <div>
-                      <div className="text-xs font-medium capitalize text-white">
-                        {theme}
-                      </div>
-                      <div className="mt-0.5 text-[9px] text-gray-400">
-                        {themeBorders.length} borders
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{themeConfig.icon}</span>
+                      <div>
+                        <div className="text-xs font-medium capitalize text-white">{theme}</div>
+                        <div className="mt-0.5 text-[9px] text-gray-400">
+                          {themeBorders.length} borders
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Selection indicator */}
-                  {isSelected && (
-                    <motion.div
-                      className="absolute right-2 top-2 h-2 w-2 rounded-full bg-emerald-400"
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ type: 'spring', stiffness: 500 }}
-                    />
-                  )}
-                </motion.button>
-              );
-            })}
+                    {/* Selection indicator */}
+                    {isSelected && (
+                      <motion.div
+                        className="absolute right-2 top-2 h-2 w-2 rounded-full bg-emerald-400"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', stiffness: 500 }}
+                      />
+                    )}
+                  </motion.button>
+                );
+              }
+            )}
           </div>
 
           {/* Border preview grid for selected theme */}
@@ -2212,103 +2700,113 @@ function ThemeControlPanel({
 
                 {/* Animated border preview cards */}
                 <div className="grid grid-cols-4 gap-2">
-                  {getBordersByTheme(state.selectedBorderTheme).slice(0, 8).map((border, idx) => {
-                    const tier = border.unlockType === 'default' ? 'free' :
-                                border.unlockType === 'subscription' || border.unlockType === 'purchase' ? 'pro' : 'elite';
-                    const tierConfig = {
-                      free: { label: 'FREE', color: '#10b981', bgColor: '#10b98120' },
-                      pro: { label: 'PRO', color: '#8b5cf6', bgColor: '#8b5cf620' },
-                      elite: { label: 'ELITE', color: '#ec4899', bgColor: '#ec489920' },
-                    }[tier];
+                  {getBordersByTheme(state.selectedBorderTheme)
+                    .slice(0, 8)
+                    .map((border, idx) => {
+                      const tier =
+                        border.unlockType === 'default'
+                          ? 'free'
+                          : border.unlockType === 'subscription' || border.unlockType === 'purchase'
+                            ? 'pro'
+                            : 'elite';
+                      const tierConfig = {
+                        free: { label: 'FREE', color: '#10b981', bgColor: '#10b98120' },
+                        pro: { label: 'PRO', color: '#8b5cf6', bgColor: '#8b5cf620' },
+                        elite: { label: 'ELITE', color: '#ec4899', bgColor: '#ec489920' },
+                      }[tier];
 
-                    const isSelected = state.selectedBorderId === border.id;
+                      const isSelected = state.selectedBorderId === border.id;
 
-                    return (
-                      <motion.div
-                        key={border.id}
-                        className="group relative"
-                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        transition={{ delay: idx * 0.05, type: 'spring', stiffness: 300 }}
-                      >
-                        <motion.button
-                          className={`relative aspect-square w-full overflow-hidden rounded-lg border ${
-                            isSelected ? 'border-emerald-400' : 'border-white/20'
-                          } cursor-pointer`}
-                          style={{
-                            background: `linear-gradient(135deg, ${border.primaryColor}40, ${border.secondaryColor || border.primaryColor}40)`,
-                          }}
-                          whileHover={{ scale: 1.05, zIndex: 10 }}
-                          whileTap={{ scale: 0.95 }}
-                          onClick={() => {
-                            // Apply themed border globally to entire profile
-                            const borderTheme = state.selectedBorderTheme;
-                            const themeColorMap: Partial<Record<BorderTheme, ThemePreset>> = {
-                              '8bit': 'emerald',
-                              'japanese': 'pink',
-                              'anime': 'purple',
-                              'cyberpunk': 'cyan',
-                              'gothic': 'crimson',
-                              'kawaii': 'pink',
-                              'steampunk': 'orange',
-                              'vaporwave': 'purple',
-                              'cosmic': 'purple',
-                              'fantasy': 'purple',
-                              'nature': 'emerald',
-                              'tribal': 'orange',
-                              'geometric': 'cyan',
-                              'holographic': 'purple',
-                              'chinese': 'gold'
-                            };
-                            const matchingThemeColor = borderTheme && themeColorMap[borderTheme]
-                              ? themeColorMap[borderTheme]!
-                              : state.theme;
-
-                            onChange({
-                              selectedBorderId: border.id,
-                              // Apply theme globally across all visual elements
-                              theme: matchingThemeColor,
-                              avatarBorderColor: matchingThemeColor,
-                              chatBubbleColor: matchingThemeColor,
-                              // Set avatar border to use the themed border style
-                              avatarBorder: 'legendary' // Use premium border for themed borders
-                            });
-                          }}
+                      return (
+                        <motion.div
+                          key={border.id}
+                          className="group relative"
+                          initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          transition={{ delay: idx * 0.05, type: 'spring', stiffness: 300 }}
                         >
-                          {/* Tier label */}
-                          <div
-                            className="absolute left-1 top-1 z-10 rounded px-1 py-0.5 text-[8px] font-bold"
-                            style={{ backgroundColor: tierConfig.bgColor, color: tierConfig.color }}
-                          >
-                            {tierConfig.label}
-                          </div>
-
-                          {/* Animated effects */}
-                          <motion.div
-                            className="absolute inset-0"
+                          <motion.button
+                            className={`relative aspect-square w-full overflow-hidden rounded-lg border ${
+                              isSelected ? 'border-emerald-400' : 'border-white/20'
+                            } cursor-pointer`}
                             style={{
-                              background: `radial-gradient(circle at 50% 50%, ${border.primaryColor}60, ${border.secondaryColor || border.primaryColor}60, transparent)`,
+                              background: `linear-gradient(135deg, ${border.primaryColor}40, ${border.secondaryColor || border.primaryColor}40)`,
                             }}
-                            animate={{
-                              scale: [1, 1.2, 1],
-                              opacity: [0.5, 0.8, 0.5],
-                            }}
-                            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                          />
+                            whileHover={{ scale: 1.05, zIndex: 10 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => {
+                              // Apply themed border globally to entire profile
+                              const borderTheme = state.selectedBorderTheme;
+                              const themeColorMap: Partial<Record<BorderTheme, ThemePreset>> = {
+                                '8bit': 'emerald',
+                                japanese: 'pink',
+                                anime: 'purple',
+                                cyberpunk: 'cyan',
+                                gothic: 'crimson',
+                                kawaii: 'pink',
+                                steampunk: 'orange',
+                                vaporwave: 'purple',
+                                cosmic: 'purple',
+                                fantasy: 'purple',
+                                nature: 'emerald',
+                                tribal: 'orange',
+                                geometric: 'cyan',
+                                holographic: 'purple',
+                                chinese: 'gold',
+                              };
+                              const matchingThemeColor =
+                                borderTheme && themeColorMap[borderTheme]
+                                  ? themeColorMap[borderTheme]!
+                                  : state.theme;
 
-                          {/* Selection indicator */}
-                          {isSelected && (
+                              onChange({
+                                selectedBorderId: border.id,
+                                // Apply theme globally across all visual elements
+                                theme: matchingThemeColor,
+                                avatarBorderColor: matchingThemeColor,
+                                chatBubbleColor: matchingThemeColor,
+                                // Set avatar border to use the themed border style
+                                avatarBorder: 'legendary', // Use premium border for themed borders
+                              });
+                            }}
+                          >
+                            {/* Tier label */}
+                            <div
+                              className="absolute left-1 top-1 z-10 rounded px-1 py-0.5 text-[8px] font-bold"
+                              style={{
+                                backgroundColor: tierConfig.bgColor,
+                                color: tierConfig.color,
+                              }}
+                            >
+                              {tierConfig.label}
+                            </div>
+
+                            {/* Animated effects */}
                             <motion.div
-                              className="absolute inset-0 border-2 border-emerald-400 rounded-lg pointer-events-none"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ type: 'spring' }}
+                              className="absolute inset-0"
+                              style={{
+                                background: `radial-gradient(circle at 50% 50%, ${border.primaryColor}60, ${border.secondaryColor || border.primaryColor}60, transparent)`,
+                              }}
+                              animate={{
+                                scale: [1, 1.2, 1],
+                                opacity: [0.5, 0.8, 0.5],
+                              }}
+                              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                             />
-                          )}
-                        </motion.button>
-                      </motion.div>
-                    );
-                  })}
+
+                            {/* Selection indicator */}
+                            {isSelected && (
+                              <motion.div
+                                className="pointer-events-none absolute inset-0 rounded-lg border-2 border-emerald-400"
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ type: 'spring' }}
+                              />
+                            )}
+                          </motion.button>
+                        </motion.div>
+                      );
+                    })}
                 </div>
 
                 <div className="mt-3 flex items-center justify-between text-[10px] text-gray-500">
@@ -2326,10 +2824,13 @@ function ThemeControlPanel({
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-400">
             Next-Gen Profile Themes
-            <span className="ml-2 text-[10px] text-purple-400">Apply custom theme to your profile!</span>
+            <span className="ml-2 text-[10px] text-purple-400">
+              Apply custom theme to your profile!
+            </span>
           </label>
           <p className="mb-3 text-xs text-gray-500">
-            Choose a profile theme variant from the {state.selectedBorderTheme} collection. These themes customize your entire profile appearance.
+            Choose a profile theme variant from the {state.selectedBorderTheme} collection. These
+            themes customize your entire profile appearance.
           </p>
           <ProfileThemeShowcase
             theme={state.selectedBorderTheme}
@@ -2358,7 +2859,9 @@ function AvatarControlPanel({
           borderType={state.avatarBorder}
           borderColor={state.avatarBorderColor}
           size="large"
-          speedMultiplier={state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1}
+          speedMultiplier={
+            state.animationSpeed === 'slow' ? 2 : state.animationSpeed === 'fast' ? 0.5 : 1
+          }
         />
       </div>
 
@@ -2366,36 +2869,41 @@ function AvatarControlPanel({
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-400">Avatar Border</label>
         <div className="grid grid-cols-2 gap-2">
-          {(Object.entries(avatarBorders) as [AvatarBorderType, typeof avatarBorders[AvatarBorderType]][]).map(
-            ([type, info]) => (
-              <motion.button
-                key={type}
-                className={`relative rounded-lg border p-2 text-left transition-all ${
-                  state.avatarBorder === type
-                    ? 'border-white/50 bg-white/10'
-                    : 'border-white/10 hover:border-white/30'
-                }`}
-                onClick={() => onChange({ avatarBorder: type })}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs font-medium ${state.avatarBorder === type ? 'text-white' : 'text-gray-400'}`}>
-                    {info.name}
+          {(
+            Object.entries(avatarBorders) as [
+              AvatarBorderType,
+              (typeof avatarBorders)[AvatarBorderType],
+            ][]
+          ).map(([type, info]) => (
+            <motion.button
+              key={type}
+              className={`relative rounded-lg border p-2 text-left transition-all ${
+                state.avatarBorder === type
+                  ? 'border-white/50 bg-white/10'
+                  : 'border-white/10 hover:border-white/30'
+              }`}
+              onClick={() => onChange({ avatarBorder: type })}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <div className="flex items-center justify-between">
+                <span
+                  className={`text-xs font-medium ${state.avatarBorder === type ? 'text-white' : 'text-gray-400'}`}
+                >
+                  {info.name}
+                </span>
+                {info.premium && (
+                  <span
+                    className="rounded px-1 py-0.5 text-[9px] font-bold"
+                    style={{ background: rarityColors[info.rarity!], color: '#fff' }}
+                  >
+                    {info.rarity}
                   </span>
-                  {info.premium && (
-                    <span
-                      className="rounded px-1 py-0.5 text-[9px] font-bold"
-                      style={{ background: rarityColors[info.rarity!], color: '#fff' }}
-                    >
-                      {info.rarity}
-                    </span>
-                  )}
-                </div>
-                <p className="mt-0.5 text-[10px] text-gray-500">{info.description}</p>
-              </motion.button>
-            )
-          )}
+                )}
+              </div>
+              <p className="mt-0.5 text-[10px] text-gray-500">{info.description}</p>
+            </motion.button>
+          ))}
         </div>
       </div>
 
@@ -2420,36 +2928,15 @@ function AvatarControlPanel({
         </div>
       </div>
 
-      {/* Avatar Size */}
-      <div>
-        <label className="mb-2 block text-sm font-medium text-gray-400">Avatar Size</label>
-        <div className="flex gap-2">
-          {(['small', 'medium', 'large'] as const).map((size) => (
-            <motion.button
-              key={size}
-              className={`flex-1 rounded-lg border px-2 py-1.5 text-xs capitalize transition-all ${
-                state.avatarSize === size
-                  ? 'border-white/50 bg-white/10 text-white'
-                  : 'border-white/10 text-gray-400 hover:border-white/30'
-              }`}
-              onClick={() => onChange({ avatarSize: size })}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {size}
-            </motion.button>
-          ))}
-        </div>
-      </div>
-
       {/* Note: Themed borders moved to Theme tab */}
       <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 p-3">
         <div className="flex items-center gap-2 text-sm font-medium text-emerald-400">
           <span>🎨</span> Themed Border Collections
         </div>
         <p className="mt-1 text-xs text-gray-400">
-          150+ animated borders across 6 themes are now in the <span className="font-semibold text-emerald-400">Theme tab</span>!
-          Select a theme collection there to apply unified styling across your entire profile.
+          150+ animated borders across 6 themes are now in the{' '}
+          <span className="font-semibold text-emerald-400">Theme tab</span>! Select a theme
+          collection there to apply unified styling across your entire profile.
         </p>
       </div>
 
@@ -2481,21 +2968,23 @@ function ChatControlPanel({
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-400">Bubble Style Presets</label>
         <div className="grid grid-cols-3 gap-2">
-          {(['default', 'rounded', 'sharp', 'cloud', 'modern', 'retro'] as ChatBubbleStyle[]).map((style) => (
-            <motion.button
-              key={style}
-              className={`rounded-lg border px-2 py-1.5 text-xs capitalize transition-all ${
-                state.chatBubbleStyle === style
-                  ? 'border-white/50 bg-white/10 text-white'
-                  : 'border-white/10 text-gray-400 hover:border-white/30'
-              }`}
-              onClick={() => onChange({ chatBubbleStyle: style })}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {style}
-            </motion.button>
-          ))}
+          {(['default', 'rounded', 'sharp', 'cloud', 'modern', 'retro'] as ChatBubbleStyle[]).map(
+            (style) => (
+              <motion.button
+                key={style}
+                className={`rounded-lg border px-2 py-1.5 text-xs capitalize transition-all ${
+                  state.chatBubbleStyle === style
+                    ? 'border-white/50 bg-white/10 text-white'
+                    : 'border-white/10 text-gray-400 hover:border-white/30'
+                }`}
+                onClick={() => onChange({ chatBubbleStyle: style })}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                {style}
+              </motion.button>
+            )
+          )}
         </div>
       </div>
 
@@ -2590,8 +3079,18 @@ function ChatControlPanel({
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-400">Visual Effects</label>
         {[
-          { key: 'bubbleGlassEffect', label: 'Glass Effect', icon: '💎', desc: 'Frosted glass backdrop blur' },
-          { key: 'bubbleShowTail', label: 'Message Tail', icon: '💬', desc: 'Classic chat bubble tail' },
+          {
+            key: 'bubbleGlassEffect',
+            label: 'Glass Effect',
+            icon: '💎',
+            desc: 'Frosted glass backdrop blur',
+          },
+          {
+            key: 'bubbleShowTail',
+            label: 'Message Tail',
+            icon: '💬',
+            desc: 'Classic chat bubble tail',
+          },
           { key: 'bubbleHoverEffect', label: 'Hover Animation', icon: '✨', desc: 'Lift on hover' },
         ].map(({ key, label, icon, desc }) => (
           <label
@@ -2629,9 +3128,19 @@ function ChatControlPanel({
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-400">Layout Options</label>
         {[
-          { key: 'showTimestamps', label: 'Show Timestamps', icon: '🕐', desc: 'Display message time' },
+          {
+            key: 'showTimestamps',
+            label: 'Show Timestamps',
+            icon: '🕐',
+            desc: 'Display message time',
+          },
           { key: 'compactMode', label: 'Compact Mode', icon: '📐', desc: 'Reduced spacing' },
-          { key: 'groupMessages', label: 'Group Messages', icon: '📦', desc: 'Combine sequential messages' },
+          {
+            key: 'groupMessages',
+            label: 'Group Messages',
+            icon: '📦',
+            desc: 'Combine sequential messages',
+          },
         ].map(({ key, label, icon, desc }) => (
           <label
             key={key}
@@ -2670,7 +3179,8 @@ function ChatControlPanel({
           <span>💡</span> Pro Tip
         </div>
         <p className="mt-1 text-xs text-gray-400">
-          Access 20+ more customization options in the full web app including gradient controls, border styles, and typing indicators
+          Access 20+ more customization options in the full web app including gradient controls,
+          border styles, and typing indicators
         </p>
       </div>
     </div>
@@ -2690,13 +3200,15 @@ function ProfileControlPanel({
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-400">Profile Card Style</label>
         <div className="grid grid-cols-2 gap-2">
-          {([
-            { id: 'minimal', name: 'Minimal', desc: 'Clean & simple' },
-            { id: 'detailed', name: 'Detailed', desc: 'Full info display' },
-            { id: 'compact', name: 'Compact', desc: 'Space efficient' },
-            { id: 'expanded', name: 'Expanded', desc: 'Show everything' },
-            { id: 'gaming', name: 'Gaming', desc: 'Stats focused', premium: true },
-          ] as const).map((style) => (
+          {(
+            [
+              { id: 'minimal', name: 'Minimal', desc: 'Clean & simple' },
+              { id: 'detailed', name: 'Detailed', desc: 'Full info display' },
+              { id: 'compact', name: 'Compact', desc: 'Space efficient' },
+              { id: 'expanded', name: 'Expanded', desc: 'Show everything' },
+              { id: 'gaming', name: 'Gaming', desc: 'Stats focused', premium: true },
+            ] as const
+          ).map((style) => (
             <motion.button
               key={style.id}
               className={`relative rounded-lg border p-2 text-left transition-all ${
@@ -2709,7 +3221,9 @@ function ProfileControlPanel({
               whileTap={{ scale: 0.98 }}
             >
               <div className="flex items-center justify-between">
-                <span className={`text-xs font-medium ${state.profileCardStyle === style.id ? 'text-white' : 'text-gray-400'}`}>
+                <span
+                  className={`text-xs font-medium ${state.profileCardStyle === style.id ? 'text-white' : 'text-gray-400'}`}
+                >
                   {style.name}
                 </span>
                 {'premium' in style && style.premium && (
@@ -2819,10 +3333,10 @@ export function CustomizationDemo() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-gray-950 py-24">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.05),transparent_70%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.05),transparent_70%)]" />
+    <section className="relative overflow-hidden bg-transparent py-24">
+      {/* Background - subtle gradients that blend with parent */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.03),transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.03),transparent_70%)]" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
@@ -2846,8 +3360,9 @@ export function CustomizationDemo() {
             Make It <GlowText>Yours</GlowText>
           </h2>
           <p className="mx-auto max-w-2xl text-xl text-gray-400">
-            Create your unique identity with animated avatar borders, custom chat bubbles, and personalized profiles.
-            <span className="block mt-2 text-emerald-400">Your style follows you everywhere.</span>
+            Create your unique identity with animated avatar borders, custom chat bubbles, and
+            personalized profiles.
+            <span className="mt-2 block text-emerald-400">Your style follows you everywhere.</span>
           </p>
         </motion.div>
 
@@ -2870,10 +3385,16 @@ export function CustomizationDemo() {
                   exit={{ opacity: 0, scale: 0.95 }}
                   transition={{ duration: 0.3 }}
                 >
-                  {activePanel === 'theme' && <ProfilePreview state={state} onChange={updateState} />}
-                  {activePanel === 'avatar' && <AvatarPreview state={state} onChange={updateState} />}
+                  {activePanel === 'theme' && (
+                    <ProfilePreview state={state} onChange={updateState} />
+                  )}
+                  {activePanel === 'avatar' && (
+                    <AvatarPreview state={state} onChange={updateState} />
+                  )}
                   {activePanel === 'chat' && <ChatPreview state={state} />}
-                  {activePanel === 'profile' && <ProfilePreview state={state} onChange={updateState} />}
+                  {activePanel === 'profile' && (
+                    <ProfilePreview state={state} onChange={updateState} />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </TiltCard>
@@ -2912,7 +3433,9 @@ export function CustomizationDemo() {
                     <button
                       key={panel.id}
                       className={`relative flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                        activePanel === panel.id ? 'text-white' : 'text-gray-400 hover:text-gray-300'
+                        activePanel === panel.id
+                          ? 'text-white'
+                          : 'text-gray-400 hover:text-gray-300'
                       }`}
                       onClick={() => setActivePanel(panel.id)}
                     >
@@ -2940,10 +3463,18 @@ export function CustomizationDemo() {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {activePanel === 'theme' && <ThemeControlPanel state={state} onChange={updateState} />}
-                    {activePanel === 'avatar' && <AvatarControlPanel state={state} onChange={updateState} />}
-                    {activePanel === 'chat' && <ChatControlPanel state={state} onChange={updateState} />}
-                    {activePanel === 'profile' && <ProfileControlPanel state={state} onChange={updateState} />}
+                    {activePanel === 'theme' && (
+                      <ThemeControlPanel state={state} onChange={updateState} />
+                    )}
+                    {activePanel === 'avatar' && (
+                      <AvatarControlPanel state={state} onChange={updateState} />
+                    )}
+                    {activePanel === 'chat' && (
+                      <ChatControlPanel state={state} onChange={updateState} />
+                    )}
+                    {activePanel === 'profile' && (
+                      <ProfileControlPanel state={state} onChange={updateState} />
+                    )}
                   </motion.div>
                 </AnimatePresence>
               </div>

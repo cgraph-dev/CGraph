@@ -1,177 +1,179 @@
 /**
  * Marketing Footer Component
- * 
- * Shared footer for all marketing/public pages including
- * landing page, legal pages, and company pages.
- * 
+ *
+ * Unified footer matching the landing page design with animated
+ * gradient border, glow effects, and consistent styling.
+ *
  * @since v0.9.2
+ * @updated v0.9.5 - Unified with landing page style
  */
 
 import { Link } from 'react-router-dom';
-import AnimatedLogo from '@/components/AnimatedLogo';
+import { motion } from 'framer-motion';
+import './marketing-pages.css';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
+  const footerLinks = {
+    product: [
+      { label: 'Features', to: '/#features' },
+      { label: 'Security', to: '/#security' },
+      { label: 'Pricing', to: '/#pricing' },
+      { label: 'Download', to: '/login' },
+    ],
+    resources: [
+      { label: 'Documentation', href: 'https://docs.cgraph.org' },
+      { label: 'API Reference', href: 'https://docs.cgraph.org/api' },
+      { label: 'Status', to: '/status' },
+      { label: 'Blog', href: 'https://blog.cgraph.org' },
+    ],
+    company: [
+      { label: 'About', to: '/about' },
+      { label: 'Careers', to: '/careers' },
+      { label: 'Contact', to: '/contact' },
+      { label: 'Press', to: '/press' },
+    ],
+    legal: [
+      { label: 'Privacy Policy', to: '/privacy' },
+      { label: 'Terms of Service', to: '/terms' },
+      { label: 'Cookie Policy', to: '/cookies' },
+      { label: 'GDPR', to: '/gdpr' },
+    ],
+  };
+
+  const renderLink = (link: { label: string; to?: string; href?: string }) => {
+    if (link.href) {
+      return (
+        <a
+          key={link.label}
+          href={link.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="gl-footer-unified__link"
+        >
+          {link.label}
+        </a>
+      );
+    }
+    return (
+      <Link key={link.label} to={link.to!} className="gl-footer-unified__link">
+        {link.label}
+      </Link>
+    );
+  };
+
   return (
-    <footer className="border-t border-gray-800 bg-gray-950 py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
+    <footer className="gl-footer-unified">
+      {/* Animated gradient top border */}
+      <div className="gl-footer-unified__border" />
+
+      {/* Glow effect */}
+      <div className="gl-footer-unified__glow" />
+
+      <div className="gl-footer-unified__container">
+        {/* Links Grid */}
+        <motion.div
+          className="gl-footer-unified__grid"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
           {/* Product */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">Product</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/#features" className="text-gray-400 transition-colors hover:text-white">
-                  Features
-                </Link>
-              </li>
-              <li>
-                <Link to="/#security" className="text-gray-400 transition-colors hover:text-white">
-                  Security
-                </Link>
-              </li>
-              <li>
-                <Link to="/#pricing" className="text-gray-400 transition-colors hover:text-white">
-                  Pricing
-                </Link>
-              </li>
-              <li>
-                <Link to="/login" className="text-gray-400 transition-colors hover:text-white">
-                  Download
-                </Link>
-              </li>
-            </ul>
+          <div className="gl-footer-unified__column">
+            <h4 className="gl-footer-unified__heading">Product</h4>
+            <div className="gl-footer-unified__links">{footerLinks.product.map(renderLink)}</div>
           </div>
 
           {/* Resources */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">Resources</h4>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="https://docs.cgraph.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 transition-colors hover:text-white"
-                >
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://docs.cgraph.org/api"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 transition-colors hover:text-white"
-                >
-                  API Reference
-                </a>
-              </li>
-              <li>
-                <Link to="/status" className="text-gray-400 transition-colors hover:text-white">
-                  Status
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="https://blog.cgraph.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 transition-colors hover:text-white"
-                >
-                  Blog
-                </a>
-              </li>
-            </ul>
+          <div className="gl-footer-unified__column">
+            <h4 className="gl-footer-unified__heading">Resources</h4>
+            <div className="gl-footer-unified__links">{footerLinks.resources.map(renderLink)}</div>
           </div>
 
           {/* Company */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">Company</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/about" className="text-gray-400 transition-colors hover:text-white">
-                  About
-                </Link>
-              </li>
-              <li>
-                <Link to="/careers" className="text-gray-400 transition-colors hover:text-white">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-gray-400 transition-colors hover:text-white">
-                  Contact
-                </Link>
-              </li>
-              <li>
-                <Link to="/press" className="text-gray-400 transition-colors hover:text-white">
-                  Press
-                </Link>
-              </li>
-            </ul>
+          <div className="gl-footer-unified__column">
+            <h4 className="gl-footer-unified__heading">Company</h4>
+            <div className="gl-footer-unified__links">{footerLinks.company.map(renderLink)}</div>
           </div>
 
           {/* Legal */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">Legal</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/privacy" className="text-gray-400 transition-colors hover:text-white">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/terms" className="text-gray-400 transition-colors hover:text-white">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link to="/cookies" className="text-gray-400 transition-colors hover:text-white">
-                  Cookie Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/gdpr" className="text-gray-400 transition-colors hover:text-white">
-                  GDPR
-                </Link>
-              </li>
-            </ul>
+          <div className="gl-footer-unified__column">
+            <h4 className="gl-footer-unified__heading">Legal</h4>
+            <div className="gl-footer-unified__links">{footerLinks.legal.map(renderLink)}</div>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-800 pt-8 md:flex-row">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <AnimatedLogo size="sm" />
-            <span className="text-gray-400">© {currentYear} CGraph. All rights reserved.</span>
+        {/* Bottom bar */}
+        <motion.div
+          className="gl-footer-unified__bottom"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+        >
+          {/* Logo & Copyright */}
+          <div className="gl-footer-unified__brand">
+            <Link to="/" className="gl-footer-unified__logo">
+              <svg viewBox="0 0 32 32" className="gl-footer-unified__logo-icon">
+                <path
+                  d="M16 2L4 9v14l12 7 12-7V9L16 2zm0 4l8 4.5v9L16 24l-8-4.5v-9L16 6z"
+                  fill="url(#footer-logo-gradient)"
+                />
+                <defs>
+                  <linearGradient id="footer-logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#8b5cf6" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span>CGraph</span>
+            </Link>
+            <span className="gl-footer-unified__copy">
+              © {currentYear} CGraph. All rights reserved.
+            </span>
           </div>
 
           {/* Social links */}
-          <div className="flex items-center gap-4">
+          <div className="gl-footer-unified__social">
             <a
-              href="/forum"
-              className="text-gray-400 transition-colors hover:text-white"
-              aria-label="Community Forum"
-            >
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
-              </svg>
-            </a>
-            <a
-              href="https://twitter.com/cgraph_org"
+              href="https://twitter.com/cgraph"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 transition-colors hover:text-white"
+              className="gl-footer-unified__social-link"
               aria-label="Twitter"
             >
-              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
             </a>
+            <a
+              href="https://github.com/cgraph"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gl-footer-unified__social-link"
+              aria-label="GitHub"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+              </svg>
+            </a>
+            <Link
+              to="/forum"
+              className="gl-footer-unified__social-link"
+              aria-label="Community Forum"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
+                />
+              </svg>
+            </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   );

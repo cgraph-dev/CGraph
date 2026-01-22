@@ -1,9 +1,9 @@
 /**
  * Cookie Policy Page
- * 
+ *
  * Renders the Cookie Policy legal document with consistent
  * marketing page styling.
- * 
+ *
  * @since v0.9.2
  */
 
@@ -214,20 +214,22 @@ export default function CookiePolicy() {
   return (
     <MarketingLayout
       title="Cookie Policy"
-      subtitle="Last updated: January 16, 2026 • Version 1.0"
+      subtitle="Last updated: January 21, 2026 • Version 1.1"
+      eyebrow="Transparency First"
     >
-      <section className="bg-gray-950 py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
           {/* Introduction */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mb-12 rounded-2xl border border-gray-800 bg-gray-900/50 p-8"
+            className="marketing-card"
+            style={{ marginBottom: '3rem' }}
           >
-            <p className="text-lg text-gray-300">
-              This Cookie Policy explains how CGraph ("we", "us", "our") uses cookies and similar 
-              technologies when you visit our website at cgraph.org or use our web application 
+            <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
+              This Cookie Policy explains how CGraph ("we", "us", "our") uses cookies and similar
+              technologies when you visit our website at cgraph.org or use our web application
               (collectively, the "Service").
             </p>
           </motion.div>
@@ -239,13 +241,16 @@ export default function CookiePolicy() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mb-12"
           >
-            <h2 className="mb-4 text-xl font-semibold text-white">Table of Contents</h2>
+            <h2 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Table of Contents
+            </h2>
             <nav className="grid gap-2 sm:grid-cols-2">
               {sections.map((section) => (
                 <a
                   key={section.id}
                   href={`#${section.id}`}
-                  className="text-gray-400 transition-colors hover:text-purple-400"
+                  style={{ color: 'var(--color-gray)', transition: 'color 0.2s' }}
+                  className="hover:text-emerald-400"
                 >
                   {section.title}
                 </a>
@@ -264,9 +269,14 @@ export default function CookiePolicy() {
               transition={{ duration: 0.5 }}
               className="mb-12 scroll-mt-24"
             >
-              <h2 className="mb-6 text-2xl font-bold text-white">{section.title}</h2>
-              <div 
-                className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300 prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300 prose-strong:text-white prose-code:text-emerald-400 prose-code:bg-gray-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-table:border-gray-700 prose-th:bg-gray-800 prose-th:text-white prose-td:text-gray-300 prose-th:border-gray-700 prose-td:border-gray-700"
+              <h2
+                className="font-zentry mb-6 text-2xl font-bold"
+                style={{ color: 'var(--color-light)' }}
+              >
+                {section.title}
+              </h2>
+              <div
+                className="legal-content"
                 dangerouslySetInnerHTML={{ __html: section.content }}
               />
             </motion.section>
@@ -277,30 +287,35 @@ export default function CookiePolicy() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-2xl border border-gray-800 bg-gray-900/50 p-8"
+            className="marketing-card"
           >
-            <h3 className="mb-4 text-xl font-semibold text-white">Related Documents</h3>
-            <div className="grid gap-4 sm:grid-cols-3">
-              <a
-                href="/privacy"
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-purple-500/50"
-              >
-                <h4 className="font-medium text-white">Privacy Policy</h4>
-                <p className="mt-1 text-sm text-gray-400">How we handle your data</p>
+            <h3 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Related Documents
+            </h3>
+            <div className="marketing-grid marketing-grid--3">
+              <a href="/privacy" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Privacy Policy
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we handle your data
+                </p>
               </a>
-              <a
-                href="/terms"
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-purple-500/50"
-              >
-                <h4 className="font-medium text-white">Terms of Service</h4>
-                <p className="mt-1 text-sm text-gray-400">Rules for using CGraph</p>
+              <a href="/terms" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Terms of Service
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Rules for using CGraph
+                </p>
               </a>
-              <a
-                href="/gdpr"
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-purple-500/50"
-              >
-                <h4 className="font-medium text-white">GDPR Compliance</h4>
-                <p className="mt-1 text-sm text-gray-400">Your data rights</p>
+              <a href="/gdpr" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  GDPR Compliance
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Your data rights
+                </p>
               </a>
             </div>
           </motion.div>

@@ -1,5 +1,9 @@
 /**
- * CGraph Landing Page - GSAP Enhanced
+ * @deprecated ARCHIVED - January 22, 2026
+ * This page has been replaced by /pages/LandingPage.tsx (GAMELAND-style)
+ * Kept for reference only. Do not import or use.
+ *
+ * CGraph Landing Page - GSAP Enhanced (Legacy)
  *
  * Features:
  * - Video hero background with GSAP parallax

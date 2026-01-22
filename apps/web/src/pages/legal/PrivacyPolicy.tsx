@@ -1,9 +1,9 @@
 /**
  * Privacy Policy Page
- * 
+ *
  * Renders the Privacy Policy legal document with consistent
  * marketing page styling.
- * 
+ *
  * @since v0.9.2
  */
 
@@ -24,6 +24,8 @@ const sections = [
           <tr><td><strong>Messages</strong></td><td>Direct messages, group chat content</td><td>Until deleted by user</td></tr>
           <tr><td><strong>Profile Data</strong></td><td>Bio, display name, avatar</td><td>Until account deletion</td></tr>
           <tr><td><strong>Wallet Address</strong></td><td>Web3 authentication (optional)</td><td>Until account deletion</td></tr>
+          <tr><td><strong>Forum Content</strong></td><td>Posts, comments, votes, community membership</td><td>Until deleted by user</td></tr>
+          <tr><td><strong>Gamification Data</strong></td><td>XP, achievements, quest progress, leaderboard rankings</td><td>Until account deletion</td></tr>
         </tbody>
       </table>
       
@@ -191,21 +193,23 @@ export default function PrivacyPolicy() {
   return (
     <MarketingLayout
       title="Privacy Policy"
-      subtitle="Last updated: January 8, 2026 • Version 1.0"
+      subtitle="Last updated: January 21, 2026 • Version 1.1"
+      eyebrow="Your Data, Your Rights"
     >
-      <section className="bg-gray-950 py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
           {/* Introduction */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mb-12 rounded-2xl border border-gray-800 bg-gray-900/50 p-8"
+            className="marketing-card"
+            style={{ marginBottom: '3rem' }}
           >
-            <p className="text-lg text-gray-300">
-              CGraph ("we", "us", "our") is committed to protecting your privacy. This Privacy Policy 
-              explains how we collect, use, disclose, and safeguard your information when you use our 
-              mobile application and web platform (collectively, the "Service").
+            <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
+              CGraph ("we", "us", "our") is committed to protecting your privacy. This Privacy
+              Policy explains how we collect, use, disclose, and safeguard your information when you
+              use our mobile application and web platform (collectively, the "Service").
             </p>
           </motion.div>
 
@@ -216,13 +220,16 @@ export default function PrivacyPolicy() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="mb-12"
           >
-            <h2 className="mb-4 text-xl font-semibold text-white">Table of Contents</h2>
+            <h2 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Table of Contents
+            </h2>
             <nav className="grid gap-2 sm:grid-cols-2">
               {sections.map((section) => (
                 <a
                   key={section.id}
                   href={`#${section.id}`}
-                  className="text-gray-400 transition-colors hover:text-purple-400"
+                  style={{ color: 'var(--color-gray)', transition: 'color 0.2s' }}
+                  className="hover:text-emerald-400"
                 >
                   {section.title}
                 </a>
@@ -241,9 +248,14 @@ export default function PrivacyPolicy() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="mb-12 scroll-mt-24"
             >
-              <h2 className="mb-6 text-2xl font-bold text-white">{section.title}</h2>
-              <div 
-                className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300 prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300 prose-strong:text-white prose-table:border-gray-700 prose-th:bg-gray-800 prose-th:text-white prose-td:text-gray-300 prose-th:border-gray-700 prose-td:border-gray-700"
+              <h2
+                className="font-zentry mb-6 text-2xl font-bold"
+                style={{ color: 'var(--color-light)' }}
+              >
+                {section.title}
+              </h2>
+              <div
+                className="legal-content"
                 dangerouslySetInnerHTML={{ __html: section.content }}
               />
             </motion.section>
@@ -254,30 +266,35 @@ export default function PrivacyPolicy() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-2xl border border-gray-800 bg-gray-900/50 p-8"
+            className="marketing-card"
           >
-            <h3 className="mb-4 text-xl font-semibold text-white">Related Documents</h3>
-            <div className="grid gap-4 sm:grid-cols-3">
-              <a
-                href="/terms"
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-purple-500/50"
-              >
-                <h4 className="font-medium text-white">Terms of Service</h4>
-                <p className="mt-1 text-sm text-gray-400">Rules for using CGraph</p>
+            <h3 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Related Documents
+            </h3>
+            <div className="marketing-grid marketing-grid--3">
+              <a href="/terms" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Terms of Service
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Rules for using CGraph
+                </p>
               </a>
-              <a
-                href="/cookies"
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-purple-500/50"
-              >
-                <h4 className="font-medium text-white">Cookie Policy</h4>
-                <p className="mt-1 text-sm text-gray-400">How we use cookies</p>
+              <a href="/cookies" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Cookie Policy
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we use cookies
+                </p>
               </a>
-              <a
-                href="/gdpr"
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-purple-500/50"
-              >
-                <h4 className="font-medium text-white">GDPR Compliance</h4>
-                <p className="mt-1 text-sm text-gray-400">Your data rights</p>
+              <a href="/gdpr" className="marketing-card" style={{ padding: '1rem' }}>
+                <h4 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  GDPR Compliance
+                </h4>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Your data rights
+                </p>
               </a>
             </div>
           </motion.div>

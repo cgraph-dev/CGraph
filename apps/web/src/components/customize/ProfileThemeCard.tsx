@@ -156,8 +156,8 @@ export default function ProfileThemeCard({
     }
   };
 
-  // Particle animation based on type - particle param reserved for future per-particle customization
-  const getParticleAnimation = (/* particle: typeof particles[0] */) => {
+  // Particle animation based on type
+  const getParticleAnimation = (_particle: (typeof particles)[0]) => {
     const config = PARTICLE_CONFIGS[theme.particleType];
     const baseY = config.velocity.y.min < 0 ? -30 : 30;
 

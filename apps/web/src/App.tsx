@@ -1,10 +1,11 @@
 import { useEffect, lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 import { useCustomizationApplication } from '@/hooks/useCustomizationApplication';
+import { Preloader } from '@/components/Preloader';
 import '@/themes/theme-globals.css';
 import '@/styles/customization-effects.css';
 
@@ -15,17 +16,16 @@ import AppLayout from '@/layouts/AppLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 
 // ============================================================================
-// LOADING COMPONENT - Shown during lazy load
+// SCROLL TO TOP - Ensures page starts at top on navigation
 // ============================================================================
-function PageLoader() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-900">
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
-        <span className="text-sm text-gray-400">Loading...</span>
-      </div>
-    </div>
-  );
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [pathname]);
+
+  return null;
 }
 
 // ============================================================================
@@ -104,7 +104,7 @@ const AdminDashboard = lazy(() => import('@/pages/admin/AdminDashboard'));
 
 // Static pages
 const NotFound = lazy(() => import('@/pages/NotFound'));
-const LandingPage = lazy(() => import('@/pages/LandingPageGSAP'));
+const LandingPage = lazy(() => import('@/pages/LandingPage'));
 
 // Legal pages
 const PrivacyPolicy = lazy(() => import('@/pages/legal/PrivacyPolicy'));
@@ -125,7 +125,6 @@ const EnhancedDemo = lazy(() => import('@/pages/test/EnhancedDemo'));
 const ThemeApplicationTest = lazy(() => import('@/pages/test/ThemeApplicationTest'));
 
 // Demo pages
-const LandingDemo = lazy(() => import('@/pages/demo/LandingDemo'));
 const LandingDemoWorkshop = lazy(() => import('@/pages/demo/LandingDemoWorkshop'));
 
 // Initialize auth check on app load - non-blocking
@@ -270,14 +269,15 @@ function ProfileRedirectRoute() {
     return <Navigate to={`/user/${user.id}`} replace />;
   }
 
-  // While loading, show loading spinner
-  return <PageLoader />;
+  // While loading, show the preloader
+  return <Preloader />;
 }
 
 export default function App() {
   return (
     <AuthInitializer>
-      <Suspense fallback={<PageLoader />}>
+      <ScrollToTop />
+      <Suspense fallback={<Preloader />}>
         <Routes>
           {/* Test route for Matrix animation */}
           <Route path="/test/matrix" element={<MatrixTest />} />
@@ -292,10 +292,7 @@ export default function App() {
           <Route path="/demo/workshop" element={<LandingDemoWorkshop />} />
 
           {/* Public landing page - GAMELAND-style */}
-          <Route path="/" element={<LandingDemo />} />
-
-          {/* Alternative GSAP landing page */}
-          <Route path="/landing" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage />} />
 
           {/* Legal pages - public access */}
           <Route path="/privacy" element={<PrivacyPolicy />} />

@@ -1,16 +1,18 @@
 /**
  * Marketing Navigation Component
- * 
- * Shared navigation bar for all marketing/public pages including
- * landing page, legal pages, and company pages.
- * 
+ *
+ * Floating pill-style navigation matching the landing page design.
+ * Features hide-on-scroll-down behavior, animated gradient border,
+ * and emerald/purple color scheme.
+ *
  * @since v0.9.2
+ * @updated v0.9.5 - Unified with landing page style
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import AnimatedLogo from '@/components/AnimatedLogo';
+import './marketing-pages.css';
 
 interface NavigationProps {
   /** Whether to show landing page anchor links (Features, Security, Pricing) */
@@ -19,17 +21,33 @@ interface NavigationProps {
   transparent?: boolean;
 }
 
-export default function Navigation({ showLandingLinks = false, transparent = true }: NavigationProps) {
+export default function Navigation({
+  showLandingLinks = false,
+  transparent = true,
+}: NavigationProps) {
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+
+      // Hide/show based on scroll direction
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setHidden(true);
+      } else {
+        setHidden(false);
+      }
+
+      // Background opacity based on scroll position
+      setScrolled(currentScrollY > 20);
+      lastScrollY.current = currentScrollY;
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -38,178 +56,158 @@ export default function Navigation({ showLandingLinks = false, transparent = tru
     setMobileMenuOpen(false);
   }, [location.pathname]);
 
-  const showBackground = scrolled || !transparent;
-
   return (
-    <motion.nav
-      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
-        showBackground ? 'bg-gray-900/95 shadow-lg backdrop-blur-md' : 'bg-transparent'
-      }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <AnimatedLogo size="sm" />
-            <span className="bg-gradient-to-r from-cyan-400 to-fuchsia-400 bg-clip-text text-xl font-semibold tracking-tight text-transparent">
-              CGraph
-            </span>
-          </Link>
+    <>
+      {/* Desktop Navigation - Floating Pill Style */}
+      <motion.nav
+        className={`gl-nav-unified ${scrolled ? 'scrolled' : ''} ${hidden ? 'hidden' : ''}`}
+        initial={{ x: '-50%', y: -100, opacity: 0 }}
+        animate={{
+          x: '-50%',
+          y: hidden ? -100 : 0,
+          opacity: hidden ? 0 : 1,
+        }}
+        transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
+      >
+        {/* Animated gradient border */}
+        <div className="gl-nav-unified__border" />
 
-          {/* Desktop Navigation */}
-          <div className="hidden items-center gap-8 md:flex">
-            {showLandingLinks ? (
-              <>
-                <a href="#features" className="text-gray-300 transition-colors hover:text-white">
-                  Features
-                </a>
-                <a href="#security" className="text-gray-300 transition-colors hover:text-white">
-                  Security
-                </a>
-                <a href="#pricing" className="text-gray-300 transition-colors hover:text-white">
-                  Pricing
-                </a>
-              </>
-            ) : (
-              <>
-                <Link to="/" className="text-gray-300 transition-colors hover:text-white">
-                  Home
-                </Link>
-                <Link to="/about" className="text-gray-300 transition-colors hover:text-white">
-                  About
-                </Link>
-              </>
-            )}
-            <a
-              href="https://docs.cgraph.org"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-300 transition-colors hover:text-white"
-            >
-              Docs
-            </a>
-          </div>
+        {/* Logo */}
+        <Link to="/" className="gl-nav-unified__logo">
+          <svg viewBox="0 0 32 32" className="gl-nav-unified__logo-icon">
+            <path
+              d="M16 2L4 9v14l12 7 12-7V9L16 2zm0 4l8 4.5v9L16 24l-8-4.5v-9L16 6z"
+              fill="url(#nav-logo-gradient)"
+            />
+            <defs>
+              <linearGradient id="nav-logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#10b981" />
+                <stop offset="100%" stopColor="#8b5cf6" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>CGraph</span>
+        </Link>
 
-          {/* Auth buttons */}
-          <div className="hidden items-center gap-4 md:flex">
-            <Link
-              to="/login"
-              className="px-4 py-2 text-gray-300 transition-colors hover:text-white"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="rounded-lg bg-gradient-to-r from-purple-500 to-indigo-600 px-6 py-2 font-medium text-white shadow-lg shadow-purple-500/25 transition-all hover:from-purple-600 hover:to-indigo-700 hover:shadow-purple-500/40"
-            >
-              Get Started
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            className="text-gray-300 hover:text-white md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
-            aria-expanded={mobileMenuOpen}
+        {/* Desktop Navigation Links */}
+        <div className="gl-nav-unified__links">
+          {showLandingLinks ? (
+            <>
+              <a href="#features" className="gl-nav-unified__link">
+                Features
+              </a>
+              <a href="#security" className="gl-nav-unified__link">
+                Security
+              </a>
+              <a href="#pricing" className="gl-nav-unified__link">
+                Pricing
+              </a>
+            </>
+          ) : (
+            <>
+              <Link to="/" className="gl-nav-unified__link">
+                Home
+              </Link>
+              <Link to="/about" className="gl-nav-unified__link">
+                About
+              </Link>
+            </>
+          )}
+          <a
+            href="https://docs.cgraph.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="gl-nav-unified__link"
           >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {mobileMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
+            Docs
+          </a>
         </div>
 
-        {/* Mobile menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="rounded-b-xl bg-gray-900/95 backdrop-blur-md md:hidden"
-            >
-              <div className="space-y-4 px-4 py-4">
-                {showLandingLinks ? (
-                  <>
-                    <a
-                      href="#features"
-                      className="block text-gray-300 transition-colors hover:text-white"
-                    >
-                      Features
-                    </a>
-                    <a
-                      href="#security"
-                      className="block text-gray-300 transition-colors hover:text-white"
-                    >
-                      Security
-                    </a>
-                    <a
-                      href="#pricing"
-                      className="block text-gray-300 transition-colors hover:text-white"
-                    >
-                      Pricing
-                    </a>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      to="/"
-                      className="block text-gray-300 transition-colors hover:text-white"
-                    >
-                      Home
-                    </Link>
-                    <Link
-                      to="/about"
-                      className="block text-gray-300 transition-colors hover:text-white"
-                    >
-                      About
-                    </Link>
-                  </>
-                )}
-                <a
-                  href="https://docs.cgraph.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-gray-300 transition-colors hover:text-white"
-                >
-                  Docs
-                </a>
-                <div className="space-y-2 border-t border-gray-800 pt-4">
-                  <Link
-                    to="/login"
-                    className="block px-4 py-2 text-center text-gray-300 transition-colors hover:text-white"
-                  >
-                    Sign In
+        {/* CTA Button */}
+        <Link to="/register" className="gl-nav-unified__cta">
+          <span className="gl-nav-unified__cta-text">Get Started</span>
+          <svg
+            className="gl-nav-unified__cta-arrow"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13 7l5 5m0 0l-5 5m5-5H6"
+            />
+          </svg>
+        </Link>
+
+        {/* Mobile menu button */}
+        <button
+          className="gl-nav-unified__mobile-toggle"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={mobileMenuOpen}
+        >
+          <span className={`gl-nav-unified__hamburger ${mobileMenuOpen ? 'open' : ''}`}>
+            <span />
+            <span />
+            <span />
+          </span>
+        </button>
+      </motion.nav>
+
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            className="gl-nav-unified__mobile-menu"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="gl-nav-unified__mobile-links">
+              {showLandingLinks ? (
+                <>
+                  <a href="#features" className="gl-nav-unified__mobile-link">
+                    Features
+                  </a>
+                  <a href="#security" className="gl-nav-unified__mobile-link">
+                    Security
+                  </a>
+                  <a href="#pricing" className="gl-nav-unified__mobile-link">
+                    Pricing
+                  </a>
+                </>
+              ) : (
+                <>
+                  <Link to="/" className="gl-nav-unified__mobile-link">
+                    Home
                   </Link>
-                  <Link
-                    to="/register"
-                    className="block rounded-lg bg-gradient-to-r from-purple-500 to-indigo-600 px-6 py-2 text-center font-medium text-white"
-                  >
-                    Get Started
+                  <Link to="/about" className="gl-nav-unified__mobile-link">
+                    About
                   </Link>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.nav>
+                </>
+              )}
+              <a
+                href="https://docs.cgraph.org"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="gl-nav-unified__mobile-link"
+              >
+                Docs
+              </a>
+              <div className="gl-nav-unified__mobile-divider" />
+              <Link to="/login" className="gl-nav-unified__mobile-link">
+                Sign In
+              </Link>
+              <Link to="/register" className="gl-nav-unified__mobile-cta">
+                Get Started
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

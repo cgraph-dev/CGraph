@@ -1,8 +1,8 @@
 /**
  * About Page
- * 
+ *
  * Company information, mission, values, and team.
- * 
+ *
  * @since v0.9.2
  */
 
@@ -11,34 +11,40 @@ import { MarketingLayout } from '@/components/marketing';
 
 const values = [
   {
-    icon: '🔐',
-    title: 'Privacy First',
-    description: 'We believe privacy is a fundamental human right. Our architecture ensures we cannot access your messages, even if we wanted to.',
+    icon: '🎨',
+    title: 'Full Customization',
+    description:
+      'Every aspect of your community is customizable. Themes, layouts, features—make it truly yours.',
   },
   {
     icon: '🌐',
-    title: 'Transparency',
-    description: 'Transparency builds trust. We are committed to clear communication about our security practices and policies.',
+    title: 'Open Community',
+    description:
+      'Build thriving communities with forums, real-time messaging, and engaging gamification features.',
   },
   {
     icon: '🤝',
-    title: 'User Ownership',
-    description: 'Your data belongs to you. Export it, delete it, or take it elsewhere. We make it easy to exercise your digital rights.',
+    title: 'User Freedom',
+    description:
+      'Your data belongs to you. Export it, customize it, or take it elsewhere. We empower users.',
   },
   {
     icon: '⚡',
     title: 'Performance',
-    description: 'Security should not mean sacrifice. We optimize relentlessly to deliver real-time messaging with sub-100ms latency.',
+    description:
+      'Lightning-fast experience. We optimize relentlessly to deliver real-time messaging with sub-200ms latency.',
   },
   {
-    icon: '🎨',
-    title: 'Beautiful Design',
-    description: 'Privacy software doesn\'t have to be ugly. We craft delightful experiences that make secure communication a joy.',
+    icon: '🎮',
+    title: 'Gamification',
+    description:
+      'Earn rewards, unlock achievements, and climb leaderboards. Every interaction is meaningful.',
   },
   {
     icon: '🌍',
     title: 'Accessibility',
-    description: 'Everyone deserves secure communication. We follow WCAG guidelines and support screen readers, keyboard navigation, and more.',
+    description:
+      'Everyone deserves great communication tools. We follow WCAG guidelines and support all users.',
   },
 ];
 
@@ -52,51 +58,71 @@ const team = [
 ];
 
 const milestones = [
-  { year: '2026', event: 'CGraph founded with mission to build privacy-first messaging' },
-  { year: '2026', event: 'Development of core encryption and messaging features' },
-  { year: '2026', event: 'Forum and community features in development' },
+  {
+    year: 'Q1 2026',
+    event: 'CGraph founded with mission to build privacy-first messaging',
+    completed: true,
+  },
+  {
+    year: 'Q2 2026',
+    event: 'Core encryption, real-time messaging, and Web3 auth development',
+    completed: false,
+  },
+  {
+    year: 'Q3 2026',
+    event: 'Forums, gamification, and community features launch',
+    completed: false,
+  },
 ];
 
 export default function About() {
   return (
     <MarketingLayout
       title="About CGraph"
-      subtitle="Building the future of private, secure communication"
+      subtitle="Real-time messaging meets community forums — with powerful customization"
+      eyebrow="Our Story"
       showCTA
     >
       {/* Mission Section */}
-      <section className="bg-gray-950 py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="mx-auto max-w-3xl text-center"
           >
-            <h2 className="mb-6 text-3xl font-bold text-white sm:text-4xl">Our Mission</h2>
-            <p className="text-xl text-gray-400">
-              CGraph was founded on a simple belief: <span className="text-white">private communication is a fundamental right</span>, 
-              not a premium feature. We're building the messaging platform we wished existed—one that combines 
-              the security of Signal, the community features of Discord, and the user experience people deserve.
+            <h2 className="marketing-section__title font-zentry">Our Mission</h2>
+            <p className="text-xl" style={{ color: 'var(--color-gray)' }}>
+              CGraph was founded on a simple belief:{' '}
+              <span className="marketing-hero__highlight">
+                communities deserve freedom to customize
+              </span>
+              . We're building the all-in-one platform that combines real-time messaging,
+              Reddit-style community forums, Web3 authentication, and gamification rewards—making
+              every interaction count.
             </p>
           </motion.div>
         </div>
       </section>
 
       {/* Values Section */}
-      <section className="bg-gray-900 py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">Our Values</h2>
-            <p className="mt-4 text-gray-400">The principles that guide everything we build</p>
-          </motion.div>
+      <section className="marketing-section marketing-section--dark">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="marketing-section__title font-zentry">Our Values</h2>
+              <p className="marketing-section__desc">
+                The principles that guide everything we build
+              </p>
+            </motion.div>
+          </div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="marketing-grid marketing-grid--3">
             {values.map((value, index) => (
               <motion.div
                 key={value.title}
@@ -104,11 +130,11 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="rounded-2xl border border-gray-800 bg-gray-900/50 p-6"
+                className="marketing-card"
               >
-                <div className="mb-4 text-4xl">{value.icon}</div>
-                <h3 className="mb-2 text-xl font-semibold text-white">{value.title}</h3>
-                <p className="text-gray-400">{value.description}</p>
+                <span className="marketing-card__icon">{value.icon}</span>
+                <h3 className="marketing-card__title">{value.title}</h3>
+                <p className="marketing-card__desc">{value.description}</p>
               </motion.div>
             ))}
           </div>
@@ -116,21 +142,22 @@ export default function About() {
       </section>
 
       {/* Team Section */}
-      <section className="bg-gray-950 py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">Meet the Founder</h2>
-            <p className="mt-4 text-gray-400">
-              Building CGraph from Georgia with a passion for privacy and secure communication
-            </p>
-          </motion.div>
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="marketing-section__title font-zentry">Meet the Founder</h2>
+              <p className="marketing-section__desc">
+                Building CGraph from Georgia with a passion for privacy and secure communication
+              </p>
+            </motion.div>
+          </div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto max-w-md">
             {team.map((member, index) => (
               <motion.div
                 key={member.name}
@@ -138,14 +165,12 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="rounded-2xl border border-gray-800 bg-gray-900/50 p-6 text-center"
+                className="marketing-card team-card"
               >
-                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 text-2xl font-bold text-white">
-                  {member.avatar}
-                </div>
-                <h3 className="text-xl font-semibold text-white">{member.name}</h3>
-                <p className="mb-3 text-purple-400">{member.role}</p>
-                <p className="text-sm text-gray-400">{member.bio}</p>
+                <div className="team-card__avatar">{member.avatar}</div>
+                <h3 className="team-card__name">{member.name}</h3>
+                <p className="team-card__role">{member.role}</p>
+                <p className="team-card__bio">{member.bio}</p>
               </motion.div>
             ))}
           </div>
@@ -153,62 +178,150 @@ export default function About() {
       </section>
 
       {/* Timeline Section */}
-      <section className="bg-gray-900 py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-12 text-center"
-          >
-            <h2 className="text-3xl font-bold text-white sm:text-4xl">Our Journey</h2>
-            <p className="mt-4 text-gray-400">Key milestones in our mission</p>
-          </motion.div>
+      <section className="marketing-section marketing-section--dark">
+        <div className="mx-auto max-w-4xl px-4">
+          <div className="marketing-section__header">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="marketing-section__title font-zentry">Our Journey</h2>
+              <p className="marketing-section__desc">Key milestones in our mission</p>
+            </motion.div>
+          </div>
 
-          <div className="relative">
-            {/* Timeline line */}
-            <div className="absolute left-8 top-0 hidden h-full w-0.5 bg-gradient-to-b from-purple-500 to-indigo-600 md:block" />
+          <div className="grid gap-6 md:grid-cols-3">
+            {milestones.map((milestone, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.15, duration: 0.5 }}
+                whileHover={{ scale: 1.03, y: -5 }}
+                className="marketing-card relative overflow-hidden"
+                style={{
+                  borderColor: milestone.completed
+                    ? 'rgba(16, 185, 129, 0.3)'
+                    : 'rgba(239, 68, 68, 0.3)',
+                }}
+              >
+                {/* Status glow effect */}
+                <div
+                  className="absolute inset-0 opacity-10"
+                  style={{
+                    background: milestone.completed
+                      ? 'radial-gradient(circle at top right, rgba(16, 185, 129, 0.4), transparent 70%)'
+                      : 'radial-gradient(circle at top right, rgba(239, 68, 68, 0.4), transparent 70%)',
+                  }}
+                />
 
-            <div className="space-y-8">
-              {milestones.map((milestone, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 }}
-                  className="flex gap-6"
+                {/* Header with year and status */}
+                <div className="relative mb-4 flex items-center justify-between">
+                  <motion.span
+                    className="font-mono text-lg font-bold"
+                    style={{ color: milestone.completed ? 'var(--color-primary)' : '#ef4444' }}
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: index * 0.15 + 0.2 }}
+                  >
+                    {milestone.year}
+                  </motion.span>
+
+                  {/* Status circle */}
+                  <div className="relative flex items-center justify-center">
+                    <motion.div
+                      className="relative flex h-8 w-8 items-center justify-center rounded-full"
+                      style={{
+                        background: milestone.completed ? 'var(--color-primary)' : '#ef4444',
+                        boxShadow: milestone.completed
+                          ? '0 0 12px rgba(16, 185, 129, 0.5)'
+                          : '0 0 12px rgba(239, 68, 68, 0.5)',
+                      }}
+                      initial={{ scale: 0 }}
+                      whileInView={{ scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: index * 0.15 + 0.3, type: 'spring', stiffness: 300 }}
+                    >
+                      {milestone.completed ? (
+                        <motion.svg
+                          className="h-4 w-4 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <motion.path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={3}
+                            d="M5 13l4 4L19 7"
+                            initial={{ pathLength: 0 }}
+                            whileInView={{ pathLength: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: index * 0.15 + 0.4, duration: 0.4 }}
+                          />
+                        </motion.svg>
+                      ) : (
+                        <motion.div
+                          className="h-2.5 w-2.5 rounded-full bg-white"
+                          animate={{ scale: [1, 1.3, 1] }}
+                          transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+                        />
+                      )}
+                    </motion.div>
+                    {/* Pulse animation for pending items */}
+                    {!milestone.completed && (
+                      <motion.div
+                        className="absolute h-8 w-8 rounded-full"
+                        style={{ background: 'rgba(239, 68, 68, 0.4)' }}
+                        animate={{ scale: [1, 2], opacity: [0.5, 0] }}
+                        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeOut' }}
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* Status label */}
+                <div className="relative mb-3">
+                  <span
+                    className="inline-block rounded-full px-3 py-1 text-xs font-semibold"
+                    style={{
+                      background: milestone.completed
+                        ? 'rgba(16, 185, 129, 0.15)'
+                        : 'rgba(239, 68, 68, 0.15)',
+                      color: milestone.completed ? 'var(--color-primary)' : '#ef4444',
+                    }}
+                  >
+                    {milestone.completed ? '✓ Completed' : '○ In Progress'}
+                  </span>
+                </div>
+
+                {/* Event description */}
+                <p
+                  className="relative"
+                  style={{ color: 'var(--color-gray)', margin: 0, lineHeight: 1.6 }}
                 >
-                  <div className="hidden w-16 flex-shrink-0 text-right md:block">
-                    <span className="font-mono text-purple-400">{milestone.year}</span>
-                  </div>
-                  <div className="relative hidden md:block">
-                    <div className="absolute left-1/2 top-1 h-4 w-4 -translate-x-1/2 rounded-full border-2 border-purple-500 bg-gray-900" />
-                  </div>
-                  <div className="flex-1 rounded-xl border border-gray-800 bg-gray-900/50 p-4">
-                    <span className="mb-2 inline-block font-mono text-sm text-purple-400 md:hidden">
-                      {milestone.year}
-                    </span>
-                    <p className="text-gray-300">{milestone.event}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+                  {milestone.event}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Vision Section */}
-      <section className="bg-gray-950 py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="marketing-section marketing-section--alt">
+        <div className="marketing-section__container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             className="text-center"
           >
-            <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl">Our Vision</h2>
-            <p className="mx-auto max-w-2xl text-gray-400">
+            <h2 className="marketing-section__title font-zentry">Our Vision</h2>
+            <p className="marketing-section__desc mx-auto max-w-2xl">
               We're building CGraph to prove that privacy and great user experience can coexist.
               Join us on this journey to create a communication platform that respects your privacy
               while delivering the features you need.

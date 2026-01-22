@@ -1,124 +1,107 @@
-import { useState, useEffect, useRef } from 'react';
+/**
+ * CGraph Landing Page - GAMELAND Style
+ *
+ * Official landing page featuring:
+ * - Preloader with animated loading bar
+ * - Video hero section with clip-path masks
+ * - Purple/lime/black color scheme
+ * - Button text-swap animation
+ * - 3D tilt cards with glare effect
+ * - Scroll-triggered GSAP animations
+ */
+
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
-import {
-  motion,
-  useScroll,
-  useTransform,
-  AnimatePresence,
-  useMotionValue,
-  useSpring,
-} from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
-import AnimatedLogo from '@/components/AnimatedLogo';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import './landing-page.css';
+
+// Lazy load showcase components
+const CustomizationDemo = lazy(() =>
+  import('@/components/landing/CustomizationDemo').then((m) => ({ default: m.CustomizationDemo }))
+);
+
+const ForumShowcase = lazy(() =>
+  import('@/components/landing/ForumShowcase').then((m) => ({ default: m.ForumShowcase }))
+);
+
+gsap.registerPlugin(ScrollTrigger);
+
+// Performance: Throttle function for scroll handlers
+const throttle = <T extends (...args: Parameters<T>) => ReturnType<T>>(
+  fn: T,
+  delay: number
+): ((...args: Parameters<T>) => void) => {
+  let lastCall = 0;
+  return (...args: Parameters<T>) => {
+    const now = Date.now();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      fn(...args);
+    }
+  };
+};
 
 // =============================================================================
-// CGRAPH LANDING PAGE - ENHANCED VERSION
-// =============================================================================
-// Full marketing landing page with:
-// - Matrix-inspired particle effects with glow
-// - Glassmorphism cards with animated borders
-// - Cyberpunk-style scanlines and holographic effects
-// - 3D floating elements with parallax
-// - Animated gradient text with shimmer
-// - Interactive hover states
+// DATA
 // =============================================================================
 
-// Feature data
 const features = [
   {
     icon: '🔐',
     title: 'End-to-End Encryption',
     description:
-      'Signal Protocol-inspired encryption with X3DH key agreement and Double Ratchet for forward secrecy. Your messages stay private.',
-    gradient: 'from-purple-500 to-indigo-600',
-    glowColor: 'rgba(139, 92, 246, 0.4)',
+      'Signal Protocol with X3DH key agreement and Double Ratchet algorithm. Your messages stay private.',
   },
   {
     icon: '💬',
     title: 'Real-Time Messaging',
     description:
-      'Sub-200ms message delivery with WebSocket channels. Support for text, images, files, voice messages, and reactions.',
-    gradient: 'from-blue-500 to-cyan-500',
-    glowColor: 'rgba(6, 182, 212, 0.4)',
+      'Sub-200ms delivery with WebSocket channels. Feel the speed of instant communication.',
   },
   {
     icon: '🏛️',
     title: 'Forums & Communities',
-    description:
-      'Reddit-style communities with MyBB forum features. Boards, threads, voting, moderation, and plugins.',
-    gradient: 'from-emerald-500 to-teal-500',
-    glowColor: 'rgba(16, 185, 129, 0.4)',
+    description: 'Reddit-style communities with voting, threads, and powerful moderation tools.',
   },
   {
     icon: '👥',
     title: 'Groups & Channels',
-    description:
-      'Discord-style servers with roles, permissions, and organized channels for text and voice communication.',
-    gradient: 'from-orange-500 to-red-500',
-    glowColor: 'rgba(249, 115, 22, 0.4)',
+    description: 'Powerful servers with roles, permissions, and organized channel structures.',
   },
   {
     icon: '📞',
     title: 'Voice & Video Calls',
-    description:
-      'WebRTC-powered calling with spatial audio, screen sharing, and support for group calls up to 25 participants.',
-    gradient: 'from-pink-500 to-rose-500',
-    glowColor: 'rgba(236, 72, 153, 0.4)',
+    description: 'Crystal-clear WebRTC calling with screen sharing and recording capabilities.',
   },
   {
     icon: '🎮',
     title: 'Gamification',
-    description:
-      'XP, levels, achievements, quests, and custom titles. Turn engagement into rewards with our built-in economy.',
-    gradient: 'from-violet-500 to-purple-600',
-    glowColor: 'rgba(139, 92, 246, 0.4)',
+    description: 'Earn XP, unlock achievements, complete quests, and climb the leaderboards.',
   },
 ];
 
-// Security features
-const securityFeatures = [
-  {
-    icon: '🛡️',
-    title: 'Zero-Knowledge Architecture',
-    description: 'We cannot read your encrypted messages',
-  },
-  {
-    icon: '🔑',
-    title: 'X3DH Key Agreement',
-    description: 'Industry-standard initial key exchange',
-  },
-  {
-    icon: '🔄',
-    title: 'Double Ratchet Protocol',
-    description: 'Forward secrecy for every message',
-  },
-  {
-    icon: '📱',
-    title: 'Multi-Device Support',
-    description: 'Seamless sync across all your devices',
-  },
-  { icon: '🔒', title: 'HTTP-Only Cookies', description: 'XSS-resistant session management' },
-  {
-    icon: '✅',
-    title: 'Auditable Security',
-    description: 'Transparent about our security practices',
-  },
+const stats = [
+  { value: '10K+', label: 'Active Creators', icon: '🎨' },
+  { value: '50K+', label: 'Communities', icon: '🌐' },
+  { value: '1M+', label: 'Daily Messages', icon: '💬' },
+  { value: '∞', label: 'Possibilities', icon: '✨' },
 ];
 
-// Pricing tiers
 const pricingTiers = [
   {
     name: 'Free',
     price: '$0',
     period: 'forever',
-    description: 'Everything you need to get started',
+    description: 'Everything to get started',
     features: [
-      'Unlimited encrypted messaging',
-      'Join up to 10 forums',
-      'Create 3 groups',
-      'Voice calls (1-on-1)',
-      '100MB file storage',
-      'Basic customization',
+      'End-to-end encrypted messaging',
+      'Join unlimited forums',
+      'Create 1 forum',
+      '1-on-1 voice & video calls',
+      'Web3 wallet authentication',
     ],
     cta: 'Get Started',
     highlighted: false,
@@ -127,1353 +110,725 @@ const pricingTiers = [
     name: 'Premium',
     price: '$9',
     period: '/month',
-    description: 'For power users and community leaders',
+    description: 'For power users',
     features: [
-      'Everything in Free, plus:',
-      'Unlimited forum creation',
-      'Create unlimited groups',
-      'Group video calls (up to 25)',
-      '10GB file storage',
-      'Custom titles & badges',
-      'Priority support',
-      'Ad-free experience',
+      'Everything in Free',
+      'Create up to 5 forums',
+      'Group calls up to 25 people',
+      'Priority customer support',
+      'Advanced profile customization',
     ],
-    cta: 'Start Free Trial',
+    cta: 'Start Trial',
     highlighted: true,
   },
   {
     name: 'Enterprise',
     price: 'Custom',
     period: '',
-    description: 'For organizations and teams',
+    description: 'For organizations',
     features: [
-      'Everything in Premium, plus:',
-      'Custom branding',
+      'Everything in Premium',
+      'Custom domain & branding',
       'SSO/SAML integration',
-      'Advanced admin controls',
-      'Audit logging',
-      'Dedicated support',
-      'SLA guarantees',
-      'On-premise option',
+      'Admin dashboard & controls',
+      'Dedicated account manager',
+      'Custom SLA & uptime guarantee',
     ],
     cta: 'Contact Sales',
     highlighted: false,
   },
 ];
 
-// Feature highlights
-const highlights = [
-  { value: 'E2EE', label: 'End-to-End Encrypted', icon: '🔐' },
-  { value: 'Real-Time', label: 'Instant Messaging', icon: '⚡' },
-  { value: 'Forums', label: 'Community Features', icon: '🏛️' },
-  { value: 'WebRTC', label: 'Voice & Video', icon: '📞' },
+const footerLinks = {
+  product: [
+    { label: 'Features', href: '#features' },
+    { label: 'Security', href: '#security' },
+    { label: 'Pricing', href: '#pricing' },
+    { label: 'Download', href: '/login' },
+  ],
+  resources: [
+    { label: 'Documentation', href: 'https://docs.cgraph.org', external: true },
+    { label: 'API Reference', href: 'https://docs.cgraph.org/api', external: true },
+    { label: 'Status', href: '/status' },
+    { label: 'Blog', href: 'https://blog.cgraph.org', external: true },
+  ],
+  company: [
+    { label: 'About', href: '/about' },
+    { label: 'Careers', href: '/careers' },
+    { label: 'Contact', href: '/contact' },
+    { label: 'Press', href: '/press' },
+  ],
+  legal: [
+    { label: 'Privacy', href: '/privacy' },
+    { label: 'Terms', href: '/terms' },
+    { label: 'Cookie Policy', href: '/cookies' },
+    { label: 'GDPR', href: '/gdpr' },
+  ],
+};
+
+const securityFeatures = [
+  { icon: '🔒', title: 'End-to-End Encrypted', description: 'Messages encrypted with AES-256-GCM' },
+  { icon: '🛡️', title: 'Zero-Knowledge', description: 'We cannot read your messages' },
+  { icon: '🔑', title: 'Argon2 Passwords', description: 'OWASP-recommended password hashing' },
+  { icon: '📱', title: 'Multi-Device Sync', description: 'Secure sync across all devices' },
+  { icon: '🔐', title: '2FA Protection', description: 'TOTP-based two-factor authentication' },
+  { icon: '🌐', title: 'Web3 Authentication', description: 'Sign in with your crypto wallet' },
+  { icon: '⚡', title: 'Real-Time Secure', description: 'Encrypted WebSocket connections' },
+  { icon: '🔏', title: 'TLS Everywhere', description: 'All data encrypted in transit' },
+  { icon: '✅', title: 'GDPR Compliant', description: 'Full data export & deletion rights' },
 ];
 
-// Empty testimonials for now
-const testimonials: Array<{
-  quote: string;
-  author: string;
-  role: string;
-  avatar: string;
-}> = [];
-
 // =============================================================================
-// ANIMATED COMPONENTS
+// SECURITY ICON WITH PREVIEW
 // =============================================================================
 
-// Matrix-style rain effect
-function MatrixRain() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [isReady, setIsReady] = useState(false); // Only show after scale is calculated
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({});
+  const [position, setPosition] = useState<'top' | 'bottom'>('top');
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    const chars =
-      'CGRAPH01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-    const fontSize = 14;
-    const columns = Math.floor(canvas.width / fontSize);
-    const drops: number[] = [];
-
-    for (let i = 0; i < columns; i++) {
-      drops[i] = Math.random() * -100;
+  // Get the current scale of the parent section
+  const getParentScale = useCallback(() => {
+    if (!cardRef.current) return 1;
+    const section = cardRef.current.closest('.zoom-section');
+    if (!section) return 1;
+    const transform = window.getComputedStyle(section).transform;
+    if (transform === 'none') return 1;
+    // Parse matrix(a, b, c, d, tx, ty) - scale is in 'a' position
+    const matrix = transform.match(/matrix\(([^)]+)\)/);
+    if (matrix && matrix[1]) {
+      const values = matrix[1].split(',').map((v) => parseFloat(v.trim()));
+      return values[0] || 1; // 'a' value is the scaleX
     }
-
-    let animationId: number;
-
-    const draw = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      ctx.fillStyle = '#10b981';
-      ctx.font = `${fontSize}px monospace`;
-
-      for (let i = 0; i < drops.length; i++) {
-        const char = chars[Math.floor(Math.random() * chars.length)] ?? '0';
-        const x = i * fontSize;
-        const dropValue = drops[i] ?? 0;
-        const y = dropValue * fontSize;
-
-        // Gradient effect - brighter at the bottom
-        const gradient = ctx.createLinearGradient(x, y - fontSize * 10, x, y);
-        gradient.addColorStop(0, 'rgba(16, 185, 129, 0)');
-        gradient.addColorStop(1, 'rgba(16, 185, 129, 0.8)');
-        ctx.fillStyle = gradient;
-
-        ctx.fillText(char, x, y);
-
-        if (y > canvas.height && Math.random() > 0.98) {
-          drops[i] = 0;
-        }
-        drops[i] = dropValue + 0.5;
-      }
-
-      animationId = requestAnimationFrame(draw);
-    };
-
-    draw();
-
-    return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationId);
-    };
+    return 1;
   }, []);
 
+  // Update tooltip position on hover and during scroll
+  const updatePosition = useCallback(() => {
+    if (cardRef.current) {
+      const rect = cardRef.current.getBoundingClientRect();
+      const spaceAbove = rect.top;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const isTop = spaceAbove > spaceBelow;
+      setPosition(isTop ? 'top' : 'bottom');
+
+      // Get the current scale of the parent section
+      const scale = getParentScale();
+
+      // Calculate fixed position for the tooltip, scaled to match icons
+      setTooltipStyle({
+        position: 'fixed',
+        left: rect.left + rect.width / 2,
+        top: isTop ? rect.top - 12 * scale : rect.bottom + 12 * scale,
+        transform: isTop
+          ? `translate(-50%, -100%) scale(${scale})`
+          : `translate(-50%, 0) scale(${scale})`,
+        transformOrigin: isTop ? 'bottom center' : 'top center',
+        zIndex: 9999,
+        opacity: 1,
+      });
+      setIsReady(true);
+    }
+  }, [getParentScale]);
+
+  useEffect(() => {
+    if (isHovered) {
+      // Calculate position immediately on hover
+      updatePosition();
+      // Update position on scroll to keep tooltip aligned and scaled
+      window.addEventListener('scroll', updatePosition, { passive: true });
+      return () => {
+        window.removeEventListener('scroll', updatePosition);
+        setIsReady(false);
+      };
+    }
+    return undefined;
+  }, [isHovered, updatePosition]);
+
+  // Only render tooltip when hovered AND position/scale is ready
+  const tooltip = isHovered && isReady && (
+    <div
+      className={`security-preview security-preview--portal ${position === 'top' ? 'security-preview--top' : 'security-preview--bottom'}`}
+      style={tooltipStyle}
+    >
+      <div className="security-preview__glow" />
+      <div className="security-preview__content">
+        <div className="security-preview__icon">{feature.icon}</div>
+        <div className="security-preview__info">
+          <h4 className="security-preview__title">{feature.title}</h4>
+          <p className="security-preview__desc">{feature.description}</p>
+        </div>
+      </div>
+      <div className="security-preview__arrow" />
+    </div>
+  );
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none absolute inset-0"
-      style={{ opacity: 0.35 }}
-    />
+    <div
+      ref={cardRef}
+      className="about__icon-item"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {feature.icon}
+
+      {/* Preview Tooltip - Rendered via portal to escape parent transforms */}
+      {tooltip && createPortal(tooltip, document.body)}
+    </div>
   );
 }
 
-// Enhanced particle field with glow
-function ParticleField() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mouseRef = useRef({ x: 0, y: 0 });
+// =============================================================================
+// GAMELAND-STYLE PRELOADER COMPONENT
+// =============================================================================
+
+function Preloader({ onComplete }: { onComplete: () => void }) {
+  const preloaderRef = useRef<HTMLDivElement>(null);
+  const brandRef = useRef<HTMLDivElement>(null);
+  const cursorGlowRef = useRef<HTMLDivElement>(null);
+  const fillRef = useRef<HTMLSpanElement>(null);
+  const percentRef = useRef<HTMLSpanElement>(null);
+  const statusRef = useRef<HTMLSpanElement>(null);
+
+  // Mouse tracking for interactive glow effect
+  useEffect(() => {
+    const glow = cursorGlowRef.current;
+    const pre = preloaderRef.current;
+    if (!glow || !pre) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      const rect = pre.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      gsap.to(glow, {
+        x: x - 150,
+        y: y - 150,
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+    };
+
+    const handleMouseEnter = () => {
+      gsap.to(glow, { opacity: 1, scale: 1, duration: 0.3 });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to(glow, { opacity: 0, scale: 0.5, duration: 0.3 });
+    };
+
+    pre.addEventListener('mousemove', handleMouseMove);
+    pre.addEventListener('mouseenter', handleMouseEnter);
+    pre.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      pre.removeEventListener('mousemove', handleMouseMove);
+      pre.removeEventListener('mouseenter', handleMouseEnter);
+      pre.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const pre = preloaderRef.current;
+    const elFill = fillRef.current;
+    const elPercent = percentRef.current;
+    const elStatus = statusRef.current;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!pre || !elFill || !elPercent || !elStatus) return;
 
-    const particles: Array<{
-      x: number;
-      y: number;
-      vx: number;
-      vy: number;
-      size: number;
-      opacity: number;
-      hue: number;
-      pulse: number;
-    }> = [];
+    let viewProgress = 0;
+    let done = false;
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+    // Prep hero elements for intro animation (hidden state)
+    const prepHeroIntro = () => {
+      gsap.set('.hero__eyebrow', {
+        y: 60,
+        opacity: 0,
+        scale: 0.98,
+        willChange: 'transform,opacity',
+      });
+      gsap.set('.hero__title', {
+        y: 40,
+        opacity: 0,
+        willChange: 'transform,opacity',
+      });
+      gsap.set('.hero__subtitle', {
+        y: 22,
+        opacity: 0,
+        skewY: 5,
+        willChange: 'transform,opacity',
+      });
+      gsap.set('.hero__buttons', {
+        y: 18,
+        opacity: 0,
+        scale: 0,
+        willChange: 'transform,opacity',
+      });
+    };
+
+    // Animate hero elements in after preloader closes
+    const runHeroAnimations = () => {
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+
+      tl.to('.hero__eyebrow', {
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        duration: 0.65,
+        onComplete: () => {
+          gsap.set('.hero__eyebrow', { clearProps: 'transform,willChange' });
+        },
+      })
+        .to(
+          '.hero__title',
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.6,
+            onComplete: () => {
+              gsap.set('.hero__title', { clearProps: 'transform,willChange' });
+            },
+          },
+          '>-0.3'
+        )
+        .to(
+          '.hero__subtitle',
+          {
+            y: 0,
+            opacity: 1,
+            skewY: 0,
+            duration: 0.55,
+            onComplete: () => {
+              gsap.set('.hero__subtitle', { clearProps: 'transform,willChange' });
+            },
+          },
+          '>-0.25'
+        )
+        .to(
+          '.hero__buttons',
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.45,
+            ease: 'back.out(1.7)',
+            onComplete: () => {
+              gsap.set('.hero__buttons', { clearProps: 'transform,willChange' });
+            },
+          },
+          '>-0.13'
+        );
+    };
+
+    // Simulate loading progress (GAMELAND uses resource loading, we simulate)
+    const simulateLoading = () => {
+      const loadTl = gsap.timeline();
+
+      // Animate brand letters on start
+      const brandLetters = brandRef.current?.querySelectorAll('.preloader__letter');
+      if (brandLetters) {
+        gsap.set(brandLetters, {
+          y: 80,
+          opacity: 0,
+          rotateX: -90,
+          scale: 0.5,
+        });
+
+        loadTl.to(
+          brandLetters,
+          {
+            y: 0,
+            opacity: 1,
+            rotateX: 0,
+            scale: 1,
+            duration: 0.6,
+            stagger: 0.08,
+            ease: 'back.out(1.7)',
+          },
+          0
+        );
+
+        // Add continuous floating animation after entrance
+        loadTl.to(
+          brandLetters,
+          {
+            y: -5,
+            duration: 1.2,
+            stagger: {
+              each: 0.1,
+              repeat: -1,
+              yoyo: true,
+            },
+            ease: 'sine.inOut',
+          },
+          0.8
+        );
+      }
+
+      // Slowly progress to ~85% over 1.5s
+      loadTl.to(
+        {},
+        {
+          duration: 1.5,
+          onUpdate: function () {
+            const progress = this.progress();
+            viewProgress = progress * 0.85;
+            const pct = Math.floor(viewProgress * 100);
+            elPercent.textContent = pct + '%';
+            elFill.style.width = pct + '%';
+          },
+        },
+        0
+      );
+
+      // Then call closePreloader
+      loadTl.call(closePreloader);
+    };
+
+    // Close preloader with GAMELAND-style eased completion
+    const closePreloader = () => {
+      if (done) return;
+      done = true;
+
+      // Change status to READY with animation class
+      elStatus.textContent = 'READY';
+      elStatus.classList.add('is-ready');
+
+      // Ease progress to 100% (GAMELAND formula: viewProgress += (1 - viewProgress) * 0.3)
+      gsap.to(
+        {},
+        {
+          duration: 0.25,
+          onUpdate: () => {
+            viewProgress += (1 - viewProgress) * 0.3;
+            const pct = viewProgress >= 0.99 ? 100 : Math.floor(viewProgress * 100);
+            elPercent.textContent = pct + '%';
+            elFill.style.width = pct + '%';
+          },
+          onComplete: () => {
+            // Prep hero elements before fade
+            prepHeroIntro();
+
+            // Refresh ScrollTrigger if available
+            if (ScrollTrigger) ScrollTrigger.refresh();
+
+            // Fade out preloader
+            gsap.to(pre, {
+              opacity: 0,
+              duration: 0.35,
+              ease: 'power2.out',
+              onComplete: () => {
+                pre.classList.add('is-done');
+                document.documentElement.classList.add('site-ready');
+                document.documentElement.style.overflow = '';
+
+                // Run hero entrance animations
+                runHeroAnimations();
+
+                // Refresh ScrollTrigger after animations
+                if (ScrollTrigger) ScrollTrigger.refresh(true);
+
+                // Notify parent
+                onComplete();
+              },
+            });
+          },
+        }
+      );
+    };
+
+    // Lock scroll during preloader
+    document.documentElement.style.overflow = 'hidden';
+
+    // Start loading simulation
+    simulateLoading();
+
+    return () => {
+      document.documentElement.style.overflow = '';
+    };
+  }, [onComplete]);
+
+  return (
+    <div ref={preloaderRef} className="preloader" aria-hidden="true">
+      {/* 3D Terrain Background */}
+      <div className="preloader__terrain">
+        <div className="preloader__terrain-grid" />
+        <div className="preloader__terrain-fog" />
+      </div>
+
+      {/* Animated grid background */}
+      <div className="preloader__grid" />
+
+      {/* Star field particles */}
+      <div className="preloader__stars">
+        {[...Array(50)].map((_, i) => (
+          <span
+            key={i}
+            className="preloader__star"
+            style={
+              {
+                '--x': `${Math.random() * 100}%`,
+                '--y': `${Math.random() * 100}%`,
+                '--delay': `${Math.random() * 3}s`,
+                '--duration': `${2 + Math.random() * 3}s`,
+                '--size': `${1 + Math.random() * 3}px`,
+              } as React.CSSProperties
+            }
+          />
+        ))}
+      </div>
+
+      {/* Floating energy particles */}
+      <div className="preloader__energy-field">
+        {[...Array(30)].map((_, i) => (
+          <span
+            key={i}
+            className="preloader__energy"
+            style={
+              {
+                '--i': i,
+                '--x': `${Math.random() * 100}%`,
+                '--speed': `${4 + Math.random() * 6}s`,
+              } as React.CSSProperties
+            }
+          />
+        ))}
+      </div>
+
+      {/* Interactive cursor glow */}
+      <div ref={cursorGlowRef} className="preloader__cursor-glow" />
+
+      {/* Floating orbs */}
+      <div className="preloader__orbs">
+        <div className="preloader__orb preloader__orb--1" />
+        <div className="preloader__orb preloader__orb--2" />
+        <div className="preloader__orb preloader__orb--3" />
+        <div className="preloader__orb preloader__orb--4" />
+        <div className="preloader__orb preloader__orb--5" />
+      </div>
+
+      {/* Scanline effect */}
+      <div className="preloader__scanline" />
+
+      {/* Corner accents */}
+      <div className="preloader__corner preloader__corner--tl" />
+      <div className="preloader__corner preloader__corner--tr" />
+      <div className="preloader__corner preloader__corner--bl" />
+      <div className="preloader__corner preloader__corner--br" />
+
+      {/* Main content */}
+      <div className="preloader__inner">
+        <div ref={brandRef} className="preloader__brand-container">
+          <div className="preloader__brand-glow" />
+          <h3 className="preloader__brand">
+            {'CGRAPH'.split('').map((letter, i) => (
+              <span
+                key={i}
+                className="preloader__letter"
+                data-letter={letter}
+                style={{ '--letter-index': i } as React.CSSProperties}
+              >
+                {letter}
+                <span className="preloader__letter-glitch" data-letter={letter} />
+              </span>
+            ))}
+          </h3>
+          <div className="preloader__brand-particles">
+            {[...Array(12)].map((_, i) => (
+              <span
+                key={i}
+                className="preloader__particle"
+                style={{ '--i': i } as React.CSSProperties}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="preloader__bar-wrapper">
+          <div className="preloader__bar">
+            <span ref={fillRef} className="preloader__fill" />
+          </div>
+        </div>
+        <div className="preloader__meta">
+          <span ref={percentRef} className="preloader__percent">
+            0%
+          </span>
+          <span className="preloader__dot">•</span>
+          <span ref={statusRef} className="preloader__status" data-text="GENERATING NEW CONNECTION">
+            GENERATING NEW CONNECTION
+          </span>
+        </div>
+      </div>
+
+      {/* Version tag */}
+      <div className="preloader__version">v2.0.0</div>
+    </div>
+  );
+}
+
+// =============================================================================
+// TILT CARD COMPONENT (GAMELAND-STYLE)
+// =============================================================================
+
+function TiltCard({
+  icon,
+  title,
+  description,
+}: {
+  icon: string;
+  title: string;
+  description: string;
+}) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card) return;
+
+    let rect: DOMRect | null = null;
+    let raf = 0;
+    let hover = false;
+    let tx = 0.5,
+      ty = 0.5,
+      targetX = 0.5,
+      targetY = 0.5;
+    const max = 12;
+    const scaleHover = 0.985;
+
+    const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+    const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max);
+
+    const measure = () => {
+      rect = card.getBoundingClientRect();
+    };
+
+    const tick = () => {
+      raf = 0;
+      tx = lerp(tx, targetX, 0.18);
+      ty = lerp(ty, targetY, 0.18);
+
+      const ry = clamp((tx - 0.5) * (max * 2), -max, max);
+      const rx = clamp(-(ty - 0.5) * (max * 2), -max, max);
+
+      card.style.setProperty('--ry', ry + 'deg');
+      card.style.setProperty('--rx', rx + 'deg');
+      card.style.setProperty('--s', hover ? String(scaleHover) : '1');
+      card.style.setProperty('--mouse-x', clamp(tx * 100, 2, 98) + '%');
+      card.style.setProperty('--mouse-y', clamp(ty * 100, 2, 98) + '%');
+
+      const settling = Math.abs(targetX - tx) > 1e-3 || Math.abs(targetY - ty) > 1e-3 || hover;
+      if (settling) raf = requestAnimationFrame(tick);
+    };
+
+    const handleMouseEnter = () => {
+      measure();
+      hover = true;
+      card.classList.add('is-tilting');
+      if (!raf) raf = requestAnimationFrame(tick);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
+      if (!hover || !rect) return;
+      const rawX = (e.clientX - rect.left) / rect.width;
+      const rawY = (e.clientY - rect.top) / rect.height;
+      targetX = clamp(rawX, 0, 1);
+      targetY = clamp(rawY, 0, 1);
+      if (!raf) raf = requestAnimationFrame(tick);
     };
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-    window.addEventListener('mousemove', handleMouseMove);
-
-    // Create particles - increased count for more dramatic effect
-    for (let i = 0; i < 120; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        vx: (Math.random() - 0.5) * 1.2,
-        vy: (Math.random() - 0.5) * 1.2,
-        size: Math.random() * 4 + 1.5,
-        opacity: Math.random() * 0.7 + 0.3,
-        hue: Math.random() * 60 + 120, // Green to cyan range
-        pulse: Math.random() * Math.PI * 2,
-      });
-    }
-
-    let animationId: number;
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      particles.forEach((particle) => {
-        // Mouse attraction - stronger effect
-        const dx = mouseRef.current.x - particle.x;
-        const dy = mouseRef.current.y - particle.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 200) {
-          particle.vx += dx * 0.00005;
-          particle.vy += dy * 0.00005;
-        }
-
-        particle.x += particle.vx;
-        particle.y += particle.vy;
-        particle.pulse += 0.02;
-
-        // Damping
-        particle.vx *= 0.99;
-        particle.vy *= 0.99;
-
-        if (particle.x < 0 || particle.x > canvas.width) particle.vx *= -1;
-        if (particle.y < 0 || particle.y > canvas.height) particle.vy *= -1;
-
-        // Pulsing size
-        const pulseSize = particle.size + Math.sin(particle.pulse) * 0.5;
-
-        // Draw glow
-        const gradient = ctx.createRadialGradient(
-          particle.x,
-          particle.y,
-          0,
-          particle.x,
-          particle.y,
-          pulseSize * 4
-        );
-        gradient.addColorStop(0, `hsla(${particle.hue}, 80%, 60%, ${particle.opacity * 0.8})`);
-        gradient.addColorStop(0.5, `hsla(${particle.hue}, 80%, 50%, ${particle.opacity * 0.3})`);
-        gradient.addColorStop(1, 'transparent');
-
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, pulseSize * 4, 0, Math.PI * 2);
-        ctx.fillStyle = gradient;
-        ctx.fill();
-
-        // Draw core
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, pulseSize, 0, Math.PI * 2);
-        ctx.fillStyle = `hsla(${particle.hue}, 90%, 70%, ${particle.opacity})`;
-        ctx.fill();
-      });
-
-      // Draw connections
-      particles.forEach((p1, i) => {
-        particles.slice(i + 1).forEach((p2) => {
-          const dx = p1.x - p2.x;
-          const dy = p1.y - p2.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-
-          if (distance < 150) {
-            const opacity = 0.15 * (1 - distance / 150);
-            ctx.beginPath();
-            ctx.moveTo(p1.x, p1.y);
-            ctx.lineTo(p2.x, p2.y);
-            const avgHue = (p1.hue + p2.hue) / 2;
-            ctx.strokeStyle = `hsla(${avgHue}, 70%, 50%, ${opacity})`;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-          }
-        });
-      });
-
-      animationId = requestAnimationFrame(animate);
+    const handleMouseLeave = () => {
+      hover = false;
+      targetX = 0.5;
+      targetY = 0.5;
+      card.classList.remove('is-tilting');
+      if (!raf) raf = requestAnimationFrame(tick);
     };
 
-    animate();
+    card.addEventListener('mouseenter', handleMouseEnter);
+    card.addEventListener('mousemove', handleMouseMove, { passive: true });
+    card.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationId);
+      card.removeEventListener('mouseenter', handleMouseEnter);
+      card.removeEventListener('mousemove', handleMouseMove);
+      card.removeEventListener('mouseleave', handleMouseLeave);
+      if (raf) cancelAnimationFrame(raf);
     };
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none absolute inset-0"
-      style={{ opacity: 0.8 }}
-    />
-  );
-}
-
-// Scanline overlay effect
-function ScanlineOverlay() {
-  return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.03) 2px, rgba(0, 0, 0, 0.03) 4px)',
-        }}
-      />
-      <motion.div
-        className="absolute inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"
-        animate={{ y: ['0vh', '100vh'] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
-      />
+    <div ref={cardRef} className="tilt-card">
+      <div className="tilt-card__bg" />
+      <div className="tilt-card__glare" />
+      <div className="tilt-card__content">
+        <span className="tilt-card__icon">{icon}</span>
+        <h3 className="tilt-card__title font-robert">{title}</h3>
+        <p className="tilt-card__desc">{description}</p>
+      </div>
+      <div className="tilt-card__accent" />
     </div>
   );
 }
 
-// Floating orb/nebula background effect
-function FloatingOrbs() {
+// Animated Sign In Button with glowing border and icon animation
+function SignInButton() {
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Primary green orb */}
-      <motion.div
-        className="absolute h-[600px] w-[600px] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%)',
-          filter: 'blur(60px)',
-          top: '10%',
-          left: '20%',
-        }}
-        animate={{
-          x: [0, 50, -30, 0],
-          y: [0, -40, 30, 0],
-          scale: [1, 1.1, 0.95, 1],
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      {/* Secondary cyan orb */}
-      <motion.div
-        className="absolute h-[500px] w-[500px] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, transparent 70%)',
-          filter: 'blur(50px)',
-          top: '40%',
-          right: '15%',
-        }}
-        animate={{
-          x: [0, -40, 20, 0],
-          y: [0, 30, -50, 0],
-          scale: [1, 0.9, 1.05, 1],
-        }}
-        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-      />
-      {/* Accent purple orb */}
-      <motion.div
-        className="absolute h-[400px] w-[400px] rounded-full"
-        style={{
-          background: 'radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%)',
-          filter: 'blur(40px)',
-          bottom: '20%',
-          left: '10%',
-        }}
-        animate={{
-          x: [0, 30, -20, 0],
-          y: [0, -30, 40, 0],
-          scale: [1, 1.15, 0.9, 1],
-        }}
-        transition={{ duration: 22, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
-      />
-    </div>
-  );
-}
-
-// Animated gradient border
-function AnimatedBorder({
-  children,
-  className = '',
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <div className={`group relative ${className}`}>
-      <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-purple-500 opacity-0 blur-sm transition-opacity duration-500 group-hover:opacity-100" />
-      <div
-        className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-emerald-500 via-cyan-500 to-purple-500 opacity-30"
-        style={{
-          backgroundSize: '200% 200%',
-          animation: 'gradient-shift 3s ease infinite',
-        }}
-      />
-      <div className="relative rounded-2xl bg-gray-900/90 backdrop-blur-xl">{children}</div>
-    </div>
-  );
-}
-
-// Glowing text component
-function GlowingText({
-  children,
-  className = '',
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <span className={`relative ${className}`}>
-      <span className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent opacity-50 blur-xl">
-        {children}
+    <Link to="/login" className="btn-signin group">
+      <span className="btn-signin__glow" />
+      <span className="btn-signin__border" />
+      <span className="btn-signin__content">
+        <svg
+          className="btn-signin__icon"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+          <polyline points="10 17 15 12 10 7" />
+          <line x1="15" y1="12" x2="3" y2="12" />
+        </svg>
+        <span className="btn-signin__text">Sign In</span>
+        <span className="btn-signin__text-hover">Welcome</span>
       </span>
-      <span className="relative bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">
-        {children}
-      </span>
-    </span>
+    </Link>
   );
 }
 
-// Floating card with 3D effect
-function FloatingCard({
-  children,
-  className = '',
-  delay = 0,
+function SwapButton({
+  primary = false,
+  mainText,
+  altText,
+  href,
 }: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
+  primary?: boolean;
+  mainText: string;
+  altText: string;
+  href?: string;
 }) {
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useTransform(y, [-100, 100], [10, -10]), {
-    stiffness: 300,
-    damping: 30,
-  });
-  const rotateY = useSpring(useTransform(x, [-100, 100], [-10, 10]), {
-    stiffness: 300,
-    damping: 30,
-  });
+  const className = `btn-swap ${primary ? 'btn-swap--primary' : ''}`;
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set(e.clientX - centerX);
-    y.set(e.clientY - centerY);
-  };
-
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6, delay }}
-      style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      className={`${className}`}
-    >
-      {children}
-    </motion.div>
+  const content = (
+    <>
+      <span className="btn-swap__main">{mainText}</span>
+      <span className="btn-swap__alt">{altText}</span>
+    </>
   );
-}
 
-// =============================================================================
-// MAIN SECTIONS
-// =============================================================================
+  if (href) {
+    return (
+      <Link to={href} className={className}>
+        {content}
+      </Link>
+    );
+  }
 
-// Navigation component
-function Navigation() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  return (
-    <motion.nav
-      className={`fixed left-0 right-0 top-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? 'border-b border-emerald-500/10 bg-gray-900/80 shadow-lg shadow-emerald-500/5 backdrop-blur-xl'
-          : 'bg-transparent'
-      }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6, ease: 'easeOut' }}
-    >
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="group flex items-center gap-3">
-            <AnimatedLogo size="sm" />
-            <span className="text-xl font-bold tracking-tight">
-              <GlowingText>CGraph</GlowingText>
-            </span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden items-center gap-8 md:flex">
-            {['Features', 'Security', 'Pricing'].map((item) => (
-              <a
-                key={item}
-                href={`#${item.toLowerCase()}`}
-                className="group relative text-gray-400 transition-colors hover:text-white"
-              >
-                {item}
-                <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
-            <a
-              href="https://docs.cgraph.org"
-              className="group relative text-gray-400 transition-colors hover:text-white"
-            >
-              Docs
-              <span className="absolute -bottom-1 left-0 h-[2px] w-0 bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-300 group-hover:w-full" />
-            </a>
-          </div>
-
-          {/* Auth buttons */}
-          <div className="hidden items-center gap-4 md:flex">
-            <Link
-              to="/login"
-              className="px-4 py-2 text-gray-400 transition-colors hover:text-white"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-2 font-medium text-white shadow-lg shadow-emerald-500/25 transition-all hover:shadow-emerald-500/40"
-            >
-              <span className="relative z-10">Get Started</span>
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600"
-                initial={{ x: '100%' }}
-                whileHover={{ x: 0 }}
-                transition={{ duration: 0.3 }}
-              />
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <button
-            className="text-gray-300 hover:text-white md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {mobileMenuOpen ? (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              ) : (
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16M4 18h16"
-                />
-              )}
-            </svg>
-          </button>
-        </div>
-
-        {/* Mobile menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="rounded-b-xl border-t border-emerald-500/10 bg-gray-900/95 backdrop-blur-xl md:hidden"
-            >
-              <div className="space-y-4 px-4 py-4">
-                <a
-                  href="#features"
-                  className="block text-gray-300 transition-colors hover:text-emerald-400"
-                >
-                  Features
-                </a>
-                <a
-                  href="#security"
-                  className="block text-gray-300 transition-colors hover:text-emerald-400"
-                >
-                  Security
-                </a>
-                <a
-                  href="#pricing"
-                  className="block text-gray-300 transition-colors hover:text-emerald-400"
-                >
-                  Pricing
-                </a>
-                <a
-                  href="https://docs.cgraph.org"
-                  className="block text-gray-300 transition-colors hover:text-emerald-400"
-                >
-                  Docs
-                </a>
-                <div className="space-y-2 border-t border-gray-800 pt-4">
-                  <Link to="/login" className="block px-4 py-2 text-center text-gray-300">
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="block rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 px-6 py-2 text-center font-medium text-white"
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.nav>
-  );
-}
-
-// Hero section
-function HeroSection() {
-  const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 500], [0, 150]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-
-  return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-950">
-      {/* Backgrounds */}
-      <MatrixRain />
-      <ParticleField />
-      <FloatingOrbs />
-      <ScanlineOverlay />
-
-      {/* Additional accent orbs with enhanced glow */}
-      <motion.div
-        className="absolute left-1/4 top-1/4 h-[600px] w-[600px] rounded-full bg-emerald-600/25 blur-[120px]"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.25, 0.4, 0.25],
-        }}
-        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute bottom-1/4 right-1/4 h-[550px] w-[550px] rounded-full bg-cyan-600/25 blur-[110px]"
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.35, 0.2, 0.35],
-        }}
-        transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-      />
-      <motion.div
-        className="absolute right-1/3 top-1/3 h-[350px] w-[350px] rounded-full bg-purple-600/20 blur-[90px]"
-        animate={{
-          x: [0, 60, 0],
-          y: [0, -40, 0],
-        }}
-        transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
-      />
-
-      <motion.div
-        style={{ y, opacity }}
-        className="relative z-10 mx-auto max-w-7xl px-4 pb-16 pt-24 text-center sm:px-6 lg:px-8"
-      >
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.9 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 backdrop-blur-sm"
-        >
-          <motion.span
-            className="h-2 w-2 rounded-full bg-emerald-500"
-            animate={{ scale: [1, 1.5, 1], opacity: [1, 0.5, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-          <span className="text-sm font-medium text-emerald-300">
-            v0.9.3 — Next-Gen UI Now Available
-          </span>
-        </motion.div>
-
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="mb-6 text-5xl font-bold text-white sm:text-6xl lg:text-7xl"
-        >
-          Communication <GlowingText>Reimagined</GlowingText>
-        </motion.h1>
-
-        {/* Subheadline */}
-        <motion.p
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mx-auto mb-10 max-w-3xl text-xl text-gray-400 sm:text-2xl"
-        >
-          The privacy-first platform that combines{' '}
-          <span className="text-emerald-400">encrypted messaging</span>,{' '}
-          <span className="text-cyan-400">community forums</span>, and{' '}
-          <span className="text-purple-400">voice calls</span> — all in one beautiful experience.
-        </motion.p>
-
-        {/* CTA buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="flex flex-col items-center justify-center gap-4 sm:flex-row"
-        >
-          <Link
-            to="/register"
-            className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-8 py-4 text-lg font-semibold text-white shadow-xl shadow-emerald-500/25 transition-all hover:shadow-emerald-500/40 sm:w-auto"
-          >
-            <span className="relative z-10 flex items-center justify-center gap-2">
-              Start Free Today
-              <motion.span
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity }}
-              >
-                →
-              </motion.span>
-            </span>
-            <motion.div
-              className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600"
-              initial={{ x: '-100%' }}
-              whileHover={{ x: 0 }}
-              transition={{ duration: 0.3 }}
-            />
-          </Link>
-          <a
-            href="#features"
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-700 bg-gray-800/50 px-8 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all hover:border-emerald-500/50 hover:bg-gray-800 sm:w-auto"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-            Learn More
-          </a>
-        </motion.div>
-
-        {/* Feature Highlights */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="mt-20 grid grid-cols-2 gap-8 md:grid-cols-4"
-        >
-          {highlights.map((item, index) => (
-            <motion.div
-              key={item.label}
-              className="group text-center"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-            >
-              <motion.div
-                className="mb-2 text-4xl"
-                animate={{ y: [0, -5, 0] }}
-                transition={{ duration: 2, delay: index * 0.2, repeat: Infinity }}
-              >
-                {item.icon}
-              </motion.div>
-              <div className="mb-1 text-2xl font-bold text-white transition-colors group-hover:text-emerald-400 sm:text-3xl">
-                {item.value}
-              </div>
-              <div className="text-sm text-gray-500">{item.label}</div>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 transform"
-        >
-          <motion.div
-            animate={{ y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="flex h-10 w-6 items-start justify-center rounded-full border-2 border-emerald-500/50 pt-2"
-          >
-            <motion.div
-              className="h-2 w-1 rounded-full bg-emerald-400"
-              animate={{ opacity: [1, 0.3, 1] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            />
-          </motion.div>
-        </motion.div>
-      </motion.div>
-    </section>
-  );
-}
-
-// Features section
-function FeaturesSection() {
-  return (
-    <section id="features" className="relative overflow-hidden bg-gray-950 py-24">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(16,185,129,0.05),transparent_70%)]" />
-      <div
-        className="absolute inset-0 opacity-20"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(16, 185, 129, 0.05) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(16, 185, 129, 0.05) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-        }}
-      />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <motion.span
-            className="mb-4 inline-block rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-sm font-medium text-emerald-400"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-          >
-            Powerful Features
-          </motion.span>
-          <h2 className="mb-4 text-4xl font-bold text-white sm:text-5xl">
-            Everything You <GlowingText>Need</GlowingText>
-          </h2>
-          <p className="mx-auto max-w-2xl text-xl text-gray-400">
-            A complete communication platform built for privacy, performance, and community.
-          </p>
-        </motion.div>
-
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature, index) => (
-            <FloatingCard key={feature.title} delay={index * 0.1}>
-              <AnimatedBorder>
-                <div className="group relative overflow-hidden rounded-2xl p-8 transition-all duration-500">
-                  {/* Glow effect */}
-                  <div
-                    className="absolute -inset-px opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-                    style={{
-                      background: `radial-gradient(circle at center, ${feature.glowColor}, transparent 70%)`,
-                      filter: 'blur(20px)',
-                    }}
-                  />
-
-                  <div className="relative z-10">
-                    <motion.div
-                      className="mb-4 text-5xl"
-                      whileHover={{ scale: 1.2, rotate: [0, -10, 10, 0] }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      {feature.icon}
-                    </motion.div>
-                    <h3 className="mb-3 text-xl font-semibold text-white transition-colors group-hover:text-emerald-400">
-                      {feature.title}
-                    </h3>
-                    <p className="leading-relaxed text-gray-400">{feature.description}</p>
-                  </div>
-                </div>
-              </AnimatedBorder>
-            </FloatingCard>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Security section
-function SecuritySection() {
-  return (
-    <section id="security" className="relative overflow-hidden bg-gray-900 py-24">
-      {/* Grid background */}
-      <div
-        className="absolute inset-0 opacity-10"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(16, 185, 129, 0.1) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(16, 185, 129, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px',
-        }}
-      />
-      <ScanlineOverlay />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-16 lg:grid-cols-2">
-          {/* Left: Content */}
-          <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2">
-              <span className="text-sm font-medium text-emerald-400">🔐 Security First</span>
-            </div>
-            <h2 className="mb-6 text-4xl font-bold text-white sm:text-5xl">
-              Your Privacy is <GlowingText>Non-Negotiable</GlowingText>
-            </h2>
-            <p className="mb-8 text-xl leading-relaxed text-gray-400">
-              We implement encryption inspired by the Signal Protocol. Your messages are encrypted
-              end-to-end, meaning only you and your recipients can read them.
-            </p>
-            <div className="space-y-4">
-              {securityFeatures.slice(0, 3).map((item, index) => (
-                <motion.div
-                  key={item.title}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
-                  className="group flex items-start gap-4 rounded-lg p-3 transition-colors hover:bg-emerald-500/5"
-                >
-                  <motion.div className="text-2xl" whileHover={{ scale: 1.2 }}>
-                    {item.icon}
-                  </motion.div>
-                  <div>
-                    <div className="font-medium text-white transition-colors group-hover:text-emerald-400">
-                      {item.title}
-                    </div>
-                    <div className="text-sm text-gray-400">{item.description}</div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Right: Security features grid */}
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="grid grid-cols-2 gap-4"
-          >
-            {securityFeatures.map((item, index) => (
-              <FloatingCard key={item.title} delay={index * 0.1}>
-                <div className="group rounded-xl border border-gray-700 bg-gray-800/50 p-6 backdrop-blur-sm transition-all hover:border-emerald-500/50 hover:bg-gray-800/80">
-                  <motion.div
-                    className="mb-3 text-3xl"
-                    whileHover={{ scale: 1.3, rotate: 10 }}
-                    transition={{ type: 'spring', stiffness: 300 }}
-                  >
-                    {item.icon}
-                  </motion.div>
-                  <div className="mb-1 text-sm font-medium text-white transition-colors group-hover:text-emerald-400">
-                    {item.title}
-                  </div>
-                  <div className="text-xs text-gray-500">{item.description}</div>
-                </div>
-              </FloatingCard>
-            ))}
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Pricing section
-function PricingSection() {
-  return (
-    <section id="pricing" className="relative overflow-hidden bg-gray-950 py-24">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.1),transparent_50%)]" />
-
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <motion.span
-            className="mb-4 inline-block rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-sm font-medium text-emerald-400"
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-          >
-            Simple Pricing
-          </motion.span>
-          <h2 className="mb-4 text-4xl font-bold text-white sm:text-5xl">
-            Transparent <GlowingText>Pricing</GlowingText>
-          </h2>
-          <p className="mx-auto max-w-2xl text-xl text-gray-400">
-            Start free and upgrade when you're ready. No hidden fees, no surprises.
-          </p>
-        </motion.div>
-
-        <div className="grid gap-8 md:grid-cols-3">
-          {pricingTiers.map((tier, index) => (
-            <FloatingCard key={tier.name} delay={index * 0.1}>
-              <div
-                className={`relative rounded-2xl p-8 ${
-                  tier.highlighted
-                    ? 'scale-105 border-2 border-emerald-500 bg-gradient-to-b from-emerald-900/30 to-gray-900'
-                    : 'border border-gray-800 bg-gray-900/50'
-                }`}
-              >
-                {tier.highlighted && (
-                  <motion.div
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 transform"
-                    initial={{ y: -10, opacity: 0 }}
-                    whileInView={{ y: 0, opacity: 1 }}
-                    viewport={{ once: true }}
-                  >
-                    <span className="rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-1 text-sm font-medium text-white shadow-lg shadow-emerald-500/30">
-                      Most Popular
-                    </span>
-                  </motion.div>
-                )}
-
-                <div className="mb-8 text-center">
-                  <h3 className="mb-2 text-2xl font-bold text-white">{tier.name}</h3>
-                  <div className="flex items-baseline justify-center gap-1">
-                    <span className="text-5xl font-bold text-white">{tier.price}</span>
-                    <span className="text-gray-400">{tier.period}</span>
-                  </div>
-                  <p className="mt-3 text-gray-400">{tier.description}</p>
-                </div>
-
-                <ul className="mb-8 space-y-4">
-                  {tier.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <svg
-                        className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-500"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </svg>
-                      <span className="text-gray-300">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  to="/register"
-                  className={`block rounded-xl px-6 py-3 text-center font-semibold transition-all ${
-                    tier.highlighted
-                      ? 'bg-gradient-to-r from-emerald-500 to-cyan-500 text-white shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40'
-                      : 'border border-gray-700 bg-gray-800 text-white hover:border-emerald-500/50 hover:bg-gray-700'
-                  }`}
-                >
-                  {tier.cta}
-                </Link>
-              </div>
-            </FloatingCard>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Testimonials section (only renders if we have testimonials)
-function TestimonialsSection() {
-  if (testimonials.length === 0) return null;
-
-  return (
-    <section className="relative overflow-hidden bg-gray-900 py-24">
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="mb-16 text-center"
-        >
-          <h2 className="mb-4 text-4xl font-bold text-white sm:text-5xl">Loved by Communities</h2>
-          <p className="text-xl text-gray-400">See what our users are saying about CGraph.</p>
-        </motion.div>
-
-        <div className="grid gap-8 md:grid-cols-3">
-          {testimonials.map((testimonial, index) => (
-            <FloatingCard key={testimonial.author} delay={index * 0.1}>
-              <div className="rounded-2xl border border-gray-700 bg-gray-800/50 p-8 backdrop-blur-sm">
-                <div className="mb-4 flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <svg
-                      key={i}
-                      className="h-5 w-5 text-yellow-400"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <p className="mb-6 italic text-gray-300">"{testimonial.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-cyan-500 font-medium text-white">
-                    {testimonial.avatar}
-                  </div>
-                  <div>
-                    <div className="font-medium text-white">{testimonial.author}</div>
-                    <div className="text-sm text-gray-400">{testimonial.role}</div>
-                  </div>
-                </div>
-              </div>
-            </FloatingCard>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// Final CTA section
-function CTASection() {
-  return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-gray-950 to-gray-900 py-24">
-      {/* Animated background elements */}
-      <motion.div
-        className="absolute left-1/4 top-1/2 h-[400px] w-[400px] rounded-full bg-emerald-600/10 blur-[100px]"
-        animate={{
-          scale: [1, 1.3, 1],
-          opacity: [0.1, 0.2, 0.1],
-        }}
-        transition={{ duration: 6, repeat: Infinity }}
-      />
-      <motion.div
-        className="absolute bottom-0 right-1/4 h-[400px] w-[400px] rounded-full bg-cyan-600/10 blur-[100px]"
-        animate={{
-          scale: [1.3, 1, 1.3],
-          opacity: [0.2, 0.1, 0.2],
-        }}
-        transition={{ duration: 6, repeat: Infinity }}
-      />
-
-      <div className="relative z-10 mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <motion.div
-            initial={{ scale: 0 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-            className="mb-6 inline-block text-6xl"
-          >
-            🚀
-          </motion.div>
-          <h2 className="mb-6 text-4xl font-bold text-white sm:text-5xl lg:text-6xl">
-            Ready to Experience <GlowingText>True Privacy?</GlowingText>
-          </h2>
-          <p className="mx-auto mb-10 max-w-2xl text-xl text-gray-400">
-            Join us in building the future of secure, privacy-first communication. Sign up to be
-            among the first users.
-          </p>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Link
-              to="/register"
-              className="group relative w-full overflow-hidden rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-10 py-4 text-lg font-semibold text-white shadow-xl shadow-emerald-500/25 transition-all hover:shadow-emerald-500/40 sm:w-auto"
-            >
-              <span className="relative z-10 flex items-center justify-center gap-2">
-                Create Free Account
-                <motion.span
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  →
-                </motion.span>
-              </span>
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-emerald-600 to-cyan-600"
-                initial={{ x: '-100%' }}
-                whileHover={{ x: 0 }}
-                transition={{ duration: 0.3 }}
-              />
-            </Link>
-            <Link
-              to="/login"
-              className="w-full rounded-xl border border-gray-700 bg-gray-800/50 px-10 py-4 text-lg font-semibold text-white backdrop-blur-sm transition-all hover:border-emerald-500/50 hover:bg-gray-800 sm:w-auto"
-            >
-              Sign In
-            </Link>
-          </div>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-// Footer
-function Footer() {
-  const currentYear = new Date().getFullYear();
-
-  return (
-    <footer className="relative border-t border-emerald-500/10 bg-gray-950 py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
-          {/* Product */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">Product</h4>
-            <ul className="space-y-2">
-              {['Features', 'Security', 'Pricing', 'Download'].map((item) => (
-                <li key={item}>
-                  <a
-                    href={item === 'Download' ? '/login' : `#${item.toLowerCase()}`}
-                    className="text-gray-400 transition-colors hover:text-emerald-400"
-                  >
-                    {item}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Resources */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">Resources</h4>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="https://docs.cgraph.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 transition-colors hover:text-emerald-400"
-                >
-                  Documentation
-                </a>
-              </li>
-              <li>
-                <a
-                  href="https://docs.cgraph.org/api"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 transition-colors hover:text-emerald-400"
-                >
-                  API Reference
-                </a>
-              </li>
-              <li>
-                <Link
-                  to="/status"
-                  className="text-gray-400 transition-colors hover:text-emerald-400"
-                >
-                  Status
-                </Link>
-              </li>
-              <li>
-                <a
-                  href="https://blog.cgraph.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 transition-colors hover:text-emerald-400"
-                >
-                  Blog
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Company */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">Company</h4>
-            <ul className="space-y-2">
-              {['About', 'Careers', 'Contact', 'Press'].map((item) => (
-                <li key={item}>
-                  <Link
-                    to={`/${item.toLowerCase()}`}
-                    className="text-gray-400 transition-colors hover:text-emerald-400"
-                  >
-                    {item}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div>
-            <h4 className="mb-4 font-semibold text-white">Legal</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link
-                  to="/privacy"
-                  className="text-gray-400 transition-colors hover:text-emerald-400"
-                >
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/terms"
-                  className="text-gray-400 transition-colors hover:text-emerald-400"
-                >
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/cookies"
-                  className="text-gray-400 transition-colors hover:text-emerald-400"
-                >
-                  Cookie Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/gdpr" className="text-gray-400 transition-colors hover:text-emerald-400">
-                  GDPR
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-800 pt-8 md:flex-row">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <AnimatedLogo size="sm" />
-            <span className="text-gray-500">© {currentYear} CGraph. All rights reserved.</span>
-          </div>
-
-          {/* Social links */}
-          <div className="flex items-center gap-4">
-            <a href="/forum" className="text-gray-400 transition-colors hover:text-emerald-400">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"
-                />
-              </svg>
-            </a>
-            <a
-              href="https://twitter.com/cgraph_org"
-              className="text-gray-400 transition-colors hover:text-emerald-400"
-            >
-              <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-              </svg>
-            </a>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
+  return <button className={className}>{content}</button>;
 }
 
 // =============================================================================
@@ -1483,6 +838,18 @@ function Footer() {
 export default function LandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
+  const [preloading, setPreloading] = useState(true);
+  const [navHidden, setNavHidden] = useState(false);
+  const [navScrolled, setNavScrolled] = useState(false);
+
+  const heroRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const aboutRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const aboutVisualRef = useRef<HTMLDivElement>(null);
+  const aboutGlowRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   // Redirect authenticated users to messages
   useEffect(() => {
@@ -1491,23 +858,548 @@ export default function LandingPage() {
     }
   }, [isAuthenticated, navigate]);
 
-  return (
-    <div className="min-h-screen bg-gray-950">
-      {/* Add global styles for gradient animation */}
-      <style>{`
-        @keyframes gradient-shift {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
+  // Scroll handler for nav visibility - throttled for performance
+  useEffect(() => {
+    let lastScroll = 0;
+
+    const handleScroll = throttle(() => {
+      const currentScroll = window.scrollY;
+      setNavHidden(currentScroll > lastScroll && currentScroll > 100);
+      setNavScrolled(currentScroll > 50);
+      lastScroll = currentScroll;
+    }, 16); // ~60fps
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Cursor-following glow effect for about section - throttled for performance
+  useEffect(() => {
+    const visual = aboutVisualRef.current;
+    const glow = aboutGlowRef.current;
+    if (!visual || !glow) return;
+
+    const handleMouseMove = throttle((e: MouseEvent) => {
+      const rect = visual.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      // Offset from center (like original TiltCard3D)
+      gsap.to(glow, {
+        x: x - centerX,
+        y: y - centerY,
+        opacity: 0.8,
+        duration: 0.3,
+        ease: 'power2.out',
+        overwrite: 'auto', // Prevent animation queue buildup
+      });
+    }, 16); // ~60fps
+
+    const handleMouseLeave = () => {
+      gsap.to(glow, {
+        opacity: 0,
+        duration: 0.3,
+        ease: 'power2.out',
+      });
+    };
+
+    visual.addEventListener('mousemove', handleMouseMove, { passive: true });
+    visual.addEventListener('mouseleave', handleMouseLeave);
+
+    return () => {
+      visual.removeEventListener('mousemove', handleMouseMove);
+      visual.removeEventListener('mouseleave', handleMouseLeave);
+    };
+  }, []);
+
+  // GSAP animations after preload (non-hero elements - hero is animated by preloader)
+  useEffect(() => {
+    if (preloading) return;
+
+    // Defer animations slightly to ensure DOM is ready and improve initial paint
+    const timeoutId = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        // Section zoom effect - smooth parallax-style scaling
+        const sections = document.querySelectorAll('.zoom-section');
+
+        sections.forEach((section) => {
+          // Scale down as section leaves the viewport (starts when section top hits 30% from top)
+          gsap.to(section, {
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 30%',
+              end: 'top -50%',
+              scrub: 1,
+              fastScrollEnd: true, // Performance: end early on fast scroll
+            },
+            scale: 0.25,
+            opacity: 0.05,
+            ease: 'none',
+          });
+
+          // Scale up as section enters viewport - reach full scale when section is centered
+          gsap.fromTo(
+            section,
+            {
+              scale: 0.25,
+              opacity: 0.05,
+            },
+            {
+              scrollTrigger: {
+                trigger: section,
+                start: 'top 100%',
+                end: 'top 50%',
+                scrub: 1,
+                fastScrollEnd: true, // Performance: end early on fast scroll
+              },
+              scale: 1,
+              opacity: 1,
+              ease: 'none',
+            }
+          );
+        });
+
+        // Feature cards scroll animation
+        gsap.from('.tilt-card', {
+          scrollTrigger: {
+            trigger: featuresRef.current,
+            start: 'top 80%',
+          },
+          y: 60,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+        });
+
+        // About section scroll animation
+        gsap.from('.about__content > *', {
+          scrollTrigger: {
+            trigger: aboutRef.current,
+            start: 'top 70%',
+          },
+          y: 50,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+        });
+
+        // CTA section scroll animation
+        gsap.from('.cta__content > *', {
+          scrollTrigger: {
+            trigger: ctaRef.current,
+            start: 'top 80%',
+          },
+          y: 40,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: 'power3.out',
+        });
+
+        // Scroll indicator - follows user scroll
+        if (scrollIndicatorRef.current) {
+          const scrollDot = scrollIndicatorRef.current.querySelector('.hero__scroll-dot');
+          const scrollArrows = scrollIndicatorRef.current.querySelectorAll(
+            '.hero__scroll-arrows span'
+          );
+
+          // Animate the dot based on scroll progress
+          if (scrollDot) {
+            gsap.to(scrollDot, {
+              scrollTrigger: {
+                trigger: heroRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.5,
+              },
+              y: 20,
+              opacity: 0.2,
+              ease: 'none',
+            });
+          }
+
+          // Animate arrows cascading based on scroll
+          scrollArrows.forEach((arrow, index) => {
+            gsap.to(arrow, {
+              scrollTrigger: {
+                trigger: heroRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.5,
+              },
+              y: 8 + index * 4,
+              opacity: 0,
+              ease: 'none',
+            });
+          });
+
+          // Fade out entire scroll indicator as user scrolls
+          gsap.to(scrollIndicatorRef.current, {
+            scrollTrigger: {
+              trigger: heroRef.current,
+              start: 'top top',
+              end: '30% top',
+              scrub: 0.3,
+            },
+            opacity: 0,
+            y: 20,
+            ease: 'none',
+          });
         }
-      `}</style>
-      <Navigation />
-      <HeroSection />
-      <FeaturesSection />
-      <SecuritySection />
-      <PricingSection />
-      <TestimonialsSection />
-      <CTASection />
-      <Footer />
+      });
+
+      return () => ctx.revert();
+    }, 100); // Small delay to improve initial paint
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [preloading]);
+
+  const handlePreloadComplete = useCallback(() => {
+    setPreloading(false);
+  }, []);
+
+  return (
+    <div className="demo-landing">
+      {/* Preloader */}
+      {preloading && <Preloader onComplete={handlePreloadComplete} />}
+
+      {/* Navigation */}
+      <nav className={`gl-nav ${navHidden ? 'hidden' : ''} ${navScrolled ? 'scrolled' : ''}`}>
+        <Link to="/demo/landing" className="gl-nav__logo">
+          <span>⬡</span>
+          CGraph
+        </Link>
+
+        <div className="gl-nav__links">
+          <a href="#features" className="gl-nav__link">
+            Features
+          </a>
+          <a href="#security" className="gl-nav__link">
+            Security
+          </a>
+          <a href="#pricing" className="gl-nav__link">
+            Pricing
+          </a>
+        </div>
+
+        <SignInButton />
+      </nav>
+
+      {/* Hero */}
+      <section ref={heroRef} className="hero">
+        <div className="hero__bg">
+          <div className="hero__gradient-bg" />
+          <div className="hero__bg-aurora" />
+          <div className="hero__bg-grid" />
+          <div className="hero__bg-particles" />
+          <div className="hero__bg-streaks" />
+          <div className="hero__bg-spotlight" />
+          <div className="hero__bg-interactive" />
+          <div className="hero__bg-noise" />
+          <div className="hero__bg-vignette" />
+          <div className="hero__bg-fade" />
+        </div>
+
+        <div className="hero__content">
+          <span className="hero__eyebrow font-robert">The All-in-One Platform</span>
+
+          <h1 className="hero__title font-zentry">
+            <span>Beyond</span>
+            <span className="hero__title-gradient">Messaging</span>
+          </h1>
+
+          <p className="hero__subtitle font-robert">
+            Real-time messaging meets community forums — with bank-grade encryption, Web3
+            authentication, and rewards that make every interaction count.
+          </p>
+
+          <div className="hero__buttons">
+            <SwapButton primary mainText="Start Free" altText="No Credit Card" href="/register" />
+            <SwapButton mainText="Learn More" altText="Explore" href="#features" />
+          </div>
+        </div>
+
+        <div ref={scrollIndicatorRef} className="hero__scroll">
+          <span>Scroll</span>
+          <div className="hero__scroll-line">
+            <span className="hero__scroll-dot" />
+          </div>
+          <div className="hero__scroll-arrows">
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section ref={statsRef} className="stats-section zoom-section">
+        <div className="stats-grid">
+          {stats.map((stat) => (
+            <div key={stat.label} className="stat-card">
+              <span className="stat-card__icon">{stat.icon}</span>
+              <span className="stat-card__value font-zentry">{stat.value}</span>
+              <span className="stat-card__label font-robert">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features */}
+      <section ref={featuresRef} id="features" className="features zoom-section">
+        <div className="features__header">
+          <p className="features__eyebrow">Powerful Features</p>
+          <h2 className="features__title font-zentry">Everything You Need</h2>
+        </div>
+
+        <div className="features__grid">
+          {features.map((feature) => (
+            <TiltCard key={feature.title} {...feature} />
+          ))}
+        </div>
+      </section>
+
+      {/* Customization Demo */}
+      <section className="showcase-section zoom-section">
+        <Suspense
+          fallback={
+            <div className="showcase-loading">
+              <div className="showcase-loading__spinner" />
+              <span>Loading Customization Preview...</span>
+            </div>
+          }
+        >
+          <CustomizationDemo />
+        </Suspense>
+      </section>
+
+      {/* Forum Showcase */}
+      <section className="showcase-section showcase-section--alt zoom-section">
+        <Suspense
+          fallback={
+            <div className="showcase-loading">
+              <div className="showcase-loading__spinner" />
+              <span>Loading Forum Preview...</span>
+            </div>
+          }
+        >
+          <ForumShowcase />
+        </Suspense>
+      </section>
+
+      {/* About/Security */}
+      <section ref={aboutRef} id="security" className="about zoom-section">
+        <div className="about__container">
+          <div className="about__content">
+            <p className="about__eyebrow font-robert">Privacy-First Design</p>
+            <h2 className="about__title font-zentry">Your Privacy Is Our Priority</h2>
+            <p className="about__desc">
+              Built from the ground up with security in mind. Your messages are end-to-end encrypted
+              with AES-256, and we use Signal-inspired encryption protocols. Not even we can access
+              your private conversations.
+            </p>
+            <SwapButton mainText="Security Details" altText="Learn More" />
+          </div>
+
+          <div ref={aboutVisualRef} className="about__visual">
+            <div className="about__orb" />
+            <div
+              ref={aboutGlowRef}
+              className="pointer-events-none absolute left-1/2 top-1/2 z-10 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 opacity-0 blur-3xl"
+            />
+            <div className="about__icon-grid">
+              {securityFeatures.map((feature, i) => (
+                <SecurityIconCard key={i} feature={feature} />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing */}
+      <section id="pricing" className="pricing zoom-section">
+        <div className="pricing__header">
+          <p className="features__eyebrow font-robert">Pricing</p>
+          <h2 className="features__title font-zentry">Simple, Transparent Pricing</h2>
+        </div>
+
+        <div className="pricing__grid">
+          {pricingTiers.map((tier) => (
+            <div
+              key={tier.name}
+              className={`pricing__card ${tier.highlighted ? 'pricing__card--highlighted' : ''}`}
+            >
+              {tier.highlighted && <span className="pricing__badge">Most Popular</span>}
+              <h3 className="pricing__name font-robert">{tier.name}</h3>
+              <div className="pricing__price">
+                <span className="pricing__amount">{tier.price}</span>
+                <span className="pricing__period">{tier.period}</span>
+              </div>
+              <p className="pricing__desc">{tier.description}</p>
+
+              <ul className="pricing__features">
+                {tier.features.map((feature) => (
+                  <li key={feature}>
+                    <svg
+                      className="pricing__check"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                to="/register"
+                className={`pricing__cta ${tier.highlighted ? 'pricing__cta--primary' : ''}`}
+              >
+                {tier.cta}
+              </Link>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section ref={ctaRef} className="cta zoom-section">
+        <div className="cta__content">
+          <span className="cta__rocket">🚀</span>
+          <h2 className="cta__title font-zentry">
+            Build Your <span className="cta__highlight">Community</span>
+          </h2>
+          <p className="cta__desc font-robert">
+            Create forums, customize your space, and connect with like-minded people.
+          </p>
+          <div className="cta__buttons">
+            <SwapButton primary mainText="Create Account" altText="Join Now!" href="/register" />
+            <SwapButton mainText="Sign In" altText="Welcome Back" href="/login" />
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="gl-footer">
+        <div className="gl-footer__main">
+          <div className="gl-footer__column">
+            <h4 className="gl-footer__heading">Product</h4>
+            {footerLinks.product.map((link) => (
+              <a key={link.label} href={link.href} className="gl-footer__link">
+                {link.label}
+              </a>
+            ))}
+          </div>
+          <div className="gl-footer__column">
+            <h4 className="gl-footer__heading">Resources</h4>
+            {footerLinks.resources.map((link) =>
+              'external' in link && link.external ? (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="gl-footer__link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link key={link.label} to={link.href} className="gl-footer__link">
+                  {link.label}
+                </Link>
+              )
+            )}
+          </div>
+          <div className="gl-footer__column">
+            <h4 className="gl-footer__heading">Company</h4>
+            {footerLinks.company.map((link) => (
+              <Link key={link.label} to={link.href} className="gl-footer__link">
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          <div className="gl-footer__column">
+            <h4 className="gl-footer__heading">Legal</h4>
+            {footerLinks.legal.map((link) => (
+              <Link key={link.label} to={link.href} className="gl-footer__link">
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+        <div className="gl-footer__bottom">
+          <div className="gl-footer__bottom-left">
+            <Link to="/forums" className="gl-footer__logo">
+              <svg
+                className="gl-footer__logo-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M12 2L2 7L12 12L22 7L12 2Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M2 17L12 22L22 17"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M2 12L12 17L22 12"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span>© 2026 CGraph</span>
+            </Link>
+          </div>
+          <div className="gl-footer__socials">
+            <a
+              href="https://twitter.com/cgraph"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gl-footer__social"
+              aria-label="Twitter"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+            <a
+              href="https://github.com/cgraph"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gl-footer__social"
+              aria-label="GitHub"
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

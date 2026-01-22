@@ -1,9 +1,9 @@
 /**
  * GDPR Compliance Page
- * 
+ *
  * Renders the GDPR compliance information with consistent
  * marketing page styling.
- * 
+ *
  * @since v0.9.2
  */
 
@@ -36,6 +36,8 @@ const sections = [
         <tbody>
           <tr><td><strong>Account Creation</strong></td><td>Contract</td><td>Necessary to provide the Service</td></tr>
           <tr><td><strong>Message Delivery</strong></td><td>Contract</td><td>Core service functionality</td></tr>
+          <tr><td><strong>Forum & Communities</strong></td><td>Contract</td><td>Community features and discussions</td></tr>
+          <tr><td><strong>Gamification System</strong></td><td>Contract</td><td>XP, achievements, leaderboards</td></tr>
           <tr><td><strong>Security Measures</strong></td><td>Legitimate Interest</td><td>Protecting users and the platform</td></tr>
           <tr><td><strong>Analytics</strong></td><td>Consent</td><td>Understanding service usage</td></tr>
           <tr><td><strong>Marketing Emails</strong></td><td>Consent</td><td>Only with explicit opt-in</td></tr>
@@ -256,21 +258,23 @@ export default function GDPR() {
   return (
     <MarketingLayout
       title="GDPR Compliance"
-      subtitle="Last updated: January 16, 2026 • Version 1.0"
+      subtitle="Last updated: January 21, 2026 • Version 1.1"
+      eyebrow="EU Data Protection"
     >
-      <section className="bg-gray-950 py-16">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <section className="marketing-section marketing-section--alt">
+        <div className="mx-auto max-w-4xl px-4">
           {/* Introduction */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="mb-12 rounded-2xl border border-gray-800 bg-gray-900/50 p-8"
+            className="marketing-card"
+            style={{ marginBottom: '3rem' }}
           >
-            <p className="text-lg text-gray-300">
-              This document outlines CGraph's compliance with the General Data Protection Regulation (GDPR) 
-              and explains the rights available to users in the European Economic Area (EEA), United Kingdom, 
-              and other jurisdictions with similar data protection laws.
+            <p style={{ color: 'var(--color-gray)', fontSize: '1.125rem', lineHeight: 1.7 }}>
+              This document outlines CGraph's compliance with the General Data Protection Regulation
+              (GDPR) and explains the rights available to users in the European Economic Area (EEA),
+              United Kingdom, and other jurisdictions with similar data protection laws.
             </p>
           </motion.div>
 
@@ -279,22 +283,41 @@ export default function GDPR() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-12 grid gap-4 sm:grid-cols-3"
+            className="marketing-grid marketing-grid--3"
+            style={{ marginBottom: '3rem' }}
           >
-            <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-6 text-center">
-              <div className="mb-2 text-3xl">📥</div>
-              <h3 className="font-semibold text-white">Download Data</h3>
-              <p className="mt-1 text-sm text-gray-400">Settings → Privacy → Download</p>
+            <div
+              className="marketing-card text-center"
+              style={{
+                borderColor: 'rgba(16, 185, 129, 0.3)',
+                background: 'rgba(16, 185, 129, 0.1)',
+              }}
+            >
+              <span className="marketing-card__icon">📥</span>
+              <h3 className="marketing-card__title">Download Data</h3>
+              <p className="marketing-card__desc">Settings → Privacy → Download</p>
             </div>
-            <div className="rounded-xl border border-blue-500/30 bg-blue-500/10 p-6 text-center">
-              <div className="mb-2 text-3xl">📤</div>
-              <h3 className="font-semibold text-white">Export Data</h3>
-              <p className="mt-1 text-sm text-gray-400">Settings → Privacy → Export</p>
+            <div
+              className="marketing-card text-center"
+              style={{
+                borderColor: 'rgba(139, 92, 246, 0.3)',
+                background: 'rgba(139, 92, 246, 0.1)',
+              }}
+            >
+              <span className="marketing-card__icon">📤</span>
+              <h3 className="marketing-card__title">Export Data</h3>
+              <p className="marketing-card__desc">Settings → Privacy → Export</p>
             </div>
-            <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-6 text-center">
-              <div className="mb-2 text-3xl">🗑️</div>
-              <h3 className="font-semibold text-white">Delete Account</h3>
-              <p className="mt-1 text-sm text-gray-400">Settings → Account → Delete</p>
+            <div
+              className="marketing-card text-center"
+              style={{
+                borderColor: 'rgba(239, 68, 68, 0.3)',
+                background: 'rgba(239, 68, 68, 0.1)',
+              }}
+            >
+              <span className="marketing-card__icon">🗑️</span>
+              <h3 className="marketing-card__title">Delete Account</h3>
+              <p className="marketing-card__desc">Settings → Account → Delete</p>
             </div>
           </motion.div>
 
@@ -305,13 +328,16 @@ export default function GDPR() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="mb-12"
           >
-            <h2 className="mb-4 text-xl font-semibold text-white">Table of Contents</h2>
+            <h2 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Table of Contents
+            </h2>
             <nav className="grid gap-2 sm:grid-cols-2">
               {sections.map((section) => (
                 <a
                   key={section.id}
                   href={`#${section.id}`}
-                  className="text-gray-400 transition-colors hover:text-purple-400"
+                  style={{ color: 'var(--color-gray)', transition: 'color 0.2s' }}
+                  className="hover:text-emerald-400"
                 >
                   {section.title}
                 </a>
@@ -330,9 +356,14 @@ export default function GDPR() {
               transition={{ duration: 0.5 }}
               className="mb-12 scroll-mt-24"
             >
-              <h2 className="mb-6 text-2xl font-bold text-white">{section.title}</h2>
-              <div 
-                className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300 prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300 prose-strong:text-white prose-table:border-gray-700 prose-th:bg-gray-800 prose-th:text-white prose-td:text-gray-300 prose-th:border-gray-700 prose-td:border-gray-700"
+              <h2
+                className="font-zentry mb-6 text-2xl font-bold"
+                style={{ color: 'var(--color-light)' }}
+              >
+                {section.title}
+              </h2>
+              <div
+                className="legal-content"
                 dangerouslySetInnerHTML={{ __html: section.content }}
               />
             </motion.section>
@@ -343,46 +374,64 @@ export default function GDPR() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="rounded-2xl border border-gray-800 bg-gray-900/50 p-8"
+            className="marketing-card"
           >
-            <h3 className="mb-4 text-xl font-semibold text-white">Contact</h3>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <h3 className="mb-4 text-xl font-semibold" style={{ color: 'var(--color-light)' }}>
+              Contact
+            </h3>
+            <div
+              className="marketing-grid"
+              style={{ gridTemplateColumns: 'repeat(2, 1fr)', marginBottom: '2rem' }}
+            >
               <div>
-                <p className="text-gray-400">General Privacy Inquiries</p>
-                <a href="mailto:privacy@cgraph.org" className="text-purple-400 hover:text-purple-300">
+                <p style={{ color: 'var(--color-gray)' }}>General Privacy Inquiries</p>
+                <a
+                  href="mailto:privacy@cgraph.org"
+                  style={{ color: 'var(--color-primary)' }}
+                  className="hover:opacity-80"
+                >
                   privacy@cgraph.org
                 </a>
               </div>
               <div>
-                <p className="text-gray-400">Data Protection Officer</p>
-                <a href="mailto:dpo@cgraph.org" className="text-purple-400 hover:text-purple-300">
+                <p style={{ color: 'var(--color-gray)' }}>Data Protection Officer</p>
+                <a
+                  href="mailto:dpo@cgraph.org"
+                  style={{ color: 'var(--color-primary)' }}
+                  className="hover:opacity-80"
+                >
                   dpo@cgraph.org
                 </a>
               </div>
             </div>
-            
-            <h4 className="mb-4 mt-8 font-semibold text-white">Related Documents</h4>
-            <div className="grid gap-4 sm:grid-cols-3">
-              <a
-                href="/privacy"
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-purple-500/50"
-              >
-                <h5 className="font-medium text-white">Privacy Policy</h5>
-                <p className="mt-1 text-sm text-gray-400">How we handle your data</p>
+
+            <h4 className="mb-4 font-semibold" style={{ color: 'var(--color-light)' }}>
+              Related Documents
+            </h4>
+            <div className="marketing-grid marketing-grid--3">
+              <a href="/privacy" className="marketing-card" style={{ padding: '1rem' }}>
+                <h5 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Privacy Policy
+                </h5>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we handle your data
+                </p>
               </a>
-              <a
-                href="/terms"
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-purple-500/50"
-              >
-                <h5 className="font-medium text-white">Terms of Service</h5>
-                <p className="mt-1 text-sm text-gray-400">Rules for using CGraph</p>
+              <a href="/terms" className="marketing-card" style={{ padding: '1rem' }}>
+                <h5 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Terms of Service
+                </h5>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  Rules for using CGraph
+                </p>
               </a>
-              <a
-                href="/cookies"
-                className="rounded-lg border border-gray-700 bg-gray-800 p-4 transition-colors hover:border-purple-500/50"
-              >
-                <h5 className="font-medium text-white">Cookie Policy</h5>
-                <p className="mt-1 text-sm text-gray-400">How we use cookies</p>
+              <a href="/cookies" className="marketing-card" style={{ padding: '1rem' }}>
+                <h5 className="font-medium" style={{ color: 'var(--color-light)' }}>
+                  Cookie Policy
+                </h5>
+                <p className="mt-1 text-sm" style={{ color: 'var(--color-gray)' }}>
+                  How we use cookies
+                </p>
               </a>
             </div>
           </motion.div>

@@ -1,9 +1,9 @@
 /**
  * CGraph UI Component Library
- * 
+ *
  * A collection of reusable, accessible React components
  * designed for the CGraph web application.
- * 
+ *
  * All components support:
  * - Dark mode via Tailwind CSS
  * - Keyboard navigation
@@ -13,16 +13,13 @@
 
 // Layout & Feedback
 export { default as ErrorBoundary } from './ErrorBoundary';
-export { LoadingSpinner as Loading, LoadingOverlay } from './Loading';
+export { Preloader } from './Preloader';
+export { LoadingOverlay } from './Loading';
 export { default as Modal, ConfirmDialog } from './Modal';
-export { 
-  default as ToastProvider,
-  useToast,
-  toast,
-} from './Toast';
+export { default as ToastProvider, useToast, toast } from './Toast';
 
 // Empty States
-export { 
+export {
   default as EmptyState,
   EmptyMessages,
   EmptyConversations,
@@ -58,18 +55,12 @@ export { VoiceMessagePlayer } from './VoiceMessagePlayer';
 export { VoiceMessageRecorder } from './VoiceMessageRecorder';
 
 // UI Components - Enhanced versions
-export { 
-  default as Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent, 
-  CardFooter 
-} from './ui/Card';
-export { 
-  default as Skeleton, 
-  PostCardSkeleton, 
-  ForumCardSkeleton, 
-  CommentSkeleton 
+export { default as Card, CardHeader, CardTitle, CardContent, CardFooter } from './ui/Card';
+export {
+  default as Skeleton,
+  PostCardSkeleton,
+  ForumCardSkeleton,
+  CommentSkeleton,
 } from './ui/Skeleton';
 export {
   default as Badge,

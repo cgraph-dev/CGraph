@@ -1,22 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { LoadingSpinner, LoadingScreen, LoadingOverlay, SkeletonText, SkeletonAvatar, SkeletonMessage } from './Loading';
+import { LoadingOverlay, SkeletonText, SkeletonAvatar, SkeletonMessage } from './Loading';
+import { Preloader } from './Preloader';
 
 /**
  * Loading Component Stories
- * 
+ *
  * Various loading indicators and states for async operations,
  * page transitions, and skeleton loading patterns.
- * 
- * @since v0.7.30
+ *
+ * For full-page loading, use the Preloader component.
+ *
+ * @since v0.9.5
  */
-const meta: Meta<typeof LoadingSpinner> = {
+const meta: Meta<typeof LoadingOverlay> = {
   title: 'Components/Loading',
-  component: LoadingSpinner,
+  component: LoadingOverlay,
   parameters: {
     layout: 'centered',
     docs: {
       description: {
-        component: 'Reusable loading components including spinners, skeletons, and overlays.',
+        component:
+          'Reusable loading components including skeletons, overlays, and the full-page Preloader.',
       },
     },
   },
@@ -27,43 +31,17 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 /**
- * Default spinner
+ * Loading overlay for async operations
  */
-export const Spinner: Story = {
-  args: {
-    size: 'md',
-    color: 'primary',
-  },
-};
-
-/**
- * All spinner sizes
- */
-export const SpinnerSizes: Story = {
-  args: {
-    size: 'md',
-  },
+export const Overlay: Story = {
   render: () => (
-    <div className="flex items-center gap-6">
-      <LoadingSpinner size="sm" />
-      <LoadingSpinner size="md" />
-      <LoadingSpinner size="lg" />
-    </div>
-  ),
-};
-
-/**
- * Spinner colors
- */
-export const SpinnerColors: Story = {
-  args: {
-    size: 'md',
-  },
-  render: () => (
-    <div className="flex items-center gap-6 p-4 bg-dark-800 rounded-lg">
-      <LoadingSpinner color="primary" />
-      <LoadingSpinner color="white" />
-      <LoadingSpinner color="gray" />
+    <div className="relative h-60 w-80 rounded-lg bg-dark-800">
+      <div className="space-y-4 p-4">
+        <div className="h-4 w-3/4 rounded bg-dark-700" />
+        <div className="h-4 w-1/2 rounded bg-dark-700" />
+        <div className="h-4 w-2/3 rounded bg-dark-700" />
+      </div>
+      <LoadingOverlay message="Saving changes..." />
     </div>
   ),
 };
@@ -72,11 +50,8 @@ export const SpinnerColors: Story = {
  * Skeleton text loader
  */
 export const Skeleton: Story = {
-  args: {
-    size: 'md',
-  },
   render: () => (
-    <div className="w-80 space-y-4 p-4 bg-dark-800 rounded-lg">
+    <div className="w-80 space-y-4 rounded-lg bg-dark-800 p-4">
       <SkeletonAvatar />
       <SkeletonText lines={3} />
     </div>
@@ -84,14 +59,11 @@ export const Skeleton: Story = {
 };
 
 /**
- * Message skeleton
+ * Message skeleton for conversation lists
  */
 export const MessageSkeleton: Story = {
-  args: {
-    size: 'md',
-  },
   render: () => (
-    <div className="w-96 bg-dark-900 rounded-lg">
+    <div className="w-96 rounded-lg bg-dark-900">
       <SkeletonMessage />
       <SkeletonMessage />
       <SkeletonMessage />
@@ -100,55 +72,15 @@ export const MessageSkeleton: Story = {
 };
 
 /**
- * Loading overlay
+ * Full-page Preloader (scaled down)
+ *
+ * This is the main loading component for page transitions.
+ * Features terrain effect, star field, energy particles, and animated logo.
  */
-export const Overlay: Story = {
-  args: {
-    size: 'md',
-  },
+export const FullPagePreloader: Story = {
   render: () => (
-    <div className="relative w-80 h-60 bg-dark-800 rounded-lg">
-      <div className="p-4 space-y-4">
-        <div className="h-4 bg-dark-700 rounded w-3/4" />
-        <div className="h-4 bg-dark-700 rounded w-1/2" />
-        <div className="h-4 bg-dark-700 rounded w-2/3" />
-      </div>
-      <LoadingOverlay message="Saving changes..." />
-    </div>
-  ),
-};
-
-/**
- * Full screen loading (scaled down)
- */
-export const FullScreen: Story = {
-  args: {
-    size: 'md',
-  },
-  render: () => (
-    <div className="w-96 h-64 rounded-lg overflow-hidden border border-dark-600">
-      <LoadingScreen message="Loading application..." />
-    </div>
-  ),
-};
-
-/**
- * Button with loading state
- */
-export const ButtonLoading: Story = {
-  args: {
-    size: 'md',
-  },
-  render: () => (
-    <div className="flex gap-4">
-      <button className="px-4 py-2 bg-primary-600 text-white rounded-lg flex items-center gap-2 opacity-75 cursor-wait">
-        <LoadingSpinner size="sm" color="white" />
-        <span>Saving...</span>
-      </button>
-      <button className="px-4 py-2 bg-dark-700 text-white rounded-lg flex items-center gap-2 opacity-75 cursor-wait">
-        <LoadingSpinner size="sm" color="gray" />
-        <span>Loading...</span>
-      </button>
+    <div className="relative h-[500px] w-[800px] overflow-hidden rounded-lg border border-dark-600">
+      <Preloader loop={true} />
     </div>
   ),
 };

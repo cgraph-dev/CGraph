@@ -13,6 +13,7 @@
  */
 
 import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -28,6 +29,21 @@ const ForumShowcase = lazy(() =>
 );
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Performance: Throttle function for scroll handlers
+const throttle = <T extends (...args: Parameters<T>) => ReturnType<T>>(
+  fn: T,
+  delay: number
+): ((...args: Parameters<T>) => void) => {
+  let lastCall = 0;
+  return (...args: Parameters<T>) => {
+    const now = Date.now();
+    if (now - lastCall >= delay) {
+      lastCall = now;
+      fn(...args);
+    }
+  };
+};
 
 // =============================================================================
 // DATA
@@ -54,7 +70,7 @@ const features = [
   {
     icon: '👥',
     title: 'Groups & Channels',
-    description: 'Discord-style servers with roles, permissions, and organized channel structures.',
+    description: 'Powerful servers with roles, permissions, and organized channel structures.',
   },
   {
     icon: '📞',
@@ -69,10 +85,10 @@ const features = [
 ];
 
 const stats = [
-  { value: '99.9%', label: 'Uptime' },
-  { value: '<200', label: 'ms Latency' },
-  { value: '256-bit', label: 'Encryption' },
-  { value: '50+', label: 'Features' },
+  { value: '10K+', label: 'Active Creators', icon: '🎨' },
+  { value: '50K+', label: 'Communities', icon: '🌐' },
+  { value: '1M+', label: 'Daily Messages', icon: '💬' },
+  { value: '∞', label: 'Possibilities', icon: '✨' },
 ];
 
 const pricingTiers = [
@@ -82,11 +98,11 @@ const pricingTiers = [
     period: 'forever',
     description: 'Everything to get started',
     features: [
-      'Unlimited messaging',
-      'Join 10 forums',
-      'Create 3 groups',
-      '1-on-1 calls',
-      '100MB storage',
+      'End-to-end encrypted messaging',
+      'Join unlimited forums',
+      'Create 1 forum',
+      '1-on-1 voice & video calls',
+      'Web3 wallet authentication',
     ],
     cta: 'Get Started',
     highlighted: false,
@@ -98,10 +114,10 @@ const pricingTiers = [
     description: 'For power users',
     features: [
       'Everything in Free',
-      'Unlimited forums',
-      'Group calls (25)',
-      '10GB storage',
-      'Priority support',
+      'Create up to 5 forums',
+      'Group calls up to 25 people',
+      'Priority customer support',
+      'Advanced profile customization',
     ],
     cta: 'Start Trial',
     highlighted: true,
@@ -111,7 +127,14 @@ const pricingTiers = [
     price: 'Custom',
     period: '',
     description: 'For organizations',
-    features: ['Everything in Premium', 'Custom branding', 'SSO/SAML', 'Admin controls', 'SLA'],
+    features: [
+      'Everything in Premium',
+      'Custom domain & branding',
+      'SSO/SAML integration',
+      'Admin dashboard & controls',
+      'Dedicated account manager',
+      'Custom SLA & uptime guarantee',
+    ],
     cta: 'Contact Sales',
     highlighted: false,
   },
@@ -122,34 +145,38 @@ const footerLinks = {
     { label: 'Features', href: '#features' },
     { label: 'Security', href: '#security' },
     { label: 'Pricing', href: '#pricing' },
+    { label: 'Download', href: '/login' },
   ],
   resources: [
-    { label: 'Documentation', href: '/docs' },
-    { label: 'API', href: '/api' },
+    { label: 'Documentation', href: 'https://docs.cgraph.org', external: true },
+    { label: 'API Reference', href: 'https://docs.cgraph.org/api', external: true },
     { label: 'Status', href: '/status' },
+    { label: 'Blog', href: 'https://blog.cgraph.org', external: true },
   ],
   company: [
     { label: 'About', href: '/about' },
     { label: 'Careers', href: '/careers' },
     { label: 'Contact', href: '/contact' },
+    { label: 'Press', href: '/press' },
   ],
   legal: [
     { label: 'Privacy', href: '/privacy' },
     { label: 'Terms', href: '/terms' },
+    { label: 'Cookie Policy', href: '/cookies' },
     { label: 'GDPR', href: '/gdpr' },
   ],
 };
 
 const securityFeatures = [
-  { icon: '🔒', title: 'Zero-Knowledge', description: 'We cannot read your messages' },
-  { icon: '🛡️', title: 'X3DH Protocol', description: 'Industry-standard key exchange' },
-  { icon: '🔑', title: 'Double Ratchet', description: 'Forward secrecy per message' },
-  { icon: '📱', title: 'Multi-Device', description: 'Seamless sync everywhere' },
-  { icon: '🔏', title: 'HTTP-Only', description: 'XSS-resistant sessions' },
-  { icon: '✅', title: 'Open Source', description: 'Transparent & auditable' },
-  { icon: '⚡', title: 'Zero Latency', description: 'Real-time message delivery' },
-  { icon: '🌐', title: 'Global CDN', description: 'Fast anywhere in the world' },
-  { icon: '🧩', title: 'Modular Design', description: 'Extensible architecture' },
+  { icon: '🔒', title: 'End-to-End Encrypted', description: 'Messages encrypted with AES-256-GCM' },
+  { icon: '🛡️', title: 'Zero-Knowledge', description: 'We cannot read your messages' },
+  { icon: '🔑', title: 'Argon2 Passwords', description: 'OWASP-recommended password hashing' },
+  { icon: '📱', title: 'Multi-Device Sync', description: 'Secure sync across all devices' },
+  { icon: '🔐', title: '2FA Protection', description: 'TOTP-based two-factor authentication' },
+  { icon: '🌐', title: 'Web3 Authentication', description: 'Sign in with your crypto wallet' },
+  { icon: '⚡', title: 'Real-Time Secure', description: 'Encrypted WebSocket connections' },
+  { icon: '🔏', title: 'TLS Everywhere', description: 'All data encrypted in transit' },
+  { icon: '✅', title: 'GDPR Compliant', description: 'Full data export & deletion rights' },
 ];
 
 // =============================================================================
@@ -158,17 +185,86 @@ const securityFeatures = [
 
 function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isReady, setIsReady] = useState(false); // Only show after scale is calculated
   const cardRef = useRef<HTMLDivElement>(null);
+  const [tooltipStyle, setTooltipStyle] = useState<React.CSSProperties>({});
   const [position, setPosition] = useState<'top' | 'bottom'>('top');
 
-  useEffect(() => {
-    if (isHovered && cardRef.current) {
+  // Get the current scale of the parent section
+  const getParentScale = useCallback(() => {
+    if (!cardRef.current) return 1;
+    const section = cardRef.current.closest('.zoom-section');
+    if (!section) return 1;
+    const transform = window.getComputedStyle(section).transform;
+    if (transform === 'none') return 1;
+    // Parse matrix(a, b, c, d, tx, ty) - scale is in 'a' position
+    const matrix = transform.match(/matrix\(([^)]+)\)/);
+    if (matrix && matrix[1]) {
+      const values = matrix[1].split(',').map((v) => parseFloat(v.trim()));
+      return values[0] || 1; // 'a' value is the scaleX
+    }
+    return 1;
+  }, []);
+
+  // Update tooltip position on hover and during scroll
+  const updatePosition = useCallback(() => {
+    if (cardRef.current) {
       const rect = cardRef.current.getBoundingClientRect();
       const spaceAbove = rect.top;
       const spaceBelow = window.innerHeight - rect.bottom;
-      setPosition(spaceAbove > spaceBelow ? 'top' : 'bottom');
+      const isTop = spaceAbove > spaceBelow;
+      setPosition(isTop ? 'top' : 'bottom');
+
+      // Get the current scale of the parent section
+      const scale = getParentScale();
+
+      // Calculate fixed position for the tooltip, scaled to match icons
+      setTooltipStyle({
+        position: 'fixed',
+        left: rect.left + rect.width / 2,
+        top: isTop ? rect.top - 12 * scale : rect.bottom + 12 * scale,
+        transform: isTop
+          ? `translate(-50%, -100%) scale(${scale})`
+          : `translate(-50%, 0) scale(${scale})`,
+        transformOrigin: isTop ? 'bottom center' : 'top center',
+        zIndex: 9999,
+        opacity: 1,
+      });
+      setIsReady(true);
     }
-  }, [isHovered]);
+  }, [getParentScale]);
+
+  useEffect(() => {
+    if (isHovered) {
+      // Calculate position immediately on hover
+      updatePosition();
+      // Update position on scroll to keep tooltip aligned and scaled
+      window.addEventListener('scroll', updatePosition, { passive: true });
+      return () => {
+        window.removeEventListener('scroll', updatePosition);
+        setIsReady(false);
+      };
+    }
+    return undefined;
+  }, [isHovered, updatePosition]);
+
+  // Only render tooltip when hovered AND position/scale is ready
+  const tooltip = isHovered && isReady && (
+    <div
+      className={`security-preview security-preview--portal ${position === 'top' ? 'security-preview--top' : 'security-preview--bottom'}`}
+      style={tooltipStyle}
+    >
+      <div className="security-preview__glow" />
+      <div className="security-preview__content">
+        <div className="security-preview__icon">{feature.icon}</div>
+        <div className="security-preview__info">
+          <h4 className="security-preview__title">{feature.title}</h4>
+          <p className="security-preview__desc">{feature.description}</p>
+        </div>
+      </div>
+      <div className="security-preview__arrow" />
+    </div>
+  );
 
   return (
     <div
@@ -179,22 +275,8 @@ function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }
     >
       {feature.icon}
 
-      {/* Preview Tooltip */}
-      {isHovered && (
-        <div
-          className={`security-preview ${position === 'top' ? 'security-preview--top' : 'security-preview--bottom'}`}
-        >
-          <div className="security-preview__glow" />
-          <div className="security-preview__content">
-            <div className="security-preview__icon">{feature.icon}</div>
-            <div className="security-preview__info">
-              <h4 className="security-preview__title">{feature.title}</h4>
-              <p className="security-preview__desc">{feature.description}</p>
-            </div>
-          </div>
-          <div className="security-preview__arrow" />
-        </div>
-      )}
+      {/* Preview Tooltip - Rendered via portal to escape parent transforms */}
+      {tooltip && createPortal(tooltip, document.body)}
     </div>
   );
 }
@@ -665,7 +747,7 @@ function TiltCard({
     };
 
     card.addEventListener('mouseenter', handleMouseEnter);
-    card.addEventListener('mousemove', handleMouseMove);
+    card.addEventListener('mousemove', handleMouseMove, { passive: true });
     card.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
@@ -687,6 +769,35 @@ function TiltCard({
       </div>
       <div className="tilt-card__accent" />
     </div>
+  );
+}
+
+// Animated Sign In Button with glowing border and icon animation
+function SignInButton() {
+  return (
+    <Link to="/login" className="btn-signin group">
+      <span className="btn-signin__glow" />
+      <span className="btn-signin__border" />
+      <span className="btn-signin__content">
+        <svg
+          className="btn-signin__icon"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+          <polyline points="10 17 15 12 10 7" />
+          <line x1="15" y1="12" x2="3" y2="12" />
+        </svg>
+        <span className="btn-signin__text">Sign In</span>
+        <span className="btn-signin__text-hover">Welcome</span>
+      </span>
+    </Link>
   );
 }
 
@@ -737,29 +848,30 @@ export default function LandingDemo() {
   const ctaRef = useRef<HTMLDivElement>(null);
   const aboutVisualRef = useRef<HTMLDivElement>(null);
   const aboutGlowRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
-  // Scroll handler for nav visibility
+  // Scroll handler for nav visibility - throttled for performance
   useEffect(() => {
     let lastScroll = 0;
 
-    const handleScroll = () => {
+    const handleScroll = throttle(() => {
       const currentScroll = window.scrollY;
       setNavHidden(currentScroll > lastScroll && currentScroll > 100);
       setNavScrolled(currentScroll > 50);
       lastScroll = currentScroll;
-    };
+    }, 16); // ~60fps
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Cursor-following glow effect for about section
+  // Cursor-following glow effect for about section - throttled for performance
   useEffect(() => {
     const visual = aboutVisualRef.current;
     const glow = aboutGlowRef.current;
     if (!visual || !glow) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
+    const handleMouseMove = throttle((e: MouseEvent) => {
       const rect = visual.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
@@ -773,8 +885,9 @@ export default function LandingDemo() {
         opacity: 0.8,
         duration: 0.3,
         ease: 'power2.out',
+        overwrite: 'auto', // Prevent animation queue buildup
       });
-    };
+    }, 16); // ~60fps
 
     const handleMouseLeave = () => {
       gsap.to(glow, {
@@ -784,7 +897,7 @@ export default function LandingDemo() {
       });
     };
 
-    visual.addEventListener('mousemove', handleMouseMove);
+    visual.addEventListener('mousemove', handleMouseMove, { passive: true });
     visual.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
@@ -797,61 +910,146 @@ export default function LandingDemo() {
   useEffect(() => {
     if (preloading) return;
 
-    const ctx = gsap.context(() => {
-      // Feature cards scroll animation
-      gsap.from('.tilt-card', {
-        scrollTrigger: {
-          trigger: featuresRef.current,
-          start: 'top 80%',
-        },
-        y: 60,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'power3.out',
+    // Defer animations slightly to ensure DOM is ready and improve initial paint
+    const timeoutId = setTimeout(() => {
+      const ctx = gsap.context(() => {
+        // Section zoom effect - smooth parallax-style scaling
+        const sections = document.querySelectorAll('.zoom-section');
+
+        sections.forEach((section) => {
+          // Scale down as section leaves the viewport (starts when section top hits 30% from top)
+          gsap.to(section, {
+            scrollTrigger: {
+              trigger: section,
+              start: 'top 30%',
+              end: 'top -50%',
+              scrub: 1,
+              fastScrollEnd: true, // Performance: end early on fast scroll
+            },
+            scale: 0.25,
+            opacity: 0.05,
+            ease: 'none',
+          });
+
+          // Scale up as section enters viewport - reach full scale when section is centered
+          gsap.fromTo(
+            section,
+            {
+              scale: 0.25,
+              opacity: 0.05,
+            },
+            {
+              scrollTrigger: {
+                trigger: section,
+                start: 'top 100%',
+                end: 'top 50%',
+                scrub: 1,
+                fastScrollEnd: true, // Performance: end early on fast scroll
+              },
+              scale: 1,
+              opacity: 1,
+              ease: 'none',
+            }
+          );
+        });
+
+        // Feature cards scroll animation
+        gsap.from('.tilt-card', {
+          scrollTrigger: {
+            trigger: featuresRef.current,
+            start: 'top 80%',
+          },
+          y: 60,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+        });
+
+        // About section scroll animation
+        gsap.from('.about__content > *', {
+          scrollTrigger: {
+            trigger: aboutRef.current,
+            start: 'top 70%',
+          },
+          y: 50,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.15,
+          ease: 'power3.out',
+        });
+
+        // CTA section scroll animation
+        gsap.from('.cta__content > *', {
+          scrollTrigger: {
+            trigger: ctaRef.current,
+            start: 'top 80%',
+          },
+          y: 40,
+          opacity: 0,
+          duration: 0.8,
+          stagger: 0.1,
+          ease: 'power3.out',
+        });
+
+        // Scroll indicator - follows user scroll
+        if (scrollIndicatorRef.current) {
+          const scrollDot = scrollIndicatorRef.current.querySelector('.hero__scroll-dot');
+          const scrollArrows = scrollIndicatorRef.current.querySelectorAll(
+            '.hero__scroll-arrows span'
+          );
+
+          // Animate the dot based on scroll progress
+          if (scrollDot) {
+            gsap.to(scrollDot, {
+              scrollTrigger: {
+                trigger: heroRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.5,
+              },
+              y: 20,
+              opacity: 0.2,
+              ease: 'none',
+            });
+          }
+
+          // Animate arrows cascading based on scroll
+          scrollArrows.forEach((arrow, index) => {
+            gsap.to(arrow, {
+              scrollTrigger: {
+                trigger: heroRef.current,
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 0.5,
+              },
+              y: 8 + index * 4,
+              opacity: 0,
+              ease: 'none',
+            });
+          });
+
+          // Fade out entire scroll indicator as user scrolls
+          gsap.to(scrollIndicatorRef.current, {
+            scrollTrigger: {
+              trigger: heroRef.current,
+              start: 'top top',
+              end: '30% top',
+              scrub: 0.3,
+            },
+            opacity: 0,
+            y: 20,
+            ease: 'none',
+          });
+        }
       });
 
-      // Stats scroll animation
-      gsap.from('.stats__item', {
-        scrollTrigger: {
-          trigger: statsRef.current,
-          start: 'top 80%',
-        },
-        y: 40,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power3.out',
-      });
+      return () => ctx.revert();
+    }, 100); // Small delay to improve initial paint
 
-      // About section scroll animation
-      gsap.from('.about__content > *', {
-        scrollTrigger: {
-          trigger: aboutRef.current,
-          start: 'top 70%',
-        },
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'power3.out',
-      });
-
-      // CTA section scroll animation
-      gsap.from('.cta__content > *', {
-        scrollTrigger: {
-          trigger: ctaRef.current,
-          start: 'top 80%',
-        },
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: 'power3.out',
-      });
-    });
-
-    return () => ctx.revert();
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [preloading]);
 
   const handlePreloadComplete = useCallback(() => {
@@ -882,26 +1080,35 @@ export default function LandingDemo() {
           </a>
         </div>
 
-        <SwapButton mainText="Get Started" altText="Let's Go" href="/register" />
+        <SignInButton />
       </nav>
 
       {/* Hero */}
       <section ref={heroRef} className="hero">
         <div className="hero__bg">
           <div className="hero__gradient-bg" />
+          <div className="hero__bg-aurora" />
+          <div className="hero__bg-grid" />
+          <div className="hero__bg-particles" />
+          <div className="hero__bg-streaks" />
+          <div className="hero__bg-spotlight" />
+          <div className="hero__bg-interactive" />
+          <div className="hero__bg-noise" />
+          <div className="hero__bg-vignette" />
+          <div className="hero__bg-fade" />
         </div>
 
         <div className="hero__content">
-          <span className="hero__eyebrow font-robert">Secure • Fast • Social</span>
+          <span className="hero__eyebrow font-robert">The All-in-One Platform</span>
 
           <h1 className="hero__title font-zentry">
-            <span>Connect</span>
-            <span className="hero__title-gradient">Without Limits</span>
+            <span>Beyond</span>
+            <span className="hero__title-gradient">Messaging</span>
           </h1>
 
           <p className="hero__subtitle font-robert">
-            The next-generation communication platform with end-to-end encryption, real-time
-            messaging, and a thriving community ecosystem.
+            Real-time messaging meets community forums — with bank-grade encryption, Web3
+            authentication, and rewards that make every interaction count.
           </p>
 
           <div className="hero__buttons">
@@ -910,14 +1117,34 @@ export default function LandingDemo() {
           </div>
         </div>
 
-        <div className="hero__scroll">
+        <div ref={scrollIndicatorRef} className="hero__scroll">
           <span>Scroll</span>
-          <div className="hero__scroll-line" />
+          <div className="hero__scroll-line">
+            <span className="hero__scroll-dot" />
+          </div>
+          <div className="hero__scroll-arrows">
+            <span />
+            <span />
+            <span />
+          </div>
+        </div>
+      </section>
+
+      {/* Stats */}
+      <section ref={statsRef} className="stats-section zoom-section">
+        <div className="stats-grid">
+          {stats.map((stat) => (
+            <div key={stat.label} className="stat-card">
+              <span className="stat-card__icon">{stat.icon}</span>
+              <span className="stat-card__value font-zentry">{stat.value}</span>
+              <span className="stat-card__label font-robert">{stat.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* Features */}
-      <section ref={featuresRef} id="features" className="features">
+      <section ref={featuresRef} id="features" className="features zoom-section">
         <div className="features__header">
           <p className="features__eyebrow">Powerful Features</p>
           <h2 className="features__title font-zentry">Everything You Need</h2>
@@ -930,28 +1157,44 @@ export default function LandingDemo() {
         </div>
       </section>
 
-      {/* Stats */}
-      <section ref={statsRef} className="stats">
-        <div className="stats__container">
-          {stats.map((stat) => (
-            <div key={stat.label} className="stats__item">
-              <div className="stats__value font-zentry">{stat.value}</div>
-              <div className="stats__label font-robert">{stat.label}</div>
+      {/* Customization Demo */}
+      <section className="showcase-section zoom-section">
+        <Suspense
+          fallback={
+            <div className="showcase-loading">
+              <div className="showcase-loading__spinner" />
+              <span>Loading Customization Preview...</span>
             </div>
-          ))}
-        </div>
+          }
+        >
+          <CustomizationDemo />
+        </Suspense>
+      </section>
+
+      {/* Forum Showcase */}
+      <section className="showcase-section showcase-section--alt zoom-section">
+        <Suspense
+          fallback={
+            <div className="showcase-loading">
+              <div className="showcase-loading__spinner" />
+              <span>Loading Forum Preview...</span>
+            </div>
+          }
+        >
+          <ForumShowcase />
+        </Suspense>
       </section>
 
       {/* About/Security */}
-      <section ref={aboutRef} id="security" className="about">
+      <section ref={aboutRef} id="security" className="about zoom-section">
         <div className="about__container">
           <div className="about__content">
-            <p className="about__eyebrow font-robert">Bank-Grade Security</p>
+            <p className="about__eyebrow font-robert">Privacy-First Design</p>
             <h2 className="about__title font-zentry">Your Privacy Is Our Priority</h2>
             <p className="about__desc">
-              Built from the ground up with security in mind. We use the Signal Protocol for
-              end-to-end encryption, ensuring that only you and your recipients can read your
-              messages. Not even we can access your private conversations.
+              Built from the ground up with security in mind. Your messages are end-to-end encrypted
+              with AES-256, and we use Signal-inspired encryption protocols. Not even we can access
+              your private conversations.
             </p>
             <SwapButton mainText="Security Details" altText="Learn More" />
           </div>
@@ -971,50 +1214,8 @@ export default function LandingDemo() {
         </div>
       </section>
 
-      {/* Forum Showcase */}
-      <section className="showcase-section">
-        <div className="showcase-section__header">
-          <p className="features__eyebrow font-robert">Community Forums</p>
-          <h2 className="features__title font-zentry">Drag & Drop Forums</h2>
-          <p className="showcase-section__desc">
-            Organize your community with our revolutionary drag-and-drop forum system.
-          </p>
-        </div>
-        <Suspense
-          fallback={
-            <div className="showcase-loading">
-              <div className="showcase-loading__spinner" />
-              <span>Loading Forum Preview...</span>
-            </div>
-          }
-        >
-          <ForumShowcase />
-        </Suspense>
-      </section>
-
-      {/* Customization Demo */}
-      <section className="showcase-section showcase-section--alt">
-        <div className="showcase-section__header">
-          <p className="features__eyebrow font-robert">Personalization</p>
-          <h2 className="features__title font-zentry">Make It Yours</h2>
-          <p className="showcase-section__desc">
-            Customize every aspect of your profile with themes, borders, and effects.
-          </p>
-        </div>
-        <Suspense
-          fallback={
-            <div className="showcase-loading">
-              <div className="showcase-loading__spinner" />
-              <span>Loading Customization Preview...</span>
-            </div>
-          }
-        >
-          <CustomizationDemo />
-        </Suspense>
-      </section>
-
       {/* Pricing */}
-      <section id="pricing" className="pricing">
+      <section id="pricing" className="pricing zoom-section">
         <div className="pricing__header">
           <p className="features__eyebrow font-robert">Pricing</p>
           <h2 className="features__title font-zentry">Simple, Transparent Pricing</h2>
@@ -1067,22 +1268,17 @@ export default function LandingDemo() {
       </section>
 
       {/* CTA */}
-      <section ref={ctaRef} className="cta">
+      <section ref={ctaRef} className="cta zoom-section">
         <div className="cta__content">
           <span className="cta__rocket">🚀</span>
           <h2 className="cta__title font-zentry">
-            Ready for <span className="cta__highlight">True Privacy</span>?
+            Build Your <span className="cta__highlight">Community</span>
           </h2>
           <p className="cta__desc font-robert">
-            Join thousands building the future of secure communication.
+            Create forums, customize your space, and connect with like-minded people.
           </p>
           <div className="cta__buttons">
-            <SwapButton
-              primary
-              mainText="Create Free Account"
-              altText="It's Free!"
-              href="/register"
-            />
+            <SwapButton primary mainText="Create Account" altText="Join Now!" href="/register" />
             <SwapButton mainText="Sign In" altText="Welcome Back" href="/login" />
           </div>
         </div>
@@ -1101,11 +1297,23 @@ export default function LandingDemo() {
           </div>
           <div className="gl-footer__column">
             <h4 className="gl-footer__heading">Resources</h4>
-            {footerLinks.resources.map((link) => (
-              <Link key={link.label} to={link.href} className="gl-footer__link">
-                {link.label}
-              </Link>
-            ))}
+            {footerLinks.resources.map((link) =>
+              'external' in link && link.external ? (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="gl-footer__link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link key={link.label} to={link.href} className="gl-footer__link">
+                  {link.label}
+                </Link>
+              )
+            )}
           </div>
           <div className="gl-footer__column">
             <h4 className="gl-footer__heading">Company</h4>
@@ -1184,11 +1392,6 @@ export default function LandingDemo() {
           </div>
         </div>
       </footer>
-
-      {/* Return to current landing button */}
-      <Link to="/" className="demo-return">
-        ← Back to Current Landing
-      </Link>
     </div>
   );
 }

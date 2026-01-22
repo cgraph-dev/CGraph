@@ -41,8 +41,24 @@ const initialCategories: ForumCategory[] = [
     icon: '📢',
     collapsed: false,
     boards: [
-      { id: 'news', name: 'News & Updates', icon: '📰', description: 'Latest platform updates', threads: 42, posts: 156, color: '#10b981' },
-      { id: 'events', name: 'Events', icon: '🎉', description: 'Community events calendar', threads: 18, posts: 89, color: '#06b6d4' },
+      {
+        id: 'news',
+        name: 'News & Updates',
+        icon: '📰',
+        description: 'Latest platform updates',
+        threads: 42,
+        posts: 156,
+        color: '#10b981',
+      },
+      {
+        id: 'events',
+        name: 'Events',
+        icon: '🎉',
+        description: 'Community events calendar',
+        threads: 18,
+        posts: 89,
+        color: '#06b6d4',
+      },
     ],
   },
   {
@@ -51,9 +67,33 @@ const initialCategories: ForumCategory[] = [
     icon: '👥',
     collapsed: false,
     boards: [
-      { id: 'introductions', name: 'Introductions', icon: '👋', description: 'Say hello to the community', threads: 234, posts: 1205, color: '#8b5cf6' },
-      { id: 'general', name: 'General Discussion', icon: '💬', description: 'Talk about anything', threads: 892, posts: 5621, color: '#f97316' },
-      { id: 'showcase', name: 'Project Showcase', icon: '🚀', description: 'Share your creations', threads: 156, posts: 743, color: '#ec4899' },
+      {
+        id: 'introductions',
+        name: 'Introductions',
+        icon: '👋',
+        description: 'Say hello to the community',
+        threads: 234,
+        posts: 1205,
+        color: '#8b5cf6',
+      },
+      {
+        id: 'general',
+        name: 'General Discussion',
+        icon: '💬',
+        description: 'Talk about anything',
+        threads: 892,
+        posts: 5621,
+        color: '#f97316',
+      },
+      {
+        id: 'showcase',
+        name: 'Project Showcase',
+        icon: '🚀',
+        description: 'Share your creations',
+        threads: 156,
+        posts: 743,
+        color: '#ec4899',
+      },
     ],
   },
   {
@@ -62,9 +102,33 @@ const initialCategories: ForumCategory[] = [
     icon: '🛠️',
     collapsed: false,
     boards: [
-      { id: 'help', name: 'Help & Questions', icon: '❓', description: 'Get help from the community', threads: 567, posts: 2341, color: '#eab308' },
-      { id: 'bugs', name: 'Bug Reports', icon: '🐛', description: 'Report issues', threads: 89, posts: 412, color: '#ef4444' },
-      { id: 'feedback', name: 'Feedback', icon: '💡', description: 'Share your ideas', threads: 123, posts: 678, color: '#22c55e' },
+      {
+        id: 'help',
+        name: 'Help & Questions',
+        icon: '❓',
+        description: 'Get help from the community',
+        threads: 567,
+        posts: 2341,
+        color: '#eab308',
+      },
+      {
+        id: 'bugs',
+        name: 'Bug Reports',
+        icon: '🐛',
+        description: 'Report issues',
+        threads: 89,
+        posts: 412,
+        color: '#ef4444',
+      },
+      {
+        id: 'feedback',
+        name: 'Feedback',
+        icon: '💡',
+        description: 'Share your ideas',
+        threads: 123,
+        posts: 678,
+        color: '#22c55e',
+      },
     ],
   },
 ];
@@ -116,13 +180,13 @@ const DraggableBoard = memo(function DraggableBoard({ board, isDragging }: Dragg
       </div>
 
       {/* Board info */}
-      <div className="flex-1 min-w-0">
-        <h4 className="font-semibold text-white truncate">{board.name}</h4>
-        <p className="text-sm text-gray-400 truncate">{board.description}</p>
+      <div className="min-w-0 flex-1">
+        <h4 className="truncate font-semibold text-white">{board.name}</h4>
+        <p className="truncate text-sm text-gray-400">{board.description}</p>
       </div>
 
       {/* Stats */}
-      <div className="hidden sm:flex items-center gap-4 text-sm text-gray-500">
+      <div className="hidden items-center gap-4 text-sm text-gray-500 sm:flex">
         <div className="text-center">
           <div className="font-medium text-white">{board.threads}</div>
           <div className="text-xs">threads</div>
@@ -134,16 +198,31 @@ const DraggableBoard = memo(function DraggableBoard({ board, isDragging }: Dragg
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white">
+      <div className="flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100">
+        <button className="rounded-lg p-2 text-gray-400 hover:bg-gray-700 hover:text-white">
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+            />
           </svg>
         </button>
-        <button className="p-2 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white">
+        <button className="rounded-lg p-2 text-gray-400 hover:bg-gray-700 hover:text-white">
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
           </svg>
         </button>
       </div>
@@ -171,11 +250,11 @@ const Category = memo(function Category({
   return (
     <motion.div
       layout
-      className="rounded-2xl border border-gray-800 bg-gray-900/50 overflow-hidden"
+      className="overflow-hidden rounded-2xl border border-gray-800 bg-gray-900/50"
     >
       {/* Category header */}
       <button
-        className="w-full flex items-center gap-3 p-4 hover:bg-gray-800/50 transition-colors"
+        className="flex w-full items-center gap-3 p-4 transition-colors hover:bg-gray-800/50"
         onClick={onToggle}
       >
         <span className="text-2xl">{category.icon}</span>
@@ -286,17 +365,13 @@ export function ForumShowcase() {
 
   const toggleCategory = useCallback((categoryId: string) => {
     setCategories((prev) =>
-      prev.map((cat) =>
-        cat.id === categoryId ? { ...cat, collapsed: !cat.collapsed } : cat
-      )
+      prev.map((cat) => (cat.id === categoryId ? { ...cat, collapsed: !cat.collapsed } : cat))
     );
   }, []);
 
   const reorderBoards = useCallback((categoryId: string, newBoards: ForumBoard[]) => {
     setCategories((prev) =>
-      prev.map((cat) =>
-        cat.id === categoryId ? { ...cat, boards: newBoards } : cat
-      )
+      prev.map((cat) => (cat.id === categoryId ? { ...cat, boards: newBoards } : cat))
     );
     setHasChanges(true);
   }, []);
@@ -312,11 +387,11 @@ export function ForumShowcase() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden bg-gray-950 py-24">
-      {/* Background */}
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.1),transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.1),transparent_50%)]" />
+    <section className="relative overflow-hidden bg-transparent py-24">
+      {/* Background - subtle gradients that blend with parent */}
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.03),transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,rgba(139,92,246,0.03),transparent_50%)]" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -327,7 +402,7 @@ export function ForumShowcase() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <span className="mb-4 inline-block rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1 text-sm text-purple-400">
+          <span className="mb-4 inline-block animate-[badge-subtle-pulse_4s_ease-in-out_infinite] cursor-default rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1 text-sm text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15),0_0_24px_rgba(168,85,247,0.08)] transition-all duration-300 hover:scale-[1.02] hover:animate-none hover:border-purple-500/60 hover:bg-purple-500/20 hover:shadow-[0_0_20px_rgba(168,85,247,0.3),0_0_40px_rgba(168,85,247,0.15)]">
             🏛️ Revolutionary Forums
           </span>
           <h2 className="mb-4 text-3xl font-bold text-white sm:text-4xl lg:text-5xl">
@@ -337,8 +412,8 @@ export function ForumShowcase() {
             </span>
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-gray-400">
-            The first forum platform with true drag-and-drop organization.
-            Arrange boards, categories, and threads exactly how your community needs them.
+            The first forum platform with true drag-and-drop organization. Arrange boards,
+            categories, and threads exactly how your community needs them.
           </p>
         </motion.div>
 
@@ -354,9 +429,7 @@ export function ForumShowcase() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as typeof activeTab)}
                 className={`relative flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  activeTab === tab.id
-                    ? 'text-white'
-                    : 'text-gray-400 hover:text-gray-300'
+                  activeTab === tab.id ? 'text-white' : 'text-gray-400 hover:text-gray-300'
                 }`}
               >
                 <span>{tab.icon}</span>
@@ -482,10 +555,30 @@ export function ForumShowcase() {
                     {/* Sample Threads */}
                     <div className="space-y-3">
                       {[
-                        { prefix: 'SOLVED', title: 'How to set up end-to-end encryption?', replies: 24, views: 1203 },
-                        { prefix: 'HELP', title: 'Need help with forum permissions', replies: 8, views: 456 },
-                        { prefix: 'ANNOUNCEMENT', title: 'New drag-and-drop feature released!', replies: 156, views: 8921 },
-                        { prefix: 'DISCUSSION', title: 'Best practices for community moderation', replies: 67, views: 2341 },
+                        {
+                          prefix: 'SOLVED',
+                          title: 'How to set up end-to-end encryption?',
+                          replies: 24,
+                          views: 1203,
+                        },
+                        {
+                          prefix: 'HELP',
+                          title: 'Need help with forum permissions',
+                          replies: 8,
+                          views: 456,
+                        },
+                        {
+                          prefix: 'ANNOUNCEMENT',
+                          title: 'New drag-and-drop feature released!',
+                          replies: 156,
+                          views: 8921,
+                        },
+                        {
+                          prefix: 'DISCUSSION',
+                          title: 'Best practices for community moderation',
+                          replies: 67,
+                          views: 2341,
+                        },
                       ].map((thread, i) => {
                         const prefixData = threadPrefixes.find((p) => p.name === thread.prefix);
                         return (
@@ -502,8 +595,8 @@ export function ForumShowcase() {
                             >
                               {thread.prefix}
                             </span>
-                            <span className="flex-1 text-white truncate">{thread.title}</span>
-                            <div className="hidden sm:flex items-center gap-4 text-sm text-gray-500">
+                            <span className="flex-1 truncate text-white">{thread.title}</span>
+                            <div className="hidden items-center gap-4 text-sm text-gray-500 sm:flex">
                               <span>💬 {thread.replies}</span>
                               <span>👁️ {thread.views}</span>
                             </div>
@@ -529,10 +622,18 @@ export function ForumShowcase() {
                     {/* Moderation Actions */}
                     <div className="grid gap-4 sm:grid-cols-2">
                       {[
-                        { icon: '📌', title: 'Pin Threads', desc: 'Highlight important discussions' },
+                        {
+                          icon: '📌',
+                          title: 'Pin Threads',
+                          desc: 'Highlight important discussions',
+                        },
                         { icon: '🔒', title: 'Lock Threads', desc: 'Prevent further replies' },
                         { icon: '🔀', title: 'Move Threads', desc: 'Reorganize between boards' },
-                        { icon: '✂️', title: 'Split Threads', desc: 'Separate off-topic discussions' },
+                        {
+                          icon: '✂️',
+                          title: 'Split Threads',
+                          desc: 'Separate off-topic discussions',
+                        },
                         { icon: '🔗', title: 'Merge Threads', desc: 'Combine duplicate topics' },
                         { icon: '⚠️', title: 'User Warnings', desc: 'Track rule violations' },
                       ].map((action, i) => (
@@ -590,9 +691,7 @@ export function ForumShowcase() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h3 className="text-lg font-semibold text-white">
-                Revolutionary Features
-              </h3>
+              <h3 className="text-lg font-semibold text-white">Revolutionary Features</h3>
 
               <div className="space-y-3">
                 {features.map((feature, i) => (
@@ -622,16 +721,19 @@ export function ForumShowcase() {
                 transition={{ delay: 0.5 }}
               >
                 <h4 className="mb-2 font-semibold text-white">Ready to build your community?</h4>
-                <p className="mb-4 text-sm text-gray-400">
-                  Create your first forum in minutes
-                </p>
+                <p className="mb-4 text-sm text-gray-400">Create your first forum in minutes</p>
                 <a
                   href="/register"
                   className="inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-6 py-2.5 font-medium text-white transition-colors hover:bg-emerald-600"
                 >
                   Get Started Free
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M17 8l4 4m0 0l-4 4m4-4H3"
+                    />
                   </svg>
                 </a>
               </motion.div>
