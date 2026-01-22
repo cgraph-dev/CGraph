@@ -10,7 +10,7 @@
  * - Haptic feedback
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
@@ -54,7 +54,11 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   const { unreadCount } = useNotificationStore();
   const { conversations } = useChatStore();
 
-  const unreadMessages = conversations.reduce((acc, conv) => acc + (conv.unreadCount || 0), 0);
+  // Memoize to prevent recalculation on every render
+  const unreadMessages = useMemo(
+    () => conversations.reduce((acc, conv) => acc + (conv.unreadCount || 0), 0),
+    [conversations]
+  );
 
   const navItems: NavItem[] = [
     {
@@ -107,7 +111,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         animate={{ y: 0, opacity: 1 }}
         className={`fixed bottom-4 left-4 right-4 z-50 ${className}`}
       >
-        <div className="bg-dark-800/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl">
+        <div className="rounded-2xl border border-white/10 bg-dark-800/90 shadow-2xl backdrop-blur-xl">
           <div className="flex items-center justify-around p-2">
             {navItems.map((item) => {
               const active = isActive(item.path);
@@ -123,17 +127,14 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                   <motion.div
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className={`
-                      relative flex items-center justify-center
-                      ${active ? 'text-primary-400' : 'text-white/60'}
-                    `}
+                    className={`relative flex items-center justify-center ${active ? 'text-primary-400' : 'text-white/60'} `}
                   >
                     <Icon className="h-6 w-6" />
                     {item.badge && item.badge > 0 && (
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center px-1 bg-red-500 text-white text-[10px] font-bold rounded-full"
+                        className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
                       >
                         {item.badge > 99 ? '99+' : item.badge}
                       </motion.span>
@@ -142,7 +143,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                   {active && (
                     <motion.div
                       layoutId="mobileNavIndicator"
-                      className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary-500 rounded-full"
+                      className="absolute -bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary-500"
                     />
                   )}
                 </NavLink>
@@ -159,9 +160,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({
       <motion.nav
         initial={{ y: 100 }}
         animate={{ y: 0 }}
-        className={`fixed bottom-0 left-0 right-0 z-50 bg-dark-900 border-t border-white/5 safe-area-bottom ${className}`}
+        className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-white/5 bg-dark-900 ${className}`}
       >
-        <div className="flex items-center justify-around py-2 px-1">
+        <div className="flex items-center justify-around px-1 py-2">
           {navItems.map((item) => {
             const active = isActive(item.path);
             const Icon = active ? item.activeIcon : item.icon;
@@ -171,13 +172,13 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                 key={item.path}
                 to={item.path}
                 onClick={handleNavClick}
-                className="relative flex-1 flex justify-center p-2"
+                className="relative flex flex-1 justify-center p-2"
               >
                 <div className={active ? 'text-primary-400' : 'text-white/50'}>
-                  <Icon className="h-6 w-6 mx-auto" />
+                  <Icon className="mx-auto h-6 w-6" />
                 </div>
                 {item.badge && item.badge > 0 && (
-                  <span className="absolute top-1 right-1/4 min-w-[14px] h-3.5 flex items-center justify-center px-0.5 bg-red-500 text-white text-[9px] font-bold rounded-full">
+                  <span className="absolute right-1/4 top-1 flex h-3.5 min-w-[14px] items-center justify-center rounded-full bg-red-500 px-0.5 text-[9px] font-bold text-white">
                     {item.badge > 99 ? '99' : item.badge}
                   </span>
                 )}
@@ -194,9 +195,9 @@ export const MobileNav: React.FC<MobileNavProps> = ({
     <motion.nav
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className={`fixed bottom-0 left-0 right-0 z-50 bg-dark-900/95 backdrop-blur-xl border-t border-white/10 safe-area-bottom ${className}`}
+      className={`safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-white/10 bg-dark-900/95 backdrop-blur-xl ${className}`}
     >
-      <div className="flex items-center justify-around py-2 px-2">
+      <div className="flex items-center justify-around px-2 py-2">
         {navItems.map((item) => {
           const active = isActive(item.path);
           const Icon = active ? item.activeIcon : item.icon;
@@ -222,7 +223,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 flex items-center justify-center px-1 bg-red-500 text-white text-[10px] font-bold rounded-full"
+                      className="absolute -right-1.5 -top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white"
                     >
                       {item.badge > 99 ? '99+' : item.badge}
                     </motion.span>
@@ -241,7 +242,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({
               {active && (
                 <motion.div
                   layoutId="mobileNavActive"
-                  className="absolute -top-0.5 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary-500 rounded-full"
+                  className="absolute -top-0.5 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-primary-500"
                 />
               )}
             </NavLink>

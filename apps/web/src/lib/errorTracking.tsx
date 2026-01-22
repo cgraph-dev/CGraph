@@ -499,14 +499,24 @@ export function finishTransaction(txId: string, report = false): void {
 // Global Error Handlers
 // ============================================================================
 
+// Store references for proper cleanup (prevents memory leaks)
+let queueProcessorInterval: ReturnType<typeof setInterval> | null = null;
+let globalErrorHandler: ((event: ErrorEvent) => void) | null = null;
+let globalRejectionHandler: ((event: PromiseRejectionEvent) => void) | null = null;
+let isInitialized = false;
+
 /**
  * Initialize global error handlers
  */
 export function initErrorTracking(): void {
   if (typeof window === 'undefined') return;
 
+  // Prevent double initialization
+  if (isInitialized) return;
+  isInitialized = true;
+
   // Unhandled errors
-  window.addEventListener('error', (event) => {
+  globalErrorHandler = (event: ErrorEvent) => {
     captureError(event.error || event.message, {
       component: 'global',
       action: 'unhandled_error',
@@ -516,17 +526,19 @@ export function initErrorTracking(): void {
         colno: event.colno,
       },
     });
-  });
+  };
+  window.addEventListener('error', globalErrorHandler);
 
   // Unhandled promise rejections
-  window.addEventListener('unhandledrejection', (event) => {
+  globalRejectionHandler = (event: PromiseRejectionEvent) => {
     const error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
 
     captureError(error, {
       component: 'global',
       action: 'unhandled_rejection',
     });
-  });
+  };
+  window.addEventListener('unhandledrejection', globalRejectionHandler);
 
   // Track navigation
   if ('navigation' in performance) {
@@ -537,11 +549,40 @@ export function initErrorTracking(): void {
     });
   }
 
-  // Start queue processor
-  setInterval(processQueue, CONFIG.retryInterval);
+  // Start queue processor (store ID for cleanup)
+  queueProcessorInterval = setInterval(processQueue, CONFIG.retryInterval);
 
   if (CONFIG.debug) {
     console.info('[ErrorTracking] Initialized');
+  }
+}
+
+/**
+ * Cleanup error tracking handlers and intervals
+ * Call this when unmounting the app or in tests
+ */
+export function cleanupErrorTracking(): void {
+  if (typeof window === 'undefined') return;
+
+  if (queueProcessorInterval) {
+    clearInterval(queueProcessorInterval);
+    queueProcessorInterval = null;
+  }
+
+  if (globalErrorHandler) {
+    window.removeEventListener('error', globalErrorHandler);
+    globalErrorHandler = null;
+  }
+
+  if (globalRejectionHandler) {
+    window.removeEventListener('unhandledrejection', globalRejectionHandler);
+    globalRejectionHandler = null;
+  }
+
+  isInitialized = false;
+
+  if (CONFIG.debug) {
+    console.info('[ErrorTracking] Cleaned up');
   }
 }
 
