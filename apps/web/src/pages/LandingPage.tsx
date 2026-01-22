@@ -10,12 +10,15 @@
  * - Scroll-triggered GSAP animations
  */
 
-import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, lazy, Suspense, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { AnimatedAvatar } from '@/components/customize/AnimatedAvatar';
+import { themeColors } from '@/stores/customizationStoreV2';
+import { motion } from 'framer-motion';
 import './landing-page.css';
 
 // Lazy load showcase components
@@ -28,6 +31,39 @@ const ForumShowcase = lazy(() =>
 );
 
 gsap.registerPlugin(ScrollTrigger);
+
+// =============================================================================
+// CHARACTER SETS FOR MULTILINGUAL SCRAMBLE EFFECT
+// =============================================================================
+const CHAR_SETS = {
+  arabic: 'ابتثجحخدذرزسشصضطظعغفقكلمنهوي',
+  chinese: '系统加载连接数据安全网络智能技术创新未来图形通信',
+  japanese: 'アイウエオカキクケコサシスセソタチツテトナニヌネノ',
+  korean: '가나다라마바사아자차카타파하연결준비완료',
+  russian: 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ',
+  thai: 'กขคฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ',
+  symbols: '◆◇○●□■△▲▽▼◎★☆※⟨⟩⌈⌉⌊⌋',
+} as const;
+
+// Pre-compute array of character sets for performance (avoid Object.values on each call)
+const CHAR_SET_VALUES = Object.values(CHAR_SETS);
+const CHAR_SET_COUNT = CHAR_SET_VALUES.length;
+
+// Get random character from a random charset - optimized
+const getRandomChar = (): string => {
+  const randomSet = CHAR_SET_VALUES[Math.floor(Math.random() * CHAR_SET_COUNT)];
+  return randomSet[Math.floor(Math.random() * randomSet.length)];
+};
+
+// Fisher-Yates shuffle for random order reveal
+const shuffleArray = <T,>(array: T[]): T[] => {
+  const shuffled = [...array];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+};
 
 // Performance: Throttle function for scroll handlers
 const throttle = <T extends (...args: Parameters<T>) => ReturnType<T>>(
@@ -83,12 +119,221 @@ const features = [
   },
 ];
 
-const stats = [
-  { value: '10K+', label: 'Active Creators', icon: '🎨' },
-  { value: '50K+', label: 'Communities', icon: '🌐' },
-  { value: '1M+', label: 'Daily Messages', icon: '💬' },
-  { value: '∞', label: 'Possibilities', icon: '✨' },
+// Feature showcase card types for the interactive demo section
+interface ShowcaseCardData {
+  id: string;
+  label: string;
+  icon: string;
+}
+
+const showcaseCards: ShowcaseCardData[] = [
+  { id: 'avatar', label: 'Avatar Borders', icon: '👤' },
+  { id: 'chat', label: 'Chat Styles', icon: '💬' },
+  { id: 'profile', label: 'Profile Themes', icon: '✨' },
+  { id: 'title', label: 'Animated Titles', icon: '🏆' },
 ];
+
+// =============================================================================
+// FEATURE SHOWCASE CARDS - Interactive hover reveal demos
+// =============================================================================
+
+const FeatureShowcaseCard = memo(function FeatureShowcaseCard({
+  data,
+}: {
+  data: ShowcaseCardData;
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const renderContent = () => {
+    switch (data.id) {
+      case 'avatar':
+        return (
+          <div className="showcase-card__content">
+            <div
+              className={`showcase-card__state ${isHovered ? 'showcase-card__state--hidden' : 'showcase-card__state--visible'}`}
+            >
+              {/* Basic Avatar */}
+              <div className="showcase-avatar showcase-avatar--basic">
+                <div className="showcase-avatar__image">
+                  <span>CG</span>
+                </div>
+                <span className="showcase-avatar__label">Basic</span>
+              </div>
+            </div>
+            <div
+              className={`showcase-card__state ${isHovered ? 'showcase-card__state--visible' : 'showcase-card__state--hidden'}`}
+            >
+              {/* Premium Avatar with AnimatedAvatar */}
+              <div className="showcase-avatar showcase-avatar--premium">
+                <AnimatedAvatar
+                  borderType="legendary"
+                  borderColor="emerald"
+                  size={72}
+                  initials="CG"
+                />
+                <span className="showcase-avatar__label showcase-avatar__label--premium">
+                  Legendary
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'chat':
+        return (
+          <div className="showcase-card__content">
+            <div
+              className={`showcase-card__state ${isHovered ? 'showcase-card__state--hidden' : 'showcase-card__state--visible'}`}
+            >
+              {/* Basic Chat Bubble */}
+              <div className="showcase-chat">
+                <div className="showcase-chat__bubble showcase-chat__bubble--basic">
+                  Hello there! 👋
+                </div>
+                <span className="showcase-chat__label">Default</span>
+              </div>
+            </div>
+            <div
+              className={`showcase-card__state ${isHovered ? 'showcase-card__state--visible' : 'showcase-card__state--hidden'}`}
+            >
+              {/* Premium Chat Bubble */}
+              <div className="showcase-chat">
+                <div className="showcase-chat__bubble showcase-chat__bubble--premium">
+                  <span className="showcase-chat__bubble-glow" />
+                  Hello there! 👋
+                </div>
+                <span className="showcase-chat__label showcase-chat__label--premium">
+                  Glass Premium
+                </span>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'profile':
+        return (
+          <div className="showcase-card__content">
+            <div
+              className={`showcase-card__state ${isHovered ? 'showcase-card__state--hidden' : 'showcase-card__state--visible'}`}
+            >
+              {/* Basic Profile Card */}
+              <div className="showcase-profile showcase-profile--basic">
+                <div className="showcase-profile__avatar">CG</div>
+                <div className="showcase-profile__info">
+                  <span className="showcase-profile__name">CGraph User</span>
+                  <span className="showcase-profile__status">Online</span>
+                </div>
+              </div>
+            </div>
+            <div
+              className={`showcase-card__state ${isHovered ? 'showcase-card__state--visible' : 'showcase-card__state--hidden'}`}
+            >
+              {/* Premium Profile Card */}
+              <div className="showcase-profile showcase-profile--premium">
+                <div className="showcase-profile__glow" />
+                <div className="showcase-profile__avatar showcase-profile__avatar--premium">
+                  <AnimatedAvatar
+                    borderType="mythic"
+                    borderColor="purple"
+                    size={48}
+                    initials="CG"
+                  />
+                </div>
+                <div className="showcase-profile__info">
+                  <span className="showcase-profile__name showcase-profile__name--premium">
+                    CGraph Elite
+                  </span>
+                  <div className="showcase-profile__badges">
+                    <span className="showcase-badge showcase-badge--founder">👑</span>
+                    <span className="showcase-badge showcase-badge--verified">✓</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'title':
+        return (
+          <div className="showcase-card__content">
+            <div
+              className={`showcase-card__state ${isHovered ? 'showcase-card__state--hidden' : 'showcase-card__state--visible'}`}
+            >
+              {/* Basic Title */}
+              <div className="showcase-title">
+                <span className="showcase-title__text showcase-title__text--basic">Member</span>
+                <span className="showcase-title__sublabel">Standard Title</span>
+              </div>
+            </div>
+            <div
+              className={`showcase-card__state ${isHovered ? 'showcase-card__state--visible' : 'showcase-card__state--hidden'}`}
+            >
+              {/* Animated Legendary Title */}
+              <div className="showcase-title">
+                <span className="showcase-title__text showcase-title__text--legendary">
+                  <span className="showcase-title__glow" />⚡ LEGENDARY ⚡
+                </span>
+                <div className="showcase-title__badges">
+                  <motion.span
+                    className="showcase-badge showcase-badge--animated"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    🔥
+                  </motion.span>
+                  <motion.span
+                    className="showcase-badge showcase-badge--animated"
+                    animate={{
+                      scale: [1, 1.15, 1],
+                      y: [0, -3, 0],
+                    }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                  >
+                    💎
+                  </motion.span>
+                  <motion.span
+                    className="showcase-badge showcase-badge--animated"
+                    animate={{
+                      scale: [1, 1.1, 1],
+                      rotate: [0, -5, 5, 0],
+                    }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
+                  >
+                    ⭐
+                  </motion.span>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <motion.div
+      className="showcase-card"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      whileHover={{ scale: 1.02, y: -8 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+    >
+      <div className="showcase-card__indicator">
+        <span className={`showcase-card__dot ${isHovered ? 'showcase-card__dot--active' : ''}`} />
+        <span className="showcase-card__hover-hint">{isHovered ? 'Premium' : 'Hover me'}</span>
+      </div>
+      {renderContent()}
+      <div className="showcase-card__footer">
+        <span className="showcase-card__label">{data.label}</span>
+      </div>
+    </motion.div>
+  );
+});
 
 const pricingTiers = [
   {
@@ -284,6 +529,9 @@ function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }
 // GAMELAND-STYLE PRELOADER COMPONENT
 // =============================================================================
 
+const FINAL_TEXT = 'CGRAPH';
+const SCRAMBLE_THRESHOLD = 0.7; // Stop scrambling at 70%
+
 function Preloader({ onComplete }: { onComplete: () => void }) {
   const preloaderRef = useRef<HTMLDivElement>(null);
   const brandRef = useRef<HTMLDivElement>(null);
@@ -291,6 +539,9 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
   const fillRef = useRef<HTMLSpanElement>(null);
   const percentRef = useRef<HTMLSpanElement>(null);
   const statusRef = useRef<HTMLSpanElement>(null);
+  const scrambleIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const isScrambleStoppedRef = useRef(false);
+  const currentSpeedRef = useRef(60); // Starting speed in ms
 
   // Mouse tracking for interactive glow effect
   useEffect(() => {
@@ -303,9 +554,10 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
+      // Center the glow (300px/2 = 150px offset)
       gsap.to(glow, {
-        x: x - 150,
-        y: y - 150,
+        left: x - 150,
+        top: y - 150,
         duration: 0.3,
         ease: 'power2.out',
       });
@@ -337,6 +589,10 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
     const elStatus = statusRef.current;
 
     if (!pre || !elFill || !elPercent || !elStatus) return;
+
+    // Reset refs on mount (important for React StrictMode / hot reload)
+    isScrambleStoppedRef.current = false;
+    currentSpeedRef.current = 60;
 
     let viewProgress = 0;
     let done = false;
@@ -422,69 +678,150 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         );
     };
 
+    // Start the character scramble effect with variable speed
+    const startScramble = () => {
+      const brandLetters = brandRef.current?.querySelectorAll('.preloader__letter');
+      if (!brandLetters || brandLetters.length === 0) return;
+
+      // Cache as array for faster iteration (avoid live NodeList overhead)
+      const lettersArray = Array.from(brandLetters) as HTMLElement[];
+
+      // Add scrambling class to all letters
+      lettersArray.forEach((letter) => letter.classList.add('is-scrambling'));
+
+      // Variable speed scramble - starts fast, slows down as progress increases
+      const updateScramble = () => {
+        if (isScrambleStoppedRef.current) return;
+
+        // Batch DOM updates in requestAnimationFrame for smoother rendering
+        requestAnimationFrame(() => {
+          lettersArray.forEach((el) => {
+            // Higher chance to scramble (80%)
+            if (Math.random() > 0.2) {
+              el.textContent = getRandomChar();
+            }
+          });
+        });
+
+        // Schedule next update with current speed
+        scrambleIntervalRef.current = setTimeout(updateScramble, currentSpeedRef.current);
+      };
+
+      updateScramble();
+    };
+
+    // Stop scramble and reveal letters in random order
+    const stopScramble = () => {
+      if (isScrambleStoppedRef.current) return;
+      isScrambleStoppedRef.current = true;
+
+      // Clear the scramble timeout
+      if (scrambleIntervalRef.current) {
+        clearTimeout(scrambleIntervalRef.current);
+        scrambleIntervalRef.current = null;
+      }
+
+      const brandLetters = brandRef.current?.querySelectorAll('.preloader__letter');
+      const brandElement = brandRef.current?.querySelector('.preloader__brand');
+      if (!brandLetters || brandLetters.length === 0) return;
+
+      // Cache as array for consistent indexing
+      const lettersArray = Array.from(brandLetters) as HTMLElement[];
+
+      // Remove scrambling class from all
+      lettersArray.forEach((letter) => letter.classList.remove('is-scrambling'));
+
+      // Create random order for reveal (Option C)
+      const indices = shuffleArray([...Array(FINAL_TEXT.length).keys()]);
+
+      // Reveal letters in random order with staggered timing
+      indices.forEach((index, revealOrder) => {
+        gsap.delayedCall(revealOrder * 0.12, () => {
+          const letter = lettersArray[index];
+          if (letter) {
+            letter.textContent = FINAL_TEXT[index];
+            letter.classList.add('is-revealed');
+          }
+        });
+      });
+
+      // Add complete class to brand after all letters revealed
+      gsap.delayedCall(indices.length * 0.12 + 0.3, () => {
+        brandElement?.classList.add('is-complete');
+      });
+    };
+
     // Simulate loading progress (GAMELAND uses resource loading, we simulate)
     const simulateLoading = () => {
       const loadTl = gsap.timeline();
 
-      // Animate brand letters on start
+      // Animate brand letters on start - smooth professional entrance
       const brandLetters = brandRef.current?.querySelectorAll('.preloader__letter');
       if (brandLetters) {
         gsap.set(brandLetters, {
-          y: 80,
+          y: 40,
           opacity: 0,
-          rotateX: -90,
-          scale: 0.5,
+          scale: 0.9,
         });
 
+        // Smooth staggered entrance
         loadTl.to(
           brandLetters,
           {
             y: 0,
             opacity: 1,
-            rotateX: 0,
             scale: 1,
-            duration: 0.6,
-            stagger: 0.08,
-            ease: 'back.out(1.7)',
+            duration: 0.8,
+            stagger: 0.1,
+            ease: 'power3.out',
+            onComplete: startScramble, // Start scramble after entrance
           },
           0
         );
-
-        // Add continuous floating animation after entrance
-        loadTl.to(
-          brandLetters,
-          {
-            y: -5,
-            duration: 1.2,
-            stagger: {
-              each: 0.1,
-              repeat: -1,
-              yoyo: true,
-            },
-            ease: 'sine.inOut',
-          },
-          0.8
-        );
       }
 
-      // Slowly progress to ~85% over 1.5s
+      // Progress to 70% over 1.8s with variable scramble speed
       loadTl.to(
         {},
         {
-          duration: 1.5,
+          duration: 1.8,
           onUpdate: function () {
             const progress = this.progress();
-            viewProgress = progress * 0.85;
+            viewProgress = progress * SCRAMBLE_THRESHOLD;
+            const pct = Math.floor(viewProgress * 100);
+            elPercent.textContent = pct + '%';
+            elFill.style.width = pct + '%';
+
+            // Variable speed: start at 60ms, slow to 200ms as we approach 70%
+            // Option C: Variable speed that slows as it approaches threshold
+            currentSpeedRef.current = 60 + Math.floor(progress * 140);
+          },
+        },
+        0.8
+      );
+
+      // At 70%, stop scramble and reveal
+      loadTl.call(stopScramble);
+
+      // Continue to 85% while letters are revealing
+      loadTl.to(
+        {},
+        {
+          duration: 0.8,
+          onUpdate: function () {
+            const progress = this.progress();
+            viewProgress = SCRAMBLE_THRESHOLD + progress * 0.15;
             const pct = Math.floor(viewProgress * 100);
             elPercent.textContent = pct + '%';
             elFill.style.width = pct + '%';
           },
-        },
-        0
+        }
       );
 
       // Then call closePreloader
       loadTl.call(closePreloader);
+
+      return loadTl;
     };
 
     // Close preloader with GAMELAND-style eased completion
@@ -542,11 +879,18 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
     // Lock scroll during preloader
     document.documentElement.style.overflow = 'hidden';
 
-    // Start loading simulation
-    simulateLoading();
+    // Start loading simulation and store timeline reference
+    const loadTimeline = simulateLoading();
 
     return () => {
       document.documentElement.style.overflow = '';
+      // Cleanup scramble interval
+      if (scrambleIntervalRef.current) {
+        clearTimeout(scrambleIntervalRef.current);
+        scrambleIntervalRef.current = null;
+      }
+      // Kill GSAP timeline to prevent memory leaks
+      loadTimeline?.kill();
     };
   }, [onComplete]);
 
@@ -623,15 +967,15 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
         <div ref={brandRef} className="preloader__brand-container">
           <div className="preloader__brand-glow" />
           <h3 className="preloader__brand">
-            {'CGRAPH'.split('').map((letter, i) => (
+            {FINAL_TEXT.split('').map((letter, i) => (
               <span
                 key={i}
                 className="preloader__letter"
                 data-letter={letter}
+                data-original={letter}
                 style={{ '--letter-index': i } as React.CSSProperties}
               >
                 {letter}
-                <span className="preloader__letter-glitch" data-letter={letter} />
               </span>
             ))}
           </h3>
@@ -1109,8 +1453,8 @@ export default function LandingPage() {
         <div className="hero__content">
           <span className="hero__eyebrow font-robert">The All-in-One Platform</span>
 
-          <h1 className="hero__title font-zentry">
-            <span>Beyond</span>
+          <h1 className="hero__title">
+            <span className="hero__title-beyond">Beyond</span>
             <span className="hero__title-gradient">Messaging</span>
           </h1>
 
@@ -1138,24 +1482,27 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Stats */}
+      {/* Feature Showcase */}
       <section ref={statsRef} className="stats-section zoom-section">
         <div className="stats-grid">
-          {stats.map((stat) => (
-            <div key={stat.label} className="stat-card">
-              <span className="stat-card__icon">{stat.icon}</span>
-              <span className="stat-card__value font-zentry">{stat.value}</span>
-              <span className="stat-card__label font-robert">{stat.label}</span>
-            </div>
+          {showcaseCards.map((card) => (
+            <FeatureShowcaseCard key={card.id} data={card} />
           ))}
         </div>
       </section>
 
       {/* Features */}
       <section ref={featuresRef} id="features" className="features zoom-section">
-        <div className="features__header">
-          <p className="features__eyebrow">Powerful Features</p>
-          <h2 className="features__title font-zentry">Everything You Need</h2>
+        <div className="section-header">
+          <span className="section-header__badge section-header__badge--emerald">
+            ✨ Powerful Features
+          </span>
+          <h2 className="section-header__title font-zentry">
+            Everything You <span className="section-header__gradient">Need</span>
+          </h2>
+          <p className="section-header__desc">
+            Build, customize, and grow your community with our comprehensive feature set.
+          </p>
         </div>
 
         <div className="features__grid">
@@ -1197,8 +1544,12 @@ export default function LandingPage() {
       <section ref={aboutRef} id="security" className="about zoom-section">
         <div className="about__container">
           <div className="about__content">
-            <p className="about__eyebrow font-robert">Privacy-First Design</p>
-            <h2 className="about__title font-zentry">Your Privacy Is Our Priority</h2>
+            <span className="mb-4 inline-block animate-[badge-subtle-pulse_4s_ease-in-out_infinite] cursor-default rounded-full border border-purple-500/30 bg-purple-500/10 px-4 py-1 text-sm text-purple-400 shadow-[0_0_12px_rgba(168,85,247,0.15),0_0_24px_rgba(168,85,247,0.08)] transition-all duration-300 hover:scale-[1.02] hover:animate-none hover:border-purple-500/60 hover:bg-purple-500/20 hover:shadow-[0_0_20px_rgba(168,85,247,0.3),0_0_40px_rgba(168,85,247,0.15)]">
+              🔒 Privacy-First Design
+            </span>
+            <h2 className="about__title font-zentry">
+              Your Privacy Is Our <span className="about__gradient">Priority</span>
+            </h2>
             <p className="about__desc">
               Built from the ground up with security in mind. Your messages are end-to-end encrypted
               with AES-256, and we use Signal-inspired encryption protocols. Not even we can access
@@ -1224,9 +1575,14 @@ export default function LandingPage() {
 
       {/* Pricing */}
       <section id="pricing" className="pricing zoom-section">
-        <div className="pricing__header">
-          <p className="features__eyebrow font-robert">Pricing</p>
-          <h2 className="features__title font-zentry">Simple, Transparent Pricing</h2>
+        <div className="section-header">
+          <span className="section-header__badge section-header__badge--cyan">💎 Pricing</span>
+          <h2 className="section-header__title font-zentry">
+            Simple, <span className="pricing__gradient-animated">Transparent</span> Pricing
+          </h2>
+          <p className="section-header__desc">
+            Choose the plan that fits your community. No hidden fees, cancel anytime.
+          </p>
         </div>
 
         <div className="pricing__grid">
@@ -1278,11 +1634,13 @@ export default function LandingPage() {
       {/* CTA */}
       <section ref={ctaRef} className="cta zoom-section">
         <div className="cta__content">
-          <span className="cta__rocket">🚀</span>
+          <span className="mb-4 inline-block animate-[badge-emerald-pulse_4s_ease-in-out_infinite] cursor-default rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1 text-sm text-emerald-400 shadow-[0_0_12px_rgba(16,185,129,0.15),0_0_24px_rgba(16,185,129,0.08)] transition-all duration-300 hover:scale-[1.02] hover:animate-none hover:border-emerald-500/60 hover:bg-emerald-500/20 hover:shadow-[0_0_20px_rgba(16,185,129,0.3),0_0_40px_rgba(16,185,129,0.15)]">
+            🚀 Ready to Start?
+          </span>
           <h2 className="cta__title font-zentry">
-            Build Your <span className="cta__highlight">Community</span>
+            Build Your <span className="cta__gradient-animated">Community</span>
           </h2>
-          <p className="cta__desc font-robert">
+          <p className="cta__desc">
             Create forums, customize your space, and connect with like-minded people.
           </p>
           <div className="cta__buttons">
