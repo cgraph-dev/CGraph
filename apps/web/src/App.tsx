@@ -114,6 +114,11 @@ const TermsOfService = lazy(() => import('@/pages/legal/TermsOfService'));
 const CookiePolicy = lazy(() => import('@/pages/legal/CookiePolicy'));
 const GDPR = lazy(() => import('@/pages/legal/GDPR'));
 
+// Product pages
+const Features = lazy(() => import('@/pages/product/Features'));
+const SecurityPage = lazy(() => import('@/pages/product/Security'));
+const Pricing = lazy(() => import('@/pages/product/Pricing'));
+
 // Company pages
 const About = lazy(() => import('@/pages/company/About'));
 const Contact = lazy(() => import('@/pages/company/Contact'));
@@ -281,6 +286,11 @@ export default function App() {
 
           {/* Public landing page - GAMELAND-style */}
           <Route path="/" element={<LandingPage />} />
+
+          {/* Product pages - public access */}
+          <Route path="/features" element={<Features />} />
+          <Route path="/security" element={<SecurityPage />} />
+          <Route path="/pricing" element={<Pricing />} />
 
           {/* Legal pages - public access */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
