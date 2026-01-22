@@ -386,9 +386,9 @@ const pricingTiers = [
 
 const footerLinks = {
   product: [
-    { label: 'Features', href: '#features' },
-    { label: 'Security', href: '#security' },
-    { label: 'Pricing', href: '#pricing' },
+    { label: 'Features', href: '/features' },
+    { label: 'Security', href: '/security' },
+    { label: 'Pricing', href: '/pricing' },
     { label: 'Download', href: '/login' },
   ],
   resources: [
@@ -1672,9 +1672,9 @@ export default function LandingPage() {
           <div className="gl-footer__column">
             <h4 className="gl-footer__heading">Product</h4>
             {footerLinks.product.map((link) => (
-              <a key={link.label} href={link.href} className="gl-footer__link">
+              <Link key={link.label} to={link.href} className="gl-footer__link">
                 {link.label}
-              </a>
+              </Link>
             ))}
           </div>
           <div className="gl-footer__column">
