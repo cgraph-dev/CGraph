@@ -1202,6 +1202,22 @@ export default function LandingPage() {
     }
   }, [isAuthenticated, navigate]);
 
+  // Handle hash navigation on page load (e.g., /#pricing, /#features)
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && !preloading) {
+      // Small delay to ensure DOM is ready after preloader
+      const timeoutId = setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+      return () => clearTimeout(timeoutId);
+    }
+    return undefined;
+  }, [preloading]);
+
   // Scroll handler for nav visibility - throttled for performance
   useEffect(() => {
     let lastScroll = 0;
