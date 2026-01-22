@@ -1,7 +1,6 @@
 import { ReactNode, memo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MatrixAuthBackground, MatrixLogo } from '@/lib/animations/matrix';
 import {
   CyberGrid,
   MorphingBlob,
@@ -10,6 +9,8 @@ import {
   TiltCard,
   TextScramble,
   ScanLines,
+  ParticleField,
+  AuroraGlow,
   prefersReducedMotion,
 } from '@/components/auth/AuthEffects';
 
@@ -49,24 +50,36 @@ const FeatureCard = memo(function FeatureCard({
 const BackgroundLayers = memo(function BackgroundLayers() {
   return (
     <>
-      {/* Base matrix effect with purple tint */}
-      <MatrixAuthBackground theme="matrix-green" opacity={0.85} zIndex={1} />
+      {/* Base dark gradient background */}
+      <div className="fixed inset-0 z-[1] bg-gradient-to-br from-[#030712] via-[#0a0f1a] to-[#111827]" />
 
-      {/* Cyber grid overlay - purple accent */}
+      {/* Aurora glow effect - animated gradients */}
       <div className="fixed inset-0 z-[2]">
-        <CyberGrid color="#8b5cf6" cellSize={50} pulseSpeed={4000} />
+        <AuroraGlow colors={['#8b5cf6', '#7c3aed', '#10b981', '#059669']} speed={10} />
       </div>
 
-      {/* Dark gradient overlay matching landing page - purple/emerald blend */}
-      <div className="fixed inset-0 z-[3] bg-gradient-to-br from-[#030712]/90 via-[#0a0f1a]/85 to-[#111827]/80" />
+      {/* Particle field - interconnected nodes */}
+      <div className="fixed inset-0 z-[3]">
+        <ParticleField
+          particleCount={60}
+          colors={['#8b5cf6', '#a78bfa', '#10b981', '#34d399']}
+          connectionDistance={120}
+          speed={0.4}
+        />
+      </div>
+
+      {/* Cyber grid overlay - purple accent */}
+      <div className="fixed inset-0 z-[4]">
+        <CyberGrid color="#8b5cf6" cellSize={60} pulseSpeed={5000} />
+      </div>
 
       {/* Morphing blobs - purple and emerald for landing page look */}
-      <MorphingBlob color="#8b5cf6" size={600} className="-left-48 -top-48 z-[4] opacity-50" />
-      <MorphingBlob color="#10b981" size={500} className="-bottom-48 -right-48 z-[4] opacity-40" />
-      <MorphingBlob color="#7c3aed" size={350} className="left-1/3 top-1/4 z-[4] opacity-25" />
+      <MorphingBlob color="#8b5cf6" size={600} className="-left-48 -top-48 z-[5] opacity-40" />
+      <MorphingBlob color="#10b981" size={500} className="-bottom-48 -right-48 z-[5] opacity-30" />
+      <MorphingBlob color="#7c3aed" size={350} className="left-1/3 top-1/4 z-[5] opacity-20" />
 
       {/* Floating security icons - purple */}
-      <div className="fixed inset-0 z-[5]">
+      <div className="fixed inset-0 z-[6]">
         <FloatingIcons color="#a78bfa" />
       </div>
 
@@ -115,13 +128,16 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
                 />
               </svg>
             </motion.div>
-            <MatrixLogo
-              text="CGraph"
-              className="text-3xl font-bold text-white"
-              glowColor="#8b5cf6"
-              animationDuration={2000}
-              loopDelay={8000}
-            />
+            <motion.span
+              className="text-3xl font-bold"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-emerald-400 bg-clip-text text-transparent">
+                CGraph
+              </span>
+            </motion.span>
           </Link>
         </motion.div>
 
