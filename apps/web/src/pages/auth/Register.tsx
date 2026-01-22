@@ -1,11 +1,35 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
 import { OAuthButtonGroup } from '@/components/auth/OAuthButtons';
+import { TextScramble, GlitchText, prefersReducedMotion } from '@/components/auth/AuthEffects';
+
+// Animation variants for staggered children
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
+};
 
 export default function Register() {
   const navigate = useNavigate();
   const { register, isLoading, error, clearError } = useAuthStore();
+  const reduced = prefersReducedMotion();
 
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -59,11 +83,20 @@ export default function Register() {
   };
 
   return (
-    <div className="space-y-8">
+    <motion.div
+      className="space-y-8"
+      variants={reduced ? {} : containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Mobile Logo with matrix glow */}
-      <div className="form-field-animate text-center lg:hidden">
+      <motion.div variants={reduced ? {} : itemVariants} className="text-center lg:hidden">
         <Link to="/" className="group inline-flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600 transition-all duration-300 group-hover:bg-primary-500 group-hover:shadow-glow-md">
+          <motion.div
+            className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600 transition-all duration-300 group-hover:bg-primary-500 group-hover:shadow-glow-md"
+            whileHover={reduced ? {} : { scale: 1.1, rotate: 5 }}
+            whileTap={reduced ? {} : { scale: 0.95 }}
+          >
             <svg
               className="h-6 w-6 text-white transition-transform duration-300 group-hover:scale-110"
               fill="none"
@@ -77,20 +110,29 @@ export default function Register() {
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
-          </div>
+          </motion.div>
           <span className="matrix-glow text-2xl font-bold text-white">CGraph</span>
         </Link>
-      </div>
+      </motion.div>
 
-      {/* Header with matrix styling */}
-      <div className="form-field-animate text-center lg:text-left">
-        <h2 className="matrix-glow text-3xl font-bold text-white">Create your account</h2>
-        <p className="mt-2 text-gray-400">Join the community and start connecting</p>
-      </div>
+      {/* Header with cyberpunk text effect */}
+      <motion.div variants={reduced ? {} : itemVariants} className="text-center lg:text-left">
+        <h2 className="text-3xl font-bold text-white">
+          <GlitchText text="Create your account" className="matrix-glow" />
+        </h2>
+        <p className="mt-2 text-gray-400">
+          <TextScramble text="Join the community and start connecting" delay={500} />
+        </p>
+      </motion.div>
 
       {/* Error Alert with matrix styling */}
       {displayError && (
-        <div className="animate-fade-in rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400 shadow-lg shadow-red-500/10 backdrop-blur-sm">
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+          className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400 shadow-lg shadow-red-500/10 backdrop-blur-sm"
+        >
           <div className="flex items-center gap-2">
             <svg
               className="h-5 w-5 flex-shrink-0"
@@ -110,32 +152,33 @@ export default function Register() {
               ? displayError
               : (displayError as { message?: string })?.message || 'An error occurred'}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Register Form with staggered animations */}
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div className="form-field-animate">
+        <motion.div variants={reduced ? {} : itemVariants}>
           <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-300">
             Email address
           </label>
-          <input
+          <motion.input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="email"
-            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="you@example.com"
+            whileFocus={reduced ? {} : { scale: 1.01 }}
           />
-        </div>
+        </motion.div>
 
-        <div className="form-field-animate">
+        <motion.div variants={reduced ? {} : itemVariants}>
           <label htmlFor="username" className="mb-2 block text-sm font-medium text-gray-300">
             Username
           </label>
-          <input
+          <motion.input
             id="username"
             type="text"
             value={username}
@@ -145,20 +188,21 @@ export default function Register() {
             minLength={3}
             maxLength={30}
             pattern="[a-zA-Z0-9_]+"
-            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="johndoe"
+            whileFocus={reduced ? {} : { scale: 1.01 }}
           />
           <p className="mt-1 text-xs text-gray-500">
             Letters, numbers, and underscores only. 3-30 characters.
           </p>
-        </div>
+        </motion.div>
 
-        <div className="form-field-animate">
+        <motion.div variants={reduced ? {} : itemVariants}>
           <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-300">
             Password
           </label>
           <div className="relative">
-            <input
+            <motion.input
               id="password"
               type={showPassword ? 'text' : 'password'}
               value={password}
@@ -166,13 +210,16 @@ export default function Register() {
               required
               minLength={8}
               autoComplete="new-password"
-              className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+              className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
               placeholder="••••••••"
+              whileFocus={reduced ? {} : { scale: 1.01 }}
             />
-            <button
+            <motion.button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:scale-110 hover:text-primary-400"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:text-primary-400"
+              whileHover={reduced ? {} : { scale: 1.2 }}
+              whileTap={reduced ? {} : { scale: 0.9 }}
             >
               {showPassword ? (
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -199,30 +246,33 @@ export default function Register() {
                   />
                 </svg>
               )}
-            </button>
+            </motion.button>
           </div>
           <p className="mt-1 text-xs text-gray-500">Minimum 8 characters</p>
-        </div>
+        </motion.div>
 
-        <div className="form-field-animate">
+        <motion.div variants={reduced ? {} : itemVariants}>
           <label htmlFor="confirmPassword" className="mb-2 block text-sm font-medium text-gray-300">
             Confirm password
           </label>
           <div className="relative">
-            <input
+            <motion.input
               id="confirmPassword"
               type={showConfirmPassword ? 'text' : 'password'}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               autoComplete="new-password"
-              className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+              className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
               placeholder="••••••••"
+              whileFocus={reduced ? {} : { scale: 1.01 }}
             />
-            <button
+            <motion.button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:scale-110 hover:text-primary-400"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:text-primary-400"
+              whileHover={reduced ? {} : { scale: 1.2 }}
+              whileTap={reduced ? {} : { scale: 0.9 }}
             >
               {showConfirmPassword ? (
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -249,11 +299,14 @@ export default function Register() {
                   />
                 </svg>
               )}
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
-        <label className="form-field-animate group flex cursor-pointer items-start gap-3">
+        <motion.label
+          variants={reduced ? {} : itemVariants}
+          className="group flex cursor-pointer items-start gap-3"
+        >
           <input
             type="checkbox"
             checked={agreeToTerms}
@@ -280,12 +333,19 @@ export default function Register() {
               Privacy Policy
             </a>
           </span>
-        </label>
+        </motion.label>
 
-        <button
+        <motion.button
           type="submit"
           disabled={isLoading}
-          className="matrix-button form-field-animate flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+          variants={reduced ? {} : itemVariants}
+          whileHover={
+            reduced || isLoading
+              ? {}
+              : { scale: 1.02, boxShadow: '0 0 30px rgba(16, 185, 129, 0.4)' }
+          }
+          whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
+          className="matrix-button flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
             <>
@@ -305,11 +365,11 @@ export default function Register() {
               </svg>
             </>
           )}
-        </button>
+        </motion.button>
       </form>
 
       {/* Divider with matrix styling */}
-      <div className="form-field-animate relative">
+      <motion.div variants={reduced ? {} : itemVariants} className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-dark-600/50" />
         </div>
@@ -318,25 +378,25 @@ export default function Register() {
             Or sign up with
           </span>
         </div>
-      </div>
+      </motion.div>
 
       {/* OAuth Buttons with matrix hover effects */}
-      <div className="form-field-animate">
+      <motion.div variants={reduced ? {} : itemVariants}>
         <OAuthButtonGroup
           providers={['google', 'apple', 'facebook', 'tiktok']}
           variant="icon"
           onSuccess={() => navigate('/messages')}
           onError={(err) => console.error('OAuth error:', err)}
         />
-      </div>
+      </motion.div>
 
       {/* Sign In Link with matrix styling */}
-      <p className="form-field-animate text-center text-gray-400">
+      <motion.p variants={reduced ? {} : itemVariants} className="text-center text-gray-400">
         Already have an account?{' '}
         <Link to="/login" className="matrix-link font-medium">
           Sign in
         </Link>
-      </p>
-    </div>
+      </motion.p>
+    </motion.div>
   );
 }

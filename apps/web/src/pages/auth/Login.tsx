@@ -1,12 +1,36 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
 import { OAuthButtonGroup } from '@/components/auth/OAuthButtons';
+import { TextScramble, GlitchText, prefersReducedMotion } from '@/components/auth/AuthEffects';
+
+// Animation variants for staggered children
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: 'easeOut' },
+  },
+};
 
 export default function Login() {
   const navigate = useNavigate();
   const { login, getWalletChallenge, loginWithWallet, isLoading, error, clearError } =
     useAuthStore();
+  const reduced = prefersReducedMotion();
 
   // Auto-dismiss error after 5 seconds (enough time to read)
   useEffect(() => {
@@ -68,11 +92,20 @@ export default function Login() {
   };
 
   return (
-    <div className="space-y-8">
+    <motion.div
+      className="space-y-8"
+      variants={reduced ? {} : containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
       {/* Mobile Logo with matrix glow */}
-      <div className="form-field-animate text-center lg:hidden">
+      <motion.div variants={reduced ? {} : itemVariants} className="text-center lg:hidden">
         <Link to="/" className="group inline-flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600 transition-all duration-300 group-hover:bg-primary-500 group-hover:shadow-glow-md">
+          <motion.div
+            className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-600 transition-all duration-300 group-hover:bg-primary-500 group-hover:shadow-glow-md"
+            whileHover={reduced ? {} : { scale: 1.1, rotate: 5 }}
+            whileTap={reduced ? {} : { scale: 0.95 }}
+          >
             <svg
               className="h-6 w-6 text-white transition-transform duration-300 group-hover:scale-110"
               fill="none"
@@ -86,20 +119,29 @@ export default function Login() {
                 d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
               />
             </svg>
-          </div>
+          </motion.div>
           <span className="matrix-glow text-2xl font-bold text-white">CGraph</span>
         </Link>
-      </div>
+      </motion.div>
 
-      {/* Header with subtle animation */}
-      <div className="form-field-animate text-center lg:text-left">
-        <h2 className="matrix-glow text-3xl font-bold text-white">Welcome back</h2>
-        <p className="mt-2 text-gray-400">Sign in to your account to continue</p>
-      </div>
+      {/* Header with cyberpunk text effect */}
+      <motion.div variants={reduced ? {} : itemVariants} className="text-center lg:text-left">
+        <h2 className="text-3xl font-bold text-white">
+          <GlitchText text="Welcome back" className="matrix-glow" />
+        </h2>
+        <p className="mt-2 text-gray-400">
+          <TextScramble text="Sign in to your account to continue" delay={500} />
+        </p>
+      </motion.div>
 
       {/* Error Alert with matrix styling */}
       {error && (
-        <div className="animate-fade-in rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400 shadow-lg shadow-red-500/10 backdrop-blur-sm">
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.95 }}
+          className="rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400 shadow-lg shadow-red-500/10 backdrop-blur-sm"
+        >
           <div className="flex items-center gap-2">
             <svg
               className="h-5 w-5 flex-shrink-0"
@@ -119,46 +161,50 @@ export default function Login() {
               ? error
               : (error as { message?: string })?.message || 'An error occurred'}
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* Login Form with staggered animations */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="form-field-animate">
+        <motion.div variants={reduced ? {} : itemVariants}>
           <label htmlFor="identifier" className="mb-2 block text-sm font-medium text-gray-300">
             Email or Username
           </label>
-          <input
+          <motion.input
             id="identifier"
             type="text"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
             autoComplete="username"
-            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+            className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
             placeholder="you@example.com or username"
+            whileFocus={reduced ? {} : { scale: 1.01 }}
           />
-        </div>
+        </motion.div>
 
-        <div className="form-field-animate">
+        <motion.div variants={reduced ? {} : itemVariants}>
           <label htmlFor="password" className="mb-2 block text-sm font-medium text-gray-300">
             Password
           </label>
           <div className="relative">
-            <input
+            <motion.input
               id="password"
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+              className="matrix-input w-full rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 pr-12 text-white placeholder-gray-500 transition-all duration-300 hover:border-dark-500 focus:border-primary-500/50 focus:outline-none focus:ring-2 focus:ring-primary-500/50"
               placeholder="••••••••"
+              whileFocus={reduced ? {} : { scale: 1.01 }}
             />
-            <button
+            <motion.button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:scale-110 hover:text-primary-400"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition-all duration-200 hover:text-primary-400"
+              whileHover={reduced ? {} : { scale: 1.2 }}
+              whileTap={reduced ? {} : { scale: 0.9 }}
             >
               {showPassword ? (
                 <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -185,11 +231,14 @@ export default function Login() {
                   />
                 </svg>
               )}
-            </button>
+            </motion.button>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="form-field-animate flex items-center justify-between">
+        <motion.div
+          variants={reduced ? {} : itemVariants}
+          className="flex items-center justify-between"
+        >
           <label className="group flex cursor-pointer items-center gap-2">
             <input
               type="checkbox"
@@ -202,12 +251,19 @@ export default function Login() {
           <Link to="/forgot-password" className="matrix-link text-sm">
             Forgot password?
           </Link>
-        </div>
+        </motion.div>
 
-        <button
+        <motion.button
           type="submit"
           disabled={isLoading}
-          className="matrix-button form-field-animate flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+          variants={reduced ? {} : itemVariants}
+          whileHover={
+            reduced || isLoading
+              ? {}
+              : { scale: 1.02, boxShadow: '0 0 30px rgba(16, 185, 129, 0.4)' }
+          }
+          whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
+          className="matrix-button flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isLoading ? (
             <>
@@ -232,11 +288,11 @@ export default function Login() {
               </svg>
             </>
           )}
-        </button>
+        </motion.button>
       </form>
 
       {/* Divider with matrix styling */}
-      <div className="form-field-animate relative">
+      <motion.div variants={reduced ? {} : itemVariants} className="relative">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-dark-600/50" />
         </div>
@@ -245,28 +301,35 @@ export default function Login() {
             Or continue with
           </span>
         </div>
-      </div>
+      </motion.div>
 
       {/* OAuth Buttons with matrix hover effects */}
-      <div className="form-field-animate">
+      <motion.div variants={reduced ? {} : itemVariants}>
         <OAuthButtonGroup
           providers={['google', 'apple', 'facebook', 'tiktok']}
           variant="icon"
           onSuccess={() => navigate('/messages')}
           onError={(err) => console.error('OAuth error:', err)}
         />
-      </div>
+      </motion.div>
 
       {/* Wallet Login with matrix styling */}
-      <button
+      <motion.button
         onClick={handleWalletConnect}
         disabled={isLoading}
-        className="form-field-animate group flex w-full items-center justify-center gap-3 rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 font-medium text-white transition-all duration-300 hover:border-primary-500/30 hover:bg-dark-700/80 hover:shadow-glow-sm"
+        variants={reduced ? {} : itemVariants}
+        whileHover={
+          reduced || isLoading ? {} : { scale: 1.02, borderColor: 'rgba(16, 185, 129, 0.5)' }
+        }
+        whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
+        className="group flex w-full items-center justify-center gap-3 rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 font-medium text-white transition-all duration-300 hover:border-primary-500/30 hover:bg-dark-700/80 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]"
       >
-        <svg
-          className="h-5 w-5 transition-transform duration-300 group-hover:scale-110"
+        <motion.svg
+          className="h-5 w-5"
           viewBox="0 0 40 40"
           fill="none"
+          whileHover={reduced ? {} : { rotate: 360 }}
+          transition={{ duration: 0.5 }}
         >
           <path
             d="M20 40C31.0457 40 40 31.0457 40 20C40 8.9543 31.0457 0 20 0C8.9543 0 0 8.9543 0 20C0 31.0457 8.9543 40 20 40Z"
@@ -286,18 +349,18 @@ export default function Login() {
             fillOpacity="0.2"
           />
           <path d="M11 20.2L20.498 25.8363V16.09L11 20.2Z" fill="white" fillOpacity="0.602" />
-        </svg>
+        </motion.svg>
         <span>Connect Wallet</span>
-      </button>
+      </motion.button>
 
       {/* Sign Up Link with matrix styling */}
-      <p className="form-field-animate text-center text-gray-400">
+      <motion.p variants={reduced ? {} : itemVariants} className="text-center text-gray-400">
         Don't have an account?{' '}
         <Link to="/register" className="matrix-link font-medium">
           Sign up
         </Link>
-      </p>
-    </div>
+      </motion.p>
+    </motion.div>
   );
 }
 
