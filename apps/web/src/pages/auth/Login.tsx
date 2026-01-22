@@ -260,7 +260,7 @@ export default function Login() {
           whileHover={
             reduced || isLoading
               ? {}
-              : { scale: 1.02, boxShadow: '0 0 30px rgba(16, 185, 129, 0.4)' }
+              : { scale: 1.02, boxShadow: '0 0 30px rgba(139, 92, 246, 0.4)' }
           }
           whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
           className="matrix-button flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"
@@ -319,10 +319,10 @@ export default function Login() {
         disabled={isLoading}
         variants={reduced ? {} : itemVariants}
         whileHover={
-          reduced || isLoading ? {} : { scale: 1.02, borderColor: 'rgba(16, 185, 129, 0.5)' }
+          reduced || isLoading ? {} : { scale: 1.02, borderColor: 'rgba(139, 92, 246, 0.5)' }
         }
         whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
-        className="group flex w-full items-center justify-center gap-3 rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 font-medium text-white transition-all duration-300 hover:border-primary-500/30 hover:bg-dark-700/80 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+        className="group flex w-full items-center justify-center gap-3 rounded-lg border border-dark-600 bg-dark-800/80 px-4 py-3 font-medium text-white transition-all duration-300 hover:border-violet-500/30 hover:bg-dark-700/80 hover:shadow-[0_0_20px_rgba(139,92,246,0.2)]"
       >
         <motion.svg
           className="h-5 w-5"

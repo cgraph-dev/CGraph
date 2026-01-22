@@ -29,7 +29,7 @@ interface CyberGridProps {
 }
 
 export const CyberGrid = memo(function CyberGrid({
-  color = '#10b981',
+  color = '#8b5cf6',
   lineWidth = 0.5,
   cellSize = 40,
   pulseSpeed = 3000,
@@ -141,7 +141,7 @@ interface MorphingBlobProps {
 }
 
 export const MorphingBlob = memo(function MorphingBlob({
-  color = '#10b981',
+  color = '#8b5cf6',
   size = 400,
   className = '',
 }: MorphingBlobProps) {
@@ -206,7 +206,7 @@ interface FloatingIconsProps {
 }
 
 export const FloatingIcons = memo(function FloatingIcons({
-  color = '#10b981',
+  color = '#8b5cf6',
 }: FloatingIconsProps) {
   const icons = [
     // Shield
@@ -278,7 +278,7 @@ interface CursorGlowProps {
 }
 
 export const CursorGlow = memo(function CursorGlow({
-  color = '#10b981',
+  color = '#8b5cf6',
   size = 300,
 }: CursorGlowProps) {
   const x = useMotionValue(0);

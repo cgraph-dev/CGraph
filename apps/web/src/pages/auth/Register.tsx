@@ -342,7 +342,7 @@ export default function Register() {
           whileHover={
             reduced || isLoading
               ? {}
-              : { scale: 1.02, boxShadow: '0 0 30px rgba(16, 185, 129, 0.4)' }
+              : { scale: 1.02, boxShadow: '0 0 30px rgba(139, 92, 246, 0.4)' }
           }
           whileTap={reduced || isLoading ? {} : { scale: 0.98 }}
           className="matrix-button flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 font-medium text-white transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-50"

@@ -30,13 +30,13 @@ const FeatureCard = memo(function FeatureCard({
   const reduced = prefersReducedMotion();
 
   return (
-    <TiltCard className="group rounded-xl border border-white/10 bg-white/5 p-4 text-center backdrop-blur-md transition-all duration-300 hover:border-primary-400/30 hover:bg-white/10 hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+    <TiltCard className="group rounded-xl border border-white/10 bg-gradient-to-br from-violet-500/10 to-emerald-500/5 p-4 text-center backdrop-blur-md transition-all duration-300 hover:border-violet-400/40 hover:bg-gradient-to-br hover:from-violet-500/20 hover:to-emerald-500/10 hover:shadow-[0_0_30px_rgba(139,92,246,0.3)]">
       <motion.div
         initial={reduced ? {} : { opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay }}
       >
-        <div className="text-2xl font-bold text-white transition-colors group-hover:text-primary-300">
+        <div className="text-2xl font-bold text-white transition-colors group-hover:text-violet-300">
           <TextScramble text={title} delay={delay * 1000 + 500} />
         </div>
         <div className="mt-1 text-sm text-white/70">{subtitle}</div>
@@ -49,28 +49,29 @@ const FeatureCard = memo(function FeatureCard({
 const BackgroundLayers = memo(function BackgroundLayers() {
   return (
     <>
-      {/* Base matrix effect */}
-      <MatrixAuthBackground theme="matrix-green" opacity={0.95} zIndex={1} />
+      {/* Base matrix effect with purple tint */}
+      <MatrixAuthBackground theme="matrix-green" opacity={0.85} zIndex={1} />
 
-      {/* Cyber grid overlay */}
+      {/* Cyber grid overlay - purple accent */}
       <div className="fixed inset-0 z-[2]">
-        <CyberGrid color="#10b981" cellSize={50} pulseSpeed={4000} />
+        <CyberGrid color="#8b5cf6" cellSize={50} pulseSpeed={4000} />
       </div>
 
-      {/* Dark gradient overlay for readability */}
-      <div className="fixed inset-0 z-[3] bg-gradient-to-br from-black/60 via-dark-950/70 to-matrix-dim/40" />
+      {/* Dark gradient overlay matching landing page - purple/emerald blend */}
+      <div className="fixed inset-0 z-[3] bg-gradient-to-br from-[#030712]/90 via-[#0a0f1a]/85 to-[#111827]/80" />
 
-      {/* Morphing blobs for organic feel */}
-      <MorphingBlob color="#10b981" size={600} className="-left-48 -top-48 z-[4] opacity-40" />
-      <MorphingBlob color="#06b6d4" size={400} className="-bottom-32 -right-32 z-[4] opacity-30" />
+      {/* Morphing blobs - purple and emerald for landing page look */}
+      <MorphingBlob color="#8b5cf6" size={600} className="-left-48 -top-48 z-[4] opacity-50" />
+      <MorphingBlob color="#10b981" size={500} className="-bottom-48 -right-48 z-[4] opacity-40" />
+      <MorphingBlob color="#7c3aed" size={350} className="left-1/3 top-1/4 z-[4] opacity-25" />
 
-      {/* Floating security icons */}
+      {/* Floating security icons - purple */}
       <div className="fixed inset-0 z-[5]">
-        <FloatingIcons color="#10b981" />
+        <FloatingIcons color="#a78bfa" />
       </div>
 
-      {/* Cursor glow effect */}
-      <CursorGlow color="#10b981" size={400} />
+      {/* Cursor glow effect - purple */}
+      <CursorGlow color="#8b5cf6" size={400} />
 
       {/* CRT scan lines */}
       <ScanLines opacity={0.02} />
@@ -96,7 +97,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
         >
           <Link to="/" className="group flex items-center gap-3">
             <motion.div
-              className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md transition-all duration-300 group-hover:border-primary-400/50 group-hover:bg-white/20 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]"
+              className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/20 bg-gradient-to-br from-violet-500/20 to-emerald-500/10 backdrop-blur-md transition-all duration-300 group-hover:border-violet-400/50 group-hover:bg-gradient-to-br group-hover:from-violet-500/30 group-hover:to-emerald-500/20 group-hover:shadow-[0_0_30px_rgba(139,92,246,0.5)]"
               whileHover={reduced ? {} : { scale: 1.1, rotate: 5 }}
               whileTap={reduced ? {} : { scale: 0.95 }}
             >
@@ -117,7 +118,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             <MatrixLogo
               text="CGraph"
               className="text-3xl font-bold text-white"
-              glowColor="#10b981"
+              glowColor="#8b5cf6"
               animationDuration={2000}
               loopDelay={8000}
             />
@@ -132,7 +133,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <h1 className="text-5xl font-bold leading-tight text-white">
-              <span className="bg-gradient-to-r from-primary-300 via-emerald-300 to-cyan-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-violet-400 via-purple-300 to-emerald-400 bg-clip-text text-transparent">
                 <TextScramble text="Connect, Share," delay={300} />
               </span>
               <br />
@@ -149,8 +150,8 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
             transition={{ duration: 0.8, delay: 0.4 }}
           >
             The all-in-one platform for{' '}
-            <span className="font-medium text-primary-400">secure messaging</span>,{' '}
-            <span className="font-medium text-cyan-400">group discussions</span>, and{' '}
+            <span className="font-medium text-violet-400">secure messaging</span>,{' '}
+            <span className="font-medium text-purple-300">group discussions</span>, and{' '}
             <span className="font-medium text-emerald-400">community forums</span>.
           </motion.p>
 
@@ -187,7 +188,7 @@ export default function AuthLayout({ children }: AuthLayoutProps) {
           transition={{ duration: 0.8, delay: 0.3, ease: 'easeOut' }}
         >
           <TiltCard
-            className="rounded-2xl border border-white/10 bg-white/5 p-8 shadow-2xl shadow-[0_0_50px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl transition-all duration-500 hover:border-primary-400/30 hover:shadow-[0_0_60px_rgba(16,185,129,0.2),inset_0_1px_0_rgba(255,255,255,0.15)]"
+            className="rounded-2xl border border-white/10 bg-gradient-to-br from-[#111827]/80 via-[#0a0f1a]/70 to-[#030712]/80 p-8 shadow-2xl shadow-[0_0_50px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl transition-all duration-500 hover:border-violet-400/30 hover:shadow-[0_0_60px_rgba(139,92,246,0.2),inset_0_1px_0_rgba(255,255,255,0.15)]"
             maxTilt={5}
           >
             {children}
