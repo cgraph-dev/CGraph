@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { sanitizeCss } from '@/lib/security';
 import {
   useActiveForumTheme,
   type ForumTheme,
@@ -556,8 +557,10 @@ export const ForumThemeProvider = memo(function ForumThemeProvider({
 
   return (
     <div className={cn('forum-theme-container min-h-screen', className)} style={cssVariables}>
-      {/* Inject custom CSS */}
-      {theme.customCss && <style dangerouslySetInnerHTML={{ __html: theme.customCss }} />}
+      {/* Inject custom CSS - sanitized to prevent CSS injection attacks */}
+      {theme.customCss && (
+        <style dangerouslySetInnerHTML={{ __html: sanitizeCss(theme.customCss) }} />
+      )}
 
       {/* Glassmorphism backdrop */}
       {theme.glassmorphism && (

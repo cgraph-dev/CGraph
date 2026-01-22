@@ -1,16 +1,16 @@
 /**
  * Production-safe logger with integrated error tracking
- * 
+ *
  * - Development: Full logging with stack traces
  * - Production: Sanitized output with error tracking integration
- * 
+ *
  * Features:
  * - Automatic PII stripping in production
  * - Error tracking service integration (Sentry-compatible)
  * - Breadcrumb trail for debugging
  * - Structured logging with severity levels
  * - Performance timing support
- * 
+ *
  * @module lib/logger
  * @version 2.0.0
  * @since v0.7.58
@@ -42,18 +42,20 @@ const timers: Map<string, number> = new Map();
  * Removes potential PII and sensitive data
  */
 function sanitizeForProduction(args: unknown[]): string {
-  return args.map(arg => {
-    if (arg instanceof Error) {
-      return `Error: ${arg.name}`;
-    }
-    if (typeof arg === 'object' && arg !== null) {
-      return '[Object]';
-    }
-    if (typeof arg === 'string' && arg.length > 100) {
-      return arg.substring(0, 100) + '...';
-    }
-    return String(arg);
-  }).join(' ');
+  return args
+    .map((arg) => {
+      if (arg instanceof Error) {
+        return `Error: ${arg.name}`;
+      }
+      if (typeof arg === 'object' && arg !== null) {
+        return '[Object]';
+      }
+      if (typeof arg === 'string' && arg.length > 100) {
+        return arg.substring(0, 100) + '...';
+      }
+      return String(arg);
+    })
+    .join(' ');
 }
 
 /**
@@ -62,26 +64,26 @@ function sanitizeForProduction(args: unknown[]): string {
  */
 export const createLogger = (namespace: string): Logger => {
   const prefix = `[${namespace}]`;
-  
+
   return {
     debug: (...args: unknown[]) => {
       if (isDev) {
         console.debug(prefix, ...args);
       }
     },
-    
+
     info: (...args: unknown[]) => {
       if (isDev) {
         console.info(prefix, ...args);
       }
     },
-    
+
     log: (...args: unknown[]) => {
       if (isDev) {
         console.log(prefix, ...args);
       }
     },
-    
+
     warn: (...args: unknown[]) => {
       if (isDev) {
         console.warn(prefix, ...args);
@@ -94,7 +96,7 @@ export const createLogger = (namespace: string): Logger => {
         });
       }
     },
-    
+
     error: (error: Error | string, ...args: unknown[]) => {
       if (isDev) {
         console.error(prefix, error, ...args);
@@ -108,11 +110,11 @@ export const createLogger = (namespace: string): Logger => {
         });
       }
     },
-    
+
     time: (label: string) => {
       timers.set(`${namespace}:${label}`, performance.now());
     },
-    
+
     timeEnd: (label: string) => {
       const key = `${namespace}:${label}`;
       const start = timers.get(key);
@@ -131,7 +133,7 @@ export const createLogger = (namespace: string): Logger => {
         }
       }
     },
-    
+
     breadcrumb: (message: string, data?: Record<string, unknown>) => {
       addBreadcrumb({
         category: 'console',
@@ -156,3 +158,6 @@ export const authLogger = createLogger('Auth');
 export const apiLogger = createLogger('API');
 export const forumLogger = createLogger('Forum');
 export const chatLogger = createLogger('Chat');
+export const themeLogger = createLogger('Theme');
+export const gamificationLogger = createLogger('Gamification');
+export const routeLogger = createLogger('Route');

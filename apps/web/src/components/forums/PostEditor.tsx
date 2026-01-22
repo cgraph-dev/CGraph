@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import {
   BoldIcon,
   ItalicIcon,
@@ -379,7 +380,11 @@ export function PostEditor({
     <div className="prose prose-invert min-h-[200px] max-w-none rounded-lg border border-dark-600 bg-dark-800 p-4">
       <h1>{title || 'Post Title'}</h1>
       <div
-        dangerouslySetInnerHTML={{ __html: content || '<p>Your content will appear here...</p>' }}
+        dangerouslySetInnerHTML={{
+          __html: DOMPurify.sanitize(content || '<p>Your content will appear here...</p>', {
+            USE_PROFILES: { html: true },
+          }),
+        }}
       />
     </div>
   );

@@ -25,6 +25,56 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
     <title>CGraph</title>
+
+    <!-- Critical CSS - Inlined for faster LCP on landing page -->
+    <style id="critical-css">
+      /* Core variables for landing page - prevents FOUC */
+      :root {
+        --color-primary: #10b981;
+        --color-primary-dark: #059669;
+        --color-secondary: #8b5cf6;
+        --color-dark: #030712;
+        --color-dark-alt: #0a0f1a;
+        --gradient-primary: linear-gradient(135deg, #10b981 0%, #8b5cf6 100%);
+        --gradient-hero: linear-gradient(135deg, #030712 0%, #0a0f1a 50%, #111827 100%);
+        --glow-emerald: 0 0 20px rgba(16, 185, 129, 0.5);
+      }
+      
+      /* Critical layout - prevents layout shift */
+      .demo-landing {
+        background: var(--color-dark);
+        color: #ffffff;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      
+      /* Hero section critical styles */
+      .hero-section {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      
+      /* GPU acceleration hint for animated elements */
+      .gpu-accelerated {
+        transform: translateZ(0);
+        backface-visibility: hidden;
+      }
+      
+      /* Reduced motion preference */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+      
+      /* Font display optimization */
+      .font-display { font-family: 'Outfit', system-ui, sans-serif; }
+      .font-mono { font-family: 'JetBrains Mono', monospace; }
+    </style>
   </head>
   <body class="bg-dark-900 text-white antialiased">
     <div id="root">

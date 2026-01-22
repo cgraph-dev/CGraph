@@ -6,6 +6,8 @@ import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 import { useCustomizationApplication } from '@/hooks/useCustomizationApplication';
 import { Preloader } from '@/components/Preloader';
+import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
+import { authLogger, themeLogger, gamificationLogger, routeLogger } from '@/lib/logger';
 import '@/themes/theme-globals.css';
 import '@/styles/customization-effects.css';
 
@@ -141,29 +143,23 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Run auth check in background - don't block rendering
-    if (import.meta.env.DEV) {
-      console.debug('[AuthInitializer] Starting auth check, hasToken:', !!token);
-    }
+    authLogger.debug('Starting auth check, hasToken:', !!token);
 
     checkAuth()
       .catch((error) => {
-        console.error('[AuthInitializer] Auth check failed:', error);
+        authLogger.error(error, 'Auth check failed');
       })
       .finally(() => {
-        if (import.meta.env.DEV) {
-          console.debug('[AuthInitializer] Auth check complete');
-        }
+        authLogger.debug('Auth check complete');
       });
   }, [checkAuth, token]);
 
   // Fetch gamification data when authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      if (import.meta.env.DEV) {
-        console.debug('[AuthInitializer] Fetching gamification data...');
-      }
+      gamificationLogger.debug('Fetching gamification data...');
       fetchGamificationData().catch((error) => {
-        console.error('[AuthInitializer] Gamification fetch failed:', error);
+        gamificationLogger.error(error, 'Gamification fetch failed');
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -184,20 +180,16 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
     root.style.setProperty('--user-theme-glow', colors.glow);
     root.style.setProperty('--user-theme-gradient', colors.gradient);
 
-    if (import.meta.env.DEV) {
-      console.debug('[ThemeSystem] Applied app theme:', appThemeId);
-      console.debug('[ThemeSystem] Applied user customizations:', theme.colorPreset, colors);
-    }
+    themeLogger.debug('Applied app theme:', appThemeId);
+    themeLogger.debug('Applied user customizations:', theme.colorPreset, colors);
   }, [theme.colorPreset]);
 
   // Sync theme with server when user logs in
   useEffect(() => {
     if (isAuthenticated && user?.id) {
-      if (import.meta.env.DEV) {
-        console.debug('[ThemeSystem] Syncing theme with server for user:', user.id);
-      }
+      themeLogger.debug('Syncing theme with server for user:', user.id);
       syncWithServer(user.id).catch((error) => {
-        console.error('[ThemeSystem] Theme sync failed:', error);
+        themeLogger.error(error, 'Theme sync failed');
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -211,9 +203,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
 
-  if (import.meta.env.DEV) {
-    console.debug('[ProtectedRoute] isAuthenticated:', isAuthenticated);
-  }
+  routeLogger.debug('ProtectedRoute isAuthenticated:', isAuthenticated);
 
   // Never block on loading - just check if authenticated
   if (!isAuthenticated) {
@@ -227,9 +217,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore();
 
-  if (import.meta.env.DEV) {
-    console.debug('[PublicRoute] isAuthenticated:', isAuthenticated);
-  }
+  routeLogger.debug('PublicRoute isAuthenticated:', isAuthenticated);
 
   // Never block - just redirect if authenticated
   if (isAuthenticated) {
@@ -375,31 +363,185 @@ export default function App() {
               <Route path=":groupId/channels/:channelId" element={<GroupChannel />} />
             </Route>
 
-            {/* Forums */}
-            <Route path="forums" element={<Forums />} />
-            <Route path="forums/leaderboard" element={<ForumLeaderboard />} />
-            <Route path="forums/create" element={<CreateForum />} />
-            <Route path="forums/plugins" element={<PluginMarketplace />} />
-            <Route path="forums/moderation" element={<ModerationQueue />} />
-            <Route path="forums/:forumSlug" element={<ForumBoardView />} />
-            <Route path="forums/:forumSlug/posts" element={<Forums />} />
-            <Route path="forums/:forumSlug/create-post" element={<CreatePost />} />
-            <Route path="forums/:forumSlug/settings" element={<ForumSettings />} />
-            <Route path="forums/:forumSlug/admin" element={<ForumAdmin />} />
-            <Route path="forums/:forumSlug/post/:postId" element={<ForumPost />} />
-            <Route path="forums/:forumSlug/boards/:boardSlug" element={<ForumBoardView />} />
-            <Route path="forums/:forumSlug/threads/:threadId" element={<ForumPost />} />
-            <Route path="forums/:forumSlug/plugins" element={<PluginMarketplace />} />
+            {/* Forums - wrapped with RouteErrorBoundary for isolation */}
+            <Route
+              path="forums"
+              element={
+                <RouteErrorBoundary routeName="Forums">
+                  <Forums />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/leaderboard"
+              element={
+                <RouteErrorBoundary routeName="Forum Leaderboard">
+                  <ForumLeaderboard />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/create"
+              element={
+                <RouteErrorBoundary routeName="Create Forum">
+                  <CreateForum />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/plugins"
+              element={
+                <RouteErrorBoundary routeName="Plugin Marketplace">
+                  <PluginMarketplace />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/moderation"
+              element={
+                <RouteErrorBoundary routeName="Moderation Queue">
+                  <ModerationQueue />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/:forumSlug"
+              element={
+                <RouteErrorBoundary routeName="Forum View">
+                  <ForumBoardView />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/:forumSlug/posts"
+              element={
+                <RouteErrorBoundary routeName="Forum Posts">
+                  <Forums />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/:forumSlug/create-post"
+              element={
+                <RouteErrorBoundary routeName="Create Post">
+                  <CreatePost />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/:forumSlug/settings"
+              element={
+                <RouteErrorBoundary routeName="Forum Settings">
+                  <ForumSettings />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/:forumSlug/admin"
+              element={
+                <RouteErrorBoundary routeName="Forum Admin">
+                  <ForumAdmin />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/:forumSlug/post/:postId"
+              element={
+                <RouteErrorBoundary routeName="Forum Post">
+                  <ForumPost />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/:forumSlug/boards/:boardSlug"
+              element={
+                <RouteErrorBoundary routeName="Forum Board">
+                  <ForumBoardView />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/:forumSlug/threads/:threadId"
+              element={
+                <RouteErrorBoundary routeName="Forum Thread">
+                  <ForumPost />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="forums/:forumSlug/plugins"
+              element={
+                <RouteErrorBoundary routeName="Forum Plugins">
+                  <PluginMarketplace />
+                </RouteErrorBoundary>
+              }
+            />
 
-            {/* Settings */}
-            <Route path="settings" element={<Settings />} />
-            <Route path="settings/:section" element={<Settings />} />
-            <Route path="settings/theme" element={<ThemeCustomization />} />
-            <Route path="settings/app-theme" element={<AppThemeSettings />} />
-            <Route path="settings/titles" element={<TitleSelection />} />
-            <Route path="settings/badges" element={<BadgeSelection />} />
-            <Route path="settings/security/2fa-setup" element={<TwoFactorSetup />} />
-            <Route path="settings/privacy/blocked" element={<BlockedUsers />} />
+            {/* Settings - wrapped with RouteErrorBoundary */}
+            <Route
+              path="settings"
+              element={
+                <RouteErrorBoundary routeName="Settings">
+                  <Settings />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="settings/:section"
+              element={
+                <RouteErrorBoundary routeName="Settings">
+                  <Settings />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="settings/theme"
+              element={
+                <RouteErrorBoundary routeName="Theme Customization">
+                  <ThemeCustomization />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="settings/app-theme"
+              element={
+                <RouteErrorBoundary routeName="App Theme">
+                  <AppThemeSettings />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="settings/titles"
+              element={
+                <RouteErrorBoundary routeName="Title Selection">
+                  <TitleSelection />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="settings/badges"
+              element={
+                <RouteErrorBoundary routeName="Badge Selection">
+                  <BadgeSelection />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="settings/security/2fa-setup"
+              element={
+                <RouteErrorBoundary routeName="2FA Setup">
+                  <TwoFactorSetup />
+                </RouteErrorBoundary>
+              }
+            />
+            <Route
+              path="settings/privacy/blocked"
+              element={
+                <RouteErrorBoundary routeName="Blocked Users">
+                  <BlockedUsers />
+                </RouteErrorBoundary>
+              }
+            />
 
             {/* Community */}
             <Route path="community/leaderboard" element={<UserLeaderboard />} />

@@ -1,0 +1,125 @@
+/**
+ * GlassCard CSS Module
+ * 
+ * Demonstrates CSS Modules pattern for component-level styling.
+ * Scoped styles prevent conflicts while allowing theme customization
+ * via CSS custom properties.
+ * 
+ * @module components/ui/GlassCard
+ * @version 1.0.0
+ */
+
+/* Base card styles - scoped to this component */
+.card {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+/* Variant: Frosted glass effect */
+.frosted {
+  background: rgba(17, 24, 39, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(75, 85, 99, 0.3);
+}
+
+.frosted:hover {
+  border-color: rgba(75, 85, 99, 0.5);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Variant: Neon glow effect */
+.neon {
+  background: rgba(17, 24, 39, 0.8);
+  border: 1px solid var(--color-primary, #10b981);
+  box-shadow: 
+    0 0 20px rgba(16, 185, 129, 0.15),
+    inset 0 0 60px rgba(16, 185, 129, 0.05);
+}
+
+.neon:hover {
+  box-shadow: 
+    0 0 30px rgba(16, 185, 129, 0.25),
+    inset 0 0 80px rgba(16, 185, 129, 0.1);
+}
+
+/* Variant: Solid dark card */
+.solid {
+  background: rgb(17, 24, 39);
+  border: 1px solid rgb(55, 65, 81);
+}
+
+.solid:hover {
+  background: rgb(31, 41, 55);
+}
+
+/* Variant: Gradient border */
+.gradient {
+  background: rgba(17, 24, 39, 0.9);
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+
+.gradient::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #10b981, #8b5cf6);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+/* Size modifiers */
+.padSm {
+  padding: 0.75rem;
+}
+
+.padMd {
+  padding: 1.25rem;
+}
+
+.padLg {
+  padding: 2rem;
+}
+
+/* Interactive state */
+.interactive {
+  cursor: pointer;
+}
+
+.interactive:active {
+  transform: scale(0.98);
+}
+
+/* Animation classes */
+.fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glow effect on hover - uses theme variables */
+.glowOnHover:hover {
+  box-shadow: 0 0 40px var(--user-theme-glow, rgba(16, 185, 129, 0.3));
+}
+
+/* Support for forum theme customization */
+.forumThemed {
+  background: var(--forum-surface, rgba(17, 24, 39, 0.7));
+  border-color: var(--forum-border, rgba(75, 85, 99, 0.3));
+}

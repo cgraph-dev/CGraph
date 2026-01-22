@@ -10,6 +10,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import {
   MagnifyingGlassIcon,
   XMarkIcon,
@@ -98,7 +99,12 @@ function SearchResultCard({ result, onClick }: SearchResultCardProps) {
       {/* Content with highlight */}
       <p
         className="text-sm text-gray-300"
-        dangerouslySetInnerHTML={{ __html: result.highlightedContent }}
+        dangerouslySetInnerHTML={{
+          __html: DOMPurify.sanitize(result.highlightedContent, {
+            ALLOWED_TAGS: ['mark', 'span', 'b', 'strong', 'em', 'i'],
+            ALLOWED_ATTR: ['class'],
+          }),
+        }}
       />
 
       {/* Jump to arrow */}

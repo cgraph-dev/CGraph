@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Card, { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -39,22 +39,42 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
   const [activeTab, setActiveTab] = useState<'all' | SubscriptionType>('all');
   const [bulkUpdating, setBulkUpdating] = useState(false);
 
-  useEffect(() => {
-    fetchSubscriptions();
-  }, []);
+  // AbortController ref for cleanup on unmount
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-  const fetchSubscriptions = async () => {
-    setIsLoading(true);
-    try {
-      const response = await fetch('/api/forum/subscriptions');
-      const data = await response.json();
-      setSubscriptions(data.subscriptions || []);
-    } catch (error) {
-      console.error('Failed to fetch subscriptions:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  useEffect(() => {
+    // Create new AbortController for this effect
+    abortControllerRef.current = new AbortController();
+    const signal = abortControllerRef.current.signal;
+
+    const fetchSubscriptions = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/forum/subscriptions', { signal });
+        const data = await response.json();
+        // Only update state if not aborted
+        if (!signal.aborted) {
+          setSubscriptions(data.subscriptions || []);
+        }
+      } catch (error) {
+        // Ignore abort errors, log others
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.error('Failed to fetch subscriptions:', error);
+        }
+      } finally {
+        if (!signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchSubscriptions();
+
+    // Cleanup: abort any in-flight requests on unmount
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
 
   const updateSubscription = async (id: string, updates: Partial<Subscription>) => {
     try {
@@ -63,9 +83,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updates),
       });
-      setSubscriptions((prev) =>
-        prev.map((sub) => (sub.id === id ? { ...sub, ...updates } : sub))
-      );
+      setSubscriptions((prev) => prev.map((sub) => (sub.id === id ? { ...sub, ...updates } : sub)));
     } catch (error) {
       console.error('Failed to update subscription:', error);
     }
@@ -90,9 +108,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ notificationMode: mode }),
       });
-      setSubscriptions((prev) =>
-        prev.map((sub) => ({ ...sub, notificationMode: mode }))
-      );
+      setSubscriptions((prev) => prev.map((sub) => ({ ...sub, notificationMode: mode })));
     } catch (error) {
       console.error('Failed to bulk update:', error);
     } finally {
@@ -139,9 +155,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
   void _getModeLabel;
 
   const filteredSubscriptions =
-    activeTab === 'all'
-      ? subscriptions
-      : subscriptions.filter((sub) => sub.type === activeTab);
+    activeTab === 'all' ? subscriptions : subscriptions.filter((sub) => sub.type === activeTab);
 
   const counts = {
     all: subscriptions.length,
@@ -160,13 +174,9 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5" />
               Subscriptions
-              {totalUnread > 0 && (
-                <Badge variant="destructive">{totalUnread} unread</Badge>
-              )}
+              {totalUnread > 0 && <Badge variant="destructive">{totalUnread} unread</Badge>}
             </CardTitle>
-            <CardDescription>
-              Manage your forum, board, and thread subscriptions
-            </CardDescription>
+            <CardDescription>Manage your forum, board, and thread subscriptions</CardDescription>
           </div>
           <div className="flex items-center gap-2">
             <Select
@@ -211,8 +221,8 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
 
               <TabsContent value={activeTab} className="mt-4">
                 {filteredSubscriptions.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <BellOff className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <div className="text-muted-foreground py-8 text-center">
+                    <BellOff className="mx-auto mb-2 h-12 w-12 opacity-50" />
                     <p>No subscriptions yet</p>
                     <p className="text-sm">
                       Subscribe to forums, boards, or threads to get notified of new activity
@@ -223,15 +233,15 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
                     {filteredSubscriptions.map((subscription) => (
                       <div
                         key={subscription.id}
-                        className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                        className="bg-card hover:bg-accent/50 flex items-center justify-between rounded-lg border p-3 transition-colors"
                       >
-                        <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="flex-shrink-0 p-2 rounded-md bg-primary/10">
+                        <div className="flex min-w-0 flex-1 items-center gap-3">
+                          <div className="bg-primary/10 flex-shrink-0 rounded-md p-2">
                             {getTypeIcon(subscription.type)}
                           </div>
-                          <div className="flex-1 min-w-0">
+                          <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2">
-                              <p className="font-medium truncate">{subscription.targetName}</p>
+                              <p className="truncate font-medium">{subscription.targetName}</p>
                               {subscription.unreadCount > 0 && (
                                 <Badge variant="destructive" className="text-xs">
                                   {subscription.unreadCount}
@@ -239,11 +249,11 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
                               )}
                             </div>
                             {subscription.targetPath && (
-                              <p className="text-xs text-muted-foreground truncate">
+                              <p className="text-muted-foreground truncate text-xs">
                                 {subscription.targetPath}
                               </p>
                             )}
-                            <p className="text-xs text-muted-foreground">
+                            <p className="text-muted-foreground text-xs">
                               {getTypeLabel(subscription.type)} • Subscribed{' '}
                               {formatDistanceToNow(new Date(subscription.createdAt), {
                                 addSuffix: true,
@@ -256,7 +266,9 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
                           <Select
                             value={subscription.notificationMode}
                             onValueChange={(value) =>
-                              updateSubscription(subscription.id, { notificationMode: value as NotificationMode })
+                              updateSubscription(subscription.id, {
+                                notificationMode: value as NotificationMode,
+                              })
                             }
                           >
                             <SelectTrigger className="w-28">

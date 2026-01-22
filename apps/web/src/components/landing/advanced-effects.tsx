@@ -43,13 +43,20 @@ export function NoiseOverlay({ opacity = 0.05, speed = 0.3, grain = 'medium' }: 
     // Frame counter reserved for future animation timing
     const _frame = 0;
 
+    // Resize handler with debouncing
+    let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
+    const debouncedResize = () => {
+      if (resizeTimeout) clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resize, 100);
+    };
+
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', debouncedResize);
 
     const generateNoise = () => {
       const imageData = ctx.createImageData(canvas.width, canvas.height);
@@ -81,7 +88,8 @@ export function NoiseOverlay({ opacity = 0.05, speed = 0.3, grain = 'medium' }: 
     );
 
     return () => {
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', debouncedResize);
+      if (resizeTimeout) clearTimeout(resizeTimeout);
       cancelAnimationFrame(animationId);
       clearInterval(interval);
     };

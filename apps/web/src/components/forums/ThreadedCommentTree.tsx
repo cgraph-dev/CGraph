@@ -18,6 +18,7 @@
 
 import { useState, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import DOMPurify from 'dompurify';
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -291,7 +292,9 @@ const ThreadedComment = memo(function ThreadedComment({
         {/* Comment Content */}
         <div
           className="prose prose-invert prose-sm max-w-none text-gray-300"
-          dangerouslySetInnerHTML={{ __html: comment.content }}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(comment.content, { USE_PROFILES: { html: true } }),
+          }}
         />
 
         {/* Comment Actions */}

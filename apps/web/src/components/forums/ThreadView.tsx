@@ -1,6 +1,7 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import DOMPurify from 'dompurify';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -357,7 +358,11 @@ export function ThreadView({
           <div
             className={`prose prose-invert max-w-none ${!isExpanded && variant !== 'expanded' ? 'relative max-h-96 overflow-hidden' : ''}`}
           >
-            <div dangerouslySetInnerHTML={{ __html: post.content }} />
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(post.content, { USE_PROFILES: { html: true } }),
+              }}
+            />
             {!isExpanded && variant !== 'expanded' && (
               <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-dark-800 to-transparent" />
             )}

@@ -34,7 +34,9 @@ export function ShaderBackground({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl') as WebGLRenderingContext;
+    const gl =
+      canvas.getContext('webgl') ||
+      (canvas.getContext('experimental-webgl') as WebGLRenderingContext);
     if (!gl) {
       console.warn('WebGL not supported, falling back to CSS gradient');
       return;
@@ -295,7 +297,8 @@ export function ShaderBackground({
     gl.uniform3f(color3Location, color3[0] ?? 0, color3[1] ?? 0, color3[2] ?? 0);
     gl.uniform1f(intensityLocation, intensity);
 
-    // Resize handler
+    // Resize handler with debouncing to prevent layout thrashing
+    let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -303,12 +306,17 @@ export function ShaderBackground({
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
     };
 
+    const debouncedResize = () => {
+      if (resizeTimeout) clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resize, 100);
+    };
+
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', debouncedResize);
 
     // Animation loop
     const render = () => {
-      const elapsed = (Date.now() - startTimeRef.current) / 1000 * speed;
+      const elapsed = ((Date.now() - startTimeRef.current) / 1000) * speed;
       gl.uniform1f(timeLocation, elapsed);
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       animationRef.current = requestAnimationFrame(render);
@@ -317,7 +325,8 @@ export function ShaderBackground({
     render();
 
     return () => {
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', debouncedResize);
+      if (resizeTimeout) clearTimeout(resizeTimeout);
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current);
       }
@@ -374,13 +383,20 @@ export function Metaballs({
       color: colors[Math.floor(Math.random() * colors.length)],
     }));
 
+    // Resize handler with debouncing
+    let resizeTimeout: ReturnType<typeof setTimeout> | null = null;
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
+    const debouncedResize = () => {
+      if (resizeTimeout) clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resize, 100);
+    };
+
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener('resize', debouncedResize);
 
     const render = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -396,14 +412,7 @@ export function Metaballs({
         if (ball.y < 0 || ball.y > canvas.height) ball.vy *= -1;
 
         // Draw metaball
-        const gradient = ctx.createRadialGradient(
-          ball.x,
-          ball.y,
-          0,
-          ball.x,
-          ball.y,
-          ball.radius
-        );
+        const gradient = ctx.createRadialGradient(ball.x, ball.y, 0, ball.x, ball.y, ball.radius);
         gradient.addColorStop(0, ball.color + '80');
         gradient.addColorStop(0.5, ball.color + '40');
         gradient.addColorStop(1, 'transparent');
@@ -420,7 +429,8 @@ export function Metaballs({
     render();
 
     return () => {
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', debouncedResize);
+      if (resizeTimeout) clearTimeout(resizeTimeout);
       cancelAnimationFrame(animationId);
     };
   }, [count, colors, speed]);
@@ -489,7 +499,7 @@ export function GeometricPattern({
     const drawTriangle = (x: number, y: number, r: number, offset: number) => {
       ctx.beginPath();
       for (let i = 0; i < 3; i++) {
-        const angle = (Math.PI * 2 / 3) * i + offset - Math.PI / 2;
+        const angle = ((Math.PI * 2) / 3) * i + offset - Math.PI / 2;
         const px = x + r * Math.cos(angle);
         const py = y + r * Math.sin(angle);
         if (i === 0) ctx.moveTo(px, py);
@@ -516,7 +526,7 @@ export function GeometricPattern({
           }
         }
       } else if (pattern === 'triangles') {
-        const h = size * Math.sqrt(3) / 2;
+        const h = (size * Math.sqrt(3)) / 2;
         for (let row = 0; row < canvas.height / h + 1; row++) {
           for (let col = 0; col < canvas.width / size + 1; col++) {
             const x = col * size + (row % 2) * (size / 2);
@@ -537,7 +547,7 @@ export function GeometricPattern({
           for (let col = 0; col < canvas.width / size + 1; col++) {
             const x = col * size + size / 2;
             const y = row * size + size / 2;
-            const pulseRadius = size / 2 * (1 + Math.sin(time * 0.002 + row + col) * 0.1);
+            const pulseRadius = (size / 2) * (1 + Math.sin(time * 0.002 + row + col) * 0.1);
             ctx.beginPath();
             ctx.arc(x, y, animated ? pulseRadius : size / 2, 0, Math.PI * 2);
             ctx.stroke();
@@ -779,7 +789,11 @@ export function Vortex({
 
         ctx.beginPath();
         ctx.arc(x, y, particle.size, 0, Math.PI * 2);
-        ctx.fillStyle = color + Math.floor(particle.opacity * 255).toString(16).padStart(2, '0');
+        ctx.fillStyle =
+          color +
+          Math.floor(particle.opacity * 255)
+            .toString(16)
+            .padStart(2, '0');
         ctx.fill();
       });
 
@@ -937,7 +951,7 @@ export function DNAHelix({
 
       for (let i = 0; i < nodeCount; i++) {
         const y = i * spacing;
-        const phase = (i * 0.2 + time * 0.02 * speed);
+        const phase = i * 0.2 + time * 0.02 * speed;
 
         // First strand
         const x1 = centerX + Math.sin(phase) * amplitude;
