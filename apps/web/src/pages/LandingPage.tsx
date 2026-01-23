@@ -773,6 +773,7 @@ export default function LandingPage() {
   // GSAP animations on mount (hero + scroll-triggered elements)
   useEffect(() => {
     let heroTl: gsap.core.Timeline | null = null;
+    let gsapContextRef: gsap.Context | null = null;
 
     // Hero entrance animations - run immediately
     gsap.set('.hero__eyebrow', { y: 60, opacity: 0, scale: 0.98 });
