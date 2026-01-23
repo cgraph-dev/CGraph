@@ -2,7 +2,8 @@
  * CGraph Landing Page - GAMELAND Style
  *
  * Official landing page featuring:
- * - Preloader with animated loading bar
+ * - Instant hero animations on mount (no preloader for speed)
+ * - Skeleton loaders for lazy-loaded sections
  * - Video hero section with clip-path masks
  * - Purple/lime/black color scheme
  * - Button text-swap animation
@@ -19,6 +20,10 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AnimatedAvatar } from '@/components/customize/AnimatedAvatar';
 import { themeColors } from '@/stores/customizationStoreV2';
 import { motion } from 'framer-motion';
+import {
+  CustomizationDemoSkeleton,
+  ForumShowcaseSkeleton,
+} from '@/components/landing/LandingSkeletons';
 import './landing-page.css';
 
 // Lazy load showcase components
@@ -31,40 +36,6 @@ const ForumShowcase = lazy(() =>
 );
 
 gsap.registerPlugin(ScrollTrigger);
-
-// =============================================================================
-// CHARACTER SETS FOR MULTILINGUAL SCRAMBLE EFFECT
-// =============================================================================
-const CHAR_SETS = {
-  arabic: 'ابتثجحخدذرزسشصضطظعغفقكلمنهوي',
-  chinese: '系统加载连接数据安全网络智能技术创新未来图形通信',
-  japanese: 'アイウエオカキクケコサシスセソタチツテトナニヌネノ',
-  korean: '가나다라마바사아자차카타파하연결준비완료',
-  russian: 'АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ',
-  thai: 'กขคฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ',
-  symbols: '◆◇○●□■△▲▽▼◎★☆※⟨⟩⌈⌉⌊⌋',
-} as const;
-
-// Pre-compute array of character sets for performance (avoid Object.values on each call)
-const CHAR_SET_VALUES = Object.values(CHAR_SETS);
-const CHAR_SET_COUNT = CHAR_SET_VALUES.length;
-
-// Get random character from a random charset - optimized
-const getRandomChar = (): string => {
-  const randomSet = CHAR_SET_VALUES[Math.floor(Math.random() * CHAR_SET_COUNT)];
-  return randomSet[Math.floor(Math.random() * randomSet.length)];
-};
-
-// Fisher-Yates shuffle for random order reveal
-const shuffleArray = <T,>(array: T[]): T[] => {
-  const shuffled = [...array];
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-};
-
 // Performance: Throttle function for scroll handlers
 const throttle = <T extends (...args: Parameters<T>) => ReturnType<T>>(
   fn: T,
@@ -524,499 +495,6 @@ function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }
     </div>
   );
 }
-
-// =============================================================================
-// GAMELAND-STYLE PRELOADER COMPONENT
-// =============================================================================
-
-const FINAL_TEXT = 'CGRAPH';
-const SCRAMBLE_THRESHOLD = 0.7; // Stop scrambling at 70%
-
-// Module-level flag to prevent StrictMode double-run (persists across remounts)
-let preloaderHasRun = false;
-
-function Preloader({ onComplete }: { onComplete: () => void }) {
-  const preloaderRef = useRef<HTMLDivElement>(null);
-  const brandRef = useRef<HTMLDivElement>(null);
-  const cursorGlowRef = useRef<HTMLDivElement>(null);
-  const fillRef = useRef<HTMLSpanElement>(null);
-  const percentRef = useRef<HTMLSpanElement>(null);
-  const statusRef = useRef<HTMLSpanElement>(null);
-  const scrambleIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const isScrambleStoppedRef = useRef(false);
-  const currentSpeedRef = useRef(60); // Starting speed in ms
-
-  // Mouse tracking for interactive glow effect
-  useEffect(() => {
-    const glow = cursorGlowRef.current;
-    const pre = preloaderRef.current;
-    if (!glow || !pre) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = pre.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      // Center the glow (300px/2 = 150px offset)
-      gsap.to(glow, {
-        left: x - 150,
-        top: y - 150,
-        duration: 0.3,
-        ease: 'power2.out',
-      });
-    };
-
-    const handleMouseEnter = () => {
-      gsap.to(glow, { opacity: 1, scale: 1, duration: 0.3 });
-    };
-
-    const handleMouseLeave = () => {
-      gsap.to(glow, { opacity: 0, scale: 0.5, duration: 0.3 });
-    };
-
-    pre.addEventListener('mousemove', handleMouseMove);
-    pre.addEventListener('mouseenter', handleMouseEnter);
-    pre.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      pre.removeEventListener('mousemove', handleMouseMove);
-      pre.removeEventListener('mouseenter', handleMouseEnter);
-      pre.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  }, []);
-
-  useEffect(() => {
-    const pre = preloaderRef.current;
-    const elFill = fillRef.current;
-    const elPercent = percentRef.current;
-    const elStatus = statusRef.current;
-
-    if (!pre || !elFill || !elPercent || !elStatus) return;
-    // Prevent double-run in React StrictMode - use module-level flag
-    if (preloaderHasRun) return;
-    preloaderHasRun = true;
-
-    // Reset refs on mount (important for React StrictMode / hot reload)
-    isScrambleStoppedRef.current = false;
-    currentSpeedRef.current = 60;
-
-    let viewProgress = 0;
-    let done = false;
-
-    // Prep hero elements for intro animation (hidden state)
-    const prepHeroIntro = () => {
-      gsap.set('.hero__eyebrow', {
-        y: 60,
-        opacity: 0,
-        scale: 0.98,
-        willChange: 'transform,opacity',
-      });
-      gsap.set('.hero__title', {
-        y: 40,
-        opacity: 0,
-        willChange: 'transform,opacity',
-      });
-      gsap.set('.hero__subtitle', {
-        y: 22,
-        opacity: 0,
-        skewY: 5,
-        willChange: 'transform,opacity',
-      });
-      gsap.set('.hero__buttons', {
-        y: 18,
-        opacity: 0,
-        scale: 0,
-        willChange: 'transform,opacity',
-      });
-    };
-
-    // Animate hero elements in after preloader closes
-    const runHeroAnimations = () => {
-      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
-
-      tl.to('.hero__eyebrow', {
-        y: 0,
-        opacity: 1,
-        scale: 1,
-        duration: 0.65,
-        onComplete: () => {
-          gsap.set('.hero__eyebrow', { clearProps: 'transform,willChange' });
-        },
-      })
-        .to(
-          '.hero__title',
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.6,
-            onComplete: () => {
-              gsap.set('.hero__title', { clearProps: 'transform,willChange' });
-            },
-          },
-          '>-0.3'
-        )
-        .to(
-          '.hero__subtitle',
-          {
-            y: 0,
-            opacity: 1,
-            skewY: 0,
-            duration: 0.55,
-            onComplete: () => {
-              gsap.set('.hero__subtitle', { clearProps: 'transform,willChange' });
-            },
-          },
-          '>-0.25'
-        )
-        .to(
-          '.hero__buttons',
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.45,
-            ease: 'back.out(1.7)',
-            onComplete: () => {
-              gsap.set('.hero__buttons', { clearProps: 'transform,willChange' });
-            },
-          },
-          '>-0.13'
-        );
-    };
-
-    // Start the character scramble effect with variable speed
-    const startScramble = () => {
-      const brandLetters = brandRef.current?.querySelectorAll('.preloader__letter');
-      if (!brandLetters || brandLetters.length === 0) return;
-
-      // Cache as array for faster iteration (avoid live NodeList overhead)
-      const lettersArray = Array.from(brandLetters) as HTMLElement[];
-
-      // Add scrambling class to all letters
-      lettersArray.forEach((letter) => letter.classList.add('is-scrambling'));
-
-      // Variable speed scramble - starts fast, slows down as progress increases
-      const updateScramble = () => {
-        if (isScrambleStoppedRef.current) return;
-
-        // Batch DOM updates in requestAnimationFrame for smoother rendering
-        requestAnimationFrame(() => {
-          lettersArray.forEach((el) => {
-            // Higher chance to scramble (80%)
-            if (Math.random() > 0.2) {
-              el.textContent = getRandomChar();
-            }
-          });
-        });
-
-        // Schedule next update with current speed
-        scrambleIntervalRef.current = setTimeout(updateScramble, currentSpeedRef.current);
-      };
-
-      updateScramble();
-    };
-
-    // Stop scramble and reveal letters in random order
-    const stopScramble = () => {
-      if (isScrambleStoppedRef.current) return;
-      isScrambleStoppedRef.current = true;
-
-      // Clear the scramble timeout
-      if (scrambleIntervalRef.current) {
-        clearTimeout(scrambleIntervalRef.current);
-        scrambleIntervalRef.current = null;
-      }
-
-      const brandLetters = brandRef.current?.querySelectorAll('.preloader__letter');
-      const brandElement = brandRef.current?.querySelector('.preloader__brand');
-      if (!brandLetters || brandLetters.length === 0) return;
-
-      // Cache as array for consistent indexing
-      const lettersArray = Array.from(brandLetters) as HTMLElement[];
-
-      // Remove scrambling class from all
-      lettersArray.forEach((letter) => letter.classList.remove('is-scrambling'));
-
-      // Create random order for reveal (Option C)
-      const indices = shuffleArray([...Array(FINAL_TEXT.length).keys()]);
-
-      // Reveal letters in random order with staggered timing
-      indices.forEach((index, revealOrder) => {
-        gsap.delayedCall(revealOrder * 0.12, () => {
-          const letter = lettersArray[index];
-          if (letter) {
-            letter.textContent = FINAL_TEXT[index];
-            letter.classList.add('is-revealed');
-          }
-        });
-      });
-
-      // Add complete class to brand after all letters revealed
-      gsap.delayedCall(indices.length * 0.12 + 0.3, () => {
-        brandElement?.classList.add('is-complete');
-      });
-    };
-
-    // Simulate loading progress (GAMELAND uses resource loading, we simulate)
-    const simulateLoading = () => {
-      const loadTl = gsap.timeline();
-
-      // Animate brand letters on start - smooth professional entrance
-      const brandLetters = brandRef.current?.querySelectorAll('.preloader__letter');
-      if (brandLetters) {
-        gsap.set(brandLetters, {
-          y: 40,
-          opacity: 0,
-          scale: 0.9,
-        });
-
-        // Smooth staggered entrance
-        loadTl.to(
-          brandLetters,
-          {
-            y: 0,
-            opacity: 1,
-            scale: 1,
-            duration: 0.8,
-            stagger: 0.1,
-            ease: 'power3.out',
-            onComplete: startScramble, // Start scramble after entrance
-          },
-          0
-        );
-      }
-
-      // Progress to 70% over 1.8s with variable scramble speed
-      loadTl.to(
-        {},
-        {
-          duration: 1.8,
-          onUpdate: function () {
-            const progress = this.progress();
-            viewProgress = progress * SCRAMBLE_THRESHOLD;
-            const pct = Math.floor(viewProgress * 100);
-            elPercent.textContent = pct + '%';
-            elFill.style.width = pct + '%';
-
-            // Variable speed: start at 60ms, slow to 200ms as we approach 70%
-            // Option C: Variable speed that slows as it approaches threshold
-            currentSpeedRef.current = 60 + Math.floor(progress * 140);
-          },
-        },
-        0.8
-      );
-
-      // At 70%, stop scramble and reveal
-      loadTl.call(stopScramble);
-
-      // Continue to 85% while letters are revealing
-      loadTl.to(
-        {},
-        {
-          duration: 0.8,
-          onUpdate: function () {
-            const progress = this.progress();
-            viewProgress = SCRAMBLE_THRESHOLD + progress * 0.15;
-            const pct = Math.floor(viewProgress * 100);
-            elPercent.textContent = pct + '%';
-            elFill.style.width = pct + '%';
-          },
-        }
-      );
-
-      // Then call closePreloader
-      loadTl.call(closePreloader);
-
-      return loadTl;
-    };
-
-    // Close preloader with GAMELAND-style eased completion
-    const closePreloader = () => {
-      if (done) return;
-      done = true;
-
-      // Change status to READY with animation class
-      elStatus.textContent = 'READY';
-      elStatus.classList.add('is-ready');
-
-      // Ease progress to 100% (GAMELAND formula: viewProgress += (1 - viewProgress) * 0.3)
-      gsap.to(
-        {},
-        {
-          duration: 0.25,
-          onUpdate: () => {
-            viewProgress += (1 - viewProgress) * 0.3;
-            const pct = viewProgress >= 0.99 ? 100 : Math.floor(viewProgress * 100);
-            elPercent.textContent = pct + '%';
-            elFill.style.width = pct + '%';
-          },
-          onComplete: () => {
-            // Prep hero elements before fade
-            prepHeroIntro();
-
-            // Refresh ScrollTrigger if available
-            if (ScrollTrigger) ScrollTrigger.refresh();
-
-            // Fade out preloader
-            gsap.to(pre, {
-              opacity: 0,
-              duration: 0.35,
-              ease: 'power2.out',
-              onComplete: () => {
-                pre.classList.add('is-done');
-                document.documentElement.classList.add('site-ready');
-                document.documentElement.style.overflow = '';
-
-                // Run hero entrance animations
-                runHeroAnimations();
-
-                // Refresh ScrollTrigger after animations
-                if (ScrollTrigger) ScrollTrigger.refresh(true);
-
-                // Notify parent
-                onComplete();
-              },
-            });
-          },
-        }
-      );
-    };
-
-    // Lock scroll during preloader
-    document.documentElement.style.overflow = 'hidden';
-
-    // Start loading simulation and store timeline reference
-    const loadTimeline = simulateLoading();
-
-    return () => {
-      document.documentElement.style.overflow = '';
-      // Cleanup scramble interval
-      if (scrambleIntervalRef.current) {
-        clearTimeout(scrambleIntervalRef.current);
-        scrambleIntervalRef.current = null;
-      }
-      // Kill GSAP timeline to prevent memory leaks
-      loadTimeline?.kill();
-    };
-  }, [onComplete]);
-
-  return (
-    <div ref={preloaderRef} className="preloader" aria-hidden="true">
-      {/* 3D Terrain Background */}
-      <div className="preloader__terrain">
-        <div className="preloader__terrain-grid" />
-        <div className="preloader__terrain-fog" />
-      </div>
-
-      {/* Animated grid background */}
-      <div className="preloader__grid" />
-
-      {/* Star field particles */}
-      <div className="preloader__stars">
-        {[...Array(50)].map((_, i) => (
-          <span
-            key={i}
-            className="preloader__star"
-            style={
-              {
-                '--x': `${Math.random() * 100}%`,
-                '--y': `${Math.random() * 100}%`,
-                '--delay': `${Math.random() * 3}s`,
-                '--duration': `${2 + Math.random() * 3}s`,
-                '--size': `${1 + Math.random() * 3}px`,
-              } as React.CSSProperties
-            }
-          />
-        ))}
-      </div>
-
-      {/* Floating energy particles */}
-      <div className="preloader__energy-field">
-        {[...Array(30)].map((_, i) => (
-          <span
-            key={i}
-            className="preloader__energy"
-            style={
-              {
-                '--i': i,
-                '--x': `${Math.random() * 100}%`,
-                '--speed': `${4 + Math.random() * 6}s`,
-              } as React.CSSProperties
-            }
-          />
-        ))}
-      </div>
-
-      {/* Interactive cursor glow */}
-      <div ref={cursorGlowRef} className="preloader__cursor-glow" />
-
-      {/* Floating orbs */}
-      <div className="preloader__orbs">
-        <div className="preloader__orb preloader__orb--1" />
-        <div className="preloader__orb preloader__orb--2" />
-        <div className="preloader__orb preloader__orb--3" />
-        <div className="preloader__orb preloader__orb--4" />
-        <div className="preloader__orb preloader__orb--5" />
-      </div>
-
-      {/* Scanline effect */}
-      <div className="preloader__scanline" />
-
-      {/* Corner accents */}
-      <div className="preloader__corner preloader__corner--tl" />
-      <div className="preloader__corner preloader__corner--tr" />
-      <div className="preloader__corner preloader__corner--bl" />
-      <div className="preloader__corner preloader__corner--br" />
-
-      {/* Main content */}
-      <div className="preloader__inner">
-        <div ref={brandRef} className="preloader__brand-container">
-          <div className="preloader__brand-glow" />
-          <h3 className="preloader__brand">
-            {FINAL_TEXT.split('').map((letter, i) => (
-              <span
-                key={i}
-                className="preloader__letter"
-                data-letter={letter}
-                data-original={letter}
-                style={{ '--letter-index': i } as React.CSSProperties}
-              >
-                {letter}
-              </span>
-            ))}
-          </h3>
-          <div className="preloader__brand-particles">
-            {[...Array(12)].map((_, i) => (
-              <span
-                key={i}
-                className="preloader__particle"
-                style={{ '--i': i } as React.CSSProperties}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="preloader__bar-wrapper">
-          <div className="preloader__bar">
-            <span ref={fillRef} className="preloader__fill" />
-          </div>
-        </div>
-        <div className="preloader__meta">
-          <span ref={percentRef} className="preloader__percent">
-            0%
-          </span>
-          <span className="preloader__dot">•</span>
-          <span ref={statusRef} className="preloader__status" data-text="GENERATING NEW CONNECTION">
-            GENERATING NEW CONNECTION
-          </span>
-        </div>
-      </div>
-
-      {/* Version tag */}
-      <div className="preloader__version">v2.0.0</div>
-    </div>
-  );
-}
-
 // =============================================================================
 // TILT CARD COMPONENT (GAMELAND-STYLE)
 // =============================================================================
@@ -1188,7 +666,7 @@ function SwapButton({
 export default function LandingPage() {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuthStore();
-  const [preloading, setPreloading] = useState(true);
+
   const [navHidden, setNavHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
 
@@ -1211,8 +689,8 @@ export default function LandingPage() {
   // Handle hash navigation on page load (e.g., /#pricing, /#features)
   useEffect(() => {
     const hash = window.location.hash;
-    if (hash && !preloading) {
-      // Small delay to ensure DOM is ready after preloader
+    if (hash) {
+      // Small delay to ensure DOM is ready
       const timeoutId = setTimeout(() => {
         const element = document.querySelector(hash);
         if (element) {
@@ -1222,7 +700,7 @@ export default function LandingPage() {
       return () => clearTimeout(timeoutId);
     }
     return undefined;
-  }, [preloading]);
+  }, []);
 
   // Scroll handler for nav visibility - throttled for performance
   useEffect(() => {
@@ -1280,11 +758,31 @@ export default function LandingPage() {
     };
   }, []);
 
-  // GSAP animations after preload (non-hero elements - hero is animated by preloader)
+  // GSAP animations on mount (hero + scroll-triggered elements)
   useEffect(() => {
-    if (preloading) return;
+    let heroTl: gsap.core.Timeline | null = null;
 
-    // Defer animations slightly to ensure DOM is ready and improve initial paint
+    // Hero entrance animations - run immediately
+    gsap.set('.hero__eyebrow', { y: 60, opacity: 0, scale: 0.98 });
+    gsap.set('.hero__title', { y: 40, opacity: 0 });
+    gsap.set('.hero__subtitle', { y: 22, opacity: 0, skewY: 5 });
+    gsap.set('.hero__buttons', { y: 18, opacity: 0, scale: 0 });
+
+    heroTl = gsap.timeline({ delay: 0.1, defaults: { ease: 'power2.out' } });
+    heroTl
+      .to('.hero__eyebrow', { y: 0, opacity: 1, scale: 1, duration: 0.65 })
+      .to('.hero__title', { y: 0, opacity: 1, duration: 0.6 }, '>-0.3')
+      .to('.hero__subtitle', { y: 0, opacity: 1, skewY: 0, duration: 0.55 }, '>-0.25')
+      .to(
+        '.hero__buttons',
+        { y: 0, opacity: 1, scale: 1, duration: 0.45, ease: 'back.out(1.7)' },
+        '>-0.13'
+      );
+
+    // Mark site as ready for CSS transitions
+    document.documentElement.classList.add('site-ready');
+
+    // Defer scroll-triggered animations slightly to ensure DOM is ready
     const timeoutId = setTimeout(() => {
       const ctx = gsap.context(() => {
         // Section zoom effect - smooth parallax-style scaling
@@ -1424,17 +922,10 @@ export default function LandingPage() {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [preloading]);
-
-  const handlePreloadComplete = useCallback(() => {
-    setPreloading(false);
   }, []);
 
   return (
     <div className="demo-landing">
-      {/* Preloader */}
-      {preloading && <Preloader onComplete={handlePreloadComplete} />}
-
       {/* Navigation */}
       <nav className={`gl-nav ${navHidden ? 'hidden' : ''} ${navScrolled ? 'scrolled' : ''}`}>
         <Link to="/" className="gl-nav__logo">
@@ -1536,28 +1027,14 @@ export default function LandingPage() {
 
       {/* Customization Demo */}
       <section className="showcase-section zoom-section">
-        <Suspense
-          fallback={
-            <div className="showcase-loading">
-              <div className="showcase-loading__spinner" />
-              <span>Loading Customization Preview...</span>
-            </div>
-          }
-        >
+        <Suspense fallback={<CustomizationDemoSkeleton />}>
           <CustomizationDemo />
         </Suspense>
       </section>
 
       {/* Forum Showcase */}
       <section className="showcase-section showcase-section--alt zoom-section">
-        <Suspense
-          fallback={
-            <div className="showcase-loading">
-              <div className="showcase-loading__spinner" />
-              <span>Loading Forum Preview...</span>
-            </div>
-          }
-        >
+        <Suspense fallback={<ForumShowcaseSkeleton />}>
           <ForumShowcase />
         </Suspense>
       </section>
