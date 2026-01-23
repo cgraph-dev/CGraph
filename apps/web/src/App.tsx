@@ -114,10 +114,7 @@ const TermsOfService = lazy(() => import('@/pages/legal/TermsOfService'));
 const CookiePolicy = lazy(() => import('@/pages/legal/CookiePolicy'));
 const GDPR = lazy(() => import('@/pages/legal/GDPR'));
 
-// Product pages
-const Features = lazy(() => import('@/pages/product/Features'));
-const SecurityPage = lazy(() => import('@/pages/product/Security'));
-const Pricing = lazy(() => import('@/pages/product/Pricing'));
+// Product pages removed - now handled as sections in LandingPage
 
 // Company pages
 const About = lazy(() => import('@/pages/company/About'));
@@ -287,10 +284,7 @@ export default function App() {
           {/* Public landing page - GAMELAND-style */}
           <Route path="/" element={<LandingPage />} />
 
-          {/* Product pages - public access */}
-          <Route path="/features" element={<Features />} />
-          <Route path="/security" element={<SecurityPage />} />
-          <Route path="/pricing" element={<Pricing />} />
+          {/* Product sections - scroll to LandingPage sections via /#features, /#security, /#pricing */}
 
           {/* Legal pages - public access */}
           <Route path="/privacy" element={<PrivacyPolicy />} />
