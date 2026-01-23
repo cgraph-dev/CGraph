@@ -939,7 +939,8 @@ export default function LandingPage() {
             className="gl-nav__link"
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+              const el = document.getElementById('features');
+              if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
             }}
           >
             Features
@@ -949,7 +950,8 @@ export default function LandingPage() {
             className="gl-nav__link"
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById('security')?.scrollIntoView({ behavior: 'smooth' });
+              const el = document.getElementById('security');
+              if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
             }}
           >
             Security
@@ -959,7 +961,8 @@ export default function LandingPage() {
             className="gl-nav__link"
             onClick={(e) => {
               e.preventDefault();
-              document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+              const el = document.getElementById('pricing');
+              if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
             }}
           >
             Pricing
