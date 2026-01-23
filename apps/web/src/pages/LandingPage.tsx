@@ -934,15 +934,36 @@ export default function LandingPage() {
         </Link>
 
         <div className="gl-nav__links">
-          <Link to="/features" className="gl-nav__link">
+          <a
+            href="#features"
+            className="gl-nav__link"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
             Features
-          </Link>
-          <Link to="/security" className="gl-nav__link">
+          </a>
+          <a
+            href="#security"
+            className="gl-nav__link"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('security')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
             Security
-          </Link>
-          <Link to="/pricing" className="gl-nav__link">
+          </a>
+          <a
+            href="#pricing"
+            className="gl-nav__link"
+            onClick={(e) => {
+              e.preventDefault();
+              document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+          >
             Pricing
-          </Link>
+          </a>
         </div>
 
         <SignInButton />
