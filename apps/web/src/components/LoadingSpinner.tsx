@@ -11,28 +11,48 @@ export function LoadingSpinner() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0a0f]">
       <div className="flex flex-col items-center gap-4">
-        {/* Spinner */}
+        {/* Spinner with gradient */}
         <div className="relative h-12 w-12">
-          {/* Outer ring */}
-          <div className="absolute inset-0 rounded-full border-2 border-purple-500/20" />
-          {/* Spinning gradient ring */}
-          <div
-            className="absolute inset-0 animate-spin rounded-full border-2 border-transparent"
-            style={{
-              borderTopColor: '#a78bfa',
-              borderRightColor: '#8b5cf6',
-              animationDuration: '0.8s',
-            }}
-          />
+          {/* SVG gradient spinner */}
+          <svg
+            className="h-12 w-12 animate-spin"
+            viewBox="0 0 50 50"
+            style={{ animationDuration: '1s' }}
+          >
+            <defs>
+              <linearGradient id="spinnerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#a78bfa" />
+                <stop offset="50%" stopColor="#8b5cf6" />
+                <stop offset="100%" stopColor="#10b981" />
+              </linearGradient>
+            </defs>
+            <circle
+              cx="25"
+              cy="25"
+              r="20"
+              fill="none"
+              stroke="url(#spinnerGradient)"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeDasharray="80 45"
+            />
+          </svg>
           {/* Inner glow */}
-          <div className="absolute inset-2 rounded-full bg-purple-500/10" />
+          <div className="absolute inset-3 rounded-full bg-gradient-to-br from-purple-500/20 to-emerald-500/10" />
         </div>
 
-        {/* Brand text */}
-        <div className="flex items-center gap-2 text-lg font-semibold text-white/80">
-          <span className="text-purple-400">⬡</span>
-          <span>CGraph</span>
-        </div>
+        {/* Brand text with gradient */}
+        <span
+          className="text-lg font-semibold"
+          style={{
+            background: 'linear-gradient(135deg, #a78bfa 0%, #8b5cf6 50%, #10b981 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
+          CGraph
+        </span>
       </div>
     </div>
   );
