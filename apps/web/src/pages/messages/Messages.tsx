@@ -10,7 +10,6 @@ import {
   MagnifyingGlassIcon,
   PlusIcon,
   UserIcon,
-  ArrowPathIcon,
   SparklesIcon,
   ChatBubbleLeftRightIcon,
   MagnifyingGlassPlusIcon,
@@ -27,7 +26,6 @@ export default function Messages() {
     useChatStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [onlineStatus, setOnlineStatus] = useState<Record<string, boolean>>({});
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
@@ -78,16 +76,6 @@ export default function Messages() {
       socketManager.peekConversationsPresence(conversationIds);
     }
   }, [conversations, user?.id]);
-
-  // Handle refresh
-  const handleRefresh = useCallback(async () => {
-    setIsRefreshing(true);
-    try {
-      await fetchConversations();
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [fetchConversations]);
 
   // Fetch conversations on mount
   useEffect(() => {
@@ -170,21 +158,6 @@ export default function Messages() {
                 whileTap={{ scale: 0.9 }}
               >
                 <MagnifyingGlassPlusIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-              </motion.button>
-              <motion.button
-                onClick={() => {
-                  handleRefresh();
-                  HapticFeedback.light();
-                }}
-                disabled={isRefreshing}
-                className="group rounded-xl p-2 text-gray-400 transition-all hover:bg-primary-500/20 hover:text-primary-400 disabled:opacity-50"
-                title="Refresh conversations"
-                whileHover={{ scale: 1.1, rotate: 180 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <ArrowPathIcon
-                  className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''} group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]`}
-                />
               </motion.button>
               <motion.button
                 onClick={() => HapticFeedback.medium()}

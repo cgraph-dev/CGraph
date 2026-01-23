@@ -906,6 +906,25 @@ defmodule CGraph.Groups do
     %Message{}
     |> Message.changeset(message_attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, message} ->
+        {:ok, Repo.preload(message, [:sender, :reactions])}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        if idempotency_conflict?(changeset) do
+          client_message_id = Ecto.Changeset.get_field(changeset, :client_message_id)
+
+          case get_channel_message_by_client_id(channel.id, client_message_id) do
+            nil -> {:error, changeset}
+            message -> {:ok, Repo.preload(message, [:sender, :reactions])}
+          end
+        else
+          {:error, changeset}
+        end
+
+      error ->
+        error
+    end
   end
 
   @doc """
@@ -916,6 +935,24 @@ defmodule CGraph.Groups do
     |> Ecto.Changeset.change(owner_id: new_owner_id)
     |> Repo.update()
   end
+
+  defp idempotency_conflict?(changeset) do
+    Enum.any?(changeset.errors, fn {field, {_, _}} ->
+      field == :client_message_id
+    end)
+  end
+
+  defp get_channel_message_by_client_id(channel_id, client_message_id)
+       when is_binary(client_message_id) do
+    from(m in Message,
+      where: m.channel_id == ^channel_id,
+      where: m.client_message_id == ^client_message_id,
+      preload: [:sender, reactions: :user]
+    )
+    |> Repo.one()
+  end
+
+  defp get_channel_message_by_client_id(_, _), do: nil
 
   # ============================================================================
   # Search

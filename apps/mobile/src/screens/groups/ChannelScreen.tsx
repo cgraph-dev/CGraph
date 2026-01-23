@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import * as Crypto from 'expo-crypto';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RouteProp } from '@react-navigation/native';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -30,25 +31,25 @@ export default function ChannelScreen({ navigation, route }: Props) {
   const { groupId, channelId } = route.params;
   const { colors } = useTheme();
   const { user: _user } = useAuth();
-  
+
   const [channel, setChannel] = useState<Channel | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
-  
+
   const flatListRef = useRef<FlatList>(null);
-  
+
   useEffect(() => {
     fetchChannel();
     fetchMessages();
     joinChannel();
-    
+
     return () => {
       socketManager.leaveChannel(`group:${groupId}:channel:${channelId}`);
     };
   }, [groupId, channelId]);
-  
+
   const fetchChannel = async () => {
     try {
       const response = await api.get(`/api/v1/groups/${groupId}/channels/${channelId}`);
@@ -59,7 +60,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
       console.error('Error fetching channel:', error);
     }
   };
-  
+
   const fetchMessages = async () => {
     try {
       const response = await api.get(`/api/v1/groups/${groupId}/channels/${channelId}/messages`);
@@ -70,7 +71,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
       setIsLoading(false);
     }
   };
-  
+
   const joinChannel = () => {
     const phoenixChannel = socketManager.joinChannel(`group:${groupId}:channel:${channelId}`);
     if (phoenixChannel) {
@@ -80,17 +81,18 @@ export default function ChannelScreen({ navigation, route }: Props) {
       });
     }
   };
-  
+
   const sendMessage = async () => {
     const content = inputText.trim();
     if (!content || isSending) return;
-    
+
     setIsSending(true);
     setInputText('');
-    
+
     try {
       const response = await api.post(`/api/v1/groups/${groupId}/channels/${channelId}/messages`, {
         content,
+        client_message_id: Crypto.randomUUID(),
       });
       setMessages((prev) => [...prev, response.data.data]);
     } catch (error) {
@@ -100,43 +102,44 @@ export default function ChannelScreen({ navigation, route }: Props) {
       setIsSending(false);
     }
   };
-  
-  const renderMessage = useCallback(({ item, index }: { item: Message; index: number }) => {
-    const prevMessage = index > 0 ? messages[index - 1] : null;
-    const isGrouped = prevMessage?.sender_id === item.sender_id;
-    
-    return (
-      <View style={[styles.messageContainer, !isGrouped && styles.messageWithAvatar]}>
-        {!isGrouped && (
-          <View style={styles.messageSender}>
-            <View style={styles.avatarSmall}>
-              {item.sender.avatar_url ? (
-                <Image source={{ uri: item.sender.avatar_url }} style={styles.avatarImage} />
-              ) : (
-                <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
-                  <Text style={styles.avatarText}>
-                    {item.sender.username?.charAt(0).toUpperCase()}
-                  </Text>
-                </View>
-              )}
+
+  const renderMessage = useCallback(
+    ({ item, index }: { item: Message; index: number }) => {
+      const prevMessage = index > 0 ? messages[index - 1] : null;
+      const isGrouped = prevMessage?.sender_id === item.sender_id;
+
+      return (
+        <View style={[styles.messageContainer, !isGrouped && styles.messageWithAvatar]}>
+          {!isGrouped && (
+            <View style={styles.messageSender}>
+              <View style={styles.avatarSmall}>
+                {item.sender.avatar_url ? (
+                  <Image source={{ uri: item.sender.avatar_url }} style={styles.avatarImage} />
+                ) : (
+                  <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
+                    <Text style={styles.avatarText}>
+                      {item.sender.username?.charAt(0).toUpperCase()}
+                    </Text>
+                  </View>
+                )}
+              </View>
+              <Text style={[styles.senderName, { color: colors.text }]}>
+                {item.sender.display_name || item.sender.username}
+              </Text>
+              <Text style={[styles.messageTime, { color: colors.textTertiary }]}>
+                {safeFormatTime(item.inserted_at)}
+              </Text>
             </View>
-            <Text style={[styles.senderName, { color: colors.text }]}>
-              {item.sender.display_name || item.sender.username}
-            </Text>
-            <Text style={[styles.messageTime, { color: colors.textTertiary }]}>
-              {safeFormatTime(item.inserted_at)}
-            </Text>
+          )}
+          <View style={[styles.messageContent, !isGrouped && styles.messageContentWithAvatar]}>
+            <Text style={[styles.messageText, { color: colors.text }]}>{item.content}</Text>
           </View>
-        )}
-        <View style={[styles.messageContent, !isGrouped && styles.messageContentWithAvatar]}>
-          <Text style={[styles.messageText, { color: colors.text }]}>
-            {item.content}
-          </Text>
         </View>
-      </View>
-    );
-  }, [messages, colors]);
-  
+      );
+    },
+    [messages, colors]
+  );
+
   if (isLoading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
@@ -144,7 +147,7 @@ export default function ChannelScreen({ navigation, route }: Props) {
       </View>
     );
   }
-  
+
   return (
     <KeyboardAvoidingView
       style={[styles.container, { backgroundColor: colors.background }]}
@@ -159,12 +162,17 @@ export default function ChannelScreen({ navigation, route }: Props) {
         contentContainerStyle={styles.messagesList}
         onContentSizeChange={() => flatListRef.current?.scrollToEnd()}
       />
-      
-      <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+
+      <View
+        style={[
+          styles.inputContainer,
+          { backgroundColor: colors.surface, borderTopColor: colors.border },
+        ]}
+      >
         <TouchableOpacity style={styles.attachButton}>
           <Ionicons name="add-circle-outline" size={28} color={colors.textSecondary} />
         </TouchableOpacity>
-        
+
         <TextInput
           style={[styles.input, { backgroundColor: colors.input, color: colors.text }]}
           placeholder={`Message #${channel?.name || 'channel'}`}
@@ -174,16 +182,23 @@ export default function ChannelScreen({ navigation, route }: Props) {
           multiline
           maxLength={4000}
         />
-        
+
         <TouchableOpacity
-          style={[styles.sendButton, { backgroundColor: inputText.trim() ? colors.primary : colors.surfaceHover }]}
+          style={[
+            styles.sendButton,
+            { backgroundColor: inputText.trim() ? colors.primary : colors.surfaceHover },
+          ]}
           onPress={sendMessage}
           disabled={!inputText.trim() || isSending}
         >
           {isSending ? (
             <ActivityIndicator size="small" color="#fff" />
           ) : (
-            <Ionicons name="send" size={20} color={inputText.trim() ? '#fff' : colors.textTertiary} />
+            <Ionicons
+              name="send"
+              size={20}
+              color={inputText.trim() ? '#fff' : colors.textTertiary}
+            />
           )}
         </TouchableOpacity>
       </View>

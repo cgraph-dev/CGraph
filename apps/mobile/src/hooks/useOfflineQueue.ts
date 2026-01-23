@@ -9,6 +9,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import * as Haptics from 'expo-haptics';
+import * as Crypto from 'expo-crypto';
 import {
   enqueue,
   dequeue,
@@ -62,15 +63,8 @@ export interface UseOfflineQueueReturn {
     content: string,
     metadata?: Record<string, unknown>
   ) => Promise<QueueItem>;
-  queueReaction: (
-    messageId: string,
-    emoji: string
-  ) => Promise<QueueItem>;
-  queuePost: (
-    forumId: string,
-    title: string,
-    content: string
-  ) => Promise<QueueItem>;
+  queueReaction: (messageId: string, emoji: string) => Promise<QueueItem>;
+  queuePost: (forumId: string, title: string, content: string) => Promise<QueueItem>;
 }
 
 export function useOfflineQueue(): UseOfflineQueueReturn {
@@ -103,7 +97,7 @@ export function useOfflineQueue(): UseOfflineQueueReturn {
       subscribe('networkChange', (data) => {
         const { isOnline } = data as { isOnline: boolean };
         setStats((prev) => ({ ...prev, isOnline }));
-        
+
         // Haptic feedback on network change
         if (isOnline) {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -143,14 +137,17 @@ export function useOfflineQueue(): UseOfflineQueueReturn {
   /**
    * Remove item from queue
    */
-  const removeFromQueue = useCallback(async (itemId: string): Promise<boolean> => {
-    const success = await dequeue(itemId);
-    if (success) {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      refresh();
-    }
-    return success;
-  }, [refresh]);
+  const removeFromQueue = useCallback(
+    async (itemId: string): Promise<boolean> => {
+      const success = await dequeue(itemId);
+      if (success) {
+        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        refresh();
+      }
+      return success;
+    },
+    [refresh]
+  );
 
   /**
    * Retry failed items
@@ -179,16 +176,18 @@ export function useOfflineQueue(): UseOfflineQueueReturn {
       content: string,
       metadata?: Record<string, unknown>
     ): Promise<QueueItem> => {
+      const clientMessageId = Crypto.randomUUID();
       return addToQueue(
         'message',
         `/api/v1/conversations/${conversationId}/messages`,
         'POST',
-        { content },
+        { content, client_message_id: clientMessageId },
         {
           priority: QueuePriority.CRITICAL,
           metadata: {
             description: `Message to conversation ${conversationId}`,
             conversationId,
+            clientMessageId,
             ...metadata,
           },
         }

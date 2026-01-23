@@ -44,7 +44,8 @@ defmodule CGraphWeb.API.V1.ChannelMessageController do
     message_params = %{
       content: Map.get(params, "content"),
       attachments: Map.get(params, "attachments", []),
-      reply_to_id: Map.get(params, "reply_to_id")
+      reply_to_id: Map.get(params, "reply_to_id"),
+      client_message_id: Map.get(params, "client_message_id")
     }
 
     with {:ok, group} <- Groups.get_user_group(user, group_id),

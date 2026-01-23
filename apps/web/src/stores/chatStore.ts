@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { api } from '@/lib/api';
+import { createIdempotencyKey } from '@cgraph/utils';
 import {
   ensureArray,
   ensureObject,
@@ -8,6 +9,7 @@ import {
   normalizeConversations,
 } from '@/lib/apiUtils';
 import { useE2EEStore } from '@/lib/crypto/e2eeStore';
+import { useAuthStore } from '@/stores/authStore';
 import { chatLogger as logger } from '@/lib/logger';
 
 export interface Message {
@@ -100,11 +102,15 @@ export interface ChatState {
   conversations: Conversation[];
   activeConversationId: string | null;
   messages: Record<string, Message[]>;
+  // O(1) message ID lookup for deduplication - scales to millions of messages
+  messageIdSets: Record<string, Set<string>>;
   isLoadingConversations: boolean;
   isLoadingMessages: boolean;
   typingUsers: Record<string, string[]>;
   typingUsersInfo: Record<string, TypingUserInfo[]>;
   hasMoreMessages: Record<string, boolean>;
+  // TTL cache to prevent repeated fetchConversations calls (scales to high traffic)
+  conversationsLastFetchedAt: number | null;
 
   // Actions
   fetchConversations: () => Promise<void>;
@@ -134,6 +140,9 @@ export interface ChatState {
   markAsRead: (conversationId: string) => Promise<void>;
   createConversation: (userIds: string[]) => Promise<Conversation>;
   getRecipientId: (conversationId: string, currentUserId: string) => string | null;
+  // Real-time conversation updates from socket
+  addConversation: (conversation: Conversation) => void;
+  updateConversation: (conversation: Partial<Conversation> & { id: string }) => void;
   // Real-time reaction updates from socket
   addReactionToMessage: (
     messageId: string,
@@ -150,13 +159,25 @@ export const useChatStore = create<ChatState>()(
       conversations: [],
       activeConversationId: null,
       messages: {},
+      messageIdSets: {},
       isLoadingConversations: false,
       isLoadingMessages: false,
       typingUsers: {},
       typingUsersInfo: {},
       hasMoreMessages: {},
+      conversationsLastFetchedAt: null,
 
       fetchConversations: async () => {
+        const { conversationsLastFetchedAt, isLoadingConversations } = get();
+        const now = Date.now();
+        const CACHE_TTL = 30000; // 30 seconds
+
+        // Skip if already loading or recently fetched (TTL cache)
+        if (isLoadingConversations) return;
+        if (conversationsLastFetchedAt && now - conversationsLastFetchedAt < CACHE_TTL) {
+          return; // Cache still valid
+        }
+
         set({ isLoadingConversations: true });
         try {
           const response = await api.get('/api/v1/conversations');
@@ -170,6 +191,7 @@ export const useChatStore = create<ChatState>()(
           set({
             conversations: normalizedConversations,
             isLoadingConversations: false,
+            conversationsLastFetchedAt: now,
           });
         } catch (error) {
           set({ isLoadingConversations: false });
@@ -188,19 +210,30 @@ export const useChatStore = create<ChatState>()(
           const newMessages = rawMessages.map((m) => normalizeMessage(m)) as unknown as Message[];
           const hasMore = newMessages.length === 50;
 
-          set((state) => ({
-            messages: {
-              ...state.messages,
-              [conversationId]: before
-                ? [...newMessages, ...(state.messages[conversationId] || [])]
-                : newMessages,
-            },
-            hasMoreMessages: {
-              ...state.hasMoreMessages,
-              [conversationId]: hasMore,
-            },
-            isLoadingMessages: false,
-          }));
+          set((state) => {
+            // Build message ID set for O(1) deduplication
+            const existingIds = state.messageIdSets[conversationId] || new Set<string>();
+            const newIdSet = new Set(existingIds);
+            newMessages.forEach((m) => newIdSet.add(m.id));
+
+            return {
+              messages: {
+                ...state.messages,
+                [conversationId]: before
+                  ? [...newMessages, ...(state.messages[conversationId] || [])]
+                  : newMessages,
+              },
+              messageIdSets: {
+                ...state.messageIdSets,
+                [conversationId]: newIdSet,
+              },
+              hasMoreMessages: {
+                ...state.hasMoreMessages,
+                [conversationId]: hasMore,
+              },
+              isLoadingMessages: false,
+            };
+          });
         } catch (error) {
           set({ isLoadingMessages: false });
           throw error;
@@ -210,20 +243,21 @@ export const useChatStore = create<ChatState>()(
       sendMessage: async (conversationId: string, content: string, replyToId?: string) => {
         // Check if E2EE is available and get recipient for encryption
         const e2eeStore = useE2EEStore.getState();
+        const clientMessageId = createIdempotencyKey();
         const { conversations } = get();
         const conversation = conversations.find((c) => c.id === conversationId);
 
         // Get current user ID from auth store for recipient detection
         // For direct conversations, encrypt if E2EE is initialized
         if (e2eeStore.isInitialized && conversation?.type === 'direct') {
-          // Get the other participant (recipient)
-          const currentUserIdFromParticipants =
-            conversation.participants.length === 2 ? conversation.participants[0]?.userId : null;
+          const currentUserId = useAuthStore.getState().user?.id;
 
           // Find recipient (the other participant)
-          const recipientParticipant =
-            conversation.participants.find((p) => p.userId !== currentUserIdFromParticipants) ||
-            conversation.participants[1];
+          const recipientParticipant = currentUserId
+            ? conversation.participants.find((p) => p.userId !== currentUserId)
+            : conversation.participants.find(
+                (p) => p.userId !== conversation.participants[0]?.userId
+              ) || conversation.participants[1];
 
           if (recipientParticipant) {
             try {
@@ -240,6 +274,7 @@ export const useChatStore = create<ChatState>()(
                 nonce: encryptedMsg.nonce,
                 recipient_identity_key_id: encryptedMsg.recipientIdentityKeyId,
                 one_time_prekey_id: encryptedMsg.oneTimePreKeyId,
+                client_message_id: clientMessageId,
               };
               if (replyToId) payload.reply_to_id = replyToId;
 
@@ -265,7 +300,7 @@ export const useChatStore = create<ChatState>()(
         }
 
         // Fallback: Send plaintext (for group chats or when E2EE not available)
-        const payload: Record<string, string> = { content };
+        const payload: Record<string, string> = { content, client_message_id: clientMessageId };
         if (replyToId) payload.reply_to_id = replyToId;
 
         const response = await api.post(
@@ -305,6 +340,7 @@ export const useChatStore = create<ChatState>()(
             nonce: encryptedMsg.nonce,
             recipient_identity_key_id: encryptedMsg.recipientIdentityKeyId,
             one_time_prekey_id: encryptedMsg.oneTimePreKeyId,
+            client_message_id: createIdempotencyKey(),
           };
           if (replyToId) payload.reply_to_id = replyToId;
 
@@ -411,14 +447,25 @@ export const useChatStore = create<ChatState>()(
       addMessage: (message: Message) => {
         set((state) => {
           const conversationMessages = state.messages[message.conversationId] || [];
-          // Avoid duplicates
-          if (conversationMessages.some((m) => m.id === message.id)) {
+          const idSet = state.messageIdSets[message.conversationId] || new Set<string>();
+
+          // O(1) deduplication check - scales to millions of messages
+          if (idSet.has(message.id)) {
             return state;
           }
+
+          // Create new Set with the message ID added
+          const newIdSet = new Set(idSet);
+          newIdSet.add(message.id);
+
           return {
             messages: {
               ...state.messages,
               [message.conversationId]: [...conversationMessages, message],
+            },
+            messageIdSets: {
+              ...state.messageIdSets,
+              [message.conversationId]: newIdSet,
             },
             conversations: state.conversations.map((conv) =>
               conv.id === message.conversationId
@@ -441,14 +488,34 @@ export const useChatStore = create<ChatState>()(
       },
 
       removeMessage: (messageId: string, conversationId: string) => {
-        set((state) => ({
-          messages: {
-            ...state.messages,
-            [conversationId]: (state.messages[conversationId] || []).filter(
-              (m) => m.id !== messageId
-            ),
-          },
-        }));
+        set((state) => {
+          // Remove from ID set for O(1) deduplication consistency
+          const idSet = state.messageIdSets[conversationId];
+          if (idSet) {
+            const newIdSet = new Set(idSet);
+            newIdSet.delete(messageId);
+            return {
+              messages: {
+                ...state.messages,
+                [conversationId]: (state.messages[conversationId] || []).filter(
+                  (m) => m.id !== messageId
+                ),
+              },
+              messageIdSets: {
+                ...state.messageIdSets,
+                [conversationId]: newIdSet,
+              },
+            };
+          }
+          return {
+            messages: {
+              ...state.messages,
+              [conversationId]: (state.messages[conversationId] || []).filter(
+                (m) => m.id !== messageId
+              ),
+            },
+          };
+        });
       },
 
       setTypingUser: (
@@ -507,6 +574,34 @@ export const useChatStore = create<ChatState>()(
           return conversation;
         }
         throw new Error('Failed to create conversation');
+      },
+
+      /**
+       * Add a new conversation from real-time socket event
+       * Prevents duplicates by checking existing conversations
+       */
+      addConversation: (conversation: Conversation) => {
+        set((state) => {
+          // Check if conversation already exists
+          if (state.conversations.some((c) => c.id === conversation.id)) {
+            return state;
+          }
+          return {
+            conversations: [conversation, ...state.conversations],
+          };
+        });
+      },
+
+      /**
+       * Update an existing conversation from real-time socket event
+       * Used for last message updates, unread counts, etc.
+       */
+      updateConversation: (updates: Partial<Conversation> & { id: string }) => {
+        set((state) => ({
+          conversations: state.conversations.map((conv) =>
+            conv.id === updates.id ? { ...conv, ...updates } : conv
+          ),
+        }));
       },
 
       /**

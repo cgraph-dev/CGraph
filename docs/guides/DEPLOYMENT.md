@@ -18,6 +18,12 @@ The backend is already deployed. Here's our current production setup:
 | Database  | Supabase       | Europe region, PostgreSQL 15          |
 | Redis     | Not configured | Rate limiting uses local ETS fallback |
 
+> **Recommended for scale:** Configure Redis in production.
+>
+> - Enables distributed rate limiting
+> - Avoids single-node token/session state
+> - Improves presence and notification fan‑out reliability
+
 **Production URLs:**
 
 - API: https://cgraph-backend.fly.dev

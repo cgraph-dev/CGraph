@@ -1,10 +1,10 @@
 import { Socket, Channel, Presence } from 'phoenix';
 import { useAuthStore } from '@/stores/authStore';
-import { useChatStore, Message } from '@/stores/chatStore';
+import { useChatStore, Message, Conversation } from '@/stores/chatStore';
 import { useGroupStore, ChannelMessage } from '@/stores/groupStore';
 import { useE2EEStore } from '@/lib/crypto/e2eeStore';
 import { socketLogger as logger } from './logger';
-import { normalizeMessage } from './apiUtils';
+import { normalizeMessage, normalizeConversation } from './apiUtils';
 
 // ============================================================================
 // Forum/Thread WebSocket Types
@@ -322,6 +322,26 @@ class SocketManager {
       logger.log('Message preview:', payload);
     });
 
+    // Handle new conversation created (real-time sync for multi-device)
+    channel.on('conversation_created', (payload) => {
+      logger.log('New conversation created:', payload);
+      const data = payload as { conversation: Record<string, unknown> };
+      if (data.conversation) {
+        // Normalize the conversation data before adding to store
+        const normalized = normalizeConversation(data.conversation) as unknown as Conversation;
+        useChatStore.getState().addConversation(normalized);
+      }
+    });
+
+    // Handle conversation updates (new messages, unread counts, etc.)
+    channel.on('conversation_updated', (payload) => {
+      logger.log('Conversation updated:', payload);
+      const data = payload as { conversation: Partial<Conversation> & { id: string } };
+      if (data.conversation?.id) {
+        useChatStore.getState().updateConversation(data.conversation);
+      }
+    });
+
     channel
       .join()
       .receive('ok', () => {
@@ -393,11 +413,14 @@ class SocketManager {
     });
 
     // Handle status updates (online -> away -> busy -> etc.)
-    channel.on('status_update', (payload: unknown) => {
+    const handleStatusUpdate = (payload: unknown) => {
       const data = payload as { user_id: string; status: string };
       logger.log('Friend status update:', data.user_id, '->', data.status);
       // Status listeners can query the status via API if needed
-    });
+    };
+
+    channel.on('status_update', handleStatusUpdate);
+    channel.on('friend_status_changed', handleStatusUpdate);
 
     channel
       .join()
@@ -806,31 +829,41 @@ class SocketManager {
   /**
    * Forum event callbacks interface
    */
-  private forumCallbacks: Map<string, {
-    onNewThread?: (thread: ForumThreadPayload) => void;
-    onThreadPinned?: (data: { thread_id: string; is_pinned: boolean }) => void;
-    onThreadLocked?: (data: { thread_id: string; is_locked: boolean }) => void;
-    onThreadDeleted?: (data: { thread_id: string }) => void;
-    onMemberJoined?: (user: ForumUserPayload) => void;
-    onMemberLeft?: (data: { user_id: string }) => void;
-    onStatsUpdate?: (stats: ForumStatsPayload) => void;
-    onPresenceSync?: (members: ForumPresenceMember[]) => void;
-  }> = new Map();
+  private forumCallbacks: Map<
+    string,
+    {
+      onNewThread?: (thread: ForumThreadPayload) => void;
+      onThreadPinned?: (data: { thread_id: string; is_pinned: boolean }) => void;
+      onThreadLocked?: (data: { thread_id: string; is_locked: boolean }) => void;
+      onThreadDeleted?: (data: { thread_id: string }) => void;
+      onMemberJoined?: (user: ForumUserPayload) => void;
+      onMemberLeft?: (data: { user_id: string }) => void;
+      onStatsUpdate?: (stats: ForumStatsPayload) => void;
+      onPresenceSync?: (members: ForumPresenceMember[]) => void;
+    }
+  > = new Map();
 
   /**
    * Thread event callbacks interface
    */
-  private threadCallbacks: Map<string, {
-    onNewComment?: (comment: ThreadCommentPayload) => void;
-    onCommentEdited?: (comment: ThreadCommentPayload) => void;
-    onCommentDeleted?: (data: { comment_id: string }) => void;
-    onVoteChanged?: (data: ThreadVotePayload) => void;
-    onCommentVoteChanged?: (data: CommentVotePayload) => void;
-    onTyping?: (data: ThreadTypingPayload) => void;
-    onPollUpdated?: (data: ThreadPollPayload) => void;
-    onThreadStatusChanged?: (data: { thread_id: string; is_locked: boolean; is_pinned: boolean }) => void;
-    onPresenceSync?: (viewers: ThreadViewerPayload[]) => void;
-  }> = new Map();
+  private threadCallbacks: Map<
+    string,
+    {
+      onNewComment?: (comment: ThreadCommentPayload) => void;
+      onCommentEdited?: (comment: ThreadCommentPayload) => void;
+      onCommentDeleted?: (data: { comment_id: string }) => void;
+      onVoteChanged?: (data: ThreadVotePayload) => void;
+      onCommentVoteChanged?: (data: CommentVotePayload) => void;
+      onTyping?: (data: ThreadTypingPayload) => void;
+      onPollUpdated?: (data: ThreadPollPayload) => void;
+      onThreadStatusChanged?: (data: {
+        thread_id: string;
+        is_locked: boolean;
+        is_pinned: boolean;
+      }) => void;
+      onPresenceSync?: (viewers: ThreadViewerPayload[]) => void;
+    }
+  > = new Map();
 
   /**
    * Join a forum channel for real-time updates.
@@ -849,16 +882,19 @@ class SocketManager {
    * @param callbacks - Optional callbacks for forum events
    * @returns Channel instance or null if unable to join
    */
-  joinForum(forumId: string, callbacks?: {
-    onNewThread?: (thread: ForumThreadPayload) => void;
-    onThreadPinned?: (data: { thread_id: string; is_pinned: boolean }) => void;
-    onThreadLocked?: (data: { thread_id: string; is_locked: boolean }) => void;
-    onThreadDeleted?: (data: { thread_id: string }) => void;
-    onMemberJoined?: (user: ForumUserPayload) => void;
-    onMemberLeft?: (data: { user_id: string }) => void;
-    onStatsUpdate?: (stats: ForumStatsPayload) => void;
-    onPresenceSync?: (members: ForumPresenceMember[]) => void;
-  }): Channel | null {
+  joinForum(
+    forumId: string,
+    callbacks?: {
+      onNewThread?: (thread: ForumThreadPayload) => void;
+      onThreadPinned?: (data: { thread_id: string; is_pinned: boolean }) => void;
+      onThreadLocked?: (data: { thread_id: string; is_locked: boolean }) => void;
+      onThreadDeleted?: (data: { thread_id: string }) => void;
+      onMemberJoined?: (user: ForumUserPayload) => void;
+      onMemberLeft?: (data: { user_id: string }) => void;
+      onStatsUpdate?: (stats: ForumStatsPayload) => void;
+      onPresenceSync?: (members: ForumPresenceMember[]) => void;
+    }
+  ): Channel | null {
     const topic = `forum:${forumId}`;
 
     // Store callbacks for this forum
@@ -905,7 +941,7 @@ class SocketManager {
             display_name: meta.display_name,
             avatar_url: meta.avatar_url,
             online_at: meta.online_at,
-            is_member: meta.is_member
+            is_member: meta.is_member,
           });
           return userId;
         });
@@ -1001,7 +1037,7 @@ class SocketManager {
   subscribeToForum(forumId: string): Promise<{ subscribed: boolean }> {
     const topic = `forum:${forumId}`;
     const channel = this.channels.get(topic);
-    
+
     if (!channel || channel.state !== 'joined') {
       return Promise.reject(new Error('Not connected to forum channel'));
     }
@@ -1020,7 +1056,7 @@ class SocketManager {
   unsubscribeFromForum(forumId: string): Promise<{ subscribed: boolean }> {
     const topic = `forum:${forumId}`;
     const channel = this.channels.get(topic);
-    
+
     if (!channel || channel.state !== 'joined') {
       return Promise.reject(new Error('Not connected to forum channel'));
     }
@@ -1055,17 +1091,24 @@ class SocketManager {
    * @param callbacks - Optional callbacks for thread events
    * @returns Channel instance or null if unable to join
    */
-  joinThread(threadId: string, callbacks?: {
-    onNewComment?: (comment: ThreadCommentPayload) => void;
-    onCommentEdited?: (comment: ThreadCommentPayload) => void;
-    onCommentDeleted?: (data: { comment_id: string }) => void;
-    onVoteChanged?: (data: ThreadVotePayload) => void;
-    onCommentVoteChanged?: (data: CommentVotePayload) => void;
-    onTyping?: (data: ThreadTypingPayload) => void;
-    onPollUpdated?: (data: ThreadPollPayload) => void;
-    onThreadStatusChanged?: (data: { thread_id: string; is_locked: boolean; is_pinned: boolean }) => void;
-    onPresenceSync?: (viewers: ThreadViewerPayload[]) => void;
-  }): Channel | null {
+  joinThread(
+    threadId: string,
+    callbacks?: {
+      onNewComment?: (comment: ThreadCommentPayload) => void;
+      onCommentEdited?: (comment: ThreadCommentPayload) => void;
+      onCommentDeleted?: (data: { comment_id: string }) => void;
+      onVoteChanged?: (data: ThreadVotePayload) => void;
+      onCommentVoteChanged?: (data: CommentVotePayload) => void;
+      onTyping?: (data: ThreadTypingPayload) => void;
+      onPollUpdated?: (data: ThreadPollPayload) => void;
+      onThreadStatusChanged?: (data: {
+        thread_id: string;
+        is_locked: boolean;
+        is_pinned: boolean;
+      }) => void;
+      onPresenceSync?: (viewers: ThreadViewerPayload[]) => void;
+    }
+  ): Channel | null {
     const topic = `thread:${threadId}`;
 
     // Store callbacks for this thread
@@ -1111,7 +1154,7 @@ class SocketManager {
             username: meta.username,
             display_name: meta.display_name,
             avatar_url: meta.avatar_url,
-            typing: meta.typing
+            typing: meta.typing,
           });
           return userId;
         });
@@ -1213,7 +1256,7 @@ class SocketManager {
   voteOnThread(threadId: string, value: 1 | -1 | 0): Promise<ThreadVotePayload> {
     const topic = `thread:${threadId}`;
     const channel = this.channels.get(topic);
-    
+
     if (!channel || channel.state !== 'joined') {
       return Promise.reject(new Error('Not connected to thread channel'));
     }
@@ -1229,10 +1272,14 @@ class SocketManager {
   /**
    * Vote on a comment via WebSocket.
    */
-  voteOnComment(threadId: string, commentId: string, value: 1 | -1 | 0): Promise<CommentVotePayload> {
+  voteOnComment(
+    threadId: string,
+    commentId: string,
+    value: 1 | -1 | 0
+  ): Promise<CommentVotePayload> {
     const topic = `thread:${threadId}`;
     const channel = this.channels.get(topic);
-    
+
     if (!channel || channel.state !== 'joined') {
       return Promise.reject(new Error('Not connected to thread channel'));
     }
@@ -1248,10 +1295,14 @@ class SocketManager {
   /**
    * Send a comment via WebSocket.
    */
-  sendComment(threadId: string, content: string, parentId?: string): Promise<{ comment_id: string }> {
+  sendComment(
+    threadId: string,
+    content: string,
+    parentId?: string
+  ): Promise<{ comment_id: string }> {
     const topic = `thread:${threadId}`;
     const channel = this.channels.get(topic);
-    
+
     if (!channel || channel.state !== 'joined') {
       return Promise.reject(new Error('Not connected to thread channel'));
     }
@@ -1281,7 +1332,7 @@ class SocketManager {
   voteOnPoll(threadId: string, optionId: string): Promise<{ poll: ThreadPollData }> {
     const topic = `thread:${threadId}`;
     const channel = this.channels.get(topic);
-    
+
     if (!channel || channel.state !== 'joined') {
       return Promise.reject(new Error('Not connected to thread channel'));
     }
@@ -1300,7 +1351,7 @@ class SocketManager {
   getThreadViewers(threadId: string): Promise<{ viewers: ThreadViewerPayload[] }> {
     const topic = `thread:${threadId}`;
     const channel = this.channels.get(topic);
-    
+
     if (!channel || channel.state !== 'joined') {
       return Promise.reject(new Error('Not connected to thread channel'));
     }
@@ -1353,20 +1404,38 @@ class SocketManager {
   }
 
   // Peek at conversations to get presence data (lightweight join/leave)
+  // Fixed: Now properly leaves channels after presence peek to prevent memory leak
   async peekConversationsPresence(conversationIds: string[]): Promise<void> {
     if (!this.socket?.isConnected()) {
       await this.connect();
     }
 
+    const channelsToLeave: string[] = [];
+
     conversationIds.forEach((convId) => {
       const topic = `conversation:${convId}`;
       const existingChannel = this.channels.get(topic);
 
-      // Only peek if not already joined
+      // Only peek if not already joined (active conversation)
       if (!existingChannel || existingChannel.state !== 'joined') {
         this.joinConversation(convId);
+        channelsToLeave.push(convId);
       }
     });
+
+    // Leave channels after a brief delay to allow presence data to be received
+    // This prevents memory leak from keeping channels open indefinitely
+    if (channelsToLeave.length > 0) {
+      setTimeout(() => {
+        channelsToLeave.forEach((convId) => {
+          // Only leave if not the active conversation
+          const { activeConversationId } = useChatStore.getState();
+          if (convId !== activeConversationId) {
+            this.leaveConversation(convId);
+          }
+        });
+      }, 2000); // 2 second delay to receive presence
+    }
   }
 }
 

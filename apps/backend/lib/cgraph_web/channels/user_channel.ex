@@ -101,6 +101,30 @@ defmodule CGraphWeb.UserChannel do
   end
 
   @impl true
+  def handle_info({:conversation_created, conversation}, socket) do
+    push(socket, "conversation_created", %{
+      conversation: %{
+        id: conversation.id,
+        type: if(conversation.user_two_id, do: "direct", else: "group"),
+        name: nil,
+        avatarUrl: nil,
+        participants: format_participants(conversation.participants),
+        lastMessage: nil,
+        unreadCount: 0,
+        createdAt: conversation.inserted_at,
+        updatedAt: conversation.updated_at
+      }
+    })
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:conversation_updated, conversation_data}, socket) do
+    push(socket, "conversation_updated", %{conversation: conversation_data})
+    {:noreply, socket}
+  end
+
+  @impl true
   def handle_in("get_contact_presence", _params, socket) do
     user = socket.assigns.current_user
     contact_presence = fetch_contact_presence(user.id)
@@ -180,30 +204,10 @@ defmodule CGraphWeb.UserChannel do
   end
 
   defp get_contact_ids(user_id) do
-    # Query conversations for unique participant IDs
-    # The Relationships module is not implemented yet
-    import Ecto.Query
-
-    try do
-      alias CGraph.Messaging.ConversationParticipant
-      alias CGraph.Repo
-
-      # Get all conversations the user is in
-      conversation_ids = ConversationParticipant
-        |> where([cp], cp.user_id == ^user_id)
-        |> select([cp], cp.conversation_id)
-        |> Repo.all()
-
-      # Get all other participants in those conversations
-      ConversationParticipant
-        |> where([cp], cp.conversation_id in ^conversation_ids)
-        |> where([cp], cp.user_id != ^user_id)
-        |> select([cp], cp.user_id)
-        |> distinct(true)
-        |> Repo.all()
-    rescue
-      _ -> []
-    end
+    # Use accepted friendships for presence visibility
+    CGraph.Accounts.Friends.get_accepted_friend_ids(user_id)
+  rescue
+    _ -> []
   end
 
   defp get_user_status(user_id) do
@@ -258,6 +262,22 @@ defmodule CGraphWeb.UserChannel do
         false
     end
   end
+
+  defp format_participants(participants) when is_list(participants) do
+    Enum.map(participants, fn p ->
+      %{
+        user_id: p.user_id,
+        joined_at: p.inserted_at,
+        user: p.user && %{
+          id: p.user.id,
+          username: p.user.username,
+          display_name: p.user.display_name,
+          avatar_url: p.user.avatar_url
+        }
+      }
+    end)
+  end
+  defp format_participants(_), do: []
 
   defp truncate_content(nil, _max_length), do: nil
   defp truncate_content(content, max_length) when byte_size(content) <= max_length, do: content

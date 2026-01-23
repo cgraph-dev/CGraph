@@ -18,7 +18,6 @@ import {
   InformationCircleIcon,
   LockClosedIcon,
   ShieldCheckIcon,
-  ArrowPathIcon,
   MicrophoneIcon,
   Cog6ToothIcon,
   SparklesIcon,
@@ -160,7 +159,6 @@ export default function Conversation() {
   const [messageInput, setMessageInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [replyTo, setReplyTo] = useState<Message | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [showStickerPicker, setShowStickerPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -190,17 +188,6 @@ export default function Conversation() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [friends.length]);
-
-  // Refresh handler
-  const handleRefresh = useCallback(async () => {
-    if (!conversationId || isRefreshing) return;
-    setIsRefreshing(true);
-    try {
-      await fetchMessages(conversationId);
-    } finally {
-      setIsRefreshing(false);
-    }
-  }, [conversationId, isRefreshing, fetchMessages]);
 
   const conversation = conversations.find((c) => c.id === conversationId);
   const conversationMessages = conversationId ? messages[conversationId] || [] : [];
@@ -292,6 +279,13 @@ export default function Conversation() {
     return () => {
       mounted = false;
       setActiveConversation(null);
+
+      // Clean up typing indicator to prevent race condition
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      socketManager.sendTyping(`conversation:${conversationId}`, false);
+
       socketManager.leaveConversation(conversationId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -386,16 +380,19 @@ export default function Conversation() {
       formData.append('waveform', JSON.stringify(data.waveform));
       formData.append('conversation_id', conversationId);
 
-      // Upload voice message
-      await api.post('/api/v1/voice-messages', formData, {
+      // Upload voice message and get the created message back
+      const response = await api.post('/api/v1/voice-messages', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      // Refetch messages to show the new voice message
-      // (alternatively, we could add the message directly to the store)
-      await fetchMessages(conversationId);
+      // Add message directly to store instead of refetching all messages
+      // This is more efficient for high-throughput scenarios
+      if (response.data?.message) {
+        const { addMessage } = useChatStore.getState();
+        addMessage(response.data.message as Message);
+      }
     } catch (error) {
       console.error('Failed to send voice message:', error);
       toast.error('Failed to send voice message.');
@@ -626,21 +623,6 @@ export default function Conversation() {
               >
                 <LockClosedIcon className="h-3.5 w-3.5 text-green-400" />
                 <span className="text-xs font-bold tracking-wider text-green-400">E2EE</span>
-              </motion.button>
-
-              {/* Action Buttons */}
-              <motion.button
-                onClick={() => {
-                  handleRefresh();
-                  if (uiPreferences.enableHaptic) HapticFeedback.light();
-                }}
-                disabled={isRefreshing}
-                className="rounded-lg p-2 text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white disabled:opacity-50"
-                title="Refresh messages"
-                whileHover={{ scale: 1.1, rotate: uiPreferences.enable3D ? 180 : 0 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <ArrowPathIcon className={`h-5 w-5 ${isRefreshing ? 'animate-spin' : ''}`} />
               </motion.button>
 
               <motion.button

@@ -180,9 +180,24 @@ defmodule CGraph.Messaging.Conversations do
         |> Repo.insert()
       end
 
-      Repo.preload(conversation, [participants: :user])
+      conversation_with_participants = Repo.preload(conversation, [participants: :user])
+
+      # Broadcast to all participants so their UI updates in real-time
+      broadcast_conversation_created(conversation_with_participants, participant_ids)
+
+      conversation_with_participants
     else
       {:error, :group_conversations_not_supported}
+    end
+  end
+
+  defp broadcast_conversation_created(conversation, participant_ids) do
+    for user_id <- participant_ids do
+      Phoenix.PubSub.broadcast(
+        CGraph.PubSub,
+        "user:#{user_id}:notifications",
+        {:conversation_created, conversation}
+      )
     end
   end
 end

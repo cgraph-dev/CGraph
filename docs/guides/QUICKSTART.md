@@ -5,7 +5,8 @@
 
 ---
 
-This guide walks through setting up CGraph on your local machine. The process is straightforward, though there are several components since this is a full-stack app with real-time features.
+This guide walks through setting up CGraph on your local machine. The process is straightforward,
+though there are several components since this is a full-stack app with real-time features.
 
 ## Prerequisites
 
@@ -13,21 +14,23 @@ These are the versions tested and recommended. Slightly newer versions typically
 
 ### Required Software
 
-| Tool | Version | Check Command | Purpose |
-|------|---------|---------------|---------|
-| **Node.js** | 22.x LTS | `node --version` | Frontend runtime |
-| **pnpm** | 10.x | `pnpm --version` | Package manager |
-| **Elixir** | 1.19+ | `elixir --version` | Backend language |
-| **Erlang/OTP** | 28+ | `erl -version` | Elixir runtime |
-| **PostgreSQL** | 16+ | `psql --version` | Primary database |
-| **FFmpeg** | 6.1+ | `ffmpeg -version` | Voice message processing |
-| **asdf** | latest | `asdf --version` | Version manager (recommended) |
+| Tool           | Version  | Check Command      | Purpose                       |
+| -------------- | -------- | ------------------ | ----------------------------- |
+| **Node.js**    | 22.x LTS | `node --version`   | Frontend runtime              |
+| **pnpm**       | 10.x     | `pnpm --version`   | Package manager               |
+| **Elixir**     | 1.19+    | `elixir --version` | Backend language              |
+| **Erlang/OTP** | 28+      | `erl -version`     | Elixir runtime                |
+| **PostgreSQL** | 16+      | `psql --version`   | Primary database              |
+| **FFmpeg**     | 6.1+     | `ffmpeg -version`  | Voice message processing      |
+| **asdf**       | latest   | `asdf --version`   | Version manager (recommended) |
 
-*Redis is recommended for distributed rate limiting and session management. In development, ETS provides fallback caching when Redis is unavailable.*
+_Redis is recommended for distributed rate limiting and session management. In development, ETS
+provides fallback caching when Redis is unavailable._
 
 ### Installation Instructions
 
 **macOS (Homebrew):**
+
 ```bash
 # Install asdf version manager (0.18+)
 brew install asdf
@@ -52,6 +55,7 @@ brew services start postgresql@16
 ```
 
 **Ubuntu/Debian:**
+
 ```bash
 # Install build dependencies
 sudo apt update
@@ -88,8 +92,8 @@ sudo apt install postgresql-16 postgresql-contrib
 sudo systemctl start postgresql
 ```
 
-**Windows:**
-Use WSL2 with Ubuntu and follow the Linux instructions above. Native Windows support is not recommended for Elixir development.
+**Windows:** Use WSL2 with Ubuntu and follow the Linux instructions above. Native Windows support is
+not recommended for Elixir development.
 
 ---
 
@@ -112,6 +116,7 @@ cd ../..
 ### Common Issues
 
 **"pnpm install" fails:**
+
 ```bash
 # Clear pnpm cache
 pnpm store prune
@@ -121,6 +126,7 @@ pnpm install
 ```
 
 **"mix deps.get" fails:**
+
 ```bash
 # Update Hex package manager
 mix local.hex --force
@@ -133,12 +139,14 @@ mix deps.get
 ```
 
 **Problem:** `ERESOLVE unable to resolve dependency tree`
+
 ```bash
 # Try with legacy peer deps
 pnpm install --legacy-peer-deps
 ```
 
 **Problem:** `bcrypt` compilation fails
+
 ```bash
 # You need build tools
 # macOS: xcode-select --install
@@ -146,6 +154,7 @@ pnpm install --legacy-peer-deps
 ```
 
 **Problem:** Everything is broken and you want to start over
+
 ```bash
 rm -rf node_modules apps/*/node_modules packages/*/node_modules
 pnpm store prune
@@ -162,7 +171,7 @@ Development uses `.env` files. Copy the example files:
 # Backend
 cp apps/backend/.env.example apps/backend/.env
 
-# Web frontend  
+# Web frontend
 cp apps/web/.env.example apps/web/.env
 
 # Mobile
@@ -172,6 +181,7 @@ cp apps/mobile/.env.example apps/mobile/.env
 ### Minimum Required Variables
 
 **`apps/backend/.env`:**
+
 ```bash
 # Database (adjust if your local Postgres uses different credentials)
 DATABASE_URL=ecto://postgres:postgres@localhost/cgraph_dev
@@ -186,6 +196,11 @@ GUARDIAN_SECRET=another-long-random-string
 # Redis (default local)
 REDIS_URL=redis://localhost:6379
 
+# If you use docker compose, Redis requires authentication
+# Keep REDIS_PASSWORD in your compose env and include it in REDIS_URL:
+# REDIS_PASSWORD=your_local_password
+# REDIS_URL=redis://:your_local_password@localhost:6379
+
 # For local dev, these can be fake
 RESEND_API_KEY=re_fake_key_for_dev
 R2_ACCESS_KEY_ID=fake
@@ -195,12 +210,14 @@ R2_ENDPOINT=http://localhost:9000
 ```
 
 **`apps/web/.env`:**
+
 ```bash
 VITE_API_URL=http://localhost:4000
 VITE_WS_URL=ws://localhost:4000
 ```
 
 **`apps/mobile/.env`:**
+
 ```bash
 API_URL=http://localhost:4000
 WS_URL=ws://localhost:4000
@@ -228,6 +245,7 @@ mix run priv/repo/seeds.exs
 ### Troubleshooting: Database Issues
 
 **Problem:** `connection refused`
+
 ```bash
 # Make sure Postgres is running
 # macOS: brew services start postgresql@15
@@ -235,12 +253,14 @@ mix run priv/repo/seeds.exs
 ```
 
 **Problem:** `role "postgres" does not exist`
+
 ```bash
 # Create the postgres user
 createuser -s postgres
 ```
 
 **Problem:** `database "cgraph_dev" already exists`
+
 ```bash
 # Drop and recreate (WARNING: destroys all data)
 mix ecto.drop
@@ -260,12 +280,14 @@ pnpm dev
 ```
 
 This starts:
+
 - Backend (Phoenix) on `http://localhost:4000`
 - Web frontend (Vite) on `http://localhost:5173`
 
 ### Or start things separately:
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd apps/backend
 mix phx.server
@@ -275,12 +297,14 @@ iex -S mix phx.server
 ```
 
 **Terminal 2 - Web Frontend:**
+
 ```bash
 cd apps/web
 pnpm dev
 ```
 
 **Terminal 3 - Mobile (optional):**
+
 ```bash
 cd apps/mobile
 pnpm start
@@ -295,8 +319,9 @@ pnpm start
 ### Check Backend
 
 Visit `http://localhost:4000/api/health` in your browser. You should see:
+
 ```json
-{"status": "ok", "database": "connected", "redis": "connected"}
+{ "status": "ok", "database": "connected", "redis": "connected" }
 ```
 
 ### Check Web Frontend
@@ -306,6 +331,7 @@ Visit `http://localhost:5173`. You should see the login page.
 ### Check Mobile
 
 Run the app in a simulator:
+
 ```bash
 cd apps/mobile
 pnpm ios   # or pnpm android
@@ -319,6 +345,7 @@ pnpm ios   # or pnpm android
 4. Check your terminal—the "email" content prints there
 
 Or use the seeded test account:
+
 - Email: `demo@cgraph.org`
 - Password: `password123`
 
@@ -390,10 +417,10 @@ Edit `apps/backend/lib/cgraph_web/router.ex`:
 # Near the top, in the public API scope
 scope "/api", CGraphWeb do
   pipe_through :api
-  
+
   # Add this line
   get "/ping", PingController, :ping
-  
+
   # ... existing routes
 end
 ```
@@ -405,7 +432,7 @@ Create `apps/backend/lib/cgraph_web/controllers/ping_controller.ex`:
 ```elixir
 defmodule CGraphWeb.PingController do
   use CGraphWeb, :controller
-  
+
   def ping(conn, _params) do
     json(conn, %{
       pong: true,
@@ -429,6 +456,7 @@ curl http://localhost:4000/api/ping
 ### 4. Call It from the Frontend (Optional)
 
 Add to your React component:
+
 ```tsx
 import { api } from '@/lib/api';
 
@@ -534,17 +562,27 @@ The Docker setup mounts your local code, so changes are reflected immediately.
 Install these extensions for the best experience:
 
 **Required:**
-- [ElixirLS](https://marketplace.visualstudio.com/items?itemName=JakeBecker.elixir-ls) - Elixir language support
-- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) - Code formatting
-- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) - TypeScript linting
-- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) - CSS classes
+
+- [ElixirLS](https://marketplace.visualstudio.com/items?itemName=JakeBecker.elixir-ls) - Elixir
+  language support
+- [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) - Code
+  formatting
+- [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) - TypeScript
+  linting
+- [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) -
+  CSS classes
 
 **Nice to have:**
-- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) - Git blame, history
-- [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) - Inline error display
-- [Thunder Client](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client) - API testing
+
+- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens) - Git blame,
+  history
+- [Error Lens](https://marketplace.visualstudio.com/items?itemName=usernamehw.errorlens) - Inline
+  error display
+- [Thunder Client](https://marketplace.visualstudio.com/items?itemName=rangav.vscode-thunder-client) -
+  API testing
 
 **Workspace settings (`.vscode/settings.json`):**
+
 ```json
 {
   "editor.formatOnSave": true,
@@ -591,6 +629,7 @@ PORT=4001 mix phx.server
 ### "Mix command not found"
 
 Elixir isn't in your PATH. Try:
+
 ```bash
 # macOS with Homebrew
 source ~/.zshrc  # or ~/.bashrc
@@ -627,6 +666,7 @@ Stuck? Resources:
 4. **Website** — [www.cgraph.org](https://www.cgraph.org)
 
 When asking for help, include:
+
 - What you're trying to do
 - What error you're seeing (full stack trace)
 - What you've already tried
@@ -645,6 +685,6 @@ Now that you're up and running:
 
 ---
 
-*Last updated: January 2026 | v0.7.28*
+_Last updated: January 2026 | v0.7.28_
 
 — Burca Lucas

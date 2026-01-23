@@ -21,6 +21,7 @@ import {
   ShieldCheckIcon,
 } from '@heroicons/react/24/outline';
 import { useNavigate } from 'react-router-dom';
+import { socketManager } from '@/lib/socket';
 
 type Tab = 'all' | 'online' | 'pending' | 'blocked';
 
@@ -34,6 +35,8 @@ export default function Friends() {
   const [addFriendSuccess, setAddFriendSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
+  // Track online friend IDs for presence updates - value used to trigger re-renders
+  const [, setOnlineFriendIds] = useState<string[]>([]);
 
   const {
     friends,
@@ -57,11 +60,37 @@ export default function Friends() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+
+    const connectPresence = async () => {
+      await socketManager.connect();
+      socketManager.joinPresenceLobby();
+
+      if (isMounted) {
+        setOnlineFriendIds(socketManager.getOnlineFriends());
+      }
+    };
+
+    connectPresence();
+
+    const unsubscribe = socketManager.onStatusChange((conversationId) => {
+      if (conversationId === 'lobby') {
+        setOnlineFriendIds(socketManager.getOnlineFriends());
+      }
+    });
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
+  }, []);
+
+  const onlineCount = friends.filter((friend) => socketManager.isFriendOnline(friend.id)).length;
+
   const tabs = [
     { id: 'all' as Tab, label: 'All', count: friends.length },
-    // Note: "Online" tab disabled - requires global presence tracking implementation
-    // Database status field is never updated and shows stale data
-    // { id: 'online' as Tab, label: 'Online', count: 0 },
+    { id: 'online' as Tab, label: 'Online', count: onlineCount },
     { id: 'pending' as Tab, label: 'Pending', count: pendingRequests.length + sentRequests.length },
     { id: 'blocked' as Tab, label: 'Blocked', count: 0 },
   ];
@@ -71,10 +100,9 @@ export default function Friends() {
       friend.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
       friend.displayName?.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // Online filtering disabled until global presence tracking is implemented
-    // if (activeTab === 'online') {
-    //   return matchesSearch && friend.status === 'online';
-    // }
+    if (activeTab === 'online') {
+      return matchesSearch && socketManager.isFriendOnline(friend.id);
+    }
 
     return matchesSearch;
   });
@@ -129,21 +157,21 @@ export default function Friends() {
   };
 
   return (
-    <div className="flex flex-1 h-full overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
+    <div className="flex h-full flex-1 overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Friends List Panel */}
-      <div className="w-96 bg-dark-900/50 backdrop-blur-xl border-r border-primary-500/20 flex flex-col overflow-hidden relative">
+      <div className="relative flex w-96 flex-col overflow-hidden border-r border-primary-500/20 bg-dark-900/50 backdrop-blur-xl">
         {/* Ambient glow effect */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-primary-500/5 via-transparent to-purple-500/5" />
 
         {/* Header */}
-        <div className="p-4 border-b border-primary-500/20 relative z-10">
+        <div className="relative z-10 border-b border-primary-500/20 p-4">
           <motion.div
-            className="flex items-center justify-between mb-4"
+            className="mb-4 flex items-center justify-between"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
           >
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent flex items-center gap-2">
+            <h2 className="flex items-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
               <UsersIcon className="h-6 w-6 text-primary-400" />
               Friends
             </h2>
@@ -154,7 +182,7 @@ export default function Friends() {
                 setShowAddFriend(!showAddFriend);
                 HapticFeedback.medium();
               }}
-              className="p-2 rounded-xl hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-all group"
+              className="group rounded-xl p-2 text-gray-400 transition-all hover:bg-primary-500/20 hover:text-primary-400"
               title="Add Friend"
             >
               <UserPlusIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
@@ -178,14 +206,14 @@ export default function Friends() {
                       value={addFriendInput}
                       onChange={(e) => setAddFriendInput(e.target.value)}
                       placeholder="Enter username..."
-                      className="flex-1 px-3 py-2 bg-dark-800/50 border border-primary-500/30 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                      className="flex-1 rounded-xl border border-primary-500/30 bg-dark-800/50 px-3 py-2 text-sm text-white placeholder-gray-500 transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                     />
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       type="submit"
                       disabled={isLoading || isSubmitting}
-                      className="px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-xl text-sm font-medium transition-all shadow-lg shadow-primary-500/20 disabled:opacity-50"
+                      className="rounded-xl bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-2 text-sm font-medium shadow-lg shadow-primary-500/20 transition-all hover:from-primary-700 hover:to-primary-800 disabled:opacity-50"
                     >
                       {isSubmitting ? 'Sending...' : 'Send'}
                     </motion.button>
@@ -243,17 +271,19 @@ export default function Friends() {
                   }}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  className="relative flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all"
+                  className="relative flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all"
                 >
                   {activeTab === tab.id && (
                     <motion.div
                       layoutId="friendsTabIndicator"
-                      className="absolute inset-0 bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent rounded-lg"
+                      className="absolute inset-0 rounded-lg bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
                       style={{ boxShadow: '0 0 15px rgba(16, 185, 129, 0.3)' }}
                       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                     />
                   )}
-                  <span className={`relative z-10 ${activeTab === tab.id ? 'text-white' : 'text-gray-400'}`}>
+                  <span
+                    className={`relative z-10 ${activeTab === tab.id ? 'text-white' : 'text-gray-400'}`}
+                  >
                     {tab.label}
                   </span>
                   <AnimatePresence mode="wait">
@@ -262,7 +292,7 @@ export default function Friends() {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         exit={{ scale: 0 }}
-                        className={`relative z-10 px-1.5 py-0.5 rounded-full text-xs ${
+                        className={`relative z-10 rounded-full px-1.5 py-0.5 text-xs ${
                           activeTab === tab.id
                             ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white'
                             : 'bg-dark-600 text-gray-400'
@@ -288,13 +318,13 @@ export default function Friends() {
                 className="mt-3"
               >
                 <div className="relative">
-                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-primary-400" />
+                  <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-primary-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search friends..."
-                    className="w-full pl-9 pr-4 py-2 bg-dark-800/50 border border-primary-500/30 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all backdrop-blur-sm"
+                    className="w-full rounded-xl border border-primary-500/30 bg-dark-800/50 py-2 pl-9 pr-4 text-sm text-white placeholder-gray-500 backdrop-blur-sm transition-all focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20"
                   />
                 </div>
               </motion.div>
@@ -303,9 +333,9 @@ export default function Friends() {
         </div>
 
         {/* Friends List */}
-        <div className="flex-1 overflow-y-auto min-h-0 relative z-10">
+        <div className="relative z-10 min-h-0 flex-1 overflow-y-auto">
           {error && (
-            <div className="m-4 p-3 bg-red-900/20 border border-red-700/50 rounded-xl text-red-400 text-sm">
+            <div className="m-4 rounded-xl border border-red-700/50 bg-red-900/20 p-3 text-sm text-red-400">
               <p>{error}</p>
               <button onClick={clearError} className="mt-1 text-xs underline hover:no-underline">
                 Dismiss
@@ -314,7 +344,11 @@ export default function Friends() {
           )}
 
           {isLoading && (
-            <motion.div className="flex items-center justify-center py-12" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <motion.div
+              className="flex items-center justify-center py-12"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
               <div className="relative">
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
                 <motion.div
@@ -327,13 +361,18 @@ export default function Friends() {
           )}
 
           {!isLoading && activeTab === 'pending' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-3">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="p-3"
+            >
               {pendingRequests.length > 0 && (
                 <div className="mb-4">
                   <motion.h3
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="text-xs font-semibold bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent uppercase tracking-wider mb-2 px-1"
+                    className="mb-2 bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text px-1 text-xs font-semibold uppercase tracking-wider text-transparent"
                   >
                     Incoming — {pendingRequests.length}
                   </motion.h3>
@@ -343,9 +382,19 @@ export default function Friends() {
                         key={request.id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20, delay: index * 0.05 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 300,
+                          damping: 20,
+                          delay: index * 0.05,
+                        }}
                       >
-                        <FriendRequestCard request={request} type="incoming" onAccept={() => acceptRequest(request.id)} onDecline={() => declineRequest(request.id)} />
+                        <FriendRequestCard
+                          request={request}
+                          type="incoming"
+                          onAccept={() => acceptRequest(request.id)}
+                          onDecline={() => declineRequest(request.id)}
+                        />
                       </motion.div>
                     ))}
                   </div>
@@ -358,7 +407,7 @@ export default function Friends() {
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: pendingRequests.length * 0.05 }}
-                    className="text-xs font-semibold bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent uppercase tracking-wider mb-2 px-1"
+                    className="mb-2 bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text px-1 text-xs font-semibold uppercase tracking-wider text-transparent"
                   >
                     Sent — {sentRequests.length}
                   </motion.h3>
@@ -368,9 +417,18 @@ export default function Friends() {
                         key={request.id}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20, delay: (pendingRequests.length + index) * 0.05 }}
+                        transition={{
+                          type: 'spring',
+                          stiffness: 300,
+                          damping: 20,
+                          delay: (pendingRequests.length + index) * 0.05,
+                        }}
                       >
-                        <FriendRequestCard request={request} type="outgoing" onDecline={() => declineRequest(request.id)} />
+                        <FriendRequestCard
+                          request={request}
+                          type="outgoing"
+                          onDecline={() => declineRequest(request.id)}
+                        />
                       </motion.div>
                     ))}
                   </div>
@@ -378,9 +436,9 @@ export default function Friends() {
               )}
 
               {pendingRequests.length === 0 && sentRequests.length === 0 && (
-                <div className="text-center py-12">
-                  <ClockIcon className="h-12 w-12 mx-auto text-gray-600 mb-3" />
-                  <p className="text-gray-400 text-sm">No pending requests</p>
+                <div className="py-12 text-center">
+                  <ClockIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
+                  <p className="text-sm text-gray-400">No pending requests</p>
                 </div>
               )}
             </motion.div>
@@ -395,7 +453,12 @@ export default function Friends() {
                       key={friend.id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 20, delay: index * 0.05 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 300,
+                        damping: 20,
+                        delay: index * 0.05,
+                      }}
                     >
                       <FriendListItem
                         friend={friend}
@@ -410,9 +473,9 @@ export default function Friends() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12 px-4">
-                  <UserPlusIcon className="h-12 w-12 mx-auto text-gray-600 mb-3" />
-                  <p className="text-gray-400 text-sm">
+                <div className="px-4 py-12 text-center">
+                  <UserPlusIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
+                  <p className="text-sm text-gray-400">
                     {searchQuery ? 'No friends found' : 'No friends yet'}
                   </p>
                 </div>
@@ -421,18 +484,23 @@ export default function Friends() {
           )}
 
           {!isLoading && activeTab === 'blocked' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-center py-12 px-4">
-              <NoSymbolIcon className="h-12 w-12 mx-auto text-gray-600 mb-3" />
-              <p className="text-gray-400 text-sm">No blocked users</p>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="px-4 py-12 text-center"
+            >
+              <NoSymbolIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
+              <p className="text-sm text-gray-400">No blocked users</p>
             </motion.div>
           )}
         </div>
       </div>
 
       {/* Welcome Panel - Right Side */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <motion.div
-          className="flex-1 flex items-center justify-center bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative overflow-hidden"
+          className="relative flex flex-1 items-center justify-center overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -441,7 +509,7 @@ export default function Friends() {
           {[...Array(10)].map((_, i) => (
             <motion.div
               key={i}
-              className="absolute w-1 h-1 rounded-full bg-primary-400"
+              className="absolute h-1 w-1 rounded-full bg-primary-400"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -461,13 +529,13 @@ export default function Friends() {
           ))}
 
           <motion.div
-            className="text-center relative z-10"
+            className="relative z-10 text-center"
             initial={{ scale: 0.9, y: 20 }}
             animate={{ scale: 1, y: 0 }}
             transition={{ type: 'spring', stiffness: 200, damping: 20 }}
           >
-            <div className="relative inline-block mb-6">
-              <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-pink-500/20 flex items-center justify-center mx-auto backdrop-blur-sm border border-primary-500/30 shadow-2xl">
+            <div className="relative mb-6 inline-block">
+              <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-3xl border border-primary-500/30 bg-gradient-to-br from-primary-500/20 via-purple-500/20 to-pink-500/20 shadow-2xl backdrop-blur-sm">
                 <HeartIcon className="h-12 w-12 text-primary-400" />
               </div>
               <motion.div
@@ -489,11 +557,11 @@ export default function Friends() {
               />
             </div>
 
-            <h3 className="text-3xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-3 flex items-center justify-center gap-2">
+            <h3 className="mb-3 flex items-center justify-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
               Your Friends
-              <SparklesIcon className="h-6 w-6 text-primary-400 animate-pulse" />
+              <SparklesIcon className="h-6 w-6 animate-pulse text-primary-400" />
             </h3>
-            <p className="text-gray-400 max-w-md text-lg">
+            <p className="max-w-md text-lg text-gray-400">
               Connect with your friends, start conversations, and stay in touch
             </p>
 
@@ -513,14 +581,24 @@ export default function Friends() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
             >
-              <GlassCard variant="holographic" glow glowColor="rgba(16, 185, 129, 0.2)" className="px-6 py-3">
-                <p className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent">
+              <GlassCard
+                variant="holographic"
+                glow
+                glowColor="rgba(16, 185, 129, 0.2)"
+                className="px-6 py-3"
+              >
+                <p className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-2xl font-bold text-transparent">
                   {friends.length}
                 </p>
                 <p className="text-xs text-gray-400">Friends</p>
               </GlassCard>
-              <GlassCard variant="holographic" glow glowColor="rgba(168, 85, 247, 0.2)" className="px-6 py-3">
-                <p className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <GlassCard
+                variant="holographic"
+                glow
+                glowColor="rgba(168, 85, 247, 0.2)"
+                className="px-6 py-3"
+              >
+                <p className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-2xl font-bold text-transparent">
                   {pendingRequests.length}
                 </p>
                 <p className="text-xs text-gray-400">Requests</p>
@@ -557,7 +635,7 @@ function FriendListItem({
 
   return (
     <motion.div
-      className={`flex items-center gap-3 px-4 py-3 transition-all duration-200 group relative cursor-pointer ${
+      className={`group relative flex cursor-pointer items-center gap-3 px-4 py-3 transition-all duration-200 ${
         isHovered ? 'bg-primary-500/10' : 'hover:bg-primary-500/5'
       }`}
       onMouseEnter={() => {
@@ -578,11 +656,7 @@ function FriendListItem({
       )}
 
       {/* Avatar */}
-      <UserProfileCard
-        userId={friend.id}
-        trigger="both"
-        className="cursor-pointer"
-      >
+      <UserProfileCard userId={friend.id} trigger="both" className="cursor-pointer">
         <div className="relative flex-shrink-0">
           {friend.avatarUrl ? (
             <img
@@ -591,7 +665,7 @@ function FriendListItem({
               className="h-10 w-10 rounded-full object-cover ring-2 ring-dark-700"
             />
           ) : (
-            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium ring-2 ring-dark-700">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 font-medium text-white ring-2 ring-dark-700">
               {friend.username.charAt(0).toUpperCase()}
             </div>
           )}
@@ -600,10 +674,7 @@ function FriendListItem({
             animate={
               friend.status === 'online'
                 ? {
-                    boxShadow: [
-                      '0 0 0 0 rgba(34, 197, 94, 0.7)',
-                      '0 0 0 4px rgba(34, 197, 94, 0)',
-                    ],
+                    boxShadow: ['0 0 0 0 rgba(34, 197, 94, 0.7)', '0 0 0 4px rgba(34, 197, 94, 0)'],
                   }
                 : {}
             }
@@ -613,15 +684,18 @@ function FriendListItem({
       </UserProfileCard>
 
       {/* Info */}
-      <div className="flex-1 min-w-0">
-        <p className="font-medium text-sm text-white truncate">
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-white">
           {friend.displayName || friend.username}
         </p>
-        <p className="text-xs text-gray-400 truncate">@{friend.username}</p>
+        <p className="truncate text-xs text-gray-400">@{friend.username}</p>
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity relative z-10" onClick={(e) => e.stopPropagation()}>
+      <div
+        className="relative z-10 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+        onClick={(e) => e.stopPropagation()}
+      >
         <motion.button
           onClick={(e) => {
             e.stopPropagation();
@@ -630,10 +704,10 @@ function FriendListItem({
           }}
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
-          className="p-1.5 hover:bg-primary-600/20 rounded-lg transition-all"
+          className="rounded-lg p-1.5 transition-all hover:bg-primary-600/20"
           title="Send Message"
         >
-          <ChatBubbleLeftRightIcon className="h-4 w-4 text-gray-400 hover:text-primary-400 transition-colors" />
+          <ChatBubbleLeftRightIcon className="h-4 w-4 text-gray-400 transition-colors hover:text-primary-400" />
         </motion.button>
         <div className="relative">
           <motion.button
@@ -644,9 +718,9 @@ function FriendListItem({
             }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
-            className="p-1.5 hover:bg-dark-600 rounded-lg transition-colors"
+            className="rounded-lg p-1.5 transition-colors hover:bg-dark-600"
           >
-            <EllipsisVerticalIcon className="h-4 w-4 text-gray-400 hover:text-white transition-colors" />
+            <EllipsisVerticalIcon className="h-4 w-4 text-gray-400 transition-colors hover:text-white" />
           </motion.button>
           <AnimatePresence>
             {dropdownOpen && (
@@ -656,16 +730,16 @@ function FriendListItem({
                   initial={{ opacity: 0, scale: 0.95, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                  className="absolute right-0 top-full mt-1 z-20"
+                  className="absolute right-0 top-full z-20 mt-1"
                 >
-                  <GlassCard variant="neon" className="py-1 min-w-[140px]">
+                  <GlassCard variant="neon" className="min-w-[140px] py-1">
                     <button
                       onClick={() => {
                         onRemove();
                         setDropdownOpen(false);
                         HapticFeedback.medium();
                       }}
-                      className="w-full px-3 py-2 text-left text-sm text-gray-300 hover:text-white hover:bg-dark-600/50 flex items-center gap-2 transition-colors"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 transition-colors hover:bg-dark-600/50 hover:text-white"
                     >
                       <UserMinusIcon className="h-4 w-4" />
                       Remove
@@ -676,7 +750,7 @@ function FriendListItem({
                         setDropdownOpen(false);
                         HapticFeedback.medium();
                       }}
-                      className="w-full px-3 py-2 text-left text-sm text-red-400 hover:text-red-300 hover:bg-red-900/20 flex items-center gap-2 transition-colors"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-400 transition-colors hover:bg-red-900/20 hover:text-red-300"
                     >
                       <NoSymbolIcon className="h-4 w-4" />
                       Block
@@ -716,17 +790,18 @@ function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequest
     >
       <GlassCard
         variant="crystal"
-        className="relative overflow-hidden group"
+        className="group relative overflow-hidden"
         style={{
-          boxShadow: type === 'incoming'
-            ? '0 4px 20px rgba(16, 185, 129, 0.2)'
-            : '0 4px 20px rgba(0, 0, 0, 0.3)',
+          boxShadow:
+            type === 'incoming'
+              ? '0 4px 20px rgba(16, 185, 129, 0.2)'
+              : '0 4px 20px rgba(0, 0, 0, 0.3)',
         }}
       >
         {/* Animated border for incoming requests */}
         {type === 'incoming' && (
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent pointer-events-none"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
             animate={{
               backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
             }}
@@ -734,7 +809,7 @@ function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequest
           />
         )}
 
-        <div className="flex items-center justify-between p-3 relative z-10">
+        <div className="relative z-10 flex items-center justify-between p-3">
           <div className="flex items-center gap-3">
             <UserProfileCard
               userId={request.user?.id || ''}
@@ -746,7 +821,7 @@ function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequest
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
                 {avatarUrl ? (
-                  <div className="p-0.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full">
+                  <div className="rounded-full bg-gradient-to-br from-primary-500 to-purple-600 p-0.5">
                     <img
                       src={avatarUrl}
                       alt={username}
@@ -754,14 +829,14 @@ function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequest
                     />
                   </div>
                 ) : (
-                  <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center text-white font-medium">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 font-medium text-white">
                     {username.charAt(0).toUpperCase()}
                   </div>
                 )}
               </motion.div>
             </UserProfileCard>
             <div>
-              <p className="font-medium bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
+              <p className="bg-gradient-to-r from-white to-primary-100 bg-clip-text font-medium text-transparent">
                 {displayName}
               </p>
               <p className="text-sm text-gray-400">@{username}</p>
@@ -777,7 +852,7 @@ function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequest
                 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                className="p-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg transition-all group/btn"
+                className="group/btn rounded-lg bg-gradient-to-r from-green-600 to-green-700 p-2 transition-all hover:from-green-700 hover:to-green-800"
                 style={{ boxShadow: '0 0 15px rgba(34, 197, 94, 0.4)' }}
                 title="Accept"
               >
@@ -794,10 +869,10 @@ function FriendRequestCard({ request, type, onAccept, onDecline }: FriendRequest
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="p-2 bg-dark-700/50 hover:bg-red-600/20 rounded-lg transition-all group/btn"
+              className="group/btn rounded-lg bg-dark-700/50 p-2 transition-all hover:bg-red-600/20"
               title={type === 'incoming' ? 'Decline' : 'Cancel'}
             >
-              <XMarkIcon className="h-5 w-5 text-gray-400 group-hover/btn:text-red-400 transition-colors" />
+              <XMarkIcon className="h-5 w-5 text-gray-400 transition-colors group-hover/btn:text-red-400" />
             </motion.button>
           </div>
         </div>

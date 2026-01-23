@@ -30,6 +30,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Haptics from 'expo-haptics';
+import * as Crypto from 'expo-crypto';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -37,8 +38,20 @@ import { useE2EE } from '../../lib/crypto/E2EEContext';
 import api from '../../lib/api';
 import socketManager from '../../lib/socket';
 import { normalizeMessage, normalizeMessages } from '../../lib/normalizers';
-import { MessagesStackParamList, Message, Conversation, ConversationParticipant, UserBasic } from '../../types';
-import { VoiceMessageRecorder, VoiceMessagePlayer, TelegramAttachmentPicker, RichMediaEmbed, MorphingInputButton } from '../../components';
+import {
+  MessagesStackParamList,
+  Message,
+  Conversation,
+  ConversationParticipant,
+  UserBasic,
+} from '../../types';
+import {
+  VoiceMessageRecorder,
+  VoiceMessagePlayer,
+  TelegramAttachmentPicker,
+  RichMediaEmbed,
+  MorphingInputButton,
+} from '../../components';
 import { createLogger } from '../../lib/logger';
 
 const logger = createLogger('ConversationScreen');
@@ -46,75 +59,87 @@ const logger = createLogger('ConversationScreen');
 // Helper to get correct MIME type from file extension or asset
 const getMimeType = (filename: string | undefined, defaultType: string): string => {
   if (!filename) return defaultType;
-  
+
   const ext = filename.toLowerCase().split('.').pop();
   const mimeMap: Record<string, string> = {
     // Images
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png',
-    'gif': 'image/gif',
-    'webp': 'image/webp',
-    'heic': 'image/heic',
-    'heif': 'image/heif',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    gif: 'image/gif',
+    webp: 'image/webp',
+    heic: 'image/heic',
+    heif: 'image/heif',
     // Videos
-    'mp4': 'video/mp4',
-    'mov': 'video/quicktime',
-    'm4v': 'video/x-m4v',
-    'webm': 'video/webm',
+    mp4: 'video/mp4',
+    mov: 'video/quicktime',
+    m4v: 'video/x-m4v',
+    webm: 'video/webm',
     '3gp': 'video/3gpp',
     // Documents
-    'pdf': 'application/pdf',
-    'doc': 'application/msword',
-    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'xls': 'application/vnd.ms-excel',
-    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'txt': 'text/plain',
-    'csv': 'text/csv',
+    pdf: 'application/pdf',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    xls: 'application/vnd.ms-excel',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    txt: 'text/plain',
+    csv: 'text/csv',
   };
-  
-  return ext ? (mimeMap[ext] || defaultType) : defaultType;
+
+  return ext ? mimeMap[ext] || defaultType : defaultType;
 };
 
 // Helper to process reactions and set hasReacted based on current user
-const processMessagesWithReactions = (messages: Message[], currentUserId: string | undefined): Message[] => {
+const processMessagesWithReactions = (
+  messages: Message[],
+  currentUserId: string | undefined
+): Message[] => {
   if (!currentUserId) return messages;
-  
-  return messages.map(msg => {
+
+  return messages.map((msg) => {
     if (!msg.reactions || msg.reactions.length === 0) return msg;
-    
-    const processedReactions = msg.reactions.map(reaction => {
+
+    const processedReactions = msg.reactions.map((reaction) => {
       // Check if current user is in the users array for this reaction
       // Handle multiple formats:
       // 1. Array of user objects: [{ id: "...", username: "..." }, ...]
       // 2. Array of user IDs: ["user-id-1", "user-id-2", ...]
       // 3. Mixed formats from different backend responses
-      const hasReacted = reaction.users?.some(u => {
-        // If u is a string (just user ID), compare directly
-        if (typeof u === 'string') {
-          return String(u) === String(currentUserId);
-        }
-        // If u is an object, check various ID fields
-        const uAny = u as any;
-        return String(u.id) === String(currentUserId) || 
-               String(uAny.user_id) === String(currentUserId);
-      }) || false;
-      
+      const hasReacted =
+        reaction.users?.some((u) => {
+          // If u is a string (just user ID), compare directly
+          if (typeof u === 'string') {
+            return String(u) === String(currentUserId);
+          }
+          // If u is an object, check various ID fields
+          const uAny = u as any;
+          return (
+            String(u.id) === String(currentUserId) || String(uAny.user_id) === String(currentUserId)
+          );
+        }) || false;
+
       // Normalize users array to always be objects with id field
-      const normalizedUsers = reaction.users?.map(u => {
-        if (typeof u === 'string') {
-          return { id: u, username: null, display_name: null, avatar_url: null, status: 'offline' as const };
-        }
-        return u;
-      }) || [];
-      
+      const normalizedUsers =
+        reaction.users?.map((u) => {
+          if (typeof u === 'string') {
+            return {
+              id: u,
+              username: null,
+              display_name: null,
+              avatar_url: null,
+              status: 'offline' as const,
+            };
+          }
+          return u;
+        }) || [];
+
       return {
         ...reaction,
         users: normalizedUsers,
         hasReacted,
       };
     });
-    
+
     return { ...msg, reactions: processedReactions };
   });
 };
@@ -129,10 +154,121 @@ const QUICK_REACTIONS = ['❤️', '👍', '😂', '😮', '😢', '🔥'];
 
 // Full emoji picker categories
 const EMOJI_CATEGORIES = {
-  'Smileys': ['😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😊', '😇', '🙂', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😜', '🤪', '😝', '🤗', '🤭', '🤫', '🤔', '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥'],
-  'Gestures': ['👍', '👎', '👏', '🙌', '👐', '🤲', '🤝', '🙏', '✌️', '🤞', '🤟', '🤘', '👌', '🤌', '🤏', '👈', '👉', '👆', '👇', '☝️', '✋', '🤚', '🖐️', '🖖', '👋', '🤙', '💪', '🦾', '🖕', '✍️'],
-  'Hearts': ['❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '💔', '❣️', '💕', '💞', '💓', '💗', '💖', '💘', '💝', '💟', '♥️'],
-  'Symbols': ['✨', '⭐', '🌟', '💫', '🔥', '💯', '💢', '💥', '💦', '💨', '🕳️', '💣', '💬', '👁️‍🗨️', '🗨️', '🗯️', '💭', '💤', '🎵', '🎶'],
+  Smileys: [
+    '😀',
+    '😃',
+    '😄',
+    '😁',
+    '😅',
+    '😂',
+    '🤣',
+    '😊',
+    '😇',
+    '🙂',
+    '😉',
+    '😌',
+    '😍',
+    '🥰',
+    '😘',
+    '😗',
+    '😙',
+    '😚',
+    '😋',
+    '😛',
+    '😜',
+    '🤪',
+    '😝',
+    '🤗',
+    '🤭',
+    '🤫',
+    '🤔',
+    '🤐',
+    '🤨',
+    '😐',
+    '😑',
+    '😶',
+    '😏',
+    '😒',
+    '🙄',
+    '😬',
+    '🤥',
+  ],
+  Gestures: [
+    '👍',
+    '👎',
+    '👏',
+    '🙌',
+    '👐',
+    '🤲',
+    '🤝',
+    '🙏',
+    '✌️',
+    '🤞',
+    '🤟',
+    '🤘',
+    '👌',
+    '🤌',
+    '🤏',
+    '👈',
+    '👉',
+    '👆',
+    '👇',
+    '☝️',
+    '✋',
+    '🤚',
+    '🖐️',
+    '🖖',
+    '👋',
+    '🤙',
+    '💪',
+    '🦾',
+    '🖕',
+    '✍️',
+  ],
+  Hearts: [
+    '❤️',
+    '🧡',
+    '💛',
+    '💚',
+    '💙',
+    '💜',
+    '🖤',
+    '🤍',
+    '🤎',
+    '💔',
+    '❣️',
+    '💕',
+    '💞',
+    '💓',
+    '💗',
+    '💖',
+    '💘',
+    '💝',
+    '💟',
+    '♥️',
+  ],
+  Symbols: [
+    '✨',
+    '⭐',
+    '🌟',
+    '💫',
+    '🔥',
+    '💯',
+    '💢',
+    '💥',
+    '💦',
+    '💨',
+    '🕳️',
+    '💣',
+    '💬',
+    '👁️‍🗨️',
+    '🗨️',
+    '🗯️',
+    '💭',
+    '💤',
+    '🎵',
+    '🎶',
+  ],
 };
 
 // Animated Message Wrapper Component for smooth entrance animations
@@ -143,140 +279,147 @@ interface AnimatedMessageProps {
   isNew?: boolean;
 }
 
-const AnimatedMessageWrapper = memo(({ children, isOwnMessage, index, isNew }: AnimatedMessageProps) => {
-  const slideAnim = useRef(new Animated.Value(isNew ? 30 : 0)).current;
-  const fadeAnim = useRef(new Animated.Value(isNew ? 0 : 1)).current;
-  const scaleAnim = useRef(new Animated.Value(isNew ? 0.9 : 1)).current;
-  
-  useEffect(() => {
-    if (isNew) {
-      Animated.parallel([
-        Animated.spring(slideAnim, {
-          toValue: 0,
+const AnimatedMessageWrapper = memo(
+  ({ children, isOwnMessage, index, isNew }: AnimatedMessageProps) => {
+    const slideAnim = useRef(new Animated.Value(isNew ? 30 : 0)).current;
+    const fadeAnim = useRef(new Animated.Value(isNew ? 0 : 1)).current;
+    const scaleAnim = useRef(new Animated.Value(isNew ? 0.9 : 1)).current;
+
+    useEffect(() => {
+      if (isNew) {
+        Animated.parallel([
+          Animated.spring(slideAnim, {
+            toValue: 0,
+            useNativeDriver: true,
+            tension: 100,
+            friction: 12,
+          }),
+          Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 200,
+            useNativeDriver: true,
+          }),
+          Animated.spring(scaleAnim, {
+            toValue: 1,
+            useNativeDriver: true,
+            tension: 120,
+            friction: 8,
+          }),
+        ]).start();
+      }
+    }, [isNew, slideAnim, fadeAnim, scaleAnim]);
+
+    return (
+      <Animated.View
+        style={{
+          opacity: fadeAnim,
+          transform: [
+            { translateX: isOwnMessage ? slideAnim : Animated.multiply(slideAnim, -1) },
+            { scale: scaleAnim },
+          ],
+        }}
+      >
+        {children}
+      </Animated.View>
+    );
+  }
+);
+
+// Animated Reaction Bubble Component
+const AnimatedReactionBubble = memo(
+  ({
+    reaction,
+    isOwnMessage,
+    onPress,
+    colors,
+  }: {
+    reaction: { emoji: string; count: number; hasReacted: boolean };
+    isOwnMessage: boolean;
+    onPress: () => void;
+    colors: any;
+  }) => {
+    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const bounceAnim = useRef(new Animated.Value(0)).current;
+
+    const handlePress = () => {
+      // Bounce animation on tap
+      Animated.sequence([
+        Animated.spring(scaleAnim, {
+          toValue: 1.3,
           useNativeDriver: true,
-          tension: 100,
-          friction: 12,
-        }),
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 200,
-          useNativeDriver: true,
+          tension: 300,
+          friction: 5,
         }),
         Animated.spring(scaleAnim, {
           toValue: 1,
           useNativeDriver: true,
-          tension: 120,
+          tension: 200,
+          friction: 10,
+        }),
+      ]).start();
+
+      // Also trigger the emoji bounce
+      Animated.sequence([
+        Animated.timing(bounceAnim, {
+          toValue: -8,
+          duration: 100,
+          useNativeDriver: true,
+          easing: Easing.out(Easing.quad),
+        }),
+        Animated.spring(bounceAnim, {
+          toValue: 0,
+          useNativeDriver: true,
+          tension: 300,
           friction: 8,
         }),
       ]).start();
-    }
-  }, [isNew, slideAnim, fadeAnim, scaleAnim]);
-  
-  return (
-    <Animated.View
-      style={{
-        opacity: fadeAnim,
-        transform: [
-          { translateX: isOwnMessage ? slideAnim : Animated.multiply(slideAnim, -1) },
-          { scale: scaleAnim },
-        ],
-      }}
-    >
-      {children}
-    </Animated.View>
-  );
-});
 
-// Animated Reaction Bubble Component
-const AnimatedReactionBubble = memo(({ 
-  reaction, 
-  isOwnMessage, 
-  onPress, 
-  colors 
-}: { 
-  reaction: { emoji: string; count: number; hasReacted: boolean };
-  isOwnMessage: boolean;
-  onPress: () => void;
-  colors: any;
-}) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const bounceAnim = useRef(new Animated.Value(0)).current;
-  
-  const handlePress = () => {
-    // Bounce animation on tap
-    Animated.sequence([
-      Animated.spring(scaleAnim, {
-        toValue: 1.3,
-        useNativeDriver: true,
-        tension: 300,
-        friction: 5,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 200,
-        friction: 10,
-      }),
-    ]).start();
-    
-    // Also trigger the emoji bounce
-    Animated.sequence([
-      Animated.timing(bounceAnim, {
-        toValue: -8,
-        duration: 100,
-        useNativeDriver: true,
-        easing: Easing.out(Easing.quad),
-      }),
-      Animated.spring(bounceAnim, {
-        toValue: 0,
-        useNativeDriver: true,
-        tension: 300,
-        friction: 8,
-      }),
-    ]).start();
-    
-    onPress();
-  };
-  
-  return (
-    <TouchableOpacity
-      style={[
-        styles.reactionBubble,
-        { 
-          backgroundColor: reaction.hasReacted 
-            ? (isOwnMessage ? 'rgba(255,255,255,0.25)' : colors.primary + '25')
-            : (isOwnMessage ? 'rgba(255,255,255,0.12)' : colors.surface),
-          borderColor: reaction.hasReacted ? colors.primary : 'transparent',
-          borderWidth: reaction.hasReacted ? 1.5 : 0,
-        }
-      ]}
-      onPress={handlePress}
-      activeOpacity={0.7}
-    >
-      <Animated.Text 
+      onPress();
+    };
+
+    return (
+      <TouchableOpacity
         style={[
-          styles.reactionEmoji,
-          { 
-            transform: [
-              { scale: scaleAnim },
-              { translateY: bounceAnim },
-            ] 
-          }
+          styles.reactionBubble,
+          {
+            backgroundColor: reaction.hasReacted
+              ? isOwnMessage
+                ? 'rgba(255,255,255,0.25)'
+                : colors.primary + '25'
+              : isOwnMessage
+                ? 'rgba(255,255,255,0.12)'
+                : colors.surface,
+            borderColor: reaction.hasReacted ? colors.primary : 'transparent',
+            borderWidth: reaction.hasReacted ? 1.5 : 0,
+          },
         ]}
+        onPress={handlePress}
+        activeOpacity={0.7}
       >
-        {reaction.emoji}
-      </Animated.Text>
-      {reaction.count > 1 && (
-        <Text style={[
-          styles.reactionCount,
-          { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.text }
-        ]}>
-          {reaction.count}
-        </Text>
-      )}
-    </TouchableOpacity>
-  );
-});
+        <Animated.Text
+          style={[
+            styles.reactionEmoji,
+            {
+              transform: [{ scale: scaleAnim }, { translateY: bounceAnim }],
+            },
+          ]}
+        >
+          {reaction.emoji}
+        </Animated.Text>
+        {reaction.count > 1 && (
+          <Text
+            style={[
+              styles.reactionCount,
+              { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.text },
+            ]}
+          >
+            {reaction.count}
+          </Text>
+        )}
+      </TouchableOpacity>
+    );
+  }
+);
 
 // Video Player Component using expo-video
 interface VideoPlayerComponentProps {
@@ -293,12 +436,12 @@ interface InlineVideoThumbnailProps {
 const InlineVideoThumbnail = memo(({ videoUrl }: InlineVideoThumbnailProps) => {
   const [hasError, setHasError] = useState(false);
   const { colors } = useTheme();
-  
+
   const player = useVideoPlayer(videoUrl, (player) => {
     player.loop = false;
     player.pause(); // Keep paused to show first frame only
   });
-  
+
   useEffect(() => {
     if (__DEV__) {
       console.log('[Video] Loading thumbnail for:', videoUrl);
@@ -311,15 +454,20 @@ const InlineVideoThumbnail = memo(({ videoUrl }: InlineVideoThumbnailProps) => {
     });
     return () => errorSub.remove();
   }, [player, videoUrl]);
-  
+
   if (hasError) {
     return (
-      <View style={[styles.videoThumbnail, { backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center' }]}>
+      <View
+        style={[
+          styles.videoThumbnail,
+          { backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center' },
+        ]}
+      >
         <Ionicons name="videocam-off-outline" size={40} color={colors.textSecondary} />
       </View>
     );
   }
-  
+
   return (
     <VideoView
       style={styles.videoThumbnail}
@@ -334,25 +482,25 @@ const VideoPlayerComponent = memo(({ videoUrl, duration, onClose }: VideoPlayerC
   const { colors } = useTheme();
   const [hasError, setHasError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  
+
   const player = useVideoPlayer(videoUrl, (player) => {
     player.loop = false;
     player.play();
   });
-  
+
   const [isPlaying, setIsPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
   const [showControls, setShowControls] = useState(true);
-  
+
   useEffect(() => {
     if (__DEV__) {
       console.log('[Video] Playing video:', videoUrl);
     }
-    
+
     const playSub = player.addListener('playingChange', (event) => {
       setIsPlaying(event.isPlaying);
     });
-    
+
     const statusSub = player.addListener('statusChange', (status) => {
       if (status.error) {
         console.error('[Video] Player error:', status.error);
@@ -360,23 +508,23 @@ const VideoPlayerComponent = memo(({ videoUrl, duration, onClose }: VideoPlayerC
         setErrorMessage(String(status.error));
       }
     });
-    
+
     return () => {
       playSub.remove();
       statusSub.remove();
     };
   }, [player, videoUrl]);
-  
+
   useEffect(() => {
     const interval = setInterval(() => {
       if (player.currentTime !== undefined) {
         setCurrentTime(player.currentTime);
       }
     }, 250);
-    
+
     return () => clearInterval(interval);
   }, [player]);
-  
+
   const togglePlayPause = () => {
     if (isPlaying) {
       player.pause();
@@ -385,27 +533,48 @@ const VideoPlayerComponent = memo(({ videoUrl, duration, onClose }: VideoPlayerC
     }
     setShowControls(true);
   };
-  
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
-  
+
   const handleTap = () => {
     setShowControls(!showControls);
   };
-  
+
   if (hasError) {
     return (
-      <View style={[styles.videoPlayerWrapper, { backgroundColor: '#000', justifyContent: 'center', alignItems: 'center' }]}>
+      <View
+        style={[
+          styles.videoPlayerWrapper,
+          { backgroundColor: '#000', justifyContent: 'center', alignItems: 'center' },
+        ]}
+      >
         <Ionicons name="alert-circle-outline" size={64} color="#fff" />
         <Text style={{ color: '#fff', marginTop: 16, fontSize: 16 }}>Failed to load video</Text>
         {__DEV__ && errorMessage && (
-          <Text style={{ color: '#999', marginTop: 8, fontSize: 12, textAlign: 'center', paddingHorizontal: 20 }}>{errorMessage}</Text>
+          <Text
+            style={{
+              color: '#999',
+              marginTop: 8,
+              fontSize: 12,
+              textAlign: 'center',
+              paddingHorizontal: 20,
+            }}
+          >
+            {errorMessage}
+          </Text>
         )}
-        <TouchableOpacity 
-          style={{ marginTop: 20, paddingHorizontal: 24, paddingVertical: 12, backgroundColor: colors.primary, borderRadius: 8 }}
+        <TouchableOpacity
+          style={{
+            marginTop: 20,
+            paddingHorizontal: 24,
+            paddingVertical: 12,
+            backgroundColor: colors.primary,
+            borderRadius: 8,
+          }}
           onPress={onClose}
         >
           <Text style={{ color: '#fff', fontWeight: '600' }}>Close</Text>
@@ -413,52 +582,40 @@ const VideoPlayerComponent = memo(({ videoUrl, duration, onClose }: VideoPlayerC
       </View>
     );
   }
-  
+
   return (
-    <Pressable 
-      style={styles.videoPlayerWrapper} 
-      onPress={handleTap}
-    >
+    <Pressable style={styles.videoPlayerWrapper} onPress={handleTap}>
       <VideoView
         style={styles.videoPlayer}
         player={player}
         contentFit="contain"
         nativeControls={false}
       />
-      
+
       {/* Custom Controls Overlay */}
       {showControls && (
         <View style={styles.videoControlsOverlay}>
           {/* Center play/pause button */}
-          <TouchableOpacity 
-            style={styles.videoPlayPauseBtn}
-            onPress={togglePlayPause}
-          >
+          <TouchableOpacity style={styles.videoPlayPauseBtn} onPress={togglePlayPause}>
             <View style={styles.videoPlayPauseBtnInner}>
-              <Ionicons 
-                name={isPlaying ? 'pause' : 'play'} 
-                size={40} 
-                color="#fff" 
-              />
+              <Ionicons name={isPlaying ? 'pause' : 'play'} size={40} color="#fff" />
             </View>
           </TouchableOpacity>
-          
+
           {/* Bottom progress bar */}
           <View style={styles.videoProgressContainer}>
             <Text style={styles.videoTimeText}>{formatTime(currentTime)}</Text>
             <View style={styles.videoProgressBar}>
-              <View 
+              <View
                 style={[
                   styles.videoProgressFill,
-                  { 
-                    width: duration ? `${(currentTime / duration) * 100}%` : '0%' 
-                  }
-                ]} 
+                  {
+                    width: duration ? `${(currentTime / duration) * 100}%` : '0%',
+                  },
+                ]}
               />
             </View>
-            <Text style={styles.videoTimeText}>
-              {duration ? formatTime(duration) : '--:--'}
-            </Text>
+            <Text style={styles.videoTimeText}>{duration ? formatTime(duration) : '--:--'}</Text>
           </View>
         </View>
       )}
@@ -475,12 +632,12 @@ interface AttachmentVideoPreviewProps {
 const AttachmentVideoPreview = memo(({ uri, duration }: AttachmentVideoPreviewProps) => {
   const { colors } = useTheme();
   const [hasError, setHasError] = useState(false);
-  
+
   const player = useVideoPlayer(uri, (player) => {
     player.loop = false;
     player.pause();
   });
-  
+
   useEffect(() => {
     if (__DEV__) {
       console.log('[Video] Attachment preview for:', uri);
@@ -493,10 +650,15 @@ const AttachmentVideoPreview = memo(({ uri, duration }: AttachmentVideoPreviewPr
     });
     return () => errorSub.remove();
   }, [player, uri]);
-  
+
   if (hasError) {
     return (
-      <View style={[styles.attachmentPreviewVideoContainer, { backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center' }]}>
+      <View
+        style={[
+          styles.attachmentPreviewVideoContainer,
+          { backgroundColor: colors.surface, justifyContent: 'center', alignItems: 'center' },
+        ]}
+      >
         <Ionicons name="videocam-outline" size={48} color={colors.textSecondary} />
         <Text style={{ color: colors.textSecondary, marginTop: 8 }}>Video</Text>
         {duration !== undefined && duration > 0 && (
@@ -507,7 +669,7 @@ const AttachmentVideoPreview = memo(({ uri, duration }: AttachmentVideoPreviewPr
       </View>
     );
   }
-  
+
   return (
     <View style={styles.attachmentPreviewVideoContainer}>
       <VideoView
@@ -537,14 +699,13 @@ type Props = {
   route: RouteProp<MessagesStackParamList, 'Conversation'>;
 };
 
-
 export default function ConversationScreen({ navigation, route }: Props) {
   const { conversationId } = route.params;
   const { colors, colorScheme } = useTheme();
   const isDark = colorScheme === 'dark';
   const { user } = useAuth();
   const { isInitialized: isE2EEInitialized, encryptMessage } = useE2EE();
-  
+
   const [_conversation, setConversation] = useState<Conversation | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
@@ -558,54 +719,57 @@ export default function ConversationScreen({ navigation, route }: Props) {
   const [isOtherUserTyping, setIsOtherUserTyping] = useState(false);
   const [showAttachMenu, setShowAttachMenu] = useState(false);
   const [otherUser, setOtherUser] = useState<UserBasic | null>(null);
-  
+
   // Image viewer state
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageGallery, setImageGallery] = useState<string[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showImageViewer, setShowImageViewer] = useState(false);
   const imageGalleryRef = useRef<FlatList>(null);
-  
+
   // Video player state
   const [showVideoPlayer, setShowVideoPlayer] = useState(false);
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
   const [selectedVideoDuration, setSelectedVideoDuration] = useState<number>(0);
-  
+
   // Message action menu state
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
   const [showMessageActions, setShowMessageActions] = useState(false);
   const [replyingTo, setReplyingTo] = useState<Message | null>(null);
-  
+
   // Reaction picker state
   const [showReactionPicker, setShowReactionPicker] = useState(false);
   const [reactionPickerMessage, setReactionPickerMessage] = useState<Message | null>(null);
-  const [selectedEmojiCategory, setSelectedEmojiCategory] = useState<keyof typeof EMOJI_CATEGORIES>('Smileys');
-  
+  const [selectedEmojiCategory, setSelectedEmojiCategory] =
+    useState<keyof typeof EMOJI_CATEGORIES>('Smileys');
+
   // Attachment preview state
-  const [pendingAttachments, setPendingAttachments] = useState<Array<{
-    uri: string;
-    type: 'image' | 'file' | 'video';
-    name?: string;
-    mimeType?: string;
-    duration?: number;
-  }>>([]);
+  const [pendingAttachments, setPendingAttachments] = useState<
+    Array<{
+      uri: string;
+      type: 'image' | 'file' | 'video';
+      name?: string;
+      mimeType?: string;
+      duration?: number;
+    }>
+  >([]);
   const [showAttachmentPreview, setShowAttachmentPreview] = useState(false);
   const [attachmentCaption, setAttachmentCaption] = useState('');
   const attachmentPreviewAnim = useRef(new Animated.Value(0)).current;
-  
+
   // Track newly added messages for entrance animations
   const [newMessageIds, setNewMessageIds] = useState<Set<string>>(new Set());
-  
+
   // Picker lock to prevent concurrent picker operations
   const isPickerActiveRef = useRef(false);
-  
+
   // Track deleted message IDs to prevent re-adding them
   const deletedMessageIdsRef = useRef<Set<string>>(new Set());
-  
+
   // Track if we should scroll to bottom on next content size change
   const shouldScrollToBottomRef = useRef(true);
   const contentHeightRef = useRef(0);
-  
+
   // Animation refs
   const attachMenuAnim = useRef(new Animated.Value(0)).current;
   const waveAnim = useRef(new Animated.Value(0)).current;
@@ -622,25 +786,25 @@ export default function ConversationScreen({ navigation, route }: Props) {
     new Animated.Value(0),
     new Animated.Value(0),
   ]).current;
-  
+
   const flatListRef = useRef<FlatList>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef<TextInput>(null);
-  
+
   // Pinned messages - get all pinned, sorted by pin date (most recent first)
   const pinnedMessages = useMemo(() => {
     return messages
-      .filter(m => m.is_pinned)
+      .filter((m) => m.is_pinned)
       .sort((a, b) => {
         const aDate = a.pinned_at ? new Date(a.pinned_at).getTime() : 0;
         const bDate = b.pinned_at ? new Date(b.pinned_at).getTime() : 0;
         return bDate - aDate;
       });
   }, [messages]);
-  
+
   // Current pinned message index for navigation
   const [currentPinnedIndex, setCurrentPinnedIndex] = useState(0);
-  
+
   // Reset pinned index when pinned messages change (e.g., when unpinning)
   useEffect(() => {
     if (pinnedMessages.length === 0) {
@@ -650,128 +814,141 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setCurrentPinnedIndex(pinnedMessages.length - 1);
     }
   }, [pinnedMessages.length, currentPinnedIndex]);
-  
+
   // Get the current pinned message to display
-  const currentPinnedMessage = pinnedMessages.length > 0 ? pinnedMessages[Math.min(currentPinnedIndex, pinnedMessages.length - 1)] : null;
-  
+  const currentPinnedMessage =
+    pinnedMessages.length > 0
+      ? pinnedMessages[Math.min(currentPinnedIndex, pinnedMessages.length - 1)]
+      : null;
+
   // Scroll to a specific message by ID
-  const scrollToMessage = useCallback((messageId: string) => {
-    const index = messages.findIndex(m => m.id === messageId);
-    if (index !== -1 && flatListRef.current) {
-      flatListRef.current.scrollToIndex({
-        index,
-        animated: true,
-        viewPosition: 0.3, // Show message in upper third of screen
-      });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    }
-  }, [messages]);
-  
+  const scrollToMessage = useCallback(
+    (messageId: string) => {
+      const index = messages.findIndex((m) => m.id === messageId);
+      if (index !== -1 && flatListRef.current) {
+        flatListRef.current.scrollToIndex({
+          index,
+          animated: true,
+          viewPosition: 0.3, // Show message in upper third of screen
+        });
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }
+    },
+    [messages]
+  );
+
   // Navigate to next/prev pinned message
-  const navigatePinnedMessages = useCallback((direction: 'next' | 'prev') => {
-    if (pinnedMessages.length <= 1) return;
-    
-    if (direction === 'next') {
-      setCurrentPinnedIndex(prev => (prev + 1) % pinnedMessages.length);
-    } else {
-      setCurrentPinnedIndex(prev => (prev - 1 + pinnedMessages.length) % pinnedMessages.length);
-    }
-    Haptics.selectionAsync();
-  }, [pinnedMessages.length]);
-  
+  const navigatePinnedMessages = useCallback(
+    (direction: 'next' | 'prev') => {
+      if (pinnedMessages.length <= 1) return;
+
+      if (direction === 'next') {
+        setCurrentPinnedIndex((prev) => (prev + 1) % pinnedMessages.length);
+      } else {
+        setCurrentPinnedIndex((prev) => (prev - 1 + pinnedMessages.length) % pinnedMessages.length);
+      }
+      Haptics.selectionAsync();
+    },
+    [pinnedMessages.length]
+  );
+
   // Format last seen timestamp for display
   const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
     if (!lastSeenAt) return '';
-    
+
     const lastSeen = new Date(lastSeenAt);
     // Check if it's a valid date
     if (isNaN(lastSeen.getTime())) return '';
-    
+
     const now = new Date();
     const diffMs = now.getTime() - lastSeen.getTime();
     const diffMins = Math.floor(diffMs / 60000);
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
-    
+
     if (diffMins < 1) return 'just now';
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays === 1) return 'yesterday';
     if (diffDays < 7) return `${diffDays}d ago`;
-    
+
     return lastSeen.toLocaleDateString();
   };
-  
+
   // Subscribe to presence changes (both conversation and global friend presence)
   useEffect(() => {
     if (!conversationId || !otherParticipantId) return;
-    
+
     // Initial check - first try global friend presence, then conversation presence
-    const isOnline = socketManager.isFriendOnline(otherParticipantId) || 
-                     socketManager.isUserOnline(conversationId, otherParticipantId);
+    const isOnline =
+      socketManager.isFriendOnline(otherParticipantId) ||
+      socketManager.isUserOnline(conversationId, otherParticipantId);
     setIsOtherUserOnline(isOnline);
-    
+
     // Subscribe to conversation-level status changes
     const unsubscribeConv = socketManager.onStatusChange((convId, participantId, isOnline) => {
       if (convId === conversationId && participantId === otherParticipantId) {
         setIsOtherUserOnline(isOnline);
       }
     });
-    
+
     // Subscribe to global friend status changes
     const unsubscribeGlobal = socketManager.onGlobalStatusChange((userId, isOnline) => {
       if (userId === otherParticipantId) {
         setIsOtherUserOnline(isOnline);
       }
     });
-    
+
     return () => {
       unsubscribeConv();
       unsubscribeGlobal();
     };
   }, [conversationId, otherParticipantId]);
-  
+
   // Subscribe to typing indicator changes
   useEffect(() => {
     if (!conversationId || !otherParticipantId) return;
-    
+
     // Initial check for any typing users
     const typingUsers = socketManager.getTypingUsers(conversationId);
-    const otherTyping = typingUsers.some(t => String(t.userId) === String(otherParticipantId));
+    const otherTyping = typingUsers.some((t) => String(t.userId) === String(otherParticipantId));
     setIsOtherUserTyping(otherTyping);
-    
+
     // Subscribe to typing changes
     const unsubscribe = socketManager.onTypingChange((convId, userId, isTyping) => {
       if (convId === conversationId && String(userId) === String(otherParticipantId)) {
         setIsOtherUserTyping(isTyping);
       }
     });
-    
+
     return () => unsubscribe();
   }, [conversationId, otherParticipantId]);
-  
+
   // Handle input text changes with typing indicator
-  const handleTextChange = useCallback((text: string) => {
-    setInputText(text);
-    
-    const channelTopic = `conversation:${conversationId}`;
-    
-    // Send typing indicator when user starts typing
-    if (text.length > 0) {
-      socketManager.sendTyping(channelTopic, true);
-      
-      // Clear existing timeout
-      if (typingTimeoutRef.current) {
-        clearTimeout(typingTimeoutRef.current);
+  const handleTextChange = useCallback(
+    (text: string) => {
+      setInputText(text);
+
+      const channelTopic = `conversation:${conversationId}`;
+
+      // Send typing indicator when user starts typing
+      if (text.length > 0) {
+        socketManager.sendTyping(channelTopic, true);
+
+        // Clear existing timeout
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current);
+        }
+
+        // Set timeout to stop typing indicator after pause (aligned with backend)
+        typingTimeoutRef.current = setTimeout(() => {
+          socketManager.sendTyping(channelTopic, false);
+        }, 5000);
       }
-      
-      // Set timeout to stop typing indicator after pause (aligned with backend)
-      typingTimeoutRef.current = setTimeout(() => {
-        socketManager.sendTyping(channelTopic, false);
-      }, 5000);
-    }
-  }, [conversationId]);
-  
+    },
+    [conversationId]
+  );
+
   // Stop typing indicator when sending message or unmounting
   const stopTypingIndicator = useCallback(() => {
     if (typingTimeoutRef.current) {
@@ -780,27 +957,25 @@ export default function ConversationScreen({ navigation, route }: Props) {
     }
     socketManager.sendTyping(`conversation:${conversationId}`, false);
   }, [conversationId]);
-  
+
   // Track if component is still mounted to prevent state updates after unmount
   const isMountedRef = useRef(true);
   const cleanupRef = useRef<(() => void) | null>(null);
-  
 
-  
   useEffect(() => {
     isMountedRef.current = true;
     const channelTopic = `conversation:${conversationId}`;
-    
+
     const initializeConversation = async () => {
       await socketManager.connect();
       if (!isMountedRef.current) return;
-      
+
       // joinChannel has built-in debouncing - safe to call on every mount
       socketManager.joinChannel(channelTopic);
-      
+
       const unsubscribe = socketManager.onChannelMessage(channelTopic, (event, payload) => {
         if (!isMountedRef.current) return;
-        
+
         // Handle message read event
         if (event === 'message_read') {
           const readData = payload as { user_id: string; message_id: string };
@@ -818,7 +993,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           }
           return;
         }
-        
+
         // Handle events with message_id only (delete, unpin, reactions)
         if (event === 'message_deleted') {
           const deleteData = payload as { message_id?: string; message?: { id: string } };
@@ -830,51 +1005,60 @@ export default function ConversationScreen({ navigation, route }: Props) {
           }
           return;
         }
-        
+
         if (event === 'message_unpinned') {
           const unpinData = payload as { message_id?: string; message?: { id: string } };
           const messageId = unpinData.message_id || unpinData.message?.id;
           if (messageId) {
             setMessages((prev) =>
-              prev.map((m) => (m.id === messageId ? { ...m, is_pinned: false, pinned_at: undefined, pinned_by_id: undefined } : m))
+              prev.map((m) =>
+                m.id === messageId
+                  ? { ...m, is_pinned: false, pinned_at: undefined, pinned_by_id: undefined }
+                  : m
+              )
             );
           }
           return;
         }
-        
+
         // Handle reaction added
         if (event === 'reaction_added') {
-          const reactionData = payload as { 
-            message_id: string; 
-            emoji: string; 
+          const reactionData = payload as {
+            message_id: string;
+            emoji: string;
             user_id: string;
             user?: { id: string; username?: string; display_name?: string; avatar_url?: string };
           };
           if (reactionData.message_id && reactionData.emoji) {
             const reactingUserId = String(reactionData.user_id);
             const currentUserId = String(user?.id || '');
-            
+
             setMessages((prev) =>
               prev.map((m) => {
                 if (m.id !== reactionData.message_id) return m;
                 const reactions = [...(m.reactions || [])];
-                const existingIdx = reactions.findIndex(r => r.emoji === reactionData.emoji);
-                
+                const existingIdx = reactions.findIndex((r) => r.emoji === reactionData.emoji);
+
                 if (existingIdx >= 0) {
                   // Add user to existing reaction
                   const existing = reactions[existingIdx];
-                  const userAlreadyReacted = existing.users.some(u => String(u.id) === reactingUserId);
+                  const userAlreadyReacted = existing.users.some(
+                    (u) => String(u.id) === reactingUserId
+                  );
                   if (!userAlreadyReacted) {
                     reactions[existingIdx] = {
                       ...existing,
                       count: existing.count + 1,
-                      users: [...existing.users, {
-                        id: reactionData.user_id,
-                        username: reactionData.user?.username || null,
-                        display_name: reactionData.user?.display_name,
-                        avatar_url: reactionData.user?.avatar_url,
-                        status: 'online',
-                      }],
+                      users: [
+                        ...existing.users,
+                        {
+                          id: reactionData.user_id,
+                          username: reactionData.user?.username || null,
+                          display_name: reactionData.user?.display_name,
+                          avatar_url: reactionData.user?.avatar_url,
+                          status: 'online',
+                        },
+                      ],
                       hasReacted: existing.hasReacted || reactingUserId === currentUserId,
                     };
                   }
@@ -883,13 +1067,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
                   reactions.push({
                     emoji: reactionData.emoji,
                     count: 1,
-                    users: [{
-                      id: reactionData.user_id,
-                      username: reactionData.user?.username || null,
-                      display_name: reactionData.user?.display_name,
-                      avatar_url: reactionData.user?.avatar_url,
-                      status: 'online',
-                    }],
+                    users: [
+                      {
+                        id: reactionData.user_id,
+                        username: reactionData.user?.username || null,
+                        display_name: reactionData.user?.display_name,
+                        avatar_url: reactionData.user?.avatar_url,
+                        status: 'online',
+                      },
+                    ],
                     hasReacted: reactingUserId === currentUserId,
                   });
                 }
@@ -899,23 +1085,23 @@ export default function ConversationScreen({ navigation, route }: Props) {
           }
           return;
         }
-        
+
         // Handle reaction removed
         if (event === 'reaction_removed') {
           const reactionData = payload as { message_id: string; emoji: string; user_id: string };
           if (reactionData.message_id && reactionData.emoji) {
             const removedUserId = String(reactionData.user_id);
             const currentUserId = String(user?.id || '');
-            
+
             setMessages((prev) =>
               prev.map((m) => {
                 if (m.id !== reactionData.message_id) return m;
                 const reactions = [...(m.reactions || [])];
-                const existingIdx = reactions.findIndex(r => r.emoji === reactionData.emoji);
-                
+                const existingIdx = reactions.findIndex((r) => r.emoji === reactionData.emoji);
+
                 if (existingIdx >= 0) {
                   const existing = reactions[existingIdx];
-                  const newUsers = existing.users.filter(u => String(u.id) !== removedUserId);
+                  const newUsers = existing.users.filter((u) => String(u.id) !== removedUserId);
                   if (newUsers.length === 0) {
                     // Remove reaction entirely
                     reactions.splice(existingIdx, 1);
@@ -924,7 +1110,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
                       ...existing,
                       count: newUsers.length,
                       users: newUsers,
-                      hasReacted: newUsers.some(u => String(u.id) === currentUserId),
+                      hasReacted: newUsers.some((u) => String(u.id) === currentUserId),
                     };
                   }
                 }
@@ -934,9 +1120,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
           }
           return;
         }
-        
+
         const data = payload as { message: Record<string, unknown> };
-        
+
         // Validate message data before normalizing
         if (!data.message || !data.message.id) {
           if (__DEV__) {
@@ -944,9 +1130,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
           }
           return;
         }
-        
+
         const normalized = normalizeMessage(data.message);
-        
+
         // Additional validation - skip messages without sender info (except for pin events)
         if (event !== 'message_pinned' && !normalized.sender_id && !normalized.sender?.id) {
           if (__DEV__) {
@@ -954,10 +1140,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
           }
           return;
         }
-        
+
         // Validate message has actual content or media (except for pin events)
         if (event !== 'message_pinned') {
-          const hasRealContent = normalized.content && normalized.content.trim().length > 0 && normalized.content !== '[Voice Message]';
+          const hasRealContent =
+            normalized.content &&
+            normalized.content.trim().length > 0 &&
+            normalized.content !== '[Voice Message]';
           const hasMediaUrl = normalized.metadata?.url || normalized.file_url;
           if (!hasRealContent && !hasMediaUrl) {
             if (__DEV__) {
@@ -966,7 +1155,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             return;
           }
         }
-        
+
         if (event === 'new_message') {
           // Skip if message was deleted
           if (deletedMessageIdsRef.current.has(normalized.id)) {
@@ -975,10 +1164,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
             }
             return;
           }
-          
+
           setMessages((prev) => {
             // Check for duplicates before adding
-            const exists = prev.some(m => m.id === normalized.id);
+            const exists = prev.some((m) => m.id === normalized.id);
             if (exists) {
               if (__DEV__) {
                 logger.debug('Skipping duplicate message:', normalized.id);
@@ -988,7 +1177,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             // Prepend for inverted list (newest first)
             return [normalized, ...prev];
           });
-          
+
           // Mark message as read if it's from someone else
           if (normalized.sender_id !== user?.id) {
             const channel = socketManager.getChannel(channelTopic);
@@ -996,7 +1185,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
               channel.push('mark_read', { message_id: normalized.id });
             }
           }
-          
+
           // Scroll to top (visually bottom in inverted list) when receiving new message
           setTimeout(() => {
             flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
@@ -1006,23 +1195,30 @@ export default function ConversationScreen({ navigation, route }: Props) {
           if (deletedMessageIdsRef.current.has(normalized.id)) {
             return;
           }
-          setMessages((prev) =>
-            prev.map((m) => (m.id === normalized.id ? normalized : m))
-          );
+          setMessages((prev) => prev.map((m) => (m.id === normalized.id ? normalized : m)));
         } else if (event === 'message_pinned') {
           // Update message to show as pinned
           setMessages((prev) =>
-            prev.map((m) => (m.id === normalized.id ? { ...m, is_pinned: true, pinned_at: normalized.pinned_at, pinned_by_id: normalized.pinned_by_id } : m))
+            prev.map((m) =>
+              m.id === normalized.id
+                ? {
+                    ...m,
+                    is_pinned: true,
+                    pinned_at: normalized.pinned_at,
+                    pinned_by_id: normalized.pinned_by_id,
+                  }
+                : m
+            )
           );
         }
       });
-      
+
       cleanupRef.current = unsubscribe;
     };
-    
+
     fetchMessages();
     initializeConversation();
-    
+
     return () => {
       isMountedRef.current = false;
       if (cleanupRef.current) {
@@ -1039,58 +1235,68 @@ export default function ConversationScreen({ navigation, route }: Props) {
       // The join debouncing will prevent duplicate joins on remount
     };
   }, [conversationId]);
-  
+
   // Fetch conversation when user is available - separate effect to handle auth loading
   useEffect(() => {
     if (user?.id) {
       fetchConversation();
     }
   }, [conversationId, user?.id]);
-  
+
   const fetchConversation = async () => {
     const currentUserId = user?.id;
     if (!currentUserId) return;
-    
+
     try {
       const response = await api.get(`/api/v1/conversations/${conversationId}`);
       const conv = response.data.data || response.data;
       setConversation(conv);
-      
+
       // Find other participant - API returns camelCase (userId, user.displayName)
       const otherParticipant = conv.participants?.find((p: ConversationParticipant) => {
         const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
         return String(participantUserId) !== String(currentUserId);
       });
-      
+
       // Store other participant's user ID for presence tracking
-      const rawOtherUserId = otherParticipant?.userId || otherParticipant?.user_id || (otherParticipant?.user as any)?.id;
+      const rawOtherUserId =
+        otherParticipant?.userId ||
+        otherParticipant?.user_id ||
+        (otherParticipant?.user as any)?.id;
       const otherUserId = rawOtherUserId ? String(rawOtherUserId) : null;
-      
+
       if (otherUserId) {
         setOtherParticipantId(otherUserId);
-        
+
         // Store full other user info for profile access
         const otherUserInfo: UserBasic = {
           id: otherUserId,
           username: (otherParticipant?.user as any)?.username || otherParticipant?.username || null,
-          display_name: (otherParticipant?.user as any)?.displayName || (otherParticipant?.user as any)?.display_name || null,
-          avatar_url: (otherParticipant?.user as any)?.avatarUrl || (otherParticipant?.user as any)?.avatar_url || null,
+          display_name:
+            (otherParticipant?.user as any)?.displayName ||
+            (otherParticipant?.user as any)?.display_name ||
+            null,
+          avatar_url:
+            (otherParticipant?.user as any)?.avatarUrl ||
+            (otherParticipant?.user as any)?.avatar_url ||
+            null,
           status: 'offline',
         };
         setOtherUser(otherUserInfo);
-        
+
         // Extract last seen from participant's user data
         const lastSeen = (otherParticipant?.user as any)?.lastSeenAt || null;
         setOtherParticipantLastSeen(lastSeen);
-        
+
         // Use global friend presence first, then fall back to conversation presence
-        const presenceOnline = socketManager.isFriendOnline(otherUserId) ||
-                               socketManager.isUserOnline(conversationId, otherUserId);
+        const presenceOnline =
+          socketManager.isFriendOnline(otherUserId) ||
+          socketManager.isUserOnline(conversationId, otherUserId);
         setIsOtherUserOnline(presenceOnline);
       }
-      
+
       // Extract display name - API uses camelCase (displayName, not display_name)
-      const displayName = 
+      const displayName =
         conv.name ||
         otherParticipant?.nickname ||
         (otherParticipant?.user as any)?.displayName ||
@@ -1100,102 +1306,120 @@ export default function ConversationScreen({ navigation, route }: Props) {
         (otherParticipant?.user as any)?.username ||
         otherParticipant?.username ||
         'Conversation';
-      
+
       updateHeader(displayName);
     } catch (error) {
       logger.error('Error fetching conversation:', error);
     }
   };
-  
+
   // Update header with current online and typing status
-  const updateHeader = useCallback((displayName: string) => {
-    // Determine status text with priority: typing > online > last seen > offline
-    const lastSeenText = formatLastSeen(otherParticipantLastSeen);
-    let statusText = lastSeenText ? `Last seen ${lastSeenText}` : 'Offline';
-    let statusColor = '#6b7280';
-    let showPulse = false;
-    
-    if (isOtherUserTyping) {
-      statusText = 'Typing...';
-      statusColor = '#3b82f6';
-      showPulse = true;
-    } else if (isOtherUserOnline) {
-      statusText = 'Online';
-      statusColor = '#22c55e';
-      showPulse = true;
-    }
-    
-    navigation.setOptions({
-      headerTitle: () => (
-        <TouchableOpacity 
-          style={styles.headerTitleContainer}
-          onPress={() => {
-            if (otherParticipantId) {
-              // Navigate to FriendsTab and then to UserProfile screen
-              (navigation as any).navigate('FriendsTab', {
-                screen: 'UserProfile',
-                params: { userId: otherParticipantId }
-              });
-            }
-          }}
-          activeOpacity={0.7}
-        >
-          <View style={[styles.headerAvatar, { backgroundColor: colors.surfaceHover }]}>
-            {otherUser?.avatar_url ? (
-              <Image source={{ uri: otherUser.avatar_url }} style={styles.headerAvatarImage} />
-            ) : (
-              <Ionicons name="person" size={20} color={colors.textSecondary} />
-            )}
-          </View>
-          <View style={styles.headerTextContainer}>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>{displayName}</Text>
-            <View style={styles.headerStatusRow}>
-              {(isOtherUserOnline || isOtherUserTyping) && (
-                <View style={[
-                  styles.statusDot, 
-                  { backgroundColor: statusColor },
-                  showPulse && styles.statusDotPulse
-                ]} />
+  const updateHeader = useCallback(
+    (displayName: string) => {
+      // Determine status text with priority: typing > online > last seen > offline
+      const lastSeenText = formatLastSeen(otherParticipantLastSeen);
+      let statusText = lastSeenText ? `Last seen ${lastSeenText}` : 'Offline';
+      let statusColor = '#6b7280';
+      let showPulse = false;
+
+      if (isOtherUserTyping) {
+        statusText = 'Typing...';
+        statusColor = '#3b82f6';
+        showPulse = true;
+      } else if (isOtherUserOnline) {
+        statusText = 'Online';
+        statusColor = '#22c55e';
+        showPulse = true;
+      }
+
+      navigation.setOptions({
+        headerTitle: () => (
+          <TouchableOpacity
+            style={styles.headerTitleContainer}
+            onPress={() => {
+              if (otherParticipantId) {
+                // Navigate to FriendsTab and then to UserProfile screen
+                (navigation as any).navigate('FriendsTab', {
+                  screen: 'UserProfile',
+                  params: { userId: otherParticipantId },
+                });
+              }
+            }}
+            activeOpacity={0.7}
+          >
+            <View style={[styles.headerAvatar, { backgroundColor: colors.surfaceHover }]}>
+              {otherUser?.avatar_url ? (
+                <Image source={{ uri: otherUser.avatar_url }} style={styles.headerAvatarImage} />
+              ) : (
+                <Ionicons name="person" size={20} color={colors.textSecondary} />
               )}
-              <Text style={[
-                styles.headerSubtitle, 
-                { color: isOtherUserOnline || isOtherUserTyping ? statusColor : colors.textSecondary },
-                (isOtherUserOnline || isOtherUserTyping) && { fontWeight: '500' }
-              ]}>
-                {statusText}
-              </Text>
             </View>
+            <View style={styles.headerTextContainer}>
+              <Text style={[styles.headerTitle, { color: colors.text }]}>{displayName}</Text>
+              <View style={styles.headerStatusRow}>
+                {(isOtherUserOnline || isOtherUserTyping) && (
+                  <View
+                    style={[
+                      styles.statusDot,
+                      { backgroundColor: statusColor },
+                      showPulse && styles.statusDotPulse,
+                    ]}
+                  />
+                )}
+                <Text
+                  style={[
+                    styles.headerSubtitle,
+                    {
+                      color:
+                        isOtherUserOnline || isOtherUserTyping ? statusColor : colors.textSecondary,
+                    },
+                    (isOtherUserOnline || isOtherUserTyping) && { fontWeight: '500' },
+                  ]}
+                >
+                  {statusText}
+                </Text>
+              </View>
+            </View>
+          </TouchableOpacity>
+        ),
+        headerLeft: () => (
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.7}
+          >
+            <Ionicons name="chevron-back" size={28} color={colors.text} />
+          </TouchableOpacity>
+        ),
+        headerRight: () => (
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
+              onPress={() => handleStartCall('audio')}
+            >
+              <Ionicons name="call-outline" size={20} color={colors.text} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
+              onPress={() => handleStartCall('video')}
+            >
+              <Ionicons name="videocam-outline" size={22} color={colors.text} />
+            </TouchableOpacity>
           </View>
-        </TouchableOpacity>
-      ),
-      headerLeft: () => (
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}
-          activeOpacity={0.7}
-        >
-          <Ionicons name="chevron-back" size={28} color={colors.text} />
-        </TouchableOpacity>
-      ),
-      headerRight: () => (
-        <View style={styles.headerActions}>
-          <TouchableOpacity 
-            style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
-            onPress={() => handleStartCall('audio')}
-          >
-            <Ionicons name="call-outline" size={20} color={colors.text} />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={[styles.headerActionBtn, { backgroundColor: colors.surface }]}
-            onPress={() => handleStartCall('video')}
-          >
-            <Ionicons name="videocam-outline" size={22} color={colors.text} />
-          </TouchableOpacity>
-        </View>
-      ),
-    });
-  }, [colors, isOtherUserOnline, isOtherUserTyping, otherParticipantLastSeen, otherParticipantId, otherUser, navigation]);
-  
+        ),
+      });
+    },
+    [
+      colors,
+      isOtherUserOnline,
+      isOtherUserTyping,
+      otherParticipantLastSeen,
+      otherParticipantId,
+      otherUser,
+      navigation,
+    ]
+  );
+
   // Update header when online or typing status changes
   useEffect(() => {
     if (_conversation) {
@@ -1204,10 +1428,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
         const participantUserId = p.userId || p.user_id || (p.user as any)?.id || p.id;
         return String(participantUserId) !== String(user?.id);
       });
-      
+
       // Extract display name with comprehensive fallbacks for nested/flat structures
       // API returns camelCase: user.displayName, user.avatarUrl
-      const displayName = 
+      const displayName =
         conv.name ||
         otherParticipant?.nickname ||
         (otherParticipant?.user as any)?.displayName ||
@@ -1218,11 +1442,18 @@ export default function ConversationScreen({ navigation, route }: Props) {
         otherParticipant?.user?.username ||
         (otherParticipant as any)?.username ||
         'Conversation';
-      
+
       updateHeader(displayName);
     }
-  }, [isOtherUserOnline, isOtherUserTyping, otherParticipantLastSeen, _conversation, updateHeader, user?.id]);
-  
+  }, [
+    isOtherUserOnline,
+    isOtherUserTyping,
+    otherParticipantLastSeen,
+    _conversation,
+    updateHeader,
+    user?.id,
+  ]);
+
   const fetchMessages = async () => {
     try {
       const response = await api.get(`/api/v1/conversations/${conversationId}/messages`);
@@ -1237,12 +1468,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
           if (deletedMessageIdsRef.current.has(msg.id)) {
             return acc;
           }
-          if (!acc.some(m => m.id === msg.id)) {
+          if (!acc.some((m) => m.id === msg.id)) {
             acc.push(msg);
           }
           return acc;
         }, []);
-        
+
         // Sort messages reverse chronologically (newest first) for inverted list
         // Inverted FlatList displays from bottom, so newest appears at bottom visually
         const sortedMessages = uniqueMessages.sort((a, b) => {
@@ -1250,11 +1481,11 @@ export default function ConversationScreen({ navigation, route }: Props) {
           const dateB = new Date(b.inserted_at).getTime();
           return dateB - dateA; // Newest first
         });
-        
+
         setMessages(sortedMessages);
-        
+
         // Mark latest message as read if it's not from current user
-        const latestUnread = sortedMessages.find(m => m.sender_id !== user?.id);
+        const latestUnread = sortedMessages.find((m) => m.sender_id !== user?.id);
         if (latestUnread) {
           markMessageAsRead(latestUnread.id);
         }
@@ -1267,15 +1498,18 @@ export default function ConversationScreen({ navigation, route }: Props) {
       }
     }
   };
-  
+
   // Mark message as read via WebSocket
-  const markMessageAsRead = useCallback((messageId: string) => {
-    const channel = socketManager.getChannel(`conversation:${conversationId}`);
-    if (channel) {
-      channel.push('mark_read', { message_id: messageId });
-    }
-  }, [conversationId]);
-  
+  const markMessageAsRead = useCallback(
+    (messageId: string) => {
+      const channel = socketManager.getChannel(`conversation:${conversationId}`);
+      if (channel) {
+        channel.push('mark_read', { message_id: messageId });
+      }
+    },
+    [conversationId]
+  );
+
   const onRefresh = async () => {
     setIsRefreshing(true);
     try {
@@ -1286,7 +1520,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setIsRefreshing(false);
     }
   };
-  
+
   // Animated send button press effect
   const animateSendButton = () => {
     Animated.sequence([
@@ -1304,29 +1538,33 @@ export default function ConversationScreen({ navigation, route }: Props) {
       }),
     ]).start();
   };
-  
+
   const sendMessage = async () => {
     const content = inputText.trim();
     if (!content || isSending) return;
-    
+
     // Trigger send button animation
     animateSendButton();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
+
     setIsSending(true);
     setInputText('');
     const currentReplyTo = replyingTo;
     setReplyingTo(null); // Clear reply after capturing
-    
+
     // Stop typing indicator when sending
     stopTypingIndicator();
-    
+
     try {
-      let messagePayload: Record<string, unknown> = { content };
+      const clientMessageId = Crypto.randomUUID();
+      let messagePayload: Record<string, unknown> = {
+        content,
+        client_message_id: clientMessageId,
+      };
       if (currentReplyTo) {
         messagePayload.reply_to_id = currentReplyTo.id;
       }
-      
+
       // E2EE: Encrypt message for direct conversations if E2EE is initialized
       let plaintextForLocal = content;
       if (isE2EEInitialized && otherParticipantId) {
@@ -1339,6 +1577,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
             nonce: encryptedMsg.nonce,
             recipient_identity_key_id: encryptedMsg.recipientIdentityKeyId,
             one_time_prekey_id: encryptedMsg.oneTimePreKeyId,
+            client_message_id: clientMessageId,
           };
           if (currentReplyTo) {
             messagePayload.reply_to_id = currentReplyTo.id;
@@ -1349,35 +1588,38 @@ export default function ConversationScreen({ navigation, route }: Props) {
           // Fall through to plaintext
         }
       }
-      
-      const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, messagePayload);
+
+      const response = await api.post(
+        `/api/v1/conversations/${conversationId}/messages`,
+        messagePayload
+      );
       const rawMessage = response.data.data || response.data.message || response.data;
       const normalized = normalizeMessage(rawMessage);
-      
+
       // For encrypted messages, store plaintext locally (we know what we sent)
       if (messagePayload.is_encrypted) {
         normalized.content = plaintextForLocal;
       }
-      
+
       // Mark as new message for entrance animation
-      setNewMessageIds(prev => new Set(prev).add(normalized.id));
-      
+      setNewMessageIds((prev) => new Set(prev).add(normalized.id));
+
       // Add with deduplication - socket may also deliver this message
       // Prepend for inverted list (newest first)
       setMessages((prev) => {
-        const exists = prev.some(m => m.id === normalized.id);
+        const exists = prev.some((m) => m.id === normalized.id);
         if (exists) return prev;
         return [normalized, ...prev];
       });
-      
+
       // Scroll to the new message (offset 0 for inverted list)
       setTimeout(() => {
         flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       }, 100);
-      
+
       // Clear new message flag after animation completes
       setTimeout(() => {
-        setNewMessageIds(prev => {
+        setNewMessageIds((prev) => {
           const next = new Set(prev);
           next.delete(normalized.id);
           return next;
@@ -1391,17 +1633,21 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setIsSending(false);
     }
   };
-  
+
   // Handle voice message completion - upload and send as a message
-  const handleVoiceComplete = async (voiceData: { uri: string; duration: number; waveform: number[] }) => {
+  const handleVoiceComplete = async (voiceData: {
+    uri: string;
+    duration: number;
+    waveform: number[];
+  }) => {
     setIsSending(true);
     setIsVoiceMode(false);
-    
+
     try {
       // Note: FileSystem.getInfoAsync is deprecated in Expo SDK 54+
       // However, for file existence check, we can use try-catch on the formData
       // If the file doesn't exist, the upload will fail anyway
-      
+
       // Create form data for upload
       const formData = new FormData();
       formData.append('audio', {
@@ -1412,37 +1658,37 @@ export default function ConversationScreen({ navigation, route }: Props) {
       formData.append('duration', String(Math.round(voiceData.duration)));
       formData.append('waveform', JSON.stringify(voiceData.waveform));
       formData.append('conversation_id', conversationId);
-      
+
       // Upload voice message
       const response = await api.post('/api/v1/voice-messages', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-      
+
       const rawMessage = response.data.data || response.data.message || response.data;
-      
+
       // Validate message has required fields before adding
       if (!rawMessage || !rawMessage.id) {
         logger.warn('Invalid message response:', rawMessage);
         return;
       }
-      
+
       const normalized = normalizeMessage(rawMessage);
-      
+
       // Add with deduplication - socket may also deliver this message
       // Prepend for inverted list (newest first)
       setMessages((prev) => {
-        const exists = prev.some(m => m.id === normalized.id);
+        const exists = prev.some((m) => m.id === normalized.id);
         if (exists) return prev;
         return [normalized, ...prev];
       });
-      
+
       // Scroll to the new voice message (offset 0 for inverted list)
       setTimeout(() => {
         flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       }, 100);
-      
+
       // Clean up the temporary file
       await FileSystem.deleteAsync(voiceData.uri, { idempotent: true });
     } catch (error) {
@@ -1453,7 +1699,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setIsSending(false);
     }
   };
-  
+
   // Handle starting a call (audio or video)
   const handleStartCall = (type: 'audio' | 'video') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -1464,7 +1710,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       [{ text: 'Got it', style: 'default' }]
     );
   };
-  
+
   // Close attachment menu with animation - always animate to closed state
   const closeAttachMenu = useCallback(() => {
     setShowAttachMenu(false);
@@ -1475,7 +1721,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       friction: 8,
     }).start();
   }, [attachMenuAnim]);
-  
+
   // Open attachment menu with animation
   const openAttachMenu = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -1487,7 +1733,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       friction: 8,
     }).start();
   }, [attachMenuAnim]);
-  
+
   // Toggle attachment menu with animation
   const toggleAttachMenu = useCallback(() => {
     if (showAttachMenu) {
@@ -1496,48 +1742,51 @@ export default function ConversationScreen({ navigation, route }: Props) {
       openAttachMenu();
     }
   }, [showAttachMenu, closeAttachMenu, openAttachMenu]);
-  
+
   // Handle image press - open fullscreen viewer with animation
   // Can open a single image or a gallery of images with swipe support
-  const handleImagePress = useCallback((imageUrl: string, allImages?: string[], startIndex?: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
-    // Set up gallery if multiple images provided
-    if (allImages && allImages.length > 1) {
-      setImageGallery(allImages);
-      setCurrentImageIndex(startIndex ?? 0);
-      setSelectedImage(allImages[startIndex ?? 0]);
-    } else {
-      setImageGallery([imageUrl]);
-      setCurrentImageIndex(0);
-      setSelectedImage(imageUrl);
-    }
-    
-    setShowImageViewer(true);
-    
-    // Animate in
-    Animated.parallel([
-      Animated.timing(imageViewerAnim, {
-        toValue: 1,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      Animated.spring(imageScaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 80,
-        friction: 8,
-      }),
-    ]).start(() => {
-      // Scroll to the correct image after modal opens
-      if (allImages && allImages.length > 1 && startIndex && startIndex > 0) {
-        setTimeout(() => {
-          imageGalleryRef.current?.scrollToIndex({ index: startIndex, animated: false });
-        }, 50);
+  const handleImagePress = useCallback(
+    (imageUrl: string, allImages?: string[], startIndex?: number) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+      // Set up gallery if multiple images provided
+      if (allImages && allImages.length > 1) {
+        setImageGallery(allImages);
+        setCurrentImageIndex(startIndex ?? 0);
+        setSelectedImage(allImages[startIndex ?? 0]);
+      } else {
+        setImageGallery([imageUrl]);
+        setCurrentImageIndex(0);
+        setSelectedImage(imageUrl);
       }
-    });
-  }, [imageViewerAnim, imageScaleAnim]);
-  
+
+      setShowImageViewer(true);
+
+      // Animate in
+      Animated.parallel([
+        Animated.timing(imageViewerAnim, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.spring(imageScaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 80,
+          friction: 8,
+        }),
+      ]).start(() => {
+        // Scroll to the correct image after modal opens
+        if (allImages && allImages.length > 1 && startIndex && startIndex > 0) {
+          setTimeout(() => {
+            imageGalleryRef.current?.scrollToIndex({ index: startIndex, animated: false });
+          }, 50);
+        }
+      });
+    },
+    [imageViewerAnim, imageScaleAnim]
+  );
+
   // Close image viewer with animation
   const closeImageViewer = useCallback(() => {
     Animated.parallel([
@@ -1558,7 +1807,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setCurrentImageIndex(0);
     });
   }, [imageViewerAnim, imageScaleAnim]);
-  
+
   // Handle video press - open fullscreen video player
   const handleVideoPress = useCallback((videoUrl: string, duration?: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -1566,14 +1815,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
     setSelectedVideoDuration(duration || 0);
     setShowVideoPlayer(true);
   }, []);
-  
+
   // Close video player
   const closeVideoPlayer = useCallback(() => {
     setShowVideoPlayer(false);
     setSelectedVideoUrl(null);
     setSelectedVideoDuration(0);
   }, []);
-  
+
   // Handle file press - open/download file
   const handleFilePress = useCallback(async (fileUrl: string, filename?: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -1582,99 +1831,116 @@ export default function ConversationScreen({ navigation, route }: Props) {
       if (canOpen) {
         await Linking.openURL(fileUrl);
       } else {
-        Alert.alert(
-          'Open File',
-          `Would you like to open "${filename || 'this file'}"?`,
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Open', onPress: () => Linking.openURL(fileUrl) },
-          ]
-        );
+        Alert.alert('Open File', `Would you like to open "${filename || 'this file'}"?`, [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open', onPress: () => Linking.openURL(fileUrl) },
+        ]);
       }
     } catch (error) {
       logger.error('Error opening file:', error);
       Alert.alert('Error', 'Could not open file. Please try again.');
     }
   }, []);
-  
+
   // Get appropriate icon for file type
   const getFileIcon = (filename?: string): keyof typeof Ionicons.glyphMap => {
     if (!filename) return 'document-outline';
     const ext = filename.toLowerCase().split('.').pop();
     switch (ext) {
-      case 'pdf': return 'document-text-outline';
-      case 'doc': case 'docx': return 'document-text-outline';
-      case 'xls': case 'xlsx': return 'grid-outline';
-      case 'ppt': case 'pptx': return 'easel-outline';
-      case 'zip': case 'rar': case '7z': return 'archive-outline';
-      case 'mp3': case 'wav': case 'aac': return 'musical-notes-outline';
-      case 'mp4': case 'mov': case 'avi': return 'videocam-outline';
-      case 'txt': return 'document-outline';
-      default: return 'document-outline';
+      case 'pdf':
+        return 'document-text-outline';
+      case 'doc':
+      case 'docx':
+        return 'document-text-outline';
+      case 'xls':
+      case 'xlsx':
+        return 'grid-outline';
+      case 'ppt':
+      case 'pptx':
+        return 'easel-outline';
+      case 'zip':
+      case 'rar':
+      case '7z':
+        return 'archive-outline';
+      case 'mp3':
+      case 'wav':
+      case 'aac':
+        return 'musical-notes-outline';
+      case 'mp4':
+      case 'mov':
+      case 'avi':
+        return 'videocam-outline';
+      case 'txt':
+        return 'document-outline';
+      default:
+        return 'document-outline';
     }
   };
-  
+
   // Format file size for display
   const formatFileSize = (bytes: number): string => {
     if (bytes < 1024) return `${bytes} B`;
     if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
-  
+
   // Handle long press on message to show actions
-  const handleMessageLongPress = useCallback((message: Message) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    setSelectedMessage(message);
-    setShowMessageActions(true);
-    
-    // Reset all animations
-    backdropAnim.setValue(0);
-    menuScaleAnim.setValue(0.9);
-    messageActionsAnim.setValue(0);
-    actionItemAnims.forEach(anim => anim.setValue(0));
-    
-    // Staggered entrance animation
-    Animated.parallel([
-      // Backdrop fade in
-      Animated.timing(backdropAnim, {
-        toValue: 1,
-        duration: 250,
-        useNativeDriver: true,
-      }),
-      // Menu slide up with spring
-      Animated.spring(messageActionsAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 65,
-        friction: 9,
-      }),
-      // Menu scale up
-      Animated.spring(menuScaleAnim, {
-        toValue: 1,
-        useNativeDriver: true,
-        tension: 100,
-        friction: 10,
-      }),
-    ]).start(() => {
-      // Stagger action items
-      const staggerDelay = 50;
-      actionItemAnims.forEach((anim, index) => {
-        setTimeout(() => {
-          Animated.spring(anim, {
-            toValue: 1,
-            useNativeDriver: true,
-            tension: 120,
-            friction: 8,
-          }).start();
-        }, index * staggerDelay);
+  const handleMessageLongPress = useCallback(
+    (message: Message) => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      setSelectedMessage(message);
+      setShowMessageActions(true);
+
+      // Reset all animations
+      backdropAnim.setValue(0);
+      menuScaleAnim.setValue(0.9);
+      messageActionsAnim.setValue(0);
+      actionItemAnims.forEach((anim) => anim.setValue(0));
+
+      // Staggered entrance animation
+      Animated.parallel([
+        // Backdrop fade in
+        Animated.timing(backdropAnim, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        // Menu slide up with spring
+        Animated.spring(messageActionsAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 65,
+          friction: 9,
+        }),
+        // Menu scale up
+        Animated.spring(menuScaleAnim, {
+          toValue: 1,
+          useNativeDriver: true,
+          tension: 100,
+          friction: 10,
+        }),
+      ]).start(() => {
+        // Stagger action items
+        const staggerDelay = 50;
+        actionItemAnims.forEach((anim, index) => {
+          setTimeout(() => {
+            Animated.spring(anim, {
+              toValue: 1,
+              useNativeDriver: true,
+              tension: 120,
+              friction: 8,
+            }).start();
+          }, index * staggerDelay);
+        });
       });
-    });
-  }, [messageActionsAnim, backdropAnim, menuScaleAnim, actionItemAnims]);
-  
+    },
+    [messageActionsAnim, backdropAnim, menuScaleAnim, actionItemAnims]
+  );
+
   // Close message actions menu
   const closeMessageActions = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    
+
     Animated.parallel([
       Animated.timing(backdropAnim, {
         toValue: 0,
@@ -1696,7 +1962,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setSelectedMessage(null);
     });
   }, [messageActionsAnim, backdropAnim, menuScaleAnim]);
-  
+
   // Handle reply to message
   const handleReply = useCallback(() => {
     if (selectedMessage) {
@@ -1706,143 +1972,166 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [selectedMessage, closeMessageActions]);
-  
+
   // Cancel reply
   const cancelReply = useCallback(() => {
     setReplyingTo(null);
   }, []);
-  
+
   // Handle adding a reaction to a message
   // Limit: 1 reaction per user per message - will replace existing reaction
-  const handleAddReaction = useCallback(async (messageId: string, emoji: string) => {
-    try {
-      await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      
-      // Optimistic update - add reaction locally (replacing any existing user reaction)
-      setMessages(prev => prev.map(m => {
-        if (m.id !== messageId) return m;
-        let reactions = [...(m.reactions || [])];
-        const currentUserId = user?.id;
-        
-        // First, remove user's previous reaction if any (1 reaction per user limit)
-        reactions = reactions.map(r => {
-          if (r.hasReacted && r.emoji !== emoji) {
-            const newUsers = r.users.filter(u => u.id !== currentUserId);
-            if (newUsers.length === 0) {
-              return null; // Mark for removal
+  const handleAddReaction = useCallback(
+    async (messageId: string, emoji: string) => {
+      try {
+        await api.post(`/api/v1/messages/${messageId}/reactions`, { emoji });
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+        // Optimistic update - add reaction locally (replacing any existing user reaction)
+        setMessages((prev) =>
+          prev.map((m) => {
+            if (m.id !== messageId) return m;
+            let reactions = [...(m.reactions || [])];
+            const currentUserId = user?.id;
+
+            // First, remove user's previous reaction if any (1 reaction per user limit)
+            reactions = reactions
+              .map((r) => {
+                if (r.hasReacted && r.emoji !== emoji) {
+                  const newUsers = r.users.filter((u) => u.id !== currentUserId);
+                  if (newUsers.length === 0) {
+                    return null; // Mark for removal
+                  }
+                  return {
+                    ...r,
+                    count: newUsers.length,
+                    hasReacted: false,
+                    users: newUsers,
+                  };
+                }
+                return r;
+              })
+              .filter(Boolean) as typeof reactions;
+
+            // Now add the new reaction
+            const existingIdx = reactions.findIndex((r) => r.emoji === emoji);
+
+            if (existingIdx >= 0) {
+              const existing = reactions[existingIdx];
+              if (!existing.hasReacted) {
+                reactions[existingIdx] = {
+                  ...existing,
+                  count: existing.count + 1,
+                  hasReacted: true,
+                  users: [
+                    ...existing.users,
+                    {
+                      id: currentUserId || '',
+                      username: user?.username || null,
+                      display_name: user?.display_name,
+                      avatar_url: user?.avatar_url,
+                      status: 'online',
+                    },
+                  ],
+                };
+              }
+            } else {
+              reactions.push({
+                emoji,
+                count: 1,
+                hasReacted: true,
+                users: [
+                  {
+                    id: currentUserId || '',
+                    username: user?.username || null,
+                    display_name: user?.display_name,
+                    avatar_url: user?.avatar_url,
+                    status: 'online',
+                  },
+                ],
+              });
             }
-            return {
-              ...r,
-              count: newUsers.length,
-              hasReacted: false,
-              users: newUsers,
-            };
-          }
-          return r;
-        }).filter(Boolean) as typeof reactions;
-        
-        // Now add the new reaction
-        const existingIdx = reactions.findIndex(r => r.emoji === emoji);
-        
-        if (existingIdx >= 0) {
-          const existing = reactions[existingIdx];
-          if (!existing.hasReacted) {
-            reactions[existingIdx] = {
-              ...existing,
-              count: existing.count + 1,
-              hasReacted: true,
-              users: [...existing.users, {
-                id: currentUserId || '',
-                username: user?.username || null,
-                display_name: user?.display_name,
-                avatar_url: user?.avatar_url,
-                status: 'online',
-              }],
-            };
-          }
-        } else {
-          reactions.push({
-            emoji,
-            count: 1,
-            hasReacted: true,
-            users: [{
-              id: currentUserId || '',
-              username: user?.username || null,
-              display_name: user?.display_name,
-              avatar_url: user?.avatar_url,
-              status: 'online',
-            }],
-          });
+            return { ...m, reactions };
+          })
+        );
+      } catch (error: any) {
+        // 409 means user already has this exact reaction - silently ignore
+        if (error?.response?.status !== 409) {
+          logger.warn('Error adding reaction:', error?.message || error);
         }
-        return { ...m, reactions };
-      }));
-    } catch (error: any) {
-      // 409 means user already has this exact reaction - silently ignore
-      if (error?.response?.status !== 409) {
-        logger.warn('Error adding reaction:', error?.message || error);
       }
-    }
-  }, [user]);
-  
+    },
+    [user]
+  );
+
   // Handle removing a reaction from a message
-  const handleRemoveReaction = useCallback(async (messageId: string, emoji: string) => {
-    try {
-      await api.delete(`/api/v1/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      
-      // Optimistic update - remove reaction locally
-      setMessages(prev => prev.map(m => {
-        if (m.id !== messageId) return m;
-        const reactions = [...(m.reactions || [])];
-        const existingIdx = reactions.findIndex(r => r.emoji === emoji);
-        
-        if (existingIdx >= 0) {
-          const existing = reactions[existingIdx];
-          const newUsers = existing.users.filter(u => u.id !== user?.id);
-          if (newUsers.length === 0) {
-            reactions.splice(existingIdx, 1);
-          } else {
-            reactions[existingIdx] = {
-              ...existing,
-              count: newUsers.length,
-              hasReacted: false,
-              users: newUsers,
-            };
-          }
-        }
-        return { ...m, reactions };
-      }));
-    } catch (error) {
-      logger.error('Error removing reaction:', error);
-      Alert.alert('Error', 'Failed to remove reaction');
-    }
-  }, [user?.id]);
-  
-  // Handle quick reaction from message actions menu
-  const handleQuickReaction = useCallback((emoji: string) => {
-    if (selectedMessage) {
-      const hasReacted = selectedMessage.reactions?.some(
-        r => r.emoji === emoji && r.hasReacted
-      );
-      if (hasReacted) {
-        handleRemoveReaction(selectedMessage.id, emoji);
-      } else {
-        handleAddReaction(selectedMessage.id, emoji);
+  const handleRemoveReaction = useCallback(
+    async (messageId: string, emoji: string) => {
+      try {
+        await api.delete(`/api/v1/messages/${messageId}/reactions/${encodeURIComponent(emoji)}`);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+        // Optimistic update - remove reaction locally
+        setMessages((prev) =>
+          prev.map((m) => {
+            if (m.id !== messageId) return m;
+            const reactions = [...(m.reactions || [])];
+            const existingIdx = reactions.findIndex((r) => r.emoji === emoji);
+
+            if (existingIdx >= 0) {
+              const existing = reactions[existingIdx];
+              const newUsers = existing.users.filter((u) => u.id !== user?.id);
+              if (newUsers.length === 0) {
+                reactions.splice(existingIdx, 1);
+              } else {
+                reactions[existingIdx] = {
+                  ...existing,
+                  count: newUsers.length,
+                  hasReacted: false,
+                  users: newUsers,
+                };
+              }
+            }
+            return { ...m, reactions };
+          })
+        );
+      } catch (error) {
+        logger.error('Error removing reaction:', error);
+        Alert.alert('Error', 'Failed to remove reaction');
       }
-      closeMessageActions();
-    }
-  }, [selectedMessage, handleAddReaction, handleRemoveReaction, closeMessageActions]);
-  
+    },
+    [user?.id]
+  );
+
+  // Handle quick reaction from message actions menu
+  const handleQuickReaction = useCallback(
+    (emoji: string) => {
+      if (selectedMessage) {
+        const hasReacted = selectedMessage.reactions?.some(
+          (r) => r.emoji === emoji && r.hasReacted
+        );
+        if (hasReacted) {
+          handleRemoveReaction(selectedMessage.id, emoji);
+        } else {
+          handleAddReaction(selectedMessage.id, emoji);
+        }
+        closeMessageActions();
+      }
+    },
+    [selectedMessage, handleAddReaction, handleRemoveReaction, closeMessageActions]
+  );
+
   // Handle reaction tap on message bubble
-  const handleReactionTap = useCallback((messageId: string, emoji: string, hasReacted: boolean) => {
-    if (hasReacted) {
-      handleRemoveReaction(messageId, emoji);
-    } else {
-      handleAddReaction(messageId, emoji);
-    }
-  }, [handleAddReaction, handleRemoveReaction]);
-  
+  const handleReactionTap = useCallback(
+    (messageId: string, emoji: string, hasReacted: boolean) => {
+      if (hasReacted) {
+        handleRemoveReaction(messageId, emoji);
+      } else {
+        handleAddReaction(messageId, emoji);
+      }
+    },
+    [handleAddReaction, handleRemoveReaction]
+  );
+
   // Open full reaction picker
   const openReactionPicker = useCallback(() => {
     if (selectedMessage) {
@@ -1851,17 +2140,17 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setTimeout(() => setShowReactionPicker(true), 200);
     }
   }, [selectedMessage, closeMessageActions]);
-  
+
   // Close reaction picker
   const closeReactionPicker = useCallback(() => {
     setShowReactionPicker(false);
     setReactionPickerMessage(null);
   }, []);
-  
+
   // Handle pin/unpin message
   const handleTogglePin = useCallback(async () => {
     if (!selectedMessage) return;
-    
+
     const channelTopic = `conversation:${conversationId}`;
     const channel = socketManager.getChannel(channelTopic);
     if (!channel) {
@@ -1869,32 +2158,37 @@ export default function ConversationScreen({ navigation, route }: Props) {
       closeMessageActions();
       return;
     }
-    
+
     const isPinned = selectedMessage.is_pinned;
     const event = isPinned ? 'unpin_message' : 'pin_message';
-    
-    channel.push(event, { message_id: selectedMessage.id })
+
+    channel
+      .push(event, { message_id: selectedMessage.id })
       .receive('ok', (response: any) => {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         // Update local state with proper pin timestamp from server
-        setMessages(prev => prev.map(m => 
-          m.id === selectedMessage.id 
-            ? { 
-                ...m, 
-                is_pinned: !isPinned,
-                pinned_at: !isPinned ? (response?.pinned_at || new Date().toISOString()) : undefined,
-                pinned_by_id: !isPinned ? (response?.pinned_by_id || user?.id) : undefined,
-              }
-            : m
-        ));
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === selectedMessage.id
+              ? {
+                  ...m,
+                  is_pinned: !isPinned,
+                  pinned_at: !isPinned
+                    ? response?.pinned_at || new Date().toISOString()
+                    : undefined,
+                  pinned_by_id: !isPinned ? response?.pinned_by_id || user?.id : undefined,
+                }
+              : m
+          )
+        );
       })
       .receive('error', (err: any) => {
         // Extract reason from various error formats
-        const reason = typeof err === 'string' ? err : (err?.reason || err?.error || '');
+        const reason = typeof err === 'string' ? err : err?.reason || err?.error || '';
         logger.warn('Pin error:', reason);
-        
+
         let errorMsg = `Failed to ${isPinned ? 'unpin' : 'pin'} message`;
-        
+
         if (reason === 'pin_limit_reached' || reason.includes('limit')) {
           errorMsg = 'You can only pin up to 3 messages. Unpin a message first.';
         } else if (reason === 'already_pinned') {
@@ -1904,24 +2198,24 @@ export default function ConversationScreen({ navigation, route }: Props) {
         } else if (reason === 'not_found') {
           errorMsg = 'Message not found.';
         }
-        
+
         Alert.alert('Pin Error', errorMsg);
       });
-    
+
     closeMessageActions();
   }, [selectedMessage, conversationId, closeMessageActions]);
-  
+
   // Handle unsend/delete message (for everyone)
   const handleUnsend = useCallback(async () => {
     if (!selectedMessage) return;
-    
+
     const isOwnMessage = String(user?.id) === String(selectedMessage.sender_id);
     if (!isOwnMessage) {
       Alert.alert('Error', 'You can only unsend your own messages');
       closeMessageActions();
       return;
     }
-    
+
     Alert.alert(
       'Unsend Message',
       'This message will be deleted for everyone in this conversation. This cannot be undone.',
@@ -1937,27 +2231,28 @@ export default function ConversationScreen({ navigation, route }: Props) {
               Alert.alert('Error', 'Not connected to conversation');
               return;
             }
-            
-            channel.push('delete_message', { message_id: selectedMessage.id })
+
+            channel
+              .push('delete_message', { message_id: selectedMessage.id })
               .receive('ok', () => {
                 Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                 // Track deleted message ID to prevent re-adding
                 deletedMessageIdsRef.current.add(selectedMessage.id);
                 // Remove from local state
-                setMessages(prev => prev.filter(m => m.id !== selectedMessage.id));
+                setMessages((prev) => prev.filter((m) => m.id !== selectedMessage.id));
               })
               .receive('error', (err: any) => {
                 logger.error('Failed to unsend message:', err);
                 Alert.alert('Error', 'Failed to unsend message');
               });
-          }
-        }
+          },
+        },
       ]
     );
-    
+
     closeMessageActions();
   }, [selectedMessage, user?.id, conversationId, closeMessageActions]);
-  
+
   // Handle image picker
   const handlePickImage = async () => {
     // Prevent concurrent picker operations
@@ -1965,14 +2260,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
       logger.debug('Picker already active, ignoring');
       return;
     }
-    
+
     isPickerActiveRef.current = true;
     logger.debug('Starting image picker...');
     closeAttachMenu();
-    
+
     // Longer delay to ensure modal is fully closed
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     try {
       logger.debug('Requesting media library permission...');
       const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -1981,7 +2276,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         Alert.alert('Permission needed', 'Please allow access to your photos to send images.');
         return;
       }
-      
+
       logger.debug('Launching image library...');
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
@@ -1989,17 +2284,20 @@ export default function ConversationScreen({ navigation, route }: Props) {
         allowsMultipleSelection: true,
         selectionLimit: 10,
       });
-      logger.debug('Image picker result:', result.canceled ? 'canceled' : `${result.assets?.length} selected`);
-      
+      logger.debug(
+        'Image picker result:',
+        result.canceled ? 'canceled' : `${result.assets?.length} selected`
+      );
+
       if (!result.canceled && result.assets && result.assets.length > 0) {
         // Add to pending attachments and show preview
-        const newAttachments = result.assets.map(asset => ({
+        const newAttachments = result.assets.map((asset) => ({
           uri: asset.uri,
           type: 'image' as const,
           name: asset.fileName || `photo_${Date.now()}.jpg`,
           mimeType: asset.mimeType || 'image/jpeg',
         }));
-        setPendingAttachments(prev => [...prev, ...newAttachments]);
+        setPendingAttachments((prev) => [...prev, ...newAttachments]);
         openAttachmentPreview();
       }
     } catch (error) {
@@ -2009,7 +2307,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       isPickerActiveRef.current = false;
     }
   };
-  
+
   // Handle camera capture - opens native camera with photo/video toggle (like Telegram)
   const handleTakePhoto = async () => {
     // Prevent concurrent picker operations
@@ -2017,14 +2315,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
       logger.debug('Picker already active, ignoring');
       return;
     }
-    
+
     isPickerActiveRef.current = true;
     logger.debug('Starting camera...');
     closeAttachMenu();
-    
+
     // Longer delay to ensure modal is fully closed
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     try {
       logger.debug('Requesting camera permission...');
       const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
@@ -2033,10 +2331,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
         Alert.alert('Permission needed', 'Please allow camera access.');
         return;
       }
-      
+
       // Note: Microphone permission is automatically requested by the camera when recording video
       // No need to request it separately for expo-image-picker
-      
+
       logger.debug('Launching camera with photo/video support...');
       // Open native camera with BOTH photo and video options - user can switch in camera UI
       const result = await ImagePicker.launchCameraAsync({
@@ -2046,19 +2344,22 @@ export default function ConversationScreen({ navigation, route }: Props) {
         videoQuality: 1, // High quality video
       });
       logger.debug('Camera result:', result.canceled ? 'canceled' : 'selected');
-      
+
       if (!result.canceled && result.assets[0]) {
         // Add to pending attachments and show preview
         const asset = result.assets[0];
         const isVideo = asset.type === 'video' || asset.mimeType?.startsWith('video/');
         logger.debug('Asset type:', asset.type, 'mimeType:', asset.mimeType, 'isVideo:', isVideo);
-        setPendingAttachments(prev => [...prev, {
-          uri: asset.uri,
-          type: isVideo ? 'video' as const : 'image' as const,
-          name: asset.fileName || `camera_${Date.now()}.${isVideo ? 'mp4' : 'jpg'}`,
-          mimeType: asset.mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
-          duration: asset.duration ?? undefined,
-        }]);
+        setPendingAttachments((prev) => [
+          ...prev,
+          {
+            uri: asset.uri,
+            type: isVideo ? ('video' as const) : ('image' as const),
+            name: asset.fileName || `camera_${Date.now()}.${isVideo ? 'mp4' : 'jpg'}`,
+            mimeType: asset.mimeType || (isVideo ? 'video/mp4' : 'image/jpeg'),
+            duration: asset.duration ?? undefined,
+          },
+        ]);
         openAttachmentPreview();
       }
     } catch (error) {
@@ -2068,7 +2369,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       isPickerActiveRef.current = false;
     }
   };
-  
+
   // Handle document picker
   const handlePickDocument = async () => {
     // Prevent concurrent picker operations
@@ -2076,39 +2377,54 @@ export default function ConversationScreen({ navigation, route }: Props) {
       logger.debug('Picker already active, ignoring');
       return;
     }
-    
+
     isPickerActiveRef.current = true;
     logger.debug('Starting document picker...');
     closeAttachMenu();
-    
+
     // Longer delay to ensure modal is fully closed
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     try {
       logger.debug('Launching document picker...');
       // Note: multiple selection disabled - causes issues with bundle files on iOS
       const result = await DocumentPicker.getDocumentAsync({
-        type: ['application/pdf', 'text/*', 'application/msword', 'application/vnd.openxmlformats-officedocument.*', 'application/vnd.ms-excel', 'image/*', 'audio/*', 'video/*'],
+        type: [
+          'application/pdf',
+          'text/*',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.*',
+          'application/vnd.ms-excel',
+          'image/*',
+          'audio/*',
+          'video/*',
+        ],
         copyToCacheDirectory: true,
         multiple: false,
       });
       logger.debug('Document picker result:', result.canceled ? 'canceled' : 'selected');
-      
+
       if (!result.canceled && result.assets && result.assets.length > 0) {
         const asset = result.assets[0];
         // Filter out directory bundles (like .band files)
         if (asset.name?.endsWith('.band') || asset.mimeType === 'application/octet-stream') {
           // Check if it might be a bundle/directory
-          Alert.alert('Unsupported File', 'This file type is not supported. Please choose a different file.');
+          Alert.alert(
+            'Unsupported File',
+            'This file type is not supported. Please choose a different file.'
+          );
           return;
         }
         // Add single file to pending attachments
-        setPendingAttachments(prev => [...prev, {
-          uri: asset.uri,
-          type: 'file' as const,
-          name: asset.name || `file_${Date.now()}`,
-          mimeType: asset.mimeType || 'application/octet-stream',
-        }]);
+        setPendingAttachments((prev) => [
+          ...prev,
+          {
+            uri: asset.uri,
+            type: 'file' as const,
+            name: asset.name || `file_${Date.now()}`,
+            mimeType: asset.mimeType || 'application/octet-stream',
+          },
+        ]);
         openAttachmentPreview();
       }
     } catch (error) {
@@ -2118,7 +2434,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       isPickerActiveRef.current = false;
     }
   };
-  
+
   // Open attachment preview modal
   const openAttachmentPreview = useCallback(() => {
     setShowAttachmentPreview(true);
@@ -2129,7 +2445,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       friction: 10,
     }).start();
   }, [attachmentPreviewAnim]);
-  
+
   // Close attachment preview modal
   const closeAttachmentPreview = useCallback(() => {
     Animated.timing(attachmentPreviewAnim, {
@@ -2142,11 +2458,11 @@ export default function ConversationScreen({ navigation, route }: Props) {
       setAttachmentCaption('');
     });
   }, [attachmentPreviewAnim]);
-  
+
   // Remove a specific attachment from pending list
   const removeAttachment = (index: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setPendingAttachments(prev => {
+    setPendingAttachments((prev) => {
       const newList = prev.filter((_, i) => i !== index);
       if (newList.length === 0) {
         closeAttachmentPreview();
@@ -2154,51 +2470,52 @@ export default function ConversationScreen({ navigation, route }: Props) {
       return newList;
     });
   };
-  
+
   // Send all pending attachments
   const sendPendingAttachments = async () => {
     if (pendingAttachments.length === 0) return;
-    
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const caption = attachmentCaption.trim();
     const attachmentsToSend = [...pendingAttachments];
     closeAttachmentPreview();
     setIsSending(true);
-    
+
     try {
       // Separate images, videos, and files
-      const images = attachmentsToSend.filter(a => a.type === 'image');
-      const videos = attachmentsToSend.filter(a => a.type === 'video');
-      const files = attachmentsToSend.filter(a => a.type === 'file');
-      
+      const images = attachmentsToSend.filter((a) => a.type === 'image');
+      const videos = attachmentsToSend.filter((a) => a.type === 'video');
+      const files = attachmentsToSend.filter((a) => a.type === 'file');
+
       // Upload all images and collect URLs for grid message
       if (images.length > 0) {
         const uploadedUrls: string[] = [];
-        
+
         for (const image of images) {
           const formData = new FormData();
           const name = image.name || `photo_${Date.now()}.jpg`;
           // Use helper to get correct MIME type from filename, fallback to asset's mimeType or jpeg
           const mimeType = getMimeType(name, image.mimeType || 'image/jpeg');
-          
+
           formData.append('file', {
             uri: Platform.OS === 'ios' ? image.uri.replace('file://', '') : image.uri,
             name,
             type: mimeType,
           } as any);
           formData.append('context', 'message');
-          
+
           const response = await api.post('/api/v1/upload', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
             timeout: 60000,
           });
-          
-          const fileUrl = response.data?.data?.url || response.data?.url || response.data?.file?.url;
+
+          const fileUrl =
+            response.data?.data?.url || response.data?.url || response.data?.file?.url;
           if (fileUrl) {
             uploadedUrls.push(fileUrl);
           }
         }
-        
+
         // Send all images as a single message with grid metadata
         if (uploadedUrls.length > 0) {
           // Use 'image' content_type for backend compatibility, store grid info in metadata
@@ -2207,14 +2524,20 @@ export default function ConversationScreen({ navigation, route }: Props) {
             content_type: 'image', // Use standard 'image' type for backend compatibility
             file_url: uploadedUrls[0], // Primary image
             // Store grid_images in link_preview since backend persists it as a :map
-            link_preview: uploadedUrls.length > 1 ? {
-              grid_images: uploadedUrls,
-              image_count: uploadedUrls.length,
-            } : undefined,
+            link_preview:
+              uploadedUrls.length > 1
+                ? {
+                    grid_images: uploadedUrls,
+                    image_count: uploadedUrls.length,
+                  }
+                : undefined,
           };
           logger.debug('Sending message:', JSON.stringify(msgPayload));
-          const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, msgPayload);
-          
+          const msgResponse = await api.post(
+            `/api/v1/conversations/${conversationId}/messages`,
+            msgPayload
+          );
+
           const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
           if (__DEV__) {
             logger.debug('Server response metadata:', JSON.stringify(rawMessage?.metadata));
@@ -2229,25 +2552,39 @@ export default function ConversationScreen({ navigation, route }: Props) {
           }
         }
       }
-      
+
       // Send files individually (each as separate message)
       for (const file of files) {
-        await uploadAndSendFile(file.uri, file.type, file.name, files.indexOf(file) === 0 ? caption : undefined);
+        await uploadAndSendFile(
+          file.uri,
+          file.type,
+          file.name,
+          files.indexOf(file) === 0 ? caption : undefined
+        );
       }
-      
+
       // Send videos individually (each as separate message)
       for (const video of videos) {
-        await uploadAndSendFile(video.uri, 'video', video.name, videos.indexOf(video) === 0 && !files.length ? caption : undefined, video.duration);
+        await uploadAndSendFile(
+          video.uri,
+          'video',
+          video.name,
+          videos.indexOf(video) === 0 && !files.length ? caption : undefined,
+          video.duration
+        );
       }
     } catch (error: any) {
       logger.error('Error sending attachments:', error);
       logger.error('Error response:', error?.response?.data);
-      Alert.alert('Error', error?.response?.data?.error || 'Failed to send attachments. Please try again.');
+      Alert.alert(
+        'Error',
+        error?.response?.data?.error || 'Failed to send attachments. Please try again.'
+      );
     } finally {
       setIsSending(false);
     }
   };
-  
+
   // Add more attachments to pending list
   const addMoreAttachments = async () => {
     // Close preview temporarily
@@ -2260,45 +2597,57 @@ export default function ConversationScreen({ navigation, route }: Props) {
       await handlePickImage();
     });
   };
-  
+
   // Upload and send file as message
-  const uploadAndSendFile = async (uri: string, type: 'image' | 'file' | 'video', filename?: string, caption?: string, duration?: number) => {
+  const uploadAndSendFile = async (
+    uri: string,
+    type: 'image' | 'file' | 'video',
+    filename?: string,
+    caption?: string,
+    duration?: number
+  ) => {
     setIsSending(true);
-    
+
     try {
       const formData = new FormData();
       const defaultExt = type === 'image' ? 'jpg' : type === 'video' ? 'mp4' : 'bin';
       const name = filename || `${type}_${Date.now()}.${defaultExt}`;
-      
+
       // Use helper for accurate MIME type detection
-      const defaultMime = type === 'image' ? 'image/jpeg' : type === 'video' ? 'video/mp4' : 'application/octet-stream';
+      const defaultMime =
+        type === 'image'
+          ? 'image/jpeg'
+          : type === 'video'
+            ? 'video/mp4'
+            : 'application/octet-stream';
       const mimeType = getMimeType(name, defaultMime);
-      
+
       formData.append('file', {
         uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
         name,
         type: mimeType,
       } as any);
       formData.append('context', 'message');
-      
+
       logger.debug('Uploading file:', { name, type: mimeType, uri: uri.substring(0, 50) });
-      
+
       const response = await api.post('/api/v1/upload', formData, {
-        headers: { 
+        headers: {
           'Content-Type': 'multipart/form-data',
         },
         timeout: 120000, // 2 minute timeout for video uploads
       });
-      
+
       logger.debug('Upload response:', JSON.stringify(response.data));
-      
+
       // Extract URL from various response formats
       const fileUrl = response.data?.data?.url || response.data?.url || response.data?.file?.url;
-      
+
       if (fileUrl) {
         // Send message with file attachment
         // Use caption if provided, otherwise default content
-        const messageContent = caption || (type === 'image' ? 'Photo' : type === 'video' ? 'Video' : `${name}`);
+        const messageContent =
+          caption || (type === 'image' ? 'Photo' : type === 'video' ? 'Video' : `${name}`);
         const msgPayload: any = {
           content: messageContent,
           content_type: type,
@@ -2306,23 +2655,26 @@ export default function ConversationScreen({ navigation, route }: Props) {
           file_name: name,
           file_mime_type: mimeType,
         };
-        
+
         // Add metadata for videos (duration, mimeType for proper detection)
         if (type === 'video') {
-          msgPayload.metadata = { 
+          msgPayload.metadata = {
             duration: duration || 0,
             mimeType: mimeType, // Include mimeType in metadata for normalizer detection
           };
         }
-        
-        const msgResponse = await api.post(`/api/v1/conversations/${conversationId}/messages`, msgPayload);
-        
+
+        const msgResponse = await api.post(
+          `/api/v1/conversations/${conversationId}/messages`,
+          msgPayload
+        );
+
         const rawMessage = msgResponse.data.data || msgResponse.data.message || msgResponse.data;
         if (rawMessage?.id) {
           const normalized = normalizeMessage(rawMessage);
           // Prepend for inverted list (newest first)
           setMessages((prev) => {
-            const exists = prev.some(m => m.id === normalized.id);
+            const exists = prev.some((m) => m.id === normalized.id);
             if (exists) return prev;
             return [normalized, ...prev];
           });
@@ -2334,37 +2686,40 @@ export default function ConversationScreen({ navigation, route }: Props) {
       }
     } catch (error: any) {
       logger.error('Error uploading file:', error?.response?.data || error?.message || error);
-      const errorMessage = error?.response?.data?.error?.message || error?.message || 'Failed to send file. Please try again.';
+      const errorMessage =
+        error?.response?.data?.error?.message ||
+        error?.message ||
+        'Failed to send file. Please try again.';
       Alert.alert('Upload Error', errorMessage);
     } finally {
       setIsSending(false);
     }
   };
-  
+
   // Send a wave greeting
   const handleSendWave = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     const emoji = WAVE_EMOJIS[Math.floor(Math.random() * WAVE_EMOJIS.length)];
-    
+
     // Trigger wave animation
     Animated.sequence([
       Animated.timing(waveAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
       Animated.timing(waveAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
     ]).start();
-    
+
     // Send the wave message directly
     try {
       const response = await api.post(`/api/v1/conversations/${conversationId}/messages`, {
         content: emoji,
         type: 'text',
       });
-      
+
       const rawMessage = response.data.data || response.data.message || response.data;
       if (rawMessage?.id) {
         const normalized = normalizeMessage(rawMessage);
         // Prepend for inverted list (newest first)
         setMessages((prev) => {
-          const exists = prev.some(m => m.id === normalized.id);
+          const exists = prev.some((m) => m.id === normalized.id);
           if (exists) return prev;
           return [normalized, ...prev];
         });
@@ -2374,13 +2729,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
       logger.error('Error sending wave:', error);
     }
   };
-  
+
   // Get message status icon and color
   const getMessageStatus = (message: Message, isOwn: boolean) => {
     if (!isOwn) return null;
-    
-    const status = message.status || (message.read_at ? 'read' : message.delivered_at ? 'delivered' : 'sent');
-    
+
+    const status =
+      message.status || (message.read_at ? 'read' : message.delivered_at ? 'delivered' : 'sent');
+
     switch (status) {
       case 'sending':
         return { icon: 'time-outline' as const, color: colors.textTertiary };
@@ -2396,14 +2752,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
         return { icon: 'checkmark-outline' as const, color: colors.textTertiary };
     }
   };
-  
+
   /**
    * Safely formats a date string to local time.
    * Handles invalid dates gracefully to prevent RangeError.
    */
   const formatTime = (dateString: string | undefined | null): string => {
     if (!dateString) return '';
-    
+
     try {
       const date = new Date(dateString);
       // Check if date is valid
@@ -2423,404 +2779,477 @@ export default function ConversationScreen({ navigation, route }: Props) {
 
   // Handle assets selected from TelegramAttachmentPicker
   // IMPORTANT: This must be defined BEFORE any early returns to comply with Rules of Hooks
-  const handleAttachmentPickerSelect = useCallback((assets: Array<{
-    uri: string;
-    type: 'image' | 'video' | 'file';
-    name?: string;
-    mimeType?: string;
-    duration?: number;
-  }>) => {
-    if (assets.length === 0) return;
-    
-    const newAttachments = assets.map(asset => ({
-      uri: asset.uri,
-      type: asset.type,
-      name: asset.name,
-      mimeType: asset.mimeType,
-      duration: asset.duration,
-    }));
-    
-    setPendingAttachments(prev => [...prev, ...newAttachments]);
-    openAttachmentPreview();
-  }, [openAttachmentPreview]);
-  
+  const handleAttachmentPickerSelect = useCallback(
+    (
+      assets: Array<{
+        uri: string;
+        type: 'image' | 'video' | 'file';
+        name?: string;
+        mimeType?: string;
+        duration?: number;
+      }>
+    ) => {
+      if (assets.length === 0) return;
+
+      const newAttachments = assets.map((asset) => ({
+        uri: asset.uri,
+        type: asset.type,
+        name: asset.name,
+        mimeType: asset.mimeType,
+        duration: asset.duration,
+      }));
+
+      setPendingAttachments((prev) => [...prev, ...newAttachments]);
+      openAttachmentPreview();
+    },
+    [openAttachmentPreview]
+  );
+
   // Extracted message content renderer - must be defined before renderMessage
-  const renderMessageContent = useCallback((item: Message, isOwnMessage: boolean, senderDisplayName: string) => {
-    return (
-      <>
-        {/* Reply preview if this message is a reply */}
-        {item.reply_to && (
-          <View style={[
-            styles.replyContainer,
-            { 
-              backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.05)',
-              borderLeftColor: isOwnMessage ? 'rgba(255,255,255,0.5)' : colors.primary
-            }
-          ]}>
-            <Text style={[styles.replyAuthor, { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.primary }]} numberOfLines={1}>
-              {item.reply_to.sender?.display_name || item.reply_to.sender?.username || 'Unknown'}
-            </Text>
-            <Text 
-              style={[styles.replyText, { color: isOwnMessage ? 'rgba(255,255,255,0.75)' : colors.textSecondary }]} 
-              numberOfLines={2}
+  const renderMessageContent = useCallback(
+    (item: Message, isOwnMessage: boolean, senderDisplayName: string) => {
+      return (
+        <>
+          {/* Reply preview if this message is a reply */}
+          {item.reply_to && (
+            <View
+              style={[
+                styles.replyContainer,
+                {
+                  backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.05)',
+                  borderLeftColor: isOwnMessage ? 'rgba(255,255,255,0.5)' : colors.primary,
+                },
+              ]}
             >
-              {item.reply_to.content || (item.reply_to.type === 'image' ? 'Photo' : item.reply_to.type === 'file' ? 'File' : 'Message')}
-            </Text>
-          </View>
-        )}
-        {/* Image Grid messages - multiple photos in one message (check FIRST before single image) */}
-        {item.type === 'image' && item.metadata?.grid_images && Array.isArray(item.metadata.grid_images) && item.metadata.grid_images.length > 0 && (
-          <View style={styles.imageGrid}>
-            {(() => {
-              const images = item.metadata.grid_images as string[];
-              const count = images.length;
-              
-              // Calculate grid layout based on image count
-              const gridStyle = count === 1 ? styles.imageGridSingle :
-                               count === 2 ? styles.imageGridTwo :
-                               count === 3 ? styles.imageGridThree :
-                               count === 4 ? styles.imageGridFour :
-                               styles.imageGridMany;
-              
-              return (
-                <View style={gridStyle}>
-                  {images.slice(0, 4).map((imgUrl, idx) => (
-                    <TouchableOpacity
-                      key={idx}
-                      activeOpacity={0.9}
-                      onPress={() => handleImagePress(imgUrl, images, idx)}
-                      style={[
-                        styles.gridImageContainer,
-                        count === 1 && styles.gridImageFull,
-                        count === 2 && styles.gridImageHalf,
-                        count === 3 && (idx === 0 ? styles.gridImageThreeMain : styles.gridImageThreeSide),
-                        count >= 4 && styles.gridImageQuarter,
-                      ]}
-                    >
-                      <Image
-                        source={{ uri: imgUrl }}
-                        style={styles.gridImage}
-                        resizeMode="cover"
-                      />
-                      {/* Show "+X more" overlay on 4th image if more than 4 */}
-                      {idx === 3 && count > 4 && (
-                        <View style={styles.gridMoreOverlay}>
-                          <Text style={styles.gridMoreText}>+{count - 4}</Text>
-                        </View>
-                      )}
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              );
-            })()}
-            {/* Photo count badge */}
-            {(item.metadata.grid_images as string[]).length > 1 && (
-              <View style={styles.imageGridBadge}>
-                <Text style={styles.imageGridBadgeText}>
-                  {(item.metadata.grid_images as string[]).length} photos
-                </Text>
-              </View>
-            )}
-          </View>
-        )}
-        {/* Single Image messages (only if NOT a grid) */}
-        {item.type === 'image' && item.metadata?.url && !item.metadata?.grid_images && (
-          <View>
-            <TouchableOpacity 
-              activeOpacity={0.9}
-              onPress={() => handleImagePress(item.metadata!.url!)}
-            >
-              <Image
-                source={{ uri: item.metadata.url }}
-                style={styles.messageImage}
-                resizeMode="cover"
-              />
-              <View style={styles.imageOverlay}>
-                <Ionicons name="expand-outline" size={16} color="rgba(255,255,255,0.9)" />
-              </View>
-            </TouchableOpacity>
-            <View style={styles.imageGridBadge}>
-              <Text style={styles.imageGridBadgeText}>Photo</Text>
-            </View>
-          </View>
-        )}
-        {/* File messages */}
-        {item.type === 'file' && item.metadata?.url && (
-          <TouchableOpacity 
-            style={[styles.fileAttachment, { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.15)' : colors.input }]}
-            onPress={() => handleFilePress(item.metadata!.url!, item.metadata?.filename)}
-            activeOpacity={0.7}
-          >
-            <View style={[styles.fileIconContainer, { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.2)' : colors.primary + '20' }]}>
-              <Ionicons name={getFileIcon(item.metadata?.filename)} size={20} color={isOwnMessage ? '#fff' : colors.primary} />
-            </View>
-            <View style={styles.fileInfo}>
-              <Text style={{ color: isOwnMessage ? '#fff' : colors.text, fontWeight: '600' }} numberOfLines={1}>
-                {item.metadata.filename || 'File'}
+              <Text
+                style={[
+                  styles.replyAuthor,
+                  { color: isOwnMessage ? 'rgba(255,255,255,0.9)' : colors.primary },
+                ]}
+                numberOfLines={1}
+              >
+                {item.reply_to.sender?.display_name || item.reply_to.sender?.username || 'Unknown'}
               </Text>
-              {item.metadata.size && (
-                <Text style={{ color: isOwnMessage ? 'rgba(255,255,255,0.7)' : colors.textSecondary, fontSize: 12, marginTop: 2 }}>
-                  {formatFileSize(item.metadata.size)}
-                </Text>
-              )}
+              <Text
+                style={[
+                  styles.replyText,
+                  { color: isOwnMessage ? 'rgba(255,255,255,0.75)' : colors.textSecondary },
+                ]}
+                numberOfLines={2}
+              >
+                {item.reply_to.content ||
+                  (item.reply_to.type === 'image'
+                    ? 'Photo'
+                    : item.reply_to.type === 'file'
+                      ? 'File'
+                      : 'Message')}
+              </Text>
             </View>
-            <Ionicons name="download-outline" size={20} color={isOwnMessage ? 'rgba(255,255,255,0.8)' : colors.textSecondary} />
-          </TouchableOpacity>
-        )}
-        {/* Video messages */}
-        {(() => {
-          // Debug logging for video detection
-          if (__DEV__ && (item.type === 'video' || item.metadata?.url?.match(/\.(mp4|mov|m4v)$/i))) {
-            console.log('[Video] Message type:', item.type, 'URL:', item.metadata?.url, 'mimeType:', item.metadata?.mimeType);
-          }
-          return null;
-        })()}
-        {item.type === 'video' && item.metadata?.url && (
-          <TouchableOpacity 
-            activeOpacity={0.9}
-            onPress={() => handleVideoPress(item.metadata!.url!, item.metadata?.duration)}
-            style={styles.videoMessageContainer}
-          >
-            {/* Video thumbnail - show inline video frame or image thumbnail */}
-            {item.metadata.thumbnail ? (
-              <Image
-                source={{ uri: item.metadata.thumbnail }}
-                style={styles.videoThumbnail}
-                resizeMode="cover"
-              />
-            ) : (
-              <InlineVideoThumbnail videoUrl={item.metadata.url} />
-            )}
-            {/* Play button overlay */}
-            <View style={styles.videoPlayOverlayMessage}>
-              <View style={styles.videoPlayButtonMessage}>
-                <Ionicons name="play" size={32} color="#fff" />
-              </View>
-            </View>
-            {/* Duration badge */}
-            {item.metadata.duration && (
-              <View style={styles.videoDurationBadgeMessage}>
-                <Text style={styles.videoDurationTextMessage}>
-                  {Math.floor(item.metadata.duration / 60)}:{String(Math.floor(item.metadata.duration % 60)).padStart(2, '0')}
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        )}
-        {/* Voice messages */}
-        {(item.type === 'voice' || item.type === 'audio') && item.metadata?.url && (
-          <VoiceMessagePlayer
-            audioUrl={item.metadata.url}
-            duration={item.metadata.duration || 0}
-            waveformData={item.metadata.waveform}
-            isSender={isOwnMessage}
-          />
-        )}
-        {/* Text content - hide for voice, video, and image messages with default placeholder content */}
-        {item.content && 
-         item.type !== 'voice' && 
-         item.type !== 'audio' && 
-         item.type !== 'video' && 
-         item.type !== 'image' &&
-         !item.content.match(/^(📷 Photo|Photo|🎥 Video|Video|📎 .+|\d+ photos?)$/) && (
-          <Text
-            style={[
-              styles.messageText,
-              { color: isOwnMessage ? '#fff' : colors.text },
-            ]}
-          >
-            {item.content}
-          </Text>
-        )}
-        {/* Show caption for media if it's not just a placeholder */}
-        {item.content && 
-         (item.type === 'video' || item.type === 'image') && 
-         !item.content.match(/^(📷 Photo|Photo|🎥 Video|Video|\d+ photos?)$/) && (
-          <Text
-            style={[
-              styles.messageText,
-              { color: isOwnMessage ? '#fff' : colors.text },
-            ]}
-          >
-            {item.content}
-          </Text>
-        )}
-        {/* Rich Media Embeds for URLs in text messages */}
-        {item.content && 
-         item.type === 'text' &&
-         item.content.match(/https?:\/\/[^\s]+/) && (
-          <RichMediaEmbed
-            content={item.content}
-            isOwnMessage={isOwnMessage}
-            maxEmbeds={2}
-          />
-        )}
-        <View style={styles.messageFooter}>
-          <Text
-            style={[
-              styles.messageTime,
-              { color: isOwnMessage ? 'rgba(255,255,255,0.75)' : colors.textTertiary },
-            ]}
-          >
-            {formatTime(item.inserted_at)}
-            {item.is_edited && ' • edited'}
-          </Text>
-          {/* Message status indicator for own messages */}
-          {isOwnMessage && (() => {
-            const statusInfo = getMessageStatus(item, isOwnMessage);
-            if (!statusInfo) return null;
-            return (
-              <Ionicons
-                name={statusInfo.icon}
-                size={14}
-                color={statusInfo.color}
-                style={styles.messageStatusIcon}
-              />
-            );
-          })()}
-        </View>
-        {/* Reactions display with animations */}
-        {item.reactions && item.reactions.length > 0 && (
-          <View style={[
-            styles.reactionsContainer,
-            isOwnMessage ? styles.reactionsOwn : styles.reactionsOther
-          ]}>
-            {item.reactions.map((reaction, index) => (
-              <AnimatedReactionBubble
-                key={`${reaction.emoji}-${index}`}
-                reaction={reaction}
-                isOwnMessage={isOwnMessage}
-                onPress={() => handleReactionTap(item.id, reaction.emoji, reaction.hasReacted)}
-                colors={colors}
-              />
-            ))}
-          </View>
-        )}
-      </>
-    );
-  }, [colors, handleImagePress, handleFilePress, getFileIcon, formatFileSize, formatTime, getMessageStatus, handleReactionTap]);
-  
-  const renderMessage = useCallback(({ item }: { item: Message }) => {
-    // Skip rendering messages without proper ID or that appear empty/invalid
-    if (!item.id) {
-      if (__DEV__) {
-        logger.debug('Skipping message without ID');
-      }
-      return null;
-    }
-    
-    // Skip messages without valid sender info (ghost messages)
-    const hasSender = item.sender_id || item.sender?.id;
-    if (!hasSender) {
-      if (__DEV__) {
-        logger.debug('Skipping message without sender:', item.id);
-      }
-      return null;
-    }
-    
-    // Skip messages that have no actual content
-    const hasTextContent = item.content && item.content.trim().length > 0 && item.content !== '[Voice Message]';
-    const hasMediaUrl = item.metadata?.url || item.file_url;
-    const isVoiceWithUrl = item.type === 'voice' && hasMediaUrl;
-    const isFileWithUrl = (item.type === 'file' || item.type === 'image') && hasMediaUrl;
-    
-    if (!hasTextContent && !isVoiceWithUrl && !isFileWithUrl) {
-      if (__DEV__) {
-        logger.debug('Skipping empty/invalid message:', item.id, { 
-          type: item.type, 
-          content: item.content?.substring(0, 20),
-          hasUrl: !!hasMediaUrl 
-        });
-      }
-      return null;
-    }
-    
-    // Get current user ID - ensure string comparison
-    const currentUserId = user?.id ? String(user.id) : '';
-    
-    // Get message sender ID - normalizer sets sender_id (snake_case)
-    // Fallback to sender.id for backwards compatibility
-    const messageSenderId = item.sender_id 
-      ? String(item.sender_id) 
-      : (item.sender?.id ? String(item.sender.id) : '');
-    
-    // Message is from current user if IDs match
-    const isOwnMessage = currentUserId !== '' && currentUserId === messageSenderId;
-    
-    // Get sender display name with fallbacks
-    const senderDisplayName = item.sender?.display_name || (item.sender as any)?.displayName || item.sender?.username || 'User';
-    const senderAvatarUrl = item.sender?.avatar_url || (item.sender as any)?.avatarUrl;
-    
-    // Check if this is a new message for entrance animation
-    const isNewMessage = newMessageIds.has(item.id);
-    
-    return (
-      <AnimatedMessageWrapper 
-        isOwnMessage={isOwnMessage} 
-        index={0}
-        isNew={isNewMessage}
-      >
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onLongPress={() => handleMessageLongPress(item)}
-          delayLongPress={400}
-        >
-          <View
-            style={[
-              styles.messageContainer,
-              isOwnMessage ? styles.ownMessage : styles.otherMessage,
-            ]}
-          >
-            {!isOwnMessage && (
-              <View style={styles.avatarSmall}>
-                {senderAvatarUrl ? (
-                  <Image source={{ uri: senderAvatarUrl }} style={styles.avatarImage} />
-                ) : (
-                  <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
-                    <Text style={styles.avatarText}>
-                      {senderDisplayName.charAt(0).toUpperCase()}
+          )}
+          {/* Image Grid messages - multiple photos in one message (check FIRST before single image) */}
+          {item.type === 'image' &&
+            item.metadata?.grid_images &&
+            Array.isArray(item.metadata.grid_images) &&
+            item.metadata.grid_images.length > 0 && (
+              <View style={styles.imageGrid}>
+                {(() => {
+                  const images = item.metadata.grid_images as string[];
+                  const count = images.length;
+
+                  // Calculate grid layout based on image count
+                  const gridStyle =
+                    count === 1
+                      ? styles.imageGridSingle
+                      : count === 2
+                        ? styles.imageGridTwo
+                        : count === 3
+                          ? styles.imageGridThree
+                          : count === 4
+                            ? styles.imageGridFour
+                            : styles.imageGridMany;
+
+                  return (
+                    <View style={gridStyle}>
+                      {images.slice(0, 4).map((imgUrl, idx) => (
+                        <TouchableOpacity
+                          key={idx}
+                          activeOpacity={0.9}
+                          onPress={() => handleImagePress(imgUrl, images, idx)}
+                          style={[
+                            styles.gridImageContainer,
+                            count === 1 && styles.gridImageFull,
+                            count === 2 && styles.gridImageHalf,
+                            count === 3 &&
+                              (idx === 0 ? styles.gridImageThreeMain : styles.gridImageThreeSide),
+                            count >= 4 && styles.gridImageQuarter,
+                          ]}
+                        >
+                          <Image
+                            source={{ uri: imgUrl }}
+                            style={styles.gridImage}
+                            resizeMode="cover"
+                          />
+                          {/* Show "+X more" overlay on 4th image if more than 4 */}
+                          {idx === 3 && count > 4 && (
+                            <View style={styles.gridMoreOverlay}>
+                              <Text style={styles.gridMoreText}>+{count - 4}</Text>
+                            </View>
+                          )}
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  );
+                })()}
+                {/* Photo count badge */}
+                {(item.metadata.grid_images as string[]).length > 1 && (
+                  <View style={styles.imageGridBadge}>
+                    <Text style={styles.imageGridBadgeText}>
+                      {(item.metadata.grid_images as string[]).length} photos
                     </Text>
                   </View>
                 )}
               </View>
             )}
-            {/* Pin indicator */}
-            {item.is_pinned && (
-              <View style={styles.pinnedIndicator}>
-                <Ionicons name="pin" size={12} color={colors.primary} />
-              </View>
-            )}
-            {isOwnMessage ? (
-              <LinearGradient
-                colors={['#22c55e', '#16a34a']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={[
-                  styles.messageBubble,
-                  styles.ownMessageBubble,
-                  item.is_pinned && styles.pinnedBubble,
-                ]}
+          {/* Single Image messages (only if NOT a grid) */}
+          {item.type === 'image' && item.metadata?.url && !item.metadata?.grid_images && (
+            <View>
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => handleImagePress(item.metadata!.url!)}
               >
-                {renderMessageContent(item, isOwnMessage, senderDisplayName)}
-              </LinearGradient>
-            ) : (
+                <Image
+                  source={{ uri: item.metadata.url }}
+                  style={styles.messageImage}
+                  resizeMode="cover"
+                />
+                <View style={styles.imageOverlay}>
+                  <Ionicons name="expand-outline" size={16} color="rgba(255,255,255,0.9)" />
+                </View>
+              </TouchableOpacity>
+              <View style={styles.imageGridBadge}>
+                <Text style={styles.imageGridBadgeText}>Photo</Text>
+              </View>
+            </View>
+          )}
+          {/* File messages */}
+          {item.type === 'file' && item.metadata?.url && (
+            <TouchableOpacity
+              style={[
+                styles.fileAttachment,
+                { backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.15)' : colors.input },
+              ]}
+              onPress={() => handleFilePress(item.metadata!.url!, item.metadata?.filename)}
+              activeOpacity={0.7}
+            >
               <View
                 style={[
-                  styles.messageBubble,
-                  styles.otherMessageBubble,
-                  { backgroundColor: colors.surface },
-                  item.is_pinned && styles.pinnedBubble,
+                  styles.fileIconContainer,
+                  {
+                    backgroundColor: isOwnMessage ? 'rgba(255,255,255,0.2)' : colors.primary + '20',
+                  },
                 ]}
               >
-                {renderMessageContent(item, isOwnMessage, senderDisplayName)}
+                <Ionicons
+                  name={getFileIcon(item.metadata?.filename)}
+                  size={20}
+                  color={isOwnMessage ? '#fff' : colors.primary}
+                />
               </View>
+              <View style={styles.fileInfo}>
+                <Text
+                  style={{ color: isOwnMessage ? '#fff' : colors.text, fontWeight: '600' }}
+                  numberOfLines={1}
+                >
+                  {item.metadata.filename || 'File'}
+                </Text>
+                {item.metadata.size && (
+                  <Text
+                    style={{
+                      color: isOwnMessage ? 'rgba(255,255,255,0.7)' : colors.textSecondary,
+                      fontSize: 12,
+                      marginTop: 2,
+                    }}
+                  >
+                    {formatFileSize(item.metadata.size)}
+                  </Text>
+                )}
+              </View>
+              <Ionicons
+                name="download-outline"
+                size={20}
+                color={isOwnMessage ? 'rgba(255,255,255,0.8)' : colors.textSecondary}
+              />
+            </TouchableOpacity>
+          )}
+          {/* Video messages */}
+          {(() => {
+            // Debug logging for video detection
+            if (
+              __DEV__ &&
+              (item.type === 'video' || item.metadata?.url?.match(/\.(mp4|mov|m4v)$/i))
+            ) {
+              console.log(
+                '[Video] Message type:',
+                item.type,
+                'URL:',
+                item.metadata?.url,
+                'mimeType:',
+                item.metadata?.mimeType
+              );
+            }
+            return null;
+          })()}
+          {item.type === 'video' && item.metadata?.url && (
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={() => handleVideoPress(item.metadata!.url!, item.metadata?.duration)}
+              style={styles.videoMessageContainer}
+            >
+              {/* Video thumbnail - show inline video frame or image thumbnail */}
+              {item.metadata.thumbnail ? (
+                <Image
+                  source={{ uri: item.metadata.thumbnail }}
+                  style={styles.videoThumbnail}
+                  resizeMode="cover"
+                />
+              ) : (
+                <InlineVideoThumbnail videoUrl={item.metadata.url} />
+              )}
+              {/* Play button overlay */}
+              <View style={styles.videoPlayOverlayMessage}>
+                <View style={styles.videoPlayButtonMessage}>
+                  <Ionicons name="play" size={32} color="#fff" />
+                </View>
+              </View>
+              {/* Duration badge */}
+              {item.metadata.duration && (
+                <View style={styles.videoDurationBadgeMessage}>
+                  <Text style={styles.videoDurationTextMessage}>
+                    {Math.floor(item.metadata.duration / 60)}:
+                    {String(Math.floor(item.metadata.duration % 60)).padStart(2, '0')}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          )}
+          {/* Voice messages */}
+          {(item.type === 'voice' || item.type === 'audio') && item.metadata?.url && (
+            <VoiceMessagePlayer
+              audioUrl={item.metadata.url}
+              duration={item.metadata.duration || 0}
+              waveformData={item.metadata.waveform}
+              isSender={isOwnMessage}
+            />
+          )}
+          {/* Text content - hide for voice, video, and image messages with default placeholder content */}
+          {item.content &&
+            item.type !== 'voice' &&
+            item.type !== 'audio' &&
+            item.type !== 'video' &&
+            item.type !== 'image' &&
+            !item.content.match(/^(📷 Photo|Photo|🎥 Video|Video|📎 .+|\d+ photos?)$/) && (
+              <Text style={[styles.messageText, { color: isOwnMessage ? '#fff' : colors.text }]}>
+                {item.content}
+              </Text>
             )}
+          {/* Show caption for media if it's not just a placeholder */}
+          {item.content &&
+            (item.type === 'video' || item.type === 'image') &&
+            !item.content.match(/^(📷 Photo|Photo|🎥 Video|Video|\d+ photos?)$/) && (
+              <Text style={[styles.messageText, { color: isOwnMessage ? '#fff' : colors.text }]}>
+                {item.content}
+              </Text>
+            )}
+          {/* Rich Media Embeds for URLs in text messages */}
+          {item.content && item.type === 'text' && item.content.match(/https?:\/\/[^\s]+/) && (
+            <RichMediaEmbed content={item.content} isOwnMessage={isOwnMessage} maxEmbeds={2} />
+          )}
+          <View style={styles.messageFooter}>
+            <Text
+              style={[
+                styles.messageTime,
+                { color: isOwnMessage ? 'rgba(255,255,255,0.75)' : colors.textTertiary },
+              ]}
+            >
+              {formatTime(item.inserted_at)}
+              {item.is_edited && ' • edited'}
+            </Text>
+            {/* Message status indicator for own messages */}
+            {isOwnMessage &&
+              (() => {
+                const statusInfo = getMessageStatus(item, isOwnMessage);
+                if (!statusInfo) return null;
+                return (
+                  <Ionicons
+                    name={statusInfo.icon}
+                    size={14}
+                    color={statusInfo.color}
+                    style={styles.messageStatusIcon}
+                  />
+                );
+              })()}
           </View>
-        </TouchableOpacity>
-      </AnimatedMessageWrapper>
-    );
-  }, [user?.id, colors, handleMessageLongPress, renderMessageContent, newMessageIds]);
-  
+          {/* Reactions display with animations */}
+          {item.reactions && item.reactions.length > 0 && (
+            <View
+              style={[
+                styles.reactionsContainer,
+                isOwnMessage ? styles.reactionsOwn : styles.reactionsOther,
+              ]}
+            >
+              {item.reactions.map((reaction, index) => (
+                <AnimatedReactionBubble
+                  key={`${reaction.emoji}-${index}`}
+                  reaction={reaction}
+                  isOwnMessage={isOwnMessage}
+                  onPress={() => handleReactionTap(item.id, reaction.emoji, reaction.hasReacted)}
+                  colors={colors}
+                />
+              ))}
+            </View>
+          )}
+        </>
+      );
+    },
+    [
+      colors,
+      handleImagePress,
+      handleFilePress,
+      getFileIcon,
+      formatFileSize,
+      formatTime,
+      getMessageStatus,
+      handleReactionTap,
+    ]
+  );
+
+  const renderMessage = useCallback(
+    ({ item }: { item: Message }) => {
+      // Skip rendering messages without proper ID or that appear empty/invalid
+      if (!item.id) {
+        if (__DEV__) {
+          logger.debug('Skipping message without ID');
+        }
+        return null;
+      }
+
+      // Skip messages without valid sender info (ghost messages)
+      const hasSender = item.sender_id || item.sender?.id;
+      if (!hasSender) {
+        if (__DEV__) {
+          logger.debug('Skipping message without sender:', item.id);
+        }
+        return null;
+      }
+
+      // Skip messages that have no actual content
+      const hasTextContent =
+        item.content && item.content.trim().length > 0 && item.content !== '[Voice Message]';
+      const hasMediaUrl = item.metadata?.url || item.file_url;
+      const isVoiceWithUrl = item.type === 'voice' && hasMediaUrl;
+      const isFileWithUrl = (item.type === 'file' || item.type === 'image') && hasMediaUrl;
+
+      if (!hasTextContent && !isVoiceWithUrl && !isFileWithUrl) {
+        if (__DEV__) {
+          logger.debug('Skipping empty/invalid message:', item.id, {
+            type: item.type,
+            content: item.content?.substring(0, 20),
+            hasUrl: !!hasMediaUrl,
+          });
+        }
+        return null;
+      }
+
+      // Get current user ID - ensure string comparison
+      const currentUserId = user?.id ? String(user.id) : '';
+
+      // Get message sender ID - normalizer sets sender_id (snake_case)
+      // Fallback to sender.id for backwards compatibility
+      const messageSenderId = item.sender_id
+        ? String(item.sender_id)
+        : item.sender?.id
+          ? String(item.sender.id)
+          : '';
+
+      // Message is from current user if IDs match
+      const isOwnMessage = currentUserId !== '' && currentUserId === messageSenderId;
+
+      // Get sender display name with fallbacks
+      const senderDisplayName =
+        item.sender?.display_name ||
+        (item.sender as any)?.displayName ||
+        item.sender?.username ||
+        'User';
+      const senderAvatarUrl = item.sender?.avatar_url || (item.sender as any)?.avatarUrl;
+
+      // Check if this is a new message for entrance animation
+      const isNewMessage = newMessageIds.has(item.id);
+
+      return (
+        <AnimatedMessageWrapper isOwnMessage={isOwnMessage} index={0} isNew={isNewMessage}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onLongPress={() => handleMessageLongPress(item)}
+            delayLongPress={400}
+          >
+            <View
+              style={[
+                styles.messageContainer,
+                isOwnMessage ? styles.ownMessage : styles.otherMessage,
+              ]}
+            >
+              {!isOwnMessage && (
+                <View style={styles.avatarSmall}>
+                  {senderAvatarUrl ? (
+                    <Image source={{ uri: senderAvatarUrl }} style={styles.avatarImage} />
+                  ) : (
+                    <View style={[styles.avatarPlaceholder, { backgroundColor: colors.primary }]}>
+                      <Text style={styles.avatarText}>
+                        {senderDisplayName.charAt(0).toUpperCase()}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+              )}
+              {/* Pin indicator */}
+              {item.is_pinned && (
+                <View style={styles.pinnedIndicator}>
+                  <Ionicons name="pin" size={12} color={colors.primary} />
+                </View>
+              )}
+              {isOwnMessage ? (
+                <LinearGradient
+                  colors={['#22c55e', '#16a34a']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[
+                    styles.messageBubble,
+                    styles.ownMessageBubble,
+                    item.is_pinned && styles.pinnedBubble,
+                  ]}
+                >
+                  {renderMessageContent(item, isOwnMessage, senderDisplayName)}
+                </LinearGradient>
+              ) : (
+                <View
+                  style={[
+                    styles.messageBubble,
+                    styles.otherMessageBubble,
+                    { backgroundColor: colors.surface },
+                    item.is_pinned && styles.pinnedBubble,
+                  ]}
+                >
+                  {renderMessageContent(item, isOwnMessage, senderDisplayName)}
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        </AnimatedMessageWrapper>
+      );
+    },
+    [user?.id, colors, handleMessageLongPress, renderMessageContent, newMessageIds]
+  );
+
   if (isLoading) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
@@ -2828,19 +3257,19 @@ export default function ConversationScreen({ navigation, route }: Props) {
       </View>
     );
   }
-  
+
   // Beautiful animated empty conversation state - inspired by Discord/Telegram
   const EmptyConversation = () => {
     const otherName = otherUser?.display_name || otherUser?.username || 'this person';
     const otherAvatar = otherUser?.avatar_url;
     const otherInitial = otherName.charAt(0).toUpperCase();
-    
+
     // Animated wave hand for the greeting
     const waveRotate = waveAnim.interpolate({
       inputRange: [0, 0.5, 1],
       outputRange: ['0deg', '20deg', '0deg'],
     });
-    
+
     return (
       <View style={styles.emptyStateWrapper}>
         {/* Large profile avatar */}
@@ -2854,23 +3283,20 @@ export default function ConversationScreen({ navigation, route }: Props) {
           )}
           <View style={styles.emptyOnlineIndicator} />
         </View>
-        
+
         {/* User name and info */}
         <Text style={[styles.emptyUserName, { color: colors.text }]}>{otherName}</Text>
-        
+
         {/* Cute message with animated emoji */}
         <View style={styles.emptyMessageRow}>
-          <Animated.Text style={[
-            styles.emptyWaveEmoji,
-            { transform: [{ rotate: waveRotate }] }
-          ]}>
+          <Animated.Text style={[styles.emptyWaveEmoji, { transform: [{ rotate: waveRotate }] }]}>
             👋
           </Animated.Text>
           <Text style={[styles.emptyMessageText, { color: colors.textSecondary }]}>
             This is the very beginning of your{'\n'}conversation with {otherName}
           </Text>
         </View>
-        
+
         {/* Action buttons */}
         <View style={styles.emptyActions}>
           <TouchableOpacity
@@ -2878,26 +3304,29 @@ export default function ConversationScreen({ navigation, route }: Props) {
             onPress={handleSendWave}
             activeOpacity={0.8}
           >
-            <Text style={styles.waveButtonText}>👋  Wave to {otherName}</Text>
+            <Text style={styles.waveButtonText}>👋 Wave to {otherName}</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={[styles.sayHiButton, { borderColor: colors.border }]}
             onPress={() => setInputText('Hey! How are you? 😊')}
             activeOpacity={0.8}
           >
-            <Text style={[styles.sayHiButtonText, { color: colors.text }]}>💬  Say Hi</Text>
+            <Text style={[styles.sayHiButtonText, { color: colors.text }]}>💬 Say Hi</Text>
           </TouchableOpacity>
         </View>
-        
+
         {/* Fun conversation starters */}
         <View style={styles.conversationStarters}>
           <Text style={[styles.startersTitle, { color: colors.textTertiary }]}>Quick starters</Text>
           <View style={styles.startersRow}>
-            {['Hello! 👋', 'What\'s up? 🤔', 'Nice to meet you! ✨'].map((starter, index) => (
+            {['Hello! 👋', "What's up? 🤔", 'Nice to meet you! ✨'].map((starter, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.starterChip, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                style={[
+                  styles.starterChip,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                ]}
                 onPress={() => setInputText(starter)}
                 activeOpacity={0.7}
               >
@@ -2913,15 +3342,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Message Actions Menu Component - Modern Discord/Telegram style
   const MessageActionsMenu = () => {
     if (!showMessageActions || !selectedMessage) return null;
-    
+
     const isOwnMessage = String(user?.id) === String(selectedMessage.sender_id);
     const isPinned = selectedMessage.is_pinned;
-    
+
     // Check which quick reactions the user has already used on this message
     const getReactionState = (emoji: string) => {
-      return selectedMessage.reactions?.some(r => r.emoji === emoji && r.hasReacted) || false;
+      return selectedMessage.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false;
     };
-    
+
     // Define action items
     const actionItems = [
       {
@@ -2968,20 +3397,20 @@ export default function ConversationScreen({ navigation, route }: Props) {
         visible: isOwnMessage,
         danger: true,
       },
-    ].filter(item => item.visible);
-    
+    ].filter((item) => item.visible);
+
     const slideUp = messageActionsAnim.interpolate({
       inputRange: [0, 1],
       outputRange: [400, 0],
     });
-    
+
     const backdropOpacity = backdropAnim.interpolate({
       inputRange: [0, 1],
       outputRange: [0, 1],
     });
-    
+
     // Render a pressable action item with animation
-    const renderActionItem = (item: typeof actionItems[0], index: number) => {
+    const renderActionItem = (item: (typeof actionItems)[0], index: number) => {
       const itemAnim = actionItemAnims[index] || new Animated.Value(1);
       const translateY = itemAnim.interpolate({
         inputRange: [0, 1],
@@ -2991,7 +3420,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         inputRange: [0, 1],
         outputRange: [0, 1],
       });
-      
+
       return (
         <Animated.View
           key={item.id}
@@ -3007,24 +3436,22 @@ export default function ConversationScreen({ navigation, route }: Props) {
             }}
             style={({ pressed }) => [
               styles.modernActionItem,
-              { 
-                backgroundColor: pressed 
-                  ? (item.danger ? 'rgba(239, 68, 68, 0.15)' : 'rgba(255, 255, 255, 0.08)')
+              {
+                backgroundColor: pressed
+                  ? item.danger
+                    ? 'rgba(239, 68, 68, 0.15)'
+                    : 'rgba(255, 255, 255, 0.08)'
                   : 'rgba(255, 255, 255, 0.04)',
                 transform: [{ scale: pressed ? 0.97 : 1 }],
               },
             ]}
           >
-            <View style={[
-              styles.modernActionIconWrap,
-              { backgroundColor: `${item.color}18` }
-            ]}>
+            <View style={[styles.modernActionIconWrap, { backgroundColor: `${item.color}18` }]}>
               <Ionicons name={item.icon as any} size={20} color={item.color} />
             </View>
-            <Text style={[
-              styles.modernActionLabel,
-              { color: item.danger ? item.color : colors.text }
-            ]}>
+            <Text
+              style={[styles.modernActionLabel, { color: item.danger ? item.color : colors.text }]}
+            >
               {item.label}
             </Text>
             <View style={styles.modernActionArrow}>
@@ -3034,7 +3461,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         </Animated.View>
       );
     };
-    
+
     return (
       <Modal
         visible={showMessageActions}
@@ -3046,43 +3473,56 @@ export default function ConversationScreen({ navigation, route }: Props) {
         <View style={styles.modernActionsOverlay}>
           {/* Animated blur backdrop */}
           <Animated.View style={[StyleSheet.absoluteFill, { opacity: backdropOpacity }]}>
-            <BlurView 
-              intensity={Platform.OS === 'ios' ? 40 : 100} 
+            <BlurView
+              intensity={Platform.OS === 'ios' ? 40 : 100}
               tint={isDark ? 'dark' : 'light'}
               style={StyleSheet.absoluteFill}
             />
-            <Pressable 
+            <Pressable
               style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0,0,0,0.4)' }]}
               onPress={closeMessageActions}
             />
           </Animated.View>
-          
+
           {/* Centered content area */}
           <View style={styles.modernActionsContent}>
             {/* Message Preview Card */}
-            <Animated.View style={[
-              styles.modernMessagePreview,
-              { 
-                backgroundColor: isDark ? 'rgba(30, 30, 35, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                transform: [
-                  { translateY: slideUp },
-                  { scale: menuScaleAnim }
-                ],
-                opacity: backdropOpacity,
-              }
-            ]}>
+            <Animated.View
+              style={[
+                styles.modernMessagePreview,
+                {
+                  backgroundColor: isDark ? 'rgba(30, 30, 35, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                  transform: [{ translateY: slideUp }, { scale: menuScaleAnim }],
+                  opacity: backdropOpacity,
+                },
+              ]}
+            >
               <View style={styles.modernPreviewHeader}>
                 <View style={[styles.modernPreviewAvatar, { backgroundColor: colors.primary }]}>
                   <Text style={styles.modernPreviewAvatarText}>
-                    {(selectedMessage.sender?.display_name || selectedMessage.sender?.username || 'U').charAt(0).toUpperCase()}
+                    {(
+                      selectedMessage.sender?.display_name ||
+                      selectedMessage.sender?.username ||
+                      'U'
+                    )
+                      .charAt(0)
+                      .toUpperCase()}
                   </Text>
                 </View>
                 <View style={styles.modernPreviewMeta}>
-                  <Text style={[styles.modernPreviewName, { color: colors.text }]} numberOfLines={1}>
-                    {selectedMessage.sender?.display_name || selectedMessage.sender?.username || 'Unknown'}
+                  <Text
+                    style={[styles.modernPreviewName, { color: colors.text }]}
+                    numberOfLines={1}
+                  >
+                    {selectedMessage.sender?.display_name ||
+                      selectedMessage.sender?.username ||
+                      'Unknown'}
                   </Text>
                   <Text style={[styles.modernPreviewTime, { color: colors.textSecondary }]}>
-                    {new Date(selectedMessage.inserted_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(selectedMessage.inserted_at).toLocaleTimeString([], {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
                   </Text>
                 </View>
                 {isPinned && (
@@ -3091,12 +3531,12 @@ export default function ConversationScreen({ navigation, route }: Props) {
                   </View>
                 )}
               </View>
-              
+
               {/* Message content preview */}
               <View style={styles.modernPreviewBody}>
                 {selectedMessage.type === 'image' && selectedMessage.metadata?.url ? (
                   <View style={styles.modernPreviewImageWrap}>
-                    <Image 
+                    <Image
                       source={{ uri: selectedMessage.metadata.url }}
                       style={styles.modernPreviewImage}
                       resizeMode="cover"
@@ -3107,19 +3547,27 @@ export default function ConversationScreen({ navigation, route }: Props) {
                     </View>
                   </View>
                 ) : selectedMessage.type === 'file' ? (
-                  <View style={[styles.modernPreviewFile, { backgroundColor: colors.surfaceHover }]}>
+                  <View
+                    style={[styles.modernPreviewFile, { backgroundColor: colors.surfaceHover }]}
+                  >
                     <Ionicons name="document-outline" size={20} color={colors.primary} />
-                    <Text style={[styles.modernPreviewFileText, { color: colors.text }]} numberOfLines={1}>
+                    <Text
+                      style={[styles.modernPreviewFileText, { color: colors.text }]}
+                      numberOfLines={1}
+                    >
                       {selectedMessage.metadata?.filename || 'File'}
                     </Text>
                   </View>
                 ) : (
-                  <Text style={[styles.modernPreviewText, { color: colors.text }]} numberOfLines={3}>
+                  <Text
+                    style={[styles.modernPreviewText, { color: colors.text }]}
+                    numberOfLines={3}
+                  >
                     {selectedMessage.content || 'Message'}
                   </Text>
                 )}
               </View>
-              
+
               {/* Quick Reactions Bar */}
               <View style={styles.quickReactionsBar}>
                 {QUICK_REACTIONS.map((emoji) => {
@@ -3129,13 +3577,15 @@ export default function ConversationScreen({ navigation, route }: Props) {
                       key={emoji}
                       style={[
                         styles.quickReactionBtn,
-                        { 
-                          backgroundColor: hasReacted 
-                            ? colors.primary + '25' 
-                            : (isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'),
+                        {
+                          backgroundColor: hasReacted
+                            ? colors.primary + '25'
+                            : isDark
+                              ? 'rgba(255,255,255,0.08)'
+                              : 'rgba(0,0,0,0.05)',
                           borderColor: hasReacted ? colors.primary : 'transparent',
                           borderWidth: hasReacted ? 1.5 : 0,
-                        }
+                        },
                       ]}
                       onPress={() => handleQuickReaction(emoji)}
                       activeOpacity={0.7}
@@ -3148,7 +3598,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
                   style={[
                     styles.quickReactionBtn,
                     styles.quickReactionMore,
-                    { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' }
+                    { backgroundColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)' },
                   ]}
                   onPress={openReactionPicker}
                   activeOpacity={0.7}
@@ -3157,56 +3607,56 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 </TouchableOpacity>
               </View>
             </Animated.View>
-            
+
             {/* Action Menu Card */}
-            <Animated.View style={[
-              styles.modernActionsCard,
-              { 
-                backgroundColor: isDark ? 'rgba(30, 30, 35, 0.95)' : 'rgba(255, 255, 255, 0.95)',
-                transform: [
-                  { translateY: slideUp },
-                  { scale: menuScaleAnim }
-                ],
-                opacity: backdropOpacity,
-              }
-            ]}>
+            <Animated.View
+              style={[
+                styles.modernActionsCard,
+                {
+                  backgroundColor: isDark ? 'rgba(30, 30, 35, 0.95)' : 'rgba(255, 255, 255, 0.95)',
+                  transform: [{ translateY: slideUp }, { scale: menuScaleAnim }],
+                  opacity: backdropOpacity,
+                },
+              ]}
+            >
               <View style={styles.modernActionsHeader}>
                 <View style={[styles.modernActionsHandle, { backgroundColor: colors.border }]} />
                 <Text style={[styles.modernActionsTitle, { color: colors.textSecondary }]}>
                   MESSAGE OPTIONS
                 </Text>
               </View>
-              
+
               <View style={styles.modernActionsList}>
                 {actionItems.map((item, index) => renderActionItem(item, index))}
               </View>
             </Animated.View>
-            
+
             {/* Cancel Button */}
-            <Animated.View style={[
-              { 
-                transform: [
-                  { translateY: slideUp },
-                  { scale: menuScaleAnim }
-                ],
-                opacity: backdropOpacity,
-              }
-            ]}>
+            <Animated.View
+              style={[
+                {
+                  transform: [{ translateY: slideUp }, { scale: menuScaleAnim }],
+                  opacity: backdropOpacity,
+                },
+              ]}
+            >
               <Pressable
                 onPress={closeMessageActions}
                 style={({ pressed }) => [
                   styles.modernCancelButton,
-                  { 
-                    backgroundColor: isDark 
-                      ? (pressed ? 'rgba(50, 50, 55, 0.98)' : 'rgba(40, 40, 45, 0.95)')
-                      : (pressed ? 'rgba(240, 240, 245, 0.98)' : 'rgba(255, 255, 255, 0.95)'),
+                  {
+                    backgroundColor: isDark
+                      ? pressed
+                        ? 'rgba(50, 50, 55, 0.98)'
+                        : 'rgba(40, 40, 45, 0.95)'
+                      : pressed
+                        ? 'rgba(240, 240, 245, 0.98)'
+                        : 'rgba(255, 255, 255, 0.95)',
                     transform: [{ scale: pressed ? 0.98 : 1 }],
-                  }
+                  },
                 ]}
               >
-                <Text style={[styles.modernCancelText, { color: colors.primary }]}>
-                  Cancel
-                </Text>
+                <Text style={[styles.modernCancelText, { color: colors.primary }]}>Cancel</Text>
               </Pressable>
             </Animated.View>
           </View>
@@ -3218,15 +3668,17 @@ export default function ConversationScreen({ navigation, route }: Props) {
   // Full Emoji Reaction Picker Modal
   const ReactionPickerModal = () => {
     if (!showReactionPicker || !reactionPickerMessage) return null;
-    
+
     const categoryKeys = Object.keys(EMOJI_CATEGORIES) as (keyof typeof EMOJI_CATEGORIES)[];
     const emojis = EMOJI_CATEGORIES[selectedEmojiCategory];
-    
+
     // Check if user has already reacted with an emoji
     const hasReacted = (emoji: string) => {
-      return reactionPickerMessage.reactions?.some(r => r.emoji === emoji && r.hasReacted) || false;
+      return (
+        reactionPickerMessage.reactions?.some((r) => r.emoji === emoji && r.hasReacted) || false
+      );
     };
-    
+
     return (
       <Modal
         visible={showReactionPicker}
@@ -3236,28 +3688,24 @@ export default function ConversationScreen({ navigation, route }: Props) {
         statusBarTranslucent
       >
         <View style={styles.reactionPickerOverlay}>
-          <Pressable 
-            style={styles.reactionPickerBackdrop}
-            onPress={closeReactionPicker}
-          />
-          <View style={[
-            styles.reactionPickerContainer,
-            { backgroundColor: isDark ? '#1a1a2e' : '#ffffff' }
-          ]}>
+          <Pressable style={styles.reactionPickerBackdrop} onPress={closeReactionPicker} />
+          <View
+            style={[
+              styles.reactionPickerContainer,
+              { backgroundColor: isDark ? '#1a1a2e' : '#ffffff' },
+            ]}
+          >
             {/* Header */}
             <View style={styles.reactionPickerHeader}>
               <View style={[styles.reactionPickerHandle, { backgroundColor: colors.border }]} />
               <Text style={[styles.reactionPickerTitle, { color: colors.text }]}>
                 😊 Add Reaction
               </Text>
-              <TouchableOpacity
-                style={styles.reactionPickerClose}
-                onPress={closeReactionPicker}
-              >
+              <TouchableOpacity style={styles.reactionPickerClose} onPress={closeReactionPicker}>
                 <Ionicons name="close" size={24} color={colors.textSecondary} />
               </TouchableOpacity>
             </View>
-            
+
             {/* Category tabs */}
             <View style={styles.emojiCategoryTabs}>
               <FlatList
@@ -3272,14 +3720,19 @@ export default function ConversationScreen({ navigation, route }: Props) {
                       selectedEmojiCategory === item && {
                         backgroundColor: colors.primary + '20',
                         borderColor: colors.primary,
-                      }
+                      },
                     ]}
                     onPress={() => setSelectedEmojiCategory(item)}
                   >
-                    <Text style={[
-                      styles.emojiCategoryLabel,
-                      { color: selectedEmojiCategory === item ? colors.primary : colors.textSecondary }
-                    ]}>
+                    <Text
+                      style={[
+                        styles.emojiCategoryLabel,
+                        {
+                          color:
+                            selectedEmojiCategory === item ? colors.primary : colors.textSecondary,
+                        },
+                      ]}
+                    >
                       {item}
                     </Text>
                   </TouchableOpacity>
@@ -3287,12 +3740,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 contentContainerStyle={styles.emojiCategoryTabsContent}
               />
             </View>
-            
+
             {/* Emoji grid */}
-            <ScrollView 
-              style={styles.emojiScrollView}
-              showsVerticalScrollIndicator={false}
-            >
+            <ScrollView style={styles.emojiScrollView} showsVerticalScrollIndicator={false}>
               <View style={styles.emojiGrid}>
                 {emojis.map((emoji, index) => {
                   const reacted = hasReacted(emoji);
@@ -3305,7 +3755,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
                           backgroundColor: colors.primary + '20',
                           borderColor: colors.primary,
                           borderWidth: 1,
-                        }
+                        },
                       ]}
                       onPress={() => {
                         if (reacted) {
@@ -3344,7 +3794,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
       />
       <MessageActionsMenu />
       <ReactionPickerModal />
-      
+
       {/* Attachment Preview Modal */}
       <Modal
         visible={showAttachmentPreview}
@@ -3353,22 +3803,22 @@ export default function ConversationScreen({ navigation, route }: Props) {
         onRequestClose={closeAttachmentPreview}
         statusBarTranslucent
       >
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
           style={{ flex: 1 }}
           behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-          <Animated.View 
+          <Animated.View
             style={[
               styles.attachmentPreviewContainer,
-              { 
+              {
                 opacity: attachmentPreviewAnim,
-                backgroundColor: 'rgba(0,0,0,0.95)'
-              }
+                backgroundColor: 'rgba(0,0,0,0.95)',
+              },
             ]}
           >
             {/* Header */}
             <View style={styles.attachmentPreviewHeader}>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={closeAttachmentPreview}
                 style={styles.attachmentPreviewCloseBtn}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -3376,9 +3826,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 <Ionicons name="close" size={28} color="#fff" />
               </TouchableOpacity>
               <Text style={styles.attachmentPreviewTitle}>
-                {pendingAttachments.length} {pendingAttachments.length === 1 ? 'item' : 'items'} selected
+                {pendingAttachments.length} {pendingAttachments.length === 1 ? 'item' : 'items'}{' '}
+                selected
               </Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={addMoreAttachments}
                 style={styles.attachmentPreviewAddBtn}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -3386,9 +3837,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 <Ionicons name="add" size={28} color="#fff" />
               </TouchableOpacity>
             </View>
-            
+
             {/* Preview Area */}
-            <ScrollView 
+            <ScrollView
               style={styles.attachmentPreviewScroll}
               contentContainerStyle={styles.attachmentPreviewContent}
               horizontal={pendingAttachments.length > 1}
@@ -3396,19 +3847,25 @@ export default function ConversationScreen({ navigation, route }: Props) {
               showsHorizontalScrollIndicator={pendingAttachments.length > 1}
             >
               {pendingAttachments.map((attachment, index) => (
-                <Animated.View 
+                <Animated.View
                   key={index}
                   style={[
                     styles.attachmentPreviewItem,
                     pendingAttachments.length > 1 && { width: SCREEN_WIDTH - 40 },
-                    { transform: [{ scale: attachmentPreviewAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.8, 1]
-                    })}]}
+                    {
+                      transform: [
+                        {
+                          scale: attachmentPreviewAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0.8, 1],
+                          }),
+                        },
+                      ],
+                    },
                   ]}
                 >
                   {/* Remove button */}
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     style={styles.attachmentRemoveBtn}
                     onPress={() => removeAttachment(index)}
                     hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
@@ -3417,30 +3874,36 @@ export default function ConversationScreen({ navigation, route }: Props) {
                       <Ionicons name="close" size={18} color="#fff" />
                     </View>
                   </TouchableOpacity>
-                  
+
                   {attachment.type === 'image' ? (
-                    <Image 
+                    <Image
                       source={{ uri: attachment.uri }}
                       style={styles.attachmentPreviewImage}
                       resizeMode="contain"
                     />
                   ) : attachment.type === 'video' ? (
-                    <AttachmentVideoPreview 
-                      uri={attachment.uri}
-                      duration={attachment.duration}
-                    />
+                    <AttachmentVideoPreview uri={attachment.uri} duration={attachment.duration} />
                   ) : (
                     <View style={styles.attachmentPreviewFile}>
-                      <View style={[styles.attachmentPreviewFileIcon, { backgroundColor: colors.primary }]}>
-                        <Ionicons 
+                      <View
+                        style={[
+                          styles.attachmentPreviewFileIcon,
+                          { backgroundColor: colors.primary },
+                        ]}
+                      >
+                        <Ionicons
                           name={
-                            attachment.mimeType?.includes('pdf') ? 'document-text' :
-                            attachment.mimeType?.includes('word') ? 'document' :
-                            attachment.mimeType?.includes('sheet') || attachment.mimeType?.includes('excel') ? 'grid' :
-                            'document-attach'
-                          } 
-                          size={48} 
-                          color="#fff" 
+                            attachment.mimeType?.includes('pdf')
+                              ? 'document-text'
+                              : attachment.mimeType?.includes('word')
+                                ? 'document'
+                                : attachment.mimeType?.includes('sheet') ||
+                                    attachment.mimeType?.includes('excel')
+                                  ? 'grid'
+                                  : 'document-attach'
+                          }
+                          size={48}
+                          color="#fff"
                         />
                       </View>
                       <Text style={styles.attachmentPreviewFileName} numberOfLines={2}>
@@ -3451,20 +3914,24 @@ export default function ConversationScreen({ navigation, route }: Props) {
                       </Text>
                     </View>
                   )}
-                  
+
                   {/* Index indicator for multiple attachments */}
                   {pendingAttachments.length > 1 && (
                     <View style={styles.attachmentIndexBadge}>
-                      <Text style={styles.attachmentIndexText}>{index + 1}/{pendingAttachments.length}</Text>
+                      <Text style={styles.attachmentIndexText}>
+                        {index + 1}/{pendingAttachments.length}
+                      </Text>
                     </View>
                   )}
                 </Animated.View>
               ))}
             </ScrollView>
-            
+
             {/* Bottom: Caption input + Send button */}
             <View style={[styles.attachmentPreviewFooter, { backgroundColor: colors.surface }]}>
-              <View style={[styles.attachmentCaptionContainer, { backgroundColor: colors.background }]}>
+              <View
+                style={[styles.attachmentCaptionContainer, { backgroundColor: colors.background }]}
+              >
                 <TextInput
                   style={[styles.attachmentCaptionInput, { color: colors.text }]}
                   placeholder="Add a caption..."
@@ -3475,7 +3942,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
                   maxLength={500}
                 />
               </View>
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.attachmentSendBtn, { backgroundColor: colors.primary }]}
                 onPress={sendPendingAttachments}
                 activeOpacity={0.8}
@@ -3486,7 +3953,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           </Animated.View>
         </KeyboardAvoidingView>
       </Modal>
-      
+
       {/* Full-screen Image Viewer Modal */}
       <Modal
         visible={showImageViewer}
@@ -3495,24 +3962,19 @@ export default function ConversationScreen({ navigation, route }: Props) {
         onRequestClose={closeImageViewer}
         statusBarTranslucent
       >
-        <Animated.View 
-          style={[
-            styles.imageViewerContainer,
-            { opacity: imageViewerAnim }
-          ]}
-        >
-          <TouchableOpacity 
+        <Animated.View style={[styles.imageViewerContainer, { opacity: imageViewerAnim }]}>
+          <TouchableOpacity
             style={styles.imageViewerBackdrop}
             activeOpacity={1}
             onPress={closeImageViewer}
           />
-          <Animated.View 
+          <Animated.View
             style={[
               styles.imageViewerContent,
-              { 
+              {
                 transform: [{ scale: imageScaleAnim }],
-                opacity: imageViewerAnim 
-              }
+                opacity: imageViewerAnim,
+              },
             ]}
           >
             {imageGallery.length > 1 ? (
@@ -3532,7 +3994,11 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 onScroll={(e) => {
                   // Update page number in real-time during scroll
                   const newIndex = Math.round(e.nativeEvent.contentOffset.x / SCREEN_WIDTH);
-                  if (newIndex !== currentImageIndex && newIndex >= 0 && newIndex < imageGallery.length) {
+                  if (
+                    newIndex !== currentImageIndex &&
+                    newIndex >= 0 &&
+                    newIndex < imageGallery.length
+                  ) {
                     setCurrentImageIndex(newIndex);
                     setSelectedImage(imageGallery[newIndex]);
                   }
@@ -3540,7 +4006,14 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 scrollEventThrottle={16}
                 keyExtractor={(item, index) => `gallery-${index}-${item}`}
                 renderItem={({ item }) => (
-                  <View style={{ width: SCREEN_WIDTH, height: SCREEN_HEIGHT, justifyContent: 'center', alignItems: 'center' }}>
+                  <View
+                    style={{
+                      width: SCREEN_WIDTH,
+                      height: SCREEN_HEIGHT,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}
+                  >
                     <Image
                       source={{ uri: item }}
                       style={styles.fullscreenImage}
@@ -3549,16 +4022,18 @@ export default function ConversationScreen({ navigation, route }: Props) {
                   </View>
                 )}
               />
-            ) : selectedImage && (
-              /* Single image view */
-              <Image
-                source={{ uri: selectedImage }}
-                style={styles.fullscreenImage}
-                resizeMode="contain"
-              />
+            ) : (
+              selectedImage && (
+                /* Single image view */
+                <Image
+                  source={{ uri: selectedImage }}
+                  style={styles.fullscreenImage}
+                  resizeMode="contain"
+                />
+              )
             )}
           </Animated.View>
-          
+
           {/* Image counter for gallery */}
           {imageGallery.length > 1 && (
             <View style={styles.imageCounterContainer}>
@@ -3567,9 +4042,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
               </Text>
             </View>
           )}
-          
+
           {/* Close button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.imageViewerCloseBtn}
             onPress={closeImageViewer}
             hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
@@ -3578,15 +4053,10 @@ export default function ConversationScreen({ navigation, route }: Props) {
               <Ionicons name="close" size={24} color="#fff" />
             </View>
           </TouchableOpacity>
-          
+
           {/* Action buttons */}
-          <Animated.View 
-            style={[
-              styles.imageViewerActions,
-              { opacity: imageViewerAnim }
-            ]}
-          >
-            <TouchableOpacity 
+          <Animated.View style={[styles.imageViewerActions, { opacity: imageViewerAnim }]}>
+            <TouchableOpacity
               style={styles.imageViewerActionBtn}
               onPress={() => {
                 if (selectedImage) {
@@ -3597,7 +4067,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
               <Ionicons name="download-outline" size={22} color="#fff" />
               <Text style={styles.imageViewerActionText}>Save</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.imageViewerActionBtn}
               onPress={() => {
                 if (selectedImage) {
@@ -3612,7 +4082,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           </Animated.View>
         </Animated.View>
       </Modal>
-      
+
       {/* Full-screen Video Player Modal */}
       <Modal
         visible={showVideoPlayer}
@@ -3622,7 +4092,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
         statusBarTranslucent
       >
         <View style={styles.videoPlayerContainer}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.videoPlayerBackdrop}
             activeOpacity={1}
             onPress={closeVideoPlayer}
@@ -3636,9 +4106,9 @@ export default function ConversationScreen({ navigation, route }: Props) {
               />
             )}
           </View>
-          
+
           {/* Close button */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.videoPlayerCloseBtn}
             onPress={closeVideoPlayer}
             hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
@@ -3649,13 +4119,13 @@ export default function ConversationScreen({ navigation, route }: Props) {
           </TouchableOpacity>
         </View>
       </Modal>
-      
+
       {/* Enhanced Pinned Messages Bar with Animation */}
       {currentPinnedMessage && (
         <Animated.View
           style={[
             styles.pinnedBarEnhanced,
-            { 
+            {
               backgroundColor: colors.surface,
               borderBottomColor: colors.border,
             },
@@ -3673,36 +4143,45 @@ export default function ConversationScreen({ navigation, route }: Props) {
               end={{ x: 0, y: 1 }}
               style={styles.pinnedBarGradient}
             />
-            
+
             {/* Media preview thumbnail */}
-            {(currentPinnedMessage.type === 'image' || currentPinnedMessage.type === 'video') && currentPinnedMessage.metadata?.url && (
-              <View style={styles.pinnedMediaPreview}>
-                <Image 
-                  source={{ uri: currentPinnedMessage.metadata.thumbnail || currentPinnedMessage.metadata.url }} 
-                  style={styles.pinnedMediaThumbnail}
-                />
-                {currentPinnedMessage.type === 'video' && (
-                  <View style={styles.pinnedVideoIcon}>
-                    <Ionicons name="play" size={10} color="#fff" />
-                  </View>
-                )}
-              </View>
-            )}
-            
+            {(currentPinnedMessage.type === 'image' || currentPinnedMessage.type === 'video') &&
+              currentPinnedMessage.metadata?.url && (
+                <View style={styles.pinnedMediaPreview}>
+                  <Image
+                    source={{
+                      uri:
+                        currentPinnedMessage.metadata.thumbnail ||
+                        currentPinnedMessage.metadata.url,
+                    }}
+                    style={styles.pinnedMediaThumbnail}
+                  />
+                  {currentPinnedMessage.type === 'video' && (
+                    <View style={styles.pinnedVideoIcon}>
+                      <Ionicons name="play" size={10} color="#fff" />
+                    </View>
+                  )}
+                </View>
+              )}
+
             {/* Voice message indicator */}
             {(currentPinnedMessage.type === 'voice' || currentPinnedMessage.type === 'audio') && (
-              <View style={[styles.pinnedVoiceIndicator, { backgroundColor: colors.primary + '20' }]}>
+              <View
+                style={[styles.pinnedVoiceIndicator, { backgroundColor: colors.primary + '20' }]}
+              >
                 <Ionicons name="mic" size={18} color={colors.primary} />
               </View>
             )}
-            
+
             {/* File indicator */}
             {currentPinnedMessage.type === 'file' && (
-              <View style={[styles.pinnedFileIndicator, { backgroundColor: colors.primary + '20' }]}>
+              <View
+                style={[styles.pinnedFileIndicator, { backgroundColor: colors.primary + '20' }]}
+              >
                 <Ionicons name="document-attach" size={18} color={colors.primary} />
               </View>
             )}
-            
+
             {/* Content */}
             <View style={styles.pinnedBarContentEnhanced}>
               <View style={styles.pinnedBarHeaderRow}>
@@ -3712,29 +4191,42 @@ export default function ConversationScreen({ navigation, route }: Props) {
                 <Text style={[styles.pinnedBarLabelEnhanced, { color: colors.primary }]}>
                   Pinned
                   {pinnedMessages.length > 1 && (
-                    <Text style={styles.pinnedBarCounter}> · {currentPinnedIndex + 1}/{pinnedMessages.length}</Text>
+                    <Text style={styles.pinnedBarCounter}>
+                      {' '}
+                      · {currentPinnedIndex + 1}/{pinnedMessages.length}
+                    </Text>
                   )}
                 </Text>
                 {currentPinnedMessage.sender && (
-                  <Text style={[styles.pinnedBarSender, { color: colors.textSecondary }]} numberOfLines={1}>
-                    by {currentPinnedMessage.sender.display_name || currentPinnedMessage.sender.username}
+                  <Text
+                    style={[styles.pinnedBarSender, { color: colors.textSecondary }]}
+                    numberOfLines={1}
+                  >
+                    by{' '}
+                    {currentPinnedMessage.sender.display_name ||
+                      currentPinnedMessage.sender.username}
                   </Text>
                 )}
               </View>
-              <Text 
-                style={[styles.pinnedBarTextEnhanced, { color: colors.text }]} 
+              <Text
+                style={[styles.pinnedBarTextEnhanced, { color: colors.text }]}
                 numberOfLines={1}
               >
-                {currentPinnedMessage.content && !currentPinnedMessage.content.match(/^(📷 Photo|Photo|🎥 Video|Video|\d+ photos?)$/)
+                {currentPinnedMessage.content &&
+                !currentPinnedMessage.content.match(/^(📷 Photo|Photo|🎥 Video|Video|\d+ photos?)$/)
                   ? currentPinnedMessage.content
-                  : currentPinnedMessage.type === 'image' ? 'Photo'
-                  : currentPinnedMessage.type === 'video' ? '🎬 Video' 
-                  : currentPinnedMessage.type === 'voice' ? '🎤 Voice message' 
-                  : currentPinnedMessage.type === 'file' ? `📎 ${currentPinnedMessage.metadata?.filename || 'File'}` 
-                  : 'Message'}
+                  : currentPinnedMessage.type === 'image'
+                    ? 'Photo'
+                    : currentPinnedMessage.type === 'video'
+                      ? '🎬 Video'
+                      : currentPinnedMessage.type === 'voice'
+                        ? '🎤 Voice message'
+                        : currentPinnedMessage.type === 'file'
+                          ? `📎 ${currentPinnedMessage.metadata?.filename || 'File'}`
+                          : 'Message'}
               </Text>
             </View>
-            
+
             {/* Progress dots for multiple pins */}
             {pinnedMessages.length > 1 && (
               <View style={styles.pinnedProgressContainer}>
@@ -3747,17 +4239,20 @@ export default function ConversationScreen({ navigation, route }: Props) {
                     }}
                     hitSlop={{ top: 8, bottom: 8, left: 4, right: 4 }}
                   >
-                    <View 
+                    <View
                       style={[
                         styles.pinnedProgressDot,
-                        { backgroundColor: idx === currentPinnedIndex ? colors.primary : colors.border }
+                        {
+                          backgroundColor:
+                            idx === currentPinnedIndex ? colors.primary : colors.border,
+                        },
                       ]}
                     />
                   </TouchableOpacity>
                 ))}
               </View>
             )}
-            
+
             {/* Navigation arrows */}
             {pinnedMessages.length > 1 && (
               <View style={styles.pinnedBarNavEnhanced}>
@@ -3780,7 +4275,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           </TouchableOpacity>
         </Animated.View>
       )}
-      
+
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -3805,7 +4300,7 @@ export default function ConversationScreen({ navigation, route }: Props) {
           />
         }
       />
-      
+
       {/* Voice Recorder overlay */}
       {isVoiceMode && (
         <View style={[styles.voiceRecorderContainer, { backgroundColor: colors.surface }]}>
@@ -3816,17 +4311,30 @@ export default function ConversationScreen({ navigation, route }: Props) {
           />
         </View>
       )}
-      
+
       {/* Reply preview bar */}
       {replyingTo && (
-        <View style={[styles.replyPreviewBar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+        <View
+          style={[
+            styles.replyPreviewBar,
+            { backgroundColor: colors.surface, borderTopColor: colors.border },
+          ]}
+        >
           <View style={[styles.replyPreviewLine, { backgroundColor: colors.primary }]} />
           <View style={styles.replyPreviewContent}>
             <Text style={[styles.replyPreviewLabel, { color: colors.primary }]}>
               Replying to {replyingTo.sender?.display_name || replyingTo.sender?.username || 'User'}
             </Text>
-            <Text style={[styles.replyPreviewText, { color: colors.textSecondary }]} numberOfLines={1}>
-              {replyingTo.content || (replyingTo.type === 'image' ? 'Photo' : replyingTo.type === 'voice' ? 'Voice message' : 'File')}
+            <Text
+              style={[styles.replyPreviewText, { color: colors.textSecondary }]}
+              numberOfLines={1}
+            >
+              {replyingTo.content ||
+                (replyingTo.type === 'image'
+                  ? 'Photo'
+                  : replyingTo.type === 'voice'
+                    ? 'Voice message'
+                    : 'File')}
             </Text>
           </View>
           <TouchableOpacity onPress={cancelReply} style={styles.replyPreviewClose}>
@@ -3834,34 +4342,47 @@ export default function ConversationScreen({ navigation, route }: Props) {
           </TouchableOpacity>
         </View>
       )}
-      
+
       {/* Normal input area */}
       {!isVoiceMode && (
-        <View style={[styles.inputContainer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
+        <View
+          style={[
+            styles.inputContainer,
+            { backgroundColor: colors.surface, borderTopColor: colors.border },
+          ]}
+        >
           <TouchableOpacity style={styles.attachButton} onPress={toggleAttachMenu}>
-            <Animated.View style={{
-              transform: [{ 
-                rotate: attachMenuAnim.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: ['0deg', '45deg'],
-                })
-              }]
-            }}>
-              <Ionicons name="add-circle" size={28} color={showAttachMenu ? colors.primary : colors.textSecondary} />
+            <Animated.View
+              style={{
+                transform: [
+                  {
+                    rotate: attachMenuAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: ['0deg', '45deg'],
+                    }),
+                  },
+                ],
+              }}
+            >
+              <Ionicons
+                name="add-circle"
+                size={28}
+                color={showAttachMenu ? colors.primary : colors.textSecondary}
+              />
             </Animated.View>
           </TouchableOpacity>
-          
+
           <TextInput
             ref={inputRef}
             style={[styles.input, { backgroundColor: colors.input, color: colors.text }]}
-            placeholder={replyingTo ? "Reply..." : "Message..."}
+            placeholder={replyingTo ? 'Reply...' : 'Message...'}
             placeholderTextColor={colors.textTertiary}
             value={inputText}
             onChangeText={handleTextChange}
             multiline
             maxLength={4000}
           />
-          
+
           {/* Morphing send/mic button with web-parity animations */}
           <MorphingInputButton
             hasText={inputText.trim().length > 0}

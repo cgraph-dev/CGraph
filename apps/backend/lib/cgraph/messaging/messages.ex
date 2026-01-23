@@ -90,6 +90,19 @@ defmodule CGraph.Messaging.Messages do
       {:ok, message} ->
         update_conversation_last_message(conversation, message)
         {:ok, Repo.preload(message, [:sender, :reactions])}
+
+      {:error, %Ecto.Changeset{} = changeset} ->
+        if idempotency_conflict?(changeset) do
+          client_message_id = Ecto.Changeset.get_field(changeset, :client_message_id)
+
+          case get_message_by_client_id(conversation.id, client_message_id) do
+            nil -> {:error, changeset}
+            message -> {:ok, Repo.preload(message, [:sender, :reactions])}
+          end
+        else
+          {:error, changeset}
+        end
+
       error ->
         error
     end
@@ -182,11 +195,56 @@ defmodule CGraph.Messaging.Messages do
   # Private helpers
 
   defp update_conversation_last_message(conversation, message) do
-    conversation
+    {:ok, updated_conversation} = conversation
     |> Ecto.Changeset.change(%{
       last_message_at: message.inserted_at,
       last_message_id: message.id
     })
     |> Repo.update()
+
+    # Broadcast conversation update to all participants
+    broadcast_conversation_updated(updated_conversation, message)
   end
+
+  defp broadcast_conversation_updated(conversation, message) do
+    # Get participant IDs from conversation
+    participant_ids = [conversation.user_one_id, conversation.user_two_id] |> Enum.filter(& &1)
+
+    conversation_update = %{
+      id: conversation.id,
+      lastMessage: %{
+        id: message.id,
+        content: message.content,
+        senderId: message.sender_id,
+        createdAt: message.inserted_at
+      },
+      updatedAt: conversation.updated_at
+    }
+
+    for user_id <- participant_ids do
+      Phoenix.PubSub.broadcast(
+        CGraph.PubSub,
+        "user:#{user_id}:notifications",
+        {:conversation_updated, conversation_update}
+      )
+    end
+  end
+
+  defp idempotency_conflict?(changeset) do
+    Enum.any?(changeset.errors, fn {field, {_, _}} ->
+      field == :client_message_id
+    end)
+  end
+
+  defp get_message_by_client_id(conversation_id, client_message_id)
+       when is_binary(client_message_id) do
+    from(m in Message,
+      where: m.conversation_id == ^conversation_id,
+      where: m.client_message_id == ^client_message_id,
+      preload: [:sender, reactions: :user]
+    )
+    |> Repo.one()
+  end
+
+  defp get_message_by_client_id(_, _), do: nil
 end

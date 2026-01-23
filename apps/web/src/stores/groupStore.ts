@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
+import { createIdempotencyKey } from '@cgraph/utils';
 import { ensureArray, ensureObject } from '@/lib/apiUtils';
 
 export interface Group {
@@ -210,7 +211,10 @@ export const useGroupStore = create<GroupState>((set, get) => ({
   },
 
   sendChannelMessage: async (channelId: string, content: string, replyToId?: string) => {
-    const payload: Record<string, string> = { content };
+    const payload: Record<string, string> = {
+      content,
+      client_message_id: createIdempotencyKey(),
+    };
     if (replyToId) payload.reply_to_id = replyToId;
 
     const response = await api.post(`/api/v1/channels/${channelId}/messages`, payload);

@@ -79,6 +79,7 @@ defmodule CGraphWeb.API.V1.MessageController do
       file_mime_type: Map.get(params, "file_mime_type"),
       thumbnail_url: Map.get(params, "thumbnail_url"),
       is_encrypted: Map.get(params, "is_encrypted", false),
+      client_message_id: Map.get(params, "client_message_id"),
       # Combined metadata (E2EE + link previews, etc.)
       link_preview: combined_metadata
     }
