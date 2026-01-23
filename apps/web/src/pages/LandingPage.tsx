@@ -805,41 +805,45 @@ export default function LandingPage() {
         sections.forEach((section, index) => {
           // First visible section starts at full scale, others start scaled down
           if (index === 0) {
-            gsap.set(section, { scale: 1, opacity: 1 });
+            gsap.set(section, { scale: 1, opacity: 1, transformOrigin: 'center center' });
           } else {
-            gsap.set(section, { scale: 0.92, opacity: 0.3 });
+            gsap.set(section, { scale: 0.75, opacity: 0.2, transformOrigin: 'center center' });
           }
         });
 
         // Create unified zoom animation for each section
+        // Sections hit 100% scale when centered in viewport (top 50%)
         sections.forEach((section) => {
           // Single timeline with scrub for smooth bidirectional scrolling
           const tl = gsap.timeline({
             scrollTrigger: {
               trigger: section,
-              start: 'top 100%', // Animation starts when section enters viewport
-              end: 'top -30%', // Animation ends when section is well past
-              scrub: 0.8, // Smooth scrubbing (lower = smoother)
+              start: 'top 100%', // Animation starts when section enters viewport bottom
+              end: 'top -50%', // Animation ends when section top is 50% above viewport
+              scrub: 1.2, // Ultra-smooth scrubbing
               invalidateOnRefresh: true, // Recalculate on refresh
             },
           });
 
-          // Phase 1: Scale up as section enters (0% to 40% of scroll progress)
+          // Phase 1: Scale up as section approaches center (0% to 33% progress)
+          // Section scales from 75% to 100% as it moves from bottom to center
           tl.fromTo(
             section,
-            { scale: 0.92, opacity: 0.3, transformOrigin: 'center center' },
-            { scale: 1, opacity: 1, duration: 0.4, ease: 'power1.out' }
+            { scale: 0.75, opacity: 0.2, transformOrigin: 'center center' },
+            { scale: 1, opacity: 1, duration: 0.33, ease: 'sine.out' }
           );
 
-          // Phase 2: Hold at full scale (40% to 60% of scroll progress)
-          tl.to(section, { scale: 1, opacity: 1, duration: 0.2 });
+          // Phase 2: Hold at full scale while centered (33% to 66% progress)
+          // This is when section top is near viewport center (top 50%)
+          tl.to(section, { scale: 1, opacity: 1, duration: 0.34, ease: 'none' });
 
-          // Phase 3: Scale down as section leaves (60% to 100% of scroll progress)
+          // Phase 3: Scale down as section leaves center (66% to 100% progress)
+          // Section shrinks 25% as it scrolls past center
           tl.to(section, {
-            scale: 0.88,
-            opacity: 0.15,
-            duration: 0.4,
-            ease: 'power1.in',
+            scale: 0.75,
+            opacity: 0.2,
+            duration: 0.33,
+            ease: 'sine.in',
           });
         });
 
