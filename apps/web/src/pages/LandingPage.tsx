@@ -51,6 +51,18 @@ const throttle = <T extends (...args: Parameters<T>) => ReturnType<T>>(
   };
 };
 
+// Performance: Debounce function for resize handlers
+const debounce = <T extends (...args: Parameters<T>) => ReturnType<T>>(
+  fn: T,
+  delay: number
+): ((...args: Parameters<T>) => void) => {
+  let timeoutId: ReturnType<typeof setTimeout>;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+};
+
 // =============================================================================
 // DATA
 // =============================================================================
@@ -785,45 +797,53 @@ export default function LandingPage() {
     // Defer scroll-triggered animations slightly to ensure DOM is ready
     const timeoutId = setTimeout(() => {
       const ctx = gsap.context(() => {
-        // Section zoom effect - smooth parallax-style scaling
+        // Section zoom effect - unified smooth parallax-style scaling
         const sections = document.querySelectorAll('.zoom-section');
 
+        // Set initial states for all sections
+        sections.forEach((section, index) => {
+          // First visible section starts at full scale, others start scaled down
+          if (index === 0) {
+            gsap.set(section, { scale: 1, opacity: 1 });
+          } else {
+            gsap.set(section, { scale: 0.92, opacity: 0.3 });
+          }
+        });
+
+        // Create unified zoom animation for each section
         sections.forEach((section) => {
-          // Scale down as section leaves the viewport (starts when section top hits 30% from top)
-          gsap.to(section, {
+          // Single timeline with scrub for smooth bidirectional scrolling
+          const tl = gsap.timeline({
             scrollTrigger: {
               trigger: section,
-              start: 'top 30%',
-              end: 'top -50%',
-              scrub: 1,
-              fastScrollEnd: true, // Performance: end early on fast scroll
+              start: 'top 100%', // Animation starts when section enters viewport
+              end: 'top -30%', // Animation ends when section is well past
+              scrub: 0.8, // Smooth scrubbing (lower = smoother)
+              invalidateOnRefresh: true, // Recalculate on refresh
             },
-            scale: 0.25,
-            opacity: 0.05,
-            ease: 'none',
           });
 
-          // Scale up as section enters viewport - reach full scale when section is centered
-          gsap.fromTo(
+          // Phase 1: Scale up as section enters (0% to 40% of scroll progress)
+          tl.fromTo(
             section,
-            {
-              scale: 0.25,
-              opacity: 0.05,
-            },
-            {
-              scrollTrigger: {
-                trigger: section,
-                start: 'top 100%',
-                end: 'top 50%',
-                scrub: 1,
-                fastScrollEnd: true, // Performance: end early on fast scroll
-              },
-              scale: 1,
-              opacity: 1,
-              ease: 'none',
-            }
+            { scale: 0.92, opacity: 0.3, transformOrigin: 'center center' },
+            { scale: 1, opacity: 1, duration: 0.4, ease: 'power1.out' }
           );
+
+          // Phase 2: Hold at full scale (40% to 60% of scroll progress)
+          tl.to(section, { scale: 1, opacity: 1, duration: 0.2 });
+
+          // Phase 3: Scale down as section leaves (60% to 100% of scroll progress)
+          tl.to(section, {
+            scale: 0.88,
+            opacity: 0.15,
+            duration: 0.4,
+            ease: 'power1.in',
+          });
         });
+
+        // Refresh ScrollTrigger after setup to ensure accurate positions
+        ScrollTrigger.refresh();
 
         // Feature cards scroll animation
         gsap.from('.tilt-card', {
@@ -916,11 +936,43 @@ export default function LandingPage() {
         }
       });
 
-      return () => ctx.revert();
+      // Store context for cleanup
+      gsapContextRef = ctx;
+
+      // ResizeObserver to refresh ScrollTrigger when lazy content loads
+      const resizeObserver = new ResizeObserver(
+        debounce(() => {
+          ScrollTrigger.refresh();
+        }, 200)
+      );
+
+      // Observe the main container for size changes (lazy content loading)
+      const mainContainer = document.querySelector('.demo-landing');
+      if (mainContainer) {
+        resizeObserver.observe(mainContainer);
+      }
+
+      // Store for cleanup
+      (window as unknown as { _cgraphResizeObserver?: ResizeObserver })._cgraphResizeObserver =
+        resizeObserver;
     }, 100); // Small delay to improve initial paint
 
     return () => {
       clearTimeout(timeoutId);
+      heroTl?.kill();
+      // Clean up ResizeObserver
+      const observer = (window as unknown as { _cgraphResizeObserver?: ResizeObserver })
+        ._cgraphResizeObserver;
+      if (observer) {
+        observer.disconnect();
+        delete (window as unknown as { _cgraphResizeObserver?: ResizeObserver })
+          ._cgraphResizeObserver;
+      }
+      // Properly revert GSAP context and kill ScrollTriggers
+      if (gsapContextRef) {
+        gsapContextRef.revert();
+        gsapContextRef = null;
+      }
     };
   }, []);
 
