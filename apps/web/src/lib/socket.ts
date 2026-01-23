@@ -150,6 +150,11 @@ function getSocketUrl(): string {
 
 const SOCKET_URL = getSocketUrl();
 
+// Debug logging for development
+console.log('[Socket] Configured URL:', SOCKET_URL);
+console.log('[Socket] VITE_WS_URL:', import.meta.env.VITE_WS_URL);
+console.log('[Socket] VITE_API_URL:', import.meta.env.VITE_API_URL);
+
 class SocketManager {
   private socket: Socket | null = null;
   private channels: Map<string, Channel> = new Map();
@@ -174,15 +179,18 @@ class SocketManager {
     }
 
     const token = useAuthStore.getState().token;
+    console.log('[Socket] connect() called, token exists:', !!token);
     if (!token) {
       logger.warn('Cannot connect to socket: no auth token');
       return Promise.resolve();
     }
 
     if (this.socket?.isConnected()) {
+      console.log('[Socket] Already connected');
       return Promise.resolve();
     }
 
+    console.log('[Socket] Connecting to:', SOCKET_URL);
     this.connectionPromise = new Promise((resolve) => {
       this.socket = new Socket(SOCKET_URL, {
         params: { token },
@@ -195,6 +203,7 @@ class SocketManager {
 
       this.socket.onOpen(() => {
         logger.log('Socket connected');
+        console.log('[Socket] ✅ Connected successfully to:', SOCKET_URL);
         if (this.reconnectTimer) {
           clearTimeout(this.reconnectTimer);
           this.reconnectTimer = null;
@@ -205,11 +214,13 @@ class SocketManager {
 
       this.socket.onClose(() => {
         logger.log('Socket disconnected');
+        console.log('[Socket] ⚠️ Disconnected');
         this.connectionPromise = null;
       });
 
       this.socket.onError((error: unknown) => {
         logger.error('Socket error:', error);
+        console.log('[Socket] ❌ Error:', error);
         this.connectionPromise = null;
         resolve(); // Resolve anyway to not block
       });
@@ -325,10 +336,12 @@ class SocketManager {
     // Handle new conversation created (real-time sync for multi-device)
     channel.on('conversation_created', (payload) => {
       logger.log('New conversation created:', payload);
+      console.log('[Socket] 🆕 conversation_created event:', payload);
       const data = payload as { conversation: Record<string, unknown> };
       if (data.conversation) {
         // Normalize the conversation data before adding to store
         const normalized = normalizeConversation(data.conversation) as unknown as Conversation;
+        console.log('[Socket] Normalized conversation:', normalized);
         useChatStore.getState().addConversation(normalized);
       }
     });
@@ -346,9 +359,11 @@ class SocketManager {
       .join()
       .receive('ok', () => {
         logger.log(`Joined user channel: ${topic}`);
+        console.log(`[Socket] ✅ Joined user channel: ${topic}`);
       })
       .receive('error', (resp: unknown) => {
         logger.error(`Failed to join user channel: ${topic}`, resp);
+        console.log(`[Socket] ❌ Failed to join user channel: ${topic}`, resp);
         this.channels.delete(topic);
       });
 
