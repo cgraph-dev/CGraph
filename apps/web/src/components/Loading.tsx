@@ -1,8 +1,8 @@
 /**
  * Loading Components
  *
- * For full-page loading states, use the Preloader component instead:
- * import { Preloader } from '@/components/Preloader';
+ * For full-page loading states, use the LoadingSpinner component instead:
+ * import { LoadingSpinner } from '@/components/LoadingSpinner';
  *
  * @since v0.9.5
  */

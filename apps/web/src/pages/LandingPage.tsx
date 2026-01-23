@@ -532,6 +532,9 @@ function SecurityIconCard({ feature }: { feature: (typeof securityFeatures)[0] }
 const FINAL_TEXT = 'CGRAPH';
 const SCRAMBLE_THRESHOLD = 0.7; // Stop scrambling at 70%
 
+// Module-level flag to prevent StrictMode double-run (persists across remounts)
+let preloaderHasRun = false;
+
 function Preloader({ onComplete }: { onComplete: () => void }) {
   const preloaderRef = useRef<HTMLDivElement>(null);
   const brandRef = useRef<HTMLDivElement>(null);
@@ -589,6 +592,9 @@ function Preloader({ onComplete }: { onComplete: () => void }) {
     const elStatus = statusRef.current;
 
     if (!pre || !elFill || !elPercent || !elStatus) return;
+    // Prevent double-run in React StrictMode - use module-level flag
+    if (preloaderHasRun) return;
+    preloaderHasRun = true;
 
     // Reset refs on mount (important for React StrictMode / hot reload)
     isScrambleStoppedRef.current = false;

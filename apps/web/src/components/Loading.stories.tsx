@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { LoadingOverlay, SkeletonText, SkeletonAvatar, SkeletonMessage } from './Loading';
-import { Preloader } from './Preloader';
+import { LoadingSpinner } from './LoadingSpinner';
 
 /**
  * Loading Component Stories
@@ -8,7 +8,7 @@ import { Preloader } from './Preloader';
  * Various loading indicators and states for async operations,
  * page transitions, and skeleton loading patterns.
  *
- * For full-page loading, use the Preloader component.
+ * For full-page loading, use the LoadingSpinner component.
  *
  * @since v0.9.5
  */
@@ -20,7 +20,7 @@ const meta: Meta<typeof LoadingOverlay> = {
     docs: {
       description: {
         component:
-          'Reusable loading components including skeletons, overlays, and the full-page Preloader.',
+          'Reusable loading components including skeletons, overlays, and the full-page LoadingSpinner.',
       },
     },
   },
@@ -72,15 +72,15 @@ export const MessageSkeleton: Story = {
 };
 
 /**
- * Full-page Preloader (scaled down)
+ * Full-page LoadingSpinner (scaled down)
  *
  * This is the main loading component for page transitions.
- * Features terrain effect, star field, energy particles, and animated logo.
+ * Features a simple spinning animation with brand colors.
  */
-export const FullPagePreloader: Story = {
+export const FullPageSpinner: Story = {
   render: () => (
     <div className="relative h-[500px] w-[800px] overflow-hidden rounded-lg border border-dark-600">
-      <Preloader loop={true} />
+      <LoadingSpinner />
     </div>
   ),
 };

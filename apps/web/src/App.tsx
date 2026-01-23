@@ -5,7 +5,7 @@ import { useGamificationStore } from '@/stores/gamificationStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 import { useCustomizationApplication } from '@/hooks/useCustomizationApplication';
-import { Preloader } from '@/components/Preloader';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import { authLogger, themeLogger, gamificationLogger, routeLogger } from '@/lib/logger';
 import '@/themes/theme-globals.css';
@@ -262,15 +262,15 @@ function ProfileRedirectRoute() {
     return <Navigate to={`/user/${user.id}`} replace />;
   }
 
-  // While loading, show the preloader
-  return <Preloader />;
+  // While loading, show loading spinner
+  return <LoadingSpinner />;
 }
 
 export default function App() {
   return (
     <AuthInitializer>
       <ScrollToTop />
-      <Suspense fallback={<Preloader />}>
+      <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Test route for Matrix animation */}
           <Route path="/test/matrix" element={<MatrixTest />} />

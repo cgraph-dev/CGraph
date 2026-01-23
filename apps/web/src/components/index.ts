@@ -13,7 +13,7 @@
 
 // Layout & Feedback
 export { default as ErrorBoundary } from './ErrorBoundary';
-export { Preloader } from './Preloader';
+export { LoadingSpinner } from './LoadingSpinner';
 export { LoadingOverlay } from './Loading';
 export { default as Modal, ConfirmDialog } from './Modal';
 export { default as ToastProvider, useToast, toast } from './Toast';
