@@ -6,6 +6,72 @@ All notable changes to CGraph will be documented in this file.
 
 ## [0.9.5] - 2026-01-24
 
+**🎨 IDENTITY TAB: Complete Customization System + Critical Deployment Fixes**
+
+This release completes the Identity customization tab with comprehensive data collections and fixes
+critical deployment configuration issues for Vercel.
+
+### 🚀 New Features
+
+#### Identity Customization System
+
+| Feature                  | Description                                                                                                             |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------------- |
+| **21 Border Animations** | All animation types now fully implemented in ThemedBorderCard                                                           |
+| **30+ Titles**           | New titlesCollection.ts with 6 categories (Starter, Achievement, Activity, Special, Gaming, Mythic)                     |
+| **40+ Badges**           | New badgesCollection.ts with 7 categories and progress tracking                                                         |
+| **AnimatedTitleText**    | Component with all 11 animation types (fade, glow, pulse, shimmer, rainbow, typing, glitch, wave, bounce, neon-flicker) |
+| **LayoutPreview**        | Visual previews for all 7 profile layout types                                                                          |
+| **Badge Equip Limit**    | Progress bar, MAX indicator, and warning when 5/5 badges equipped                                                       |
+
+#### New Data Files
+
+| File                  | Content                                                                        |
+| --------------------- | ------------------------------------------------------------------------------ |
+| `titlesCollection.ts` | 30+ titles with TitleDefinition interface, 6 rarity levels, 11 animation types |
+| `badgesCollection.ts` | 40+ badges with BadgeDefinition interface, progress tracking, 7 categories     |
+
+### 🐛 Bug Fixes
+
+| Issue                                         | Solution                                                                                                |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Title animations not working**              | Fixed property mapping: `animation` → `animationType`                                                   |
+| **Profile layouts showing emoji placeholder** | Added proper LayoutPreview components with visual representations                                       |
+| **Border animations missing 10 types**        | Added pixel-pulse, scan-line, glitch, sakura-fall, wave, energy-surge, smoke, neon-flicker, galaxy, ice |
+| **Duplicate JSDoc causing parse error**       | Removed orphaned comment block                                                                          |
+
+### 🔧 Deployment Configuration Fixes
+
+| Issue                                 | Solution                                                                      |
+| ------------------------------------- | ----------------------------------------------------------------------------- |
+| **API URL bypassing Vercel rewrites** | Changed `VITE_API_URL` to empty string for Discord-style same-origin requests |
+| **CORS blocking Vercel previews**     | Added secure regex `^https://cgraph[a-z0-9-]*.vercel.app$`                    |
+| **CSP header redundant backend URL**  | Removed direct backend URL since API calls now go through `'self'`            |
+| **Version mismatch**                  | Synced all versions to 0.9.5                                                  |
+
+### 📁 Files Modified
+
+| File                        | Changes                                                                        |
+| --------------------------- | ------------------------------------------------------------------------------ |
+| `ThemedBorderCard.tsx`      | Added 10 missing animation implementations                                     |
+| `IdentityCustomization.tsx` | AnimatedTitleText, LayoutPreview, badge limit indicator, data file integration |
+| `titlesCollection.ts`       | New file: 30+ titles with full type definitions                                |
+| `badgesCollection.ts`       | New file: 40+ badges with progress tracking                                    |
+| `.env.production`           | API URL now empty for Vercel rewrites                                          |
+| `cors.ex`                   | Added Vercel preview deployment regex                                          |
+| `vercel.json`               | Updated CSP header                                                             |
+| `package.json`              | Version sync to 0.9.5                                                          |
+
+### ⚠️ Breaking Changes
+
+- `VITE_API_URL` is now empty in production - API calls use Vercel rewrites instead of direct
+  backend access
+- Title interface now uses `animationType` instead of `animation` property
+
+---
+
+## [0.9.5-pre] - 2026-01-24
+
 **🔧 PERFORMANCE & TYPE SAFETY: Customize Tab Performance Fix & TypeScript Error Resolution**
 
 This release fixes critical performance issues in the Customize tab and resolves all pre-existing

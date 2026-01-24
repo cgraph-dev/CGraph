@@ -11,16 +11,43 @@
 
 ---
 
+## API Configuration (v0.9.5+)
+
+**Important:** As of v0.9.5, the frontend uses Discord-style API routing through Vercel rewrites.
+
+```bash
+# .env.production (baked into build)
+VITE_API_URL=           # Empty = use Vercel rewrites (recommended)
+VITE_WS_URL=wss://cgraph-backend.fly.dev/socket  # WebSockets still direct
+```
+
+### How It Works
+
+```
+Browser → /api/v1/users → Vercel Rewrite → cgraph-backend.fly.dev/api/v1/users
+```
+
+**Benefits:**
+
+- No CORS issues (same-origin requests)
+- Edge caching possible
+- Single domain for better security
+- Preview deployments work automatically
+
+---
+
 ## Vercel Environment Variables (Required)
 
 Set these in your Vercel project settings → Environment Variables:
 
 ```bash
-# Required
-VITE_API_URL=https://cgraph-backend.fly.dev
-VITE_WS_URL=wss://cgraph-backend.fly.dev
+# API Configuration (leave empty to use rewrites - recommended)
+VITE_API_URL=
+VITE_WS_URL=wss://cgraph-backend.fly.dev/socket
+
+# App Configuration
 VITE_APP_NAME=CGraph
-VITE_APP_VERSION=1.0.0
+VITE_APP_VERSION=0.9.5
 
 # Optional - Feature Flags
 VITE_AI_ENABLED=false
@@ -33,6 +60,23 @@ VITE_SENTRY_DSN=<your-sentry-dsn>
 
 ---
 
+## CORS Configuration for Preview Deployments
+
+The backend now supports Vercel preview deployments via regex pattern:
+
+```elixir
+# Allowed pattern: cgraph*.vercel.app
+~r/^https:\/\/cgraph[a-z0-9-]*\.vercel\.app$/
+```
+
+This means:
+
+- ✅ `cgraph-abc123.vercel.app` (preview deployments)
+- ✅ `cgraph-feature-branch.vercel.app` (branch previews)
+- ❌ `other-project.vercel.app` (other projects blocked)
+
+---
+
 ## Production Readiness for 10,000+ Users
 
 ### 1. Frontend (Vercel) ✅
@@ -41,6 +85,7 @@ VITE_SENTRY_DSN=<your-sentry-dsn>
 - [x] **Asset Caching** - 1 year cache for static assets (js, css, assets/)
 - [x] **No-Cache HTML** - index.html has no-cache for instant updates
 - [x] **SPA Fallback** - Rewrites configured for client-side routing
+- [x] **API Rewrites** - /api/\* proxied to backend (Discord-style)
 - [x] **Code Splitting** - Manual chunks for React, GSAP, Framer Motion, etc.
 - [x] **Error Boundary** - Global error boundary wraps entire app
 - [x] **Source Maps** - Enabled for debugging production issues
