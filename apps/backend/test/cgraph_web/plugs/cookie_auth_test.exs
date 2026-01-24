@@ -33,11 +33,13 @@ defmodule CgraphWeb.Plugs.CookieAuthTest do
       assert cookie.max_age == 60 * 60 * 24 * 7  # 7 days
     end
 
-    test "cookies have SameSite=Strict for security", %{conn: conn} do
+    test "cookies have SameSite=None for cross-origin requests", %{conn: conn} do
+      # SameSite=None is required for cross-origin cookie sending (Vercel frontend -> Fly.io backend)
+      # This works in conjunction with Secure=true (HTTPS only)
       conn = CookieAuth.set_auth_cookies(conn, "access", "refresh")
 
-      assert conn.resp_cookies["cgraph_access_token"].same_site == "Strict"
-      assert conn.resp_cookies["cgraph_refresh_token"].same_site == "Strict"
+      assert conn.resp_cookies["cgraph_access_token"].same_site == "None"
+      assert conn.resp_cookies["cgraph_refresh_token"].same_site == "None"
     end
   end
 

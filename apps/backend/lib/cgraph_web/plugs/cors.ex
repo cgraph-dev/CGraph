@@ -72,7 +72,8 @@ defmodule CGraphWeb.Plugs.Cors do
           # 1. Only allows *.vercel.app domains (Vercel-controlled)
           # 2. Requires 'cgraph' prefix to prevent other Vercel projects
           # 3. Authentication still required for sensitive operations
-          ~r/^https:\/\/cgraph[a-z0-9-]*\.vercel\.app$/
+          # Note: 'i' flag for case-insensitive (Vercel URLs can have mixed case)
+          ~r/^https:\/\/cgraph[a-z0-9-]*\.vercel\.app$/i
         ]
 
       {nil, false} ->

@@ -214,11 +214,27 @@ export const useAuthStore = create<AuthState>()(
         login: async (email: string, password: string) => {
           set({ isLoading: true, error: null }, false, 'login/start');
           try {
+            authLogger.info('[Auth] Attempting login...', { identifier: email });
             const response = await api.post('/api/v1/auth/login', {
               identifier: email, // Backend accepts email or username
               password,
             });
+
+            // Debug logging for auth troubleshooting
+            authLogger.info('[Auth] Login response received', {
+              status: response.status,
+              hasUser: !!response.data?.user,
+              hasTokens: !!response.data?.tokens,
+              cookiesPresent: document.cookie.includes('cgraph_'),
+            });
+
             const { user, tokens } = response.data;
+
+            if (!user || !tokens) {
+              authLogger.error('[Auth] Invalid response structure', { data: response.data });
+              throw new Error('Invalid login response: missing user or tokens');
+            }
+
             set(
               {
                 user: mapUserFromApi(user),
@@ -230,7 +246,27 @@ export const useAuthStore = create<AuthState>()(
               false,
               'login/success'
             );
+
+            authLogger.info('[Auth] Login successful', {
+              userId: user.id,
+              username: user.username,
+            });
           } catch (error: unknown) {
+            // Enhanced error logging for debugging
+            if (error instanceof AxiosError) {
+              authLogger.error('[Auth] Login failed (AxiosError)', {
+                status: error.response?.status,
+                statusText: error.response?.statusText,
+                data: error.response?.data,
+                message: error.message,
+                code: error.code,
+                // Check for CORS issues
+                isCorsError: error.code === 'ERR_NETWORK' && !error.response,
+              });
+            } else {
+              authLogger.error('[Auth] Login failed (Unknown error)', { error });
+            }
+
             set(
               {
                 error: getApiErrorMessage(error, 'Login failed'),
