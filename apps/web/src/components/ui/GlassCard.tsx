@@ -4,13 +4,14 @@
  * Futuristic glassmorphic card with advanced visual effects.
  * Features blur, gradient borders, glow effects, and 3D transforms.
  *
- * @version 2.0.0
+ * @version 2.1.0 - Performance optimizations for hover3D and particles
  * @since v0.7.33
  */
 
-import { ReactNode, HTMLAttributes, useRef, useState } from 'react';
+import { ReactNode, HTMLAttributes, useRef, useState, useCallback } from 'react';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useThrottledCallback, usePrefersReducedMotion } from '@/hooks';
 
 // =============================================================================
 // TYPES
@@ -89,6 +90,10 @@ export default function GlassCard({
 }: GlassCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  // Disable 3D effect if user prefers reduced motion
+  const shouldAnimate3D = hover3D && !prefersReducedMotion;
 
   // Motion values for 3D tilt effect
   const mouseX = useMotionValue(0);
@@ -103,26 +108,35 @@ export default function GlassCard({
     damping: 20,
   });
 
-  // Handle mouse move for 3D effect
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current || !hover3D) return;
+  // Handle mouse move for 3D effect - throttled to ~60fps for performance
+  const handleMouseMoveInternal = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (!cardRef.current || !shouldAnimate3D) return;
 
-    const rect = cardRef.current.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
+      const rect = cardRef.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
 
-    const percentX = (e.clientX - centerX) / (rect.width / 2);
-    const percentY = (e.clientY - centerY) / (rect.height / 2);
+      const percentX = (e.clientX - centerX) / (rect.width / 2);
+      const percentY = (e.clientY - centerY) / (rect.height / 2);
 
-    mouseX.set(percentX);
-    mouseY.set(percentY);
-  };
+      mouseX.set(percentX);
+      mouseY.set(percentY);
+    },
+    [shouldAnimate3D, mouseX, mouseY]
+  );
 
-  const handleMouseLeave = () => {
+  // Throttle mouse move handler to 16ms (~60fps) for smooth but efficient updates
+  const handleMouseMove = useThrottledCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => handleMouseMoveInternal(e),
+    16
+  );
+
+  const handleMouseLeave = useCallback(() => {
     mouseX.set(0);
     mouseY.set(0);
     setIsHovered(false);
-  };
+  }, [mouseX, mouseY]);
 
   // Get style values
   const style = variantStyles[variant];
@@ -145,15 +159,17 @@ export default function GlassCard({
       className={cn('relative overflow-hidden rounded-2xl transition-all duration-300', className)}
       style={{
         ...glowStyle,
-        rotateX: hover3D ? rotateX : 0,
-        rotateY: hover3D ? rotateY : 0,
+        rotateX: shouldAnimate3D ? rotateX : 0,
+        rotateY: shouldAnimate3D ? rotateY : 0,
         transformStyle: 'preserve-3d',
         perspective: 1000,
+        // GPU layer promotion for better performance
+        willChange: shouldAnimate3D ? 'transform' : 'auto',
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={handleMouseLeave}
-      whileHover={hover3D ? { scale: 1.02, z: 50 } : {}}
+      whileHover={shouldAnimate3D ? { scale: 1.02, z: 50 } : {}}
       transition={{ type: 'spring', stiffness: 300, damping: 25 }}
       {...props}
     >
@@ -196,7 +212,7 @@ export default function GlassCard({
         </div>
       )}
 
-      {/* Particles effect */}
+      {/* Particles effect - only animate when hovered for performance */}
       {particles && (
         <div className="absolute inset-0 -z-10 overflow-hidden rounded-2xl">
           {[...Array(12)].map((_, i) => (
@@ -207,14 +223,21 @@ export default function GlassCard({
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
                 opacity: 0.3,
+                // GPU layer promotion for particle performance
+                willChange: isHovered && !prefersReducedMotion ? 'transform, opacity' : 'auto',
+                transform: 'translateZ(0)',
               }}
-              animate={{
-                y: [0, -20, 0],
-                opacity: [0.3, 0.6, 0.3],
-              }}
+              animate={
+                isHovered && !prefersReducedMotion
+                  ? {
+                      y: [0, -20, 0],
+                      opacity: [0.3, 0.6, 0.3],
+                    }
+                  : { y: 0, opacity: 0.3 }
+              }
               transition={{
                 duration: 2 + Math.random() * 2,
-                repeat: Infinity,
+                repeat: isHovered ? Infinity : 0,
                 delay: Math.random() * 2,
               }}
             />

@@ -23,8 +23,10 @@ interface NavigationProps {
 
 export default function Navigation({
   showLandingLinks = false,
-  transparent = true,
+  transparent: _transparent = true,
 }: NavigationProps) {
+  // transparent prop reserved for future hero section styling
+  void _transparent;
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CheckCircleIcon,
@@ -18,6 +18,7 @@ import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
 import { useCustomizationStore } from '@/stores/customizationStore';
 import { useCustomizationStoreV2, type EffectPreset } from '@/stores/customizationStoreV2';
+import { usePrefersReducedMotion } from '@/hooks';
 import toast from 'react-hot-toast';
 
 // Mapping from V1 particle IDs to V2 EffectPreset
@@ -382,6 +383,338 @@ const ANIMATION_SETS: AnimationSet[] = [
   },
 ];
 
+// ==================== PARTICLE PREVIEW COMPONENT ====================
+// Optimized component that only animates particles when shouldAnimate is true
+// This prevents 100+ concurrent animations that cause performance issues
+
+interface ParticlePreviewProps {
+  type: string;
+  shouldAnimate: boolean;
+}
+
+// Type definitions for particle data variants
+interface BaseParticle {
+  id: number;
+  delay: number;
+  duration: number;
+}
+
+interface SnowParticle extends BaseParticle {
+  startX: number;
+  endX: number;
+}
+
+interface StarsParticle extends BaseParticle {
+  top: number;
+  left: number;
+}
+
+interface BubblesParticle extends BaseParticle {
+  size: number;
+  left: number;
+}
+
+interface SparklesParticle extends BaseParticle {
+  top: number;
+  left: number;
+  fontSize: number;
+}
+
+interface ConfettiParticle extends BaseParticle {
+  left: number;
+  color: string;
+}
+
+interface FirefliesParticle extends BaseParticle {
+  top: number;
+  left: number;
+}
+
+const ParticlePreview = memo(function ParticlePreview({
+  type,
+  shouldAnimate,
+}: ParticlePreviewProps) {
+  // Memoize particle positions to prevent recalculation on re-render
+  const snowData = useMemo(
+    (): SnowParticle[] =>
+      type === 'snow'
+        ? Array.from({ length: 8 }, (_, i) => ({
+            id: i,
+            startX: Math.random() * 100,
+            endX: Math.random() * 100,
+            delay: Math.random() * 2,
+            duration: 3 + Math.random() * 2,
+          }))
+        : [],
+    [type]
+  );
+
+  const starsData = useMemo(
+    (): StarsParticle[] =>
+      type === 'stars'
+        ? Array.from({ length: 12 }, (_, i) => ({
+            id: i,
+            top: Math.random() * 100,
+            left: Math.random() * 100,
+            delay: Math.random() * 2,
+            duration: 2 + Math.random(),
+          }))
+        : [],
+    [type]
+  );
+
+  const bubblesData = useMemo(
+    (): BubblesParticle[] =>
+      type === 'bubbles'
+        ? Array.from({ length: 6 }, (_, i) => ({
+            id: i,
+            size: 20 + Math.random() * 20,
+            left: Math.random() * 80,
+            delay: Math.random() * 3,
+            duration: 4 + Math.random() * 2,
+          }))
+        : [],
+    [type]
+  );
+
+  const sparklesData = useMemo(
+    (): SparklesParticle[] =>
+      type === 'sparkles'
+        ? Array.from({ length: 10 }, (_, i) => ({
+            id: i,
+            top: Math.random() * 100,
+            left: Math.random() * 100,
+            fontSize: 8 + Math.random() * 8,
+            delay: Math.random() * 2,
+            duration: 1 + Math.random(),
+          }))
+        : [],
+    [type]
+  );
+
+  const confettiData = useMemo((): ConfettiParticle[] => {
+    const colors = ['#ef4444', '#22c55e', '#3b82f6', '#eab308', '#ec4899'] as const;
+    return type === 'confetti'
+      ? Array.from({ length: 10 }, (_, i) => ({
+          id: i,
+          left: Math.random() * 100,
+          color: colors[i % colors.length]!,
+          delay: Math.random() * 2,
+          duration: 2 + Math.random() * 2,
+        }))
+      : [];
+  }, [type]);
+
+  const firefliesData = useMemo(
+    (): FirefliesParticle[] =>
+      type === 'fireflies'
+        ? Array.from({ length: 8 }, (_, i) => ({
+            id: i,
+            top: Math.random() * 100,
+            left: Math.random() * 100,
+            delay: Math.random() * 2,
+            duration: 3 + Math.random() * 2,
+          }))
+        : [],
+    [type]
+  );
+
+  // GPU layer promotion styles for better performance
+  const gpuStyles = {
+    willChange: shouldAnimate ? 'transform, opacity' : 'auto',
+    transform: 'translateZ(0)',
+  } as const;
+
+  if (type === 'none') {
+    return (
+      <div className="flex h-full items-center justify-center text-xs text-white/40">
+        No particles
+      </div>
+    );
+  }
+
+  if (type === 'snow') {
+    return (
+      <>
+        {snowData.map((p) => (
+          <motion.div
+            key={p.id}
+            className="absolute h-1 w-1 rounded-full bg-white"
+            style={{ ...gpuStyles, left: `${p.startX}%` }}
+            animate={
+              shouldAnimate
+                ? {
+                    y: ['-10%', '110%'],
+                    x: [`${p.startX}%`, `${p.endX}%`],
+                    opacity: [0.3, 0.7, 0.3],
+                  }
+                : { y: '50%', opacity: 0.5 }
+            }
+            transition={
+              shouldAnimate
+                ? { duration: p.duration, repeat: Infinity, delay: p.delay }
+                : { duration: 0.3 }
+            }
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (type === 'stars') {
+    return (
+      <>
+        {starsData.map((p) => (
+          <motion.div
+            key={p.id}
+            className="absolute h-1 w-1 rounded-full bg-white"
+            style={{ ...gpuStyles, top: `${p.top}%`, left: `${p.left}%` }}
+            animate={
+              shouldAnimate
+                ? { opacity: [0.2, 1, 0.2], scale: [1, 1.5, 1] }
+                : { opacity: 0.5, scale: 1 }
+            }
+            transition={
+              shouldAnimate
+                ? { duration: p.duration, repeat: Infinity, delay: p.delay }
+                : { duration: 0.3 }
+            }
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (type === 'bubbles') {
+    return (
+      <>
+        {bubblesData.map((p) => (
+          <motion.div
+            key={p.id}
+            className="absolute rounded-full border-2 border-white/30"
+            style={{
+              ...gpuStyles,
+              width: p.size,
+              height: p.size,
+              left: `${p.left}%`,
+            }}
+            animate={shouldAnimate ? { y: ['110%', '-10%'] } : { y: '50%' }}
+            transition={
+              shouldAnimate
+                ? { duration: p.duration, repeat: Infinity, delay: p.delay }
+                : { duration: 0.3 }
+            }
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (type === 'sparkles') {
+    return (
+      <>
+        {sparklesData.map((p) => (
+          <motion.div
+            key={p.id}
+            className="absolute text-yellow-300"
+            style={{
+              ...gpuStyles,
+              top: `${p.top}%`,
+              left: `${p.left}%`,
+              fontSize: p.fontSize,
+            }}
+            animate={
+              shouldAnimate
+                ? { opacity: [0, 1, 0], scale: [0, 1.5, 0], rotate: [0, 180] }
+                : { opacity: 0.5, scale: 1, rotate: 0 }
+            }
+            transition={
+              shouldAnimate
+                ? { duration: p.duration, repeat: Infinity, delay: p.delay }
+                : { duration: 0.3 }
+            }
+          >
+            ✨
+          </motion.div>
+        ))}
+      </>
+    );
+  }
+
+  if (type === 'confetti') {
+    return (
+      <>
+        {confettiData.map((p) => (
+          <motion.div
+            key={p.id}
+            className="absolute h-2 w-2 rounded-sm"
+            style={{
+              ...gpuStyles,
+              left: `${p.left}%`,
+              backgroundColor: p.color,
+            }}
+            animate={
+              shouldAnimate
+                ? {
+                    y: ['-10%', '110%'],
+                    rotate: [0, 360],
+                    opacity: [1, 0.5],
+                  }
+                : { y: '50%', rotate: 0, opacity: 0.5 }
+            }
+            transition={
+              shouldAnimate
+                ? { duration: p.duration, repeat: Infinity, delay: p.delay }
+                : { duration: 0.3 }
+            }
+          />
+        ))}
+      </>
+    );
+  }
+
+  if (type === 'fireflies') {
+    return (
+      <>
+        {firefliesData.map((p) => (
+          <motion.div
+            key={p.id}
+            className="absolute h-2 w-2 rounded-full bg-yellow-400"
+            style={{
+              ...gpuStyles,
+              top: `${p.top}%`,
+              left: `${p.left}%`,
+              boxShadow: shouldAnimate ? '0 0 8px #facc15, 0 0 16px #facc15' : 'none',
+            }}
+            animate={
+              shouldAnimate
+                ? {
+                    opacity: [0.3, 1, 0.3],
+                    scale: [0.8, 1.2, 0.8],
+                    x: [0, 10, -10, 0],
+                    y: [0, -10, 5, 0],
+                  }
+                : { opacity: 0.5, scale: 1 }
+            }
+            transition={
+              shouldAnimate
+                ? { duration: p.duration, repeat: Infinity, delay: p.delay }
+                : { duration: 0.3 }
+            }
+          />
+        ))}
+      </>
+    );
+  }
+
+  // Default fallback for other particle types - show a static preview
+  return (
+    <div className="flex h-full items-center justify-center">
+      <SparklesIcon className="h-8 w-8 text-white/30" />
+    </div>
+  );
+});
+
 // ==================== MAIN COMPONENT ====================
 
 export default function EffectsCustomization() {
@@ -405,19 +738,25 @@ export default function EffectsCustomization() {
   const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
 
   // Sync particle effect to V2 store for live preview
-  const syncParticleToV2 = useCallback((particleId: string) => {
-    const v2Effect = PARTICLE_ID_TO_V2_EFFECT[particleId] || 'minimal';
-    setEffect(v2Effect);
-    // Use updateSettings instead of toggle to prevent infinite loop
-    updateSettings({ particlesEnabled: particleId !== 'particle-none' });
-  }, [setEffect, updateSettings]);
+  const syncParticleToV2 = useCallback(
+    (particleId: string) => {
+      const v2Effect = PARTICLE_ID_TO_V2_EFFECT[particleId] || 'minimal';
+      setEffect(v2Effect);
+      // Use updateSettings instead of toggle to prevent infinite loop
+      updateSettings({ particlesEnabled: particleId !== 'particle-none' });
+    },
+    [setEffect, updateSettings]
+  );
 
   // Sync background effect to V2 store for live preview
-  const syncBackgroundToV2 = useCallback((bgId: string) => {
-    // Background effects map to animated background - use updateSettings instead of toggle
-    const isAnimated = BACKGROUND_EFFECTS.find(bg => bg.id === bgId)?.animated || false;
-    updateSettings({ animatedBackground: isAnimated });
-  }, [updateSettings]);
+  const syncBackgroundToV2 = useCallback(
+    (bgId: string) => {
+      // Background effects map to animated background - use updateSettings instead of toggle
+      const isAnimated = BACKGROUND_EFFECTS.find((bg) => bg.id === bgId)?.animated || false;
+      updateSettings({ animatedBackground: isAnimated });
+    },
+    [updateSettings]
+  );
 
   // Fetch customizations on mount
   useEffect(() => {
@@ -436,7 +775,11 @@ export default function EffectsCustomization() {
   }, [particleEffect, setEffect]);
 
   // Handle preview for locked items
-  const handlePreviewItem = (category: 'particle' | 'background' | 'animation', id: string, isUnlocked: boolean) => {
+  const handlePreviewItem = (
+    category: 'particle' | 'background' | 'animation',
+    id: string,
+    isUnlocked: boolean
+  ) => {
     if (category === 'particle') {
       updateEffects('particleEffect', id);
       syncParticleToV2(id);
@@ -669,6 +1012,10 @@ function ParticleEffectsSection({
   previewingLockedItem,
   onSelect,
 }: ParticleEffectsSectionProps) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  // Track which card is being hovered for performance - only animate hovered card
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
+
   const getPerformanceColor = (performance: string) => {
     switch (performance) {
       case 'light':
@@ -686,177 +1033,98 @@ function ParticleEffectsSection({
     <div className="grid grid-cols-3 gap-4">
       {particles.map((particle, index) => {
         const isPreviewing = previewingLockedItem === particle.id;
+        const isHovered = hoveredCard === particle.id;
+        // Only animate particles if card is hovered and user doesn't prefer reduced motion
+        const shouldAnimate = isHovered && !prefersReducedMotion;
+
         return (
-        <motion.div
-          key={particle.id}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: index * 0.03 }}
-        >
-          <GlassCard
-            variant={
-              selectedParticle === particle.id || isPreviewing
-                ? 'neon'
-                : particle.unlocked
-                  ? 'crystal'
-                  : 'frosted'
-            }
-            glow={selectedParticle === particle.id || isPreviewing}
-            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.4)' : selectedParticle === particle.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 transition-all cursor-pointer hover:scale-[1.02] ${
-              isPreviewing ? 'ring-2 ring-yellow-500' : ''
-            }`}
-            onClick={() => onSelect(particle.id, particle.unlocked)}
+          <motion.div
+            key={particle.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.03 }}
+            onMouseEnter={() => setHoveredCard(particle.id)}
+            onMouseLeave={() => setHoveredCard(null)}
           >
-            {/* Particle Preview */}
-            <div className="relative mb-3 h-32 overflow-hidden rounded-lg bg-gradient-to-br from-dark-700 to-dark-800">
-              {/* Animated particle simulation */}
-              {particle.type === 'snow' && (
-                <>
-                  {[...Array(8)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute h-1 w-1 rounded-full bg-white"
-                      animate={{
-                        y: ['-10%', '110%'],
-                        x: [Math.random() * 100 + '%', Math.random() * 100 + '%'],
-                        opacity: [0.3, 0.7, 0.3],
-                      }}
-                      transition={{
-                        duration: 3 + Math.random() * 2,
-                        repeat: Infinity,
-                        delay: Math.random() * 2,
-                      }}
-                    />
-                  ))}
-                </>
-              )}
-              {particle.type === 'stars' && (
-                <>
-                  {[...Array(12)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute h-1 w-1 rounded-full bg-white"
-                      style={{
-                        top: Math.random() * 100 + '%',
-                        left: Math.random() * 100 + '%',
-                      }}
-                      animate={{
-                        opacity: [0.2, 1, 0.2],
-                        scale: [1, 1.5, 1],
-                      }}
-                      transition={{
-                        duration: 2 + Math.random(),
-                        repeat: Infinity,
-                        delay: Math.random() * 2,
-                      }}
-                    />
-                  ))}
-                </>
-              )}
-              {particle.type === 'bubbles' && (
-                <>
-                  {[...Array(6)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute rounded-full border-2 border-white/30"
-                      style={{
-                        width: 20 + Math.random() * 20,
-                        height: 20 + Math.random() * 20,
-                        left: Math.random() * 80 + '%',
-                      }}
-                      animate={{
-                        y: ['110%', '-10%'],
-                      }}
-                      transition={{
-                        duration: 4 + Math.random() * 2,
-                        repeat: Infinity,
-                        delay: Math.random() * 3,
-                      }}
-                    />
-                  ))}
-                </>
-              )}
-              {particle.type === 'sparkles' && (
-                <>
-                  {[...Array(10)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute text-yellow-300"
-                      style={{
-                        top: Math.random() * 100 + '%',
-                        left: Math.random() * 100 + '%',
-                        fontSize: 8 + Math.random() * 8,
-                      }}
-                      animate={{
-                        opacity: [0, 1, 0],
-                        scale: [0, 1.5, 0],
-                        rotate: [0, 180],
-                      }}
-                      transition={{
-                        duration: 1 + Math.random(),
-                        repeat: Infinity,
-                        delay: Math.random() * 2,
-                      }}
-                    >
-                      ✨
-                    </motion.div>
-                  ))}
-                </>
-              )}
-            </div>
-
-            {/* Premium Badge */}
-            {particle.isPremium && (
-              <div className="absolute right-2 top-2 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 px-2 py-0.5 text-xs font-bold text-white">
-                PRO
+            <GlassCard
+              variant={
+                selectedParticle === particle.id || isPreviewing
+                  ? 'neon'
+                  : particle.unlocked
+                    ? 'crystal'
+                    : 'frosted'
+              }
+              glow={selectedParticle === particle.id || isPreviewing}
+              glowColor={
+                isPreviewing
+                  ? 'rgba(234, 179, 8, 0.4)'
+                  : selectedParticle === particle.id
+                    ? 'rgba(139, 92, 246, 0.3)'
+                    : undefined
+              }
+              hover3D={false}
+              className={`relative cursor-pointer p-4 transition-all hover:scale-[1.02] ${
+                isPreviewing ? 'ring-2 ring-yellow-500' : ''
+              }`}
+              onClick={() => onSelect(particle.id, particle.unlocked)}
+            >
+              {/* Particle Preview - OPTIMIZED: only animate when hovered */}
+              <div className="relative mb-3 h-32 overflow-hidden rounded-lg bg-gradient-to-br from-dark-700 to-dark-800">
+                {/* Animated particle simulation - conditionally animated */}
+                <ParticlePreview type={particle.type} shouldAnimate={shouldAnimate} />
               </div>
-            )}
 
-            {/* Particle Name */}
-            <h4 className="mb-1 text-sm font-semibold text-white">{particle.name}</h4>
+              {/* Premium Badge */}
+              {particle.isPremium && (
+                <div className="absolute right-2 top-2 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 px-2 py-0.5 text-xs font-bold text-white">
+                  PRO
+                </div>
+              )}
 
-            {/* Description */}
-            <p className="mb-2 text-xs text-white/60">{particle.description}</p>
+              {/* Particle Name */}
+              <h4 className="mb-1 text-sm font-semibold text-white">{particle.name}</h4>
 
-            {/* Performance Indicator */}
-            <div className="mb-3 flex items-center justify-between text-xs">
-              <span className="text-white/60">Performance:</span>
-              <span className={`font-medium ${getPerformanceColor(particle.performance)}`}>
-                {particle.performance.toUpperCase()}
-              </span>
-            </div>
+              {/* Description */}
+              <p className="mb-2 text-xs text-white/60">{particle.description}</p>
 
-            {/* Status */}
-            {particle.unlocked ? (
-              selectedParticle === particle.id ? (
-                <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-3 py-1.5">
-                  <CheckCircleIconSolid className="h-4 w-4 text-green-400" />
-                  <span className="text-xs font-medium text-green-400">Active</span>
+              {/* Performance Indicator */}
+              <div className="mb-3 flex items-center justify-between text-xs">
+                <span className="text-white/60">Performance:</span>
+                <span className={`font-medium ${getPerformanceColor(particle.performance)}`}>
+                  {particle.performance.toUpperCase()}
+                </span>
+              </div>
+
+              {/* Status */}
+              {particle.unlocked ? (
+                selectedParticle === particle.id ? (
+                  <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-3 py-1.5">
+                    <CheckCircleIconSolid className="h-4 w-4 text-green-400" />
+                    <span className="text-xs font-medium text-green-400">Active</span>
+                  </div>
+                ) : (
+                  <button className="w-full rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-700">
+                    Apply
+                  </button>
+                )
+              ) : isPreviewing ? (
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-1.5">
+                  <EyeIcon className="h-4 w-4 text-yellow-400" />
+                  <span className="text-xs font-medium text-yellow-400">Previewing</span>
                 </div>
               ) : (
-                <button className="w-full rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-700">
-                  Apply
-                </button>
-              )
-            ) : isPreviewing ? (
-              <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-1.5">
-                <EyeIcon className="h-4 w-4 text-yellow-400" />
-                <span className="text-xs font-medium text-yellow-400">Previewing</span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
-                <div className="flex items-center gap-1">
-                  <LockClosedIcon className="h-4 w-4 text-white/40" />
-                  <span className="text-xs text-white/60">Click to Preview</span>
+                <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
+                  <div className="flex items-center gap-1">
+                    <LockClosedIcon className="h-4 w-4 text-white/40" />
+                    <span className="text-xs text-white/60">Click to Preview</span>
+                  </div>
+                  <p className="mt-1 text-center text-xs text-white/40">
+                    {particle.unlockRequirement}
+                  </p>
                 </div>
-                <p className="mt-1 text-center text-xs text-white/40">
-                  {particle.unlockRequirement}
-                </p>
-              </div>
-            )}
-          </GlassCard>
-        </motion.div>
+              )}
+            </GlassCard>
+          </motion.div>
         );
       })}
     </div>
@@ -881,91 +1149,97 @@ function BackgroundEffectsSection({
       {backgrounds.map((bg, index) => {
         const isPreviewing = previewingLockedItem === bg.id;
         return (
-        <motion.div
-          key={bg.id}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: index * 0.04 }}
-        >
-          <GlassCard
-            variant={
-              selectedBackground === bg.id || isPreviewing
-                ? 'neon'
-                : bg.unlocked
-                  ? 'crystal'
-                  : 'frosted'
-            }
-            glow={selectedBackground === bg.id || isPreviewing}
-            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.4)' : selectedBackground === bg.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 transition-all cursor-pointer hover:scale-[1.02] ${
-              isPreviewing ? 'ring-2 ring-yellow-500' : ''
-            }`}
-            onClick={() => onSelect(bg.id, bg.unlocked)}
+          <motion.div
+            key={bg.id}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: index * 0.04 }}
           >
-            {/* Background Preview */}
-            <motion.div
-              className="relative mb-3 h-40 overflow-hidden rounded-lg"
-              style={{ background: bg.preview }}
-              animate={
-                bg.animated
-                  ? {
-                      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                    }
-                  : {}
+            <GlassCard
+              variant={
+                selectedBackground === bg.id || isPreviewing
+                  ? 'neon'
+                  : bg.unlocked
+                    ? 'crystal'
+                    : 'frosted'
               }
-              transition={bg.animated ? { duration: 10, repeat: Infinity } : {}}
+              glow={selectedBackground === bg.id || isPreviewing}
+              glowColor={
+                isPreviewing
+                  ? 'rgba(234, 179, 8, 0.4)'
+                  : selectedBackground === bg.id
+                    ? 'rgba(139, 92, 246, 0.3)'
+                    : undefined
+              }
+              className={`relative cursor-pointer p-4 transition-all hover:scale-[1.02] ${
+                isPreviewing ? 'ring-2 ring-yellow-500' : ''
+              }`}
+              onClick={() => onSelect(bg.id, bg.unlocked)}
             >
-              {bg.animated && (
-                <div className="absolute left-2 top-2 rounded-full bg-black/40 px-2 py-0.5 text-xs text-white backdrop-blur-sm">
-                  Animated
-                </div>
-              )}
-            </motion.div>
-
-            {/* Background Name */}
-            <h4 className="mb-1 text-sm font-semibold text-white">{bg.name}</h4>
-
-            {/* Description */}
-            <p className="mb-2 text-xs text-white/60">{bg.description}</p>
-
-            {/* Performance */}
-            <div className="mb-3 flex items-center justify-between text-xs">
-              <span className="text-white/60">Performance:</span>
-              <span
-                className={`font-medium ${bg.performance === 'light' ? 'text-green-400' : bg.performance === 'medium' ? 'text-yellow-400' : 'text-red-400'}`}
+              {/* Background Preview */}
+              <motion.div
+                className="relative mb-3 h-40 overflow-hidden rounded-lg"
+                style={{ background: bg.preview }}
+                animate={
+                  bg.animated
+                    ? {
+                        backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                      }
+                    : {}
+                }
+                transition={bg.animated ? { duration: 10, repeat: Infinity } : {}}
               >
-                {bg.performance.toUpperCase()}
-              </span>
-            </div>
+                {bg.animated && (
+                  <div className="absolute left-2 top-2 rounded-full bg-black/40 px-2 py-0.5 text-xs text-white backdrop-blur-sm">
+                    Animated
+                  </div>
+                )}
+              </motion.div>
 
-            {/* Status */}
-            {bg.unlocked ? (
-              selectedBackground === bg.id ? (
-                <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-3 py-2">
-                  <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
-                  <span className="text-sm font-medium text-green-400">Active</span>
+              {/* Background Name */}
+              <h4 className="mb-1 text-sm font-semibold text-white">{bg.name}</h4>
+
+              {/* Description */}
+              <p className="mb-2 text-xs text-white/60">{bg.description}</p>
+
+              {/* Performance */}
+              <div className="mb-3 flex items-center justify-between text-xs">
+                <span className="text-white/60">Performance:</span>
+                <span
+                  className={`font-medium ${bg.performance === 'light' ? 'text-green-400' : bg.performance === 'medium' ? 'text-yellow-400' : 'text-red-400'}`}
+                >
+                  {bg.performance.toUpperCase()}
+                </span>
+              </div>
+
+              {/* Status */}
+              {bg.unlocked ? (
+                selectedBackground === bg.id ? (
+                  <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-3 py-2">
+                    <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
+                    <span className="text-sm font-medium text-green-400">Active</span>
+                  </div>
+                ) : (
+                  <button className="w-full rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                    Apply
+                  </button>
+                )
+              ) : isPreviewing ? (
+                <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-2">
+                  <EyeIcon className="h-5 w-5 text-yellow-400" />
+                  <span className="text-sm font-medium text-yellow-400">Previewing</span>
                 </div>
               ) : (
-                <button className="w-full rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
-                  Apply
-                </button>
-              )
-            ) : isPreviewing ? (
-              <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-2">
-                <EyeIcon className="h-5 w-5 text-yellow-400" />
-                <span className="text-sm font-medium text-yellow-400">Previewing</span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                <div className="flex items-center gap-1">
-                  <LockClosedIcon className="h-4 w-4 text-white/40" />
-                  <span className="text-xs text-white/60">Click to Preview</span>
+                <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-2">
+                  <div className="flex items-center gap-1">
+                    <LockClosedIcon className="h-4 w-4 text-white/40" />
+                    <span className="text-xs text-white/60">Click to Preview</span>
+                  </div>
+                  <p className="mt-1 text-center text-xs text-white/40">{bg.unlockRequirement}</p>
                 </div>
-                <p className="mt-1 text-center text-xs text-white/40">{bg.unlockRequirement}</p>
-              </div>
-            )}
-          </GlassCard>
-        </motion.div>
+              )}
+            </GlassCard>
+          </motion.div>
         );
       })}
     </div>
@@ -990,92 +1264,98 @@ function AnimationSetsSection({
       {animations.map((anim, index) => {
         const isPreviewing = previewingLockedItem === anim.id;
         return (
-        <motion.div
-          key={anim.id}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.03 }}
-        >
-          <GlassCard
-            variant={
-              selectedAnimation === anim.id || isPreviewing
-                ? 'neon'
-                : anim.unlocked
-                  ? 'crystal'
-                  : 'frosted'
-            }
-            glow={selectedAnimation === anim.id || isPreviewing}
-            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.4)' : selectedAnimation === anim.id ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative p-4 transition-all cursor-pointer hover:scale-[1.01] ${
-              isPreviewing ? 'ring-2 ring-yellow-500' : ''
-            }`}
-            onClick={() => onSelect(anim.id, anim.unlocked)}
+          <motion.div
+            key={anim.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.03 }}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h4 className="mb-1 text-base font-bold text-white">{anim.name}</h4>
-                <p className="mb-2 text-sm text-white/60">{anim.description}</p>
-                <div className="flex items-center gap-4 text-xs">
-                  <span className="text-white/60">
-                    Speed: <span className="font-medium text-primary-400">{anim.speed}</span>
-                  </span>
-                  <span className="text-white/60">
-                    Easing: <span className="font-medium text-primary-400">{anim.easing}</span>
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
-                {/* Animation Preview */}
-                <div className="flex h-16 w-32 items-center justify-center overflow-hidden rounded-lg bg-dark-800">
-                  <motion.div
-                    className="h-8 w-8 rounded-lg bg-primary-600"
-                    animate={{ x: [-20, 20, -20] }}
-                    transition={{
-                      duration:
-                        anim.speed === 'instant'
-                          ? 0
-                          : anim.speed === 'fast'
-                            ? 0.3
-                            : anim.speed === 'normal'
-                              ? 0.5
-                              : anim.speed === 'smooth'
-                                ? 0.7
-                                : 1,
-                      ease: anim.easing as import('framer-motion').Easing,
-                      repeat: Infinity,
-                      repeatDelay: 0.5,
-                    }}
-                  />
+            <GlassCard
+              variant={
+                selectedAnimation === anim.id || isPreviewing
+                  ? 'neon'
+                  : anim.unlocked
+                    ? 'crystal'
+                    : 'frosted'
+              }
+              glow={selectedAnimation === anim.id || isPreviewing}
+              glowColor={
+                isPreviewing
+                  ? 'rgba(234, 179, 8, 0.4)'
+                  : selectedAnimation === anim.id
+                    ? 'rgba(139, 92, 246, 0.3)'
+                    : undefined
+              }
+              className={`relative cursor-pointer p-4 transition-all hover:scale-[1.01] ${
+                isPreviewing ? 'ring-2 ring-yellow-500' : ''
+              }`}
+              onClick={() => onSelect(anim.id, anim.unlocked)}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex-1">
+                  <h4 className="mb-1 text-base font-bold text-white">{anim.name}</h4>
+                  <p className="mb-2 text-sm text-white/60">{anim.description}</p>
+                  <div className="flex items-center gap-4 text-xs">
+                    <span className="text-white/60">
+                      Speed: <span className="font-medium text-primary-400">{anim.speed}</span>
+                    </span>
+                    <span className="text-white/60">
+                      Easing: <span className="font-medium text-primary-400">{anim.easing}</span>
+                    </span>
+                  </div>
                 </div>
 
-                {/* Status Button */}
-                {anim.unlocked ? (
-                  selectedAnimation === anim.id ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
-                      <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
-                      <span className="text-sm font-medium text-green-400">Active</span>
+                <div className="flex items-center gap-3">
+                  {/* Animation Preview */}
+                  <div className="flex h-16 w-32 items-center justify-center overflow-hidden rounded-lg bg-dark-800">
+                    <motion.div
+                      className="h-8 w-8 rounded-lg bg-primary-600"
+                      animate={{ x: [-20, 20, -20] }}
+                      transition={{
+                        duration:
+                          anim.speed === 'instant'
+                            ? 0
+                            : anim.speed === 'fast'
+                              ? 0.3
+                              : anim.speed === 'normal'
+                                ? 0.5
+                                : anim.speed === 'smooth'
+                                  ? 0.7
+                                  : 1,
+                        ease: anim.easing as import('framer-motion').Easing,
+                        repeat: Infinity,
+                        repeatDelay: 0.5,
+                      }}
+                    />
+                  </div>
+
+                  {/* Status Button */}
+                  {anim.unlocked ? (
+                    selectedAnimation === anim.id ? (
+                      <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
+                        <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
+                        <span className="text-sm font-medium text-green-400">Active</span>
+                      </div>
+                    ) : (
+                      <button className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                        Apply
+                      </button>
+                    )
+                  ) : isPreviewing ? (
+                    <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-4 py-2">
+                      <EyeIcon className="h-5 w-5 text-yellow-400" />
+                      <span className="text-sm font-medium text-yellow-400">Previewing</span>
                     </div>
                   ) : (
-                    <button className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
-                      Apply
-                    </button>
-                  )
-                ) : isPreviewing ? (
-                  <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-4 py-2">
-                    <EyeIcon className="h-5 w-5 text-yellow-400" />
-                    <span className="text-sm font-medium text-yellow-400">Previewing</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
-                    <LockClosedIcon className="h-5 w-5 text-white/40" />
-                    <span className="text-sm text-white/60">Click to Preview</span>
-                  </div>
-                )}
+                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
+                      <LockClosedIcon className="h-5 w-5 text-white/40" />
+                      <span className="text-sm text-white/60">Click to Preview</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          </GlassCard>
-        </motion.div>
+            </GlassCard>
+          </motion.div>
         );
       })}
     </div>

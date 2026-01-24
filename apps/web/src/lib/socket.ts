@@ -948,16 +948,19 @@ class SocketManager {
 
       presence.onSync(() => {
         const members: ForumPresenceMember[] = [];
-        presence.list((userId: string, { metas }: { metas: ForumPresenceMeta[] }) => {
-          const meta = metas[0];
-          members.push({
-            user_id: userId,
-            username: meta.username,
-            display_name: meta.display_name,
-            avatar_url: meta.avatar_url,
-            online_at: meta.online_at,
-            is_member: meta.is_member,
-          });
+        presence.list((userId: string, pres: unknown) => {
+          const { metas } = pres as { metas: ForumPresenceMeta[] };
+          const meta = metas?.[0];
+          if (meta) {
+            members.push({
+              user_id: userId,
+              username: meta.username,
+              display_name: meta.display_name,
+              avatar_url: meta.avatar_url,
+              online_at: meta.online_at,
+              is_member: meta.is_member,
+            });
+          }
           return userId;
         });
 
@@ -1060,7 +1063,7 @@ class SocketManager {
     return new Promise((resolve, reject) => {
       channel
         .push('subscribe', {})
-        .receive('ok', (resp: { subscribed: boolean }) => resolve(resp))
+        .receive('ok', (resp: unknown) => resolve(resp as { subscribed: boolean }))
         .receive('error', (resp: unknown) => reject(resp));
     });
   }
@@ -1079,7 +1082,7 @@ class SocketManager {
     return new Promise((resolve, reject) => {
       channel
         .push('unsubscribe', {})
-        .receive('ok', (resp: { subscribed: boolean }) => resolve(resp))
+        .receive('ok', (resp: unknown) => resolve(resp as { subscribed: boolean }))
         .receive('error', (resp: unknown) => reject(resp));
     });
   }
@@ -1162,15 +1165,18 @@ class SocketManager {
 
       presence.onSync(() => {
         const viewers: ThreadViewerPayload[] = [];
-        presence.list((userId: string, { metas }: { metas: ThreadPresenceMeta[] }) => {
-          const meta = metas[0];
-          viewers.push({
-            user_id: userId,
-            username: meta.username,
-            display_name: meta.display_name,
-            avatar_url: meta.avatar_url,
-            typing: meta.typing,
-          });
+        presence.list((userId: string, pres: unknown) => {
+          const { metas } = pres as { metas: ThreadPresenceMeta[] };
+          const meta = metas?.[0];
+          if (meta) {
+            viewers.push({
+              user_id: userId,
+              username: meta.username,
+              display_name: meta.display_name,
+              avatar_url: meta.avatar_url,
+              typing: meta.typing,
+            });
+          }
           return userId;
         });
 
@@ -1279,7 +1285,7 @@ class SocketManager {
     return new Promise((resolve, reject) => {
       channel
         .push('vote', { value })
-        .receive('ok', (resp: ThreadVotePayload) => resolve(resp))
+        .receive('ok', (resp: unknown) => resolve(resp as ThreadVotePayload))
         .receive('error', (resp: unknown) => reject(resp));
     });
   }
@@ -1302,7 +1308,7 @@ class SocketManager {
     return new Promise((resolve, reject) => {
       channel
         .push('vote_comment', { comment_id: commentId, value })
-        .receive('ok', (resp: CommentVotePayload) => resolve(resp))
+        .receive('ok', (resp: unknown) => resolve(resp as CommentVotePayload))
         .receive('error', (resp: unknown) => reject(resp));
     });
   }
@@ -1325,7 +1331,7 @@ class SocketManager {
     return new Promise((resolve, reject) => {
       channel
         .push('new_comment', { content, parent_id: parentId })
-        .receive('ok', (resp: { comment_id: string }) => resolve(resp))
+        .receive('ok', (resp: unknown) => resolve(resp as { comment_id: string }))
         .receive('error', (resp: unknown) => reject(resp));
     });
   }
@@ -1355,7 +1361,7 @@ class SocketManager {
     return new Promise((resolve, reject) => {
       channel
         .push('vote_poll', { option_id: optionId })
-        .receive('ok', (resp: { poll: ThreadPollData }) => resolve(resp))
+        .receive('ok', (resp: unknown) => resolve(resp as { poll: ThreadPollData }))
         .receive('error', (resp: unknown) => reject(resp));
     });
   }
@@ -1374,7 +1380,7 @@ class SocketManager {
     return new Promise((resolve, reject) => {
       channel
         .push('get_viewers', {})
-        .receive('ok', (resp: { viewers: ThreadViewerPayload[] }) => resolve(resp))
+        .receive('ok', (resp: unknown) => resolve(resp as { viewers: ThreadViewerPayload[] }))
         .receive('error', (resp: unknown) => reject(resp));
     });
   }

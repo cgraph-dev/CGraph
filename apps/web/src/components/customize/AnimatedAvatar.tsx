@@ -3,12 +3,15 @@
  *
  * Renders avatar with various animated border effects.
  * Ported from CustomizationDemo with scalability optimizations.
+ *
+ * @version 2.1.0 - Added reduced motion support and GPU optimizations
  */
 
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import type { AvatarBorderType, ThemePreset } from '@/stores/customizationStoreV2';
 import { themeColors } from '@/stores/customizationStoreV2';
+import { usePrefersReducedMotion } from '@/hooks';
 
 interface AnimatedAvatarProps {
   borderType: AvatarBorderType;
@@ -36,8 +39,36 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
   const effectiveSize =
     typeof size === 'number' ? (size <= 48 ? 'small' : size <= 64 ? 'medium' : 'large') : size;
   const borderWidth = effectiveSize === 'small' ? 2 : effectiveSize === 'medium' ? 3 : 4;
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  // GPU layer promotion styles for animated elements
+  const gpuStyles = useMemo(
+    () => ({
+      willChange: prefersReducedMotion ? 'auto' : 'transform, opacity',
+      transform: 'translateZ(0)',
+    }),
+    [prefersReducedMotion]
+  );
 
   const renderBorderEffect = () => {
+    // If reduced motion is preferred, show static borders only
+    if (prefersReducedMotion) {
+      switch (borderType) {
+        case 'none':
+          return null;
+        default:
+          return (
+            <div
+              className="absolute inset-0 rounded-full"
+              style={{
+                border: `${borderWidth}px solid ${colors.primary}`,
+                boxShadow: `0 0 15px ${colors.glow}`,
+              }}
+            />
+          );
+      }
+    }
+
     switch (borderType) {
       case 'none':
         return null;
@@ -55,6 +86,7 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
           <motion.div
             className="absolute inset-0 rounded-full"
             style={{
+              ...gpuStyles,
               border: `${borderWidth}px solid ${colors.primary}`,
               boxShadow: `0 0 15px ${colors.glow}, 0 0 30px ${colors.glow}`,
             }}
@@ -74,11 +106,11 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
           <>
             <motion.div
               className="absolute inset-0 rounded-full"
-              style={{ border: `${borderWidth}px solid ${colors.primary}` }}
+              style={{ ...gpuStyles, border: `${borderWidth}px solid ${colors.primary}` }}
             />
             <motion.div
               className="absolute inset-0 rounded-full"
-              style={{ border: `${borderWidth}px solid ${colors.primary}` }}
+              style={{ ...gpuStyles, border: `${borderWidth}px solid ${colors.primary}` }}
               animate={{
                 scale: [1, 1.3, 1.3],
                 opacity: [0.8, 0, 0],
@@ -87,7 +119,7 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
             />
             <motion.div
               className="absolute inset-0 rounded-full"
-              style={{ border: `${borderWidth}px solid ${colors.secondary}` }}
+              style={{ ...gpuStyles, border: `${borderWidth}px solid ${colors.secondary}` }}
               animate={{
                 scale: [1, 1.5, 1.5],
                 opacity: [0.6, 0, 0],
@@ -102,6 +134,7 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
           <motion.div
             className="absolute inset-[-4px] rounded-full"
             style={{
+              ...gpuStyles,
               background: `conic-gradient(from 0deg, ${colors.primary}, ${colors.secondary}, transparent, ${colors.primary})`,
               padding: borderWidth,
             }}
@@ -124,6 +157,7 @@ export const AnimatedAvatar = memo(function AnimatedAvatar({
                 key={i}
                 className="absolute"
                 style={{
+                  ...gpuStyles,
                   width: 6,
                   height: 12,
                   background: `linear-gradient(to top, ${colors.primary}, ${colors.secondary}, transparent)`,

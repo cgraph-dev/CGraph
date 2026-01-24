@@ -19,7 +19,8 @@ import {
 export default function GroupChannel() {
   const { groupId, channelId } = useParams<{ groupId: string; channelId: string }>();
   // useAuthStore available for future permission checks
-  const _authStore = useAuthStore();
+  const authStore = useAuthStore();
+  void authStore; // Reserved for future permission checks
   const {
     groups,
     channelMessages,

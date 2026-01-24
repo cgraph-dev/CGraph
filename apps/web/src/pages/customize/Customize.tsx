@@ -273,7 +273,8 @@ export default function Customize() {
               exit={{ opacity: 0, x: -20 }}
               transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             >
-              <GlassCard variant="frosted" className="p-8">
+              {/* IMPORTANT: hover3D disabled to prevent performance issues with particle animations */}
+              <GlassCard variant="frosted" hover3D={false} className="p-8">
                 <Suspense fallback={<LoadingSkeleton />}>
                   {activeCategory === 'identity' && <IdentityCustomization />}
                   {activeCategory === 'themes' && <ThemeCustomization />}

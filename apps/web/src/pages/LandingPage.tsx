@@ -18,7 +18,6 @@ import { useAuthStore } from '@/stores/authStore';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { AnimatedAvatar } from '@/components/customize/AnimatedAvatar';
-import { themeColors } from '@/stores/customizationStoreV2';
 import { motion } from 'framer-motion';
 import {
   CustomizationDemoSkeleton,

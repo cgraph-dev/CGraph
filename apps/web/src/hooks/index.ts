@@ -7,11 +7,20 @@
 
 export { useMediaQuery } from './useMediaQuery';
 export { useLocalStorage } from './useLocalStorage';
-export { useDebounce } from './useDebounce';
+export { useDebounce, useDebouncedCallback, useThrottledCallback } from './useDebounce';
 export { useClickOutside } from './useClickOutside';
 export { useWindowSize } from './useWindowSize';
 export { useCopyToClipboard } from './useCopyToClipboard';
 export { usePresence, useUserOnline } from './usePresence';
+export { usePrefersReducedMotion } from './useMediaQuery';
 export { useToast, type ToastOptions, type UseToastReturn } from './useToast';
-export { useForumSocket, type UseForumSocketOptions, type UseForumSocketReturn } from './useForumSocket';
-export { useThreadSocket, type UseThreadSocketOptions, type UseThreadSocketReturn } from './useThreadSocket';
+export {
+  useForumSocket,
+  type UseForumSocketOptions,
+  type UseForumSocketReturn,
+} from './useForumSocket';
+export {
+  useThreadSocket,
+  type UseThreadSocketOptions,
+  type UseThreadSocketReturn,
+} from './useThreadSocket';

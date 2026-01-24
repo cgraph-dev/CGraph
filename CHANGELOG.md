@@ -4,6 +4,84 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.5] - 2026-01-24
+
+**🔧 PERFORMANCE & TYPE SAFETY: Customize Tab Performance Fix & TypeScript Error Resolution**
+
+This release fixes critical performance issues in the Customize tab and resolves all pre-existing
+TypeScript errors across the codebase.
+
+### 🐛 Bug Fixes
+
+#### Customize Tab Performance (Critical)
+
+| Issue                                    | Solution                                                            |
+| ---------------------------------------- | ------------------------------------------------------------------- |
+| **Page trembling/blocking on hover**     | Throttled mouse handlers to 60fps (16ms intervals)                  |
+| **100+ concurrent infinite animations**  | Converted to hover-only animations (reduced to ~8 active at a time) |
+| **GlassCard 3D transform recalculation** | Added throttled mouse move handler with GPU layer promotion         |
+| **Dual store synchronization**           | Disabled hover3D on main content wrapper                            |
+
+#### TypeScript Errors Fixed
+
+| File                       | Error                                       | Fix                                             |
+| -------------------------- | ------------------------------------------- | ----------------------------------------------- |
+| `Register.tsx`             | Framer Motion `ease` type error             | Added `as const` type assertion                 |
+| `Login.tsx`                | Framer Motion `ease` type error             | Added `as const` type assertion                 |
+| `socket.ts`                | Phoenix Presence callback types (12 errors) | Changed to `unknown` with explicit casting      |
+| `EffectsCustomization.tsx` | Particle data union type errors (15 errors) | Created typed interfaces for each particle type |
+| `GroupChannel.tsx`         | Unused `_authStore` variable                | Renamed with void statement                     |
+| `NotificationProvider.tsx` | Unused `useContext` import                  | Removed unused import                           |
+| `LandingPage.tsx`          | Unused `themeColors` import                 | Removed unused import                           |
+| `ForumCategoryList.tsx`    | Unused `formatTimeAgo` function             | Removed unused function                         |
+| `Conversation.tsx`         | Unused `conversationId` parameter           | Prefixed with underscore                        |
+| `Navigation.tsx`           | Unused `transparent` prop                   | Renamed with void statement                     |
+| `advanced-effects.tsx`     | Unused `_frame` variable                    | Changed to `let frame` (actually used)          |
+
+### ⚡ Performance Improvements
+
+#### New Hook: `useThrottledCallback`
+
+```typescript
+// Throttles callback execution to 60fps for smooth animations
+const handleMouseMove = useThrottledCallback((e: MouseEvent) => {
+  // Handle mouse move at max 60fps
+}, 16);
+```
+
+#### GPU Layer Promotion
+
+- Added `willChange: 'transform'` to animated elements
+- Added `transform: translateZ(0)` for compositor layer promotion
+- Conditional willChange based on animation state
+
+#### Reduced Motion Support
+
+- All animated components now respect `prefers-reduced-motion`
+- Static fallbacks for accessibility compliance
+- Memoized motion preference detection
+
+### 📁 Files Modified
+
+| File                       | Changes                                                |
+| -------------------------- | ------------------------------------------------------ |
+| `hooks/useDebounce.ts`     | Added `useThrottledCallback` hook (~60 lines)          |
+| `hooks/index.ts`           | Exported new hooks                                     |
+| `GlassCard.tsx`            | Throttled mouse handler, GPU promotion, reduced motion |
+| `TiltCard.tsx`             | Throttled mouse handler, reduced motion support        |
+| `Customize.tsx`            | Disabled hover3D on main wrapper                       |
+| `EffectsCustomization.tsx` | Type-safe particle system with 6 typed interfaces      |
+| `LivePreviewPanel.tsx`     | Reduced particles (20→10), memoized data               |
+| `AnimatedAvatar.tsx`       | Reduced motion support, GPU styles                     |
+
+### 🔒 Type Safety
+
+- Zero TypeScript errors (was 31 errors)
+- Zero ESLint errors
+- All pre-existing type issues resolved
+
+---
+
 ## [0.9.4] - 2026-01-20
 
 **🎨 LANDING PAGE: Premium GAMELAND-Style Landing with Custom Fonts & Immersive Preloader**

@@ -40,8 +40,8 @@ export function NoiseOverlay({ opacity = 0.05, speed = 0.3, grain = 'medium' }: 
     if (!ctx) return;
 
     let animationId: number;
-    // Frame counter reserved for future animation timing
-    const _frame = 0;
+    // Frame counter for animation timing
+    let frame = 0;
 
     // Resize handler with debouncing
     let resizeTimeout: ReturnType<typeof setTimeout> | null = null;

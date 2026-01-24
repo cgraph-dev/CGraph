@@ -1539,8 +1539,7 @@ function MessageBubble({
 async function handleAddReaction(
   messageId: string,
   emoji: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  conversationId?: string
+  _conversationId?: string
 ): Promise<void> {
   try {
     const { addReaction } = useChatStore.getState();
