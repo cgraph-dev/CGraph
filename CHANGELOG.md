@@ -6,10 +6,10 @@ All notable changes to CGraph will be documented in this file.
 
 ## [0.9.5] - 2026-01-24
 
-**🎨 IDENTITY TAB: Complete Customization System + Critical Deployment Fixes**
+**🎨 IDENTITY TAB: Complete Customization System + Deployment Fixes**
 
 This release completes the Identity customization tab with comprehensive data collections and fixes
-critical deployment configuration issues for Vercel.
+deployment configuration issues for Vercel.
 
 ### 🚀 New Features
 
@@ -39,15 +39,16 @@ critical deployment configuration issues for Vercel.
 | **Profile layouts showing emoji placeholder** | Added proper LayoutPreview components with visual representations                                       |
 | **Border animations missing 10 types**        | Added pixel-pulse, scan-line, glitch, sakura-fall, wave, energy-surge, smoke, neon-flicker, galaxy, ice |
 | **Duplicate JSDoc causing parse error**       | Removed orphaned comment block                                                                          |
+| **Login failed on Vercel**                    | Reverted to direct backend URL (empty VITE_API_URL caused routing issues)                               |
 
-### 🔧 Deployment Configuration Fixes
+### 🔧 Deployment Configuration
 
-| Issue                                 | Solution                                                                      |
-| ------------------------------------- | ----------------------------------------------------------------------------- |
-| **API URL bypassing Vercel rewrites** | Changed `VITE_API_URL` to empty string for Discord-style same-origin requests |
-| **CORS blocking Vercel previews**     | Added secure regex `^https://cgraph[a-z0-9-]*.vercel.app$`                    |
-| **CSP header redundant backend URL**  | Removed direct backend URL since API calls now go through `'self'`            |
-| **Version mismatch**                  | Synced all versions to 0.9.5                                                  |
+| Configuration                | Value                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------- |
+| **API URL**                  | Direct backend: `https://cgraph-backend.fly.dev`                            |
+| **CORS for Vercel previews** | Added regex `^https://cgraph[a-z0-9-]*.vercel.app$` for all preview domains |
+| **CSP connect-src**          | Allows both 'self' and direct backend URLs                                  |
+| **Version**                  | Synced to 0.9.5 across all packages                                         |
 
 ### 📁 Files Modified
 
@@ -57,7 +58,7 @@ critical deployment configuration issues for Vercel.
 | `IdentityCustomization.tsx` | AnimatedTitleText, LayoutPreview, badge limit indicator, data file integration |
 | `titlesCollection.ts`       | New file: 30+ titles with full type definitions                                |
 | `badgesCollection.ts`       | New file: 40+ badges with progress tracking                                    |
-| `.env.production`           | API URL now empty for Vercel rewrites                                          |
+| `.env.production`           | Direct backend URL for reliable API calls                                      |
 | `cors.ex`                   | Added Vercel preview deployment regex                                          |
 | `vercel.json`               | Updated CSP header                                                             |
 | `package.json`              | Version sync to 0.9.5                                                          |

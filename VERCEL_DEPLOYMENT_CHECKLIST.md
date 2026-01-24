@@ -13,26 +13,26 @@
 
 ## API Configuration (v0.9.5+)
 
-**Important:** As of v0.9.5, the frontend uses Discord-style API routing through Vercel rewrites.
+The frontend uses direct backend access with CORS enabled for all Vercel deployments.
 
 ```bash
 # .env.production (baked into build)
-VITE_API_URL=           # Empty = use Vercel rewrites (recommended)
-VITE_WS_URL=wss://cgraph-backend.fly.dev/socket  # WebSockets still direct
+VITE_API_URL=https://cgraph-backend.fly.dev
+VITE_WS_URL=wss://cgraph-backend.fly.dev/socket
 ```
 
 ### How It Works
 
 ```
-Browser → /api/v1/users → Vercel Rewrite → cgraph-backend.fly.dev/api/v1/users
+Browser → https://cgraph-backend.fly.dev/api/v1/users (direct with CORS)
 ```
 
-**Benefits:**
+**Why Direct Access (not Vercel Rewrites):**
 
-- No CORS issues (same-origin requests)
-- Edge caching possible
-- Single domain for better security
-- Preview deployments work automatically
+- Vercel rewrites have ordering issues with catch-all routes
+- Direct CORS is more reliable for API calls
+- Backend CORS supports all cgraph\*.vercel.app domains
+- WebSockets require direct connection anyway
 
 ---
 
@@ -41,8 +41,8 @@ Browser → /api/v1/users → Vercel Rewrite → cgraph-backend.fly.dev/api/v1/u
 Set these in your Vercel project settings → Environment Variables:
 
 ```bash
-# API Configuration (leave empty to use rewrites - recommended)
-VITE_API_URL=
+# API Configuration (direct backend access)
+VITE_API_URL=https://cgraph-backend.fly.dev
 VITE_WS_URL=wss://cgraph-backend.fly.dev/socket
 
 # App Configuration
@@ -73,6 +73,7 @@ This means:
 
 - ✅ `cgraph-abc123.vercel.app` (preview deployments)
 - ✅ `cgraph-feature-branch.vercel.app` (branch previews)
+- ✅ `cgraph-web-v2.vercel.app` (explicit domain)
 - ❌ `other-project.vercel.app` (other projects blocked)
 
 ---
