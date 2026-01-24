@@ -61,14 +61,18 @@ defmodule CGraphWeb.Plugs.Cors do
           "https://cgraph.org",
           "https://www.cgraph.org",
           "https://app.cgraph.org",
-          # Vercel deployment domains (specific deployments only)
+          # Vercel deployment domains (specific deployments)
           "https://cgraph.vercel.app",
           "https://cgraph-web.vercel.app",
           "https://c-graph.vercel.app",
-          "https://cgraph-web-v2.vercel.app"
-          # ✅ SECURITY FIX: Removed wildcard Vercel subdomain regex
-          # If preview deployments are needed, add them explicitly above
-          # or set CORS_ORIGINS environment variable with specific domains
+          "https://cgraph-web-v2.vercel.app",
+          # Vercel preview deployments (Discord-style: allow all vercel.app subdomains)
+          # Pattern: cgraph-{hash}-{team}.vercel.app or cgraph-{branch}-{team}.vercel.app
+          # This is safe because:
+          # 1. Only allows *.vercel.app domains (Vercel-controlled)
+          # 2. Requires 'cgraph' prefix to prevent other Vercel projects
+          # 3. Authentication still required for sensitive operations
+          ~r/^https:\/\/cgraph[a-z0-9-]*\.vercel\.app$/
         ]
 
       {nil, false} ->

@@ -31,13 +31,40 @@ import {
   RARITY_ORDER as _RARITY_ORDER,
 } from '@/data/borderCollections';
 
+// Import titles collection
+import {
+  ALL_TITLES,
+  TITLE_CATEGORIES,
+  getTitleById as _getTitleById,
+  type TitleDefinition,
+  type TitleRarity,
+  type TitleAnimationType,
+  TITLE_RARITY_COLORS as _TITLE_RARITY_COLORS,
+} from '@/data/titlesCollection';
+
+// Import badges collection
+import {
+  ALL_BADGES,
+  BADGE_CATEGORIES,
+  getBadgeById as _getBadgeById,
+  type BadgeDefinition,
+  type BadgeRarity,
+  BADGE_RARITY_COLORS as _BADGE_RARITY_COLORS,
+} from '@/data/badgesCollection';
+
 // Reserved for future use
 void _RARITY_COLORS;
 void _RARITY_ORDER;
+void _getTitleById;
+void _TITLE_RARITY_COLORS;
+void _getBadgeById;
+void _BADGE_RARITY_COLORS;
 
 // Import reusable components (reserved for future modular refactoring)
 import _ThemeGridPicker from '@/components/customize/ThemeGridPicker';
-import ThemedBorderCard, { BorderCardGrid as _BorderCardGrid } from '@/components/customize/ThemedBorderCard';
+import ThemedBorderCard, {
+  BorderCardGrid as _BorderCardGrid,
+} from '@/components/customize/ThemedBorderCard';
 void _ThemeGridPicker;
 void _BorderCardGrid;
 
@@ -46,17 +73,26 @@ void _BorderCardGrid;
  *
  * Comprehensive identity customization page with 4 sections:
  * 1. Avatar Borders - 150+ animated borders with rarity filtering
- * 2. Titles - 25+ animated title styles
- * 3. Badges - Equip up to 5 badges with drag-and-drop
+ * 2. Titles - 30+ animated title styles
+ * 3. Badges - 40+ badges, equip up to 5 with progress tracking
  * 4. Profile Card Layouts - 7 layout styles with visual previews
  *
  * Features:
  * - Live preview in right panel
  * - Search/filter functionality
- * - Rarity filtering (common, rare, legendary, mythic)
- * - Unlock status indicators
+ * - Rarity filtering (free, common, rare, epic, legendary, mythic)
+ * - Unlock status indicators with progress tracking
  * - One-click equip/unequip
+ * - Visual animations toggle
+ * - Comprehensive data from collection files
+ *
+ * Data Sources:
+ * - borderCollections.ts: 150+ themed borders
+ * - titlesCollection.ts: 30+ animated titles
+ * - badgesCollection.ts: 40+ categorized badges
  */
+
+// ==================== TYPE DEFINITIONS ====================
 
 // ==================== TYPE DEFINITIONS ====================
 
@@ -75,7 +111,7 @@ interface Border {
 interface Title {
   id: string;
   name: string;
-  animation: string;
+  animationType: TitleAnimationType; // Consistent with TitleDefinition
   gradient: string;
   unlocked: boolean;
   unlockRequirement?: string;
@@ -269,112 +305,32 @@ const MOCK_BORDERS: Border[] = [
   },
 ];
 
-const MOCK_TITLES: Title[] = [
-  { id: 't1', name: 'Newbie', animation: 'none', gradient: 'text-gray-400', unlocked: true },
-  { id: 't2', name: 'Adventurer', animation: 'fade', gradient: 'text-blue-400', unlocked: true },
-  {
-    id: 't3',
-    name: 'Veteran',
-    animation: 'glow',
-    gradient: 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent',
-    unlocked: true,
-  },
-  {
-    id: 't4',
-    name: 'Elite',
-    animation: 'pulse',
-    gradient: 'bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent',
-    unlocked: false,
-    unlockRequirement: 'Reach Level 25',
-  },
-  {
-    id: 't5',
-    name: 'Legend',
-    animation: 'shimmer',
-    gradient: 'bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent',
-    unlocked: false,
-    unlockRequirement: 'Complete 100 Quests',
-  },
-  {
-    id: 't6',
-    name: 'Mythic Hero',
-    animation: 'rainbow',
-    gradient:
-      'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent',
-    unlocked: false,
-    unlockRequirement: 'Prestige 5',
-  },
-];
+// Convert TitleDefinition from collection to local Title format
+const convertTitleToLocal = (t: TitleDefinition): Title => ({
+  id: t.id,
+  name: t.name,
+  animationType: t.animationType,
+  gradient: t.gradient,
+  unlocked: t.unlocked,
+  unlockRequirement: t.unlockRequirement,
+});
 
-const MOCK_BADGES: Badge[] = [
-  {
-    id: 'badge1',
-    name: 'Early Adopter',
-    description: 'Joined in the first month',
-    icon: '🌟',
-    rarity: 'rare',
-    unlocked: true,
-  },
-  {
-    id: 'badge2',
-    name: 'Forum Master',
-    description: 'Created 100 posts',
-    icon: '📝',
-    rarity: 'epic',
-    unlocked: true,
-  },
-  {
-    id: 'badge3',
-    name: 'Friend Magnet',
-    description: 'Have 50 friends',
-    icon: '👥',
-    rarity: 'rare',
-    unlocked: true,
-  },
-  {
-    id: 'badge4',
-    name: 'Streak King',
-    description: '30 day login streak',
-    icon: '🔥',
-    rarity: 'legendary',
-    unlocked: false,
-    unlockRequirement: '30 day streak',
-  },
-  {
-    id: 'badge5',
-    name: 'Achievement Hunter',
-    description: 'Unlock 50 achievements',
-    icon: '🏆',
-    rarity: 'epic',
-    unlocked: false,
-    unlockRequirement: '50 achievements',
-  },
-  {
-    id: 'badge6',
-    name: 'Helpful Hero',
-    description: 'Receive 100 upvotes',
-    icon: '💖',
-    rarity: 'rare',
-    unlocked: true,
-  },
-  {
-    id: 'badge7',
-    name: 'Bug Squasher',
-    description: 'Report 10 bugs',
-    icon: '🐛',
-    rarity: 'common',
-    unlocked: true,
-  },
-  {
-    id: 'badge8',
-    name: 'Beta Tester',
-    description: 'Test new features',
-    icon: '🧪',
-    rarity: 'legendary',
-    unlocked: false,
-    unlockRequirement: 'Join beta program',
-  },
-];
+// Use titles from collection file
+const MOCK_TITLES: Title[] = ALL_TITLES.map(convertTitleToLocal);
+
+// Convert BadgeDefinition from collection to local Badge format
+const convertBadgeToLocal = (b: BadgeDefinition): Badge => ({
+  id: b.id,
+  name: b.name,
+  description: b.description,
+  icon: b.icon,
+  rarity: b.rarity === 'free' ? 'common' : (b.rarity as Rarity),
+  unlocked: b.unlocked,
+  unlockRequirement: b.unlockRequirement,
+});
+
+// Use badges from collection file
+const MOCK_BADGES: Badge[] = ALL_BADGES.map(convertBadgeToLocal);
 
 const PROFILE_LAYOUTS: ProfileLayout[] = [
   {
@@ -430,26 +386,55 @@ const PROFILE_LAYOUTS: ProfileLayout[] = [
 
 // ==================== MAIN COMPONENT ====================
 
-// Border ID to V2 avatar border type mapping
-const BORDER_ID_TO_V2_TYPE: Record<string, AvatarBorderType> = {
-  'b1': 'static',
-  'b2': 'static',
-  'b3': 'static',
-  'b4': 'static',
-  'b5': 'pulse',
-  'b6': 'rotate',
-  'b7': 'glow',
-  'b8': 'electric',
-  'b9': 'rotate',
-  'b10': 'fire',
-  'b11': 'ice',
-  'b12': 'glow',
-  'b13': 'fire',
-  'b14': 'legendary',
-  'b15': 'mythic',
-  'b16': 'fire',
-  'b17': 'mythic',
-  'b18': 'legendary',
+// Map animation types to V2 avatar border types
+// This function dynamically maps any border from borderCollections to the V2 store format
+function getV2BorderType(animationType: string): AvatarBorderType {
+  const animationToV2Map: Record<string, AvatarBorderType> = {
+    none: 'static',
+    pulse: 'pulse',
+    glow: 'glow',
+    rotate: 'rotate',
+    shimmer: 'glow',
+    rainbow: 'legendary',
+    fire: 'fire',
+    ice: 'ice',
+    electric: 'electric',
+    void: 'mythic',
+    aurora: 'legendary',
+    galaxy: 'mythic',
+    'pixel-pulse': 'pulse',
+    'scan-line': 'static',
+    glitch: 'electric',
+    'sakura-fall': 'glow',
+    wave: 'pulse',
+    'energy-surge': 'electric',
+    smoke: 'glow',
+    'neon-flicker': 'electric',
+    holographic: 'legendary',
+  };
+  return animationToV2Map[animationType] || 'static';
+}
+
+// Legacy border ID mapping (for backwards compatibility with old mock borders)
+const LEGACY_BORDER_ID_TO_V2_TYPE: Record<string, AvatarBorderType> = {
+  b1: 'static',
+  b2: 'static',
+  b3: 'static',
+  b4: 'static',
+  b5: 'pulse',
+  b6: 'rotate',
+  b7: 'glow',
+  b8: 'electric',
+  b9: 'rotate',
+  b10: 'fire',
+  b11: 'ice',
+  b12: 'glow',
+  b13: 'fire',
+  b14: 'legendary',
+  b15: 'mythic',
+  b16: 'fire',
+  b17: 'mythic',
+  b18: 'legendary',
 };
 
 export default function IdentityCustomization() {
@@ -476,7 +461,7 @@ export default function IdentityCustomization() {
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRarity, setSelectedRarity] = useState<Rarity | 'all'>('all');
-  
+
   // Track if user is previewing a locked/premium item
   const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
 
@@ -508,32 +493,51 @@ export default function IdentityCustomization() {
   });
 
   // Sync border selection to V2 store for live preview
-  const syncBorderToV2 = useCallback((borderId: string) => {
-    const v2Type = BORDER_ID_TO_V2_TYPE[borderId];
-    if (v2Type) {
-      v2Store.setAvatarBorder(v2Type);
-    }
-    v2Store.selectBorderId(borderId);
-  }, [v2Store]);
+  // Sync border selection to V2 store for live preview
+  // Supports both legacy mock borders (b1-b18) and new themed borders from borderCollections
+  const syncBorderToV2 = useCallback(
+    (borderId: string) => {
+      // First check legacy mapping
+      const legacyV2Type = LEGACY_BORDER_ID_TO_V2_TYPE[borderId];
+      if (legacyV2Type) {
+        v2Store.setAvatarBorder(legacyV2Type);
+      } else {
+        // Find border in new collection and map its animation type
+        const border = ALL_BORDERS.find((b) => b.id === borderId);
+        if (border) {
+          const v2Type = getV2BorderType(border.animationType);
+          v2Store.setAvatarBorder(v2Type);
+        }
+      }
+      v2Store.selectBorderId(borderId);
+    },
+    [v2Store]
+  );
 
   // Sync title selection to V2 store for live preview
-  const syncTitleToV2 = useCallback((titleId: string | null) => {
-    v2Store.setEquippedTitle(titleId);
-  }, [v2Store]);
+  const syncTitleToV2 = useCallback(
+    (titleId: string | null) => {
+      v2Store.setEquippedTitle(titleId);
+    },
+    [v2Store]
+  );
 
   // Preview a locked/premium item without saving
-  const handlePreviewItem = useCallback((itemId: string, type: 'border' | 'title') => {
-    setPreviewingLockedItem(itemId);
-    if (type === 'border') {
-      syncBorderToV2(itemId);
-    } else if (type === 'title') {
-      syncTitleToV2(itemId);
-    }
-    toast('👁️ Previewing item - Purchase premium to save', {
-      icon: '✨',
-      duration: 3000,
-    });
-  }, [syncBorderToV2, syncTitleToV2]);
+  const handlePreviewItem = useCallback(
+    (itemId: string, type: 'border' | 'title') => {
+      setPreviewingLockedItem(itemId);
+      if (type === 'border') {
+        syncBorderToV2(itemId);
+      } else if (type === 'title') {
+        syncTitleToV2(itemId);
+      }
+      toast('👁️ Previewing item - Purchase premium to save', {
+        icon: '✨',
+        duration: 3000,
+      });
+    },
+    [syncBorderToV2, syncTitleToV2]
+  );
 
   // Clear preview when changing sections
   const clearPreview = useCallback(() => {
@@ -551,7 +555,7 @@ export default function IdentityCustomization() {
       handlePreviewItem(borderId, 'border');
       return;
     }
-    
+
     clearPreview();
     updateIdentity('avatarBorder', borderId);
     syncBorderToV2(borderId);
@@ -563,7 +567,7 @@ export default function IdentityCustomization() {
       handlePreviewItem(titleId, 'title');
       return;
     }
-    
+
     clearPreview();
     updateIdentity('title', titleId);
     syncTitleToV2(titleId);
@@ -575,7 +579,7 @@ export default function IdentityCustomization() {
       toast.error(`Unlock required: ${badge.unlockRequirement}`);
       return;
     }
-    
+
     if (equippedBadges.includes(badgeId)) {
       const newBadges = equippedBadges.filter((id) => id !== badgeId);
       updateIdentity('equippedBadges', newBadges);
@@ -598,7 +602,7 @@ export default function IdentityCustomization() {
       });
       return;
     }
-    
+
     updateIdentity('profileLayout', layoutId);
     v2Store.setProfileCardStyle(layoutId as any);
   };
@@ -791,10 +795,15 @@ interface BordersSectionProps {
   // Reserved for future use when we add rarity-based styling
 }
 
-function BordersSection({ borders, selectedBorder, previewingBorder, onEquip }: BordersSectionProps) {
+function BordersSection({
+  borders,
+  selectedBorder,
+  previewingBorder,
+  onEquip,
+}: BordersSectionProps) {
   const [selectedTheme, setSelectedTheme] = useState<BorderTheme | 'all'>('all');
   const [showAnimations, setShowAnimations] = useState(true);
-  
+
   // Get borders from the new collection system
   const themedBorders = useMemo(() => {
     if (selectedTheme === 'all') {
@@ -802,14 +811,14 @@ function BordersSection({ borders, selectedBorder, previewingBorder, onEquip }: 
     }
     return getBordersByTheme(selectedTheme);
   }, [selectedTheme]);
-  
+
   // Filter by search query from parent (using the borders prop for search results)
   const displayBorders = useMemo(() => {
     // If there's a search active (borders.length < total), use that
     if (borders.length < MOCK_BORDERS.length) {
       // Map old borders to new format for display
-      return borders.map(b => ({
-        ...themedBorders.find(tb => tb.name.toLowerCase().includes(b.name.toLowerCase())) || {
+      return borders.map((b) => ({
+        ...(themedBorders.find((tb) => tb.name.toLowerCase().includes(b.name.toLowerCase())) || {
           id: b.id,
           name: b.name,
           theme: 'elemental' as BorderTheme,
@@ -820,26 +829,23 @@ function BordersSection({ borders, selectedBorder, previewingBorder, onEquip }: 
           unlocked: b.unlocked,
           unlockRequirement: b.unlockRequirement,
           description: `${b.rarity} border`,
-        },
+        }),
       }));
     }
     return themedBorders;
   }, [borders, themedBorders]);
-  
+
   return (
     <div className="space-y-6">
       {/* Theme Category Selector */}
       <div className="flex flex-wrap gap-2">
         <motion.button
           onClick={() => setSelectedTheme('all')}
-          className={`
-            flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm
-            transition-all duration-200
-            ${selectedTheme === 'all' 
-              ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white shadow-lg shadow-primary-500/25' 
-              : 'bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white border border-white/10'
-            }
-          `}
+          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
+            selectedTheme === 'all'
+              ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white shadow-lg shadow-primary-500/25'
+              : 'border border-white/10 bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white'
+          } `}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
         >
@@ -847,26 +853,23 @@ function BordersSection({ borders, selectedBorder, previewingBorder, onEquip }: 
           <span>All Borders</span>
           <span className="text-xs opacity-70">({ALL_BORDERS.length})</span>
         </motion.button>
-        
+
         {BORDER_THEMES.map((theme) => (
           <motion.button
             key={theme.id}
             onClick={() => setSelectedTheme(theme.id)}
-            className={`
-              flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm
-              transition-all duration-200
-              ${selectedTheme === theme.id 
-                ? 'text-white shadow-lg' 
-                : 'bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white border border-white/10'
-              }
-            `}
+            className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
+              selectedTheme === theme.id
+                ? 'text-white shadow-lg'
+                : 'border border-white/10 bg-dark-700/50 text-gray-400 hover:bg-dark-600/50 hover:text-white'
+            } `}
             style={{
-              background: selectedTheme === theme.id 
-                ? `linear-gradient(135deg, ${theme.accentColor}cc, ${theme.accentColor}66)`
-                : undefined,
-              boxShadow: selectedTheme === theme.id 
-                ? `0 4px 20px ${theme.accentColor}40`
-                : undefined,
+              background:
+                selectedTheme === theme.id
+                  ? `linear-gradient(135deg, ${theme.accentColor}cc, ${theme.accentColor}66)`
+                  : undefined,
+              boxShadow:
+                selectedTheme === theme.id ? `0 4px 20px ${theme.accentColor}40` : undefined,
             }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -877,35 +880,30 @@ function BordersSection({ borders, selectedBorder, previewingBorder, onEquip }: 
           </motion.button>
         ))}
       </div>
-      
+
       {/* Controls Row */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-400">
             <input
               type="checkbox"
               checked={showAnimations}
               onChange={(e) => setShowAnimations(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+              className="h-4 w-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
             />
             Show Animations
           </label>
         </div>
-        <div className="text-sm text-gray-500">
-          Showing {displayBorders.length} borders
-        </div>
+        <div className="text-sm text-gray-500">Showing {displayBorders.length} borders</div>
       </div>
-      
+
       {/* Borders Grid */}
-      <motion.div 
-        className="grid grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
-        layout
-      >
+      <motion.div className="grid grid-cols-4 gap-4 lg:grid-cols-5 xl:grid-cols-6" layout>
         <AnimatePresence mode="popLayout">
           {displayBorders.map((border, index) => {
             const isSelected = selectedBorder === border.id;
             const isPreviewing = previewingBorder === border.id;
-            
+
             return (
               <motion.div
                 key={border.id}
@@ -913,9 +911,9 @@ function BordersSection({ borders, selectedBorder, previewingBorder, onEquip }: 
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ 
+                transition={{
                   delay: Math.min(index * 0.02, 0.3),
-                  layout: { duration: 0.3 }
+                  layout: { duration: 0.3 },
                 }}
               >
                 <ThemedBorderCard
@@ -926,7 +924,7 @@ function BordersSection({ borders, selectedBorder, previewingBorder, onEquip }: 
                     const oldBorder: Border = {
                       id: border.id,
                       name: border.name,
-                      rarity: border.rarity === 'free' ? 'common' : border.rarity as Rarity,
+                      rarity: border.rarity === 'free' ? 'common' : (border.rarity as Rarity),
                       animation: border.animationType,
                       colors: border.colors,
                       unlocked: border.unlocked,
@@ -945,16 +943,16 @@ function BordersSection({ borders, selectedBorder, previewingBorder, onEquip }: 
       </motion.div>
 
       {displayBorders.length === 0 && (
-        <motion.div 
+        <motion.div
           className="col-span-full py-16 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          <div className="text-4xl mb-4">🔍</div>
+          <div className="mb-4 text-4xl">🔍</div>
           <p className="text-gray-400">No borders found matching your filters.</p>
-          <button 
+          <button
             onClick={() => setSelectedTheme('all')}
-            className="mt-4 text-primary-400 hover:text-primary-300 text-sm"
+            className="mt-4 text-sm text-primary-400 hover:text-primary-300"
           >
             View all borders
           </button>
@@ -971,81 +969,234 @@ interface TitlesSectionProps {
   onEquip: (titleId: string, title: Title) => void;
 }
 
-function TitlesSection({ titles, selectedTitle, previewingTitle, onEquip }: TitlesSectionProps) {
-  return (
-    <div className="space-y-3">
-      {titles.map((title, index) => {
-        const isSelected = selectedTitle === title.id;
-        const isPreviewing = previewingTitle === title.id;
-        const isActive = isSelected || isPreviewing;
-        
-        return (
-        <motion.div
-          key={title.id}
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: index * 0.03 }}
-        >
-          <GlassCard
-            variant={isActive ? 'neon' : 'crystal'}
-            glow={isActive}
-            glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.3)' : isSelected ? 'rgba(139, 92, 246, 0.3)' : undefined}
-            className={`relative cursor-pointer p-4 transition-all hover:scale-[1.02]`}
-            onClick={() => onEquip(title.id, title)}
-          >
-            {/* Preview indicator for locked items */}
-            {isPreviewing && (
-              <div className="absolute right-4 top-4 z-10 flex items-center gap-1 rounded-full bg-yellow-500 px-2 py-0.5 text-[10px] font-bold text-black">
-                <EyeIcon className="h-3 w-3" />
-                Preview
-              </div>
-            )}
-            
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h4 className={`mb-1 text-lg font-bold ${title.gradient}`}>{title.name}</h4>
-                <p className="text-xs text-white/60">Animation: {title.animation}</p>
-              </div>
+// Animated title text component with all 11 animation types
+function AnimatedTitleText({
+  name,
+  animationType,
+  gradient,
+}: {
+  name: string;
+  animationType: TitleAnimationType;
+  gradient: string;
+}) {
+  // Base text styling
+  const baseClass = `text-lg font-bold ${gradient}`;
 
-              <div className="flex items-center gap-3">
-                {title.unlocked ? (
-                  isSelected ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
-                      <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
-                      <span className="text-sm font-medium text-green-400">Equipped</span>
-                    </div>
-                  ) : (
-                    <button className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
-                      Equip
-                    </button>
-                  )
-                ) : isPreviewing ? (
-                  <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-4 py-2">
-                    <EyeIcon className="h-5 w-5 text-yellow-400" />
-                    <span className="text-sm font-medium text-yellow-400">Previewing</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
-                    <EyeIcon className="h-5 w-5 text-white/40" />
-                    <span className="text-sm text-white/60">Preview</span>
+  // Animation variants for different title animations
+  const getAnimationVariants = () => {
+    switch (animationType) {
+      case 'fade':
+        return {
+          animate: { opacity: [0.5, 1, 0.5] },
+          transition: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
+        };
+      case 'glow':
+        return {
+          animate: {
+            textShadow: [
+              '0 0 4px currentColor',
+              '0 0 20px currentColor, 0 0 40px currentColor',
+              '0 0 4px currentColor',
+            ],
+          },
+          transition: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+        };
+      case 'pulse':
+        return {
+          animate: { scale: [1, 1.05, 1] },
+          transition: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' },
+        };
+      case 'shimmer':
+        return {
+          animate: {
+            backgroundPosition: ['200% center', '-200% center'],
+          },
+          transition: { duration: 3, repeat: Infinity, ease: 'linear' },
+          style: {
+            backgroundImage: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%), ${gradient}`,
+            backgroundSize: '200% 100%',
+            WebkitBackgroundClip: 'text',
+            backgroundClip: 'text',
+          },
+        };
+      case 'rainbow':
+        return {
+          animate: {
+            filter: ['hue-rotate(0deg)', 'hue-rotate(360deg)'],
+          },
+          transition: { duration: 4, repeat: Infinity, ease: 'linear' },
+        };
+      case 'typing':
+        return {
+          animate: { width: ['0%', '100%', '100%', '0%'] },
+          transition: { duration: 4, repeat: Infinity, times: [0, 0.4, 0.6, 1] },
+          style: { overflow: 'hidden', whiteSpace: 'nowrap' as const },
+        };
+      case 'glitch':
+        return {
+          animate: {
+            x: [0, -2, 2, -1, 1, 0],
+            filter: [
+              'none',
+              'drop-shadow(2px 0 #ff0000) drop-shadow(-2px 0 #00ffff)',
+              'drop-shadow(-2px 0 #ff0000) drop-shadow(2px 0 #00ffff)',
+              'none',
+            ],
+          },
+          transition: { duration: 0.5, repeat: Infinity, repeatDelay: 2 },
+        };
+      case 'wave':
+        return {
+          animate: { y: [0, -4, 0, 4, 0] },
+          transition: { duration: 1.5, repeat: Infinity, ease: 'easeInOut' },
+        };
+      case 'bounce':
+        return {
+          animate: { y: [0, -8, 0] },
+          transition: { duration: 0.6, repeat: Infinity, ease: 'easeOut' },
+        };
+      case 'neon-flicker':
+        return {
+          animate: {
+            opacity: [1, 0.8, 1, 0.9, 1, 0.7, 1],
+            textShadow: [
+              '0 0 7px currentColor, 0 0 10px currentColor, 0 0 21px currentColor',
+              '0 0 4px currentColor',
+              '0 0 7px currentColor, 0 0 10px currentColor, 0 0 21px currentColor',
+            ],
+          },
+          transition: { duration: 2, repeat: Infinity, times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 1] },
+        };
+      case 'none':
+      default:
+        return {};
+    }
+  };
+
+  const animProps = getAnimationVariants();
+
+  return (
+    <motion.h4 className={baseClass} {...animProps}>
+      {name}
+    </motion.h4>
+  );
+}
+
+function TitlesSection({ titles, selectedTitle, previewingTitle, onEquip }: TitlesSectionProps) {
+  const [showAnimations, setShowAnimations] = useState(true);
+
+  return (
+    <div className="space-y-4">
+      {/* Animation Toggle */}
+      <div className="flex items-center justify-between pb-2">
+        <label className="flex cursor-pointer items-center gap-2 text-sm text-gray-400">
+          <input
+            type="checkbox"
+            checked={showAnimations}
+            onChange={(e) => setShowAnimations(e.target.checked)}
+            className="h-4 w-4 rounded border-gray-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
+          />
+          Show Animations
+        </label>
+        <div className="text-sm text-gray-500">{titles.length} titles available</div>
+      </div>
+
+      <div className="space-y-3">
+        {titles.map((title, index) => {
+          const isSelected = selectedTitle === title.id;
+          const isPreviewing = previewingTitle === title.id;
+          const isActive = isSelected || isPreviewing;
+
+          return (
+            <motion.div
+              key={title.id}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: index * 0.03 }}
+            >
+              <GlassCard
+                variant={isActive ? 'neon' : 'crystal'}
+                glow={isActive}
+                glowColor={
+                  isPreviewing
+                    ? 'rgba(234, 179, 8, 0.3)'
+                    : isSelected
+                      ? 'rgba(139, 92, 246, 0.3)'
+                      : undefined
+                }
+                className={`relative cursor-pointer p-4 transition-all hover:scale-[1.02]`}
+                onClick={() => onEquip(title.id, title)}
+              >
+                {/* Preview indicator for locked items */}
+                {isPreviewing && (
+                  <div className="absolute right-4 top-4 z-10 flex items-center gap-1 rounded-full bg-yellow-500 px-2 py-0.5 text-[10px] font-bold text-black">
+                    <EyeIcon className="h-3 w-3" />
+                    Preview
                   </div>
                 )}
-              </div>
-            </div>
-            
-            {/* Unlock requirement hint */}
-            {!title.unlocked && !isPreviewing && (
-              <div className="mt-2 text-xs text-white/40">
-                🔒 {title.unlockRequirement}
-              </div>
-            )}
-          </GlassCard>
-        </motion.div>
-      )})}
 
-      {titles.length === 0 && (
-        <div className="py-12 text-center text-white/60">No titles found matching your search.</div>
-      )}
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    {/* Animated title display */}
+                    {showAnimations ? (
+                      <AnimatedTitleText
+                        name={title.name}
+                        animationType={title.animationType}
+                        gradient={title.gradient}
+                      />
+                    ) : (
+                      <h4 className={`mb-1 text-lg font-bold ${title.gradient}`}>{title.name}</h4>
+                    )}
+                    <div className="mt-1 flex items-center gap-2">
+                      <span className="inline-flex items-center rounded bg-white/10 px-2 py-0.5 text-[10px] font-medium text-white/60">
+                        {title.animationType === 'none'
+                          ? '⚡ Static'
+                          : `✨ ${title.animationType.charAt(0).toUpperCase() + title.animationType.slice(1)}`}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    {title.unlocked ? (
+                      isSelected ? (
+                        <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
+                          <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
+                          <span className="text-sm font-medium text-green-400">Equipped</span>
+                        </div>
+                      ) : (
+                        <button className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                          Equip
+                        </button>
+                      )
+                    ) : isPreviewing ? (
+                      <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-4 py-2">
+                        <EyeIcon className="h-5 w-5 text-yellow-400" />
+                        <span className="text-sm font-medium text-yellow-400">Previewing</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
+                        <EyeIcon className="h-5 w-5 text-white/40" />
+                        <span className="text-sm text-white/60">Preview</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Unlock requirement hint */}
+                {!title.unlocked && !isPreviewing && (
+                  <div className="mt-2 text-xs text-white/40">🔒 {title.unlockRequirement}</div>
+                )}
+              </GlassCard>
+            </motion.div>
+          );
+        })}
+
+        {titles.length === 0 && (
+          <div className="py-12 text-center text-white/60">
+            No titles found matching your search.
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -1058,50 +1209,105 @@ interface BadgesSectionProps {
 }
 
 function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: BadgesSectionProps) {
+  const isMaxEquipped = equippedBadges.length >= 5;
+
   return (
     <div>
       {/* Equipped Badges Display */}
       <GlassCard variant="holographic" className="mb-6 p-6">
-        <div className="mb-4 flex items-center gap-3">
-          <SparklesIcon className="h-6 w-6 text-primary-400" />
-          <h3 className="text-lg font-bold text-white">Equipped Badges</h3>
-          <span className="text-sm text-white/60">({equippedBadges.length}/5)</span>
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <SparklesIcon className="h-6 w-6 text-primary-400" />
+            <h3 className="text-lg font-bold text-white">Equipped Badges</h3>
+          </div>
+          <div
+            className={`flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${
+              isMaxEquipped
+                ? 'border border-yellow-500/30 bg-yellow-500/20 text-yellow-400'
+                : 'bg-white/10 text-white/60'
+            }`}
+          >
+            <span>{equippedBadges.length}/5</span>
+            {isMaxEquipped && (
+              <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-xs">
+                MAX
+              </motion.span>
+            )}
+          </div>
+        </div>
+
+        {/* Progress bar for equipped badges */}
+        <div className="mb-4 h-2 w-full overflow-hidden rounded-full bg-white/10">
+          <motion.div
+            className={`h-full rounded-full ${
+              isMaxEquipped
+                ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
+                : 'bg-gradient-to-r from-primary-500 to-purple-500'
+            }`}
+            initial={{ width: 0 }}
+            animate={{ width: `${(equippedBadges.length / 5) * 100}%` }}
+            transition={{ duration: 0.3, ease: 'easeOut' }}
+          />
         </div>
 
         <div className="grid grid-cols-5 gap-3">
           {[...Array(5)].map((_, index) => {
             const badgeId = equippedBadges[index];
             const badge = badges.find((b) => b.id === badgeId);
+            const isSlotFilled = !!badge;
 
             return (
-              <div
+              <motion.div
                 key={index}
-                className="group relative flex aspect-square items-center justify-center rounded-xl border-2 border-dashed border-white/20 bg-white/5"
+                className={`group relative flex aspect-square items-center justify-center rounded-xl border-2 transition-all duration-200 ${
+                  isSlotFilled
+                    ? 'border-primary-500/50 bg-primary-500/10'
+                    : isMaxEquipped
+                      ? 'border-dashed border-white/10 bg-white/5 opacity-50'
+                      : 'border-dashed border-white/20 bg-white/5 hover:border-white/30'
+                }`}
+                whileHover={isSlotFilled ? { scale: 1.05 } : undefined}
               >
                 {badge ? (
                   <>
                     <span className="text-4xl">{badge.icon}</span>
                     <button
                       onClick={() => onToggle(badge.id, badge)}
-                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                      className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white opacity-0 transition-all hover:scale-110 hover:bg-red-600 group-hover:opacity-100"
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
+                    {/* Badge name tooltip */}
+                    <div className="pointer-events-none absolute -bottom-8 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded bg-dark-800 px-2 py-1 text-[10px] text-white/80 opacity-0 transition-opacity group-hover:opacity-100">
+                      {badge.name}
+                    </div>
                   </>
                 ) : (
-                  <span className="text-xs text-white/30">Empty</span>
+                  <span className="text-xs text-white/30">
+                    {isMaxEquipped ? '—' : `Slot ${index + 1}`}
+                  </span>
                 )}
-              </div>
+              </motion.div>
             );
           })}
         </div>
+
+        {isMaxEquipped && (
+          <motion.p
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-3 text-center text-xs text-yellow-400/80"
+          >
+            ⚠️ Maximum badges equipped! Remove one to add another.
+          </motion.p>
+        )}
       </GlassCard>
 
       {/* Available Badges Grid */}
       <div className="grid grid-cols-3 gap-4">
         {badges.map((badge, index) => {
           const isEquipped = equippedBadges.includes(badge.id);
-          const canEquip = badge.unlocked && !isEquipped && equippedBadges.length < 5;
+          const canEquip = badge.unlocked && !isEquipped && !isMaxEquipped;
 
           return (
             <motion.div
@@ -1119,10 +1325,19 @@ function BadgesSection({ badges, equippedBadges, onToggle, getRarityColor }: Bad
                     ? 'cursor-pointer hover:scale-105'
                     : isEquipped
                       ? 'cursor-pointer'
-                      : 'cursor-not-allowed opacity-60'
+                      : badge.unlocked && isMaxEquipped
+                        ? 'cursor-not-allowed opacity-70'
+                        : 'cursor-not-allowed opacity-60'
                 }`}
                 onClick={() => onToggle(badge.id, badge)}
               >
+                {/* Max equipped indicator for available badges */}
+                {badge.unlocked && !isEquipped && isMaxEquipped && (
+                  <div className="absolute right-2 top-2 rounded bg-yellow-500/20 px-1.5 py-0.5 text-[10px] text-yellow-400">
+                    MAX
+                  </div>
+                )}
+
                 {/* Badge Icon */}
                 <div className="mb-3 text-center text-5xl">{badge.icon}</div>
 
@@ -1180,6 +1395,152 @@ interface LayoutsSectionProps {
   onSelect: (layoutId: string, layout: ProfileLayout) => void;
 }
 
+// Visual preview components for each layout type
+function LayoutPreview({ preview }: { preview: string }) {
+  const baseClasses = 'w-full h-full rounded-lg overflow-hidden';
+
+  switch (preview) {
+    case 'classic':
+      return (
+        <div
+          className={`${baseClasses} flex flex-col items-center bg-gradient-to-br from-dark-700 to-dark-800 p-3`}
+        >
+          {/* Classic: Avatar centered, info below */}
+          <div className="mb-2 h-10 w-10 rounded-full bg-gradient-to-br from-primary-500 to-purple-500" />
+          <div className="mb-1 h-2 w-16 rounded bg-white/30" />
+          <div className="mb-2 h-1.5 w-12 rounded bg-white/20" />
+          <div className="flex gap-1">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-4 w-4 rounded bg-white/20" />
+            ))}
+          </div>
+        </div>
+      );
+    case 'modern':
+      return (
+        <div
+          className={`${baseClasses} flex gap-2 bg-gradient-to-br from-dark-700 to-dark-800 p-2`}
+        >
+          {/* Modern: Split panel */}
+          <div className="flex w-1/3 flex-col items-center justify-center">
+            <div className="mb-1 h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500" />
+            <div className="h-1.5 w-8 rounded bg-white/30" />
+          </div>
+          <div className="flex w-2/3 flex-col justify-center gap-1.5">
+            <div className="h-2 w-full rounded bg-white/20" />
+            <div className="h-2 w-3/4 rounded bg-white/15" />
+            <div className="mt-1 flex gap-1">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-3 w-3 rounded bg-white/20" />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    case 'compact':
+      return (
+        <div
+          className={`${baseClasses} flex items-center gap-2 bg-gradient-to-br from-dark-700 to-dark-800 p-2`}
+        >
+          {/* Compact: Single row */}
+          <div className="h-8 w-8 flex-shrink-0 rounded-full bg-gradient-to-br from-green-500 to-emerald-500" />
+          <div className="flex-1">
+            <div className="mb-1 h-2 w-full rounded bg-white/30" />
+            <div className="h-1.5 w-2/3 rounded bg-white/20" />
+          </div>
+          <div className="flex gap-0.5">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-3 w-3 rounded bg-white/20" />
+            ))}
+          </div>
+        </div>
+      );
+    case 'showcase':
+      return (
+        <div className={`${baseClasses} bg-gradient-to-br from-dark-700 to-dark-800 p-2`}>
+          {/* Showcase: Large badges */}
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-6 w-6 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500" />
+            <div className="h-1.5 w-12 rounded bg-white/30" />
+          </div>
+          <div className="grid grid-cols-4 gap-1">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div
+                key={i}
+                className="flex aspect-square items-center justify-center rounded bg-gradient-to-br from-white/20 to-white/10"
+              >
+                <div className="h-2/3 w-2/3 rounded-full bg-white/30" />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    case 'gaming':
+      return (
+        <div className={`${baseClasses} bg-gradient-to-br from-dark-700 to-dark-800 p-2`}>
+          {/* Gaming: Stats focused */}
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-6 w-6 rounded-full bg-gradient-to-br from-red-500 to-pink-500" />
+            <div className="flex-1">
+              <div className="h-1.5 w-full rounded-full bg-gradient-to-r from-green-500 to-emerald-500" />
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-1">
+            {['🎮', '🏆', '⚔️'].map((emoji, i) => (
+              <div key={i} className="rounded bg-white/10 p-1 text-center">
+                <span className="text-xs">{emoji}</span>
+                <div className="mt-1 h-1 w-full rounded bg-white/20" />
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    case 'professional':
+      return (
+        <div className={`${baseClasses} bg-gradient-to-br from-slate-800 to-slate-900 p-3`}>
+          {/* Professional: Clean business */}
+          <div className="flex items-start gap-3">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-slate-500 to-slate-600" />
+            <div className="flex-1">
+              <div className="mb-1 h-2 w-full rounded bg-white/30" />
+              <div className="mb-2 h-1.5 w-2/3 rounded bg-white/20" />
+              <div className="border-t border-white/10 pt-2">
+                <div className="h-1 w-1/2 rounded bg-white/15" />
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    case 'artistic':
+      return (
+        <div
+          className={`${baseClasses} relative overflow-hidden bg-gradient-to-br from-purple-900/50 to-pink-900/50 p-2`}
+        >
+          {/* Artistic: Creative asymmetric */}
+          <div className="absolute -right-2 -top-2 h-12 w-12 rounded-full bg-gradient-to-br from-pink-500/30 to-purple-500/30 blur-sm" />
+          <div className="relative z-10">
+            <div className="mb-2 ml-auto h-8 w-8 rounded-full bg-gradient-to-br from-pink-500 to-purple-500 ring-2 ring-white/20" />
+            <div className="mb-1 h-2 w-full rounded bg-white/30" />
+            <div className="h-1.5 w-2/3 rounded bg-white/20" />
+            <div className="mt-2 flex justify-end gap-1">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-3 w-3 rounded-full bg-white/20" />
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    default:
+      return (
+        <div
+          className={`${baseClasses} flex items-center justify-center bg-gradient-to-br from-dark-700 to-dark-800`}
+        >
+          <span className="text-2xl">🎨</span>
+        </div>
+      );
+  }
+}
+
 function LayoutsSection({ layouts, selectedLayout, onSelect }: LayoutsSectionProps) {
   return (
     <div className="grid grid-cols-2 gap-6">
@@ -1198,8 +1559,8 @@ function LayoutsSection({ layouts, selectedLayout, onSelect }: LayoutsSectionPro
             onClick={() => onSelect(layout.id, layout)}
           >
             {/* Layout Preview */}
-            <div className="mb-4 flex aspect-video items-center justify-center rounded-lg bg-gradient-to-br from-dark-700 to-dark-800">
-              <span className="text-4xl">🎨</span>
+            <div className="mb-4 aspect-video overflow-hidden rounded-lg border border-white/10">
+              <LayoutPreview preview={layout.preview} />
             </div>
 
             {/* Layout Name */}
