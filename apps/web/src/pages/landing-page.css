@@ -1105,30 +1105,35 @@ html.site-ready {
 .gl-nav__logo {
   font-size: 1.25rem;
   font-weight: 700;
-  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.6rem;
   padding: 0.25rem 0.5rem;
   transition: all 0.3s ease;
 }
 
 .gl-nav__logo:hover {
-  transform: scale(1.05);
-  filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.5));
+  transform: scale(1.02);
 }
 
-.gl-nav__logo span {
-  font-size: 1.1rem;
-  transition: transform 0.3s ease;
+.gl-nav__logo-text {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-family: 'Orbitron', 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  letter-spacing: 0.02em;
 }
 
-.gl-nav__logo:hover span {
-  transform: rotate(30deg);
+.gl-nav__logo svg {
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.gl-nav__logo:hover svg {
+  filter: drop-shadow(0 0 8px rgba(0, 212, 255, 0.6));
 }
 
 .gl-nav__links {

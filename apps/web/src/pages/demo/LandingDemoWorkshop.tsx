@@ -16,6 +16,7 @@ import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { LogoIcon } from '@/components/Logo';
 import './landing-demo-workshop.css';
 
 // Lazy load showcase components
@@ -866,8 +867,8 @@ export default function LandingDemoWorkshop() {
       {/* Navigation */}
       <nav className={`gl-nav ${navHidden ? 'hidden' : ''} ${navScrolled ? 'scrolled' : ''}`}>
         <Link to="/demo/landing" className="gl-nav__logo">
-          <span>⬡</span>
-          CGraph
+          <LogoIcon size={32} showGlow animated color="gradient" />
+          <span className="gl-nav__logo-text">CGraph</span>
         </Link>
 
         <div className="gl-nav__links">
@@ -1127,34 +1128,7 @@ export default function LandingDemoWorkshop() {
         <div className="gl-footer__bottom">
           <div className="gl-footer__bottom-left">
             <Link to="/forums" className="gl-footer__logo">
-              <svg
-                className="gl-footer__logo-icon"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 2L2 7L12 12L22 7L12 2Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M2 17L12 22L22 17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M2 12L12 17L22 12"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              <LogoIcon size={24} color="white" />
               <span>© 2026 CGraph</span>
             </Link>
           </div>

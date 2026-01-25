@@ -1,443 +1,776 @@
-import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+/**
+ * CGraph Animated Circuit Board Logo
+ *
+ * Elaborate animated version of the circuit board logo featuring:
+ * - Sequential trace drawing (electricity flowing through circuits)
+ * - Pulsing node effects (data nodes activating)
+ * - Data packet flow animation (particles moving along traces)
+ * - Central hub pulsing (the Graph connection point)
+ * - Splash screen variant with full animation sequence
+ * - Loading variant with continuous animation
+ *
+ * Perfect for:
+ * - App splash screens
+ * - Loading states
+ * - Hero sections
+ * - Authentication pages
+ */
+
+import { motion, Variants, AnimatePresence } from 'framer-motion';
+import { useEffect, useState, useId } from 'react';
 
 interface AnimatedLogoProps {
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'hero';
   showText?: boolean;
-  variant?: 'default' | 'loading' | 'splash';
+  variant?: 'default' | 'loading' | 'splash' | 'hero';
+  onAnimationComplete?: () => void;
+  color?: 'default' | 'cyan' | 'emerald' | 'purple';
 }
 
 const sizeMap = {
-  sm: { container: 40, text: 'text-xl', logo: 24 },
-  md: { container: 64, text: 'text-3xl', logo: 40 },
-  lg: { container: 80, text: 'text-4xl', logo: 56 },
-  xl: { container: 128, text: 'text-6xl', logo: 88 },
+  sm: { container: 48, text: 'text-xl', logo: 40 },
+  md: { container: 80, text: 'text-3xl', logo: 64 },
+  lg: { container: 120, text: 'text-4xl', logo: 96 },
+  xl: { container: 180, text: 'text-6xl', logo: 144 },
+  hero: { container: 280, text: 'text-8xl', logo: 220 },
 };
 
-// Professional CG Monogram Logo SVG Component
-function GeometricLogo({ size, isAnimated = false }: { size: number; isAnimated?: boolean }) {
+const colorPalettes = {
+  default: {
+    primary: '#00d4ff', // Cyan
+    secondary: '#8b5cf6', // Purple
+    tertiary: '#10b981', // Emerald
+  },
+  cyan: {
+    primary: '#00d4ff',
+    secondary: '#06b6d4',
+    tertiary: '#0891b2',
+  },
+  emerald: {
+    primary: '#10b981',
+    secondary: '#34d399',
+    tertiary: '#06b6d4',
+  },
+  purple: {
+    primary: '#8b5cf6',
+    secondary: '#a855f7',
+    tertiary: '#06b6d4',
+  },
+};
+
+// Animation variants for drawing traces
+const traceDrawVariants: Variants = {
+  hidden: { pathLength: 0, opacity: 0 },
+  visible: (delay: number) => ({
+    pathLength: 1,
+    opacity: 1,
+    transition: {
+      pathLength: { duration: 0.6, delay, ease: 'easeOut' },
+      opacity: { duration: 0.1, delay },
+    },
+  }),
+};
+
+// Animation variants for nodes appearing
+const nodeAppearVariants: Variants = {
+  hidden: { scale: 0, opacity: 0 },
+  visible: (delay: number) => ({
+    scale: 1,
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 400,
+      damping: 15,
+      delay,
+    },
+  }),
+};
+
+// Continuous pulse for loading state
+const pulseVariants: Variants = {
+  pulse: {
+    scale: [1, 1.2, 1],
+    opacity: [1, 0.8, 1],
+    transition: {
+      duration: 1.5,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    },
+  },
+};
+
+/**
+ * Main Animated Circuit Board Logo
+ */
+function CircuitBoardLogo({
+  logoSize,
+  isAnimated = false,
+  isLoading = false,
+  isSplash = false,
+  color = 'default',
+  onAnimationComplete,
+}: {
+  logoSize: number;
+  isAnimated?: boolean;
+  isLoading?: boolean;
+  isSplash?: boolean;
+  color?: 'default' | 'cyan' | 'emerald' | 'purple';
+  onAnimationComplete?: () => void;
+}) {
+  const uniqueId = useId();
+  const c = colorPalettes[color];
+  const [showParticles, setShowParticles] = useState(false);
+  const [animationPhase, setAnimationPhase] = useState(0);
+
+  // Progress through animation phases for splash
+  useEffect(() => {
+    if (isSplash) {
+      const timers = [
+        setTimeout(() => setAnimationPhase(1), 800), // Traces drawn
+        setTimeout(() => setAnimationPhase(2), 1600), // Nodes appear
+        setTimeout(() => setAnimationPhase(3), 2200), // Particles start
+        setTimeout(() => {
+          setAnimationPhase(4);
+          onAnimationComplete?.();
+        }, 3500), // Complete
+      ];
+      return () => timers.forEach(clearTimeout);
+    }
+    if (isLoading) {
+      setShowParticles(true);
+    }
+    return undefined;
+  }, [isSplash, isLoading, onAnimationComplete]);
+
+  useEffect(() => {
+    if (animationPhase >= 3) {
+      setShowParticles(true);
+    }
+  }, [animationPhase]);
+
+  const ids = {
+    primaryGrad: `anim-circuit-primary-${uniqueId}`,
+    secondaryGrad: `anim-circuit-secondary-${uniqueId}`,
+    tertiaryGrad: `anim-circuit-tertiary-${uniqueId}`,
+    glow: `anim-glow-${uniqueId}`,
+    nodeGlow: `anim-node-glow-${uniqueId}`,
+    particleGlow: `anim-particle-glow-${uniqueId}`,
+  };
+
+  const shouldAnimate = isAnimated || isSplash || isLoading;
+
   return (
-    <svg viewBox="0 0 100 100" width={size} height={size} className="overflow-visible">
+    <svg
+      viewBox="0 0 120 96"
+      width={logoSize}
+      height={logoSize * 0.8}
+      style={{ overflow: 'visible' }}
+    >
       <defs>
-        {/* Primary gradient - Purple to Indigo */}
-        <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#a855f7" />
-          <stop offset="50%" stopColor="#8b5cf6" />
-          <stop offset="100%" stopColor="#6366f1" />
+        {/* Primary gradient */}
+        <linearGradient id={ids.primaryGrad} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={c.primary} />
+          <stop offset="100%" stopColor={c.primary} stopOpacity="0.8" />
         </linearGradient>
-        {/* Secondary gradient - Emerald */}
-        <linearGradient id="secondaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#34d399" />
-          <stop offset="100%" stopColor="#10b981" />
+
+        {/* Secondary gradient */}
+        <linearGradient id={ids.secondaryGrad} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={c.secondary} />
+          <stop offset="100%" stopColor={c.secondary} stopOpacity="0.7" />
         </linearGradient>
-        {/* Background gradient */}
-        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#1e1b4b" />
-          <stop offset="100%" stopColor="#0f172a" />
+
+        {/* Tertiary gradient */}
+        <linearGradient id={ids.tertiaryGrad} x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={c.tertiary} />
+          <stop offset="100%" stopColor={c.tertiary} stopOpacity="0.8" />
         </linearGradient>
-        {/* Metallic accent */}
-        <linearGradient id="metallicGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#e2e8f0" stopOpacity="0.9" />
-          <stop offset="50%" stopColor="#94a3b8" stopOpacity="0.7" />
-          <stop offset="100%" stopColor="#64748b" stopOpacity="0.5" />
-        </linearGradient>
-        {/* Glow filter - Purple */}
-        <filter id="glowPurple" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
-          <feFlood floodColor="#a855f7" floodOpacity="0.6" result="glowColor" />
-          <feComposite in="glowColor" in2="coloredBlur" operator="in" result="softGlow" />
-          <feMerge>
-            <feMergeNode in="softGlow" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-        {/* Glow filter - Emerald */}
-        <filter id="glowEmerald" x="-50%" y="-50%" width="200%" height="200%">
+
+        {/* Glow filters */}
+        <filter id={ids.glow} x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur" />
-          <feFlood floodColor="#10b981" floodOpacity="0.5" result="glowColor" />
-          <feComposite in="glowColor" in2="coloredBlur" operator="in" result="softGlow" />
           <feMerge>
-            <feMergeNode in="softGlow" />
+            <feMergeNode in="coloredBlur" />
             <feMergeNode in="SourceGraphic" />
           </feMerge>
         </filter>
-        {/* Inner shadow for depth */}
-        <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
-          <feOffset dx="0" dy="2" />
-          <feGaussianBlur stdDeviation="2" result="offset-blur" />
-          <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse" />
-          <feFlood floodColor="black" floodOpacity="0.3" result="color" />
-          <feComposite operator="in" in="color" in2="inverse" result="shadow" />
-          <feComposite operator="over" in="shadow" in2="SourceGraphic" />
+
+        <filter id={ids.nodeGlow} x="-100%" y="-100%" width="300%" height="300%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
         </filter>
-        {/* Clip path for hexagon */}
-        <clipPath id="hexClip">
-          <polygon points="50,3 93,25 93,75 50,97 7,75 7,25" />
-        </clipPath>
+
+        <filter id={ids.particleGlow} x="-200%" y="-200%" width="500%" height="500%">
+          <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+          <feMerge>
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="coloredBlur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
 
-      {/* Outer hexagon border with gradient */}
-      <motion.polygon
-        points="50,3 93,25 93,75 50,97 7,75 7,25"
+      {/* Background hexagon frame (optional, for hero variant) */}
+      <motion.path
+        d="M60 2L112 28V68L60 94L8 68V28L60 2Z"
         fill="none"
-        stroke="url(#primaryGradient)"
-        strokeWidth="2"
-        strokeLinejoin="round"
-        animate={isAnimated ? { strokeOpacity: [0.6, 1, 0.6] } : { strokeOpacity: 0.8 }}
-        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        stroke={`url(#${ids.primaryGrad})`}
+        strokeWidth="1"
+        initial={{ pathLength: 0, opacity: 0 }}
+        animate={shouldAnimate ? { pathLength: 1, opacity: 0.2 } : { pathLength: 1, opacity: 0.15 }}
+        transition={{ duration: 1.5, ease: 'easeOut' }}
       />
 
-      {/* Inner hexagon background */}
-      <polygon
-        points="50,8 88,28 88,72 50,92 12,72 12,28"
-        fill="url(#bgGradient)"
-        filter="url(#innerShadow)"
-      />
+      {/* ============================================ */}
+      {/* "C" LETTER TRACES                           */}
+      {/* ============================================ */}
+      <g filter={`url(#${ids.glow})`}>
+        {/* C - Main vertical left stroke */}
+        <motion.path
+          d="M18 20V48V76"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0}
+        />
 
-      {/* Subtle grid pattern for tech feel */}
-      <g opacity="0.1" stroke="#a855f7" strokeWidth="0.3">
-        <line x1="50" y1="8" x2="50" y2="92" />
-        <line x1="12" y1="50" x2="88" y2="50" />
-        <line x1="31" y1="18" x2="69" y2="82" />
-        <line x1="69" y1="18" x2="31" y2="82" />
+        {/* C - Top horizontal */}
+        <motion.path
+          d="M18 20H42"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.1}
+        />
+
+        {/* C - Top angle */}
+        <motion.path
+          d="M42 20V26L48 32"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.2}
+        />
+
+        {/* C - Bottom horizontal */}
+        <motion.path
+          d="M18 76H42"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.3}
+        />
+
+        {/* C - Bottom angle */}
+        <motion.path
+          d="M42 76V70L48 64"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.4}
+        />
+
+        {/* C - Middle branches */}
+        <motion.path
+          d="M18 48H30L36 42"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.5}
+        />
+        <motion.path
+          d="M30 48L36 54"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.55}
+        />
+
+        {/* C - Detail traces (purple) */}
+        <motion.path
+          d="M24 28H32L38 34"
+          stroke={`url(#${ids.secondaryGrad})`}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeOpacity="0.7"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 0.7 }}
+          custom={0.6}
+        />
+        <motion.path
+          d="M24 68H32L38 62"
+          stroke={`url(#${ids.secondaryGrad})`}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeOpacity="0.7"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 0.7 }}
+          custom={0.65}
+        />
       </g>
 
-      {/* Decorative corner accents */}
-      <motion.g
-        animate={isAnimated ? { opacity: [0.4, 0.8, 0.4] } : { opacity: 0.6 }}
-        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <circle cx="50" cy="8" r="2" fill="url(#secondaryGradient)" />
-        <circle cx="88" cy="28" r="1.5" fill="url(#primaryGradient)" />
-        <circle cx="88" cy="72" r="1.5" fill="url(#primaryGradient)" />
-        <circle cx="50" cy="92" r="2" fill="url(#secondaryGradient)" />
-        <circle cx="12" cy="72" r="1.5" fill="url(#primaryGradient)" />
-        <circle cx="12" cy="28" r="1.5" fill="url(#primaryGradient)" />
-      </motion.g>
-
-      {/* CG Monogram - Main letterforms */}
-      <motion.g
-        filter="url(#glowPurple)"
-        animate={isAnimated ? { scale: [1, 1.02, 1] } : {}}
-        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ transformOrigin: '50px 50px' }}
-      >
-        {/* C letter - left side */}
+      {/* ============================================ */}
+      {/* "G" LETTER TRACES                           */}
+      {/* ============================================ */}
+      <g filter={`url(#${ids.glow})`}>
+        {/* G - Top horizontal */}
         <motion.path
-          d="M 28 35 
-             C 28 28, 35 22, 45 22
-             L 45 22
-             C 42 22, 32 26, 32 35
-             L 32 65
-             C 32 74, 42 78, 45 78
-             L 45 78
-             C 35 78, 28 72, 28 65
-             Z"
-          fill="url(#primaryGradient)"
-          animate={isAnimated ? { fillOpacity: [0.9, 1, 0.9] } : { fillOpacity: 1 }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+          d="M72 20H102"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.1}
         />
-        {/* C curve - top arm */}
+
+        {/* G - Top left angle */}
         <motion.path
-          d="M 45 22 L 55 22 L 55 28 L 45 28 C 38 28, 34 32, 34 35 L 34 36 L 28 36 L 28 35 C 28 28, 35 22, 45 22 Z"
-          fill="url(#primaryGradient)"
+          d="M72 20V26L66 32"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.15}
         />
-        {/* C curve - bottom arm */}
+
+        {/* G - Right vertical top */}
         <motion.path
-          d="M 45 78 L 55 78 L 55 72 L 45 72 C 38 72, 34 68, 34 65 L 34 64 L 28 64 L 28 65 C 28 72, 35 78, 45 78 Z"
-          fill="url(#primaryGradient)"
+          d="M102 20V44"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.2}
         />
-      </motion.g>
 
-      {/* G letter - right side, integrated with shared stroke */}
-      <motion.g
-        filter="url(#glowEmerald)"
-        animate={isAnimated ? { scale: [1, 1.02, 1] } : {}}
-        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
-        style={{ transformOrigin: '50px 50px' }}
-      >
-        {/* G main body */}
+        {/* G - Middle crossbar */}
         <motion.path
-          d="M 55 22 
-             C 65 22, 72 28, 72 35
-             L 72 65
-             C 72 72, 65 78, 55 78
-             L 50 78
-             L 50 72
-             L 55 72
-             C 62 72, 66 68, 66 65
-             L 66 35
-             C 66 32, 62 28, 55 28
-             L 50 28
-             L 50 22
-             Z"
-          fill="url(#secondaryGradient)"
-          animate={isAnimated ? { fillOpacity: [0.9, 1, 0.9] } : { fillOpacity: 1 }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+          d="M102 48H84L78 42"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.35}
         />
-        {/* G crossbar */}
-        <motion.rect
-          x="55"
-          y="47"
-          width="17"
-          height="6"
-          rx="1"
-          fill="url(#secondaryGradient)"
-          animate={isAnimated ? { width: [17, 19, 17] } : {}}
-          transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+        <motion.path
+          d="M84 48L78 54"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.4}
         />
-        {/* G vertical bar from crossbar */}
-        <rect x="66" y="47" width="6" height="18" rx="1" fill="url(#secondaryGradient)" />
-      </motion.g>
 
-      {/* Shared connection element - graph node connecting C and G */}
-      <motion.g
-        animate={isAnimated ? { opacity: [0.6, 1, 0.6] } : { opacity: 0.8 }}
-        transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        {/* Central connecting node */}
-        <circle cx="50" cy="50" r="4" fill="url(#metallicGradient)" />
-        <circle cx="50" cy="50" r="2" fill="url(#primaryGradient)" />
+        {/* G - Right vertical bottom */}
+        <motion.path
+          d="M102 52V76"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.45}
+        />
 
-        {/* Connecting lines to represent graph edges */}
-        <line
-          x1="50"
-          y1="50"
-          x2="35"
-          y2="35"
-          stroke="url(#primaryGradient)"
-          strokeWidth="1"
-          opacity="0.5"
+        {/* G - Bottom horizontal */}
+        <motion.path
+          d="M72 76H102"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.5}
         />
-        <line
-          x1="50"
-          y1="50"
-          x2="65"
-          y2="35"
-          stroke="url(#secondaryGradient)"
-          strokeWidth="1"
-          opacity="0.5"
-        />
-        <line
-          x1="50"
-          y1="50"
-          x2="35"
-          y2="65"
-          stroke="url(#primaryGradient)"
-          strokeWidth="1"
-          opacity="0.5"
-        />
-        <line
-          x1="50"
-          y1="50"
-          x2="65"
-          y2="65"
-          stroke="url(#secondaryGradient)"
-          strokeWidth="1"
-          opacity="0.5"
-        />
-      </motion.g>
 
-      {/* Orbital ring for tech aesthetic */}
-      <motion.ellipse
-        cx="50"
-        cy="50"
-        rx="40"
-        ry="12"
-        fill="none"
-        stroke="url(#primaryGradient)"
-        strokeWidth="0.5"
-        strokeDasharray="4 4"
-        opacity="0.3"
-        animate={isAnimated ? { rotate: 360 } : {}}
-        transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
-        style={{ transformOrigin: '50px 50px' }}
-      />
+        {/* G - Bottom left angle */}
+        <motion.path
+          d="M72 76V70L66 64"
+          stroke={`url(#${ids.primaryGrad})`}
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 1 }}
+          custom={0.55}
+        />
 
-      {/* Small orbiting particle */}
-      {isAnimated && (
+        {/* G - Detail traces (purple) */}
+        <motion.path
+          d="M96 28H88L82 34"
+          stroke={`url(#${ids.secondaryGrad})`}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeOpacity="0.7"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 0.7 }}
+          custom={0.6}
+        />
+        <motion.path
+          d="M96 68H88L82 62"
+          stroke={`url(#${ids.secondaryGrad})`}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeOpacity="0.7"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 0.7 }}
+          custom={0.65}
+        />
+
+        {/* Connection traces (emerald) */}
+        <motion.path
+          d="M54 38H60L66 32"
+          stroke={`url(#${ids.tertiaryGrad})`}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeOpacity="0.6"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 0.6 }}
+          custom={0.7}
+        />
+        <motion.path
+          d="M54 58H60L66 64"
+          stroke={`url(#${ids.tertiaryGrad})`}
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeOpacity="0.6"
+          fill="none"
+          variants={traceDrawVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { pathLength: 1, opacity: 0.6 }}
+          custom={0.75}
+        />
+      </g>
+
+      {/* ============================================ */}
+      {/* CIRCUIT NODES                               */}
+      {/* ============================================ */}
+      <g filter={`url(#${ids.nodeGlow})`}>
+        {/* C nodes */}
         <motion.circle
-          cx="90"
-          cy="50"
+          cx="18"
+          cy="20"
+          r="3"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={0.8}
+        />
+        <motion.circle
+          cx="42"
+          cy="20"
+          r="2.5"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={0.85}
+        />
+        <motion.circle
+          cx="48"
+          cy="32"
           r="2"
-          fill="url(#secondaryGradient)"
-          animate={{
-            rotate: 360,
-          }}
-          transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-          style={{ transformOrigin: '50px 50px' }}
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={0.9}
         />
-      )}
-    </svg>
-  );
-}
-
-export default function AnimatedLogo({
-  size = 'md',
-  showText = false,
-  variant = 'default',
-}: AnimatedLogoProps) {
-  const [isHovered, setIsHovered] = useState(false);
-  const dimensions = sizeMap[size];
-
-  // Particle system for logo
-  const particles = Array.from({ length: 12 }, (_, i) => i);
-  const isAnimated = variant === 'loading' || variant === 'splash' || isHovered;
-
-  return (
-    <div className="flex flex-col items-center gap-4">
-      <motion.div
-        className="relative"
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        initial={{ scale: 0, rotate: -180 }}
-        animate={{ scale: 1, rotate: 0 }}
-        transition={{
-          type: 'spring',
-          stiffness: 200,
-          damping: 15,
-          delay: 0.1,
-        }}
-      >
-        {/* Outer glow ring - purple/emerald gradient */}
-        <motion.div
-          className="absolute inset-0 rounded-full"
-          style={{
-            width: dimensions.container,
-            height: dimensions.container,
-            background:
-              'radial-gradient(circle, rgba(168, 85, 247, 0.4), rgba(16, 185, 129, 0.25), transparent 70%)',
-            filter: 'blur(20px)',
-          }}
-          animate={{
-            scale: isHovered ? [1, 1.2, 1] : 1,
-            opacity: isHovered ? [0.5, 0.8, 0.5] : 0.3,
-          }}
-          transition={{
-            duration: 2,
-            repeat: variant === 'loading' ? Infinity : 0,
-            ease: 'easeInOut',
-          }}
+        <motion.circle
+          cx="18"
+          cy="48"
+          r="3"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={isLoading ? pulseVariants : nodeAppearVariants}
+          initial={isLoading ? undefined : 'hidden'}
+          animate={isLoading ? 'pulse' : shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={0.95}
+        />
+        <motion.circle
+          cx="18"
+          cy="76"
+          r="3"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.0}
+        />
+        <motion.circle
+          cx="42"
+          cy="76"
+          r="2.5"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.05}
+        />
+        <motion.circle
+          cx="48"
+          cy="64"
+          r="2"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.1}
         />
 
-        {/* Orbiting particles */}
-        {variant !== 'default' &&
-          particles.map((i) => {
-            const angle = (i / particles.length) * 2 * Math.PI;
-            const radius = dimensions.container * 0.7;
-            const isPurple = i % 2 === 0;
+        {/* C secondary nodes (purple) */}
+        <motion.circle
+          cx="36"
+          cy="42"
+          r="2"
+          fill={`url(#${ids.secondaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.15}
+        />
+        <motion.circle
+          cx="36"
+          cy="54"
+          r="2"
+          fill={`url(#${ids.secondaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.2}
+        />
+        <motion.circle
+          cx="30"
+          cy="48"
+          r="1.5"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.25}
+        />
 
-            return (
-              <motion.div
-                key={i}
-                className={`absolute h-1.5 w-1.5 rounded-full ${isPurple ? 'bg-purple-400' : 'bg-emerald-400'}`}
-                style={{
-                  left: '50%',
-                  top: '50%',
-                }}
-                animate={{
-                  x: Math.cos(angle) * radius - 3,
-                  y: Math.sin(angle) * radius - 3,
-                  opacity: [0.2, 1, 0.2],
-                  scale: [0.5, 1.5, 0.5],
-                }}
-                transition={{
-                  duration: 3,
-                  repeat: Infinity,
-                  delay: i * 0.1,
-                  ease: 'easeInOut',
-                }}
-              />
-            );
-          })}
+        {/* G nodes */}
+        <motion.circle
+          cx="72"
+          cy="20"
+          r="2.5"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={0.9}
+        />
+        <motion.circle
+          cx="102"
+          cy="20"
+          r="3"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={0.95}
+        />
+        <motion.circle
+          cx="66"
+          cy="32"
+          r="2"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.0}
+        />
+        <motion.circle
+          cx="102"
+          cy="48"
+          r="3"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={isLoading ? pulseVariants : nodeAppearVariants}
+          initial={isLoading ? undefined : 'hidden'}
+          animate={isLoading ? 'pulse' : shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.05}
+        />
+        <motion.circle
+          cx="72"
+          cy="76"
+          r="2.5"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.1}
+        />
+        <motion.circle
+          cx="102"
+          cy="76"
+          r="3"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.15}
+        />
+        <motion.circle
+          cx="66"
+          cy="64"
+          r="2"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.2}
+        />
 
-        {/* Rotating border rings - purple */}
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            width: dimensions.container,
-            height: dimensions.container,
-          }}
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        >
-          <div className="absolute inset-0 rounded-full border-2 border-purple-500/20" />
-          <div
-            className="absolute h-3 w-3 rounded-full bg-purple-500"
-            style={{ top: -6, left: '50%', marginLeft: -6 }}
-          />
-          <div
-            className="absolute h-2 w-2 rounded-full bg-emerald-500"
-            style={{ bottom: -4, right: '20%', marginRight: -4 }}
-          />
-        </motion.div>
+        {/* G secondary nodes */}
+        <motion.circle
+          cx="78"
+          cy="42"
+          r="2"
+          fill={`url(#${ids.secondaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.25}
+        />
+        <motion.circle
+          cx="78"
+          cy="54"
+          r="2"
+          fill={`url(#${ids.secondaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.3}
+        />
+        <motion.circle
+          cx="84"
+          cy="48"
+          r="1.5"
+          fill={`url(#${ids.primaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.35}
+        />
+      </g>
 
-        {/* Counter-rotating ring - emerald */}
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            width: dimensions.container,
-            height: dimensions.container,
-          }}
-          animate={{ rotate: -360 }}
-          transition={{
-            duration: 15,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        >
-          <div className="absolute inset-2 rounded-full border border-emerald-500/20" />
-          <div
-            className="absolute h-2 w-2 rounded-full bg-indigo-500"
-            style={{ top: 10, right: 10 }}
-          />
-        </motion.div>
-
-        {/* Main logo container */}
-        <motion.div
-          className="relative flex items-center justify-center overflow-visible rounded-full"
-          style={{
-            width: dimensions.container,
-            height: dimensions.container,
-            boxShadow: '0 20px 60px rgba(168, 85, 247, 0.3), 0 10px 30px rgba(16, 185, 129, 0.2)',
-          }}
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 20 }}
-        >
-          {/* Geometric Logo SVG */}
-          <GeometricLogo size={dimensions.container} isAnimated={isAnimated} />
-
-          {/* Scanning line effect */}
-          {variant === 'loading' && (
-            <motion.div
-              className="absolute inset-x-0 h-1 rounded-full bg-gradient-to-r from-transparent via-purple-400/50 to-transparent"
-              animate={{
-                top: ['-10%', '110%'],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: 'linear',
-              }}
-            />
-          )}
-        </motion.div>
-
-        {/* Pulse effect for loading */}
-        {variant === 'loading' && (
-          <motion.div
-            className="absolute inset-0 rounded-full border-2 border-purple-400"
-            style={{
-              width: dimensions.container,
-              height: dimensions.container,
-            }}
+      {/* ============================================ */}
+      {/* CENTRAL HUB (The "Graph" connection)        */}
+      {/* ============================================ */}
+      <g filter={`url(#${ids.nodeGlow})`}>
+        {/* Main hub circle */}
+        <motion.circle
+          cx="60"
+          cy="48"
+          r="6"
+          fill={`url(#${ids.tertiaryGrad})`}
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 1 }}
+          custom={1.5}
+        />
+        {/* Inner highlight */}
+        <motion.circle
+          cx="60"
+          cy="48"
+          r="3"
+          fill="#fff"
+          fillOpacity="0.5"
+          variants={nodeAppearVariants}
+          initial="hidden"
+          animate={shouldAnimate ? 'visible' : { scale: 1, opacity: 0.5 }}
+          custom={1.55}
+        />
+        {/* Pulsing ring */}
+        {(isLoading || showParticles) && (
+          <motion.circle
+            cx="60"
+            cy="48"
+            r="8"
+            fill="none"
+            stroke={c.tertiary}
+            strokeWidth="1.5"
+            initial={{ r: 8, opacity: 0.8 }}
             animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.5, 0, 0.5],
+              r: [8, 16, 8],
+              opacity: [0.8, 0, 0.8],
             }}
             transition={{
               duration: 2,
@@ -446,120 +779,200 @@ export default function AnimatedLogo({
             }}
           />
         )}
-      </motion.div>
+      </g>
 
-      {/* Animated text */}
-      {showText && (
-        <motion.div
-          className="relative"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-        >
-          <motion.h1
-            className={`bg-gradient-to-r from-purple-400 via-white to-emerald-400 bg-clip-text font-bold text-transparent ${dimensions.text}`}
+      {/* ============================================ */}
+      {/* DATA FLOW PARTICLES                         */}
+      {/* ============================================ */}
+      <AnimatePresence>
+        {showParticles && (
+          <g filter={`url(#${ids.particleGlow})`}>
+            {/* Particle flowing down C */}
+            <motion.circle
+              r="2.5"
+              fill={c.primary}
+              initial={{ cx: 18, cy: 20, opacity: 0 }}
+              animate={{
+                cx: [18, 18, 18],
+                cy: [20, 48, 76],
+                opacity: [1, 1, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                repeatDelay: 0.5,
+                ease: 'linear',
+              }}
+            />
+
+            {/* Particle flowing down G */}
+            <motion.circle
+              r="2.5"
+              fill={c.primary}
+              initial={{ cx: 102, cy: 20, opacity: 0 }}
+              animate={{
+                cx: [102, 102, 102],
+                cy: [20, 48, 76],
+                opacity: [1, 1, 0],
+              }}
+              transition={{
+                duration: 1.5,
+                delay: 0.3,
+                repeat: Infinity,
+                repeatDelay: 0.5,
+                ease: 'linear',
+              }}
+            />
+
+            {/* Particle flowing from C to G through center */}
+            <motion.circle
+              r="3"
+              fill={c.tertiary}
+              initial={{ cx: 30, cy: 48, opacity: 0 }}
+              animate={{
+                cx: [30, 45, 60, 75, 90],
+                cy: [48, 48, 48, 48, 48],
+                opacity: [0, 1, 1, 1, 0],
+                scale: [0.5, 1, 1.2, 1, 0.5],
+              }}
+              transition={{
+                duration: 2,
+                delay: 0.8,
+                repeat: Infinity,
+                repeatDelay: 0.3,
+                ease: 'easeInOut',
+              }}
+            />
+
+            {/* Additional accent particles */}
+            <motion.circle
+              r="1.5"
+              fill={c.secondary}
+              initial={{ cx: 24, cy: 28, opacity: 0 }}
+              animate={{
+                cx: [24, 30, 38],
+                cy: [28, 30, 34],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 1,
+                delay: 1.2,
+                repeat: Infinity,
+                repeatDelay: 1,
+                ease: 'linear',
+              }}
+            />
+            <motion.circle
+              r="1.5"
+              fill={c.secondary}
+              initial={{ cx: 96, cy: 28, opacity: 0 }}
+              animate={{
+                cx: [96, 90, 82],
+                cy: [28, 30, 34],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 1,
+                delay: 1.5,
+                repeat: Infinity,
+                repeatDelay: 1,
+                ease: 'linear',
+              }}
+            />
+          </g>
+        )}
+      </AnimatePresence>
+    </svg>
+  );
+}
+
+/**
+ * Main Animated Logo Component Export
+ */
+export default function AnimatedLogo({
+  size = 'md',
+  showText = true,
+  variant = 'default',
+  onAnimationComplete,
+  color = 'default',
+}: AnimatedLogoProps) {
+  const [textVisible, setTextVisible] = useState(variant !== 'splash');
+  const dimensions = sizeMap[size];
+  const c = colorPalettes[color];
+
+  useEffect(() => {
+    if (variant === 'splash') {
+      const timer = setTimeout(() => setTextVisible(true), 1800);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
+  }, [variant]);
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      {/* Logo Container with optional glow backdrop */}
+      <div className="relative">
+        {/* Ambient glow behind logo */}
+        {(variant === 'splash' || variant === 'hero') && (
+          <motion.div
+            className="absolute inset-0 rounded-full blur-3xl"
             style={{
-              backgroundSize: '200% auto',
+              background: `radial-gradient(circle, ${c.primary}20 0%, transparent 70%)`,
             }}
-            animate={{
-              backgroundPosition: ['0% center', '200% center', '0% center'],
-            }}
-            transition={{
-              duration: 5,
-              repeat: Infinity,
-              ease: 'linear',
-            }}
-          >
-            CGraph
-          </motion.h1>
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1.5, opacity: 0.5 }}
+            transition={{ duration: 2, ease: 'easeOut' }}
+          />
+        )}
 
-          {variant === 'loading' && (
-            <motion.p
-              className="mt-2 text-center text-sm text-gray-400"
-              animate={{ opacity: [0.5, 1, 0.5] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
+        <CircuitBoardLogo
+          logoSize={dimensions.logo}
+          isAnimated={variant === 'default'}
+          isLoading={variant === 'loading'}
+          isSplash={variant === 'splash'}
+          color={color}
+          onAnimationComplete={onAnimationComplete}
+        />
+      </div>
+
+      {/* Text with animation */}
+      {showText && (
+        <AnimatePresence>
+          {textVisible && (
+            <motion.div
+              className="flex flex-col items-center"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
             >
-              Loading...
-            </motion.p>
+              <motion.span
+                className={`font-bold ${dimensions.text} tracking-tight`}
+                style={{
+                  background: `linear-gradient(135deg, ${c.primary}, ${c.secondary}, ${c.tertiary})`,
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                }}
+              >
+                CGraph
+              </motion.span>
+              {variant === 'splash' && (
+                <motion.span
+                  className="mt-1 text-sm text-gray-400"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  Secure • Connected • Decentralized
+                </motion.span>
+              )}
+            </motion.div>
           )}
-        </motion.div>
+        </AnimatePresence>
       )}
     </div>
   );
 }
 
-// Splash screen variant
-export function SplashScreen() {
-  const [progress, setProgress] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 100);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* Background particles */}
-      {Array.from({ length: 30 }).map((_, i) => {
-        const isPurple = i % 2 === 0;
-        return (
-          <motion.div
-            key={i}
-            className={`absolute h-1 w-1 rounded-full ${isPurple ? 'bg-purple-400' : 'bg-emerald-400'}`}
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -30, 0],
-              opacity: [0.1, 0.5, 0.1],
-              scale: [1, 2, 1],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
-            }}
-          />
-        );
-      })}
-
-      {/* Logo */}
-      <AnimatedLogo size="xl" showText variant="splash" />
-
-      {/* Progress bar */}
-      <motion.div
-        className="mt-12 h-1 w-64 overflow-hidden rounded-full bg-slate-700"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-      >
-        <motion.div
-          className="h-full rounded-full bg-gradient-to-r from-purple-500 via-emerald-400 to-indigo-500"
-          style={{ width: `${progress}%` }}
-          initial={{ width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.3 }}
-        />
-      </motion.div>
-
-      {/* Loading text */}
-      <motion.p
-        className="mt-4 text-sm text-gray-400"
-        animate={{ opacity: [0.5, 1, 0.5] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-      >
-        Initializing secure connection...
-      </motion.p>
-    </div>
-  );
-}
+// Named exports for specific use cases
+export { CircuitBoardLogo };

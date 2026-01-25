@@ -1,0 +1,29 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="6" fill="#0f172a"/>
+  <g transform="translate(3, 6) scale(0.22)">
+    <path d="M18 20H42" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M42 20V26L48 32" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M18 20V48V76" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M18 76H42" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M42 76V70L48 64" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M72 20H102" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M72 20V26L66 32" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M102 20V44" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M72 76H102" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M72 76V70L66 64" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M102 76V52" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M102 48H84" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="18" cy="20" r="5" fill="#00d4ff"/>
+    <circle cx="18" cy="48" r="4" fill="#00d4ff"/>
+    <circle cx="18" cy="76" r="5" fill="#00d4ff"/>
+    <circle cx="102" cy="20" r="5" fill="#00d4ff"/>
+    <circle cx="102" cy="48" r="5" fill="#00d4ff"/>
+    <circle cx="102" cy="76" r="5" fill="#00d4ff"/>
+  </g>
+</svg>

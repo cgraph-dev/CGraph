@@ -3,7 +3,7 @@
 const config = {
   title: 'CGraph Documentation',
   tagline: 'The All-in-One Open-Source Communication Platform',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   // Production URL
   url: 'https://docs.cgraph.org',
@@ -92,6 +92,7 @@ const config = {
         logo: {
           alt: 'CGraph Logo',
           src: 'img/logo.svg',
+          srcDark: 'img/logo-dark.svg',
         },
         items: [
           {

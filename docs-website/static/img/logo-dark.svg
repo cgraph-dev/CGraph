@@ -1,0 +1,62 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="primary-dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#00d4ff" stop-opacity="0.9"/>
+    </linearGradient>
+    <filter id="glow-dark" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Transparent background for dark mode -->
+  <rect width="100" height="100" fill="transparent"/>
+  
+  <!-- Circuit logo scaled -->
+  <g transform="translate(10, 22) scale(0.67)" filter="url(#glow-dark)">
+    <!-- C traces -->
+    <path d="M18 20H42" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M42 20V26L48 32" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M18 20V48V76" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M18 76H42" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M42 76V70L48 64" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M18 48H30L36 42" stroke="url(#primary-dark)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M30 48L36 54" stroke="url(#primary-dark)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- G traces -->
+    <path d="M72 20H102" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M72 20V26L66 32" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M102 20V44" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M72 76H102" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M72 76V70L66 64" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M102 76V52" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round"/>
+    <path d="M102 48H84L78 42" stroke="url(#primary-dark)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M84 48L78 54" stroke="url(#primary-dark)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Main nodes -->
+    <circle cx="18" cy="20" r="4" fill="#00d4ff"/>
+    <circle cx="42" cy="20" r="3.5" fill="#00d4ff"/>
+    <circle cx="48" cy="32" r="3" fill="#8b5cf6"/>
+    <circle cx="18" cy="48" r="4" fill="#10b981"/>
+    <circle cx="36" cy="42" r="2.5" fill="#8b5cf6"/>
+    <circle cx="36" cy="54" r="2.5" fill="#8b5cf6"/>
+    <circle cx="48" cy="64" r="3" fill="#8b5cf6"/>
+    <circle cx="42" cy="76" r="3.5" fill="#00d4ff"/>
+    <circle cx="18" cy="76" r="4" fill="#00d4ff"/>
+    
+    <circle cx="72" cy="20" r="3.5" fill="#00d4ff"/>
+    <circle cx="66" cy="32" r="3" fill="#8b5cf6"/>
+    <circle cx="102" cy="20" r="4" fill="#00d4ff"/>
+    <circle cx="102" cy="48" r="4" fill="#10b981"/>
+    <circle cx="84" cy="48" r="3.5" fill="#00d4ff"/>
+    <circle cx="78" cy="42" r="2.5" fill="#8b5cf6"/>
+    <circle cx="78" cy="54" r="2.5" fill="#8b5cf6"/>
+    <circle cx="66" cy="64" r="3" fill="#8b5cf6"/>
+    <circle cx="72" cy="76" r="3.5" fill="#00d4ff"/>
+    <circle cx="102" cy="76" r="4" fill="#00d4ff"/>
+  </g>
+</svg>
