@@ -36,6 +36,7 @@ import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
 import { GifMessage } from '@/components/chat/GifMessage';
 import { FileMessage } from '@/components/chat/FileMessage';
 import { E2EEErrorModal } from '@/components/chat/E2EEErrorModal';
+import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
 
 // Sticker system integration
 import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
@@ -198,6 +199,10 @@ export default function Conversation() {
     replyToId?: string;
     options?: { type?: string; metadata?: Record<string, any> };
   } | null>(null);
+
+  // ====== FORWARD MESSAGE STATE ======
+  const [showForwardModal, setShowForwardModal] = useState(false);
+  const [messageToForward, setMessageToForward] = useState<Message | null>(null);
   const [uiPreferences, setUiPreferences] = useState({
     glassEffect: 'holographic' as 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic',
     animationIntensity: 'high' as 'low' | 'medium' | 'high',
@@ -655,6 +660,49 @@ export default function Conversation() {
     } catch (error) {
       console.error('Failed to pin message:', error);
       toast.error('Failed to pin message');
+    }
+  };
+
+  // Open forward modal
+  const handleOpenForward = (message: Message) => {
+    setMessageToForward(message);
+    setShowForwardModal(true);
+    setActiveMessageMenu(null);
+    if (uiPreferences.enableHaptic) HapticFeedback.medium();
+  };
+
+  // Forward message to selected conversations
+  const handleForwardMessage = async (conversationIds: string[]) => {
+    if (!messageToForward) return;
+
+    try {
+      // Forward to each selected conversation
+      const forwardPromises = conversationIds.map((targetConversationId) => {
+        const forwardedContent =
+          messageToForward.messageType === 'text'
+            ? messageToForward.content
+            : `[Forwarded ${messageToForward.messageType}]`;
+
+        return sendMessage(targetConversationId, forwardedContent, undefined, {
+          type: messageToForward.messageType,
+          metadata: {
+            ...messageToForward.metadata,
+            forwarded: true,
+            originalSenderId: messageToForward.senderId,
+            originalMessageId: messageToForward.id,
+          },
+        });
+      });
+
+      await Promise.all(forwardPromises);
+
+      const count = conversationIds.length;
+      toast.success(`Message forwarded to ${count} conversation${count > 1 ? 's' : ''}`);
+      if (uiPreferences.enableHaptic) HapticFeedback.success();
+    } catch (error) {
+      console.error('Failed to forward message:', error);
+      toast.error('Failed to forward message');
+      if (uiPreferences.enableHaptic) HapticFeedback.error();
     }
   };
 
@@ -1190,6 +1238,7 @@ export default function Conversation() {
                         onEdit={() => handleStartEdit(message)}
                         onDelete={() => handleDeleteMessage(message.id)}
                         onPin={() => handlePinMessage(message.id)}
+                        onForward={() => handleOpenForward(message)}
                         isMenuOpen={activeMessageMenu === message.id}
                         onToggleMenu={() => handleToggleMessageMenu(message.id)}
                         isEditing={editingMessageId === message.id}
@@ -1497,6 +1546,19 @@ export default function Conversation() {
           recipientName={conversationName}
         />
 
+        {/* Forward Message Modal */}
+        {messageToForward && (
+          <ForwardMessageModal
+            isOpen={showForwardModal}
+            onClose={() => {
+              setShowForwardModal(false);
+              setMessageToForward(null);
+            }}
+            onForward={handleForwardMessage}
+            message={messageToForward}
+          />
+        )}
+
         {/* Hidden File Input */}
         <input
           ref={fileInputRef}
@@ -1576,6 +1638,7 @@ function MessageBubble({
   onEdit,
   onDelete,
   onPin,
+  onForward,
   isMenuOpen,
   onToggleMenu,
   isEditing,
@@ -1602,6 +1665,7 @@ function MessageBubble({
   onEdit?: () => void;
   onDelete?: () => void;
   onPin?: () => void;
+  onForward?: () => void;
   isMenuOpen?: boolean;
   onToggleMenu?: () => void;
   isEditing?: boolean;
@@ -1715,6 +1779,20 @@ function MessageBubble({
                       />
                     </svg>
                     Pin
+                  </button>
+                  <button
+                    onClick={onForward}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-dark-700"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                      />
+                    </svg>
+                    Forward
                   </button>
                   <button
                     onClick={onDelete}
