@@ -23,7 +23,7 @@ defmodule CGraph.Messaging.Message do
     :inserted_at, :updated_at
   ]}
 
-  @content_types ["text", "image", "video", "audio", "file", "voice", "system"]
+  @content_types ["text", "image", "video", "audio", "file", "voice", "sticker", "gif", "system"]
 
   schema "messages" do
     field :content, :string

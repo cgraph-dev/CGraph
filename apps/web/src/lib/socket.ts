@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useChatStore, Message, Conversation } from '@/stores/chatStore';
 import { useGroupStore, ChannelMessage } from '@/stores/groupStore';
 import { useE2EEStore } from '@/lib/crypto/e2eeStore';
+import { useIncomingCallStore, type IncomingCall } from '@/stores/incomingCallStore';
 import { socketLogger as logger } from './logger';
 import { normalizeMessage, normalizeConversation } from './apiUtils';
 
@@ -353,6 +354,30 @@ class SocketManager {
       if (data.conversation?.id) {
         useChatStore.getState().updateConversation(data.conversation);
       }
+    });
+
+    // Handle incoming WebRTC calls
+    channel.on('incoming_call', (payload) => {
+      logger.log('Incoming call received:', payload);
+      console.log('[Socket] 📞 Incoming call:', payload);
+      const data = payload as { room_id: string; caller_id: string; type: 'audio' | 'video' };
+
+      // Fetch caller info from auth store or friends list
+      const callerUser = useChatStore
+        .getState()
+        .conversations.flatMap((conv) => conv.participants)
+        .find((p) => p.userId === data.caller_id);
+
+      const incomingCall: IncomingCall = {
+        roomId: data.room_id,
+        callerId: data.caller_id,
+        callerName: callerUser?.user?.username || callerUser?.user?.displayName || 'Unknown User',
+        callerAvatar: callerUser?.user?.avatarUrl || null,
+        type: data.type,
+        timestamp: Date.now(),
+      };
+
+      useIncomingCallStore.getState().setIncomingCall(incomingCall);
     });
 
     channel

@@ -18,6 +18,11 @@ import AppLayout from '@/layouts/AppLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 
 // ============================================================================
+// GLOBAL HANDLERS - Must be eagerly loaded
+// ============================================================================
+import { IncomingCallHandler } from '@/components/voice/IncomingCallHandler';
+
+// ============================================================================
 // SCROLL TO TOP - Ensures page starts at top on navigation
 // ============================================================================
 function ScrollToTop() {
@@ -267,6 +272,7 @@ export default function App() {
   return (
     <AuthInitializer>
       <ScrollToTop />
+      <IncomingCallHandler />
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
           {/* Test route for Matrix animation */}

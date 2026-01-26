@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useFriendStore } from '@/stores/friendStore';
@@ -33,6 +33,9 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import MessageReactions from '@/components/chat/MessageReactions';
 import RichMediaEmbed from '@/components/chat/RichMediaEmbed';
 import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
+import { GifMessage } from '@/components/chat/GifMessage';
+import { FileMessage } from '@/components/chat/FileMessage';
+import { E2EEErrorModal } from '@/components/chat/E2EEErrorModal';
 
 // Sticker system integration
 import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
@@ -48,6 +51,10 @@ import UserProfileCard from '@/components/profile/UserProfileCard';
 
 // Chat info panel
 import ChatInfoPanel from '@/components/chat/ChatInfoPanel';
+
+// Voice/Video call modals
+import { VoiceCallModal } from '@/components/voice/VoiceCallModal';
+import { VideoCallModal } from '@/components/voice/VideoCallModal';
 
 // ============================================================================
 // TYPE-SAFE REACTION AGGREGATION UTILITIES
@@ -142,6 +149,7 @@ export default function Conversation() {
   }, []);
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuthStore();
   const { friends, fetchFriends } = useFriendStore();
   const {
@@ -165,11 +173,31 @@ export default function Conversation() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputContainerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // ====== MESSAGE ACTIONS STATE ======
+  const [activeMessageMenu, setActiveMessageMenu] = useState<string | null>(null);
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
+
+  // ====== CALL STATE ======
+  const [showVoiceCallModal, setShowVoiceCallModal] = useState(false);
+  const [showVideoCallModal, setShowVideoCallModal] = useState(false);
+  const [incomingRoomId, setIncomingRoomId] = useState<string | undefined>(undefined);
 
   // ====== NEXT GEN UI CUSTOMIZATION STATE ======
   const [showSettings, setShowSettings] = useState(false);
   const [showE2EETester, setShowE2EETester] = useState(false);
   const [showInfoPanel, setShowInfoPanel] = useState(false);
+
+  // ====== E2EE ERROR STATE ======
+  const [showE2EEError, setShowE2EEError] = useState(false);
+  const [e2eeErrorMessage, setE2EEErrorMessage] = useState('');
+  const [pendingMessage, setPendingMessage] = useState<{
+    content: string;
+    replyToId?: string;
+    options?: { type?: string; metadata?: Record<string, any> };
+  } | null>(null);
   const [uiPreferences, setUiPreferences] = useState({
     glassEffect: 'holographic' as 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic',
     animationIntensity: 'high' as 'low' | 'medium' | 'high',
@@ -188,6 +216,29 @@ export default function Conversation() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [friends.length]);
+
+  // Handle incoming call query params - auto-answer calls from notifications
+  useEffect(() => {
+    const incomingCallParam = searchParams.get('incomingCall');
+    const callTypeParam = searchParams.get('callType');
+
+    if (incomingCallParam && callTypeParam) {
+      // Store the incoming room ID
+      setIncomingRoomId(incomingCallParam);
+
+      // Auto-open the appropriate modal
+      if (callTypeParam === 'video') {
+        setShowVideoCallModal(true);
+      } else {
+        setShowVoiceCallModal(true);
+      }
+
+      // Clean up query params after handling
+      searchParams.delete('incomingCall');
+      searchParams.delete('callType');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const conversation = conversations.find((c) => c.id === conversationId);
   const conversationMessages = conversationId ? messages[conversationId] || [] : [];
@@ -333,7 +384,84 @@ export default function Conversation() {
       socketManager.sendTyping(`conversation:${conversationId}`, false);
     } catch (error) {
       console.error('Failed to send message:', error);
-      toast.error('Failed to send message. Please try again.');
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to send message. Please try again.';
+
+      // Check if this is an E2EE encryption failure
+      if (errorMessage.includes('Failed to encrypt message')) {
+        // Show E2EE error modal instead of toast
+        setPendingMessage({
+          content: messageInput.trim(),
+          replyToId: replyTo?.id,
+        });
+        setE2EEErrorMessage(errorMessage);
+        setShowE2EEError(true);
+        // Don't clear message input - user might want to retry
+      } else {
+        // For other errors, show toast
+        toast.error(errorMessage);
+        // Clear input for non-E2EE errors
+        setMessageInput('');
+        setReplyTo(null);
+      }
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Retry sending with E2EE encryption
+  const handleRetryE2EE = async () => {
+    if (!pendingMessage || !conversationId || isSending) return;
+
+    setIsSending(true);
+    try {
+      await sendMessage(
+        conversationId,
+        pendingMessage.content,
+        pendingMessage.replyToId,
+        pendingMessage.options
+      );
+      setMessageInput('');
+      setReplyTo(null);
+      setPendingMessage(null);
+      toast.success('Message sent with encryption');
+      if (uiPreferences.enableHaptic) HapticFeedback.success();
+    } catch (error) {
+      console.error('Retry failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
+
+      if (errorMessage.includes('Failed to encrypt message')) {
+        // Still failing - show modal again
+        setE2EEErrorMessage(errorMessage);
+        setShowE2EEError(true);
+      } else {
+        toast.error(errorMessage);
+      }
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Send message without encryption (user explicitly chose this)
+  const handleSendUnencrypted = async () => {
+    if (!pendingMessage || !conversationId || isSending) return;
+
+    setIsSending(true);
+    try {
+      // Use chatStore's sendMessage with forceUnencrypted flag
+      // This will skip E2EE even for direct conversations
+      await sendMessage(conversationId, pendingMessage.content, pendingMessage.replyToId, {
+        ...pendingMessage.options,
+        forceUnencrypted: true,
+      });
+      setMessageInput('');
+      setReplyTo(null);
+      setPendingMessage(null);
+      toast.warning('Message sent without encryption');
+      if (uiPreferences.enableHaptic) HapticFeedback.warning();
+    } catch (error) {
+      console.error('Failed to send unencrypted message:', error);
+      toast.error('Failed to send message');
     } finally {
       setIsSending(false);
     }
@@ -354,7 +482,9 @@ export default function Conversation() {
       if (uiPreferences.enableHaptic) HapticFeedback.success();
     } catch (error) {
       console.error('Failed to send sticker:', error);
-      toast.error('Failed to send sticker.');
+      // Show specific error message if available (e.g., E2EE encryption failure)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send sticker.';
+      toast.error(errorMessage);
       if (uiPreferences.enableHaptic) HapticFeedback.error();
     } finally {
       setIsSending(false);
@@ -380,24 +510,75 @@ export default function Conversation() {
       formData.append('waveform', JSON.stringify(data.waveform));
       formData.append('conversation_id', conversationId);
 
-      // Upload voice message and get the created message back
-      const response = await api.post('/api/v1/voice-messages', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // Upload voice message - backend will create message and broadcast via WebSocket
+      // Note: axios automatically sets Content-Type for FormData
+      const response = await api.post('/api/v1/voice-messages', formData);
 
-      // Add message directly to store instead of refetching all messages
-      // This is more efficient for high-throughput scenarios
-      if (response.data?.message) {
-        const { addMessage } = useChatStore.getState();
-        addMessage(response.data.message as Message);
+      // Success! The message will appear via WebSocket broadcast automatically
+      // Backend creates the message and broadcasts "new_message" event
+      if (response.data?.data) {
+        toast.success('Voice message sent');
+        if (uiPreferences.enableHaptic) HapticFeedback.success();
       }
     } catch (error) {
       console.error('Failed to send voice message:', error);
       toast.error('Failed to send voice message.');
+      if (uiPreferences.enableHaptic) HapticFeedback.error();
     } finally {
       setIsSending(false);
+    }
+  };
+
+  // Handle file selection and upload
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !conversationId) return;
+
+    setIsSending(true);
+
+    try {
+      // Upload file to server
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('context', 'message');
+
+      const uploadResponse = await api.post('/api/v1/upload', formData);
+      const fileData = uploadResponse.data?.data;
+
+      if (!fileData) {
+        throw new Error('No file data returned from upload');
+      }
+
+      // Send message with file metadata
+      await sendMessage(
+        conversationId,
+        file.name, // Use filename as message content
+        replyTo?.id,
+        {
+          type: 'file',
+          metadata: {
+            fileUrl: fileData.url,
+            fileName: fileData.filename,
+            fileSize: fileData.size,
+            fileMimeType: fileData.content_type,
+            thumbnailUrl: fileData.thumbnail_url,
+          },
+        }
+      );
+
+      setReplyTo(null);
+      toast.success('File sent');
+      if (uiPreferences.enableHaptic) HapticFeedback.success();
+    } catch (error) {
+      console.error('Failed to send file:', error);
+      toast.error('Failed to send file');
+      if (uiPreferences.enableHaptic) HapticFeedback.error();
+    } finally {
+      setIsSending(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
@@ -416,6 +597,86 @@ export default function Conversation() {
     if (oldestMessage) {
       fetchMessages(conversationId, oldestMessage.id);
     }
+  };
+
+  // ====== MESSAGE ACTION HANDLERS ======
+
+  // Start editing a message
+  const handleStartEdit = (message: Message) => {
+    setEditingMessageId(message.id);
+    setEditContent(message.content);
+    setActiveMessageMenu(null);
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditingMessageId(null);
+    setEditContent('');
+  };
+
+  // Save edited message
+  const handleSaveEdit = async () => {
+    if (!conversationId || !editingMessageId || !editContent.trim()) return;
+
+    try {
+      const { editMessage } = useChatStore.getState();
+      await editMessage(editingMessageId, editContent.trim());
+      toast.success('Message edited');
+      handleCancelEdit();
+    } catch (error) {
+      console.error('Failed to edit message:', error);
+      toast.error('Failed to edit message');
+    }
+  };
+
+  // Delete a message
+  const handleDeleteMessage = async (messageId: string) => {
+    if (!conversationId) return;
+
+    try {
+      const { deleteMessage } = useChatStore.getState();
+      await deleteMessage(messageId);
+      toast.success('Message deleted');
+      setActiveMessageMenu(null);
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      toast.error('Failed to delete message');
+    }
+  };
+
+  // Pin a message
+  const handlePinMessage = async (messageId: string) => {
+    if (!conversationId) return;
+
+    try {
+      await api.post(`/api/v1/conversations/${conversationId}/messages/${messageId}/pin`);
+      toast.success('Message pinned');
+      setActiveMessageMenu(null);
+    } catch (error) {
+      console.error('Failed to pin message:', error);
+      toast.error('Failed to pin message');
+    }
+  };
+
+  // Toggle message action menu
+  const handleToggleMessageMenu = (messageId: string) => {
+    setActiveMessageMenu(activeMessageMenu === messageId ? null : messageId);
+  };
+
+  // ====== CALL HANDLERS ======
+
+  // Start voice call
+  const handleStartVoiceCall = () => {
+    if (!conversationId) return;
+    setShowVoiceCallModal(true);
+    if (uiPreferences.enableHaptic) HapticFeedback.medium();
+  };
+
+  // Start video call
+  const handleStartVideoCall = () => {
+    if (!conversationId) return;
+    setShowVideoCallModal(true);
+    if (uiPreferences.enableHaptic) HapticFeedback.medium();
   };
 
   // Format date header
@@ -626,7 +887,7 @@ export default function Conversation() {
               </motion.button>
 
               <motion.button
-                onClick={() => uiPreferences.enableHaptic && HapticFeedback.medium()}
+                onClick={handleStartVoiceCall}
                 className="rounded-lg p-2 text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -636,7 +897,7 @@ export default function Conversation() {
               </motion.button>
 
               <motion.button
-                onClick={() => uiPreferences.enableHaptic && HapticFeedback.medium()}
+                onClick={handleStartVideoCall}
                 className="rounded-lg p-2 text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
@@ -926,6 +1187,16 @@ export default function Conversation() {
                         onReply={() => setReplyTo(message)}
                         uiPreferences={uiPreferences}
                         onAvatarClick={(userId) => navigate(`/user/${userId}`)}
+                        onEdit={() => handleStartEdit(message)}
+                        onDelete={() => handleDeleteMessage(message.id)}
+                        onPin={() => handlePinMessage(message.id)}
+                        isMenuOpen={activeMessageMenu === message.id}
+                        onToggleMenu={() => handleToggleMessageMenu(message.id)}
+                        isEditing={editingMessageId === message.id}
+                        editContent={editContent}
+                        onEditContentChange={setEditContent}
+                        onSaveEdit={handleSaveEdit}
+                        onCancelEdit={handleCancelEdit}
                       />
                       {/* Enhanced Reactions: AnimatedReactionBubble with type-safe aggregation */}
                       {message.reactions && message.reactions.length > 0 && (
@@ -1108,10 +1379,14 @@ export default function Conversation() {
               /* Next Gen Input UI */
               <div className="flex items-end gap-3 p-2">
                 <motion.button
-                  onClick={() => uiPreferences.enableHaptic && HapticFeedback.light()}
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                    if (uiPreferences.enableHaptic) HapticFeedback.light();
+                  }}
                   className="group rounded-xl p-2.5 text-gray-400 transition-all hover:bg-primary-500/20 hover:text-primary-400"
                   whileHover={{ scale: 1.1, rotate: -15 }}
                   whileTap={{ scale: 0.9 }}
+                  title="Attach file"
                 >
                   <PaperClipIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                 </motion.button>
@@ -1208,6 +1483,28 @@ export default function Conversation() {
             />
           )}
         </AnimatePresence>
+
+        {/* E2EE Error Modal - Shows when encryption fails */}
+        <E2EEErrorModal
+          isOpen={showE2EEError}
+          onClose={() => {
+            setShowE2EEError(false);
+            setPendingMessage(null);
+          }}
+          onRetry={handleRetryE2EE}
+          onSendUnencrypted={handleSendUnencrypted}
+          errorMessage={e2eeErrorMessage}
+          recipientName={conversationName}
+        />
+
+        {/* Hidden File Input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          onChange={handleFileSelect}
+          className="hidden"
+          accept="image/*,video/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt,.csv"
+        />
       </div>
 
       {/* User Info Panel (Right Sidebar) */}
@@ -1237,6 +1534,34 @@ export default function Conversation() {
           />
         )}
       </AnimatePresence>
+
+      {/* Voice Call Modal */}
+      <VoiceCallModal
+        isOpen={showVoiceCallModal}
+        onClose={() => {
+          setShowVoiceCallModal(false);
+          setIncomingRoomId(undefined);
+        }}
+        conversationId={conversationId || ''}
+        otherParticipantId={otherParticipant?.user?.id || ''}
+        otherParticipantName={conversationName}
+        otherParticipantAvatar={otherParticipant?.user?.avatarUrl ?? undefined}
+        incomingRoomId={incomingRoomId}
+      />
+
+      {/* Video Call Modal */}
+      <VideoCallModal
+        isOpen={showVideoCallModal}
+        onClose={() => {
+          setShowVideoCallModal(false);
+          setIncomingRoomId(undefined);
+        }}
+        conversationId={conversationId || ''}
+        otherParticipantId={otherParticipant?.user?.id || ''}
+        otherParticipantName={conversationName}
+        otherParticipantAvatar={otherParticipant?.user?.avatarUrl ?? undefined}
+        incomingRoomId={incomingRoomId}
+      />
     </div>
   );
 }
@@ -1248,6 +1573,16 @@ function MessageBubble({
   showAvatar,
   onReply,
   uiPreferences,
+  onEdit,
+  onDelete,
+  onPin,
+  isMenuOpen,
+  onToggleMenu,
+  isEditing,
+  editContent,
+  onEditContentChange,
+  onSaveEdit,
+  onCancelEdit,
 }: {
   message: Message;
   isOwn: boolean;
@@ -1264,6 +1599,16 @@ function MessageBubble({
     messageEntranceAnimation: 'slide' | 'scale' | 'fade' | 'bounce';
   };
   onAvatarClick?: (userId: string) => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onPin?: () => void;
+  isMenuOpen?: boolean;
+  onToggleMenu?: () => void;
+  isEditing?: boolean;
+  editContent?: string;
+  onEditContentChange?: (content: string) => void;
+  onSaveEdit?: () => void;
+  onCancelEdit?: () => void;
 }) {
   const [showActions, setShowActions] = useState(false);
 
@@ -1318,7 +1663,7 @@ function MessageBubble({
         <div className="flex items-center gap-2">
           {/* Actions (for own messages, show on left) */}
           {isOwn && showActions && (
-            <div className="flex items-center gap-1">
+            <div className="relative flex items-center gap-1">
               <button
                 onClick={onReply}
                 className="rounded p-1 text-gray-500 hover:bg-dark-700 hover:text-white"
@@ -1334,11 +1679,59 @@ function MessageBubble({
                 </svg>
               </button>
               <button
+                onClick={onToggleMenu}
                 className="rounded p-1 text-gray-500 hover:bg-dark-700 hover:text-white"
                 title="More"
               >
                 <EllipsisVerticalIcon className="h-4 w-4" />
               </button>
+              {/* Action Menu Dropdown */}
+              {isMenuOpen && (
+                <div className="absolute right-0 top-full z-50 mt-1 w-32 rounded-lg bg-dark-800 py-1 shadow-lg ring-1 ring-white/10">
+                  <button
+                    onClick={onEdit}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-dark-700"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      />
+                    </svg>
+                    Edit
+                  </button>
+                  <button
+                    onClick={onPin}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-gray-300 hover:bg-dark-700"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                      />
+                    </svg>
+                    Pin
+                  </button>
+                  <button
+                    onClick={onDelete}
+                    className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm text-red-400 hover:bg-dark-700"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -1414,14 +1807,57 @@ function MessageBubble({
                   />
                 </div>
               )}
-            {/* Text content - hide for voice messages */}
+
+            {/* GIF Message */}
+            {message.messageType === 'gif' && (
+              <GifMessage message={message} isOwnMessage={isOwn} className="mb-2" />
+            )}
+
+            {/* File Message */}
+            {message.messageType === 'file' && (
+              <FileMessage message={message} isOwnMessage={isOwn} className="mb-2" />
+            )}
+
+            {/* Text content - hide for voice, GIF, and file messages */}
             {message.content &&
               message.messageType !== 'voice' &&
-              message.messageType !== 'audio' && (
+              message.messageType !== 'audio' &&
+              message.messageType !== 'gif' &&
+              message.messageType !== 'file' && (
                 <>
-                  <p className="whitespace-pre-wrap break-words">{message.content}</p>
-                  {/* Rich Media Embeds - automatically detect and render URLs */}
-                  <RichMediaEmbed content={message.content} isOwnMessage={isOwn} />
+                  {isEditing ? (
+                    /* Edit Mode */
+                    <div className="space-y-2">
+                      <textarea
+                        value={editContent}
+                        onChange={(e) => onEditContentChange?.(e.target.value)}
+                        className="w-full rounded-lg border border-gray-600 bg-dark-800 px-3 py-2 text-sm text-white focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                        rows={3}
+                        autoFocus
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={onSaveEdit}
+                          className="rounded-lg bg-primary-600 px-3 py-1 text-xs font-medium text-white hover:bg-primary-500"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={onCancelEdit}
+                          className="rounded-lg bg-dark-600 px-3 py-1 text-xs font-medium text-gray-300 hover:bg-dark-500"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Normal Display */
+                    <>
+                      <p className="whitespace-pre-wrap break-words">{message.content}</p>
+                      {/* Rich Media Embeds - automatically detect and render URLs */}
+                      <RichMediaEmbed content={message.content} isOwnMessage={isOwn} />
+                    </>
+                  )}
                 </>
               )}
             <div

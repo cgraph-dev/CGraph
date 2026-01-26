@@ -111,6 +111,84 @@ defmodule CGraphWeb.API.V1.MessageController do
   end
 
   @doc """
+  Update (edit) a message.
+  Only the sender can edit their own messages.
+  """
+  def update(conn, %{"conversation_id" => conversation_id, "id" => message_id} = params) do
+    user = conn.assigns.current_user
+
+    with {:ok, _conversation} <- Messaging.get_user_conversation(user, conversation_id),
+         {:ok, message} <- Messaging.edit_message(message_id, user.id, params["content"]) do
+      # Broadcast the update via Phoenix Channels
+      CGraphWeb.Endpoint.broadcast!(
+        "conversation:#{conversation_id}",
+        "message_updated",
+        %{message: MessageJSON.message_data(message)}
+      )
+
+      render(conn, :show, message: message)
+    end
+  end
+
+  @doc """
+  Delete a message.
+  Only the sender can delete their own messages.
+  """
+  def delete(conn, %{"conversation_id" => conversation_id, "id" => message_id}) do
+    user = conn.assigns.current_user
+
+    with {:ok, _conversation} <- Messaging.get_user_conversation(user, conversation_id),
+         {:ok, message} <- Messaging.delete_message(message_id, user.id) do
+      # Broadcast the deletion via Phoenix Channels
+      CGraphWeb.Endpoint.broadcast!(
+        "conversation:#{conversation_id}",
+        "message_deleted",
+        %{message_id: message_id, deleted_by: user.id}
+      )
+
+      render(conn, :show, message: message)
+    end
+  end
+
+  @doc """
+  Pin a message in the conversation.
+  """
+  def pin(conn, %{"conversation_id" => conversation_id, "message_id" => message_id}) do
+    user = conn.assigns.current_user
+
+    with {:ok, _conversation} <- Messaging.get_user_conversation(user, conversation_id),
+         {:ok, message} <- Messaging.pin_message(message_id, user.id) do
+      # Broadcast the pin via Phoenix Channels
+      CGraphWeb.Endpoint.broadcast!(
+        "conversation:#{conversation_id}",
+        "message_pinned",
+        %{message: MessageJSON.message_data(message)}
+      )
+
+      render(conn, :show, message: message)
+    end
+  end
+
+  @doc """
+  Unpin a message in the conversation.
+  """
+  def unpin(conn, %{"conversation_id" => conversation_id, "message_id" => message_id}) do
+    user = conn.assigns.current_user
+
+    with {:ok, _conversation} <- Messaging.get_user_conversation(user, conversation_id),
+         {:ok, message} <- Messaging.unpin_message(message_id, user.id) do
+      # Broadcast the unpin via Phoenix Channels
+      CGraphWeb.Endpoint.broadcast!(
+        "conversation:#{conversation_id}",
+        "message_unpinned",
+        %{message_id: message_id}
+      )
+
+      render(conn, :show, message: message)
+    end
+  end
+
+  @doc """
   Mark a message as read.
   """
   def mark_read(conn, %{"conversation_id" => conversation_id, "id" => message_id}) do

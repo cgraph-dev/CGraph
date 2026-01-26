@@ -110,37 +110,55 @@ export class WebRTCManager {
       });
       this.state.localStream = this.localStream;
       this.state.isVideoEnabled = options.video ?? true;
+      this.state.status = 'ringing';
 
       // Ensure socket is connected
       if (!this.socket) {
         throw new Error('WebRTC socket not initialized');
       }
 
-      // Join signaling channel
-      this.channel = this.socket.channel('call:lobby', {});
-      await this.joinChannel();
-
-      // Create call room
-      const response = await this.pushToChannel('create_room', {
-        target_user_id: targetUserId,
-        call_type: options.video ? 'video' : 'audio',
+      // Create call room via WebRTC lobby channel
+      const lobbyChannel = this.socket.channel('webrtc:lobby', {});
+      await new Promise((resolve, reject) => {
+        lobbyChannel
+          .join()
+          .receive('ok', () => resolve(undefined))
+          .receive('error', (reason) => reject(new Error(JSON.stringify(reason))));
       });
 
-      const roomId = (response as { room_id: string }).room_id;
-      this.state.roomId = roomId;
-      this.state.status = 'ringing';
+      // Create call room
+      const response = await new Promise<{ room_id: string; ice_servers: unknown[] }>(
+        (resolve, reject) => {
+          lobbyChannel
+            .push('create_room', {
+              target_ids: [targetUserId],
+              type: options.video ? 'video' : 'audio',
+            })
+            .receive('ok', (resp) => resolve(resp as { room_id: string; ice_servers: unknown[] }))
+            .receive('error', (reason) => reject(new Error(JSON.stringify(reason))));
+        }
+      );
 
-      // Join the room channel
+      lobbyChannel.leave();
+
+      const roomId = response.room_id;
+      this.state.roomId = roomId;
+
+      // Join the room channel for signaling
       if (!this.socket) {
         throw new Error('WebRTC socket not initialized');
       }
-      this.channel = this.socket.channel(`call:${roomId}`, {});
+      this.channel = this.socket.channel(`call:${roomId}`, {
+        device: 'web',
+        media: { audio: options.audio ?? true, video: options.video ?? true },
+      });
       await this.joinChannel();
       this.setupChannelHandlers();
 
       return roomId;
     } catch (error) {
       this.state.error = error instanceof Error ? error.message : 'Failed to start call';
+      this.state.status = 'idle';
       this.eventHandlers.onError?.(this.state.error);
       return null;
     }
@@ -162,23 +180,25 @@ export class WebRTCManager {
       this.state.localStream = this.localStream;
       this.state.roomId = roomId;
       this.state.status = 'connecting';
+      this.state.isVideoEnabled = options.video ?? true;
 
       // Ensure socket is connected
       if (!this.socket) {
         throw new Error('WebRTC socket not initialized');
       }
 
-      // Join the room channel
-      this.channel = this.socket.channel(`call:${roomId}`, {});
+      // Join the room channel with media options
+      this.channel = this.socket.channel(`call:${roomId}`, {
+        device: 'web',
+        media: { audio: options.audio ?? true, video: options.video ?? true },
+      });
       await this.joinChannel();
       this.setupChannelHandlers();
-
-      // Notify that we've joined
-      await this.pushToChannel('join_call', {});
 
       return true;
     } catch (error) {
       this.state.error = error instanceof Error ? error.message : 'Failed to answer call';
+      this.state.status = 'idle';
       this.eventHandlers.onError?.(this.state.error);
       return false;
     }

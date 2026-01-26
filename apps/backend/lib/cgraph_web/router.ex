@@ -316,7 +316,10 @@ defmodule CGraphWeb.Router do
     resources "/conversations", ConversationController, only: [:index, :show, :create] do
       # Mark entire conversation as read
       post "/read", ConversationController, :mark_read
-      resources "/messages", MessageController, only: [:index, :create]
+      resources "/messages", MessageController, only: [:index, :create, :update, :delete] do
+        post "/pin", MessageController, :pin
+        delete "/pin", MessageController, :unpin
+      end
       post "/messages/:id/read", MessageController, :mark_read
       post "/typing", MessageController, :typing
     end
@@ -444,6 +447,10 @@ defmodule CGraphWeb.Router do
     get "/voice-messages/:id", VoiceMessageController, :show
     get "/voice-messages/:id/waveform", VoiceMessageController, :waveform
     delete "/voice-messages/:id", VoiceMessageController, :delete
+
+    # GIF Search (Tenor API proxy)
+    get "/gifs/search", GifController, :search
+    get "/gifs/trending", GifController, :trending
 
     # ==========================================================================
     # Secondary Groups & Auto-Assignment Rules

@@ -115,7 +115,12 @@ export interface ChatState {
   // Actions
   fetchConversations: () => Promise<void>;
   fetchMessages: (conversationId: string, before?: string) => Promise<void>;
-  sendMessage: (conversationId: string, content: string, replyToId?: string) => Promise<void>;
+  sendMessage: (
+    conversationId: string,
+    content: string,
+    replyToId?: string,
+    options?: { type?: string; metadata?: Record<string, any>; forceUnencrypted?: boolean }
+  ) => Promise<void>;
   sendEncryptedMessage: (
     conversationId: string,
     recipientId: string,
@@ -240,16 +245,24 @@ export const useChatStore = create<ChatState>()(
         }
       },
 
-      sendMessage: async (conversationId: string, content: string, replyToId?: string) => {
+      sendMessage: async (
+        conversationId: string,
+        content: string,
+        replyToId?: string,
+        options?: { type?: string; metadata?: Record<string, any>; forceUnencrypted?: boolean }
+      ) => {
         // Check if E2EE is available and get recipient for encryption
         const e2eeStore = useE2EEStore.getState();
         const clientMessageId = createIdempotencyKey();
         const { conversations } = get();
         const conversation = conversations.find((c) => c.id === conversationId);
+        const contentType = options?.type || 'text';
+        const metadata = options?.metadata || {};
+        const forceUnencrypted = options?.forceUnencrypted || false;
 
         // Get current user ID from auth store for recipient detection
-        // For direct conversations, encrypt if E2EE is initialized
-        if (e2eeStore.isInitialized && conversation?.type === 'direct') {
+        // For direct conversations, encrypt if E2EE is initialized (unless user explicitly chose unencrypted)
+        if (e2eeStore.isInitialized && conversation?.type === 'direct' && !forceUnencrypted) {
           const currentUserId = useAuthStore.getState().user?.id;
 
           // Find recipient (the other participant)
@@ -293,15 +306,49 @@ export const useChatStore = create<ChatState>()(
               logger.log('Sent E2EE encrypted message');
               return;
             } catch (encryptError) {
-              logger.error('E2EE encryption failed, falling back to plaintext:', encryptError);
-              // Fall through to plaintext sending
+              logger.error('E2EE encryption failed:', encryptError);
+
+              // SECURITY: Do NOT silently fall back to plaintext!
+              // This is a direct conversation with E2EE initialized - the user expects encryption.
+              // Sending plaintext would violate their security expectations.
+
+              const errorMsg =
+                encryptError instanceof Error ? encryptError.message : 'Unknown error';
+
+              // Show user-friendly error message
+              throw new Error(
+                `Failed to encrypt message: ${errorMsg}. ` +
+                  'Please try again or check your encryption keys. ' +
+                  'Your message was NOT sent to protect your privacy.'
+              );
             }
           }
         }
 
         // Fallback: Send plaintext (for group chats or when E2EE not available)
-        const payload: Record<string, string> = { content, client_message_id: clientMessageId };
+        // This path should ONLY be reached for:
+        // - Group conversations (not direct)
+        // - Direct conversations where E2EE is not initialized
+        const payload: Record<string, any> = {
+          content,
+          client_message_id: clientMessageId,
+          content_type: contentType,
+        };
         if (replyToId) payload.reply_to_id = replyToId;
+
+        // Add file metadata if provided
+        if (metadata.fileUrl) {
+          payload.file_url = metadata.fileUrl;
+          payload.file_name = metadata.fileName;
+          payload.file_size = metadata.fileSize;
+          payload.file_mime_type = metadata.fileMimeType;
+          if (metadata.thumbnailUrl) payload.thumbnail_url = metadata.thumbnailUrl;
+        }
+
+        // Add other metadata
+        if (metadata && Object.keys(metadata).length > 0) {
+          payload.metadata = metadata;
+        }
 
         const response = await api.post(
           `/api/v1/conversations/${conversationId}/messages`,
@@ -416,7 +463,25 @@ export const useChatStore = create<ChatState>()(
       },
 
       editMessage: async (messageId: string, content: string) => {
-        const response = await api.patch(`/api/v1/messages/${messageId}`, { content });
+        // Find the conversation that contains this message
+        const { messages } = get();
+        let conversationId: string | null = null;
+
+        for (const [convId, convMessages] of Object.entries(messages)) {
+          if (convMessages.some((msg) => msg.id === messageId)) {
+            conversationId = convId;
+            break;
+          }
+        }
+
+        if (!conversationId) {
+          throw new Error('Message not found in any conversation');
+        }
+
+        const response = await api.patch(
+          `/api/v1/conversations/${conversationId}/messages/${messageId}`,
+          { content }
+        );
         const rawMessage = ensureObject<Record<string, unknown>>(response.data, 'message');
         if (rawMessage) {
           const message = normalizeMessage(rawMessage) as unknown as Message;
@@ -425,11 +490,23 @@ export const useChatStore = create<ChatState>()(
       },
 
       deleteMessage: async (messageId: string) => {
-        await api.delete(`/api/v1/messages/${messageId}`);
-        const { activeConversationId } = get();
-        if (activeConversationId) {
-          get().removeMessage(messageId, activeConversationId);
+        // Find the conversation that contains this message
+        const { messages } = get();
+        let conversationId: string | null = null;
+
+        for (const [convId, convMessages] of Object.entries(messages)) {
+          if (convMessages.some((msg) => msg.id === messageId)) {
+            conversationId = convId;
+            break;
+          }
         }
+
+        if (!conversationId) {
+          throw new Error('Message not found in any conversation');
+        }
+
+        await api.delete(`/api/v1/conversations/${conversationId}/messages/${messageId}`);
+        get().removeMessage(messageId, conversationId);
       },
 
       addReaction: async (messageId: string, emoji: string) => {

@@ -15,7 +15,8 @@ defmodule CGraphWeb.UserSocket do
   channel "user:*", CGraphWeb.UserChannel
   channel "presence:*", CGraphWeb.PresenceChannel
   channel "call:*", CGraphWeb.CallChannel
-  
+  channel "webrtc:lobby", CGraphWeb.WebRTCLobbyChannel
+
   # Gamification Channels
   channel "gamification:*", CGraphWeb.GamificationChannel
   channel "marketplace:*", CGraphWeb.MarketplaceChannel

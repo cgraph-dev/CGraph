@@ -15,7 +15,7 @@ export function cn(...inputs: ClassValue[]) {
  */
 export function safeParseDate(value: unknown): Date | null {
   if (!value) return null;
-  
+
   try {
     const date = new Date(value as string | number | Date);
     return isNaN(date.getTime()) ? null : date;
@@ -33,12 +33,27 @@ export function formatTimeAgo(
 ): string {
   const { addSuffix = true, fallback = 'Just now' } = options || {};
   const date = safeParseDate(value);
-  
+
   if (!date) return fallback;
-  
+
   try {
     return fnsFormatDistanceToNow(date, { addSuffix });
   } catch {
     return fallback;
   }
+}
+
+/**
+ * Format bytes to human-readable string
+ */
+export function formatBytes(bytes: number, decimals: number = 2): string {
+  if (bytes === 0) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }

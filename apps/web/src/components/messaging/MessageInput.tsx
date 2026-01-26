@@ -16,6 +16,7 @@ import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { StickerPicker } from '@/components/chat/StickerPicker';
+import { GifPicker, type GifResult } from '@/components/chat/GifPicker';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { Sticker } from '@/data/stickers';
 import { api } from '@/lib/api';
@@ -217,6 +218,28 @@ export function MessageInput({
           stickerName: sticker.name,
           stickerEmoji: sticker.emoji,
           stickerPackId: sticker.packId,
+        },
+      });
+      setAttachmentMode('none');
+      HapticFeedback.medium();
+    },
+    [onSend]
+  );
+
+  // Handle GIF select
+  const handleGifSelect = useCallback(
+    (gif: GifResult) => {
+      onSend({
+        content: '',
+        type: 'gif',
+        metadata: {
+          gifId: gif.id,
+          gifTitle: gif.title,
+          gifUrl: gif.url,
+          gifPreviewUrl: gif.previewUrl,
+          gifWidth: gif.width,
+          gifHeight: gif.height,
+          gifSource: gif.source,
         },
       });
       setAttachmentMode('none');
@@ -463,6 +486,24 @@ export function MessageInput({
               onSelect={handleStickerSelect}
               onClose={() => setAttachmentMode('none')}
               isOpen={attachmentMode === 'sticker'}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* GIF Picker */}
+      <AnimatePresence>
+        {attachmentMode === 'gif' && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 10 }}
+            className="absolute bottom-full left-0 right-0 mb-2"
+          >
+            <GifPicker
+              onSelect={handleGifSelect}
+              onClose={() => setAttachmentMode('none')}
+              isOpen={attachmentMode === 'gif'}
             />
           </motion.div>
         )}
