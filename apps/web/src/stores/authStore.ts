@@ -459,14 +459,17 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: state.isAuthenticated,
         }),
         // Critical: Handle rehydration to fix isLoading state
-        // Note: We use queueMicrotask to defer setState calls until after the store is fully initialized
+        // Note: We use setTimeout(0) to defer setState calls until after the store is fully initialized
         // This avoids "Cannot access before initialization" errors in production builds
         onRehydrateStorage: () => {
           authLogger.debug('onRehydrateStorage called');
+          let hasRun = false; // Guard against multiple executions
           return (state, error) => {
+            if (hasRun) return; // Prevent infinite loops
+            hasRun = true;
             authLogger.debug('Rehydration callback - state:', !!state, 'error:', error);
             // Defer setState to avoid TDZ error with useAuthStore
-            queueMicrotask(() => {
+            setTimeout(() => {
               if (error) {
                 console.error('Auth store rehydration failed:', error);
                 // On error, reset to safe state
@@ -479,17 +482,16 @@ export const useAuthStore = create<AuthState>()(
                 });
               } else if (state) {
                 // Rehydration successful - mark loading as complete
-                // Don't block on token validation - let the app render
                 authLogger.debug('Rehydration complete - hasToken:', !!state.token);
                 useAuthStore.setState({
-                  isLoading: false, // Never block - checkAuth runs in background
+                  isLoading: false,
                 });
               } else {
                 // No state to rehydrate
                 authLogger.debug('No state to rehydrate');
                 useAuthStore.setState({ isLoading: false });
               }
-            });
+            }, 0);
           };
         },
       }
