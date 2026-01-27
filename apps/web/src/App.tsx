@@ -172,7 +172,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       .finally(() => {
         authLogger.debug('Auth check complete');
       });
-  }, [checkAuth, token]);
+    // Only run once on mount - checkAuth handles all token state internally
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fetch gamification data when authenticated
   useEffect(() => {
@@ -192,7 +194,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
         console.error('Customization initialization failed:', error);
       });
     }
-  }, [isAuthenticated, initializeCustomizations]);
+    // initializeCustomizations is stable from Zustand - safe to omit from deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   // Apply global theme CSS variables (both app theme and user customizations)
   useEffect(() => {
