@@ -30,6 +30,15 @@ defmodule CGraphWeb.StripeWebhookController do
     payload = conn.private[:raw_body]
     signature = get_stripe_signature(conn)
 
+    if is_nil(payload) or is_nil(signature) do
+      Logger.warning("Stripe webhook missing payload or signature")
+
+      return
+        conn
+        |> put_status(:bad_request)
+        |> json(%{error: "Missing webhook payload or signature"})
+    end
+
     case verify_webhook(payload, signature) do
       {:ok, event} ->
         handle_event(event)
@@ -169,7 +178,7 @@ defmodule CGraphWeb.StripeWebhookController do
   end
 
   defp verify_webhook(payload, signature) do
-    webhook_secret = Application.get_env(:stripity_stripe, :webhook_secret)
+    webhook_secret = Application.get_env(:stripity_stripe, :signing_secret)
 
     case Stripe.Webhook.construct_event(payload, signature, webhook_secret) do
       {:ok, event} -> {:ok, event}

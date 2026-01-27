@@ -57,6 +57,23 @@ defmodule CGraphWeb.Plugs.RateLimiterV2 do
 
   @behaviour Plug
 
+  # Trusted proxy CIDR ranges - only trust forwarded headers from these IPs
+  # Configure via: config :cgraph, CGraphWeb.Plugs.RateLimiterV2, trusted_proxies: [...]
+  @default_trusted_proxies [
+    # Cloudflare IPv4: https://www.cloudflare.com/ips-v4
+    "173.245.48.0/20", "103.21.244.0/22", "103.22.200.0/22", "103.31.4.0/22",
+    "141.101.64.0/18", "108.162.192.0/18", "190.93.240.0/20", "188.114.96.0/20",
+    "197.234.240.0/22", "198.41.128.0/17", "162.158.0.0/15", "104.16.0.0/13",
+    "104.24.0.0/14", "172.64.0.0/13", "131.0.72.0/22",
+    # Cloudflare IPv6
+    "2400:cb00::/32", "2606:4700::/32", "2803:f800::/32", "2405:b500::/32",
+    "2405:8100::/32", "2a06:98c0::/29", "2c0f:f248::/32",
+    # Common private ranges (for local load balancers)
+    "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "127.0.0.0/8",
+    # Docker default bridge
+    "172.17.0.0/16"
+  ]
+
   # Rate limit tier configurations
   @tiers %{
     standard: %{limit: 100, window_ms: 60_000},
@@ -202,38 +219,129 @@ defmodule CGraphWeb.Plugs.RateLimiterV2 do
   end
 
   @doc """
-  Extract the real client IP, accounting for proxies and load balancers.
+  Extract the real client IP with trusted proxy enforcement.
 
-  Checks headers in order of trust:
+  SECURITY: Only trusts forwarded headers when the direct connection
+  comes from a known/trusted proxy IP. This prevents IP spoofing attacks
+  where malicious clients send fake X-Forwarded-For headers.
+
+  Checks headers in order of trust (only if from trusted proxy):
   1. CF-Connecting-IP (Cloudflare)
   2. X-Real-IP (nginx)
   3. X-Forwarded-For (standard proxy header, first IP)
-  4. conn.remote_ip (direct connection)
+  4. conn.remote_ip (direct connection - always fallback)
   """
   def extract_client_ip(conn) do
-    cond do
-      # Cloudflare
-      cf_ip = get_req_header(conn, "cf-connecting-ip") |> List.first() ->
-        sanitize_ip(cf_ip)
+    direct_ip = conn.remote_ip |> :inet.ntoa() |> to_string()
 
-      # Nginx real IP
-      real_ip = get_req_header(conn, "x-real-ip") |> List.first() ->
-        sanitize_ip(real_ip)
+    # Only trust forwarded headers if connection is from a trusted proxy
+    if trusted_proxy?(conn.remote_ip) do
+      cond do
+        # Cloudflare
+        cf_ip = get_req_header(conn, "cf-connecting-ip") |> List.first() ->
+          sanitize_ip(cf_ip)
 
-      # Standard forwarded header (take first, which is original client)
-      forwarded = get_req_header(conn, "x-forwarded-for") |> List.first() ->
-        forwarded
-        |> String.split(",")
-        |> List.first()
-        |> String.trim()
-        |> sanitize_ip()
+        # Nginx real IP
+        real_ip = get_req_header(conn, "x-real-ip") |> List.first() ->
+          sanitize_ip(real_ip)
 
-      # Direct connection
-      true ->
-        conn.remote_ip
-        |> :inet.ntoa()
-        |> to_string()
+        # Standard forwarded header (take first, which is original client)
+        forwarded = get_req_header(conn, "x-forwarded-for") |> List.first() ->
+          forwarded
+          |> String.split(",")
+          |> List.first()
+          |> String.trim()
+          |> sanitize_ip()
+
+        # Direct connection from trusted proxy but no forwarded header
+        true ->
+          direct_ip
+      end
+    else
+      # Untrusted source - ignore all forwarded headers, use direct IP
+      # Log if someone is trying to spoof
+      if has_forwarded_headers?(conn) do
+        Logger.warning(
+          "Ignoring forwarded headers from untrusted IP: #{direct_ip}",
+          module: __MODULE__,
+          direct_ip: direct_ip
+        )
+      end
+
+      direct_ip
     end
+  end
+
+  defp has_forwarded_headers?(conn) do
+    Enum.any?(["x-forwarded-for", "x-real-ip", "cf-connecting-ip"], fn header ->
+      get_req_header(conn, header) != []
+    end)
+  end
+
+  @doc """
+  Check if an IP address is in the trusted proxy list.
+  """
+  def trusted_proxy?(ip_tuple) when is_tuple(ip_tuple) do
+    trusted_cidrs = get_trusted_proxy_cidrs()
+    Enum.any?(trusted_cidrs, fn cidr -> ip_in_cidr?(ip_tuple, cidr) end)
+  end
+
+  defp get_trusted_proxy_cidrs do
+    Application.get_env(:cgraph, __MODULE__, [])
+    |> Keyword.get(:trusted_proxies, @default_trusted_proxies)
+    |> Enum.map(&parse_cidr/1)
+    |> Enum.reject(&is_nil/1)
+  end
+
+  defp parse_cidr(cidr_string) do
+    case String.split(cidr_string, "/") do
+      [ip_str, prefix_str] ->
+        with {:ok, ip} <- parse_ip(ip_str),
+             {prefix, ""} <- Integer.parse(prefix_str) do
+          {ip, prefix}
+        else
+          _ -> nil
+        end
+
+      [ip_str] ->
+        # Single IP, treat as /32 or /128
+        case parse_ip(ip_str) do
+          {:ok, ip} when tuple_size(ip) == 4 -> {ip, 32}
+          {:ok, ip} when tuple_size(ip) == 8 -> {ip, 128}
+          _ -> nil
+        end
+    end
+  end
+
+  defp parse_ip(ip_str) do
+    ip_str
+    |> String.to_charlist()
+    |> :inet.parse_address()
+  end
+
+  defp ip_in_cidr?(ip, {network, prefix}) when tuple_size(ip) == tuple_size(network) do
+    ip_int = ip_to_integer(ip)
+    network_int = ip_to_integer(network)
+    bits = tuple_size(ip) * 8
+    mask = (1 <<< bits) - 1 - ((1 <<< (bits - prefix)) - 1)
+
+    (ip_int &&& mask) == (network_int &&& mask)
+  end
+
+  defp ip_in_cidr?(_, _), do: false  # IPv4/IPv6 mismatch
+
+  defp ip_to_integer(ip) when tuple_size(ip) == 4 do
+    # IPv4
+    ip
+    |> Tuple.to_list()
+    |> Enum.reduce(0, fn octet, acc -> (acc <<< 8) + octet end)
+  end
+
+  defp ip_to_integer(ip) when tuple_size(ip) == 8 do
+    # IPv6
+    ip
+    |> Tuple.to_list()
+    |> Enum.reduce(0, fn segment, acc -> (acc <<< 16) + segment end)
   end
 
   defp sanitize_ip(ip_string) when is_binary(ip_string) do

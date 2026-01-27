@@ -356,6 +356,38 @@ class SocketManager {
       }
     });
 
+    // Handle initial contact presence snapshot
+    channel.on('contact_presence', (payload) => {
+      const data = payload as { contacts?: Record<string, { online?: boolean }> };
+      const contacts = data.contacts || {};
+      const onlineSet = new Set<string>();
+
+      Object.entries(contacts).forEach(([userId, status]) => {
+        if (status?.online) {
+          onlineSet.add(userId);
+        }
+      });
+
+      this.onlineUsers.set('lobby', onlineSet);
+      logger.log('Contact presence snapshot:', onlineSet.size);
+    });
+
+    // Handle contact presence updates (friend online/offline)
+    channel.on('contact_status_changed', (payload) => {
+      const data = payload as { user_id: string; online: boolean };
+      const onlineSet = this.onlineUsers.get('lobby') || new Set<string>();
+
+      if (data.online) {
+        onlineSet.add(data.user_id);
+        this.notifyStatusChange('lobby', data.user_id, true);
+      } else {
+        onlineSet.delete(data.user_id);
+        this.notifyStatusChange('lobby', data.user_id, false);
+      }
+
+      this.onlineUsers.set('lobby', onlineSet);
+    });
+
     // Handle incoming WebRTC calls
     channel.on('incoming_call', (payload) => {
       logger.log('Incoming call received:', payload);
@@ -419,7 +451,7 @@ class SocketManager {
       return null;
     }
 
-    const channel = this.socket.channel(topic, {});
+    const channel = this.socket.channel(topic, { include_contact_presence: true });
     const presence = new Presence(channel);
 
     // Handle initial presence state

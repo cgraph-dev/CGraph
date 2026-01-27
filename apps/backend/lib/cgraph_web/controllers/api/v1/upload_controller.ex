@@ -2,12 +2,34 @@ defmodule CGraphWeb.API.V1.UploadController do
   @moduledoc """
   Handles file uploads.
   Supports images, documents, and other media with size and type restrictions.
+
+  SECURITY: Uses server-side MIME sniffing via magic bytes to verify
+  file types, preventing content-type spoofing attacks.
   """
   use CGraphWeb, :controller
+  require Logger
 
   alias CGraph.Uploads
 
   action_fallback CGraphWeb.FallbackController
+
+  # Magic bytes for file type detection (first bytes of file)
+  # Reference: https://en.wikipedia.org/wiki/List_of_file_signatures
+  @magic_bytes %{
+    # Images
+    <<0xFF, 0xD8, 0xFF>> => "image/jpeg",
+    <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>> => "image/png",
+    <<0x47, 0x49, 0x46, 0x38, 0x37, 0x61>> => "image/gif",  # GIF87a
+    <<0x47, 0x49, 0x46, 0x38, 0x39, 0x61>> => "image/gif",  # GIF89a
+    <<0x52, 0x49, 0x46, 0x46>> => :webp_check,  # RIFF (WebP container)
+    # Videos
+    <<0x00, 0x00, 0x00>> => :mp4_check,  # ftyp box (needs further check)
+    <<0x1A, 0x45, 0xDF, 0xA3>> => "video/webm",  # WebM/MKV
+    # Documents
+    <<0x25, 0x50, 0x44, 0x46>> => "application/pdf",  # %PDF
+    <<0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1>> => :ole_check,  # MS Office OLE
+    <<0x50, 0x4B, 0x03, 0x04>> => :zip_check  # ZIP-based (OOXML, etc.)
+  }
 
   # Max file sizes in bytes
   @max_image_size 10 * 1024 * 1024  # 10 MB
@@ -158,31 +180,190 @@ defmodule CGraphWeb.API.V1.UploadController do
   # Private helpers
 
   defp validate_upload(upload, context) do
-    content_type = upload.content_type
+    claimed_type = upload.content_type
     size = get_file_size(upload)
 
-    cond do
-      content_type in @allowed_image_types ->
-        validate_size(size, @max_image_size, "image")
+    # SECURITY: Verify actual file type via magic bytes
+    with {:ok, detected_type} <- detect_mime_type(upload.path),
+         :ok <- verify_content_type_match(claimed_type, detected_type, upload.path) do
+      # Use detected type for validation (more secure)
+      actual_type = detected_type
 
-      content_type in @allowed_video_types ->
-        if context in ["message", "post"] do
-          validate_size(size, @max_video_size, "video")
-        else
-          {:error, :video_not_allowed_in_context}
-        end
+      cond do
+        actual_type in @allowed_image_types ->
+          validate_size(size, @max_image_size, "image")
 
-      content_type in @allowed_document_types ->
-        if context == "message" do
-          validate_size(size, @max_file_size, "document")
-        else
-          {:error, :documents_not_allowed_in_context}
-        end
+        actual_type in @allowed_video_types ->
+          if context in ["message", "post"] do
+            validate_size(size, @max_video_size, "video")
+          else
+            {:error, :video_not_allowed_in_context}
+          end
 
-      true ->
-        {:error, :unsupported_file_type}
+        actual_type in @allowed_document_types ->
+          if context == "message" do
+            validate_size(size, @max_file_size, "document")
+          else
+            {:error, :documents_not_allowed_in_context}
+          end
+
+        true ->
+          {:error, :unsupported_file_type}
+      end
     end
   end
+
+  # Detect MIME type from file magic bytes
+  defp detect_mime_type(path) do
+    case File.open(path, [:read, :binary]) do
+      {:ok, file} ->
+        # Read first 16 bytes for magic byte detection
+        header = IO.binread(file, 16)
+        File.close(file)
+        identify_type_from_header(header)
+
+      {:error, reason} ->
+        Logger.error("Failed to read file for MIME detection: #{inspect(reason)}")
+        {:error, :file_read_error}
+    end
+  end
+
+  defp identify_type_from_header(header) when is_binary(header) and byte_size(header) >= 3 do
+    # Check magic bytes in order of specificity
+    cond do
+      # PNG (8 bytes)
+      binary_part(header, 0, min(8, byte_size(header))) == <<0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A>> ->
+        {:ok, "image/png"}
+
+      # JPEG (3 bytes)
+      binary_part(header, 0, 3) == <<0xFF, 0xD8, 0xFF>> ->
+        {:ok, "image/jpeg"}
+
+      # GIF87a/GIF89a (6 bytes)
+      byte_size(header) >= 6 and binary_part(header, 0, 6) in [<<0x47, 0x49, 0x46, 0x38, 0x37, 0x61>>, <<0x47, 0x49, 0x46, 0x38, 0x39, 0x61>>] ->
+        {:ok, "image/gif"}
+
+      # WebP (RIFF....WEBP)
+      byte_size(header) >= 12 and binary_part(header, 0, 4) == <<0x52, 0x49, 0x46, 0x46>> and binary_part(header, 8, 4) == "WEBP" ->
+        {:ok, "image/webp"}
+
+      # WebM/MKV
+      binary_part(header, 0, 4) == <<0x1A, 0x45, 0xDF, 0xA3>> ->
+        {:ok, "video/webm"}
+
+      # MP4/MOV/M4V family (ftyp box)
+      byte_size(header) >= 8 and binary_part(header, 4, 4) == "ftyp" ->
+        identify_mp4_variant(header)
+
+      # PDF
+      binary_part(header, 0, 4) == <<0x25, 0x50, 0x44, 0x46>> ->
+        {:ok, "application/pdf"}
+
+      # MS Office OLE (old .doc, .xls)
+      byte_size(header) >= 8 and binary_part(header, 0, 8) == <<0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1>> ->
+        {:ok, "application/msword"}  # Could be .xls too, but safer default
+
+      # ZIP-based (OOXML: .docx, .xlsx, etc.)
+      binary_part(header, 0, 4) == <<0x50, 0x4B, 0x03, 0x04>> ->
+        {:ok, "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}
+
+      # Plain text detection (printable ASCII/UTF-8 heuristic)
+      is_likely_text?(header) ->
+        {:ok, "text/plain"}
+
+      true ->
+        {:error, :unknown_file_type}
+    end
+  end
+
+  defp identify_type_from_header(_), do: {:error, :file_too_small}
+
+  defp identify_mp4_variant(header) when byte_size(header) >= 12 do
+    brand = binary_part(header, 8, 4)
+
+    cond do
+      brand in ["isom", "iso2", "mp41", "mp42", "avc1", "M4V ", "M4A "] ->
+        {:ok, "video/mp4"}
+
+      brand in ["qt  ", "MSNV"] ->
+        {:ok, "video/quicktime"}
+
+      brand == "3gp" <> _ ->
+        {:ok, "video/3gpp"}
+
+      # Default to mp4 for ftyp containers
+      true ->
+        {:ok, "video/mp4"}
+    end
+  end
+
+  defp identify_mp4_variant(_), do: {:error, :invalid_mp4}
+
+  defp is_likely_text?(data) do
+    # Check if content appears to be text (printable ASCII, UTF-8 BOM, common text patterns)
+    cond do
+      # UTF-8 BOM
+      binary_part(data, 0, min(3, byte_size(data))) == <<0xEF, 0xBB, 0xBF>> ->
+        true
+
+      # Check if mostly printable ASCII
+      true ->
+        printable_ratio =
+          data
+          |> :binary.bin_to_list()
+          |> Enum.count(fn byte ->
+            # Printable ASCII, tab, newline, carriage return
+            (byte >= 32 and byte <= 126) or byte in [9, 10, 13]
+          end)
+
+        printable_ratio / byte_size(data) > 0.9
+    end
+  end
+
+  # Verify claimed content-type matches detected type
+  defp verify_content_type_match(claimed, detected, path) do
+    # Allow some flexibility for related types
+    if types_compatible?(claimed, detected) do
+      :ok
+    else
+      Logger.warning(
+        "Content-type mismatch: claimed=#{claimed}, detected=#{detected}, file=#{path}",
+        module: __MODULE__
+      )
+      {:error, :content_type_mismatch}
+    end
+  end
+
+  defp types_compatible?(claimed, detected) when claimed == detected, do: true
+
+  # Allow HEIC/HEIF (not easily detected) when claiming image types
+  defp types_compatible?(claimed, _detected) when claimed in ["image/heic", "image/heif"], do: true
+
+  # Allow MS Office document type variants
+  defp types_compatible?(claimed, detected)
+       when claimed in ["application/msword", "application/vnd.ms-excel"] and
+            detected in ["application/msword", "application/vnd.ms-excel"],
+       do: true
+
+  # Allow OOXML variants
+  defp types_compatible?(claimed, detected)
+       when claimed in [
+              "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            ] and
+            detected == "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+       do: true
+
+  # Allow CSV as text/plain
+  defp types_compatible?("text/csv", "text/plain"), do: true
+
+  # Video type variants
+  defp types_compatible?(claimed, detected)
+       when claimed in ["video/mp4", "video/quicktime", "video/x-m4v"] and
+            detected in ["video/mp4", "video/quicktime"],
+       do: true
+
+  defp types_compatible?(_, _), do: false
 
   defp validate_size(size, max, type) do
     if size <= max do

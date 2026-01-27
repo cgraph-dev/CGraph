@@ -273,17 +273,21 @@ defmodule CGraphWeb.PresenceChannel do
 
   # Broadcast a message to all friends of a user
   defp broadcast_to_friends(user_id, friend_ids, event, payload) do
-    # Broadcast to each friend's personal channel
+    # Normalize payload into presence update format for user channel
+    presence_update =
+      payload
+      |> Map.put(:from_user_id, user_id)
+      |> Map.put_new(:online, event != "friend_offline")
+      |> Map.put_new(:status, if(event == "friend_offline", do: "offline", else: "online"))
+
+    # Broadcast to each friend's personal presence_updates topic
     Enum.each(friend_ids, fn friend_id ->
       Phoenix.PubSub.broadcast(
         CGraph.PubSub,
-        "user:#{friend_id}",
-        {event, Map.put(payload, :from_user_id, user_id)}
+        "user:#{friend_id}:presence_updates",
+        {:presence_update, user_id, presence_update}
       )
     end)
-
-    # Also broadcast on the presence lobby for friends who are connected
-    CGraphWeb.Endpoint.broadcast("presence:lobby", event, payload)
   end
 
   # Private helpers
