@@ -69,7 +69,9 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    // SECURITY: Sourcemaps disabled in production to protect proprietary code
+    // Set VITE_ENABLE_SOURCEMAPS=true for debugging if needed
+    sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true' ? true : false,
     // Suppress chunk size warnings - large chunks are expected for Web3/rich apps
     // Index (~800KB) and demo pages are intentionally large
     chunkSizeWarningLimit: 2000,

@@ -51,7 +51,7 @@ platform** similar to Discord.
 | Phase 2: Repository Restructuring | Days 4-7   | 🟡 IN PROGRESS (manual: make repo private) |
 | Phase 3: Remove Self-Hosting      | Days 8-14  | ✅ COMPLETE                                |
 | Phase 4: Payment Integration      | Days 15-30 | ✅ COMPLETE (backend + frontend)           |
-| Phase 5: Code Protection          | Days 31-45 | ⚪ NOT STARTED                             |
+| Phase 5: Code Protection          | Days 31-45 | ✅ COMPLETE (sourcemaps disabled)          |
 | Phase 6: Ongoing Operations       | Continuous | ⚪ NOT STARTED                             |
 
 ---
@@ -633,7 +633,9 @@ Create checkout flow that calls your backend, which creates a Stripe Checkout Se
 ```typescript
 export default defineConfig({
   build: {
-    sourcemap: false, // Ensure this is false for production
+    // SECURITY: Sourcemaps disabled in production to protect proprietary code
+    // Set VITE_ENABLE_SOURCEMAPS=true for debugging if needed
+    sourcemap: process.env.VITE_ENABLE_SOURCEMAPS === 'true' ? true : false,
   },
 });
 ```
@@ -647,7 +649,7 @@ pnpm add -D javascript-obfuscator
 **Reality check:** Discord's client gets reverse-engineered (BetterDiscord, Vencord). Obfuscation
 slows attackers but doesn't stop them. Don't over-invest here.
 
-**STATUS:** ⚪ VERIFY sourcemap setting
+**STATUS:** ✅ IMPLEMENTED (January 27, 2026) - Sourcemaps disabled by default
 
 ---
 
