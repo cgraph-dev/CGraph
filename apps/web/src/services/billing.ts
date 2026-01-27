@@ -6,7 +6,7 @@
  * @module services/billing
  */
 
-import api from './api';
+import { api } from '../lib/api';
 import type { PlanId } from '../lib/stripe';
 
 /**

@@ -79,7 +79,9 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
     );
   }
 
-  const currentPlan = PLANS.find((p) => p.id === status?.tier) || PLANS[0];
+  // currentPlan is guaranteed to be defined since PLANS[0] always exists
+  const currentPlan = PLANS.find((p) => p.id === status?.tier) ?? PLANS[0]!;
+  const currentPlanIndex = PLANS.indexOf(currentPlan);
 
   return (
     <div className={`space-y-8 ${className}`}>
@@ -154,7 +156,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {PLANS.map((plan) => {
           const isCurrent = plan.id === status?.tier;
-          const isUpgrade = PLANS.indexOf(plan) > PLANS.indexOf(currentPlan);
+          const isUpgrade = PLANS.indexOf(plan) > currentPlanIndex;
           const price = billingCycle === 'yearly' ? plan.priceYearly : plan.price;
 
           return (
