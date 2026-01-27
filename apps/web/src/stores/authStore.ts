@@ -458,42 +458,10 @@ export const useAuthStore = create<AuthState>()(
           user: state.user,
           isAuthenticated: state.isAuthenticated,
         }),
-        // Critical: Handle rehydration to fix isLoading state
-        // Note: We use setTimeout(0) to defer setState calls until after the store is fully initialized
-        // This avoids "Cannot access before initialization" errors in production builds
-        onRehydrateStorage: () => {
-          authLogger.debug('onRehydrateStorage called');
-          let hasRun = false; // Guard against multiple executions
-          return (state, error) => {
-            if (hasRun) return; // Prevent infinite loops
-            hasRun = true;
-            authLogger.debug('Rehydration callback - state:', !!state, 'error:', error);
-            // Defer setState to avoid TDZ error with useAuthStore
-            setTimeout(() => {
-              if (error) {
-                console.error('Auth store rehydration failed:', error);
-                // On error, reset to safe state
-                useAuthStore.setState({
-                  isLoading: false,
-                  isAuthenticated: false,
-                  user: null,
-                  token: null,
-                  refreshToken: null,
-                });
-              } else if (state) {
-                // Rehydration successful - mark loading as complete
-                authLogger.debug('Rehydration complete - hasToken:', !!state.token);
-                useAuthStore.setState({
-                  isLoading: false,
-                });
-              } else {
-                // No state to rehydrate
-                authLogger.debug('No state to rehydrate');
-                useAuthStore.setState({ isLoading: false });
-              }
-            }, 0);
-          };
-        },
+        // PRODUCTION BUILD FIX:
+        // DO NOT use onRehydrateStorage with setState - it causes TDZ errors
+        // because useAuthStore is referenced before the store is fully assigned.
+        // Instead, we handle isLoading in initializeTokenService() called from App.tsx
       }
     ),
     {
@@ -523,7 +491,6 @@ export const useAuthStore = create<AuthState>()(
  * 3. Token access works correctly once store is ready
  */
 let tokenServiceInitialized = false;
-let safetyTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 export function initializeTokenService(): void {
   // Guard against double initialization
@@ -533,6 +500,10 @@ export function initializeTokenService(): void {
   }
   tokenServiceInitialized = true;
   authLogger.debug('Initializing token service handlers');
+
+  // Mark loading as complete - persist middleware has finished by now
+  // This replaces onRehydrateStorage which caused TDZ errors
+  useAuthStore.setState({ isLoading: false });
 
   registerTokenHandlers({
     getAccessToken: () => useAuthStore.getState().token,
@@ -546,15 +517,5 @@ export function initializeTokenService(): void {
     onLogout: () => useAuthStore.getState().logout(),
   });
 
-  // Safety timeout: ensure isLoading is set to false within 3 seconds
-  // This catches any edge cases where rehydration might not complete
-  if (typeof window !== 'undefined' && !safetyTimeoutId) {
-    safetyTimeoutId = setTimeout(() => {
-      const state = useAuthStore.getState();
-      if (state.isLoading) {
-        authLogger.warn('Safety timeout: forcing isLoading to false');
-        useAuthStore.setState({ isLoading: false });
-      }
-    }, 3000);
-  }
+  // Safety timeout removed - no longer needed since we set isLoading: false above
 }
