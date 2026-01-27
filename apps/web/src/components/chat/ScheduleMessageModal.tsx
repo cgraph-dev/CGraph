@@ -4,7 +4,7 @@ import { ClockIcon, XMarkIcon, CalendarIcon, PaperAirplaneIcon } from '@heroicon
 import { add, format, isBefore, isAfter, startOfDay, addHours } from 'date-fns';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { toast } from 'sonner';
+import { toast } from '@/components/Toast';
 
 interface ScheduleMessageModalProps {
   isOpen: boolean;

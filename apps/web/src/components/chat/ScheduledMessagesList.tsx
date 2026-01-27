@@ -11,7 +11,7 @@ import { format, formatDistanceToNow, isPast, isToday, isTomorrow, isThisWeek } 
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useChatStore, Message } from '@/stores/chatStore';
-import { toast } from 'sonner';
+import { toast } from '@/components/Toast';
 
 interface ScheduledMessagesListProps {
   isOpen: boolean;

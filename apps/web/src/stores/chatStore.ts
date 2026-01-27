@@ -818,7 +818,7 @@ export const useChatStore = create<ChatState>()(
         set({ isLoadingScheduledMessages: true });
         try {
           const response = await api.get(`/conversations/${conversationId}/scheduled-messages`);
-          const scheduledMessages = ensureArray(response.data?.messages || response.data);
+          const scheduledMessages = ensureArray<Message>(response.data?.messages || response.data);
 
           set((state) => ({
             scheduledMessages: {
@@ -859,7 +859,9 @@ export const useChatStore = create<ChatState>()(
           }
 
           const response = await api.post(`/conversations/${conversationId}/messages`, payload);
-          const scheduledMessage = normalizeMessage(response.data?.message || response.data);
+          const scheduledMessage = normalizeMessage(
+            response.data?.message || response.data
+          ) as unknown as Message;
 
           // Add to scheduled messages list
           set((state) => {
@@ -910,7 +912,9 @@ export const useChatStore = create<ChatState>()(
           const response = await api.patch(`/messages/${messageId}/reschedule`, {
             scheduled_at: newScheduledAt.toISOString(),
           });
-          const updatedMessage = normalizeMessage(response.data?.message || response.data);
+          const updatedMessage = normalizeMessage(
+            response.data?.message || response.data
+          ) as unknown as Message;
 
           // Update in scheduled messages list
           set((state) => {
