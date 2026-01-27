@@ -459,32 +459,37 @@ export const useAuthStore = create<AuthState>()(
           isAuthenticated: state.isAuthenticated,
         }),
         // Critical: Handle rehydration to fix isLoading state
+        // Note: We use queueMicrotask to defer setState calls until after the store is fully initialized
+        // This avoids "Cannot access before initialization" errors in production builds
         onRehydrateStorage: () => {
           authLogger.debug('onRehydrateStorage called');
           return (state, error) => {
             authLogger.debug('Rehydration callback - state:', !!state, 'error:', error);
-            if (error) {
-              console.error('Auth store rehydration failed:', error);
-              // On error, reset to safe state
-              useAuthStore.setState({
-                isLoading: false,
-                isAuthenticated: false,
-                user: null,
-                token: null,
-                refreshToken: null,
-              });
-            } else if (state) {
-              // Rehydration successful - mark loading as complete
-              // Don't block on token validation - let the app render
-              authLogger.debug('Rehydration complete - hasToken:', !!state.token);
-              useAuthStore.setState({
-                isLoading: false, // Never block - checkAuth runs in background
-              });
-            } else {
-              // No state to rehydrate
-              authLogger.debug('No state to rehydrate');
-              useAuthStore.setState({ isLoading: false });
-            }
+            // Defer setState to avoid TDZ error with useAuthStore
+            queueMicrotask(() => {
+              if (error) {
+                console.error('Auth store rehydration failed:', error);
+                // On error, reset to safe state
+                useAuthStore.setState({
+                  isLoading: false,
+                  isAuthenticated: false,
+                  user: null,
+                  token: null,
+                  refreshToken: null,
+                });
+              } else if (state) {
+                // Rehydration successful - mark loading as complete
+                // Don't block on token validation - let the app render
+                authLogger.debug('Rehydration complete - hasToken:', !!state.token);
+                useAuthStore.setState({
+                  isLoading: false, // Never block - checkAuth runs in background
+                });
+              } else {
+                // No state to rehydrate
+                authLogger.debug('No state to rehydrate');
+                useAuthStore.setState({ isLoading: false });
+              }
+            });
           };
         },
       }
