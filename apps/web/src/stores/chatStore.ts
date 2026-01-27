@@ -48,6 +48,9 @@ export interface Message {
   ephemeralPublicKey?: string;
   nonce?: string;
   senderIdentityKey?: string;
+  // Message scheduling
+  scheduledAt?: string | null;
+  scheduleStatus?: 'immediate' | 'scheduled' | 'sent' | 'cancelled';
 }
 
 export interface Reaction {
@@ -111,6 +114,9 @@ export interface ChatState {
   hasMoreMessages: Record<string, boolean>;
   // TTL cache to prevent repeated fetchConversations calls (scales to high traffic)
   conversationsLastFetchedAt: number | null;
+  // Scheduled messages
+  scheduledMessages: Record<string, Message[]>;
+  isLoadingScheduledMessages: boolean;
 
   // Actions
   fetchConversations: () => Promise<void>;
@@ -156,6 +162,16 @@ export interface ChatState {
     username?: string
   ) => void;
   removeReactionFromMessage: (messageId: string, emoji: string, userId: string) => void;
+  // Message scheduling
+  fetchScheduledMessages: (conversationId: string) => Promise<void>;
+  scheduleMessage: (
+    conversationId: string,
+    content: string,
+    scheduledAt: Date,
+    options?: { type?: string; metadata?: Record<string, any>; replyToId?: string }
+  ) => Promise<void>;
+  cancelScheduledMessage: (messageId: string) => Promise<void>;
+  rescheduleMessage: (messageId: string, newScheduledAt: Date) => Promise<void>;
 }
 
 export const useChatStore = create<ChatState>()(
@@ -171,6 +187,8 @@ export const useChatStore = create<ChatState>()(
       typingUsersInfo: {},
       hasMoreMessages: {},
       conversationsLastFetchedAt: null,
+      scheduledMessages: {},
+      isLoadingScheduledMessages: false,
 
       fetchConversations: async () => {
         const { conversationsLastFetchedAt, isLoadingConversations } = get();
@@ -791,6 +809,125 @@ export const useChatStore = create<ChatState>()(
 
           return { messages: { ...state.messages, ...updatedMessages } };
         });
+      },
+
+      /**
+       * Fetch scheduled messages for a conversation
+       */
+      fetchScheduledMessages: async (conversationId: string) => {
+        set({ isLoadingScheduledMessages: true });
+        try {
+          const response = await api.get(`/conversations/${conversationId}/scheduled-messages`);
+          const scheduledMessages = ensureArray(response.data?.messages || response.data);
+
+          set((state) => ({
+            scheduledMessages: {
+              ...state.scheduledMessages,
+              [conversationId]: scheduledMessages,
+            },
+            isLoadingScheduledMessages: false,
+          }));
+        } catch (error) {
+          logger.error('Failed to fetch scheduled messages:', error);
+          set({ isLoadingScheduledMessages: false });
+          throw error;
+        }
+      },
+
+      /**
+       * Schedule a message for future delivery
+       */
+      scheduleMessage: async (
+        conversationId: string,
+        content: string,
+        scheduledAt: Date,
+        options: { type?: string; metadata?: Record<string, any>; replyToId?: string } = {}
+      ) => {
+        try {
+          const payload: any = {
+            content,
+            content_type: options.type || 'text',
+            scheduled_at: scheduledAt.toISOString(),
+          };
+
+          if (options.replyToId) {
+            payload.reply_to_id = options.replyToId;
+          }
+
+          if (options.metadata) {
+            payload.metadata = options.metadata;
+          }
+
+          const response = await api.post(`/conversations/${conversationId}/messages`, payload);
+          const scheduledMessage = normalizeMessage(response.data?.message || response.data);
+
+          // Add to scheduled messages list
+          set((state) => {
+            const existingScheduled = state.scheduledMessages[conversationId] || [];
+            return {
+              scheduledMessages: {
+                ...state.scheduledMessages,
+                [conversationId]: [...existingScheduled, scheduledMessage],
+              },
+            };
+          });
+
+          logger.info('Message scheduled successfully:', scheduledMessage.id);
+        } catch (error) {
+          logger.error('Failed to schedule message:', error);
+          throw error;
+        }
+      },
+
+      /**
+       * Cancel a scheduled message
+       */
+      cancelScheduledMessage: async (messageId: string) => {
+        try {
+          await api.delete(`/messages/${messageId}/cancel-schedule`);
+
+          // Remove from scheduled messages
+          set((state) => {
+            const updatedScheduledMessages: Record<string, Message[]> = {};
+            Object.entries(state.scheduledMessages).forEach(([convId, messages]) => {
+              updatedScheduledMessages[convId] = messages.filter((m) => m.id !== messageId);
+            });
+            return { scheduledMessages: updatedScheduledMessages };
+          });
+
+          logger.info('Scheduled message cancelled:', messageId);
+        } catch (error) {
+          logger.error('Failed to cancel scheduled message:', error);
+          throw error;
+        }
+      },
+
+      /**
+       * Reschedule a message to a new time
+       */
+      rescheduleMessage: async (messageId: string, newScheduledAt: Date) => {
+        try {
+          const response = await api.patch(`/messages/${messageId}/reschedule`, {
+            scheduled_at: newScheduledAt.toISOString(),
+          });
+          const updatedMessage = normalizeMessage(response.data?.message || response.data);
+
+          // Update in scheduled messages list
+          set((state) => {
+            const updatedScheduledMessages: Record<string, Message[]> = {};
+            Object.entries(state.scheduledMessages).forEach(([convId, messages]) => {
+              updatedScheduledMessages[convId] = messages.map((m) =>
+                m.id === messageId ? updatedMessage : m
+              );
+            });
+            return { scheduledMessages: updatedScheduledMessages };
+          });
+
+          logger.info('Message rescheduled:', messageId);
+        } catch (error) {
+          logger.error('Failed to reschedule message:', error);
+          throw error;
+        }
       },
     }),
     {

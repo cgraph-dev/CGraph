@@ -341,13 +341,13 @@ Result: Buttons appear but do nothing when clicked
   - [x] Meilisearch integration for sub-50ms fuzzy search
   - [x] Backend `/api/v1/messages/search` with comprehensive filters
 
-- [x] **Message Scheduling** ⏳ FOUNDATION COMPLETE (API/UI Pending)
+- [x] **Message Scheduling** ⏳ API COMPLETE (UI Pending)
   - [x] Database migration with scheduled_at and schedule_status fields
   - [x] ScheduledMessageWorker processes scheduled messages every minute
   - [x] Oban cron configuration for automated delivery
   - [x] Message schema updated with scheduling support
   - [x] Partial indexes for efficient worker queries
-  - [ ] API endpoints for scheduling/canceling/rescheduling (Phase 2)
+  - [x] API endpoints for scheduling/canceling/rescheduling (Phase 2) ✅
   - [ ] ScheduleMessageModal frontend component (Phase 3)
   - [ ] Scheduled messages list UI (Phase 3)
   - [ ] State management integration (Phase 3)

@@ -22,6 +22,7 @@ import {
   Cog6ToothIcon,
   SparklesIcon,
   MagnifyingGlassIcon,
+  ClockIcon,
 } from '@heroicons/react/24/outline';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
@@ -40,6 +41,8 @@ import { FileMessage } from '@/components/chat/FileMessage';
 import { E2EEErrorModal } from '@/components/chat/E2EEErrorModal';
 import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
 import { MessageSearch } from '@/components/messages/MessageSearch';
+import { ScheduleMessageModal } from '@/components/chat/ScheduleMessageModal';
+import { ScheduledMessagesList } from '@/components/chat/ScheduledMessagesList';
 
 // Sticker system integration
 import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
@@ -166,6 +169,8 @@ export default function Conversation() {
     sendMessage,
     markAsRead,
     setActiveConversation,
+    scheduleMessage,
+    rescheduleMessage,
   } = useChatStore();
 
   const [messageInput, setMessageInput] = useState('');
@@ -208,6 +213,13 @@ export default function Conversation() {
   // ====== FORWARD MESSAGE STATE ======
   const [showForwardModal, setShowForwardModal] = useState(false);
   const [messageToForward, setMessageToForward] = useState<Message | null>(null);
+
+  // ====== SCHEDULE MESSAGE STATE ======
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [messageToSchedule, setMessageToSchedule] = useState<string>('');
+  const [showScheduledList, setShowScheduledList] = useState(false);
+  const [messageToReschedule, setMessageToReschedule] = useState<Message | null>(null);
+
   const [uiPreferences, setUiPreferences] = useState({
     glassEffect: 'holographic' as 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic',
     animationIntensity: 'high' as 'low' | 'medium' | 'high',
@@ -532,6 +544,54 @@ export default function Conversation() {
     } finally {
       setIsSending(false);
     }
+  };
+
+  // Handle schedule message
+  const handleSchedule = async (scheduledAt: Date) => {
+    if (!conversationId) return;
+
+    // Check if we're rescheduling an existing message
+    if (messageToReschedule) {
+      try {
+        await rescheduleMessage(messageToReschedule.id, scheduledAt);
+        setMessageToReschedule(null);
+        if (uiPreferences.enableHaptic) HapticFeedback.success();
+      } catch (error) {
+        console.error('Failed to reschedule message:', error);
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to reschedule message';
+        toast.error(errorMessage);
+        if (uiPreferences.enableHaptic) HapticFeedback.error();
+        throw error;
+      }
+    } else if (messageToSchedule.trim()) {
+      // Scheduling a new message
+      try {
+        await scheduleMessage(conversationId, messageToSchedule, scheduledAt, {
+          type: 'text',
+          replyToId: replyTo?.id,
+        });
+        setMessageInput('');
+        setMessageToSchedule('');
+        setReplyTo(null);
+        if (uiPreferences.enableHaptic) HapticFeedback.success();
+      } catch (error) {
+        console.error('Failed to schedule message:', error);
+        const errorMessage = error instanceof Error ? error.message : 'Failed to schedule message';
+        toast.error(errorMessage);
+        if (uiPreferences.enableHaptic) HapticFeedback.error();
+        throw error;
+      }
+    }
+  };
+
+  // Handle opening reschedule modal
+  const handleRescheduleClick = (message: Message) => {
+    setMessageToReschedule(message);
+    setMessageToSchedule(message.content);
+    setShowScheduledList(false);
+    setShowScheduleModal(true);
+    if (uiPreferences.enableHaptic) HapticFeedback.medium();
   };
 
   // Handle voice message complete - upload and send
@@ -1043,6 +1103,24 @@ export default function Conversation() {
                 title="Search messages"
               >
                 <MagnifyingGlassIcon className="h-5 w-5" />
+              </motion.button>
+
+              {/* Scheduled Messages Button */}
+              <motion.button
+                onClick={() => {
+                  setShowScheduledList(!showScheduledList);
+                  if (uiPreferences.enableHaptic) HapticFeedback.medium();
+                }}
+                className={`rounded-lg p-2 transition-all duration-200 hover:bg-white/10 ${
+                  showScheduledList
+                    ? 'bg-purple-500/20 text-purple-400'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                title="Scheduled messages"
+              >
+                <ClockIcon className="h-5 w-5" />
               </motion.button>
 
               <motion.button
@@ -1582,6 +1660,26 @@ export default function Conversation() {
                   <SparklesIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                 </motion.button>
 
+                {/* Schedule Button */}
+                {messageInput.trim() && (
+                  <motion.button
+                    onClick={() => {
+                      setMessageToSchedule(messageInput);
+                      setShowScheduleModal(true);
+                      if (uiPreferences.enableHaptic) HapticFeedback.medium();
+                    }}
+                    className="group rounded-xl p-2.5 text-gray-400 transition-all hover:bg-purple-500/20 hover:text-purple-400"
+                    whileHover={{ scale: 1.1, rotate: -10 }}
+                    whileTap={{ scale: 0.9 }}
+                    title="Schedule message"
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0, opacity: 0 }}
+                  >
+                    <ClockIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                  </motion.button>
+                )}
+
                 {/* Morphing Send/Mic Button */}
                 <AnimatePresence mode="wait">
                   {messageInput.trim() ? (
@@ -1682,6 +1780,28 @@ export default function Conversation() {
           onClose={() => setShowMessageSearch(false)}
           onResultClick={handleSearchResultClick}
           conversationId={conversationId}
+        />
+
+        {/* Scheduled Messages List */}
+        {conversationId && (
+          <ScheduledMessagesList
+            isOpen={showScheduledList}
+            onClose={() => setShowScheduledList(false)}
+            conversationId={conversationId}
+            onReschedule={handleRescheduleClick}
+          />
+        )}
+
+        {/* Schedule Message Modal */}
+        <ScheduleMessageModal
+          isOpen={showScheduleModal}
+          onClose={() => {
+            setShowScheduleModal(false);
+            setMessageToSchedule('');
+            setMessageToReschedule(null);
+          }}
+          onSchedule={handleSchedule}
+          messagePreview={messageToSchedule}
         />
 
         {/* Hidden File Input */}

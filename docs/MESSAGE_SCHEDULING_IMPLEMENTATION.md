@@ -61,9 +61,9 @@ Updated Jason encoder to include new fields in JSON responses.
 
 Updated changeset to accept `scheduled_at` and `schedule_status` parameters.
 
-## API Endpoints ⏳ PENDING
+## API Endpoints ✅ COMPLETE
 
-Need to create endpoints in `MessageController`:
+Implemented endpoints in `MessageController`:
 
 ### POST `/api/v1/conversations/:id/messages` (Modified)
 
@@ -228,13 +228,13 @@ describe('ScheduledMessagesList', () => {
 - [x] Cron configuration
 - [x] Schema updates
 
-### Phase 2: API Layer ⏳ IN PROGRESS
+### Phase 2: API Layer ✅ COMPLETE
 
-- [ ] Create/modify message endpoint
-- [ ] List scheduled messages endpoint
-- [ ] Reschedule endpoint
-- [ ] Cancel endpoint
-- [ ] API tests
+- [x] Create/modify message endpoint
+- [x] List scheduled messages endpoint
+- [x] Reschedule endpoint
+- [x] Cancel endpoint
+- [ ] API tests (pending)
 
 ### Phase 3: Frontend UI ⏳ PENDING
 
