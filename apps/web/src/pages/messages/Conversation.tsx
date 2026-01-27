@@ -34,6 +34,7 @@ import MessageReactions from '@/components/chat/MessageReactions';
 import RichMediaEmbed from '@/components/chat/RichMediaEmbed';
 import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
 import { GifMessage } from '@/components/chat/GifMessage';
+import { GifPicker, type GifResult } from '@/components/chat/GifPicker';
 import { FileMessage } from '@/components/chat/FileMessage';
 import { E2EEErrorModal } from '@/components/chat/E2EEErrorModal';
 import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
@@ -170,6 +171,7 @@ export default function Conversation() {
   const [replyTo, setReplyTo] = useState<Message | null>(null);
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [showStickerPicker, setShowStickerPicker] = useState(false);
+  const [showGifPicker, setShowGifPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -489,6 +491,39 @@ export default function Conversation() {
       console.error('Failed to send sticker:', error);
       // Show specific error message if available (e.g., E2EE encryption failure)
       const errorMessage = error instanceof Error ? error.message : 'Failed to send sticker.';
+      toast.error(errorMessage);
+      if (uiPreferences.enableHaptic) HapticFeedback.error();
+    } finally {
+      setIsSending(false);
+    }
+  };
+
+  // Handle GIF selection - sends GIF as a message with metadata
+  const handleGifSelect = async (gif: GifResult) => {
+    if (!conversationId || isSending) return;
+
+    setIsSending(true);
+    setShowGifPicker(false);
+
+    try {
+      // Send GIF message with full metadata for rendering
+      await sendMessage(conversationId, gif.title || 'GIF', replyTo?.id, {
+        type: 'gif',
+        metadata: {
+          gifUrl: gif.url,
+          gifPreviewUrl: gif.previewUrl,
+          gifTitle: gif.title,
+          gifWidth: gif.width,
+          gifHeight: gif.height,
+          gifSource: gif.source,
+        },
+      });
+      setReplyTo(null);
+      toast.success('GIF sent');
+      if (uiPreferences.enableHaptic) HapticFeedback.success();
+    } catch (error) {
+      console.error('Failed to send GIF:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send GIF.';
       toast.error(errorMessage);
       if (uiPreferences.enableHaptic) HapticFeedback.error();
     } finally {
@@ -1404,12 +1439,18 @@ export default function Conversation() {
             borderGradient
             className="rounded-2xl p-2"
           >
-            {/* Sticker Picker - positioned above input */}
+            {/* Sticker & GIF Pickers - positioned above input */}
             <div className="relative" ref={inputContainerRef}>
               <StickerPicker
                 isOpen={showStickerPicker}
                 onClose={() => setShowStickerPicker(false)}
                 onSelect={handleStickerSelect}
+              />
+              <GifPicker
+                isOpen={showGifPicker}
+                onClose={() => setShowGifPicker(false)}
+                onSelect={handleGifSelect}
+                className="bottom-16 left-0"
               />
             </div>
 
@@ -1459,11 +1500,31 @@ export default function Conversation() {
                 <StickerButton
                   onClick={() => {
                     setShowStickerPicker(!showStickerPicker);
+                    setShowGifPicker(false);
                     if (uiPreferences.enableHaptic) HapticFeedback.light();
                   }}
                   isActive={showStickerPicker}
                   className="rounded-xl hover:bg-primary-500/20 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
                 />
+
+                {/* GIF Button */}
+                <motion.button
+                  onClick={() => {
+                    setShowGifPicker(!showGifPicker);
+                    setShowStickerPicker(false);
+                    if (uiPreferences.enableHaptic) HapticFeedback.light();
+                  }}
+                  className={`group rounded-xl p-2.5 transition-all ${
+                    showGifPicker
+                      ? 'bg-primary-500/20 text-primary-400'
+                      : 'text-gray-400 hover:bg-primary-500/20 hover:text-primary-400'
+                  }`}
+                  whileHover={{ scale: 1.1, rotate: -15 }}
+                  whileTap={{ scale: 0.9 }}
+                  title="Send GIF"
+                >
+                  <SparklesIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                </motion.button>
 
                 {/* Morphing Send/Mic Button */}
                 <AnimatePresence mode="wait">
