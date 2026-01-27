@@ -498,7 +498,33 @@ export const useCustomizationStoreV2 = create<CustomizationStore>()(
     }),
     {
       name: 'cgraph-customization-v2',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => {
+        // Safe localStorage wrapper
+        return {
+          getItem: (name: string): string | null => {
+            try {
+              return localStorage.getItem(name);
+            } catch (error) {
+              console.warn('[CustomizationV2] Failed to read from localStorage:', error);
+              return null;
+            }
+          },
+          setItem: (name: string, value: string): void => {
+            try {
+              localStorage.setItem(name, value);
+            } catch (error) {
+              console.warn('[CustomizationV2] Failed to write to localStorage:', error);
+            }
+          },
+          removeItem: (name: string): void => {
+            try {
+              localStorage.removeItem(name);
+            } catch (error) {
+              console.warn('[CustomizationV2] Failed to remove from localStorage:', error);
+            }
+          },
+        };
+      }),
       partialize: (state) => ({
         themePreset: state.themePreset,
         effectPreset: state.effectPreset,

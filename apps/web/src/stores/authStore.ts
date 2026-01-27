@@ -183,19 +183,28 @@ const createSecureStorage = (): StateStorage => {
 
   return {
     getItem: (name: string): string | null => {
-      const value = sessionStorage.getItem(name);
-      if (!value) return null;
       try {
+        const value = sessionStorage.getItem(name);
+        if (!value) return null;
         return decode(value);
-      } catch {
-        return value;
+      } catch (error) {
+        console.warn('[Auth] Failed to read from sessionStorage:', error);
+        return null;
       }
     },
     setItem: (name: string, value: string): void => {
-      sessionStorage.setItem(name, encode(value));
+      try {
+        sessionStorage.setItem(name, encode(value));
+      } catch (error) {
+        console.warn('[Auth] Failed to write to sessionStorage:', error);
+      }
     },
     removeItem: (name: string): void => {
-      sessionStorage.removeItem(name);
+      try {
+        sessionStorage.removeItem(name);
+      } catch (error) {
+        console.warn('[Auth] Failed to remove from sessionStorage:', error);
+      }
     },
   };
 };

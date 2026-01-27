@@ -600,7 +600,33 @@ export const useCustomizationStore = create<CustomizationState>()(
     }),
     {
       name: 'cgraph-customizations',
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => {
+        // Safe localStorage wrapper that handles errors
+        return {
+          getItem: (name: string): string | null => {
+            try {
+              return localStorage.getItem(name);
+            } catch (error) {
+              console.warn('[Customizations] Failed to read from localStorage:', error);
+              return null;
+            }
+          },
+          setItem: (name: string, value: string): void => {
+            try {
+              localStorage.setItem(name, value);
+            } catch (error) {
+              console.warn('[Customizations] Failed to write to localStorage:', error);
+            }
+          },
+          removeItem: (name: string): void => {
+            try {
+              localStorage.removeItem(name);
+            } catch (error) {
+              console.warn('[Customizations] Failed to remove from localStorage:', error);
+            }
+          },
+        };
+      }),
       // Only persist essential data (don't persist loading states)
       partialize: (state) => ({
         profile: state.profile,
