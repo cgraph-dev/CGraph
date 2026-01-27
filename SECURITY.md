@@ -1,27 +1,43 @@
 # Security Policy
 
+## ⚠️ Proprietary Software Notice
+
+CGraph is **proprietary software**. This security policy applies to our hosted platform only.
+Self-hosting is not permitted under our license.
+
 ## Supported Versions
 
 | Version | Supported          |
 | ------- | ------------------ |
+| 0.9.x   | :white_check_mark: |
+| 0.8.x   | :white_check_mark: |
 | 0.7.x   | :white_check_mark: |
-| 0.6.x   | :white_check_mark: |
-| < 0.6   | :x:                |
+| < 0.7   | :x:                |
 
 ## Reporting a Vulnerability
 
-Security is a top priority for CGraph. If you discover a vulnerability, please report it
-responsibly.
+Security is a top priority for CGraph. If you discover a vulnerability, please report it responsibly
+and confidentially.
 
 ### How to Report
 
 1. **Do NOT** create a public GitHub issue for security vulnerabilities
-2. Email: **security@cgraph.org**
-3. Include:
+2. **Do NOT** disclose the vulnerability publicly until we have resolved it
+3. **Do NOT** exploit the vulnerability beyond what is necessary to demonstrate it
+4. Email: **security@cgraph.app**
+5. Include:
    - Description of the vulnerability
    - Steps to reproduce
    - Potential impact
    - Suggested fixes (optional but appreciated)
+   - Your contact information for follow-up
+
+### What We Ask
+
+- Give us reasonable time to address the issue before public disclosure (90 days)
+- Do not access or modify other users' data
+- Do not degrade the performance of our services
+- Do not use social engineering, phishing, or physical attacks
 
 ### Response Timeline
 
@@ -54,10 +70,6 @@ CGraph implements defense-in-depth with multiple security layers:
 - **Zero-Knowledge**: Server never sees plaintext messages
 - **Forward Secrecy**: Per-message key ratcheting
 
-> **Note**: Our E2EE implementation is Signal Protocol-inspired but custom-built. It has not
-> undergone formal third-party security audit. See
-> [SECURITY_ROADMAP.md](docs/guides/SECURITY_ROADMAP.md) for our security maturity plan.
-
 #### Transport & Storage
 
 - **Transport**: TLS 1.3 for all connections
@@ -71,12 +83,6 @@ CGraph implements defense-in-depth with multiple security layers:
 - **SQL Injection**: Prevented via parameterized queries
 - **XSS Prevention**: Content Security Policy enforcement
 - **CSRF Protection**: Token validation for mutations
-
-#### UI Security (v0.7.37+)
-
-- **Theme Import Removed**: Theme import/export removed to prevent JSON-based XSS/injection
-- **Content Sanitization**: User-generated content sanitized before rendering
-- **No Dynamic Code Execution**: All theme colors validated as hex/rgba strings only
 
 #### Infrastructure
 
@@ -111,43 +117,50 @@ Security researchers acting in good faith can expect:
 1. Collaborative resolution process
 2. Regular progress updates
 3. Credit in security acknowledgments (anonymous if preferred)
-4. No legal action for responsible disclosure
+4. No legal action for responsible disclosure that follows this policy
 
 ### Bug Bounty
 
-No formal bounty program exists yet, but significant findings may be rewarded at discretion.
+We offer rewards for qualifying security vulnerabilities. Contact security@cgraph.app for details.
+
+| Severity | Reward Range |
+| -------- | ------------ |
+| Critical | $500 - $2000 |
+| High     | $200 - $500  |
+| Medium   | $50 - $200   |
+| Low      | Recognition  |
+
+_Rewards are at our discretion and depend on the quality of the report and impact of the
+vulnerability._
 
 ### Security Updates
 
-Security patches are released as point versions and announced via:
+Security patches are announced via:
 
-- GitHub Security Advisories
-- CHANGELOG.md
-- Project Discord
+- Email to affected users (for critical issues)
+- In-app notifications
+- Status page at status.cgraph.app
 
-## Contributor Security Checklist
+### Prohibited Activities
 
-Before submitting code:
+The following activities are strictly prohibited and may result in legal action:
 
-- [ ] No secrets, API keys, or credentials in code
-- [ ] Input validation for all user data
-- [ ] Proper error handling (no sensitive data in errors)
-- [ ] Rate limiting for new endpoints
-- [ ] Authorization checks on protected resources
-- [ ] Parameterized SQL queries only
-- [ ] File uploads validated and sanitized
-- [ ] Logs don't expose sensitive information
+- Attempting to reverse engineer, decompile, or deobfuscate the Software
+- Attempting to access our infrastructure or servers without authorization
+- Sharing access credentials or attempting to bypass authentication
+- Scraping, crawling, or automated data collection
+- Any attempt to self-host or deploy the Software outside our platform
 
 ## Contact
 
-- Security: security@cgraph.org
-- General: hello@cgraph.org
-- Website: [www.cgraph.org](https://www.cgraph.org)
-
-— Burca Lucas
-
-- PGP Key: Available on request
+- Security: security@cgraph.app
+- General: hello@cgraph.app
+- Website: [cgraph.app](https://cgraph.app)
 
 ---
+
+**CGraph - Proprietary and Confidential**
+
+© 2025-2026 CGraph. All Rights Reserved.
 
 Thank you for helping keep CGraph and our users safe!

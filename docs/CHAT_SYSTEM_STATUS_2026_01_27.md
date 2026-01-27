@@ -234,8 +234,6 @@ have been implemented, optimized, and verified to work correctly.
 | Message Editing    | ✅                | ❌       | ✅      | ✅       | ✅         |
 | Message Pinning    | ✅                | ✅       | ✅      | ✅       | ✅         |
 | Gamification       | ✅                | ❌       | Partial | ❌       | ❌         |
-| Open Source        | ✅                | ❌       | ❌      | Client   | ❌         |
-| Self-Hostable      | ✅                | ❌       | ❌      | ❌       | ❌         |
 
 **Verdict:** CGraph matches or exceeds competitors in all core messaging features.
 

@@ -4,19 +4,17 @@
 
 <img src="docs/assets/cgraph-logo.svg" alt="CGraph Logo" width="140" />
 
-### The All-in-One Open-Source Communication Platform
+### The All-in-One Secure Communication Platform
 
 #### Real-time messaging • Community forums • End-to-end encryption • Web3 authentication • Gamification
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-0.9.4-green.svg)](CHANGELOG.md)
-[![Tests](https://img.shields.io/badge/tests-1030%20passing-brightgreen.svg)](#testing)
-[![Elixir](https://img.shields.io/badge/elixir-1.17+-purple.svg)](https://elixir-lang.org/)
+[![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
 
 **Current version:** 0.9.4 (January 2026)
 
-[🌐 Website](https://www.cgraph.org) · [📚 Documentation](docs/) · [🔌 API Reference](docs/API.md) ·
-[🤝 Contributing](CONTRIBUTING.md)
+[🌐 Website](https://cgraph.app) · [📚 Documentation](https://docs.cgraph.app) ·
+[🔌 API Reference](https://api.cgraph.app/docs)
 
 </div>
 
@@ -27,18 +25,16 @@
 | Feature                   |              CGraph              |    Competitors    |
 | ------------------------- | :------------------------------: | :---------------: |
 | **End-to-End Encryption** |        ✅ Double Ratchet         |     ⚠️ Varies     |
-| **Open Source**           |           ✅ 100% MIT            |  ⚠️ Partial/None  |
 | **Web3/Wallet Auth**      |            ✅ Native             |        ❌         |
 | **Community Forums**      |           ✅ Built-in            |        ❌         |
 | **Gamification**          |   ✅ XP, Achievements, Quests    |        ❌         |
 | **No Phone Required**     |                ✅                | ⚠️ Often required |
-| **Self-Hostable**         |         ✅ Full control          |    ⚠️ Limited     |
 | **Role Permissions**      |           ✅ Granular            |     ⚠️ Basic      |
 | **Referral System**       | ✅ Tiered rewards & leaderboards |        ❌         |
 | **Offline Support**       |    ✅ Full queue & auto-sync     |    ⚠️ Limited     |
 
 CGraph combines the best of modern communication platforms—real-time messaging, organized servers,
-rich forums, end-to-end encryption, and gamification—all in one self-hostable package.
+rich forums, end-to-end encryption, and gamification—all in one seamless experience.
 
 ---
 
@@ -121,289 +117,63 @@ rich forums, end-to-end encryption, and gamification—all in one self-hostable 
 
 ---
 
-## Tech Stack
-
-| Layer          | Technology                               |
-| -------------- | ---------------------------------------- |
-| **Backend**    | Elixir 1.17+ / Phoenix 1.8               |
-| **Database**   | PostgreSQL 16+ / Redis 7+                |
-| **Web**        | React 19 / Vite / TailwindCSS 4          |
-| **Mobile**     | React Native 0.81 / Expo SDK 54          |
-| **Real-time**  | Phoenix Channels + Presence              |
-| **Encryption** | libsodium (AES-256-GCM, X25519, Ed25519) |
-| **Search**     | Meilisearch (optional)                   |
-| **Storage**    | S3/Minio compatible                      |
-
-### Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Load Balancer                            │
-└─────────────────────────────────────────────────────────────────┘
-                                │
-          ┌─────────────────────┼─────────────────────┐
-          ▼                     ▼                     ▼
-   ┌─────────────┐       ┌─────────────┐       ┌─────────────┐
-   │   Phoenix   │       │   Phoenix   │       │   Phoenix   │
-   │   Node 1    │◄─────►│   Node 2    │◄─────►│   Node 3    │
-   └─────────────┘       └─────────────┘       └─────────────┘
-          │                     │                     │
-          └─────────────────────┼─────────────────────┘
-                                │
-          ┌─────────────────────┼─────────────────────┐
-          ▼                     ▼                     ▼
-   ┌─────────────┐       ┌─────────────┐       ┌─────────────┐
-   │ PostgreSQL  │       │    Redis    │       │   S3/Minio  │
-   │   Primary   │       │   Cluster   │       │   Storage   │
-   └─────────────┘       └─────────────┘       └─────────────┘
-```
-
----
-
 ## Getting Started
 
-### Prerequisites
+Visit **[cgraph.app](https://cgraph.app)** to create your account and start using CGraph.
 
-| Tool       | Version | Installation                        |
-| ---------- | ------- | ----------------------------------- |
-| Node.js    | 18+     | `asdf install nodejs 22.11.0`       |
-| pnpm       | 9+      | `npm install -g pnpm`               |
-| Elixir     | 1.17+   | `asdf install elixir 1.17.3-otp-26` |
-| Erlang     | 26+     | `asdf install erlang 26.2`          |
-| PostgreSQL | 15+     | Docker or local install             |
-| Redis      | 7+      | Docker or local install             |
+### Web App
 
-> **Recommended:** Use [asdf](https://asdf-vm.com/) for version management. Run `asdf install` in
-> the project root to install exact versions from `.tool-versions`.
+Access CGraph directly in your browser at [app.cgraph.app](https://app.cgraph.app).
 
-### Environment Variables
+### Mobile Apps
 
-**Backend** (`apps/backend/.env`):
+- **iOS**: Download from the [App Store](https://apps.apple.com/app/cgraph)
+- **Android**: Download from [Google Play](https://play.google.com/store/apps/details?id=app.cgraph)
+
+### API Access
+
+For developers, CGraph provides a public API. See our
+[API Documentation](https://api.cgraph.app/docs).
 
 ```bash
-DATABASE_URL=postgres://postgres:postgres@localhost:5432/cgraph_dev
-REDIS_URL=redis://localhost:6379
-GUARDIAN_SECRET_KEY=your-secret-key-here
-SECRET_KEY_BASE=your-phoenix-secret-key
-```
-
-**Frontend** (`apps/web/.env`):
-
-```bash
-VITE_API_URL=http://localhost:4000
-VITE_WS_URL=ws://localhost:4000/socket
-```
-
-### Quick Start
-
-```bash
-# Clone the repository
-git clone https://github.com/cgraph-dev/CGraph.git
-cd CGraph
-
-# Install dependencies
-pnpm install
-
-# Set up backend
-cd apps/backend
-cp ../../.env.example .env
-mix deps.get
-mix ecto.setup
-mix phx.server
-
-# In another terminal, start the web app
-cd apps/web
-pnpm dev
-```
-
-### Development URLs
-
-| Service     | URL                   | Notes                      |
-| ----------- | --------------------- | -------------------------- |
-| Backend API | http://localhost:4000 | Phoenix server             |
-| Web App     | http://localhost:3000 | Vite dev server            |
-| PostgreSQL  | localhost:5432        | Default: postgres/postgres |
-| Redis       | localhost:6379        |                            |
-| Storybook   | http://localhost:6006 | `pnpm storybook`           |
-
-### Docker Development
-
-```bash
-# Start database services only
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres redis
-
-# Start full stack
-cp .env.example .env
-docker-compose up -d
-
-# View logs
-docker-compose logs -f backend
-
-# Stop services
-docker-compose down
-```
-
-### Database Commands
-
-```bash
-cd apps/backend
-
-mix ecto.setup      # Create + migrate + seed
-mix ecto.migrate    # Run pending migrations
-mix ecto.rollback   # Undo last migration
-mix ecto.reset      # Drop + create + migrate + seed
-mix ecto.gen.migration <name>  # Generate new migration
+# Example: Get current user
+curl -H "Authorization: Bearer YOUR_TOKEN" https://api.cgraph.app/v1/me
 ```
 
 ---
 
-## Project Structure
+## Pricing
 
-```
-CGraph/
-├── apps/
-│   ├── backend/        # Elixir/Phoenix API server
-│   ├── web/            # React web application
-│   └── mobile/         # React Native mobile app
-├── packages/
-│   ├── shared-types/   # Shared TypeScript types
-│   ├── ui/             # Shared UI components
-│   └── utils/          # Common utilities
-├── docs/               # Documentation
-└── infrastructure/     # Deployment scripts
-```
+| Plan           | Price      | Features                                         |
+| -------------- | ---------- | ------------------------------------------------ |
+| **Free**       | $0/forever | Unlimited messaging, 10 servers, basic features  |
+| **Premium**    | $9/month   | Unlimited servers, HD video calls, custom themes |
+| **Enterprise** | Custom     | SSO/SAML, API access, dedicated support, SLA     |
+
+Visit [cgraph.app/pricing](https://cgraph.app/pricing) for full details.
 
 ---
 
-## API Overview
+## Support
 
-REST API with WebSocket channels for real-time features.
-
-**Authentication:**
-
-```bash
-POST /api/v1/auth/register      # Email/password registration
-POST /api/v1/auth/login         # Email/password login
-POST /api/v1/auth/wallet/verify # Wallet authentication
-```
-
-**Core Resources:**
-
-```bash
-GET  /api/v1/me                 # Current user profile
-GET  /api/v1/conversations      # Direct messages
-GET  /api/v1/groups             # Servers
-GET  /api/v1/forums             # Public forums
-GET  /api/v1/gamification/stats # XP, level, achievements
-```
-
-Full documentation: [docs/API.md](docs/API.md)
+- **Help Center**: [help.cgraph.app](https://help.cgraph.app)
+- **Email**: support@cgraph.app
+- **Status**: [status.cgraph.app](https://status.cgraph.app)
 
 ---
 
-## Testing
+## Legal
 
-| Layer     | Tests   | Coverage |
-| --------- | ------- | -------- |
-| Backend   | 718     | 89%      |
-| Web       | 255     | 85%      |
-| Mobile    | 142     | 78%      |
-| **Total** | **973** | **84%**  |
-
-```bash
-# Run all tests
-pnpm test
-
-# Backend tests with coverage
-cd apps/backend && mix test --cover
-
-# Web tests
-cd apps/web && pnpm test:coverage
-```
-
----
-
-## Documentation
-
-| Document                               | Description                   |
-| -------------------------------------- | ----------------------------- |
-| [Quick Start](docs/QUICKSTART.md)      | Get running in 5 minutes      |
-| [Architecture](docs/ARCHITECTURE.md)   | System design overview        |
-| [API Reference](docs/API_REFERENCE.md) | Complete REST API docs        |
-| [Security](docs/SECURITY.md)           | Encryption and authentication |
-| [Deployment](docs/DEPLOYMENT.md)       | Production setup              |
-| [Mobile](docs/MOBILE.md)               | React Native development      |
-
-Documentation is auto-generated from code comments using TypeDoc and OpenAPI specs.
-
-## CI & Security Tooling
-
-- CI builds backend and web Docker images each PR to catch Dockerfile/healthcheck regressions early.
-- Security workflow runs gitleaks, hadolint (backend/web Dockerfiles), Sobelow, pnpm audit, Syft
-  SBOM, and Grype vulnerability scans with artifacts; see `.github/workflows/ci.yml`.
-- Context7 MCP helper is configured in `.vscode/mcp.json`; provide your own `CONTEXT7_API_KEY` when
-  prompted.
-
-### Using the Context7 MCP helper
-
-- Purpose: quick research/summarization aid; not a runtime dependency.
-- Setup: supply your Context7 API key when prompted by your MCP-enabled client (stored locally, not
-  in repo/CI).
-- Usage examples: ask it to summarize long docs, draft changelog/release note text, outline tests,
-  or suggest scan tuning (e.g., gitleaks allowlists). Review and commit changes yourself.
-
----
-
-## Roadmap
-
-### Q1 2026
-
-- [ ] Bot/Integration API
-- [ ] Slash commands
-- [ ] Webhooks for external integrations
-
-### Q2 2026
-
-- [ ] Screen sharing in video calls
-- [ ] Desktop app (Tauri)
-- [ ] Plugin/extension system
-
-### Q3 2026
-
-- [ ] Federation protocol (ActivityPub)
-- [ ] Matrix bridge
-
----
-
-## Contributing
-
-Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-```bash
-git checkout -b feature/your-feature
-pnpm test
-git push origin feature/your-feature
-```
-
----
-
-## Author
-
-Built by **Burca Lucas**
-
-- [Website](https://www.cgraph.org)
-- [GitHub](https://github.com/cgraph-dev)
-
----
-
-## License
-
-MIT License - See [LICENSE](LICENSE) for details.
+- [Terms of Service](https://cgraph.app/terms)
+- [Privacy Policy](https://cgraph.app/privacy)
+- [License](LICENSE)
 
 ---
 
 <div align="center">
 
-**[www.cgraph.org](https://www.cgraph.org)**
+**[cgraph.app](https://cgraph.app)**
+
+© 2025-2026 CGraph. All Rights Reserved.
 
 </div>

@@ -3,9 +3,9 @@
   "version": "0.9.5",
   "private": true,
   "type": "module",
-  "description": "CGraph - Open-source messaging platform with Signal Protocol-inspired E2EE, gamification, and real-time collaboration",
+  "description": "CGraph - Secure messaging platform with Signal Protocol-inspired E2EE, gamification, and real-time collaboration",
   "author": "Burca Lucas",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "workspaces": [
     "apps/*",
     "packages/*"
