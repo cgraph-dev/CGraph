@@ -57,6 +57,9 @@ defmodule CGraphWeb.Endpoint do
   plug CGraphWeb.Plugs.CorrelationId
   plug Plug.Telemetry, event_prefix: [:phoenix, :endpoint]
 
+  # Cache raw body for webhook signature verification (must be before Plug.Parsers)
+  plug CGraphWeb.Plugs.RawBodyPlug
+
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],

@@ -434,7 +434,7 @@ rm /CGraph/apps/web/.env.example
 rm /CGraph/apps/mobile/.env.example
 ```
 
-**STATUS:** ⚪ NOT STARTED
+**STATUS:** ✅ COMPLETED (January 27, 2026)
 
 ---
 
@@ -454,6 +454,8 @@ Replace with:
 - Links to hosted platform
 - Getting started with the app (as a user)
 - API documentation links
+
+**STATUS:** ✅ COMPLETED (January 27, 2026)
 
 **File: `/CGraph/docs/CHAT_SYSTEM_STATUS_2026_01_27.md`**
 
@@ -538,6 +540,24 @@ Create `/CGraph/apps/backend/lib/cgraph_web/controllers/stripe_webhook_controlle
 - Handle `customer.subscription.deleted`
 - Update user's `subscription_tier` accordingly
 
+**STATUS:** ✅ IMPLEMENTED (January 27, 2026)
+
+**Files Created:**
+
+- `/CGraph/apps/backend/lib/cgraph_web/controllers/stripe_webhook_controller.ex` - Webhook handler
+- `/CGraph/apps/backend/lib/cgraph/subscriptions/subscriptions.ex` - Stripe integration context
+- `/CGraph/apps/backend/lib/cgraph_web/controllers/api/payment_controller.ex` - Payment API
+- `/CGraph/apps/backend/lib/cgraph_web/plugs/raw_body_plug.ex` - Raw body for signature verification
+- `/CGraph/apps/backend/config/stripe.exs` - Stripe configuration
+
+**Routes Added:**
+
+- `POST /api/webhooks/stripe` - Stripe webhook endpoint
+- `GET /api/v1/billing/plans` - List available plans
+- `GET /api/v1/billing/status` - Current billing status
+- `POST /api/v1/billing/checkout` - Create Stripe Checkout session
+- `POST /api/v1/billing/portal` - Create Stripe Customer Portal session
+
 **Step 5: Connect Frontend to Stripe Checkout**
 
 The pricing UI exists at: `/CGraph/apps/web/src/components/landing/PricingSection.tsx`
@@ -550,7 +570,7 @@ pnpm add @stripe/stripe-js @stripe/react-stripe-js
 
 Create checkout flow that calls your backend, which creates a Stripe Checkout Session.
 
-**STATUS:** ⚪ NOT STARTED
+**STATUS:** ⚪ NOT STARTED (Frontend integration pending)
 
 ---
 

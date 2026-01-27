@@ -88,6 +88,9 @@ defmodule CGraph.MixProject do
       {:swoosh, "~> 1.20"},
       {:finch, "~> 0.20"},
 
+      # Payment processing
+      {:stripity_stripe, "~> 3.2"},
+
       # JSON
       {:jason, "~> 1.4"},
 

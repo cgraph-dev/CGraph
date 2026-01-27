@@ -150,5 +150,8 @@ config :ex_aws,
 # Suppress Tesla Builder deprecation warning (we'll migrate when ready)
 config :tesla, disable_deprecated_builder_warning: true
 
+# Import Stripe configuration
+import_config "stripe.exs"
+
 # Import environment specific config
 import_config "#{config_env()}.exs"

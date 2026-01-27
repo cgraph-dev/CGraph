@@ -90,6 +90,14 @@ defmodule CGraphWeb.Router do
     get "/metrics", MetricsController, :index
   end
 
+  # Stripe webhook endpoint (no auth - uses Stripe signature verification)
+  # Must have raw body preserved for signature verification
+  scope "/api/webhooks", CGraphWeb do
+    pipe_through :api
+
+    post "/stripe", StripeWebhookController, :webhook
+  end
+
   # Public API routes (authentication endpoints - strict rate limiting)
   scope "/api/v1", CGraphWeb.API.V1 do
     pipe_through :api_auth_strict
@@ -242,6 +250,14 @@ defmodule CGraphWeb.Router do
     get "/tiers/me", TierController, :my_tier
     get "/tiers/check/:action", TierController, :check_action
     get "/tiers/features/:feature", TierController, :check_feature
+
+    # ==========================================================================
+    # Billing & Payments (Stripe Integration)
+    # ==========================================================================
+    get "/billing/plans", API.PaymentController, :plans
+    get "/billing/status", API.PaymentController, :billing_status
+    post "/billing/checkout", API.PaymentController, :create_checkout
+    post "/billing/portal", API.PaymentController, :create_portal
 
     # ==========================================================================
     # AI Endpoints - PLACEHOLDER FOR FUTURE CLAUDE INTEGRATION
