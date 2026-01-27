@@ -4,6 +4,61 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.5-security] - 2026-01-27
+
+**🔐 SECURITY HARDENING: Critical Security Fixes + Stripe Payment Integration**
+
+This release addresses 5 critical security vulnerabilities and adds Stripe payment processing.
+
+### 🔐 Security Fixes
+
+| Issue                     | Severity | Fix                                                                |
+| ------------------------- | -------- | ------------------------------------------------------------------ |
+| **Presence Privacy Leak** | Critical | Scoped presence broadcasts to per-user PubSub topics               |
+| **Stripe Webhook Bug**    | High     | Fixed `:signing_secret` config key mismatch                        |
+| **IP Spoofing**           | High     | Added trusted proxy CIDR enforcement (Cloudflare + private ranges) |
+| **MIME Type Spoofing**    | Medium   | Added magic byte validation for uploads                            |
+| **Client Presence Sync**  | Medium   | Added presence handlers to web/mobile socket clients               |
+
+### 💳 Stripe Integration
+
+| Tier       | Price     | Group Limit | Features                |
+| ---------- | --------- | ----------- | ----------------------- |
+| Free       | $0        | 5           | Basic messaging         |
+| Starter    | $4.99/mo  | 10          | Voice calls, themes     |
+| Pro        | $9.99/mo  | 50          | Video calls, priorities |
+| Business   | $19.99/mo | Unlimited   | Admin tools, analytics  |
+| Enterprise | Custom    | Unlimited   | SLA, dedicated support  |
+
+### 🛡️ Code Protection
+
+- Source maps disabled in production builds
+- DMCA takedown template for unauthorized use
+- Proprietary license enforcement
+
+### 📁 Key Files Modified
+
+| File                               | Changes                                   |
+| ---------------------------------- | ----------------------------------------- |
+| `presence_channel.ex`              | Scoped broadcasts to user topics          |
+| `stripe_webhook_controller.ex`     | Fixed config key for webhook verification |
+| `rate_limiter_v2.ex`               | Added trusted proxy CIDR validation       |
+| `upload_controller.ex`             | Added magic byte MIME sniffing            |
+| `apps/web/src/lib/socket.ts`       | Added presence event handlers             |
+| `apps/mobile/src/lib/socket.ts`    | Added user channel auto-join              |
+| `apps/web/src/services/billing.ts` | Fixed api import path                     |
+| `BillingSettings.tsx`              | Fixed currentPlan type narrowing          |
+
+### 🔧 New Environment Variables
+
+```bash
+STRIPE_SECRET_KEY       # Stripe API secret key
+STRIPE_WEBHOOK_SECRET   # Stripe webhook signing secret
+STRIPE_PRICE_IDS        # JSON map: {"starter": "price_xxx", ...}
+```
+
+---
+
 ## [0.9.5] - 2026-01-24
 
 **🎨 IDENTITY TAB: Complete Customization System + Deployment Fixes**

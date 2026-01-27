@@ -6,12 +6,13 @@
 
 ### The All-in-One Secure Communication Platform
 
-#### Real-time messaging • Community forums • End-to-end encryption • Web3 authentication • Gamification
+#### Real-time messaging • Community forums • End-to-end encryption • Gamification • Subscription tiers
 
-[![Version](https://img.shields.io/badge/version-0.9.4-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.5-green.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
+[![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Current version:** 0.9.4 (January 2026)
+**Current version:** 0.9.5 (January 2026)
 
 [🌐 Website](https://cgraph.app) · [📚 Documentation](https://docs.cgraph.app) ·
 [🔌 API Reference](https://api.cgraph.app/docs)
@@ -20,18 +21,27 @@
 
 ---
 
+## ⚠️ Proprietary Software
+
+CGraph is **proprietary software**. Self-hosting is not permitted. All users must access CGraph
+through the officially hosted platform at [cgraph.app](https://cgraph.app).
+
+See [LICENSE](LICENSE) for complete terms.
+
+---
+
 ## Why CGraph?
 
-| Feature                   |              CGraph              |    Competitors    |
-| ------------------------- | :------------------------------: | :---------------: |
-| **End-to-End Encryption** |        ✅ Double Ratchet         |     ⚠️ Varies     |
-| **Web3/Wallet Auth**      |            ✅ Native             |        ❌         |
-| **Community Forums**      |           ✅ Built-in            |        ❌         |
-| **Gamification**          |   ✅ XP, Achievements, Quests    |        ❌         |
-| **No Phone Required**     |                ✅                | ⚠️ Often required |
-| **Role Permissions**      |           ✅ Granular            |     ⚠️ Basic      |
-| **Referral System**       | ✅ Tiered rewards & leaderboards |        ❌         |
-| **Offline Support**       |    ✅ Full queue & auto-sync     |    ⚠️ Limited     |
+| Feature                   |              CGraph              | Competitors |
+| ------------------------- | :------------------------------: | :---------: |
+| **End-to-End Encryption** |     ✅ X3DH + Double Ratchet     |  ⚠️ Varies  |
+| **OAuth Authentication**  |    ✅ Google, Apple, Facebook    |  ✅ Common  |
+| **Community Forums**      |           ✅ Built-in            |     ❌      |
+| **Gamification**          |   ✅ XP, Achievements, Quests    |     ❌      |
+| **Subscription Tiers**    |   ✅ Free, Premium, Enterprise   |  ⚠️ Basic   |
+| **Role Permissions**      |           ✅ Granular            |  ⚠️ Basic   |
+| **Referral System**       | ✅ Tiered rewards & leaderboards |     ❌      |
+| **Offline Support**       |    ✅ Full queue & auto-sync     | ⚠️ Limited  |
 
 CGraph combines the best of modern communication platforms—real-time messaging, organized servers,
 rich forums, end-to-end encryption, and gamification—all in one seamless experience.
@@ -43,10 +53,11 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 ### 💬 Real-Time Messaging
 
 - Instant message delivery with typing indicators and read receipts
-- End-to-end encryption using Double Ratchet protocol (industry-leading security)
+- End-to-end encryption using X3DH + Double Ratchet (Signal Protocol)
 - Voice messages with waveform visualization
 - Voice and video calls via WebRTC (1:1 and group calls)
-- Message reactions, editing, and deletion
+- Message reactions, editing, deletion, and forwarding
+- GIF search integration (Giphy/Tenor)
 - Cross-platform sync (web, iOS, Android)
 
 ### 🏢 Servers & Channels
@@ -62,11 +73,12 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 
 - Reddit-style posts with upvote/downvote
 - Karma tracking and user rankings
-- Nested comment threads
-- Post categories and flairs
+- Nested comment threads with infinite depth
+- Thread prefixes and categories
 - Forum-specific leaderboards
-- Moderator tools (pin, lock, remove)
-- Rich text with code syntax highlighting
+- Moderator tools (pin, lock, remove, move)
+- Rich text editor with code syntax highlighting
+- RSS/Atom feed support for all forums
 
 ### 🎮 Gamification System
 
@@ -77,24 +89,31 @@ rich forums, end-to-end encryption, and gamification—all in one seamless exper
 - **Streak System** - Maintain daily login streaks for XP multipliers (3+ days = 1.5x, 7+ days =
   2.0x)
 - **Titles & Badges** - Unlock and equip cosmetic rewards
-- **Virtual Currency** - Earn coins to spend in the shop
+- **Virtual Currency** - Earn coins to spend in the marketplace
 - **Leaderboards** - Compete globally and per-forum
+- **Seasonal Events** - Time-limited challenges and rewards
 
 ### 🔐 Security & Privacy
 
-- **E2EE Messaging** - AES-256-GCM encryption with X25519 key exchange
-- **Wallet Authentication** - Login with Ethereum wallet (no email/password needed)
+- **E2EE Messaging** - AES-256-GCM encryption with X25519 key exchange (X3DH)
+- **Double Ratchet** - Forward secrecy with per-message key derivation
 - **Two-Factor Auth** - TOTP with backup codes
 - **OAuth Support** - Google, Apple, Facebook, TikTok
+- **HTTP-only Cookies** - XSS-immune token storage
+- **Trusted Proxy Validation** - IP spoofing protection
+- **MIME Type Verification** - Server-side file type validation via magic bytes
 - **Zero-Knowledge Design** - Server cannot read encrypted messages
 - **GDPR Compliance** - Full data export and deletion
 
-### 🌐 Web3 Integration
+### 💳 Subscription Tiers
 
-- Ethereum wallet login (MetaMask, WalletConnect)
-- NFT profile pictures
-- Token-gated channels
-- Cryptographic identity verification
+| Tier           | Features                                              |
+| -------------- | ----------------------------------------------------- |
+| **Free**       | 5 forums/groups, basic features                       |
+| **Starter**    | 10 forums/groups, custom themes                       |
+| **Pro**        | 50 forums/groups, HD video, priority support          |
+| **Business**   | Unlimited forums/groups, API access, analytics        |
+| **Enterprise** | SSO/SAML, dedicated support, SLA, custom integrations |
 
 ### 📱 Mobile Apps
 
@@ -144,13 +163,29 @@ curl -H "Authorization: Bearer YOUR_TOKEN" https://api.cgraph.app/v1/me
 
 ## Pricing
 
-| Plan           | Price      | Features                                         |
-| -------------- | ---------- | ------------------------------------------------ |
-| **Free**       | $0/forever | Unlimited messaging, 10 servers, basic features  |
-| **Premium**    | $9/month   | Unlimited servers, HD video calls, custom themes |
-| **Enterprise** | Custom     | SSO/SAML, API access, dedicated support, SLA     |
+| Plan           | Price      | Features                                              |
+| -------------- | ---------- | ----------------------------------------------------- |
+| **Free**       | $0/forever | Unlimited messaging, 5 forums/groups, basic features  |
+| **Starter**    | $4.99/mo   | 10 forums/groups, custom themes, file sharing (50MB)  |
+| **Pro**        | $9.99/mo   | 50 forums/groups, HD video calls, 200MB uploads       |
+| **Business**   | $19.99/mo  | Unlimited forums/groups, API access, analytics, 1GB   |
+| **Enterprise** | Custom     | SSO/SAML, dedicated support, SLA, custom integrations |
 
 Visit [cgraph.app/pricing](https://cgraph.app/pricing) for full details.
+
+---
+
+## Tech Stack
+
+| Layer      | Technology                                         |
+| ---------- | -------------------------------------------------- |
+| Backend    | Elixir 1.17+ / Phoenix 1.8 / PostgreSQL 16         |
+| Web        | React 19 / Vite / TailwindCSS / Zustand            |
+| Mobile     | React Native 0.81 / Expo SDK 54                    |
+| Real-time  | Phoenix Channels (WebSocket)                       |
+| Encryption | X3DH + Double Ratchet / AES-256-GCM / X25519       |
+| Payments   | Stripe (subscriptions, webhooks)                   |
+| Hosting    | Fly.io (backend) / Vercel (web) / Cloudflare (CDN) |
 
 ---
 

@@ -1,17 +1,19 @@
 # CGraph Documentation
 
-> **Current Version: 0.9.2** | Enterprise-grade real-time communication platform
+> **Current Version: 0.9.5** | Enterprise-grade real-time communication platform
+
+⚠️ **Proprietary Software** - CGraph is proprietary software. Self-hosting is not permitted.
 
 Welcome to the official CGraph documentation. This resource provides comprehensive guidance for
-developers, operators, and contributors.
+developers and users of our hosted platform.
 
 ---
 
 ## � Project Status
 
-| Document                                | Description                                  |
-| --------------------------------------- | -------------------------------------------- |
-| [**Project Status**](PROJECT_STATUS.md) | Feature tracking, architecture, and roadmap  |
+| Document                                | Description                                 |
+| --------------------------------------- | ------------------------------------------- |
+| [**Project Status**](PROJECT_STATUS.md) | Feature tracking, architecture, and roadmap |
 
 ---
 
@@ -44,27 +46,28 @@ developers, operators, and contributors.
 
 ### Architecture
 
-| Document                                                          | Description                        |
-| ----------------------------------------------------------------- | ---------------------------------- |
-| [Architecture Overview](architecture/ARCHITECTURE.md)             | System architecture                |
-| [Database Design](architecture/DATABASE.md)                       | Schema and data model              |
-| [Database Scaling](architecture/DATABASE_SCALING.md)              | Scaling strategies                 |
-| [Presence System](architecture/PRESENCE_ARCHITECTURE.md)          | Real-time presence architecture    |
-| [Real-time Communication](architecture/REALTIME_COMMUNICATION.md) | WebSocket implementation           |
-| [Technical Overview](architecture/TECHNICAL_OVERVIEW.md)          | Technical deep-dive                |
-| [AI Integration](architecture/AI_INTEGRATION.md)                  | Future AI features (Claude)        |
+| Document                                                          | Description                     |
+| ----------------------------------------------------------------- | ------------------------------- |
+| [Architecture Overview](architecture/ARCHITECTURE.md)             | System architecture             |
+| [Database Design](architecture/DATABASE.md)                       | Schema and data model           |
+| [Database Scaling](architecture/DATABASE_SCALING.md)              | Scaling strategies              |
+| [Presence System](architecture/PRESENCE_ARCHITECTURE.md)          | Real-time presence architecture |
+| [Real-time Communication](architecture/REALTIME_COMMUNICATION.md) | WebSocket implementation        |
+| [Technical Overview](architecture/TECHNICAL_OVERVIEW.md)          | Technical deep-dive             |
+| [AI Integration](architecture/AI_INTEGRATION.md)                  | Future AI features (Claude)     |
 
 ---
 
 ## 📋 Release Notes
 
-| Version                                             | Date          | Highlights                                            |
-| --------------------------------------------------- | ------------- | ----------------------------------------------------- |
-| [**v0.9.2**](release-notes/V0.9.2_RELEASE_NOTES.md) | January 2026  | **Latest** - Friend request idempotency, scroll fixes |
-| [v0.9.1](release-notes/V0.9.1_RELEASE_NOTES.md)     | January 2026  | Chat message editing, typing indicators               |
-| [v0.9.0](release-notes/V0.9.0_RELEASE_NOTES.md)     | January 2026  | Major release - new architecture                      |
-| [v0.7.57](release-notes/V0.7.57_RELEASE_NOTES.md)   | December 2025 | Legacy stable                                         |
-| [All Releases →](release-notes/)                    |               | Complete version history                              |
+| Version                                             | Date         | Highlights                                       |
+| --------------------------------------------------- | ------------ | ------------------------------------------------ |
+| [**v0.9.5**](release-notes/V0.9.5_RELEASE_NOTES.md) | January 2026 | **Latest** - Security hardening, Stripe payments |
+| [v0.9.4](release-notes/V0.9.4_RELEASE_NOTES.md)     | January 2026 | Proprietary transition, code protection          |
+| [v0.9.2](release-notes/V0.9.2_RELEASE_NOTES.md)     | January 2026 | Friend request idempotency, scroll fixes         |
+| [v0.9.1](release-notes/V0.9.1_RELEASE_NOTES.md)     | January 2026 | Chat message editing, typing indicators          |
+| [v0.9.0](release-notes/V0.9.0_RELEASE_NOTES.md)     | January 2026 | Major release - new architecture                 |
+| [All Releases →](release-notes/)                    |              | Complete version history                         |
 
 ---
 
@@ -128,4 +131,5 @@ outdated information but are retained for historical reference and audit purpose
 
 ---
 
-<sub>**CGraph Documentation** • Version 0.9.2 • Last updated: January 2026</sub>
+<sub>**CGraph Documentation** • Version 0.9.5 • Proprietary Software • Last updated: January
+2026</sub>

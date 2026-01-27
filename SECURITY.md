@@ -64,11 +64,12 @@ CGraph implements defense-in-depth with multiple security layers:
 #### End-to-End Encryption (E2EE)
 
 - **Algorithm**: AES-256-GCM via Web Crypto API
-- **Key Exchange**: P-256 ECDH (Signal Protocol-inspired X3DH)
+- **Key Exchange**: X25519 ECDH (Signal Protocol X3DH)
 - **Ratcheting**: Double Ratchet protocol for forward secrecy
 - **Key Derivation**: HKDF-SHA256 with conversation-specific salt
-- **Zero-Knowledge**: Server never sees plaintext messages
+- **Zero-Knowledge**: Server stores only public keys; encryption/decryption client-side
 - **Forward Secrecy**: Per-message key ratcheting
+- **Key Storage**: Client-side IndexedDB/SecureStore, never sent to server
 
 #### Transport & Storage
 
@@ -78,11 +79,20 @@ CGraph implements defense-in-depth with multiple security layers:
 
 #### API Security
 
-- **Rate Limiting**: Per-endpoint limits with Redis tracking
+- **Rate Limiting**: Distributed Redis-backed limiter with trusted proxy enforcement
+- **Trusted Proxies**: Only accepts X-Forwarded-For from Cloudflare/private CIDRs
 - **Input Validation**: Ecto changesets with strict typing
 - **SQL Injection**: Prevented via parameterized queries
 - **XSS Prevention**: Content Security Policy enforcement
 - **CSRF Protection**: Token validation for mutations
+- **Session Cookies**: HTTP-only, Secure, SameSite=Lax
+
+#### Upload Security
+
+- **MIME Sniffing**: Magic byte validation prevents content-type spoofing
+- **File Type Allowlist**: Only permitted extensions accepted
+- **Size Limits**: Per-tier upload size restrictions
+- **Virus Scanning**: Integration ready for external scanning
 
 #### Infrastructure
 

@@ -467,7 +467,7 @@ OAuth.mobile_callback(:google, %{
 
 **Module:** `CgraphWeb.Plugs.RateLimiterV2`
 
-Multi-algorithm rate limiting:
+Multi-algorithm distributed rate limiting with Redis backend:
 
 | Tier     | Limit | Window | Use Case       |
 | -------- | ----- | ------ | -------------- |
@@ -481,6 +481,26 @@ Multi-algorithm rate limiting:
 - Sliding Window (precise counting)
 - Leaky Bucket (constant rate)
 - Fixed Window (simple limits)
+
+#### Trusted Proxy Enforcement (v0.9.5+)
+
+The rate limiter validates X-Forwarded-For headers only from trusted sources:
+
+```elixir
+# Trusted CIDR ranges
+@trusted_cidrs [
+  # Cloudflare IPv4
+  "103.21.244.0/22", "103.22.200.0/22", "103.31.4.0/22",
+  "104.16.0.0/13", "104.24.0.0/14", "108.162.192.0/18",
+  "131.0.72.0/22", "141.101.64.0/18", "162.158.0.0/15",
+  "172.64.0.0/13", "173.245.48.0/20", "188.114.96.0/20",
+  "190.93.240.0/20", "197.234.240.0/22", "198.41.128.0/17",
+  # Private networks
+  "127.0.0.0/8", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"
+]
+```
+
+This prevents IP spoofing attacks where malicious clients set fake X-Forwarded-For headers.
 
 #### WebSocket Rate Limiting
 
@@ -863,7 +883,9 @@ Tokens include:
 - [x] MIME sniffing prevention
 - [x] Rate limiting on all endpoints
 - [x] Strict rate limiting on auth endpoints
+- [x] Trusted proxy CIDR enforcement (v0.9.5+)
 - [x] JWT token revocation
+- [x] HTTP-only session cookies (v0.9.5+)
 - [x] Account lockout
 - [x] Password breach checking
 - [x] 2FA support
@@ -873,11 +895,12 @@ Tokens include:
 - [x] CSRF protection (SameSite cookies)
 - [x] End-to-End Encryption (E2EE) - Server infrastructure ready
 - [x] Voice message security controls
-- [x] Magic byte file validation (v0.7.23+)
+- [x] Magic byte file validation (v0.7.23+, enhanced v0.9.5)
 - [x] Message idempotency (v0.7.23+)
 - [x] Semgrep SAST scanning (v0.9.3+)
 - [x] CodeQL semantic analysis (v0.9.3+)
 - [x] Security gate on PRs (v0.9.3+)
+- [x] Stripe webhook verification (v0.9.5+)
 
 ## Security Telemetry Events
 

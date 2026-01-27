@@ -222,11 +222,13 @@ See [AI_INTEGRATION.md](architecture/AI_INTEGRATION.md) for details.
 | Layer    | Technology                        |
 | -------- | --------------------------------- |
 | Web      | React 19.1, Vite 6.3, TailwindCSS |
-| Mobile   | React Native, Expo                |
-| Backend  | Phoenix/Elixir                    |
-| Database | PostgreSQL                        |
+| Mobile   | React Native 0.81, Expo SDK 54    |
+| Backend  | Phoenix 1.8 / Elixir 1.17+        |
+| Database | PostgreSQL (Supabase)             |
 | Realtime | Phoenix Channels (WebSocket)      |
+| Payments | Stripe Checkout + Subscriptions   |
 | Deploy   | Vercel (frontend), Fly.io (API)   |
+| CDN      | Cloudflare                        |
 
 ---
 

@@ -5,21 +5,25 @@ repository.
 
 ## Project Overview
 
-CGraph is an enterprise messaging platform combining real-time chat, community forums, and
-decentralized identity. Features include Signal Protocol encryption (X3DH + AES-256-GCM), Ethereum
-wallet authentication, voice/video calls, and a karma-based forum system.
+CGraph is a **proprietary** enterprise messaging platform combining real-time chat, community
+forums, and gamification. Features include Signal Protocol encryption (X3DH + Double Ratchet with
+AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
+forum system.
 
-**Version**: 0.9.4 **Last Updated**: January 2026
+**Version**: 0.9.5  
+**Last Updated**: January 2026  
+**License**: Proprietary (see LICENSE)
 
 ## Key Features
 
 - **End-to-End Encryption**: Signal Protocol (X3DH + Double Ratchet) with AES-256-GCM
-- **Multi-Auth Support**: Email/password, OAuth (Google, Apple, Facebook), Ethereum wallet
+- **Multi-Auth Support**: Email/password, OAuth (Google, Apple, Facebook, TikTok)
 - **Real-time Messaging**: Phoenix Channels with WebSocket, presence tracking
 - **Forums & Groups**: Reddit-style karma, Discord-style servers with channels
-- **Gamification**: Achievements, leaderboards, XP system
+- **Gamification**: Achievements, leaderboards, XP system, seasonal events
 - **Push Notifications**: Expo (mobile), Web Push API (browser), email digests
-- **Premium Tiers**: free (5 forums/groups), starter (10), pro (50), business (unlimited)
+- **Subscription Tiers**: free (5), starter (10), pro (50), business (unlimited), enterprise
+- **Payments**: Stripe integration for subscription management
 
 ## Common Commands
 
@@ -145,22 +149,43 @@ Core business logic organized by domain:
 - `forums.ex` - Posts, comments, voting, karma
 - `groups.ex` - Servers, channels, roles, permissions
 - `presence.ex` - Online status, typing indicators
-- `crypto.ex` / `encryption.ex` - E2E encryption primitives
+- `crypto/` - E2EE key management (X3DH, prekeys, identity keys)
 - `moderation.ex` - Content moderation, reports
 - `search.ex` - Full-text search across entities
+- `gamification.ex` - XP, achievements, quests, leaderboards
+- `subscriptions/` - Stripe payment integration
+- `referrals.ex` - Referral codes, rewards, tracking
+- `rate_limiter/` - Distributed rate limiting with Redis
 
 ### Backend Web Layer (apps/backend/lib/cgraph_web/)
 
 - `router.ex` - All API routes under `/api/v1`
-- `controllers/` - REST endpoints
+- `controllers/` - REST endpoints (85+ controllers)
 - `channels/` - Phoenix channels for real-time features
-- `plugs/` - Authentication, rate limiting, CORS
+- `plugs/` - Authentication, rate limiting, CORS, security headers
+
+### Key Plugs (Middleware)
+
+- `RateLimiterV2` - Distributed rate limiting (standard, strict, relaxed, burst tiers)
+- `CookieAuth` - HTTP-only cookie JWT extraction (XSS-safe)
+- `AuthPipeline` - Guardian JWT verification
+- `SecurityHeaders` - HSTS, CSP, X-Frame-Options, etc.
+- `CurrentUser` - Load authenticated user into conn
 
 ### Real-time Communication
 
 - Phoenix PubSub for server-side event broadcasting
-- WebSocket channels: `user:*`, `conversation:*`, `group:*`, `forum:*`
+- WebSocket channels: `user:*`, `conversation:*`, `group:*`, `forum:*`, `presence:*`, `call:*`
 - Presence tracking for online status across devices
+- Per-user channels for notifications and contact presence updates
+
+### Security Architecture
+
+- **Authentication**: Guardian JWT with JTI revocation, HTTP-only cookies
+- **Rate Limiting**: Redis-backed distributed limiter with trusted proxy enforcement
+- **E2EE**: Server stores only public keys; encryption/decryption client-side
+- **Upload Security**: Magic byte MIME sniffing, content-type verification
+- **IP Protection**: Only trusts X-Forwarded-For from Cloudflare/private CIDRs
 
 ### Caching Architecture
 
@@ -267,7 +292,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 - Added `usePushNotifications` hook for auto-registration
 - Integrated SettingsProvider in App.tsx
 
-## Production Infrastructure (v0.9.3)
+## Production Infrastructure (v0.9.5)
 
 ### Fly.io Backend
 
@@ -283,6 +308,12 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 - **Connection**: Direct PostgreSQL on port 5432
 - **SSL**: Required (DATABASE_SSL=true)
 
+### Stripe Integration
+
+- **Payment Processing**: Stripe Checkout for subscriptions
+- **Webhooks**: `/api/webhooks/stripe` endpoint
+- **Subscription Tiers**: free, starter ($4.99), pro ($9.99), business ($19.99), enterprise
+
 ### Key Configuration Files
 
 - `apps/backend/fly.toml` - Fly.io deployment configuration
@@ -293,17 +324,21 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 
 - `/health` - Basic health check (returns version, status)
 - `/ready` - Readiness check (database, cache, redis status)
+- `/api/webhooks/stripe` - Stripe webhook receiver
 
 ### Environment Variables (Fly.io Secrets)
 
 ```
-DATABASE_URL     - Ecto connection URL to Supabase
-DATABASE_SSL     - true
-SECRET_KEY_BASE  - Phoenix secret (generate with: mix phx.gen.secret)
-JWT_SECRET       - Guardian JWT signing key
-ENCRYPTION_KEY   - For sensitive data encryption
-PHX_HOST         - api.cgraph.org (or cgraph-backend.fly.dev)
-REDIS_URL        - Optional: Upstash Redis URL for distributed rate limiting
+DATABASE_URL          - Ecto connection URL to Supabase
+DATABASE_SSL          - true
+SECRET_KEY_BASE       - Phoenix secret (generate with: mix phx.gen.secret)
+JWT_SECRET            - Guardian JWT signing key
+ENCRYPTION_KEY        - For sensitive data encryption
+PHX_HOST              - api.cgraph.org (or cgraph-backend.fly.dev)
+REDIS_URL             - Optional: Upstash Redis URL for distributed rate limiting
+STRIPE_SECRET_KEY     - Stripe API secret key
+STRIPE_WEBHOOK_SECRET - Stripe webhook signing secret
+STRIPE_PRICE_IDS      - JSON map of tier -> price_id
 ```
 
 ### Deployment Notes
@@ -312,3 +347,4 @@ REDIS_URL        - Optional: Upstash Redis URL for distributed rate limiting
 - Fly.io handles SSL termination (no force_ssl in Phoenix)
 - Uses IPv4 socket option for DNS compatibility
 - CleanupWorker runs daily via Oban cron
+- Sourcemaps disabled in production for code protection
