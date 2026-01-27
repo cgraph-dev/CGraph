@@ -21,6 +21,7 @@ import {
   MicrophoneIcon,
   Cog6ToothIcon,
   SparklesIcon,
+  MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
@@ -38,6 +39,7 @@ import { GifPicker, type GifResult } from '@/components/chat/GifPicker';
 import { FileMessage } from '@/components/chat/FileMessage';
 import { E2EEErrorModal } from '@/components/chat/E2EEErrorModal';
 import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
+import { MessageSearch } from '@/components/messages/MessageSearch';
 
 // Sticker system integration
 import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
@@ -172,6 +174,7 @@ export default function Conversation() {
   const [isVoiceMode, setIsVoiceMode] = useState(false);
   const [showStickerPicker, setShowStickerPicker] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
+  const [showMessageSearch, setShowMessageSearch] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -741,6 +744,41 @@ export default function Conversation() {
     }
   };
 
+  // Handle search result click - navigate to conversation and scroll to message
+  const handleSearchResultClick = (searchConversationId: string, messageId: string) => {
+    // Close search panel
+    setShowMessageSearch(false);
+
+    // If search result is from a different conversation, navigate to it
+    if (searchConversationId !== conversationId) {
+      navigate(`/messages/${searchConversationId}?highlightMessage=${messageId}`);
+      return;
+    }
+
+    // If in same conversation, scroll to message and highlight it
+    const messageElement = document.getElementById(`message-${messageId}`);
+    if (messageElement) {
+      messageElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // Add highlight effect
+      messageElement.classList.add(
+        'ring-2',
+        'ring-primary-500',
+        'ring-offset-2',
+        'ring-offset-dark-900'
+      );
+      setTimeout(() => {
+        messageElement.classList.remove(
+          'ring-2',
+          'ring-primary-500',
+          'ring-offset-2',
+          'ring-offset-dark-900'
+        );
+      }, 2000);
+    }
+
+    if (uiPreferences.enableHaptic) HapticFeedback.success();
+  };
+
   // Toggle message action menu
   const handleToggleMessageMenu = (messageId: string) => {
     setActiveMessageMenu(activeMessageMenu === messageId ? null : messageId);
@@ -987,6 +1025,24 @@ export default function Conversation() {
                 title="Video call"
               >
                 <VideoCameraIcon className="h-5 w-5" />
+              </motion.button>
+
+              {/* Message Search Button */}
+              <motion.button
+                onClick={() => {
+                  setShowMessageSearch(!showMessageSearch);
+                  if (uiPreferences.enableHaptic) HapticFeedback.medium();
+                }}
+                className={`rounded-lg p-2 transition-all duration-200 hover:bg-white/10 ${
+                  showMessageSearch
+                    ? 'bg-primary-500/20 text-primary-400'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                title="Search messages"
+              >
+                <MagnifyingGlassIcon className="h-5 w-5" />
               </motion.button>
 
               <motion.button
@@ -1619,6 +1675,14 @@ export default function Conversation() {
             message={messageToForward}
           />
         )}
+
+        {/* Message Search Panel */}
+        <MessageSearch
+          isOpen={showMessageSearch}
+          onClose={() => setShowMessageSearch(false)}
+          onResultClick={handleSearchResultClick}
+          conversationId={conversationId}
+        />
 
         {/* Hidden File Input */}
         <input
