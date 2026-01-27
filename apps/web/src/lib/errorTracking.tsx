@@ -291,48 +291,30 @@ async function processQueue(): Promise<void> {
 }
 
 async function sendErrorToBackend(error: QueuedError): Promise<void> {
-  // Sentry integration is optional - only used if @sentry/react is installed
-  // and VITE_SENTRY_DSN is configured. We skip the import entirely if DSN is not set
-  // to avoid Vite import analysis errors when Sentry is not installed.
-  if (CONFIG.sentryDsn && typeof window !== 'undefined') {
-    try {
-      // SECURITY NOTE: This uses Function constructor for truly dynamic imports.
-      // This is intentional and safe because:
-      // 1. The specifier '@sentry/react' is hardcoded, not user-controlled
-      // 2. This allows optional Sentry integration without build-time dependency
-      // 3. CSP should allow 'unsafe-eval' only if Sentry is used
-      // If CSP is strict, use conditional build flags instead.
-      const dynamicImport = new Function('specifier', 'return import(specifier)');
-      const Sentry = await dynamicImport('@sentry/react');
-      Sentry.captureException(new Error(error.error), {
-        tags: error.context.tags,
-        extra: {
-          ...error.context.extra,
-          breadcrumbs: error.breadcrumbs,
-        },
-        user: error.userContext ? { id: error.userContext.id } : undefined,
-      });
-    } catch {
-      // Sentry not installed or failed to load - this is expected when
-      // @sentry/react is not in dependencies. Continue with custom backend.
-    }
-  }
+  // Sentry integration disabled - would require 'unsafe-eval' CSP which we don't want
+  // If Sentry is needed in the future, add @sentry/react as a direct dependency
+  // and use a regular import instead of dynamic Function constructor
 
-  // Send to our backend
-  await api.post(CONFIG.errorEndpoint, {
-    error_id: error.id,
-    message: error.error,
-    level: error.context.level || 'error',
-    component: error.context.component,
-    action: error.context.action,
-    metadata: stripPii(error.context.metadata),
-    tags: error.context.tags,
-    breadcrumbs: error.breadcrumbs.slice(-20), // Last 20 breadcrumbs
-    user_id: error.userContext?.id,
-    url: error.url,
-    user_agent: error.userAgent,
-    timestamp: new Date(error.timestamp).toISOString(),
-  });
+  // Send to our backend only
+  try {
+    await api.post(CONFIG.errorEndpoint, {
+      error_id: error.id,
+      message: error.error,
+      level: error.context.level || 'error',
+      component: error.context.component,
+      action: error.context.action,
+      metadata: stripPii(error.context.metadata),
+      tags: error.context.tags,
+      breadcrumbs: error.breadcrumbs.slice(-20), // Last 20 breadcrumbs
+      user_id: error.userContext?.id,
+      url: error.url,
+      user_agent: error.userAgent,
+      timestamp: new Date(error.timestamp).toISOString(),
+    });
+  } catch (e) {
+    // Silently fail - don't let error reporting cause more errors
+    console.warn('[ErrorTracking] Failed to send error to backend:', e);
+  }
 }
 
 // ============================================================================
