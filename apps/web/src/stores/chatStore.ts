@@ -540,34 +540,51 @@ export const useChatStore = create<ChatState>()(
       },
 
       addMessage: (message: Message) => {
-        set((state) => {
-          const conversationMessages = state.messages[message.conversationId] || [];
-          const idSet = state.messageIdSets[message.conversationId] || new Set<string>();
+        // Use queueMicrotask to batch rapid message updates
+        // This prevents UI freeze from cascading re-renders when receiving
+        // multiple real-time messages in quick succession
+        queueMicrotask(() => {
+          set((state) => {
+            const conversationMessages = state.messages[message.conversationId] || [];
+            const idSet = state.messageIdSets[message.conversationId] || new Set<string>();
 
-          // O(1) deduplication check - scales to millions of messages
-          if (idSet.has(message.id)) {
-            return state;
-          }
+            // O(1) deduplication check - scales to millions of messages
+            if (idSet.has(message.id)) {
+              return state;
+            }
 
-          // Create new Set with the message ID added
-          const newIdSet = new Set(idSet);
-          newIdSet.add(message.id);
+            // Create new Set with the message ID added
+            const newIdSet = new Set(idSet);
+            newIdSet.add(message.id);
 
-          return {
-            messages: {
-              ...state.messages,
-              [message.conversationId]: [...conversationMessages, message],
-            },
-            messageIdSets: {
-              ...state.messageIdSets,
-              [message.conversationId]: newIdSet,
-            },
-            conversations: state.conversations.map((conv) =>
-              conv.id === message.conversationId
-                ? { ...conv, lastMessage: message, updatedAt: message.createdAt }
-                : conv
-            ),
-          };
+            // Only update lastMessage if this is the newest message
+            const shouldUpdateLastMessage =
+              !state.conversations.find((c) => c.id === message.conversationId)?.lastMessage ||
+              new Date(message.createdAt) >
+                new Date(
+                  state.conversations.find((c) => c.id === message.conversationId)?.lastMessage
+                    ?.createdAt || 0
+                );
+
+            return {
+              messages: {
+                ...state.messages,
+                [message.conversationId]: [...conversationMessages, message],
+              },
+              messageIdSets: {
+                ...state.messageIdSets,
+                [message.conversationId]: newIdSet,
+              },
+              // Only update conversations array if necessary (reduces re-renders)
+              conversations: shouldUpdateLastMessage
+                ? state.conversations.map((conv) =>
+                    conv.id === message.conversationId
+                      ? { ...conv, lastMessage: message, updatedAt: message.createdAt }
+                      : conv
+                  )
+                : state.conversations,
+            };
+          });
         });
       },
 

@@ -192,7 +192,15 @@ class SocketManager {
     }
 
     console.log('[Socket] Connecting to:', SOCKET_URL);
-    this.connectionPromise = new Promise((resolve) => {
+    this.connectionPromise = new Promise((resolve, reject) => {
+      // Connection timeout - don't hang forever
+      const connectionTimeout = setTimeout(() => {
+        logger.error('Socket connection timeout after 15s');
+        console.log('[Socket] ⏱️ Connection timeout');
+        this.connectionPromise = null;
+        reject(new Error('Socket connection timeout'));
+      }, 15000);
+
       this.socket = new Socket(SOCKET_URL, {
         params: { token },
         reconnectAfterMs: (tries: number) => {
@@ -203,6 +211,7 @@ class SocketManager {
       });
 
       this.socket.onOpen(() => {
+        clearTimeout(connectionTimeout);
         logger.log('Socket connected');
         console.log('[Socket] ✅ Connected successfully to:', SOCKET_URL);
         if (this.reconnectTimer) {
@@ -220,13 +229,19 @@ class SocketManager {
       });
 
       this.socket.onError((error: unknown) => {
+        clearTimeout(connectionTimeout);
         logger.error('Socket error:', error);
         console.log('[Socket] ❌ Error:', error);
         this.connectionPromise = null;
-        resolve(); // Resolve anyway to not block
+        // Reject on error - don't proceed with broken socket
+        reject(error);
       });
 
       this.socket.connect();
+    }).catch((err) => {
+      // Log but don't throw - allow app to continue in degraded mode
+      logger.warn('Socket connection failed, app will work in offline mode:', err);
+      console.log('[Socket] ⚠️ Connection failed, continuing in offline mode');
     });
 
     return this.connectionPromise;
@@ -1481,14 +1496,24 @@ class SocketManager {
     return new Map(this.onlineUsers);
   }
 
+  // Track pending peek operations for cleanup
+  private peekTimeouts: Set<ReturnType<typeof setTimeout>> = new Set();
+
   // Peek at conversations to get presence data (lightweight join/leave)
   // Fixed: Now properly leaves channels after presence peek to prevent memory leak
-  async peekConversationsPresence(conversationIds: string[]): Promise<void> {
+  // Returns cleanup function for component unmount
+  async peekConversationsPresence(conversationIds: string[]): Promise<() => void> {
     if (!this.socket?.isConnected()) {
-      await this.connect();
+      try {
+        await this.connect();
+      } catch {
+        // Socket not available, return no-op cleanup
+        return () => {};
+      }
     }
 
     const channelsToLeave: string[] = [];
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     conversationIds.forEach((convId) => {
       const topic = `conversation:${convId}`;
@@ -1504,7 +1529,8 @@ class SocketManager {
     // Leave channels after a brief delay to allow presence data to be received
     // This prevents memory leak from keeping channels open indefinitely
     if (channelsToLeave.length > 0) {
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
+        if (timeoutId) this.peekTimeouts.delete(timeoutId);
         channelsToLeave.forEach((convId) => {
           // Only leave if not the active conversation
           const { activeConversationId } = useChatStore.getState();
@@ -1513,7 +1539,23 @@ class SocketManager {
           }
         });
       }, 2000); // 2 second delay to receive presence
+      this.peekTimeouts.add(timeoutId);
     }
+
+    // Return cleanup function for component unmount
+    return () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        this.peekTimeouts.delete(timeoutId);
+      }
+      // Leave any channels we joined immediately
+      channelsToLeave.forEach((convId) => {
+        const { activeConversationId } = useChatStore.getState();
+        if (convId !== activeConversationId) {
+          this.leaveConversation(convId);
+        }
+      });
+    };
   }
 }
 

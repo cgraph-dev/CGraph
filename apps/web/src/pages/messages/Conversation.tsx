@@ -332,27 +332,43 @@ export default function Conversation() {
   }, [conversationId, otherParticipantUserId]);
 
   // Join channel and fetch messages
+  // Optimized: Use AbortController to prevent race conditions and memory leaks
   useEffect(() => {
     if (!conversationId) return;
 
     let mounted = true;
+    const abortController = new AbortController();
 
     setActiveConversation(conversationId);
 
     // Ensure socket is connected before joining conversation
     const initializeChannel = async () => {
-      await socketManager.connect();
-      if (mounted) {
-        socketManager.joinConversation(conversationId);
+      try {
+        await socketManager.connect();
+        if (mounted && !abortController.signal.aborted) {
+          socketManager.joinConversation(conversationId);
+        }
+      } catch (err) {
+        // Socket connection failed - app continues in degraded mode
+        console.warn('[Conversation] Socket connection failed:', err);
       }
     };
 
+    // Run initialization and data fetching
     initializeChannel();
-    fetchMessages(conversationId);
-    markAsRead(conversationId);
+
+    // Debounce rapid conversation switches
+    const fetchTimeoutId = setTimeout(() => {
+      if (!abortController.signal.aborted) {
+        fetchMessages(conversationId);
+        markAsRead(conversationId);
+      }
+    }, 50);
 
     return () => {
       mounted = false;
+      abortController.abort();
+      clearTimeout(fetchTimeoutId);
       setActiveConversation(null);
 
       // Clean up typing indicator to prevent race condition
