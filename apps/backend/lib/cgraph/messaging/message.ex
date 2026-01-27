@@ -20,6 +20,7 @@ defmodule CGraph.Messaging.Message do
   @derive {Jason.Encoder, only: [
     :id, :content, :content_type, :is_encrypted, :is_edited,
     :sender_id, :conversation_id, :channel_id, :reply_to_id,
+    :scheduled_at, :schedule_status,
     :inserted_at, :updated_at
   ]}
 
@@ -41,6 +42,10 @@ defmodule CGraph.Messaging.Message do
     field :is_pinned, :boolean, default: false
     field :pinned_at, :utc_datetime
     belongs_to :pinned_by, CGraph.Accounts.User
+
+    # Scheduled message fields
+    field :scheduled_at, :utc_datetime_usec
+    field :schedule_status, :string, default: "immediate"
 
     # For file attachments
     field :file_url, :string
@@ -75,7 +80,8 @@ defmodule CGraph.Messaging.Message do
       :content, :content_type, :is_encrypted, :sender_id,
       :conversation_id, :channel_id, :reply_to_id,
       :file_url, :file_name, :file_size, :file_mime_type,
-      :thumbnail_url, :link_preview, :client_message_id
+      :thumbnail_url, :link_preview, :client_message_id,
+      :scheduled_at, :schedule_status
     ])
     |> validate_required([:content, :sender_id])
     |> sanitize_content()

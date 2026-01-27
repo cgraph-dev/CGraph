@@ -92,7 +92,13 @@ config :cgraph, Oban,
     # Prune completed jobs after 7 days
     {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
     # Rescue orphaned jobs (stuck jobs older than 30 minutes)
-    {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)}
+    {Oban.Plugins.Lifeline, rescue_after: :timer.minutes(30)},
+    # Cron jobs for scheduled tasks
+    {Oban.Plugins.Cron,
+     crontab: [
+       # Process scheduled messages every minute
+       {"* * * * *", CGraph.Workers.ScheduledMessageWorker}
+     ]}
   ],
   queues: [
     default: 10,
