@@ -504,12 +504,17 @@ export const useAuthStore = create<AuthState>()(
 );
 
 /**
- * Register token handlers with tokenService
+ * Initialize token service handlers
+ *
+ * PRODUCTION BUILD FIX:
+ * This function MUST be called from App.tsx (or similar) AFTER React mounts,
+ * NOT at module import time. This prevents TDZ (Temporal Dead Zone) errors
+ * where useAuthStore is accessed before it's fully initialized.
  *
  * CIRCULAR DEPENDENCY FIX:
  * - api.ts needs access to tokens but can't import authStore (creates circular dep)
  * - tokenService.ts provides a decoupled interface
- * - authStore registers its handlers here after initialization
+ * - authStore registers its handlers via this function after the app mounts
  * - api.ts calls tokenService functions which delegate to these handlers
  *
  * This ensures:
@@ -517,26 +522,39 @@ export const useAuthStore = create<AuthState>()(
  * 2. No "Cannot access before initialization" errors in production builds
  * 3. Token access works correctly once store is ready
  */
-registerTokenHandlers({
-  getAccessToken: () => useAuthStore.getState().token,
-  getRefreshToken: () => useAuthStore.getState().refreshToken,
-  setTokens: ({ accessToken, refreshToken }) => {
-    useAuthStore.setState({
-      token: accessToken,
-      refreshToken: refreshToken ?? useAuthStore.getState().refreshToken,
-    });
-  },
-  onLogout: () => useAuthStore.getState().logout(),
-});
+let tokenServiceInitialized = false;
+let safetyTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
-// Safety timeout: ensure isLoading is set to false within 3 seconds of module load
-// This catches any edge cases where rehydration might not complete
-if (typeof window !== 'undefined') {
-  setTimeout(() => {
-    const state = useAuthStore.getState();
-    if (state.isLoading) {
-      authLogger.warn('Safety timeout: forcing isLoading to false');
-      useAuthStore.setState({ isLoading: false });
-    }
-  }, 3000);
+export function initializeTokenService(): void {
+  // Guard against double initialization
+  if (tokenServiceInitialized) {
+    authLogger.debug('Token service already initialized, skipping');
+    return;
+  }
+  tokenServiceInitialized = true;
+  authLogger.debug('Initializing token service handlers');
+
+  registerTokenHandlers({
+    getAccessToken: () => useAuthStore.getState().token,
+    getRefreshToken: () => useAuthStore.getState().refreshToken,
+    setTokens: ({ accessToken, refreshToken }) => {
+      useAuthStore.setState({
+        token: accessToken,
+        refreshToken: refreshToken ?? useAuthStore.getState().refreshToken,
+      });
+    },
+    onLogout: () => useAuthStore.getState().logout(),
+  });
+
+  // Safety timeout: ensure isLoading is set to false within 3 seconds
+  // This catches any edge cases where rehydration might not complete
+  if (typeof window !== 'undefined' && !safetyTimeoutId) {
+    safetyTimeoutId = setTimeout(() => {
+      const state = useAuthStore.getState();
+      if (state.isLoading) {
+        authLogger.warn('Safety timeout: forcing isLoading to false');
+        useAuthStore.setState({ isLoading: false });
+      }
+    }, 3000);
+  }
 }

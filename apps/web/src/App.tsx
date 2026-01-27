@@ -1,6 +1,6 @@
-import { useEffect, lazy, Suspense } from 'react';
+import { useEffect, lazy, Suspense, useRef } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useAuthStore } from '@/stores/authStore';
+import { useAuthStore, initializeTokenService } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useCustomizationInitializer } from '@/stores/unifiedCustomizationStore';
@@ -146,6 +146,17 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   const fetchGamificationData = useGamificationStore((state) => state.fetchGamificationData);
   const { theme, syncWithServer } = useThemeStore();
   const { initialize: initializeCustomizations } = useCustomizationInitializer();
+  const tokenServiceInitRef = useRef(false);
+
+  // CRITICAL: Initialize token service on first mount
+  // This registers auth handlers with tokenService AFTER React mounts,
+  // avoiding TDZ errors in production builds where module execution order varies
+  useEffect(() => {
+    if (!tokenServiceInitRef.current) {
+      tokenServiceInitRef.current = true;
+      initializeTokenService();
+    }
+  }, []);
 
   // Apply customization settings to UI
   useCustomizationApplication();
