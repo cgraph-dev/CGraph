@@ -66,7 +66,7 @@ defmodule CGraphWeb.API.V1.MessageController do
       base_metadata
     end
 
-    # Build message params, including file attachment fields
+    # Build message params, including file attachment fields and scheduling
     message_params = %{
       content: Map.get(params, "content"),
       content_type: Map.get(params, "content_type", "text"),
@@ -81,7 +81,10 @@ defmodule CGraphWeb.API.V1.MessageController do
       is_encrypted: Map.get(params, "is_encrypted", false),
       client_message_id: Map.get(params, "client_message_id"),
       # Combined metadata (E2EE + link previews, etc.)
-      link_preview: combined_metadata
+      link_preview: combined_metadata,
+      # Scheduling fields
+      scheduled_at: parse_scheduled_at(params["scheduled_at"]),
+      schedule_status: if(params["scheduled_at"], do: "scheduled", else: "immediate")
     }
     # Remove nil values to avoid overwriting with nils
     |> Enum.reject(fn {_k, v} -> is_nil(v) end)
@@ -89,12 +92,15 @@ defmodule CGraphWeb.API.V1.MessageController do
 
     with {:ok, conversation} <- Messaging.get_user_conversation(user, conversation_id),
          {:ok, message} <- Messaging.send_message(conversation, user, message_params) do
-      # Broadcast via Phoenix Channels
-      CGraphWeb.Endpoint.broadcast!(
-        "conversation:#{conversation_id}",
-        "new_message",
-        %{message: MessageJSON.message_data(message)}
-      )
+      # Only broadcast immediate messages, not scheduled ones
+      # Scheduled messages are broadcast by the ScheduledMessageWorker at send time
+      if message.schedule_status == "immediate" do
+        CGraphWeb.Endpoint.broadcast!(
+          "conversation:#{conversation_id}",
+          "new_message",
+          %{message: MessageJSON.message_data(message)}
+        )
+      end
 
       conn
       |> put_status(:created)
@@ -220,6 +226,105 @@ defmodule CGraphWeb.API.V1.MessageController do
       )
 
       json(conn, %{status: "ok"})
+    end
+  end
+
+  @doc """
+  List scheduled messages for a conversation.
+  Returns all messages with schedule_status = 'scheduled'.
+  """
+  def list_scheduled(conn, %{"conversation_id" => conversation_id} = params) do
+    user = conn.assigns.current_user
+
+    opts = [
+      page: parse_int(params["page"], 1, min: 1),
+      per_page: parse_int(params["per_page"], 50, min: 1, max: @max_per_page)
+    ]
+
+    with {:ok, conversation} <- Messaging.get_user_conversation(user, conversation_id),
+         {messages, total} <- Messaging.list_scheduled_messages(conversation, opts) do
+      render(conn, :index,
+        messages: messages,
+        meta: %{page: opts[:page], per_page: opts[:per_page], total: total}
+      )
+    end
+  end
+
+  @doc """
+  Reschedule a scheduled message.
+  Only the sender can reschedule their own messages.
+  """
+  def reschedule(conn, %{"id" => message_id} = params) do
+    user = conn.assigns.current_user
+
+    with {:ok, message} <- Messaging.get_message(message_id),
+         :ok <- authorize_message_owner(message, user),
+         {:ok, scheduled_at} <- validate_scheduled_at(params["scheduled_at"]),
+         {:ok, updated_message} <- Messaging.reschedule_message(message, scheduled_at) do
+      render(conn, :show, message: updated_message)
+    end
+  end
+
+  @doc """
+  Cancel a scheduled message.
+  Only the sender can cancel their own messages.
+  """
+  def cancel_schedule(conn, %{"id" => message_id}) do
+    user = conn.assigns.current_user
+
+    with {:ok, message} <- Messaging.get_message(message_id),
+         :ok <- authorize_message_owner(message, user),
+         {:ok, cancelled_message} <- Messaging.cancel_scheduled_message(message) do
+      render(conn, :show, message: cancelled_message)
+    end
+  end
+
+  # Private helper functions
+
+  # Parse scheduled_at parameter and validate it's in the future
+  defp parse_scheduled_at(nil), do: nil
+
+  defp parse_scheduled_at(scheduled_at) when is_binary(scheduled_at) do
+    case DateTime.from_iso8601(scheduled_at) do
+      {:ok, datetime, _offset} ->
+        if DateTime.compare(datetime, DateTime.utc_now()) == :gt do
+          datetime
+        else
+          nil
+        end
+
+      _ ->
+        nil
+    end
+  end
+
+  defp parse_scheduled_at(_), do: nil
+
+  # Validate scheduled_at for rescheduling
+  defp validate_scheduled_at(nil), do: {:error, :missing_scheduled_at}
+
+  defp validate_scheduled_at(scheduled_at) when is_binary(scheduled_at) do
+    case DateTime.from_iso8601(scheduled_at) do
+      {:ok, datetime, _offset} ->
+        if DateTime.compare(datetime, DateTime.utc_now()) == :gt do
+          {:ok, datetime}
+        else
+          {:error, :scheduled_at_must_be_future}
+        end
+
+      _ ->
+        {:error, :invalid_datetime}
+    end
+  end
+
+  defp validate_scheduled_at(_), do: {:error, :invalid_datetime}
+
+  # Authorize that user is the message owner
+  defp authorize_message_owner(message, user) do
+    if message.sender_id == user.id do
+      :ok
+    else
+      {:error, :unauthorized}
     end
   end
 end

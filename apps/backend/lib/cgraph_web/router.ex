@@ -322,7 +322,13 @@ defmodule CGraphWeb.Router do
       end
       post "/messages/:id/read", MessageController, :mark_read
       post "/typing", MessageController, :typing
+      # Scheduled messages
+      get "/scheduled-messages", MessageController, :list_scheduled
     end
+
+    # Scheduled message management (outside conversation scope)
+    patch "/messages/:id/reschedule", MessageController, :reschedule
+    delete "/messages/:id/cancel-schedule", MessageController, :cancel_schedule
 
     # Group Channels (Discord-style)
     resources "/groups", GroupController do

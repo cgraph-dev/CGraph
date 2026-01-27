@@ -622,6 +622,69 @@ defmodule CGraph.Messaging do
   end
 
   @doc """
+  List scheduled messages for a conversation.
+  Returns messages with schedule_status = 'scheduled', ordered by scheduled_at.
+  """
+  def list_scheduled_messages(conversation, opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    per_page = Keyword.get(opts, :per_page, 50)
+    offset = (page - 1) * per_page
+
+    query =
+      from m in Message,
+        where: m.conversation_id == ^conversation.id,
+        where: m.schedule_status == "scheduled",
+        where: not is_nil(m.scheduled_at),
+        where: is_nil(m.deleted_at),
+        order_by: [asc: m.scheduled_at],
+        limit: ^per_page,
+        offset: ^offset,
+        preload: [:sender]
+
+    messages = Repo.all(query)
+
+    count_query =
+      from m in Message,
+        where: m.conversation_id == ^conversation.id,
+        where: m.schedule_status == "scheduled",
+        where: not is_nil(m.scheduled_at),
+        where: is_nil(m.deleted_at),
+        select: count(m.id)
+
+    total = Repo.one(count_query) || 0
+
+    {messages, total}
+  end
+
+  @doc """
+  Reschedule a scheduled message to a new time.
+  Only works for messages with schedule_status = 'scheduled'.
+  """
+  def reschedule_message(message, new_scheduled_at) do
+    if message.schedule_status == "scheduled" do
+      message
+      |> Ecto.Changeset.change(scheduled_at: new_scheduled_at)
+      |> Repo.update()
+    else
+      {:error, :message_not_scheduled}
+    end
+  end
+
+  @doc """
+  Cancel a scheduled message.
+  Updates schedule_status to 'cancelled'.
+  """
+  def cancel_scheduled_message(message) do
+    if message.schedule_status == "scheduled" do
+      message
+      |> Ecto.Changeset.change(schedule_status: "cancelled")
+      |> Repo.update()
+    else
+      {:error, :message_not_scheduled}
+    end
+  end
+
+  @doc """
   Edit a message by ID (only by sender).
   """
   def edit_message(message_id, user_id, content) do
