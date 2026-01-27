@@ -6,6 +6,7 @@ import {
   EventReward,
   BattlePassTier,
 } from '@/stores/seasonalEventStore';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 // Reserved for future features
 const _reservedImports = {
@@ -540,6 +541,8 @@ interface LeaderboardEntry {
   username: string;
   displayName: string;
   avatarUrl?: string;
+  avatarBorderId?: string | null;
+  avatar_border_id?: string | null;
   score: number;
   change?: number;
 }
@@ -594,10 +597,11 @@ export function EventLeaderboard({
             <div className="w-8 text-center font-bold text-gray-500">#{entry.rank}</div>
 
             {/* Avatar */}
-            <img
-              src={entry.avatarUrl || '/default-avatar.png'}
+            <ThemedAvatar
+              src={entry.avatarUrl}
               alt={entry.displayName}
-              className="h-10 w-10 rounded-full"
+              size="medium"
+              avatarBorderId={entry.avatarBorderId ?? entry.avatar_border_id ?? null}
             />
 
             {/* Name */}
@@ -657,17 +661,22 @@ function LeaderboardPodium({ entry, position }: { entry: LeaderboardEntry; posit
     >
       {/* Avatar */}
       <div className="relative mb-2">
-        <img
-          src={entry.avatarUrl || '/default-avatar.png'}
-          alt={entry.displayName}
-          className={`h-16 w-16 rounded-full border-4 ${
+        <div
+          className={`rounded-full border-4 ${
             position === 1
               ? 'border-yellow-500'
               : position === 2
                 ? 'border-gray-400'
                 : 'border-orange-600'
           }`}
-        />
+        >
+          <ThemedAvatar
+            src={entry.avatarUrl}
+            alt={entry.displayName}
+            size="large"
+            avatarBorderId={entry.avatarBorderId ?? entry.avatar_border_id ?? null}
+          />
+        </div>
         <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 text-2xl">
           {medals[position]}
         </span>

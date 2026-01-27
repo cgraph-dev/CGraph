@@ -18,10 +18,11 @@ import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
 import OnlineStatusIndicator from '@/components/common/OnlineStatusIndicator';
 import UserStars from '@/components/common/UserStars';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 /**
  * Member List Page
- * 
+ *
  * MyBB-style member list with:
  * - Search by username, email
  * - Filter by group, online status, join date
@@ -35,6 +36,7 @@ interface Member {
   username: string;
   displayName: string | null;
   avatarUrl: string | null;
+  avatarBorderId?: string | null;
   userGroup: string;
   userGroupId: string;
   userGroupColor: string | null;
@@ -136,7 +138,7 @@ export default function MemberList() {
 
       const response = await api.get('/api/v1/members', { params });
       const data = response.data;
-      
+
       const memberList = ensureArray(data, 'members') as Record<string, unknown>[];
       setMembers(
         memberList.map((m) => ({
@@ -144,6 +146,7 @@ export default function MemberList() {
           username: (m.username as string) || 'Unknown',
           displayName: (m.display_name as string) || null,
           avatarUrl: (m.avatar_url as string) || null,
+          avatarBorderId: (m.avatar_border_id as string) || (m.avatarBorderId as string) || null,
           userGroup: (m.user_group as string) || 'Member',
           userGroupId: (m.user_group_id as string) || '',
           userGroupColor: (m.user_group_color as string) || null,
@@ -238,29 +241,29 @@ export default function MemberList() {
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field) return null;
     return sortOrder === 'asc' ? (
-      <ChevronUpIcon className="h-4 w-4 inline ml-1" />
+      <ChevronUpIcon className="ml-1 inline h-4 w-4" />
     ) : (
-      <ChevronDownIcon className="h-4 w-4 inline ml-1" />
+      <ChevronDownIcon className="ml-1 inline h-4 w-4" />
     );
   };
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto max-w-7xl px-4 py-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <UserGroupIcon className="h-8 w-8 text-primary" />
+          <UserGroupIcon className="text-primary h-8 w-8" />
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Member List</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-foreground text-2xl font-bold">Member List</h1>
+            <p className="text-muted-foreground text-sm">
               {(totalMembers ?? 0).toLocaleString()} registered members
             </p>
           </div>
         </div>
-        
+
         <button
           onClick={() => fetchMembers()}
-          className="mt-4 sm:mt-0 flex items-center gap-2 px-4 py-2 text-sm bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+          className="bg-secondary hover:bg-secondary/80 mt-4 flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-colors sm:mt-0"
           disabled={isLoading}
         >
           <ArrowPathIcon className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -269,24 +272,24 @@ export default function MemberList() {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-card border border-border rounded-lg p-4 mb-6">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="bg-card border-border mb-6 rounded-lg border p-4">
+        <div className="flex flex-col gap-4 sm:flex-row">
           {/* Search */}
           <div className="relative flex-1">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <MagnifyingGlassIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
             <input
               type="text"
               placeholder="Search members..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+              className="bg-background border-border focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
             />
           </div>
 
           {/* Filter toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 transition-colors ${
               showFilters || hasActiveFilters
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
@@ -295,26 +298,24 @@ export default function MemberList() {
             <FunnelIcon className="h-5 w-5" />
             Filters
             {hasActiveFilters && (
-              <span className="bg-white/20 text-xs px-1.5 py-0.5 rounded">Active</span>
+              <span className="rounded bg-white/20 px-1.5 py-0.5 text-xs">Active</span>
             )}
           </button>
         </div>
 
         {/* Expanded filters */}
         {showFilters && (
-          <div className="mt-4 pt-4 border-t border-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="border-border mt-4 grid grid-cols-1 gap-4 border-t pt-4 sm:grid-cols-2 lg:grid-cols-4">
             {/* User group filter */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                User Group
-              </label>
+              <label className="text-foreground mb-1 block text-sm font-medium">User Group</label>
               <select
                 value={filterGroup}
                 onChange={(e) => {
                   setFilterGroup(e.target.value);
                   setPage(1);
                 }}
-                className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="bg-background border-border focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
               >
                 <option value="">All Groups</option>
                 {userGroups.map((group) => (
@@ -327,7 +328,7 @@ export default function MemberList() {
 
             {/* Online only */}
             <div className="flex items-end">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex cursor-pointer items-center gap-2">
                 <input
                   type="checkbox"
                   checked={filterOnlineOnly}
@@ -335,19 +336,15 @@ export default function MemberList() {
                     setFilterOnlineOnly(e.target.checked);
                     setPage(1);
                   }}
-                  className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                  className="border-border text-primary focus:ring-primary h-4 w-4 rounded"
                 />
-                <span className="text-sm font-medium text-foreground">
-                  Online Only
-                </span>
+                <span className="text-foreground text-sm font-medium">Online Only</span>
               </label>
             </div>
 
             {/* Joined after */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Joined After
-              </label>
+              <label className="text-foreground mb-1 block text-sm font-medium">Joined After</label>
               <input
                 type="date"
                 value={filterJoinedAfter}
@@ -355,13 +352,13 @@ export default function MemberList() {
                   setFilterJoinedAfter(e.target.value);
                   setPage(1);
                 }}
-                className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="bg-background border-border focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
               />
             </div>
 
             {/* Joined before */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="text-foreground mb-1 block text-sm font-medium">
                 Joined Before
               </label>
               <input
@@ -371,7 +368,7 @@ export default function MemberList() {
                   setFilterJoinedBefore(e.target.value);
                   setPage(1);
                 }}
-                className="w-full px-3 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                className="bg-background border-border focus:ring-primary w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring-2"
               />
             </div>
 
@@ -380,7 +377,7 @@ export default function MemberList() {
               <div className="sm:col-span-2 lg:col-span-4">
                 <button
                   onClick={clearFilters}
-                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  className="text-muted-foreground hover:text-foreground flex items-center gap-2 text-sm transition-colors"
                 >
                   <XMarkIcon className="h-4 w-4" />
                   Clear all filters
@@ -393,60 +390,60 @@ export default function MemberList() {
 
       {/* Error state */}
       {error && (
-        <div className="bg-destructive/10 text-destructive border border-destructive/20 rounded-lg p-4 mb-6">
+        <div className="bg-destructive/10 text-destructive border-destructive/20 mb-6 rounded-lg border p-4">
           {error}
         </div>
       )}
 
       {/* Members table */}
-      <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <div className="bg-card border-border overflow-hidden rounded-lg border">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-muted/50 border-b border-border">
-                <th className="text-left px-4 py-3 font-medium text-foreground">
+              <tr className="bg-muted/50 border-border border-b">
+                <th className="text-foreground px-4 py-3 text-left font-medium">
                   <button
                     onClick={() => handleSort('username')}
-                    className="flex items-center hover:text-primary transition-colors"
+                    className="hover:text-primary flex items-center transition-colors"
                   >
                     Member
                     <SortIcon field="username" />
                   </button>
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-foreground hidden sm:table-cell">
+                <th className="text-foreground hidden px-4 py-3 text-left font-medium sm:table-cell">
                   Group
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-foreground hidden md:table-cell">
+                <th className="text-foreground hidden px-4 py-3 text-left font-medium md:table-cell">
                   <button
                     onClick={() => handleSort('joined_at')}
-                    className="flex items-center hover:text-primary transition-colors"
+                    className="hover:text-primary flex items-center transition-colors"
                   >
                     Joined
                     <SortIcon field="joined_at" />
                   </button>
                 </th>
-                <th className="text-center px-4 py-3 font-medium text-foreground hidden lg:table-cell">
+                <th className="text-foreground hidden px-4 py-3 text-center font-medium lg:table-cell">
                   <button
                     onClick={() => handleSort('post_count')}
-                    className="flex items-center justify-center hover:text-primary transition-colors"
+                    className="hover:text-primary flex items-center justify-center transition-colors"
                   >
                     Posts
                     <SortIcon field="post_count" />
                   </button>
                 </th>
-                <th className="text-center px-4 py-3 font-medium text-foreground hidden lg:table-cell">
+                <th className="text-foreground hidden px-4 py-3 text-center font-medium lg:table-cell">
                   <button
                     onClick={() => handleSort('reputation')}
-                    className="flex items-center justify-center hover:text-primary transition-colors"
+                    className="hover:text-primary flex items-center justify-center transition-colors"
                   >
                     Rep
                     <SortIcon field="reputation" />
                   </button>
                 </th>
-                <th className="text-left px-4 py-3 font-medium text-foreground hidden xl:table-cell">
+                <th className="text-foreground hidden px-4 py-3 text-left font-medium xl:table-cell">
                   <button
                     onClick={() => handleSort('last_active')}
-                    className="flex items-center hover:text-primary transition-colors"
+                    className="hover:text-primary flex items-center transition-colors"
                   >
                     Last Active
                     <SortIcon field="last_active" />
@@ -458,37 +455,37 @@ export default function MemberList() {
               {isLoading ? (
                 // Loading skeleton
                 Array.from({ length: 10 }).map((_, i) => (
-                  <tr key={i} className="border-b border-border">
+                  <tr key={i} className="border-border border-b">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-muted animate-pulse" />
+                        <div className="bg-muted h-10 w-10 animate-pulse rounded-full" />
                         <div className="space-y-2">
-                          <div className="h-4 w-24 bg-muted rounded animate-pulse" />
-                          <div className="h-3 w-16 bg-muted rounded animate-pulse" />
+                          <div className="bg-muted h-4 w-24 animate-pulse rounded" />
+                          <div className="bg-muted h-3 w-16 animate-pulse rounded" />
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 hidden sm:table-cell">
-                      <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                    <td className="hidden px-4 py-3 sm:table-cell">
+                      <div className="bg-muted h-4 w-20 animate-pulse rounded" />
                     </td>
-                    <td className="px-4 py-3 hidden md:table-cell">
-                      <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+                    <td className="hidden px-4 py-3 md:table-cell">
+                      <div className="bg-muted h-4 w-24 animate-pulse rounded" />
                     </td>
-                    <td className="px-4 py-3 hidden lg:table-cell">
-                      <div className="h-4 w-12 bg-muted rounded animate-pulse mx-auto" />
+                    <td className="hidden px-4 py-3 lg:table-cell">
+                      <div className="bg-muted mx-auto h-4 w-12 animate-pulse rounded" />
                     </td>
-                    <td className="px-4 py-3 hidden lg:table-cell">
-                      <div className="h-4 w-12 bg-muted rounded animate-pulse mx-auto" />
+                    <td className="hidden px-4 py-3 lg:table-cell">
+                      <div className="bg-muted mx-auto h-4 w-12 animate-pulse rounded" />
                     </td>
-                    <td className="px-4 py-3 hidden xl:table-cell">
-                      <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+                    <td className="hidden px-4 py-3 xl:table-cell">
+                      <div className="bg-muted h-4 w-20 animate-pulse rounded" />
                     </td>
                   </tr>
                 ))
               ) : members.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-muted-foreground">
-                    <UserIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <td colSpan={6} className="text-muted-foreground px-4 py-12 text-center">
+                    <UserIcon className="mx-auto mb-4 h-12 w-12 opacity-50" />
                     <p className="text-lg font-medium">No members found</p>
                     <p className="text-sm">Try adjusting your search or filters</p>
                   </td>
@@ -497,24 +494,26 @@ export default function MemberList() {
                 members.map((member) => (
                   <tr
                     key={member.id}
-                    className="border-b border-border last:border-0 hover:bg-muted/30 transition-colors"
+                    className="border-border hover:bg-muted/30 border-b transition-colors last:border-0"
                   >
                     {/* Member */}
                     <td className="px-4 py-3">
                       <Link
                         to={`/profile/${member.username}`}
-                        className="flex items-center gap-3 group"
+                        className="group flex items-center gap-3"
                       >
                         <div className="relative">
                           {member.avatarUrl ? (
-                            <img
+                            <ThemedAvatar
                               src={member.avatarUrl}
-                              alt={member.username}
-                              className="w-10 h-10 rounded-full object-cover"
+                              alt={member.displayName || member.username}
+                              size="small"
+                              className="h-10 w-10"
+                              avatarBorderId={member.avatarBorderId}
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                              <UserIcon className="h-5 w-5 text-primary" />
+                            <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                              <UserIcon className="text-primary h-5 w-5" />
                             </div>
                           )}
                           <OnlineStatusIndicator
@@ -525,12 +524,12 @@ export default function MemberList() {
                         </div>
                         <div>
                           <span
-                            className="font-medium group-hover:text-primary transition-colors"
+                            className="group-hover:text-primary font-medium transition-colors"
                             style={{ color: member.userGroupColor || undefined }}
                           >
                             {member.displayName || member.username}
                           </span>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <div className="text-muted-foreground flex items-center gap-2 text-xs">
                             <span>@{member.username}</span>
                             {member.stars > 0 && <UserStars count={member.stars} size="xs" />}
                           </div>
@@ -539,9 +538,9 @@ export default function MemberList() {
                     </td>
 
                     {/* Group */}
-                    <td className="px-4 py-3 hidden sm:table-cell">
+                    <td className="hidden px-4 py-3 sm:table-cell">
                       <span
-                        className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full"
+                        className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium"
                         style={{
                           backgroundColor: member.userGroupColor
                             ? `${member.userGroupColor}20`
@@ -554,7 +553,7 @@ export default function MemberList() {
                     </td>
 
                     {/* Joined */}
-                    <td className="px-4 py-3 text-sm text-muted-foreground hidden md:table-cell">
+                    <td className="text-muted-foreground hidden px-4 py-3 text-sm md:table-cell">
                       <div className="flex items-center gap-1.5">
                         <CalendarDaysIcon className="h-4 w-4" />
                         {formatDate(member.joinedAt)}
@@ -562,22 +561,22 @@ export default function MemberList() {
                     </td>
 
                     {/* Posts */}
-                    <td className="px-4 py-3 text-center hidden lg:table-cell">
+                    <td className="hidden px-4 py-3 text-center lg:table-cell">
                       <div className="flex items-center justify-center gap-1.5 text-sm">
-                        <ChatBubbleLeftIcon className="h-4 w-4 text-muted-foreground" />
+                        <ChatBubbleLeftIcon className="text-muted-foreground h-4 w-4" />
                         <span>{(member?.postCount ?? 0).toLocaleString()}</span>
                       </div>
                     </td>
 
                     {/* Reputation */}
-                    <td className="px-4 py-3 text-center hidden lg:table-cell">
+                    <td className="hidden px-4 py-3 text-center lg:table-cell">
                       <div
                         className={`flex items-center justify-center gap-1 text-sm ${
                           member.reputation > 0
                             ? 'text-green-500'
                             : member.reputation < 0
-                            ? 'text-red-500'
-                            : 'text-muted-foreground'
+                              ? 'text-red-500'
+                              : 'text-muted-foreground'
                         }`}
                       >
                         {member.reputation > 0 ? (
@@ -585,12 +584,15 @@ export default function MemberList() {
                         ) : (
                           <StarIcon className="h-4 w-4" />
                         )}
-                        <span>{member.reputation >= 0 ? '+' : ''}{member.reputation}</span>
+                        <span>
+                          {member.reputation >= 0 ? '+' : ''}
+                          {member.reputation}
+                        </span>
                       </div>
                     </td>
 
                     {/* Last Active */}
-                    <td className="px-4 py-3 text-sm text-muted-foreground hidden xl:table-cell">
+                    <td className="text-muted-foreground hidden px-4 py-3 text-sm xl:table-cell">
                       {formatRelativeTime(member.lastActive)}
                     </td>
                   </tr>
@@ -602,36 +604,36 @@ export default function MemberList() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-border">
-            <div className="text-sm text-muted-foreground">
+          <div className="border-border flex items-center justify-between border-t px-4 py-3">
+            <div className="text-muted-foreground text-sm">
               Page {page} of {totalPages}
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPage(1)}
                 disabled={page === 1}
-                className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="border-border hover:bg-muted rounded-lg border px-3 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               >
                 First
               </button>
               <button
                 onClick={() => setPage(page - 1)}
                 disabled={page === 1}
-                className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="border-border hover:bg-muted rounded-lg border px-3 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Previous
               </button>
               <button
                 onClick={() => setPage(page + 1)}
                 disabled={page === totalPages}
-                className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="border-border hover:bg-muted rounded-lg border px-3 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
               <button
                 onClick={() => setPage(totalPages)}
                 disabled={page === totalPages}
-                className="px-3 py-1.5 text-sm border border-border rounded-lg hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="border-border hover:bg-muted rounded-lg border px-3 py-1.5 text-sm transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Last
               </button>
@@ -641,26 +643,26 @@ export default function MemberList() {
       </div>
 
       {/* Stats cards */}
-      <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-lg p-4 text-center">
-          <UserGroupIcon className="h-6 w-6 mx-auto text-primary mb-2" />
-          <div className="text-2xl font-bold text-foreground">
+      <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="bg-card border-border rounded-lg border p-4 text-center">
+          <UserGroupIcon className="text-primary mx-auto mb-2 h-6 w-6" />
+          <div className="text-foreground text-2xl font-bold">
             {(totalMembers ?? 0).toLocaleString()}
           </div>
-          <div className="text-sm text-muted-foreground">Total Members</div>
+          <div className="text-muted-foreground text-sm">Total Members</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-4 text-center">
-          <div className="h-6 w-6 mx-auto mb-2 flex items-center justify-center">
-            <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
+        <div className="bg-card border-border rounded-lg border p-4 text-center">
+          <div className="mx-auto mb-2 flex h-6 w-6 items-center justify-center">
+            <span className="h-3 w-3 animate-pulse rounded-full bg-green-500" />
           </div>
-          <div className="text-2xl font-bold text-foreground">
+          <div className="text-foreground text-2xl font-bold">
             {members.filter((m) => m.isOnline).length}
           </div>
-          <div className="text-sm text-muted-foreground">Currently Online</div>
+          <div className="text-muted-foreground text-sm">Currently Online</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-4 text-center">
-          <CalendarDaysIcon className="h-6 w-6 mx-auto text-primary mb-2" />
-          <div className="text-2xl font-bold text-foreground">
+        <div className="bg-card border-border rounded-lg border p-4 text-center">
+          <CalendarDaysIcon className="text-primary mx-auto mb-2 h-6 w-6" />
+          <div className="text-foreground text-2xl font-bold">
             {members.length > 0
               ? formatDate(
                   members.reduce((latest, m) =>
@@ -669,16 +671,14 @@ export default function MemberList() {
                 )
               : '-'}
           </div>
-          <div className="text-sm text-muted-foreground">Newest Member</div>
+          <div className="text-muted-foreground text-sm">Newest Member</div>
         </div>
-        <div className="bg-card border border-border rounded-lg p-4 text-center">
-          <ChatBubbleLeftIcon className="h-6 w-6 mx-auto text-primary mb-2" />
-          <div className="text-2xl font-bold text-foreground">
-            {members
-              .reduce((sum, m) => sum + m.postCount, 0)
-              .toLocaleString()}
+        <div className="bg-card border-border rounded-lg border p-4 text-center">
+          <ChatBubbleLeftIcon className="text-primary mx-auto mb-2 h-6 w-6" />
+          <div className="text-foreground text-2xl font-bold">
+            {members.reduce((sum, m) => sum + m.postCount, 0).toLocaleString()}
           </div>
-          <div className="text-sm text-muted-foreground">Total Posts</div>
+          <div className="text-muted-foreground text-sm">Total Posts</div>
         </div>
       </div>
     </div>

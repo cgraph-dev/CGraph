@@ -36,6 +36,7 @@ import { formatTimeAgo } from '@/lib/utils';
 import { UserStars } from '@/components/gamification/UserStars';
 import { ThreadedCommentTree } from './ThreadedCommentTree';
 import type { Post, Comment, ThreadPrefix } from '@/stores/forumStore';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 /**
  * ThreadView Component
@@ -326,10 +327,11 @@ export function ThreadView({
 
           {/* Author Info */}
           <div className="mb-4 flex items-center gap-3">
-            <img
-              src={post.author.avatarUrl || '/default-avatar.png'}
+            <ThemedAvatar
+              src={post.author.avatarUrl}
               alt={post.author.displayName || post.author.username || 'User'}
-              className="h-10 w-10 rounded-full"
+              size="medium"
+              avatarBorderId={post.author.avatarBorderId ?? post.author.avatar_border_id ?? null}
             />
             <div>
               <div className="flex items-center gap-2">
@@ -657,10 +659,13 @@ export function ThreadView({
             )}
 
             <div className="mb-2 flex items-center gap-2">
-              <img
-                src={comment.author.avatarUrl || '/default-avatar.png'}
+              <ThemedAvatar
+                src={comment.author.avatarUrl}
                 alt={comment.author.displayName ?? comment.author.username ?? 'User'}
-                className="h-6 w-6 rounded-full"
+                size="xs"
+                avatarBorderId={
+                  comment.author.avatarBorderId ?? comment.author.avatar_border_id ?? null
+                }
               />
               <span className="text-sm font-medium">
                 {comment.author.displayName || comment.author.username}

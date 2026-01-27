@@ -1012,6 +1012,10 @@ export default function Conversation() {
                     alt={conversationName}
                     size="large"
                     userTheme={(otherParticipant?.user as any)?.theme}
+                    avatarBorderId={
+                      (otherParticipant as any)?.user?.avatarBorderId ??
+                      (otherParticipant as any)?.user?.avatar_border_id
+                    }
                   />
                   {isOtherUserOnline && (
                     <motion.div
@@ -2002,6 +2006,10 @@ const MessageBubble = memo(
                   alt={message.sender?.displayName || message.sender?.username || 'User'}
                   size="small"
                   userTheme={(message as any).senderTheme}
+                  avatarBorderId={
+                    (message.sender as any)?.avatarBorderId ??
+                    (message.sender as any)?.avatar_border_id
+                  }
                 />
               </UserProfileCard>
             )}

@@ -1,6 +1,6 @@
 # CGraph Documentation
 
-> **Current Version: 0.9.5** | Enterprise-grade real-time communication platform
+> **Current Version: 0.9.6** | Enterprise-grade real-time communication platform
 
 ⚠️ **Proprietary Software** - CGraph is proprietary software. Self-hosting is not permitted.
 
@@ -60,14 +60,15 @@ developers and users of our hosted platform.
 
 ## 📋 Release Notes
 
-| Version                                             | Date         | Highlights                                       |
-| --------------------------------------------------- | ------------ | ------------------------------------------------ |
-| [**v0.9.5**](release-notes/V0.9.5_RELEASE_NOTES.md) | January 2026 | **Latest** - Security hardening, Stripe payments |
-| [v0.9.4](release-notes/V0.9.4_RELEASE_NOTES.md)     | January 2026 | Proprietary transition, code protection          |
-| [v0.9.2](release-notes/V0.9.2_RELEASE_NOTES.md)     | January 2026 | Friend request idempotency, scroll fixes         |
-| [v0.9.1](release-notes/V0.9.1_RELEASE_NOTES.md)     | January 2026 | Chat message editing, typing indicators          |
-| [v0.9.0](release-notes/V0.9.0_RELEASE_NOTES.md)     | January 2026 | Major release - new architecture                 |
-| [All Releases →](release-notes/)                    |              | Complete version history                         |
+| Version                                             | Date         | Highlights                                                   |
+| --------------------------------------------------- | ------------ | ------------------------------------------------------------ |
+| [**v0.9.6**](release-notes/V0.9.6_RELEASE_NOTES.md) | January 2026 | **Latest** - Avatar borders everywhere, deployment readiness |
+| [v0.9.5](release-notes/V0.9.5_RELEASE_NOTES.md)     | January 2026 | Security hardening, Stripe payments                          |
+| [v0.9.4](release-notes/V0.9.4_RELEASE_NOTES.md)     | January 2026 | Proprietary transition, code protection                      |
+| [v0.9.2](release-notes/V0.9.2_RELEASE_NOTES.md)     | January 2026 | Friend request idempotency, scroll fixes                     |
+| [v0.9.1](release-notes/V0.9.1_RELEASE_NOTES.md)     | January 2026 | Chat message editing, typing indicators                      |
+| [v0.9.0](release-notes/V0.9.0_RELEASE_NOTES.md)     | January 2026 | Major release - new architecture                             |
+| [All Releases →](release-notes/)                    |              | Complete version history                                     |
 
 ---
 

@@ -7,7 +7,6 @@ import {
   GiftIcon,
   TrophyIcon,
   UsersIcon,
-
   ArrowPathIcon,
   SparklesIcon,
   ChevronRightIcon,
@@ -16,10 +15,11 @@ import {
 } from '@heroicons/react/24/outline';
 import { Link } from 'react-router-dom';
 import { useReferralStore } from '@/stores/referralStore';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 /**
  * Referral Dashboard Component
- * 
+ *
  * MyBB-style referral system dashboard with:
  * - Referral link/code
  * - Stats overview
@@ -53,14 +53,20 @@ export default function ReferralDashboard() {
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<'all' | 'month' | 'week'>('all');
 
-  // Fetch data on mount
   useEffect(() => {
     fetchReferralCode();
     fetchReferrals();
     fetchStats();
     fetchLeaderboard(leaderboardPeriod);
     fetchRewardTiers();
-  }, [fetchReferralCode, fetchReferrals, fetchStats, fetchLeaderboard, fetchRewardTiers, leaderboardPeriod]);
+  }, [
+    fetchReferralCode,
+    fetchReferrals,
+    fetchStats,
+    fetchLeaderboard,
+    fetchRewardTiers,
+    leaderboardPeriod,
+  ]);
 
   // Copy to clipboard
   const copyToClipboard = async (text: string, type: 'code' | 'url') => {
@@ -110,58 +116,53 @@ export default function ReferralDashboard() {
     }
   };
 
-  // Calculate progress to next tier
   const nextTier = useMemo(() => {
     if (!stats || rewardTiers.length === 0) return null;
-    const unachieved = rewardTiers.find((t) => !t.achieved);
+    const unachieved = rewardTiers.find((tier) => !tier.achieved);
     if (!unachieved) return null;
+
     const progress = (stats.verifiedReferrals / unachieved.referralsRequired) * 100;
     return { tier: unachieved, progress: Math.min(progress, 100) };
   }, [stats, rewardTiers]);
 
   // Recent referrals
-  const recentReferrals = useMemo(
-    () => referrals.slice(0, 5),
-    [referrals]
-  );
+  const recentReferrals = useMemo(() => referrals.slice(0, 5), [referrals]);
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto max-w-7xl px-4 py-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <GiftIcon className="h-8 w-8 text-primary" />
+          <GiftIcon className="text-primary h-8 w-8" />
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Referral Program</h1>
-            <p className="text-sm text-muted-foreground">
-              Invite friends and earn rewards
-            </p>
+            <h1 className="text-foreground text-2xl font-bold">Referral Program</h1>
+            <p className="text-muted-foreground text-sm">Invite friends and earn rewards</p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
           {/* Referral Link Card */}
-          <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-              <LinkIcon className="h-5 w-5 text-primary" />
+          <div className="from-primary/10 to-primary/5 border-primary/20 rounded-xl border bg-gradient-to-br p-6">
+            <h2 className="text-foreground mb-4 flex items-center gap-2 text-lg font-semibold">
+              <LinkIcon className="text-primary h-5 w-5" />
               Your Referral Link
             </h2>
 
             {isLoading || !referralCode ? (
-              <div className="h-12 bg-background/50 rounded-lg animate-pulse" />
+              <div className="bg-background/50 h-12 animate-pulse rounded-lg" />
             ) : (
               <>
                 {/* URL Display */}
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex-1 bg-background border border-border rounded-lg px-4 py-3 font-mono text-sm truncate">
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="bg-background border-border flex-1 truncate rounded-lg border px-4 py-3 font-mono text-sm">
                     {referralCode.url}
                   </div>
                   <button
                     onClick={() => copyToClipboard(referralCode.url, 'url')}
-                    className="p-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+                    className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg p-3 transition-colors"
                     title="Copy link"
                   >
                     {copied && copiedType === 'url' ? (
@@ -172,7 +173,7 @@ export default function ReferralDashboard() {
                   </button>
                   <button
                     onClick={shareReferral}
-                    className="p-3 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
+                    className="bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-lg p-3 transition-colors"
                     title="Share"
                   >
                     <ShareIcon className="h-5 w-5" />
@@ -183,7 +184,7 @@ export default function ReferralDashboard() {
                 <div className="flex items-center justify-between text-sm">
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">Your code:</span>
-                    <code className="px-2 py-1 bg-background rounded font-mono font-semibold">
+                    <code className="bg-background rounded px-2 py-1 font-mono font-semibold">
                       {referralCode.code}
                     </code>
                     <button
@@ -201,7 +202,7 @@ export default function ReferralDashboard() {
                   <button
                     onClick={handleRegenerateCode}
                     disabled={isRegenerating}
-                    className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
                   >
                     <ArrowPathIcon className={`h-4 w-4 ${isRegenerating ? 'animate-spin' : ''}`} />
                     Regenerate
@@ -209,9 +210,10 @@ export default function ReferralDashboard() {
                 </div>
 
                 {/* Usage stats */}
-                <div className="mt-4 pt-4 border-t border-border/50 flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="border-border/50 text-muted-foreground mt-4 flex items-center gap-4 border-t pt-4 text-sm">
                   <span>
-                    Used <strong className="text-foreground">{referralCode.usageCount}</strong> times
+                    Used <strong className="text-foreground">{referralCode.usageCount}</strong>{' '}
+                    times
                   </span>
                   {referralCode.maxUsage && (
                     <span>
@@ -224,37 +226,37 @@ export default function ReferralDashboard() {
           </div>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="bg-card border border-border rounded-lg p-4">
-              <UsersIcon className="h-6 w-6 text-primary mb-2" />
-              <div className="text-2xl font-bold text-foreground">
-                {stats?.totalReferrals || 0}
-              </div>
-              <div className="text-sm text-muted-foreground">Total Referrals</div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <div className="bg-card border-border rounded-lg border p-4">
+              <UsersIcon className="text-primary mb-2 h-6 w-6" />
+              <div className="text-foreground text-2xl font-bold">{stats?.totalReferrals || 0}</div>
+              <div className="text-muted-foreground text-sm">Total Referrals</div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-4">
-              <CheckIcon className="h-6 w-6 text-green-500 mb-2" />
-              <div className="text-2xl font-bold text-foreground">
+            <div className="bg-card border-border rounded-lg border p-4">
+              <CheckIcon className="mb-2 h-6 w-6 text-green-500" />
+              <div className="text-foreground text-2xl font-bold">
                 {stats?.verifiedReferrals || 0}
               </div>
-              <div className="text-sm text-muted-foreground">Verified</div>
+              <div className="text-muted-foreground text-sm">Verified</div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-4">
-              <SparklesIcon className="h-6 w-6 text-yellow-500 mb-2" />
-              <div className="text-2xl font-bold text-foreground">
+            <div className="bg-card border-border rounded-lg border p-4">
+              <SparklesIcon className="mb-2 h-6 w-6 text-yellow-500" />
+              <div className="text-foreground text-2xl font-bold">
                 {stats?.totalRewardsEarned.xp.toLocaleString() || 0}
               </div>
-              <div className="text-sm text-muted-foreground">XP Earned</div>
+              <div className="text-muted-foreground text-sm">XP Earned</div>
             </div>
 
-            <div className="bg-card border border-border rounded-lg p-4">
-              <TrophyIcon className="h-6 w-6 text-amber-500 mb-2" />
-              <div className="text-2xl font-bold text-foreground flex items-center gap-1">
+            <div className="bg-card border-border rounded-lg border p-4">
+              <TrophyIcon className="mb-2 h-6 w-6 text-amber-500" />
+              <div className="text-foreground flex items-center gap-1 text-2xl font-bold">
                 #{stats?.rank || '-'}
                 {stats?.rankChange !== 0 && (
-                  <span className={`text-sm ${stats?.rankChange && stats.rankChange > 0 ? 'text-green-500' : 'text-red-500'}`}>
+                  <span
+                    className={`text-sm ${stats?.rankChange && stats.rankChange > 0 ? 'text-green-500' : 'text-red-500'}`}
+                  >
                     {stats?.rankChange && stats.rankChange > 0 ? (
                       <ArrowTrendingUpIcon className="h-4 w-4" />
                     ) : (
@@ -263,30 +265,31 @@ export default function ReferralDashboard() {
                   </span>
                 )}
               </div>
-              <div className="text-sm text-muted-foreground">Your Rank</div>
+              <div className="text-muted-foreground text-sm">Your Rank</div>
             </div>
           </div>
 
           {/* Progress to Next Tier */}
           {nextTier && (
-            <div className="bg-card border border-border rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="font-medium text-foreground">
-                  Progress to {nextTier.tier.name}
-                </h3>
-                <span className="text-sm text-muted-foreground">
+            <div className="bg-card border-border rounded-lg border p-4">
+              <div className="mb-2 flex items-center justify-between">
+                <h3 className="text-foreground font-medium">Progress to {nextTier.tier.name}</h3>
+                <span className="text-muted-foreground text-sm">
                   {stats?.verifiedReferrals || 0} / {nextTier.tier.referralsRequired} referrals
                 </span>
               </div>
-              <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
+              <div className="bg-muted h-3 w-full overflow-hidden rounded-full">
                 <div
-                  className="h-full bg-gradient-to-r from-primary to-primary/70 rounded-full transition-all duration-500"
+                  className="from-primary to-primary/70 h-full rounded-full bg-gradient-to-r transition-all duration-500"
                   style={{ width: `${nextTier.progress}%` }}
                 />
               </div>
               <div className="mt-2 flex flex-wrap gap-2">
                 {nextTier.tier.rewards.map((reward, i) => (
-                  <span key={i} className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground">
+                  <span
+                    key={i}
+                    className="bg-muted text-muted-foreground rounded-full px-2 py-1 text-xs"
+                  >
                     {reward.description}
                   </span>
                 ))}
@@ -295,57 +298,58 @@ export default function ReferralDashboard() {
           )}
 
           {/* Recent Referrals */}
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
-            <div className="p-4 border-b border-border flex items-center justify-between">
-              <h3 className="font-semibold text-foreground">Recent Referrals</h3>
+          <div className="bg-card border-border overflow-hidden rounded-lg border">
+            <div className="border-border flex items-center justify-between border-b p-4">
+              <h3 className="text-foreground font-semibold">Recent Referrals</h3>
               <Link
                 to="/referrals/history"
-                className="text-sm text-primary hover:underline flex items-center gap-1"
+                className="text-primary flex items-center gap-1 text-sm hover:underline"
               >
                 View All <ChevronRightIcon className="h-4 w-4" />
               </Link>
             </div>
 
             {recentReferrals.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground">
-                <UsersIcon className="h-12 w-12 mx-auto mb-3 opacity-50" />
+              <div className="text-muted-foreground p-8 text-center">
+                <UsersIcon className="mx-auto mb-3 h-12 w-12 opacity-50" />
                 <p>No referrals yet</p>
                 <p className="text-sm">Share your link to start earning rewards!</p>
               </div>
             ) : (
-              <div className="divide-y divide-border">
+              <div className="divide-border divide-y">
                 {recentReferrals.map((referral) => (
-                  <div key={referral.id} className="p-4 flex items-center justify-between">
+                  <div key={referral.id} className="flex items-center justify-between p-4">
                     <div className="flex items-center gap-3">
                       {referral.referredAvatarUrl ? (
-                        <img
+                        <ThemedAvatar
                           src={referral.referredAvatarUrl}
                           alt={referral.referredUsername}
-                          className="w-10 h-10 rounded-full"
+                          size="small"
+                          className="h-10 w-10"
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <UsersIcon className="h-5 w-5 text-primary" />
+                        <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                          <UsersIcon className="text-primary h-5 w-5" />
                         </div>
                       )}
                       <div>
-                        <div className="font-medium text-foreground">
+                        <div className="text-foreground font-medium">
                           {referral.referredUsername}
                         </div>
-                        <div className="text-xs text-muted-foreground">
+                        <div className="text-muted-foreground text-xs">
                           {new Date(referral.createdAt).toLocaleDateString()}
                         </div>
                       </div>
                     </div>
                     <span
-                      className={`text-xs px-2 py-1 rounded-full ${
+                      className={`rounded-full px-2 py-1 text-xs ${
                         referral.status === 'rewarded'
                           ? 'bg-green-500/10 text-green-500'
                           : referral.status === 'verified'
-                          ? 'bg-blue-500/10 text-blue-500'
-                          : referral.status === 'pending'
-                          ? 'bg-yellow-500/10 text-yellow-500'
-                          : 'bg-muted text-muted-foreground'
+                            ? 'bg-blue-500/10 text-blue-500'
+                            : referral.status === 'pending'
+                              ? 'bg-yellow-500/10 text-yellow-500'
+                              : 'bg-muted text-muted-foreground'
                       }`}
                     >
                       {referral.status}
@@ -360,17 +364,17 @@ export default function ReferralDashboard() {
         {/* Sidebar */}
         <div className="space-y-6">
           {/* Leaderboard */}
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
-            <div className="p-4 border-b border-border">
+          <div className="bg-card border-border overflow-hidden rounded-lg border">
+            <div className="border-border border-b p-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-foreground flex items-center gap-2">
+                <h3 className="text-foreground flex items-center gap-2 font-semibold">
                   <TrophyIcon className="h-5 w-5 text-amber-500" />
                   Leaderboard
                 </h3>
                 <select
                   value={leaderboardPeriod}
                   onChange={(e) => setLeaderboardPeriod(e.target.value as typeof leaderboardPeriod)}
-                  className="text-xs bg-muted border-0 rounded px-2 py-1"
+                  className="bg-muted rounded border-0 px-2 py-1 text-xs"
                 >
                   <option value="all">All Time</option>
                   <option value="month">This Month</option>
@@ -380,49 +384,45 @@ export default function ReferralDashboard() {
             </div>
 
             {leaderboard.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground text-sm">
-                No data yet
-              </div>
+              <div className="text-muted-foreground p-8 text-center text-sm">No data yet</div>
             ) : (
-              <div className="divide-y divide-border">
+              <div className="divide-border divide-y">
                 {leaderboard.slice(0, 10).map((leader, index) => (
-                  <div
-                    key={leader.userId}
-                    className="p-3 flex items-center gap-3"
-                  >
+                  <div key={leader.userId} className="flex items-center gap-3 p-3">
                     <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                      className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
                         index === 0
                           ? 'bg-amber-500 text-white'
                           : index === 1
-                          ? 'bg-gray-400 text-white'
-                          : index === 2
-                          ? 'bg-amber-700 text-white'
-                          : 'bg-muted text-muted-foreground'
+                            ? 'bg-gray-400 text-white'
+                            : index === 2
+                              ? 'bg-amber-700 text-white'
+                              : 'bg-muted text-muted-foreground'
                       }`}
                     >
                       {leader.rank}
                     </div>
                     {leader.avatarUrl ? (
-                      <img
+                      <ThemedAvatar
                         src={leader.avatarUrl}
                         alt={leader.username}
-                        className="w-8 h-8 rounded-full"
+                        size="xs"
+                        className="h-8 w-8"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                        <UsersIcon className="h-4 w-4 text-primary" />
+                      <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-full">
+                        <UsersIcon className="text-primary h-4 w-4" />
                       </div>
                     )}
-                    <div className="flex-1 min-w-0">
+                    <div className="min-w-0 flex-1">
                       <Link
                         to={`/profile/${leader.username}`}
-                        className="font-medium text-foreground hover:text-primary truncate block"
+                        className="text-foreground hover:text-primary block truncate font-medium"
                       >
                         {leader.displayName || leader.username}
                       </Link>
                     </div>
-                    <div className="text-sm font-medium text-foreground">
+                    <div className="text-foreground text-sm font-medium">
                       {leader.referralCount}
                     </div>
                   </div>
@@ -432,23 +432,20 @@ export default function ReferralDashboard() {
           </div>
 
           {/* Reward Tiers */}
-          <div className="bg-card border border-border rounded-lg overflow-hidden">
-            <div className="p-4 border-b border-border">
-              <h3 className="font-semibold text-foreground flex items-center gap-2">
-                <GiftIcon className="h-5 w-5 text-primary" />
+          <div className="bg-card border-border overflow-hidden rounded-lg border">
+            <div className="border-border border-b p-4">
+              <h3 className="text-foreground flex items-center gap-2 font-semibold">
+                <GiftIcon className="text-primary h-5 w-5" />
                 Reward Tiers
               </h3>
             </div>
 
-            <div className="divide-y divide-border">
+            <div className="divide-border divide-y">
               {rewardTiers.map((tier) => (
-                <div
-                  key={tier.id}
-                  className={`p-4 ${tier.achieved ? 'bg-green-500/5' : ''}`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium text-foreground">{tier.name}</span>
-                    <span className="text-xs text-muted-foreground">
+                <div key={tier.id} className={`p-4 ${tier.achieved ? 'bg-green-500/5' : ''}`}>
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-foreground font-medium">{tier.name}</span>
+                    <span className="text-muted-foreground text-xs">
                       {tier.referralsRequired} referrals
                     </span>
                   </div>
@@ -456,12 +453,12 @@ export default function ReferralDashboard() {
                     {tier.rewards.map((reward) => (
                       <div key={reward.id} className="flex items-center gap-1">
                         <span
-                          className={`text-xs px-2 py-0.5 rounded ${
+                          className={`rounded px-2 py-0.5 text-xs ${
                             reward.claimed
                               ? 'bg-green-500/10 text-green-500'
                               : tier.achieved
-                              ? 'bg-primary/10 text-primary'
-                              : 'bg-muted text-muted-foreground'
+                                ? 'bg-primary/10 text-primary'
+                                : 'bg-muted text-muted-foreground'
                           }`}
                         >
                           {reward.description}
@@ -469,7 +466,7 @@ export default function ReferralDashboard() {
                         {tier.achieved && !reward.claimed && (
                           <button
                             onClick={() => claimReward(reward.id)}
-                            className="text-xs text-primary hover:underline"
+                            className="text-primary text-xs hover:underline"
                           >
                             Claim
                           </button>
@@ -483,23 +480,23 @@ export default function ReferralDashboard() {
           </div>
 
           {/* How it Works */}
-          <div className="bg-card border border-border rounded-lg p-4">
-            <h3 className="font-semibold text-foreground mb-3">How it Works</h3>
-            <ol className="space-y-3 text-sm text-muted-foreground">
+          <div className="bg-card border-border rounded-lg border p-4">
+            <h3 className="text-foreground mb-3 font-semibold">How it Works</h3>
+            <ol className="text-muted-foreground space-y-3 text-sm">
               <li className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs flex-shrink-0">
+                <span className="bg-primary text-primary-foreground flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-xs">
                   1
                 </span>
                 Share your referral link with friends
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs flex-shrink-0">
+                <span className="bg-primary text-primary-foreground flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-xs">
                   2
                 </span>
                 They sign up using your link
               </li>
               <li className="flex items-start gap-2">
-                <span className="w-5 h-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs flex-shrink-0">
+                <span className="bg-primary text-primary-foreground flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full text-xs">
                   3
                 </span>
                 Once verified, you both get rewards!

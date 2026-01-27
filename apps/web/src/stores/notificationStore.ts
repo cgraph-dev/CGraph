@@ -15,6 +15,8 @@ export interface Notification {
     username: string;
     displayName: string | null;
     avatarUrl: string | null;
+    avatarBorderId?: string | null;
+    avatar_border_id?: string | null;
   };
   createdAt: string;
 }

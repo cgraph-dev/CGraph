@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { useCustomizationInitializer } from '@/stores/unifiedCustomizationStore';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 import { useCustomizationApplication } from '@/hooks/useCustomizationApplication';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -144,6 +145,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const fetchGamificationData = useGamificationStore((state) => state.fetchGamificationData);
   const { theme, syncWithServer } = useThemeStore();
+  const { initialize: initializeCustomizations } = useCustomizationInitializer();
 
   // Apply customization settings to UI
   useCustomizationApplication();
@@ -171,6 +173,15 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
+
+  // Initialize unified customization store when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      initializeCustomizations().catch((error) => {
+        console.error('Customization initialization failed:', error);
+      });
+    }
+  }, [isAuthenticated, initializeCustomizations]);
 
   // Apply global theme CSS variables (both app theme and user customizations)
   useEffect(() => {

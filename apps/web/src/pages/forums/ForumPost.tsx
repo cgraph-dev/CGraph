@@ -10,6 +10,7 @@ import ThreadPrefix from '@/components/forums/ThreadPrefix';
 import ThreadRating from '@/components/forums/ThreadRating';
 import PollWidget from '@/components/forums/PollWidget';
 import EditHistoryModal from '@/components/forums/EditHistoryModal';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import {
   ArrowUpIcon,
   ArrowDownIcon,
@@ -29,20 +30,23 @@ import {
   BellSlashIcon,
   ArrowDownTrayIcon,
 } from '@heroicons/react/24/outline';
-import { ArrowUpIcon as ArrowUpIconSolid, ArrowDownIcon as ArrowDownIconSolid } from '@heroicons/react/24/solid';
+import {
+  ArrowUpIcon as ArrowUpIconSolid,
+  ArrowDownIcon as ArrowDownIconSolid,
+} from '@heroicons/react/24/solid';
 
 export default function ForumPost() {
   const { forumSlug, postId } = useParams<{ forumSlug: string; postId: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { 
-    currentPost, 
-    comments, 
-    isLoadingComments, 
-    fetchPost, 
-    fetchComments, 
+  const {
+    currentPost,
+    comments,
+    isLoadingComments,
+    fetchPost,
+    fetchComments,
     fetchForum,
-    vote, 
+    vote,
     createComment,
     pinPost,
     unpinPost,
@@ -81,7 +85,12 @@ export default function ForumPost() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [forumSlug, currentForum?.slug]);
 
-  const handleVote = async (type: 'post' | 'comment', id: string, value: 1 | -1, currentVote: 1 | -1 | null) => {
+  const handleVote = async (
+    type: 'post' | 'comment',
+    id: string,
+    value: 1 | -1,
+    currentVote: 1 | -1 | null
+  ) => {
     const newValue = currentVote === value ? null : value;
     await vote(type, id, newValue);
   };
@@ -118,37 +127,37 @@ export default function ForumPost() {
   if (!currentPost) {
     return (
       <div className="flex-1 overflow-y-auto bg-dark-900 p-4">
-        <div className="max-w-4xl mx-auto">
+        <div className="mx-auto max-w-4xl">
           {/* Skeleton back button */}
-          <div className="h-10 w-48 bg-dark-800 rounded mb-4 animate-pulse" />
-          
+          <div className="mb-4 h-10 w-48 animate-pulse rounded bg-dark-800" />
+
           {/* Skeleton post card */}
-          <div className="bg-dark-800 rounded-lg border border-dark-700 p-6 animate-pulse">
+          <div className="animate-pulse rounded-lg border border-dark-700 bg-dark-800 p-6">
             <div className="flex gap-4">
               {/* Vote sidebar skeleton */}
               <div className="flex flex-col items-center gap-2">
-                <div className="h-6 w-6 bg-dark-700 rounded" />
-                <div className="h-5 w-10 bg-dark-700 rounded" />
-                <div className="h-6 w-6 bg-dark-700 rounded" />
+                <div className="h-6 w-6 rounded bg-dark-700" />
+                <div className="h-5 w-10 rounded bg-dark-700" />
+                <div className="h-6 w-6 rounded bg-dark-700" />
               </div>
-              
+
               {/* Content skeleton */}
               <div className="flex-1 space-y-4">
                 <div className="flex items-center gap-2">
-                  <div className="h-6 w-6 bg-dark-700 rounded-full" />
-                  <div className="h-4 w-32 bg-dark-700 rounded" />
-                  <div className="h-4 w-24 bg-dark-700 rounded" />
+                  <div className="h-6 w-6 rounded-full bg-dark-700" />
+                  <div className="h-4 w-32 rounded bg-dark-700" />
+                  <div className="h-4 w-24 rounded bg-dark-700" />
                 </div>
-                <div className="h-8 w-3/4 bg-dark-700 rounded" />
+                <div className="h-8 w-3/4 rounded bg-dark-700" />
                 <div className="space-y-2">
-                  <div className="h-4 w-full bg-dark-700 rounded" />
-                  <div className="h-4 w-full bg-dark-700 rounded" />
-                  <div className="h-4 w-2/3 bg-dark-700 rounded" />
+                  <div className="h-4 w-full rounded bg-dark-700" />
+                  <div className="h-4 w-full rounded bg-dark-700" />
+                  <div className="h-4 w-2/3 rounded bg-dark-700" />
                 </div>
                 <div className="flex gap-4 pt-4">
-                  <div className="h-8 w-28 bg-dark-700 rounded" />
-                  <div className="h-8 w-20 bg-dark-700 rounded" />
-                  <div className="h-8 w-16 bg-dark-700 rounded" />
+                  <div className="h-8 w-28 rounded bg-dark-700" />
+                  <div className="h-8 w-20 rounded bg-dark-700" />
+                  <div className="h-8 w-16 rounded bg-dark-700" />
                 </div>
               </div>
             </div>
@@ -161,26 +170,28 @@ export default function ForumPost() {
   return (
     <div className="flex-1 overflow-y-auto bg-dark-900">
       {/* Back button */}
-      <div className="sticky top-0 z-10 bg-dark-800 border-b border-dark-700 px-4 py-3">
+      <div className="sticky top-0 z-10 border-b border-dark-700 bg-dark-800 px-4 py-3">
         <Link
           to={`/forums/${forumSlug}`}
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-gray-400 transition-colors hover:text-white"
         >
           <ArrowLeftIcon className="h-5 w-5" />
           <span>Back to c/{forumSlug}</span>
         </Link>
       </div>
 
-      <div className="max-w-4xl mx-auto py-4 px-4 animate-fadeIn">
+      <div className="animate-fadeIn mx-auto max-w-4xl px-4 py-4">
         {/* Post */}
-        <article className="bg-dark-800 rounded-lg border border-dark-700 animate-slideUp">
+        <article className="animate-slideUp rounded-lg border border-dark-700 bg-dark-800">
           <div className="flex">
             {/* Vote sidebar */}
-            <div className="flex flex-col items-center gap-1 p-4 bg-dark-700/50 rounded-l-lg">
+            <div className="flex flex-col items-center gap-1 rounded-l-lg bg-dark-700/50 p-4">
               <button
                 onClick={() => handleVote('post', currentPost.id, 1, currentPost.myVote)}
-                className={`p-1 rounded hover:bg-dark-600 transition-colors ${
-                  currentPost.myVote === 1 ? 'text-orange-500' : 'text-gray-400 hover:text-orange-500'
+                className={`rounded p-1 transition-colors hover:bg-dark-600 ${
+                  currentPost.myVote === 1
+                    ? 'text-orange-500'
+                    : 'text-gray-400 hover:text-orange-500'
                 }`}
               >
                 {currentPost.myVote === 1 ? (
@@ -194,15 +205,15 @@ export default function ForumPost() {
                   currentPost.myVote === 1
                     ? 'text-orange-500'
                     : currentPost.myVote === -1
-                    ? 'text-blue-500'
-                    : 'text-white'
+                      ? 'text-blue-500'
+                      : 'text-white'
                 }`}
               >
                 {currentPost.score}
               </span>
               <button
                 onClick={() => handleVote('post', currentPost.id, -1, currentPost.myVote)}
-                className={`p-1 rounded hover:bg-dark-600 transition-colors ${
+                className={`rounded p-1 transition-colors hover:bg-dark-600 ${
                   currentPost.myVote === -1 ? 'text-blue-500' : 'text-gray-400 hover:text-blue-500'
                 }`}
               >
@@ -217,17 +228,17 @@ export default function ForumPost() {
             {/* Content */}
             <div className="flex-1 p-4">
               {/* Meta */}
-              <div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
+              <div className="mb-3 flex items-center gap-2 text-sm text-gray-400">
                 <Link
                   to={`/forums/${currentPost.forum.slug}`}
                   className="flex items-center gap-2 hover:underline"
                 >
-                  <div className="h-6 w-6 rounded-full bg-dark-600 overflow-hidden">
+                  <div className="h-6 w-6 overflow-hidden rounded-full bg-dark-600">
                     {currentPost.forum.iconUrl ? (
                       <img
                         src={currentPost.forum.iconUrl}
                         alt=""
-                        className="w-full h-full object-cover"
+                        className="h-full w-full object-cover"
                       />
                     ) : (
                       <span className="text-xs">{currentPost.forum.name.charAt(0)}</span>
@@ -238,7 +249,10 @@ export default function ForumPost() {
                 <span>•</span>
                 <span>
                   Posted by{' '}
-                  <Link to={currentPost.author.username ? `/u/${currentPost.author.username}` : '#'} className="hover:underline">
+                  <Link
+                    to={currentPost.author.username ? `/u/${currentPost.author.username}` : '#'}
+                    className="hover:underline"
+                  >
                     u/{currentPost.author.username || currentPost.author.displayName || 'unknown'}
                   </Link>
                 </span>
@@ -249,33 +263,31 @@ export default function ForumPost() {
               {/* Title */}
               <div className="mb-4">
                 {/* Badges Row */}
-                <div className="flex items-center gap-2 mb-2 flex-wrap">
+                <div className="mb-2 flex flex-wrap items-center gap-2">
                   {currentPost.isPinned && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-600 text-sm rounded">
+                    <span className="inline-flex items-center gap-1 rounded bg-green-600 px-2 py-1 text-sm">
                       <MapPinIcon className="h-3.5 w-3.5" />
                       Pinned
                     </span>
                   )}
                   {currentPost.isLocked && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-600 text-sm rounded">
+                    <span className="inline-flex items-center gap-1 rounded bg-yellow-600 px-2 py-1 text-sm">
                       <LockClosedIcon className="h-3.5 w-3.5" />
                       Locked
                     </span>
                   )}
                   {currentPost.isClosed && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-600 text-sm rounded">
+                    <span className="inline-flex items-center gap-1 rounded bg-red-600 px-2 py-1 text-sm">
                       <LockClosedIcon className="h-3.5 w-3.5" />
                       Closed
                     </span>
                   )}
                   {currentPost.isNsfw && (
-                    <span className="inline-block px-2 py-1 bg-red-600 text-sm rounded">
-                      NSFW
-                    </span>
+                    <span className="inline-block rounded bg-red-600 px-2 py-1 text-sm">NSFW</span>
                   )}
                   {currentPost.category && (
                     <span
-                      className="inline-block px-2 py-1 text-sm rounded"
+                      className="inline-block rounded px-2 py-1 text-sm"
                       style={{ backgroundColor: currentPost.category.color }}
                     >
                       {currentPost.category.name}
@@ -285,15 +297,13 @@ export default function ForumPost() {
                 </div>
 
                 {/* Title */}
-                <h1 className="text-2xl font-bold text-white">
-                  {currentPost.title}
-                </h1>
+                <h1 className="text-2xl font-bold text-white">{currentPost.title}</h1>
 
                 {/* Edit indicator */}
                 {currentPost.editedAt && (
                   <button
                     onClick={() => setShowEditHistory(true)}
-                    className="mt-2 flex items-center gap-1.5 text-sm text-gray-400 hover:text-primary-400 transition-colors"
+                    className="mt-2 flex items-center gap-1.5 text-sm text-gray-400 transition-colors hover:text-primary-400"
                   >
                     <ClockIcon className="h-4 w-4" />
                     <span>
@@ -317,19 +327,15 @@ export default function ForumPost() {
                   href={currentPost.linkUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-primary-400 hover:underline mb-4 block"
+                  className="mb-4 block text-primary-400 hover:underline"
                 >
                   {currentPost.linkUrl}
                 </a>
               )}
 
               {currentPost.postType === 'image' && currentPost.mediaUrls?.[0] && (
-                <div className="mb-4 rounded-lg overflow-hidden">
-                  <img
-                    src={currentPost.mediaUrls[0]}
-                    alt=""
-                    className="max-w-full h-auto"
-                  />
+                <div className="mb-4 overflow-hidden rounded-lg">
+                  <img src={currentPost.mediaUrls[0]} alt="" className="h-auto max-w-full" />
                 </div>
               )}
 
@@ -347,12 +353,14 @@ export default function ForumPost() {
               {/* Attachments */}
               {currentPost.attachments && currentPost.attachments.length > 0 && (
                 <div className="mb-4">
-                  <h3 className="text-sm font-semibold text-gray-400 mb-2">Attachments ({currentPost.attachments.length})</h3>
+                  <h3 className="mb-2 text-sm font-semibold text-gray-400">
+                    Attachments ({currentPost.attachments.length})
+                  </h3>
                   <div className="space-y-2">
                     {currentPost.attachments.map((attachment) => (
                       <div
                         key={attachment.id}
-                        className="flex items-center gap-3 p-3 bg-dark-700 rounded-lg border border-dark-600 hover:border-primary-500/50 transition-colors"
+                        className="flex items-center gap-3 rounded-lg border border-dark-600 bg-dark-700 p-3 transition-colors hover:border-primary-500/50"
                       >
                         {/* Thumbnail or Icon */}
                         {attachment.fileType.startsWith('image/') && attachment.thumbnailUrl ? (
@@ -362,16 +370,17 @@ export default function ForumPost() {
                             className="h-12 w-12 rounded object-cover"
                           />
                         ) : (
-                          <div className="h-12 w-12 rounded bg-dark-600 flex items-center justify-center">
+                          <div className="flex h-12 w-12 items-center justify-center rounded bg-dark-600">
                             <span className="text-xs text-gray-400">
-                              {attachment.fileType.split('/')[1]?.toUpperCase().slice(0, 4) || 'FILE'}
+                              {attachment.fileType.split('/')[1]?.toUpperCase().slice(0, 4) ||
+                                'FILE'}
                             </span>
                           </div>
                         )}
 
                         {/* File Info */}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white truncate">
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium text-white">
                             {attachment.originalFilename}
                           </p>
                           <p className="text-xs text-gray-400">
@@ -386,7 +395,7 @@ export default function ForumPost() {
                         <a
                           href={attachment.downloadUrl}
                           download={attachment.originalFilename}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 hover:bg-primary-500 text-white text-sm rounded-lg transition-colors"
+                          className="flex items-center gap-1.5 rounded-lg bg-primary-600 px-3 py-1.5 text-sm text-white transition-colors hover:bg-primary-500"
                         >
                           <ArrowDownTrayIcon className="h-4 w-4" />
                           <span>Download</span>
@@ -399,7 +408,7 @@ export default function ForumPost() {
 
               {/* Thread Rating */}
               {(currentPost.rating !== undefined || currentPost.ratingCount !== undefined) && (
-                <div className="mb-4 pb-4 border-b border-dark-700">
+                <div className="mb-4 border-b border-dark-700 pb-4">
                   <ThreadRating
                     threadId={currentPost.id}
                     rating={currentPost.rating}
@@ -412,25 +421,27 @@ export default function ForumPost() {
               )}
 
               {/* Actions */}
-              <div className="flex items-center gap-4 text-gray-400 pt-4 border-t border-dark-700">
+              <div className="flex items-center gap-4 border-t border-dark-700 pt-4 text-gray-400">
                 <span className="flex items-center gap-1.5 text-sm">
                   <ChatBubbleLeftIcon className="h-5 w-5" />
                   <span>{currentPost.commentCount} Comments</span>
                 </span>
-                <button className="flex items-center gap-1.5 text-sm hover:bg-dark-700 px-2 py-1 rounded transition-colors">
+                <button className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-dark-700">
                   <ShareIcon className="h-5 w-5" />
                   <span>Share</span>
                 </button>
-                <button className="flex items-center gap-1.5 text-sm hover:bg-dark-700 px-2 py-1 rounded transition-colors">
+                <button className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-dark-700">
                   <BookmarkIcon className="h-5 w-5" />
                   <span>Save</span>
                 </button>
                 <button
                   onClick={() => {
                     setIsSubscribed(!isSubscribed);
-                    toast.success(isSubscribed ? 'Unsubscribed from thread' : 'Subscribed to thread');
+                    toast.success(
+                      isSubscribed ? 'Unsubscribed from thread' : 'Subscribed to thread'
+                    );
                   }}
-                  className={`flex items-center gap-1.5 text-sm hover:bg-dark-700 px-2 py-1 rounded transition-colors ${
+                  className={`flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-dark-700 ${
                     isSubscribed ? 'text-primary-400' : ''
                   }`}
                 >
@@ -441,17 +452,17 @@ export default function ForumPost() {
                   )}
                   <span>{isSubscribed ? 'Unsubscribe' : 'Subscribe'}</span>
                 </button>
-                
+
                 {/* More Actions Dropdown */}
                 <Dropdown
                   trigger={
-                    <button className="flex items-center gap-1.5 text-sm hover:bg-dark-700 px-2 py-1 rounded transition-colors">
+                    <button className="flex items-center gap-1.5 rounded px-2 py-1 text-sm transition-colors hover:bg-dark-700">
                       <EllipsisHorizontalIcon className="h-5 w-5" />
                     </button>
                   }
                 >
                   {/* Moderation Actions - Only for moderators/owners */}
-                  {(currentForum?.ownerId === user?.id || 
+                  {(currentForum?.ownerId === user?.id ||
                     currentForum?.moderators?.some((m: { id: string }) => m.id === user?.id)) && (
                     <>
                       <DropdownItem
@@ -490,14 +501,20 @@ export default function ForumPost() {
                             toast.error('Failed to update lock status');
                           }
                         }}
-                        icon={currentPost.isLocked ? <LockOpenIcon className="h-4 w-4" /> : <LockClosedIcon className="h-4 w-4" />}
+                        icon={
+                          currentPost.isLocked ? (
+                            <LockOpenIcon className="h-4 w-4" />
+                          ) : (
+                            <LockClosedIcon className="h-4 w-4" />
+                          )
+                        }
                       >
                         {currentPost.isLocked ? 'Unlock Post' : 'Lock Post'}
                       </DropdownItem>
                       <DropdownDivider />
                     </>
                   )}
-                  
+
                   {/* Author Actions */}
                   {currentPost.authorId === user?.id && (
                     <>
@@ -510,7 +527,11 @@ export default function ForumPost() {
                       <DropdownItem
                         onClick={async () => {
                           if (!currentPost.forum?.id) return;
-                          if (confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+                          if (
+                            confirm(
+                              'Are you sure you want to delete this post? This action cannot be undone.'
+                            )
+                          ) {
                             try {
                               await deletePost(currentPost.forum.id, currentPost.id);
                               toast.success('Post deleted');
@@ -528,7 +549,7 @@ export default function ForumPost() {
                       <DropdownDivider />
                     </>
                   )}
-                  
+
                   {/* General Actions */}
                   <DropdownItem
                     onClick={() => setShowReportModal(true)}
@@ -544,15 +565,15 @@ export default function ForumPost() {
 
         {/* Comment Input */}
         {currentPost.isLocked ? (
-          <div className="mt-4 bg-dark-800 rounded-lg border border-yellow-600/50 p-4">
+          <div className="mt-4 rounded-lg border border-yellow-600/50 bg-dark-800 p-4">
             <div className="flex items-center gap-3 text-yellow-400">
               <LockClosedIcon className="h-5 w-5" />
               <p className="text-sm">This post is locked. New comments are disabled.</p>
             </div>
           </div>
         ) : (
-          <div className="mt-4 bg-dark-800 rounded-lg border border-dark-700 p-4">
-            <p className="text-sm text-gray-400 mb-2">
+          <div className="mt-4 rounded-lg border border-dark-700 bg-dark-800 p-4">
+            <p className="mb-2 text-sm text-gray-400">
               Comment as <span className="text-primary-400">{user?.username}</span>
             </p>
             <textarea
@@ -560,13 +581,13 @@ export default function ForumPost() {
               onChange={(e) => setCommentContent(e.target.value)}
               placeholder="What are your thoughts?"
               rows={4}
-              className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+              className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
             />
-            <div className="flex justify-end mt-2">
+            <div className="mt-2 flex justify-end">
               <button
                 onClick={handleSubmitComment}
                 disabled={!commentContent.trim() || isSubmitting}
-                className="px-4 py-2 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium rounded-full transition-colors"
+                className="rounded-full bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? 'Submitting...' : 'Comment'}
               </button>
@@ -581,7 +602,7 @@ export default function ForumPost() {
               <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
             </div>
           ) : postComments.length === 0 ? (
-            <div className="text-center py-8 text-gray-400">
+            <div className="py-8 text-center text-gray-400">
               <p>No comments yet. Be the first to comment!</p>
             </div>
           ) : (
@@ -605,16 +626,17 @@ export default function ForumPost() {
       {/* Report Modal */}
       {showReportModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-dark-800 rounded-lg border border-dark-600 p-6 w-full max-w-md mx-4">
-            <h3 className="text-lg font-semibold text-white mb-4">Report Post</h3>
-            <p className="text-sm text-gray-400 mb-4">
-              Please select a reason for reporting this post. Our moderation team will review your report.
+          <div className="mx-4 w-full max-w-md rounded-lg border border-dark-600 bg-dark-800 p-6">
+            <h3 className="mb-4 text-lg font-semibold text-white">Report Post</h3>
+            <p className="mb-4 text-sm text-gray-400">
+              Please select a reason for reporting this post. Our moderation team will review your
+              report.
             </p>
-            
+
             <select
               value={reportReason}
               onChange={(e) => setReportReason(e.target.value)}
-              className="w-full bg-dark-700 border border-dark-600 rounded-lg px-3 py-2 text-white mb-4 focus:outline-none focus:border-primary-500"
+              className="mb-4 w-full rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-white focus:border-primary-500 focus:outline-none"
             >
               <option value="">Select a reason...</option>
               <option value="spam">Spam or misleading</option>
@@ -627,13 +649,13 @@ export default function ForumPost() {
               <option value="other">Other</option>
             </select>
 
-            <div className="flex gap-3 justify-end">
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => {
                   setShowReportModal(false);
                   setReportReason('');
                 }}
-                className="px-4 py-2 text-gray-400 hover:text-white transition-colors"
+                className="px-4 py-2 text-gray-400 transition-colors hover:text-white"
               >
                 Cancel
               </button>
@@ -658,7 +680,7 @@ export default function ForumPost() {
                   }
                 }}
                 disabled={!reportReason || isReporting}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 disabled:bg-red-600/50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                className="rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-red-600/50"
               >
                 {isReporting ? 'Submitting...' : 'Submit Report'}
               </button>
@@ -709,22 +731,41 @@ function CommentItem({
         {/* Thread line */}
         {depth > 0 && (
           <div className="flex flex-col items-center">
-            <div className="w-px flex-1 bg-dark-600 hover:bg-primary-500 cursor-pointer" onClick={() => setIsCollapsed(!isCollapsed)} />
+            <div
+              className="w-px flex-1 cursor-pointer bg-dark-600 hover:bg-primary-500"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+            />
           </div>
         )}
 
         <div className="flex-1">
           {/* Comment header */}
           <div className="flex items-center gap-2 text-xs text-gray-400">
-            <Link to={comment.author.username ? `/u/${comment.author.username}` : '#'} className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-full bg-dark-600 overflow-hidden flex items-center justify-center">
+            <Link
+              to={comment.author.username ? `/u/${comment.author.username}` : '#'}
+              className="flex items-center gap-2"
+            >
+              <div className="flex h-6 w-6 items-center justify-center overflow-hidden rounded-full bg-dark-600">
                 {comment.author.avatarUrl ? (
-                  <img src={comment.author.avatarUrl} alt="" className="w-full h-full object-cover" />
+                  <ThemedAvatar
+                    src={comment.author.avatarUrl}
+                    alt={comment.author.username || comment.author.displayName || 'User'}
+                    size="xs"
+                    avatarBorderId={
+                      comment.author.avatarBorderId ?? comment.author.avatar_border_id ?? null
+                    }
+                  />
                 ) : (
-                  <span className="text-[10px]">{(comment.author.username || comment.author.displayName || '?').charAt(0).toUpperCase()}</span>
+                  <span className="text-[10px]">
+                    {(comment.author.username || comment.author.displayName || '?')
+                      .charAt(0)
+                      .toUpperCase()}
+                  </span>
                 )}
               </div>
-              <span className="font-medium text-gray-300 hover:underline">{comment.author.username || comment.author.displayName || 'Unknown'}</span>
+              <span className="font-medium text-gray-300 hover:underline">
+                {comment.author.username || comment.author.displayName || 'Unknown'}
+              </span>
             </Link>
             <span>•</span>
             <span>{formatTimeAgo(comment.createdAt)}</span>
@@ -744,10 +785,10 @@ function CommentItem({
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-1 mt-2 text-xs text-gray-400">
+              <div className="mt-2 flex items-center gap-1 text-xs text-gray-400">
                 <button
                   onClick={() => onVote(comment.id, 1, comment.myVote)}
-                  className={`p-1 rounded hover:bg-dark-700 ${
+                  className={`rounded p-1 hover:bg-dark-700 ${
                     comment.myVote === 1 ? 'text-orange-500' : 'hover:text-orange-500'
                   }`}
                 >
@@ -762,15 +803,15 @@ function CommentItem({
                     comment.myVote === 1
                       ? 'text-orange-500'
                       : comment.myVote === -1
-                      ? 'text-blue-500'
-                      : ''
+                        ? 'text-blue-500'
+                        : ''
                   }`}
                 >
                   {comment.score}
                 </span>
                 <button
                   onClick={() => onVote(comment.id, -1, comment.myVote)}
-                  className={`p-1 rounded hover:bg-dark-700 ${
+                  className={`rounded p-1 hover:bg-dark-700 ${
                     comment.myVote === -1 ? 'text-blue-500' : 'hover:text-blue-500'
                   }`}
                 >
@@ -782,11 +823,11 @@ function CommentItem({
                 </button>
                 <button
                   onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                  className="px-2 py-1 hover:bg-dark-700 rounded transition-colors"
+                  className="rounded px-2 py-1 transition-colors hover:bg-dark-700"
                 >
                   Reply
                 </button>
-                <button className="px-2 py-1 hover:bg-dark-700 rounded transition-colors">
+                <button className="rounded px-2 py-1 transition-colors hover:bg-dark-700">
                   Share
                 </button>
               </div>
@@ -799,19 +840,19 @@ function CommentItem({
                     onChange={(e) => setReplyContent(e.target.value)}
                     placeholder="Write a reply..."
                     rows={3}
-                    className="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+                    className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
-                  <div className="flex justify-end gap-2 mt-2">
+                  <div className="mt-2 flex justify-end gap-2">
                     <button
                       onClick={() => setReplyingTo(null)}
-                      className="px-3 py-1.5 text-sm text-gray-400 hover:text-white transition-colors"
+                      className="px-3 py-1.5 text-sm text-gray-400 transition-colors hover:text-white"
                     >
                       Cancel
                     </button>
                     <button
                       onClick={() => onSubmitReply(comment.id)}
                       disabled={!replyContent.trim() || isSubmitting}
-                      className="px-3 py-1.5 text-sm bg-primary-600 hover:bg-primary-700 disabled:opacity-50 text-white rounded-full transition-colors"
+                      className="rounded-full bg-primary-600 px-3 py-1.5 text-sm text-white transition-colors hover:bg-primary-700 disabled:opacity-50"
                     >
                       Reply
                     </button>

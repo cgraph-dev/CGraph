@@ -88,6 +88,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
       bio: user.bio,
       status: user.status,
       status_message: user.status_message,
+      avatar_border_id: user.avatar_border_id,
       wallet_address: user.wallet_address,
       email_verified_at: user.email_verified_at,
       two_factor_enabled: user.totp_enabled,
@@ -121,6 +122,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
       bio: user.bio,
       status: user.status,
       status_message: user.status_message,
+      avatar_border_id: user.avatar_border_id,
       karma: user.karma || 0,
       is_verified: user.is_verified || false,
       is_premium: user.is_premium || false,
@@ -158,6 +160,7 @@ defmodule CGraphWeb.API.V1.UserJSON do
       xp: user.xp || 0,
       level: user.level || 1,
       streak_days: user.streak_days || 0,
+      avatar_border_id: user.avatar_border_id,
       is_verified: user.is_verified || false
     }
   end

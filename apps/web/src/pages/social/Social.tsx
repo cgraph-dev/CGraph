@@ -16,6 +16,7 @@ void EllipsisVerticalIcon; // Reserved for context menu
 import { BellIcon as BellIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import UserProfileCard from '@/components/profile/UserProfileCard';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { useFriendStore } from '@/stores/friendStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
@@ -477,10 +478,16 @@ function FriendsTab({
                     <UserProfileCard userId={friend.id} trigger="both">
                       <div className="relative flex-shrink-0">
                         {friend.avatarUrl ? (
-                          <img
+                          <ThemedAvatar
                             src={friend.avatarUrl}
-                            alt={friend.username}
-                            className="h-12 w-12 rounded-full object-cover ring-2 ring-dark-700"
+                            alt={friend.displayName || friend.username}
+                            size="medium"
+                            className="h-12 w-12 ring-2 ring-dark-700"
+                            avatarBorderId={
+                              (friend as any)?.avatarBorderId ??
+                              (friend as any)?.avatar_border_id ??
+                              null
+                            }
                           />
                         ) : (
                           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 font-medium text-white ring-2 ring-dark-700">

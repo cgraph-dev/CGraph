@@ -33,23 +33,23 @@ defmodule CGraphWeb.StripeWebhookController do
     if is_nil(payload) or is_nil(signature) do
       Logger.warning("Stripe webhook missing payload or signature")
 
-      return
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: "Missing webhook payload or signature"})
-    end
+      conn
+      |> put_status(:bad_request)
+      |> json(%{error: "Missing webhook payload or signature"})
+    else
 
-    case verify_webhook(payload, signature) do
-      {:ok, event} ->
-        handle_event(event)
-        json(conn, %{received: true})
+      case verify_webhook(payload, signature) do
+        {:ok, event} ->
+          handle_event(event)
+          json(conn, %{received: true})
 
-      {:error, reason} ->
-        Logger.warning("Stripe webhook verification failed: #{inspect(reason)}")
+        {:error, reason} ->
+          Logger.warning("Stripe webhook verification failed: #{inspect(reason)}")
 
-        conn
-        |> put_status(:bad_request)
-        |> json(%{error: "Webhook verification failed"})
+          conn
+          |> put_status(:bad_request)
+          |> json(%{error: "Webhook verification failed"})
+      end
     end
   end
 

@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
+import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
+import { useChatBubbleStore } from '@/stores/chatBubbleStore';
 import type { UserTheme } from '@/stores/themeStore';
 import { ThemedAvatar } from './ThemedAvatar';
 
@@ -27,10 +29,53 @@ export function ThemedChatBubble({
   className = '',
 }: ThemedChatBubbleProps) {
   const currentUserTheme = useThemeStore((state) => state.theme);
+  const { chat } = useChatCustomization();
+  const { style: bubbleStyle } = useChatBubbleStore();
 
   // If it's own message, use current user's theme; otherwise use provided theme
-  const theme = isOwn ? currentUserTheme : (userTheme ? { ...currentUserTheme, ...userTheme } : currentUserTheme);
+  const theme = isOwn
+    ? currentUserTheme
+    : userTheme
+      ? { ...currentUserTheme, ...userTheme }
+      : currentUserTheme;
   const colors = THEME_COLORS[theme.chatBubbleColor];
+
+  // Unified customization overrides (cross-device)
+  const unifiedBubbleColor = chat.bubbleColor;
+  const unifiedTextColor = chat.textColor;
+  const unifiedRadius = chat.bubbleRadius;
+  const unifiedOpacity = chat.bubbleOpacity;
+
+  // Local UI-only overrides (per-device)
+  const localBubbleColor = isOwn ? bubbleStyle.ownMessageBg : bubbleStyle.otherMessageBg;
+  const localTextColor = isOwn ? bubbleStyle.ownMessageText : bubbleStyle.otherMessageText;
+  const localRadius = bubbleStyle.borderRadius;
+
+  const resolvedBubbleColor = unifiedBubbleColor ?? localBubbleColor ?? colors.primary;
+  const resolvedTextColor = unifiedTextColor ?? localTextColor ?? '#ffffff';
+  const resolvedRadius = unifiedRadius ?? localRadius ?? theme.bubbleBorderRadius;
+  const resolvedOpacity = unifiedOpacity ?? 100;
+
+  const shadowIntensityMap: Record<string, number> = {
+    none: 0,
+    light: 10,
+    medium: 20,
+    strong: 40,
+  };
+  const resolvedShadowIntensity =
+    shadowIntensityMap[chat.bubbleShadow || 'medium'] ?? theme.bubbleShadowIntensity;
+
+  const applyOpacity = (color: string, opacity: number) => {
+    const clamped = Math.min(100, Math.max(0, opacity));
+    // Only append alpha for 6-digit hex colors
+    if (/^#[0-9A-Fa-f]{6}$/.test(color)) {
+      const alpha = Math.round((clamped / 100) * 255)
+        .toString(16)
+        .padStart(2, '0');
+      return `${color}${alpha}`;
+    }
+    return color;
+  };
 
   // Entrance animation props
   const getEntranceAnimation = () => {
@@ -75,24 +120,26 @@ export function ThemedChatBubble({
   // Bubble shape styles
   const getBubbleStyle = () => {
     const baseStyle: React.CSSProperties = {
-      borderRadius: `${theme.bubbleBorderRadius}px`,
-      boxShadow: theme.bubbleShadowIntensity > 0
-        ? `0 2px ${theme.bubbleShadowIntensity / 5}px ${colors.glow}`
-        : 'none',
+      borderRadius: `${resolvedRadius}px`,
+      boxShadow:
+        resolvedShadowIntensity > 0
+          ? `0 2px ${resolvedShadowIntensity / 5}px ${colors.glow}`
+          : 'none',
+      color: resolvedTextColor,
     };
 
     if (theme.bubbleGlassEffect && theme.blurEnabled) {
       return {
         ...baseStyle,
         backdropFilter: 'blur(10px)',
-        backgroundColor: `${colors.primary}90`,
-        border: `1px solid ${colors.primary}40`,
+        backgroundColor: applyOpacity(resolvedBubbleColor, resolvedOpacity),
+        border: `1px solid ${applyOpacity(resolvedBubbleColor, 25)}`,
       };
     }
 
     return {
       ...baseStyle,
-      backgroundColor: colors.primary,
+      backgroundColor: resolvedBubbleColor,
     };
   };
 
@@ -102,7 +149,7 @@ export function ThemedChatBubble({
 
     return (
       <svg
-        className={`absolute bottom-0 ${position === 'left' ? '-left-2' : '-right-2'} w-4 h-4`}
+        className={`absolute bottom-0 ${position === 'left' ? '-left-2' : '-right-2'} h-4 w-4`}
         viewBox="0 0 20 20"
         style={{ fill: theme.bubbleGlassEffect ? `${colors.primary}90` : colors.primary }}
       >
@@ -130,35 +177,24 @@ export function ThemedChatBubble({
       )}
 
       {/* Message Container */}
-      <div className={`flex flex-col max-w-[70%] ${isOwn ? 'items-end' : 'items-start'}`}>
+      <div className={`flex max-w-[70%] flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
         {/* User name (for other users' messages) */}
-        {!isOwn && userName && (
-          <span className="text-xs text-gray-400 mb-1 px-2">{userName}</span>
-        )}
+        {!isOwn && userName && <span className="mb-1 px-2 text-xs text-gray-400">{userName}</span>}
 
         {/* Message Bubble */}
         <motion.div
           className="relative"
           {...animation}
-          whileHover={
-            theme.bubbleHoverEffect
-              ? { y: -2, scale: 1.02 }
-              : undefined
-          }
+          whileHover={theme.bubbleHoverEffect ? { y: -2, scale: 1.02 } : undefined}
           transition={{ type: 'spring', stiffness: 400 }}
         >
-          <div
-            className="px-4 py-2 text-white relative"
-            style={getBubbleStyle()}
-          >
+          <div className="relative px-4 py-2 text-white" style={getBubbleStyle()}>
             {/* Message Text */}
-            <p className="text-sm break-words whitespace-pre-wrap">{message}</p>
+            <p className="whitespace-pre-wrap break-words text-sm">{message}</p>
 
             {/* Timestamp (inside bubble) */}
             {showTimestamp && timestamp && (
-              <span className="text-[10px] text-white/70 mt-1 block">
-                {timestamp}
-              </span>
+              <span className="mt-1 block text-[10px] text-white/70">{timestamp}</span>
             )}
           </div>
 
@@ -167,11 +203,11 @@ export function ThemedChatBubble({
 
           {/* Particle effects for premium themes */}
           {theme.particlesEnabled && (theme.effect === 'neon' || theme.effect === 'cyberpunk') && (
-            <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-lg">
+            <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg">
               {Array.from({ length: 3 }).map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute w-1 h-1 rounded-full"
+                  className="absolute h-1 w-1 rounded-full"
                   style={{
                     background: colors.secondary,
                     left: `${20 + i * 30}%`,
@@ -194,9 +230,10 @@ export function ThemedChatBubble({
           {/* Holographic shine effect */}
           {theme.effect === 'holographic' && (
             <motion.div
-              className="absolute inset-0 opacity-20 pointer-events-none"
+              className="pointer-events-none absolute inset-0 opacity-20"
               style={{
-                background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)',
+                background:
+                  'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)',
                 backgroundSize: '200% 200%',
                 borderRadius: `${theme.bubbleBorderRadius}px`,
               }}
@@ -208,9 +245,7 @@ export function ThemedChatBubble({
 
         {/* Timestamp (outside bubble) */}
         {showTimestamp && timestamp && theme.bubbleShowTail && (
-          <span className="text-[10px] text-gray-500 mt-1 px-2">
-            {timestamp}
-          </span>
+          <span className="mt-1 px-2 text-[10px] text-gray-500">{timestamp}</span>
         )}
       </div>
     </div>

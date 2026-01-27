@@ -1,6 +1,9 @@
 import { motion } from 'framer-motion';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import type { UserTheme } from '@/stores/themeStore';
+import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
+import type { AvatarBorderConfig } from '@/types/avatar-borders';
+import { AVATAR_BORDERS } from '@/data/avatar-borders';
 
 interface ThemedAvatarProps {
   src?: string | null;
@@ -8,6 +11,8 @@ interface ThemedAvatarProps {
   size?: 'xs' | 'small' | 'medium' | 'large' | 'xlarge';
   className?: string;
   userTheme?: Partial<UserTheme>; // For displaying other users' avatars with their theme
+  avatarBorderId?: string | null;
+  avatarBorderConfig?: AvatarBorderConfig;
   onClick?: () => void;
   style?: React.CSSProperties;
 }
@@ -28,12 +33,22 @@ const borderWidthMap = {
   xlarge: 5,
 };
 
+const sizePxMap = {
+  xs: 24,
+  small: 32,
+  medium: 48,
+  large: 64,
+  xlarge: 96,
+};
+
 export function ThemedAvatar({
   src,
   alt = 'Avatar',
   size = 'medium',
   className = '',
   userTheme,
+  avatarBorderId,
+  avatarBorderConfig,
   onClick,
   style,
 }: ThemedAvatarProps) {
@@ -44,7 +59,30 @@ export function ThemedAvatar({
   const colors = THEME_COLORS[theme.avatarBorderColor];
 
   const borderWidth = borderWidthMap[size];
-  const speedMultiplier = theme.animationSpeed === 'slow' ? 2 : theme.animationSpeed === 'fast' ? 0.5 : 1;
+  const speedMultiplier =
+    theme.animationSpeed === 'slow' ? 2 : theme.animationSpeed === 'fast' ? 0.5 : 1;
+
+  // Prefer advanced avatar borders when provided (discord-style compatibility)
+  const resolvedBorder: AvatarBorderConfig | undefined =
+    avatarBorderConfig ||
+    (avatarBorderId ? AVATAR_BORDERS.find((border) => border.id === avatarBorderId) : undefined);
+
+  if (resolvedBorder) {
+    return (
+      <div className={className} style={style}>
+        <AvatarBorderRenderer
+          src={src || '/default-avatar.png'}
+          alt={alt}
+          border={resolvedBorder}
+          size={sizePxMap[size]}
+          showParticles={theme.particlesEnabled}
+          animationSpeed={speedMultiplier}
+          interactive={!!onClick}
+          onClick={onClick}
+        />
+      </div>
+    );
+  }
 
   // Determine border animation based on avatarBorder type
   const getBorderAnimation = () => {
@@ -129,7 +167,7 @@ export function ThemedAvatar({
 
   return (
     <motion.div
-      className={`relative rounded-full overflow-hidden ${sizeMap[size]} ${className} ${
+      className={`relative overflow-hidden rounded-full ${sizeMap[size]} ${className} ${
         onClick ? 'cursor-pointer' : ''
       }`}
       style={{
@@ -151,36 +189,37 @@ export function ThemedAvatar({
       onClick={onClick}
     >
       {/* Particles effect for premium borders */}
-      {theme.particlesEnabled && (theme.avatarBorder === 'legendary' || theme.avatarBorder === 'mythic') && (
-        <div className="absolute inset-0 pointer-events-none">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute w-1 h-1 rounded-full"
-              style={{
-                background: colors.primary,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                y: [0, -10, 0],
-                opacity: [0.3, 0.8, 0.3],
-              }}
-              transition={{
-                duration: (1.5 + Math.random()) * speedMultiplier,
-                repeat: Infinity,
-                delay: Math.random() * 2,
-              }}
-            />
-          ))}
-        </div>
-      )}
+      {theme.particlesEnabled &&
+        (theme.avatarBorder === 'legendary' || theme.avatarBorder === 'mythic') && (
+          <div className="pointer-events-none absolute inset-0">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute h-1 w-1 rounded-full"
+                style={{
+                  background: colors.primary,
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                animate={{
+                  y: [0, -10, 0],
+                  opacity: [0.3, 0.8, 0.3],
+                }}
+                transition={{
+                  duration: (1.5 + Math.random()) * speedMultiplier,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
+          </div>
+        )}
 
       {/* Avatar Image */}
       <img
         src={src || '/default-avatar.png'}
         alt={alt}
-        className="w-full h-full object-cover"
+        className="h-full w-full object-cover"
         onError={(e) => {
           const target = e.target as HTMLImageElement;
           target.src = '/default-avatar.png';
@@ -189,15 +228,16 @@ export function ThemedAvatar({
 
       {/* Gradient overlay for glassmorphism effect */}
       {theme.effect === 'glassmorphism' && theme.blurEnabled && (
-        <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent pointer-events-none" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
       )}
 
       {/* Holographic effect */}
       {theme.effect === 'holographic' && (
         <motion.div
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="pointer-events-none absolute inset-0 opacity-20"
           style={{
-            background: 'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)',
+            background:
+              'linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)',
             backgroundSize: '200% 200%',
           }}
           animate={{ backgroundPosition: ['0% 0%', '200% 200%'] }}

@@ -44,6 +44,8 @@ interface LeaderboardEntry {
   username: string;
   displayName?: string;
   avatarUrl?: string;
+  avatarBorderId?: string | null;
+  avatar_border_id?: string | null;
   level: number;
   score: number;
   badges?: string[];
@@ -181,6 +183,11 @@ export function LeaderboardWidget({
                   size={index === 1 ? 'large' : 'medium'}
                   className="ring-2"
                   style={{ '--tw-ring-color': RANK_COLORS[actualRank] } as React.CSSProperties}
+                  avatarBorderId={
+                    entry.avatarBorderId ??
+                    (entry as LeaderboardEntry & { avatar_border_id?: string | null })
+                      .avatar_border_id
+                  }
                 />
                 {actualRank === 1 && (
                   <motion.div
@@ -268,6 +275,10 @@ export function LeaderboardWidget({
           src={entry.avatarUrl}
           alt={entry.displayName || entry.username}
           size="small"
+          avatarBorderId={
+            entry.avatarBorderId ??
+            (entry as LeaderboardEntry & { avatar_border_id?: string | null }).avatar_border_id
+          }
         />
 
         {/* User Info */}
@@ -347,6 +358,11 @@ export function LeaderboardWidget({
                 src={entry.avatarUrl}
                 alt={entry.displayName || entry.username}
                 size="xs"
+                avatarBorderId={
+                  entry.avatarBorderId ??
+                  (entry as LeaderboardEntry & { avatar_border_id?: string | null })
+                    .avatar_border_id
+                }
               />
               <span className="flex-1 truncate text-sm">{entry.displayName || entry.username}</span>
               <span className="text-sm font-medium" style={{ color: primaryColor }}>
@@ -364,6 +380,11 @@ export function LeaderboardWidget({
                 src={currentUserEntry.avatarUrl}
                 alt={currentUserEntry.displayName || currentUserEntry.username}
                 size="xs"
+                avatarBorderId={
+                  currentUserEntry.avatarBorderId ??
+                  (currentUserEntry as LeaderboardEntry & { avatar_border_id?: string | null })
+                    .avatar_border_id
+                }
               />
               <span className="flex-1 truncate text-sm font-medium text-primary-400">You</span>
               <span className="text-sm font-medium" style={{ color: primaryColor }}>

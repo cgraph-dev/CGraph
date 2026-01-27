@@ -9,6 +9,7 @@ import {
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useChatStore, type Message } from '@/stores/chatStore';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 interface ForwardMessageModalProps {
   isOpen: boolean;
@@ -171,6 +172,10 @@ export function ForwardMessageModal({
                 ) : (
                   filteredConversations.map((conversation) => {
                     const isSelected = selectedConversations.has(conversation.id);
+                    const avatarBorderId =
+                      (conversation as { avatarBorderId?: string | null })?.avatarBorderId ??
+                      (conversation as { avatar_border_id?: string | null })?.avatar_border_id ??
+                      null;
                     return (
                       <motion.button
                         key={conversation.id}
@@ -184,15 +189,16 @@ export function ForwardMessageModal({
                         }`}
                       >
                         {/* Avatar */}
-                        <div className="relative h-10 w-10 flex-shrink-0">
+                        <div className="relative flex-shrink-0">
                           {conversation.avatarUrl ? (
-                            <img
+                            <ThemedAvatar
                               src={conversation.avatarUrl}
                               alt={conversation.name || 'Conversation'}
-                              className="h-full w-full rounded-full object-cover"
+                              size="medium"
+                              avatarBorderId={avatarBorderId}
                             />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-sm font-semibold text-white">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-400 to-primary-600 text-sm font-semibold text-white">
                               {(conversation.name || '?').charAt(0).toUpperCase()}
                             </div>
                           )}

@@ -288,7 +288,7 @@ defmodule CGraphWeb.API.V1.UploadController do
       brand in ["qt  ", "MSNV"] ->
         {:ok, "video/quicktime"}
 
-      brand == "3gp" <> _ ->
+      String.starts_with?(brand, "3gp") ->
         {:ok, "video/3gpp"}
 
       # Default to mp4 for ftyp containers

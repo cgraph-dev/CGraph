@@ -98,7 +98,10 @@ interface ChatBubbleStore {
   style: ChatBubbleStyle;
   isLoading: boolean;
   isSaving: boolean;
-  updateStyle: <K extends keyof ChatBubbleStyle>(key: K, value: ChatBubbleStyle[K]) => void;
+  updateStyle: <K extends keyof ChatBubbleStyle>(
+    keyOrUpdates: K | Partial<ChatBubbleStyle>,
+    value?: ChatBubbleStyle[K]
+  ) => void;
   updateMultiple: (updates: Partial<ChatBubbleStyle>) => void;
   resetStyle: () => void;
   applyPreset: (preset: 'default' | 'minimal' | 'modern' | 'retro' | 'bubble' | 'glass') => void;
@@ -115,10 +118,19 @@ export const useChatBubbleStore = create<ChatBubbleStore>()(
       isLoading: false,
       isSaving: false,
 
-      updateStyle: (key, value) => {
-        set((state) => ({
-          style: { ...state.style, [key]: value },
-        }));
+      updateStyle: (keyOrUpdates, value) => {
+        if (typeof keyOrUpdates === 'string') {
+          set((state) => ({
+            style: {
+              ...state.style,
+              [keyOrUpdates]: value as ChatBubbleStyle[typeof keyOrUpdates],
+            },
+          }));
+        } else {
+          set((state) => ({
+            style: { ...state.style, ...keyOrUpdates },
+          }));
+        }
         // Auto-sync to backend after update (debounced in component)
       },
 
@@ -243,7 +255,12 @@ export const useChatBubbleStore = create<ChatBubbleStore>()(
         const { style } = get();
         set({ isSaving: true });
         try {
-          await api.patch('/api/v1/users/me/preferences/chat-bubble', { style });
+          // Store full chat bubble config inside custom_config to preserve all UI-only fields
+          await api.patch('/api/v1/me/customizations', {
+            custom_config: {
+              chat_bubble_style: style,
+            },
+          });
         } catch (error) {
           console.warn('Failed to sync chat bubble style to backend:', error);
           // Fail silently - local storage will persist
@@ -255,10 +272,13 @@ export const useChatBubbleStore = create<ChatBubbleStore>()(
       fetchFromBackend: async () => {
         set({ isLoading: true });
         try {
-          const response = await api.get('/api/v1/users/me/preferences/chat-bubble');
-          if (response.data?.style) {
+          const response = await api.get('/api/v1/me/customizations');
+          const data = response.data?.data || {};
+          const remoteStyle = data.custom_config?.chat_bubble_style;
+
+          if (remoteStyle && typeof remoteStyle === 'object') {
             set({
-              style: { ...defaultChatBubbleStyle, ...response.data.style },
+              style: { ...defaultChatBubbleStyle, ...remoteStyle },
               isLoading: false,
             });
           } else {

@@ -12,6 +12,7 @@ import ShaderBackground from '@/components/shaders/ShaderBackground';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { pageTransitions, buttonVariantsSubtle } from '@/lib/animations/transitions';
 
 // Reserved for future animation enhancements
@@ -387,10 +388,12 @@ export default function AppLayout() {
               aria-label={`Your profile picture: ${user?.displayName || user?.username || 'User'}`}
             >
               {user?.avatarUrl ? (
-                <img
+                <ThemedAvatar
                   src={user.avatarUrl}
                   alt={user.displayName || user.username || 'User avatar'}
-                  className="h-full w-full rounded-lg object-cover"
+                  size="medium"
+                  className="h-full w-full rounded-lg"
+                  avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br from-primary-600 to-purple-700 text-lg font-bold">

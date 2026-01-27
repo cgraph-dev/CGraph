@@ -6,6 +6,7 @@ import {
   SortOption,
   MarketplaceListing,
 } from '@/stores/marketplaceStore';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 // Reserved for future use
 void useMemo;
@@ -375,10 +376,13 @@ function ListingCard({ listing, onClick }: ListingCardProps) {
 
         {listing.seller && (
           <div className="mt-3 flex items-center gap-2 border-t border-white/10 pt-3">
-            <img
-              src={listing.seller.avatarUrl || '/default-avatar.png'}
+            <ThemedAvatar
+              src={listing.seller.avatarUrl}
               alt={listing.seller.displayName}
-              className="h-6 w-6 rounded-full"
+              size="xs"
+              avatarBorderId={
+                listing.seller.avatarBorderId ?? listing.seller.avatar_border_id ?? null
+              }
             />
             <span className="truncate text-xs text-gray-500">{listing.seller.displayName}</span>
           </div>
@@ -461,10 +465,13 @@ function ListingDetailModal({ listing, onClose }: ListingDetailModalProps) {
           {/* Seller Info */}
           {listing.seller && (
             <div className="mb-4 flex items-center gap-3 rounded-lg bg-white/5 p-3">
-              <img
-                src={listing.seller.avatarUrl || '/default-avatar.png'}
+              <ThemedAvatar
+                src={listing.seller.avatarUrl}
                 alt={listing.seller.displayName}
-                className="h-10 w-10 rounded-full"
+                size="medium"
+                avatarBorderId={
+                  listing.seller.avatarBorderId ?? listing.seller.avatar_border_id ?? null
+                }
               />
               <div>
                 <p className="font-medium">{listing.seller.displayName}</p>

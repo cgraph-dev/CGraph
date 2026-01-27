@@ -8,11 +8,11 @@
 
 #### Real-time messaging • Community forums • End-to-end encryption • Gamification • Subscription tiers
 
-[![Version](https://img.shields.io/badge/version-0.9.5-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.6-green.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Current version:** 0.9.5 (January 2026)
+**Current version:** 0.9.6 (January 2026)
 
 [🌐 Website](https://cgraph.app) · [📚 Documentation](https://docs.cgraph.app) ·
 [🔌 API Reference](https://api.cgraph.app/docs)

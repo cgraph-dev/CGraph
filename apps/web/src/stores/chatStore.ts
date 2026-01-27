@@ -41,6 +41,7 @@ export interface Message {
     username: string;
     displayName: string | null;
     avatarUrl: string | null;
+    avatarBorderId?: string | null;
   };
   createdAt: string;
   updatedAt: string;
@@ -88,6 +89,7 @@ export interface ConversationParticipant {
     avatarUrl: string | null;
     status: string;
     lastSeenAt?: string | null;
+    avatarBorderId?: string | null;
   };
   nickname: string | null;
   isMuted: boolean;

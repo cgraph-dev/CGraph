@@ -4,6 +4,27 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.6] - 2026-01-27
+
+**🎨 AVATAR BORDERS EVERYWHERE + DEPLOYMENT READINESS**
+
+This release completes avatar border wiring across the UI and verifies Vercel build readiness.
+
+### ✨ UI/UX
+
+- Unified `ThemedAvatar` usage across forums, chat, events, marketplace, messaging, and member
+  lists.
+- Added avatar border support to forum, marketplace, and hosting data models.
+
+### 🧰 Stability
+
+- Fixed `ReferralDashboard` import/memoization regressions that blocked Vite builds.
+
+### 🚀 Deployment
+
+- Verified `pnpm turbo run build --filter=@cgraph/web` for production readiness.
+- Updated deployment and release documentation.
+
 ## [0.9.5-security] - 2026-01-27
 
 **🔐 SECURITY HARDENING: Critical Security Fixes + Stripe Payment Integration**
@@ -133,16 +154,12 @@ deployment configuration issues for Vercel.
 This release fixes critical performance issues in the Customize tab and resolves all pre-existing
 TypeScript errors across the codebase.
 
-### 🐛 Bug Fixes
-
 #### Customize Tab Performance (Critical)
 
-| Issue                                    | Solution                                                            |
-| ---------------------------------------- | ------------------------------------------------------------------- |
-| **Page trembling/blocking on hover**     | Throttled mouse handlers to 60fps (16ms intervals)                  |
-| **100+ concurrent infinite animations**  | Converted to hover-only animations (reduced to ~8 active at a time) |
-| **GlassCard 3D transform recalculation** | Added throttled mouse move handler with GPU layer promotion         |
-| **Dual store synchronization**           | Disabled hover3D on main content wrapper                            |
+| Issue | Solution | | **Page trembling/blocking on hover** | Throttled mouse handlers to 60fps
+(16ms intervals) | | **100+ concurrent infinite animations** | Converted to hover-only animations
+(reduced to ~8 active at a time) | | **GlassCard 3D transform recalculation** | Added throttled
+mouse move handler with GPU layer promotion |
 
 #### TypeScript Errors Fixed
 

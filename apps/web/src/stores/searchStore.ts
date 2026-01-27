@@ -7,6 +7,8 @@ export interface SearchUser {
   username: string;
   displayName: string | null;
   avatarUrl: string | null;
+  avatarBorderId?: string | null;
+  avatar_border_id?: string | null;
   status: string;
 }
 
@@ -65,7 +67,10 @@ interface SearchState {
   setQuery: (query: string) => void;
   setCategory: (category: SearchCategory) => void;
   search: (query?: string) => Promise<void>;
-  searchById: (type: 'user' | 'group' | 'forum', id: string) => Promise<SearchUser | SearchGroup | SearchForum | null>;
+  searchById: (
+    type: 'user' | 'group' | 'forum',
+    id: string
+  ) => Promise<SearchUser | SearchGroup | SearchForum | null>;
   clearResults: () => void;
   clearError: () => void;
 }
@@ -89,15 +94,15 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
   search: async (queryOverride) => {
     const { query: stateQuery, category } = get();
     const query = queryOverride ?? stateQuery;
-    
+
     if (!query.trim()) {
-      set({ 
-        users: [], 
-        groups: [], 
-        forums: [], 
-        posts: [], 
+      set({
+        users: [],
+        groups: [],
+        forums: [],
+        posts: [],
         messages: [],
-        hasSearched: false 
+        hasSearched: false,
       });
       return;
     }
@@ -110,7 +115,8 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
       // Search users
       if (category === 'all' || category === 'users') {
         searchPromises.push(
-          api.get('/api/v1/search/users', { params: { q: query } })
+          api
+            .get('/api/v1/search/users', { params: { q: query } })
             .then((res) => {
               set({ users: ensureArray<SearchUser>(res.data, 'users') });
             })
@@ -121,7 +127,8 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
       // Search messages
       if (category === 'all' || category === 'messages') {
         searchPromises.push(
-          api.get('/api/v1/search/messages', { params: { q: query } })
+          api
+            .get('/api/v1/search/messages', { params: { q: query } })
             .then((res) => {
               set({ messages: ensureArray<SearchMessage>(res.data, 'messages') });
             })
@@ -132,7 +139,8 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
       // Search posts
       if (category === 'all' || category === 'posts') {
         searchPromises.push(
-          api.get('/api/v1/search/posts', { params: { q: query } })
+          api
+            .get('/api/v1/search/posts', { params: { q: query } })
             .then((res) => {
               set({ posts: ensureArray<SearchPost>(res.data, 'posts') });
             })
@@ -143,7 +151,8 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
       // For groups and forums, use list endpoints with search params
       if (category === 'all' || category === 'groups') {
         searchPromises.push(
-          api.get('/api/v1/groups', { params: { search: query } })
+          api
+            .get('/api/v1/groups', { params: { search: query } })
             .then((res) => {
               set({ groups: ensureArray<SearchGroup>(res.data, 'groups') });
             })
@@ -153,7 +162,8 @@ export const useSearchStore = create<SearchState>()((set, get) => ({
 
       if (category === 'all' || category === 'forums') {
         searchPromises.push(
-          api.get('/api/v1/forums', { params: { search: query } })
+          api
+            .get('/api/v1/forums', { params: { search: query } })
             .then((res) => {
               set({ forums: ensureArray<SearchForum>(res.data, 'forums') });
             })

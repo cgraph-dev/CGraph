@@ -7,11 +7,9 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
-import {
-  TrophyIcon as TrophyIconSolid,
-  CheckBadgeIcon,
-} from '@heroicons/react/24/solid';
+import { TrophyIcon as TrophyIconSolid, CheckBadgeIcon } from '@heroicons/react/24/solid';
 import { ErrorState, EmptyState } from '@/components/ui';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -22,6 +20,7 @@ interface LeaderboardUser {
   username: string;
   displayName: string | null;
   avatarUrl: string | null;
+  avatarBorderId?: string | null;
   karma: number;
   isVerified: boolean;
 }
@@ -36,27 +35,27 @@ interface LeaderboardMeta {
 function getRankBadge(rank: number) {
   if (rank === 1) {
     return (
-      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-500/30">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 shadow-lg shadow-yellow-500/30">
         <TrophyIconSolid className="h-5 w-5 text-white" />
       </div>
     );
   }
   if (rank === 2) {
     return (
-      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-gray-300 to-gray-500 shadow-lg shadow-gray-400/30">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-gray-300 to-gray-500 shadow-lg shadow-gray-400/30">
         <span className="text-lg font-bold text-white">2</span>
       </div>
     );
   }
   if (rank === 3) {
     return (
-      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 shadow-lg shadow-orange-500/30">
+      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-orange-400 to-orange-600 shadow-lg shadow-orange-500/30">
         <span className="text-lg font-bold text-white">3</span>
       </div>
     );
   }
   return (
-    <div className="flex items-center justify-center w-10 h-10 rounded-full bg-dark-600">
+    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-dark-600">
       <span className="text-lg font-semibold text-gray-400">#{rank}</span>
     </div>
   );
@@ -91,13 +90,13 @@ function UserLeaderboardCard({ user, index }: { user: LeaderboardUser; index: nu
           variant={isTopThree ? 'holographic' : 'default'}
           glow={isTopThree}
           glowColor={isTopThree ? 'rgba(16, 185, 129, 0.3)' : undefined}
-          className="relative overflow-hidden group"
+          className="group relative overflow-hidden"
         >
           <motion.div
-            className="absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/10 via-purple-500/10 to-transparent opacity-0 group-hover:opacity-100"
             transition={{ duration: 0.3 }}
           />
-          <div className="flex items-center gap-4 p-4 relative z-10">
+          <div className="relative z-10 flex items-center gap-4 p-4">
             {/* Rank Badge */}
             <motion.div
               whileHover={{ scale: 1.1, rotate: 5 }}
@@ -107,22 +106,34 @@ function UserLeaderboardCard({ user, index }: { user: LeaderboardUser; index: nu
             </motion.div>
 
             {/* Avatar */}
-            <Link to={`/u/${user.username}`} className="shrink-0" onClick={() => HapticFeedback.light()}>
-              <motion.div whileHover={{ scale: 1.1 }} transition={{ type: 'spring', stiffness: 400, damping: 20 }}>
+            <Link
+              to={`/u/${user.username}`}
+              className="shrink-0"
+              onClick={() => HapticFeedback.light()}
+            >
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+              >
                 {user.avatarUrl ? (
-                  <div className={`p-0.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full ${isTopThree ? 'ring-2 ring-primary-500/50' : ''}`}>
-                    <img
+                  <div
+                    className={`rounded-full bg-gradient-to-br from-primary-500 to-purple-600 p-0.5 ${
+                      isTopThree ? 'ring-2 ring-primary-500/50' : ''
+                    }`}
+                  >
+                    <ThemedAvatar
                       src={user.avatarUrl}
-                      alt={user.displayName || user.username}
-                      className={`rounded-full object-cover ${
-                        isTopThree ? 'w-14 h-14' : 'w-12 h-12'
-                      }`}
+                      alt={user.displayName || user.username || 'User'}
+                      size={isTopThree ? 'large' : 'medium'}
+                      avatarBorderId={user.avatarBorderId}
                     />
                   </div>
                 ) : (
-                  <div className={`flex items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-white font-semibold ${
-                    isTopThree ? 'w-14 h-14 text-xl' : 'w-12 h-12 text-lg'
-                  }`}>
+                  <div
+                    className={`flex items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 font-semibold text-white ${
+                      isTopThree ? 'h-14 w-14 text-xl' : 'h-12 w-12 text-lg'
+                    }`}
+                  >
                     {(user.displayName || user.username || '?').charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -130,14 +141,14 @@ function UserLeaderboardCard({ user, index }: { user: LeaderboardUser; index: nu
             </Link>
 
             {/* User Info */}
-            <div className="flex-1 min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
                 <Link
                   to={`/u/${user.username}`}
-                  className={`font-semibold truncate ${
+                  className={`truncate font-semibold ${
                     isTopThree
-                      ? 'text-lg bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent'
-                      : 'text-gray-200 hover:text-primary-400 transition-colors'
+                      ? 'bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-lg text-transparent'
+                      : 'text-gray-200 transition-colors hover:text-primary-400'
                   }`}
                   onClick={() => HapticFeedback.light()}
                 >
@@ -148,21 +159,23 @@ function UserLeaderboardCard({ user, index }: { user: LeaderboardUser; index: nu
                     whileHover={{ scale: 1.2, rotate: 360 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 10 }}
                   >
-                    <CheckBadgeIcon className="h-5 w-5 text-primary-400 shrink-0" />
+                    <CheckBadgeIcon className="h-5 w-5 shrink-0 text-primary-400" />
                   </motion.div>
                 )}
               </div>
-              <p className="text-sm text-gray-400 truncate">@{user.username}</p>
+              <p className="truncate text-sm text-gray-400">@{user.username}</p>
             </div>
 
             {/* Karma */}
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-dark-600/50 backdrop-blur-sm">
-              <SparklesIcon className={`h-5 w-5 ${
-                isTopThree ? 'text-yellow-400' : 'text-primary-400'
-              }`} />
-              <span className={`font-bold ${
-                isTopThree ? 'text-xl text-yellow-400' : 'text-lg text-white'
-              }`}>
+            <div className="flex items-center gap-2 rounded-lg bg-dark-600/50 px-4 py-2 backdrop-blur-sm">
+              <SparklesIcon
+                className={`h-5 w-5 ${isTopThree ? 'text-yellow-400' : 'text-primary-400'}`}
+              />
+              <span
+                className={`font-bold ${
+                  isTopThree ? 'text-xl text-yellow-400' : 'text-lg text-white'
+                }`}
+              >
                 {formatKarma(user.karma)}
               </span>
               <span className="text-sm text-gray-400">karma</span>
@@ -178,17 +191,17 @@ function LoadingSkeleton() {
   return (
     <div className="space-y-3">
       {[...Array(10)].map((_, i) => (
-        <div 
-          key={i} 
-          className="animate-pulse bg-dark-700 rounded-xl h-20 flex items-center gap-4 p-4"
+        <div
+          key={i}
+          className="flex h-20 animate-pulse items-center gap-4 rounded-xl bg-dark-700 p-4"
         >
-          <div className="w-10 h-10 rounded-full bg-dark-600" />
-          <div className="w-12 h-12 rounded-full bg-dark-600" />
+          <div className="h-10 w-10 rounded-full bg-dark-600" />
+          <div className="h-12 w-12 rounded-full bg-dark-600" />
           <div className="flex-1 space-y-2">
-            <div className="h-4 bg-dark-600 rounded w-32" />
-            <div className="h-3 bg-dark-600 rounded w-20" />
+            <div className="h-4 w-32 rounded bg-dark-600" />
+            <div className="h-3 w-20 rounded bg-dark-600" />
           </div>
-          <div className="h-8 bg-dark-600 rounded w-24" />
+          <div className="h-8 w-24 rounded bg-dark-600" />
         </div>
       ))}
     </div>
@@ -206,25 +219,28 @@ export default function UserLeaderboard() {
     const fetchLeaderboard = async () => {
       setIsLoading(true);
       setError(null);
-      
+
       try {
         const response = await api.get('/api/v1/users/leaderboard', {
-          params: { page, limit: 25 }
+          params: { page, limit: 25 },
         });
-        
+
         const data = response.data?.data || [];
         const metaData = response.data?.meta || {};
-        
-        setUsers(data.map((u: any) => ({
-          rank: u.rank,
-          id: u.id,
-          username: u.username,
-          displayName: u.display_name,
-          avatarUrl: u.avatar_url,
-          karma: u.karma,
-          isVerified: u.is_verified,
-        })));
-        
+
+        setUsers(
+          data.map((u: any) => ({
+            rank: u.rank,
+            id: u.id,
+            username: u.username,
+            displayName: u.display_name,
+            avatarUrl: u.avatar_url,
+            avatarBorderId: u.avatar_border_id ?? u.avatarBorderId ?? null,
+            karma: u.karma,
+            isVerified: u.is_verified,
+          }))
+        );
+
         setMeta({
           page: metaData.page || page,
           perPage: metaData.per_page || 25,
@@ -243,12 +259,12 @@ export default function UserLeaderboard() {
   }, [page]);
 
   return (
-    <div className="flex-1 overflow-y-auto bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative">
+    <div className="relative flex-1 overflow-y-auto bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Ambient particles */}
       {[...Array(15)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-0.5 h-0.5 rounded-full bg-primary-400 pointer-events-none z-0"
+          className="pointer-events-none absolute z-0 h-0.5 w-0.5 rounded-full bg-primary-400"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -268,23 +284,23 @@ export default function UserLeaderboard() {
       ))}
 
       {/* Header */}
-      <div className="sticky top-0 z-10 bg-dark-900/50 backdrop-blur-xl border-b border-primary-500/20 px-4 py-4">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-500/5 via-transparent to-purple-500/5 pointer-events-none" />
+      <div className="sticky top-0 z-10 border-b border-primary-500/20 bg-dark-900/50 px-4 py-4 backdrop-blur-xl">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/5 via-transparent to-purple-500/5" />
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="max-w-3xl mx-auto flex items-center gap-4 relative z-10"
+          className="relative z-10 mx-auto flex max-w-3xl items-center gap-4"
         >
           <motion.div
-            className="p-3 rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20"
+            className="rounded-xl bg-gradient-to-br from-yellow-500/20 to-orange-500/20 p-3"
             whileHover={{ scale: 1.1, rotate: 5 }}
             transition={{ type: 'spring', stiffness: 400, damping: 10 }}
           >
             <TrophyIconSolid className="h-8 w-8 text-yellow-500" />
           </motion.div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent">
+            <h1 className="bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
               Top Contributors
             </h1>
             <p className="text-gray-400">Users ranked by karma earned from community engagement</p>
@@ -293,7 +309,7 @@ export default function UserLeaderboard() {
       </div>
 
       {/* Content */}
-      <div className="max-w-3xl mx-auto p-4 space-y-4 relative z-10">
+      <div className="relative z-10 mx-auto max-w-3xl space-y-4 p-4">
         <AnimatePresence mode="wait">
           {error ? (
             <motion.div
@@ -339,86 +355,104 @@ export default function UserLeaderboard() {
             >
               {/* Top 3 Spotlight */}
               {page === 1 && users.length >= 3 && (
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                {/* Second Place */}
-                <div className="order-1 flex flex-col items-center p-4 pt-8">
-                  <Link to={`/u/${users[1]?.username}`} className="group">
-                    <div className="relative">
-                      {users[1]?.avatarUrl ? (
-                        <img 
-                          src={users[1].avatarUrl} 
-                          className="w-16 h-16 rounded-full ring-2 ring-gray-400 group-hover:ring-4 transition-all"
-                          alt={users[1].username}
-                        />
-                      ) : (
-                        <div className="w-16 h-16 rounded-full bg-gray-500 flex items-center justify-center text-2xl font-bold text-white ring-2 ring-gray-400">
-                          {(users[1]?.displayName || users[1]?.username || '?').charAt(0).toUpperCase()}
+                <div className="mb-6 grid grid-cols-3 gap-4">
+                  {/* Second Place */}
+                  <div className="order-1 flex flex-col items-center p-4 pt-8">
+                    <Link to={`/u/${users[1]?.username}`} className="group">
+                      <div className="relative">
+                        {users[1]?.avatarUrl ? (
+                          <ThemedAvatar
+                            src={users[1].avatarUrl}
+                            alt={users[1].displayName || users[1].username || 'User'}
+                            size="medium"
+                            className="h-16 w-16 ring-2 ring-gray-400 transition-all group-hover:ring-4"
+                            avatarBorderId={users[1].avatarBorderId}
+                          />
+                        ) : (
+                          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gray-500 text-2xl font-bold text-white ring-2 ring-gray-400">
+                            {(users[1]?.displayName || users[1]?.username || '?')
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
+                        )}
+                        <div className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-gray-400 text-sm font-bold text-white shadow-lg">
+                          2
                         </div>
-                      )}
-                      <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-gray-400 flex items-center justify-center text-sm font-bold text-white shadow-lg">
-                        2
                       </div>
-                    </div>
-                    <p className="mt-3 text-center text-sm font-medium text-gray-300 group-hover:text-white truncate max-w-20">
-                      {users[1]?.displayName || users[1]?.username || 'Unknown'}
-                    </p>
-                    <p className="text-center text-xs text-gray-500">{formatKarma(users[1]?.karma || 0)}</p>
-                  </Link>
-                </div>
+                      <p className="mt-3 max-w-20 truncate text-center text-sm font-medium text-gray-300 group-hover:text-white">
+                        {users[1]?.displayName || users[1]?.username || 'Unknown'}
+                      </p>
+                      <p className="text-center text-xs text-gray-500">
+                        {formatKarma(users[1]?.karma || 0)}
+                      </p>
+                    </Link>
+                  </div>
 
-                {/* First Place */}
-                <div className="order-2 flex flex-col items-center p-4">
-                  <Link to={`/u/${users[0]?.username}`} className="group">
-                    <div className="relative">
-                      {users[0]?.avatarUrl ? (
-                        <img 
-                          src={users[0].avatarUrl} 
-                          className="w-20 h-20 rounded-full ring-4 ring-yellow-500 group-hover:ring-6 transition-all shadow-lg shadow-yellow-500/30"
-                          alt={users[0].username}
-                        />
-                      ) : (
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center text-3xl font-bold text-white ring-4 ring-yellow-500 shadow-lg shadow-yellow-500/30">
-                          {(users[0]?.displayName || users[0]?.username || '?').charAt(0).toUpperCase()}
+                  {/* First Place */}
+                  <div className="order-2 flex flex-col items-center p-4">
+                    <Link to={`/u/${users[0]?.username}`} className="group">
+                      <div className="relative">
+                        {users[0]?.avatarUrl ? (
+                          <ThemedAvatar
+                            src={users[0].avatarUrl}
+                            alt={users[0].displayName || users[0].username || 'User'}
+                            size="large"
+                            className="group-hover:ring-6 h-20 w-20 shadow-lg shadow-yellow-500/30 ring-4 ring-yellow-500 transition-all"
+                            avatarBorderId={users[0].avatarBorderId}
+                          />
+                        ) : (
+                          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 text-3xl font-bold text-white shadow-lg shadow-yellow-500/30 ring-4 ring-yellow-500">
+                            {(users[0]?.displayName || users[0]?.username || '?')
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
+                        )}
+                        <div className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500 shadow-lg">
+                          <TrophyIconSolid className="h-5 w-5 text-white" />
                         </div>
-                      )}
-                      <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center shadow-lg">
-                        <TrophyIconSolid className="h-5 w-5 text-white" />
                       </div>
-                    </div>
-                    <p className="mt-3 text-center font-semibold text-white group-hover:text-yellow-400 truncate max-w-24">
-                      {users[0]?.displayName || users[0]?.username || 'Unknown'}
-                    </p>
-                    <p className="text-center text-sm text-yellow-400 font-medium">{formatKarma(users[0]?.karma || 0)}</p>
-                  </Link>
-                </div>
+                      <p className="mt-3 max-w-24 truncate text-center font-semibold text-white group-hover:text-yellow-400">
+                        {users[0]?.displayName || users[0]?.username || 'Unknown'}
+                      </p>
+                      <p className="text-center text-sm font-medium text-yellow-400">
+                        {formatKarma(users[0]?.karma || 0)}
+                      </p>
+                    </Link>
+                  </div>
 
-                {/* Third Place */}
-                <div className="order-3 flex flex-col items-center p-4 pt-10">
-                  <Link to={`/u/${users[2]?.username}`} className="group">
-                    <div className="relative">
-                      {users[2]?.avatarUrl ? (
-                        <img 
-                          src={users[2].avatarUrl} 
-                          className="w-14 h-14 rounded-full ring-2 ring-orange-500 group-hover:ring-4 transition-all"
-                          alt={users[2].username}
-                        />
-                      ) : (
-                        <div className="w-14 h-14 rounded-full bg-orange-500 flex items-center justify-center text-xl font-bold text-white ring-2 ring-orange-500">
-                          {(users[2]?.displayName || users[2]?.username || '?').charAt(0).toUpperCase()}
+                  {/* Third Place */}
+                  <div className="order-3 flex flex-col items-center p-4 pt-10">
+                    <Link to={`/u/${users[2]?.username}`} className="group">
+                      <div className="relative">
+                        {users[2]?.avatarUrl ? (
+                          <ThemedAvatar
+                            src={users[2].avatarUrl}
+                            alt={users[2].displayName || users[2].username || 'User'}
+                            size="small"
+                            className="h-14 w-14 ring-2 ring-orange-500 transition-all group-hover:ring-4"
+                            avatarBorderId={users[2].avatarBorderId}
+                          />
+                        ) : (
+                          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-orange-500 text-xl font-bold text-white ring-2 ring-orange-500">
+                            {(users[2]?.displayName || users[2]?.username || '?')
+                              .charAt(0)
+                              .toUpperCase()}
+                          </div>
+                        )}
+                        <div className="absolute -bottom-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-orange-500 text-xs font-bold text-white shadow-lg">
+                          3
                         </div>
-                      )}
-                      <div className="absolute -bottom-2 -right-2 w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center text-xs font-bold text-white shadow-lg">
-                        3
                       </div>
-                    </div>
-                    <p className="mt-3 text-center text-sm font-medium text-gray-300 group-hover:text-white truncate max-w-16">
-                      {users[2]?.displayName || users[2]?.username || 'Unknown'}
-                    </p>
-                    <p className="text-center text-xs text-gray-500">{formatKarma(users[2]?.karma || 0)}</p>
-                  </Link>
+                      <p className="mt-3 max-w-16 truncate text-center text-sm font-medium text-gray-300 group-hover:text-white">
+                        {users[2]?.displayName || users[2]?.username || 'Unknown'}
+                      </p>
+                      <p className="text-center text-xs text-gray-500">
+                        {formatKarma(users[2]?.karma || 0)}
+                      </p>
+                    </Link>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
               {/* Full List */}
               <div className="space-y-3">
@@ -437,13 +471,13 @@ export default function UserLeaderboard() {
                 >
                   <motion.button
                     onClick={() => {
-                      setPage(p => Math.max(1, p - 1));
+                      setPage((p) => Math.max(1, p - 1));
                       HapticFeedback.light();
                     }}
                     disabled={page === 1}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 px-4 py-2 bg-dark-700/50 hover:bg-dark-600/50 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors backdrop-blur-sm border border-primary-500/20"
+                    className="flex items-center gap-2 rounded-lg border border-primary-500/20 bg-dark-700/50 px-4 py-2 text-white backdrop-blur-sm transition-colors hover:bg-dark-600/50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <ChevronLeftIcon className="h-5 w-5" />
                     Previous
@@ -455,13 +489,13 @@ export default function UserLeaderboard() {
 
                   <motion.button
                     onClick={() => {
-                      setPage(p => Math.min(meta.totalPages, p + 1));
+                      setPage((p) => Math.min(meta.totalPages, p + 1));
                       HapticFeedback.light();
                     }}
                     disabled={page === meta.totalPages}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-2 px-4 py-2 bg-dark-700/50 hover:bg-dark-600/50 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors backdrop-blur-sm border border-primary-500/20"
+                    className="flex items-center gap-2 rounded-lg border border-primary-500/20 bg-dark-700/50 px-4 py-2 text-white backdrop-blur-sm transition-colors hover:bg-dark-600/50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Next
                     <ChevronRightIcon className="h-5 w-5" />

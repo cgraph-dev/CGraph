@@ -229,6 +229,9 @@ defmodule CGraphWeb.Router do
     get "/forums/:id/children", ForumHierarchyController, :children
     get "/forums/:id/ancestors", ForumHierarchyController, :ancestors
     get "/forums/:id/breadcrumbs", ForumHierarchyController, :breadcrumbs
+
+    # Public user customizations (read-only)
+    get "/users/:id/customizations", CustomizationController, :show
   end
 
   # Telemetry endpoints (relaxed rate limiting, minimal auth)
@@ -323,10 +326,19 @@ defmodule CGraphWeb.Router do
     post "/users/presence/bulk", UserController, :bulk_presence
 
     # User Customizations (avatar borders, titles, themes, effects)
-    get "/users/:id/customizations", CustomizationController, :show
     put "/users/:id/customizations", CustomizationController, :update
     patch "/users/:id/customizations", CustomizationController, :patch
     delete "/users/:id/customizations", CustomizationController, :delete
+
+    # My Customizations (authenticated user - optimized for real-time updates)
+    get "/me/customizations", CustomizationController, :my_customizations
+    patch "/me/customizations", CustomizationController, :update_my_customizations
+    delete "/me/customizations", CustomizationController, :delete_my_customizations
+
+    # Avatar Border Configuration (public GET for viewing, auth GET/PATCH for updating)
+    get "/users/:id/avatar-border", UserController, :get_avatar_border
+    get "/me/avatar-border", UserController, :get_my_avatar_border
+    patch "/me/avatar-border", UserController, :update_avatar_border
 
     # Direct Messages (1:1)
     resources "/conversations", ConversationController, only: [:index, :show, :create] do

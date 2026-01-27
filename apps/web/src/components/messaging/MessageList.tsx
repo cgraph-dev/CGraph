@@ -371,7 +371,14 @@ function MessageItem({
         {/* Avatar */}
         {!isGrouped && (
           <div className="w-10 flex-shrink-0">
-            <ThemedAvatar src={message.author.avatarUrl} alt={displayName} size="medium" />
+            <ThemedAvatar
+              src={message.author.avatarUrl}
+              alt={displayName}
+              size="medium"
+              avatarBorderId={
+                (message.author as any)?.avatarBorderId ?? (message.author as any)?.avatar_border_id
+              }
+            />
           </div>
         )}
 

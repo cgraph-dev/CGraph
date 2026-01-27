@@ -73,6 +73,7 @@ defmodule CGraphWeb.API.V1.ConversationJSON do
               username: user.username,
               displayName: user.display_name,
               avatarUrl: user.avatar_url,
+              avatarBorderId: user.avatar_border_id,
               status: user.status || "offline",
               lastSeenAt: last_seen
             }

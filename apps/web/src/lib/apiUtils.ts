@@ -10,31 +10,31 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 /**
  * Resolves a potentially relative URL to an absolute URL.
- * 
+ *
  * Backend may return relative paths like `/uploads/voice/uuid.opus` which need
  * to be prefixed with the API base URL for proper resource loading.
- * 
+ *
  * @param url - The URL to resolve (may be relative or absolute)
  * @returns The absolute URL, or undefined if input was falsy
  */
 function resolveMediaUrl(url: string | undefined | null): string | undefined {
   if (!url) return undefined;
-  
+
   // Already an absolute URL (http:// or https://)
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
-  
+
   // Data URLs should pass through unchanged
   if (url.startsWith('data:')) {
     return url;
   }
-  
+
   // Relative URL - prefix with API base URL
   // Ensure single slash between base and path
   const base = API_URL.endsWith('/') ? API_URL.slice(0, -1) : API_URL;
   const path = url.startsWith('/') ? url : `/${url}`;
-  
+
   return `${base}${path}`;
 }
 
@@ -104,10 +104,7 @@ export function ensureArray<T>(data: unknown, key?: string): T[] {
  * const user = ensureObject<User>(response.data, 'user');
  * ```
  */
-export function ensureObject<T extends object>(
-  data: unknown,
-  key?: string
-): T | null {
+export function ensureObject<T extends object>(data: unknown, key?: string): T | null {
   // Handle null/undefined
   if (data == null) {
     return null;
@@ -167,15 +164,32 @@ export function extractPagination(data: unknown): {
 
   return {
     page: typeof meta.page === 'number' ? meta.page : defaults.page,
-    perPage: typeof meta.per_page === 'number' ? meta.per_page :
-             typeof meta.perPage === 'number' ? meta.perPage :
-             typeof meta.limit === 'number' ? meta.limit : defaults.perPage,
-    total: typeof meta.total === 'number' ? meta.total :
-           typeof meta.total_count === 'number' ? meta.total_count : defaults.total,
-    totalPages: typeof meta.total_pages === 'number' ? meta.total_pages :
-                typeof meta.totalPages === 'number' ? meta.totalPages : defaults.totalPages,
-    hasMore: typeof meta.has_more === 'boolean' ? meta.has_more :
-             typeof meta.hasMore === 'boolean' ? meta.hasMore : defaults.hasMore,
+    perPage:
+      typeof meta.per_page === 'number'
+        ? meta.per_page
+        : typeof meta.perPage === 'number'
+          ? meta.perPage
+          : typeof meta.limit === 'number'
+            ? meta.limit
+            : defaults.perPage,
+    total:
+      typeof meta.total === 'number'
+        ? meta.total
+        : typeof meta.total_count === 'number'
+          ? meta.total_count
+          : defaults.total,
+    totalPages:
+      typeof meta.total_pages === 'number'
+        ? meta.total_pages
+        : typeof meta.totalPages === 'number'
+          ? meta.totalPages
+          : defaults.totalPages,
+    hasMore:
+      typeof meta.has_more === 'boolean'
+        ? meta.has_more
+        : typeof meta.hasMore === 'boolean'
+          ? meta.hasMore
+          : defaults.hasMore,
   };
 }
 
@@ -224,9 +238,12 @@ export function extractErrorMessage(
         }
         if (typeof data.message === 'string') return data.message;
         if (Array.isArray(data.errors) && data.errors.length > 0) {
-          return data.errors.map((e: unknown) =>
-            typeof e === 'string' ? e : (e as Record<string, unknown>)?.message || ''
-          ).filter(Boolean).join(', ');
+          return data.errors
+            .map((e: unknown) =>
+              typeof e === 'string' ? e : (e as Record<string, unknown>)?.message || ''
+            )
+            .filter(Boolean)
+            .join(', ');
         }
       }
     }
@@ -254,25 +271,27 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
   if (!raw || typeof raw !== 'object') {
     return raw;
   }
-  
+
   const senderId = raw.senderId ?? raw.sender_id ?? null;
   const sender = normalizeSender(raw.sender as Record<string, unknown> | null);
   const contentType = raw.contentType ?? raw.content_type ?? 'text';
-  
+
   // Build metadata - for voice/audio/file messages, extract from multiple possible sources
   // Priority: existing metadata.url > attachment.url > fileUrl/file_url
   let metadata = (raw.metadata as Record<string, unknown>) || {};
   const attachment = raw.attachment as Record<string, unknown> | null;
-  
+
   // If metadata already has a URL, ensure it's resolved to absolute
   if (metadata.url) {
     metadata = {
       ...metadata,
       url: resolveMediaUrl(metadata.url as string),
-      thumbnailUrl: metadata.thumbnailUrl ? resolveMediaUrl(metadata.thumbnailUrl as string) : undefined,
+      thumbnailUrl: metadata.thumbnailUrl
+        ? resolveMediaUrl(metadata.thumbnailUrl as string)
+        : undefined,
     };
   }
-  
+
   // For voice/audio messages, ensure metadata has the required fields
   if ((contentType === 'voice' || contentType === 'audio') && !metadata.url) {
     // Check attachment object first (from message_json.ex serialization)
@@ -280,13 +299,13 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     const attachmentFilename = attachment?.filename as string | undefined;
     const attachmentSize = attachment?.size as number | undefined;
     const attachmentMimeType = attachment?.mime_type as string | undefined;
-    
+
     // Fallback to root-level file fields
     const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
     const fileName = attachmentFilename ?? raw.fileName ?? raw.file_name;
     const fileSize = attachmentSize ?? raw.fileSize ?? raw.file_size;
     const fileMimeType = attachmentMimeType ?? raw.fileMimeType ?? raw.file_mime_type;
-    
+
     if (fileUrl) {
       metadata = {
         ...metadata,
@@ -299,7 +318,7 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
       };
     }
   }
-  
+
   // For file/image messages, ensure metadata has the required fields
   if ((contentType === 'file' || contentType === 'image') && !metadata.url) {
     // Check attachment object first (from message_json.ex serialization)
@@ -307,13 +326,13 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     const attachmentFilename = attachment?.filename as string | undefined;
     const attachmentSize = attachment?.size as number | undefined;
     const attachmentThumbnail = attachment?.thumbnail_url as string | undefined;
-    
+
     // Fallback to root-level file fields
     const fileUrl = attachmentUrl ?? raw.fileUrl ?? raw.file_url;
     const fileName = attachmentFilename ?? raw.fileName ?? raw.file_name;
     const fileSize = attachmentSize ?? raw.fileSize ?? raw.file_size;
     const thumbnailUrl = attachmentThumbnail ?? raw.thumbnailUrl ?? raw.thumbnail_url;
-    
+
     if (fileUrl) {
       metadata = {
         ...metadata,
@@ -324,7 +343,7 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
       };
     }
   }
-  
+
   return {
     id: raw.id,
     conversationId: raw.conversationId ?? raw.conversation_id ?? null,
@@ -343,28 +362,43 @@ export function normalizeMessage(raw: Record<string, unknown>): Record<string, u
     metadata: metadata,
     reactions: raw.reactions ?? [],
     sender: sender,
-    createdAt: raw.createdAt ?? raw.created_at ?? raw.insertedAt ?? raw.inserted_at ?? new Date().toISOString(),
-    updatedAt: raw.updatedAt ?? raw.updated_at ?? raw.createdAt ?? raw.created_at ?? new Date().toISOString(),
+    createdAt:
+      raw.createdAt ??
+      raw.created_at ??
+      raw.insertedAt ??
+      raw.inserted_at ??
+      new Date().toISOString(),
+    updatedAt:
+      raw.updatedAt ??
+      raw.updated_at ??
+      raw.createdAt ??
+      raw.created_at ??
+      new Date().toISOString(),
     // E2EE fields - extract from metadata or root level
-    ephemeralPublicKey: metadata?.ephemeral_public_key ?? raw.ephemeralPublicKey ?? raw.ephemeral_public_key ?? null,
+    ephemeralPublicKey:
+      metadata?.ephemeral_public_key ?? raw.ephemeralPublicKey ?? raw.ephemeral_public_key ?? null,
     nonce: metadata?.nonce ?? raw.nonce ?? null,
-    senderIdentityKey: metadata?.sender_identity_key ?? raw.senderIdentityKey ?? raw.sender_identity_key ?? null,
+    senderIdentityKey:
+      metadata?.sender_identity_key ?? raw.senderIdentityKey ?? raw.sender_identity_key ?? null,
   };
 }
 
 /**
  * Normalizes sender data from various formats.
  */
-function normalizeSender(sender: Record<string, unknown> | null | undefined): Record<string, unknown> | null {
+function normalizeSender(
+  sender: Record<string, unknown> | null | undefined
+): Record<string, unknown> | null {
   if (!sender || typeof sender !== 'object') {
     return null;
   }
-  
+
   return {
     id: sender.id,
     username: sender.username,
     displayName: sender.displayName ?? sender.display_name ?? null,
     avatarUrl: sender.avatarUrl ?? sender.avatar_url ?? null,
+    avatarBorderId: sender.avatarBorderId ?? sender.avatar_border_id ?? null,
     status: sender.status ?? 'offline',
   };
 }
@@ -377,10 +411,10 @@ export function normalizeParticipant(raw: Record<string, unknown>): Record<strin
   if (!raw || typeof raw !== 'object') {
     return raw;
   }
-  
+
   const userObj = raw.user as Record<string, unknown> | null;
   const userId = raw.userId ?? raw.user_id ?? userObj?.id ?? raw.id;
-  
+
   return {
     id: raw.id,
     participantId: raw.id,
@@ -389,13 +423,16 @@ export function normalizeParticipant(raw: Record<string, unknown>): Record<strin
     isMuted: raw.isMuted ?? raw.is_muted ?? false,
     mutedUntil: raw.mutedUntil ?? raw.muted_until ?? null,
     joinedAt: raw.joinedAt ?? raw.joined_at ?? raw.insertedAt ?? raw.inserted_at,
-    user: userObj ? {
-      id: userObj.id,
-      username: userObj.username,
-      displayName: userObj.displayName ?? userObj.display_name ?? null,
-      avatarUrl: userObj.avatarUrl ?? userObj.avatar_url ?? null,
-      status: userObj.status ?? 'offline',
-    } : null,
+    user: userObj
+      ? {
+          id: userObj.id,
+          username: userObj.username,
+          displayName: userObj.displayName ?? userObj.display_name ?? null,
+          avatarUrl: userObj.avatarUrl ?? userObj.avatar_url ?? null,
+          avatarBorderId: userObj.avatarBorderId ?? userObj.avatar_border_id ?? null,
+          status: userObj.status ?? 'offline',
+        }
+      : null,
   };
 }
 
@@ -407,17 +444,17 @@ export function normalizeConversation(raw: Record<string, unknown>): Record<stri
   if (!raw || typeof raw !== 'object') {
     return raw;
   }
-  
+
   const participants = raw.participants as Record<string, unknown>[] | null;
   const lastMessage = raw.lastMessage ?? raw.last_message;
-  
+
   return {
     id: raw.id,
     type: raw.type ?? 'direct',
     name: raw.name ?? null,
     avatarUrl: raw.avatarUrl ?? raw.avatar_url ?? null,
-    participants: Array.isArray(participants) 
-      ? participants.map(p => normalizeParticipant(p))
+    participants: Array.isArray(participants)
+      ? participants.map((p) => normalizeParticipant(p))
       : [],
     lastMessage: lastMessage ? normalizeMessage(lastMessage as Record<string, unknown>) : null,
     lastMessageAt: raw.lastMessageAt ?? raw.last_message_at ?? null,
@@ -438,4 +475,3 @@ export function normalizeConversations(conversations: unknown[]): Record<string,
   }
   return conversations.map((c) => normalizeConversation(c as Record<string, unknown>));
 }
-

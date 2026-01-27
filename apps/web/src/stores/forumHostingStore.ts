@@ -82,6 +82,8 @@ export interface ThreadAuthor {
   username: string;
   displayName: string | null;
   avatarUrl: string | null;
+  avatarBorderId?: string | null;
+  avatar_border_id?: string | null;
 }
 
 export interface ForumMember {
@@ -92,6 +94,8 @@ export interface ForumMember {
   title: string | null;
   signature: string | null;
   avatarUrl: string | null;
+  avatarBorderId?: string | null;
+  avatar_border_id?: string | null;
   postCount: number;
   threadCount: number;
   reputation: number;

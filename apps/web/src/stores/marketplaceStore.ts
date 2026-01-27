@@ -24,6 +24,8 @@ export interface MarketplaceSeller {
   username: string;
   displayName: string;
   avatarUrl: string;
+  avatarBorderId?: string | null;
+  avatar_border_id?: string | null;
 }
 
 export interface MarketplaceListing {

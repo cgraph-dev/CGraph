@@ -59,7 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const { user } = useAuthStore();
   const { groups } = useGroupStore();
   const { isSubscribed } = usePremiumStore();
-  
+
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
 
@@ -68,11 +68,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setIsCollapsed(!isCollapsed);
   }, [isCollapsed]);
 
-  const handleGroupClick = useCallback((groupId: string) => {
-    HapticFeedback.light();
-    onGroupSelect?.(groupId);
-    navigate(`/groups/${groupId}`);
-  }, [navigate, onGroupSelect]);
+  const handleGroupClick = useCallback(
+    (groupId: string) => {
+      HapticFeedback.light();
+      onGroupSelect?.(groupId);
+      navigate(`/groups/${groupId}`);
+    },
+    [navigate, onGroupSelect]
+  );
 
   const quickActions: QuickAction[] = [
     {
@@ -99,16 +102,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <motion.div
         initial={{ x: -100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
-        className={`fixed left-4 top-4 bottom-4 z-40 ${className}`}
+        className={`fixed bottom-4 left-4 top-4 z-40 ${className}`}
       >
         <GlassCard
           variant="crystal"
-          className={`h-full ${sidebarWidth} transition-all duration-300 flex flex-col p-2`}
+          className={`h-full ${sidebarWidth} flex flex-col p-2 transition-all duration-300`}
         >
           {/* Toggle button */}
           <button
             onClick={toggleCollapsed}
-            className="absolute -right-3 top-8 p-1.5 bg-dark-800 border border-white/10 rounded-full hover:bg-dark-700"
+            className="absolute -right-3 top-8 rounded-full border border-white/10 bg-dark-800 p-1.5 hover:bg-dark-700"
           >
             {isCollapsed ? (
               <ChevronRightIcon className="h-4 w-4 text-white" />
@@ -119,7 +122,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* Groups list */}
           {showGroups && (
-            <div className="flex-1 overflow-y-auto space-y-2">
+            <div className="flex-1 space-y-2 overflow-y-auto">
               {groups.map((group) => (
                 <motion.button
                   key={group.id}
@@ -128,73 +131,62 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   onHoverStart={() => setHoveredGroup(group.id)}
                   onHoverEnd={() => setHoveredGroup(null)}
                   onClick={() => handleGroupClick(group.id)}
-                  className={`
-                    relative w-full p-2 rounded-xl transition-colors
-                    ${hoveredGroup === group.id ? 'bg-white/10' : 'hover:bg-white/5'}
-                  `}
+                  className={`relative w-full rounded-xl p-2 transition-colors ${hoveredGroup === group.id ? 'bg-white/10' : 'hover:bg-white/5'} `}
                 >
                   <div className="flex items-center gap-3">
-                    <ThemedAvatar
-                      src={group.iconUrl}
-                      alt={group.name}
-                      size="medium"
-                    />
+                    <ThemedAvatar src={group.iconUrl} alt={group.name} size="medium" />
                     <AnimatePresence>
                       {!isCollapsed && (
                         <motion.span
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -10 }}
-                          className="text-sm font-medium text-white truncate"
+                          className="truncate text-sm font-medium text-white"
                         >
                           {group.name}
                         </motion.span>
                       )}
                     </AnimatePresence>
                   </div>
-                  
+
                   {/* Hover tooltip for collapsed state */}
                   {isCollapsed && hoveredGroup === group.id && (
                     <motion.div
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      className="absolute left-full ml-2 px-3 py-1.5 bg-dark-800 rounded-lg text-sm text-white whitespace-nowrap z-50"
+                      className="absolute left-full z-50 ml-2 whitespace-nowrap rounded-lg bg-dark-800 px-3 py-1.5 text-sm text-white"
                     >
                       {group.name}
                     </motion.div>
                   )}
                 </motion.button>
               ))}
-              
+
               {/* Add group button */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/groups/create')}
-                className="w-full p-2 rounded-xl border-2 border-dashed border-white/20 hover:border-primary-500/50 flex items-center justify-center gap-2"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-white/20 p-2 hover:border-primary-500/50"
               >
                 <PlusIcon className="h-5 w-5 text-white/40" />
-                {!isCollapsed && (
-                  <span className="text-sm text-white/40">Add Group</span>
-                )}
+                {!isCollapsed && <span className="text-sm text-white/40">Add Group</span>}
               </motion.button>
             </div>
           )}
 
           {/* Quick actions */}
           {showQuickActions && (
-            <div className={`border-t border-white/10 pt-2 mt-2 ${isCollapsed ? 'space-y-2' : 'flex gap-2'}`}>
+            <div
+              className={`mt-2 border-t border-white/10 pt-2 ${isCollapsed ? 'space-y-2' : 'flex gap-2'}`}
+            >
               {quickActions.map((action) => (
                 <motion.button
                   key={action.label}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   onClick={action.onClick}
-                  className={`
-                    p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors
-                    ${isCollapsed ? 'w-full' : 'flex-1'}
-                    flex items-center justify-center
-                  `}
+                  className={`rounded-lg bg-white/5 p-2 transition-colors hover:bg-white/10 ${isCollapsed ? 'w-full' : 'flex-1'} flex items-center justify-center`}
                 >
                   {action.icon}
                 </motion.button>
@@ -204,15 +196,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* User status */}
           {showUserStatus && user && (
-            <div className="border-t border-white/10 pt-3 mt-3">
+            <div className="mt-3 border-t border-white/10 pt-3">
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <ThemedAvatar
                     src={user.avatarUrl}
                     alt={user.displayName || user.username || 'User'}
                     size="medium"
+                    avatarBorderId={
+                      (user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id
+                    }
                   />
-                  <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-dark-800" />
+                  <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-dark-800 bg-green-500" />
                 </div>
                 <AnimatePresence>
                   {!isCollapsed && (
@@ -220,15 +215,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -10 }}
-                      className="flex-1 min-w-0"
+                      className="min-w-0 flex-1"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-white truncate">
+                        <span className="truncate text-sm font-medium text-white">
                           {user.displayName || user.username}
                         </span>
-                        {isSubscribed && (
-                          <SparklesIcon className="h-4 w-4 text-amber-400" />
-                        )}
+                        {isSubscribed && <SparklesIcon className="h-4 w-4 text-amber-400" />}
                       </div>
                       <span className="text-xs text-white/40">Online</span>
                     </motion.div>
@@ -237,7 +230,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {!isCollapsed && (
                   <button
                     onClick={() => navigate('/settings')}
-                    className="p-1.5 rounded-lg hover:bg-white/10"
+                    className="rounded-lg p-1.5 hover:bg-white/10"
                   >
                     <CogIcon className="h-4 w-4 text-white/40" />
                   </button>
@@ -255,16 +248,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <motion.aside
       animate={{ width: isCollapsed ? 64 : 256 }}
       transition={{ duration: 0.2 }}
-      className={`
-        relative bg-dark-900 border-r border-white/5 flex flex-col
-        ${variant === 'compact' ? 'py-2' : 'py-4'}
-        ${className}
-      `}
+      className={`relative flex flex-col border-r border-white/5 bg-dark-900 ${variant === 'compact' ? 'py-2' : 'py-4'} ${className} `}
     >
       {/* Toggle button */}
       <button
         onClick={toggleCollapsed}
-        className="absolute -right-3 top-6 p-1.5 bg-dark-800 border border-white/10 rounded-full hover:bg-dark-700 z-10"
+        className="absolute -right-3 top-6 z-10 rounded-full border border-white/10 bg-dark-800 p-1.5 hover:bg-dark-700"
       >
         {isCollapsed ? (
           <ChevronRightIcon className="h-3 w-3 text-white" />
@@ -275,25 +264,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* Groups list */}
       {showGroups && (
-        <div className="flex-1 overflow-y-auto px-2 space-y-1">
+        <div className="flex-1 space-y-1 overflow-y-auto px-2">
           {groups.map((group) => (
             <motion.button
               key={group.id}
               whileHover={{ x: 2 }}
               onClick={() => handleGroupClick(group.id)}
-              className={`
-                w-full p-2 rounded-lg transition-colors text-left
-                hover:bg-white/5 flex items-center gap-3
-              `}
+              className={`flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-white/5`}
             >
-              <ThemedAvatar
-                src={group.iconUrl}
-                alt={group.name}
-                size="small"
-              />
-              {!isCollapsed && (
-                <span className="text-sm text-white truncate">{group.name}</span>
-              )}
+              <ThemedAvatar src={group.iconUrl} alt={group.name} size="small" />
+              {!isCollapsed && <span className="truncate text-sm text-white">{group.name}</span>}
             </motion.button>
           ))}
         </div>
@@ -301,19 +281,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       {/* User section */}
       {showUserStatus && user && (
-        <div className="px-2 pt-2 border-t border-white/5">
+        <div className="border-t border-white/5 px-2 pt-2">
           <NavLink
             to="/profile"
-            className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5"
+            className="flex items-center gap-3 rounded-lg p-2 hover:bg-white/5"
           >
             <ThemedAvatar
               src={user.avatarUrl}
               alt={user.displayName || user.username || 'User'}
               size="small"
+              avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
             />
             {!isCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium text-white">
                   {user.displayName || user.username}
                 </p>
               </div>

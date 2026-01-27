@@ -17,6 +17,7 @@ import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { formatTimeAgo } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 /**
  * Nested Comments Component for Forum Posts
@@ -48,6 +49,8 @@ export interface Comment {
     username: string;
     displayName: string | null;
     avatarUrl: string | null;
+    avatarBorderId?: string | null;
+    avatar_border_id?: string | null;
     karma: number;
     isVerified: boolean;
     badges?: string[];
@@ -98,37 +101,40 @@ export default function NestedComments({
   const [editContent, setEditContent] = useState('');
 
   // Sort comments based on criteria
-  const sortedComments = useCallback((commentsToSort: Comment[]) => {
-    const sorted = [...commentsToSort];
+  const sortedComments = useCallback(
+    (commentsToSort: Comment[]) => {
+      const sorted = [...commentsToSort];
 
-    switch (sortBy) {
-      case 'best':
-        // Best answers first, then by score and recency
-        return sorted.sort((a, b) => {
-          if (a.isBestAnswer && !b.isBestAnswer) return -1;
-          if (!a.isBestAnswer && b.isBestAnswer) return 1;
-          if (a.score !== b.score) return b.score - a.score;
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-      case 'new':
-        return sorted.sort((a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      case 'old':
-        return sorted.sort((a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
-      case 'controversial':
-        // Comments with many votes but low scores are controversial
-        return sorted.sort((a, b) => {
-          const aControversy = Math.abs(a.score) / (Math.abs(a.score) + 1);
-          const bControversy = Math.abs(b.score) / (Math.abs(b.score) + 1);
-          return bControversy - aControversy;
-        });
-      default:
-        return sorted;
-    }
-  }, [sortBy]);
+      switch (sortBy) {
+        case 'best':
+          // Best answers first, then by score and recency
+          return sorted.sort((a, b) => {
+            if (a.isBestAnswer && !b.isBestAnswer) return -1;
+            if (!a.isBestAnswer && b.isBestAnswer) return 1;
+            if (a.score !== b.score) return b.score - a.score;
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          });
+        case 'new':
+          return sorted.sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        case 'old':
+          return sorted.sort(
+            (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+          );
+        case 'controversial':
+          // Comments with many votes but low scores are controversial
+          return sorted.sort((a, b) => {
+            const aControversy = Math.abs(a.score) / (Math.abs(a.score) + 1);
+            const bControversy = Math.abs(b.score) / (Math.abs(b.score) + 1);
+            return bControversy - aControversy;
+          });
+        default:
+          return sorted;
+      }
+    },
+    [sortBy]
+  );
 
   const toggleCollapse = (commentId: string) => {
     const newExpanded = new Set(expandedComments);
@@ -194,7 +200,7 @@ export default function NestedComments({
           {/* Best Answer Badge */}
           {comment.isBestAnswer && (
             <motion.div
-              className="absolute -top-3 left-4 px-3 py-1 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 flex items-center gap-1.5"
+              className="absolute -top-3 left-4 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 px-3 py-1"
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: 'spring', stiffness: 200 }}
@@ -206,18 +212,21 @@ export default function NestedComments({
 
           <div className="p-4">
             {/* Comment Header */}
-            <div className="flex items-start justify-between gap-3 mb-3">
+            <div className="mb-3 flex items-start justify-between gap-3">
               <div className="flex items-center gap-3">
                 {/* Avatar */}
-                <div className="h-8 w-8 rounded-full overflow-hidden bg-gradient-to-br from-primary-500 to-purple-600 flex-shrink-0">
+                <div className="h-8 w-8 flex-shrink-0">
                   {comment.author.avatarUrl ? (
-                    <img
+                    <ThemedAvatar
                       src={comment.author.avatarUrl}
                       alt={comment.author.username}
-                      className="h-full w-full object-cover"
+                      size="small"
+                      avatarBorderId={
+                        comment.author.avatarBorderId ?? comment.author.avatar_border_id ?? null
+                      }
                     />
                   ) : (
-                    <div className="h-full w-full flex items-center justify-center text-sm font-bold text-white">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-purple-600 text-sm font-bold text-white">
                       {comment.author.username.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -226,14 +235,18 @@ export default function NestedComments({
                 {/* Author Info */}
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-white">{comment.author.displayName || comment.author.username}</span>
+                    <span className="font-semibold text-white">
+                      {comment.author.displayName || comment.author.username}
+                    </span>
                     {comment.author.isVerified && (
                       <CheckBadgeIcon className="h-4 w-4 text-primary-400" title="Verified" />
                     )}
                     {comment.author.badges && comment.author.badges.length > 0 && (
                       <div className="flex gap-1">
                         {comment.author.badges.slice(0, 2).map((badge, idx) => (
-                          <span key={idx} className="text-xs" title={badge}>{badge}</span>
+                          <span key={idx} className="text-xs" title={badge}>
+                            {badge}
+                          </span>
                         ))}
                       </div>
                     )}
@@ -260,7 +273,7 @@ export default function NestedComments({
                       onMarkBestAnswer(comment.id);
                       HapticFeedback.success();
                     }}
-                    className="p-1.5 rounded-lg hover:bg-green-500/20 text-gray-400 hover:text-green-400 transition-colors"
+                    className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-green-500/20 hover:text-green-400"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     title="Mark as best answer"
@@ -275,7 +288,7 @@ export default function NestedComments({
                       setEditContent(comment.content);
                       HapticFeedback.light();
                     }}
-                    className="p-1.5 rounded-lg hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-colors"
+                    className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-primary-500/20 hover:text-primary-400"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     title="Edit"
@@ -291,7 +304,7 @@ export default function NestedComments({
                         HapticFeedback.medium();
                       }
                     }}
-                    className="p-1.5 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-400 transition-colors"
+                    className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-400"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     title="Delete"
@@ -308,13 +321,13 @@ export default function NestedComments({
                 <textarea
                   value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="w-full px-4 py-3 bg-dark-800 border border-primary-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 resize-none min-h-[100px]"
+                  className="min-h-[100px] w-full resize-none rounded-lg border border-primary-500/30 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
                   autoFocus
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEdit(comment.id)}
-                    className="px-4 py-2 bg-primary-600 hover:bg-primary-500 rounded-lg text-white font-medium transition-colors"
+                    className="rounded-lg bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-500"
                   >
                     Save
                   </button>
@@ -323,14 +336,14 @@ export default function NestedComments({
                       setEditingComment(null);
                       setEditContent('');
                     }}
-                    className="px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-gray-300 font-medium transition-colors"
+                    className="rounded-lg bg-dark-700 px-4 py-2 font-medium text-gray-300 transition-colors hover:bg-dark-600"
                   >
                     Cancel
                   </button>
                 </div>
               </div>
             ) : (
-              <div className="text-gray-200 whitespace-pre-wrap break-words mb-3">
+              <div className="mb-3 whitespace-pre-wrap break-words text-gray-200">
                 {comment.content}
               </div>
             )}
@@ -338,13 +351,13 @@ export default function NestedComments({
             {/* Comment Actions */}
             <div className="flex items-center gap-4">
               {/* Vote Buttons */}
-              <div className="flex items-center gap-2 bg-dark-800/50 rounded-lg px-2 py-1">
+              <div className="flex items-center gap-2 rounded-lg bg-dark-800/50 px-2 py-1">
                 <motion.button
                   onClick={() => {
                     onVote(comment.id, comment.userVote === 1 ? null : 1);
                     HapticFeedback.light();
                   }}
-                  className={`p-1 rounded transition-colors ${
+                  className={`rounded p-1 transition-colors ${
                     comment.userVote === 1
                       ? 'text-primary-400'
                       : 'text-gray-400 hover:text-primary-400'
@@ -358,10 +371,15 @@ export default function NestedComments({
                     <ArrowUpIcon className="h-4 w-4" />
                   )}
                 </motion.button>
-                <span className={`text-sm font-semibold min-w-[24px] text-center ${
-                  comment.score > 0 ? 'text-primary-400' :
-                  comment.score < 0 ? 'text-red-400' : 'text-gray-400'
-                }`}>
+                <span
+                  className={`min-w-[24px] text-center text-sm font-semibold ${
+                    comment.score > 0
+                      ? 'text-primary-400'
+                      : comment.score < 0
+                        ? 'text-red-400'
+                        : 'text-gray-400'
+                  }`}
+                >
                   {comment.score}
                 </span>
                 <motion.button
@@ -369,10 +387,8 @@ export default function NestedComments({
                     onVote(comment.id, comment.userVote === -1 ? null : -1);
                     HapticFeedback.light();
                   }}
-                  className={`p-1 rounded transition-colors ${
-                    comment.userVote === -1
-                      ? 'text-red-400'
-                      : 'text-gray-400 hover:text-red-400'
+                  className={`rounded p-1 transition-colors ${
+                    comment.userVote === -1 ? 'text-red-400' : 'text-gray-400 hover:text-red-400'
                   }`}
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
@@ -392,7 +408,7 @@ export default function NestedComments({
                   setReplyContent('');
                   HapticFeedback.light();
                 }}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-primary-500/20 text-gray-400 hover:text-primary-400 transition-colors text-sm"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-primary-500/20 hover:text-primary-400"
               >
                 <ChatBubbleLeftIcon className="h-4 w-4" />
                 <span>Reply</span>
@@ -402,9 +418,11 @@ export default function NestedComments({
               {hasReplies && (
                 <button
                   onClick={() => toggleCollapse(comment.id)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:bg-dark-700 text-gray-400 hover:text-gray-200 transition-colors text-sm"
+                  className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm text-gray-400 transition-colors hover:bg-dark-700 hover:text-gray-200"
                 >
-                  <span>{isCollapsed ? 'Show' : 'Hide'} {comment.replies.length} replies</span>
+                  <span>
+                    {isCollapsed ? 'Show' : 'Hide'} {comment.replies.length} replies
+                  </span>
                 </button>
               )}
             </div>
@@ -421,14 +439,14 @@ export default function NestedComments({
                   value={replyContent}
                   onChange={(e) => setReplyContent(e.target.value)}
                   placeholder={`Reply to ${comment.author.username}...`}
-                  className="w-full px-4 py-3 bg-dark-800 border border-primary-500/30 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 resize-none min-h-[80px]"
+                  className="min-h-[80px] w-full resize-none rounded-lg border border-primary-500/30 bg-dark-800 px-4 py-3 text-white placeholder-gray-500 focus:border-primary-500 focus:outline-none"
                   autoFocus
                 />
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleReply(comment.id)}
                     disabled={!replyContent.trim()}
-                    className="px-4 py-2 bg-primary-600 hover:bg-primary-500 disabled:bg-dark-700 disabled:text-gray-500 rounded-lg text-white font-medium transition-colors"
+                    className="rounded-lg bg-primary-600 px-4 py-2 font-medium text-white transition-colors hover:bg-primary-500 disabled:bg-dark-700 disabled:text-gray-500"
                   >
                     Reply
                   </button>
@@ -437,7 +455,7 @@ export default function NestedComments({
                       setReplyingTo(null);
                       setReplyContent('');
                     }}
-                    className="px-4 py-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-gray-300 font-medium transition-colors"
+                    className="rounded-lg bg-dark-700 px-4 py-2 font-medium text-gray-300 transition-colors hover:bg-dark-600"
                   >
                     Cancel
                   </button>
@@ -456,8 +474,8 @@ export default function NestedComments({
 
         {/* Max Depth Reached - Show "Continue Thread" Link */}
         {!isCollapsed && hasReplies && !continueThread && (
-          <div className="ml-6 md:ml-12 mb-3">
-            <button className="text-sm text-primary-400 hover:text-primary-300 flex items-center gap-1.5">
+          <div className="mb-3 ml-6 md:ml-12">
+            <button className="flex items-center gap-1.5 text-sm text-primary-400 hover:text-primary-300">
               <span>Continue this thread →</span>
               <span className="text-gray-500">({comment.replies.length} more)</span>
             </button>
@@ -477,8 +495,8 @@ export default function NestedComments({
       </AnimatePresence>
 
       {topLevelComments.length === 0 && (
-        <div className="text-center py-12">
-          <ChatBubbleLeftIcon className="h-12 w-12 text-gray-600 mx-auto mb-3" />
+        <div className="py-12 text-center">
+          <ChatBubbleLeftIcon className="mx-auto mb-3 h-12 w-12 text-gray-600" />
           <p className="text-gray-400">No comments yet. Be the first to comment!</p>
         </div>
       )}

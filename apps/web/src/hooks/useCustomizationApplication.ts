@@ -10,7 +10,8 @@
  */
 
 import { useEffect } from 'react';
-import { useCustomizationStore } from '@/stores/customizationStore';
+import { useCustomizationStore as useLegacyCustomizationStore } from '@/stores/customizationStore';
+import { useCustomizationStore as useUnifiedCustomizationStore } from '@/stores/unifiedCustomizationStore';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 
 /**
@@ -84,15 +85,27 @@ const ANIMATION_SPEEDS = {
  * Hook to apply all customizations to the UI
  */
 export function useCustomizationApplication() {
-  const {
-    profileTheme,
-    chatTheme,
-    forumTheme,
-    appTheme,
-    particleEffect,
-    backgroundEffect,
-    animationSpeed,
-  } = useCustomizationStore();
+  const unifiedProfile = useUnifiedCustomizationStore((state) => state.profile);
+  const unifiedChat = useUnifiedCustomizationStore((state) => state.chat);
+
+  const legacy = useLegacyCustomizationStore((state) => ({
+    profileTheme: state.profileTheme,
+    chatTheme: state.chatTheme,
+    forumTheme: state.forumTheme,
+    appTheme: state.appTheme,
+    particleEffect: state.particleEffect,
+    backgroundEffect: state.backgroundEffect,
+    animationSpeed: state.animationSpeed,
+  }));
+
+  // Prefer unified store values, fallback to legacy for compatibility
+  const profileTheme = unifiedProfile.profileTheme || legacy.profileTheme;
+  const chatTheme = unifiedProfile.chatTheme || legacy.chatTheme;
+  const forumTheme = unifiedProfile.forumTheme || legacy.forumTheme;
+  const appTheme = unifiedProfile.appTheme || legacy.appTheme;
+  const particleEffect = unifiedChat.particleEffect || legacy.particleEffect;
+  const backgroundEffect = unifiedChat.backgroundEffect || legacy.backgroundEffect;
+  const animationSpeed = unifiedChat.animationSpeed || legacy.animationSpeed;
 
   useEffect(() => {
     const root = document.documentElement;

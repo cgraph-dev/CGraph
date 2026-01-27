@@ -354,4 +354,107 @@ defmodule CGraphWeb.API.V1.UserController do
     |> put_status(:bad_request)
     |> json(%{error: "user_ids array required"})
   end
+
+  @doc """
+  Get avatar border configuration for any user (public endpoint).
+
+  Returns the complete avatar border setup including:
+  - Border ID and design
+  - Animation settings
+  - Color configuration
+  - Particle effects
+  - Glow intensity
+
+  Designed for scale: Cached aggressively, indexed queries, minimal data transfer.
+  """
+  def get_avatar_border(conn, %{"id" => user_id}) do
+    with {:ok, user} <- Accounts.get_user(user_id) do
+      border_config = %{
+        border_id: user.avatar_border_id,
+        animation: user.avatar_border_animation,
+        color_primary: user.avatar_border_color_primary,
+        color_secondary: user.avatar_border_color_secondary,
+        particle_effect: user.avatar_border_particle_effect,
+        glow_intensity: user.avatar_border_glow_intensity || 50,
+        config: user.avatar_border_config || %{},
+        equipped_at: user.avatar_border_equipped_at
+      }
+
+      conn
+      |> put_resp_header("cache-control", "public, max-age=300")
+      |> json(%{data: border_config})
+    end
+  end
+
+  @doc """
+  Get avatar border configuration for the current user (authenticated).
+
+  Mirrors GET /users/:id/avatar-border but uses the auth context.
+  """
+  def get_my_avatar_border(conn, _params) do
+    user = conn.assigns.current_user
+
+    border_config = %{
+      border_id: user.avatar_border_id,
+      animation: user.avatar_border_animation,
+      color_primary: user.avatar_border_color_primary,
+      color_secondary: user.avatar_border_color_secondary,
+      particle_effect: user.avatar_border_particle_effect,
+      glow_intensity: user.avatar_border_glow_intensity || 50,
+      config: user.avatar_border_config || %{},
+      equipped_at: user.avatar_border_equipped_at
+    }
+
+    conn
+    |> put_resp_header("cache-control", "private, max-age=60")
+    |> json(%{data: border_config})
+  end
+
+  @doc """
+  Update the current user's avatar border configuration.
+
+  Accepts partial updates - only provided fields are changed.
+  Validates all parameters to prevent malicious data at scale.
+  """
+  def update_avatar_border(conn, params) do
+    user = conn.assigns.current_user
+
+    # Whitelist and sanitize parameters
+    avatar_border_params = params
+    |> Map.take([
+      "border_id", "animation", "color_primary", "color_secondary",
+      "particle_effect", "glow_intensity", "config"
+    ])
+    |> Map.new(fn {k, v} -> {String.to_atom(k), v} end)
+    |> Map.put(:avatar_border_equipped_at, DateTime.utc_now())
+
+    # Convert snake_case API params to schema field names
+    schema_params = %{
+      avatar_border_id: Map.get(avatar_border_params, :border_id),
+      avatar_border_animation: Map.get(avatar_border_params, :animation),
+      avatar_border_color_primary: Map.get(avatar_border_params, :color_primary),
+      avatar_border_color_secondary: Map.get(avatar_border_params, :color_secondary),
+      avatar_border_particle_effect: Map.get(avatar_border_params, :particle_effect),
+      avatar_border_glow_intensity: Map.get(avatar_border_params, :glow_intensity),
+      avatar_border_config: Map.get(avatar_border_params, :config),
+      avatar_border_equipped_at: avatar_border_params[:avatar_border_equipped_at]
+    }
+    |> Enum.reject(fn {_, v} -> is_nil(v) end)
+    |> Map.new()
+
+    with {:ok, updated_user} <- Accounts.update_user(user, schema_params) do
+      border_config = %{
+        border_id: updated_user.avatar_border_id,
+        animation: updated_user.avatar_border_animation,
+        color_primary: updated_user.avatar_border_color_primary,
+        color_secondary: updated_user.avatar_border_color_secondary,
+        particle_effect: updated_user.avatar_border_particle_effect,
+        glow_intensity: updated_user.avatar_border_glow_intensity || 50,
+        config: updated_user.avatar_border_config || %{},
+        equipped_at: updated_user.avatar_border_equipped_at
+      }
+
+      json(conn, %{data: border_config})
+    end
+  end
 end

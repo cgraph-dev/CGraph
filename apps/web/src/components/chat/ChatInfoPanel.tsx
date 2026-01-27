@@ -46,6 +46,8 @@ interface ChatInfoPanelProps {
     id: string;
     username: string;
     avatarUrl?: string;
+    avatarBorderId?: string | null;
+    avatar_border_id?: string | null;
   }>;
   sharedForums?: Array<{
     id: string;
@@ -207,6 +209,7 @@ export default function ChatInfoPanel({
                 alt={user.displayName || user.username}
                 size="large"
                 userTheme={user.theme}
+                avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
                 className="!h-24 !w-24"
               />
               {user.onlineStatus === 'online' && (
@@ -371,12 +374,17 @@ export default function ChatInfoPanel({
                   title={friend.username}
                 >
                   {friend.avatarUrl ? (
-                    <img
-                      src={friend.avatarUrl}
-                      alt={friend.username}
-                      className="h-10 w-10 cursor-pointer rounded-full border-2 border-dark-900 transition-transform hover:scale-110"
+                    <div
+                      className="cursor-pointer rounded-full border-2 border-dark-900 transition-transform hover:scale-110"
                       onClick={() => navigate(`/user/${friend.id}`)}
-                    />
+                    >
+                      <ThemedAvatar
+                        src={friend.avatarUrl}
+                        alt={friend.username}
+                        size="medium"
+                        avatarBorderId={friend.avatarBorderId ?? friend.avatar_border_id ?? null}
+                      />
+                    </div>
                   ) : (
                     <div
                       className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full border-2 border-dark-900 bg-gradient-to-br from-primary-600 to-purple-600 font-bold text-white transition-transform hover:scale-110"

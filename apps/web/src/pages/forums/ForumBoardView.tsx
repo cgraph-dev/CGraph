@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useForumHostingStore, Board, Thread, ForumMember } from '@/stores/forumHostingStore';
 import { useForumStore, Forum } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import {
   ChatBubbleLeftRightIcon,
   FolderIcon,
@@ -23,13 +24,13 @@ import {
 
 /**
  * ForumBoardView - MyBB-style board and thread listing
- * 
+ *
  * Shows:
  * - Forum header with banner/icon/stats
  * - List of boards (categories/sections)
  * - Recent threads across all boards
  * - Announcements
- * 
+ *
  * Design follows classic MyBB/phpBB forum layout:
  * - Boards grouped into categories
  * - Thread list with author, replies, views, last post
@@ -39,17 +40,25 @@ export default function ForumBoardView() {
   const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
   const { fetchForum, subscribe, unsubscribe, voteForum } = useForumStore();
-  const { 
-    boards, threads, members,
-    fetchBoards, fetchRecentThreads, fetchMembers, 
-    isLoadingBoards, isLoadingThreads, isLoadingMembers 
+  const {
+    boards,
+    threads,
+    members,
+    fetchBoards,
+    fetchRecentThreads,
+    fetchMembers,
+    isLoadingBoards,
+    isLoadingThreads,
+    isLoadingMembers,
   } = useForumHostingStore();
 
   const [forum, setForum] = useState<Forum | null>(null);
   const [isLoadingForum, setIsLoadingForum] = useState(true);
   const [activeTab, setActiveTab] = useState<'boards' | 'threads' | 'members'>('boards');
   const [memberSearch, setMemberSearch] = useState('');
-  const [memberSort, setMemberSort] = useState<'recent' | 'reputation' | 'posts' | 'alphabetical'>('recent');
+  const [memberSort, setMemberSort] = useState<'recent' | 'reputation' | 'posts' | 'alphabetical'>(
+    'recent'
+  );
 
   useEffect(() => {
     if (forumSlug) {
@@ -66,17 +75,14 @@ export default function ForumBoardView() {
 
   const loadForum = async () => {
     if (!forumSlug) return;
-    
+
     setIsLoadingForum(true);
     try {
       const forumData = await fetchForum(forumSlug);
       setForum(forumData);
-      
+
       // Load boards and threads for this forum
-      await Promise.all([
-        fetchBoards(forumData.id),
-        fetchRecentThreads(forumData.id),
-      ]);
+      await Promise.all([fetchBoards(forumData.id), fetchRecentThreads(forumData.id)]);
     } catch (error) {
       console.error('Failed to load forum:', error);
     } finally {
@@ -107,18 +113,18 @@ export default function ForumBoardView() {
 
   if (isLoadingForum) {
     return (
-      <div className="flex-1 flex items-center justify-center">
-        <div className="h-12 w-12 border-4 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+      <div className="flex flex-1 items-center justify-center">
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary-500/30 border-t-primary-500" />
       </div>
     );
   }
 
   if (!forum) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-white mb-2">Forum Not Found</h2>
-          <p className="text-gray-400 mb-4">The forum you're looking for doesn't exist.</p>
+          <h2 className="mb-2 text-2xl font-bold text-white">Forum Not Found</h2>
+          <p className="mb-4 text-gray-400">The forum you're looking for doesn't exist.</p>
           <Link to="/forums" className="text-primary-400 hover:underline">
             Browse all forums
           </Link>
@@ -132,21 +138,35 @@ export default function ForumBoardView() {
       {/* Forum Header */}
       <div className="relative">
         {/* Banner */}
-        <div 
+        <div
           className="h-48 bg-gradient-to-r from-primary-600 to-primary-800"
-          style={forum.bannerUrl ? { backgroundImage: `url(${forum.bannerUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}
+          style={
+            forum.bannerUrl
+              ? {
+                  backgroundImage: `url(${forum.bannerUrl})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
+              : {}
+          }
         />
 
         {/* Forum Info Bar */}
-        <div className="bg-dark-800 border-b border-dark-700">
-          <div className="max-w-6xl mx-auto px-4 py-4">
+        <div className="border-b border-dark-700 bg-dark-800">
+          <div className="mx-auto max-w-6xl px-4 py-4">
             <div className="flex items-start gap-4">
               {/* Icon */}
-              <div className="h-24 w-24 -mt-12 rounded-xl border-4 border-dark-800 bg-primary-600 flex items-center justify-center overflow-hidden">
+              <div className="-mt-12 flex h-24 w-24 items-center justify-center overflow-hidden rounded-xl border-4 border-dark-800 bg-primary-600">
                 {forum.iconUrl ? (
-                  <img src={forum.iconUrl} alt={forum.name} className="h-full w-full object-cover" />
+                  <img
+                    src={forum.iconUrl}
+                    alt={forum.name}
+                    className="h-full w-full object-cover"
+                  />
                 ) : (
-                  <span className="text-4xl font-bold text-white">{forum.name?.[0]?.toUpperCase()}</span>
+                  <span className="text-4xl font-bold text-white">
+                    {forum.name?.[0]?.toUpperCase()}
+                  </span>
                 )}
               </div>
 
@@ -160,21 +180,23 @@ export default function ForumBoardView() {
 
                   <div className="flex items-center gap-3">
                     {/* Voting */}
-                    <div className="flex items-center gap-1 bg-dark-700 rounded-lg p-1">
+                    <div className="flex items-center gap-1 rounded-lg bg-dark-700 p-1">
                       <button
                         onClick={() => handleVote(1)}
                         disabled={!isAuthenticated}
-                        className={`p-2 rounded ${forum.userVote === 1 ? 'bg-orange-500 text-white' : 'hover:bg-dark-600 text-gray-400'}`}
+                        className={`rounded p-2 ${forum.userVote === 1 ? 'bg-orange-500 text-white' : 'text-gray-400 hover:bg-dark-600'}`}
                       >
                         <ArrowUpIcon className="h-5 w-5" />
                       </button>
-                      <span className={`px-2 font-bold ${forum.score > 0 ? 'text-orange-400' : 'text-gray-400'}`}>
+                      <span
+                        className={`px-2 font-bold ${forum.score > 0 ? 'text-orange-400' : 'text-gray-400'}`}
+                      >
                         {forum.score}
                       </span>
                       <button
                         onClick={() => handleVote(-1)}
                         disabled={!isAuthenticated}
-                        className={`p-2 rounded ${forum.userVote === -1 ? 'bg-blue-500 text-white' : 'hover:bg-dark-600 text-gray-400'}`}
+                        className={`rounded p-2 ${forum.userVote === -1 ? 'bg-blue-500 text-white' : 'text-gray-400 hover:bg-dark-600'}`}
                       >
                         <ArrowDownIcon className="h-5 w-5" />
                       </button>
@@ -183,7 +205,7 @@ export default function ForumBoardView() {
                     {/* Join/Settings */}
                     <button
                       onClick={handleSubscribe}
-                      className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                      className={`rounded-lg px-4 py-2 font-medium transition-colors ${
                         forum.isSubscribed
                           ? 'bg-dark-700 text-white hover:bg-dark-600'
                           : 'bg-primary-600 text-white hover:bg-primary-700'
@@ -195,7 +217,7 @@ export default function ForumBoardView() {
                     {isOwner && (
                       <button
                         onClick={() => navigate(`/forums/${forum.slug}/admin`)}
-                        className="p-2 bg-dark-700 hover:bg-dark-600 rounded-lg text-gray-400 transition-colors"
+                        className="rounded-lg bg-dark-700 p-2 text-gray-400 transition-colors hover:bg-dark-600"
                         title="Forum Admin Dashboard"
                       >
                         <CogIcon className="h-5 w-5" />
@@ -204,34 +226,36 @@ export default function ForumBoardView() {
                   </div>
                 </div>
 
-                {forum.description && (
-                  <p className="mt-2 text-gray-300">{forum.description}</p>
-                )}
+                {forum.description && <p className="mt-2 text-gray-300">{forum.description}</p>}
 
                 {/* Stats & Badges */}
-                <div className="mt-3 flex items-center flex-wrap gap-4 text-sm">
+                <div className="mt-3 flex flex-wrap items-center gap-4 text-sm">
                   {/* Privacy Badge */}
                   {!forum.isPublic && (
-                    <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full text-xs font-medium">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-yellow-500/20 px-2 py-1 text-xs font-medium text-yellow-400">
                       <LockClosedIcon className="h-3 w-3" />
                       Private
                     </span>
                   )}
-                  
+
                   {/* Member count */}
                   <span className="flex items-center gap-1.5 text-gray-400">
                     <UserIcon className="h-4 w-4" />
-                    <span className="font-medium text-white">{(forum.memberCount ?? 0).toLocaleString()}</span>
+                    <span className="font-medium text-white">
+                      {(forum.memberCount ?? 0).toLocaleString()}
+                    </span>
                     <span>members</span>
                   </span>
-                  
+
                   {/* Thread count */}
                   <span className="flex items-center gap-1.5 text-gray-400">
                     <ChatBubbleLeftRightIcon className="h-4 w-4" />
-                    <span className="font-medium text-white">{(forum as any).thread_count?.toLocaleString() || '0'}</span>
+                    <span className="font-medium text-white">
+                      {(forum as any).thread_count?.toLocaleString() || '0'}
+                    </span>
                     <span>threads</span>
                   </span>
-                  
+
                   {/* Forum score */}
                   <span className="flex items-center gap-1.5 text-gray-400">
                     <FireIcon className="h-4 w-4 text-orange-400" />
@@ -246,8 +270,8 @@ export default function ForumBoardView() {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="bg-dark-800 border-b border-dark-700">
-        <div className="max-w-6xl mx-auto px-4">
+      <div className="border-b border-dark-700 bg-dark-800">
+        <div className="mx-auto max-w-6xl px-4">
           <div className="flex items-center gap-1">
             {[
               { key: 'boards', label: 'Boards', icon: FolderIcon },
@@ -259,7 +283,7 @@ export default function ForumBoardView() {
                 onClick={() => setActiveTab(tab.key as any)}
                 className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${
                   activeTab === tab.key
-                    ? 'text-primary-400 border-b-2 border-primary-400'
+                    ? 'border-b-2 border-primary-400 text-primary-400'
                     : 'text-gray-400 hover:text-white'
                 }`}
               >
@@ -272,10 +296,10 @@ export default function ForumBoardView() {
       </div>
 
       {/* Content */}
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="mx-auto max-w-6xl px-4 py-6">
         {activeTab === 'boards' && (
-          <BoardsList 
-            boards={boards} 
+          <BoardsList
+            boards={boards}
             forumSlug={forum.slug}
             isLoading={isLoadingBoards}
             isOwner={!!isOwner}
@@ -283,11 +307,7 @@ export default function ForumBoardView() {
         )}
 
         {activeTab === 'threads' && (
-          <ThreadsList
-            threads={threads}
-            forumSlug={forum.slug}
-            isLoading={isLoadingThreads}
-          />
+          <ThreadsList threads={threads} forumSlug={forum.slug} isLoading={isLoadingThreads} />
         )}
 
         {activeTab === 'members' && (
@@ -319,7 +339,7 @@ function BoardsList({ boards, forumSlug, isLoading, isOwner }: BoardsListProps) 
     return (
       <div className="space-y-4">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="animate-pulse bg-dark-700 rounded-lg h-20" />
+          <div key={i} className="h-20 animate-pulse rounded-lg bg-dark-700" />
         ))}
       </div>
     );
@@ -327,16 +347,18 @@ function BoardsList({ boards, forumSlug, isLoading, isOwner }: BoardsListProps) 
 
   if (boards.length === 0) {
     return (
-      <div className="text-center py-12">
-        <FolderIcon className="h-16 w-16 mx-auto text-gray-600 mb-4" />
-        <h3 className="text-xl font-bold text-white mb-2">No Boards Yet</h3>
-        <p className="text-gray-400 mb-4">
-          {isOwner ? "Create your first board to organize discussions." : "This forum doesn't have any boards yet."}
+      <div className="py-12 text-center">
+        <FolderIcon className="mx-auto mb-4 h-16 w-16 text-gray-600" />
+        <h3 className="mb-2 text-xl font-bold text-white">No Boards Yet</h3>
+        <p className="mb-4 text-gray-400">
+          {isOwner
+            ? 'Create your first board to organize discussions.'
+            : "This forum doesn't have any boards yet."}
         </p>
         {isOwner && (
           <button
             onClick={() => navigate(`/forums/${forumSlug}/boards/new`)}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700"
           >
             <PlusIcon className="h-5 w-5" />
             Create Board
@@ -347,7 +369,7 @@ function BoardsList({ boards, forumSlug, isLoading, isOwner }: BoardsListProps) 
   }
 
   // Group boards by parent (for hierarchical display)
-  const topLevelBoards = boards.filter(b => !b.parentId);
+  const topLevelBoards = boards.filter((b) => !b.parentId);
 
   return (
     <div className="space-y-4">
@@ -356,7 +378,7 @@ function BoardsList({ boards, forumSlug, isLoading, isOwner }: BoardsListProps) 
         <div className="flex justify-end">
           <button
             onClick={() => navigate(`/forums/${forumSlug}/boards/new`)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg transition-colors"
+            className="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-white transition-colors hover:bg-primary-700"
           >
             <PlusIcon className="h-5 w-5" />
             Create Board
@@ -365,9 +387,9 @@ function BoardsList({ boards, forumSlug, isLoading, isOwner }: BoardsListProps) 
       )}
 
       {/* Boards Table */}
-      <div className="bg-dark-700 rounded-lg overflow-hidden">
+      <div className="overflow-hidden rounded-lg bg-dark-700">
         {/* Header */}
-        <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-dark-800 text-sm font-medium text-gray-400 border-b border-dark-600">
+        <div className="grid grid-cols-12 gap-4 border-b border-dark-600 bg-dark-800 px-4 py-3 text-sm font-medium text-gray-400">
           <div className="col-span-6">Board</div>
           <div className="col-span-2 text-center">Threads</div>
           <div className="col-span-2 text-center">Posts</div>
@@ -392,19 +414,19 @@ function BoardRow({ board, forumSlug }: BoardRowProps) {
   return (
     <Link
       to={`/forums/${forumSlug}/boards/${board.slug}`}
-      className="grid grid-cols-12 gap-4 px-4 py-4 hover:bg-dark-600/50 transition-colors border-b border-dark-600 last:border-b-0"
+      className="grid grid-cols-12 gap-4 border-b border-dark-600 px-4 py-4 transition-colors last:border-b-0 hover:bg-dark-600/50"
     >
       {/* Board Info */}
       <div className="col-span-6 flex items-start gap-3">
-        <div className="p-2 bg-primary-600/20 rounded-lg">
+        <div className="rounded-lg bg-primary-600/20 p-2">
           <FolderOpenIcon className="h-6 w-6 text-primary-400" />
         </div>
         <div>
-          <h3 className="font-medium text-white hover:text-primary-400 transition-colors">
+          <h3 className="font-medium text-white transition-colors hover:text-primary-400">
             {board.name}
           </h3>
           {board.description && (
-            <p className="text-sm text-gray-400 line-clamp-1">{board.description}</p>
+            <p className="line-clamp-1 text-sm text-gray-400">{board.description}</p>
           )}
         </div>
       </div>
@@ -423,9 +445,10 @@ function BoardRow({ board, forumSlug }: BoardRowProps) {
       <div className="col-span-2 text-sm text-gray-400">
         {board.lastPostAt ? (
           <div>
-            <p className="text-gray-300 truncate">{board.lastPostTitle || 'No title'}</p>
+            <p className="truncate text-gray-300">{board.lastPostTitle || 'No title'}</p>
             <p className="text-xs">
-              by {board.lastPostAuthor || 'Unknown'} · {new Date(board.lastPostAt).toLocaleDateString()}
+              by {board.lastPostAuthor || 'Unknown'} ·{' '}
+              {new Date(board.lastPostAt).toLocaleDateString()}
             </p>
           </div>
         ) : (
@@ -447,7 +470,7 @@ function ThreadsList({ threads, forumSlug, isLoading }: ThreadsListProps) {
     return (
       <div className="space-y-3">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="animate-pulse bg-dark-700 rounded-lg h-16" />
+          <div key={i} className="h-16 animate-pulse rounded-lg bg-dark-700" />
         ))}
       </div>
     );
@@ -455,18 +478,20 @@ function ThreadsList({ threads, forumSlug, isLoading }: ThreadsListProps) {
 
   if (threads.length === 0) {
     return (
-      <div className="text-center py-12">
-        <ChatBubbleLeftRightIcon className="h-16 w-16 mx-auto text-gray-600 mb-4" />
-        <h3 className="text-xl font-bold text-white mb-2">No Threads Yet</h3>
-        <p className="text-gray-400">Start a discussion by creating a thread in one of the boards.</p>
+      <div className="py-12 text-center">
+        <ChatBubbleLeftRightIcon className="mx-auto mb-4 h-16 w-16 text-gray-600" />
+        <h3 className="mb-2 text-xl font-bold text-white">No Threads Yet</h3>
+        <p className="text-gray-400">
+          Start a discussion by creating a thread in one of the boards.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-dark-700 rounded-lg overflow-hidden">
+    <div className="overflow-hidden rounded-lg bg-dark-700">
       {/* Header */}
-      <div className="grid grid-cols-12 gap-4 px-4 py-3 bg-dark-800 text-sm font-medium text-gray-400 border-b border-dark-600">
+      <div className="grid grid-cols-12 gap-4 border-b border-dark-600 bg-dark-800 px-4 py-3 text-sm font-medium text-gray-400">
         <div className="col-span-6">Thread</div>
         <div className="col-span-2 text-center">Replies</div>
         <div className="col-span-2 text-center">Views</div>
@@ -490,11 +515,11 @@ function ThreadRow({ thread, forumSlug }: ThreadRowProps) {
   return (
     <Link
       to={`/forums/${forumSlug}/threads/${thread.id}`}
-      className="grid grid-cols-12 gap-4 px-4 py-4 hover:bg-dark-600/50 transition-colors border-b border-dark-600 last:border-b-0"
+      className="grid grid-cols-12 gap-4 border-b border-dark-600 px-4 py-4 transition-colors last:border-b-0 hover:bg-dark-600/50"
     >
       {/* Thread Info */}
       <div className="col-span-6 flex items-start gap-3">
-        <div className="flex-shrink-0 mt-1">
+        <div className="mt-1 flex-shrink-0">
           {thread.isPinned ? (
             <MapPinIcon className="h-5 w-5 text-yellow-500" />
           ) : thread.isLocked ? (
@@ -505,18 +530,23 @@ function ThreadRow({ thread, forumSlug }: ThreadRowProps) {
         </div>
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-medium text-white hover:text-primary-400 transition-colors truncate">
+            <h3 className="truncate font-medium text-white transition-colors hover:text-primary-400">
               {thread.title}
             </h3>
             {thread.isPinned && (
-              <span className="px-1.5 py-0.5 bg-yellow-600/20 text-yellow-400 text-xs rounded">Pinned</span>
+              <span className="rounded bg-yellow-600/20 px-1.5 py-0.5 text-xs text-yellow-400">
+                Pinned
+              </span>
             )}
             {thread.isLocked && (
-              <span className="px-1.5 py-0.5 bg-red-600/20 text-red-400 text-xs rounded">Locked</span>
+              <span className="rounded bg-red-600/20 px-1.5 py-0.5 text-xs text-red-400">
+                Locked
+              </span>
             )}
           </div>
           <p className="text-sm text-gray-400">
-            by {thread.author?.displayName || thread.author?.username || 'Unknown'} · {new Date(thread.createdAt).toLocaleDateString()}
+            by {thread.author?.displayName || thread.author?.username || 'Unknown'} ·{' '}
+            {new Date(thread.createdAt).toLocaleDateString()}
           </p>
         </div>
       </div>
@@ -528,7 +558,7 @@ function ThreadRow({ thread, forumSlug }: ThreadRowProps) {
 
       {/* View Count */}
       <div className="col-span-2 flex items-center justify-center text-gray-300">
-        <EyeIcon className="h-4 w-4 mr-1 text-gray-500" />
+        <EyeIcon className="mr-1 h-4 w-4 text-gray-500" />
         {(thread.viewCount ?? 0).toLocaleString()}
       </div>
 
@@ -536,9 +566,7 @@ function ThreadRow({ thread, forumSlug }: ThreadRowProps) {
       <div className="col-span-2 text-sm text-gray-400">
         {thread.lastReplyAt ? (
           <div>
-            <p className="text-xs">
-              {thread.lastReplyBy || 'Unknown'}
-            </p>
+            <p className="text-xs">{thread.lastReplyBy || 'Unknown'}</p>
             <p className="text-xs text-gray-500">
               {new Date(thread.lastReplyAt).toLocaleDateString()}
             </p>
@@ -564,12 +592,19 @@ interface MembersListProps {
   onSortChange: (sort: 'recent' | 'reputation' | 'posts' | 'alphabetical') => void;
 }
 
-function MembersList({ members, isLoading, search, onSearchChange, sort, onSortChange }: MembersListProps) {
+function MembersList({
+  members,
+  isLoading,
+  search,
+  onSearchChange,
+  sort,
+  onSortChange,
+}: MembersListProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="animate-pulse bg-dark-700 rounded-lg h-20" />
+          <div key={i} className="h-20 animate-pulse rounded-lg bg-dark-700" />
         ))}
       </div>
     );
@@ -578,21 +613,21 @@ function MembersList({ members, isLoading, search, onSearchChange, sort, onSortC
   return (
     <div className="space-y-4">
       {/* Search & Sort Controls */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
-          <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
           <input
             type="text"
             placeholder="Search members..."
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="w-full rounded-lg border border-dark-600 bg-dark-700 py-2 pl-10 pr-4 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
         <select
           value={sort}
           onChange={(e) => onSortChange(e.target.value as typeof sort)}
-          className="px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+          className="rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
         >
           <option value="recent">Recently Joined</option>
           <option value="reputation">Reputation</option>
@@ -603,12 +638,12 @@ function MembersList({ members, isLoading, search, onSearchChange, sort, onSortC
 
       {/* Members Grid */}
       {members.length === 0 ? (
-        <div className="text-center py-12 text-gray-400">
-          <UserIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+        <div className="py-12 text-center text-gray-400">
+          <UserIcon className="mx-auto mb-4 h-12 w-12 opacity-50" />
           <p>No members found</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {members.map((member) => (
             <MemberCard key={member.id} member={member} />
           ))}
@@ -642,18 +677,21 @@ function MemberCard({ member }: MemberCardProps) {
   return (
     <Link
       to={`/profile/${member.userId}`}
-      className="flex items-center gap-4 p-4 bg-dark-700 rounded-lg border border-dark-600 hover:border-primary-500/50 transition-colors"
+      className="flex items-center gap-4 rounded-lg border border-dark-600 bg-dark-700 p-4 transition-colors hover:border-primary-500/50"
     >
       {/* Avatar */}
       <div className="flex-shrink-0">
         {member.avatarUrl ? (
-          <img
+          <ThemedAvatar
             src={member.avatarUrl}
             alt={member.displayName || 'User'}
-            className="w-12 h-12 rounded-full object-cover"
+            size="medium"
+            avatarBorderId={
+              (member as any)?.avatarBorderId ?? (member as any)?.avatar_border_id ?? null
+            }
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-dark-600 flex items-center justify-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-dark-600">
             <UserIcon className="h-6 w-6 text-gray-400" />
           </div>
         )}
@@ -662,25 +700,24 @@ function MemberCard({ member }: MemberCardProps) {
       {/* Info */}
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <h3 className="font-medium text-white truncate">
-            {member.displayName || 'Member'}
-          </h3>
+          <h3 className="truncate font-medium text-white">{member.displayName || 'Member'}</h3>
           {member.role !== 'member' && (
-            <span className={`flex items-center gap-1 px-2 py-0.5 text-xs rounded-full border ${roleColors[member.role]}`}>
+            <span
+              className={`flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs ${roleColors[member.role]}`}
+            >
               <RoleIcon className="h-3 w-3" />
               {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
             </span>
           )}
         </div>
-        {member.title && (
-          <p className="text-sm text-primary-400">{member.title}</p>
-        )}
-        <div className="flex items-center gap-4 mt-1 text-xs text-gray-400">
+        {member.title && <p className="text-sm text-primary-400">{member.title}</p>}
+        <div className="mt-1 flex items-center gap-4 text-xs text-gray-400">
           <span>{member.postCount.toLocaleString()} posts</span>
-          <span>{member.reputation >= 0 ? '+' : ''}{member.reputation} rep</span>
-          {member.joinedAt && (
-            <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
-          )}
+          <span>
+            {member.reputation >= 0 ? '+' : ''}
+            {member.reputation} rep
+          </span>
+          {member.joinedAt && <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>}
         </div>
       </div>
     </Link>

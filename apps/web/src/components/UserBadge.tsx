@@ -1,4 +1,5 @@
 import { CheckBadgeIcon, SparklesIcon, ShieldCheckIcon } from '@heroicons/react/24/solid';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { transitions, hoverEffects } from '@/lib/animations';
 
 interface UserBadgeProps {
@@ -7,6 +8,7 @@ interface UserBadgeProps {
   username?: string | null;
   displayName?: string | null;
   avatarUrl?: string | null;
+  avatarBorderId?: string | null;
   isVerified?: boolean;
   isPremium?: boolean;
   karma?: number;
@@ -18,7 +20,7 @@ interface UserBadgeProps {
 
 /**
  * UserBadge - Displays user identity with unique ID, username, and status badges
- * 
+ *
  * Features:
  * - Unique user ID display (#0001)
  * - Optional username (can be null for new users)
@@ -32,6 +34,7 @@ export default function UserBadge({
   username,
   displayName,
   avatarUrl,
+  avatarBorderId,
   isVerified = false,
   isPremium = false,
   karma = 0,
@@ -67,72 +70,56 @@ export default function UserBadge({
   const s = sizeClasses[size];
   const displayNameOrFallback = displayName || username || `User ${userIdDisplay}`;
   const initials = displayNameOrFallback.charAt(0).toUpperCase();
+  const themedAvatarSize = size === 'sm' ? 'small' : size === 'lg' ? 'large' : 'medium';
 
   return (
     <div
-      className={`
-        inline-flex items-center ${s.container}
-        ${interactive ? `${transitions.default} ${hoverEffects.scale} cursor-pointer` : ''}
-        ${className}
-      `}
+      className={`inline-flex items-center ${s.container} ${interactive ? `${transitions.default} ${hoverEffects.scale} cursor-pointer` : ''} ${className} `}
     >
       {/* Avatar */}
-      <div className={`
-        relative ${s.avatar} rounded-full overflow-hidden
-        bg-gradient-to-br from-primary-500 to-primary-700
-        ring-2 ring-dark-700 ring-offset-2 ring-offset-dark-900
-        flex items-center justify-center font-bold text-white
-        ${transitions.default}
-        ${interactive ? 'group-hover:ring-primary-500' : ''}
-      `}>
+      <div
+        className={`relative ${s.avatar} flex items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 font-bold text-white ring-2 ring-dark-700 ring-offset-2 ring-offset-dark-900 ${transitions.default} ${interactive ? 'group-hover:ring-primary-500' : ''} `}
+      >
         {avatarUrl ? (
-          <img
+          <ThemedAvatar
             src={avatarUrl}
-            alt=""
-            className="w-full h-full object-cover"
+            alt={displayNameOrFallback}
+            size={themedAvatarSize}
+            className="h-full w-full"
+            avatarBorderId={avatarBorderId}
           />
         ) : (
           <span>{initials}</span>
         )}
-        
+
         {/* Online indicator */}
-        <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-green-500 border-2 border-dark-900" />
+        <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-dark-900 bg-green-500" />
       </div>
 
       {/* User Info */}
-      <div className="flex flex-col min-w-0">
+      <div className="flex min-w-0 flex-col">
         <div className="flex items-center gap-1.5">
           {/* Display Name */}
-          <span className={`${s.name} font-semibold text-white truncate`}>
+          <span className={`${s.name} truncate font-semibold text-white`}>
             {displayNameOrFallback}
           </span>
-          
+
           {/* Badges */}
           {isVerified && (
-            <CheckBadgeIcon
-              className={`${s.badge} text-blue-400 flex-shrink-0`}
-              title="Verified"
-            />
+            <CheckBadgeIcon className={`${s.badge} flex-shrink-0 text-blue-400`} title="Verified" />
           )}
           {isPremium && (
-            <SparklesIcon
-              className={`${s.badge} text-amber-400 flex-shrink-0`}
-              title="Premium"
-            />
+            <SparklesIcon className={`${s.badge} flex-shrink-0 text-amber-400`} title="Premium" />
           )}
         </div>
 
         {/* Username and ID row */}
         <div className="flex items-center gap-2 text-gray-400">
-          {username && (
-            <span className={`${s.id} truncate`}>@{username}</span>
-          )}
+          {username && <span className={`${s.id} truncate`}>@{username}</span>}
           {showId && (
-            <span className={`
-              ${s.id} font-mono px-1.5 py-0.5 rounded
-              bg-dark-700/50 text-gray-500
-              ${transitions.default}
-            `}>
+            <span
+              className={` ${s.id} rounded bg-dark-700/50 px-1.5 py-0.5 font-mono text-gray-500 ${transitions.default} `}
+            >
               {userIdDisplay}
             </span>
           )}
@@ -158,11 +145,11 @@ export function UserBadgeMini({
   className = '',
 }: Pick<UserBadgeProps, 'userIdDisplay' | 'username' | 'displayName' | 'className'>) {
   const name = displayName || username || userIdDisplay;
-  
+
   return (
     <span className={`inline-flex items-center gap-1 ${className}`}>
       <span className="font-medium text-white">{name}</span>
-      <span className="text-xs font-mono text-gray-500 bg-dark-700/50 px-1 rounded">
+      <span className="rounded bg-dark-700/50 px-1 font-mono text-xs text-gray-500">
         {userIdDisplay}
       </span>
     </span>

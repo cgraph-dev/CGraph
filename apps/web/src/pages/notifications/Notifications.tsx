@@ -4,6 +4,7 @@ import { useNotificationStore, Notification } from '@/stores/notificationStore';
 import { formatTimeAgo } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   BellIcon,
@@ -95,12 +96,12 @@ export default function Notifications() {
   };
 
   return (
-    <div className="flex-1 overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 relative">
+    <div className="relative flex-1 overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Ambient particles */}
       {[...Array(8)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-0.5 h-0.5 rounded-full bg-primary-400 pointer-events-none"
+          className="pointer-events-none absolute h-0.5 w-0.5 rounded-full bg-primary-400"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -119,16 +120,16 @@ export default function Notifications() {
         />
       ))}
 
-      <div className="max-w-2xl mx-auto p-6 relative z-10">
+      <div className="relative z-10 mx-auto max-w-2xl p-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
-          className="flex items-center justify-between mb-6"
+          className="mb-6 flex items-center justify-between"
         >
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent flex items-center gap-2">
+            <h1 className="flex items-center gap-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-2xl font-bold text-transparent">
               <BellIcon className="h-6 w-6 text-primary-400" />
               Notifications
             </h1>
@@ -138,10 +139,10 @@ export default function Notifications() {
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -5 }}
-                  className="text-sm text-gray-400 mt-1"
+                  className="mt-1 text-sm text-gray-400"
                 >
                   <motion.span
-                    className="inline-block px-2 py-0.5 bg-gradient-to-r from-primary-600 to-purple-600 rounded-full text-white text-xs font-medium mr-2"
+                    className="mr-2 inline-block rounded-full bg-gradient-to-r from-primary-600 to-purple-600 px-2 py-0.5 text-xs font-medium text-white"
                     style={{ boxShadow: '0 0 10px rgba(16, 185, 129, 0.4)' }}
                     animate={{
                       scale: [1, 1.05, 1],
@@ -169,7 +170,7 @@ export default function Notifications() {
                     markAllAsRead();
                     HapticFeedback.success();
                   }}
-                  className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-lg text-sm font-medium transition-all shadow-lg shadow-primary-500/20"
+                  className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-4 py-2 text-sm font-medium shadow-lg shadow-primary-500/20 transition-all hover:from-primary-700 hover:to-primary-800"
                 >
                   <CheckIcon className="h-4 w-4" />
                   Mark all read
@@ -180,8 +181,8 @@ export default function Notifications() {
         </motion.div>
 
         {/* Filter Tabs */}
-        <GlassCard variant="default" className="p-1 mb-6">
-          <div className="flex gap-1 relative">
+        <GlassCard variant="default" className="mb-6 p-1">
+          <div className="relative flex gap-1">
             <motion.button
               onClick={() => {
                 setFilter('all');
@@ -189,17 +190,19 @@ export default function Notifications() {
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all relative z-10"
+              className="relative z-10 flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all"
             >
               {filter === 'all' && (
                 <motion.div
                   layoutId="notificationFilterTab"
-                  className="absolute inset-0 bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent rounded-md"
+                  className="absolute inset-0 rounded-md bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
                   style={{ boxShadow: '0 0 15px rgba(16, 185, 129, 0.3)' }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 />
               )}
-              <span className={`relative z-10 ${filter === 'all' ? 'text-white' : 'text-gray-400'}`}>
+              <span
+                className={`relative z-10 ${filter === 'all' ? 'text-white' : 'text-gray-400'}`}
+              >
                 All
               </span>
             </motion.button>
@@ -210,17 +213,19 @@ export default function Notifications() {
               }}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all relative z-10"
+              className="relative z-10 flex-1 rounded-md px-4 py-2 text-sm font-medium transition-all"
             >
               {filter === 'unread' && (
                 <motion.div
                   layoutId="notificationFilterTab"
-                  className="absolute inset-0 bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent rounded-md"
+                  className="absolute inset-0 rounded-md bg-gradient-to-r from-primary-500/20 via-purple-500/20 to-transparent"
                   style={{ boxShadow: '0 0 15px rgba(16, 185, 129, 0.3)' }}
                   transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 />
               )}
-              <span className={`relative z-10 ${filter === 'unread' ? 'text-white' : 'text-gray-400'}`}>
+              <span
+                className={`relative z-10 ${filter === 'unread' ? 'text-white' : 'text-gray-400'}`}
+              >
                 Unread{' '}
                 <AnimatePresence mode="wait">
                   {unreadCount > 0 && (
@@ -249,14 +254,19 @@ export default function Notifications() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
               >
-                <GlassCard variant="holographic" glow glowColor="rgba(16, 185, 129, 0.3)" className="p-12">
+                <GlassCard
+                  variant="holographic"
+                  glow
+                  glowColor="rgba(16, 185, 129, 0.3)"
+                  className="p-12"
+                >
                   <div className="flex flex-col items-center justify-center text-center">
                     <motion.div
                       className="relative mb-4"
                       animate={{ rotate: [0, 5, -5, 0] }}
                       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                     >
-                      <div className="p-4 bg-gradient-to-br from-primary-500/20 to-purple-500/20 rounded-full">
+                      <div className="rounded-full bg-gradient-to-br from-primary-500/20 to-purple-500/20 p-4">
                         <BellIcon className="h-12 w-12 text-primary-400" />
                       </div>
                       <motion.div
@@ -268,7 +278,7 @@ export default function Notifications() {
                         transition={{ duration: 3, repeat: Infinity }}
                       />
                     </motion.div>
-                    <h3 className="text-lg font-medium bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-2">
+                    <h3 className="mb-2 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-lg font-medium text-transparent">
                       {filter === 'unread' ? 'All caught up!' : 'No notifications yet'}
                     </h3>
                     <p className="text-gray-400">
@@ -312,7 +322,7 @@ export default function Notifications() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="text-center mt-6"
+              className="mt-6 text-center"
             >
               <motion.button
                 onClick={() => {
@@ -322,12 +332,12 @@ export default function Notifications() {
                 disabled={isLoading}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 rounded-lg text-sm font-medium text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary-500/20"
+                className="rounded-lg bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-3 text-sm font-medium text-white shadow-lg shadow-primary-500/20 transition-all hover:from-primary-700 hover:to-primary-800 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
                     <motion.div
-                      className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
+                      className="h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                       animate={{ rotate: 360 }}
                       transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                     />
@@ -363,7 +373,7 @@ function NotificationItem({
     <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
       <GlassCard
         variant={notification.isRead ? 'default' : 'crystal'}
-        className={`group relative overflow-hidden cursor-pointer ${
+        className={`group relative cursor-pointer overflow-hidden ${
           !notification.isRead ? 'ring-1 ring-primary-500/30' : ''
         }`}
         style={{
@@ -378,11 +388,11 @@ function NotificationItem({
       >
         {/* Hover gradient glow */}
         <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-primary-500/5 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none"
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-primary-500/5 via-purple-500/5 to-transparent opacity-0 group-hover:opacity-100"
           transition={{ duration: 0.3 }}
         />
 
-        <div className="flex items-start gap-4 p-4 relative z-10">
+        <div className="relative z-10 flex items-start gap-4 p-4">
           {/* Icon or Avatar */}
           <motion.div
             className="flex-shrink-0"
@@ -391,11 +401,17 @@ function NotificationItem({
           >
             {notification.sender?.avatarUrl ? (
               <div className="relative">
-                <div className="p-0.5 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full">
-                  <img
+                <div className="rounded-full bg-gradient-to-br from-primary-500 to-purple-600 p-0.5">
+                  <ThemedAvatar
                     src={notification.sender.avatarUrl}
-                    alt=""
-                    className="h-10 w-10 rounded-full object-cover"
+                    alt={notification.sender.displayName || notification.sender.username}
+                    size="small"
+                    className="h-10 w-10"
+                    avatarBorderId={
+                      notification.sender.avatarBorderId ??
+                      notification.sender.avatar_border_id ??
+                      null
+                    }
                   />
                 </div>
                 <div
@@ -416,22 +432,25 @@ function NotificationItem({
           </motion.div>
 
           {/* Content */}
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             <p
               className={`text-sm ${
                 notification.isRead
                   ? 'text-gray-300'
-                  : 'bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent font-medium'
+                  : 'bg-gradient-to-r from-white to-primary-100 bg-clip-text font-medium text-transparent'
               }`}
             >
               {notification.title}
             </p>
-            <p className="text-sm text-gray-400 mt-0.5 line-clamp-2">{notification.body}</p>
-            <p className="text-xs text-gray-500 mt-1">{formatTimeAgo(notification.createdAt)}</p>
+            <p className="mt-0.5 line-clamp-2 text-sm text-gray-400">{notification.body}</p>
+            <p className="mt-1 text-xs text-gray-500">{formatTimeAgo(notification.createdAt)}</p>
           </div>
 
           {/* Actions */}
-          <div className="flex-shrink-0 flex items-start gap-2" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex flex-shrink-0 items-start gap-2"
+            onClick={(e) => e.stopPropagation()}
+          >
             {/* Unread indicator */}
             <AnimatePresence>
               {!notification.isRead && (
@@ -460,7 +479,7 @@ function NotificationItem({
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
-                  className="p-1.5 rounded-lg bg-dark-700/50 hover:bg-dark-600 text-gray-400 hover:text-white transition-colors"
+                  className="rounded-lg bg-dark-700/50 p-1.5 text-gray-400 transition-colors hover:bg-dark-600 hover:text-white"
                 >
                   <EllipsisHorizontalIcon className="h-5 w-5" />
                 </motion.button>

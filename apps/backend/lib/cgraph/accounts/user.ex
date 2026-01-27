@@ -107,6 +107,19 @@ defmodule CGraph.Accounts.User do
     field :total_messages_sent, :integer, default: 0
     field :total_posts_created, :integer, default: 0
 
+    # Avatar Border Customization (150+ designs with full configuration)
+    field :avatar_border_id, :string
+    field :avatar_border_animation, :string
+    field :avatar_border_color_primary, :string
+    field :avatar_border_color_secondary, :string
+    field :avatar_border_particle_effect, :string
+    field :avatar_border_glow_intensity, :integer, default: 50
+    field :avatar_border_config, :map, default: %{}
+    field :avatar_border_equipped_at, :utc_datetime
+
+    # Stripe integration
+    field :stripe_customer_id, :string
+
     # Associations
     has_many :sessions, CGraph.Accounts.Session
     has_many :push_tokens, CGraph.Accounts.PushToken

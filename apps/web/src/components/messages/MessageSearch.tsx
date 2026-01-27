@@ -23,6 +23,7 @@ import {
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 // ==================== TYPE DEFINITIONS ====================
 
@@ -75,10 +76,11 @@ function SearchResultCard({ result, onClick }: SearchResultCardProps) {
       <div className="mb-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {result.senderAvatarUrl ? (
-            <img
+            <ThemedAvatar
               src={result.senderAvatarUrl}
               alt={result.senderUsername}
-              className="h-6 w-6 rounded-full object-cover"
+              size="xs"
+              className="h-6 w-6"
             />
           ) : (
             <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-600">

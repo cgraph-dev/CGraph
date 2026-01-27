@@ -22,6 +22,7 @@ import { adminApi } from '@/lib/api/admin';
 import { format } from 'date-fns';
 import { formatTimeAgo } from '@/lib/utils';
 import clsx from 'clsx';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 // ============================================================================
 // Types
@@ -68,6 +69,8 @@ interface AdminUser {
   email: string;
   displayName: string | null;
   avatarUrl: string | null;
+  avatarBorderId?: string | null;
+  avatar_border_id?: string | null;
   status: 'active' | 'banned' | 'deleted';
   insertedAt: string;
   lastSeenAt: string | null;
@@ -127,28 +130,24 @@ export default function AdminDashboard() {
       className="min-h-screen bg-gray-50 dark:bg-gray-900"
     >
       {/* Header */}
-      <header className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+      <header className="border-b border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <ShieldExclamationIcon className="w-6 h-6 text-white" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
+                <ShieldExclamationIcon className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Admin Dashboard
-                </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  CGraph Administration
-                </p>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
+                <p className="text-xs text-gray-500 dark:text-gray-400">CGraph Administration</p>
               </div>
             </div>
-            
+
             <button
               onClick={() => queryClient.invalidateQueries()}
-              className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+              className="flex items-center space-x-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
             >
-              <ArrowPathIcon className="w-4 h-4" />
+              <ArrowPathIcon className="h-4 w-4" />
               <span>Refresh</span>
             </button>
           </div>
@@ -156,21 +155,21 @@ export default function AdminDashboard() {
       </header>
 
       {/* Navigation Tabs */}
-      <nav className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-1 overflow-x-auto py-2">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={clsx(
-                  'flex items-center space-x-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap',
+                  'flex items-center space-x-2 whitespace-nowrap rounded-lg px-4 py-2.5 text-sm font-medium transition-all',
                   activeTab === tab.id
-                    ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                    : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
                 )}
               >
-                <tab.icon className="w-5 h-5" />
+                <tab.icon className="h-5 w-5" />
                 <span>{tab.name}</span>
               </button>
             ))}
@@ -179,7 +178,7 @@ export default function AdminDashboard() {
       </nav>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <AnimatePresence mode="wait">
           {activeTab === 'overview' && <OverviewTab key="overview" />}
           {activeTab === 'users' && <UsersTab key="users" />}
@@ -222,18 +221,14 @@ function OverviewTab() {
     >
       {/* Real-time Stats Bar */}
       {realtime && (
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl p-4 text-white">
-          <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 p-4 text-white">
+          <div className="flex flex-wrap items-center justify-between gap-4">
             <RealtimeStat
               icon={SignalIcon}
               label="Active Connections"
               value={realtime.activeConnections}
             />
-            <RealtimeStat
-              icon={BoltIcon}
-              label="Requests/min"
-              value={realtime.requestsPerMinute}
-            />
+            <RealtimeStat icon={BoltIcon} label="Requests/min" value={realtime.requestsPerMinute} />
             <RealtimeStat
               icon={CircleStackIcon}
               label="DB Latency"
@@ -244,17 +239,13 @@ function OverviewTab() {
               label="Cache Hit Rate"
               value={`${(realtime.cacheHitRate * 100).toFixed(1)}%`}
             />
-            <RealtimeStat
-              icon={ServerIcon}
-              label="Memory"
-              value={`${realtime.memoryUsageMb}MB`}
-            />
+            <RealtimeStat icon={ServerIcon} label="Memory" value={`${realtime.memoryUsageMb}MB`} />
           </div>
         </div>
       )}
 
       {/* Metric Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Total Users"
           value={metrics?.users.total || 0}
@@ -266,7 +257,7 @@ function OverviewTab() {
         <MetricCard
           title="Active Users (24h)"
           value={metrics?.users.active24h || 0}
-          change={`${((metrics?.users.active24h || 0) / (metrics?.users.total || 1) * 100).toFixed(1)}%`}
+          change={`${(((metrics?.users.active24h || 0) / (metrics?.users.total || 1)) * 100).toFixed(1)}%`}
           changeType="neutral"
           icon={SignalIcon}
           color="green"
@@ -290,13 +281,13 @@ function OverviewTab() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <SystemHealthCard metrics={metrics} />
         <JobsStatusCard jobs={metrics?.jobs} />
       </div>
 
       {/* Additional Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <StatsCard
           title="Groups"
           stats={[
@@ -336,12 +327,20 @@ function UsersTab() {
 
   const { data: usersData, isLoading } = useQuery({
     queryKey: ['admin', 'users', { search: searchTerm, status: statusFilter, page }],
-    queryFn: () => adminApi.listUsers({ search: searchTerm, status: statusFilter, page, perPage: 20 }),
+    queryFn: () =>
+      adminApi.listUsers({ search: searchTerm, status: statusFilter, page, perPage: 20 }),
   });
 
   const banMutation = useMutation({
-    mutationFn: ({ userId, reason, duration }: { userId: string; reason: string; duration?: number }) =>
-      adminApi.banUser(userId, reason, duration),
+    mutationFn: ({
+      userId,
+      reason,
+      duration,
+    }: {
+      userId: string;
+      reason: string;
+      duration?: number;
+    }) => adminApi.banUser(userId, reason, duration),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
     },
@@ -362,22 +361,22 @@ function UsersTab() {
       className="space-y-6"
     >
       {/* Search and Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex-1 relative">
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <div className="relative flex-1">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               placeholder="Search users by username or email..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 focus:border-transparent focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
             />
           </div>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500"
+            className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
           >
             <option value="all">All Status</option>
             <option value="active">Active</option>
@@ -388,7 +387,7 @@ function UsersTab() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         {isLoading ? (
           <LoadingState />
         ) : (
@@ -396,19 +395,19 @@ function UsersTab() {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                     User
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                     Joined
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                     Last Seen
                   </th>
-                  <th className="px-6 py-3 text-right text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                     Actions
                   </th>
                 </tr>
@@ -418,7 +417,9 @@ function UsersTab() {
                   <UserRow
                     key={user.id}
                     user={user}
-                    onBan={(reason, duration) => banMutation.mutate({ userId: user.id, reason, duration })}
+                    onBan={(reason, duration) =>
+                      banMutation.mutate({ userId: user.id, reason, duration })
+                    }
                     onUnban={() => unbanMutation.mutate(user.id)}
                     isBanning={banMutation.isPending}
                     isUnbanning={unbanMutation.isPending}
@@ -431,22 +432,23 @@ function UsersTab() {
 
         {/* Pagination */}
         {usersData && (
-          <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
+          <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4 dark:border-gray-700">
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Showing {(page - 1) * 20 + 1} to {Math.min(page * 20, usersData.totalCount)} of {usersData.totalCount} users
+              Showing {(page - 1) * 20 + 1} to {Math.min(page * 20, usersData.totalCount)} of{' '}
+              {usersData.totalCount} users
             </p>
             <div className="flex space-x-2">
               <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50"
+                className="rounded-lg bg-gray-100 px-3 py-1.5 text-sm disabled:opacity-50 dark:bg-gray-700"
               >
                 Previous
               </button>
               <button
-                onClick={() => setPage(p => p + 1)}
+                onClick={() => setPage((p) => p + 1)}
                 disabled={page * 20 >= usersData.totalCount}
-                className="px-3 py-1.5 text-sm bg-gray-100 dark:bg-gray-700 rounded-lg disabled:opacity-50"
+                className="rounded-lg bg-gray-100 px-3 py-1.5 text-sm disabled:opacity-50 dark:bg-gray-700"
               >
                 Next
               </button>
@@ -458,13 +460,13 @@ function UsersTab() {
   );
 }
 
-function UserRow({ 
-  user, 
-  onBan, 
+function UserRow({
+  user,
+  onBan,
   onUnban,
   isBanning,
-  isUnbanning 
-}: { 
+  isUnbanning,
+}: {
   user: AdminUser;
   onBan: (reason: string, duration?: number) => void;
   onUnban: () => void;
@@ -475,13 +477,18 @@ function UserRow({
 
   return (
     <>
-      <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-        <td className="px-6 py-4 whitespace-nowrap">
+      <tr className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50">
+        <td className="whitespace-nowrap px-6 py-4">
           <div className="flex items-center space-x-3">
-            <img
-              src={user.avatarUrl || `https://ui-avatars.com/api/?name=${user.username}&background=random`}
+            <ThemedAvatar
+              src={
+                user.avatarUrl ||
+                `https://ui-avatars.com/api/?name=${user.username}&background=random`
+              }
               alt={user.username}
-              className="w-10 h-10 rounded-full object-cover"
+              size="small"
+              className="h-10 w-10"
+              avatarBorderId={user.avatarBorderId ?? user.avatar_border_id ?? null}
             />
             <div>
               <p className="font-medium text-gray-900 dark:text-white">
@@ -493,28 +500,26 @@ function UserRow({
             </div>
           </div>
         </td>
-        <td className="px-6 py-4 whitespace-nowrap">
+        <td className="whitespace-nowrap px-6 py-4">
           <StatusBadge status={user.status} />
           {user.isPremium && (
-            <span className="ml-2 px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
+            <span className="ml-2 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
               Premium
             </span>
           )}
         </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
           {format(new Date(user.insertedAt), 'MMM d, yyyy')}
         </td>
-        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-          {user.lastSeenAt
-            ? formatTimeAgo(user.lastSeenAt)
-            : 'Never'}
+        <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+          {user.lastSeenAt ? formatTimeAgo(user.lastSeenAt) : 'Never'}
         </td>
-        <td className="px-6 py-4 whitespace-nowrap text-right">
+        <td className="whitespace-nowrap px-6 py-4 text-right">
           {user.status === 'banned' ? (
             <button
               onClick={onUnban}
               disabled={isUnbanning}
-              className="px-3 py-1.5 text-sm font-medium text-green-700 bg-green-100 rounded-lg hover:bg-green-200 disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-green-100 px-3 py-1.5 text-sm font-medium text-green-700 transition-colors hover:bg-green-200 disabled:opacity-50"
             >
               {isUnbanning ? 'Unbanning...' : 'Unban'}
             </button>
@@ -522,7 +527,7 @@ function UserRow({
             <button
               onClick={() => setShowBanModal(true)}
               disabled={isBanning}
-              className="px-3 py-1.5 text-sm font-medium text-red-700 bg-red-100 rounded-lg hover:bg-red-200 disabled:opacity-50 transition-colors"
+              className="rounded-lg bg-red-100 px-3 py-1.5 text-sm font-medium text-red-700 transition-colors hover:bg-red-200 disabled:opacity-50"
             >
               Ban
             </button>
@@ -558,8 +563,15 @@ function ReportsTab() {
   });
 
   const resolveMutation = useMutation({
-    mutationFn: ({ reportId, action, note }: { reportId: string; action: 'resolve' | 'dismiss'; note?: string }) =>
-      adminApi.resolveReport(reportId, action, note),
+    mutationFn: ({
+      reportId,
+      action,
+      note,
+    }: {
+      reportId: string;
+      action: 'resolve' | 'dismiss';
+      note?: string;
+    }) => adminApi.resolveReport(reportId, action, note),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'reports'] });
     },
@@ -573,17 +585,17 @@ function ReportsTab() {
       className="space-y-6"
     >
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div className="flex space-x-2">
           {['pending', 'resolved', 'dismissed', 'all'].map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
               className={clsx(
-                'px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors',
+                'rounded-lg px-4 py-2 text-sm font-medium capitalize transition-colors',
                 statusFilter === status
-                  ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
               )}
             >
               {status}
@@ -603,7 +615,9 @@ function ReportsTab() {
             <ReportCard
               key={report.id}
               report={report}
-              onResolve={(action, note) => resolveMutation.mutate({ reportId: report.id, action, note })}
+              onResolve={(action, note) =>
+                resolveMutation.mutate({ reportId: report.id, action, note })
+              }
               isResolving={resolveMutation.isPending}
             />
           ))
@@ -613,11 +627,11 @@ function ReportsTab() {
   );
 }
 
-function ReportCard({ 
-  report, 
+function ReportCard({
+  report,
   onResolve,
-  isResolving 
-}: { 
+  isResolving,
+}: {
   report: Report;
   onResolve: (action: 'resolve' | 'dismiss', note?: string) => void;
   isResolving: boolean;
@@ -634,22 +648,25 @@ function ReportCard({
     <motion.div
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
-      className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
+      className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center space-x-3 mb-2">
-            <span className={clsx('px-2 py-1 text-xs font-medium rounded-full', typeColors[report.type])}>
+          <div className="mb-2 flex items-center space-x-3">
+            <span
+              className={clsx(
+                'rounded-full px-2 py-1 text-xs font-medium',
+                typeColors[report.type]
+              )}
+            >
               {report.type.replace('_', ' ')}
             </span>
             <StatusBadge status={report.status} />
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {report.contentType}
-            </span>
+            <span className="text-sm text-gray-500 dark:text-gray-400">{report.contentType}</span>
           </div>
-          
-          <p className="text-gray-900 dark:text-white mb-2">{report.reason}</p>
-          
+
+          <p className="mb-2 text-gray-900 dark:text-white">{report.reason}</p>
+
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Reported by <span className="font-medium">@{report.reporterUsername}</span>
             {' • '}
@@ -658,21 +675,21 @@ function ReportCard({
         </div>
 
         {report.status === 'pending' && (
-          <div className="flex space-x-2 ml-4">
+          <div className="ml-4 flex space-x-2">
             <button
               onClick={() => onResolve('resolve')}
               disabled={isResolving}
-              className="flex items-center space-x-1 px-3 py-1.5 text-sm font-medium text-green-700 bg-green-100 rounded-lg hover:bg-green-200 disabled:opacity-50"
+              className="flex items-center space-x-1 rounded-lg bg-green-100 px-3 py-1.5 text-sm font-medium text-green-700 hover:bg-green-200 disabled:opacity-50"
             >
-              <CheckCircleIcon className="w-4 h-4" />
+              <CheckCircleIcon className="h-4 w-4" />
               <span>Resolve</span>
             </button>
             <button
               onClick={() => onResolve('dismiss')}
               disabled={isResolving}
-              className="flex items-center space-x-1 px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 disabled:opacity-50"
+              className="flex items-center space-x-1 rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
             >
-              <XCircleIcon className="w-4 h-4" />
+              <XCircleIcon className="h-4 w-4" />
               <span>Dismiss</span>
             </button>
           </div>
@@ -705,17 +722,17 @@ function AuditTab() {
       className="space-y-6"
     >
       {/* Filters */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800">
         <div className="flex space-x-2 overflow-x-auto">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setCategoryFilter(category)}
               className={clsx(
-                'px-4 py-2 rounded-lg text-sm font-medium capitalize whitespace-nowrap transition-colors',
+                'whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium capitalize transition-colors',
                 categoryFilter === category
-                  ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300'
+                  : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700'
               )}
             >
               {category}
@@ -725,7 +742,7 @@ function AuditTab() {
       </div>
 
       {/* Audit Log Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         {isLoading ? (
           <LoadingState />
         ) : (
@@ -733,11 +750,21 @@ function AuditTab() {
             <table className="w-full">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Time</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Category</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Action</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Actor</th>
-                  <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">IP Address</th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-gray-500">
+                    Time
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-gray-500">
+                    Category
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-gray-500">
+                    Action
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-gray-500">
+                    Actor
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-semibold uppercase text-gray-500">
+                    IP Address
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -747,19 +774,15 @@ function AuditTab() {
                       {format(new Date(entry.timestamp), 'MMM d, HH:mm:ss')}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="px-2 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded">
+                      <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
                         {entry.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 dark:text-white font-medium">
+                    <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                       {entry.action}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      @{entry.actorUsername}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500 font-mono">
-                      {entry.ipAddress}
-                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-500">@{entry.actorUsername}</td>
+                    <td className="px-6 py-4 font-mono text-sm text-gray-500">{entry.ipAddress}</td>
                   </tr>
                 ))}
               </tbody>
@@ -796,11 +819,11 @@ function SettingsTab() {
       exit={{ opacity: 0, y: -20 }}
       className="space-y-6"
     >
-      <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+        <h2 className="mb-6 text-lg font-semibold text-gray-900 dark:text-white">
           System Configuration
         </h2>
-        
+
         <div className="space-y-6">
           <SettingToggle
             label="Registration Enabled"
@@ -808,28 +831,28 @@ function SettingsTab() {
             value={config?.registrationEnabled ?? true}
             onChange={(value) => updateConfigMutation.mutate({ registrationEnabled: value })}
           />
-          
+
           <SettingToggle
             label="Email Verification Required"
             description="Require email verification for new accounts"
             value={config?.emailVerificationRequired ?? true}
             onChange={(value) => updateConfigMutation.mutate({ emailVerificationRequired: value })}
           />
-          
+
           <SettingToggle
             label="Maintenance Mode"
             description="Put the application in maintenance mode"
             value={config?.maintenanceMode ?? false}
             onChange={(value) => updateConfigMutation.mutate({ maintenanceMode: value })}
           />
-          
+
           <SettingNumber
             label="Max Message Length"
             description="Maximum characters per message"
             value={config?.maxMessageLength ?? 4000}
             onChange={(value) => updateConfigMutation.mutate({ maxMessageLength: value })}
           />
-          
+
           <SettingNumber
             label="Max File Upload Size (MB)"
             description="Maximum file upload size in megabytes"
@@ -846,14 +869,14 @@ function SettingsTab() {
 // Helper Components
 // ============================================================================
 
-function MetricCard({ 
-  title, 
-  value, 
-  change, 
-  changeType, 
+function MetricCard({
+  title,
+  value,
+  change,
+  changeType,
   icon: Icon,
-  color 
-}: { 
+  color,
+}: {
   title: string;
   value: number | string;
   change: string;
@@ -877,32 +900,39 @@ function MetricCard({
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
-      className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700"
+      className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className={clsx('w-12 h-12 rounded-xl bg-gradient-to-br flex items-center justify-center', colors[color])}>
-          <Icon className="w-6 h-6 text-white" />
+      <div className="mb-4 flex items-center justify-between">
+        <div
+          className={clsx(
+            'flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br',
+            colors[color]
+          )}
+        >
+          <Icon className="h-6 w-6 text-white" />
         </div>
       </div>
-      <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">{title}</h3>
-      <p className="text-2xl font-bold text-gray-900 dark:text-white">{(value ?? 0).toLocaleString()}</p>
-      <p className={clsx('text-sm mt-1', changeColors[changeType])}>{change}</p>
+      <h3 className="mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">{title}</h3>
+      <p className="text-2xl font-bold text-gray-900 dark:text-white">
+        {(value ?? 0).toLocaleString()}
+      </p>
+      <p className={clsx('mt-1 text-sm', changeColors[changeType])}>{change}</p>
     </motion.div>
   );
 }
 
-function RealtimeStat({ 
-  icon: Icon, 
-  label, 
-  value 
-}: { 
+function RealtimeStat({
+  icon: Icon,
+  label,
+  value,
+}: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string | number;
 }) {
   return (
     <div className="flex items-center space-x-3">
-      <Icon className="w-5 h-5 opacity-80" />
+      <Icon className="h-5 w-5 opacity-80" />
       <div>
         <p className="text-xs opacity-80">{label}</p>
         <p className="font-semibold">{value}</p>
@@ -922,7 +952,12 @@ function StatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={clsx('px-2 py-0.5 text-xs font-medium rounded-full capitalize', colors[status] || colors.active)}>
+    <span
+      className={clsx(
+        'rounded-full px-2 py-0.5 text-xs font-medium capitalize',
+        colors[status] || colors.active
+      )}
+    >
       {status}
     </span>
   );
@@ -931,15 +966,15 @@ function StatusBadge({ status }: { status: string }) {
 function LoadingState() {
   return (
     <div className="flex items-center justify-center py-12">
-      <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent" />
     </div>
   );
 }
 
 function EmptyState({ message }: { message: string }) {
   return (
-    <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-      <ExclamationTriangleIcon className="w-12 h-12 mx-auto mb-4 opacity-50" />
+    <div className="py-12 text-center text-gray-500 dark:text-gray-400">
+      <ExclamationTriangleIcon className="mx-auto mb-4 h-12 w-12 opacity-50" />
       <p>{message}</p>
     </div>
   );
@@ -947,12 +982,27 @@ function EmptyState({ message }: { message: string }) {
 
 function SystemHealthCard({ metrics }: { metrics?: SystemMetrics }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">System Health</h3>
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">System Health</h3>
       <div className="space-y-4">
-        <ProgressBar label="Memory Usage" value={metrics?.system.memoryUsageMb || 0} max={1024} unit="MB" />
-        <ProgressBar label="CPU Usage" value={metrics?.system.cpuUsagePercent || 0} max={100} unit="%" />
-        <ProgressBar label="DB Connections" value={metrics?.system.dbConnections || 0} max={100} unit="" />
+        <ProgressBar
+          label="Memory Usage"
+          value={metrics?.system.memoryUsageMb || 0}
+          max={1024}
+          unit="MB"
+        />
+        <ProgressBar
+          label="CPU Usage"
+          value={metrics?.system.cpuUsagePercent || 0}
+          max={100}
+          unit="%"
+        />
+        <ProgressBar
+          label="DB Connections"
+          value={metrics?.system.dbConnections || 0}
+          max={100}
+          unit=""
+        />
       </div>
     </div>
   );
@@ -960,22 +1010,22 @@ function SystemHealthCard({ metrics }: { metrics?: SystemMetrics }) {
 
 function JobsStatusCard({ jobs }: { jobs?: SystemMetrics['jobs'] }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Background Jobs</h3>
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Background Jobs</h3>
       <div className="grid grid-cols-2 gap-4">
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4">
+        <div className="rounded-lg bg-yellow-50 p-4 dark:bg-yellow-900/20">
           <p className="text-2xl font-bold text-yellow-600">{jobs?.pending || 0}</p>
           <p className="text-sm text-yellow-600">Pending</p>
         </div>
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+        <div className="rounded-lg bg-blue-50 p-4 dark:bg-blue-900/20">
           <p className="text-2xl font-bold text-blue-600">{jobs?.executing || 0}</p>
           <p className="text-sm text-blue-600">Executing</p>
         </div>
-        <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+        <div className="rounded-lg bg-red-50 p-4 dark:bg-red-900/20">
           <p className="text-2xl font-bold text-red-600">{jobs?.failed || 0}</p>
           <p className="text-sm text-red-600">Failed</p>
         </div>
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+        <div className="rounded-lg bg-green-50 p-4 dark:bg-green-900/20">
           <p className="text-2xl font-bold text-green-600">{jobs?.completed24h || 0}</p>
           <p className="text-sm text-green-600">Completed (24h)</p>
         </div>
@@ -984,18 +1034,26 @@ function JobsStatusCard({ jobs }: { jobs?: SystemMetrics['jobs'] }) {
   );
 }
 
-function StatsCard({ title, stats }: { title: string; stats: Array<{ label: string; value: string | number; highlight?: string }> }) {
+function StatsCard({
+  title,
+  stats,
+}: {
+  title: string;
+  stats: Array<{ label: string; value: string | number; highlight?: string }>;
+}) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{title}</h3>
+    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+      <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">{title}</h3>
       <div className="space-y-3">
         {stats.map((stat, index) => (
           <div key={index} className="flex items-center justify-between">
             <span className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</span>
-            <span className={clsx(
-              'font-semibold',
-              stat.highlight === 'red' ? 'text-red-600' : 'text-gray-900 dark:text-white'
-            )}>
+            <span
+              className={clsx(
+                'font-semibold',
+                stat.highlight === 'red' ? 'text-red-600' : 'text-gray-900 dark:text-white'
+              )}
+            >
               {stat.value}
             </span>
           </div>
@@ -1005,16 +1063,29 @@ function StatsCard({ title, stats }: { title: string; stats: Array<{ label: stri
   );
 }
 
-function ProgressBar({ label, value, max, unit }: { label: string; value: number; max: number; unit: string }) {
+function ProgressBar({
+  label,
+  value,
+  max,
+  unit,
+}: {
+  label: string;
+  value: number;
+  max: number;
+  unit: string;
+}) {
   const percentage = Math.min((value / max) * 100, 100);
-  
+
   return (
     <div>
-      <div className="flex justify-between text-sm mb-1">
+      <div className="mb-1 flex justify-between text-sm">
         <span className="text-gray-500 dark:text-gray-400">{label}</span>
-        <span className="font-medium text-gray-900 dark:text-white">{value}{unit}</span>
+        <span className="font-medium text-gray-900 dark:text-white">
+          {value}
+          {unit}
+        </span>
       </div>
-      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+      <div className="h-2 w-full rounded-full bg-gray-200 dark:bg-gray-700">
         <div
           className={clsx(
             'h-2 rounded-full transition-all',
@@ -1027,12 +1098,12 @@ function ProgressBar({ label, value, max, unit }: { label: string; value: number
   );
 }
 
-function SettingToggle({ 
-  label, 
-  description, 
-  value, 
-  onChange 
-}: { 
+function SettingToggle({
+  label,
+  description,
+  value,
+  onChange,
+}: {
   label: string;
   description: string;
   value: boolean;
@@ -1047,13 +1118,13 @@ function SettingToggle({
       <button
         onClick={() => onChange(!value)}
         className={clsx(
-          'relative w-12 h-6 rounded-full transition-colors',
+          'relative h-6 w-12 rounded-full transition-colors',
           value ? 'bg-indigo-600' : 'bg-gray-300 dark:bg-gray-600'
         )}
       >
         <span
           className={clsx(
-            'absolute top-1 w-4 h-4 bg-white rounded-full transition-transform',
+            'absolute top-1 h-4 w-4 rounded-full bg-white transition-transform',
             value ? 'left-7' : 'left-1'
           )}
         />
@@ -1062,12 +1133,12 @@ function SettingToggle({
   );
 }
 
-function SettingNumber({ 
-  label, 
-  description, 
-  value, 
-  onChange 
-}: { 
+function SettingNumber({
+  label,
+  description,
+  value,
+  onChange,
+}: {
   label: string;
   description: string;
   value: number;
@@ -1083,17 +1154,17 @@ function SettingNumber({
         type="number"
         value={value}
         onChange={(e) => onChange(parseInt(e.target.value, 10))}
-        className="w-24 px-3 py-1.5 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-right"
+        className="w-24 rounded-lg border border-gray-200 bg-gray-50 px-3 py-1.5 text-right dark:border-gray-600 dark:bg-gray-700"
       />
     </div>
   );
 }
 
-function BanUserModal({ 
-  user, 
-  onConfirm, 
-  onClose 
-}: { 
+function BanUserModal({
+  user,
+  onConfirm,
+  onClose,
+}: {
   user: AdminUser;
   onConfirm: (reason: string, duration?: number) => void;
   onClose: () => void;
@@ -1111,34 +1182,34 @@ function BanUserModal({
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full mx-4 shadow-xl"
+        className="mx-4 w-full max-w-md rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800"
       >
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        <h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
           Ban User: @{user.username}
         </h3>
-        
+
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Reason
             </label>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Enter reason for ban..."
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg resize-none"
+              className="w-full resize-none rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-600 dark:bg-gray-700"
               rows={3}
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Duration
             </label>
             <select
               value={duration}
               onChange={(e) => setDuration(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg"
+              className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-600 dark:bg-gray-700"
             >
               <option value="permanent">Permanent</option>
               <option value="86400">1 Day</option>
@@ -1147,18 +1218,18 @@ function BanUserModal({
             </select>
           </div>
         </div>
-        
-        <div className="flex space-x-3 mt-6">
+
+        <div className="mt-6 flex space-x-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className="flex-1 rounded-lg bg-gray-100 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-200"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
             disabled={!reason}
-            className="flex-1 px-4 py-2 text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+            className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:opacity-50"
           >
             Ban User
           </button>
@@ -1173,7 +1244,7 @@ function formatUptime(seconds: number): string {
   const days = Math.floor(seconds / 86400);
   const hours = Math.floor((seconds % 86400) / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
-  
+
   if (days > 0) return `${days}d ${hours}h`;
   if (hours > 0) return `${hours}h ${minutes}m`;
   return `${minutes}m`;
@@ -1183,7 +1254,12 @@ function formatUptime(seconds: number): string {
 function ChatBubbleIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+      />
     </svg>
   );
 }

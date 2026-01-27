@@ -36,8 +36,12 @@ import {
 
 // Import our new components
 import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
-import { AnimatedReactionBubble, ReactionPicker } from '@/components/conversation/AnimatedReactionBubble';
+import {
+  AnimatedReactionBubble,
+  ReactionPicker,
+} from '@/components/conversation/AnimatedReactionBubble';
 import GlassCard, { GlassCardNeon } from '@/components/ui/GlassCard';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
 import ShaderBackground from '@/components/shaders/ShaderBackground';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -114,7 +118,7 @@ function EnhancedMessageBubble({
     >
       <motion.div
         ref={bubbleRef}
-        className={`flex items-end gap-2 group ${isOwn ? 'flex-row-reverse' : ''}`}
+        className={`group flex items-end gap-2 ${isOwn ? 'flex-row-reverse' : ''}`}
         onMouseEnter={() => setShowActions(true)}
         onMouseLeave={() => setShowActions(false)}
         layout
@@ -125,20 +129,26 @@ function EnhancedMessageBubble({
             {showAvatar && (
               <motion.button
                 onClick={() => message.sender?.id && onAvatarClick?.(message.sender.id)}
-                className="h-8 w-8 rounded-full overflow-hidden bg-dark-600 ring-2 ring-primary-500/20 cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500"
+                className="h-8 w-8 cursor-pointer overflow-hidden rounded-full bg-dark-600 ring-2 ring-primary-500/20 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 whileHover={{ scale: 1.1, rotate: 5 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 25 }}
                 title={`View ${message.sender?.displayName || message.sender?.username || 'user'}'s profile`}
               >
                 {message.sender?.avatarUrl ? (
-                  <img
+                  <ThemedAvatar
                     src={message.sender.avatarUrl}
                     alt={message.sender?.displayName || 'User'}
-                    className="h-full w-full object-cover"
+                    size="small"
+                    className="h-8 w-8"
+                    avatarBorderId={
+                      (message.sender as any)?.avatarBorderId ??
+                      (message.sender as any)?.avatar_border_id ??
+                      null
+                    }
                   />
                 ) : (
-                  <div className="h-full w-full flex items-center justify-center text-sm font-bold text-primary-400">
+                  <div className="flex h-full w-full items-center justify-center text-sm font-bold text-primary-400">
                     {(message.sender?.displayName || 'U').charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -163,19 +173,24 @@ function EnhancedMessageBubble({
                 >
                   <motion.button
                     onClick={onReply}
-                    className="p-2 rounded-full bg-dark-700/80 backdrop-blur-sm text-gray-400 hover:text-white border border-white/10"
+                    className="rounded-full border border-white/10 bg-dark-700/80 p-2 text-gray-400 backdrop-blur-sm hover:text-white"
                     whileHover={{ scale: 1.1, rotate: -15 }}
                     whileTap={{ scale: 0.9 }}
                     title="Reply"
                   >
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                      />
                     </svg>
                   </motion.button>
 
                   <motion.button
                     onClick={() => setShowReactionPicker(!showReactionPicker)}
-                    className="p-2 rounded-full bg-dark-700/80 backdrop-blur-sm text-gray-400 hover:text-primary-400 border border-white/10"
+                    className="rounded-full border border-white/10 bg-dark-700/80 p-2 text-gray-400 backdrop-blur-sm hover:text-primary-400"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                     title="React"
@@ -196,31 +211,36 @@ function EnhancedMessageBubble({
               className={`px-4 py-3 ${isOwn ? 'rounded-br-sm' : 'rounded-bl-sm'}`}
             >
               {/* Text content */}
-              {message.content && message.messageType !== 'voice' && message.messageType !== 'audio' && (
-                <motion.p
-                  className="whitespace-pre-wrap break-words text-white"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  {message.content}
-                </motion.p>
-              )}
+              {message.content &&
+                message.messageType !== 'voice' &&
+                message.messageType !== 'audio' && (
+                  <motion.p
+                    className="whitespace-pre-wrap break-words text-white"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                  >
+                    {message.content}
+                  </motion.p>
+                )}
 
               {/* Voice message visualization */}
-              {(message.messageType === 'voice' || message.messageType === 'audio') && message.metadata?.url && (
-                <AdvancedVoiceVisualizer
-                  audioUrl={message.metadata.url as string}
-                  variant="spectrum"
-                  theme="matrix-green"
-                  height={80}
-                  width={250}
-                  className="my-2"
-                />
-              )}
+              {(message.messageType === 'voice' || message.messageType === 'audio') &&
+                message.metadata?.url && (
+                  <AdvancedVoiceVisualizer
+                    audioUrl={message.metadata.url as string}
+                    variant="spectrum"
+                    theme="matrix-green"
+                    height={80}
+                    width={250}
+                    className="my-2"
+                  />
+                )}
 
               {/* Timestamp and status */}
-              <div className={`flex items-center gap-1.5 mt-1.5 text-xs ${isOwn ? 'text-primary-200' : 'text-gray-400'}`}>
+              <div
+                className={`mt-1.5 flex items-center gap-1.5 text-xs ${isOwn ? 'text-primary-200' : 'text-gray-400'}`}
+              >
                 <motion.span
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -245,7 +265,7 @@ function EnhancedMessageBubble({
           <AnimatePresence>
             {message.reactions.length > 0 && (
               <motion.div
-                className="flex flex-wrap gap-1.5 mt-2"
+                className="mt-2 flex flex-wrap gap-1.5"
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -253,12 +273,15 @@ function EnhancedMessageBubble({
               >
                 {/* Aggregate reactions by emoji with type-safe accumulator using nullish coalescing assignment */}
                 {Object.entries(
-                  message.reactions.reduce<Record<string, { count: number; hasReacted: boolean }>>((acc, r) => {
-                    const entry = acc[r.emoji] ??= { count: 0, hasReacted: false };
-                    entry.count++;
-                    if (user && r.userId === user.id) entry.hasReacted = true;
-                    return acc;
-                  }, {})
+                  message.reactions.reduce<Record<string, { count: number; hasReacted: boolean }>>(
+                    (acc, r) => {
+                      const entry = (acc[r.emoji] ??= { count: 0, hasReacted: false });
+                      entry.count++;
+                      if (user && r.userId === user.id) entry.hasReacted = true;
+                      return acc;
+                    },
+                    {}
+                  )
                 ).map(([emoji, { count, hasReacted }]) => (
                   <AnimatedReactionBubble
                     key={emoji}
@@ -300,12 +323,7 @@ export default function EnhancedConversation() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const {
-    conversations,
-    messages,
-    typingUsers,
-    sendMessage,
-  } = useChatStore();
+  const { conversations, messages, typingUsers, sendMessage } = useChatStore();
 
   const [messageInput, setMessageInput] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -382,7 +400,7 @@ export default function EnhancedConversation() {
 
   if (!conversation) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-dark-900">
+      <div className="flex flex-1 items-center justify-center bg-dark-900">
         <motion.div
           className="h-12 w-12 rounded-full border-4 border-primary-500 border-t-transparent"
           animate={{ rotate: 360 }}
@@ -407,13 +425,13 @@ export default function EnhancedConversation() {
 
       {/* Main Container */}
       <motion.div
-        className="flex-1 flex flex-col h-full max-h-screen overflow-hidden relative"
+        className="relative flex h-full max-h-screen flex-1 flex-col overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         {/* Header with glassmorphism */}
-        <GlassCardNeon className="h-16 px-4 flex items-center justify-between flex-shrink-0 rounded-none border-b border-primary-500/20">
+        <GlassCardNeon className="flex h-16 flex-shrink-0 items-center justify-between rounded-none border-b border-primary-500/20 px-4">
           <motion.div
             className="flex items-center gap-3"
             initial={{ x: -20, opacity: 0 }}
@@ -422,16 +440,16 @@ export default function EnhancedConversation() {
           >
             <div className="relative">
               <motion.div
-                className="h-10 w-10 rounded-full overflow-hidden bg-gradient-to-br from-primary-500 to-primary-700 ring-2 ring-primary-500/50"
+                className="h-10 w-10 overflow-hidden rounded-full bg-gradient-to-br from-primary-500 to-primary-700 ring-2 ring-primary-500/50"
                 whileHover={{ scale: 1.1, rotate: 5 }}
               >
                 {/* Avatar content */}
-                <div className="h-full w-full flex items-center justify-center text-lg font-bold text-white">
+                <div className="flex h-full w-full items-center justify-center text-lg font-bold text-white">
                   {(conversation.name || 'U').charAt(0).toUpperCase()}
                 </div>
               </motion.div>
               <motion.div
-                className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-dark-900"
+                className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-dark-900 bg-green-500"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               />
@@ -471,7 +489,7 @@ export default function EnhancedConversation() {
                 themeEngine.applyTheme(theme);
                 HapticFeedback.light();
               }}
-              className="p-2 rounded-lg bg-primary-500/20 hover:bg-primary-500/30 text-primary-400 transition-colors"
+              className="rounded-lg bg-primary-500/20 p-2 text-primary-400 transition-colors hover:bg-primary-500/30"
               whileHover={{ scale: 1.1, rotate: 180 }}
               whileTap={{ scale: 0.9 }}
               title="Generate AI Theme"
@@ -480,7 +498,7 @@ export default function EnhancedConversation() {
             </motion.button>
 
             <motion.button
-              className="p-2 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+              className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -490,11 +508,12 @@ export default function EnhancedConversation() {
         </GlassCardNeon>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 min-h-0">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-6">
           {conversationMessages.map((message, index) => {
             const isOwn = message.senderId === user?.id;
             const prevMessage = conversationMessages[index - 1];
-            const showAvatar = !isOwn && (!prevMessage || prevMessage.senderId !== message.senderId);
+            const showAvatar =
+              !isOwn && (!prevMessage || prevMessage.senderId !== message.senderId);
 
             return (
               <EnhancedMessageBubble
@@ -521,7 +540,7 @@ export default function EnhancedConversation() {
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    className="h-2 w-2 bg-primary-400 rounded-full"
+                    className="h-2 w-2 rounded-full bg-primary-400"
                     animate={{ y: [0, -8, 0] }}
                     transition={{
                       duration: 0.6,
@@ -541,7 +560,7 @@ export default function EnhancedConversation() {
         <GlassCard
           variant="frosted"
           intensity="strong"
-          className="p-4 flex-shrink-0 rounded-none border-t border-white/10"
+          className="flex-shrink-0 rounded-none border-t border-white/10 p-4"
         >
           {/* Sticker Picker - positioned above input */}
           <div className="relative" ref={inputContainerRef}>
@@ -554,7 +573,7 @@ export default function EnhancedConversation() {
 
           <div className="flex items-end gap-2">
             <motion.button
-              className="p-2.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+              className="rounded-lg p-2.5 text-gray-400 transition-colors hover:bg-white/10 hover:text-white"
               whileHover={{ scale: 1.1, rotate: 15 }}
               whileTap={{ scale: 0.9 }}
             >
@@ -567,7 +586,7 @@ export default function EnhancedConversation() {
               isActive={showStickerPicker}
             />
 
-            <div className="flex-1 bg-dark-700/50 backdrop-blur-sm rounded-xl border border-white/10">
+            <div className="flex-1 rounded-xl border border-white/10 bg-dark-700/50 backdrop-blur-sm">
               <textarea
                 value={messageInput}
                 onChange={(e) => setMessageInput(e.target.value)}
@@ -579,7 +598,7 @@ export default function EnhancedConversation() {
                 }}
                 placeholder="Type a message..."
                 rows={1}
-                className="w-full px-4 py-3 bg-transparent text-white placeholder-gray-500 resize-none focus:outline-none"
+                className="w-full resize-none bg-transparent px-4 py-3 text-white placeholder-gray-500 focus:outline-none"
               />
             </div>
 
@@ -587,7 +606,7 @@ export default function EnhancedConversation() {
               <motion.button
                 onClick={handleSend}
                 disabled={isSending}
-                className="p-2.5 rounded-lg bg-gradient-to-r from-primary-600 to-primary-500 text-white disabled:opacity-50"
+                className="rounded-lg bg-gradient-to-r from-primary-600 to-primary-500 p-2.5 text-white disabled:opacity-50"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 animate={isSending ? { rotate: 360 } : {}}
@@ -597,7 +616,7 @@ export default function EnhancedConversation() {
               </motion.button>
             ) : (
               <motion.button
-                className="p-2.5 rounded-lg hover:bg-white/10 text-gray-400 hover:text-primary-400 transition-colors"
+                className="rounded-lg p-2.5 text-gray-400 transition-colors hover:bg-white/10 hover:text-primary-400"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >

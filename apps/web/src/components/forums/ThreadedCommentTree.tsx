@@ -35,6 +35,7 @@ import {
 import { UserStars } from '@/components/gamification/UserStars';
 import { formatTimeAgo } from '@/lib/utils';
 import type { Comment } from '@/stores/forumStore';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 // =============================================================================
 // TYPES
@@ -237,10 +238,13 @@ const ThreadedComment = memo(function ThreadedComment({
         {/* Comment Header */}
         <div className="mb-2 flex items-center gap-3">
           {/* Avatar */}
-          <img
-            src={comment.author.avatarUrl || '/default-avatar.png'}
+          <ThemedAvatar
+            src={comment.author.avatarUrl}
             alt={comment.author.displayName || comment.author.username || 'User'}
-            className="h-8 w-8 rounded-full"
+            size="small"
+            avatarBorderId={
+              comment.author.avatarBorderId ?? comment.author.avatar_border_id ?? null
+            }
           />
 
           {/* Author Info */}

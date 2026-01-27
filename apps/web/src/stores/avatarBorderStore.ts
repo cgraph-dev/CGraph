@@ -228,21 +228,45 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
       initialize: async () => {
         set({ isLoading: true, error: null });
         try {
-          const response = await api.get('/api/v1/users/me/avatar-borders');
-          const data = response.data;
+          const response = await api.get('/api/v1/avatar-borders/unlocked');
+          const data = response.data || {};
+
+          // Fetch user preferences from customizations (stored in custom_config)
+          let preferences = DEFAULT_PREFERENCES;
+          try {
+            const customizationRes = await api.get('/api/v1/me/customizations');
+            const customConfig = customizationRes.data?.data?.custom_config || {};
+            const storedPrefs = customConfig.avatar_border_preferences;
+            if (storedPrefs && typeof storedPrefs === 'object') {
+              preferences = { ...DEFAULT_PREFERENCES, ...storedPrefs };
+            }
+          } catch (prefError) {
+            console.warn('Failed to fetch avatar border preferences:', prefError);
+          }
+
+          const unlocked = data.unlocked || [];
+          const equippedId = data.equipped_id || preferences.equippedBorderId;
 
           set({
             unlockedBorders: [
               // Always include free borders
               { borderId: 'none', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
               { borderId: 'static', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
-              { borderId: 'simple-glow', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
-              { borderId: 'gentle-pulse', unlockedAt: new Date().toISOString(), unlockSource: 'free' },
-              ...(data.unlocked || []),
+              {
+                borderId: 'simple-glow',
+                unlockedAt: new Date().toISOString(),
+                unlockSource: 'free',
+              },
+              {
+                borderId: 'gentle-pulse',
+                unlockedAt: new Date().toISOString(),
+                unlockSource: 'free',
+              },
+              ...unlocked,
             ],
             preferences: {
-              ...DEFAULT_PREFERENCES,
-              ...data.preferences,
+              ...preferences,
+              equippedBorderId: equippedId,
             },
             isLoading: false,
           });
@@ -269,7 +293,7 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
 
         set({ isSaving: true, error: null });
         try {
-          await api.post('/api/v1/users/me/avatar-border/equip', { borderId });
+          await api.post(`/api/v1/avatar-borders/${borderId}/equip`);
           set((state) => ({
             preferences: { ...state.preferences, equippedBorderId: borderId },
             previewBorderId: null,
@@ -311,7 +335,12 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
 
         set({ isSaving: true, error: null });
         try {
-          await api.post(`/api/v1/avatar-borders/${borderId}/unlock`);
+          try {
+            await api.post(`/api/v1/avatar-borders/${borderId}/purchase`);
+          } catch (purchaseError) {
+            // Fallback to legacy unlock endpoint
+            await api.post(`/api/v1/avatar-borders/${borderId}/unlock`);
+          }
           set({
             unlockedBorders: [
               ...unlockedBorders,
@@ -334,9 +363,15 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
       updatePreferences: async (updates: Partial<BorderPreference>) => {
         set({ isSaving: true, error: null });
         try {
-          await api.put('/api/v1/users/me/avatar-border/preferences', updates);
+          const mergedPreferences = { ...get().preferences, ...updates };
+          // Persist preferences via custom_config to avoid losing other customization keys
+          await api.patch('/api/v1/me/customizations', {
+            custom_config: {
+              avatar_border_preferences: mergedPreferences,
+            },
+          });
           set((state) => ({
-            preferences: { ...state.preferences, ...updates },
+            preferences: mergedPreferences,
             isSaving: false,
           }));
         } catch (error) {

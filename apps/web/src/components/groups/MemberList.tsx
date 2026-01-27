@@ -255,7 +255,14 @@ function MemberItem({
     >
       {/* Avatar with status */}
       <div className="relative">
-        <ThemedAvatar src={member.user.avatarUrl} alt={displayName} size="small" />
+        <ThemedAvatar
+          src={member.user.avatarUrl}
+          alt={displayName}
+          size="small"
+          avatarBorderId={
+            (member.user as any)?.avatarBorderId ?? (member.user as any)?.avatar_border_id
+          }
+        />
         <div
           className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-dark-900 ${statusColors[status]}`}
           title={statusLabels[status]}
@@ -371,7 +378,14 @@ function MemberContextMenu({
           {/* Header */}
           <div className="border-b border-gray-700/50 px-4 py-3">
             <div className="flex items-center gap-3">
-              <ThemedAvatar src={member.user.avatarUrl} alt={displayName} size="medium" />
+              <ThemedAvatar
+                src={member.user.avatarUrl}
+                alt={displayName}
+                size="medium"
+                avatarBorderId={
+                  (member.user as any)?.avatarBorderId ?? (member.user as any)?.avatar_border_id
+                }
+              />
               <div>
                 <p className="font-semibold text-white">{displayName}</p>
                 <p className="text-xs text-gray-400">@{member.user.username}</p>

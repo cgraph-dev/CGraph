@@ -20,6 +20,7 @@ import { GifPicker, type GifResult } from '@/components/chat/GifPicker';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import type { Sticker } from '@/data/stickers';
 import { api } from '@/lib/api';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 // Reserved for extended input features
 const _reservedIcons = { PaperClipIcon, AtSymbolIcon };
@@ -535,7 +536,14 @@ function MentionAutocomplete({
   void _onClose;
 
   const [users, setUsers] = useState<
-    Array<{ id: string; username: string; displayName: string; avatarUrl?: string }>
+    Array<{
+      id: string;
+      username: string;
+      displayName: string;
+      avatarUrl?: string;
+      avatarBorderId?: string | null;
+      avatar_border_id?: string | null;
+    }>
   >([]);
   const [isLoading, setIsLoading] = useState(false);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -565,6 +573,7 @@ function MentionAutocomplete({
               username: u.username,
               displayName: u.display_name || u.username,
               avatarUrl: u.avatar_url,
+              avatarBorderId: u.avatar_border_id || u.avatarBorderId || null,
             }))
           );
         } else {
@@ -634,10 +643,11 @@ function MentionAutocomplete({
             className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-dark-700"
           >
             {user.avatarUrl ? (
-              <img
+              <ThemedAvatar
                 src={user.avatarUrl}
                 alt={user.displayName}
-                className="h-8 w-8 rounded-full object-cover"
+                size="small"
+                avatarBorderId={user.avatarBorderId ?? user.avatar_border_id ?? null}
               />
             ) : (
               <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-600">

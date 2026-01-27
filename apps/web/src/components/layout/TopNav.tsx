@@ -81,9 +81,10 @@ export const TopNav: React.FC<TopNavProps> = ({
     const pathSegments = location.pathname.split('/').filter(Boolean);
     return pathSegments.map((segment, index) => ({
       label: segment.charAt(0).toUpperCase() + segment.slice(1),
-      path: index < pathSegments.length - 1 
-        ? '/' + pathSegments.slice(0, index + 1).join('/')
-        : undefined,
+      path:
+        index < pathSegments.length - 1
+          ? '/' + pathSegments.slice(0, index + 1).join('/')
+          : undefined,
     }));
   }, [location.pathname]);
 
@@ -130,20 +131,13 @@ export const TopNav: React.FC<TopNavProps> = ({
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className={`
-        sticky top-0 z-30 border-b border-white/5
-        ${getBackgroundClass()}
-        ${className}
-      `}
+      className={`sticky top-0 z-30 border-b border-white/5 ${getBackgroundClass()} ${className} `}
     >
-      <div className="px-4 h-16 flex items-center justify-between gap-4">
+      <div className="flex h-16 items-center justify-between gap-4 px-4">
         {/* Left section: Menu toggle and breadcrumbs */}
         <div className="flex items-center gap-4">
           {/* Mobile menu toggle */}
-          <button
-            onClick={onMenuToggle}
-            className="lg:hidden p-2 rounded-lg hover:bg-white/10"
-          >
+          <button onClick={onMenuToggle} className="rounded-lg p-2 hover:bg-white/10 lg:hidden">
             {isMobileMenuOpen ? (
               <XMarkIcon className="h-6 w-6 text-white" />
             ) : (
@@ -153,11 +147,8 @@ export const TopNav: React.FC<TopNavProps> = ({
 
           {/* Breadcrumbs */}
           {showBreadcrumbs && breadcrumbs.length > 0 && (
-            <nav className="hidden md:flex items-center gap-1 text-sm">
-              <Link 
-                to="/"
-                className="text-white/40 hover:text-white transition-colors"
-              >
+            <nav className="hidden items-center gap-1 text-sm md:flex">
+              <Link to="/" className="text-white/40 transition-colors hover:text-white">
                 Home
               </Link>
               {breadcrumbs.map((crumb) => (
@@ -166,12 +157,12 @@ export const TopNav: React.FC<TopNavProps> = ({
                   {crumb.path ? (
                     <Link
                       to={crumb.path}
-                      className="text-white/40 hover:text-white transition-colors"
+                      className="text-white/40 transition-colors hover:text-white"
                     >
                       {crumb.label}
                     </Link>
                   ) : (
-                    <span className="text-white font-medium">{crumb.label}</span>
+                    <span className="font-medium text-white">{crumb.label}</span>
                   )}
                 </React.Fragment>
               ))}
@@ -181,12 +172,9 @@ export const TopNav: React.FC<TopNavProps> = ({
 
         {/* Center section: Search */}
         {showSearch && (
-          <form 
-            onSubmit={handleSearch}
-            className="flex-1 max-w-md hidden sm:block"
-          >
+          <form onSubmit={handleSearch} className="hidden max-w-md flex-1 sm:block">
             <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+              <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
               <motion.input
                 type="text"
                 placeholder="Search..."
@@ -195,11 +183,11 @@ export const TopNav: React.FC<TopNavProps> = ({
                 onFocus={() => setIsSearchFocused(true)}
                 onBlur={() => setIsSearchFocused(false)}
                 animate={{
-                  backgroundColor: isSearchFocused 
-                    ? 'rgba(255, 255, 255, 0.1)' 
+                  backgroundColor: isSearchFocused
+                    ? 'rgba(255, 255, 255, 0.1)'
                     : 'rgba(255, 255, 255, 0.05)',
                 }}
-                className="w-full pl-10 pr-4 py-2 rounded-xl text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500/30 transition-all"
+                className="w-full rounded-xl py-2 pl-10 pr-4 text-white placeholder-white/40 transition-all focus:outline-none focus:ring-2 focus:ring-primary-500/30"
               />
               {searchQuery && (
                 <button
@@ -221,7 +209,7 @@ export const TopNav: React.FC<TopNavProps> = ({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={toggleDarkMode}
-            className="p-2 rounded-lg hover:bg-white/10"
+            className="rounded-lg p-2 hover:bg-white/10"
           >
             {isDarkMode ? (
               <SunIcon className="h-5 w-5 text-white/60" />
@@ -240,7 +228,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                   HapticFeedback.light();
                   setShowNotificationPanel(!showNotificationPanel);
                 }}
-                className="relative p-2 rounded-lg hover:bg-white/10"
+                className="relative rounded-lg p-2 hover:bg-white/10"
               >
                 {unreadCount > 0 ? (
                   <BellIconSolid className="h-5 w-5 text-white" />
@@ -251,7 +239,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-red-500 text-white text-xs font-bold rounded-full"
+                    className="absolute -right-0.5 -top-0.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-xs font-bold text-white"
                   >
                     {unreadCount > 99 ? '99+' : unreadCount}
                   </motion.span>
@@ -267,8 +255,8 @@ export const TopNav: React.FC<TopNavProps> = ({
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     className="absolute right-0 mt-2 w-80"
                   >
-                    <GlassCard variant="crystal" className="p-2 max-h-96 overflow-y-auto">
-                      <div className="flex items-center justify-between p-2 border-b border-white/10">
+                    <GlassCard variant="crystal" className="max-h-96 overflow-y-auto p-2">
+                      <div className="flex items-center justify-between border-b border-white/10 p-2">
                         <h3 className="font-semibold text-white">Notifications</h3>
                         <button className="text-xs text-primary-400 hover:text-primary-300">
                           Mark all read
@@ -279,24 +267,20 @@ export const TopNav: React.FC<TopNavProps> = ({
                           {notifications.slice(0, 5).map((notification) => (
                             <div
                               key={notification.id}
-                              className="p-2 hover:bg-white/5 rounded-lg cursor-pointer"
+                              className="cursor-pointer rounded-lg p-2 hover:bg-white/5"
                             >
                               <p className="text-sm text-white">{notification.title}</p>
-                              <p className="text-xs text-white/40 mt-1">
-                                {notification.createdAt}
-                              </p>
+                              <p className="mt-1 text-xs text-white/40">{notification.createdAt}</p>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <div className="py-8 text-center text-white/40">
-                          No notifications
-                        </div>
+                        <div className="py-8 text-center text-white/40">No notifications</div>
                       )}
                       <Link
                         to="/notifications"
                         onClick={() => setShowNotificationPanel(false)}
-                        className="block p-2 text-center text-sm text-primary-400 hover:text-primary-300 border-t border-white/10"
+                        className="block border-t border-white/10 p-2 text-center text-sm text-primary-400 hover:text-primary-300"
                       >
                         View all notifications
                       </Link>
@@ -317,16 +301,15 @@ export const TopNav: React.FC<TopNavProps> = ({
                   HapticFeedback.light();
                   setShowUserDropdown(!showUserDropdown);
                 }}
-                className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-white/10"
+                className="flex items-center gap-2 rounded-xl p-1.5 hover:bg-white/10"
               >
                 <ThemedAvatar
                   src={user.avatarUrl}
                   alt={user.displayName || user.username || 'User'}
                   size="small"
+                  avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
                 />
-                {isSubscribed && (
-                  <SparklesIcon className="h-4 w-4 text-amber-400" />
-                )}
+                {isSubscribed && <SparklesIcon className="h-4 w-4 text-amber-400" />}
               </motion.button>
 
               {/* User dropdown */}
@@ -339,7 +322,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                     className="absolute right-0 mt-2 w-56"
                   >
                     <GlassCard variant="crystal" className="p-2">
-                      <div className="p-3 border-b border-white/10">
+                      <div className="border-b border-white/10 p-3">
                         <p className="font-medium text-white">
                           {user.displayName || user.username}
                         </p>
@@ -350,7 +333,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                         <Link
                           to="/profile"
                           onClick={() => setShowUserDropdown(false)}
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 text-white/80 hover:text-white"
+                          className="flex items-center gap-3 rounded-lg px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white"
                         >
                           <UserCircleIcon className="h-5 w-5" />
                           Profile
@@ -358,7 +341,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                         <Link
                           to="/settings"
                           onClick={() => setShowUserDropdown(false)}
-                          className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 text-white/80 hover:text-white"
+                          className="flex items-center gap-3 rounded-lg px-3 py-2 text-white/80 hover:bg-white/10 hover:text-white"
                         >
                           <Cog6ToothIcon className="h-5 w-5" />
                           Settings
@@ -367,7 +350,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                           <Link
                             to="/premium"
                             onClick={() => setShowUserDropdown(false)}
-                            className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 text-amber-400"
+                            className="flex items-center gap-3 rounded-lg px-3 py-2 text-amber-400 hover:bg-white/10"
                           >
                             <SparklesIcon className="h-5 w-5" />
                             Upgrade to Premium
@@ -375,10 +358,10 @@ export const TopNav: React.FC<TopNavProps> = ({
                         )}
                       </div>
 
-                      <div className="pt-1 border-t border-white/10">
+                      <div className="border-t border-white/10 pt-1">
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-500/10 text-red-400"
+                          className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-red-400 hover:bg-red-500/10"
                         >
                           <ArrowRightOnRectangleIcon className="h-5 w-5" />
                           Sign Out

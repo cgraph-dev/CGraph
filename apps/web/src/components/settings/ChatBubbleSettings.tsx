@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChatBubbleStore } from '@/stores/chatBubbleStore';
+import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
@@ -36,9 +37,12 @@ const CATEGORY_COLORS: Record<BackgroundCategory, { bg: string; text: string; bo
 };
 
 export default function ChatBubbleSettings() {
-  const { style, updateStyle, resetStyle, applyPreset } =
-    useChatBubbleStore();
-  const [activeTab, setActiveTab] = useState<'colors' | 'shape' | 'effects' | 'animations' | 'layout' | 'backgrounds'>('colors');
+  const { style, updateStyle, resetStyle, applyPreset } = useChatBubbleStore();
+  const { updateChat } = useChatCustomization();
+  const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [activeTab, setActiveTab] = useState<
+    'colors' | 'shape' | 'effects' | 'animations' | 'layout' | 'backgrounds'
+  >('colors');
   const [selectedBackground, setSelectedBackground] = useState<string>('default_dark');
   const [backgroundCategory, setBackgroundCategory] = useState<BackgroundCategory | 'all'>('all');
 
@@ -63,19 +67,60 @@ export default function ChatBubbleSettings() {
     { id: 'modern', label: 'Modern', preview: 'bg-gradient-to-br from-purple-600 to-pink-600' },
     { id: 'retro', label: 'Retro', preview: 'bg-primary-600 border-2 border-primary-400' },
     { id: 'bubble', label: 'Bubble', preview: 'bg-blue-500' },
-    { id: 'glass', label: 'Glass', preview: 'bg-primary-500/30 backdrop-blur-md border border-primary-400/50' },
+    {
+      id: 'glass',
+      label: 'Glass',
+      preview: 'bg-primary-500/30 backdrop-blur-md border border-primary-400/50',
+    },
   ];
+
+  // Discord-style: silently sync relevant fields to backend (debounced)
+  useEffect(() => {
+    if (syncTimeoutRef.current) {
+      clearTimeout(syncTimeoutRef.current);
+    }
+
+    syncTimeoutRef.current = setTimeout(() => {
+      const shadowMap = (value: number) => {
+        if (value <= 0) return 'none';
+        if (value <= 15) return 'light';
+        if (value <= 35) return 'medium';
+        return 'strong';
+      };
+
+      updateChat({
+        bubbleStyle: style.bubbleShape,
+        bubbleColor: style.ownMessageBg,
+        bubbleOpacity: 100,
+        bubbleRadius: style.borderRadius,
+        bubbleShadow: shadowMap(style.shadowIntensity),
+        textColor: style.ownMessageText,
+        entranceAnimation: style.entranceAnimation,
+        hoverEffect: style.hoverEffect ? 'lift' : 'none',
+        glassEffect: style.glassEffect ? 'default' : 'none',
+        borderStyle: style.borderStyle,
+      }).catch(() => {
+        // Keep UI responsive even if sync fails
+      });
+    }, 500);
+
+    return () => {
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+      }
+    };
+  }, [style, updateChat]);
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h2 className="flex items-center gap-3 text-2xl font-bold text-white">
             <ChatBubbleLeftIcon className="h-7 w-7 text-primary-400" />
             Chat Bubble Customization
           </h2>
-          <p className="text-gray-400 mt-1">Personalize your message bubbles</p>
+          <p className="mt-1 text-gray-400">Personalize your message bubbles</p>
         </div>
 
         <button
@@ -85,7 +130,7 @@ export default function ChatBubbleSettings() {
               HapticFeedback.medium();
             }
           }}
-          className="px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-colors"
+          className="rounded-lg border border-red-500/30 bg-red-500/20 px-4 py-2 text-red-400 transition-colors hover:bg-red-500/30"
         >
           <ArrowPathIcon className="h-5 w-5" />
         </button>
@@ -93,8 +138,8 @@ export default function ChatBubbleSettings() {
 
       {/* Presets */}
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Quick Presets</h3>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+        <h3 className="mb-4 text-lg font-bold text-white">Quick Presets</h3>
+        <div className="grid grid-cols-3 gap-3 md:grid-cols-6">
           {presets.map((preset) => (
             <motion.button
               key={preset.id}
@@ -115,14 +160,22 @@ export default function ChatBubbleSettings() {
 
       {/* Preview */}
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Preview</h3>
-        <div className="space-y-4 p-4 bg-dark-900/50 rounded-xl">
+        <h3 className="mb-4 text-lg font-bold text-white">Preview</h3>
+        <div className="space-y-4 rounded-xl bg-dark-900/50 p-4">
           {/* Other person's message */}
-          <div className={`flex items-end gap-2 ${style.alignReceived === 'right' ? 'flex-row-reverse' : ''}`}>
+          <div
+            className={`flex items-end gap-2 ${style.alignReceived === 'right' ? 'flex-row-reverse' : ''}`}
+          >
             {style.showAvatar && (
-              <div className={`${
-                style.avatarSize === 'small' ? 'h-6 w-6' : style.avatarSize === 'large' ? 'h-10 w-10' : 'h-8 w-8'
-              } rounded-full bg-purple-600 flex-shrink-0`} />
+              <div
+                className={`${
+                  style.avatarSize === 'small'
+                    ? 'h-6 w-6'
+                    : style.avatarSize === 'large'
+                      ? 'h-10 w-10'
+                      : 'h-8 w-8'
+                } flex-shrink-0 rounded-full bg-purple-600`}
+              />
             )}
             <div
               className={`px-4 py-2 max-w-[${style.maxWidth}%]`}
@@ -135,12 +188,15 @@ export default function ChatBubbleSettings() {
                 color: style.otherMessageText,
                 backdropFilter: style.glassEffect ? `blur(${style.glassBlur}px)` : undefined,
                 boxShadow: `0 ${style.shadowIntensity / 10}px ${style.shadowIntensity / 5}px rgba(0,0,0,${style.shadowIntensity / 100})`,
-                border: style.borderWidth > 0 ? `${style.borderWidth}px solid rgba(255,255,255,0.1)` : undefined,
+                border:
+                  style.borderWidth > 0
+                    ? `${style.borderWidth}px solid rgba(255,255,255,0.1)`
+                    : undefined,
               }}
             >
               <p className="text-sm">Hey! How's it going?</p>
               {style.showTimestamp && style.timestampPosition === 'inside' && (
-                <span className="text-xs opacity-70 mt-1 block">12:34 PM</span>
+                <span className="mt-1 block text-xs opacity-70">12:34 PM</span>
               )}
             </div>
             {style.showTimestamp && style.timestampPosition === 'outside' && (
@@ -149,11 +205,19 @@ export default function ChatBubbleSettings() {
           </div>
 
           {/* Own message */}
-          <div className={`flex items-end gap-2 ${style.alignSent === 'left' ? '' : 'flex-row-reverse'}`}>
+          <div
+            className={`flex items-end gap-2 ${style.alignSent === 'left' ? '' : 'flex-row-reverse'}`}
+          >
             {style.showAvatar && (
-              <div className={`${
-                style.avatarSize === 'small' ? 'h-6 w-6' : style.avatarSize === 'large' ? 'h-10 w-10' : 'h-8 w-8'
-              } rounded-full bg-primary-600 flex-shrink-0`} />
+              <div
+                className={`${
+                  style.avatarSize === 'small'
+                    ? 'h-6 w-6'
+                    : style.avatarSize === 'large'
+                      ? 'h-10 w-10'
+                      : 'h-8 w-8'
+                } flex-shrink-0 rounded-full bg-primary-600`}
+              />
             )}
             <div
               className={`px-4 py-2 max-w-[${style.maxWidth}%]`}
@@ -166,12 +230,15 @@ export default function ChatBubbleSettings() {
                 color: style.ownMessageText,
                 backdropFilter: style.glassEffect ? `blur(${style.glassBlur}px)` : undefined,
                 boxShadow: `0 ${style.shadowIntensity / 10}px ${style.shadowIntensity / 5}px rgba(0,0,0,${style.shadowIntensity / 100})`,
-                border: style.borderWidth > 0 ? `${style.borderWidth}px solid rgba(255,255,255,0.1)` : undefined,
+                border:
+                  style.borderWidth > 0
+                    ? `${style.borderWidth}px solid rgba(255,255,255,0.1)`
+                    : undefined,
               }}
             >
               <p className="text-sm">Pretty good! Just customizing my chat bubbles 🎨</p>
               {style.showTimestamp && style.timestampPosition === 'inside' && (
-                <span className="text-xs opacity-70 mt-1 block">12:35 PM</span>
+                <span className="mt-1 block text-xs opacity-70">12:35 PM</span>
               )}
             </div>
             {style.showTimestamp && style.timestampPosition === 'outside' && (
@@ -192,7 +259,7 @@ export default function ChatBubbleSettings() {
                 setActiveTab(tab.id);
                 HapticFeedback.light();
               }}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all whitespace-nowrap ${
+              className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-3 font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white'
                   : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -239,39 +306,39 @@ export default function ChatBubbleSettings() {
 // Helper components for each tab
 function ColorsTab({ style, updateStyle }: any) {
   return (
-    <GlassCard variant="frosted" className="p-6 space-y-6">
+    <GlassCard variant="frosted" className="space-y-6 p-6">
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-2 block">Your Messages</label>
+        <label className="mb-2 block text-sm font-medium text-gray-300">Your Messages</label>
         <div className="flex items-center gap-3">
           <input
             type="color"
             value={style.ownMessageBg}
             onChange={(e) => updateStyle('ownMessageBg', e.target.value)}
-            className="h-10 w-20 rounded-lg cursor-pointer"
+            className="h-10 w-20 cursor-pointer rounded-lg"
           />
           <input
             type="text"
             value={style.ownMessageBg}
             onChange={(e) => updateStyle('ownMessageBg', e.target.value)}
-            className="flex-1 px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white text-sm font-mono"
+            className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
           />
         </div>
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-2 block">Other Messages</label>
+        <label className="mb-2 block text-sm font-medium text-gray-300">Other Messages</label>
         <div className="flex items-center gap-3">
           <input
             type="color"
             value={style.otherMessageBg}
             onChange={(e) => updateStyle('otherMessageBg', e.target.value)}
-            className="h-10 w-20 rounded-lg cursor-pointer"
+            className="h-10 w-20 cursor-pointer rounded-lg"
           />
           <input
             type="text"
             value={style.otherMessageBg}
             onChange={(e) => updateStyle('otherMessageBg', e.target.value)}
-            className="flex-1 px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white text-sm font-mono"
+            className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
           />
         </div>
       </div>
@@ -280,12 +347,12 @@ function ColorsTab({ style, updateStyle }: any) {
         <label className="text-sm font-medium text-gray-300">Use Gradient</label>
         <button
           onClick={() => updateStyle('useGradient', !style.useGradient)}
-          className={`relative w-12 h-6 rounded-full transition-colors ${
+          className={`relative h-6 w-12 rounded-full transition-colors ${
             style.useGradient ? 'bg-primary-600' : 'bg-dark-600'
           }`}
         >
           <motion.div
-            className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white"
+            className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white"
             animate={{ x: style.useGradient ? 24 : 0 }}
           />
         </button>
@@ -293,13 +360,13 @@ function ColorsTab({ style, updateStyle }: any) {
 
       {style.useGradient && (
         <div>
-          <label className="text-sm font-medium text-gray-300 mb-3 block">Gradient Direction</label>
+          <label className="mb-3 block text-sm font-medium text-gray-300">Gradient Direction</label>
           <div className="grid grid-cols-3 gap-2">
             {['to-r', 'to-l', 'to-br', 'to-bl', 'to-tr', 'to-tl'].map((dir) => (
               <button
                 key={dir}
                 onClick={() => updateStyle('gradientDirection', dir)}
-                className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                className={`rounded-lg px-3 py-2 text-xs font-medium transition-all ${
                   style.gradientDirection === dir
                     ? 'bg-primary-600 text-white'
                     : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -317,9 +384,9 @@ function ColorsTab({ style, updateStyle }: any) {
 
 function ShapeTab({ style, updateStyle }: any) {
   return (
-    <GlassCard variant="frosted" className="p-6 space-y-6">
+    <GlassCard variant="frosted" className="space-y-6 p-6">
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <label className="text-sm font-medium text-gray-300">Border Radius</label>
           <span className="text-sm text-primary-400">{style.borderRadius}px</span>
         </div>
@@ -334,13 +401,13 @@ function ShapeTab({ style, updateStyle }: any) {
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-3 block">Bubble Shape</label>
+        <label className="mb-3 block text-sm font-medium text-gray-300">Bubble Shape</label>
         <div className="grid grid-cols-2 gap-2">
           {['rounded', 'sharp', 'super-rounded', 'bubble', 'modern'].map((shape) => (
             <button
               key={shape}
               onClick={() => updateStyle('bubbleShape', shape)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-all ${
+              className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                 style.bubbleShape === shape
                   ? 'bg-primary-600 text-white'
                   : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -356,12 +423,12 @@ function ShapeTab({ style, updateStyle }: any) {
         <label className="text-sm font-medium text-gray-300">Show Tail</label>
         <button
           onClick={() => updateStyle('showTail', !style.showTail)}
-          className={`relative w-12 h-6 rounded-full transition-colors ${
+          className={`relative h-6 w-12 rounded-full transition-colors ${
             style.showTail ? 'bg-primary-600' : 'bg-dark-600'
           }`}
         >
           <motion.div
-            className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white"
+            className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white"
             animate={{ x: style.showTail ? 24 : 0 }}
           />
         </button>
@@ -372,17 +439,17 @@ function ShapeTab({ style, updateStyle }: any) {
 
 function EffectsTab({ style, updateStyle }: any) {
   return (
-    <GlassCard variant="frosted" className="p-6 space-y-6">
+    <GlassCard variant="frosted" className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium text-gray-300">Glass Effect</label>
         <button
           onClick={() => updateStyle('glassEffect', !style.glassEffect)}
-          className={`relative w-12 h-6 rounded-full transition-colors ${
+          className={`relative h-6 w-12 rounded-full transition-colors ${
             style.glassEffect ? 'bg-primary-600' : 'bg-dark-600'
           }`}
         >
           <motion.div
-            className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white"
+            className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white"
             animate={{ x: style.glassEffect ? 24 : 0 }}
           />
         </button>
@@ -390,7 +457,7 @@ function EffectsTab({ style, updateStyle }: any) {
 
       {style.glassEffect && (
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="mb-2 flex items-center justify-between">
             <label className="text-sm font-medium text-gray-300">Glass Blur</label>
             <span className="text-sm text-primary-400">{style.glassBlur}px</span>
           </div>
@@ -406,7 +473,7 @@ function EffectsTab({ style, updateStyle }: any) {
       )}
 
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <label className="text-sm font-medium text-gray-300">Shadow Intensity</label>
           <span className="text-sm text-primary-400">{style.shadowIntensity}%</span>
         </div>
@@ -421,7 +488,7 @@ function EffectsTab({ style, updateStyle }: any) {
       </div>
 
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <label className="text-sm font-medium text-gray-300">Border Width</label>
           <span className="text-sm text-primary-400">{style.borderWidth}px</span>
         </div>
@@ -440,15 +507,15 @@ function EffectsTab({ style, updateStyle }: any) {
 
 function AnimationsTab({ style, updateStyle }: any) {
   return (
-    <GlassCard variant="frosted" className="p-6 space-y-6">
+    <GlassCard variant="frosted" className="space-y-6 p-6">
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-3 block">Entrance Animation</label>
+        <label className="mb-3 block text-sm font-medium text-gray-300">Entrance Animation</label>
         <div className="grid grid-cols-3 gap-2">
           {['none', 'slide', 'fade', 'scale', 'bounce', 'flip'].map((anim) => (
             <button
               key={anim}
               onClick={() => updateStyle('entranceAnimation', anim)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-all ${
+              className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                 style.entranceAnimation === anim
                   ? 'bg-primary-600 text-white'
                   : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -464,25 +531,25 @@ function AnimationsTab({ style, updateStyle }: any) {
         <label className="text-sm font-medium text-gray-300">Hover Effect</label>
         <button
           onClick={() => updateStyle('hoverEffect', !style.hoverEffect)}
-          className={`relative w-12 h-6 rounded-full transition-colors ${
+          className={`relative h-6 w-12 rounded-full transition-colors ${
             style.hoverEffect ? 'bg-primary-600' : 'bg-dark-600'
           }`}
         >
           <motion.div
-            className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white"
+            className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white"
             animate={{ x: style.hoverEffect ? 24 : 0 }}
           />
         </button>
       </div>
 
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-3 block">Typing Indicator</label>
+        <label className="mb-3 block text-sm font-medium text-gray-300">Typing Indicator</label>
         <div className="grid grid-cols-2 gap-2">
           {['dots', 'wave', 'pulse', 'bars'].map((type) => (
             <button
               key={type}
               onClick={() => updateStyle('typingIndicatorStyle', type)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-all ${
+              className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                 style.typingIndicatorStyle === type
                   ? 'bg-primary-600 text-white'
                   : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -499,9 +566,9 @@ function AnimationsTab({ style, updateStyle }: any) {
 
 function LayoutTab({ style, updateStyle }: any) {
   return (
-    <GlassCard variant="frosted" className="p-6 space-y-6">
+    <GlassCard variant="frosted" className="space-y-6 p-6">
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <label className="text-sm font-medium text-gray-300">Max Width</label>
           <span className="text-sm text-primary-400">{style.maxWidth}%</span>
         </div>
@@ -519,12 +586,12 @@ function LayoutTab({ style, updateStyle }: any) {
         <label className="text-sm font-medium text-gray-300">Show Avatar</label>
         <button
           onClick={() => updateStyle('showAvatar', !style.showAvatar)}
-          className={`relative w-12 h-6 rounded-full transition-colors ${
+          className={`relative h-6 w-12 rounded-full transition-colors ${
             style.showAvatar ? 'bg-primary-600' : 'bg-dark-600'
           }`}
         >
           <motion.div
-            className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white"
+            className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white"
             animate={{ x: style.showAvatar ? 24 : 0 }}
           />
         </button>
@@ -532,13 +599,13 @@ function LayoutTab({ style, updateStyle }: any) {
 
       {style.showAvatar && (
         <div>
-          <label className="text-sm font-medium text-gray-300 mb-3 block">Avatar Size</label>
+          <label className="mb-3 block text-sm font-medium text-gray-300">Avatar Size</label>
           <div className="grid grid-cols-3 gap-2">
             {['small', 'medium', 'large'].map((size) => (
               <button
                 key={size}
                 onClick={() => updateStyle('avatarSize', size)}
-                className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-all ${
+                className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                   style.avatarSize === size
                     ? 'bg-primary-600 text-white'
                     : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -555,12 +622,12 @@ function LayoutTab({ style, updateStyle }: any) {
         <label className="text-sm font-medium text-gray-300">Show Timestamp</label>
         <button
           onClick={() => updateStyle('showTimestamp', !style.showTimestamp)}
-          className={`relative w-12 h-6 rounded-full transition-colors ${
+          className={`relative h-6 w-12 rounded-full transition-colors ${
             style.showTimestamp ? 'bg-primary-600' : 'bg-dark-600'
           }`}
         >
           <motion.div
-            className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white"
+            className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white"
             animate={{ x: style.showTimestamp ? 24 : 0 }}
           />
         </button>
@@ -568,13 +635,13 @@ function LayoutTab({ style, updateStyle }: any) {
 
       {style.showTimestamp && (
         <div>
-          <label className="text-sm font-medium text-gray-300 mb-3 block">Timestamp Position</label>
+          <label className="mb-3 block text-sm font-medium text-gray-300">Timestamp Position</label>
           <div className="grid grid-cols-2 gap-2">
             {['inside', 'outside'].map((pos) => (
               <button
                 key={pos}
                 onClick={() => updateStyle('timestampPosition', pos)}
-                className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-all ${
+                className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                   style.timestampPosition === pos
                     ? 'bg-primary-600 text-white'
                     : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -648,7 +715,7 @@ function BackgroundsTab({
                   setBackgroundCategory(cat.id);
                   HapticFeedback.light();
                 }}
-                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                className={`rounded-xl px-4 py-2 text-sm font-medium transition-all ${
                   backgroundCategory === cat.id
                     ? colors
                       ? `${colors.bg} ${colors.text} border ${colors.border}`
@@ -667,24 +734,27 @@ function BackgroundsTab({
 
       {/* Selected Background Preview */}
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Current Background Preview</h3>
-        <div className="relative rounded-xl overflow-hidden h-48">
+        <h3 className="mb-4 text-lg font-bold text-white">Current Background Preview</h3>
+        <div className="relative h-48 overflow-hidden rounded-xl">
           {/* Background */}
-          {backgrounds.find(bg => bg.id === selectedBackground) && (
+          {backgrounds.find((bg) => bg.id === selectedBackground) && (
             <motion.div
               className="absolute inset-0"
-              style={getBackgroundPreviewStyle(backgrounds.find(bg => bg.id === selectedBackground)!)}
+              style={getBackgroundPreviewStyle(
+                backgrounds.find((bg) => bg.id === selectedBackground)!
+              )}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
               {/* Animated effect overlay */}
-              {backgrounds.find(bg => bg.id === selectedBackground)?.animation && (
+              {backgrounds.find((bg) => bg.id === selectedBackground)?.animation && (
                 <motion.div
                   className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"
                   animate={{ x: ['-100%', '100%'] }}
                   transition={{
-                    duration: (backgrounds.find(bg => bg.id === selectedBackground)?.animation?.speed || 5),
+                    duration:
+                      backgrounds.find((bg) => bg.id === selectedBackground)?.animation?.speed || 5,
                     repeat: Infinity,
                     ease: 'linear',
                   }}
@@ -694,15 +764,15 @@ function BackgroundsTab({
           )}
 
           {/* Sample messages */}
-          <div className="relative z-10 p-4 space-y-3">
+          <div className="relative z-10 space-y-3 p-4">
             <div className="flex justify-start">
-              <div className="bg-dark-800/80 backdrop-blur-sm px-4 py-2 rounded-2xl rounded-bl-md max-w-[70%]">
+              <div className="max-w-[70%] rounded-2xl rounded-bl-md bg-dark-800/80 px-4 py-2 backdrop-blur-sm">
                 <p className="text-sm text-white">Hey! How's it going?</p>
                 <span className="text-xs text-gray-400">12:34 PM</span>
               </div>
             </div>
             <div className="flex justify-end">
-              <div className="bg-primary-600/80 backdrop-blur-sm px-4 py-2 rounded-2xl rounded-br-md max-w-[70%]">
+              <div className="max-w-[70%] rounded-2xl rounded-br-md bg-primary-600/80 px-4 py-2 backdrop-blur-sm">
                 <p className="text-sm text-white">Great! Just customizing my chat!</p>
                 <span className="text-xs text-white/70">12:35 PM</span>
               </div>
@@ -713,14 +783,14 @@ function BackgroundsTab({
 
       {/* Background Grid */}
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">
+        <h3 className="mb-4 text-lg font-bold text-white">
           Available Backgrounds
-          <span className="text-sm text-gray-400 font-normal ml-2">
+          <span className="ml-2 text-sm font-normal text-gray-400">
             ({backgrounds.length} backgrounds)
           </span>
         </h3>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
           {backgrounds.map((bg) => {
             const isOwned = ownedBackgrounds.includes(bg.id);
             const isSelected = selectedBackground === bg.id;
@@ -737,7 +807,7 @@ function BackgroundsTab({
                     HapticFeedback.heavy();
                   }
                 }}
-                className={`relative rounded-xl overflow-hidden transition-all ${
+                className={`relative overflow-hidden rounded-xl transition-all ${
                   isSelected
                     ? 'ring-2 ring-primary-500 ring-offset-2 ring-offset-dark-900'
                     : 'hover:ring-1 hover:ring-white/20'
@@ -746,10 +816,7 @@ function BackgroundsTab({
                 whileTap={{ scale: 0.98 }}
               >
                 {/* Background Preview */}
-                <div
-                  className="h-24 w-full"
-                  style={getBackgroundPreviewStyle(bg)}
-                >
+                <div className="h-24 w-full" style={getBackgroundPreviewStyle(bg)}>
                   {/* Animation indicator */}
                   {bg.animation && (
                     <motion.div
@@ -765,9 +832,9 @@ function BackgroundsTab({
 
                   {/* Lock overlay for unowned */}
                   {!isOwned && (
-                    <div className="absolute inset-0 bg-dark-900/60 flex items-center justify-center">
+                    <div className="absolute inset-0 flex items-center justify-center bg-dark-900/60">
                       <div className="text-center">
-                        <LockClosedIcon className="h-6 w-6 text-gray-400 mx-auto mb-1" />
+                        <LockClosedIcon className="mx-auto mb-1 h-6 w-6 text-gray-400" />
                         <span className="text-xs text-gray-400">{bg.coinPrice} coins</span>
                       </div>
                     </div>
@@ -776,7 +843,7 @@ function BackgroundsTab({
                   {/* Selected check */}
                   {isSelected && isOwned && (
                     <motion.div
-                      className="absolute top-2 right-2 bg-primary-500 rounded-full p-1"
+                      className="absolute right-2 top-2 rounded-full bg-primary-500 p-1"
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ type: 'spring', stiffness: 300 }}
@@ -787,16 +854,16 @@ function BackgroundsTab({
                 </div>
 
                 {/* Info */}
-                <div className="p-3 bg-dark-800">
-                  <p className="text-sm font-medium text-white truncate">{bg.name}</p>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${categoryColors.bg} ${categoryColors.text} ${categoryColors.border} border capitalize`}>
+                <div className="bg-dark-800 p-3">
+                  <p className="truncate text-sm font-medium text-white">{bg.name}</p>
+                  <div className="mt-1 flex items-center justify-between">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-xs ${categoryColors.bg} ${categoryColors.text} ${categoryColors.border} border capitalize`}
+                    >
                       {bg.category}
                     </span>
                     {bg.animation && (
-                      <span className="text-xs text-gray-400">
-                        {bg.animation.type}
-                      </span>
+                      <span className="text-xs text-gray-400">{bg.animation.type}</span>
                     )}
                   </div>
                 </div>
@@ -807,50 +874,50 @@ function BackgroundsTab({
       </GlassCard>
 
       {/* Animation Settings for Selected Background */}
-      {backgrounds.find(bg => bg.id === selectedBackground)?.animation && (
+      {backgrounds.find((bg) => bg.id === selectedBackground)?.animation && (
         <GlassCard variant="frosted" className="p-6">
-          <h3 className="text-lg font-bold text-white mb-4">Animation Settings</h3>
+          <h3 className="mb-4 text-lg font-bold text-white">Animation Settings</h3>
           <div className="space-y-4">
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="mb-2 flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-300">Animation Speed</label>
                 <span className="text-sm text-primary-400">
-                  {backgrounds.find(bg => bg.id === selectedBackground)?.animation?.speed}s
+                  {backgrounds.find((bg) => bg.id === selectedBackground)?.animation?.speed}s
                 </span>
               </div>
               <input
                 type="range"
                 min="1"
                 max="30"
-                defaultValue={backgrounds.find(bg => bg.id === selectedBackground)?.animation?.speed || 5}
+                defaultValue={
+                  backgrounds.find((bg) => bg.id === selectedBackground)?.animation?.speed || 5
+                }
                 className="w-full accent-primary-500"
               />
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="mb-2 flex items-center justify-between">
                 <label className="text-sm font-medium text-gray-300">Animation Intensity</label>
                 <span className="text-sm text-primary-400">
-                  {backgrounds.find(bg => bg.id === selectedBackground)?.animation?.intensity}%
+                  {backgrounds.find((bg) => bg.id === selectedBackground)?.animation?.intensity}%
                 </span>
               </div>
               <input
                 type="range"
                 min="0"
                 max="100"
-                defaultValue={backgrounds.find(bg => bg.id === selectedBackground)?.animation?.intensity || 50}
+                defaultValue={
+                  backgrounds.find((bg) => bg.id === selectedBackground)?.animation?.intensity || 50
+                }
                 className="w-full accent-primary-500"
               />
             </div>
 
             <div className="flex items-center justify-between">
               <label className="text-sm font-medium text-gray-300">Reduce Motion</label>
-              <button
-                className="relative w-12 h-6 rounded-full transition-colors bg-dark-600 hover:bg-dark-500"
-              >
-                <motion.div
-                  className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white"
-                />
+              <button className="relative h-6 w-12 rounded-full bg-dark-600 transition-colors hover:bg-dark-500">
+                <motion.div className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white" />
               </button>
             </div>
           </div>
@@ -860,11 +927,12 @@ function BackgroundsTab({
       {/* Info Box */}
       <GlassCard variant="crystal" glow className="p-4">
         <div className="flex items-start gap-3">
-          <SparklesIcon className="h-5 w-5 text-primary-400 flex-shrink-0 mt-0.5" />
+          <SparklesIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary-400" />
           <div>
             <p className="text-sm text-gray-300">
-              <strong className="text-white">Premium backgrounds</strong> include animated effects like waves, particles, and flowing gradients.
-              Unlock them with coins from the shop or by upgrading to Premium+.
+              <strong className="text-white">Premium backgrounds</strong> include animated effects
+              like waves, particles, and flowing gradients. Unlock them with coins from the shop or
+              by upgrading to Premium+.
             </p>
           </div>
         </div>

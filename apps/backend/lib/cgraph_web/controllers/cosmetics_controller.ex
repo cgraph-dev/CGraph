@@ -27,6 +27,8 @@ defmodule CGraphWeb.CosmeticsController do
   import Ecto.Query, warn: false
 
   alias CGraph.Repo
+  alias CGraph.Accounts
+  alias CGraph.Customizations
   alias CGraph.Gamification
   alias CGraph.Gamification.{
     AvatarBorder,
@@ -118,6 +120,11 @@ defmodule CGraphWeb.CosmeticsController do
           {:ok, updated} = user_border
           |> UserAvatarBorder.equip_changeset(%{is_equipped: true})
           |> Repo.update()
+
+          # Sync equipped border to user profile (discord-style: single source of truth)
+          border = Repo.get(AvatarBorder, border_id)
+          _ = sync_equipped_border(user, border)
+          _ = Customizations.update_user_customizations(user.id, %{avatar_border_id: border_id})
           
           conn
           |> put_status(:ok)
@@ -125,6 +132,36 @@ defmodule CGraphWeb.CosmeticsController do
         end
     end
   end
+
+  defp sync_equipped_border(user, %AvatarBorder{} = border) do
+    primary = List.first(border.colors || [])
+    secondary = border.colors |> List.wrap() |> Enum.at(1)
+    particle_type = Map.get(border.particle_config || %{}, "type")
+    glow_intensity =
+      case Map.get(border.glow_config || %{}, "intensity") do
+        val when is_number(val) -> trunc(val)
+        _ -> 50
+      end
+
+    Accounts.update_user(user, %{
+      avatar_border_id: border.id,
+      avatar_border_animation: border.animation_type,
+      avatar_border_color_primary: primary,
+      avatar_border_color_secondary: secondary,
+      avatar_border_particle_effect: particle_type,
+      avatar_border_glow_intensity: glow_intensity,
+      avatar_border_config: %{
+        border_style: border.border_style,
+        animation_speed: border.animation_speed,
+        animation_intensity: border.animation_intensity,
+        particle_config: border.particle_config,
+        glow_config: border.glow_config
+      },
+      avatar_border_equipped_at: DateTime.utc_now()
+    })
+  end
+
+  defp sync_equipped_border(_user, _border), do: {:ok, :skipped}
 
   @doc """
   POST /api/v1/avatar-borders/:id/purchase

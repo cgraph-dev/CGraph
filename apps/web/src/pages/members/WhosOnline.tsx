@@ -14,10 +14,11 @@ import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
 import OnlineStatusIndicator from '@/components/common/OnlineStatusIndicator';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 /**
  * Who's Online Page
- * 
+ *
  * MyBB-style who's online page with:
  * - Currently online users list
  * - Guest count
@@ -32,6 +33,7 @@ interface OnlineUser {
   username: string;
   displayName: string | null;
   avatarUrl: string | null;
+  avatarBorderId?: string | null;
   userGroup: string;
   userGroupColor: string | null;
   currentLocation: string;
@@ -68,7 +70,7 @@ export default function WhosOnline() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  
+
   // View mode
   const [viewMode, setViewMode] = useState<'list' | 'activity'>('list');
   const [showGuests, setShowGuests] = useState(true);
@@ -90,6 +92,7 @@ export default function WhosOnline() {
           username: (u.username as string) || 'Guest',
           displayName: (u.display_name as string) || null,
           avatarUrl: (u.avatar_url as string) || null,
+          avatarBorderId: (u.avatar_border_id as string) || (u.avatarBorderId as string) || null,
           userGroup: (u.user_group as string) || 'Member',
           userGroupColor: (u.user_group_color as string) || null,
           currentLocation: (u.current_location as string) || 'Unknown',
@@ -172,9 +175,9 @@ export default function WhosOnline() {
   const DeviceIcon = ({ device }: { device: OnlineUser['device'] }) => {
     switch (device) {
       case 'mobile':
-        return <DevicePhoneMobileIcon className="h-4 w-4 text-muted-foreground" title="Mobile" />;
+        return <DevicePhoneMobileIcon className="text-muted-foreground h-4 w-4" title="Mobile" />;
       case 'desktop':
-        return <ComputerDesktopIcon className="h-4 w-4 text-muted-foreground" title="Desktop" />;
+        return <ComputerDesktopIcon className="text-muted-foreground h-4 w-4" title="Desktop" />;
       default:
         return null;
     }
@@ -186,34 +189,34 @@ export default function WhosOnline() {
   const guestCount = stats?.guests || 0;
 
   return (
-    <div className="container mx-auto px-4 py-6 max-w-7xl">
+    <div className="container mx-auto max-w-7xl px-4 py-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
+      <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <GlobeAltIcon className="h-8 w-8 text-primary" />
+          <GlobeAltIcon className="text-primary h-8 w-8" />
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Who's Online</h1>
-            <p className="text-sm text-muted-foreground">
+            <h1 className="text-foreground text-2xl font-bold">Who's Online</h1>
+            <p className="text-muted-foreground text-sm">
               Last updated: {formatRelativeTime(lastUpdated.toISOString())}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 mt-4 sm:mt-0">
+        <div className="mt-4 flex items-center gap-3 sm:mt-0">
           {/* Auto-refresh toggle */}
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={autoRefresh}
               onChange={(e) => setAutoRefresh(e.target.checked)}
-              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              className="border-border text-primary focus:ring-primary h-4 w-4 rounded"
             />
             Auto-refresh
           </label>
 
           <button
             onClick={fetchOnlineData}
-            className="flex items-center gap-2 px-4 py-2 text-sm bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+            className="bg-secondary hover:bg-secondary/80 flex items-center gap-2 rounded-lg px-4 py-2 text-sm transition-colors"
             disabled={isLoading}
           >
             <ArrowPathIcon className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -223,75 +226,65 @@ export default function WhosOnline() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-        <div className="bg-card border border-border rounded-lg p-4">
+      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
+        <div className="bg-card border-border rounded-lg border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <UserGroupIcon className="h-5 w-5 text-primary" />
+              <div className="bg-primary/10 rounded-lg p-2">
+                <UserGroupIcon className="text-primary h-5 w-5" />
               </div>
-              <span className="text-sm font-medium text-muted-foreground">Total Online</span>
+              <span className="text-muted-foreground text-sm font-medium">Total Online</span>
             </div>
           </div>
-          <div className="mt-2 text-2xl font-bold text-foreground">
-            {stats?.totalOnline || 0}
-          </div>
+          <div className="text-foreground mt-2 text-2xl font-bold">{stats?.totalOnline || 0}</div>
         </div>
 
-        <div className="bg-card border border-border rounded-lg p-4">
+        <div className="bg-card border-border rounded-lg border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-green-500/10 rounded-lg">
+              <div className="rounded-lg bg-green-500/10 p-2">
                 <UserIcon className="h-5 w-5 text-green-500" />
               </div>
-              <span className="text-sm font-medium text-muted-foreground">Members</span>
+              <span className="text-muted-foreground text-sm font-medium">Members</span>
             </div>
           </div>
-          <div className="mt-2 text-2xl font-bold text-green-500">
-            {stats?.members || 0}
-          </div>
+          <div className="mt-2 text-2xl font-bold text-green-500">{stats?.members || 0}</div>
         </div>
 
-        <div className="bg-card border border-border rounded-lg p-4">
+        <div className="bg-card border-border rounded-lg border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-blue-500/10 rounded-lg">
+              <div className="rounded-lg bg-blue-500/10 p-2">
                 <EyeIcon className="h-5 w-5 text-blue-500" />
               </div>
-              <span className="text-sm font-medium text-muted-foreground">Guests</span>
+              <span className="text-muted-foreground text-sm font-medium">Guests</span>
             </div>
           </div>
-          <div className="mt-2 text-2xl font-bold text-blue-500">
-            {stats?.guests || 0}
-          </div>
+          <div className="mt-2 text-2xl font-bold text-blue-500">{stats?.guests || 0}</div>
         </div>
 
-        <div className="bg-card border border-border rounded-lg p-4">
+        <div className="bg-card border-border rounded-lg border p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-yellow-500/10 rounded-lg">
+              <div className="rounded-lg bg-yellow-500/10 p-2">
                 <ChartBarIcon className="h-5 w-5 text-yellow-500" />
               </div>
-              <span className="text-sm font-medium text-muted-foreground">Record</span>
+              <span className="text-muted-foreground text-sm font-medium">Record</span>
             </div>
           </div>
-          <div className="mt-2 text-2xl font-bold text-yellow-500">
-            {stats?.recordOnline || 0}
-          </div>
+          <div className="mt-2 text-2xl font-bold text-yellow-500">{stats?.recordOnline || 0}</div>
           {stats?.recordDate && (
-            <div className="text-xs text-muted-foreground mt-1">
-              {formatDate(stats.recordDate)}
-            </div>
+            <div className="text-muted-foreground mt-1 text-xs">{formatDate(stats.recordDate)}</div>
           )}
         </div>
       </div>
 
       {/* View toggle */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex items-center bg-muted rounded-lg p-1">
+      <div className="mb-6 flex items-center gap-4">
+        <div className="bg-muted flex items-center rounded-lg p-1">
           <button
             onClick={() => setViewMode('list')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
               viewMode === 'list'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
@@ -301,7 +294,7 @@ export default function WhosOnline() {
           </button>
           <button
             onClick={() => setViewMode('activity')}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
               viewMode === 'activity'
                 ? 'bg-background text-foreground shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
@@ -312,12 +305,12 @@ export default function WhosOnline() {
         </div>
 
         {viewMode === 'list' && (
-          <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <label className="flex cursor-pointer items-center gap-2 text-sm">
             <input
               type="checkbox"
               checked={showGuests}
               onChange={(e) => setShowGuests(e.target.checked)}
-              className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              className="border-border text-primary focus:ring-primary h-4 w-4 rounded"
             />
             Show guest count
           </label>
@@ -326,50 +319,52 @@ export default function WhosOnline() {
 
       {/* Error state */}
       {error && (
-        <div className="bg-destructive/10 text-destructive border border-destructive/20 rounded-lg p-4 mb-6">
+        <div className="bg-destructive/10 text-destructive border-destructive/20 mb-6 rounded-lg border p-4">
           {error}
         </div>
       )}
 
       {/* User List View */}
       {viewMode === 'list' && (
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
+        <div className="bg-card border-border overflow-hidden rounded-lg border">
           {/* Online Members */}
-          <div className="p-4 border-b border-border">
-            <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+          <div className="border-border border-b p-4">
+            <h2 className="text-foreground flex items-center gap-2 text-lg font-semibold">
+              <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
               Online Members ({memberUsers.length})
             </h2>
           </div>
 
           {isLoading ? (
             <div className="p-8 text-center">
-              <ArrowPathIcon className="h-8 w-8 mx-auto animate-spin text-primary mb-4" />
+              <ArrowPathIcon className="text-primary mx-auto mb-4 h-8 w-8 animate-spin" />
               <p className="text-muted-foreground">Loading online users...</p>
             </div>
           ) : memberUsers.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              <UserIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <div className="text-muted-foreground p-8 text-center">
+              <UserIcon className="mx-auto mb-4 h-12 w-12 opacity-50" />
               <p>No members currently online</p>
             </div>
           ) : (
-            <div className="divide-y divide-border">
+            <div className="divide-border divide-y">
               {memberUsers.map((user) => (
                 <div
                   key={user.id}
-                  className="flex items-center justify-between p-4 hover:bg-muted/30 transition-colors"
+                  className="hover:bg-muted/30 flex items-center justify-between p-4 transition-colors"
                 >
                   <div className="flex items-center gap-3">
                     <div className="relative">
                       {user.avatarUrl ? (
-                        <img
+                        <ThemedAvatar
                           src={user.avatarUrl}
-                          alt={user.username}
-                          className="w-10 h-10 rounded-full object-cover"
+                          alt={user.displayName || user.username}
+                          size="small"
+                          className="h-10 w-10"
+                          avatarBorderId={user.avatarBorderId}
                         />
                       ) : (
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <UserIcon className="h-5 w-5 text-primary" />
+                        <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                          <UserIcon className="text-primary h-5 w-5" />
                         </div>
                       )}
                       <OnlineStatusIndicator
@@ -386,7 +381,7 @@ export default function WhosOnline() {
                       >
                         {user.displayName || user.username}
                       </Link>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <div className="text-muted-foreground flex items-center gap-2 text-xs">
                         <span>{user.userGroup}</span>
                         <DeviceIcon device={user.device} />
                       </div>
@@ -394,7 +389,7 @@ export default function WhosOnline() {
                   </div>
 
                   <div className="text-right">
-                    <div className="text-sm text-foreground">
+                    <div className="text-foreground text-sm">
                       {user.currentLocationUrl ? (
                         <Link
                           to={user.currentLocationUrl}
@@ -406,7 +401,7 @@ export default function WhosOnline() {
                         user.currentLocation
                       )}
                     </div>
-                    <div className="flex items-center gap-1 text-xs text-muted-foreground justify-end">
+                    <div className="text-muted-foreground flex items-center justify-end gap-1 text-xs">
                       <ClockIcon className="h-3 w-3" />
                       {formatRelativeTime(user.lastActivity)}
                     </div>
@@ -418,8 +413,8 @@ export default function WhosOnline() {
 
           {/* Guests */}
           {showGuests && guestCount > 0 && (
-            <div className="p-4 bg-muted/30 border-t border-border">
-              <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="bg-muted/30 border-border border-t p-4">
+              <div className="text-muted-foreground flex items-center gap-2">
                 <EyeIcon className="h-5 w-5" />
                 <span>
                   <strong>{guestCount}</strong> guest{guestCount !== 1 ? 's' : ''} browsing
@@ -430,8 +425,8 @@ export default function WhosOnline() {
 
           {/* Bots */}
           {stats?.bots && stats.bots > 0 && (
-            <div className="p-4 bg-muted/30 border-t border-border">
-              <div className="flex items-center gap-2 text-muted-foreground">
+            <div className="bg-muted/30 border-border border-t p-4">
+              <div className="text-muted-foreground flex items-center gap-2">
                 <ComputerDesktopIcon className="h-5 w-5" />
                 <span>
                   <strong>{stats.bots}</strong> bot{stats.bots !== 1 ? 's' : ''} indexing
@@ -444,38 +439,34 @@ export default function WhosOnline() {
 
       {/* Activity Breakdown View */}
       {viewMode === 'activity' && (
-        <div className="bg-card border border-border rounded-lg overflow-hidden">
-          <div className="p-4 border-b border-border">
-            <h2 className="text-lg font-semibold text-foreground">
-              What Users Are Doing
-            </h2>
+        <div className="bg-card border-border overflow-hidden rounded-lg border">
+          <div className="border-border border-b p-4">
+            <h2 className="text-foreground text-lg font-semibold">What Users Are Doing</h2>
           </div>
 
           {isLoading ? (
             <div className="p-8 text-center">
-              <ArrowPathIcon className="h-8 w-8 mx-auto animate-spin text-primary mb-4" />
+              <ArrowPathIcon className="text-primary mx-auto mb-4 h-8 w-8 animate-spin" />
               <p className="text-muted-foreground">Loading activity data...</p>
             </div>
           ) : activityBreakdown.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              <ChartBarIcon className="h-12 w-12 mx-auto mb-4 opacity-50" />
+            <div className="text-muted-foreground p-8 text-center">
+              <ChartBarIcon className="mx-auto mb-4 h-12 w-12 opacity-50" />
               <p>No activity data available</p>
             </div>
           ) : (
-            <div className="p-4 space-y-4">
+            <div className="space-y-4 p-4">
               {activityBreakdown.map((activity, index) => (
                 <div key={index}>
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-foreground">
-                      {activity.location}
-                    </span>
-                    <span className="text-sm text-muted-foreground">
+                  <div className="mb-1 flex items-center justify-between">
+                    <span className="text-foreground text-sm font-medium">{activity.location}</span>
+                    <span className="text-muted-foreground text-sm">
                       {activity.count} ({activity.percentage}%)
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                  <div className="bg-muted h-2 w-full overflow-hidden rounded-full">
                     <div
-                      className="h-full bg-primary rounded-full transition-all duration-500"
+                      className="bg-primary h-full rounded-full transition-all duration-500"
                       style={{ width: `${activity.percentage}%` }}
                     />
                   </div>
@@ -487,23 +478,23 @@ export default function WhosOnline() {
       )}
 
       {/* Legend */}
-      <div className="mt-6 bg-card border border-border rounded-lg p-4">
-        <h3 className="text-sm font-semibold text-foreground mb-3">Legend</h3>
+      <div className="bg-card border-border mt-6 rounded-lg border p-4">
+        <h3 className="text-foreground mb-3 text-sm font-semibold">Legend</h3>
         <div className="flex flex-wrap gap-4 text-sm">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 bg-green-500 rounded-full" />
+            <span className="h-2 w-2 rounded-full bg-green-500" />
             <span className="text-muted-foreground">Online Member</span>
           </div>
           <div className="flex items-center gap-2">
-            <EyeIcon className="h-4 w-4 text-muted-foreground" />
+            <EyeIcon className="text-muted-foreground h-4 w-4" />
             <span className="text-muted-foreground">Guest</span>
           </div>
           <div className="flex items-center gap-2">
-            <ComputerDesktopIcon className="h-4 w-4 text-muted-foreground" />
+            <ComputerDesktopIcon className="text-muted-foreground h-4 w-4" />
             <span className="text-muted-foreground">Desktop</span>
           </div>
           <div className="flex items-center gap-2">
-            <DevicePhoneMobileIcon className="h-4 w-4 text-muted-foreground" />
+            <DevicePhoneMobileIcon className="text-muted-foreground h-4 w-4" />
             <span className="text-muted-foreground">Mobile</span>
           </div>
         </div>

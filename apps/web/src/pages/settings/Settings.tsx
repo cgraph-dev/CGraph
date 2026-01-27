@@ -11,6 +11,7 @@ import UICustomizationSettings from '@/components/settings/UICustomizationSettin
 import AvatarSettings from '@/components/settings/AvatarSettings';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   UserIcon,
@@ -290,10 +291,12 @@ function AccountSettings() {
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 ring-4 ring-primary-500/20">
             {user?.avatarUrl ? (
-              <img
+              <ThemedAvatar
                 src={user.avatarUrl}
-                alt=""
-                className="h-full w-full rounded-full object-cover"
+                alt={user?.displayName || user?.username || 'User'}
+                size="large"
+                className="h-16 w-16"
+                avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
               />
             ) : (
               <span className="text-2xl font-bold text-white">
@@ -329,7 +332,13 @@ function AccountSettings() {
         <div className="flex items-center gap-4">
           <div className="h-20 w-20 overflow-hidden rounded-full bg-dark-700 ring-2 ring-dark-600 transition-all hover:ring-primary-500">
             {user?.avatarUrl ? (
-              <img src={user.avatarUrl} alt="" className="h-full w-full object-cover" />
+              <ThemedAvatar
+                src={user.avatarUrl}
+                alt={user?.displayName || user?.username || 'User'}
+                size="large"
+                className="h-20 w-20"
+                avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
+              />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-3xl font-bold text-gray-400">
                 {(user?.displayName || user?.username || 'U').charAt(0).toUpperCase()}

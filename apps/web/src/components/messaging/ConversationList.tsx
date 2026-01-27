@@ -255,6 +255,7 @@ function ConversationItem({
 
   const name = getConversationName(conversation, currentUserId);
   const avatarUrl = getConversationAvatar(conversation, currentUserId);
+  const avatarBorderId = getConversationAvatarBorderId(conversation, currentUserId);
   const isOnline = getConversationOnlineStatus(conversation, currentUserId);
   const lastMessageTime = conversation.lastMessage?.createdAt
     ? formatMessageTime(conversation.lastMessage.createdAt)
@@ -287,7 +288,12 @@ function ConversationItem({
                 <UserGroupIcon className="h-6 w-6 text-white" />
               </div>
             ) : (
-              <ThemedAvatar src={avatarUrl} alt={name} size="medium" />
+              <ThemedAvatar
+                src={avatarUrl}
+                alt={name}
+                size="medium"
+                avatarBorderId={avatarBorderId}
+              />
             )}
             {isOnline && !conversation.isGroup && (
               <div className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-dark-900 bg-green-500" />
@@ -513,7 +519,14 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
                 }`}
               >
                 <div className="relative">
-                  <ThemedAvatar src={user.avatarUrl} alt={user.displayName} size="small" />
+                  <ThemedAvatar
+                    src={user.avatarUrl}
+                    alt={user.displayName}
+                    size="small"
+                    avatarBorderId={
+                      (user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id
+                    }
+                  />
                   {user.status === 'online' && (
                     <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-dark-900 bg-green-500" />
                   )}
@@ -570,6 +583,21 @@ function getConversationAvatar(conversation: Conversation, currentUserId?: strin
   }
   const otherParticipant = conversation.participants?.find((p) => p.userId !== currentUserId);
   return otherParticipant?.user?.avatarUrl || null;
+}
+
+function getConversationAvatarBorderId(
+  conversation: Conversation,
+  currentUserId?: string
+): string | null {
+  if (conversation.isGroup) {
+    return null;
+  }
+  const otherParticipant = conversation.participants?.find((p) => p.userId !== currentUserId);
+  return (
+    (otherParticipant as any)?.user?.avatarBorderId ??
+    (otherParticipant as any)?.user?.avatar_border_id ??
+    null
+  );
 }
 
 function getConversationOnlineStatus(conversation: Conversation, currentUserId?: string): boolean {

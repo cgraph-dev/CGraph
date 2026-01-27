@@ -23,6 +23,7 @@ const _reservedForumSearch = { ArrowTrendingUpIcon, CalendarIcon, useForumStore 
 void _reservedForumSearch;
 void (0 as unknown as PostType);
 import { formatTimeAgo } from '@/lib/utils';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { useDebounce } from '@/hooks/useDebounce';
 
 /**
@@ -46,6 +47,8 @@ interface SearchResult {
   author: {
     username: string;
     avatarUrl: string | null;
+    avatarBorderId?: string | null;
+    avatar_border_id?: string | null;
   };
   forumName?: string;
   forumSlug?: string;
@@ -237,10 +240,11 @@ export function ForumSearch({
     >
       <div className="flex items-start gap-3">
         {result.type === 'user' ? (
-          <img
-            src={result.author.avatarUrl || '/default-avatar.png'}
+          <ThemedAvatar
+            src={result.author.avatarUrl}
             alt={result.author.username}
-            className="h-10 w-10 rounded-full"
+            size="medium"
+            avatarBorderId={result.author.avatarBorderId ?? result.author.avatar_border_id ?? null}
           />
         ) : (
           <div

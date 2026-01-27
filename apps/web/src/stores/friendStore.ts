@@ -8,6 +8,8 @@ export interface Friend {
   username: string;
   displayName: string | null;
   avatarUrl: string | null;
+  avatarBorderId?: string | null;
+  avatar_border_id?: string | null;
   status: 'online' | 'idle' | 'dnd' | 'offline';
   statusMessage: string | null;
   friendshipId: string;
@@ -21,29 +23,47 @@ export interface FriendRequest {
     username: string;
     displayName: string | null;
     avatarUrl: string | null;
+    avatarBorderId?: string | null;
+    avatar_border_id?: string | null;
   };
   createdAt: string;
   type: 'incoming' | 'outgoing';
 }
 
 // Helper to normalize API response to our FriendRequest format
-function normalizeRequest(data: Record<string, unknown>, type: 'incoming' | 'outgoing'): FriendRequest {
+function normalizeRequest(
+  data: Record<string, unknown>,
+  type: 'incoming' | 'outgoing'
+): FriendRequest {
   // Backend returns 'from' for incoming and 'to' for outgoing requests
-  const userData = (type === 'incoming' ? data.from : data.to) as Record<string, unknown> | undefined;
-  
+  const userData = (type === 'incoming' ? data.from : data.to) as
+    | Record<string, unknown>
+    | undefined;
+
   return {
     id: data.id as string,
-    user: userData ? {
-      id: userData.id as string,
-      username: (userData.username as string) || 'Unknown',
-      displayName: (userData.display_name as string | null) || (userData.displayName as string | null) || null,
-      avatarUrl: (userData.avatar_url as string | null) || (userData.avatarUrl as string | null) || null,
-    } : {
-      id: 'unknown',
-      username: 'Unknown User',
-      displayName: null,
-      avatarUrl: null,
-    },
+    user: userData
+      ? {
+          id: userData.id as string,
+          username: (userData.username as string) || 'Unknown',
+          displayName:
+            (userData.display_name as string | null) ||
+            (userData.displayName as string | null) ||
+            null,
+          avatarUrl:
+            (userData.avatar_url as string | null) || (userData.avatarUrl as string | null) || null,
+          avatarBorderId:
+            (userData.avatar_border_id as string | null) ||
+            (userData.avatarBorderId as string | null) ||
+            null,
+          avatar_border_id: (userData.avatar_border_id as string | null) || null,
+        }
+      : {
+          id: 'unknown',
+          username: 'Unknown User',
+          displayName: null,
+          avatarUrl: null,
+        },
     createdAt: (data.sent_at as string) || (data.created_at as string) || new Date().toISOString(),
     type,
   };
@@ -52,12 +72,19 @@ function normalizeRequest(data: Record<string, unknown>, type: 'incoming' | 'out
 // Helper to normalize friend data from API
 function normalizeFriend(data: Record<string, unknown>): Friend {
   const userData = data.user as Record<string, unknown> | undefined;
-  
+
   return {
-    id: userData?.id as string || data.id as string,
+    id: (userData?.id as string) || (data.id as string),
     username: (userData?.username as string) || 'Unknown',
-    displayName: (userData?.display_name as string | null) || (userData?.displayName as string | null) || null,
-    avatarUrl: (userData?.avatar_url as string | null) || (userData?.avatarUrl as string | null) || null,
+    displayName:
+      (userData?.display_name as string | null) || (userData?.displayName as string | null) || null,
+    avatarUrl:
+      (userData?.avatar_url as string | null) || (userData?.avatarUrl as string | null) || null,
+    avatarBorderId:
+      (userData?.avatar_border_id as string | null) ||
+      (userData?.avatarBorderId as string | null) ||
+      null,
+    avatar_border_id: (userData?.avatar_border_id as string | null) || null,
     status: 'offline',
     statusMessage: null,
     friendshipId: data.id as string,
@@ -114,7 +141,7 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
     try {
       const response = await api.get('/api/v1/friends/requests');
       const rawRequests = ensureArray<Record<string, unknown>>(response.data, 'data');
-      const normalizedRequests = rawRequests.map(r => normalizeRequest(r, 'incoming'));
+      const normalizedRequests = rawRequests.map((r) => normalizeRequest(r, 'incoming'));
       set({
         pendingRequests: normalizedRequests,
       });
@@ -129,7 +156,7 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
     try {
       const response = await api.get('/api/v1/friends/sent');
       const rawRequests = ensureArray<Record<string, unknown>>(response.data, 'data');
-      const normalizedRequests = rawRequests.map(r => normalizeRequest(r, 'outgoing'));
+      const normalizedRequests = rawRequests.map((r) => normalizeRequest(r, 'outgoing'));
       set({
         sentRequests: normalizedRequests,
       });
@@ -150,7 +177,7 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
       // UID format: 10-digit number (new format) or 1-4 digit (legacy format)
       const cleaned = input.replace('#', '');
       const isUid = /^\d{1,10}$/.test(cleaned);
-      
+
       let payload: { user_id?: string; username?: string; email?: string; uid?: string };
       if (isUuid) {
         payload = { user_id: input };
@@ -162,7 +189,7 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
       } else {
         payload = { username: input };
       }
-      
+
       await api.post('/api/v1/friends', payload, {
         // Force a fresh idempotency key per request to avoid reuse conflicts in dev
         headers: { 'Idempotency-Key': createIdempotencyKey() },
@@ -184,10 +211,7 @@ export const useFriendStore = create<FriendState>()((set, get) => ({
     try {
       await api.post(`/api/v1/friends/${requestId}/accept`);
       // Refresh both lists
-      await Promise.all([
-        get().fetchFriends(),
-        get().fetchPendingRequests(),
-      ]);
+      await Promise.all([get().fetchFriends(), get().fetchPendingRequests()]);
       set({ isLoading: false });
     } catch (error: unknown) {
       set({

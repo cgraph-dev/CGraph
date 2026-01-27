@@ -47,6 +47,8 @@ export interface ForumModerator {
   username: string;
   displayName?: string | null;
   avatarUrl?: string | null;
+  avatarBorderId?: string | null;
+  avatar_border_id?: string | null;
   permissions: string[];
   addedAt: string;
 }
@@ -151,6 +153,8 @@ export interface Post {
     username: string | null;
     displayName: string | null;
     avatarUrl: string | null;
+    avatarBorderId?: string | null;
+    avatar_border_id?: string | null;
     reputation?: number; // User karma/reputation
   };
   forum: {
@@ -315,6 +319,8 @@ export interface Comment {
     username: string | null;
     displayName: string | null;
     avatarUrl: string | null;
+    avatarBorderId?: string | null;
+    avatar_border_id?: string | null;
     reputation?: number;
   };
   createdAt: string;

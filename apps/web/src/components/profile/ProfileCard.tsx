@@ -2,6 +2,8 @@ import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
+import { getBorderById } from '@/data/avatar-borders';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { AnimatedBadgeWithTooltip } from '@/components/badges/AnimatedBadge';
 import { TitleBadge } from '@/components/gamification/TitleBadge';
 import {
@@ -234,12 +236,15 @@ const MinimalLayout = memo(function MinimalLayout({
   sizeConfig,
   theme: _theme,
 }: LayoutProps) {
+  const userBorder = user.avatarBorderId ? getBorderById(user.avatarBorderId) : undefined;
+
   return (
     <div className="flex items-center gap-3">
       <AvatarBorderRenderer
         src={user.avatarUrl}
         alt={user.displayName}
         size={sizeConfig.avatar}
+        border={userBorder}
         interactive={false}
       />
       <div className="min-w-0 flex-1">
@@ -262,6 +267,8 @@ const CompactLayout = memo(function CompactLayout({
   sizeConfig,
   theme,
 }: LayoutProps) {
+  const userBorder = user.avatarBorderId ? getBorderById(user.avatarBorderId) : undefined;
+
   return (
     <div className="flex items-center gap-3">
       <div className="relative">
@@ -269,6 +276,7 @@ const CompactLayout = memo(function CompactLayout({
           src={user.avatarUrl}
           alt={user.displayName}
           size={sizeConfig.avatar}
+          border={userBorder}
           interactive={false}
         />
         {config.showLevel && (
@@ -316,6 +324,7 @@ const DetailedLayout = memo(function DetailedLayout({
   theme,
 }: LayoutProps) {
   const xpPercentage = (user.xp / user.xpToNextLevel) * 100;
+  const userBorder = user.avatarBorderId ? getBorderById(user.avatarBorderId) : undefined;
 
   return (
     <div className="space-y-4">
@@ -325,6 +334,7 @@ const DetailedLayout = memo(function DetailedLayout({
           src={user.avatarUrl}
           alt={user.displayName}
           size={sizeConfig.avatar}
+          border={userBorder}
           interactive={false}
         />
         <div className="min-w-0 flex-1">
@@ -415,6 +425,7 @@ const DetailedLayout = memo(function DetailedLayout({
 
 const GamingLayout = memo(function GamingLayout({ user, config, sizeConfig, theme }: LayoutProps) {
   const xpPercentage = (user.xp / user.xpToNextLevel) * 100;
+  const userBorder = user.avatarBorderId ? getBorderById(user.avatarBorderId) : undefined;
 
   return (
     <div className="space-y-3">
@@ -425,6 +436,7 @@ const GamingLayout = memo(function GamingLayout({ user, config, sizeConfig, them
             src={user.avatarUrl}
             alt={user.displayName}
             size={sizeConfig.avatar + 16}
+            border={userBorder}
             interactive={false}
           />
           <div
@@ -515,6 +527,8 @@ const GamingLayout = memo(function GamingLayout({ user, config, sizeConfig, them
 });
 
 const SocialLayout = memo(function SocialLayout({ user, config, sizeConfig, theme }: LayoutProps) {
+  const userBorder = user.avatarBorderId ? getBorderById(user.avatarBorderId) : undefined;
+
   return (
     <div className="space-y-3">
       {/* Header */}
@@ -523,6 +537,7 @@ const SocialLayout = memo(function SocialLayout({ user, config, sizeConfig, them
           src={user.avatarUrl}
           alt={user.displayName}
           size={sizeConfig.avatar}
+          border={userBorder}
           interactive={false}
         />
         <div className="flex-1">
@@ -544,11 +559,12 @@ const SocialLayout = memo(function SocialLayout({ user, config, sizeConfig, them
           <div className="mb-1 text-xs opacity-60">{user.mutualFriends.length} mutual friends</div>
           <div className="flex -space-x-2">
             {user.mutualFriends.slice(0, 5).map((friend) => (
-              <img
+              <ThemedAvatar
                 key={friend.id}
                 src={friend.avatarUrl}
                 alt={friend.username}
-                className="h-6 w-6 rounded-full border-2"
+                size="xs"
+                className="h-6 w-6 border-2"
                 style={{ borderColor: theme?.colors.surface }}
               />
             ))}
@@ -601,6 +617,8 @@ const CreatorLayout = memo(function CreatorLayout({
   sizeConfig,
   theme,
 }: LayoutProps) {
+  const userBorder = user.avatarBorderId ? getBorderById(user.avatarBorderId) : undefined;
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -609,6 +627,7 @@ const CreatorLayout = memo(function CreatorLayout({
           src={user.avatarUrl}
           alt={user.displayName}
           size={sizeConfig.avatar + 24}
+          border={userBorder}
           interactive={false}
           className="mx-auto"
         />

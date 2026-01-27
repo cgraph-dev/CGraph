@@ -16,6 +16,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { MessageSearch } from '@/components/messages/MessageSearch';
+import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 export default function Messages() {
   const { conversationId } = useParams();
@@ -379,6 +380,19 @@ function getConversationAvatar(conv: Conversation, currentUserId: string): strin
   return null;
 }
 
+function getConversationAvatarBorderId(conv: Conversation, currentUserId: string): string | null {
+  if (conv.type === 'direct') {
+    const otherParticipant = conv.participants.find((p) => p.userId !== currentUserId);
+    return (
+      (otherParticipant as any)?.user?.avatarBorderId ??
+      (otherParticipant as any)?.user?.avatar_border_id ??
+      null
+    );
+  }
+
+  return (conv as any)?.avatarBorderId ?? (conv as any)?.avatar_border_id ?? null;
+}
+
 // Enhanced Conversation item component
 function ConversationItem({
   conversation,
@@ -394,6 +408,7 @@ function ConversationItem({
   const [isHovered, setIsHovered] = useState(false);
   const name = getConversationName(conversation, currentUserId);
   const avatar = getConversationAvatar(conversation, currentUserId);
+  const avatarBorderId = getConversationAvatarBorderId(conversation, currentUserId);
   const otherParticipant = conversation.participants.find((p) => p.userId !== currentUserId);
   // Use Phoenix Presence for real-time online status (single source of truth)
   const isOnline = otherParticipant
@@ -438,15 +453,19 @@ function ConversationItem({
                 : 'bg-dark-700'
           }`}
         >
-          <div className="h-full w-full overflow-hidden rounded-full bg-dark-800">
-            {avatar ? (
-              <img src={avatar} alt={name} className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-400 to-purple-400 bg-clip-text text-sm font-bold text-transparent">
-                {name.charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
+          {avatar ? (
+            <ThemedAvatar
+              src={avatar}
+              alt={name}
+              size="medium"
+              className="h-full w-full"
+              avatarBorderId={avatarBorderId}
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-400 to-purple-400 bg-clip-text text-sm font-bold text-transparent">
+              {name.charAt(0).toUpperCase()}
+            </div>
+          )}
         </div>
         {conversation.type === 'direct' && isOnline && (
           <motion.div
