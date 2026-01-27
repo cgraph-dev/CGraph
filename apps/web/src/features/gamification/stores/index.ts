@@ -1,11 +1,12 @@
 /**
  * Gamification Stores
- * 
+ *
  * Zustand stores for gamification state management.
  */
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import type { Achievement, Quest, Title, XPTransaction } from './types';
 
 // Re-export legacy store
@@ -17,27 +18,27 @@ export interface GamificationState {
   totalXP: number;
   level: number;
   coins: number;
-  
+
   // Achievements
   achievements: Achievement[];
   unlockedAchievements: string[];
-  
+
   // Quests
   activeQuests: Quest[];
   completedQuests: string[];
-  
+
   // Titles
   titles: Title[];
   equippedTitle: string | null;
-  
+
   // Streaks
   currentStreak: number;
   longestStreak: number;
   lastActiveDate: string | null;
-  
+
   // XP History
   recentXPGains: XPTransaction[];
-  
+
   // Actions
   addXP: (amount: number, source: string) => void;
   spendCoins: (amount: number) => boolean;
@@ -46,7 +47,7 @@ export interface GamificationState {
   claimReward: (questId: string) => void;
   equipTitle: (titleId: string | null) => void;
   updateStreak: () => void;
-  
+
   // Computed
   getCurrentLevel: () => number;
   getProgress: () => number;
@@ -77,27 +78,27 @@ export const useGamificationStore = create<GamificationState>()(
       longestStreak: 0,
       lastActiveDate: null,
       recentXPGains: [],
-      
+
       // Actions
       addXP: (amount, source) => {
         const state = get();
         const newTotalXP = state.totalXP + amount;
         let newLevel = state.level;
         let newCurrentXP = state.currentXP + amount;
-        
+
         // Level up logic
         while (newCurrentXP >= getXPForLevel(newLevel)) {
           newCurrentXP -= getXPForLevel(newLevel);
           newLevel++;
         }
-        
+
         const transaction: XPTransaction = {
           id: Date.now().toString(),
           amount,
           source,
           timestamp: new Date().toISOString(),
         };
-        
+
         set({
           currentXP: newCurrentXP,
           totalXP: newTotalXP,
@@ -105,7 +106,7 @@ export const useGamificationStore = create<GamificationState>()(
           recentXPGains: [transaction, ...state.recentXPGains.slice(0, 9)],
         });
       },
-      
+
       spendCoins: (amount) => {
         const state = get();
         if (state.coins >= amount) {
@@ -114,7 +115,7 @@ export const useGamificationStore = create<GamificationState>()(
         }
         return false;
       },
-      
+
       unlockAchievement: (id) => {
         const state = get();
         if (!state.unlockedAchievements.includes(id)) {
@@ -123,7 +124,7 @@ export const useGamificationStore = create<GamificationState>()(
           });
         }
       },
-      
+
       completeQuest: (id) => {
         const state = get();
         if (!state.completedQuests.includes(id)) {
@@ -132,30 +133,30 @@ export const useGamificationStore = create<GamificationState>()(
           });
         }
       },
-      
+
       claimReward: (questId) => {
         const state = get();
-        const quest = state.activeQuests.find(q => q.id === questId);
+        const quest = state.activeQuests.find((q) => q.id === questId);
         if (quest && state.completedQuests.includes(questId)) {
           set({
             coins: state.coins + (quest.rewardCoins || 0),
-            activeQuests: state.activeQuests.filter(q => q.id !== questId),
+            activeQuests: state.activeQuests.filter((q) => q.id !== questId),
           });
           state.addXP(quest.rewardXP || 0, `Quest: ${quest.title}`);
         }
       },
-      
+
       equipTitle: (titleId) => {
         set({ equippedTitle: titleId });
       },
-      
+
       updateStreak: () => {
         const state = get();
         const today = new Date().toDateString();
         const yesterday = new Date(Date.now() - 86400000).toDateString();
-        
+
         if (state.lastActiveDate === today) return;
-        
+
         if (state.lastActiveDate === yesterday) {
           const newStreak = state.currentStreak + 1;
           set({
@@ -170,23 +171,23 @@ export const useGamificationStore = create<GamificationState>()(
           });
         }
       },
-      
+
       // Computed
       getCurrentLevel: () => get().level,
-      
+
       getProgress: () => {
         const state = get();
         const xpNeeded = getXPForLevel(state.level);
         return (state.currentXP / xpNeeded) * 100;
       },
-      
+
       getXPForNextLevel: () => {
         return getXPForLevel(get().level);
       },
-      
+
       checkAchievementProgress: (id) => {
         const state = get();
-        const achievement = state.achievements.find(a => a.id === id);
+        const achievement = state.achievements.find((a) => a.id === id);
         if (!achievement) return 0;
         const current = achievement.currentProgress ?? 0;
         const target = achievement.targetProgress ?? 1;
@@ -195,6 +196,7 @@ export const useGamificationStore = create<GamificationState>()(
     }),
     {
       name: 'cgraph-gamification',
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         currentXP: state.currentXP,
         totalXP: state.totalXP,

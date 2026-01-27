@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
 
 /**
@@ -668,6 +669,7 @@ export const useGamificationStore = create<GamificationState>()(
     }),
     {
       name: 'cgraph-gamification',
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         level: state.level,
         currentXP: state.currentXP,

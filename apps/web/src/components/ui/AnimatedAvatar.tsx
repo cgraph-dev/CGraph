@@ -1,7 +1,8 @@
 import { motion, AnimatePresence, type Transition, type TargetAndTransition } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 
 type AnimationReturn = {
   animate?: TargetAndTransition;
@@ -20,15 +21,37 @@ export type BorderCategory = 'free' | 'premium' | 'legendary' | 'limited';
 
 export type BorderStyleType =
   // Free styles
-  | 'none' | 'solid' | 'gradient' | 'pulse'
+  | 'none'
+  | 'solid'
+  | 'gradient'
+  | 'pulse'
   // Premium styles
-  | 'rainbow' | 'spin' | 'glow' | 'neon' | 'fire' | 'electric'
-  | 'aurora' | 'plasma' | 'cosmic' | 'matrix' | 'holographic'
-  | 'diamond' | 'emerald' | 'ruby' | 'sapphire' | 'amethyst'
+  | 'rainbow'
+  | 'spin'
+  | 'glow'
+  | 'neon'
+  | 'fire'
+  | 'electric'
+  | 'aurora'
+  | 'plasma'
+  | 'cosmic'
+  | 'matrix'
+  | 'holographic'
+  | 'diamond'
+  | 'emerald'
+  | 'ruby'
+  | 'sapphire'
+  | 'amethyst'
   // Legendary styles
-  | 'supernova' | 'black_hole' | 'quantum' | 'void' | 'celestial'
+  | 'supernova'
+  | 'black_hole'
+  | 'quantum'
+  | 'void'
+  | 'celestial'
   // Limited edition
-  | 'anniversary' | 'founders' | 'champion';
+  | 'anniversary'
+  | 'founders'
+  | 'champion';
 
 export interface AvatarStyle {
   borderStyle: BorderStyleType;
@@ -56,40 +79,236 @@ export interface BorderStyleInfo {
 // Border style metadata for shop/settings
 export const BORDER_STYLES: BorderStyleInfo[] = [
   // Free
-  { id: 'none', name: 'None', category: 'free', description: 'No border', coinPrice: 0, preview: '' },
-  { id: 'solid', name: 'Solid', category: 'free', description: 'Simple solid border', coinPrice: 0, preview: 'border-2 border-current' },
-  { id: 'gradient', name: 'Gradient', category: 'free', description: 'Smooth gradient border', coinPrice: 0, preview: 'bg-gradient-to-r from-primary-500 to-purple-500' },
-  { id: 'pulse', name: 'Pulse', category: 'free', description: 'Gentle pulsing animation', coinPrice: 0, preview: 'animate-pulse' },
+  {
+    id: 'none',
+    name: 'None',
+    category: 'free',
+    description: 'No border',
+    coinPrice: 0,
+    preview: '',
+  },
+  {
+    id: 'solid',
+    name: 'Solid',
+    category: 'free',
+    description: 'Simple solid border',
+    coinPrice: 0,
+    preview: 'border-2 border-current',
+  },
+  {
+    id: 'gradient',
+    name: 'Gradient',
+    category: 'free',
+    description: 'Smooth gradient border',
+    coinPrice: 0,
+    preview: 'bg-gradient-to-r from-primary-500 to-purple-500',
+  },
+  {
+    id: 'pulse',
+    name: 'Pulse',
+    category: 'free',
+    description: 'Gentle pulsing animation',
+    coinPrice: 0,
+    preview: 'animate-pulse',
+  },
 
   // Premium
-  { id: 'rainbow', name: 'Rainbow', category: 'premium', description: 'Cycling rainbow colors', coinPrice: 500, preview: '' },
-  { id: 'spin', name: 'Spinning', category: 'premium', description: 'Rotating gradient border', coinPrice: 600, preview: '' },
-  { id: 'glow', name: 'Soft Glow', category: 'premium', description: 'Ethereal glowing effect', coinPrice: 700, preview: '' },
-  { id: 'neon', name: 'Neon Sign', category: 'premium', description: 'Retro neon light effect', coinPrice: 800, preview: '' },
-  { id: 'fire', name: 'Inferno', category: 'premium', description: 'Blazing fire effect', coinPrice: 900, preview: '' },
-  { id: 'electric', name: 'Electric', category: 'premium', description: 'Crackling electricity', coinPrice: 900, preview: '' },
-  { id: 'aurora', name: 'Aurora Borealis', category: 'premium', description: 'Northern lights shimmer', coinPrice: 1000, preview: '' },
-  { id: 'plasma', name: 'Plasma', category: 'premium', description: 'Energetic plasma waves', coinPrice: 1100, preview: '' },
-  { id: 'cosmic', name: 'Cosmic Dust', category: 'premium', description: 'Starry cosmic effect', coinPrice: 1200, preview: '' },
-  { id: 'matrix', name: 'Digital Rain', category: 'premium', description: 'Matrix-style data rain', coinPrice: 1200, preview: '' },
-  { id: 'holographic', name: 'Holographic', category: 'premium', description: 'Prismatic holographic shift', coinPrice: 1500, preview: '' },
-  { id: 'diamond', name: 'Diamond', category: 'premium', description: 'Brilliant diamond sparkle', coinPrice: 1500, preview: '' },
-  { id: 'emerald', name: 'Emerald', category: 'premium', description: 'Lush emerald glow', coinPrice: 1300, preview: '' },
-  { id: 'ruby', name: 'Ruby', category: 'premium', description: 'Deep ruby radiance', coinPrice: 1300, preview: '' },
-  { id: 'sapphire', name: 'Sapphire', category: 'premium', description: 'Ocean blue brilliance', coinPrice: 1300, preview: '' },
-  { id: 'amethyst', name: 'Amethyst', category: 'premium', description: 'Mystical purple aura', coinPrice: 1300, preview: '' },
+  {
+    id: 'rainbow',
+    name: 'Rainbow',
+    category: 'premium',
+    description: 'Cycling rainbow colors',
+    coinPrice: 500,
+    preview: '',
+  },
+  {
+    id: 'spin',
+    name: 'Spinning',
+    category: 'premium',
+    description: 'Rotating gradient border',
+    coinPrice: 600,
+    preview: '',
+  },
+  {
+    id: 'glow',
+    name: 'Soft Glow',
+    category: 'premium',
+    description: 'Ethereal glowing effect',
+    coinPrice: 700,
+    preview: '',
+  },
+  {
+    id: 'neon',
+    name: 'Neon Sign',
+    category: 'premium',
+    description: 'Retro neon light effect',
+    coinPrice: 800,
+    preview: '',
+  },
+  {
+    id: 'fire',
+    name: 'Inferno',
+    category: 'premium',
+    description: 'Blazing fire effect',
+    coinPrice: 900,
+    preview: '',
+  },
+  {
+    id: 'electric',
+    name: 'Electric',
+    category: 'premium',
+    description: 'Crackling electricity',
+    coinPrice: 900,
+    preview: '',
+  },
+  {
+    id: 'aurora',
+    name: 'Aurora Borealis',
+    category: 'premium',
+    description: 'Northern lights shimmer',
+    coinPrice: 1000,
+    preview: '',
+  },
+  {
+    id: 'plasma',
+    name: 'Plasma',
+    category: 'premium',
+    description: 'Energetic plasma waves',
+    coinPrice: 1100,
+    preview: '',
+  },
+  {
+    id: 'cosmic',
+    name: 'Cosmic Dust',
+    category: 'premium',
+    description: 'Starry cosmic effect',
+    coinPrice: 1200,
+    preview: '',
+  },
+  {
+    id: 'matrix',
+    name: 'Digital Rain',
+    category: 'premium',
+    description: 'Matrix-style data rain',
+    coinPrice: 1200,
+    preview: '',
+  },
+  {
+    id: 'holographic',
+    name: 'Holographic',
+    category: 'premium',
+    description: 'Prismatic holographic shift',
+    coinPrice: 1500,
+    preview: '',
+  },
+  {
+    id: 'diamond',
+    name: 'Diamond',
+    category: 'premium',
+    description: 'Brilliant diamond sparkle',
+    coinPrice: 1500,
+    preview: '',
+  },
+  {
+    id: 'emerald',
+    name: 'Emerald',
+    category: 'premium',
+    description: 'Lush emerald glow',
+    coinPrice: 1300,
+    preview: '',
+  },
+  {
+    id: 'ruby',
+    name: 'Ruby',
+    category: 'premium',
+    description: 'Deep ruby radiance',
+    coinPrice: 1300,
+    preview: '',
+  },
+  {
+    id: 'sapphire',
+    name: 'Sapphire',
+    category: 'premium',
+    description: 'Ocean blue brilliance',
+    coinPrice: 1300,
+    preview: '',
+  },
+  {
+    id: 'amethyst',
+    name: 'Amethyst',
+    category: 'premium',
+    description: 'Mystical purple aura',
+    coinPrice: 1300,
+    preview: '',
+  },
 
   // Legendary
-  { id: 'supernova', name: 'Supernova', category: 'legendary', description: 'Explosive stellar burst', coinPrice: 3000, preview: '' },
-  { id: 'black_hole', name: 'Event Horizon', category: 'legendary', description: 'Gravitational distortion', coinPrice: 3500, preview: '' },
-  { id: 'quantum', name: 'Quantum Flux', category: 'legendary', description: 'Reality-bending particles', coinPrice: 4000, preview: '' },
-  { id: 'void', name: 'Void Walker', category: 'legendary', description: 'Dark matter emanation', coinPrice: 4500, preview: '' },
-  { id: 'celestial', name: 'Celestial', category: 'legendary', description: 'Heavenly divine light', coinPrice: 5000, preview: '' },
+  {
+    id: 'supernova',
+    name: 'Supernova',
+    category: 'legendary',
+    description: 'Explosive stellar burst',
+    coinPrice: 3000,
+    preview: '',
+  },
+  {
+    id: 'black_hole',
+    name: 'Event Horizon',
+    category: 'legendary',
+    description: 'Gravitational distortion',
+    coinPrice: 3500,
+    preview: '',
+  },
+  {
+    id: 'quantum',
+    name: 'Quantum Flux',
+    category: 'legendary',
+    description: 'Reality-bending particles',
+    coinPrice: 4000,
+    preview: '',
+  },
+  {
+    id: 'void',
+    name: 'Void Walker',
+    category: 'legendary',
+    description: 'Dark matter emanation',
+    coinPrice: 4500,
+    preview: '',
+  },
+  {
+    id: 'celestial',
+    name: 'Celestial',
+    category: 'legendary',
+    description: 'Heavenly divine light',
+    coinPrice: 5000,
+    preview: '',
+  },
 
   // Limited
-  { id: 'anniversary', name: 'Anniversary', category: 'limited', description: 'Special anniversary edition', coinPrice: 0, preview: '' },
-  { id: 'founders', name: 'Founders', category: 'limited', description: 'Exclusive to early adopters', coinPrice: 0, preview: '' },
-  { id: 'champion', name: 'Champion', category: 'limited', description: 'Leaderboard top 3 reward', coinPrice: 0, preview: '' },
+  {
+    id: 'anniversary',
+    name: 'Anniversary',
+    category: 'limited',
+    description: 'Special anniversary edition',
+    coinPrice: 0,
+    preview: '',
+  },
+  {
+    id: 'founders',
+    name: 'Founders',
+    category: 'limited',
+    description: 'Exclusive to early adopters',
+    coinPrice: 0,
+    preview: '',
+  },
+  {
+    id: 'champion',
+    name: 'Champion',
+    category: 'limited',
+    description: 'Leaderboard top 3 reward',
+    coinPrice: 0,
+    preview: '',
+  },
 ];
 
 const defaultAvatarStyle: AvatarStyle = {
@@ -143,6 +362,7 @@ export const useAvatarStyle = create<{
     }),
     {
       name: 'cgraph-avatar-style-v2',
+      storage: createJSONStorage(() => safeLocalStorage),
     }
   )
 );
@@ -179,12 +399,14 @@ export default function AnimatedAvatar({
   title,
 }: AnimatedAvatarProps) {
   const { style: globalStyle } = useAvatarStyle();
-  const style = useMemo(() =>
-    customStyle ? { ...globalStyle, ...customStyle } : globalStyle,
+  const style = useMemo(
+    () => (customStyle ? { ...globalStyle, ...customStyle } : globalStyle),
     [globalStyle, customStyle]
   );
 
-  const [particles, setParticles] = useState<{ id: number; x: number; y: number; delay: number }[]>([]);
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; delay: number }[]>(
+    []
+  );
 
   // Generate particles for effects
   useEffect(() => {
@@ -226,13 +448,20 @@ export default function AnimatedAvatar({
 
   const getShapeStyles = (): string => {
     switch (style.shape) {
-      case 'circle': return 'rounded-full';
-      case 'rounded-square': return 'rounded-2xl';
-      case 'hexagon': return 'rounded-xl [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]';
-      case 'octagon': return 'rounded-xl [clip-path:polygon(30%_0%,70%_0%,100%_30%,100%_70%,70%_100%,30%_100%,0%_70%,0%_30%)]';
-      case 'shield': return 'rounded-t-full rounded-b-[50%]';
-      case 'diamond': return '[clip-path:polygon(50%_0%,100%_50%,50%_100%,0%_50%)]';
-      default: return 'rounded-full';
+      case 'circle':
+        return 'rounded-full';
+      case 'rounded-square':
+        return 'rounded-2xl';
+      case 'hexagon':
+        return 'rounded-xl [clip-path:polygon(50%_0%,100%_25%,100%_75%,50%_100%,0%_75%,0%_25%)]';
+      case 'octagon':
+        return 'rounded-xl [clip-path:polygon(30%_0%,70%_0%,100%_30%,100%_70%,70%_100%,30%_100%,0%_70%,0%_30%)]';
+      case 'shield':
+        return 'rounded-t-full rounded-b-[50%]';
+      case 'diamond':
+        return '[clip-path:polygon(50%_0%,100%_50%,50%_100%,0%_50%)]';
+      default:
+        return 'rounded-full';
     }
   };
 
@@ -240,31 +469,56 @@ export default function AnimatedAvatar({
     const { borderStyle: bs, borderColor: c1, secondaryColor: c2 } = style;
 
     switch (bs) {
-      case 'none': return 'transparent';
-      case 'solid': return c1;
-      case 'gradient': return `linear-gradient(135deg, ${c1}, ${c2})`;
-      case 'rainbow': return 'linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000)';
-      case 'aurora': return 'linear-gradient(135deg, #00ff87, #60efff, #0061ff, #60efff, #00ff87)';
-      case 'plasma': return 'linear-gradient(135deg, #ff00ff, #00ffff, #ff00ff, #ffff00, #ff00ff)';
-      case 'cosmic': return 'linear-gradient(135deg, #1a1a2e, #4a148c, #311b92, #0d47a1, #1a1a2e)';
-      case 'matrix': return 'linear-gradient(180deg, #003300, #00ff00, #003300)';
-      case 'holographic': return 'linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0, #8a2be2, #ff0080)';
-      case 'diamond': return 'linear-gradient(135deg, #ffffff, #e0e0e0, #ffffff, #c0c0c0, #ffffff)';
-      case 'emerald': return 'linear-gradient(135deg, #004d00, #00ff00, #50c878, #00ff00, #004d00)';
-      case 'ruby': return 'linear-gradient(135deg, #8b0000, #ff0000, #ff6347, #ff0000, #8b0000)';
-      case 'sapphire': return 'linear-gradient(135deg, #000080, #0000ff, #4169e1, #0000ff, #000080)';
-      case 'amethyst': return 'linear-gradient(135deg, #4b0082, #8b00ff, #9932cc, #8b00ff, #4b0082)';
-      case 'fire': return 'linear-gradient(180deg, #ff4400, #ff8800, #ffcc00, #ff8800, #ff4400)';
-      case 'electric': return 'linear-gradient(135deg, #00ffff, #0088ff, #00ffff, #ffffff, #00ffff)';
-      case 'supernova': return 'radial-gradient(circle, #ffffff, #ffff00, #ff8800, #ff0000, #ff00ff)';
-      case 'black_hole': return 'radial-gradient(circle, #000000, #1a0033, #330066, #1a0033, #000000)';
-      case 'quantum': return 'linear-gradient(135deg, #00ff00, #ff00ff, #00ffff, #ffff00, #00ff00)';
-      case 'void': return 'radial-gradient(circle, #0d0015, #1a0033, #0d0015)';
-      case 'celestial': return 'linear-gradient(135deg, #ffd700, #ffffff, #87ceeb, #ffffff, #ffd700)';
-      case 'anniversary': return 'linear-gradient(135deg, #ffd700, #ff69b4, #ffd700)';
-      case 'founders': return 'linear-gradient(135deg, #00ff00, #ffd700, #00ff00)';
-      case 'champion': return 'linear-gradient(135deg, #ffd700, #c0c0c0, #cd7f32, #ffd700)';
-      default: return `linear-gradient(135deg, ${c1}, ${c2})`;
+      case 'none':
+        return 'transparent';
+      case 'solid':
+        return c1;
+      case 'gradient':
+        return `linear-gradient(135deg, ${c1}, ${c2})`;
+      case 'rainbow':
+        return 'linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3, #ff0000)';
+      case 'aurora':
+        return 'linear-gradient(135deg, #00ff87, #60efff, #0061ff, #60efff, #00ff87)';
+      case 'plasma':
+        return 'linear-gradient(135deg, #ff00ff, #00ffff, #ff00ff, #ffff00, #ff00ff)';
+      case 'cosmic':
+        return 'linear-gradient(135deg, #1a1a2e, #4a148c, #311b92, #0d47a1, #1a1a2e)';
+      case 'matrix':
+        return 'linear-gradient(180deg, #003300, #00ff00, #003300)';
+      case 'holographic':
+        return 'linear-gradient(135deg, #ff0080, #ff8c00, #40e0d0, #8a2be2, #ff0080)';
+      case 'diamond':
+        return 'linear-gradient(135deg, #ffffff, #e0e0e0, #ffffff, #c0c0c0, #ffffff)';
+      case 'emerald':
+        return 'linear-gradient(135deg, #004d00, #00ff00, #50c878, #00ff00, #004d00)';
+      case 'ruby':
+        return 'linear-gradient(135deg, #8b0000, #ff0000, #ff6347, #ff0000, #8b0000)';
+      case 'sapphire':
+        return 'linear-gradient(135deg, #000080, #0000ff, #4169e1, #0000ff, #000080)';
+      case 'amethyst':
+        return 'linear-gradient(135deg, #4b0082, #8b00ff, #9932cc, #8b00ff, #4b0082)';
+      case 'fire':
+        return 'linear-gradient(180deg, #ff4400, #ff8800, #ffcc00, #ff8800, #ff4400)';
+      case 'electric':
+        return 'linear-gradient(135deg, #00ffff, #0088ff, #00ffff, #ffffff, #00ffff)';
+      case 'supernova':
+        return 'radial-gradient(circle, #ffffff, #ffff00, #ff8800, #ff0000, #ff00ff)';
+      case 'black_hole':
+        return 'radial-gradient(circle, #000000, #1a0033, #330066, #1a0033, #000000)';
+      case 'quantum':
+        return 'linear-gradient(135deg, #00ff00, #ff00ff, #00ffff, #ffff00, #00ff00)';
+      case 'void':
+        return 'radial-gradient(circle, #0d0015, #1a0033, #0d0015)';
+      case 'celestial':
+        return 'linear-gradient(135deg, #ffd700, #ffffff, #87ceeb, #ffffff, #ffd700)';
+      case 'anniversary':
+        return 'linear-gradient(135deg, #ffd700, #ff69b4, #ffd700)';
+      case 'founders':
+        return 'linear-gradient(135deg, #00ff00, #ffd700, #00ff00)';
+      case 'champion':
+        return 'linear-gradient(135deg, #ffd700, #c0c0c0, #cd7f32, #ffd700)';
+      default:
+        return `linear-gradient(135deg, ${c1}, ${c2})`;
     }
   };
 
@@ -428,13 +682,20 @@ export default function AnimatedAvatar({
 
   const getParticleEmoji = () => {
     switch (style.particleEffect) {
-      case 'sparkles': return ['✨', '⭐', '💫'];
-      case 'bubbles': return ['○', '◯', '●'];
-      case 'flames': return ['🔥', '💥', '⚡'];
-      case 'snow': return ['❄️', '❅', '❆'];
-      case 'hearts': return ['❤️', '💕', '💖'];
-      case 'stars': return ['⭐', '🌟', '💫'];
-      default: return [];
+      case 'sparkles':
+        return ['✨', '⭐', '💫'];
+      case 'bubbles':
+        return ['○', '◯', '●'];
+      case 'flames':
+        return ['🔥', '💥', '⚡'];
+      case 'snow':
+        return ['❄️', '❅', '❆'];
+      case 'hearts':
+        return ['❤️', '💕', '💖'];
+      case 'stars':
+        return ['⭐', '🌟', '💫'];
+      default:
+        return [];
     }
   };
 
@@ -447,36 +708,37 @@ export default function AnimatedAvatar({
     <div className={`relative inline-block ${className}`}>
       {/* Particle Effects */}
       <AnimatePresence>
-        {style.particleEffect !== 'none' && particles.map((particle) => (
-          <motion.span
-            key={particle.id}
-            className="absolute pointer-events-none z-20 text-xs"
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{
-              opacity: [0, 1, 0],
-              scale: [0, 1, 0],
-              x: [0, (Math.random() - 0.5) * 30],
-              y: [0, -20 - Math.random() * 20],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              delay: particle.delay,
-              ease: 'easeOut',
-            }}
-            style={{
-              left: `${particle.x}%`,
-              top: `${particle.y}%`,
-            }}
-          >
-            {getParticleEmoji()[Math.floor(Math.random() * getParticleEmoji().length)]}
-          </motion.span>
-        ))}
+        {style.particleEffect !== 'none' &&
+          particles.map((particle) => (
+            <motion.span
+              key={particle.id}
+              className="pointer-events-none absolute z-20 text-xs"
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{
+                opacity: [0, 1, 0],
+                scale: [0, 1, 0],
+                x: [0, (Math.random() - 0.5) * 30],
+                y: [0, -20 - Math.random() * 20],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                delay: particle.delay,
+                ease: 'easeOut',
+              }}
+              style={{
+                left: `${particle.x}%`,
+                top: `${particle.y}%`,
+              }}
+            >
+              {getParticleEmoji()[Math.floor(Math.random() * getParticleEmoji().length)]}
+            </motion.span>
+          ))}
       </AnimatePresence>
 
       {/* Main Avatar Container */}
       <motion.div
-        className={`${config.container} ${shapeClass} overflow-visible relative`}
+        className={`${config.container} ${shapeClass} relative overflow-visible`}
         style={{
           background: borderGradient,
           padding: style.borderStyle !== 'none' ? `${style.borderWidth}px` : 0,
@@ -487,20 +749,12 @@ export default function AnimatedAvatar({
         whileTap={onClick ? { scale: 0.95 } : {}}
       >
         {/* Inner Avatar */}
-        <div className={`h-full w-full ${shapeClass} overflow-hidden bg-dark-800 relative`}>
+        <div className={`h-full w-full ${shapeClass} relative overflow-hidden bg-dark-800`}>
           {src ? (
-            <img
-              src={src}
-              alt={alt}
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
+            <img src={src} alt={alt} className="h-full w-full object-cover" loading="lazy" />
           ) : (
-            <div className="h-full w-full flex items-center justify-center bg-gradient-to-br from-primary-500 to-purple-600">
-              <span
-                className="text-white font-bold"
-                style={{ fontSize: config.text }}
-              >
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary-500 to-purple-600">
+              <span className="font-bold text-white" style={{ fontSize: config.text }}>
                 {fallbackText || (alt ? alt.charAt(0).toUpperCase() : '?')}
               </span>
             </div>
@@ -508,10 +762,10 @@ export default function AnimatedAvatar({
 
           {/* Premium/Verified Badge Overlay */}
           {(isPremium || isVerified) && (
-            <div className="absolute top-0 right-0 transform translate-x-1 -translate-y-1">
+            <div className="absolute right-0 top-0 -translate-y-1 translate-x-1 transform">
               {isPremium && (
                 <motion.div
-                  className="w-4 h-4 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center"
+                  className="flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-yellow-400 to-orange-500"
                   animate={{ rotate: [0, 10, -10, 0] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
@@ -526,14 +780,15 @@ export default function AnimatedAvatar({
       {/* Level Badge */}
       {(style.showLevel || level) && level !== undefined && (
         <motion.div
-          className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 px-1.5 py-0.5 rounded-full text-white font-bold z-10"
+          className="absolute -bottom-1 left-1/2 z-10 -translate-x-1/2 transform rounded-full px-1.5 py-0.5 font-bold text-white"
           style={{
             fontSize: config.levelSize,
-            background: style.levelBadgeStyle === 'ornate'
-              ? 'linear-gradient(135deg, #ffd700, #ff8c00)'
-              : style.levelBadgeStyle === 'cyber'
-              ? 'linear-gradient(135deg, #00ff00, #00ffff)'
-              : 'linear-gradient(135deg, #10b981, #8b5cf6)',
+            background:
+              style.levelBadgeStyle === 'ornate'
+                ? 'linear-gradient(135deg, #ffd700, #ff8c00)'
+                : style.levelBadgeStyle === 'cyber'
+                  ? 'linear-gradient(135deg, #00ff00, #00ffff)'
+                  : 'linear-gradient(135deg, #10b981, #8b5cf6)',
             boxShadow: '0 2px 4px rgba(0,0,0,0.3)',
           }}
           initial={{ scale: 0 }}
@@ -546,13 +801,14 @@ export default function AnimatedAvatar({
       {/* Status Indicator */}
       {showStatus && (
         <motion.div
-          className={`absolute bottom-0 right-0 ${config.badge} rounded-full ${statusColors[statusType].bg} border-2 border-dark-900 z-10`}
-          animate={statusType === 'online' ? {
-            boxShadow: [
-              `0 0 0 0 ${statusColors[statusType].glow}`,
-              `0 0 0 4px transparent`,
-            ],
-          } : {}}
+          className={`absolute bottom-0 right-0 ${config.badge} rounded-full ${statusColors[statusType].bg} z-10 border-2 border-dark-900`}
+          animate={
+            statusType === 'online'
+              ? {
+                  boxShadow: [`0 0 0 0 ${statusColors[statusType].glow}`, `0 0 0 4px transparent`],
+                }
+              : {}
+          }
           transition={{ duration: 2, repeat: Infinity }}
         />
       )}
@@ -560,12 +816,12 @@ export default function AnimatedAvatar({
       {/* Title Display */}
       {title && (
         <motion.div
-          className="absolute -bottom-5 left-1/2 transform -translate-x-1/2 whitespace-nowrap"
+          className="absolute -bottom-5 left-1/2 -translate-x-1/2 transform whitespace-nowrap"
           initial={{ opacity: 0, y: -5 }}
           animate={{ opacity: 1, y: 0 }}
         >
           <span
-            className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+            className="rounded-full px-2 py-0.5 text-[10px] font-bold"
             style={{
               background: `linear-gradient(135deg, ${title.color}40, ${title.color}20)`,
               color: title.color,
@@ -592,7 +848,7 @@ export function AvatarStylePicker() {
     { id: 'limited', name: 'Limited', description: 'Special editions' },
   ];
 
-  const filteredStyles = BORDER_STYLES.filter(s => s.category === activeCategory);
+  const filteredStyles = BORDER_STYLES.filter((s) => s.category === activeCategory);
 
   return (
     <div className="space-y-6">
@@ -600,14 +856,14 @@ export function AvatarStylePicker() {
         <h3 className="text-lg font-bold text-white">Avatar Customization</h3>
         <button
           onClick={resetStyle}
-          className="text-sm text-gray-400 hover:text-white transition-colors"
+          className="text-sm text-gray-400 transition-colors hover:text-white"
         >
           Reset to Default
         </button>
       </div>
 
       {/* Preview */}
-      <div className="flex items-center justify-center p-8 bg-dark-800/50 rounded-xl relative overflow-hidden">
+      <div className="relative flex items-center justify-center overflow-hidden rounded-xl bg-dark-800/50 p-8">
         <div className="absolute inset-0 bg-gradient-to-br from-primary-500/5 to-purple-500/5" />
         <AnimatedAvatar
           alt="Preview"
@@ -627,7 +883,7 @@ export function AvatarStylePicker() {
           <button
             key={cat.id}
             onClick={() => setActiveCategory(cat.id)}
-            className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all ${
               activeCategory === cat.id
                 ? 'bg-primary-600 text-white'
                 : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -640,7 +896,7 @@ export function AvatarStylePicker() {
 
       {/* Border Styles Grid */}
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-3 block">Border Style</label>
+        <label className="mb-3 block text-sm font-medium text-gray-300">Border Style</label>
         <div className="grid grid-cols-3 gap-2">
           {filteredStyles.map((bs) => {
             const isOwned = ownedStyles.includes(bs.id);
@@ -651,27 +907,26 @@ export function AvatarStylePicker() {
                 key={bs.id}
                 onClick={() => isOwned && updateStyle('borderStyle', bs.id)}
                 disabled={!isOwned}
-                className={`p-3 rounded-lg text-xs font-medium transition-all relative overflow-hidden ${
+                className={`relative overflow-hidden rounded-lg p-3 text-xs font-medium transition-all ${
                   isSelected
                     ? 'bg-primary-600 text-white ring-2 ring-primary-400'
                     : isOwned
-                    ? 'bg-dark-700 text-gray-300 hover:bg-dark-600'
-                    : 'bg-dark-800 text-gray-500 cursor-not-allowed opacity-60'
+                      ? 'bg-dark-700 text-gray-300 hover:bg-dark-600'
+                      : 'cursor-not-allowed bg-dark-800 text-gray-500 opacity-60'
                 }`}
                 whileHover={isOwned ? { scale: 1.02 } : {}}
                 whileTap={isOwned ? { scale: 0.98 } : {}}
               >
                 <div className="font-semibold">{bs.name}</div>
                 {!isOwned && (
-                  <div className="text-[10px] text-yellow-500 mt-1">
-                    🔒 {bs.coinPrice} coins
-                  </div>
+                  <div className="mt-1 text-[10px] text-yellow-500">🔒 {bs.coinPrice} coins</div>
                 )}
                 {bs.category === 'legendary' && isOwned && (
                   <motion.div
-                    className="absolute inset-0 pointer-events-none"
+                    className="pointer-events-none absolute inset-0"
                     style={{
-                      background: 'linear-gradient(135deg, transparent 40%, rgba(255,215,0,0.1) 50%, transparent 60%)',
+                      background:
+                        'linear-gradient(135deg, transparent 40%, rgba(255,215,0,0.1) 50%, transparent 60%)',
                     }}
                     animate={{ x: ['-100%', '200%'] }}
                     transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
@@ -685,7 +940,7 @@ export function AvatarStylePicker() {
 
       {/* Border Width */}
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <label className="text-sm font-medium text-gray-300">Border Width</label>
           <span className="text-sm text-primary-400">{style.borderWidth}px</span>
         </div>
@@ -702,36 +957,36 @@ export function AvatarStylePicker() {
       {/* Colors */}
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium text-gray-300 mb-2 block">Primary Color</label>
+          <label className="mb-2 block text-sm font-medium text-gray-300">Primary Color</label>
           <div className="flex items-center gap-2">
             <input
               type="color"
               value={style.borderColor}
               onChange={(e) => updateStyle('borderColor', e.target.value)}
-              className="h-10 w-16 rounded-lg cursor-pointer border-0"
+              className="h-10 w-16 cursor-pointer rounded-lg border-0"
             />
             <input
               type="text"
               value={style.borderColor}
               onChange={(e) => updateStyle('borderColor', e.target.value)}
-              className="flex-1 px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white text-sm font-mono"
+              className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
             />
           </div>
         </div>
         <div>
-          <label className="text-sm font-medium text-gray-300 mb-2 block">Secondary Color</label>
+          <label className="mb-2 block text-sm font-medium text-gray-300">Secondary Color</label>
           <div className="flex items-center gap-2">
             <input
               type="color"
               value={style.secondaryColor}
               onChange={(e) => updateStyle('secondaryColor', e.target.value)}
-              className="h-10 w-16 rounded-lg cursor-pointer border-0"
+              className="h-10 w-16 cursor-pointer rounded-lg border-0"
             />
             <input
               type="text"
               value={style.secondaryColor}
               onChange={(e) => updateStyle('secondaryColor', e.target.value)}
-              className="flex-1 px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white text-sm font-mono"
+              className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
             />
           </div>
         </div>
@@ -739,7 +994,7 @@ export function AvatarStylePicker() {
 
       {/* Glow Intensity */}
       <div>
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <label className="text-sm font-medium text-gray-300">Glow Intensity</label>
           <span className="text-sm text-primary-400">{style.glowIntensity}%</span>
         </div>
@@ -755,13 +1010,13 @@ export function AvatarStylePicker() {
 
       {/* Animation Speed */}
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-3 block">Animation Speed</label>
+        <label className="mb-3 block text-sm font-medium text-gray-300">Animation Speed</label>
         <div className="grid grid-cols-5 gap-2">
           {(['none', 'slow', 'normal', 'fast', 'ultra'] as const).map((speed) => (
             <button
               key={speed}
               onClick={() => updateStyle('animationSpeed', speed)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-all ${
+              className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                 style.animationSpeed === speed
                   ? 'bg-primary-600 text-white'
                   : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -775,20 +1030,22 @@ export function AvatarStylePicker() {
 
       {/* Shape */}
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-3 block">Shape</label>
+        <label className="mb-3 block text-sm font-medium text-gray-300">Shape</label>
         <div className="grid grid-cols-3 gap-2">
-          {([
-            { value: 'circle', label: 'Circle' },
-            { value: 'rounded-square', label: 'Rounded' },
-            { value: 'hexagon', label: 'Hexagon' },
-            { value: 'octagon', label: 'Octagon' },
-            { value: 'shield', label: 'Shield' },
-            { value: 'diamond', label: 'Diamond' },
-          ] as const).map((shape) => (
+          {(
+            [
+              { value: 'circle', label: 'Circle' },
+              { value: 'rounded-square', label: 'Rounded' },
+              { value: 'hexagon', label: 'Hexagon' },
+              { value: 'octagon', label: 'Octagon' },
+              { value: 'shield', label: 'Shield' },
+              { value: 'diamond', label: 'Diamond' },
+            ] as const
+          ).map((shape) => (
             <button
               key={shape.value}
               onClick={() => updateStyle('shape', shape.value)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+              className={`rounded-lg px-3 py-2 text-xs font-medium transition-all ${
                 style.shape === shape.value
                   ? 'bg-primary-600 text-white'
                   : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -802,21 +1059,23 @@ export function AvatarStylePicker() {
 
       {/* Particle Effects */}
       <div>
-        <label className="text-sm font-medium text-gray-300 mb-3 block">Particle Effect</label>
+        <label className="mb-3 block text-sm font-medium text-gray-300">Particle Effect</label>
         <div className="grid grid-cols-4 gap-2">
-          {([
-            { value: 'none', label: 'None', emoji: '❌' },
-            { value: 'sparkles', label: 'Sparkles', emoji: '✨' },
-            { value: 'bubbles', label: 'Bubbles', emoji: '🫧' },
-            { value: 'flames', label: 'Flames', emoji: '🔥' },
-            { value: 'snow', label: 'Snow', emoji: '❄️' },
-            { value: 'hearts', label: 'Hearts', emoji: '💕' },
-            { value: 'stars', label: 'Stars', emoji: '⭐' },
-          ] as const).map((effect) => (
+          {(
+            [
+              { value: 'none', label: 'None', emoji: '❌' },
+              { value: 'sparkles', label: 'Sparkles', emoji: '✨' },
+              { value: 'bubbles', label: 'Bubbles', emoji: '🫧' },
+              { value: 'flames', label: 'Flames', emoji: '🔥' },
+              { value: 'snow', label: 'Snow', emoji: '❄️' },
+              { value: 'hearts', label: 'Hearts', emoji: '💕' },
+              { value: 'stars', label: 'Stars', emoji: '⭐' },
+            ] as const
+          ).map((effect) => (
             <button
               key={effect.value}
               onClick={() => updateStyle('particleEffect', effect.value)}
-              className={`px-2 py-2 rounded-lg text-xs font-medium transition-all flex flex-col items-center gap-1 ${
+              className={`flex flex-col items-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition-all ${
                 style.particleEffect === effect.value
                   ? 'bg-primary-600 text-white'
                   : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -831,32 +1090,32 @@ export function AvatarStylePicker() {
 
       {/* Toggles */}
       <div className="space-y-3">
-        <label className="flex items-center justify-between cursor-pointer">
+        <label className="flex cursor-pointer items-center justify-between">
           <span className="text-sm font-medium text-gray-300">Pulse on Hover</span>
           <div
             onClick={() => updateStyle('pulseOnHover', !style.pulseOnHover)}
-            className={`w-10 h-6 rounded-full transition-colors ${
+            className={`h-6 w-10 rounded-full transition-colors ${
               style.pulseOnHover ? 'bg-primary-600' : 'bg-dark-600'
             }`}
           >
             <motion.div
-              className="w-4 h-4 bg-white rounded-full mt-1"
+              className="mt-1 h-4 w-4 rounded-full bg-white"
               animate={{ x: style.pulseOnHover ? 22 : 4 }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
             />
           </div>
         </label>
 
-        <label className="flex items-center justify-between cursor-pointer">
+        <label className="flex cursor-pointer items-center justify-between">
           <span className="text-sm font-medium text-gray-300">Show Level Badge</span>
           <div
             onClick={() => updateStyle('showLevel', !style.showLevel)}
-            className={`w-10 h-6 rounded-full transition-colors ${
+            className={`h-6 w-10 rounded-full transition-colors ${
               style.showLevel ? 'bg-primary-600' : 'bg-dark-600'
             }`}
           >
             <motion.div
-              className="w-4 h-4 bg-white rounded-full mt-1"
+              className="mt-1 h-4 w-4 rounded-full bg-white"
               animate={{ x: style.showLevel ? 22 : 4 }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
             />

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import type { BorderTheme } from '@/types/avatar-borders';
 
 /**
@@ -557,6 +558,7 @@ export const useThemeStore = create<ThemeStore>()(
     {
       name: 'cgraph-user-theme',
       version: 1,
+      storage: createJSONStorage(() => safeLocalStorage),
     }
   )
 );

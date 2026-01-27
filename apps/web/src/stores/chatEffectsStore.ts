@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
 
 /**
@@ -695,6 +696,7 @@ export const useChatEffectsStore = create<ChatEffectsState>()(
     }),
     {
       name: 'cgraph-chat-effects',
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         activeMessageEffect: state.activeMessageEffect,
         activeBubbleStyle: state.activeBubbleStyle,

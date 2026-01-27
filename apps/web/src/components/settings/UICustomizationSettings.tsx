@@ -14,7 +14,8 @@ import {
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 
 /**
  * Advanced UI Customization Settings
@@ -189,6 +190,7 @@ export const useUIPreferences = create<{
     }),
     {
       name: 'cgraph-ui-preferences',
+      storage: createJSONStorage(() => safeLocalStorage),
     }
   )
 );
@@ -213,7 +215,12 @@ function applyPreferencesToDOM(prefs: UIPreferences) {
   root.style.setProperty('--animation-speed', speeds[prefs.animationSpeed]);
 
   // Spacing
-  const spacingValues = { compact: '0.5rem', normal: '1rem', comfortable: '1.5rem', spacious: '2rem' };
+  const spacingValues = {
+    compact: '0.5rem',
+    normal: '1rem',
+    comfortable: '1.5rem',
+    spacious: '2rem',
+  };
   root.style.setProperty('--spacing-unit', spacingValues[prefs.spacing]);
 
   // Border radius
@@ -230,8 +237,11 @@ function applyPreferencesToDOM(prefs: UIPreferences) {
 }
 
 export default function UICustomizationSettings() {
-  const { preferences, updatePreference, resetToDefaults, exportPreferences, importPreferences } = useUIPreferences();
-  const [activeTab, setActiveTab] = useState<'theme' | 'effects' | 'animations' | 'typography' | 'advanced'>('theme');
+  const { preferences, updatePreference, resetToDefaults, exportPreferences, importPreferences } =
+    useUIPreferences();
+  const [activeTab, setActiveTab] = useState<
+    'theme' | 'effects' | 'animations' | 'typography' | 'advanced'
+  >('theme');
   const [showExportModal, setShowExportModal] = useState(false);
 
   useEffect(() => {
@@ -251,17 +261,17 @@ export default function UICustomizationSettings() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+          <h2 className="flex items-center gap-3 text-2xl font-bold text-white">
             <Cog6ToothIcon className="h-7 w-7 text-primary-400" />
             UI Customization
           </h2>
-          <p className="text-gray-400 mt-1">Personalize every aspect of your CGraph experience</p>
+          <p className="mt-1 text-gray-400">Personalize every aspect of your CGraph experience</p>
         </div>
 
         <div className="flex gap-2">
           <motion.button
             onClick={() => setShowExportModal(true)}
-            className="px-4 py-2 rounded-lg bg-dark-700 hover:bg-dark-600 text-white transition-colors"
+            className="rounded-lg bg-dark-700 px-4 py-2 text-white transition-colors hover:bg-dark-600"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -273,7 +283,7 @@ export default function UICustomizationSettings() {
                 resetToDefaults();
               }
             }}
-            className="px-4 py-2 rounded-lg bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 transition-colors"
+            className="rounded-lg border border-red-500/30 bg-red-500/20 px-4 py-2 text-red-400 transition-colors hover:bg-red-500/30"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
@@ -293,7 +303,7 @@ export default function UICustomizationSettings() {
                 setActiveTab(tab.id);
                 HapticFeedback.light();
               }}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl font-medium transition-all whitespace-nowrap ${
+              className={`flex items-center gap-2 whitespace-nowrap rounded-xl px-4 py-3 font-medium transition-all ${
                 activeTab === tab.id
                   ? 'bg-gradient-to-r from-primary-600 to-purple-600 text-white shadow-lg'
                   : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -317,11 +327,21 @@ export default function UICustomizationSettings() {
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
         >
-          {activeTab === 'theme' && <ThemeSettings preferences={preferences} updatePreference={updatePreference} />}
-          {activeTab === 'effects' && <EffectsSettings preferences={preferences} updatePreference={updatePreference} />}
-          {activeTab === 'animations' && <AnimationsSettings preferences={preferences} updatePreference={updatePreference} />}
-          {activeTab === 'typography' && <TypographySettings preferences={preferences} updatePreference={updatePreference} />}
-          {activeTab === 'advanced' && <AdvancedSettings preferences={preferences} updatePreference={updatePreference} />}
+          {activeTab === 'theme' && (
+            <ThemeSettings preferences={preferences} updatePreference={updatePreference} />
+          )}
+          {activeTab === 'effects' && (
+            <EffectsSettings preferences={preferences} updatePreference={updatePreference} />
+          )}
+          {activeTab === 'animations' && (
+            <AnimationsSettings preferences={preferences} updatePreference={updatePreference} />
+          )}
+          {activeTab === 'typography' && (
+            <TypographySettings preferences={preferences} updatePreference={updatePreference} />
+          )}
+          {activeTab === 'advanced' && (
+            <AdvancedSettings preferences={preferences} updatePreference={updatePreference} />
+          )}
         </motion.div>
       </AnimatePresence>
 
@@ -359,22 +379,38 @@ function ThemeSettings({ preferences, updatePreference }: SettingsTabProps) {
 
   const gradients = [
     { value: 'none' as const, label: 'None', preview: 'bg-dark-900' },
-    { value: 'subtle' as const, label: 'Subtle', preview: 'bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950' },
-    { value: 'vibrant' as const, label: 'Vibrant', preview: 'bg-gradient-to-br from-primary-900 via-purple-900 to-pink-900' },
-    { value: 'rainbow' as const, label: 'Rainbow', preview: 'bg-gradient-to-br from-red-900 via-purple-900 to-blue-900' },
-    { value: 'northern-lights' as const, label: 'Aurora', preview: 'bg-gradient-to-br from-green-900 via-blue-900 to-purple-900' },
+    {
+      value: 'subtle' as const,
+      label: 'Subtle',
+      preview: 'bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950',
+    },
+    {
+      value: 'vibrant' as const,
+      label: 'Vibrant',
+      preview: 'bg-gradient-to-br from-primary-900 via-purple-900 to-pink-900',
+    },
+    {
+      value: 'rainbow' as const,
+      label: 'Rainbow',
+      preview: 'bg-gradient-to-br from-red-900 via-purple-900 to-blue-900',
+    },
+    {
+      value: 'northern-lights' as const,
+      label: 'Aurora',
+      preview: 'bg-gradient-to-br from-green-900 via-blue-900 to-purple-900',
+    },
   ];
 
   return (
     <div className="space-y-6">
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Base Theme</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <h3 className="mb-4 text-lg font-bold text-white">Base Theme</h3>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {themes.map((theme) => (
             <motion.button
               key={theme.value}
               onClick={() => updatePreference('theme', theme.value)}
-              className={`p-4 rounded-xl border-2 transition-all ${
+              className={`rounded-xl border-2 p-4 transition-all ${
                 preferences.theme === theme.value
                   ? 'border-primary-500 bg-primary-500/10'
                   : 'border-dark-600 hover:border-dark-500'
@@ -382,10 +418,10 @@ function ThemeSettings({ preferences, updatePreference }: SettingsTabProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className={`h-16 rounded-lg mb-2 ${theme.preview}`} />
+              <div className={`mb-2 h-16 rounded-lg ${theme.preview}`} />
               <span className="text-sm font-medium text-white">{theme.label}</span>
               {preferences.theme === theme.value && (
-                <CheckIcon className="h-4 w-4 text-primary-400 mt-1 mx-auto" />
+                <CheckIcon className="mx-auto mt-1 h-4 w-4 text-primary-400" />
               )}
             </motion.button>
           ))}
@@ -393,13 +429,13 @@ function ThemeSettings({ preferences, updatePreference }: SettingsTabProps) {
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Background Gradient</h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <h3 className="mb-4 text-lg font-bold text-white">Background Gradient</h3>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {gradients.map((gradient) => (
             <motion.button
               key={gradient.value}
               onClick={() => updatePreference('backgroundGradient', gradient.value)}
-              className={`p-4 rounded-xl border-2 transition-all ${
+              className={`rounded-xl border-2 p-4 transition-all ${
                 preferences.backgroundGradient === gradient.value
                   ? 'border-primary-500'
                   : 'border-dark-600 hover:border-dark-500'
@@ -407,7 +443,7 @@ function ThemeSettings({ preferences, updatePreference }: SettingsTabProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <div className={`h-16 rounded-lg mb-2 ${gradient.preview}`} />
+              <div className={`mb-2 h-16 rounded-lg ${gradient.preview}`} />
               <span className="text-xs font-medium text-white">{gradient.label}</span>
             </motion.button>
           ))}
@@ -415,7 +451,7 @@ function ThemeSettings({ preferences, updatePreference }: SettingsTabProps) {
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Color Palette</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Color Palette</h3>
         <div className="space-y-4">
           <ColorPicker
             label="Primary Color"
@@ -453,13 +489,13 @@ function EffectsSettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Glass Effect Style</h3>
-        <div className="grid grid-cols-3 md:grid-cols-7 gap-2">
+        <h3 className="mb-4 text-lg font-bold text-white">Glass Effect Style</h3>
+        <div className="grid grid-cols-3 gap-2 md:grid-cols-7">
           {glassEffects.map((effect) => (
             <motion.button
               key={effect.value}
               onClick={() => updatePreference('glassEffect', effect.value)}
-              className={`px-4 py-3 rounded-lg border transition-all text-sm ${
+              className={`rounded-lg border px-4 py-3 text-sm transition-all ${
                 preferences.glassEffect === effect.value
                   ? 'border-primary-500 bg-primary-500/20 text-primary-300'
                   : 'border-dark-600 bg-dark-700/50 text-gray-400 hover:border-dark-500'
@@ -474,7 +510,7 @@ function EffectsSettings({ preferences, updatePreference }: SettingsTabProps) {
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Glass Properties</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Glass Properties</h3>
         <div className="space-y-6">
           <SliderControl
             label="Blur Intensity"
@@ -512,12 +548,14 @@ function EffectsSettings({ preferences, updatePreference }: SettingsTabProps) {
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Particle System</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Particle System</h3>
         <div className="space-y-4">
           <Select
             label="Particle Density"
             value={preferences.particleSystem}
-            onChange={(value) => updatePreference('particleSystem', value as UIPreferences['particleSystem'])}
+            onChange={(value) =>
+              updatePreference('particleSystem', value as UIPreferences['particleSystem'])
+            }
             options={[
               { value: 'none', label: 'Disabled' },
               { value: 'minimal', label: 'Minimal (Best Performance)' },
@@ -529,7 +567,9 @@ function EffectsSettings({ preferences, updatePreference }: SettingsTabProps) {
           <Select
             label="Particle Color"
             value={preferences.particleColor}
-            onChange={(value) => updatePreference('particleColor', value as UIPreferences['particleColor'])}
+            onChange={(value) =>
+              updatePreference('particleColor', value as UIPreferences['particleColor'])
+            }
             options={[
               { value: 'primary', label: 'Primary Theme Color' },
               { value: 'rainbow', label: 'Rainbow' },
@@ -539,7 +579,9 @@ function EffectsSettings({ preferences, updatePreference }: SettingsTabProps) {
           <Select
             label="Particle Shape"
             value={preferences.particleShape}
-            onChange={(value) => updatePreference('particleShape', value as UIPreferences['particleShape'])}
+            onChange={(value) =>
+              updatePreference('particleShape', value as UIPreferences['particleShape'])
+            }
             options={[
               { value: 'circle', label: 'Circle' },
               { value: 'square', label: 'Square' },
@@ -551,7 +593,7 @@ function EffectsSettings({ preferences, updatePreference }: SettingsTabProps) {
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Visual Effects</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Visual Effects</h3>
         <div className="space-y-3">
           <Toggle
             label="Ambient Effects"
@@ -582,11 +624,13 @@ function AnimationsSettings({ preferences, updatePreference }: SettingsTabProps)
   return (
     <div className="space-y-6">
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Animation Speed</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Animation Speed</h3>
         <Select
           label="Global Animation Speed"
           value={preferences.animationSpeed}
-          onChange={(value) => updatePreference('animationSpeed', value as UIPreferences['animationSpeed'])}
+          onChange={(value) =>
+            updatePreference('animationSpeed', value as UIPreferences['animationSpeed'])
+          }
           options={[
             { value: 'instant', label: 'Instant (No Animations)' },
             { value: 'fast', label: 'Fast (150ms)' },
@@ -598,11 +642,13 @@ function AnimationsSettings({ preferences, updatePreference }: SettingsTabProps)
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Animation Intensity</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Animation Intensity</h3>
         <Select
           label="Effect Complexity"
           value={preferences.animationIntensity}
-          onChange={(value) => updatePreference('animationIntensity', value as UIPreferences['animationIntensity'])}
+          onChange={(value) =>
+            updatePreference('animationIntensity', value as UIPreferences['animationIntensity'])
+          }
           options={[
             { value: 'minimal', label: 'Minimal (Best Performance)' },
             { value: 'low', label: 'Low' },
@@ -614,7 +660,7 @@ function AnimationsSettings({ preferences, updatePreference }: SettingsTabProps)
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Animation Features</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Animation Features</h3>
         <div className="space-y-3">
           <Toggle
             label="Transitions"
@@ -651,7 +697,7 @@ function TypographySettings({ preferences, updatePreference }: SettingsTabProps)
   return (
     <div className="space-y-6">
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Font Settings</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Font Settings</h3>
         <div className="space-y-4">
           <Select
             label="Font Size"
@@ -667,7 +713,9 @@ function TypographySettings({ preferences, updatePreference }: SettingsTabProps)
           <Select
             label="Font Family"
             value={preferences.fontFamily}
-            onChange={(value) => updatePreference('fontFamily', value as UIPreferences['fontFamily'])}
+            onChange={(value) =>
+              updatePreference('fontFamily', value as UIPreferences['fontFamily'])
+            }
             options={[
               { value: 'system', label: 'System Default' },
               { value: 'inter', label: 'Inter (Recommended)' },
@@ -678,7 +726,9 @@ function TypographySettings({ preferences, updatePreference }: SettingsTabProps)
           <Select
             label="Font Weight"
             value={preferences.fontWeight}
-            onChange={(value) => updatePreference('fontWeight', value as UIPreferences['fontWeight'])}
+            onChange={(value) =>
+              updatePreference('fontWeight', value as UIPreferences['fontWeight'])
+            }
             options={[
               { value: 'light', label: 'Light (300)' },
               { value: 'normal', label: 'Normal (400)' },
@@ -691,12 +741,14 @@ function TypographySettings({ preferences, updatePreference }: SettingsTabProps)
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Text Spacing</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Text Spacing</h3>
         <div className="space-y-4">
           <Select
             label="Line Height"
             value={preferences.lineHeight}
-            onChange={(value) => updatePreference('lineHeight', value as UIPreferences['lineHeight'])}
+            onChange={(value) =>
+              updatePreference('lineHeight', value as UIPreferences['lineHeight'])
+            }
             options={[
               { value: 'compact', label: 'Compact (1.2)' },
               { value: 'normal', label: 'Normal (1.5)' },
@@ -707,7 +759,9 @@ function TypographySettings({ preferences, updatePreference }: SettingsTabProps)
           <Select
             label="Letter Spacing"
             value={preferences.letterSpacing}
-            onChange={(value) => updatePreference('letterSpacing', value as UIPreferences['letterSpacing'])}
+            onChange={(value) =>
+              updatePreference('letterSpacing', value as UIPreferences['letterSpacing'])
+            }
             options={[
               { value: 'tight', label: 'Tight (-0.05em)' },
               { value: 'normal', label: 'Normal (0)' },
@@ -726,7 +780,7 @@ function AdvancedSettings({ preferences, updatePreference }: SettingsTabProps) {
   return (
     <div className="space-y-6">
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Layout</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Layout</h3>
         <div className="space-y-4">
           <Select
             label="Spacing"
@@ -750,7 +804,9 @@ function AdvancedSettings({ preferences, updatePreference }: SettingsTabProps) {
           <Select
             label="Content Width"
             value={preferences.contentWidth}
-            onChange={(value) => updatePreference('contentWidth', value as UIPreferences['contentWidth'])}
+            onChange={(value) =>
+              updatePreference('contentWidth', value as UIPreferences['contentWidth'])
+            }
             options={[
               { value: 'narrow', label: 'Narrow (800px)' },
               { value: 'normal', label: 'Normal (1200px)' },
@@ -762,7 +818,7 @@ function AdvancedSettings({ preferences, updatePreference }: SettingsTabProps) {
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Performance</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Performance</h3>
         <div className="space-y-3">
           <Toggle
             label="Hardware Acceleration"
@@ -789,7 +845,7 @@ function AdvancedSettings({ preferences, updatePreference }: SettingsTabProps) {
       </GlassCard>
 
       <GlassCard variant="frosted" className="p-6">
-        <h3 className="text-lg font-bold text-white mb-4">Accessibility</h3>
+        <h3 className="mb-4 text-lg font-bold text-white">Accessibility</h3>
         <div className="space-y-3">
           <Toggle
             label="Reduced Motion"
@@ -818,12 +874,12 @@ function AdvancedSettings({ preferences, updatePreference }: SettingsTabProps) {
         </div>
       </GlassCard>
 
-      <GlassCard variant="neon" glow className="p-6 border-2 border-purple-500/30">
-        <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2">
+      <GlassCard variant="neon" glow className="border-2 border-purple-500/30 p-6">
+        <h3 className="mb-2 flex items-center gap-2 text-lg font-bold text-white">
           <BeakerIcon className="h-5 w-5 text-purple-400" />
           Experimental Features
         </h3>
-        <p className="text-sm text-gray-400 mb-4">Cutting-edge features that may be unstable</p>
+        <p className="mb-4 text-sm text-gray-400">Cutting-edge features that may be unstable</p>
         <div className="space-y-3">
           <Toggle
             label="Neural Effects"
@@ -871,13 +927,13 @@ function ColorPicker({ label, value, onChange }: ColorPickerProps) {
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-10 w-20 rounded-lg cursor-pointer border-2 border-dark-600"
+          className="h-10 w-20 cursor-pointer rounded-lg border-2 border-dark-600"
         />
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white text-sm font-mono w-28"
+          className="w-28 rounded-lg border border-dark-600 bg-dark-700 px-3 py-2 font-mono text-sm text-white"
         />
       </div>
     </div>
@@ -894,13 +950,22 @@ interface SliderControlProps {
   suffix?: string;
 }
 
-function SliderControl({ label, value, onChange, min, max, step = 1, suffix = '' }: SliderControlProps) {
+function SliderControl({
+  label,
+  value,
+  onChange,
+  min,
+  max,
+  step = 1,
+  suffix = '',
+}: SliderControlProps) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <label className="text-sm font-medium text-gray-300">{label}</label>
-        <span className="text-sm text-primary-400 font-semibold">
-          {value}{suffix}
+        <span className="text-sm font-semibold text-primary-400">
+          {value}
+          {suffix}
         </span>
       </div>
       <input
@@ -910,7 +975,7 @@ function SliderControl({ label, value, onChange, min, max, step = 1, suffix = ''
         step={step}
         value={value}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full h-2 bg-dark-700 rounded-lg appearance-none cursor-pointer slider"
+        className="slider h-2 w-full cursor-pointer appearance-none rounded-lg bg-dark-700"
       />
     </div>
   );
@@ -931,11 +996,11 @@ interface SelectProps {
 function Select({ label, value, onChange, options }: SelectProps) {
   return (
     <div>
-      <label className="text-sm font-medium text-gray-300 mb-2 block">{label}</label>
+      <label className="mb-2 block text-sm font-medium text-gray-300">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:border-primary-500 transition-colors"
+        className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white transition-colors focus:border-primary-500 focus:outline-none"
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
@@ -956,23 +1021,23 @@ interface ToggleProps {
 
 function Toggle({ label, description, value, onChange }: ToggleProps) {
   return (
-    <div className="flex items-center justify-between p-3 rounded-lg hover:bg-dark-700/30 transition-colors">
+    <div className="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-dark-700/30">
       <div className="flex-1">
         <div className="text-sm font-medium text-white">{label}</div>
-        {description && <div className="text-xs text-gray-500 mt-0.5">{description}</div>}
+        {description && <div className="mt-0.5 text-xs text-gray-500">{description}</div>}
       </div>
       <motion.button
         onClick={() => {
           onChange(!value);
           HapticFeedback.light();
         }}
-        className={`relative w-12 h-6 rounded-full transition-colors ${
+        className={`relative h-6 w-12 rounded-full transition-colors ${
           value ? 'bg-primary-600' : 'bg-dark-600'
         }`}
         whileTap={{ scale: 0.95 }}
       >
         <motion.div
-          className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white"
+          className="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white"
           animate={{ x: value ? 24 : 0 }}
           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
         />
@@ -993,25 +1058,25 @@ function ExportImportModal({ exportData, onImport, onClose }: ExportImportModalP
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
       <motion.div
-        className="max-w-2xl w-full"
+        className="w-full max-w-2xl"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
       >
         <GlassCard variant="holographic" glow className="p-6">
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <h3 className="text-xl font-bold text-white">Export / Import Settings</h3>
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-dark-700 text-gray-400 hover:text-white transition-colors"
+              className="rounded-full p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
             >
               <XMarkIcon className="h-5 w-5" />
             </button>
@@ -1019,12 +1084,14 @@ function ExportImportModal({ exportData, onImport, onClose }: ExportImportModalP
 
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-300 mb-2 block">Export (Copy to share)</label>
+              <label className="mb-2 block text-sm font-medium text-gray-300">
+                Export (Copy to share)
+              </label>
               <div className="relative">
                 <textarea
                   value={exportData}
                   readOnly
-                  className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-white font-mono text-xs h-40 resize-none"
+                  className="h-40 w-full resize-none rounded-lg border border-dark-600 bg-dark-800 px-4 py-3 font-mono text-xs text-white"
                 />
                 <button
                   onClick={() => {
@@ -1033,7 +1100,7 @@ function ExportImportModal({ exportData, onImport, onClose }: ExportImportModalP
                     setTimeout(() => setCopied(false), 2000);
                     HapticFeedback.success();
                   }}
-                  className="absolute top-2 right-2 px-3 py-1 rounded-lg bg-primary-600 hover:bg-primary-500 text-white text-sm transition-colors"
+                  className="absolute right-2 top-2 rounded-lg bg-primary-600 px-3 py-1 text-sm text-white transition-colors hover:bg-primary-500"
                 >
                   {copied ? 'Copied!' : 'Copy'}
                 </button>
@@ -1041,17 +1108,19 @@ function ExportImportModal({ exportData, onImport, onClose }: ExportImportModalP
             </div>
 
             <div>
-              <label className="text-sm font-medium text-gray-300 mb-2 block">Import (Paste settings)</label>
+              <label className="mb-2 block text-sm font-medium text-gray-300">
+                Import (Paste settings)
+              </label>
               <textarea
                 value={importText}
                 onChange={(e) => setImportText(e.target.value)}
                 placeholder="Paste settings JSON here..."
-                className="w-full px-4 py-3 bg-dark-800 border border-dark-600 rounded-lg text-white font-mono text-xs h-40 resize-none focus:outline-none focus:border-primary-500"
+                className="h-40 w-full resize-none rounded-lg border border-dark-600 bg-dark-800 px-4 py-3 font-mono text-xs text-white focus:border-primary-500 focus:outline-none"
               />
               <button
                 onClick={() => onImport(importText)}
                 disabled={!importText.trim()}
-                className="mt-2 w-full px-4 py-3 rounded-lg bg-primary-600 hover:bg-primary-500 disabled:bg-dark-700 disabled:text-gray-500 text-white font-medium transition-colors"
+                className="mt-2 w-full rounded-lg bg-primary-600 px-4 py-3 font-medium text-white transition-colors hover:bg-primary-500 disabled:bg-dark-700 disabled:text-gray-500"
               >
                 Import Settings
               </button>

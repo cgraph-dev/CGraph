@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
 
 /**
@@ -293,6 +294,7 @@ export const useChatBubbleStore = create<ChatBubbleStore>()(
     }),
     {
       name: 'cgraph-chat-bubble-style',
+      storage: createJSONStorage(() => safeLocalStorage),
     }
   )
 );

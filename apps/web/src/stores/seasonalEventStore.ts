@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
 
 /**
@@ -121,33 +122,38 @@ export interface SeasonalEventState {
   upcomingEvents: SeasonalEvent[];
   endedEvents: SeasonalEvent[];
   featuredEvent: SeasonalEvent | null;
-  
+
   // Current event tracking
   currentEventId: string | null;
   currentEvent: SeasonalEvent | null;
   currentProgress: EventProgress | null;
   nextMilestone: EventMilestone | null;
   availableRewards: EventMilestone[];
-  
+
   // Leaderboard
   leaderboard: LeaderboardEntry[];
   userRank: number | null;
-  
+
   // Loading states
   isLoading: boolean;
   isJoining: boolean;
   isClaiming: boolean;
   isPurchasing: boolean;
-  
+
   // Actions
   fetchEvents: (includeEnded?: boolean) => Promise<void>;
   fetchEventDetails: (eventId: string) => Promise<void>;
   fetchProgress: (eventId: string) => Promise<void>;
   joinEvent: (eventId: string) => Promise<{ success: boolean; welcomeRewards?: EventReward[] }>;
-  claimReward: (eventId: string, rewardId: string) => Promise<{ success: boolean; reward?: EventReward }>;
+  claimReward: (
+    eventId: string,
+    rewardId: string
+  ) => Promise<{ success: boolean; reward?: EventReward }>;
   fetchLeaderboard: (eventId: string, limit?: number, offset?: number) => Promise<void>;
-  purchaseBattlePass: (eventId: string) => Promise<{ success: boolean; retroactiveRewards?: EventReward[] }>;
-  
+  purchaseBattlePass: (
+    eventId: string
+  ) => Promise<{ success: boolean; retroactiveRewards?: EventReward[] }>;
+
   // Computed
   getTimeRemaining: (eventId: string) => { days: number; hours: number; minutes: number } | null;
   isEventActive: (eventId: string) => boolean;
@@ -262,13 +268,13 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
           });
           if (response.data?.success) {
             set({ currentProgress: response.data.progress });
-            
+
             // Update available rewards
             const state = get();
             set({
-              availableRewards: state.availableRewards.filter(m => m.id !== rewardId),
+              availableRewards: state.availableRewards.filter((m) => m.id !== rewardId),
             });
-            
+
             return {
               success: true,
               reward: response.data.reward,
@@ -321,7 +327,9 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
 
       getTimeRemaining: (eventId: string) => {
         const state = get();
-        const event = [...state.activeEvents, ...state.upcomingEvents].find(e => e.id === eventId);
+        const event = [...state.activeEvents, ...state.upcomingEvents].find(
+          (e) => e.id === eventId
+        );
         if (!event) return null;
 
         const endDate = new Date(event.endsAt);
@@ -339,17 +347,18 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
 
       isEventActive: (eventId: string) => {
         const state = get();
-        return state.activeEvents.some(e => e.id === eventId);
+        return state.activeEvents.some((e) => e.id === eventId);
       },
 
       canClaimMilestone: (milestoneId: string) => {
         const state = get();
         if (!state.currentProgress) return false;
-        return state.availableRewards.some(m => m.id === milestoneId);
+        return state.availableRewards.some((m) => m.id === milestoneId);
       },
     }),
     {
       name: 'cgraph-seasonal-events',
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         activeEvents: state.activeEvents,
         upcomingEvents: state.upcomingEvents,
@@ -362,11 +371,9 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
 
 // ==================== SELECTOR HOOKS ====================
 
-export const useActiveEvents = () =>
-  useSeasonalEventStore((state) => state.activeEvents);
+export const useActiveEvents = () => useSeasonalEventStore((state) => state.activeEvents);
 
-export const useFeaturedEvent = () =>
-  useSeasonalEventStore((state) => state.featuredEvent);
+export const useFeaturedEvent = () => useSeasonalEventStore((state) => state.featuredEvent);
 
 export const useCurrentEventProgress = () =>
   useSeasonalEventStore((state) => ({

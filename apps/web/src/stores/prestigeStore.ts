@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
 
 /**
@@ -76,10 +77,10 @@ export interface PrestigeState {
   prestige: PrestigeData | null;
   requirements: PrestigeRequirements | null;
   canPrestige: boolean;
-  
+
   // Tier information
   allTiers: PrestigeTier[];
-  
+
   // Leaderboard
   leaderboard: Array<{
     rank: number;
@@ -91,17 +92,17 @@ export interface PrestigeState {
     lifetimeXp: number;
     totalResets: number;
   }>;
-  
+
   // Loading states
   isLoading: boolean;
   isPrestiging: boolean;
-  
+
   // Actions
   fetchPrestige: () => Promise<void>;
   fetchRewards: () => Promise<void>;
   fetchLeaderboard: (limit?: number, offset?: number) => Promise<void>;
   performPrestige: () => Promise<{ success: boolean; rewards?: PrestigeReward[] }>;
-  
+
   // Computed
   getProgressPercent: () => number;
   getBonusForLevel: (level: number) => PrestigeBonuses;
@@ -112,9 +113,9 @@ export interface PrestigeState {
 // ==================== BONUS CALCULATION ====================
 
 const BONUS_RATES = {
-  xp: 0.05,      // 5% per prestige level
-  coins: 0.03,   // 3% per prestige level
-  karma: 0.02,   // 2% per prestige level
+  xp: 0.05, // 5% per prestige level
+  coins: 0.03, // 3% per prestige level
+  karma: 0.02, // 2% per prestige level
   dropRate: 0.01, // 1% per prestige level
 };
 
@@ -232,10 +233,10 @@ export const usePrestigeStore = create<PrestigeState>()(
               prestige: response.data.prestige,
               canPrestige: false,
             });
-            
+
             // Refresh requirements
             await get().fetchPrestige();
-            
+
             return {
               success: true,
               rewards: response.data.rewards,
@@ -274,6 +275,7 @@ export const usePrestigeStore = create<PrestigeState>()(
     }),
     {
       name: 'cgraph-prestige',
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         prestige: state.prestige,
         allTiers: state.allTiers,
@@ -311,14 +313,14 @@ function getDefaultRewardsForLevel(level: number): PrestigeReward[] {
 
 // ==================== SELECTOR HOOKS ====================
 
-export const usePrestigeLevel = () =>
-  usePrestigeStore((state) => state.prestige?.level ?? 0);
+export const usePrestigeLevel = () => usePrestigeStore((state) => state.prestige?.level ?? 0);
 
 export const usePrestigeBonuses = () =>
-  usePrestigeStore((state) => state.prestige?.bonuses ?? { xp: 0, coins: 0, karma: 0, dropRate: 0 });
+  usePrestigeStore(
+    (state) => state.prestige?.bonuses ?? { xp: 0, coins: 0, karma: 0, dropRate: 0 }
+  );
 
-export const useCanPrestige = () =>
-  usePrestigeStore((state) => state.canPrestige);
+export const useCanPrestige = () => usePrestigeStore((state) => state.canPrestige);
 
 export const usePrestigeProgress = () =>
   usePrestigeStore((state) => ({

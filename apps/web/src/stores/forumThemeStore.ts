@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
 
 /**
@@ -1102,6 +1103,7 @@ export const useForumThemeStore = create<ForumThemeState>()(
     }),
     {
       name: 'cgraph-forum-themes',
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         customThemes: state.customThemes,
       }),

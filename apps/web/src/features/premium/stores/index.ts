@@ -1,11 +1,12 @@
 /**
  * Premium Stores
- * 
+ *
  * Zustand stores for premium state management.
  */
 
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import type { SubscriptionTier, PurchaseHistory } from './types';
 
 export interface PremiumState {
@@ -14,20 +15,20 @@ export interface PremiumState {
   currentTier: SubscriptionTier | null;
   subscribedAt: string | null;
   expiresAt: string | null;
-  
+
   // Coins
   coinBalance: number;
-  
+
   // Purchase history
   purchaseHistory: PurchaseHistory[];
-  
+
   // Actions
   setSubscription: (tier: SubscriptionTier, expiresAt: string) => void;
   cancelSubscription: () => void;
   addCoins: (amount: number) => void;
   spendCoins: (amount: number) => boolean;
   addPurchase: (purchase: PurchaseHistory) => void;
-  
+
   // Computed
   getRemainingDays: () => number | null;
   canAfford: (price: number) => boolean;
@@ -43,7 +44,7 @@ export const usePremiumStore = create<PremiumState>()(
       expiresAt: null,
       coinBalance: 0,
       purchaseHistory: [],
-      
+
       // Actions
       setSubscription: (tier, expiresAt) => {
         set({
@@ -53,7 +54,7 @@ export const usePremiumStore = create<PremiumState>()(
           expiresAt,
         });
       },
-      
+
       cancelSubscription: () => {
         set({
           isSubscribed: false,
@@ -62,13 +63,13 @@ export const usePremiumStore = create<PremiumState>()(
           expiresAt: null,
         });
       },
-      
+
       addCoins: (amount) => {
         set((state) => ({
           coinBalance: state.coinBalance + amount,
         }));
       },
-      
+
       spendCoins: (amount) => {
         const state = get();
         if (state.coinBalance >= amount) {
@@ -77,13 +78,13 @@ export const usePremiumStore = create<PremiumState>()(
         }
         return false;
       },
-      
+
       addPurchase: (purchase) => {
         set((state) => ({
           purchaseHistory: [purchase, ...state.purchaseHistory],
         }));
       },
-      
+
       // Computed
       getRemainingDays: () => {
         const state = get();
@@ -93,13 +94,14 @@ export const usePremiumStore = create<PremiumState>()(
         const diff = expires.getTime() - now.getTime();
         return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
       },
-      
+
       canAfford: (price) => {
         return get().coinBalance >= price;
       },
     }),
     {
       name: 'cgraph-premium',
+      storage: createJSONStorage(() => safeLocalStorage),
     }
   )
 );

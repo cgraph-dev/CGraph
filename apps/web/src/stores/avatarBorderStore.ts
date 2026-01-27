@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
 import type {
   AvatarBorderConfig,
@@ -445,6 +446,7 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
     }),
     {
       name: 'cgraph-avatar-borders',
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         unlockedBorders: state.unlockedBorders,
         preferences: state.preferences,

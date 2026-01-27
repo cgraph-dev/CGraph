@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
 
 /**
@@ -1126,6 +1127,7 @@ export const useProfileThemeStore = create<ProfileThemeState>()(
     }),
     {
       name: 'cgraph-profile-theme',
+      storage: createJSONStorage(() => safeLocalStorage),
       partialize: (state) => ({
         theme: state.theme,
         cardConfig: state.cardConfig,
