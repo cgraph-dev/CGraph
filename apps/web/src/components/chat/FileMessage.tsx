@@ -58,7 +58,7 @@ export function FileMessage({ message, isOwnMessage, className = '' }: FileMessa
   // Get file extension
   const getFileExtension = (filename: string) => {
     const parts = filename.split('.');
-    return parts.length > 1 ? parts[parts.length - 1].toUpperCase() : '';
+    return parts.length > 1 ? (parts[parts.length - 1] ?? '').toUpperCase() : '';
   };
 
   // Handle download

@@ -8,8 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { useChatStore } from '@/stores/chatStore';
-import type { Message } from '@/types/chat';
+import { useChatStore, type Message } from '@/stores/chatStore';
 
 interface ForwardMessageModalProps {
   isOpen: boolean;

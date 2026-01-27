@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ClockIcon, XMarkIcon, CalendarIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
-import { add, format, isBefore, isAfter, startOfDay, addHours } from 'date-fns';
+import { add, format, isBefore, isAfter, addHours, type Duration } from 'date-fns';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { toast } from '@/components/Toast';
@@ -181,7 +181,7 @@ export function ScheduleMessageModal({
                             option.time
                               ? (() => {
                                   const date = add(new Date(), option.duration);
-                                  const [hours, minutes] = option.time.split(':');
+                                  const [hours = '0', minutes = '0'] = option.time.split(':');
                                   date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
                                   if (isBefore(date, new Date())) {
                                     date.setDate(date.getDate() + 1);
@@ -198,7 +198,7 @@ export function ScheduleMessageModal({
                           onClick={() => {
                             if (option.time) {
                               const date = add(new Date(), option.duration);
-                              const [hours, minutes] = option.time.split(':');
+                              const [hours = '0', minutes = '0'] = option.time.split(':');
                               date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
                               // If the time has passed today, schedule for tomorrow
                               if (isBefore(date, new Date())) {
