@@ -54,8 +54,28 @@ const localStoragePersister = createSyncStoragePersister({
   storage: window.localStorage,
   key: 'cgraph-query-cache',
   // Serialize/deserialize with error handling
-  serialize: (data) => JSON.stringify(data),
-  deserialize: (data) => JSON.parse(data),
+  serialize: (data) => {
+    try {
+      return JSON.stringify(data);
+    } catch (error) {
+      console.warn('[CGraph] Failed to serialize cache:', error);
+      return '{}';
+    }
+  },
+  deserialize: (data) => {
+    try {
+      return JSON.parse(data);
+    } catch (error) {
+      console.warn('[CGraph] Failed to deserialize cache, clearing corrupted data:', error);
+      // Clear corrupted cache
+      try {
+        window.localStorage.removeItem('cgraph-query-cache');
+      } catch (e) {
+        // Ignore localStorage errors
+      }
+      return {};
+    }
+  },
 });
 
 // Persist the query client cache
@@ -63,7 +83,7 @@ persistQueryClient({
   queryClient,
   persister: localStoragePersister,
   maxAge: 1000 * 60 * 60 * 24,
-  buster: 'v0.9.0-web',
+  buster: 'v0.9.6-web', // Updated to match current version
 });
 
 // Track online/offline status for offline-first behavior
