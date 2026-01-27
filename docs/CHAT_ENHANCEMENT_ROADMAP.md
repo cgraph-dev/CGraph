@@ -47,15 +47,15 @@ This document tracks the **ACTUAL working status** of chat features and the impl
 | Message Pin        |    Yes    |  **YES** ✅   |               **YES** ✅                |
 | Message Reactions  |    Yes    |      Yes      |               **YES** ✅                |
 | Stickers           |    Yes    |      Yes      |               **YES** ✅                |
-| GIFs               |    Yes    |    **NO**     |                **NO** ❌                |
+| GIFs               |    Yes    |  **YES** ✅   |               **YES** ✅                |
 | Voice Recording    |    Yes    |      Yes      |               **YES** ✅                |
 | Voice Playback     |    Yes    |      Yes      |               **YES** ✅                |
 | Read Receipts      |    Yes    |      Yes      |               **YES** ✅                |
 | Typing Indicators  |    Yes    |      Yes      |               **YES** ✅                |
 | Voice Calls        |    Yes    |      Yes      | **PARTIAL** (UI ready, needs WebRTC) ⚠️ |
 | Video Calls        |    Yes    |      Yes      | **PARTIAL** (UI ready, needs WebRTC) ⚠️ |
-| File Sharing       |    No     |  Schema only  |                **NO** ❌                |
-| Message Forwarding |    No     |      No       |                **NO** ❌                |
+| File Sharing       |    Yes    |  **YES** ✅   |               **YES** ✅                |
+| Message Forwarding |    Yes    |  **YES** ✅   |               **YES** ✅                |
 
 ---
 
@@ -99,6 +99,32 @@ This document tracks the **ACTUAL working status** of chat features and the impl
   - Audio player works
   - Waveform visualization displays
   - Seek functionality works
+
+- [x] **GIF Sending**
+  - GIF picker fully functional with search
+  - Tenor API integration via backend proxy
+  - Trending and categorized GIFs
+  - Favorites and recently used tracking
+  - GIFs display with fullscreen preview
+  - Click-to-expand functionality
+
+- [x] **File Sharing**
+  - File upload button in chat
+  - Upload to `/api/v1/upload` endpoint
+  - Support for images, videos, documents
+  - Image thumbnails and previews
+  - File download functionality
+  - Size limits: images (10MB), videos (100MB), docs (25MB)
+  - Cloudflare R2 storage in production
+  - 5GB quota per user
+
+- [x] **Message Forwarding**
+  - Forward button in message action menu
+  - Multi-select conversation picker
+  - Search and filter conversations
+  - Forward to multiple conversations simultaneously
+  - Preserves message metadata and type
+  - Success notifications
 
 ---
 
@@ -170,22 +196,7 @@ Result: Recording works, but message sends empty voice reference
 - `apps/web/src/pages/messages/Conversation.tsx` - Add FormData upload
 - Ensure `/api/v1/voice-messages` endpoint handles uploads correctly
 
-#### 5. GIF Picker - BROKEN
-
-**Root Cause:** No backend for GIF search/storage
-
-```
-Frontend: GifPicker.tsx has full UI
-Problem: Tenor API integration exists but no backend endpoint
-Result: GIF picker may show but sending fails
-```
-
-**Files to Fix:**
-
-- Create `/api/v1/gifs/search` endpoint (or use client-side Tenor)
-- Add GIF message type handling
-
-#### 6. Voice/Video Calls - NOT CONNECTED
+#### 5. Voice/Video Calls - NOT CONNECTED
 
 **Root Cause:** UI buttons exist but not wired to WebRTC
 
@@ -290,18 +301,46 @@ Result: Buttons appear but do nothing when clicked
   - [x] Wire all action buttons properly
   - [x] Add proper handlers for each action
 
-- [ ] **Fix GIF Sending**
-  - [ ] Decide: client-side Tenor or backend proxy
-  - [ ] Implement GIF message type handling
-  - [ ] Test GIF sending end-to-end
+- [x] **Fix GIF Sending** ✅ COMPLETED
+  - [x] Backend Tenor API proxy at `/api/v1/gifs/search`
+  - [x] Implemented GIF message type handling
+  - [x] GIF picker integrated into chat interface
+  - [x] GIF button added to message input
+  - [x] GIF metadata (url, preview, dimensions) properly sent
+  - [x] GifMessage component displays GIFs with fullscreen preview
 
 ### P2 - New Features
 
-- [ ] File Sharing in Chat
-- [ ] Message Forwarding
-- [ ] Advanced Search Filters
-- [ ] Message Scheduling
-- [ ] 7 Revolutionary Features (see below)
+- [x] **File Sharing in Chat** ✅ COMPLETED
+  - [x] File upload button integrated
+  - [x] Backend `/api/v1/upload` endpoint with FormData
+  - [x] FileMessage component displays files with thumbnails
+  - [x] Download functionality
+  - [x] Support for images, videos, PDFs, documents
+  - [x] Cloudflare R2 storage with image optimization
+  - [x] 5GB per-user quota management
+
+- [x] **Message Forwarding** ✅ COMPLETED
+  - [x] ForwardMessageModal component created
+  - [x] Forward button in message action menu
+  - [x] Multi-select conversation picker with search
+  - [x] Forward to multiple conversations in parallel
+  - [x] Preserves message type and metadata
+  - [x] Success notifications and haptic feedback
+
+- [ ] **Advanced Search Filters**
+  - [ ] Search by message type (text, file, gif, voice)
+  - [ ] Date range filtering
+  - [ ] Sender filtering
+  - [ ] Attachment type filtering
+
+- [ ] **Message Scheduling**
+  - [ ] Schedule messages for future delivery
+  - [ ] Recurring message support
+  - [ ] Timezone-aware scheduling
+  - [ ] Edit/cancel scheduled messages
+
+- [ ] **7 Revolutionary Features** (see below)
 
 ---
 
