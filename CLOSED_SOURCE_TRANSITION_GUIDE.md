@@ -45,14 +45,14 @@ platform** similar to Discord.
 
 ### Timeline Overview
 
-| Phase                             | Duration   | Status         |
-| --------------------------------- | ---------- | -------------- |
-| Phase 1: Legal Foundation         | Days 1-3   | 🟡 IN PROGRESS |
-| Phase 2: Repository Restructuring | Days 4-7   | ⚪ NOT STARTED |
-| Phase 3: Remove Self-Hosting      | Days 8-14  | ⚪ NOT STARTED |
-| Phase 4: Payment Integration      | Days 15-30 | ⚪ NOT STARTED |
-| Phase 5: Code Protection          | Days 31-45 | ⚪ NOT STARTED |
-| Phase 6: Ongoing Operations       | Continuous | ⚪ NOT STARTED |
+| Phase                             | Duration   | Status                                     |
+| --------------------------------- | ---------- | ------------------------------------------ |
+| Phase 1: Legal Foundation         | Days 1-3   | ✅ COMPLETE                                |
+| Phase 2: Repository Restructuring | Days 4-7   | 🟡 IN PROGRESS (manual: make repo private) |
+| Phase 3: Remove Self-Hosting      | Days 8-14  | ✅ COMPLETE                                |
+| Phase 4: Payment Integration      | Days 15-30 | ⚪ NOT STARTED                             |
+| Phase 5: Code Protection          | Days 31-45 | ⚪ NOT STARTED                             |
+| Phase 6: Ongoing Operations       | Continuous | ⚪ NOT STARTED                             |
 
 ---
 
@@ -817,17 +817,18 @@ permission (hence the importance of CLA).
 - [ ] Move CI/CD to appropriate location
 - [ ] Update GitHub org settings
 
-### Phase 3: Remove Self-Hosting
+### Phase 3: Remove Self-Hosting ✅
 
-- [ ] Delete docker-compose.yml
-- [ ] Delete docker-compose.dev.yml
-- [ ] Delete infrastructure/docker/
-- [ ] Delete or move infrastructure/terraform/
-- [ ] Delete all .env.example files
+- [x] Delete docker-compose.yml
+- [x] Delete docker-compose.dev.yml
+- [x] Delete infrastructure/docker/
+- [x] Delete infrastructure/terraform/
+- [x] Delete all .env.example files
 - [x] Update README.md
 - [x] Update docs/CHAT_SYSTEM_STATUS_2026_01_27.md
-- [ ] Delete QUICKSTART_NEW_UI.md
-- [ ] Review all docs/ for self-hosting mentions
+- [x] Delete QUICKSTART_NEW_UI.md
+- [x] Delete VERCEL_DEPLOYMENT_CHECKLIST.md
+- [ ] Review all docs/ for self-hosting mentions (optional)
 
 ### Phase 4: Payment Integration
 
