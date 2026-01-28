@@ -10,8 +10,7 @@
  */
 
 import { useEffect } from 'react';
-import { useCustomizationStore as useLegacyCustomizationStore } from '@/stores/customizationStore';
-import { useCustomizationStore as useUnifiedCustomizationStore } from '@/stores/unifiedCustomizationStore';
+import { useCustomizationStore } from '@/stores/customization';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 
 /**
@@ -85,34 +84,35 @@ const ANIMATION_SPEEDS = {
  * Hook to apply all customizations to the UI
  */
 export function useCustomizationApplication() {
-  const unifiedProfile = useUnifiedCustomizationStore((state) => state.profile);
-  const unifiedChat = useUnifiedCustomizationStore((state) => state.chat);
-
-  const legacy = useLegacyCustomizationStore((state) => ({
+  // The consolidated store uses flat state with all settings at the root level.
+  // Legacy alias fields (profileTheme, chatTheme, etc.) are included in the state.
+  const {
+    profileTheme,
+    selectedProfileThemeId,
+    chatTheme,
+    particleEffect,
+    backgroundEffect,
+    animationSpeed,
+  } = useCustomizationStore((state) => ({
     profileTheme: state.profileTheme,
+    selectedProfileThemeId: state.selectedProfileThemeId,
     chatTheme: state.chatTheme,
-    forumTheme: state.forumTheme,
-    appTheme: state.appTheme,
     particleEffect: state.particleEffect,
     backgroundEffect: state.backgroundEffect,
     animationSpeed: state.animationSpeed,
   }));
 
-  // Prefer unified store values, fallback to legacy for compatibility
-  const profileTheme = unifiedProfile.profileTheme || legacy.profileTheme;
-  const chatTheme = unifiedProfile.chatTheme || legacy.chatTheme;
-  const forumTheme = unifiedProfile.forumTheme || legacy.forumTheme;
-  const appTheme = unifiedProfile.appTheme || legacy.appTheme;
-  const particleEffect = unifiedChat.particleEffect || legacy.particleEffect;
-  const backgroundEffect = unifiedChat.backgroundEffect || legacy.backgroundEffect;
-  const animationSpeed = unifiedChat.animationSpeed || legacy.animationSpeed;
+  // Use profileTheme alias or fall back to selectedProfileThemeId
+  const effectiveProfileTheme = profileTheme ?? selectedProfileThemeId;
+  const forumTheme: string | null = null; // Not in consolidated store
+  const appTheme: string | null = null; // Handled separately via ThemeRegistry
 
   useEffect(() => {
     const root = document.documentElement;
 
     // Apply profile theme colors
-    if (profileTheme && PROFILE_THEME_COLORS[profileTheme]) {
-      const colors = PROFILE_THEME_COLORS[profileTheme];
+    if (effectiveProfileTheme && PROFILE_THEME_COLORS[effectiveProfileTheme]) {
+      const colors = PROFILE_THEME_COLORS[effectiveProfileTheme];
       root.style.setProperty('--profile-primary', colors.primary);
       root.style.setProperty('--profile-secondary', colors.secondary);
       root.style.setProperty('--profile-accent', colors.accent);
@@ -170,7 +170,7 @@ export function useCustomizationApplication() {
       document.body.classList.add(`forum-theme-${forumTheme}`);
     }
   }, [
-    profileTheme,
+    effectiveProfileTheme,
     chatTheme,
     forumTheme,
     appTheme,

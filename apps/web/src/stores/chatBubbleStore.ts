@@ -1,300 +1,79 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { safeLocalStorage } from '@/lib/safeStorage';
-import { api } from '@/lib/api';
-
 /**
- * Chat Bubble Customization Store
+ * @deprecated This file is deprecated. Import from '@/stores/theme' instead.
  *
- * Allows users to customize the appearance and animations of chat bubbles.
+ * Chat bubble customization is now part of the unified theme system.
+ * This file provides backward compatibility exports.
+ *
+ * @see /stores/theme/index.ts
  */
 
-export interface ChatBubbleStyle {
-  // Colors
-  ownMessageBg: string;
-  otherMessageBg: string;
-  ownMessageText: string;
-  otherMessageText: string;
-  useGradient: boolean;
-  gradientDirection: 'to-r' | 'to-l' | 'to-br' | 'to-bl' | 'to-tr' | 'to-tl';
+import { useThemeStore, CHAT_BUBBLE_PRESETS, type ChatBubbleConfig } from './theme';
 
-  // Shape
-  borderRadius: number; // 0-50
-  bubbleShape: 'rounded' | 'sharp' | 'super-rounded' | 'bubble' | 'modern';
-  showTail: boolean;
-  tailPosition: 'bottom' | 'middle';
+export { CHAT_BUBBLE_PRESETS, type ChatBubbleConfig as ChatBubbleStyle };
 
-  // Effects
-  glassEffect: boolean;
-  glassBlur: number; // 0-30
-  shadowIntensity: number; // 0-100
-  borderWidth: number; // 0-3
-  borderStyle: 'none' | 'solid' | 'gradient' | 'glow';
-
-  // Animations
-  entranceAnimation: 'none' | 'slide' | 'fade' | 'scale' | 'bounce' | 'flip';
-  hoverEffect: boolean;
-  sendAnimation: 'none' | 'pop' | 'slide-out' | 'fade-out';
-  typingIndicatorStyle: 'dots' | 'wave' | 'pulse' | 'bars';
-
-  // Layout
-  maxWidth: number; // 40-90 (percentage)
-  spacing: number; // 1-20 (pixels)
-  alignSent: 'left' | 'right';
-  alignReceived: 'left' | 'right';
-
-  // Advanced
-  showTimestamp: boolean;
-  timestampPosition: 'inside' | 'outside';
-  showAvatar: boolean;
-  avatarSize: 'small' | 'medium' | 'large';
-  groupMessages: boolean;
-  groupTimeout: number; // seconds
-}
-
-const defaultChatBubbleStyle: ChatBubbleStyle = {
-  // Colors
+// Legacy default style export
+export const defaultChatBubbleStyle: ChatBubbleConfig = {
   ownMessageBg: '#10b981',
   otherMessageBg: '#374151',
   ownMessageText: '#ffffff',
   otherMessageText: '#ffffff',
   useGradient: true,
-  gradientDirection: 'to-r',
-
-  // Shape
   borderRadius: 16,
   bubbleShape: 'rounded',
   showTail: true,
-  tailPosition: 'bottom',
-
-  // Effects
   glassEffect: false,
   glassBlur: 10,
   shadowIntensity: 20,
   borderWidth: 0,
-  borderStyle: 'none',
-
-  // Animations
   entranceAnimation: 'slide',
   hoverEffect: true,
-  sendAnimation: 'pop',
-  typingIndicatorStyle: 'dots',
-
-  // Layout
   maxWidth: 70,
   spacing: 4,
-  alignSent: 'right',
-  alignReceived: 'left',
-
-  // Advanced
   showTimestamp: true,
-  timestampPosition: 'inside',
   showAvatar: true,
-  avatarSize: 'medium',
   groupMessages: true,
-  groupTimeout: 300,
 };
 
-interface ChatBubbleStore {
-  style: ChatBubbleStyle;
-  isLoading: boolean;
-  isSaving: boolean;
-  updateStyle: <K extends keyof ChatBubbleStyle>(
-    keyOrUpdates: K | Partial<ChatBubbleStyle>,
-    value?: ChatBubbleStyle[K]
-  ) => void;
-  updateMultiple: (updates: Partial<ChatBubbleStyle>) => void;
-  resetStyle: () => void;
-  applyPreset: (preset: 'default' | 'minimal' | 'modern' | 'retro' | 'bubble' | 'glass') => void;
-  exportStyle: () => string;
-  importStyle: (json: string) => void;
-  syncToBackend: () => Promise<void>;
-  fetchFromBackend: () => Promise<void>;
-}
+/**
+ * Backward-compatible chat bubble store hook.
+ * Provides style, updateStyle, resetStyle, and applyPreset methods.
+ */
+export const useChatBubbleStore = () => {
+  const chatBubble = useThemeStore((s) => s.chatBubble);
+  const updateChatBubble = useThemeStore((s) => s.updateChatBubble);
+  const resetChatBubble = useThemeStore((s) => s.resetChatBubble);
+  const applyChatBubblePreset = useThemeStore((s) => s.applyChatBubblePreset);
 
-export const useChatBubbleStore = create<ChatBubbleStore>()(
-  persist(
-    (set, get) => ({
-      style: defaultChatBubbleStyle,
-      isLoading: false,
-      isSaving: false,
+  return {
+    style: chatBubble,
+    updateStyle: <K extends keyof ChatBubbleConfig>(
+      keyOrUpdates: K | Partial<ChatBubbleConfig>,
+      value?: ChatBubbleConfig[K]
+    ) => {
+      if (typeof keyOrUpdates === 'string') {
+        updateChatBubble({ [keyOrUpdates]: value } as Partial<ChatBubbleConfig>);
+      } else {
+        updateChatBubble(keyOrUpdates);
+      }
+    },
+    resetStyle: resetChatBubble,
+    applyPreset: (preset: keyof typeof CHAT_BUBBLE_PRESETS) => {
+      applyChatBubblePreset(preset);
+    },
+    // Additional legacy methods
+    exportStyle: () => JSON.stringify(chatBubble, null, 2),
+    importStyle: (json: string) => {
+      try {
+        const imported = JSON.parse(json);
+        updateChatBubble({ ...defaultChatBubbleStyle, ...imported });
+      } catch (e) {
+        console.error('Failed to import chat bubble style:', e);
+      }
+    },
+  };
+};
 
-      updateStyle: (keyOrUpdates, value) => {
-        if (typeof keyOrUpdates === 'string') {
-          set((state) => ({
-            style: {
-              ...state.style,
-              [keyOrUpdates]: value as ChatBubbleStyle[typeof keyOrUpdates],
-            },
-          }));
-        } else {
-          set((state) => ({
-            style: { ...state.style, ...keyOrUpdates },
-          }));
-        }
-        // Auto-sync to backend after update (debounced in component)
-      },
+// Legacy selector hook
+export const useChatBubbleTheme = () => useThemeStore((s) => s.chatBubble);
 
-      updateMultiple: (updates) => {
-        set((state) => ({
-          style: { ...state.style, ...updates },
-        }));
-      },
-
-      resetStyle: () => {
-        set({ style: defaultChatBubbleStyle });
-      },
-
-      applyPreset: (preset) => {
-        const presets: Record<string, Partial<ChatBubbleStyle>> = {
-          default: defaultChatBubbleStyle,
-
-          minimal: {
-            ownMessageBg: '#000000',
-            otherMessageBg: '#1f2937',
-            useGradient: false,
-            borderRadius: 8,
-            bubbleShape: 'sharp',
-            showTail: false,
-            glassEffect: false,
-            shadowIntensity: 0,
-            borderWidth: 1,
-            borderStyle: 'solid',
-            entranceAnimation: 'fade',
-            hoverEffect: false,
-          },
-
-          modern: {
-            ownMessageBg: '#8b5cf6',
-            otherMessageBg: '#1f2937',
-            useGradient: true,
-            gradientDirection: 'to-br',
-            borderRadius: 20,
-            bubbleShape: 'super-rounded',
-            showTail: false,
-            glassEffect: true,
-            glassBlur: 15,
-            shadowIntensity: 40,
-            borderWidth: 0,
-            entranceAnimation: 'scale',
-            hoverEffect: true,
-          },
-
-          retro: {
-            ownMessageBg: '#10b981',
-            otherMessageBg: '#6b7280',
-            useGradient: false,
-            borderRadius: 4,
-            bubbleShape: 'sharp',
-            showTail: false,
-            glassEffect: false,
-            shadowIntensity: 10,
-            borderWidth: 2,
-            borderStyle: 'solid',
-            entranceAnimation: 'none',
-            hoverEffect: false,
-            typingIndicatorStyle: 'bars',
-          },
-
-          bubble: {
-            ownMessageBg: '#3b82f6',
-            otherMessageBg: '#e5e7eb',
-            ownMessageText: '#ffffff',
-            otherMessageText: '#111827',
-            useGradient: false,
-            borderRadius: 20,
-            bubbleShape: 'bubble',
-            showTail: true,
-            tailPosition: 'bottom',
-            glassEffect: false,
-            shadowIntensity: 30,
-            entranceAnimation: 'bounce',
-            hoverEffect: true,
-          },
-
-          glass: {
-            ownMessageBg: '#10b98150',
-            otherMessageBg: '#37415150',
-            useGradient: true,
-            borderRadius: 16,
-            bubbleShape: 'rounded',
-            showTail: false,
-            glassEffect: true,
-            glassBlur: 20,
-            shadowIntensity: 50,
-            borderWidth: 1,
-            borderStyle: 'gradient',
-            entranceAnimation: 'fade',
-            hoverEffect: true,
-          },
-        };
-
-        const presetStyle = presets[preset];
-        if (presetStyle) {
-          set((state) => ({
-            style: { ...state.style, ...presetStyle },
-          }));
-        }
-      },
-
-      exportStyle: () => {
-        return JSON.stringify(get().style, null, 2);
-      },
-
-      importStyle: (json) => {
-        try {
-          const imported = JSON.parse(json);
-          set(() => ({
-            style: { ...defaultChatBubbleStyle, ...imported },
-          }));
-        } catch (error) {
-          console.error('Failed to import chat bubble style:', error);
-        }
-      },
-
-      syncToBackend: async () => {
-        const { style } = get();
-        set({ isSaving: true });
-        try {
-          // Store full chat bubble config inside custom_config to preserve all UI-only fields
-          await api.patch('/api/v1/me/customizations', {
-            custom_config: {
-              chat_bubble_style: style,
-            },
-          });
-        } catch (error) {
-          console.warn('Failed to sync chat bubble style to backend:', error);
-          // Fail silently - local storage will persist
-        } finally {
-          set({ isSaving: false });
-        }
-      },
-
-      fetchFromBackend: async () => {
-        set({ isLoading: true });
-        try {
-          const response = await api.get('/api/v1/me/customizations');
-          const data = response.data?.data || {};
-          const remoteStyle = data.custom_config?.chat_bubble_style;
-
-          if (remoteStyle && typeof remoteStyle === 'object') {
-            set({
-              style: { ...defaultChatBubbleStyle, ...remoteStyle },
-              isLoading: false,
-            });
-          } else {
-            set({ isLoading: false });
-          }
-        } catch (error) {
-          console.warn('Failed to fetch chat bubble style from backend:', error);
-          set({ isLoading: false });
-          // Use local storage fallback
-        }
-      },
-    }),
-    {
-      name: 'cgraph-chat-bubble-style',
-      storage: createJSONStorage(() => safeLocalStorage),
-    }
-  )
-);
+export default useChatBubbleStore;
