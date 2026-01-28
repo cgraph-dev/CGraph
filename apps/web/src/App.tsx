@@ -1,6 +1,6 @@
-import { useEffect, lazy, Suspense, useRef } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useAuthStore, initializeTokenService } from '@/stores/authStore';
+import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useCustomizationInitializer } from '@/stores/unifiedCustomizationStore';
@@ -146,17 +146,6 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   const fetchGamificationData = useGamificationStore((state) => state.fetchGamificationData);
   const { theme, syncWithServer } = useThemeStore();
   const { initialize: initializeCustomizations } = useCustomizationInitializer();
-  const tokenServiceInitRef = useRef(false);
-
-  // CRITICAL: Initialize token service on first mount
-  // This registers auth handlers with tokenService AFTER React mounts,
-  // avoiding TDZ errors in production builds where module execution order varies
-  useEffect(() => {
-    if (!tokenServiceInitRef.current) {
-      tokenServiceInitRef.current = true;
-      initializeTokenService();
-    }
-  }, []);
 
   // Apply customization settings to UI
   useCustomizationApplication();
@@ -172,9 +161,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       .finally(() => {
         authLogger.debug('Auth check complete');
       });
-    // Only run once on mount - checkAuth handles all token state internally
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [checkAuth, token]);
 
   // Fetch gamification data when authenticated
   useEffect(() => {
@@ -194,9 +181,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
         console.error('Customization initialization failed:', error);
       });
     }
-    // initializeCustomizations is stable from Zustand - safe to omit from deps
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
+  }, [isAuthenticated, initializeCustomizations]);
 
   // Apply global theme CSS variables (both app theme and user customizations)
   useEffect(() => {
