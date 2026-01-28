@@ -9,7 +9,7 @@
  * @since 2026-01-19
  */
 
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useCustomizationStore } from '@/stores/customization';
 
 /**
@@ -80,11 +80,25 @@ const ANIMATION_SPEEDS = {
 };
 
 /**
- * Hook to apply all customizations to the UI
- * Uses individual selectors to prevent infinite re-render loops
+ * Replaces body classes matching a prefix with a new class
  */
-export function useCustomizationApplication() {
-  // CRITICAL: Use individual selectors - object selectors create new refs each render!
+function updateBodyClass(prefix: string, newValue: string | null): void {
+  document.body.classList.forEach((className) => {
+    if (className.startsWith(prefix)) {
+      document.body.classList.remove(className);
+    }
+  });
+  if (newValue) {
+    document.body.classList.add(`${prefix}${newValue}`);
+  }
+}
+
+/**
+ * Hook to apply user customizations to the UI via CSS variables and body classes.
+ * Uses individual Zustand selectors to prevent infinite re-render loops.
+ */
+export function useCustomizationApplication(): void {
+  // Individual selectors ensure stable references (object selectors create new refs each render)
   const profileTheme = useCustomizationStore((s) => s.profileTheme);
   const selectedProfileThemeId = useCustomizationStore((s) => s.selectedProfileThemeId);
   const chatTheme = useCustomizationStore((s) => s.chatTheme);
@@ -92,20 +106,14 @@ export function useCustomizationApplication() {
   const backgroundEffect = useCustomizationStore((s) => s.backgroundEffect);
   const animationSpeed = useCustomizationStore((s) => s.animationSpeed);
 
-  // Track if initial application done
-  const hasApplied = useRef(false);
-
-  // Use profileTheme alias or fall back to selectedProfileThemeId
   const effectiveProfileTheme = profileTheme ?? selectedProfileThemeId;
-  const forumTheme: string | null = null;
-  const appTheme: string | null = null;
 
   useEffect(() => {
     const root = document.documentElement;
 
-    // Apply profile theme colors
-    if (effectiveProfileTheme && PROFILE_THEME_COLORS[effectiveProfileTheme]) {
-      const colors = PROFILE_THEME_COLORS[effectiveProfileTheme];
+    // Apply profile theme CSS variables
+    const colors = effectiveProfileTheme ? PROFILE_THEME_COLORS[effectiveProfileTheme] : null;
+    if (colors) {
       root.style.setProperty('--profile-primary', colors.primary);
       root.style.setProperty('--profile-secondary', colors.secondary);
       root.style.setProperty('--profile-accent', colors.accent);
@@ -113,64 +121,16 @@ export function useCustomizationApplication() {
       root.style.setProperty('--profile-text', colors.text);
     }
 
-    // Apply app theme
-    if (appTheme) {
-      ThemeRegistry.applyTheme(appTheme === 'dark' ? 'default' : 'matrix');
-    }
-
-    // Apply animation speed
-    const speedKey = animationSpeed as keyof typeof ANIMATION_SPEEDS;
-    const speedMultiplier = ANIMATION_SPEEDS[speedKey] || '1';
+    // Apply animation speed multiplier
+    const speedMultiplier =
+      ANIMATION_SPEEDS[animationSpeed as keyof typeof ANIMATION_SPEEDS] ?? '1';
     root.style.setProperty('--animation-speed', speedMultiplier);
 
-    // Apply particle effect class
-    document.body.classList.forEach((className) => {
-      if (className.startsWith('particle-effect-')) {
-        document.body.classList.remove(className);
-      }
-    });
-    if (particleEffect && particleEffect !== 'none') {
-      document.body.classList.add(`particle-effect-${particleEffect}`);
-    }
-
-    // Apply background effect class
-    document.body.classList.forEach((className) => {
-      if (className.startsWith('bg-effect-')) {
-        document.body.classList.remove(className);
-      }
-    });
-    if (backgroundEffect && backgroundEffect !== 'solid') {
-      document.body.classList.add(`bg-effect-${backgroundEffect}`);
-    }
-
-    // Apply chat theme class
-    document.body.classList.forEach((className) => {
-      if (className.startsWith('chat-theme-')) {
-        document.body.classList.remove(className);
-      }
-    });
-    if (chatTheme) {
-      document.body.classList.add(`chat-theme-${chatTheme}`);
-    }
-
-    // Apply forum theme class (if set)
-    document.body.classList.forEach((className) => {
-      if (className.startsWith('forum-theme-')) {
-        document.body.classList.remove(className);
-      }
-    });
-    if (forumTheme) {
-      document.body.classList.add(`forum-theme-${forumTheme}`);
-    }
-  }, [
-    effectiveProfileTheme,
-    chatTheme,
-    forumTheme,
-    appTheme,
-    particleEffect,
-    backgroundEffect,
-    animationSpeed,
-  ]);
+    // Apply body classes for effects and themes
+    updateBodyClass('particle-effect-', particleEffect !== 'none' ? particleEffect : null);
+    updateBodyClass('bg-effect-', backgroundEffect !== 'solid' ? backgroundEffect : null);
+    updateBodyClass('chat-theme-', chatTheme);
+  }, [effectiveProfileTheme, chatTheme, particleEffect, backgroundEffect, animationSpeed]);
 }
 
 /**
