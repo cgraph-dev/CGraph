@@ -220,25 +220,59 @@ export function createConfigPresets<T extends Record<string, any>>(
   return presets;
 }
 
+interface ClassifyRule<T> {
+  name?: string;
+  category?: string;
+  test: (item: T) => boolean;
+}
+
 /**
- * Classifies items by rules and returns grouped results.
+ * Classifies items by rules.
+ *
+ * - If `items` is an array, returns a Record grouping items by matched rule name/category.
+ * - If `items` is a single item and `defaultCategory` is provided, returns the matched category string.
+ *
+ * @example
+ * // Array classification
+ * const groups = classifyByRules(['apple', 'banana'], [{ name: 'fruit', test: () => true }]);
+ * // => { fruit: ['apple', 'banana'], other: [] }
+ *
+ * @example
+ * // Single item classification
+ * const category = classifyByRules('apple', [{ category: 'fruit', test: () => true }], 'unknown');
+ * // => 'fruit'
  */
 export function classifyByRules<T>(
-  items: T[],
-  rules: Array<{ name: string; test: (item: T) => boolean }>
-): Record<string, T[]> {
+  items: T | T[],
+  rules: Array<ClassifyRule<T>>,
+  defaultCategory?: string
+): Record<string, T[]> | string {
+  // Single item classification (returns string)
+  if (!Array.isArray(items) && defaultCategory !== undefined) {
+    for (const rule of rules) {
+      if (rule.test(items)) {
+        return rule.category ?? rule.name ?? defaultCategory;
+      }
+    }
+    return defaultCategory;
+  }
+
+  // Array classification (returns grouped results)
+  const itemsArray = Array.isArray(items) ? items : [items];
   const result: Record<string, T[]> = {};
 
   for (const rule of rules) {
-    result[rule.name] = [];
+    const key = rule.name ?? rule.category ?? 'unknown';
+    result[key] = [];
   }
   result['other'] = [];
 
-  for (const item of items) {
+  for (const item of itemsArray) {
     let matched = false;
     for (const rule of rules) {
       if (rule.test(item)) {
-        result[rule.name].push(item);
+        const key = rule.name ?? rule.category ?? 'unknown';
+        result[key].push(item);
         matched = true;
         break;
       }

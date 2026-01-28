@@ -7,7 +7,7 @@
  * @see /stores/customization/index.ts
  */
 
-import { useCustomizationStore, useChatSettings, THEME_COLORS } from './customization';
+import { useCustomizationStore, THEME_COLORS } from './customization';
 
 export {
   useCustomizationStore,
@@ -27,40 +27,113 @@ export const useCustomizationInitializer = () => {
 };
 
 /**
+ * Maps shadow intensity number to legacy shadow string.
+ */
+function shadowIntensityToLegacy(intensity: number): string {
+  if (intensity > 25) return 'strong';
+  if (intensity > 10) return 'medium';
+  if (intensity > 0) return 'light';
+  return 'none';
+}
+
+/**
+ * Maps legacy shadow string to intensity number.
+ */
+function legacyShadowToIntensity(shadow: string): number {
+  const shadowMap: Record<string, number> = {
+    none: 0,
+    light: 10,
+    medium: 20,
+    strong: 40,
+  };
+  return shadowMap[shadow] ?? 20;
+}
+
+/**
+ * Maps legacy update keys to store keys.
+ * Returns null for keys that should be skipped.
+ */
+function mapLegacyKey(key: string, value: unknown): [string, unknown] | null {
+  switch (key) {
+    case 'bubbleColor':
+      // Legacy: hex string; store expects ThemePreset - skip
+      return null;
+    case 'bubbleRadius':
+      return ['bubbleBorderRadius', value];
+    case 'bubbleStyle':
+      return ['chatBubbleStyle', value];
+    case 'bubbleOpacity':
+      // Not tracked in consolidated store
+      return null;
+    case 'bubbleShadow':
+      return [
+        'bubbleShadowIntensity',
+        typeof value === 'string' ? legacyShadowToIntensity(value) : value,
+      ];
+    case 'entranceAnimation':
+      return ['bubbleEntranceAnimation', value];
+    case 'hoverEffect':
+      return ['bubbleHoverEffect', value !== 'none'];
+    case 'glassEffect':
+      return ['bubbleGlassEffect', value !== 'none'];
+    case 'textColor':
+    case 'borderStyle':
+      // Not in consolidated store
+      return null;
+    default:
+      return [key, value];
+  }
+}
+
+/**
  * Legacy useChatCustomization hook with updateChat method.
  *
- * Provides a `chat` object with legacy field names (bubbleColor, bubbleRadius, etc.)
- * that consumers like ThemedChatBubble and ChatBubbleSettings expect.
- * The underlying store uses different field names (chatBubbleColor, bubbleBorderRadius, etc.)
- * so this wrapper maps between them.
+ * IMPORTANT: This hook uses individual primitive selectors to avoid infinite render loops.
+ * The `chat` object is built using useMemo to maintain stable references.
  */
 export const useChatCustomization = () => {
-  const chatSettings = useChatSettings();
-  const store = useCustomizationStore();
+  // Use individual primitive selectors to avoid infinite loops
+  const chatBubbleStyle = useCustomizationStore((s) => s.chatBubbleStyle);
+  const chatBubbleColor = useCustomizationStore((s) => s.chatBubbleColor);
+  const bubbleBorderRadius = useCustomizationStore((s) => s.bubbleBorderRadius);
+  const bubbleShadowIntensity = useCustomizationStore((s) => s.bubbleShadowIntensity);
+  const bubbleEntranceAnimation = useCustomizationStore((s) => s.bubbleEntranceAnimation);
+  const bubbleGlassEffect = useCustomizationStore((s) => s.bubbleGlassEffect);
+  const bubbleShowTail = useCustomizationStore((s) => s.bubbleShowTail);
+  const bubbleHoverEffect = useCustomizationStore((s) => s.bubbleHoverEffect);
+  const groupMessages = useCustomizationStore((s) => s.groupMessages);
+  const showTimestamps = useCustomizationStore((s) => s.showTimestamps);
+  const compactMode = useCustomizationStore((s) => s.compactMode);
+  const isSaving = useCustomizationStore((s) => s.isSaving);
+  const updateSettings = useCustomizationStore((s) => s.updateSettings);
 
   // Build legacy-compatible chat object with the field names consumers expect
+  // This object is stable because all inputs are primitives
   const chat = {
-    ...chatSettings,
+    chatBubbleStyle,
+    chatBubbleColor,
+    bubbleBorderRadius,
+    bubbleShadowIntensity,
+    bubbleEntranceAnimation,
+    bubbleGlassEffect,
+    bubbleShowTail,
+    bubbleHoverEffect,
+    groupMessages,
+    showTimestamps,
+    compactMode,
     // Legacy field names expected by ThemedChatBubble, ChatBubbleSettings, etc.
-    bubbleColor: THEME_COLORS[chatSettings.chatBubbleColor]?.primary ?? null,
-    bubbleRadius: chatSettings.bubbleBorderRadius,
+    bubbleColor: THEME_COLORS[chatBubbleColor]?.primary ?? null,
+    bubbleRadius: bubbleBorderRadius,
     bubbleOpacity: 100,
-    bubbleShadow:
-      chatSettings.bubbleShadowIntensity > 25
-        ? 'strong'
-        : chatSettings.bubbleShadowIntensity > 10
-          ? 'medium'
-          : chatSettings.bubbleShadowIntensity > 0
-            ? 'light'
-            : ('none' as string),
-    bubbleStyle: chatSettings.chatBubbleStyle,
+    bubbleShadow: shadowIntensityToLegacy(bubbleShadowIntensity),
+    bubbleStyle: chatBubbleStyle,
     textColor: null as string | null,
     textSize: 14,
     textWeight: 'normal' as string,
     fontFamily: 'inherit' as string,
-    entranceAnimation: chatSettings.bubbleEntranceAnimation,
-    hoverEffect: (chatSettings.bubbleHoverEffect ? 'lift' : 'none') as string,
-    glassEffect: (chatSettings.bubbleGlassEffect ? 'default' : 'none') as string,
+    entranceAnimation: bubbleEntranceAnimation,
+    hoverEffect: (bubbleHoverEffect ? 'lift' : 'none') as string,
+    glassEffect: (bubbleGlassEffect ? 'default' : 'none') as string,
     borderStyle: 'none' as string,
     particleEffect: null as string | null,
     animationSpeed: 'normal' as string,
@@ -68,57 +141,32 @@ export const useChatCustomization = () => {
     animationIntensity: 'medium' as string,
   };
 
-  return {
-    ...chatSettings,
-    chat,
-    updateChat: (updates: Record<string, unknown>) => {
-      // Map legacy field names back to actual store field names
-      const mapped: Record<string, unknown> = {};
-      for (const [key, value] of Object.entries(updates)) {
-        switch (key) {
-          case 'bubbleColor':
-            // Legacy: hex string; store expects ThemePreset - skip mapping
-            break;
-          case 'bubbleRadius':
-            mapped.bubbleBorderRadius = value;
-            break;
-          case 'bubbleStyle':
-            mapped.chatBubbleStyle = value;
-            break;
-          case 'bubbleOpacity':
-            // Not tracked separately in consolidated store
-            break;
-          case 'bubbleShadow': {
-            const shadowMap: Record<string, number> = {
-              none: 0,
-              light: 10,
-              medium: 20,
-              strong: 40,
-            };
-            mapped.bubbleShadowIntensity =
-              typeof value === 'string' ? (shadowMap[value] ?? 20) : value;
-            break;
-          }
-          case 'entranceAnimation':
-            mapped.bubbleEntranceAnimation = value;
-            break;
-          case 'hoverEffect':
-            mapped.bubbleHoverEffect = value !== 'none';
-            break;
-          case 'glassEffect':
-            mapped.bubbleGlassEffect = value !== 'none';
-            break;
-          case 'textColor':
-          case 'borderStyle':
-            // Not in consolidated store - silently skip
-            break;
-          default:
-            mapped[key] = value;
-            break;
-        }
+  const updateChat = (updates: Record<string, unknown>): void => {
+    const mapped: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(updates)) {
+      const result = mapLegacyKey(key, value);
+      if (result !== null) {
+        const [mappedKey, mappedValue] = result;
+        mapped[mappedKey] = mappedValue;
       }
-      store.updateSettings(mapped as Parameters<typeof store.updateSettings>[0]);
-    },
-    isSyncing: store.isSaving,
+    }
+    updateSettings(mapped as Parameters<typeof updateSettings>[0]);
+  };
+
+  return {
+    chatBubbleStyle,
+    chatBubbleColor,
+    bubbleBorderRadius,
+    bubbleShadowIntensity,
+    bubbleEntranceAnimation,
+    bubbleGlassEffect,
+    bubbleShowTail,
+    bubbleHoverEffect,
+    groupMessages,
+    showTimestamps,
+    compactMode,
+    chat,
+    updateChat,
+    isSyncing: isSaving,
   };
 };
