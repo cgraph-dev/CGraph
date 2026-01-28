@@ -9,9 +9,8 @@
  * @since 2026-01-19
  */
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useCustomizationStore } from '@/stores/customization';
-import { ThemeRegistry } from '@/themes/ThemeRegistry';
 
 /**
  * Profile Theme Color Mappings
@@ -82,30 +81,24 @@ const ANIMATION_SPEEDS = {
 
 /**
  * Hook to apply all customizations to the UI
+ * Uses individual selectors to prevent infinite re-render loops
  */
 export function useCustomizationApplication() {
-  // The consolidated store uses flat state with all settings at the root level.
-  // Legacy alias fields (profileTheme, chatTheme, etc.) are included in the state.
-  const {
-    profileTheme,
-    selectedProfileThemeId,
-    chatTheme,
-    particleEffect,
-    backgroundEffect,
-    animationSpeed,
-  } = useCustomizationStore((state) => ({
-    profileTheme: state.profileTheme,
-    selectedProfileThemeId: state.selectedProfileThemeId,
-    chatTheme: state.chatTheme,
-    particleEffect: state.particleEffect,
-    backgroundEffect: state.backgroundEffect,
-    animationSpeed: state.animationSpeed,
-  }));
+  // CRITICAL: Use individual selectors - object selectors create new refs each render!
+  const profileTheme = useCustomizationStore((s) => s.profileTheme);
+  const selectedProfileThemeId = useCustomizationStore((s) => s.selectedProfileThemeId);
+  const chatTheme = useCustomizationStore((s) => s.chatTheme);
+  const particleEffect = useCustomizationStore((s) => s.particleEffect);
+  const backgroundEffect = useCustomizationStore((s) => s.backgroundEffect);
+  const animationSpeed = useCustomizationStore((s) => s.animationSpeed);
+
+  // Track if initial application done
+  const hasApplied = useRef(false);
 
   // Use profileTheme alias or fall back to selectedProfileThemeId
   const effectiveProfileTheme = profileTheme ?? selectedProfileThemeId;
-  const forumTheme: string | null = null; // Not in consolidated store
-  const appTheme: string | null = null; // Handled separately via ThemeRegistry
+  const forumTheme: string | null = null;
+  const appTheme: string | null = null;
 
   useEffect(() => {
     const root = document.documentElement;

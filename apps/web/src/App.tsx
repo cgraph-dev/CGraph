@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
-import { useCustomizationInitializer } from '@/stores/unifiedCustomizationStore';
+import { useCustomizationStore } from '@/stores/customization';
 import { ThemeRegistry } from '@/themes/ThemeRegistry';
 import { useCustomizationApplication } from '@/hooks/useCustomizationApplication';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -139,21 +139,21 @@ const LandingDemoWorkshop = lazy(() => import('@/pages/demo/LandingDemoWorkshop'
 
 // Initialize auth check on app load - non-blocking
 function AuthInitializer({ children }: { children: React.ReactNode }) {
+  // Use stable selectors - select individual values, not objects that change on every render
   const checkAuth = useAuthStore((state) => state.checkAuth);
-  const token = useAuthStore((state) => state.token);
-  const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const userId = useAuthStore((state) => state.user?.id);
   const fetchGamificationData = useGamificationStore((state) => state.fetchGamificationData);
-  const { theme, syncWithServer } = useThemeStore();
-  const { initialize: initializeCustomizations } = useCustomizationInitializer();
+  const colorPreset = useThemeStore((state) => state.theme.colorPreset);
+  const syncWithServer = useThemeStore((state) => state.syncWithServer);
+  const fetchCustomizations = useCustomizationStore((state) => state.fetchCustomizations);
 
   // Apply customization settings to UI
   useCustomizationApplication();
 
+  // Auth check - runs once on mount only
   useEffect(() => {
-    // Run auth check in background - don't block rendering
-    authLogger.debug('Starting auth check, hasToken:', !!token);
-
+    authLogger.debug('Starting auth check on mount');
     checkAuth()
       .catch((error) => {
         authLogger.error(error, 'Auth check failed');
@@ -161,7 +161,9 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
       .finally(() => {
         authLogger.debug('Auth check complete');
       });
-  }, [checkAuth, token]);
+    // Only run on mount - checkAuth is stable from zustand
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Fetch gamification data when authenticated
   useEffect(() => {
@@ -177,11 +179,12 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   // Initialize unified customization store when authenticated
   useEffect(() => {
     if (isAuthenticated) {
-      initializeCustomizations().catch((error) => {
+      fetchCustomizations().catch((error) => {
         console.error('Customization initialization failed:', error);
       });
     }
-  }, [isAuthenticated, initializeCustomizations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
 
   // Apply global theme CSS variables (both app theme and user customizations)
   useEffect(() => {
@@ -190,28 +193,28 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
     ThemeRegistry.applyTheme(appThemeId);
 
     // Also apply user customization colors on top
-    const colors = THEME_COLORS[theme.colorPreset];
-    const root = document.documentElement;
-
-    root.style.setProperty('--user-theme-primary', colors.primary);
-    root.style.setProperty('--user-theme-secondary', colors.secondary);
-    root.style.setProperty('--user-theme-glow', colors.glow);
-    root.style.setProperty('--user-theme-gradient', colors.gradient);
-
+    const colors = THEME_COLORS[colorPreset];
+    if (colors) {
+      const root = document.documentElement;
+      root.style.setProperty('--user-theme-primary', colors.primary);
+      root.style.setProperty('--user-theme-secondary', colors.secondary);
+      root.style.setProperty('--user-theme-glow', colors.glow);
+      root.style.setProperty('--user-theme-gradient', colors.gradient);
+      themeLogger.debug('Applied user customizations:', colorPreset, colors);
+    }
     themeLogger.debug('Applied app theme:', appThemeId);
-    themeLogger.debug('Applied user customizations:', theme.colorPreset, colors);
-  }, [theme.colorPreset]);
+  }, [colorPreset]);
 
   // Sync theme with server when user logs in
   useEffect(() => {
-    if (isAuthenticated && user?.id) {
-      themeLogger.debug('Syncing theme with server for user:', user.id);
-      syncWithServer(user.id).catch((error) => {
+    if (isAuthenticated && userId) {
+      themeLogger.debug('Syncing theme with server for user:', userId);
+      syncWithServer(userId).catch((error) => {
         themeLogger.error(error, 'Theme sync failed');
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user?.id]);
+  }, [isAuthenticated, userId]);
 
   // Always render children immediately - no blocking
   return <>{children}</>;
