@@ -1,0 +1,79 @@
+<svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="primary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#00d4ff" stop-opacity="0.8"/>
+    </linearGradient>
+    <linearGradient id="secondary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0.7"/>
+    </linearGradient>
+    <linearGradient id="tertiary" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#10b981" stop-opacity="0.8"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="180" height="180" rx="36" fill="#0f172a"/>
+  <rect x="4" y="4" width="172" height="172" rx="32" fill="none" stroke="url(#primary)" stroke-width="1" stroke-opacity="0.2"/>
+  
+  <!-- Circuit traces scaled to fit -->
+  <g transform="translate(30, 42) scale(1)" filter="url(#glow)">
+    <!-- C traces -->
+    <path d="M18 20H42" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M42 20V26L48 32" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M18 20V48V76" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M18 76H42" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M42 76V70L48 64" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M18 48H30L36 42" stroke="url(#primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M30 48L36 54" stroke="url(#primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- G traces -->
+    <path d="M72 20H102" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M72 20V26L66 32" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M102 20V44" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M72 76H102" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M72 76V70L66 64" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M102 76V52" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round"/>
+    <path d="M102 48H84L78 42" stroke="url(#primary)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M84 48L78 54" stroke="url(#primary)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Accent traces -->
+    <path d="M24 28H32L38 34" stroke="url(#secondary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7"/>
+    <path d="M24 68H32L38 62" stroke="url(#secondary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7"/>
+    <path d="M96 28H88L82 34" stroke="url(#secondary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7"/>
+    <path d="M96 68H88L82 62" stroke="url(#secondary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.7"/>
+    
+    <!-- Connection traces -->
+    <path d="M54 38H60L66 32" stroke="url(#tertiary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.6"/>
+    <path d="M54 58H60L66 64" stroke="url(#tertiary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-opacity="0.6"/>
+    
+    <!-- Main nodes -->
+    <circle cx="18" cy="20" r="5" fill="url(#primary)"/>
+    <circle cx="42" cy="20" r="4" fill="url(#primary)"/>
+    <circle cx="48" cy="32" r="3.5" fill="url(#primary)"/>
+    <circle cx="18" cy="48" r="5" fill="url(#primary)"/>
+    <circle cx="18" cy="76" r="5" fill="url(#primary)"/>
+    <circle cx="42" cy="76" r="4" fill="url(#primary)"/>
+    <circle cx="48" cy="64" r="3.5" fill="url(#primary)"/>
+    <circle cx="72" cy="20" r="4" fill="url(#primary)"/>
+    <circle cx="102" cy="20" r="5" fill="url(#primary)"/>
+    <circle cx="66" cy="32" r="3.5" fill="url(#primary)"/>
+    <circle cx="102" cy="48" r="5" fill="url(#primary)"/>
+    <circle cx="72" cy="76" r="4" fill="url(#primary)"/>
+    <circle cx="102" cy="76" r="5" fill="url(#primary)"/>
+    <circle cx="66" cy="64" r="3.5" fill="url(#primary)"/>
+    
+    <!-- Center hub -->
+    <circle cx="60" cy="48" r="8" fill="url(#tertiary)"/>
+    <circle cx="60" cy="48" r="4" fill="#fff" fill-opacity="0.5"/>
+  </g>
+</svg>

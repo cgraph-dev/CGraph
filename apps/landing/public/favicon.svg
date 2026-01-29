@@ -1,0 +1,19 @@
+<svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="6" fill="#0f172a"/>
+  <!-- Simplified C -->
+  <path d="M6 8H12L14 10M6 8V16V24M6 24H12L14 22" stroke="url(#fg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Simplified G -->
+  <path d="M18 8H26M26 8V16V24M26 24H18M26 16H22" stroke="url(#fg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Nodes -->
+  <circle cx="6" cy="8" r="1.5" fill="#00d4ff"/>
+  <circle cx="6" cy="24" r="1.5" fill="#00d4ff"/>
+  <circle cx="26" cy="8" r="1.5" fill="#00d4ff"/>
+  <circle cx="26" cy="24" r="1.5" fill="#00d4ff"/>
+  <circle cx="16" cy="16" r="2" fill="#10b981"/>
+</svg>

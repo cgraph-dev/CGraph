@@ -558,6 +558,8 @@ export default function IdentityCustomization() {
 
     clearPreview();
     updateIdentity('avatarBorder', borderId);
+    // Track the specific border ID in V2 store for LivePreviewPanel
+    v2Store.selectBorderId(borderId);
     syncBorderToV2(borderId);
   };
 
@@ -1164,7 +1166,13 @@ function TitlesSection({ titles, selectedTitle, previewingTitle, onEquip }: Titl
                           <span className="text-sm font-medium text-green-400">Equipped</span>
                         </div>
                       ) : (
-                        <button className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEquip(title.id, title);
+                          }}
+                          className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+                        >
                           Equip
                         </button>
                       )
@@ -1577,7 +1585,13 @@ function LayoutsSection({ layouts, selectedLayout, onSelect }: LayoutsSectionPro
                   <span className="text-sm font-medium text-green-400">Active</span>
                 </div>
               ) : (
-                <button className="w-full rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onSelect(layout.id, layout);
+                  }}
+                  className="w-full rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+                >
                   Apply Layout
                 </button>
               )

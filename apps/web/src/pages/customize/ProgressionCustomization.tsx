@@ -309,6 +309,17 @@ export default function ProgressionCustomization() {
   // Calculate current streak
   const currentStreak = MOCK_DAILY_REWARDS.filter((r) => r.claimed).length;
 
+  // Handle claiming daily reward
+  const handleClaimReward = (day: number) => {
+    // TODO: Implement API call to claim daily reward
+    console.log(`Claiming reward for day ${day}`);
+    // In production, this would:
+    // 1. Call API to claim the reward
+    // 2. Update local state to mark the reward as claimed
+    // 3. Show a success toast
+    // For now, just log the claim
+  };
+
   // Filter achievements by search
   const filteredAchievements = MOCK_ACHIEVEMENTS.filter(
     (ach) =>
@@ -418,7 +429,11 @@ export default function ProgressionCustomization() {
           {activeCategory === 'quests' && <QuestsSection quests={MOCK_QUESTS} />}
 
           {activeCategory === 'rewards' && (
-            <DailyRewardsSection rewards={MOCK_DAILY_REWARDS} currentStreak={currentStreak} />
+            <DailyRewardsSection
+              rewards={MOCK_DAILY_REWARDS}
+              currentStreak={currentStreak}
+              onClaim={handleClaimReward}
+            />
           )}
         </motion.div>
       </AnimatePresence>
@@ -716,9 +731,10 @@ function QuestsSection({ quests }: QuestsSectionProps) {
 interface DailyRewardsSectionProps {
   rewards: DailyReward[];
   currentStreak: number;
+  onClaim: (day: number) => void;
 }
 
-function DailyRewardsSection({ rewards, currentStreak }: DailyRewardsSectionProps) {
+function DailyRewardsSection({ rewards, currentStreak, onClaim }: DailyRewardsSectionProps) {
   return (
     <div className="space-y-6">
       {/* Streak Display */}
@@ -780,7 +796,10 @@ function DailyRewardsSection({ rewards, currentStreak }: DailyRewardsSectionProp
                   <CheckCircleIconSolid className="mx-auto h-5 w-5 text-green-400" />
                 </div>
               ) : reward.day === currentStreak + 1 ? (
-                <button className="mt-2 w-full rounded bg-primary-600 px-2 py-1 text-xs font-medium text-white transition-colors hover:bg-primary-700">
+                <button
+                  onClick={() => onClaim(reward.day)}
+                  className="mt-2 w-full rounded bg-primary-600 px-2 py-1 text-xs font-medium text-white transition-colors hover:bg-primary-700"
+                >
                   Claim
                 </button>
               ) : (

@@ -415,12 +415,14 @@ export default function ThemeCustomization() {
 
   const [activeCategory, setActiveCategory] = useState<ThemeCategory>('profile');
   const [searchQuery, setSearchQuery] = useState('');
-  
+
   // Track if user is previewing a locked/premium item
   const [previewingTheme, setPreviewingTheme] = useState<string | null>(null);
-  
+
   // Profile theme subcategory (using new themed system)
-  const [profileThemeCategory, setProfileThemeCategory] = useState<ProfileThemeCategory | 'all'>('all');
+  const [profileThemeCategory, setProfileThemeCategory] = useState<ProfileThemeCategory | 'all'>(
+    'all'
+  );
   const [useNewProfileThemes, setUseNewProfileThemes] = useState(true);
 
   // Get profile themes from new data file
@@ -448,7 +450,12 @@ export default function ThemeCustomization() {
   };
 
   const categories = [
-    { id: 'profile' as ThemeCategory, label: 'Profile Themes', icon: UserCircleIcon, count: ALL_PROFILE_THEMES.length },
+    {
+      id: 'profile' as ThemeCategory,
+      label: 'Profile Themes',
+      icon: UserCircleIcon,
+      count: ALL_PROFILE_THEMES.length,
+    },
     { id: 'chat' as ThemeCategory, label: 'Chat Themes', icon: ChatBubbleLeftRightIcon, count: 5 },
     { id: 'forum' as ThemeCategory, label: 'Forum Themes', icon: NewspaperIcon, count: 4 },
     { id: 'app' as ThemeCategory, label: 'App Themes', icon: Squares2X2Icon, count: 4 },
@@ -462,7 +469,7 @@ export default function ThemeCustomization() {
       theme.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
-  
+
   // Filter new profile themes by search
   const filteredNewProfileThemes = useMemo(() => {
     if (!searchQuery) return newProfileThemes;
@@ -474,18 +481,21 @@ export default function ThemeCustomization() {
   }, [newProfileThemes, searchQuery]);
 
   // Sync theme to V2 store for live preview
-  const syncThemeToV2 = useCallback((themeId: string, category: ThemeCategory) => {
-    const v2Preset = THEME_ID_TO_V2_PRESET[themeId];
-    if (v2Preset) {
-      if (category === 'profile') {
-        v2Store.setTheme(v2Preset);
-        v2Store.setAvatarBorderColor(v2Preset);
-      } else if (category === 'chat') {
-        v2Store.setChatBubbleColor(v2Preset);
+  const syncThemeToV2 = useCallback(
+    (themeId: string, category: ThemeCategory) => {
+      const v2Preset = THEME_ID_TO_V2_PRESET[themeId];
+      if (v2Preset) {
+        if (category === 'profile') {
+          v2Store.setTheme(v2Preset);
+          v2Store.setAvatarBorderColor(v2Preset);
+        } else if (category === 'chat') {
+          v2Store.setChatBubbleColor(v2Preset);
+        }
       }
-    }
-    v2Store.setProfileTheme(themeId);
-  }, [v2Store]);
+      v2Store.setProfileTheme(themeId);
+    },
+    [v2Store]
+  );
 
   const handleApplyTheme = (themeId: string, category: ThemeCategory, theme: Theme) => {
     // Check if theme is locked - allow preview but mark it
@@ -498,10 +508,10 @@ export default function ThemeCustomization() {
       });
       return;
     }
-    
+
     // Clear any previous preview
     setPreviewingTheme(null);
-    
+
     // Update V1 store
     switch (category) {
       case 'profile':
@@ -517,7 +527,7 @@ export default function ThemeCustomization() {
         updateTheme('appTheme', themeId);
         break;
     }
-    
+
     // Sync to V2 store for live preview
     syncThemeToV2(themeId, category);
   };
@@ -548,35 +558,38 @@ export default function ThemeCustomization() {
   const isThemeActive = (themeId: string, category: ThemeCategory) => {
     return selectedThemes[category] === themeId;
   };
-  
+
   const isThemePreviewing = (themeId: string) => {
     return previewingTheme === themeId;
   };
-  
+
   // Handler for new profile themes
-  const handleApplyNewProfileTheme = useCallback((theme: ProfileThemeConfig) => {
-    const isLocked = theme.tier !== 'free' && !theme.unlocked;
-    
-    if (isLocked) {
-      setPreviewingTheme(theme.id);
-      // Sync to V2 store for live preview
+  const handleApplyNewProfileTheme = useCallback(
+    (theme: ProfileThemeConfig) => {
+      const isLocked = theme.tier !== 'free' && !theme.unlocked;
+
+      if (isLocked) {
+        setPreviewingTheme(theme.id);
+        // Sync to V2 store for live preview
+        v2Store.setProfileTheme(theme.id);
+        toast('👁️ Previewing theme - Unlock to save', {
+          icon: '✨',
+          duration: 3000,
+        });
+        return;
+      }
+
+      // Clear preview
+      setPreviewingTheme(null);
+
+      // Update stores
+      updateTheme('profileTheme', theme.id);
       v2Store.setProfileTheme(theme.id);
-      toast('👁️ Previewing theme - Unlock to save', {
-        icon: '✨',
-        duration: 3000,
-      });
-      return;
-    }
-    
-    // Clear preview
-    setPreviewingTheme(null);
-    
-    // Update stores
-    updateTheme('profileTheme', theme.id);
-    v2Store.setProfileTheme(theme.id);
-    
-    toast.success(`Applied "${theme.name}" theme!`);
-  }, [updateTheme, v2Store]);
+
+      toast.success(`Applied "${theme.name}" theme!`);
+    },
+    [updateTheme, v2Store]
+  );
 
   return (
     <div className="space-y-6">
@@ -631,7 +644,7 @@ export default function ThemeCustomization() {
             'Change the global app color scheme, navigation, and backgrounds. These themes affect the entire application.'}
         </p>
       </GlassCard>
-      
+
       {/* Profile Theme Category Picker (only show for profile category) */}
       {activeCategory === 'profile' && useNewProfileThemes && (
         <div className="space-y-3">
@@ -645,7 +658,7 @@ export default function ThemeCustomization() {
               {useNewProfileThemes ? 'View Classic Themes' : 'View Enhanced Themes'}
             </button>
           </div>
-          
+
           {/* Profile Theme Categories */}
           <div className="flex flex-wrap gap-2">
             <button
@@ -697,7 +710,7 @@ export default function ThemeCustomization() {
                 />
               ))}
             </ProfileThemeGrid>
-            
+
             {filteredNewProfileThemes.length === 0 && (
               <div className="py-12 text-center text-white/60">
                 No themes found matching your search.
@@ -792,7 +805,7 @@ interface ThemeCardProps {
 
 function ThemeCard({ theme, isActive, isPreviewing, onApply, delay }: ThemeCardProps) {
   const isHighlighted = isActive || isPreviewing;
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -802,7 +815,9 @@ function ThemeCard({ theme, isActive, isPreviewing, onApply, delay }: ThemeCardP
       <GlassCard
         variant={isHighlighted ? 'neon' : 'crystal'}
         glow={isHighlighted}
-        glowColor={isPreviewing ? 'rgba(234, 179, 8, 0.3)' : isActive ? 'rgba(139, 92, 246, 0.3)' : undefined}
+        glowColor={
+          isPreviewing ? 'rgba(234, 179, 8, 0.3)' : isActive ? 'rgba(139, 92, 246, 0.3)' : undefined
+        }
         className="relative cursor-pointer p-4 transition-all hover:scale-[1.02]"
         onClick={onApply}
       >
@@ -813,7 +828,7 @@ function ThemeCard({ theme, isActive, isPreviewing, onApply, delay }: ThemeCardP
             Preview
           </div>
         )}
-        
+
         {/* Theme Preview */}
         <div
           className="relative mb-3 aspect-video overflow-hidden rounded-lg"
@@ -914,7 +929,13 @@ function ThemeCard({ theme, isActive, isPreviewing, onApply, delay }: ThemeCardP
               <span className="text-sm font-medium text-green-400">Active</span>
             </div>
           ) : (
-            <button className="w-full rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onApply();
+              }}
+              className="w-full rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+            >
               Apply Theme
             </button>
           )
@@ -929,12 +950,10 @@ function ThemeCard({ theme, isActive, isPreviewing, onApply, delay }: ThemeCardP
             <span className="text-sm text-white/60">Click to preview</span>
           </div>
         )}
-        
+
         {/* Unlock requirement hint for locked items */}
         {!theme.unlocked && !isPreviewing && (
-          <div className="mt-2 text-center text-xs text-white/40">
-            🔒 {theme.unlockRequirement}
-          </div>
+          <div className="mt-2 text-center text-xs text-white/40">🔒 {theme.unlockRequirement}</div>
         )}
       </GlassCard>
     </motion.div>

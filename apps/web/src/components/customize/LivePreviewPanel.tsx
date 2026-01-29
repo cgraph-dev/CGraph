@@ -218,6 +218,7 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
       animationSpeed: state.animationSpeed,
       equippedTitle: state.equippedTitle,
       equippedBadges: state.equippedBadges,
+      selectedBorderId: state.selectedBorderId,
     }))
   );
 
@@ -240,18 +241,21 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
     v1Settings.equippedBadges.length > 0 ? v1Settings.equippedBadges : v2Settings.equippedBadges;
   void _effectiveBadges; // Reserved for future badge display integration
 
-  // Determine avatar border type from V1 border ID or fall back to V2
-  const effectiveBorderType = v1Settings.avatarBorder
-    ? BORDER_ID_TO_TYPE[v1Settings.avatarBorder] || v2Settings.avatarBorderType
+  // Determine avatar border type: V2 selectedBorderId > V1 avatarBorder > V2 avatarBorderType
+  // This ensures live preview updates immediately when user clicks a border
+  const effectiveBorderId = v2Settings.selectedBorderId || v1Settings.avatarBorder;
+  const effectiveBorderType = effectiveBorderId
+    ? BORDER_ID_TO_TYPE[effectiveBorderId] || v2Settings.avatarBorderType
     : v2Settings.avatarBorderType;
 
   // Determine color from profile theme
   const effectiveColorPreset =
-    PROFILE_THEME_TO_COLOR[v1Settings.profileTheme] || v2Settings.avatarBorderColor;
+    (v1Settings.profileTheme && PROFILE_THEME_TO_COLOR[v1Settings.profileTheme]) ||
+    v2Settings.avatarBorderColor;
 
   // Look up the active profile theme config (for new enhanced themes)
   const activeProfileTheme = useMemo<ProfileThemeConfig | null>(() => {
-    return getThemeById(v1Settings.profileTheme) || null;
+    return v1Settings.profileTheme ? (getThemeById(v1Settings.profileTheme) ?? null) : null;
   }, [v1Settings.profileTheme]);
 
   // Check if particles should be shown (but respect reduced motion preference)
@@ -701,7 +705,8 @@ export const LivePreviewPanel = memo(function LivePreviewPanel() {
 
   // Determine effective color from profile theme
   const effectiveColorPreset =
-    PROFILE_THEME_TO_COLOR[v1Settings.profileTheme] || v2Settings.themePreset;
+    (v1Settings.profileTheme && PROFILE_THEME_TO_COLOR[v1Settings.profileTheme]) ||
+    v2Settings.themePreset;
   const colors = themeColors[effectiveColorPreset];
 
   return (

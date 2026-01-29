@@ -160,19 +160,20 @@ export default function Conversation() {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuthStore();
   const { friends, fetchFriends } = useFriendStore();
-  const {
-    conversations,
-    messages,
-    isLoadingMessages,
-    typingUsers,
-    hasMoreMessages,
-    fetchMessages,
-    sendMessage,
-    markAsRead,
-    setActiveConversation,
-    scheduleMessage,
-    rescheduleMessage,
-  } = useChatStore();
+
+  // Split Zustand selectors to prevent infinite re-renders
+  // Each selector returns a stable reference (primitive or function)
+  const conversations = useChatStore((state) => state.conversations);
+  const messages = useChatStore((state) => state.messages);
+  const isLoadingMessages = useChatStore((state) => state.isLoadingMessages);
+  const typingUsers = useChatStore((state) => state.typingUsers);
+  const hasMoreMessages = useChatStore((state) => state.hasMoreMessages);
+  const fetchMessages = useChatStore((state) => state.fetchMessages);
+  const sendMessage = useChatStore((state) => state.sendMessage);
+  const markAsRead = useChatStore((state) => state.markAsRead);
+  const setActiveConversation = useChatStore((state) => state.setActiveConversation);
+  const scheduleMessage = useChatStore((state) => state.scheduleMessage);
+  const rescheduleMessage = useChatStore((state) => state.rescheduleMessage);
 
   const [messageInput, setMessageInput] = useState('');
   const [isSending, setIsSending] = useState(false);

@@ -8,11 +8,11 @@
 
 #### Real-time messaging • Community forums • End-to-end encryption • Gamification • Subscription tiers
 
-[![Version](https://img.shields.io/badge/version-0.9.6-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.9.8-green.svg)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Current version:** 0.9.6 (January 2026)
+**Current version:** 0.9.8 (January 2026)
 
 [🌐 Website](https://cgraph.app) · [📚 Documentation](https://docs.cgraph.app) ·
 [🔌 API Reference](https://api.cgraph.app/docs)
@@ -186,6 +186,60 @@ Visit [cgraph.app/pricing](https://cgraph.app/pricing) for full details.
 | Encryption | X3DH + Double Ratchet / AES-256-GCM / X25519       |
 | Payments   | Stripe (subscriptions, webhooks)                   |
 | Hosting    | Fly.io (backend) / Vercel (web) / Cloudflare (CDN) |
+
+---
+
+## Architecture
+
+CGraph uses a **Discord-style dual-app architecture**:
+
+```
+┌──────────────────────┐              ┌──────────────────────┐
+│     LANDING APP      │              │       WEB APP        │
+│    cgraph.org        │              │   app.cgraph.org     │
+│                      │              │                      │
+│  • Marketing site    │   Login →    │  • Authenticated     │
+│  • Pricing/Features  │  ─────────►  │  • Messages/Groups   │
+│  • Legal pages       │              │  • Forums/Settings   │
+│  • Company info      │              │  • Voice/Video       │
+│                      │              │                      │
+│   apps/landing/      │              │     apps/web/        │
+└──────────────────────┘              └──────────────────────┘
+          │                                      │
+          └──────────────┬───────────────────────┘
+                         │
+                         ▼
+              ┌──────────────────────┐
+              │     BACKEND API      │
+              │   api.cgraph.org     │
+              │    (Fly.io)          │
+              │                      │
+              │  • Elixir/Phoenix    │
+              │  • PostgreSQL        │
+              │  • WebSocket         │
+              │                      │
+              │   apps/backend/      │
+              └──────────────────────┘
+```
+
+### Why Two Apps?
+
+Like Discord (`discord.com` vs `app.discord.com`):
+
+- **Performance**: Landing page is lightweight (~200KB), app is feature-rich (~2MB)
+- **SEO**: Landing app optimized for search engines and social sharing
+- **Security**: Authenticated app doesn't expose marketing endpoints
+- **Caching**: Landing can be CDN-cached, app is dynamic
+
+### Deployment
+
+| App     | URL            | Vercel Project Root | Purpose           |
+| ------- | -------------- | ------------------- | ----------------- |
+| Landing | cgraph.org     | `apps/landing`      | Marketing, SEO    |
+| Web App | app.cgraph.org | `apps/web`          | Authenticated app |
+| Backend | api.cgraph.org | `apps/backend`      | API (Fly.io)      |
+
+See [CLAUDE.md](CLAUDE.md) for detailed architecture documentation.
 
 ---
 

@@ -135,11 +135,11 @@ export function VoiceCallModal({
             <div className="relative mb-6">
               <motion.div
                 animate={{
-                  scale: callStatus === 'calling' ? [1, 1.1, 1] : 1,
+                  scale: callState.status === 'ringing' ? [1, 1.1, 1] : 1,
                 }}
                 transition={{
                   duration: 2,
-                  repeat: callStatus === 'calling' ? Infinity : 0,
+                  repeat: callState.status === 'ringing' ? Infinity : 0,
                 }}
                 className="h-32 w-32 overflow-hidden rounded-full bg-gradient-to-br from-primary-500 to-purple-600"
               >

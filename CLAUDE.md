@@ -10,7 +10,7 @@ forums, and gamification. Features include Signal Protocol encryption (X3DH + Do
 AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls, and a karma-based
 forum system.
 
-**Version**: 0.9.5  
+**Version**: 0.9.8  
 **Last Updated**: January 2026  
 **License**: Proprietary (see LICENSE)
 
@@ -109,6 +109,134 @@ fly ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
 ```
 
 ## Architecture
+
+### Multi-App Architecture (Discord-Style)
+
+CGraph uses a **Discord-style dual-app architecture** for separation of concerns:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           PRODUCTION DEPLOYMENT                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│   cgraph.org                              app.cgraph.org                     │
+│   ┌──────────────────┐                   ┌──────────────────────────────┐   │
+│   │   LANDING APP    │                   │         WEB APP              │   │
+│   │   (apps/landing) │                   │       (apps/web)             │   │
+│   │                  │                   │                              │   │
+│   │  • Marketing     │    Login/         │  • Authenticated users only  │   │
+│   │  • Features      │    Register       │  • Messages, Groups, Forums  │   │
+│   │  • Pricing       │  ─────────────►   │  • Settings, Profile         │   │
+│   │  • Legal pages   │                   │  • Voice/Video calls         │   │
+│   │  • Company info  │                   │  • All app functionality     │   │
+│   └──────────────────┘                   └──────────────────────────────┘   │
+│           │                                           │                      │
+│           │ Unauthenticated users                     │ Authenticated users  │
+│           ▼                                           ▼                      │
+│   ┌───────────────────────────────────────────────────────────────────┐     │
+│   │                       BACKEND API                                  │     │
+│   │                   api.cgraph.org (Fly.io)                         │     │
+│   └───────────────────────────────────────────────────────────────────┘     │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+**Why this architecture?**
+
+- **Like Discord**: `discord.com` (landing) vs `app.discord.com` (authenticated app)
+- **Performance**: Landing page is lightweight, app loads full functionality
+- **SEO**: Landing app optimized for search engines
+- **Security**: Authenticated app doesn't expose unnecessary endpoints
+- **Caching**: Landing can be aggressively cached, app is dynamic
+
+### Landing App (`apps/landing`)
+
+Marketing and public-facing content:
+
+```
+apps/landing/
+├── src/
+│   ├── pages/
+│   │   ├── LandingPage.tsx        # Main marketing page (GSAP animations)
+│   │   ├── auth/                  # Login, Register, ForgotPassword
+│   │   ├── legal/                 # Privacy, Terms, Cookies, GDPR
+│   │   └── company/               # About, Careers, Contact, Press
+│   └── main.tsx                   # Router with all routes
+├── package.json
+└── vite.config.ts
+```
+
+**Routes**:
+
+- `/` - Marketing landing page with features, pricing, testimonials
+- `/login`, `/register`, `/forgot-password` - Authentication flows
+- `/privacy`, `/terms`, `/cookies`, `/gdpr` - Legal pages
+- `/about`, `/careers`, `/contact`, `/press` - Company pages
+
+### Web App (`apps/web`)
+
+Full application for authenticated users:
+
+```
+apps/web/
+├── src/
+│   ├── pages/
+│   │   ├── messages/              # Direct messages
+│   │   ├── groups/                # Discord-style servers
+│   │   ├── forums/                # Reddit-style forums
+│   │   ├── settings/              # User settings
+│   │   └── LandingPage.tsx        # Fallback for unauthenticated
+│   ├── stores/                    # Zustand state management
+│   ├── components/                # Shared components
+│   └── App.tsx                    # Main router
+├── package.json
+└── vite.config.ts
+```
+
+**Route behavior** (Discord-style):
+
+- Authenticated users visiting `/` → Redirected to `/messages`
+- Unauthenticated users visiting `/` → See landing page (or redirect to landing app)
+- All protected routes require authentication
+
+### Local Development
+
+```bash
+# Terminal 1: Landing app (port 5174)
+cd apps/landing && pnpm dev
+
+# Terminal 2: Web app (port 5173)
+cd apps/web && pnpm dev
+
+# Terminal 3: Backend API (port 4000)
+cd apps/backend && mix phx.server
+```
+
+### Vercel Deployment (Two Projects)
+
+**Project 1: Landing (cgraph.org)**
+
+```json
+{
+  "name": "cgraph-landing",
+  "rootDirectory": "apps/landing",
+  "framework": "vite",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist"
+}
+```
+
+**Project 2: Web App (app.cgraph.org)**
+
+```json
+{
+  "name": "cgraph-web",
+  "rootDirectory": "apps/web",
+  "framework": "vite",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist"
+}
+```
 
 ### Monorepo Structure
 
@@ -292,7 +420,7 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 - Added `usePushNotifications` hook for auto-registration
 - Integrated SettingsProvider in App.tsx
 
-## Production Infrastructure (v0.9.5)
+## Production Infrastructure (v0.9.8)
 
 ### Fly.io Backend
 

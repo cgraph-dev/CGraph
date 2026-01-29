@@ -731,7 +731,7 @@ export default function EffectsCustomization() {
   } = useCustomizationStore();
 
   // V2 store for live preview sync
-  const { setEffect, updateSettings } = useCustomizationStoreV2();
+  const { setEffect, updateSettings, setAnimationSpeed } = useCustomizationStoreV2();
 
   const [activeCategory, setActiveCategory] = useState<EffectCategory>('particles');
   const [searchQuery, setSearchQuery] = useState('');
@@ -797,7 +797,12 @@ export default function EffectsCustomization() {
         setPreviewingLockedItem(null);
       }
     } else {
-      updateEffects('animationSpeed', id);
+      // For animations, extract the speed value from the animation set
+      const animation = ANIMATION_SETS.find((a) => a.id === id);
+      const speedValue = animation?.speed || 'normal';
+      updateEffects('animationSpeed', speedValue);
+      // Also update V2 store directly for immediate preview
+      setAnimationSpeed(speedValue as 'slow' | 'normal' | 'fast');
       if (!isUnlocked) {
         setPreviewingLockedItem(id);
       } else {
@@ -918,7 +923,7 @@ export default function EffectsCustomization() {
           {activeCategory === 'particles' && (
             <ParticleEffectsSection
               particles={filteredItems as ParticleEffect[]}
-              selectedParticle={particleEffect}
+              selectedParticle={particleEffect ?? 'particle-none'}
               previewingLockedItem={previewingLockedItem}
               onSelect={(id, isUnlocked) => handlePreviewItem('particle', id, isUnlocked)}
             />
@@ -927,7 +932,7 @@ export default function EffectsCustomization() {
           {activeCategory === 'backgrounds' && (
             <BackgroundEffectsSection
               backgrounds={filteredItems as BackgroundEffect[]}
-              selectedBackground={backgroundEffect}
+              selectedBackground={backgroundEffect ?? 'bg-none'}
               previewingLockedItem={previewingLockedItem}
               onSelect={(id, isUnlocked) => handlePreviewItem('background', id, isUnlocked)}
             />
@@ -1103,7 +1108,13 @@ function ParticleEffectsSection({
                     <span className="text-xs font-medium text-green-400">Active</span>
                   </div>
                 ) : (
-                  <button className="w-full rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-700">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect(particle.id, particle.unlocked);
+                    }}
+                    className="w-full rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-700"
+                  >
                     Apply
                   </button>
                 )
@@ -1220,7 +1231,13 @@ function BackgroundEffectsSection({
                     <span className="text-sm font-medium text-green-400">Active</span>
                   </div>
                 ) : (
-                  <button className="w-full rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelect(bg.id, bg.unlocked);
+                    }}
+                    className="w-full rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+                  >
                     Apply
                   </button>
                 )
@@ -1272,17 +1289,17 @@ function AnimationSetsSection({
           >
             <GlassCard
               variant={
-                selectedAnimation === anim.id || isPreviewing
+                selectedAnimation === anim.speed || isPreviewing
                   ? 'neon'
                   : anim.unlocked
                     ? 'crystal'
                     : 'frosted'
               }
-              glow={selectedAnimation === anim.id || isPreviewing}
+              glow={selectedAnimation === anim.speed || isPreviewing}
               glowColor={
                 isPreviewing
                   ? 'rgba(234, 179, 8, 0.4)'
-                  : selectedAnimation === anim.id
+                  : selectedAnimation === anim.speed
                     ? 'rgba(139, 92, 246, 0.3)'
                     : undefined
               }
@@ -1331,13 +1348,19 @@ function AnimationSetsSection({
 
                   {/* Status Button */}
                   {anim.unlocked ? (
-                    selectedAnimation === anim.id ? (
+                    selectedAnimation === anim.speed ? (
                       <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
                         <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
                         <span className="text-sm font-medium text-green-400">Active</span>
                       </div>
                     ) : (
-                      <button className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelect(anim.id, anim.unlocked);
+                        }}
+                        className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
+                      >
                         Apply
                       </button>
                     )

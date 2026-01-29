@@ -4,6 +4,84 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.7] - 2026-01-27
+
+**🚀 ENTERPRISE LANDING PAGE + DISCORD-STYLE ARCHITECTURE**
+
+This release transforms the landing page into an enterprise-grade marketing site following Discord's
+architecture pattern.
+
+### 🏗️ Architecture Changes
+
+- **Separated Marketing from App**: Landing page is now a standalone app (`apps/landing`) for
+  independent scaling
+- **Professional Domain Routing**:
+  - `cgraph.org/` → Marketing landing page
+  - `cgraph.org/login` → Login gateway
+  - `cgraph.org/register` → Registration gateway
+  - `app.cgraph.org/` → Main web application
+
+### ✨ Landing Page Features
+
+- **Full Feature Port**: Migrated all 1,294 lines of LandingPage.tsx with complete functionality
+- **GSAP ScrollTrigger**: Zoom sections with parallax effects
+- **3D TiltCard Components**: Interactive feature cards with glare effects
+- **Feature Showcase**: Hover-to-reveal premium vs free feature comparisons
+- **Security Section**: Portal tooltips with detailed encryption information
+- **Pricing Tiers**: Free, Premium, Enterprise with highlighted recommendations
+- **Premium Typography**: Robert, Zentry, General custom fonts (woff2)
+
+### 🔐 Authentication Gateway
+
+- **Login Page** (`/login`): Email/password, OAuth (Google, GitHub), Web3 wallet
+- **Register Page** (`/register`): Full registration with password strength indicator
+- **Forgot Password** (`/forgot-password`): Secure email-based reset flow
+- **AuthLayout**: Shared layout with animated branding panel
+
+### ⚡ Performance Optimizations
+
+- **Lazy Loading**: All pages code-split with React.lazy()
+- **Multi-Region CDN**: Deployed to fra1, iad1, sfo1 for global coverage
+- **Aggressive Caching**: Static assets cached for 1 year
+- **Font Preloading**: Critical fonts preloaded for fast FCP
+
+### 🔒 Security Headers
+
+- Content Security Policy (CSP) with strict source rules
+- X-Frame-Options: DENY
+- X-Content-Type-Options: nosniff
+- Referrer-Policy: strict-origin-when-cross-origin
+- Permissions-Policy: Restricted camera/microphone/geolocation
+
+### 📁 New Files
+
+| File                                             | Purpose                               |
+| ------------------------------------------------ | ------------------------------------- |
+| `apps/landing/src/pages/LandingPage.tsx`         | Enterprise landing page (1000+ lines) |
+| `apps/landing/src/pages/landing-page.css`        | Full CSS (4,435 lines)                |
+| `apps/landing/src/components/Logo.tsx`           | Animated PCB-style logo               |
+| `apps/landing/src/pages/auth/AuthLayout.tsx`     | Shared auth layout                    |
+| `apps/landing/src/pages/auth/Login.tsx`          | Login gateway page                    |
+| `apps/landing/src/pages/auth/Register.tsx`       | Registration gateway page             |
+| `apps/landing/src/pages/auth/ForgotPassword.tsx` | Password reset page                   |
+| `apps/landing/src/assets/fonts/*`                | Premium fonts (woff2)                 |
+| `apps/landing/README.md`                         | Comprehensive documentation           |
+
+### 🛠️ Configuration
+
+| File                        | Changes                                  |
+| --------------------------- | ---------------------------------------- |
+| `apps/landing/vercel.json`  | Multi-region, CSP headers, caching rules |
+| `apps/landing/src/main.tsx` | Lazy loading, auth routes                |
+
+### 🔧 Environment Variables
+
+```bash
+VITE_WEB_APP_URL=https://app.cgraph.org  # Web app URL for auth redirects
+```
+
+---
+
 ## [0.9.6] - 2026-01-27
 
 **🎨 AVATAR BORDERS EVERYWHERE + DEPLOYMENT READINESS**

@@ -282,6 +282,21 @@ function ProfileRedirectRoute() {
   return <LoadingSpinner />;
 }
 
+// Landing route - Discord-style: redirect authenticated users to app, show landing to guests
+function LandingRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useAuthStore();
+
+  routeLogger.debug('LandingRoute isAuthenticated:', isAuthenticated);
+
+  // Authenticated users go directly to messages (like Discord redirects to app)
+  if (isAuthenticated) {
+    return <Navigate to="/messages" replace />;
+  }
+
+  // Unauthenticated users see the landing page
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
     <AuthInitializer>
@@ -301,8 +316,20 @@ export default function App() {
           {/* Demo: Workshop page for continued customization */}
           <Route path="/demo/workshop" element={<LandingDemoWorkshop />} />
 
-          {/* Public landing page - GAMELAND-style */}
-          <Route path="/" element={<LandingPage />} />
+          {/*
+           * Public landing page - Discord-style architecture:
+           * - Unauthenticated users see the marketing landing page
+           * - Authenticated users are redirected to /messages (the app)
+           * This mirrors Discord's behavior: discord.com → app.discord.com for logged-in users
+           */}
+          <Route
+            path="/"
+            element={
+              <LandingRoute>
+                <LandingPage />
+              </LandingRoute>
+            }
+          />
 
           {/* Product sections - scroll to LandingPage sections via /#features, /#security, /#pricing */}
 

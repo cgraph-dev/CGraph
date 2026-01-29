@@ -431,7 +431,7 @@ const apiSchemaMapper = createSchemaMapper<CustomizationState>({
 const debouncedSave = createDebouncedSave(
   async (state, _set) => {
     const payload = apiSchemaMapper.toApi(state);
-    await api.put('/api/v1/me/customizations', payload);
+    await api.patch('/api/v1/me/customizations', payload);
   },
   { delay: 1000 }
 );
