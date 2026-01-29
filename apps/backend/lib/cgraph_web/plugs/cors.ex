@@ -65,15 +65,11 @@ defmodule CGraphWeb.Plugs.Cors do
           "https://cgraph.vercel.app",
           "https://cgraph-web.vercel.app",
           "https://c-graph.vercel.app",
+          "https://c-graph-web.vercel.app",
           "https://cgraph-web-v2.vercel.app",
+          "https://cgraph-landing.vercel.app",
           # Vercel preview deployments (Discord-style: allow all vercel.app subdomains)
-          # Pattern: cgraph-{hash}-{team}.vercel.app or cgraph-{branch}-{team}.vercel.app
-          # This is safe because:
-          # 1. Only allows *.vercel.app domains (Vercel-controlled)
-          # 2. Requires 'cgraph' prefix to prevent other Vercel projects
-          # 3. Authentication still required for sensitive operations
-          # Note: 'i' flag for case-insensitive (Vercel URLs can have mixed case)
-          ~r/^https:\/\/cgraph[a-z0-9-]*\.vercel\.app$/i
+          ~r/^https:\/\/(cgraph|c-graph)[a-z0-9-]*\.vercel\.app$/i
         ]
 
       {nil, false} ->
