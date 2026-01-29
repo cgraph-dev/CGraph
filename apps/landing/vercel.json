@@ -1,9 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
-  "buildCommand": "pnpm turbo run build --filter=@cgraph/landing",
-  "installCommand": "pnpm install --no-frozen-lockfile",
-  "outputDirectory": "apps/landing/dist",
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install",
+  "outputDirectory": "dist",
   "regions": ["fra1", "iad1", "sfo1"],
   "rewrites": [
     {
