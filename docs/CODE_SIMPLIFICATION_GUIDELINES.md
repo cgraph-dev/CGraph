@@ -3,9 +3,10 @@
 This document outlines code standards, anti-patterns to avoid, and industry best practices for the CGraph codebase. **All agents and developers must follow these guidelines.**
 
 **Generated**: January 2026
-**Version**: 3.1
+**Version**: 4.0
 **Status**: MANDATORY
 **Standards**: Google, Meta, Telegram, Discord
+**Tech-Specific**: Oban, Stripe, E2EE, WebRTC, React 19, Expo 54, Phoenix 1.8, Fly.io
 
 ---
 
@@ -70,6 +71,21 @@ This guide incorporates best practices from companies serving billions of users:
 29. [Summary of Changes Made](#summary-of-changes-made)
 30. [Reference Files](#reference-files)
 31. [Quick Reference Card](#quick-reference-card)
+
+### Part 8: CGraph Implementation Status
+32. [Implementation Roadmap](#implementation-roadmap)
+33. [Current State vs Target State](#current-state-vs-target-state)
+34. [Frontend Quick Wins](#frontend-quick-wins)
+
+### Part 9: CGraph Technology-Specific Patterns
+35. [Oban Background Jobs](#oban-background-jobs)
+36. [Stripe Integration](#stripe-integration)
+37. [E2EE Signal Protocol](#e2ee-signal-protocol)
+38. [WebRTC Voice/Video](#webrtc-voicevideo)
+39. [React 19 Patterns](#react-19-patterns)
+40. [Expo 54 Mobile](#expo-54-mobile)
+41. [Phoenix 1.8 Specifics](#phoenix-18-specifics)
+42. [Fly.io Deployment](#flyio-deployment)
 
 ---
 
@@ -2187,83 +2203,206 @@ function VirtualList({ items }: { items: Item[] }) {
 
 ## State Management Patterns
 
-### Zustand Best Practices
+CGraph uses Zustand for state management with domain-specific stores. These patterns are based on actual CGraph infrastructure.
+
+### Zustand Store Architecture
 
 ```typescript
-// BAD - Monolithic store
-const useStore = create((set) => ({
-  user: null,
-  messages: [],
-  notifications: [],
-  settings: {},
-  // 50 more properties...
-  // 100 actions...
-}));
+// CGraph store pattern with middleware composition
+import { create } from 'zustand';
+import { devtools, persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
+import { chatLogger as logger } from '@/lib/logger';
 
-// GOOD - Split by domain
-const useAuthStore = create<AuthState>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  login: async (credentials) => { ... },
-  logout: () => set({ user: null, isAuthenticated: false }),
-}));
+// PATTERN 1: devtools only (most stores)
+// Use for: stores that don't need persistence
+export const useChatStore = create<ChatState>()(
+  devtools(
+    (set, get) => ({
+      conversations: [],
+      messages: {},
+      // Actions
+      addMessage: (convId, message) => {
+        logger.debug('Adding message', { convId, messageId: message.id });
+        set((state) => ({
+          messages: {
+            ...state.messages,
+            [convId]: [...(state.messages[convId] || []), message],
+          },
+        }));
+      },
+    }),
+    { name: 'ChatStore' }
+  )
+);
 
-const useChatStore = create<ChatState>((set) => ({
-  conversations: [],
-  activeConversationId: null,
-  sendMessage: async (message) => { ... },
+// PATTERN 2: persist + devtools (user preferences)
+// Use for: settings that should survive page refresh
+export const useThemeStore = create<ThemeState>()(
+  devtools(
+    persist(
+      (set, get) => ({
+        colorPreset: 'emerald',
+        animationSpeed: 'normal',
+        setColorPreset: (preset) => set({ colorPreset: preset }),
+      }),
+      {
+        name: 'cgraph-theme',
+        storage: createJSONStorage(() => safeLocalStorage),
+        partialize: (state) => ({
+          colorPreset: state.colorPreset,
+          animationSpeed: state.animationSpeed,
+        }),
+      }
+    ),
+    { name: 'ThemeStore' }
+  )
+);
+
+// PATTERN 3: No middleware (lightweight stores)
+// Use for: transient UI state
+export const useUIStore = create<UIState>((set) => ({
+  sidebarOpen: true,
+  toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),
 }));
 ```
 
-### Selector Patterns
+### Domain-Specific Stores (CGraph Structure)
 
 ```typescript
-// BAD - Selecting entire store causes re-renders on any change
+// CGraph uses domain-specific stores, NOT a monolithic store:
+// ├── authStore.ts        - Authentication, user session
+// ├── chatStore.ts        - Conversations, messages, typing
+// ├── groupStore.ts       - Group servers, channels
+// ├── forumStore.ts       - Forums, threads, posts
+// ├── themeStore.ts       - UI theming, color presets
+// ├── customizationStore.ts - User customizations, items
+// ├── notificationStore.ts - Push notifications
+// └── gamificationStore.ts - XP, achievements, rewards
+
+// Each store manages its own domain, reducing complexity
+// Inter-store communication via direct imports (not global state)
+```
+
+### Selector Patterns (CGraph Actual)
+
+```typescript
+// BAD - Selecting entire store causes re-renders
 const { user, messages, settings } = useStore();
 
 // GOOD - Select only what you need
-const user = useAuthStore(state => state.user);
-const messages = useChatStore(state => state.messages);
+const user = useAuthStore((state) => state.user);
+const conversations = useChatStore((state) => state.conversations);
 
-// For derived data, use selectors with shallow equality
-const activeUsers = useChatStore(
-  state => state.users.filter(u => u.isOnline),
-  shallow
-);
-
-// Memoized selectors for complex derivations
+// GOOD - Memoized selectors for derived data
 const selectUnreadCount = (state: ChatState) =>
   state.conversations.reduce((sum, c) => sum + c.unreadCount, 0);
 
 const unreadCount = useChatStore(selectUnreadCount);
+
+// GOOD - Computed selectors with stable reference
+const selectActiveConversation = (state: ChatState) => {
+  const id = state.activeConversationId;
+  return id ? state.conversations.find((c) => c.id === id) : null;
+};
 ```
 
-### Immutable Updates
+### Immutable Updates (Spread Pattern)
 
 ```typescript
+// CGraph uses spread operators for immutable updates (NOT Immer)
+// This is simpler and more predictable for most use cases
+
 // BAD - Direct mutation
 state.messages.push(newMessage);
-state.user.name = 'New Name';
 
-// GOOD - Immutable updates with Immer (built into Zustand)
-import { produce } from 'immer';
-
-const useStore = create((set) => ({
-  messages: [],
-  addMessage: (message) => set(
-    produce((state) => {
-      state.messages.push(message);
-    })
-  ),
-}));
-
-// Or without Immer - spread operator
-const useStore = create((set) => ({
-  messages: [],
-  addMessage: (message) => set((state) => ({
-    messages: [...state.messages, message],
+// GOOD - Spread operator (CGraph standard)
+const useChatStore = create<ChatState>()((set) => ({
+  messages: {},
+  
+  addMessage: (convId, message) => set((state) => ({
+    messages: {
+      ...state.messages,
+      [convId]: [...(state.messages[convId] || []), message],
+    },
+  })),
+  
+  updateMessage: (convId, messageId, updates) => set((state) => ({
+    messages: {
+      ...state.messages,
+      [convId]: state.messages[convId]?.map((m) =>
+        m.id === messageId ? { ...m, ...updates } : m
+      ) ?? [],
+    },
+  })),
+  
+  removeMessage: (convId, messageId) => set((state) => ({
+    messages: {
+      ...state.messages,
+      [convId]: state.messages[convId]?.filter((m) => m.id !== messageId) ?? [],
+    },
   })),
 }));
+```
+
+### Store Helpers Utilities
+
+```typescript
+// CGraph provides shared utilities in stores/utils/storeHelpers.ts
+
+import { createToggle, createToggles, toApiParams, fromApiParams } from '@/stores/utils/storeHelpers';
+
+// Toggle factory - creates toggle functions for boolean fields
+const useSettingsStore = create<SettingsState>((set) => ({
+  darkMode: false,
+  notifications: true,
+  toggleDarkMode: createToggle(set, 'darkMode'),
+  toggleNotifications: createToggle(set, 'notifications'),
+}));
+
+// Bulk toggle creation
+const toggles = createToggles(set, ['darkMode', 'notifications', 'soundEnabled']);
+// Creates: toggleDarkMode, toggleNotifications, toggleSoundEnabled
+
+// API serialization (camelCase <-> snake_case)
+const apiParams = toApiParams(
+  { colorPreset: 'emerald', animationSpeed: 'fast' },
+  { colorPreset: 'color_preset', animationSpeed: 'animation_speed' }
+);
+// Result: { color_preset: 'emerald', animation_speed: 'fast' }
+```
+
+### Centralized Mappings Pattern
+
+```typescript
+// CGraph uses centralized mappings for ID resolution
+// See: stores/customization/mappings.ts
+
+// Maps item IDs to their visual types
+export const BORDER_ID_TO_TYPE: Record<string, AvatarBorderType> = {
+  b1: 'static',
+  b5: 'pulse',
+  b6: 'rotate',
+  b10: 'fire',
+  b14: 'legendary',
+  b15: 'mythic',
+};
+
+// Maps theme IDs to color presets
+export const THEME_ID_TO_PRESET: Record<string, ThemePreset> = {
+  'profile-ocean': 'cyan',
+  'profile-forest': 'emerald',
+  'chat-neon': 'pink',
+};
+
+// Helper functions for consistent resolution
+export function getBorderType(itemId: string): AvatarBorderType {
+  return BORDER_ID_TO_TYPE[itemId] ?? 'static';
+}
+
+export function getThemeColor(themeId: string): ThemePreset {
+  return THEME_ID_TO_PRESET[themeId] ?? 'purple';
+}
 ```
 
 ---
@@ -2458,6 +2597,413 @@ const socket = new Socket('/socket', {
   reconnectAfterMs: (tries) => calculateBackoff(tries),
   heartbeatIntervalMs: 30000,
 });
+```
+
+---
+
+## CGraph Infrastructure Patterns
+
+These patterns are specific to CGraph's architecture and solve real problems encountered in production.
+
+### Token Service (Circular Dependency Fix)
+
+```typescript
+// PROBLEM: Circular dependency between api.ts and authStore.ts
+// api.ts needs tokens from authStore
+// authStore.ts needs api for HTTP requests
+// Result: "Cannot access 'X' before initialization" in production builds
+
+// SOLUTION: Token Service as intermediary
+// See: lib/tokenService.ts
+
+// tokenService.ts - Stateless token access layer
+type TokenGetter = () => string | null | undefined;
+type TokenSetter = (tokens: { accessToken: string; refreshToken?: string | null }) => void;
+
+let tokenConfig: {
+  getAccessToken: TokenGetter;
+  getRefreshToken: TokenGetter;
+  setTokens: TokenSetter;
+  onLogout: () => void;
+} | null = null;
+
+// Called by authStore on initialization
+export function registerTokenHandlers(config: typeof tokenConfig): void {
+  tokenConfig = config;
+}
+
+// Used by api.ts (no direct store import)
+export function getAccessToken(): string | null {
+  return tokenConfig?.getAccessToken() ?? null;
+}
+
+export function getRefreshToken(): string | null {
+  return tokenConfig?.getRefreshToken() ?? null;
+}
+
+// authStore.ts - Registers handlers on load
+import { registerTokenHandlers } from '@/lib/tokenService';
+
+export const useAuthStore = create<AuthState>()((set, get) => {
+  // Register token handlers immediately
+  registerTokenHandlers({
+    getAccessToken: () => get().accessToken,
+    getRefreshToken: () => get().refreshToken,
+    setTokens: ({ accessToken, refreshToken }) => {
+      set({ accessToken, refreshToken });
+    },
+    onLogout: () => get().logout(),
+  });
+
+  return {
+    accessToken: null,
+    refreshToken: null,
+    // ...rest of store
+  };
+});
+
+// api.ts - Uses tokenService instead of authStore
+import { getAccessToken, getRefreshToken, setTokensInStore } from '@/lib/tokenService';
+
+export const api = createHttpClient({
+  getAccessToken: () => getAccessToken(),
+  getRefreshToken: () => getRefreshToken(),
+  setTokens: async (tokens) => setTokensInStore(tokens),
+});
+```
+
+### Production Logger with Error Tracking
+
+```typescript
+// CGraph uses namespaced loggers for consistent, trackable logging
+// See: lib/logger.ts
+
+import { captureError, captureMessage, addBreadcrumb } from '@/lib/errorTracking';
+
+const isDev = import.meta.env?.DEV === true;
+
+interface Logger {
+  debug: (...args: unknown[]) => void;
+  info: (...args: unknown[]) => void;
+  warn: (...args: unknown[]) => void;
+  error: (error: Error | string, ...args: unknown[]) => void;
+  breadcrumb: (message: string, data?: Record<string, unknown>) => void;
+}
+
+/**
+ * Creates a namespaced logger with error tracking integration
+ */
+export const createLogger = (namespace: string): Logger => {
+  const prefix = `[${namespace}]`;
+
+  return {
+    debug: (...args) => {
+      if (isDev) console.debug(prefix, ...args);
+    },
+
+    info: (...args) => {
+      if (isDev) console.info(prefix, ...args);
+    },
+
+    warn: (...args) => {
+      if (isDev) {
+        console.warn(prefix, ...args);
+      } else {
+        // Production: sanitize and track
+        captureMessage(`${namespace}: Warning`, 'warning', { component: namespace });
+      }
+    },
+
+    error: (error, ...args) => {
+      console.error(prefix, error, ...args);
+      if (!isDev && error instanceof Error) {
+        captureError(error, { component: namespace });
+      }
+    },
+
+    breadcrumb: (message, data) => {
+      addBreadcrumb({ category: namespace, message, data });
+    },
+  };
+};
+
+// Pre-configured loggers for different domains
+export const chatLogger = createLogger('Chat');
+export const socketLogger = createLogger('Socket');
+export const e2eeLogger = createLogger('E2EE');
+export const authLogger = createLogger('Auth');
+
+// Usage in components/services:
+import { chatLogger as logger } from '@/lib/logger';
+
+function sendMessage(content: string) {
+  logger.debug('Sending message', { length: content.length });
+  logger.breadcrumb('Message sent');
+  
+  try {
+    // ...
+  } catch (error) {
+    logger.error(error as Error, 'Failed to send message');
+  }
+}
+```
+
+### Safe Storage Pattern
+
+```typescript
+// CGraph uses safeLocalStorage for SSR compatibility and error handling
+// See: lib/safeStorage.ts
+
+/**
+ * Safe localStorage wrapper that handles:
+ * - SSR (window undefined)
+ * - Private browsing mode
+ * - Storage quota exceeded
+ * - Corrupted storage data
+ */
+export const safeLocalStorage = {
+  getItem(key: string): string | null {
+    try {
+      if (typeof window === 'undefined') return null;
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+
+  setItem(key: string, value: string): void {
+    try {
+      if (typeof window === 'undefined') return;
+      localStorage.setItem(key, value);
+    } catch (e) {
+      console.warn('localStorage.setItem failed:', e);
+    }
+  },
+
+  removeItem(key: string): void {
+    try {
+      if (typeof window === 'undefined') return;
+      localStorage.removeItem(key);
+    } catch {
+      // Ignore
+    }
+  },
+};
+
+// Usage with Zustand persist middleware
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { safeLocalStorage } from '@/lib/safeStorage';
+
+const useThemeStore = create(
+  persist(
+    (set) => ({ /* state */ }),
+    {
+      name: 'cgraph-theme',
+      storage: createJSONStorage(() => safeLocalStorage),
+    }
+  )
+);
+```
+
+### API Client with Token Refresh
+
+```typescript
+// CGraph's API client handles token refresh, retry, and idempotency
+// See: lib/api.ts
+
+import { createHttpClient } from '@cgraph/utils';
+import { getAccessToken, getRefreshToken, setTokensInStore, triggerLogout } from './tokenService';
+
+export const api = createHttpClient({
+  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:4000',
+  timeoutMs: 30000,
+  withCredentials: true,
+
+  // Token access via tokenService (no circular dependency)
+  getAccessToken: () => getAccessToken(),
+  getRefreshToken: () => getRefreshToken(),
+  setTokens: async ({ accessToken, refreshToken }) => {
+    setTokensInStore({ accessToken, refreshToken: refreshToken ?? null });
+    // Reconnect socket with new token
+    const { socketManager } = await import('./socket');
+    if (socketManager.isConnected()) {
+      await socketManager.reconnectWithNewToken();
+    }
+  },
+  onLogout: async () => {
+    await triggerLogout();
+    window.location.href = '/login';
+  },
+
+  // Automatic token refresh
+  refresh: {
+    endpoint: '/api/v1/auth/refresh',
+    buildBody: (rt) => ({ refresh_token: rt }),
+    withCredentials: true,
+    parseTokens: (data) => ({
+      accessToken: data?.tokens?.access_token || data?.token,
+      refreshToken: data?.tokens?.refresh_token,
+    }),
+  },
+
+  // Retry with exponential backoff
+  retry: {
+    attempts: 3,
+    backoffMs: 400,
+    maxBackoffMs: 5000,
+  },
+
+  // Idempotency for safe retries
+  idempotency: {
+    enabled: true,
+  },
+});
+```
+
+### Socket Manager Class Pattern
+
+```typescript
+// CGraph uses a SocketManager class for WebSocket lifecycle management
+// See: lib/socket.ts
+
+class SocketManager {
+  private socket: Socket | null = null;
+  private channels: Map<string, Channel> = new Map();
+  private reconnectAttempts = 0;
+
+  connect(token: string): void {
+    if (this.socket?.isConnected()) return;
+
+    this.socket = new Socket(getSocketUrl(), {
+      params: { token },
+      reconnectAfterMs: (tries) => this.calculateBackoff(tries),
+      heartbeatIntervalMs: 30000,
+    });
+
+    this.socket.onOpen(() => {
+      socketLogger.info('Connected');
+      this.reconnectAttempts = 0;
+    });
+
+    this.socket.onError((error) => {
+      socketLogger.error(error, 'Socket error');
+    });
+
+    this.socket.connect();
+  }
+
+  // Channel caching to prevent duplicate joins
+  joinChannel(topic: string, params?: object): Channel {
+    const existing = this.channels.get(topic);
+    if (existing?.state === 'joined') return existing;
+
+    const channel = this.socket!.channel(topic, params);
+    this.channels.set(topic, channel);
+
+    channel.join()
+      .receive('ok', () => socketLogger.debug(`Joined ${topic}`))
+      .receive('error', ({ reason }) => socketLogger.error(`Failed to join ${topic}: ${reason}`));
+
+    return channel;
+  }
+
+  leaveChannel(topic: string): void {
+    const channel = this.channels.get(topic);
+    if (channel) {
+      channel.leave();
+      this.channels.delete(topic);
+    }
+  }
+
+  async reconnectWithNewToken(): Promise<void> {
+    const token = getAccessToken();
+    if (!token) return;
+
+    this.disconnect();
+    await new Promise((r) => setTimeout(r, 100));
+    this.connect(token);
+
+    // Rejoin all channels
+    for (const [topic] of this.channels) {
+      this.joinChannel(topic);
+    }
+  }
+
+  private calculateBackoff(attempt: number): number {
+    const base = Math.min(1000 * Math.pow(2, attempt), 30000);
+    const jitter = base * 0.1 * (Math.random() * 2 - 1);
+    return Math.floor(base + jitter);
+  }
+}
+
+export const socketManager = new SocketManager();
+```
+
+### Hooks Best Practices
+
+```typescript
+// CGraph hooks follow a consistent pattern
+// See: hooks/useDebounce.ts
+
+// Hook for debounced values
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// Hook for debounced callbacks (more flexible)
+export function useDebouncedCallback<T extends (...args: Parameters<T>) => void>(
+  callback: T,
+  delay: number
+): (...args: Parameters<T>) => void {
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const callbackRef = useRef(callback);
+
+  useEffect(() => {
+    callbackRef.current = callback;
+  }, [callback]);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, []);
+
+  return (...args: Parameters<T>) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => callbackRef.current(...args), delay);
+  };
+}
+
+// Hook for throttled callbacks (rate limiting)
+export function useThrottledCallback<T extends (...args: Parameters<T>) => void>(
+  callback: T,
+  limit: number
+): (...args: Parameters<T>) => void {
+  const lastRunRef = useRef<number>(0);
+
+  return (...args: Parameters<T>) => {
+    const now = Date.now();
+    if (now - lastRunRef.current >= limit) {
+      lastRunRef.current = now;
+      callback(...args);
+    }
+  };
+}
+
+// Hook index pattern (centralized exports)
+// See: hooks/index.ts
+export { useDebounce, useDebouncedCallback, useThrottledCallback } from './useDebounce';
+export { useLocalStorage } from './useLocalStorage';
+export { useClickOutside } from './useClickOutside';
+export { useMediaQuery } from './useMediaQuery';
+// ... other hooks
 ```
 
 ---
@@ -4235,38 +4781,52 @@ This section documents all code simplifications made to the CGraph codebase.
 
 These files follow best practices - use them as templates:
 
+### CGraph Infrastructure Patterns (PRIORITY)
+- `apps/web/src/lib/tokenService.ts` - Circular dependency solution pattern
+- `apps/web/src/lib/logger.ts` - Production logger with error tracking
+- `apps/web/src/lib/safeStorage.ts` - SSR-safe localStorage wrapper
+- `apps/web/src/lib/api.ts` - API client with token refresh
+- `apps/web/src/stores/utils/storeHelpers.ts` - Store utility functions
+- `apps/web/src/stores/customization/mappings.ts` - Centralized ID mappings
+
 ### Well-Structured Components
 - `apps/web/src/components/FileUpload.tsx` - Clear function separation
 - `apps/web/src/components/Modal.tsx` - Good Record type usage
 - `apps/web/src/components/Toast.tsx` - Clean context pattern
 - `apps/web/src/components/Input.tsx` - Proper forwardRef
-- `apps/web/src/components/Tabs.tsx` - Good variant styling
+- `apps/web/src/components/chat/TypingIndicator.tsx` - Extracted chat component
+- `apps/web/src/components/chat/ConversationHeader.tsx` - Clean component pattern
 
 ### Good State Management
-- `apps/web/src/stores/authStore.ts` - Well-organized Zustand store
+- `apps/web/src/stores/authStore.ts` - Token service registration pattern
 - `apps/web/src/stores/chatStore.ts` - Real-time message handling
+- `apps/web/src/stores/theme/index.ts` - Consolidated theme store
 - `apps/web/src/stores/forumStore.ts` - Complex state with pagination
-- `apps/web/src/hooks/useDebounce.ts` - Clean custom hook
+
+### Hooks Patterns
+- `apps/web/src/hooks/useDebounce.ts` - Debounce + throttle hooks
+- `apps/web/src/hooks/usePresence.ts` - Presence tracking hook
+- `apps/web/src/hooks/index.ts` - Centralized hook exports
 
 ### Real-Time Patterns
-- `apps/web/src/lib/socket.ts` - Phoenix channel management
-- `apps/web/src/hooks/usePresence.ts` - Presence tracking
+- `apps/web/src/lib/socket.ts` - SocketManager class pattern
+- `apps/web/src/lib/chat/reactionUtils.ts` - Store-accessing utilities
 
 ### Clean Utilities
 - `packages/utils/src/format.ts` - Well-organized formatters
-- `packages/utils/src/helpers.ts` - Clean helper functions
+- `packages/utils/src/http.ts` - HTTP client factory
 
 ### Backend - Core Modules
 - `apps/backend/lib/cgraph/accounts.ex` - Clean context module
 - `apps/backend/lib/cgraph/forums.ex` - Forum context with voting
 - `apps/backend/lib/cgraph/messaging.ex` - Messaging context
+- `apps/backend/lib/cgraph/release.ex` - Production migration runner
 
 ### Backend - Infrastructure
 - `apps/backend/lib/cgraph/cache/unified.ex` - Three-tier cache
 - `apps/backend/lib/cgraph/cache/distributed.ex` - Redis cache layer
 - `apps/backend/lib/cgraph/rate_limiter/distributed.ex` - Rate limiting
-- `apps/backend/lib/cgraph/performance/query_optimizer.ex` - Query patterns
-- `apps/backend/lib/cgraph/performance/circuit_breaker.ex` - Fault tolerance
+- `apps/backend/lib/cgraph_web/plugs/cors.ex` - Runtime CORS configuration
 
 ### Backend - Web Layer
 - `apps/backend/lib/cgraph_web/channels/conversation_channel.ex` - Channel pattern
@@ -4461,6 +5021,1833 @@ Error Budget:
 │ Props            │ [Component]Props  interface UserCardProps {}       │
 │ Event handlers   │ on* / handle*     onClick, handleClick             │
 └──────────────────┴────────────────────────────────────────────────────┘
+```
+
+---
+
+## Implementation Roadmap
+
+This section clarifies which industry patterns are currently implemented in CGraph vs. planned for future development.
+
+### Implementation Status Legend
+
+- ✅ **Implemented**: Production-ready, fully integrated
+- 🚧 **Planned**: On roadmap, prioritized for upcoming releases
+- 📋 **Aspirational**: Best practice from industry, not yet scheduled
+
+### Current Implementation Status
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│                        CGRAPH IMPLEMENTATION STATUS                         │
+├────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ✅ IMPLEMENTED (Production-Ready)                                         │
+│  ├─ Multi-tier Caching (L1-ETS, L2-Cachex, L3-Redis)                       │
+│  ├─ Rate Limiting (token bucket, sliding window, distributed Redis)        │
+│  ├─ E2EE Signal Protocol (X3DH, Double Ratchet, AES-256-GCM)              │
+│  ├─ Circuit Breaker (:fuse library)                                        │
+│  ├─ Phoenix Channels (real-time messaging)                                 │
+│  ├─ JWT Authentication (Guardian + HTTP-only cookies)                      │
+│  ├─ Zustand State Management (frontend)                                    │
+│  ├─ OAuth Integration (Google, Apple, Facebook)                            │
+│  ├─ Stripe Payments (subscription tiers)                                   │
+│  └─ Oban Background Jobs (email, cleanup, notifications)                   │
+│                                                                             │
+│  🚧 PLANNED (Roadmap Priority)                                             │
+│  ├─ SLO/SLI Tracking (metrics collection + alerting)          [P1]        │
+│  ├─ Gateway Sharding (~5K users per shard)                     [P1]        │
+│  ├─ Multi-region Deployment (EU + US)                          [P2]        │
+│  ├─ Session Resumption (30-second reconnect window)            [P2]        │
+│  ├─ Request Coalescing (stampede prevention)                   [P2]        │
+│  └─ Performance Monitoring (OpenTelemetry)                     [P3]        │
+│                                                                             │
+│  📋 ASPIRATIONAL (Industry Best Practice)                                  │
+│  ├─ Rust NIFs (CPU-intensive path optimization)                            │
+│  ├─ Data Services Layer (gRPC microservices)                               │
+│  ├─ Snowflake IDs (timestamp-encoded)                                      │
+│  └─ Lazy Presence (75K+ member optimization)                               │
+│                                                                             │
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+### When to Implement Aspirational Patterns
+
+| Pattern | Trigger Point | Current State |
+|---------|--------------|---------------|
+| Gateway Sharding | >50K concurrent users | Not needed yet |
+| Rust NIFs | Profiled CPU hotspot >100ms | No hotspots identified |
+| Multi-region | International user base | Single region (EU) |
+| Data Services | Team >10 engineers | Small team |
+
+---
+
+## Current State vs Target State
+
+Comparison of Discord-standard patterns vs CGraph's current implementation.
+
+### Scale Readiness Matrix
+
+| Pattern | Discord Standard | CGraph Current | Gap | Priority |
+|---------|-----------------|----------------|-----|----------|
+| **Sharding** | ~5K users/shard | Not implemented | 100% | P1 |
+| **SLO Tracking** | 99.99% targets | No tracking | 100% | P1 |
+| **Session Resume** | 30s reconnect | No resume | 100% | P2 |
+| **Multi-region** | Global + edge | Single region | 100% | P2 |
+| **Caching** | Multi-tier | L1+L2+L3 | 0% ✅ | - |
+| **Rate Limiting** | Distributed | Redis + token bucket | 0% ✅ | - |
+| **E2EE** | Not applicable | Signal Protocol | 0% ✅ | - |
+| **Rust NIFs** | Hot path | Not applicable | N/A | P3 |
+
+### Backend Readiness Score
+
+```
+Current Scale Readiness: 60/100
+
+Breakdown:
+  ├─ Caching Layer:           95/100  ████████████████████▌
+  ├─ Rate Limiting:           95/100  ████████████████████▌
+  ├─ Real-time Messaging:     85/100  ██████████████████░░░
+  ├─ E2EE Implementation:     90/100  ███████████████████░░
+  ├─ Database Patterns:       70/100  ██████████████░░░░░░░
+  ├─ Sharding/Distribution:   10/100  ██░░░░░░░░░░░░░░░░░░░
+  ├─ Observability:           20/100  ████░░░░░░░░░░░░░░░░░
+  └─ Multi-region:            0/100   ░░░░░░░░░░░░░░░░░░░░░
+
+Target for 100M users: 85/100
+```
+
+### Frontend Readiness Score
+
+```
+Current Frontend Quality: 77/100
+
+Breakdown:
+  ├─ State Management:        90/100  ███████████████████░░
+  ├─ TypeScript Strictness:   85/100  ██████████████████░░░
+  ├─ Error Handling:          80/100  █████████████████░░░░
+  ├─ Performance:             65/100  █████████████░░░░░░░░
+  ├─ React 19 Adoption:       40/100  ████████░░░░░░░░░░░░░
+  ├─ Memoization:             50/100  ██████████░░░░░░░░░░░
+  └─ Debug Code Cleanup:      60/100  ████████████░░░░░░░░░
+
+Target for production: 85/100
+```
+
+---
+
+## Frontend Quick Wins
+
+Immediate improvements to bring frontend to production quality.
+
+### 1. Console.log Cleanup
+
+48 `console.log` statements found in production code. Remove or replace with proper logging.
+
+```typescript
+// ❌ AVOID: Debug logs in production
+console.log('User data:', user);
+console.log('API response:', response);
+
+// ✅ PREFER: Conditional or structured logging
+if (import.meta.env.DEV) {
+  console.log('User data:', user);
+}
+
+// ✅ BETTER: Proper logging service
+import { logger } from '@/lib/logger';
+logger.debug('User data loaded', { userId: user.id });
+```
+
+**Files to clean**:
+- `apps/web/src/stores/*.ts` - State management debug logs
+- `apps/web/src/lib/*.ts` - Utility debug logs
+- `apps/web/src/components/**/*.tsx` - Component debug logs
+
+### 2. React 19 Adoption
+
+Adopt new React 19 patterns for improved performance and DX.
+
+```typescript
+// ❌ CURRENT: useEffect for data fetching
+function UserProfile({ userId }: { userId: string }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUser(userId).then(setUser).finally(() => setLoading(false));
+  }, [userId]);
+
+  if (loading) return <Spinner />;
+  return <Profile user={user} />;
+}
+
+// ✅ REACT 19: use() hook for data fetching
+function UserProfile({ userId }: { userId: string }) {
+  const userPromise = fetchUser(userId);
+  const user = use(userPromise);  // Suspense-compatible
+  return <Profile user={user} />;
+}
+```
+
+```typescript
+// ❌ CURRENT: Manual form state management
+function LoginForm() {
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    await login(formData);
+    setLoading(false);
+  }
+
+  return <button disabled={loading}>Login</button>;
+}
+
+// ✅ REACT 19: useFormStatus hook
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return <button disabled={pending}>Login</button>;
+}
+```
+
+### 3. Memoization for Heavy Components
+
+Add memoization to prevent unnecessary re-renders.
+
+```typescript
+// ❌ AVOID: Inline objects/functions in props
+function MessageList({ messages }: Props) {
+  return messages.map(msg => (
+    <Message
+      key={msg.id}
+      message={msg}
+      style={{ marginBottom: 8 }}  // New object every render!
+      onDelete={() => deleteMessage(msg.id)}  // New function every render!
+    />
+  ));
+}
+
+// ✅ PREFER: Stable references
+const messageStyle = { marginBottom: 8 };  // Module-level
+
+function MessageList({ messages }: Props) {
+  const handleDelete = useCallback((id: string) => {
+    deleteMessage(id);
+  }, []);
+
+  return messages.map(msg => (
+    <Message
+      key={msg.id}
+      message={msg}
+      style={messageStyle}
+      onDelete={handleDelete}
+    />
+  ));
+}
+```
+
+### 4. Performance Monitoring
+
+Add basic performance monitoring hooks.
+
+```typescript
+// apps/web/src/hooks/usePerformance.ts
+export function usePerformance(componentName: string) {
+  useEffect(() => {
+    const start = performance.now();
+
+    return () => {
+      const duration = performance.now() - start;
+      if (duration > 16) {  // Longer than one frame
+        console.warn(`[Perf] ${componentName} render took ${duration.toFixed(2)}ms`);
+      }
+    };
+  });
+}
+
+// Usage in components
+function ExpensiveComponent() {
+  usePerformance('ExpensiveComponent');
+  // ...
+}
+```
+
+---
+
+## Oban Background Jobs
+
+Oban is CGraph's background job processor. Follow these patterns for reliable async processing.
+
+### Queue Configuration
+
+```elixir
+# config/config.exs
+config :cgraph, Oban,
+  repo: CGraph.Repo,
+  queues: [
+    default: 10,           # General tasks
+    mailers: 5,            # Email sending
+    notifications: 20,     # Push notifications (high volume)
+    media: 3,              # File processing (CPU-intensive)
+    cleanup: 1,            # Scheduled cleanup (low priority)
+    webhooks: 10           # External API calls
+  ],
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},  # 7 days
+    {Oban.Plugins.Cron, crontab: [
+      {"0 3 * * *", CGraph.Workers.CleanupWorker},      # Daily 3am
+      {"*/15 * * * *", CGraph.Workers.DigestWorker}    # Every 15min
+    ]}
+  ]
+```
+
+### Job Implementation Patterns
+
+```elixir
+defmodule CGraph.Workers.EmailWorker do
+  use Oban.Worker,
+    queue: :mailers,
+    max_attempts: 3,
+    unique: [period: 60, states: [:available, :scheduled, :executing]]
+
+  @impl Oban.Worker
+  def perform(%Oban.Job{args: %{"user_id" => user_id, "template" => template}}) do
+    case CGraph.Accounts.get_user(user_id) do
+      nil ->
+        # User deleted, discard job
+        :discard
+
+      user ->
+        case CGraph.Mailer.deliver_email(user, String.to_existing_atom(template)) do
+          {:ok, _} ->
+            :ok
+
+          {:error, :rate_limited} ->
+            # Retry with backoff
+            {:snooze, 60}
+
+          {:error, reason} ->
+            {:error, reason}  # Will retry up to max_attempts
+        end
+    end
+  end
+end
+```
+
+### Job Enqueueing Best Practices
+
+```elixir
+# ❌ AVOID: No uniqueness constraint
+Oban.insert(EmailWorker.new(%{user_id: user.id, template: "welcome"}))
+
+# ✅ PREFER: Unique constraint prevents duplicates
+Oban.insert(
+  EmailWorker.new(%{user_id: user.id, template: "welcome"},
+    unique: [period: 300, keys: [:user_id, :template]]
+  )
+)
+
+# ❌ AVOID: Fire and forget without error handling
+Oban.insert!(NotificationWorker.new(%{...}))
+
+# ✅ PREFER: Handle insertion errors
+case Oban.insert(NotificationWorker.new(%{...})) do
+  {:ok, job} -> {:ok, job.id}
+  {:error, changeset} -> {:error, format_errors(changeset)}
+end
+
+# ✅ PREFER: Bulk insert for multiple jobs
+Oban.insert_all([
+  EmailWorker.new(%{user_id: 1, template: "digest"}),
+  EmailWorker.new(%{user_id: 2, template: "digest"}),
+  EmailWorker.new(%{user_id: 3, template: "digest"})
+])
+```
+
+### Error Handling and Telemetry
+
+```elixir
+# lib/cgraph/oban_reporter.ex
+defmodule CGraph.ObanReporter do
+  def handle_event([:oban, :job, :exception], measure, meta, _config) do
+    Logger.error("Oban job failed",
+      worker: meta.worker,
+      queue: meta.queue,
+      attempt: meta.attempt,
+      error: inspect(meta.error),
+      duration_ms: System.convert_time_unit(measure.duration, :native, :millisecond)
+    )
+
+    # Report to error tracking
+    Sentry.capture_exception(meta.error, stacktrace: meta.stacktrace)
+  end
+end
+
+# Attach in application.ex
+:telemetry.attach(
+  "oban-errors",
+  [:oban, :job, :exception],
+  &CGraph.ObanReporter.handle_event/4,
+  nil
+)
+```
+
+---
+
+## Stripe Integration
+
+Patterns for reliable payment processing with Stripe.
+
+### Webhook Handling
+
+```elixir
+defmodule CGraphWeb.StripeWebhookController do
+  use CGraphWeb, :controller
+
+  @webhook_secret System.get_env("STRIPE_WEBHOOK_SECRET")
+
+  def handle(conn, _params) do
+    payload = conn.assigns.raw_body
+    signature = get_req_header(conn, "stripe-signature") |> List.first()
+
+    case Stripe.Webhook.construct_event(payload, signature, @webhook_secret) do
+      {:ok, event} ->
+        handle_event(event)
+        send_resp(conn, 200, "OK")
+
+      {:error, %Stripe.SignatureVerificationError{}} ->
+        send_resp(conn, 400, "Invalid signature")
+    end
+  end
+
+  # Idempotent event handling
+  defp handle_event(%{id: event_id, type: type} = event) do
+    # Check if already processed (idempotency)
+    case CGraph.Payments.get_processed_event(event_id) do
+      nil ->
+        process_event(type, event)
+        CGraph.Payments.mark_event_processed(event_id)
+
+      _existing ->
+        :already_processed
+    end
+  end
+
+  defp process_event("customer.subscription.created", event) do
+    CGraph.Subscriptions.activate_subscription(event.data.object)
+  end
+
+  defp process_event("customer.subscription.updated", event) do
+    CGraph.Subscriptions.update_subscription(event.data.object)
+  end
+
+  defp process_event("customer.subscription.deleted", event) do
+    CGraph.Subscriptions.cancel_subscription(event.data.object)
+  end
+
+  defp process_event("invoice.payment_failed", event) do
+    CGraph.Subscriptions.handle_payment_failure(event.data.object)
+  end
+
+  defp process_event(_type, _event), do: :ignored
+end
+```
+
+### Subscription Tier Management
+
+```elixir
+defmodule CGraph.Subscriptions do
+  @tier_limits %{
+    "free" => %{max_groups: 5, max_forums: 5, max_members: 100},
+    "starter" => %{max_groups: 10, max_forums: 10, max_members: 500},
+    "pro" => %{max_groups: 50, max_forums: 50, max_members: 2000},
+    "business" => %{max_groups: :unlimited, max_forums: :unlimited, max_members: :unlimited}
+  }
+
+  def check_tier_limit(user, :groups) do
+    tier = get_user_tier(user)
+    limit = @tier_limits[tier].max_groups
+
+    case limit do
+      :unlimited -> :ok
+      n -> check_count(user, :groups, n)
+    end
+  end
+
+  def upgrade_subscription(user, new_tier, payment_method_id) do
+    with {:ok, _intent} <- create_payment_intent(user, new_tier, payment_method_id),
+         {:ok, subscription} <- Stripe.Subscription.update(user.stripe_subscription_id, %{
+           items: [%{price: get_price_id(new_tier)}]
+         }),
+         {:ok, user} <- update_user_tier(user, new_tier) do
+      # Clear cached tier
+      CGraph.Cache.delete("user:#{user.id}:tier")
+      {:ok, user}
+    end
+  end
+end
+```
+
+### Frontend Stripe Integration
+
+```typescript
+// apps/web/src/lib/stripe.ts
+import { loadStripe } from '@stripe/stripe-js';
+
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
+export async function createCheckoutSession(tier: SubscriptionTier): Promise<string> {
+  const response = await api.post('/subscriptions/checkout', { tier });
+  const { sessionId } = response.data;
+
+  const stripe = await stripePromise;
+  if (!stripe) throw new Error('Stripe failed to load');
+
+  const { error } = await stripe.redirectToCheckout({ sessionId });
+  if (error) throw error;
+
+  return sessionId;
+}
+
+// Subscription management component
+function SubscriptionManager() {
+  const { tier, loading } = useSubscription();
+
+  const handleUpgrade = async (newTier: SubscriptionTier) => {
+    try {
+      await createCheckoutSession(newTier);
+    } catch (error) {
+      toast.error('Failed to start checkout');
+    }
+  };
+
+  return (
+    <div className="subscription-tiers">
+      {TIERS.map(t => (
+        <TierCard
+          key={t.id}
+          tier={t}
+          current={t.id === tier}
+          onSelect={() => handleUpgrade(t.id)}
+        />
+      ))}
+    </div>
+  );
+}
+```
+
+---
+
+## E2EE Signal Protocol
+
+End-to-end encryption patterns using Signal Protocol (X3DH + Double Ratchet).
+
+### Key Management (Frontend)
+
+```typescript
+// apps/web/src/lib/crypto/keys.ts
+import { generateKeyPair, deriveSharedSecret } from './primitives';
+
+export interface IdentityKeyPair {
+  publicKey: Uint8Array;
+  privateKey: Uint8Array;
+}
+
+export interface PreKeyBundle {
+  identityKey: Uint8Array;
+  signedPreKey: {
+    keyId: number;
+    publicKey: Uint8Array;
+    signature: Uint8Array;
+  };
+  preKey?: {
+    keyId: number;
+    publicKey: Uint8Array;
+  };
+}
+
+// Generate and store identity keys
+export async function initializeIdentity(): Promise<IdentityKeyPair> {
+  const existing = await getStoredIdentity();
+  if (existing) return existing;
+
+  const keyPair = await generateKeyPair();
+  await storeIdentity(keyPair);
+
+  // Upload public key to server
+  await api.post('/crypto/identity-key', {
+    publicKey: base64Encode(keyPair.publicKey)
+  });
+
+  return keyPair;
+}
+
+// Generate signed prekey (rotates monthly)
+export async function generateSignedPreKey(
+  identityKeyPair: IdentityKeyPair,
+  keyId: number
+): Promise<SignedPreKey> {
+  const preKeyPair = await generateKeyPair();
+  const signature = await sign(identityKeyPair.privateKey, preKeyPair.publicKey);
+
+  return {
+    keyId,
+    publicKey: preKeyPair.publicKey,
+    privateKey: preKeyPair.privateKey,
+    signature
+  };
+}
+
+// Generate one-time prekeys (100 at a time)
+export async function generatePreKeys(startId: number, count: number = 100): Promise<PreKey[]> {
+  const preKeys: PreKey[] = [];
+
+  for (let i = 0; i < count; i++) {
+    const keyPair = await generateKeyPair();
+    preKeys.push({
+      keyId: startId + i,
+      publicKey: keyPair.publicKey,
+      privateKey: keyPair.privateKey
+    });
+  }
+
+  return preKeys;
+}
+```
+
+### X3DH Key Agreement
+
+```typescript
+// apps/web/src/lib/crypto/x3dh.ts
+export async function initiateSession(
+  myIdentity: IdentityKeyPair,
+  theirBundle: PreKeyBundle
+): Promise<SessionState> {
+  // Generate ephemeral key pair
+  const ephemeralKey = await generateKeyPair();
+
+  // Compute DH values
+  const dh1 = await deriveSharedSecret(myIdentity.privateKey, theirBundle.signedPreKey.publicKey);
+  const dh2 = await deriveSharedSecret(ephemeralKey.privateKey, theirBundle.identityKey);
+  const dh3 = await deriveSharedSecret(ephemeralKey.privateKey, theirBundle.signedPreKey.publicKey);
+
+  let dh4: Uint8Array | undefined;
+  if (theirBundle.preKey) {
+    dh4 = await deriveSharedSecret(ephemeralKey.privateKey, theirBundle.preKey.publicKey);
+  }
+
+  // Derive root key and chain key
+  const sharedSecret = concatBytes(dh1, dh2, dh3, dh4 ?? new Uint8Array());
+  const { rootKey, chainKey } = await kdf(sharedSecret);
+
+  return {
+    rootKey,
+    sendingChain: { key: chainKey, index: 0 },
+    receivingChain: null,
+    ephemeralKey: ephemeralKey.publicKey,
+    usedPreKeyId: theirBundle.preKey?.keyId
+  };
+}
+```
+
+### Message Encryption/Decryption
+
+```typescript
+// apps/web/src/lib/crypto/ratchet.ts
+export async function encryptMessage(
+  session: SessionState,
+  plaintext: string
+): Promise<{ ciphertext: Uint8Array; header: MessageHeader }> {
+  // Derive message key from chain
+  const { messageKey, newChainKey } = await deriveMessageKey(session.sendingChain.key);
+  session.sendingChain.key = newChainKey;
+  session.sendingChain.index++;
+
+  // Encrypt with AES-256-GCM
+  const nonce = crypto.getRandomValues(new Uint8Array(12));
+  const ciphertext = await encrypt(messageKey, nonce, new TextEncoder().encode(plaintext));
+
+  return {
+    ciphertext,
+    header: {
+      ephemeralKey: session.ephemeralKey,
+      previousChainLength: session.previousChainLength,
+      messageIndex: session.sendingChain.index - 1,
+      nonce
+    }
+  };
+}
+
+export async function decryptMessage(
+  session: SessionState,
+  ciphertext: Uint8Array,
+  header: MessageHeader
+): Promise<string> {
+  // Check if we need to ratchet
+  if (!constantTimeEqual(header.ephemeralKey, session.remoteEphemeralKey)) {
+    await ratchetReceiving(session, header.ephemeralKey);
+  }
+
+  // Derive message key
+  const messageKey = await deriveMessageKeyAtIndex(
+    session.receivingChain!,
+    header.messageIndex
+  );
+
+  // Decrypt
+  const plaintext = await decrypt(messageKey, header.nonce, ciphertext);
+  return new TextDecoder().decode(plaintext);
+}
+```
+
+### Backend Key Storage
+
+```elixir
+# lib/cgraph/crypto/prekey_store.ex
+defmodule CGraph.Crypto.PrekeyStore do
+  alias CGraph.Repo
+  alias CGraph.Crypto.{IdentityKey, SignedPrekey, OneTimePrekey}
+
+  def store_identity_key(user_id, public_key) do
+    %IdentityKey{}
+    |> IdentityKey.changeset(%{
+      user_id: user_id,
+      public_key: public_key,
+      created_at: DateTime.utc_now()
+    })
+    |> Repo.insert(on_conflict: :replace_all, conflict_target: :user_id)
+  end
+
+  def get_prekey_bundle(user_id) do
+    identity = Repo.get_by(IdentityKey, user_id: user_id)
+    signed = Repo.get_by(SignedPrekey, user_id: user_id)
+
+    # Pop one-time prekey (delete after use)
+    one_time = pop_one_time_prekey(user_id)
+
+    %{
+      identity_key: identity.public_key,
+      signed_prekey: %{
+        key_id: signed.key_id,
+        public_key: signed.public_key,
+        signature: signed.signature
+      },
+      one_time_prekey: one_time && %{
+        key_id: one_time.key_id,
+        public_key: one_time.public_key
+      }
+    }
+  end
+
+  defp pop_one_time_prekey(user_id) do
+    Repo.transaction(fn ->
+      prekey = from(p in OneTimePrekey,
+        where: p.user_id == ^user_id,
+        order_by: [asc: :key_id],
+        limit: 1
+      )
+      |> Repo.one()
+
+      if prekey, do: Repo.delete!(prekey)
+      prekey
+    end)
+    |> elem(1)
+  end
+
+  # Alert when prekeys running low
+  def check_prekey_count(user_id) do
+    count = Repo.one(from p in OneTimePrekey,
+      where: p.user_id == ^user_id,
+      select: count(p.id)
+    )
+
+    if count < 20 do
+      # Notify client to generate more
+      CGraphWeb.Endpoint.broadcast("user:#{user_id}", "prekeys_low", %{remaining: count})
+    end
+
+    count
+  end
+end
+```
+
+---
+
+## WebRTC Voice/Video
+
+Patterns for real-time voice and video calls.
+
+### Peer Connection Setup
+
+```typescript
+// apps/web/src/lib/webrtc/connection.ts
+const ICE_SERVERS: RTCIceServer[] = [
+  { urls: 'stun:stun.l.google.com:19302' },
+  {
+    urls: import.meta.env.VITE_TURN_SERVER,
+    username: import.meta.env.VITE_TURN_USERNAME,
+    credential: import.meta.env.VITE_TURN_CREDENTIAL
+  }
+];
+
+export class CallConnection {
+  private pc: RTCPeerConnection;
+  private localStream: MediaStream | null = null;
+  private channel: Channel;
+
+  constructor(callId: string, channel: Channel) {
+    this.channel = channel;
+    this.pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+
+    this.setupEventHandlers();
+  }
+
+  private setupEventHandlers() {
+    this.pc.onicecandidate = ({ candidate }) => {
+      if (candidate) {
+        this.channel.push('ice_candidate', { candidate: candidate.toJSON() });
+      }
+    };
+
+    this.pc.ontrack = ({ streams }) => {
+      this.onRemoteStream?.(streams[0]);
+    };
+
+    this.pc.onconnectionstatechange = () => {
+      this.onConnectionStateChange?.(this.pc.connectionState);
+    };
+  }
+
+  async startCall(video: boolean = true): Promise<void> {
+    this.localStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: video ? { width: 1280, height: 720 } : false
+    });
+
+    this.localStream.getTracks().forEach(track => {
+      this.pc.addTrack(track, this.localStream!);
+    });
+
+    const offer = await this.pc.createOffer();
+    await this.pc.setLocalDescription(offer);
+
+    this.channel.push('offer', { sdp: offer.sdp });
+  }
+
+  async handleOffer(sdp: string): Promise<void> {
+    await this.pc.setRemoteDescription({ type: 'offer', sdp });
+
+    this.localStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true
+    });
+
+    this.localStream.getTracks().forEach(track => {
+      this.pc.addTrack(track, this.localStream!);
+    });
+
+    const answer = await this.pc.createAnswer();
+    await this.pc.setLocalDescription(answer);
+
+    this.channel.push('answer', { sdp: answer.sdp });
+  }
+
+  async handleAnswer(sdp: string): Promise<void> {
+    await this.pc.setRemoteDescription({ type: 'answer', sdp });
+  }
+
+  async handleIceCandidate(candidate: RTCIceCandidateInit): Promise<void> {
+    await this.pc.addIceCandidate(candidate);
+  }
+
+  toggleMute(): boolean {
+    const audioTrack = this.localStream?.getAudioTracks()[0];
+    if (audioTrack) {
+      audioTrack.enabled = !audioTrack.enabled;
+      return !audioTrack.enabled;
+    }
+    return false;
+  }
+
+  toggleVideo(): boolean {
+    const videoTrack = this.localStream?.getVideoTracks()[0];
+    if (videoTrack) {
+      videoTrack.enabled = !videoTrack.enabled;
+      return !videoTrack.enabled;
+    }
+    return false;
+  }
+
+  hangup(): void {
+    this.localStream?.getTracks().forEach(track => track.stop());
+    this.pc.close();
+    this.channel.push('hangup', {});
+  }
+
+  // Event handlers
+  onRemoteStream?: (stream: MediaStream) => void;
+  onConnectionStateChange?: (state: RTCPeerConnectionState) => void;
+}
+```
+
+### Call Channel (Backend)
+
+```elixir
+defmodule CGraphWeb.CallChannel do
+  use CGraphWeb, :channel
+
+  def join("call:" <> call_id, _params, socket) do
+    call = CGraph.Calls.get_call!(call_id)
+
+    # Verify user is participant
+    if socket.assigns.user_id in [call.caller_id, call.callee_id] do
+      send(self(), :after_join)
+      {:ok, assign(socket, :call_id, call_id)}
+    else
+      {:error, %{reason: "unauthorized"}}
+    end
+  end
+
+  def handle_info(:after_join, socket) do
+    # Notify other participant
+    broadcast_from(socket, "user_joined", %{user_id: socket.assigns.user_id})
+    {:noreply, socket}
+  end
+
+  def handle_in("offer", %{"sdp" => sdp}, socket) do
+    broadcast_from(socket, "offer", %{sdp: sdp, from: socket.assigns.user_id})
+    {:noreply, socket}
+  end
+
+  def handle_in("answer", %{"sdp" => sdp}, socket) do
+    broadcast_from(socket, "answer", %{sdp: sdp, from: socket.assigns.user_id})
+    {:noreply, socket}
+  end
+
+  def handle_in("ice_candidate", %{"candidate" => candidate}, socket) do
+    broadcast_from(socket, "ice_candidate", %{candidate: candidate})
+    {:noreply, socket}
+  end
+
+  def handle_in("hangup", _params, socket) do
+    CGraph.Calls.end_call(socket.assigns.call_id)
+    broadcast(socket, "call_ended", %{})
+    {:stop, :normal, socket}
+  end
+end
+```
+
+### Call Quality Monitoring
+
+```typescript
+// apps/web/src/lib/webrtc/stats.ts
+export async function getCallStats(pc: RTCPeerConnection): Promise<CallQuality> {
+  const stats = await pc.getStats();
+  let quality: CallQuality = { audio: 'good', video: 'good' };
+
+  stats.forEach(report => {
+    if (report.type === 'inbound-rtp') {
+      const packetsLost = report.packetsLost || 0;
+      const packetsReceived = report.packetsReceived || 1;
+      const lossRate = packetsLost / (packetsLost + packetsReceived);
+
+      if (report.kind === 'audio') {
+        quality.audio = lossRate > 0.1 ? 'poor' : lossRate > 0.02 ? 'fair' : 'good';
+      } else if (report.kind === 'video') {
+        quality.video = lossRate > 0.05 ? 'poor' : lossRate > 0.01 ? 'fair' : 'good';
+      }
+    }
+  });
+
+  return quality;
+}
+
+// Monitor and adapt
+export function monitorCallQuality(
+  pc: RTCPeerConnection,
+  onQualityChange: (quality: CallQuality) => void
+): () => void {
+  const interval = setInterval(async () => {
+    const quality = await getCallStats(pc);
+    onQualityChange(quality);
+
+    // Adapt video quality based on network
+    if (quality.video === 'poor') {
+      const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+      if (sender) {
+        const params = sender.getParameters();
+        if (params.encodings[0]) {
+          params.encodings[0].maxBitrate = 250000; // Reduce to 250kbps
+          await sender.setParameters(params);
+        }
+      }
+    }
+  }, 5000);
+
+  return () => clearInterval(interval);
+}
+```
+
+---
+
+## React 19 Patterns
+
+> **⚠️ FUTURE/ASPIRATIONAL**: CGraph currently uses React 18. These patterns document
+> the target state for when we upgrade to React 19. Do not use these patterns until
+> the upgrade is complete. Current React 18 patterns (useEffect, useSyncExternalStore)
+> remain the standard.
+
+Modern React 19 patterns to adopt for improved performance and developer experience.
+
+### The `use()` Hook (React 19 Only)
+
+React 19's `use()` hook replaces many `useEffect` patterns for data fetching.
+
+```typescript
+// ❌ OLD: useEffect for data fetching
+function UserProfile({ userId }: { userId: string }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+
+    fetchUser(userId)
+      .then(data => {
+        if (!cancelled) setUser(data);
+      })
+      .catch(err => {
+        if (!cancelled) setError(err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [userId]);
+
+  if (loading) return <Spinner />;
+  if (error) return <ErrorMessage error={error} />;
+  return <Profile user={user!} />;
+}
+
+// ✅ REACT 19: use() with Suspense
+import { use, Suspense } from 'react';
+
+function UserProfile({ userPromise }: { userPromise: Promise<User> }) {
+  const user = use(userPromise);  // Suspends until resolved
+  return <Profile user={user} />;
+}
+
+// Parent handles loading/error states
+function UserPage({ userId }: { userId: string }) {
+  const userPromise = useMemo(() => fetchUser(userId), [userId]);
+
+  return (
+    <ErrorBoundary fallback={<ErrorMessage />}>
+      <Suspense fallback={<Spinner />}>
+        <UserProfile userPromise={userPromise} />
+      </Suspense>
+    </ErrorBoundary>
+  );
+}
+```
+
+### Form Actions with `useFormStatus`
+
+```typescript
+// ❌ OLD: Manual loading state
+function ContactForm() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    try {
+      const data = new FormData(e.currentTarget);
+      await submitContact(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input name="email" required />
+      <button disabled={loading}>
+        {loading ? 'Sending...' : 'Send'}
+      </button>
+      {error && <p className="error">{error}</p>}
+    </form>
+  );
+}
+
+// ✅ REACT 19: Form actions
+import { useFormStatus, useActionState } from 'react';
+
+async function submitAction(prevState: State, formData: FormData) {
+  try {
+    await submitContact(formData);
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}
+
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  return (
+    <button disabled={pending}>
+      {pending ? 'Sending...' : 'Send'}
+    </button>
+  );
+}
+
+function ContactForm() {
+  const [state, formAction] = useActionState(submitAction, { success: false });
+
+  return (
+    <form action={formAction}>
+      <input name="email" required />
+      <SubmitButton />
+      {state.error && <p className="error">{state.error}</p>}
+    </form>
+  );
+}
+```
+
+### Optimistic Updates with `useOptimistic`
+
+```typescript
+// ❌ OLD: Manual optimistic updates
+function MessageThread({ messages: initialMessages }: Props) {
+  const [messages, setMessages] = useState(initialMessages);
+  const [pending, setPending] = useState<Message[]>([]);
+
+  async function sendMessage(text: string) {
+    const tempId = crypto.randomUUID();
+    const optimistic = { id: tempId, text, pending: true };
+
+    setPending(prev => [...prev, optimistic]);
+
+    try {
+      const saved = await api.sendMessage(text);
+      setMessages(prev => [...prev, saved]);
+    } finally {
+      setPending(prev => prev.filter(m => m.id !== tempId));
+    }
+  }
+
+  return (
+    <div>
+      {[...messages, ...pending].map(m => (
+        <Message key={m.id} message={m} />
+      ))}
+    </div>
+  );
+}
+
+// ✅ REACT 19: useOptimistic
+import { useOptimistic } from 'react';
+
+function MessageThread({ messages }: Props) {
+  const [optimisticMessages, addOptimistic] = useOptimistic(
+    messages,
+    (state, newMessage: Message) => [...state, { ...newMessage, pending: true }]
+  );
+
+  async function sendMessage(text: string) {
+    const optimistic = { id: crypto.randomUUID(), text };
+    addOptimistic(optimistic);
+    await api.sendMessage(text);
+  }
+
+  return (
+    <div>
+      {optimisticMessages.map(m => (
+        <Message key={m.id} message={m} />
+      ))}
+    </div>
+  );
+}
+```
+
+### Document Metadata
+
+```typescript
+// ❌ OLD: useEffect for title
+function ProfilePage({ user }: { user: User }) {
+  useEffect(() => {
+    document.title = `${user.name} - CGraph`;
+  }, [user.name]);
+
+  return <Profile user={user} />;
+}
+
+// ✅ REACT 19: Native metadata
+function ProfilePage({ user }: { user: User }) {
+  return (
+    <>
+      <title>{user.name} - CGraph</title>
+      <meta name="description" content={user.bio} />
+      <Profile user={user} />
+    </>
+  );
+}
+```
+
+---
+
+## Expo 54 Mobile
+
+Modern patterns for React Native with Expo 54.
+
+### Push Notifications
+
+```typescript
+// apps/mobile/src/services/notifications.ts
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import { Platform } from 'react-native';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
+export async function registerForPushNotifications(): Promise<string | null> {
+  if (!Device.isDevice) {
+    console.warn('Push notifications require physical device');
+    return null;
+  }
+
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+
+  if (existingStatus !== 'granted') {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+
+  if (finalStatus !== 'granted') {
+    return null;
+  }
+
+  // Get Expo push token
+  const token = await Notifications.getExpoPushTokenAsync({
+    projectId: process.env.EXPO_PROJECT_ID,
+  });
+
+  // Android channel setup
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('messages', {
+      name: 'Messages',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF6B6B',
+    });
+  }
+
+  return token.data;
+}
+
+// Hook for notification handling
+export function usePushNotifications() {
+  const notificationListener = useRef<Subscription>();
+  const responseListener = useRef<Subscription>();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    registerForPushNotifications().then(token => {
+      if (token) {
+        api.post('/push-tokens', { token, platform: Platform.OS });
+      }
+    });
+
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      notification => {
+        // Handle foreground notification
+        console.log('Notification received:', notification);
+      }
+    );
+
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      response => {
+        const data = response.notification.request.content.data;
+        // Navigate based on notification type
+        if (data.type === 'message') {
+          navigation.navigate('Conversation', { id: data.conversationId });
+        }
+      }
+    );
+
+    return () => {
+      notificationListener.current?.remove();
+      responseListener.current?.remove();
+    };
+  }, []);
+}
+```
+
+### Deep Linking
+
+```typescript
+// apps/mobile/src/navigation/linking.ts
+import { LinkingOptions } from '@react-navigation/native';
+import * as Linking from 'expo-linking';
+
+export const linking: LinkingOptions<RootStackParamList> = {
+  prefixes: [
+    Linking.createURL('/'),
+    'cgraph://',
+    'https://cgraph.org',
+    'https://app.cgraph.org'
+  ],
+  config: {
+    screens: {
+      Messages: 'messages',
+      Conversation: 'conversation/:id',
+      Groups: 'groups',
+      Group: 'group/:id',
+      Forums: 'forums',
+      Thread: 'thread/:id',
+      Profile: 'profile/:username',
+      Settings: 'settings',
+    },
+  },
+  async getInitialURL() {
+    // Handle cold start from notification
+    const response = await Notifications.getLastNotificationResponseAsync();
+    if (response) {
+      return response.notification.request.content.data.url as string;
+    }
+    return await Linking.getInitialURL();
+  },
+};
+
+// Usage in App.tsx
+function App() {
+  return (
+    <NavigationContainer linking={linking}>
+      <RootNavigator />
+    </NavigationContainer>
+  );
+}
+```
+
+### Offline Support
+
+```typescript
+// apps/mobile/src/lib/offline.ts
+import NetInfo from '@react-native-community/netinfo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// Queue for offline actions
+const OFFLINE_QUEUE_KEY = 'offline_queue';
+
+interface QueuedAction {
+  id: string;
+  type: 'sendMessage' | 'createPost' | 'vote';
+  payload: unknown;
+  timestamp: number;
+}
+
+export async function queueOfflineAction(action: Omit<QueuedAction, 'id' | 'timestamp'>) {
+  const queue = await getOfflineQueue();
+  queue.push({
+    ...action,
+    id: crypto.randomUUID(),
+    timestamp: Date.now(),
+  });
+  await AsyncStorage.setItem(OFFLINE_QUEUE_KEY, JSON.stringify(queue));
+}
+
+export async function processOfflineQueue() {
+  const queue = await getOfflineQueue();
+  if (queue.length === 0) return;
+
+  const state = await NetInfo.fetch();
+  if (!state.isConnected) return;
+
+  for (const action of queue) {
+    try {
+      await processAction(action);
+      await removeFromQueue(action.id);
+    } catch (error) {
+      // Keep in queue for retry
+      console.error('Failed to process offline action:', error);
+    }
+  }
+}
+
+// Auto-process when coming online
+NetInfo.addEventListener(state => {
+  if (state.isConnected) {
+    processOfflineQueue();
+  }
+});
+
+// Offline-aware message sending
+export async function sendMessage(conversationId: string, text: string) {
+  const state = await NetInfo.fetch();
+
+  const message = {
+    id: crypto.randomUUID(),
+    conversationId,
+    text,
+    status: state.isConnected ? 'sending' : 'queued',
+    createdAt: new Date().toISOString(),
+  };
+
+  // Optimistically add to local store
+  messageStore.addOptimistic(message);
+
+  if (state.isConnected) {
+    try {
+      const saved = await api.sendMessage(conversationId, text);
+      messageStore.confirmMessage(message.id, saved);
+    } catch (error) {
+      messageStore.markFailed(message.id);
+      await queueOfflineAction({ type: 'sendMessage', payload: { conversationId, text } });
+    }
+  } else {
+    await queueOfflineAction({ type: 'sendMessage', payload: { conversationId, text } });
+  }
+}
+```
+
+### Background Tasks
+
+```typescript
+// apps/mobile/src/tasks/background.ts
+import * as BackgroundFetch from 'expo-background-fetch';
+import * as TaskManager from 'expo-task-manager';
+
+const SYNC_TASK = 'BACKGROUND_SYNC';
+
+TaskManager.defineTask(SYNC_TASK, async () => {
+  try {
+    // Sync unread counts
+    const unread = await api.get('/messages/unread-count');
+    await Notifications.setBadgeCountAsync(unread.count);
+
+    // Process offline queue
+    await processOfflineQueue();
+
+    return BackgroundFetch.BackgroundFetchResult.NewData;
+  } catch (error) {
+    return BackgroundFetch.BackgroundFetchResult.Failed;
+  }
+});
+
+export async function registerBackgroundSync() {
+  const status = await BackgroundFetch.getStatusAsync();
+
+  if (status === BackgroundFetch.BackgroundFetchStatus.Available) {
+    await BackgroundFetch.registerTaskAsync(SYNC_TASK, {
+      minimumInterval: 15 * 60, // 15 minutes
+      stopOnTerminate: false,
+      startOnBoot: true,
+    });
+  }
+}
+```
+
+---
+
+## Phoenix 1.8 Specifics
+
+Modern patterns for Phoenix 1.8 with verified routes and improved socket handling.
+
+### Verified Routes
+
+```elixir
+# Phoenix 1.8 verified routes replace `Routes.*_path` helpers
+# Old: Routes.user_path(conn, :show, user)
+# New: ~p"/users/#{user}"
+
+defmodule CGraphWeb.Router do
+  use CGraphWeb, :router
+
+  pipeline :api do
+    plug :accepts, ["json"]
+    plug CGraphWeb.Plugs.RateLimiterV2
+    plug CGraphWeb.Plugs.CookieAuth
+  end
+
+  scope "/api/v1", CGraphWeb do
+    pipe_through :api
+
+    # Users
+    get "/users/:id", UserController, :show
+    put "/users/:id", UserController, :update
+
+    # Messages - using verified routes in controllers
+    resources "/conversations", ConversationController do
+      resources "/messages", MessageController, only: [:index, :create]
+    end
+  end
+end
+
+# In controllers, use verified routes
+defmodule CGraphWeb.UserController do
+  use CGraphWeb, :controller
+
+  def show(conn, %{"id" => id}) do
+    user = CGraph.Accounts.get_user!(id)
+
+    conn
+    |> put_resp_header("location", ~p"/api/v1/users/#{user}")
+    |> render(:show, user: user)
+  end
+end
+```
+
+### Improved Socket Handling
+
+```elixir
+# lib/cgraph_web/channels/user_socket.ex
+defmodule CGraphWeb.UserSocket do
+  use Phoenix.Socket
+
+  channel "user:*", CGraphWeb.UserChannel
+  channel "conversation:*", CGraphWeb.ConversationChannel
+  channel "group:*", CGraphWeb.GroupChannel
+  channel "presence:*", CGraphWeb.PresenceChannel
+
+  @impl true
+  def connect(%{"token" => token}, socket, _connect_info) do
+    case CGraph.Guardian.decode_and_verify(token) do
+      {:ok, claims} ->
+        user_id = claims["sub"]
+        {:ok, assign(socket, :user_id, user_id)}
+
+      {:error, _reason} ->
+        :error
+    end
+  end
+
+  def connect(_params, _socket, _connect_info), do: :error
+
+  @impl true
+  def id(socket), do: "user_socket:#{socket.assigns.user_id}"
+end
+
+# Phoenix 1.8 channel with improved error handling
+defmodule CGraphWeb.ConversationChannel do
+  use CGraphWeb, :channel
+
+  @impl true
+  def join("conversation:" <> conv_id, _payload, socket) do
+    if authorized?(socket.assigns.user_id, conv_id) do
+      send(self(), :after_join)
+      {:ok, assign(socket, :conversation_id, conv_id)}
+    else
+      {:error, %{reason: "unauthorized"}}
+    end
+  end
+
+  @impl true
+  def handle_info(:after_join, socket) do
+    # Track presence
+    {:ok, _} = CGraphWeb.Presence.track(socket, socket.assigns.user_id, %{
+      online_at: System.system_time(:second)
+    })
+
+    # Push recent messages
+    messages = CGraph.Messaging.recent_messages(socket.assigns.conversation_id, 50)
+    push(socket, "recent_messages", %{messages: messages})
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_in("new_message", %{"content" => content}, socket) do
+    case CGraph.Messaging.create_message(
+      socket.assigns.conversation_id,
+      socket.assigns.user_id,
+      content
+    ) do
+      {:ok, message} ->
+        broadcast!(socket, "new_message", %{message: message})
+        {:reply, {:ok, %{id: message.id}}, socket}
+
+      {:error, changeset} ->
+        {:reply, {:error, %{errors: format_errors(changeset)}}, socket}
+    end
+  end
+
+  @impl true
+  def terminate(_reason, socket) do
+    # Clean up on disconnect
+    CGraph.Presence.untrack(socket, socket.assigns.user_id)
+    :ok
+  end
+end
+```
+
+### LiveView Integration Points
+
+```elixir
+# For admin dashboards or real-time features
+defmodule CGraphWeb.AdminLive.Dashboard do
+  use CGraphWeb, :live_view
+
+  @impl true
+  def mount(_params, session, socket) do
+    if connected?(socket) do
+      # Subscribe to real-time stats
+      Phoenix.PubSub.subscribe(CGraph.PubSub, "stats:live")
+    end
+
+    {:ok, assign(socket,
+      active_users: CGraph.Stats.active_users(),
+      messages_today: CGraph.Stats.messages_today(),
+      active_calls: CGraph.Stats.active_calls()
+    )}
+  end
+
+  @impl true
+  def handle_info({:stats_update, stats}, socket) do
+    {:noreply, assign(socket, stats)}
+  end
+
+  @impl true
+  def render(assigns) do
+    ~H"""
+    <div class="dashboard">
+      <.stat_card label="Active Users" value={@active_users} />
+      <.stat_card label="Messages Today" value={@messages_today} />
+      <.stat_card label="Active Calls" value={@active_calls} />
+    </div>
+    """
+  end
+end
+```
+
+---
+
+## Fly.io Deployment
+
+Production deployment patterns for Fly.io infrastructure.
+
+### fly.toml Configuration
+
+```toml
+# apps/backend/fly.toml
+app = "cgraph-backend"
+primary_region = "fra"  # Frankfurt
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PHX_HOST = "api.cgraph.org"
+  PORT = "4000"
+  RELEASE_COOKIE = "cgraph-secret-cookie"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 1000
+    soft_limit = 800
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 4000
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.http_checks]]
+    interval = 10000
+    grace_period = "10s"
+    method = "get"
+    path = "/health"
+    protocol = "http"
+    timeout = 2000
+
+# Health check for database
+[[services.tcp_checks]]
+  grace_period = "30s"
+  interval = "15s"
+  restart_limit = 0
+  timeout = "2s"
+```
+
+### Multi-region Deployment (Future)
+
+```toml
+# Multi-region configuration (when scaling)
+primary_region = "fra"
+
+# Read replicas in other regions
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+  processes = ["app"]
+
+[processes]
+  app = "/app/bin/server"
+
+# Region-specific environment
+[env.fra]
+  DATABASE_URL = "postgres://fra-primary.supabase.co/cgraph"
+
+[env.iad]
+  DATABASE_URL = "postgres://iad-replica.supabase.co/cgraph"
+  READ_ONLY = "true"
+```
+
+### Deployment Scripts
+
+```bash
+#!/bin/bash
+# scripts/deploy.sh
+
+set -e
+
+echo "🚀 Deploying CGraph Backend to Fly.io"
+
+# Run migrations first (blocking)
+echo "📦 Running migrations..."
+fly ssh console -C "/app/bin/cgraph eval 'CGraph.Release.migrate()'"
+
+# Deploy new version
+echo "🔄 Deploying new version..."
+fly deploy --strategy rolling
+
+# Verify deployment
+echo "✅ Verifying deployment..."
+fly status
+
+# Check health endpoint
+echo "🏥 Checking health..."
+curl -s https://api.cgraph.org/health | jq
+
+echo "✨ Deployment complete!"
+```
+
+### Secrets Management
+
+```bash
+# Set all required secrets
+fly secrets set \
+  DATABASE_URL="postgres://..." \
+  DATABASE_SSL="true" \
+  SECRET_KEY_BASE="$(mix phx.gen.secret)" \
+  JWT_SECRET="$(openssl rand -base64 32)" \
+  ENCRYPTION_KEY="$(openssl rand -base64 32)" \
+  STRIPE_SECRET_KEY="sk_live_..." \
+  STRIPE_WEBHOOK_SECRET="whsec_..."
+
+# List secrets (names only, values hidden)
+fly secrets list
+
+# Rotate a secret
+fly secrets set JWT_SECRET="$(openssl rand -base64 32)"
+```
+
+### Health Checks
+
+```elixir
+# lib/cgraph_web/controllers/health_controller.ex
+defmodule CGraphWeb.HealthController do
+  use CGraphWeb, :controller
+
+  def index(conn, _params) do
+    json(conn, %{
+      status: "ok",
+      version: Application.spec(:cgraph, :vsn) |> to_string(),
+      timestamp: DateTime.utc_now()
+    })
+  end
+
+  def ready(conn, _params) do
+    checks = %{
+      database: check_database(),
+      cache: check_cache(),
+      redis: check_redis()
+    }
+
+    status = if Enum.all?(Map.values(checks), & &1), do: "ready", else: "degraded"
+    http_status = if status == "ready", do: 200, else: 503
+
+    conn
+    |> put_status(http_status)
+    |> json(%{status: status, checks: checks})
+  end
+
+  defp check_database do
+    case Ecto.Adapters.SQL.query(CGraph.Repo, "SELECT 1", []) do
+      {:ok, _} -> true
+      _ -> false
+    end
+  end
+
+  defp check_cache do
+    case CGraph.Cache.get("health:check") do
+      {:error, _} -> false
+      _ -> true
+    end
+  end
+
+  defp check_redis do
+    case CGraph.Redis.command(["PING"]) do
+      {:ok, "PONG"} -> true
+      _ -> false
+    end
+  rescue
+    _ -> false
+  end
+end
+```
+
+### Rollback Procedure
+
+```bash
+#!/bin/bash
+# scripts/rollback.sh
+
+set -e
+
+echo "⚠️ Rolling back CGraph Backend"
+
+# Get previous deployment
+PREVIOUS=$(fly releases | head -3 | tail -1 | awk '{print $1}')
+
+echo "Rolling back to release: $PREVIOUS"
+
+# Rollback
+fly deploy --image registry.fly.io/cgraph-backend:$PREVIOUS
+
+# Verify
+fly status
+
+echo "✅ Rollback complete"
 ```
 
 ---
