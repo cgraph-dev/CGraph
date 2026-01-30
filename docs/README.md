@@ -32,10 +32,31 @@ developers and users of our hosted platform.
 
 ## 🏗️ Architecture
 
-| Document                                              | Description                          |
-| ----------------------------------------------------- | ------------------------------------ |
-| [**Architecture Diagrams**](ARCHITECTURE_DIAGRAMS.md) | Visual system architecture (Mermaid) |
-| [**Schema Ownership**](SCHEMA_OWNERSHIP.md)           | Database table ownership matrix      |
+| Document                                                     | Description                          |
+| ------------------------------------------------------------ | ------------------------------------ |
+| [**Architecture Diagrams**](ARCHITECTURE_DIAGRAMS.md)        | Visual system architecture (Mermaid) |
+| [**Schema Ownership**](SCHEMA_OWNERSHIP.md)                  | Database table ownership matrix      |
+| [**Architecture Decision Records**](architecture/decisions/) | Why we chose what we chose           |
+
+---
+
+## 📖 Operations & API
+
+| Document                                            | Description                    |
+| --------------------------------------------------- | ------------------------------ |
+| [**Operational Runbooks**](OPERATIONAL_RUNBOOKS.md) | Deployment, incidents, DB ops  |
+| [**API Documentation**](API_DOCUMENTATION.md)       | REST & WebSocket API reference |
+| [**Testing Strategy**](TESTING_STRATEGY.md)         | Test pyramid and examples      |
+| [**Security Testing**](SECURITY_TESTING.md)         | Security test framework        |
+| [**Threat Model**](THREAT_MODEL.md)                 | STRIDE analysis & mitigations  |
+
+---
+
+## 🗺️ Product
+
+| Document                          | Description                    |
+| --------------------------------- | ------------------------------ |
+| [**Product Roadmap**](ROADMAP.md) | Timeline, releases, and vision |
 
 ---
 
