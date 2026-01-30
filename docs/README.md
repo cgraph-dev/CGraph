@@ -1,6 +1,6 @@
 # CGraph Documentation
 
-> **Current Version: 0.9.6** | Enterprise-grade real-time communication platform
+> **Current Version: 0.9.8** | Enterprise-grade real-time communication platform
 
 ⚠️ **Proprietary Software** - CGraph is proprietary software. Self-hosting is not permitted.
 
@@ -9,15 +9,27 @@ developers and users of our hosted platform.
 
 ---
 
-## � Project Status
+## 📊 Project Status
 
-| Document                                | Description                                 |
-| --------------------------------------- | ------------------------------------------- |
-| [**Project Status**](PROJECT_STATUS.md) | Feature tracking, architecture, and roadmap |
+| Document                                                  | Description                                 |
+| --------------------------------------------------------- | ------------------------------------------- |
+| [**Current State Dashboard**](CURRENT_STATE_DASHBOARD.md) | Real-time project health overview           |
+| [**Project Status**](PROJECT_STATUS.md)                   | Feature tracking, architecture, and roadmap |
+| [**Codebase Audit Report**](CODEBASE_AUDIT_REPORT.md)     | Full codebase quality review                |
 
 ---
 
-## �📚 Documentation Index
+## 🔒 Quality & Security
+
+| Document                                                    | Description                            |
+| ----------------------------------------------------------- | -------------------------------------- |
+| [**Quality Gates**](QUALITY_GATES.md)                       | CI requirements and enforcement policy |
+| [**Security Review Tracking**](SECURITY_REVIEW_TRACKING.md) | Audit schedule and findings            |
+| [**Code Standards**](CODE_SIMPLIFICATION_GUIDELINES.md)     | Comprehensive coding guidelines        |
+
+---
+
+## 📚 Documentation Index
 
 ### Getting Started
 
@@ -132,5 +144,5 @@ outdated information but are retained for historical reference and audit purpose
 
 ---
 
-<sub>**CGraph Documentation** • Version 0.9.5 • Proprietary Software • Last updated: January
+<sub>**CGraph Documentation** • Version 0.9.8 • Proprietary Software • Last updated: January
 2026</sub>
