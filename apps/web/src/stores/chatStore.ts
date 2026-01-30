@@ -535,16 +535,18 @@ export const useChatStore = create<ChatState>()(
         try {
           // We need the sender's identity key and the encrypted message details
           // These should be in the message metadata from the server
-          const metadata = message.metadata || {};
+          const metadata = (message.metadata || {}) as Record<string, unknown>;
           const encryptedPayload = {
             ciphertext: message.encryptedContent || message.content,
-            ephemeralPublicKey: message.ephemeralPublicKey || metadata.ephemeral_public_key,
-            recipientIdentityKeyId: metadata.recipient_identity_key_id || '',
-            oneTimePreKeyId: metadata.one_time_prekey_id,
-            nonce: message.nonce || metadata.nonce,
+            ephemeralPublicKey:
+              message.ephemeralPublicKey || (metadata.ephemeral_public_key as string),
+            recipientIdentityKeyId: (metadata.recipient_identity_key_id as string) || '',
+            oneTimePreKeyId: metadata.one_time_prekey_id as string | undefined,
+            nonce: message.nonce || (metadata.nonce as string),
           };
 
-          const senderIdentityKey = message.senderIdentityKey || metadata.sender_identity_key;
+          const senderIdentityKey =
+            message.senderIdentityKey || (metadata.sender_identity_key as string);
 
           if (
             !encryptedPayload.ephemeralPublicKey ||

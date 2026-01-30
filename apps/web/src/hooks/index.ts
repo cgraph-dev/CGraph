@@ -24,3 +24,10 @@ export {
   type UseThreadSocketOptions,
   type UseThreadSocketReturn,
 } from './useThreadSocket';
+
+// Conversation hooks
+export {
+  useConversationState,
+  type ConversationState,
+  type SendMessageOptions,
+} from './useConversationState';

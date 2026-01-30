@@ -29,12 +29,18 @@ interface FileMessageProps {
 export function FileMessage({ message, isOwnMessage, className = '' }: FileMessageProps) {
   const [imageError, setImageError] = useState(false);
 
-  // Extract file metadata from message
-  const fileUrl = message.metadata?.fileUrl || message.metadata?.file_url;
-  const fileName = message.metadata?.fileName || message.metadata?.file_name || 'Unknown file';
-  const fileSize = message.metadata?.fileSize || message.metadata?.file_size || 0;
-  const fileMimeType = message.metadata?.fileMimeType || message.metadata?.file_mime_type || '';
-  const thumbnailUrl = message.metadata?.thumbnailUrl || message.metadata?.thumbnail_url;
+  // Extract file metadata from message with proper type casting
+  const fileUrl = (message.metadata?.fileUrl || message.metadata?.file_url) as string | undefined;
+  const fileName = (message.metadata?.fileName ||
+    message.metadata?.file_name ||
+    'Unknown file') as string;
+  const fileSize = (message.metadata?.fileSize || message.metadata?.file_size || 0) as number;
+  const fileMimeType = (message.metadata?.fileMimeType ||
+    message.metadata?.file_mime_type ||
+    '') as string;
+  const thumbnailUrl = (message.metadata?.thumbnailUrl || message.metadata?.thumbnail_url) as
+    | string
+    | undefined;
 
   if (!fileUrl) {
     return null;

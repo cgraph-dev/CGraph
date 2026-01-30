@@ -9,3 +9,5 @@ export { ConversationInput } from './ConversationInput';
 export { TypingIndicator } from './TypingIndicator';
 export { AnimatedMessageWrapper } from './AnimatedMessageWrapper';
 export { AnimatedReactionBubble } from './AnimatedReactionBubble';
+export { MessageBubble } from './MessageBubble';
+export type { MessageBubbleProps, UIPreferences } from './MessageBubble';

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback, useMemo, memo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { useChatStore, Message, ConversationParticipant } from '@/stores/chatStore';
+import { useChatStore, Message } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useFriendStore } from '@/stores/friendStore';
 import { socketManager } from '@/lib/socket';
@@ -8,7 +8,6 @@ import { api } from '@/lib/api';
 import {
   getParticipantUserId,
   getParticipantDisplayName,
-  getParticipantAvatarUrl,
   getMessageSenderId,
 } from '@/lib/apiUtils';
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
@@ -1577,7 +1576,12 @@ export default function Conversation() {
               onlineStatus: isOtherUserOnline ? 'online' : 'offline',
               lastSeenAt: otherParticipant?.user?.lastSeenAt ?? undefined,
               bio: otherParticipant?.user?.bio ?? undefined,
-              badges: otherParticipant?.user?.badges ?? [],
+              badges: (otherParticipant?.user?.badges ?? []) as unknown as Array<{
+                id: string;
+                name: string;
+                emoji: string;
+                rarity: string;
+              }>,
               theme: otherParticipant?.user?.theme ?? undefined,
             }}
             mutualFriends={mutualFriends}
@@ -1694,7 +1698,6 @@ const MessageBubble = memo(
                   src={message.sender?.avatarUrl}
                   alt={message.sender?.displayName || message.sender?.username || 'User'}
                   size="small"
-                  userTheme={message.senderTheme ?? message.sender?.theme}
                   avatarBorderId={message.sender?.avatarBorderId}
                 />
               </UserProfileCard>
@@ -2007,8 +2010,10 @@ const MessageBubble = memo(
             >
               <div className="flex -space-x-1">
                 {(
-                  message.metadata.readBy as Array<{
-                    id: string;
+                  message.metadata.readBy as unknown as Array<{
+                    id?: string;
+                    userId?: string;
+                    readAt?: string;
                     avatarUrl?: string;
                     username?: string;
                   }>
@@ -2016,7 +2021,7 @@ const MessageBubble = memo(
                   .slice(0, 3)
                   .map((reader, idx) => (
                     <motion.div
-                      key={reader.id}
+                      key={reader.id || reader.userId}
                       className="h-4 w-4 overflow-hidden rounded-full border border-dark-900 bg-gradient-to-br from-primary-500 to-purple-600"
                       initial={{ scale: 0, x: -10 }}
                       animate={{ scale: 1, x: 0 }}
