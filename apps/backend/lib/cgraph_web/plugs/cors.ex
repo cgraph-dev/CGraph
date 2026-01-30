@@ -52,15 +52,26 @@ defmodule CGraphWeb.Plugs.Cors do
   defp handle_preflight(conn), do: conn
 
   defp origin_allowed?(origin) do
+    require Logger
     allowed_origins = get_cors_origins()
+    
+    Logger.info("CORS: checking origin=#{inspect(origin)} against #{inspect(allowed_origins)}")
     
     case allowed_origins do
       "*" -> true
       origins when is_list(origins) ->
-        Enum.any?(origins, fn
-          %Regex{} = regex -> Regex.match?(regex, origin)
-          allowed when is_binary(allowed) -> allowed == origin
+        result = Enum.any?(origins, fn
+          %Regex{} = regex -> 
+            match = Regex.match?(regex, origin)
+            Logger.debug("CORS: regex match=#{match}")
+            match
+          allowed when is_binary(allowed) -> 
+            match = allowed == origin
+            if match, do: Logger.debug("CORS: exact match on #{allowed}")
+            match
         end)
+        Logger.info("CORS: final result=#{result}")
+        result
       _ -> false
     end
   end
