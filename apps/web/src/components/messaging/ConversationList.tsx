@@ -21,6 +21,7 @@ import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { getAvatarBorderId } from '@/lib/utils';
 
 /**
  * ConversationList Component
@@ -523,9 +524,7 @@ function NewChatModal({ onClose }: { onClose: () => void }) {
                     src={user.avatarUrl}
                     alt={user.displayName}
                     size="small"
-                    avatarBorderId={
-                      (user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id
-                    }
+                    avatarBorderId={getAvatarBorderId(user)}
                   />
                   {user.status === 'online' && (
                     <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border border-dark-900 bg-green-500" />
@@ -593,11 +592,8 @@ function getConversationAvatarBorderId(
     return null;
   }
   const otherParticipant = conversation.participants?.find((p) => p.userId !== currentUserId);
-  return (
-    (otherParticipant as any)?.user?.avatarBorderId ??
-    (otherParticipant as any)?.user?.avatar_border_id ??
-    null
-  );
+  const user = (otherParticipant as Record<string, unknown> | undefined)?.user;
+  return getAvatarBorderId(user);
 }
 
 function getConversationOnlineStatus(conversation: Conversation, currentUserId?: string): boolean {

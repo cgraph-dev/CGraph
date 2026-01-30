@@ -22,6 +22,7 @@ import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import UserProfileCard from '@/components/profile/UserProfileCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { getAvatarBorderId } from '@/lib/utils';
 
 interface ConversationHeaderProps {
   conversationName: string;
@@ -89,11 +90,8 @@ function ConversationHeaderComponent({
                 src={otherParticipant?.user?.avatarUrl}
                 alt={conversationName}
                 size="large"
-                userTheme={(otherParticipant?.user as any)?.theme}
-                avatarBorderId={
-                  (otherParticipant as any)?.user?.avatarBorderId ??
-                  (otherParticipant as any)?.user?.avatar_border_id
-                }
+                userTheme={otherParticipant?.user?.theme}
+                avatarBorderId={getAvatarBorderId(otherParticipant?.user)}
               />
               {isOtherUserOnline && (
                 <motion.div

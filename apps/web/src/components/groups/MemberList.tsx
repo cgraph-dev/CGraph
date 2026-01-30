@@ -17,6 +17,7 @@ void THEME_COLORS; // Reserved for role color theming
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { getAvatarBorderId } from '@/lib/utils';
 import { chatLogger as logger } from '@/lib/logger';
 
 /**
@@ -260,9 +261,7 @@ function MemberItem({
           src={member.user.avatarUrl}
           alt={displayName}
           size="small"
-          avatarBorderId={
-            (member.user as any)?.avatarBorderId ?? (member.user as any)?.avatar_border_id
-          }
+          avatarBorderId={getAvatarBorderId(member.user)}
         />
         <div
           className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-dark-900 ${statusColors[status]}`}
@@ -383,9 +382,7 @@ function MemberContextMenu({
                 src={member.user.avatarUrl}
                 alt={displayName}
                 size="medium"
-                avatarBorderId={
-                  (member.user as any)?.avatarBorderId ?? (member.user as any)?.avatar_border_id
-                }
+                avatarBorderId={getAvatarBorderId(member.user)}
               />
               <div>
                 <p className="font-semibold text-white">{displayName}</p>

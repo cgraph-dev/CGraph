@@ -13,6 +13,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { motion, AnimatePresence } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import { getAvatarBorderId } from '@/lib/utils';
 import { pageTransitions, buttonVariantsSubtle } from '@/lib/animations/transitions';
 
 // Reserved for future animation enhancements
@@ -393,7 +394,7 @@ export default function AppLayout() {
                   alt={user.displayName || user.username || 'User avatar'}
                   size="medium"
                   className="h-full w-full rounded-lg"
-                  avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
+                  avatarBorderId={getAvatarBorderId(user)}
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br from-primary-600 to-purple-700 text-lg font-bold">

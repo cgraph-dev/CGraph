@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useChatStore, Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { socketManager } from '@/lib/socket';
-import { formatTimeAgo } from '@/lib/utils';
+import { formatTimeAgo, getAvatarBorderId } from '@/lib/utils';
 import { toast } from '@/components/Toast';
 import {
   MagnifyingGlassIcon,
@@ -383,14 +383,11 @@ function getConversationAvatar(conv: Conversation, currentUserId: string): strin
 function getConversationAvatarBorderId(conv: Conversation, currentUserId: string): string | null {
   if (conv.type === 'direct') {
     const otherParticipant = conv.participants.find((p) => p.userId !== currentUserId);
-    return (
-      (otherParticipant as any)?.user?.avatarBorderId ??
-      (otherParticipant as any)?.user?.avatar_border_id ??
-      null
-    );
+    const user = (otherParticipant as Record<string, unknown> | undefined)?.user;
+    return getAvatarBorderId(user);
   }
 
-  return (conv as any)?.avatarBorderId ?? (conv as any)?.avatar_border_id ?? null;
+  return getAvatarBorderId(conv);
 }
 
 // Enhanced Conversation item component

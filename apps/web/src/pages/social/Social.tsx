@@ -19,6 +19,7 @@ import UserProfileCard from '@/components/profile/UserProfileCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { useFriendStore } from '@/stores/friendStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { getAvatarBorderId } from '@/lib/utils';
 
 /**
  * Social Hub - Unified Social Interface
@@ -483,11 +484,7 @@ function FriendsTab({
                             alt={friend.displayName || friend.username}
                             size="medium"
                             className="h-12 w-12 ring-2 ring-dark-700"
-                            avatarBorderId={
-                              (friend as any)?.avatarBorderId ??
-                              (friend as any)?.avatar_border_id ??
-                              null
-                            }
+                            avatarBorderId={getAvatarBorderId(friend)}
                           />
                         ) : (
                           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-600 to-primary-700 font-medium text-white ring-2 ring-dark-700">

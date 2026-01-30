@@ -57,3 +57,15 @@ export function formatBytes(bytes: number, decimals: number = 2): string {
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
+
+/**
+ * Safely extract avatar border ID from an object that may have
+ * either camelCase (avatarBorderId) or snake_case (avatar_border_id) property.
+ * Handles API response inconsistencies without requiring 'as any' casts.
+ */
+export function getAvatarBorderId(obj: unknown): string | null {
+  if (!obj || typeof obj !== 'object') return null;
+  const record = obj as Record<string, unknown>;
+  const borderId = record.avatarBorderId ?? record.avatar_border_id;
+  return typeof borderId === 'string' ? borderId : null;
+}

@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { getAvatarBorderId } from '@/lib/utils';
 
 /**
  * AccountSettings - User account management component
@@ -70,14 +71,6 @@ export function AccountSettings() {
     }
   };
 
-  // Get avatar border ID with proper typing
-  const getAvatarBorderId = (): string | null | undefined => {
-    if (!user) return undefined;
-    // Handle both camelCase and snake_case API responses
-    const userData = user as { avatarBorderId?: string | null; avatar_border_id?: string | null };
-    return userData.avatarBorderId ?? userData.avatar_border_id;
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -104,7 +97,7 @@ export function AccountSettings() {
                 alt={user?.displayName || user?.username || 'User'}
                 size="large"
                 className="h-16 w-16"
-                avatarBorderId={getAvatarBorderId()}
+                avatarBorderId={getAvatarBorderId(user)}
               />
             ) : (
               <span className="text-2xl font-bold text-white">
@@ -145,7 +138,7 @@ export function AccountSettings() {
                 alt={user?.displayName || user?.username || 'User'}
                 size="large"
                 className="h-20 w-20"
-                avatarBorderId={getAvatarBorderId()}
+                avatarBorderId={getAvatarBorderId(user)}
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-3xl font-bold text-gray-400">

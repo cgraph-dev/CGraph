@@ -4,6 +4,7 @@ import { useForumHostingStore, Board, Thread, ForumMember } from '@/stores/forum
 import { useForumStore, Forum } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import { getAvatarBorderId } from '@/lib/utils';
 import {
   ChatBubbleLeftRightIcon,
   FolderIcon,
@@ -686,9 +687,7 @@ function MemberCard({ member }: MemberCardProps) {
             src={member.avatarUrl}
             alt={member.displayName || 'User'}
             size="medium"
-            avatarBorderId={
-              (member as any)?.avatarBorderId ?? (member as any)?.avatar_border_id ?? null
-            }
+            avatarBorderId={getAvatarBorderId(member)}
           />
         ) : (
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-dark-600">

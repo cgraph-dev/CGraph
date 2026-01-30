@@ -5,6 +5,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import { ArrowPathIcon, ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
+import { getAvatarBorderId } from '@/lib/utils';
 import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import MessageReactions from '@/components/chat/MessageReactions';
@@ -375,9 +376,7 @@ function MessageItem({
               src={message.author.avatarUrl}
               alt={displayName}
               size="medium"
-              avatarBorderId={
-                (message.author as any)?.avatarBorderId ?? (message.author as any)?.avatar_border_id
-              }
+              avatarBorderId={getAvatarBorderId(message.author)}
             />
           </div>
         )}

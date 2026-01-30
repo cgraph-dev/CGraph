@@ -30,6 +30,7 @@ import { BellIcon as BellIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { getAvatarBorderId } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { usePremiumStore } from '@/features/premium/stores';
@@ -307,7 +308,7 @@ export const TopNav: React.FC<TopNavProps> = ({
                   src={user.avatarUrl}
                   alt={user.displayName || user.username || 'User'}
                   size="small"
-                  avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
+                  avatarBorderId={getAvatarBorderId(user)}
                 />
                 {isSubscribed && <SparklesIcon className="h-4 w-4 text-amber-400" />}
               </motion.button>

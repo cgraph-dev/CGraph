@@ -15,6 +15,7 @@ import { useNavigate } from 'react-router-dom';
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { springs } from '@/lib/animations/transitions';
+import { getAvatarBorderId } from '@/lib/utils';
 import { useFriendStore } from '@/stores/friendStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { api } from '@/lib/api';
@@ -209,7 +210,7 @@ export default function ChatInfoPanel({
                 alt={user.displayName || user.username}
                 size="large"
                 userTheme={user.theme}
-                avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
+                avatarBorderId={getAvatarBorderId(user)}
                 className="!h-24 !w-24"
               />
               {user.onlineStatus === 'online' && (

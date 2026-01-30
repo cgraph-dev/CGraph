@@ -46,6 +46,7 @@ import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer'
 import ShaderBackground from '@/components/shaders/ShaderBackground';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { themeEngine } from '@/lib/ai/ThemeEngine';
+import { getAvatarBorderId } from '@/lib/utils';
 
 // Sticker system integration
 import { StickerPicker, StickerButton } from '@/components/chat/StickerPicker';
@@ -141,11 +142,7 @@ function EnhancedMessageBubble({
                     alt={message.sender?.displayName || 'User'}
                     size="small"
                     className="h-8 w-8"
-                    avatarBorderId={
-                      (message.sender as any)?.avatarBorderId ??
-                      (message.sender as any)?.avatar_border_id ??
-                      null
-                    }
+                    avatarBorderId={getAvatarBorderId(message.sender)}
                   />
                 ) : (
                   <div className="flex h-full w-full items-center justify-center text-sm font-bold text-primary-400">

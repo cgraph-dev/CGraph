@@ -25,6 +25,7 @@ import {
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { getAvatarBorderId } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useGroupStore } from '@/stores/groupStore';
 import { usePremiumStore } from '@/features/premium/stores';
@@ -203,9 +204,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     src={user.avatarUrl}
                     alt={user.displayName || user.username || 'User'}
                     size="medium"
-                    avatarBorderId={
-                      (user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id
-                    }
+                    avatarBorderId={getAvatarBorderId(user)}
                   />
                   <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-dark-800 bg-green-500" />
                 </div>
@@ -290,7 +289,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               src={user.avatarUrl}
               alt={user.displayName || user.username || 'User'}
               size="small"
-              avatarBorderId={(user as any)?.avatarBorderId ?? (user as any)?.avatar_border_id}
+              avatarBorderId={getAvatarBorderId(user)}
             />
             {!isCollapsed && (
               <div className="min-w-0 flex-1">
