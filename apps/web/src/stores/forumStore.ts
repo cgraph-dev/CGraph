@@ -1372,38 +1372,14 @@ export const useForumStore = create<ForumState>((set, get) => ({
     }
   },
   reportItem: async (data) => {
-    // Determine the correct endpoint based on report type
-    let endpoint = '';
     const payload: Record<string, unknown> = {
       reason: data.reason,
       details: data.details,
+      report_type: data.reportType,
+      item_id: data.itemId,
     };
 
-    switch (data.reportType) {
-      case 'post':
-        // The post report endpoint expects forum_id and post_id
-        // We'll extract forum info from current state or use a general report endpoint
-        endpoint = `/api/v1/reports`;
-        payload.report_type = 'post';
-        payload.item_id = data.itemId;
-        break;
-      case 'comment':
-        endpoint = `/api/v1/reports`;
-        payload.report_type = 'comment';
-        payload.item_id = data.itemId;
-        break;
-      case 'user':
-        endpoint = `/api/v1/reports`;
-        payload.report_type = 'user';
-        payload.item_id = data.itemId;
-        break;
-      default:
-        endpoint = `/api/v1/reports`;
-        payload.report_type = data.reportType;
-        payload.item_id = data.itemId;
-    }
-
-    const response = await api.post(endpoint, { report: payload });
+    const response = await api.post('/api/v1/reports', { report: payload });
     const report = ensureObject<Report>(response.data, 'report');
     if (report) {
       set((state) => ({

@@ -13,22 +13,19 @@ import {
   PaperClipIcon,
   FaceSmileIcon,
   EllipsisVerticalIcon,
-  PhoneIcon,
-  VideoCameraIcon,
-  InformationCircleIcon,
-  LockClosedIcon,
-  ShieldCheckIcon,
   MicrophoneIcon,
-  Cog6ToothIcon,
   SparklesIcon,
-  MagnifyingGlassIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline';
 import { VoiceMessageRecorder } from '@/components/VoiceMessageRecorder';
 import { VoiceMessagePlayer } from '@/components/VoiceMessagePlayer';
 // Enhanced UI v3.0 components - NEXT GEN
-import { AnimatedMessageWrapper } from '@/components/conversation/AnimatedMessageWrapper';
-import { AnimatedReactionBubble } from '@/components/conversation/AnimatedReactionBubble';
+import {
+  AnimatedMessageWrapper,
+  AnimatedReactionBubble,
+  ConversationHeader,
+  TypingIndicator,
+} from '@/components/conversation';
 import GlassCard from '@/components/ui/GlassCard';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -64,90 +61,8 @@ import ChatInfoPanel from '@/components/chat/ChatInfoPanel';
 import { VoiceCallModal } from '@/components/voice/VoiceCallModal';
 import { VideoCallModal } from '@/components/voice/VideoCallModal';
 
-// ============================================================================
-// TYPE-SAFE REACTION AGGREGATION UTILITIES
-// ============================================================================
-
-/**
- * Aggregated reaction format expected by MessageReactions component.
- * Transforms raw reaction arrays into grouped, counted summaries.
- */
-interface AggregatedReaction {
-  emoji: string;
-  count: number;
-  users: Array<{ id: string; username: string }>;
-  hasReacted: boolean;
-}
-
-/**
- * Raw reaction format from the chat store.
- * Includes individual user attribution for each reaction instance.
- */
-interface RawReaction {
-  id: string;
-  emoji: string;
-  userId: string;
-  user: {
-    id: string;
-    username: string;
-  };
-}
-
-/**
- * Aggregates raw reactions into grouped format with counts and user lists.
- * Uses a Map-based accumulator pattern for O(n) complexity.
- *
- * @param reactions - Array of individual reaction records
- * @returns Array of aggregated reactions grouped by emoji
- */
-function aggregateReactions(reactions: RawReaction[] | undefined): AggregatedReaction[] {
-  if (!reactions || reactions.length === 0) return [];
-
-  const currentUserId = useAuthStore.getState().user?.id;
-  const aggregationMap = new Map<string, AggregatedReaction>();
-
-  for (const reaction of reactions) {
-    // Skip reactions with missing required data
-    if (!reaction?.emoji) continue;
-
-    const userId = reaction.user?.id ?? reaction.userId ?? 'unknown';
-    const username = reaction.user?.username ?? 'Unknown User';
-    const existing = aggregationMap.get(reaction.emoji);
-
-    if (existing) {
-      existing.count++;
-      existing.users.push({ id: userId, username });
-      if (reaction.userId === currentUserId) {
-        existing.hasReacted = true;
-      }
-    } else {
-      aggregationMap.set(reaction.emoji, {
-        emoji: reaction.emoji,
-        count: 1,
-        users: [{ id: userId, username }],
-        hasReacted: reaction.userId === currentUserId,
-      });
-    }
-  }
-
-  return Array.from(aggregationMap.values());
-}
-
-/**
- * Handles removal of a reaction from a message.
- * Integrates with the chat store's reaction management system.
- *
- * @param messageId - The ID of the message to remove reaction from
- * @param emoji - The emoji to remove
- */
-async function handleRemoveReaction(messageId: string, emoji: string): Promise<void> {
-  try {
-    const { removeReaction } = useChatStore.getState();
-    await removeReaction(messageId, emoji);
-  } catch (error) {
-    console.error('Failed to remove reaction:', error);
-  }
-}
+// Reaction utilities - centralized for reuse
+import { aggregateReactions, handleRemoveReaction } from '@/lib/chat';
 
 export default function Conversation() {
   // Apply adaptive theme on mount
@@ -984,207 +899,39 @@ export default function Conversation() {
         )}
 
         {/* Glassmorphic Header */}
-        <GlassCard
-          variant={uiPreferences.glassEffect}
-          hover3D={false}
-          glow={uiPreferences.enableGlow}
-          borderGradient
-          className="z-10 flex h-16 flex-shrink-0 items-center justify-between rounded-none"
-        >
-          <div className="flex h-full w-full items-center pl-4 pr-2">
-            <motion.div
-              className="flex min-w-0 flex-1 items-center gap-3"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              <UserProfileCard
-                userId={otherParticipant?.user?.id || ''}
-                trigger="both"
-                className="cursor-pointer"
-              >
-                <motion.div
-                  className="relative"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <ThemedAvatar
-                    src={otherParticipant?.user?.avatarUrl}
-                    alt={conversationName}
-                    size="large"
-                    userTheme={(otherParticipant?.user as any)?.theme}
-                    avatarBorderId={
-                      (otherParticipant as any)?.user?.avatarBorderId ??
-                      (otherParticipant as any)?.user?.avatar_border_id
-                    }
-                  />
-                  {isOtherUserOnline && (
-                    <motion.div
-                      className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-dark-900 bg-green-500 shadow-lg"
-                      animate={{
-                        boxShadow: [
-                          '0 0 0 0 rgba(34, 197, 94, 0.7)',
-                          '0 0 0 6px rgba(34, 197, 94, 0)',
-                        ],
-                      }}
-                      transition={{ duration: 2, repeat: Infinity }}
-                    />
-                  )}
-                </motion.div>
-              </UserProfileCard>
-              <div>
-                <h2 className="flex items-center gap-2 text-lg font-bold text-white">
-                  {conversationName}
-                  {uiPreferences.enableGlow && (
-                    <SparklesIcon className="h-4 w-4 animate-pulse text-primary-400" />
-                  )}
-                </h2>
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheckIcon
-                    className="h-3 w-3 text-green-400"
-                    title="End-to-end encrypted"
-                  />
-                  <p className="text-xs text-gray-400">
-                    {typing.length > 0 ? (
-                      <motion.span
-                        className="font-medium text-primary-400"
-                        animate={{ opacity: [1, 0.5, 1] }}
-                        transition={{ duration: 1.5, repeat: Infinity }}
-                      >
-                        typing...
-                      </motion.span>
-                    ) : isOtherUserOnline ? (
-                      <span className="font-medium text-green-400">Online</span>
-                    ) : (
-                      formatLastSeen(otherParticipant?.user?.lastSeenAt)
-                    )}
-                  </p>
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div
-              className="ml-auto flex flex-shrink-0 items-center gap-2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-            >
-              {/* E2EE Indicator with Glow - Now Clickable! */}
-              <motion.button
-                onClick={() => {
-                  setShowE2EETester(true);
-                  HapticFeedback.medium();
-                }}
-                className="mr-2 flex cursor-pointer items-center gap-1.5 rounded-lg border border-green-500/30 bg-green-500/10 px-2.5 py-1 backdrop-blur-sm transition-all hover:bg-green-500/20"
-                title="Click to test E2EE connection"
-                whileHover={{ scale: 1.05, boxShadow: '0 0 20px rgba(34, 197, 94, 0.3)' }}
-                whileTap={{ scale: 0.95 }}
-                animate={
-                  uiPreferences.enableGlow
-                    ? {
-                        boxShadow: [
-                          '0 0 10px rgba(34, 197, 94, 0.2)',
-                          '0 0 20px rgba(34, 197, 94, 0.4)',
-                          '0 0 10px rgba(34, 197, 94, 0.2)',
-                        ],
-                      }
-                    : {}
-                }
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <LockClosedIcon className="h-3.5 w-3.5 text-green-400" />
-                <span className="text-xs font-bold tracking-wider text-green-400">E2EE</span>
-              </motion.button>
-
-              <motion.button
-                onClick={handleStartVoiceCall}
-                className="rounded-lg p-2 text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                title="Voice call"
-              >
-                <PhoneIcon className="h-5 w-5" />
-              </motion.button>
-
-              <motion.button
-                onClick={handleStartVideoCall}
-                className="rounded-lg p-2 text-gray-400 transition-all duration-200 hover:bg-white/10 hover:text-white"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                title="Video call"
-              >
-                <VideoCameraIcon className="h-5 w-5" />
-              </motion.button>
-
-              {/* Message Search Button */}
-              <motion.button
-                onClick={() => {
-                  setShowMessageSearch(!showMessageSearch);
-                  if (uiPreferences.enableHaptic) HapticFeedback.medium();
-                }}
-                className={`rounded-lg p-2 transition-all duration-200 hover:bg-white/10 ${
-                  showMessageSearch
-                    ? 'bg-primary-500/20 text-primary-400'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                title="Search messages"
-              >
-                <MagnifyingGlassIcon className="h-5 w-5" />
-              </motion.button>
-
-              {/* Scheduled Messages Button */}
-              <motion.button
-                onClick={() => {
-                  setShowScheduledList(!showScheduledList);
-                  if (uiPreferences.enableHaptic) HapticFeedback.medium();
-                }}
-                className={`rounded-lg p-2 transition-all duration-200 hover:bg-white/10 ${
-                  showScheduledList
-                    ? 'bg-purple-500/20 text-purple-400'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                title="Scheduled messages"
-              >
-                <ClockIcon className="h-5 w-5" />
-              </motion.button>
-
-              <motion.button
-                onClick={() => {
-                  setShowInfoPanel(!showInfoPanel);
-                  if (uiPreferences.enableHaptic) HapticFeedback.medium();
-                }}
-                className={`rounded-lg p-2 transition-all duration-200 hover:bg-white/10 ${
-                  showInfoPanel
-                    ? 'bg-primary-500/20 text-primary-400'
-                    : 'text-gray-400 hover:text-white'
-                }`}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                title="Toggle user info panel"
-              >
-                <InformationCircleIcon className="h-5 w-5" />
-              </motion.button>
-
-              {/* UI Settings Button */}
-              <motion.button
-                onClick={() => {
-                  setShowSettings(!showSettings);
-                  if (uiPreferences.enableHaptic) HapticFeedback.medium();
-                }}
-                className="ml-1 rounded-lg border border-purple-500/30 bg-purple-500/20 p-2 text-purple-400 transition-all duration-200 hover:bg-purple-500/30"
-                whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
-                title="UI Customization"
-              >
-                <Cog6ToothIcon className="h-5 w-5" />
-              </motion.button>
-            </motion.div>
-          </div>
-        </GlassCard>
+        <ConversationHeader
+          conversationName={conversationName}
+          otherParticipant={otherParticipant}
+          isOtherUserOnline={isOtherUserOnline}
+          typing={typing}
+          uiPreferences={uiPreferences}
+          onStartVoiceCall={handleStartVoiceCall}
+          onStartVideoCall={handleStartVideoCall}
+          onToggleSearch={() => {
+            setShowMessageSearch(!showMessageSearch);
+            if (uiPreferences.enableHaptic) HapticFeedback.medium();
+          }}
+          onToggleScheduledList={() => {
+            setShowScheduledList(!showScheduledList);
+            if (uiPreferences.enableHaptic) HapticFeedback.medium();
+          }}
+          onToggleInfoPanel={() => {
+            setShowInfoPanel(!showInfoPanel);
+            if (uiPreferences.enableHaptic) HapticFeedback.medium();
+          }}
+          onToggleSettings={() => {
+            setShowSettings(!showSettings);
+            if (uiPreferences.enableHaptic) HapticFeedback.medium();
+          }}
+          onToggleE2EETester={() => {
+            setShowE2EETester(true);
+            HapticFeedback.medium();
+          }}
+          showScheduledList={showScheduledList}
+          showInfoPanel={showInfoPanel}
+          showSettings={showSettings}
+          formatLastSeen={formatLastSeen}
+        />
 
         {/* Settings Panel (Next Gen UI Customization) */}
         <AnimatePresence>
@@ -1476,50 +1223,11 @@ export default function Conversation() {
 
           {/* Enhanced Typing indicator */}
           <AnimatePresence>
-            {typing.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 10, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -10, scale: 0.9 }}
-                transition={{ duration: 0.3, type: 'spring' }}
-              >
-                <div className="ml-4 inline-block">
-                  <GlassCard
-                    variant="crystal"
-                    glow={uiPreferences.enableGlow}
-                    className="inline-flex items-center gap-3 rounded-2xl px-4 py-2"
-                  >
-                    <div className="flex space-x-1.5">
-                      {[0, 1, 2].map((i) => (
-                        <motion.div
-                          key={i}
-                          className="h-2.5 w-2.5 rounded-full bg-gradient-to-r from-primary-400 to-purple-400"
-                          animate={{
-                            y: [0, -8, 0],
-                            scale: [1, 1.2, 1],
-                            opacity: [0.5, 1, 0.5],
-                          }}
-                          transition={{
-                            duration: 1,
-                            repeat: Infinity,
-                            delay: i * 0.2,
-                            ease: 'easeInOut',
-                          }}
-                          style={{
-                            boxShadow: uiPreferences.enableGlow
-                              ? '0 0 10px rgba(16, 185, 129, 0.5)'
-                              : 'none',
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <span className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-sm font-medium text-transparent">
-                      typing...
-                    </span>
-                  </GlassCard>
-                </div>
-              </motion.div>
-            )}
+            <TypingIndicator
+              typing={typing}
+              enableGlow={uiPreferences.enableGlow}
+              glassEffect="crystal"
+            />
           </AnimatePresence>
 
           <div ref={messagesEndRef} />

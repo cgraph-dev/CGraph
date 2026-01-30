@@ -9,8 +9,8 @@
 
 import { memo, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import type { AvatarBorderType, ThemePreset } from '@/stores/customizationStoreV2';
-import { themeColors } from '@/stores/customizationStoreV2';
+import type { AvatarBorderType, ThemePreset } from '@/stores/customization';
+import { THEME_COLORS as themeColors } from '@/stores/customization';
 import { usePrefersReducedMotion } from '@/hooks';
 
 interface AnimatedAvatarProps {

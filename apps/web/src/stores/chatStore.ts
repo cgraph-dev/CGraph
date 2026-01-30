@@ -12,6 +12,57 @@ import { useE2EEStore } from '@/lib/crypto/e2eeStore';
 import { useAuthStore } from '@/stores/authStore';
 import { chatLogger as logger } from '@/lib/logger';
 
+/**
+ * Finds the conversation ID that contains a given message.
+ * Returns null if the message is not found in any conversation.
+ */
+function findConversationForMessage(
+  messages: Record<string, { id: string }[]>,
+  messageId: string
+): string | null {
+  for (const [convId, convMessages] of Object.entries(messages)) {
+    if (convMessages.some((msg) => msg.id === messageId)) {
+      return convId;
+    }
+  }
+  return null;
+}
+
+/**
+ * Updates a message's reactions across all conversations.
+ * Returns a new messages object with the updated message.
+ */
+function updateMessageReactions(
+  messages: Record<string, Message[]>,
+  messageId: string,
+  updateFn: (reactions: Reaction[]) => Reaction[]
+): Record<string, Message[]> {
+  const updatedMessages: Record<string, Message[]> = {};
+
+  for (const [convId, convMessages] of Object.entries(messages)) {
+    const messageIndex = convMessages.findIndex((m) => m.id === messageId);
+
+    if (messageIndex === -1) {
+      updatedMessages[convId] = convMessages;
+      continue;
+    }
+
+    const message = convMessages[messageIndex];
+    if (!message) {
+      updatedMessages[convId] = convMessages;
+      continue;
+    }
+
+    const updatedReactions = updateFn(message.reactions || []);
+    const updatedMessage: Message = { ...message, reactions: updatedReactions };
+    const updatedList = [...convMessages];
+    updatedList[messageIndex] = updatedMessage;
+    updatedMessages[convId] = updatedList;
+  }
+
+  return updatedMessages;
+}
+
 export interface Message {
   id: string;
   conversationId: string;
@@ -483,17 +534,7 @@ export const useChatStore = create<ChatState>()(
       },
 
       editMessage: async (messageId: string, content: string) => {
-        // Find the conversation that contains this message
-        const { messages } = get();
-        let conversationId: string | null = null;
-
-        for (const [convId, convMessages] of Object.entries(messages)) {
-          if (convMessages.some((msg) => msg.id === messageId)) {
-            conversationId = convId;
-            break;
-          }
-        }
-
+        const conversationId = findConversationForMessage(get().messages, messageId);
         if (!conversationId) {
           throw new Error('Message not found in any conversation');
         }
@@ -510,17 +551,7 @@ export const useChatStore = create<ChatState>()(
       },
 
       deleteMessage: async (messageId: string) => {
-        // Find the conversation that contains this message
-        const { messages } = get();
-        let conversationId: string | null = null;
-
-        for (const [convId, convMessages] of Object.entries(messages)) {
-          if (convMessages.some((msg) => msg.id === messageId)) {
-            conversationId = convId;
-            break;
-          }
-        }
-
+        const conversationId = findConversationForMessage(get().messages, messageId);
         if (!conversationId) {
           throw new Error('Message not found in any conversation');
         }
@@ -746,49 +777,24 @@ export const useChatStore = create<ChatState>()(
         username?: string
       ) => {
         set((state) => {
-          const updatedMessages: Record<string, Message[]> = {};
-
-          // Find and update the message in all conversations
-          Object.entries(state.messages).forEach(([convId, messages]) => {
-            const messageIndex = messages.findIndex((m) => m.id === messageId);
-            if (messageIndex !== -1) {
-              const message = messages[messageIndex];
-              if (!message) {
-                updatedMessages[convId] = messages;
-                return;
-              }
-              const existingReactions = message.reactions || [];
-
-              // Check if this reaction already exists from this user
-              const existingIndex = existingReactions.findIndex(
+          const updatedMessages = updateMessageReactions(
+            state.messages,
+            messageId,
+            (reactions) => {
+              const alreadyExists = reactions.some(
                 (r) => r.emoji === emoji && r.userId === userId
               );
+              if (alreadyExists) return reactions;
 
-              if (existingIndex === -1) {
-                // Add the new reaction with proper Reaction structure
-                const newReaction: Reaction = {
-                  id: `${messageId}-${emoji}-${userId}`,
-                  emoji,
-                  userId,
-                  user: {
-                    id: userId,
-                    username: username || 'User',
-                  },
-                };
-
-                const newReactions = [...existingReactions, newReaction];
-                const updatedMessage: Message = { ...message, reactions: newReactions };
-                const updatedList = [...messages];
-                updatedList[messageIndex] = updatedMessage;
-                updatedMessages[convId] = updatedList;
-              } else {
-                updatedMessages[convId] = messages;
-              }
-            } else {
-              updatedMessages[convId] = messages;
+              const newReaction: Reaction = {
+                id: `${messageId}-${emoji}-${userId}`,
+                emoji,
+                userId,
+                user: { id: userId, username: username || 'User' },
+              };
+              return [...reactions, newReaction];
             }
-          });
-
+          );
           return { messages: { ...state.messages, ...updatedMessages } };
         });
       },
@@ -799,33 +805,11 @@ export const useChatStore = create<ChatState>()(
        */
       removeReactionFromMessage: (messageId: string, emoji: string, userId: string) => {
         set((state) => {
-          const updatedMessages: Record<string, Message[]> = {};
-
-          // Find and update the message in all conversations
-          Object.entries(state.messages).forEach(([convId, messages]) => {
-            const messageIndex = messages.findIndex((m) => m.id === messageId);
-            if (messageIndex !== -1) {
-              const message = messages[messageIndex];
-              if (!message) {
-                updatedMessages[convId] = messages;
-                return;
-              }
-              const existingReactions = message.reactions || [];
-
-              // Remove the reaction from this user
-              const filteredReactions = existingReactions.filter(
-                (r) => !(r.emoji === emoji && r.userId === userId)
-              );
-
-              const updatedMessage: Message = { ...message, reactions: filteredReactions };
-              const updatedList = [...messages];
-              updatedList[messageIndex] = updatedMessage;
-              updatedMessages[convId] = updatedList;
-            } else {
-              updatedMessages[convId] = messages;
-            }
-          });
-
+          const updatedMessages = updateMessageReactions(
+            state.messages,
+            messageId,
+            (reactions) => reactions.filter((r) => !(r.emoji === emoji && r.userId === userId))
+          );
           return { messages: { ...state.messages, ...updatedMessages } };
         });
       },

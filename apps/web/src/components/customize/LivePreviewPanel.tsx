@@ -4,11 +4,9 @@
  * Real-time preview of all customization settings.
  * Shows profile card, avatar, and chat bubbles with live updates.
  *
- * IMPORTANT: This component syncs with BOTH customization stores:
- * - customizationStore (V1): Used by IdentityCustomization, ThemeCustomization, etc.
- * - customizationStoreV2: Used for advanced settings and local persistence
+ * Uses the unified customization store for all settings.
  *
- * @version 2.1.0 - Performance optimizations for particle animations
+ * @version 2.2.0 - Consolidated to single store
  */
 
 import { memo, useMemo } from 'react';
@@ -16,12 +14,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useShallow } from 'zustand/react/shallow';
 import { AnimatedAvatar } from './AnimatedAvatar';
 import {
-  useCustomizationStoreV2,
-  themeColors,
-  type ThemePreset,
-  type AvatarBorderType,
-} from '@/stores/customizationStoreV2';
-import { useCustomizationStore } from '@/stores/customizationStore';
+  useCustomizationStore,
+  THEME_COLORS as themeColors,
+  BORDER_ID_TO_TYPE,
+  PROFILE_THEME_TO_COLOR,
+  CHAT_THEME_TO_COLOR,
+  TITLE_DISPLAY_NAMES,
+} from '@/stores/customization';
 import { usePrefersReducedMotion } from '@/hooks';
 
 // Import profile themes data for enhanced background rendering
@@ -34,62 +33,6 @@ import { springs, chatBubbleAnimations, hoverAnimations } from '@/lib/animationP
 import TiltCard from '@/components/ui/TiltCard';
 import GlowText, { FireText } from '@/components/ui/GlowText';
 
-// Title display names mapping
-const TITLE_DISPLAY_NAMES: Record<string, { name: string; gradient: string }> = {
-  t1: { name: 'Newbie', gradient: 'text-gray-400' },
-  t2: { name: 'Adventurer', gradient: 'text-blue-400' },
-  t3: {
-    name: 'Veteran',
-    gradient: 'bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent',
-  },
-  t4: {
-    name: 'Elite',
-    gradient: 'bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent',
-  },
-  t5: {
-    name: 'Legend',
-    gradient: 'bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent',
-  },
-  t6: {
-    name: 'Mythic Hero',
-    gradient:
-      'bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent',
-  },
-};
-
-// Border ID to type mapping for V1 store integration
-const BORDER_ID_TO_TYPE: Record<string, AvatarBorderType> = {
-  b1: 'static',
-  b2: 'static',
-  b3: 'static',
-  b4: 'static',
-  b5: 'pulse',
-  b6: 'rotate',
-  b7: 'glow',
-  b8: 'electric',
-  b9: 'rotate',
-  b10: 'fire',
-  b11: 'ice',
-  b12: 'glow',
-  b13: 'fire',
-  b14: 'legendary',
-  b15: 'mythic',
-  b16: 'fire',
-  b17: 'mythic',
-  b18: 'legendary',
-};
-
-// Profile theme to color mapping
-const PROFILE_THEME_TO_COLOR: Record<string, ThemePreset> = {
-  'profile-default': 'purple',
-  'classic-purple': 'purple',
-  'profile-ocean': 'cyan',
-  'profile-forest': 'emerald',
-  'profile-sunset': 'orange',
-  'profile-midnight': 'purple',
-  'profile-cherry': 'pink',
-};
-
 // =============================================================================
 // CHAT BUBBLE PREVIEW
 // =============================================================================
@@ -101,8 +44,8 @@ interface ChatBubbleProps {
 }
 
 const ChatBubble = memo(function ChatBubble({ message, isOwn, timestamp }: ChatBubbleProps) {
-  // Get settings from V2 store with shallow comparison to prevent infinite loops
-  const v2Settings = useCustomizationStoreV2(
+  // Get settings from unified store with shallow comparison to prevent infinite loops
+  const settings = useCustomizationStore(
     useShallow((state) => ({
       chatBubbleColor: state.chatBubbleColor,
       bubbleBorderRadius: state.bubbleBorderRadius,
@@ -112,48 +55,32 @@ const ChatBubble = memo(function ChatBubble({ message, isOwn, timestamp }: ChatB
       bubbleHoverEffect: state.bubbleHoverEffect,
       showTimestamps: state.showTimestamps,
       bubbleEntranceAnimation: state.bubbleEntranceAnimation,
-    }))
-  );
-
-  // Get settings from V1 store for chat theme integration
-  const v1Settings = useCustomizationStore(
-    useShallow((state) => ({
       chatTheme: state.chatTheme,
       bubbleStyle: state.bubbleStyle,
-      messageEffect: state.messageEffect,
     }))
   );
 
-  // Determine colors - prefer V1 chat theme if it's a specific theme
-  const chatThemeToColor: Record<string, ThemePreset> = {
-    'chat-default': 'purple',
-    'chat-discord': 'purple',
-    'chat-telegram': 'cyan',
-    'chat-neon': 'pink',
-    'chat-minimal': 'emerald',
-    default: 'emerald',
-  };
-
-  const effectiveColorPreset = chatThemeToColor[v1Settings.chatTheme] || v2Settings.chatBubbleColor;
+  // Determine colors - use centralized mapping
+  const effectiveColorPreset = CHAT_THEME_TO_COLOR[settings.chatTheme] || settings.chatBubbleColor;
   const colors = themeColors[effectiveColorPreset];
 
   // Get style-specific entrance animation
-  const bubbleStyleKey = v1Settings.bubbleStyle || 'default';
+  const bubbleStyleKey = settings.bubbleStyle || 'default';
   const defaultAnimation = chatBubbleAnimations['default']!;
   const getEntranceAnimation = chatBubbleAnimations[bubbleStyleKey];
   const entranceAnimation = (getEntranceAnimation ?? defaultAnimation)(isOwn, 0);
 
   const bubbleStyle = {
-    borderRadius: v2Settings.bubbleBorderRadius,
-    boxShadow: `0 4px ${v2Settings.bubbleShadowIntensity / 4}px rgba(0, 0, 0, ${v2Settings.bubbleShadowIntensity / 100})`,
+    borderRadius: settings.bubbleBorderRadius,
+    boxShadow: `0 4px ${settings.bubbleShadowIntensity / 4}px rgba(0, 0, 0, ${settings.bubbleShadowIntensity / 100})`,
     background: isOwn
-      ? v2Settings.bubbleGlassEffect
+      ? settings.bubbleGlassEffect
         ? `linear-gradient(135deg, ${colors.primary}90, ${colors.secondary}70)`
         : `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`
-      : v2Settings.bubbleGlassEffect
+      : settings.bubbleGlassEffect
         ? 'rgba(255, 255, 255, 0.1)'
         : 'rgba(255, 255, 255, 0.15)',
-    backdropFilter: v2Settings.bubbleGlassEffect ? 'blur(10px)' : 'none',
+    backdropFilter: settings.bubbleGlassEffect ? 'blur(10px)' : 'none',
   };
 
   return (
@@ -162,27 +89,27 @@ const ChatBubble = memo(function ChatBubble({ message, isOwn, timestamp }: ChatB
       initial={entranceAnimation.initial}
       animate={entranceAnimation.animate}
       transition={entranceAnimation.transition}
-      whileHover={v2Settings.bubbleHoverEffect ? hoverAnimations.lift : undefined}
+      whileHover={settings.bubbleHoverEffect ? hoverAnimations.lift : undefined}
     >
       <div
         className={`relative max-w-[80%] px-3 py-2 ${isOwn ? 'text-white' : 'text-white/90'}`}
         style={bubbleStyle}
       >
         <p className="text-sm">{message}</p>
-        {v2Settings.showTimestamps && timestamp && (
+        {settings.showTimestamps && timestamp && (
           <span className="mt-1 block text-right text-[10px] opacity-60">{timestamp}</span>
         )}
 
         {/* Bubble tail */}
-        {v2Settings.bubbleShowTail && (
+        {settings.bubbleShowTail && (
           <div
             className={`absolute bottom-0 h-3 w-3 ${isOwn ? '-right-1' : '-left-1'}`}
             style={{
               background: isOwn
-                ? v2Settings.bubbleGlassEffect
+                ? settings.bubbleGlassEffect
                   ? `${colors.secondary}70`
                   : colors.secondary
-                : v2Settings.bubbleGlassEffect
+                : settings.bubbleGlassEffect
                   ? 'rgba(255, 255, 255, 0.1)'
                   : 'rgba(255, 255, 255, 0.15)',
               borderRadius: isOwn ? '0 0 0 8px' : '0 0 8px 0',
@@ -202,8 +129,8 @@ const ChatBubble = memo(function ChatBubble({ message, isOwn, timestamp }: ChatB
 const ProfileCardPreview = memo(function ProfileCardPreview() {
   const prefersReducedMotion = usePrefersReducedMotion();
 
-  // Get settings from V2 store with shallow comparison to prevent infinite loops
-  const v2Settings = useCustomizationStoreV2(
+  // Get settings from unified store with shallow comparison to prevent infinite loops
+  const settings = useCustomizationStore(
     useShallow((state) => ({
       themePreset: state.themePreset,
       effectPreset: state.effectPreset,
@@ -219,50 +146,37 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
       equippedTitle: state.equippedTitle,
       equippedBadges: state.equippedBadges,
       selectedBorderId: state.selectedBorderId,
-    }))
-  );
-
-  // Get settings from V1 store for full integration
-  const v1Settings = useCustomizationStore(
-    useShallow((state) => ({
       avatarBorder: state.avatarBorder,
       title: state.title,
-      equippedBadges: state.equippedBadges,
-      profileLayout: state.profileLayout,
       profileTheme: state.profileTheme,
       particleEffect: state.particleEffect,
-      backgroundEffect: state.backgroundEffect,
     }))
   );
 
-  // Merge settings: V1 store takes priority for identity items
-  const effectiveTitle = v1Settings.title || v2Settings.equippedTitle;
-  const _effectiveBadges =
-    v1Settings.equippedBadges.length > 0 ? v1Settings.equippedBadges : v2Settings.equippedBadges;
-  void _effectiveBadges; // Reserved for future badge display integration
+  // Determine effective title (legacy alias or canonical)
+  const effectiveTitle = settings.title || settings.equippedTitle;
 
-  // Determine avatar border type: V2 selectedBorderId > V1 avatarBorder > V2 avatarBorderType
-  // This ensures live preview updates immediately when user clicks a border
-  const effectiveBorderId = v2Settings.selectedBorderId || v1Settings.avatarBorder;
+  // Determine avatar border type using centralized mapping
+  const effectiveBorderId = settings.selectedBorderId || settings.avatarBorder;
   const effectiveBorderType = effectiveBorderId
-    ? BORDER_ID_TO_TYPE[effectiveBorderId] || v2Settings.avatarBorderType
-    : v2Settings.avatarBorderType;
+    ? BORDER_ID_TO_TYPE[effectiveBorderId] || settings.avatarBorderType
+    : settings.avatarBorderType;
 
-  // Determine color from profile theme
+  // Determine color from profile theme using centralized mapping
   const effectiveColorPreset =
-    (v1Settings.profileTheme && PROFILE_THEME_TO_COLOR[v1Settings.profileTheme]) ||
-    v2Settings.avatarBorderColor;
+    (settings.profileTheme && PROFILE_THEME_TO_COLOR[settings.profileTheme]) ||
+    settings.avatarBorderColor;
 
   // Look up the active profile theme config (for new enhanced themes)
   const activeProfileTheme = useMemo<ProfileThemeConfig | null>(() => {
-    return v1Settings.profileTheme ? (getThemeById(v1Settings.profileTheme) ?? null) : null;
-  }, [v1Settings.profileTheme]);
+    return settings.profileTheme ? (getThemeById(settings.profileTheme) ?? null) : null;
+  }, [settings.profileTheme]);
 
   // Check if particles should be shown (but respect reduced motion preference)
   const showParticles =
     !prefersReducedMotion &&
-    (v1Settings.particleEffect !== 'none' ||
-      v2Settings.particlesEnabled ||
+    (settings.particleEffect !== 'none' ||
+      settings.particlesEnabled ||
       activeProfileTheme?.particleType !== 'none');
 
   // Check if this is a legendary/mythic title for fire effect
@@ -271,7 +185,7 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
 
   const colors = themeColors[effectiveColorPreset];
   const speedMultiplier =
-    v2Settings.animationSpeed === 'slow' ? 2 : v2Settings.animationSpeed === 'fast' ? 0.5 : 1;
+    settings.animationSpeed === 'slow' ? 2 : settings.animationSpeed === 'fast' ? 0.5 : 1;
 
   // Memoize particle data to prevent recalculation - REDUCED from 20 to 10 particles
   const particleData = useMemo(() => {
@@ -331,21 +245,21 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
     }
 
     // Check V1 background effect first
-    const bgEffect = v1Settings.backgroundEffect || v2Settings.effectPreset;
+    // Cast to string to handle potential legacy values
+    const bgEffect = settings.effectPreset as string;
 
     switch (bgEffect) {
       case 'glassmorphism':
-      case 'glass':
         return {
           background: 'rgba(17, 24, 39, 0.7)',
-          backdropFilter: v2Settings.blurEnabled ? 'blur(20px)' : 'none',
+          backdropFilter: settings.blurEnabled ? 'blur(20px)' : 'none',
           border: '1px solid rgba(255, 255, 255, 0.1)',
         };
       case 'neon':
         return {
           background: 'rgba(0, 0, 0, 0.9)',
           border: `1px solid ${colors.primary}`,
-          boxShadow: v2Settings.glowEnabled
+          boxShadow: settings.glowEnabled
             ? `0 0 30px ${colors.glow}, inset 0 0 30px ${colors.glow}20`
             : 'none',
         };
@@ -366,12 +280,7 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
           clipPath:
             'polygon(0 10px, 10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%)',
         };
-      case 'gradient':
-        return {
-          background: `linear-gradient(135deg, ${colors.primary}30, ${colors.secondary}30)`,
-          border: '1px solid rgba(255, 255, 255, 0.1)',
-        };
-      default: // minimal, solid
+      default: // minimal, solid, or any legacy values
         return {
           background: 'rgba(17, 24, 39, 0.95)',
           border: '1px solid rgba(255, 255, 255, 0.05)',
@@ -401,10 +310,10 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
         className="relative overflow-hidden rounded-2xl p-4"
         style={{
           ...getBackgroundStyle(),
-          boxShadow: v2Settings.glowEnabled ? `0 0 40px ${colors.glow}` : 'none',
+          boxShadow: settings.glowEnabled ? `0 0 40px ${colors.glow}` : 'none',
         }}
         animate={
-          v2Settings.glowEnabled
+          settings.glowEnabled
             ? {
                 boxShadow: [
                   `0 0 30px ${colors.glow}`,
@@ -489,7 +398,7 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
           <AnimatedAvatar
             borderType={effectiveBorderType}
             borderColor={effectiveColorPreset}
-            size={v2Settings.avatarSize}
+            size={settings.avatarSize}
             speedMultiplier={speedMultiplier}
           />
 
@@ -523,7 +432,7 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
               </motion.div>
             )}
 
-            {v2Settings.showStatus && (
+            {settings.showStatus && (
               <div className="mt-1 flex items-center justify-center gap-1.5">
                 <motion.span
                   className="h-2 w-2 rounded-full bg-emerald-400"
@@ -543,7 +452,7 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
           </div>
 
           {/* Badges - Enhanced with rotating glow ring */}
-          {v2Settings.showBadges && (
+          {settings.showBadges && (
             <div className="mt-3 flex gap-2">
               {mockBadges.map((badge, i) => (
                 <motion.div
@@ -551,10 +460,10 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
                   className="relative flex h-8 w-8 items-center justify-center rounded-lg text-sm"
                   style={{
                     background: `${badge.color}30`,
-                    boxShadow: v2Settings.glowEnabled ? `0 0 10px ${badge.color}50` : 'none',
+                    boxShadow: settings.glowEnabled ? `0 0 10px ${badge.color}50` : 'none',
                   }}
                   animate={
-                    v2Settings.glowEnabled
+                    settings.glowEnabled
                       ? {
                           boxShadow: [
                             `0 0 10px ${badge.color}50`,
@@ -568,7 +477,7 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
                   transition={{
                     ...springs.bouncy,
                     duration: 2,
-                    repeat: v2Settings.glowEnabled ? Infinity : 0,
+                    repeat: settings.glowEnabled ? Infinity : 0,
                     delay: i * 0.3,
                   }}
                 >
@@ -678,35 +587,24 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
 // =============================================================================
 
 export const LivePreviewPanel = memo(function LivePreviewPanel() {
-  // Get V2 store states with shallow comparison
-  const v2Settings = useCustomizationStoreV2(
+  // Get store states with shallow comparison
+  const settings = useCustomizationStore(
     useShallow((state) => ({
       themePreset: state.themePreset,
       isSaving: state.isSaving,
       isDirty: state.isDirty,
-    }))
-  );
-
-  // Get V1 store states with shallow comparison
-  const v1Settings = useCustomizationStore(
-    useShallow((state) => ({
       profileTheme: state.profileTheme,
-      isSaving: state.isSaving,
-      avatarBorder: state.avatarBorder,
-      title: state.title,
     }))
   );
 
-  // Combine saving states from both stores
-  const isSaving = v1Settings.isSaving || v2Settings.isSaving;
+  // Determine if there are unsaved changes
+  const isSaving = settings.isSaving;
+  const isDirty = settings.isDirty;
 
-  // Determine if there are unsaved changes (any store has changes)
-  const isDirty = v2Settings.isDirty;
-
-  // Determine effective color from profile theme
+  // Determine effective color from profile theme using centralized mapping
   const effectiveColorPreset =
-    (v1Settings.profileTheme && PROFILE_THEME_TO_COLOR[v1Settings.profileTheme]) ||
-    v2Settings.themePreset;
+    (settings.profileTheme && PROFILE_THEME_TO_COLOR[settings.profileTheme]) ||
+    settings.themePreset;
   const colors = themeColors[effectiveColorPreset];
 
   return (

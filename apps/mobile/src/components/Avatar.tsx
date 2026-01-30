@@ -33,6 +33,24 @@ const STATUS_COLORS = {
   invisible: '#6b7280',
 };
 
+const AVATAR_COLORS = [
+  '#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
+  '#ec4899', '#f43f5e', '#ef4444', '#f97316',
+  '#f59e0b', '#eab308', '#84cc16', '#22c55e',
+  '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6',
+];
+
+/**
+ * Generate consistent color from name using hash.
+ */
+function getColorFromName(name: string): string {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length] ?? AVATAR_COLORS[0];
+}
+
 export default function Avatar({
   source,
   name,
@@ -60,21 +78,6 @@ export default function Avatar({
   const validSource = source && !source.startsWith('ph://') && !source.startsWith('assets-library://')
     ? source
     : null;
-
-  // Generate consistent color from name
-  const getColorFromName = (name: string) => {
-    const colors = [
-      '#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
-      '#ec4899', '#f43f5e', '#ef4444', '#f97316',
-      '#f59e0b', '#eab308', '#84cc16', '#22c55e',
-      '#14b8a6', '#06b6d4', '#0ea5e9', '#3b82f6',
-    ];
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    return colors[Math.abs(hash) % colors.length] || colors[0];
-  };
 
   return (
     <View style={[styles.container, { width: sizeValue, height: sizeValue }, style]}>

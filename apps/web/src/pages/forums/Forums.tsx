@@ -43,6 +43,20 @@ const timeRangeOptions = [
   { value: 'all', label: 'All Time' },
 ] as const;
 
+/**
+ * Get CSS class for vote score display based on user's vote.
+ */
+function getVoteScoreClass(vote: 1 | -1 | null): string {
+  switch (vote) {
+    case 1:
+      return 'text-orange-500 bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent';
+    case -1:
+      return 'text-blue-500 bg-gradient-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent';
+    default:
+      return 'text-white';
+  }
+}
+
 export default function Forums() {
   const { forumSlug } = useParams();
   const navigate = useNavigate();
@@ -689,13 +703,7 @@ function PostCard({
             key={post.score}
             initial={{ scale: 1.3, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className={`text-sm font-bold ${
-              post.myVote === 1
-                ? 'text-orange-500 bg-gradient-to-r from-orange-500 to-orange-400 bg-clip-text text-transparent'
-                : post.myVote === -1
-                ? 'text-blue-500 bg-gradient-to-r from-blue-500 to-blue-400 bg-clip-text text-transparent'
-                : 'text-white'
-            }`}
+            className={`text-sm font-bold ${getVoteScoreClass(post.myVote)}`}
           >
             {post.score}
           </motion.span>

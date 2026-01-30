@@ -3,6 +3,17 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this
 repository.
 
+> **MANDATORY**: Before writing ANY code, read `docs/CODE_SIMPLIFICATION_GUIDELINES.md`.
+> All code must follow industry best practices (Google, Meta, Telegram standards). No exceptions.
+
+## Industry Standards We Follow
+
+| Company | Users | What We Adopted |
+|---------|-------|-----------------|
+| **Google** | 4B+ | SRE (SLO/SLI/Error Budgets), TypeScript Style Guide, structured logging |
+| **Meta** | 3.4B | TAO caching, multi-region architecture, request coalescing |
+| **Telegram** | 1B+ | Event-driven architecture, minimal payloads, lean engineering |
+
 ## Project Overview
 
 CGraph is a **proprietary** enterprise messaging platform combining real-time chat, community
@@ -335,6 +346,113 @@ Fault tolerance via `:fuse` library in `lib/cgraph/circuit_breaker.ex`:
 PostgreSQL with Ecto. Migrations in `apps/backend/priv/repo/migrations/`. Uses ULID for IDs,
 supports full-text search.
 
+## Code Quality Standards (MANDATORY)
+
+**IMPORTANT**: All agents and developers MUST follow the guidelines in `docs/CODE_SIMPLIFICATION_GUIDELINES.md`.
+
+### Google TypeScript Naming (Mandatory)
+
+```
+PascalCase:     Classes, Interfaces, Types, Enums, React Components
+camelCase:      Variables, functions, methods, properties
+CONSTANT_CASE:  True constants (MAX_SIZE, API_URL)
+kebab-case:     File names (user-service.ts, api-utils.ts)
+```
+
+### Quick Rules - NEVER Do These
+
+1. **No nested ternaries** - Max one `?` per expression
+2. **No duplicate code** - If copying, extract to a function
+3. **No functions inside components** - Pure functions go at module level
+4. **No switch for simple mappings** - Use `Record<K, V>` objects instead
+5. **No magic numbers/strings** - Use named constants
+6. **No `any` type** - Use `unknown` with type guards
+7. **No deeply nested if/else** - Use early returns
+8. **No type assertions** - Use type guards instead of `as`
+9. **No offset pagination** - Use cursor-based pagination
+10. **No N+1 queries** - Always preload associations
+
+### Quick Rules - ALWAYS Do These
+
+1. **Use descriptive names** - `getUserById` not `get`, `isLoading` not `l`
+2. **Extract conditional logic** - Named functions are self-documenting
+3. **Use type guards** - `function isUser(x): x is User { ... }`
+4. **Handle errors explicitly** - Never silently fail
+5. **Keep functions small** - Under 20 lines, aim for 10
+6. **Use Record types** - `Record<Status, string>` for mappings
+7. **Return early** - Reduce nesting with guard clauses
+8. **Explicit return types** - All functions must have return type annotations
+9. **Event-driven writes** - Publish events, process async (Telegram pattern)
+10. **Denormalize counts** - Store vote_count, reply_count as columns
+
+### The 30-Second Rule
+
+> "Would a new team member understand this code in 30 seconds?"
+
+If no, refactor for clarity.
+
+### SLO Targets (Google SRE)
+
+```
+API Availability:      99.9%  (43 min downtime/month)
+Message Delivery:      99.95% within 1 second
+Forum Feed Latency:    99.5%  under 200ms
+Search Latency:        99%    under 500ms
+```
+
+### CGraph Scale Patterns (100M+ Users)
+
+We're building for scale. Every feature must consider:
+
+1. **Use cursor pagination** - Never offset pagination
+2. **Denormalize counts** - vote_count, reply_count as columns, not computed
+3. **Buffer writes** - Use Redis for views/votes, batch flush to DB
+4. **Cache aggressively** - L1 (ETS) → L2 (Cachex) → L3 (Redis) → DB
+5. **Minimal broadcasts** - Send IDs not full objects over WebSocket
+6. **Preload associations** - Never N+1 queries
+
+### Cache TTL Guidelines
+
+```
+users:       5 min    (slow-changing)
+sessions:    15 min   (auth tokens)
+messages:    1 min    (hot data)
+presence:    30 sec   (real-time)
+feeds:       2 min    (computed)
+rate_limits: 60 sec   (counters)
+```
+
+### Reference
+
+See `docs/CODE_SIMPLIFICATION_GUIDELINES.md` for:
+
+**Industry Standards:**
+- Google SRE practices (SLO/SLI/Error Budgets)
+- Google TypeScript Style Guide
+- Meta scale patterns (TAO caching, multi-region)
+- Telegram architecture (event-driven, minimal payloads)
+- Observability & distributed tracing
+
+**Code Quality:**
+- SOLID principles with examples
+- Anti-patterns with BAD/GOOD comparisons
+- React performance patterns
+- State management best practices
+
+**Backend & Scale:**
+- Phoenix Channels & real-time patterns
+- CGraph caching patterns (3-tier, TAO-style)
+- Rate limiting patterns
+- Forum system optimization
+- Database query patterns for scale
+- Multi-region architecture
+
+**Quality & Security:**
+- Performance budgets & SLO targets
+- Security best practices
+- Testing guidelines
+- Code review checklist
+
 ## Code Conventions
 
 ### TypeScript (Web/Mobile)
@@ -343,6 +461,9 @@ supports full-text search.
 - React function components with hooks
 - Zustand for global state, React Query for server state
 - TailwindCSS with custom design tokens in `index.css`
+- **Pure helper functions at module level** (not inside components)
+- **Use `Record<K, V>` for all variant/size/status mappings**
+- **Use type guards instead of type assertions**
 
 ### Elixir (Backend)
 
@@ -350,6 +471,9 @@ supports full-text search.
 - Guardian for JWT authentication
 - Oban for background jobs
 - Module naming: `CGraph.*` (capital G) and `CGraphWeb.*`
+- **Use pattern matching in function heads** (not nested conditionals)
+- **Use `with` for complex conditional flows** (not nested case)
+- **Use pipelines** (`|>`) for data transformations
 
 ### API
 

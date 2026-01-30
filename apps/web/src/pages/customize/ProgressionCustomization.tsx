@@ -7,14 +7,8 @@ import {
   BoltIcon,
   StarIcon,
   ChartBarIcon,
-  UserGroupIcon,
   GiftIcon,
-  CheckCircleIcon as CheckCircleIconOutline,
 } from '@heroicons/react/24/outline';
-
-// Reserved for future use
-const _reservedIcons = { UserGroupIcon, CheckCircleIconOutline };
-void _reservedIcons;
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useGamificationStore } from '@/stores/gamificationStore';

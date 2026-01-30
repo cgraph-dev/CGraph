@@ -64,74 +64,32 @@ export default function Button({
     }).start();
   };
 
-  const getVariantStyles = (): ViewStyle => {
-    switch (variant) {
-      case 'primary':
-        return {
-          backgroundColor: disabled ? colors.primary + '80' : colors.primary,
-        };
-      case 'secondary':
-        return {
-          backgroundColor: colors.surfaceSecondary,
-        };
-      case 'outline':
-        return {
-          backgroundColor: 'transparent',
-          borderWidth: 1,
-          borderColor: colors.border,
-        };
-      case 'ghost':
-        return {
-          backgroundColor: 'transparent',
-        };
-      case 'danger':
-        return {
-          backgroundColor: disabled ? '#ef444480' : '#ef4444',
-        };
-      default:
-        return {};
-    }
+  const variantStyles: Record<NonNullable<ButtonProps['variant']>, ViewStyle> = {
+    primary: { backgroundColor: disabled ? colors.primary + '80' : colors.primary },
+    secondary: { backgroundColor: colors.surfaceSecondary },
+    outline: { backgroundColor: 'transparent', borderWidth: 1, borderColor: colors.border },
+    ghost: { backgroundColor: 'transparent' },
+    danger: { backgroundColor: disabled ? '#ef444480' : '#ef4444' },
   };
 
-  const getTextColor = (): string => {
-    switch (variant) {
-      case 'primary':
-      case 'danger':
-        return '#ffffff';
-      case 'secondary':
-        return colors.text;
-      case 'outline':
-      case 'ghost':
-        return colors.primary;
-      default:
-        return colors.text;
-    }
+  const textColors: Record<NonNullable<ButtonProps['variant']>, string> = {
+    primary: '#ffffff',
+    danger: '#ffffff',
+    secondary: colors.text,
+    outline: colors.primary,
+    ghost: colors.primary,
   };
 
-  const getSizeStyles = (): ViewStyle => {
-    switch (size) {
-      case 'sm':
-        return { paddingVertical: 8, paddingHorizontal: 12 };
-      case 'md':
-        return { paddingVertical: 12, paddingHorizontal: 16 };
-      case 'lg':
-        return { paddingVertical: 16, paddingHorizontal: 24 };
-      default:
-        return {};
-    }
+  const sizeStyles: Record<NonNullable<ButtonProps['size']>, ViewStyle> = {
+    sm: { paddingVertical: 8, paddingHorizontal: 12 },
+    md: { paddingVertical: 12, paddingHorizontal: 16 },
+    lg: { paddingVertical: 16, paddingHorizontal: 24 },
   };
 
-  const getTextSize = (): number => {
-    switch (size) {
-      case 'sm':
-        return 14;
-      case 'md':
-        return 16;
-      case 'lg':
-        return 18;
-      default:
-        return 16;
-    }
+  const textSizes: Record<NonNullable<ButtonProps['size']>, number> = {
+    sm: 14,
+    md: 16,
+    lg: 18,
   };
 
   return (
@@ -144,21 +102,21 @@ export default function Button({
         activeOpacity={0.9}
         style={[
           styles.button,
-          getVariantStyles(),
-          getSizeStyles(),
+          variantStyles[variant],
+          sizeStyles[size],
           fullWidth && styles.fullWidth,
           style,
         ]}
       >
         {loading ? (
-          <ActivityIndicator color={getTextColor()} size="small" />
+          <ActivityIndicator color={textColors[variant]} size="small" />
         ) : (
           <View style={styles.content}>
             {icon}
             <Text
               style={[
                 styles.text,
-                { color: getTextColor(), fontSize: getTextSize() },
+                { color: textColors[variant], fontSize: textSizes[size] },
                 textStyle,
               ]}
             >

@@ -83,18 +83,22 @@ interface DropdownItemProps {
   disabled?: boolean;
 }
 
+function getDropdownItemClass(disabled: boolean | undefined, danger: boolean | undefined): string {
+  if (disabled) {
+    return 'text-gray-600 cursor-not-allowed';
+  }
+  if (danger) {
+    return 'text-red-400 hover:bg-red-500/10';
+  }
+  return 'text-gray-200 hover:bg-dark-700';
+}
+
 export function DropdownItem({ children, onClick, icon, danger, disabled }: DropdownItemProps) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`w-full px-3 py-2 flex items-center gap-2 text-sm text-left transition-colors ${
-        disabled
-          ? 'text-gray-600 cursor-not-allowed'
-          : danger
-          ? 'text-red-400 hover:bg-red-500/10'
-          : 'text-gray-200 hover:bg-dark-700'
-      }`}
+      className={`w-full px-3 py-2 flex items-center gap-2 text-sm text-left transition-colors ${getDropdownItemClass(disabled, danger)}`}
     >
       {icon && <span className="w-4 h-4">{icon}</span>}
       {children}

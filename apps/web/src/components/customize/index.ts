@@ -15,3 +15,6 @@ export { LivePreviewPanel } from './LivePreviewPanel';
 
 // Panels
 export { ThemePanel, AvatarPanel, ChatPanel, ProfilePanel } from './panels';
+
+// Reusable Item Card
+export { CustomizationItemCard, type CustomizationItem, type CustomizationItemCardProps } from './CustomizationItemCard';

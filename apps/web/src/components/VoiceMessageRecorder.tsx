@@ -22,6 +22,15 @@ interface VoiceMessageRecorderProps {
 type RecordingState = 'idle' | 'recording' | 'preview' | 'uploading';
 
 /**
+ * Formats seconds into MM:SS display format.
+ */
+function formatTime(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+/**
  * Voice message recorder component.
  * 
  * Features:
@@ -212,12 +221,6 @@ export function VoiceMessageRecorder({
     setDuration(0);
     setState('idle');
   }, [audioBlob, duration, waveformData, onComplete]);
-
-  const formatTime = (seconds: number): string => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   // Idle state - show mic button
   if (state === 'idle') {

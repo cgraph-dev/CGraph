@@ -7,8 +7,8 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
-import type { ThemePreset } from '@/stores/customizationStoreV2';
-import { themeColors } from '@/stores/customizationStoreV2';
+import type { ThemePreset } from '@/stores/customization';
+import { THEME_COLORS as themeColors } from '@/stores/customization';
 
 // =============================================================================
 // ANIMATION SPRINGS

@@ -64,7 +64,12 @@ export default function LevelProgress({
   }, [totalXP, prevTotalXP]);
 
   // Streak multiplier display
-  const streakMultiplier = streak >= 7 ? 2.0 : streak >= 3 ? 1.5 : 1.0;
+  function getStreakMultiplier(days: number): number {
+    if (days >= 7) return 2.0;
+    if (days >= 3) return 1.5;
+    return 1.0;
+  }
+  const streakMultiplier = getStreakMultiplier(streak);
 
   if (variant === 'compact') {
     return (

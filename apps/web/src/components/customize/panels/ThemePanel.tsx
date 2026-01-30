@@ -14,10 +14,10 @@ import {
   OptionButton,
 } from '../CustomizationUI';
 import {
-  useCustomizationStoreV2,
-  themeColors,
+  useCustomizationStore,
+  THEME_COLORS as themeColors,
   type EffectPreset,
-} from '@/stores/customizationStoreV2';
+} from '@/stores/customization';
 
 // =============================================================================
 // EFFECT PRESETS
@@ -52,7 +52,7 @@ export const ThemePanel = memo(function ThemePanel() {
     toggleGlow,
     toggleBlur,
     toggleAnimatedBackground,
-  } = useCustomizationStoreV2();
+  } = useCustomizationStore();
 
   const colors = themeColors[themePreset];
 

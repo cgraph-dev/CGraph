@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CheckCircleIcon,
   MagnifyingGlassIcon,
   ChatBubbleLeftRightIcon,
   NewspaperIcon,
@@ -10,14 +9,13 @@ import {
   SparklesIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
-
-// Reserved for future use
-void CheckCircleIcon;
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
-import { useCustomizationStore } from '@/stores/customizationStore';
-import { useCustomizationStoreV2, type ThemePreset } from '@/stores/customizationStoreV2';
+import {
+  useCustomizationStore,
+  getThemePreset,
+} from '@/stores/customization';
 import toast from 'react-hot-toast';
 
 // Import profile themes data
@@ -378,26 +376,11 @@ const MOCK_THEMES: Theme[] = [
   },
 ];
 
-// Theme ID to V2 preset mapping
-const THEME_ID_TO_V2_PRESET: Record<string, ThemePreset> = {
-  'profile-default': 'purple',
-  'classic-purple': 'purple',
-  'profile-ocean': 'cyan',
-  'profile-forest': 'emerald',
-  'profile-sunset': 'orange',
-  'profile-midnight': 'purple',
-  'profile-cherry': 'pink',
-  'chat-default': 'purple',
-  'chat-discord': 'purple',
-  'chat-telegram': 'cyan',
-  'chat-neon': 'pink',
-  'chat-minimal': 'emerald',
-};
-
 // ==================== MAIN COMPONENT ====================
 
 export default function ThemeCustomization() {
   const { user } = useAuthStore();
+  const store = useCustomizationStore();
   const {
     profileTheme,
     chatTheme,
@@ -408,10 +391,11 @@ export default function ThemeCustomization() {
     fetchCustomizations,
     saveCustomizations,
     updateTheme,
-  } = useCustomizationStore();
-
-  // V2 store for live preview sync
-  const v2Store = useCustomizationStoreV2();
+    setTheme,
+    setAvatarBorderColor,
+    setChatBubbleColor,
+    setProfileTheme,
+  } = store;
 
   const [activeCategory, setActiveCategory] = useState<ThemeCategory>('profile');
   const [searchQuery, setSearchQuery] = useState('');
@@ -443,9 +427,9 @@ export default function ThemeCustomization() {
 
   // Create selectedThemes object from store state
   const selectedThemes: Record<ThemeCategory, string> = {
-    profile: profileTheme,
+    profile: profileTheme ?? 'default',
     chat: chatTheme,
-    forum: forumTheme || 'forum-default',
+    forum: forumTheme ?? 'forum-default',
     app: appTheme,
   };
 
@@ -480,28 +464,28 @@ export default function ThemeCustomization() {
     );
   }, [newProfileThemes, searchQuery]);
 
-  // Sync theme to V2 store for live preview
-  const syncThemeToV2 = useCallback(
+  // Apply theme to store for live preview - uses centralized mapping
+  const applyThemeToStore = useCallback(
     (themeId: string, category: ThemeCategory) => {
-      const v2Preset = THEME_ID_TO_V2_PRESET[themeId];
-      if (v2Preset) {
+      const preset = getThemePreset(themeId);
+      if (preset) {
         if (category === 'profile') {
-          v2Store.setTheme(v2Preset);
-          v2Store.setAvatarBorderColor(v2Preset);
+          setTheme(preset);
+          setAvatarBorderColor(preset);
         } else if (category === 'chat') {
-          v2Store.setChatBubbleColor(v2Preset);
+          setChatBubbleColor(preset);
         }
       }
-      v2Store.setProfileTheme(themeId);
+      setProfileTheme(themeId);
     },
-    [v2Store]
+    [setTheme, setAvatarBorderColor, setChatBubbleColor, setProfileTheme]
   );
 
   const handleApplyTheme = (themeId: string, category: ThemeCategory, theme: Theme) => {
     // Check if theme is locked - allow preview but mark it
     if (!theme.unlocked) {
       setPreviewingTheme(themeId);
-      syncThemeToV2(themeId, category);
+      applyThemeToStore(themeId, category);
       toast('👁️ Previewing theme - Purchase premium to save', {
         icon: '✨',
         duration: 3000,
@@ -512,7 +496,7 @@ export default function ThemeCustomization() {
     // Clear any previous preview
     setPreviewingTheme(null);
 
-    // Update V1 store
+    // Update store
     switch (category) {
       case 'profile':
         updateTheme('profileTheme', themeId);
@@ -528,8 +512,8 @@ export default function ThemeCustomization() {
         break;
     }
 
-    // Sync to V2 store for live preview
-    syncThemeToV2(themeId, category);
+    // Apply to store for live preview
+    applyThemeToStore(themeId, category);
   };
 
   const handleSaveThemes = async () => {
@@ -570,8 +554,8 @@ export default function ThemeCustomization() {
 
       if (isLocked) {
         setPreviewingTheme(theme.id);
-        // Sync to V2 store for live preview
-        v2Store.setProfileTheme(theme.id);
+        // Sync to store for live preview
+        store.setProfileTheme(theme.id);
         toast('👁️ Previewing theme - Unlock to save', {
           icon: '✨',
           duration: 3000,
@@ -584,11 +568,11 @@ export default function ThemeCustomization() {
 
       // Update stores
       updateTheme('profileTheme', theme.id);
-      v2Store.setProfileTheme(theme.id);
+      store.setProfileTheme(theme.id);
 
       toast.success(`Applied "${theme.name}" theme!`);
     },
-    [updateTheme, v2Store]
+    [updateTheme, store]
   );
 
   return (

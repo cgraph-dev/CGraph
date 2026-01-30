@@ -14,11 +14,11 @@ import {
   OptionButton,
 } from '../CustomizationUI';
 import {
-  useCustomizationStoreV2,
-  themeColors,
+  useCustomizationStore,
+  THEME_COLORS as themeColors,
   type ChatBubbleStyle,
   type BubbleAnimation,
-} from '@/stores/customizationStoreV2';
+} from '@/stores/customization';
 
 // =============================================================================
 // BUBBLE STYLE OPTIONS
@@ -59,7 +59,7 @@ const ChatBubbleDemo = memo(function ChatBubbleDemo({ isOwn, message }: ChatBubb
     bubbleGlassEffect,
     bubbleShowTail,
     bubbleEntranceAnimation,
-  } = useCustomizationStoreV2();
+  } = useCustomizationStore();
 
   const colors = themeColors[chatBubbleColor];
 
@@ -156,7 +156,7 @@ export const ChatPanel = memo(function ChatPanel() {
     toggleGroupMessages,
     toggleTimestamps,
     toggleCompactMode,
-  } = useCustomizationStoreV2();
+  } = useCustomizationStore();
 
   return (
     <div className="space-y-8">

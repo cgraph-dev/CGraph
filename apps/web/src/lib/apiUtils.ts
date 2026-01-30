@@ -134,6 +134,33 @@ export function ensureObject<T extends object>(data: unknown, key?: string): T |
   return null;
 }
 
+// Type guards for extractPagination
+function isNumber(v: unknown): v is number {
+  return typeof v === 'number';
+}
+
+function isBoolean(v: unknown): v is boolean {
+  return typeof v === 'boolean';
+}
+
+/**
+ * Extract a typed value from multiple possible keys.
+ * Returns the first valid value found, or the fallback.
+ */
+function extractValue<T>(
+  meta: Record<string, unknown>,
+  keys: string[],
+  typeCheck: (v: unknown) => v is T,
+  fallback: T
+): T {
+  for (const key of keys) {
+    if (typeCheck(meta[key])) {
+      return meta[key];
+    }
+  }
+  return fallback;
+}
+
 /**
  * Extracts pagination metadata from API response.
  *
@@ -163,33 +190,11 @@ export function extractPagination(data: unknown): {
   const meta = (obj.meta || obj.pagination || obj) as Record<string, unknown>;
 
   return {
-    page: typeof meta.page === 'number' ? meta.page : defaults.page,
-    perPage:
-      typeof meta.per_page === 'number'
-        ? meta.per_page
-        : typeof meta.perPage === 'number'
-          ? meta.perPage
-          : typeof meta.limit === 'number'
-            ? meta.limit
-            : defaults.perPage,
-    total:
-      typeof meta.total === 'number'
-        ? meta.total
-        : typeof meta.total_count === 'number'
-          ? meta.total_count
-          : defaults.total,
-    totalPages:
-      typeof meta.total_pages === 'number'
-        ? meta.total_pages
-        : typeof meta.totalPages === 'number'
-          ? meta.totalPages
-          : defaults.totalPages,
-    hasMore:
-      typeof meta.has_more === 'boolean'
-        ? meta.has_more
-        : typeof meta.hasMore === 'boolean'
-          ? meta.hasMore
-          : defaults.hasMore,
+    page: extractValue(meta, ['page'], isNumber, defaults.page),
+    perPage: extractValue(meta, ['per_page', 'perPage', 'limit'], isNumber, defaults.perPage),
+    total: extractValue(meta, ['total', 'total_count'], isNumber, defaults.total),
+    totalPages: extractValue(meta, ['total_pages', 'totalPages'], isNumber, defaults.totalPages),
+    hasMore: extractValue(meta, ['has_more', 'hasMore'], isBoolean, defaults.hasMore),
   };
 }
 

@@ -9,10 +9,10 @@ import { motion } from 'framer-motion';
 import { ToggleRow, SectionHeader, OptionButton, PremiumBadge } from '../CustomizationUI';
 import { AnimatedAvatar } from '../AnimatedAvatar';
 import {
-  useCustomizationStoreV2,
-  themeColors,
+  useCustomizationStore,
+  THEME_COLORS as themeColors,
   type ProfileCardStyle,
-} from '@/stores/customizationStoreV2';
+} from '@/stores/customization';
 
 // =============================================================================
 // PROFILE CARD STYLE OPTIONS
@@ -43,7 +43,7 @@ const ProfileCardPreviewLarge = memo(function ProfileCardPreviewLarge() {
     showStatus,
     glowEffects,
     particleEffects,
-  } = useCustomizationStoreV2();
+  } = useCustomizationStore();
 
   const colors = themeColors[themePreset];
 
@@ -214,7 +214,7 @@ export const ProfilePanel = memo(function ProfilePanel() {
     toggleBadges,
     toggleBio,
     toggleStatus,
-  } = useCustomizationStoreV2();
+  } = useCustomizationStore();
 
   return (
     <div className="space-y-8">

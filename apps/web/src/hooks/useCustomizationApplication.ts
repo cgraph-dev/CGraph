@@ -73,7 +73,7 @@ const PROFILE_THEME_COLORS: Record<
 /**
  * Animation Speed Mappings
  */
-const ANIMATION_SPEEDS = {
+const ANIMATION_SPEEDS: Record<string, string> = {
   slow: '1.5',
   normal: '1',
   fast: '0.5',
@@ -122,8 +122,7 @@ export function useCustomizationApplication(): void {
     }
 
     // Apply animation speed multiplier
-    const speedMultiplier =
-      ANIMATION_SPEEDS[animationSpeed as keyof typeof ANIMATION_SPEEDS] ?? '1';
+    const speedMultiplier = ANIMATION_SPEEDS[animationSpeed] ?? '1';
     root.style.setProperty('--animation-speed', speedMultiplier);
 
     // Apply body classes for effects and themes

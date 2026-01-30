@@ -20,6 +20,15 @@ interface SelectProps {
   className?: string;
 }
 
+/**
+ * Gets border color class based on error and open state.
+ */
+function getBorderClass(hasError: boolean, isOpen: boolean): string {
+  if (hasError) return 'border-red-500';
+  if (isOpen) return 'border-primary-500';
+  return 'border-dark-600';
+}
+
 export default function Select({
   options,
   value,
@@ -74,9 +83,7 @@ export default function Select({
         type="button"
         onClick={() => !disabled && setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`w-full px-4 py-2.5 flex items-center justify-between bg-dark-700 border rounded-lg text-left transition-colors ${
-          error ? 'border-red-500' : isOpen ? 'border-primary-500' : 'border-dark-600'
-        } ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-dark-500'}`}
+        className={`w-full px-4 py-2.5 flex items-center justify-between bg-dark-700 border rounded-lg text-left transition-colors ${getBorderClass(!!error, isOpen)} ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:border-dark-500'}`}
       >
         <div className="flex items-center gap-2 min-w-0">
           {selectedOption?.icon}

@@ -54,14 +54,14 @@ export const useNotificationStore = create<NotificationState>()(
           const meta = extractPagination(response.data);
           const hasMore = newNotifications.length === 20 || meta.hasMore;
 
+          const responseData = response.data as Record<string, unknown>;
+          const metaUnreadCount = (responseData?.meta as Record<string, number> | undefined)?.unread_count;
+          const calculatedUnreadCount = newNotifications.filter((n) => !n.isRead).length;
+
           set((state) => ({
             notifications:
               page === 1 ? newNotifications : [...state.notifications, ...newNotifications],
-            unreadCount:
-              typeof (response.data as Record<string, unknown>)?.meta === 'object'
-                ? ((response.data as Record<string, { unread_count?: number }>).meta
-                    ?.unread_count ?? newNotifications.filter((n) => !n.isRead).length)
-                : newNotifications.filter((n) => !n.isRead).length,
+            unreadCount: metaUnreadCount ?? calculatedUnreadCount,
             hasMore,
             isLoading: false,
           }));

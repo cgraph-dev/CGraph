@@ -666,4 +666,7 @@ export const themeColors = THEME_COLORS;
 export const avatarBorders = AVATAR_BORDERS;
 export const rarityColors = RARITY_COLORS;
 
+// Re-export all mappings for centralized access
+export * from './mappings';
+
 export default useCustomizationStore;

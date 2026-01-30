@@ -4,6 +4,73 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.8] - 2026-01-30
+
+**🧹 CODE SIMPLIFICATION & COMPONENT EXTRACTION**
+
+Major code quality improvements following Google, Meta, and Telegram industry standards. Component extraction for better maintainability and reusability.
+
+### 🏗️ Code Architecture Improvements
+
+#### Conversation.tsx Extraction (~175 lines removed)
+- **ConversationHeader**: Extracted header component with all controls (voice/video call, search, settings)
+- **TypingIndicator**: Extracted reusable animated typing indicator component
+- **reactionUtils**: Centralized reaction aggregation and handling utilities
+
+#### Centralized Customization Mappings
+- **mappings.ts**: New centralized mapping module with helper functions:
+  - `getBorderType()`, `getThemeColor()`, `getThemePreset()`
+  - `getBubbleStyle()`, `getBubbleAnimation()`, `getChatThemeColor()`
+  - `getTitleDisplay()`, `isRareTitle()`
+
+#### CustomizationItemCard Component
+- **Generic reusable card** for all customization panels (bubbles, effects, reactions, borders)
+- Handles selection, preview, lock status, and animations
+- Supports `grid`, `list`, and `compact` layout variants
+
+### 🔧 Code Quality Fixes
+
+#### Anti-Pattern Elimination
+- Removed nested ternary operators (replaced with helper functions)
+- Replaced switch statements with Record<K,V> mappings
+- Moved pure functions to module level (out of components)
+- Extracted duplicate code into shared utilities
+
+#### Store Consolidation
+- Added `findConversationForMessage()` helper in chatStore
+- Added `updateMessageReactions()` helper for reaction updates
+- Improved notification store with clearAll functionality
+
+### 📁 New Files
+
+| File | Purpose |
+|------|---------|
+| `components/conversation/TypingIndicator.tsx` | Animated typing indicator with glass effect |
+| `components/customize/CustomizationItemCard.tsx` | Generic customization item card |
+| `lib/chat/reactionUtils.ts` | Reaction aggregation utilities |
+| `lib/chat/index.ts` | Chat utilities barrel export |
+| `stores/customization/mappings.ts` | Centralized ID-to-type mappings |
+| `docs/CODE_SIMPLIFICATION_GUIDELINES.md` | Comprehensive coding standards (4000+ lines) |
+
+### 📚 Documentation
+
+- **CODE_SIMPLIFICATION_GUIDELINES.md**: Complete coding standards document including:
+  - Google SRE practices (SLIs, SLOs, Error Budgets)
+  - Google TypeScript standards
+  - Meta scale patterns (TAO caching, multi-region)
+  - Telegram architecture patterns (event-driven, efficiency)
+  - SOLID principles with examples
+  - Performance budgets and benchmarks
+  - Code review checklists
+
+### ✅ Quality Assurance
+
+- All modified files pass TypeScript strict mode
+- No functionality removed - only reorganized
+- Full backwards compatibility maintained
+
+---
+
 ## [0.9.7] - 2026-01-27
 
 **🚀 ENTERPRISE LANDING PAGE + DISCORD-STYLE ARCHITECTURE**

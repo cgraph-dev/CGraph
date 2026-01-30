@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CheckCircleIcon,
   LockClosedIcon,
   MagnifyingGlassIcon,
   SparklesIcon,
@@ -9,20 +8,18 @@ import {
   BeakerIcon,
   EyeIcon,
 } from '@heroicons/react/24/outline';
-
-// Reserved for future use
-const _reservedIcons = { CheckCircleIcon };
-void _reservedIcons;
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
-import { useCustomizationStore } from '@/stores/customizationStore';
-import { useCustomizationStoreV2, type EffectPreset } from '@/stores/customizationStoreV2';
+import {
+  useCustomizationStore,
+  type EffectPreset,
+} from '@/stores/customization';
 import { usePrefersReducedMotion } from '@/hooks';
 import toast from 'react-hot-toast';
 
-// Mapping from V1 particle IDs to V2 EffectPreset
-const PARTICLE_ID_TO_V2_EFFECT: Record<string, EffectPreset> = {
+// Mapping from particle IDs to EffectPreset
+const PARTICLE_ID_TO_EFFECT: Record<string, EffectPreset> = {
   'particle-none': 'minimal',
   'particle-snow': 'glassmorphism',
   'particle-confetti': 'neon',
@@ -719,6 +716,7 @@ const ParticlePreview = memo(function ParticlePreview({
 
 export default function EffectsCustomization() {
   const { user } = useAuthStore();
+  const store = useCustomizationStore();
   const {
     particleEffect,
     backgroundEffect,
@@ -728,28 +726,28 @@ export default function EffectsCustomization() {
     fetchCustomizations,
     saveCustomizations,
     updateEffects,
-  } = useCustomizationStore();
-
-  // V2 store for live preview sync
-  const { setEffect, updateSettings, setAnimationSpeed } = useCustomizationStoreV2();
+    setEffect,
+    updateSettings,
+    setAnimationSpeed,
+  } = store;
 
   const [activeCategory, setActiveCategory] = useState<EffectCategory>('particles');
   const [searchQuery, setSearchQuery] = useState('');
   const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
 
-  // Sync particle effect to V2 store for live preview
-  const syncParticleToV2 = useCallback(
+  // Apply particle effect to store for live preview
+  const applyParticleToStore = useCallback(
     (particleId: string) => {
-      const v2Effect = PARTICLE_ID_TO_V2_EFFECT[particleId] || 'minimal';
-      setEffect(v2Effect);
+      const effectPreset = PARTICLE_ID_TO_EFFECT[particleId] || 'minimal';
+      setEffect(effectPreset);
       // Use updateSettings instead of toggle to prevent infinite loop
       updateSettings({ particlesEnabled: particleId !== 'particle-none' });
     },
     [setEffect, updateSettings]
   );
 
-  // Sync background effect to V2 store for live preview
-  const syncBackgroundToV2 = useCallback(
+  // Apply background effect to store for live preview
+  const applyBackgroundToStore = useCallback(
     (bgId: string) => {
       // Background effects map to animated background - use updateSettings instead of toggle
       const isAnimated = BACKGROUND_EFFECTS.find((bg) => bg.id === bgId)?.animated || false;
@@ -766,11 +764,11 @@ export default function EffectsCustomization() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // Sync current selection to V2 store on mount
+  // Apply current selection to store on mount
   useEffect(() => {
     if (particleEffect) {
-      const v2Effect = PARTICLE_ID_TO_V2_EFFECT[particleEffect] || 'minimal';
-      setEffect(v2Effect);
+      const effectPreset = PARTICLE_ID_TO_EFFECT[particleEffect] || 'minimal';
+      setEffect(effectPreset);
     }
   }, [particleEffect, setEffect]);
 
@@ -782,32 +780,20 @@ export default function EffectsCustomization() {
   ) => {
     if (category === 'particle') {
       updateEffects('particleEffect', id);
-      syncParticleToV2(id);
-      if (!isUnlocked) {
-        setPreviewingLockedItem(id);
-      } else {
-        setPreviewingLockedItem(null);
-      }
+      applyParticleToStore(id);
+      setPreviewingLockedItem(isUnlocked ? null : id);
     } else if (category === 'background') {
       updateEffects('backgroundEffect', id);
-      syncBackgroundToV2(id);
-      if (!isUnlocked) {
-        setPreviewingLockedItem(id);
-      } else {
-        setPreviewingLockedItem(null);
-      }
+      applyBackgroundToStore(id);
+      setPreviewingLockedItem(isUnlocked ? null : id);
     } else {
       // For animations, extract the speed value from the animation set
       const animation = ANIMATION_SETS.find((a) => a.id === id);
       const speedValue = animation?.speed || 'normal';
       updateEffects('animationSpeed', speedValue);
-      // Also update V2 store directly for immediate preview
+      // Also update store directly for immediate preview
       setAnimationSpeed(speedValue as 'slow' | 'normal' | 'fast');
-      if (!isUnlocked) {
-        setPreviewingLockedItem(id);
-      } else {
-        setPreviewingLockedItem(null);
-      }
+      setPreviewingLockedItem(isUnlocked ? null : id);
     }
   };
 

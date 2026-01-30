@@ -1,23 +1,20 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CheckCircleIcon,
   LockClosedIcon,
   MagnifyingGlassIcon,
   SparklesIcon,
   XMarkIcon,
   EyeIcon,
 } from '@heroicons/react/24/outline';
-
-// Reserved for future use
-const _reservedIcons = { CheckCircleIcon };
-void _reservedIcons;
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
 import { useGamificationStore } from '@/stores/gamificationStore';
-import { useCustomizationStore } from '@/stores/customizationStore';
-import { useCustomizationStoreV2, type AvatarBorderType } from '@/stores/customizationStoreV2';
+import {
+  useCustomizationStore,
+  type AvatarBorderType,
+} from '@/stores/customization';
 import toast from 'react-hot-toast';
 
 // Import border collections
@@ -27,46 +24,23 @@ import {
   getBordersByTheme,
   type BorderTheme,
   type BorderRarity,
-  RARITY_COLORS as _RARITY_COLORS,
-  RARITY_ORDER as _RARITY_ORDER,
 } from '@/data/borderCollections';
 
 // Import titles collection
 import {
   ALL_TITLES,
-  TITLE_CATEGORIES,
-  getTitleById as _getTitleById,
   type TitleDefinition,
-  type TitleRarity,
   type TitleAnimationType,
-  TITLE_RARITY_COLORS as _TITLE_RARITY_COLORS,
 } from '@/data/titlesCollection';
 
 // Import badges collection
 import {
   ALL_BADGES,
-  BADGE_CATEGORIES,
-  getBadgeById as _getBadgeById,
   type BadgeDefinition,
-  type BadgeRarity,
-  BADGE_RARITY_COLORS as _BADGE_RARITY_COLORS,
 } from '@/data/badgesCollection';
 
-// Reserved for future use
-void _RARITY_COLORS;
-void _RARITY_ORDER;
-void _getTitleById;
-void _TITLE_RARITY_COLORS;
-void _getBadgeById;
-void _BADGE_RARITY_COLORS;
-
-// Import reusable components (reserved for future modular refactoring)
-import _ThemeGridPicker from '@/components/customize/ThemeGridPicker';
-import ThemedBorderCard, {
-  BorderCardGrid as _BorderCardGrid,
-} from '@/components/customize/ThemedBorderCard';
-void _ThemeGridPicker;
-void _BorderCardGrid;
+// Import reusable components
+import ThemedBorderCard from '@/components/customize/ThemedBorderCard';
 
 /**
  * IdentityCustomization Component
@@ -441,6 +415,7 @@ export default function IdentityCustomization() {
   const { user } = useAuthStore();
   const { level: _level } = useGamificationStore();
   void _level; // Reserved for future use
+  const store = useCustomizationStore();
   const {
     avatarBorder,
     title,
@@ -451,10 +426,11 @@ export default function IdentityCustomization() {
     fetchCustomizations,
     saveCustomizations,
     updateIdentity,
-  } = useCustomizationStore();
-
-  // V2 store for live preview sync
-  const v2Store = useCustomizationStoreV2();
+    setAvatarBorder,
+    selectBorderId,
+    setEquippedTitle,
+    setEquippedBadges,
+  } = store;
 
   const [activeSection, setActiveSection] = useState<'borders' | 'titles' | 'badges' | 'layouts'>(
     'borders'
@@ -492,34 +468,33 @@ export default function IdentityCustomization() {
     return matchesSearch && matchesRarity;
   });
 
-  // Sync border selection to V2 store for live preview
-  // Sync border selection to V2 store for live preview
+  // Apply border selection to store for live preview
   // Supports both legacy mock borders (b1-b18) and new themed borders from borderCollections
-  const syncBorderToV2 = useCallback(
+  const applyBorderToStore = useCallback(
     (borderId: string) => {
-      // First check legacy mapping
+      // First check legacy mapping using centralized getBorderType
       const legacyV2Type = LEGACY_BORDER_ID_TO_V2_TYPE[borderId];
       if (legacyV2Type) {
-        v2Store.setAvatarBorder(legacyV2Type);
+        setAvatarBorder(legacyV2Type);
       } else {
         // Find border in new collection and map its animation type
         const border = ALL_BORDERS.find((b) => b.id === borderId);
         if (border) {
           const v2Type = getV2BorderType(border.animationType);
-          v2Store.setAvatarBorder(v2Type);
+          setAvatarBorder(v2Type);
         }
       }
-      v2Store.selectBorderId(borderId);
+      selectBorderId(borderId);
     },
-    [v2Store]
+    [setAvatarBorder, selectBorderId]
   );
 
-  // Sync title selection to V2 store for live preview
-  const syncTitleToV2 = useCallback(
+  // Apply title selection to store for live preview
+  const applyTitleToStore = useCallback(
     (titleId: string | null) => {
-      v2Store.setEquippedTitle(titleId);
+      setEquippedTitle(titleId);
     },
-    [v2Store]
+    [setEquippedTitle]
   );
 
   // Preview a locked/premium item without saving
@@ -527,16 +502,16 @@ export default function IdentityCustomization() {
     (itemId: string, type: 'border' | 'title') => {
       setPreviewingLockedItem(itemId);
       if (type === 'border') {
-        syncBorderToV2(itemId);
+        applyBorderToStore(itemId);
       } else if (type === 'title') {
-        syncTitleToV2(itemId);
+        applyTitleToStore(itemId);
       }
       toast('👁️ Previewing item - Purchase premium to save', {
         icon: '✨',
         duration: 3000,
       });
     },
-    [syncBorderToV2, syncTitleToV2]
+    [applyBorderToStore, applyTitleToStore]
   );
 
   // Clear preview when changing sections
@@ -544,10 +519,10 @@ export default function IdentityCustomization() {
     if (previewingLockedItem) {
       setPreviewingLockedItem(null);
       // Restore original selections
-      if (avatarBorder) syncBorderToV2(avatarBorder);
-      if (title) syncTitleToV2(title);
+      if (avatarBorder) applyBorderToStore(avatarBorder);
+      if (title) applyTitleToStore(title);
     }
-  }, [previewingLockedItem, avatarBorder, title, syncBorderToV2, syncTitleToV2]);
+  }, [previewingLockedItem, avatarBorder, title, applyBorderToStore, applyTitleToStore]);
 
   const handleEquipBorder = (borderId: string, border: Border) => {
     // Check if item is locked
@@ -558,9 +533,9 @@ export default function IdentityCustomization() {
 
     clearPreview();
     updateIdentity('avatarBorder', borderId);
-    // Track the specific border ID in V2 store for LivePreviewPanel
-    v2Store.selectBorderId(borderId);
-    syncBorderToV2(borderId);
+    // Track the specific border ID in store for LivePreviewPanel
+    selectBorderId(borderId);
+    applyBorderToStore(borderId);
   };
 
   const handleEquipTitle = (titleId: string, titleItem: Title) => {
@@ -572,7 +547,7 @@ export default function IdentityCustomization() {
 
     clearPreview();
     updateIdentity('title', titleId);
-    syncTitleToV2(titleId);
+    applyTitleToStore(titleId);
   };
 
   const handleToggleBadge = (badgeId: string, badge: Badge) => {
@@ -585,11 +560,11 @@ export default function IdentityCustomization() {
     if (equippedBadges.includes(badgeId)) {
       const newBadges = equippedBadges.filter((id) => id !== badgeId);
       updateIdentity('equippedBadges', newBadges);
-      v2Store.setEquippedBadges(newBadges);
+      setEquippedBadges(newBadges);
     } else if (equippedBadges.length < 5) {
       const newBadges = [...equippedBadges, badgeId];
       updateIdentity('equippedBadges', newBadges);
-      v2Store.setEquippedBadges(newBadges);
+      setEquippedBadges(newBadges);
     } else {
       toast.error('Maximum 5 badges can be equipped');
     }
@@ -606,7 +581,7 @@ export default function IdentityCustomization() {
     }
 
     updateIdentity('profileLayout', layoutId);
-    v2Store.setProfileCardStyle(layoutId as any);
+    store.setProfileCardStyle(layoutId as any);
   };
 
   const handleSaveChanges = async () => {
@@ -1078,7 +1053,7 @@ function AnimatedTitleText({
   const animProps = getAnimationVariants();
 
   return (
-    <motion.h4 className={baseClass} {...animProps}>
+    <motion.h4 className={baseClass} {...(animProps as object)}>
       {name}
     </motion.h4>
   );

@@ -9,10 +9,10 @@ import { motion } from 'framer-motion';
 import { AnimatedAvatar } from '../AnimatedAvatar';
 import { ColorPickerGrid, SizeSelector, SectionHeader, OptionButton } from '../CustomizationUI';
 import {
-  useCustomizationStoreV2,
-  avatarBorders,
+  useCustomizationStore,
+  AVATAR_BORDERS as avatarBorders,
   type AvatarBorderType,
-} from '@/stores/customizationStoreV2';
+} from '@/stores/customization';
 
 // =============================================================================
 // BORDER TYPE OPTIONS
@@ -45,7 +45,7 @@ export const AvatarPanel = memo(function AvatarPanel() {
     setAvatarBorderColor,
     setAvatarSize,
     themePreset,
-  } = useCustomizationStoreV2();
+  } = useCustomizationStore();
 
   const speedMultiplier = animationSpeed === 'slow' ? 2 : animationSpeed === 'fast' ? 0.5 : 1;
 

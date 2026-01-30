@@ -1,59 +1,25 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CheckCircleIcon,
-  LockClosedIcon,
   MagnifyingGlassIcon,
   ChatBubbleLeftRightIcon,
   SparklesIcon,
   FaceSmileIcon,
-  EyeIcon,
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
-
-// Reserved for future use
-const _reserved = { CheckCircleIcon };
-void _reserved;
-import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
-import { useCustomizationStore } from '@/stores/customizationStore';
-import { useCustomizationStoreV2, type ChatBubbleStyle } from '@/stores/customizationStoreV2';
+import {
+  useCustomizationStore,
+  getBubbleStyle,
+  getBubbleAnimation,
+} from '@/stores/customization';
+import { CustomizationItemCard, type CustomizationItem } from '@/components/customize';
 import toast from 'react-hot-toast';
 
 // Import reusable customization controls
 import RangeSliderControl from '@/components/customize/RangeSliderControl';
 import AnimatedToggle from '@/components/customize/AnimatedToggle';
-
-// Mapping from V1 bubble IDs to V2 ChatBubbleStyle
-const BUBBLE_ID_TO_V2_STYLE: Record<string, ChatBubbleStyle> = {
-  'bubble-default': 'rounded',
-  'bubble-pill': 'rounded',
-  'bubble-sharp': 'sharp',
-  'bubble-telegram': 'modern',
-  'bubble-discord': 'modern',
-  'bubble-imessage': 'cloud',
-  'bubble-minimal': 'default',
-  'bubble-neon': 'modern',
-  'bubble-gradient': 'modern',
-  'bubble-glass': 'modern',
-  'bubble-retro': 'retro',
-  'bubble-cloud': 'cloud',
-};
-
-// Mapping from V1 effect IDs to V2 BubbleAnimation
-const EFFECT_ID_TO_V2_ANIMATION: Record<
-  string,
-  'none' | 'slide' | 'fade' | 'scale' | 'bounce' | 'flip'
-> = {
-  'effect-none': 'none',
-  'effect-bounce': 'bounce',
-  'effect-slide': 'slide',
-  'effect-fade': 'fade',
-  'effect-scale': 'scale',
-  'effect-pop': 'scale',
-  'effect-rotate': 'flip',
-};
 
 /**
  * ChatCustomization Component
@@ -75,33 +41,20 @@ const EFFECT_ID_TO_V2_ANIMATION: Record<
 
 type ChatCategory = 'bubbles' | 'effects' | 'reactions' | 'advanced';
 
-interface BubbleStyle {
-  id: string;
-  name: string;
-  description: string;
+// Extend base CustomizationItem with bubble-specific properties
+interface BubbleStyle extends CustomizationItem {
   borderRadius: string;
   shadow: string;
-  unlocked: boolean;
-  unlockRequirement?: string;
-  isPremium?: boolean;
 }
 
-interface MessageEffect {
-  id: string;
-  name: string;
-  description: string;
+// Extend base CustomizationItem with effect-specific properties
+interface MessageEffect extends CustomizationItem {
   animation: string;
-  unlocked: boolean;
-  unlockRequirement?: string;
 }
 
-interface ReactionStyle {
-  id: string;
-  name: string;
-  description: string;
+// Extend base CustomizationItem with reaction-specific properties
+interface ReactionStyle extends CustomizationItem {
   animation: string;
-  unlocked: boolean;
-  unlockRequirement?: string;
 }
 
 // ==================== MOCK DATA ====================
@@ -308,6 +261,7 @@ const REACTION_STYLES: ReactionStyle[] = [
 
 export default function ChatCustomization() {
   const { user } = useAuthStore();
+  const store = useCustomizationStore();
   const {
     bubbleStyle,
     messageEffect,
@@ -317,45 +271,26 @@ export default function ChatCustomization() {
     fetchCustomizations,
     saveCustomizations,
     updateChatStyle,
-  } = useCustomizationStore();
+    setChatBubbleStyle,
+    setBubbleAnimation,
+    updateSettings,
+  } = store;
 
-  // V2 store for live preview sync
-  const v2Store = useCustomizationStoreV2();
-  const { setChatBubbleStyle, setBubbleAnimation } = v2Store;
-
-  // Fine-grained chat controls - initialize from V2 store
-  const [bubbleBorderRadius, setBubbleBorderRadius] = useState(v2Store.bubbleBorderRadius ?? 16);
+  // Fine-grained chat controls - initialize from store
+  const [bubbleBorderRadius, setBubbleBorderRadius] = useState(store.bubbleBorderRadius ?? 16);
   const [bubbleShadowIntensity, setBubbleShadowIntensity] = useState(
-    v2Store.bubbleShadowIntensity ?? 50
+    store.bubbleShadowIntensity ?? 50
   );
-  const [enableGlassEffect, setEnableGlassEffect] = useState(v2Store.bubbleGlassEffect ?? false);
-  const [enableBubbleTail, setEnableBubbleTail] = useState(v2Store.bubbleShowTail ?? true);
-  const [enableHoverEffects, setEnableHoverEffects] = useState(v2Store.bubbleHoverEffect ?? true);
+  const [enableGlassEffect, setEnableGlassEffect] = useState(store.bubbleGlassEffect ?? false);
+  const [enableBubbleTail, setEnableBubbleTail] = useState(store.bubbleShowTail ?? true);
+  const [enableHoverEffects, setEnableHoverEffects] = useState(store.bubbleHoverEffect ?? true);
   const [selectedEntranceAnimation, setSelectedEntranceAnimation] = useState<string>(
-    v2Store.bubbleEntranceAnimation ?? 'fade'
+    store.bubbleEntranceAnimation ?? 'fade'
   );
 
   const [activeCategory, setActiveCategory] = useState<ChatCategory>('bubbles');
   const [searchQuery, setSearchQuery] = useState('');
   const [previewingLockedItem, setPreviewingLockedItem] = useState<string | null>(null);
-
-  // Sync bubble style to V2 store for live preview
-  const syncBubbleToV2 = useCallback(
-    (bubbleId: string) => {
-      const v2Style = BUBBLE_ID_TO_V2_STYLE[bubbleId] || 'default';
-      setChatBubbleStyle(v2Style);
-    },
-    [setChatBubbleStyle]
-  );
-
-  // Sync message effect to V2 store for live preview
-  const syncEffectToV2 = useCallback(
-    (effectId: string) => {
-      const v2Animation = EFFECT_ID_TO_V2_ANIMATION[effectId] || 'none';
-      setBubbleAnimation(v2Animation);
-    },
-    [setBubbleAnimation]
-  );
 
   // Fetch customizations on mount
   useEffect(() => {
@@ -365,17 +300,7 @@ export default function ChatCustomization() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // Sync current selection to V2 store on mount
-  useEffect(() => {
-    if (bubbleStyle) {
-      syncBubbleToV2(bubbleStyle);
-    }
-    if (messageEffect) {
-      syncEffectToV2(messageEffect);
-    }
-  }, [bubbleStyle, messageEffect, syncBubbleToV2, syncEffectToV2]);
-
-  // Handle preview for locked items
+  // Handle preview for locked items - updates the unified store directly
   const handlePreviewItem = (
     category: 'bubble' | 'effect' | 'reaction',
     id: string,
@@ -383,27 +308,19 @@ export default function ChatCustomization() {
   ) => {
     if (category === 'bubble') {
       updateChatStyle('bubbleStyle', id);
-      syncBubbleToV2(id);
-      if (!isUnlocked) {
-        setPreviewingLockedItem(id);
-      } else {
-        setPreviewingLockedItem(null);
-      }
+      // Also update the canonical chat bubble style using centralized mapping
+      const bubbleStyleType = getBubbleStyle(id);
+      setChatBubbleStyle(bubbleStyleType);
+      setPreviewingLockedItem(isUnlocked ? null : id);
     } else if (category === 'effect') {
       updateChatStyle('messageEffect', id);
-      syncEffectToV2(id);
-      if (!isUnlocked) {
-        setPreviewingLockedItem(id);
-      } else {
-        setPreviewingLockedItem(null);
-      }
+      // Also update the canonical bubble animation using centralized mapping
+      const animationType = getBubbleAnimation(id);
+      setBubbleAnimation(animationType);
+      setPreviewingLockedItem(isUnlocked ? null : id);
     } else {
       updateChatStyle('reactionStyle', id);
-      if (!isUnlocked) {
-        setPreviewingLockedItem(id);
-      } else {
-        setPreviewingLockedItem(null);
-      }
+      setPreviewingLockedItem(isUnlocked ? null : id);
     }
   };
 
@@ -422,8 +339,8 @@ export default function ChatCustomization() {
     }
 
     try {
-      // Sync advanced controls to V2 store before saving
-      v2Store.updateSettings({
+      // Update advanced controls in store before saving
+      updateSettings({
         bubbleBorderRadius,
         bubbleShadowIntensity,
         bubbleGlassEffect: enableGlassEffect,
@@ -661,111 +578,39 @@ function BubbleStylesSection({
 }: BubbleStylesSectionProps) {
   return (
     <div className="grid grid-cols-3 gap-4">
-      {bubbles.map((bubble, index) => {
-        const isPreviewing = previewingLockedItem === bubble.id;
-        return (
-          <motion.div
-            key={bubble.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.03 }}
-          >
-            <GlassCard
-              variant={
-                selectedBubble === bubble.id || isPreviewing
-                  ? 'neon'
-                  : bubble.unlocked
-                    ? 'crystal'
-                    : 'frosted'
-              }
-              glow={selectedBubble === bubble.id || isPreviewing}
-              glowColor={
-                isPreviewing
-                  ? 'rgba(234, 179, 8, 0.4)'
-                  : selectedBubble === bubble.id
-                    ? 'rgba(139, 92, 246, 0.3)'
-                    : undefined
-              }
-              className={`relative cursor-pointer p-4 transition-all hover:scale-[1.02] ${
-                isPreviewing ? 'ring-2 ring-yellow-500' : ''
-              }`}
-              onClick={() => onSelect(bubble.id, bubble.unlocked)}
+      {bubbles.map((bubble, index) => (
+        <CustomizationItemCard
+          key={bubble.id}
+          item={bubble}
+          index={index}
+          isSelected={selectedBubble === bubble.id}
+          isPreviewing={previewingLockedItem === bubble.id}
+          onSelect={onSelect}
+          layout="compact"
+        >
+          {/* Bubble Preview */}
+          <div className="w-full space-y-2">
+            <div
+              className="ml-auto w-3/4 bg-primary-600 px-3 py-2 text-xs text-white"
+              style={{
+                borderRadius: bubble.borderRadius,
+                boxShadow: bubble.shadow,
+              }}
             >
-              {/* Bubble Preview */}
-              <div className="mb-3 flex h-32 items-center justify-center">
-                <div className="w-full space-y-2">
-                  <div
-                    className="ml-auto w-3/4 bg-primary-600 px-3 py-2 text-xs text-white"
-                    style={{
-                      borderRadius: bubble.borderRadius,
-                      boxShadow: bubble.shadow,
-                    }}
-                  >
-                    Your message
-                  </div>
-                  <div
-                    className="w-2/3 bg-dark-700 px-3 py-2 text-xs text-white"
-                    style={{
-                      borderRadius: bubble.borderRadius,
-                      boxShadow: bubble.shadow,
-                    }}
-                  >
-                    Reply
-                  </div>
-                </div>
-              </div>
-
-              {/* Premium Badge */}
-              {bubble.isPremium && (
-                <div className="absolute right-2 top-2 rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 px-2 py-0.5 text-xs font-bold text-white">
-                  PRO
-                </div>
-              )}
-
-              {/* Bubble Name */}
-              <h4 className="mb-1 text-sm font-semibold text-white">{bubble.name}</h4>
-
-              {/* Description */}
-              <p className="mb-3 text-xs text-white/60">{bubble.description}</p>
-
-              {/* Status */}
-              {bubble.unlocked ? (
-                selectedBubble === bubble.id ? (
-                  <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-3 py-1.5">
-                    <CheckCircleIconSolid className="h-4 w-4 text-green-400" />
-                    <span className="text-xs font-medium text-green-400">Active</span>
-                  </div>
-                ) : (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelect(bubble.id, bubble.unlocked);
-                    }}
-                    className="w-full rounded-lg bg-primary-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-primary-700"
-                  >
-                    Apply
-                  </button>
-                )
-              ) : isPreviewing ? (
-                <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-1.5">
-                  <EyeIcon className="h-4 w-4 text-yellow-400" />
-                  <span className="text-xs font-medium text-yellow-400">Previewing</span>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-1.5">
-                  <div className="flex items-center gap-1">
-                    <LockClosedIcon className="h-4 w-4 text-white/40" />
-                    <span className="text-xs text-white/60">Click to Preview</span>
-                  </div>
-                  <p className="mt-1 text-center text-xs text-white/40">
-                    {bubble.unlockRequirement}
-                  </p>
-                </div>
-              )}
-            </GlassCard>
-          </motion.div>
-        );
-      })}
+              Your message
+            </div>
+            <div
+              className="w-2/3 bg-dark-700 px-3 py-2 text-xs text-white"
+              style={{
+                borderRadius: bubble.borderRadius,
+                boxShadow: bubble.shadow,
+              }}
+            >
+              Reply
+            </div>
+          </div>
+        </CustomizationItemCard>
+      ))}
     </div>
   );
 }
@@ -783,101 +628,47 @@ function MessageEffectsSection({
   previewingLockedItem,
   onSelect,
 }: MessageEffectsSectionProps) {
+  // Helper to get animation props for each effect type
+  const getEffectAnimation = (animation: string) => {
+    switch (animation) {
+      case 'bounce':
+        return { y: [0, -10, 0] };
+      case 'slide':
+        return { x: [-20, 0] };
+      case 'scale':
+        return { scale: [0.8, 1] };
+      case 'rotate':
+        return { rotate: [0, 360] };
+      default:
+        return {};
+    }
+  };
+
   return (
     <div className="space-y-3">
-      {effects.map((effect, index) => {
-        const isPreviewing = previewingLockedItem === effect.id;
-        return (
-          <motion.div
-            key={effect.id}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: index * 0.03 }}
-          >
-            <GlassCard
-              variant={
-                selectedEffect === effect.id || isPreviewing
-                  ? 'neon'
-                  : effect.unlocked
-                    ? 'crystal'
-                    : 'frosted'
-              }
-              glow={selectedEffect === effect.id || isPreviewing}
-              glowColor={
-                isPreviewing
-                  ? 'rgba(234, 179, 8, 0.4)'
-                  : selectedEffect === effect.id
-                    ? 'rgba(139, 92, 246, 0.3)'
-                    : undefined
-              }
-              className={`relative cursor-pointer p-4 transition-all hover:scale-[1.01] ${
-                isPreviewing ? 'ring-2 ring-yellow-500' : ''
-              }`}
-              onClick={() => onSelect(effect.id, effect.unlocked)}
+      {effects.map((effect, index) => (
+        <CustomizationItemCard
+          key={effect.id}
+          item={effect}
+          index={index}
+          isSelected={selectedEffect === effect.id}
+          isPreviewing={previewingLockedItem === effect.id}
+          onSelect={onSelect}
+          layout="list"
+          animationDirection="slide-left"
+        >
+          {/* Animation Preview */}
+          <div className="flex h-16 w-32 items-center justify-center rounded-lg bg-dark-800">
+            <motion.div
+              className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs text-white"
+              animate={getEffectAnimation(effect.animation)}
+              transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <h4 className="mb-1 text-base font-bold text-white">{effect.name}</h4>
-                  <p className="text-sm text-white/60">{effect.description}</p>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  {/* Animation Preview */}
-                  <div className="flex h-16 w-32 items-center justify-center rounded-lg bg-dark-800">
-                    <motion.div
-                      className="rounded-lg bg-primary-600 px-3 py-1.5 text-xs text-white"
-                      animate={
-                        effect.animation === 'bounce'
-                          ? { y: [0, -10, 0] }
-                          : effect.animation === 'slide'
-                            ? { x: [-20, 0] }
-                            : effect.animation === 'scale'
-                              ? { scale: [0.8, 1] }
-                              : effect.animation === 'rotate'
-                                ? { rotate: [0, 360] }
-                                : {}
-                      }
-                      transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
-                    >
-                      Message
-                    </motion.div>
-                  </div>
-
-                  {/* Status Button */}
-                  {effect.unlocked ? (
-                    selectedEffect === effect.id ? (
-                      <div className="flex items-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-4 py-2">
-                        <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
-                        <span className="text-sm font-medium text-green-400">Active</span>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onSelect(effect.id, effect.unlocked);
-                        }}
-                        className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
-                      >
-                        Apply
-                      </button>
-                    )
-                  ) : isPreviewing ? (
-                    <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-4 py-2">
-                      <EyeIcon className="h-5 w-5 text-yellow-400" />
-                      <span className="text-sm font-medium text-yellow-400">Previewing</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2">
-                      <LockClosedIcon className="h-5 w-5 text-white/40" />
-                      <span className="text-sm text-white/60">Click to Preview</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </GlassCard>
-          </motion.div>
-        );
-      })}
+              Message
+            </motion.div>
+          </div>
+        </CustomizationItemCard>
+      ))}
     </div>
   );
 }
@@ -895,107 +686,49 @@ function ReactionStylesSection({
   previewingLockedItem,
   onSelect,
 }: ReactionStylesSectionProps) {
+  // Helper to get animation props for each reaction type
+  const getReactionAnimation = (animation: string) => {
+    switch (animation) {
+      case 'bounce':
+        return { y: [0, -20, 0] };
+      case 'pop':
+        return { scale: [1, 1.3, 1] };
+      case 'spin':
+        return { rotate: [0, 360] };
+      case 'pulse':
+        return { scale: [1, 1.1, 1] };
+      case 'shake':
+        return { x: [-5, 5, -5, 5, 0] };
+      case 'float':
+        return { y: [0, -30], opacity: [1, 0] };
+      default:
+        return {};
+    }
+  };
+
   return (
     <div className="grid grid-cols-2 gap-4">
-      {reactions.map((reaction, index) => {
-        const isPreviewing = previewingLockedItem === reaction.id;
-        return (
+      {reactions.map((reaction, index) => (
+        <CustomizationItemCard
+          key={reaction.id}
+          item={reaction}
+          index={index}
+          isSelected={selectedReaction === reaction.id}
+          isPreviewing={previewingLockedItem === reaction.id}
+          onSelect={onSelect}
+          layout="grid"
+          centerText
+        >
+          {/* Reaction Preview */}
           <motion.div
-            key={reaction.id}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.04 }}
+            className="text-6xl"
+            animate={getReactionAnimation(reaction.animation)}
+            transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
           >
-            <GlassCard
-              variant={
-                selectedReaction === reaction.id || isPreviewing
-                  ? 'neon'
-                  : reaction.unlocked
-                    ? 'crystal'
-                    : 'frosted'
-              }
-              glow={selectedReaction === reaction.id || isPreviewing}
-              glowColor={
-                isPreviewing
-                  ? 'rgba(234, 179, 8, 0.4)'
-                  : selectedReaction === reaction.id
-                    ? 'rgba(139, 92, 246, 0.3)'
-                    : undefined
-              }
-              className={`relative cursor-pointer p-4 transition-all hover:scale-[1.02] ${
-                isPreviewing ? 'ring-2 ring-yellow-500' : ''
-              }`}
-              onClick={() => onSelect(reaction.id, reaction.unlocked)}
-            >
-              {/* Reaction Preview */}
-              <div className="mb-3 flex h-32 items-center justify-center">
-                <motion.div
-                  className="text-6xl"
-                  animate={
-                    reaction.animation === 'bounce'
-                      ? { y: [0, -20, 0] }
-                      : reaction.animation === 'pop'
-                        ? { scale: [1, 1.3, 1] }
-                        : reaction.animation === 'spin'
-                          ? { rotate: [0, 360] }
-                          : reaction.animation === 'pulse'
-                            ? { scale: [1, 1.1, 1] }
-                            : reaction.animation === 'shake'
-                              ? { x: [-5, 5, -5, 5, 0] }
-                              : reaction.animation === 'float'
-                                ? { y: [0, -30], opacity: [1, 0] }
-                                : {}
-                  }
-                  transition={{ duration: 1, repeat: Infinity, repeatDelay: 1 }}
-                >
-                  ❤️
-                </motion.div>
-              </div>
-
-              {/* Reaction Name */}
-              <h4 className="mb-1 text-center text-base font-bold text-white">{reaction.name}</h4>
-
-              {/* Description */}
-              <p className="mb-3 text-center text-sm text-white/60">{reaction.description}</p>
-
-              {/* Status */}
-              {reaction.unlocked ? (
-                selectedReaction === reaction.id ? (
-                  <div className="flex items-center justify-center gap-2 rounded-lg border border-green-500/30 bg-green-500/20 px-3 py-2">
-                    <CheckCircleIconSolid className="h-5 w-5 text-green-400" />
-                    <span className="text-sm font-medium text-green-400">Active</span>
-                  </div>
-                ) : (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelect(reaction.id, reaction.unlocked);
-                    }}
-                    className="w-full rounded-lg bg-primary-600 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-700"
-                  >
-                    Apply
-                  </button>
-                )
-              ) : isPreviewing ? (
-                <div className="flex items-center justify-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-500/20 px-3 py-2">
-                  <EyeIcon className="h-5 w-5 text-yellow-400" />
-                  <span className="text-sm font-medium text-yellow-400">Previewing</span>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center rounded-lg border border-white/10 bg-white/5 px-3 py-2">
-                  <div className="flex items-center gap-1">
-                    <LockClosedIcon className="h-4 w-4 text-white/40" />
-                    <span className="text-xs text-white/60">Click to Preview</span>
-                  </div>
-                  <p className="mt-1 text-center text-xs text-white/40">
-                    {reaction.unlockRequirement}
-                  </p>
-                </div>
-              )}
-            </GlassCard>
+            ❤️
           </motion.div>
-        );
-      })}
+        </CustomizationItemCard>
+      ))}
     </div>
   );
 }
