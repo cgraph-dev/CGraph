@@ -1,12 +1,11 @@
 # Code Simplification & Best Practices Guidelines
 
-This document outlines code standards, anti-patterns to avoid, and industry best practices for the CGraph codebase. **All agents and developers must follow these guidelines.**
+This document outlines code standards, anti-patterns to avoid, and industry best practices for the
+CGraph codebase. **All agents and developers must follow these guidelines.**
 
-**Generated**: January 2026
-**Version**: 4.0
-**Status**: MANDATORY
-**Standards**: Google, Meta, Telegram, Discord
-**Tech-Specific**: Oban, Stripe, E2EE, WebRTC, React 19, Expo 54, Phoenix 1.8, Fly.io
+**Generated**: January 2026 **Version**: 4.1 **Status**: MANDATORY **Standards**: Google, Meta,
+Telegram, Discord **Tech-Specific**: Oban, Stripe, E2EE, WebRTC, React 19.1, Expo 54, Phoenix 1.8,
+Fly.io **Enforcement**: `code-simplifier@claude-plugins-official` plugin active
 
 ---
 
@@ -14,20 +13,22 @@ This document outlines code standards, anti-patterns to avoid, and industry best
 
 This guide incorporates best practices from companies serving billions of users:
 
-| Company | Scale | Tech Stack | What We Adopted |
-|---------|-------|------------|-----------------|
-| **Google** | 4B+ users | Various | SRE practices, TypeScript style, error budgets, SLO/SLI |
-| **Meta** | 3.4B users | PHP, Hack, C++ | TAO graph caching, multi-region architecture, request coalescing |
-| **Telegram** | 1B+ users | C++, custom | Event-driven architecture, MTProto efficiency, lean engineering |
-| **Discord** | 200M+ users | **Elixir**, Rust, Python | Gateway sharding, Elixir+Rust NIFs, session resumption, data services |
+| Company      | Scale       | Tech Stack               | What We Adopted                                                       |
+| ------------ | ----------- | ------------------------ | --------------------------------------------------------------------- |
+| **Google**   | 4B+ users   | Various                  | SRE practices, TypeScript style, error budgets, SLO/SLI               |
+| **Meta**     | 3.4B users  | PHP, Hack, C++           | TAO graph caching, multi-region architecture, request coalescing      |
+| **Telegram** | 1B+ users   | C++, custom              | Event-driven architecture, MTProto efficiency, lean engineering       |
+| **Discord**  | 200M+ users | **Elixir**, Rust, Python | Gateway sharding, Elixir+Rust NIFs, session resumption, data services |
 
-> **Note**: Discord's architecture is most similar to CGraph - both use Elixir/Phoenix for real-time communication.
+> **Note**: Discord's architecture is most similar to CGraph - both use Elixir/Phoenix for real-time
+> communication.
 
 ---
 
 ## Table of Contents
 
 ### Part 1: Industry Standards & Principles
+
 1. [Core Principles](#core-principles)
 2. [Google SRE Practices](#google-sre-practices)
 3. [Google TypeScript Standards](#google-typescript-standards)
@@ -37,17 +38,20 @@ This guide incorporates best practices from companies serving billions of users:
 7. [Observability & Monitoring](#observability--monitoring)
 
 ### Part 2: Code Quality Fundamentals
+
 8. [SOLID Principles](#solid-principles)
 9. [Clean Code Fundamentals](#clean-code-fundamentals)
 10. [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
 
 ### Part 3: Frontend Development
+
 11. [TypeScript/React Best Practices](#typescriptreact-best-practices)
 12. [React Performance Patterns](#react-performance-patterns)
 13. [State Management Patterns](#state-management-patterns)
 14. [Real-Time WebSocket Patterns](#real-time-websocket-patterns)
 
 ### Part 4: Backend Development
+
 15. [Phoenix Channels & Real-Time](#phoenix-channels--real-time)
 16. [CGraph Caching Patterns](#cgraph-caching-patterns)
 17. [Rate Limiting Patterns](#rate-limiting-patterns)
@@ -55,11 +59,13 @@ This guide incorporates best practices from companies serving billions of users:
 19. [Database & Query Patterns](#database--query-patterns)
 
 ### Part 5: Scale & Performance (100M+ Users)
+
 20. [Scaling Architecture](#scaling-architecture)
 21. [Forum System Optimization](#forum-system-optimization)
 22. [Performance Budgets](#performance-budgets)
 
 ### Part 6: Quality & Security
+
 23. [Error Handling Patterns](#error-handling-patterns)
 24. [API Design Patterns](#api-design-patterns)
 25. [Security Best Practices](#security-best-practices)
@@ -67,17 +73,20 @@ This guide incorporates best practices from companies serving billions of users:
 27. [Accessibility Standards](#accessibility-standards)
 
 ### Part 7: Reference
+
 28. [Code Review Checklist](#code-review-checklist)
 29. [Summary of Changes Made](#summary-of-changes-made)
 30. [Reference Files](#reference-files)
 31. [Quick Reference Card](#quick-reference-card)
 
 ### Part 8: CGraph Implementation Status
+
 32. [Implementation Roadmap](#implementation-roadmap)
 33. [Current State vs Target State](#current-state-vs-target-state)
 34. [Frontend Quick Wins](#frontend-quick-wins)
 
 ### Part 9: CGraph Technology-Specific Patterns
+
 35. [Oban Background Jobs](#oban-background-jobs)
 36. [Stripe Integration](#stripe-integration)
 37. [E2EE Signal Protocol](#e2ee-signal-protocol)
@@ -116,7 +125,8 @@ Small, incremental improvements compound over time.
 
 ## Google SRE Practices
 
-Google's Site Reliability Engineering practices are the gold standard for operating services at scale. CGraph adopts these for managing reliability.
+Google's Site Reliability Engineering practices are the gold standard for operating services at
+scale. CGraph adopts these for managing reliability.
 
 ### Service Level Indicators (SLIs)
 
@@ -135,9 +145,9 @@ const SERVICE_LEVEL_INDICATORS = {
   latency: {
     metric: 'http_request_duration_seconds',
     thresholds: {
-      p50: 100,   // ms
-      p95: 200,   // ms
-      p99: 500,   // ms
+      p50: 100, // ms
+      p95: 200, // ms
+      p99: 500, // ms
     },
   },
 
@@ -293,7 +303,8 @@ end
 
 ## Google TypeScript Standards
 
-Following [Google's TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html) for consistency.
+Following [Google's TypeScript Style Guide](https://google.github.io/styleguide/tsguide.html) for
+consistency.
 
 ### Naming Conventions
 
@@ -302,7 +313,11 @@ Following [Google's TypeScript Style Guide](https://google.github.io/styleguide/
 class UserService {}
 interface MessagePayload {}
 type ConversationId = string;
-enum MessageStatus { Pending, Sent, Delivered }
+enum MessageStatus {
+  Pending,
+  Sent,
+  Delivered,
+}
 
 // Variables, functions, methods: camelCase
 const messageCount = 0;
@@ -314,15 +329,15 @@ const API_ENDPOINTS = { users: '/api/v1/users' } as const;
 
 // Private members: no underscore prefix (use TypeScript's private)
 class Service {
-  private cache: Map<string, unknown>;  // NOT: _cache
+  private cache: Map<string, unknown>; // NOT: _cache
 }
 
 // File names: kebab-case
 // user-service.ts, message-handler.ts, api-utils.ts
 
 // React components: PascalCase (required for JSX)
-function UserProfile() {}  // Component
-function formatDate() {}   // NOT a component (lowercase)
+function UserProfile() {} // Component
+function formatDate() {} // NOT a component (lowercase)
 ```
 
 ### Type Annotations
@@ -358,12 +373,7 @@ const user = data as User;
 
 // GOOD
 function isUser(data: unknown): data is User {
-  return (
-    typeof data === 'object' &&
-    data !== null &&
-    'id' in data &&
-    'email' in data
-  );
+  return typeof data === 'object' && data !== null && 'id' in data && 'email' in data;
 }
 
 if (isUser(data)) {
@@ -392,7 +402,7 @@ const city = user?.address?.city;
 function getUser(id: string): User | null {
   const user = cache.get(id);
   if (user === undefined) {
-    return null;  // Explicit: not found
+    return null; // Explicit: not found
   }
   return user;
 }
@@ -404,9 +414,12 @@ function getUser(id: string): User | null {
 // Always use async/await over raw promises
 // BAD
 function fetchUser(id: string): Promise<User> {
-  return api.get(`/users/${id}`)
-    .then(response => response.data)
-    .catch(error => { throw new ApiError(error); });
+  return api
+    .get(`/users/${id}`)
+    .then((response) => response.data)
+    .catch((error) => {
+      throw new ApiError(error);
+    });
 }
 
 // GOOD
@@ -432,14 +445,11 @@ async function loadDashboard(userId: string) {
 
 // Use Promise.allSettled when some failures are acceptable
 async function loadOptionalData(userId: string) {
-  const results = await Promise.allSettled([
-    fetchRecommendations(userId),
-    fetchAnalytics(userId),
-  ]);
+  const results = await Promise.allSettled([fetchRecommendations(userId), fetchAnalytics(userId)]);
 
   return results
     .filter((r): r is PromiseFulfilledResult<unknown> => r.status === 'fulfilled')
-    .map(r => r.value);
+    .map((r) => r.value);
 }
 ```
 
@@ -447,11 +457,13 @@ async function loadOptionalData(userId: string) {
 
 ## Meta Scale Patterns
 
-Meta serves 3.4 billion users with sophisticated caching and data access patterns. We adopt their key strategies.
+Meta serves 3.4 billion users with sophisticated caching and data access patterns. We adopt their
+key strategies.
 
 ### TAO-Style Graph Caching
 
-Meta's TAO (The Associations and Objects) system is optimized for social graph queries. Apply similar patterns.
+Meta's TAO (The Associations and Objects) system is optimized for social graph queries. Apply
+similar patterns.
 
 ```elixir
 defmodule CGraph.GraphCache do
@@ -646,7 +658,8 @@ end
 
 ## Telegram Architecture Patterns
 
-Telegram handles 1 billion+ users with a lean team through event-driven architecture and extreme efficiency.
+Telegram handles 1 billion+ users with a lean team through event-driven architecture and extreme
+efficiency.
 
 ### Event-Driven Message Processing
 
@@ -733,19 +746,19 @@ Telegram's MTProto protocol minimizes overhead. Apply similar principles.
 ```typescript
 // Minimize payload sizes (Telegram pattern)
 interface MinimalMessagePayload {
-  i: string;      // id (short key names)
-  c: string;      // content
-  s: string;      // sender_id
-  t: number;      // timestamp (unix ms, not ISO string)
-  f?: number;     // flags (bit field for booleans)
+  i: string; // id (short key names)
+  c: string; // content
+  s: string; // sender_id
+  t: number; // timestamp (unix ms, not ISO string)
+  f?: number; // flags (bit field for booleans)
 }
 
 // Flag bits for boolean fields
 const MessageFlags = {
-  IS_EDITED: 1 << 0,      // 1
-  IS_PINNED: 1 << 1,      // 2
-  HAS_MEDIA: 1 << 2,      // 4
-  IS_ENCRYPTED: 1 << 3,   // 8
+  IS_EDITED: 1 << 0, // 1
+  IS_PINNED: 1 << 1, // 2
+  HAS_MEDIA: 1 << 2, // 4
+  IS_ENCRYPTED: 1 << 3, // 8
 } as const;
 
 // Encode message for transmission
@@ -761,7 +774,7 @@ function encodeMessage(msg: Message): MinimalMessagePayload {
     c: msg.content,
     s: msg.senderId,
     t: msg.createdAt.getTime(),
-    f: flags || undefined,  // omit if 0
+    f: flags || undefined, // omit if 0
   };
 }
 
@@ -814,7 +827,7 @@ async function sendMessage(conversationId: string, content: string) {
 function processMessage(message: Message) {
   // Fast path for common case
   if (message.type === 'text' && !message.isEncrypted) {
-    return processTextMessage(message);  // Highly optimized
+    return processTextMessage(message); // Highly optimized
   }
 
   // Slow path for special cases
@@ -829,7 +842,8 @@ function processMessage(message: Message) {
 
 ## Discord Architecture Patterns
 
-Discord serves 200M+ users with an architecture nearly identical to CGraph: Elixir for real-time, Rust for performance-critical paths. Their patterns are directly applicable.
+Discord serves 200M+ users with an architecture nearly identical to CGraph: Elixir for real-time,
+Rust for performance-critical paths. Their patterns are directly applicable.
 
 ### Gateway Sharding
 
@@ -888,9 +902,10 @@ end
 
 ### Elixir + Rust NIFs for Performance
 
-Discord uses Rust NIFs (Native Implemented Functions) for CPU-intensive operations, allowing Elixir to handle massive concurrency while Rust handles heavy computation.
+Discord uses Rust NIFs (Native Implemented Functions) for CPU-intensive operations, allowing Elixir
+to handle massive concurrency while Rust handles heavy computation.
 
-```elixir
+````elixir
 defmodule CGraph.Sorting.Native do
   @moduledoc """
   Rust NIF for sorting large member lists (Discord pattern).
@@ -928,7 +943,7 @@ end
 #     Ok(sorted)
 # }
 # ```
-```
+````
 
 ### Session Resumption
 
@@ -1179,7 +1194,8 @@ end
 
 ### Message Storage (ScyllaDB Patterns)
 
-Discord migrated from Cassandra to ScyllaDB for message storage. Key patterns apply to PostgreSQL too.
+Discord migrated from Cassandra to ScyllaDB for message storage. Key patterns apply to PostgreSQL
+too.
 
 ```elixir
 defmodule CGraph.Messages.Storage do
@@ -1467,9 +1483,15 @@ function saveUserAndSendEmail(user: User) {
 }
 
 // GOOD - Single responsibility each
-function saveUser(user: User) { db.save(user); }
-function sendWelcomeEmail(email: string) { emailService.send(email, 'Welcome!'); }
-function trackUserCreated(userId: string) { analytics.track('user_created', userId); }
+function saveUser(user: User) {
+  db.save(user);
+}
+function sendWelcomeEmail(email: string) {
+  emailService.send(email, 'Welcome!');
+}
+function trackUserCreated(userId: string) {
+  analytics.track('user_created', userId);
+}
 
 // Orchestration layer combines them
 async function onUserRegistration(user: User) {
@@ -1511,12 +1533,19 @@ Subtypes must be substitutable for their base types.
 ```typescript
 // BAD - Violates LSP
 class Rectangle {
-  setWidth(w: number) { this.width = w; }
-  setHeight(h: number) { this.height = h; }
+  setWidth(w: number) {
+    this.width = w;
+  }
+  setHeight(h: number) {
+    this.height = h;
+  }
 }
 
 class Square extends Rectangle {
-  setWidth(w: number) { this.width = w; this.height = w; } // Breaks expectation
+  setWidth(w: number) {
+    this.width = w;
+    this.height = w;
+  } // Breaks expectation
 }
 
 // GOOD - Use composition or separate types
@@ -1525,13 +1554,20 @@ interface Shape {
 }
 
 class Rectangle implements Shape {
-  constructor(private width: number, private height: number) {}
-  getArea() { return this.width * this.height; }
+  constructor(
+    private width: number,
+    private height: number
+  ) {}
+  getArea() {
+    return this.width * this.height;
+  }
 }
 
 class Square implements Shape {
   constructor(private side: number) {}
-  getArea() { return this.side * this.side; }
+  getArea() {
+    return this.side * this.side;
+  }
 }
 ```
 
@@ -1614,18 +1650,21 @@ const service = new UserService(mockDb);
 ```typescript
 // BAD - Unclear names
 const d = new Date();
-const u = users.filter(x => x.a);
-function calc(n: number) { return n * 1.1; }
+const u = users.filter((x) => x.a);
+function calc(n: number) {
+  return n * 1.1;
+}
 
 // GOOD - Intention-revealing names
 const currentDate = new Date();
-const activeUsers = users.filter(user => user.isActive);
+const activeUsers = users.filter((user) => user.isActive);
 function calculatePriceWithTax(basePrice: number): number {
   return basePrice * 1.1;
 }
 ```
 
 **Rules:**
+
 - Use **nouns** for variables: `user`, `messageList`, `isLoading`
 - Use **verbs** for functions: `getUser`, `sendMessage`, `validateInput`
 - Use **adjectives** for booleans: `isActive`, `hasPermission`, `canEdit`
@@ -1661,6 +1700,7 @@ function createUser(options: CreateUserOptions) { ... }
 ```
 
 **Rules:**
+
 - Max 3 parameters, use options object for more
 - Functions should be < 20 lines (aim for < 10)
 - One level of abstraction per function
@@ -1694,6 +1734,7 @@ const TOKEN_REFRESH_INTERVAL = 25 * 60 * 1000;
 ```
 
 **Rules:**
+
 - Code should be self-documenting
 - Comments explain WHY, not WHAT
 - Delete commented-out code (use git history)
@@ -1708,7 +1749,7 @@ const TOKEN_REFRESH_INTERVAL = 25 * 60 * 1000;
 
 ```typescript
 // NEVER DO THIS
-const result = a ? b ? c : d : e ? f : g;
+const result = a ? (b ? c : d) : e ? f : g;
 
 // RULE: Max one `?` per expression
 // ALWAYS extract to function if more than one condition
@@ -1752,11 +1793,16 @@ function completeOperation(data: Data, eventName: string) {
 ```typescript
 // BAD
 switch (status) {
-  case 'pending': return 'yellow';
-  case 'active': return 'green';
-  case 'inactive': return 'gray';
-  case 'error': return 'red';
-  default: return 'gray';
+  case 'pending':
+    return 'yellow';
+  case 'active':
+    return 'green';
+  case 'inactive':
+    return 'gray';
+  case 'error':
+    return 'red';
+  default:
+    return 'gray';
 }
 
 // GOOD
@@ -2082,13 +2128,126 @@ function isUser(value: unknown): value is User {
 }
 
 function isApiError(error: unknown): error is ApiError {
-  return (
-    error !== null &&
-    typeof error === 'object' &&
-    'code' in error &&
-    'message' in error
-  );
+  return error !== null && typeof error === 'object' && 'code' in error && 'message' in error;
 }
+```
+
+### Exhaustive Switch Pattern
+
+Use the `never` type to ensure all union cases are handled at compile time:
+
+```typescript
+// CGraph message types - must handle ALL cases
+type MessageType = 'text' | 'image' | 'video' | 'file' | 'audio' | 'sticker' | 'gif' | 'system';
+
+function getMessageIcon(type: MessageType): string {
+  switch (type) {
+    case 'text':
+      return '💬';
+    case 'image':
+      return '🖼️';
+    case 'video':
+      return '🎬';
+    case 'file':
+      return '📎';
+    case 'audio':
+      return '🎵';
+    case 'sticker':
+      return '🎨';
+    case 'gif':
+      return '🎞️';
+    case 'system':
+      return 'ℹ️';
+    default:
+      // TypeScript error if a case is missing!
+      const _exhaustive: never = type;
+      throw new Error(`Unhandled message type: ${_exhaustive}`);
+  }
+}
+
+// ❌ BAD: Silent default fallback hides bugs
+function getIconBad(type: MessageType): string {
+  switch (type) {
+    case 'text':
+      return '💬';
+    case 'image':
+      return '🖼️';
+    default:
+      return '📄'; // Silently handles new types - DANGEROUS
+  }
+}
+```
+
+### Discriminated Unions
+
+Use a shared literal property to enable TypeScript's type narrowing:
+
+```typescript
+// API response with discriminated 'status' field
+type ApiResponse<T> =
+  | { status: 'success'; data: T }
+  | { status: 'error'; error: string; code: number }
+  | { status: 'loading' };
+
+function handleResponse<T>(response: ApiResponse<T>): T | null {
+  switch (response.status) {
+    case 'success':
+      // TypeScript knows `data` exists here
+      return response.data;
+    case 'error':
+      // TypeScript knows `error` and `code` exist here
+      logger.error(`API error ${response.code}: ${response.error}`);
+      throw new Error(response.error);
+    case 'loading':
+      return null;
+    default:
+      const _exhaustive: never = response;
+      throw new Error(`Unhandled status: ${_exhaustive}`);
+  }
+}
+
+// Real CGraph example: User status
+type UserStatus = 'online' | 'idle' | 'dnd' | 'offline';
+
+function getStatusColor(status: UserStatus): string {
+  switch (status) {
+    case 'online':
+      return 'bg-green-500';
+    case 'idle':
+      return 'bg-yellow-500';
+    case 'dnd':
+      return 'bg-red-500';
+    case 'offline':
+      return 'bg-gray-500';
+    default:
+      const _exhaustive: never = status;
+      throw new Error(`Unhandled status: ${_exhaustive}`);
+  }
+}
+```
+
+### Barrel Exports (index.ts)
+
+Organize module exports with barrel files for clean imports:
+
+```typescript
+// packages/ui/src/index.ts - named exports with types
+export { cn } from './lib/utils';
+export { Button, buttonVariants, type ButtonProps } from './components/button';
+export { Input, type InputProps } from './components/input';
+export { Dialog, DialogContent, DialogHeader } from './components/dialog';
+
+// packages/shared/src/index.ts - re-export modules
+export * from './format';
+export * from './validation';
+export * from './permissions';
+export * from './helpers';
+
+// ❌ AVOID: Default exports in barrel files
+export { default as Button } from './Button'; // Harder to tree-shake
+
+// ✅ PREFER: Named exports
+export { Button } from './Button';
 ```
 
 ---
@@ -2203,7 +2362,8 @@ function VirtualList({ items }: { items: Item[] }) {
 
 ## State Management Patterns
 
-CGraph uses Zustand for state management with domain-specific stores. These patterns are based on actual CGraph infrastructure.
+CGraph uses Zustand for state management with domain-specific stores. These patterns are based on
+actual CGraph infrastructure.
 
 ### Zustand Store Architecture
 
@@ -2319,29 +2479,31 @@ state.messages.push(newMessage);
 // GOOD - Spread operator (CGraph standard)
 const useChatStore = create<ChatState>()((set) => ({
   messages: {},
-  
-  addMessage: (convId, message) => set((state) => ({
-    messages: {
-      ...state.messages,
-      [convId]: [...(state.messages[convId] || []), message],
-    },
-  })),
-  
-  updateMessage: (convId, messageId, updates) => set((state) => ({
-    messages: {
-      ...state.messages,
-      [convId]: state.messages[convId]?.map((m) =>
-        m.id === messageId ? { ...m, ...updates } : m
-      ) ?? [],
-    },
-  })),
-  
-  removeMessage: (convId, messageId) => set((state) => ({
-    messages: {
-      ...state.messages,
-      [convId]: state.messages[convId]?.filter((m) => m.id !== messageId) ?? [],
-    },
-  })),
+
+  addMessage: (convId, message) =>
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [convId]: [...(state.messages[convId] || []), message],
+      },
+    })),
+
+  updateMessage: (convId, messageId, updates) =>
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [convId]:
+          state.messages[convId]?.map((m) => (m.id === messageId ? { ...m, ...updates } : m)) ?? [],
+      },
+    })),
+
+  removeMessage: (convId, messageId) =>
+    set((state) => ({
+      messages: {
+        ...state.messages,
+        [convId]: state.messages[convId]?.filter((m) => m.id !== messageId) ?? [],
+      },
+    })),
 }));
 ```
 
@@ -2350,7 +2512,12 @@ const useChatStore = create<ChatState>()((set) => ({
 ```typescript
 // CGraph provides shared utilities in stores/utils/storeHelpers.ts
 
-import { createToggle, createToggles, toApiParams, fromApiParams } from '@/stores/utils/storeHelpers';
+import {
+  createToggle,
+  createToggles,
+  toApiParams,
+  fromApiParams,
+} from '@/stores/utils/storeHelpers';
 
 // Toggle factory - creates toggle functions for boolean fields
 const useSettingsStore = create<SettingsState>((set) => ({
@@ -2409,7 +2576,8 @@ export function getThemeColor(themeId: string): ThemePreset {
 
 ## Real-Time WebSocket Patterns
 
-CGraph uses Phoenix Channels for all real-time communication. Follow these patterns for efficient WebSocket handling.
+CGraph uses Phoenix Channels for all real-time communication. Follow these patterns for efficient
+WebSocket handling.
 
 ### Channel Connection Management
 
@@ -2444,7 +2612,8 @@ function joinConversation(conversationId: string): Channel {
   const channel = socket.channel(topic);
   channelCache.set(topic, channel);
 
-  channel.join()
+  channel
+    .join()
     .receive('ok', () => console.log(`Joined ${topic}`))
     .receive('error', ({ reason }) => console.error(`Failed: ${reason}`));
 
@@ -2520,7 +2689,8 @@ async function peekPresence(topic: string): Promise<PresenceState> {
   return new Promise((resolve, reject) => {
     const channel = socket.channel(topic);
 
-    channel.join()
+    channel
+      .join()
       .receive('ok', () => {
         const presence = channel.presenceState();
         channel.leave(); // Immediately leave after getting state
@@ -2603,7 +2773,8 @@ const socket = new Socket('/socket', {
 
 ## CGraph Infrastructure Patterns
 
-These patterns are specific to CGraph's architecture and solve real problems encountered in production.
+These patterns are specific to CGraph's architecture and solve real problems encountered in
+production.
 
 ### Token Service (Circular Dependency Fix)
 
@@ -2739,7 +2910,7 @@ import { chatLogger as logger } from '@/lib/logger';
 function sendMessage(content: string) {
   logger.debug('Sending message', { length: content.length });
   logger.breadcrumb('Message sent');
-  
+
   try {
     // ...
   } catch (error) {
@@ -2796,7 +2967,9 @@ import { safeLocalStorage } from '@/lib/safeStorage';
 
 const useThemeStore = create(
   persist(
-    (set) => ({ /* state */ }),
+    (set) => ({
+      /* state */
+    }),
     {
       name: 'cgraph-theme',
       storage: createJSONStorage(() => safeLocalStorage),
@@ -2900,7 +3073,8 @@ class SocketManager {
     const channel = this.socket!.channel(topic, params);
     this.channels.set(topic, channel);
 
-    channel.join()
+    channel
+      .join()
       .receive('ok', () => socketLogger.debug(`Joined ${topic}`))
       .receive('error', ({ reason }) => socketLogger.error(`Failed to join ${topic}: ${reason}`));
 
@@ -3567,13 +3741,13 @@ end
 
 ### User Count Scaling Table
 
-| Users | Instances | DB Connections | Redis | Special Considerations |
-|-------|-----------|----------------|-------|----------------------|
-| 10K | 2 | 100 | Optional | Current setup |
-| 100K | 5 | 250 | Required | Add PgBouncer |
-| 1M | 20 | 500 + PgBouncer | Cluster | Add read replicas |
-| 10M | 50 | Sharded | Cluster | Regional deployments |
-| 100M | 200+ | Multi-region sharded | Multi-region | Full geo-distribution |
+| Users | Instances | DB Connections       | Redis        | Special Considerations |
+| ----- | --------- | -------------------- | ------------ | ---------------------- |
+| 10K   | 2         | 100                  | Optional     | Current setup          |
+| 100K  | 5         | 250                  | Required     | Add PgBouncer          |
+| 1M    | 20        | 500 + PgBouncer      | Cluster      | Add read replicas      |
+| 10M   | 50        | Sharded              | Cluster      | Regional deployments   |
+| 100M  | 200+      | Multi-region sharded | Multi-region | Full geo-distribution  |
 
 ---
 
@@ -3906,24 +4080,24 @@ end
 // Performance monitoring
 const PERFORMANCE_BUDGETS = {
   // Initial load
-  firstContentfulPaint: 1500,   // ms
+  firstContentfulPaint: 1500, // ms
   largestContentfulPaint: 2500, // ms
-  timeToInteractive: 3500,      // ms
+  timeToInteractive: 3500, // ms
 
   // Runtime
-  messageListRender: 16,    // ms (60fps)
-  forumFeedRender: 50,      // ms
-  searchResults: 100,       // ms
+  messageListRender: 16, // ms (60fps)
+  forumFeedRender: 50, // ms
+  searchResults: 100, // ms
 
   // Bundle sizes
-  mainBundle: 200_000,      // bytes (gzipped)
-  vendorBundle: 150_000,    // bytes (gzipped)
-  routeChunk: 50_000,       // bytes (gzipped)
+  mainBundle: 200_000, // bytes (gzipped)
+  vendorBundle: 150_000, // bytes (gzipped)
+  routeChunk: 50_000, // bytes (gzipped)
 } as const;
 
 // Enforce in CI
 export function checkBundleSize(stats: WebpackStats) {
-  const mainSize = stats.assets.find(a => a.name.includes('main'))?.size ?? 0;
+  const mainSize = stats.assets.find((a) => a.name.includes('main'))?.size ?? 0;
 
   if (mainSize > PERFORMANCE_BUDGETS.mainBundle) {
     throw new Error(
@@ -4021,9 +4195,7 @@ class NotFoundError extends AppError {
 
 ```typescript
 // Use Result type for operations that can fail
-type Result<T, E = Error> =
-  | { success: true; data: T }
-  | { success: false; error: E };
+type Result<T, E = Error> = { success: true; data: T } | { success: false; error: E };
 
 async function fetchUser(id: string): Promise<Result<User, ApiError>> {
   try {
@@ -4032,7 +4204,7 @@ async function fetchUser(id: string): Promise<Result<User, ApiError>> {
   } catch (error) {
     return {
       success: false,
-      error: parseApiError(error)
+      error: parseApiError(error),
     };
   }
 }
@@ -4675,13 +4847,13 @@ function Modal({ isOpen, onClose, children }: ModalProps) {
 
 const ACCESSIBLE_COLORS = {
   // Background: #1a1a1a (dark)
-  textPrimary: '#ffffff',    // 16.5:1 ratio
-  textSecondary: '#a3a3a3',  // 7.2:1 ratio
-  textMuted: '#737373',      // 4.6:1 ratio (minimum)
+  textPrimary: '#ffffff', // 16.5:1 ratio
+  textSecondary: '#a3a3a3', // 7.2:1 ratio
+  textMuted: '#737373', // 4.6:1 ratio (minimum)
 
   // Never use colors alone to convey information
-  error: '#ef4444',          // Also use icon + text
-  success: '#22c55e',        // Also use icon + text
+  error: '#ef4444', // Also use icon + text
+  success: '#22c55e', // Also use icon + text
 };
 ```
 
@@ -4726,54 +4898,55 @@ const ACCESSIBLE_COLORS = {
 This section documents all code simplifications made to the CGraph codebase.
 
 ### 1. `apps/web/src/lib/apiUtils.ts`
-**Problem**: Nested ternary operators
-**Solution**: Extracted `extractValue` helper with type guards
+
+**Problem**: Nested ternary operators **Solution**: Extracted `extractValue` helper with type guards
 **Principle**: Functions should be readable in 30 seconds
 
 ### 2. `apps/web/src/components/Button.tsx`
-**Problem**: Duplicate spinner SVG code
-**Solution**: Created unified `LoadingSpinner` component
+
+**Problem**: Duplicate spinner SVG code **Solution**: Created unified `LoadingSpinner` component
 **Principle**: DRY - Don't Repeat Yourself
 
 ### 3. `apps/web/src/stores/chatStore.ts`
-**Problem**: Duplicate loop logic in multiple functions
-**Solution**: Added `findConversationForMessage` and `updateMessageReactions` helpers
-**Principle**: Extract common patterns into reusable functions
+
+**Problem**: Duplicate loop logic in multiple functions **Solution**: Added
+`findConversationForMessage` and `updateMessageReactions` helpers **Principle**: Extract common
+patterns into reusable functions
 
 ### 4. `apps/mobile/src/components/Button.tsx`
-**Problem**: Verbose switch statements
-**Solution**: Object lookups with `Record<K, V>` types
+
+**Problem**: Verbose switch statements **Solution**: Object lookups with `Record<K, V>` types
 **Principle**: Data over control flow
 
 ### 5. `apps/web/src/stores/forumStore.ts`
-**Problem**: Switch statement with identical cases
-**Solution**: Direct object property mapping
+
+**Problem**: Switch statement with identical cases **Solution**: Direct object property mapping
 **Principle**: Eliminate redundant code
 
 ### 6. `apps/web/src/components/Dropdown.tsx`
-**Problem**: Nested ternary in className
-**Solution**: `getDropdownItemClass` helper function
+
+**Problem**: Nested ternary in className **Solution**: `getDropdownItemClass` helper function
 **Principle**: Named functions are self-documenting
 
 ### 7. `apps/web/src/components/VoiceMessageRecorder.tsx`
-**Problem**: Pure function inside component
-**Solution**: Moved `formatTime` to module level
+
+**Problem**: Pure function inside component **Solution**: Moved `formatTime` to module level
 **Principle**: Pure functions belong at module level
 
 ### 8. `apps/web/src/components/Select.tsx`
-**Problem**: Nested ternary for border class
-**Solution**: `getBorderClass` helper function
+
+**Problem**: Nested ternary for border class **Solution**: `getBorderClass` helper function
 **Principle**: Extract conditional logic to named functions
 
 ### 9. `apps/web/src/components/gamification/LevelProgress.tsx`
-**Problem**: Nested ternary for multiplier
-**Solution**: `getStreakMultiplier` helper function
+
+**Problem**: Nested ternary for multiplier **Solution**: `getStreakMultiplier` helper function
 **Principle**: Make business logic explicit and named
 
 ### 10. `apps/web/src/components/Avatar.tsx`
-**Problem**: Helper functions inside component
-**Solution**: Moved to module level constants and functions
-**Principle**: Stable references for better performance
+
+**Problem**: Helper functions inside component **Solution**: Moved to module level constants and
+functions **Principle**: Stable references for better performance
 
 ---
 
@@ -4782,6 +4955,7 @@ This section documents all code simplifications made to the CGraph codebase.
 These files follow best practices - use them as templates:
 
 ### CGraph Infrastructure Patterns (PRIORITY)
+
 - `apps/web/src/lib/tokenService.ts` - Circular dependency solution pattern
 - `apps/web/src/lib/logger.ts` - Production logger with error tracking
 - `apps/web/src/lib/safeStorage.ts` - SSR-safe localStorage wrapper
@@ -4790,6 +4964,7 @@ These files follow best practices - use them as templates:
 - `apps/web/src/stores/customization/mappings.ts` - Centralized ID mappings
 
 ### Well-Structured Components
+
 - `apps/web/src/components/FileUpload.tsx` - Clear function separation
 - `apps/web/src/components/Modal.tsx` - Good Record type usage
 - `apps/web/src/components/Toast.tsx` - Clean context pattern
@@ -4798,37 +4973,44 @@ These files follow best practices - use them as templates:
 - `apps/web/src/components/chat/ConversationHeader.tsx` - Clean component pattern
 
 ### Good State Management
+
 - `apps/web/src/stores/authStore.ts` - Token service registration pattern
 - `apps/web/src/stores/chatStore.ts` - Real-time message handling
 - `apps/web/src/stores/theme/index.ts` - Consolidated theme store
 - `apps/web/src/stores/forumStore.ts` - Complex state with pagination
 
 ### Hooks Patterns
+
 - `apps/web/src/hooks/useDebounce.ts` - Debounce + throttle hooks
 - `apps/web/src/hooks/usePresence.ts` - Presence tracking hook
 - `apps/web/src/hooks/index.ts` - Centralized hook exports
 
 ### Real-Time Patterns
+
 - `apps/web/src/lib/socket.ts` - SocketManager class pattern
 - `apps/web/src/lib/chat/reactionUtils.ts` - Store-accessing utilities
 
 ### Clean Utilities
+
 - `packages/utils/src/format.ts` - Well-organized formatters
 - `packages/utils/src/http.ts` - HTTP client factory
 
 ### Backend - Core Modules
+
 - `apps/backend/lib/cgraph/accounts.ex` - Clean context module
 - `apps/backend/lib/cgraph/forums.ex` - Forum context with voting
 - `apps/backend/lib/cgraph/messaging.ex` - Messaging context
 - `apps/backend/lib/cgraph/release.ex` - Production migration runner
 
 ### Backend - Infrastructure
+
 - `apps/backend/lib/cgraph/cache/unified.ex` - Three-tier cache
 - `apps/backend/lib/cgraph/cache/distributed.ex` - Redis cache layer
 - `apps/backend/lib/cgraph/rate_limiter/distributed.ex` - Rate limiting
 - `apps/backend/lib/cgraph_web/plugs/cors.ex` - Runtime CORS configuration
 
 ### Backend - Web Layer
+
 - `apps/backend/lib/cgraph_web/channels/conversation_channel.ex` - Channel pattern
 - `apps/backend/lib/cgraph_web/channels/forum_channel.ex` - Forum real-time
 - `apps/backend/lib/cgraph_web/controllers/fallback_controller.ex` - Error handling
@@ -5027,7 +5209,8 @@ Error Budget:
 
 ## Implementation Roadmap
 
-This section clarifies which industry patterns are currently implemented in CGraph vs. planned for future development.
+This section clarifies which industry patterns are currently implemented in CGraph vs. planned for
+future development.
 
 ### Implementation Status Legend
 
@@ -5073,12 +5256,12 @@ This section clarifies which industry patterns are currently implemented in CGra
 
 ### When to Implement Aspirational Patterns
 
-| Pattern | Trigger Point | Current State |
-|---------|--------------|---------------|
-| Gateway Sharding | >50K concurrent users | Not needed yet |
-| Rust NIFs | Profiled CPU hotspot >100ms | No hotspots identified |
-| Multi-region | International user base | Single region (EU) |
-| Data Services | Team >10 engineers | Small team |
+| Pattern          | Trigger Point               | Current State          |
+| ---------------- | --------------------------- | ---------------------- |
+| Gateway Sharding | >50K concurrent users       | Not needed yet         |
+| Rust NIFs        | Profiled CPU hotspot >100ms | No hotspots identified |
+| Multi-region     | International user base     | Single region (EU)     |
+| Data Services    | Team >10 engineers          | Small team             |
 
 ---
 
@@ -5088,16 +5271,16 @@ Comparison of Discord-standard patterns vs CGraph's current implementation.
 
 ### Scale Readiness Matrix
 
-| Pattern | Discord Standard | CGraph Current | Gap | Priority |
-|---------|-----------------|----------------|-----|----------|
-| **Sharding** | ~5K users/shard | Not implemented | 100% | P1 |
-| **SLO Tracking** | 99.99% targets | No tracking | 100% | P1 |
-| **Session Resume** | 30s reconnect | No resume | 100% | P2 |
-| **Multi-region** | Global + edge | Single region | 100% | P2 |
-| **Caching** | Multi-tier | L1+L2+L3 | 0% ✅ | - |
-| **Rate Limiting** | Distributed | Redis + token bucket | 0% ✅ | - |
-| **E2EE** | Not applicable | Signal Protocol | 0% ✅ | - |
-| **Rust NIFs** | Hot path | Not applicable | N/A | P3 |
+| Pattern            | Discord Standard | CGraph Current       | Gap   | Priority |
+| ------------------ | ---------------- | -------------------- | ----- | -------- |
+| **Sharding**       | ~5K users/shard  | Not implemented      | 100%  | P1       |
+| **SLO Tracking**   | 99.99% targets   | No tracking          | 100%  | P1       |
+| **Session Resume** | 30s reconnect    | No resume            | 100%  | P2       |
+| **Multi-region**   | Global + edge    | Single region        | 100%  | P2       |
+| **Caching**        | Multi-tier       | L1+L2+L3             | 0% ✅ | -        |
+| **Rate Limiting**  | Distributed      | Redis + token bucket | 0% ✅ | -        |
+| **E2EE**           | Not applicable   | Signal Protocol      | 0% ✅ | -        |
+| **Rust NIFs**      | Hot path         | Not applicable       | N/A   | P3       |
 
 ### Backend Readiness Score
 
@@ -5160,6 +5343,7 @@ logger.debug('User data loaded', { userId: user.id });
 ```
 
 **Files to clean**:
+
 - `apps/web/src/stores/*.ts` - State management debug logs
 - `apps/web/src/lib/*.ts` - Utility debug logs
 - `apps/web/src/components/**/*.tsx` - Component debug logs
@@ -5260,7 +5444,8 @@ export function usePerformance(componentName: string) {
 
     return () => {
       const duration = performance.now() - start;
-      if (duration > 16) {  // Longer than one frame
+      if (duration > 16) {
+        // Longer than one frame
         console.warn(`[Perf] ${componentName} render took ${duration.toFixed(2)}ms`);
       }
     };
@@ -5578,7 +5763,7 @@ export async function initializeIdentity(): Promise<IdentityKeyPair> {
 
   // Upload public key to server
   await api.post('/crypto/identity-key', {
-    publicKey: base64Encode(keyPair.publicKey)
+    publicKey: base64Encode(keyPair.publicKey),
   });
 
   return keyPair;
@@ -5596,7 +5781,7 @@ export async function generateSignedPreKey(
     keyId,
     publicKey: preKeyPair.publicKey,
     privateKey: preKeyPair.privateKey,
-    signature
+    signature,
   };
 }
 
@@ -5609,7 +5794,7 @@ export async function generatePreKeys(startId: number, count: number = 100): Pro
     preKeys.push({
       keyId: startId + i,
       publicKey: keyPair.publicKey,
-      privateKey: keyPair.privateKey
+      privateKey: keyPair.privateKey,
     });
   }
 
@@ -5647,7 +5832,7 @@ export async function initiateSession(
     sendingChain: { key: chainKey, index: 0 },
     receivingChain: null,
     ephemeralKey: ephemeralKey.publicKey,
-    usedPreKeyId: theirBundle.preKey?.keyId
+    usedPreKeyId: theirBundle.preKey?.keyId,
   };
 }
 ```
@@ -5675,8 +5860,8 @@ export async function encryptMessage(
       ephemeralKey: session.ephemeralKey,
       previousChainLength: session.previousChainLength,
       messageIndex: session.sendingChain.index - 1,
-      nonce
-    }
+      nonce,
+    },
   };
 }
 
@@ -5691,10 +5876,7 @@ export async function decryptMessage(
   }
 
   // Derive message key
-  const messageKey = await deriveMessageKeyAtIndex(
-    session.receivingChain!,
-    header.messageIndex
-  );
+  const messageKey = await deriveMessageKeyAtIndex(session.receivingChain!, header.messageIndex);
 
   // Decrypt
   const plaintext = await decrypt(messageKey, header.nonce, ciphertext);
@@ -5788,8 +5970,8 @@ const ICE_SERVERS: RTCIceServer[] = [
   {
     urls: import.meta.env.VITE_TURN_SERVER,
     username: import.meta.env.VITE_TURN_USERNAME,
-    credential: import.meta.env.VITE_TURN_CREDENTIAL
-  }
+    credential: import.meta.env.VITE_TURN_CREDENTIAL,
+  },
 ];
 
 export class CallConnection {
@@ -5823,10 +6005,10 @@ export class CallConnection {
   async startCall(video: boolean = true): Promise<void> {
     this.localStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
-      video: video ? { width: 1280, height: 720 } : false
+      video: video ? { width: 1280, height: 720 } : false,
     });
 
-    this.localStream.getTracks().forEach(track => {
+    this.localStream.getTracks().forEach((track) => {
       this.pc.addTrack(track, this.localStream!);
     });
 
@@ -5841,10 +6023,10 @@ export class CallConnection {
 
     this.localStream = await navigator.mediaDevices.getUserMedia({
       audio: true,
-      video: true
+      video: true,
     });
 
-    this.localStream.getTracks().forEach(track => {
+    this.localStream.getTracks().forEach((track) => {
       this.pc.addTrack(track, this.localStream!);
     });
 
@@ -5881,7 +6063,7 @@ export class CallConnection {
   }
 
   hangup(): void {
-    this.localStream?.getTracks().forEach(track => track.stop());
+    this.localStream?.getTracks().forEach((track) => track.stop());
     this.pc.close();
     this.channel.push('hangup', {});
   }
@@ -5947,7 +6129,7 @@ export async function getCallStats(pc: RTCPeerConnection): Promise<CallQuality> 
   const stats = await pc.getStats();
   let quality: CallQuality = { audio: 'good', video: 'good' };
 
-  stats.forEach(report => {
+  stats.forEach((report) => {
     if (report.type === 'inbound-rtp') {
       const packetsLost = report.packetsLost || 0;
       const packetsReceived = report.packetsReceived || 1;
@@ -5975,7 +6157,7 @@ export function monitorCallQuality(
 
     // Adapt video quality based on network
     if (quality.video === 'poor') {
-      const sender = pc.getSenders().find(s => s.track?.kind === 'video');
+      const sender = pc.getSenders().find((s) => s.track?.kind === 'video');
       if (sender) {
         const params = sender.getParameters();
         if (params.encodings[0]) {
@@ -5994,16 +6176,16 @@ export function monitorCallQuality(
 
 ## React 19 Patterns
 
-> **⚠️ FUTURE/ASPIRATIONAL**: CGraph currently uses React 18. These patterns document
-> the target state for when we upgrade to React 19. Do not use these patterns until
-> the upgrade is complete. Current React 18 patterns (useEffect, useSyncExternalStore)
-> remain the standard.
+> **✅ CURRENT STANDARD**: CGraph is on **React 19.1.0** (apps/web, apps/mobile, apps/landing).
+> These patterns are the **preferred approach** for all new code. Use `use()`, `useOptimistic()`,
+> and `useFormStatus()` in new components. Legacy `useEffect` data-fetching patterns still work but
+> should be migrated when touching existing code.
 
-Modern React 19 patterns to adopt for improved performance and developer experience.
+Modern React 19 patterns for improved performance and developer experience.
 
-### The `use()` Hook (React 19 Only)
+### The `use()` Hook
 
-React 19's `use()` hook replaces many `useEffect` patterns for data fetching.
+React 19's `use()` hook replaces `useEffect` for data fetching — cleaner code, no race conditions.
 
 ```typescript
 // ❌ OLD: useEffect for data fetching
@@ -6020,8 +6202,8 @@ function UserProfile({ userId }: { userId: string }) {
       .then(data => {
         if (!cancelled) setUser(data);
       })
-      .catch(err => {
-        if (!cancelled) setError(err);
+      .catch((err: unknown) => {
+        if (!cancelled) setError(err instanceof Error ? err : new Error('Unknown error'));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -6073,8 +6255,8 @@ function ContactForm() {
     try {
       const data = new FormData(e.currentTarget);
       await submitContact(data);
-    } catch (err) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setLoading(false);
     }
@@ -6098,8 +6280,8 @@ async function submitAction(prevState: State, formData: FormData) {
   try {
     await submitContact(formData);
     return { success: true };
-  } catch (err) {
-    return { success: false, error: err.message };
+  } catch (err: unknown) {
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
 
@@ -6270,28 +6452,24 @@ export function usePushNotifications() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    registerForPushNotifications().then(token => {
+    registerForPushNotifications().then((token) => {
       if (token) {
         api.post('/push-tokens', { token, platform: Platform.OS });
       }
     });
 
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      notification => {
-        // Handle foreground notification
-        console.log('Notification received:', notification);
-      }
-    );
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      // Handle foreground notification
+      console.log('Notification received:', notification);
+    });
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      response => {
-        const data = response.notification.request.content.data;
-        // Navigate based on notification type
-        if (data.type === 'message') {
-          navigation.navigate('Conversation', { id: data.conversationId });
-        }
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      const data = response.notification.request.content.data;
+      // Navigate based on notification type
+      if (data.type === 'message') {
+        navigation.navigate('Conversation', { id: data.conversationId });
       }
-    );
+    });
 
     return () => {
       notificationListener.current?.remove();
@@ -6393,7 +6571,7 @@ export async function processOfflineQueue() {
 }
 
 // Auto-process when coming online
-NetInfo.addEventListener(state => {
+NetInfo.addEventListener((state) => {
   if (state.isConnected) {
     processOfflineQueue();
   }
@@ -6852,5 +7030,4 @@ echo "✅ Rollback complete"
 
 ---
 
-*Last updated: January 2026*
-*Maintainer: Engineering Team*
+_Last updated: January 2026_ _Maintainer: Engineering Team_

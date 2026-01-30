@@ -3,19 +3,37 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this
 repository.
 
-> **MANDATORY**: Before writing ANY code, read `docs/CODE_SIMPLIFICATION_GUIDELINES.md`.
-> All code must follow industry best practices (Google, Meta, Telegram standards). No exceptions.
+> **MANDATORY**: Before writing ANY code, read `docs/CODE_SIMPLIFICATION_GUIDELINES.md`. All code
+> must follow industry best practices (Google, Meta, Telegram, Discord standards). No exceptions.
+
+## Technology-Specific Guidelines
+
+The guidelines document (v4.0) includes CGraph-specific patterns for:
+
+| Technology          | Section         | Key Patterns                                      |
+| ------------------- | --------------- | ------------------------------------------------- |
+| **Oban**            | Background Jobs | Queue config, unique constraints, error handling  |
+| **Stripe**          | Payments        | Webhook handling, idempotency, tier management    |
+| **Signal Protocol** | E2EE            | X3DH, Double Ratchet, prekey bundles              |
+| **WebRTC**          | Voice/Video     | Peer connections, ICE servers, quality monitoring |
+| **React 19**        | Frontend        | `use()`, `useFormStatus`, `useOptimistic`         |
+| **Expo 54**         | Mobile          | Push notifications, deep linking, offline support |
+| **Phoenix 1.8**     | Backend         | Verified routes, socket handling, LiveView        |
+| **Fly.io**          | Deployment      | Health checks, secrets, multi-region              |
+
+See `docs/CODE_SIMPLIFICATION_GUIDELINES.md` Part 8-9 for implementation details.
 
 ## Industry Standards We Follow
 
-| Company | Users | Tech Stack | What We Adopted |
-|---------|-------|------------|-----------------|
-| **Google** | 4B+ | Various | SRE (SLO/SLI/Error Budgets), TypeScript Style Guide, structured logging |
-| **Meta** | 3.4B | PHP, C++ | TAO caching, multi-region architecture, request coalescing |
-| **Telegram** | 1B+ | C++, custom | Event-driven architecture, minimal payloads, lean engineering |
-| **Discord** | 200M+ | **Elixir**, Rust | Gateway sharding, Rust NIFs, session resumption, lazy presence |
+| Company      | Users | Tech Stack       | What We Adopted                                                         |
+| ------------ | ----- | ---------------- | ----------------------------------------------------------------------- |
+| **Google**   | 4B+   | Various          | SRE (SLO/SLI/Error Budgets), TypeScript Style Guide, structured logging |
+| **Meta**     | 3.4B  | PHP, C++         | TAO caching, multi-region architecture, request coalescing              |
+| **Telegram** | 1B+   | C++, custom      | Event-driven architecture, minimal payloads, lean engineering           |
+| **Discord**  | 200M+ | **Elixir**, Rust | Gateway sharding, Rust NIFs, session resumption, lazy presence          |
 
-> **Discord** uses the same stack as CGraph (Elixir/Phoenix). Their patterns are directly applicable.
+> **Discord** uses the same stack as CGraph (Elixir/Phoenix). Their patterns are directly
+> applicable.
 
 ## Project Overview
 
@@ -351,7 +369,8 @@ supports full-text search.
 
 ## Code Quality Standards (MANDATORY)
 
-**IMPORTANT**: All agents and developers MUST follow the guidelines in `docs/CODE_SIMPLIFICATION_GUIDELINES.md`.
+**IMPORTANT**: All agents and developers MUST follow the guidelines in
+`docs/CODE_SIMPLIFICATION_GUIDELINES.md`.
 
 ### Google TypeScript Naming (Mandatory)
 
@@ -430,6 +449,7 @@ rate_limits: 60 sec   (counters)
 See `docs/CODE_SIMPLIFICATION_GUIDELINES.md` for:
 
 **Industry Standards:**
+
 - Google SRE practices (SLO/SLI/Error Budgets)
 - Google TypeScript Style Guide
 - Meta scale patterns (TAO caching, multi-region)
@@ -437,12 +457,14 @@ See `docs/CODE_SIMPLIFICATION_GUIDELINES.md` for:
 - Observability & distributed tracing
 
 **Code Quality:**
+
 - SOLID principles with examples
 - Anti-patterns with BAD/GOOD comparisons
 - React performance patterns
 - State management best practices
 
 **Backend & Scale:**
+
 - Phoenix Channels & real-time patterns
 - CGraph caching patterns (3-tier, TAO-style)
 - Rate limiting patterns
@@ -451,6 +473,7 @@ See `docs/CODE_SIMPLIFICATION_GUIDELINES.md` for:
 - Multi-region architecture
 
 **Quality & Security:**
+
 - Performance budgets & SLO targets
 - Security best practices
 - Testing guidelines
