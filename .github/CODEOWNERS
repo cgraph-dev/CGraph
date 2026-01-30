@@ -26,9 +26,20 @@
 
 # Documentation
 /docs/ @cgraph-dev/core-team
+/docs/architecture/ @cgraph-dev/backend-team @cgraph-dev/core-team
+/docs/api/ @cgraph-dev/backend-team
+/docs/guides/ @cgraph-dev/core-team
+/docs/SECURITY_REVIEW_TRACKING.md @cgraph-dev/security-team
+/docs/E2EE*.md @cgraph-dev/security-team
+/docs/QUALITY_GATES.md @cgraph-dev/core-team
 *.md @cgraph-dev/core-team
 
 # Security-sensitive files require security team review
 **/auth/ @cgraph-dev/security-team
 **/crypto/ @cgraph-dev/security-team
+**/e2ee/ @cgraph-dev/security-team
+/apps/web/src/stores/e2eeStore.ts @cgraph-dev/security-team
+/apps/backend/lib/cgraph/crypto/ @cgraph-dev/security-team
+/apps/backend/lib/cgraph/e2ee/ @cgraph-dev/security-team
+SECURITY.md @cgraph-dev/security-team
 .env.example @cgraph-dev/security-team

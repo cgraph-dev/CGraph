@@ -24,8 +24,18 @@ developers and users of our hosted platform.
 | Document                                                    | Description                            |
 | ----------------------------------------------------------- | -------------------------------------- |
 | [**Quality Gates**](QUALITY_GATES.md)                       | CI requirements and enforcement policy |
+| [**CGraph Essentials**](CGRAPH_ESSENTIALS.md)               | The 20 rules that matter most          |
 | [**Security Review Tracking**](SECURITY_REVIEW_TRACKING.md) | Audit schedule and findings            |
 | [**Code Standards**](CODE_SIMPLIFICATION_GUIDELINES.md)     | Comprehensive coding guidelines        |
+
+---
+
+## 🏗️ Architecture
+
+| Document                                              | Description                          |
+| ----------------------------------------------------- | ------------------------------------ |
+| [**Architecture Diagrams**](ARCHITECTURE_DIAGRAMS.md) | Visual system architecture (Mermaid) |
+| [**Schema Ownership**](SCHEMA_OWNERSHIP.md)           | Database table ownership matrix      |
 
 ---
 

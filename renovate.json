@@ -1,0 +1,85 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":separateMajorReleases",
+    "group:allNonMajor"
+  ],
+  "labels": ["dependencies", "automated"],
+  "prHourlyLimit": 2,
+  "prConcurrentLimit": 5,
+  "schedule": ["before 9am on Monday"],
+  "timezone": "UTC",
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 5am on the first day of the month"]
+  },
+  "packageRules": [
+    {
+      "description": "Auto-merge patch updates for dev dependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "Auto-merge minor updates for linting/formatting tools",
+      "matchPackagePatterns": ["eslint", "prettier", "typescript-eslint"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr"
+    },
+    {
+      "description": "Group React updates together",
+      "matchPackagePatterns": ["react", "react-dom", "react-native"],
+      "groupName": "React",
+      "groupSlug": "react"
+    },
+    {
+      "description": "Group TypeScript updates",
+      "matchPackagePatterns": ["typescript", "typescript-eslint", "@types/"],
+      "groupName": "TypeScript",
+      "groupSlug": "typescript"
+    },
+    {
+      "description": "Group testing tools",
+      "matchPackagePatterns": ["vitest", "jest", "@testing-library", "playwright"],
+      "groupName": "Testing",
+      "groupSlug": "testing"
+    },
+    {
+      "description": "Group build tools",
+      "matchPackagePatterns": ["vite", "turbo", "esbuild", "rollup"],
+      "groupName": "Build Tools",
+      "groupSlug": "build"
+    },
+    {
+      "description": "Security-sensitive packages need manual review",
+      "matchPackagePatterns": ["crypto", "bcrypt", "argon", "jose", "jsonwebtoken", "@noble/"],
+      "labels": ["security", "needs-review"],
+      "automerge": false
+    },
+    {
+      "description": "Elixir dependencies",
+      "matchManagers": ["mix"],
+      "groupName": "Elixir Dependencies",
+      "groupSlug": "elixir"
+    },
+    {
+      "description": "Pin major versions for stability",
+      "matchDepTypes": ["dependencies"],
+      "matchUpdateTypes": ["major"],
+      "labels": ["breaking-change"],
+      "automerge": false
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": ["security", "vulnerability"],
+    "schedule": ["at any time"]
+  },
+  "ignoreDeps": [],
+  "postUpdateOptions": ["pnpmDedupe"]
+}
