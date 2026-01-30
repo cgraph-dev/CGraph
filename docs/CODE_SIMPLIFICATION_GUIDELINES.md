@@ -3,21 +3,24 @@
 This document outlines code standards, anti-patterns to avoid, and industry best practices for the CGraph codebase. **All agents and developers must follow these guidelines.**
 
 **Generated**: January 2026
-**Version**: 3.0
+**Version**: 3.1
 **Status**: MANDATORY
-**Standards**: Google, Meta, Telegram
+**Standards**: Google, Meta, Telegram, Discord
 
 ---
 
 ## Industry Standards Reference
 
-This guide incorporates best practices from:
+This guide incorporates best practices from companies serving billions of users:
 
-| Company | Scale | What We Adopted |
-|---------|-------|-----------------|
-| **Google** | 4B+ users | SRE practices, TypeScript style, error budgets, SLO/SLI |
-| **Meta** | 3.4B users | TAO graph caching, multi-region architecture, memcache patterns |
-| **Telegram** | 1B+ users | Event-driven architecture, MTProto efficiency, lean engineering |
+| Company | Scale | Tech Stack | What We Adopted |
+|---------|-------|------------|-----------------|
+| **Google** | 4B+ users | Various | SRE practices, TypeScript style, error budgets, SLO/SLI |
+| **Meta** | 3.4B users | PHP, Hack, C++ | TAO graph caching, multi-region architecture, request coalescing |
+| **Telegram** | 1B+ users | C++, custom | Event-driven architecture, MTProto efficiency, lean engineering |
+| **Discord** | 200M+ users | **Elixir**, Rust, Python | Gateway sharding, Elixir+Rust NIFs, session resumption, data services |
+
+> **Note**: Discord's architecture is most similar to CGraph - both use Elixir/Phoenix for real-time communication.
 
 ---
 
@@ -29,42 +32,44 @@ This guide incorporates best practices from:
 3. [Google TypeScript Standards](#google-typescript-standards)
 4. [Meta Scale Patterns](#meta-scale-patterns)
 5. [Telegram Architecture Patterns](#telegram-architecture-patterns)
+6. [Discord Architecture Patterns](#discord-architecture-patterns)
+7. [Observability & Monitoring](#observability--monitoring)
 
 ### Part 2: Code Quality Fundamentals
-6. [SOLID Principles](#solid-principles)
-7. [Clean Code Fundamentals](#clean-code-fundamentals)
-8. [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
+8. [SOLID Principles](#solid-principles)
+9. [Clean Code Fundamentals](#clean-code-fundamentals)
+10. [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
 
 ### Part 3: Frontend Development
-9. [TypeScript/React Best Practices](#typescriptreact-best-practices)
-10. [React Performance Patterns](#react-performance-patterns)
-11. [State Management Patterns](#state-management-patterns)
-12. [Real-Time WebSocket Patterns](#real-time-websocket-patterns)
+11. [TypeScript/React Best Practices](#typescriptreact-best-practices)
+12. [React Performance Patterns](#react-performance-patterns)
+13. [State Management Patterns](#state-management-patterns)
+14. [Real-Time WebSocket Patterns](#real-time-websocket-patterns)
 
 ### Part 4: Backend Development
-13. [Elixir/Phoenix Best Practices](#elixirphoenix-best-practices)
-14. [Phoenix Channels & Real-Time](#phoenix-channels--real-time)
-15. [CGraph Caching Patterns](#cgraph-caching-patterns)
-16. [Database & Query Patterns](#database--query-patterns)
+15. [Phoenix Channels & Real-Time](#phoenix-channels--real-time)
+16. [CGraph Caching Patterns](#cgraph-caching-patterns)
 17. [Rate Limiting Patterns](#rate-limiting-patterns)
+18. [Elixir/Phoenix Best Practices](#elixirphoenix-best-practices)
+19. [Database & Query Patterns](#database--query-patterns)
 
 ### Part 5: Scale & Performance (100M+ Users)
-18. [Scaling Architecture](#scaling-architecture)
-19. [Forum System Optimization](#forum-system-optimization)
-20. [Performance Budgets](#performance-budgets)
-21. [Observability & Monitoring](#observability--monitoring)
+20. [Scaling Architecture](#scaling-architecture)
+21. [Forum System Optimization](#forum-system-optimization)
+22. [Performance Budgets](#performance-budgets)
 
 ### Part 6: Quality & Security
-22. [Error Handling Patterns](#error-handling-patterns)
-23. [API Design Patterns](#api-design-patterns)
-24. [Security Best Practices](#security-best-practices)
-25. [Testing Guidelines](#testing-guidelines)
-26. [Accessibility Standards](#accessibility-standards)
+23. [Error Handling Patterns](#error-handling-patterns)
+24. [API Design Patterns](#api-design-patterns)
+25. [Security Best Practices](#security-best-practices)
+26. [Testing Guidelines](#testing-guidelines)
+27. [Accessibility Standards](#accessibility-standards)
 
 ### Part 7: Reference
-27. [Code Review Checklist](#code-review-checklist)
-28. [Summary of Changes Made](#summary-of-changes-made)
-29. [Reference Files](#reference-files)
+28. [Code Review Checklist](#code-review-checklist)
+29. [Summary of Changes Made](#summary-of-changes-made)
+30. [Reference Files](#reference-files)
+31. [Quick Reference Card](#quick-reference-card)
 
 ---
 
@@ -802,6 +807,427 @@ function processMessage(message: Message) {
 
 // 4. Measure everything, optimize bottlenecks
 // Don't optimize prematurely, but track metrics to know where to focus
+```
+
+---
+
+## Discord Architecture Patterns
+
+Discord serves 200M+ users with an architecture nearly identical to CGraph: Elixir for real-time, Rust for performance-critical paths. Their patterns are directly applicable.
+
+### Gateway Sharding
+
+Discord shards WebSocket connections across multiple gateway servers, each handling ~5,000 users.
+
+```elixir
+defmodule CGraph.Gateway.Shard do
+  @moduledoc """
+  Gateway sharding pattern (Discord style).
+
+  Each shard handles ~5,000 concurrent users.
+  If a shard crashes, only that subset of users is affected.
+
+  Benefits:
+  - Horizontal scaling: add shards as users grow
+  - Fault isolation: shard failure affects only 5K users
+  - Load distribution: even spread across servers
+  """
+
+  @users_per_shard 5_000
+
+  def calculate_shard(user_id, total_shards) do
+    # Consistent hashing ensures user always lands on same shard
+    :erlang.phash2(user_id, total_shards)
+  end
+
+  def required_shards(total_users) do
+    ceil(total_users / @users_per_shard)
+  end
+
+  # Shard state management
+  defmodule State do
+    defstruct [
+      :shard_id,
+      :session_id,
+      :sequence,
+      :heartbeat_interval,
+      :connected_users,
+      :guilds  # Discord calls servers "guilds"
+    ]
+  end
+
+  # Each shard maintains its own state
+  def init(shard_id) do
+    %State{
+      shard_id: shard_id,
+      session_id: generate_session_id(),
+      sequence: 0,
+      heartbeat_interval: 41_250,  # Discord's heartbeat interval
+      connected_users: MapSet.new(),
+      guilds: %{}
+    }
+  end
+end
+```
+
+### Elixir + Rust NIFs for Performance
+
+Discord uses Rust NIFs (Native Implemented Functions) for CPU-intensive operations, allowing Elixir to handle massive concurrency while Rust handles heavy computation.
+
+```elixir
+defmodule CGraph.Sorting.Native do
+  @moduledoc """
+  Rust NIF for sorting large member lists (Discord pattern).
+
+  Problem: Elixir's immutable data structures cause memory pressure
+  when sorting lists of 100K+ members.
+
+  Solution: Use Rust NIF for O(1) memory sorting operations.
+
+  Discord case study: Reduced member list updates from 5+ seconds
+  to milliseconds for servers with 100K+ members.
+  """
+
+  use Rustler, otp_app: :cgraph, crate: "cgraph_native"
+
+  # Rust NIF stubs - actual implementation in Rust
+  def sort_members(_members, _sort_key), do: :erlang.nif_error(:nif_not_loaded)
+  def merge_member_list(_existing, _new_member), do: :erlang.nif_error(:nif_not_loaded)
+  def search_members(_members, _query), do: :erlang.nif_error(:nif_not_loaded)
+end
+
+# Example Rust implementation (src/lib.rs)
+# ```rust
+# use rustler::{Encoder, Env, NifResult, Term};
+#
+# #[rustler::nif]
+# fn sort_members(members: Vec<Member>, sort_key: String) -> NifResult<Vec<Member>> {
+#     let mut sorted = members;
+#     match sort_key.as_str() {
+#         "name" => sorted.sort_by(|a, b| a.name.cmp(&b.name)),
+#         "joined_at" => sorted.sort_by(|a, b| a.joined_at.cmp(&b.joined_at)),
+#         "status" => sorted.sort_by(|a, b| a.status.cmp(&b.status)),
+#         _ => {}
+#     }
+#     Ok(sorted)
+# }
+# ```
+```
+
+### Session Resumption
+
+Discord allows clients to resume sessions after brief disconnections without losing messages.
+
+```elixir
+defmodule CGraph.Gateway.SessionResumption do
+  @moduledoc """
+  Session resumption for graceful reconnection (Discord pattern).
+
+  When a client disconnects briefly:
+  1. Server keeps session alive for 30 seconds
+  2. Client reconnects with session_id and last sequence number
+  3. Server replays all missed events
+  4. No messages are lost
+
+  This dramatically improves UX during network hiccups.
+  """
+
+  alias CGraph.Cache
+
+  @session_ttl :timer.seconds(30)
+  @max_replay_events 1000
+
+  # Store session state on disconnect
+  def suspend_session(session_id, state) do
+    Cache.set(
+      "session:#{session_id}",
+      %{
+        user_id: state.user_id,
+        subscriptions: state.subscriptions,
+        last_sequence: state.sequence,
+        events_buffer: state.pending_events,
+        suspended_at: DateTime.utc_now()
+      },
+      ttl: @session_ttl
+    )
+  end
+
+  # Attempt to resume session
+  def resume_session(session_id, last_sequence) do
+    case Cache.get("session:#{session_id}") do
+      {:ok, session} ->
+        # Calculate events to replay
+        events_to_replay = get_events_since(session, last_sequence)
+
+        if length(events_to_replay) <= @max_replay_events do
+          # Resume successful - replay events
+          {:ok, session, events_to_replay}
+        else
+          # Too many events missed - require fresh connection
+          {:error, :too_many_missed_events}
+        end
+
+      :miss ->
+        # Session expired
+        {:error, :session_not_found}
+    end
+  end
+
+  # Client-side handling
+  def handle_disconnect(socket) do
+    # Store last known state
+    suspend_session(socket.assigns.session_id, socket.assigns)
+
+    # Client will attempt resume with:
+    # { op: 6, d: { token: "...", session_id: "...", seq: 1337 } }
+  end
+end
+```
+
+### Data Services Layer (Rust)
+
+Discord's data services layer, written in Rust, handles database access with request coalescing.
+
+```elixir
+defmodule CGraph.DataServices do
+  @moduledoc """
+  Data services layer pattern (Discord style).
+
+  Rust service that sits between Elixir and the database:
+  1. Request coalescing: 1000 requests for same data = 1 DB query
+  2. Connection pooling: Efficient database connection management
+  3. Caching: In-memory cache for hot data
+  4. Batching: Automatic batching of writes
+
+  Discord uses this for their ScyllaDB message store.
+  """
+
+  # gRPC client to Rust data service
+  def get_messages(channel_id, opts \\ []) do
+    request = %{
+      channel_id: channel_id,
+      limit: opts[:limit] || 50,
+      before: opts[:before],
+      after: opts[:after]
+    }
+
+    # Rust service handles coalescing automatically
+    # Multiple Elixir processes requesting same channel's messages
+    # result in single database query
+    DataServicesClient.get_messages(request)
+  end
+
+  # Write with automatic batching
+  def create_message(channel_id, content, author_id) do
+    request = %{
+      channel_id: channel_id,
+      content: content,
+      author_id: author_id,
+      nonce: generate_nonce()  # For deduplication
+    }
+
+    # Rust service batches writes for efficiency
+    DataServicesClient.create_message(request)
+  end
+end
+```
+
+### Rate Limiting (Discord Style)
+
+Discord enforces strict rate limits with per-route buckets.
+
+```elixir
+defmodule CGraph.RateLimiter.Discord do
+  @moduledoc """
+  Discord-style rate limiting with route buckets.
+
+  Discord limits:
+  - 120 requests per minute per route (with exceptions)
+  - Gateway: 120 events per 60 seconds
+  - Messages: 5 per 5 seconds per channel
+
+  Headers returned:
+  - X-RateLimit-Limit: Max requests in window
+  - X-RateLimit-Remaining: Requests left
+  - X-RateLimit-Reset: Unix timestamp when bucket resets
+  - X-RateLimit-Bucket: Unique bucket identifier
+  """
+
+  @gateway_limit {120, 60_000}  # 120 events per minute
+  @message_limit {5, 5_000}     # 5 messages per 5 seconds per channel
+
+  def check_gateway_limit(user_id) do
+    check_limit("gateway:#{user_id}", @gateway_limit)
+  end
+
+  def check_message_limit(channel_id, user_id) do
+    # Per-channel, per-user limit
+    check_limit("message:#{channel_id}:#{user_id}", @message_limit)
+  end
+
+  defp check_limit(key, {limit, window_ms}) do
+    now = System.system_time(:millisecond)
+    bucket = get_or_create_bucket(key, limit, window_ms)
+
+    cond do
+      bucket.remaining > 0 ->
+        decrement_bucket(key)
+        {:ok, bucket}
+
+      bucket.reset_at > now ->
+        retry_after = bucket.reset_at - now
+        {:error, :rate_limited, retry_after}
+
+      true ->
+        # Window expired, reset bucket
+        reset_bucket(key, limit, window_ms)
+        {:ok, %{bucket | remaining: limit - 1}}
+    end
+  end
+
+  # Response headers for rate limit info
+  def rate_limit_headers(bucket) do
+    [
+      {"x-ratelimit-limit", to_string(bucket.limit)},
+      {"x-ratelimit-remaining", to_string(bucket.remaining)},
+      {"x-ratelimit-reset", to_string(div(bucket.reset_at, 1000))},
+      {"x-ratelimit-reset-after", to_string(div(bucket.reset_at - now(), 1000))},
+      {"x-ratelimit-bucket", bucket.id}
+    ]
+  end
+end
+```
+
+### Presence Updates (Lazy Loading)
+
+Discord uses lazy presence loading to reduce bandwidth.
+
+```elixir
+defmodule CGraph.Presence.LazyLoad do
+  @moduledoc """
+  Lazy presence loading (Discord pattern).
+
+  For large servers (>75K members), Discord doesn't send all
+  presence data upfront. Instead:
+
+  1. Client receives guild with member count only
+  2. Client requests presence for visible members
+  3. Server sends presence in chunks as user scrolls
+
+  This reduces initial payload from megabytes to kilobytes.
+  """
+
+  @lazy_threshold 75_000  # Members before lazy loading kicks in
+  @chunk_size 100
+
+  def should_lazy_load?(guild) do
+    guild.member_count >= @lazy_threshold
+  end
+
+  # Initial guild data (minimal)
+  def guild_payload(guild, lazy: true) do
+    %{
+      id: guild.id,
+      name: guild.name,
+      member_count: guild.member_count,
+      # Don't include members or presences
+      members: [],
+      presences: []
+    }
+  end
+
+  # Client requests members for visible area
+  def request_guild_members(guild_id, opts) do
+    %{
+      guild_id: guild_id,
+      query: opts[:query] || "",     # Search filter
+      limit: min(opts[:limit], @chunk_size),
+      presences: true,               # Include presence data
+      user_ids: opts[:user_ids]      # Specific users (for sidebar)
+    }
+  end
+
+  # Server responds with chunked data
+  def guild_members_chunk(guild_id, members, chunk_index, chunk_count) do
+    %{
+      guild_id: guild_id,
+      members: members,
+      chunk_index: chunk_index,
+      chunk_count: chunk_count,
+      presences: Enum.map(members, &get_presence/1),
+      not_found: []  # User IDs that don't exist
+    }
+  end
+end
+```
+
+### Message Storage (ScyllaDB Patterns)
+
+Discord migrated from Cassandra to ScyllaDB for message storage. Key patterns apply to PostgreSQL too.
+
+```elixir
+defmodule CGraph.Messages.Storage do
+  @moduledoc """
+  Message storage patterns inspired by Discord's ScyllaDB migration.
+
+  Key learnings from Discord:
+  1. Partition by channel_id for locality
+  2. Sort by message_id (time-based) within partition
+  3. Use bucket suffixes for very active channels
+  4. Separate hot (recent) and cold (old) data
+  """
+
+  # Bucket messages by time to prevent hot partitions
+  # Very active channels get bucketed by day
+  def message_bucket(channel_id, message_id) do
+    timestamp = extract_timestamp(message_id)  # Snowflake ID contains timestamp
+    bucket = div(timestamp, :timer.hours(24))  # Daily buckets
+
+    "#{channel_id}:#{bucket}"
+  end
+
+  # Query recent messages (hot path - optimized)
+  def get_recent_messages(channel_id, limit \\ 50) do
+    current_bucket = message_bucket(channel_id, generate_snowflake())
+
+    # Query current bucket first (most likely to have data)
+    Message
+    |> where(bucket: ^current_bucket)
+    |> order_by(desc: :id)
+    |> limit(^limit)
+    |> Repo.all()
+  end
+
+  # Query historical messages (cold path)
+  def get_historical_messages(channel_id, before_id, limit \\ 50) do
+    target_bucket = message_bucket(channel_id, before_id)
+
+    # May need to query multiple buckets
+    Message
+    |> where(bucket: ^target_bucket)
+    |> where([m], m.id < ^before_id)
+    |> order_by(desc: :id)
+    |> limit(^limit)
+    |> Repo.all()
+  end
+
+  # Snowflake ID generation (Discord style)
+  # Encodes timestamp in ID for efficient time-based queries
+  @discord_epoch 1_420_070_400_000  # Discord's epoch
+
+  def generate_snowflake do
+    timestamp = System.system_time(:millisecond) - @discord_epoch
+    worker_id = get_worker_id()
+    sequence = get_next_sequence()
+
+    # 64-bit ID: timestamp (42 bits) | worker (10 bits) | sequence (12 bits)
+    (timestamp <<< 22) ||| (worker_id <<< 12) ||| sequence
+  end
+
+  def extract_timestamp(snowflake) when is_integer(snowflake) do
+    (snowflake >>> 22) + @discord_epoch
+  end
+end
 ```
 
 ---
@@ -4005,6 +4431,14 @@ Error Budget:
 │  ├─ Non-blocking message sends with async delivery                     │
 │  ├─ Lean engineering - no unnecessary abstractions                     │
 │  └─ Optimize for common case (99% text messages)                       │
+│                                                                          │
+│  DISCORD PATTERNS (Elixir-specific):                                    │
+│  ├─ Gateway sharding: ~5,000 users per shard                           │
+│  ├─ Rust NIFs for CPU-intensive operations (sorting, search)           │
+│  ├─ Session resumption: 30-second window for reconnection              │
+│  ├─ Lazy presence loading for large servers (>75K members)             │
+│  ├─ Snowflake IDs: timestamp encoded in ID for efficient queries       │
+│  └─ Data services layer: Rust gRPC service for DB access               │
 │                                                                          │
 └─────────────────────────────────────────────────────────────────────────┘
 ```

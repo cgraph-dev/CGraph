@@ -8,11 +8,14 @@ repository.
 
 ## Industry Standards We Follow
 
-| Company | Users | What We Adopted |
-|---------|-------|-----------------|
-| **Google** | 4B+ | SRE (SLO/SLI/Error Budgets), TypeScript Style Guide, structured logging |
-| **Meta** | 3.4B | TAO caching, multi-region architecture, request coalescing |
-| **Telegram** | 1B+ | Event-driven architecture, minimal payloads, lean engineering |
+| Company | Users | Tech Stack | What We Adopted |
+|---------|-------|------------|-----------------|
+| **Google** | 4B+ | Various | SRE (SLO/SLI/Error Budgets), TypeScript Style Guide, structured logging |
+| **Meta** | 3.4B | PHP, C++ | TAO caching, multi-region architecture, request coalescing |
+| **Telegram** | 1B+ | C++, custom | Event-driven architecture, minimal payloads, lean engineering |
+| **Discord** | 200M+ | **Elixir**, Rust | Gateway sharding, Rust NIFs, session resumption, lazy presence |
+
+> **Discord** uses the same stack as CGraph (Elixir/Phoenix). Their patterns are directly applicable.
 
 ## Project Overview
 
