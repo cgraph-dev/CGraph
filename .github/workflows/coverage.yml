@@ -1,0 +1,212 @@
+name: Coverage Report
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+env:
+  NODE_VERSION: '22.x'
+  PNPM_VERSION: '10'
+  ELIXIR_VERSION: '1.17.3'
+  OTP_VERSION: '26.2'
+
+jobs:
+  # ============================================
+  # Collect Coverage from All Apps
+  # ============================================
+  coverage:
+    name: Coverage Analysis
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: cgraph_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---- Frontend Setup ----
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install JS dependencies
+        run: pnpm install --frozen-lockfile
+
+      # ---- Backend Setup ----
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ env.ELIXIR_VERSION }}
+          otp-version: ${{ env.OTP_VERSION }}
+
+      - name: Cache Elixir deps
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/backend/deps
+            apps/backend/_build
+          key: ${{ runner.os }}-mix-${{ hashFiles('apps/backend/mix.lock') }}
+
+      - name: Install Elixir dependencies
+        working-directory: apps/backend
+        run: mix deps.get
+
+      # ---- Run Tests with Coverage ----
+      - name: Test Web App
+        run: pnpm run test --filter=@cgraph/web -- --run --coverage
+        continue-on-error: true
+
+      - name: Test Landing
+        run: pnpm run test --filter=@cgraph/landing -- --run --coverage
+        continue-on-error: true
+
+      - name: Test Backend
+        working-directory: apps/backend
+        env:
+          MIX_ENV: test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cgraph_test
+        run: mix test --cover --export-coverage default
+        continue-on-error: true
+
+      # ---- Coverage Report ----
+      - name: Generate Coverage Summary
+        id: coverage
+        run: |
+          echo "## 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Web coverage
+          if [ -f apps/web/coverage/coverage-summary.json ]; then
+            WEB_LINES=$(jq -r '.total.lines.pct' apps/web/coverage/coverage-summary.json 2>/dev/null || echo "N/A")
+            WEB_BRANCH=$(jq -r '.total.branches.pct' apps/web/coverage/coverage-summary.json 2>/dev/null || echo "N/A")
+            echo "| App | Lines | Branches | Target |" >> $GITHUB_STEP_SUMMARY
+            echo "|-----|-------|----------|--------|" >> $GITHUB_STEP_SUMMARY
+            echo "| Web | ${WEB_LINES}% | ${WEB_BRANCH}% | 60% |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Web coverage not available" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          # Backend coverage
+          if [ -d apps/backend/cover ]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Backend coverage available in artifacts" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload Web Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-coverage
+          path: apps/web/coverage
+        if: always()
+
+      - name: Upload Backend Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: apps/backend/cover
+        if: always()
+
+      # ---- Codecov Upload ----
+      - name: Upload to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: |
+            apps/web/coverage/lcov.info,
+            apps/backend/cover/lcov.info
+          flags: unittests
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      # ---- PR Comment ----
+      - name: Coverage Comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let body = '## 📊 Coverage Report\n\n';
+
+            try {
+              const webCoverage = JSON.parse(
+                fs.readFileSync('apps/web/coverage/coverage-summary.json', 'utf8')
+              );
+              const lines = webCoverage.total.lines.pct;
+              const branches = webCoverage.total.branches.pct;
+              const functions = webCoverage.total.functions.pct;
+              
+              const getEmoji = (pct) => pct >= 60 ? '✅' : pct >= 40 ? '⚠️' : '❌';
+              
+              body += '| Metric | Coverage | Target | Status |\n';
+              body += '|--------|----------|--------|--------|\n';
+              body += `| Lines | ${lines.toFixed(1)}% | 60% | ${getEmoji(lines)} |\n`;
+              body += `| Branches | ${branches.toFixed(1)}% | 60% | ${getEmoji(branches)} |\n`;
+              body += `| Functions | ${functions.toFixed(1)}% | 60% | ${getEmoji(functions)} |\n`;
+            } catch (e) {
+              body += '⚠️ Coverage data not available\n';
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+  # ============================================
+  # Enforce Coverage Thresholds
+  # ============================================
+  coverage-gate:
+    name: Coverage Gate
+    runs-on: ubuntu-latest
+    needs: coverage
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check Coverage Thresholds
+        run: |
+          echo "Running tests with coverage thresholds..."
+          pnpm run test --filter=@cgraph/web -- --run --coverage || {
+            echo "❌ Coverage below thresholds!"
+            echo "Required: 60% lines, 60% branches, 60% functions"
+            exit 1
+          }

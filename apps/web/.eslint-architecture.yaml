@@ -1,0 +1,72 @@
+# CGraph ESLint Architectural Rules
+# These rules enforce layer boundaries and architectural patterns
+
+# Import restrictions to enforce clean architecture
+rules:
+  # Components should not import directly from stores
+  # Use hooks instead (useAuthStore, useChatStore, etc.)
+  no-restricted-imports:
+    - error
+    - patterns:
+        - group:
+            - '@/stores/*'
+            - '!@/stores/hooks'
+          message: 'Components should use store hooks, not import stores directly. Import from @/stores/hooks instead.'
+
+  # Prevent circular dependencies between major modules
+  import/no-cycle:
+    - error
+    - maxDepth: 3
+
+  # Enforce consistent import order
+  import/order:
+    - warn
+    - groups:
+        - builtin
+        - external
+        - internal
+        - parent
+        - sibling
+        - index
+      newlines-between: always
+      alphabetize:
+        order: asc
+        caseInsensitive: true
+
+# Layer boundary enforcement
+boundaries:
+  # Services can only be called from hooks or other services
+  services:
+    allowed-imports:
+      - '@/lib/*'
+      - '@/types/*'
+    forbidden-imports:
+      - '@/components/*'
+      - '@/pages/*'
+
+  # Hooks can import from services and stores
+  hooks:
+    allowed-imports:
+      - '@/lib/*'
+      - '@/stores/*'
+      - '@/types/*'
+      - '@/services/*'
+
+  # Components can only use hooks, not direct store/service access
+  components:
+    allowed-imports:
+      - '@/hooks/*'
+      - '@/components/*'
+      - '@/types/*'
+      - '@/lib/utils'
+    forbidden-imports:
+      - '@/stores/*'
+      - '@/services/*'
+
+  # Pages orchestrate components and hooks
+  pages:
+    allowed-imports:
+      - '@/components/*'
+      - '@/hooks/*'
+      - '@/types/*'
+      - '@/lib/*'

@@ -20,6 +20,45 @@ export default [
     },
     rules: reactHooks.configs.recommended.rules,
   },
+  // Architectural boundary rules for web app
+  {
+    files: ['apps/web/src/components/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'warn',
+        {
+          patterns: [
+            {
+              group: ['@/stores/*', '!@/stores/hooks', '!@/stores/index'],
+              message:
+                'Components should use store hooks from @/stores/hooks, not import stores directly.',
+            },
+            {
+              group: ['@/services/*'],
+              message: 'Components should not import services directly. Use hooks instead.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Pages can use hooks and components
+  {
+    files: ['apps/web/src/pages/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'warn',
+        {
+          patterns: [
+            {
+              group: ['@/services/*'],
+              message: 'Pages should use hooks to access services, not import directly.',
+            },
+          ],
+        },
+      ],
+    },
+  },
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {
