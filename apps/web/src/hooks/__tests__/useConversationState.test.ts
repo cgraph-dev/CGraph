@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 
 // Mock the stores before importing the hook
 vi.mock('@/stores/chatStore', () => ({
@@ -47,6 +47,32 @@ vi.mock('@/stores/presenceStore', () => ({
   }),
 }));
 
+vi.mock('@/stores/authStore', () => ({
+  useAuthStore: vi.fn(() => ({
+    user: { id: 'current-user-1' },
+  })),
+}));
+
+vi.mock('@/stores/friendStore', () => ({
+  useFriendStore: vi.fn(() => ({
+    friends: [],
+    fetchFriends: vi.fn(),
+  })),
+}));
+
+vi.mock('@/lib/socket', () => ({
+  socketManager: {
+    emit: vi.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
+  },
+}));
+
+vi.mock('@/lib/apiUtils', () => ({
+  getParticipantUserId: vi.fn(() => null),
+  getParticipantDisplayName: vi.fn(() => 'Test User'),
+}));
+
 // Import after mocks
 import { useConversationState } from '../useConversationState';
 
@@ -77,35 +103,29 @@ describe('useConversationState', () => {
     it('provides sendMessage function', () => {
       const { result } = renderHook(() => useConversationState('conv-1'));
 
-      expect(typeof result.current.actions.sendMessage).toBe('function');
+      expect(typeof result.current.sendMessage).toBe('function');
     });
 
     it('provides markAsRead function', () => {
       const { result } = renderHook(() => useConversationState('conv-1'));
 
-      expect(typeof result.current.actions.markAsRead).toBe('function');
+      expect(typeof result.current.markAsRead).toBe('function');
     });
   });
 
   describe('typing indicators', () => {
-    it('returns typing users for conversation', () => {
+    it('returns typing user IDs for conversation', () => {
       const { result } = renderHook(() => useConversationState('conv-1'));
 
-      expect(Array.isArray(result.current.typingUsers)).toBe(true);
+      expect(Array.isArray(result.current.typingUserIds)).toBe(true);
     });
   });
 
   describe('presence', () => {
-    it('returns presence users for conversation', () => {
+    it('returns isOtherUserOnline status', () => {
       const { result } = renderHook(() => useConversationState('conv-1'));
 
-      expect(Array.isArray(result.current.presenceUsers)).toBe(true);
-    });
-
-    it('calculates hasOnlineParticipants correctly', () => {
-      const { result } = renderHook(() => useConversationState('conv-1'));
-
-      expect(typeof result.current.hasOnlineParticipants).toBe('boolean');
+      expect(typeof result.current.isOtherUserOnline).toBe('boolean');
     });
   });
 
@@ -113,13 +133,13 @@ describe('useConversationState', () => {
     it('provides fetchMoreMessages function', () => {
       const { result } = renderHook(() => useConversationState('conv-1'));
 
-      expect(typeof result.current.actions.fetchMoreMessages).toBe('function');
+      expect(typeof result.current.fetchMoreMessages).toBe('function');
     });
 
-    it('returns hasMoreMessages status', () => {
+    it('returns hasMore status', () => {
       const { result } = renderHook(() => useConversationState('conv-1'));
 
-      expect(typeof result.current.hasMoreMessages).toBe('boolean');
+      expect(typeof result.current.hasMore).toBe('boolean');
     });
   });
 });

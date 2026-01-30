@@ -71,6 +71,15 @@ const createMockMessage = (overrides: Partial<Message> = {}): Message => ({
   senderId: 'user-1',
   conversationId: 'conv-1',
   createdAt: '2026-01-01T12:00:00Z',
+  updatedAt: '2026-01-01T12:00:00Z',
+  encryptedContent: null,
+  isEncrypted: false,
+  replyToId: null,
+  replyTo: null,
+  isPinned: false,
+  isEdited: false,
+  deletedAt: null,
+  metadata: {},
   reactions: [],
   messageType: 'text',
   sender: {
@@ -158,9 +167,8 @@ describe('MessageBubble', () => {
     it('renders reply preview when message has replyTo', () => {
       const message = createMockMessage({
         replyTo: {
-          id: 'reply-msg',
-          content: 'Original message',
-          sender: { id: 'user-2', username: 'replyuser' },
+          ...createMockMessage({ id: 'reply-msg', content: 'Original message' }),
+          sender: { id: 'user-2', username: 'replyuser', displayName: null, avatarUrl: null },
         },
       });
       render(<MessageBubble {...defaultProps} message={message} />);
