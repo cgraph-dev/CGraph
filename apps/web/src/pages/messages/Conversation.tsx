@@ -5,6 +5,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useFriendStore } from '@/stores/friendStore';
 import { socketManager } from '@/lib/socket';
 import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
 import {
   getParticipantUserId,
   getParticipantDisplayName,
@@ -68,6 +69,8 @@ import { VideoCallModal } from '@/components/voice/VideoCallModal';
 
 // Reaction utilities - centralized for reuse
 import { aggregateReactions, handleRemoveReaction } from '@/lib/chat';
+
+const logger = createLogger('Conversation');
 
 export default function Conversation() {
   // Apply adaptive theme on mount
@@ -261,7 +264,7 @@ export default function Conversation() {
         }
       } catch (err) {
         // Socket connection failed - app continues in degraded mode
-        console.warn('[Conversation] Socket connection failed:', err);
+        logger.warn(' Socket connection failed:', err);
       }
     };
 
@@ -334,7 +337,7 @@ export default function Conversation() {
       }
       socketManager.sendTyping(`conversation:${conversationId}`, false);
     } catch (error) {
-      console.error('Failed to send message:', error);
+      logger.warn('Failed to send message:', error);
       const errorMessage =
         error instanceof Error ? error.message : 'Failed to send message. Please try again.';
 
@@ -378,7 +381,7 @@ export default function Conversation() {
       toast.success('Message sent with encryption');
       if (uiPreferences.enableHaptic) HapticFeedback.success();
     } catch (error) {
-      console.error('Retry failed:', error);
+      logger.warn('Retry failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
 
       if (errorMessage.includes('Failed to encrypt message')) {
@@ -411,7 +414,7 @@ export default function Conversation() {
       toast.warning('Message sent without encryption');
       if (uiPreferences.enableHaptic) HapticFeedback.warning();
     } catch (error) {
-      console.error('Failed to send unencrypted message:', error);
+      logger.warn('Failed to send unencrypted message:', error);
       toast.error('Failed to send message');
     } finally {
       setIsSending(false);
@@ -432,7 +435,7 @@ export default function Conversation() {
       setReplyTo(null);
       if (uiPreferences.enableHaptic) HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to send sticker:', error);
+      logger.warn('Failed to send sticker:', error);
       // Show specific error message if available (e.g., E2EE encryption failure)
       const errorMessage = error instanceof Error ? error.message : 'Failed to send sticker.';
       toast.error(errorMessage);
@@ -466,7 +469,7 @@ export default function Conversation() {
       toast.success('GIF sent');
       if (uiPreferences.enableHaptic) HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to send GIF:', error);
+      logger.warn('Failed to send GIF:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to send GIF.';
       toast.error(errorMessage);
       if (uiPreferences.enableHaptic) HapticFeedback.error();
@@ -492,7 +495,7 @@ export default function Conversation() {
         setMessageToReschedule(null);
         if (uiPreferences.enableHaptic) HapticFeedback.success();
       } catch (error) {
-        console.error('Failed to reschedule message:', error);
+        logger.warn('Failed to reschedule message:', error);
         const errorMessage =
           error instanceof Error ? error.message : 'Failed to reschedule message';
         toast.error(errorMessage);
@@ -511,7 +514,7 @@ export default function Conversation() {
         setReplyTo(null);
         if (uiPreferences.enableHaptic) HapticFeedback.success();
       } catch (error) {
-        console.error('Failed to schedule message:', error);
+        logger.warn('Failed to schedule message:', error);
         const errorMessage = error instanceof Error ? error.message : 'Failed to schedule message';
         toast.error(errorMessage);
         if (uiPreferences.enableHaptic) HapticFeedback.error();
@@ -559,7 +562,7 @@ export default function Conversation() {
         if (uiPreferences.enableHaptic) HapticFeedback.success();
       }
     } catch (error) {
-      console.error('Failed to send voice message:', error);
+      logger.warn('Failed to send voice message:', error);
       toast.error('Failed to send voice message.');
       if (uiPreferences.enableHaptic) HapticFeedback.error();
     } finally {
@@ -608,7 +611,7 @@ export default function Conversation() {
       toast.success('File sent');
       if (uiPreferences.enableHaptic) HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to send file:', error);
+      logger.warn('Failed to send file:', error);
       toast.error('Failed to send file');
       if (uiPreferences.enableHaptic) HapticFeedback.error();
     } finally {
@@ -662,7 +665,7 @@ export default function Conversation() {
       toast.success('Message edited');
       handleCancelEdit();
     } catch (error) {
-      console.error('Failed to edit message:', error);
+      logger.warn('Failed to edit message:', error);
       toast.error('Failed to edit message');
     }
   };
@@ -677,7 +680,7 @@ export default function Conversation() {
       toast.success('Message deleted');
       setActiveMessageMenu(null);
     } catch (error) {
-      console.error('Failed to delete message:', error);
+      logger.warn('Failed to delete message:', error);
       toast.error('Failed to delete message');
     }
   };
@@ -691,7 +694,7 @@ export default function Conversation() {
       toast.success('Message pinned');
       setActiveMessageMenu(null);
     } catch (error) {
-      console.error('Failed to pin message:', error);
+      logger.warn('Failed to pin message:', error);
       toast.error('Failed to pin message');
     }
   };
@@ -733,7 +736,7 @@ export default function Conversation() {
       toast.success(`Message forwarded to ${count} conversation${count > 1 ? 's' : ''}`);
       if (uiPreferences.enableHaptic) HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to forward message:', error);
+      logger.warn('Failed to forward message:', error);
       toast.error('Failed to forward message');
       if (uiPreferences.enableHaptic) HapticFeedback.error();
     }
@@ -1123,7 +1126,7 @@ export default function Conversation() {
 
                   // Debug logging for alignment issues
                   if (import.meta.env.DEV && msgIndex === 0) {
-                    console.debug('[Conversation Web] First message debug:', {
+                    logger.debug(' Web] First message debug:', {
                       messageId: message.id,
                       messageSenderId,
                       currentUserId,
@@ -2092,6 +2095,6 @@ async function handleAddReaction(
     const { addReaction } = useChatStore.getState();
     await addReaction(messageId, emoji);
   } catch (error) {
-    console.error('Failed to add reaction:', error);
+    logger.warn('Failed to add reaction:', error);
   }
 }

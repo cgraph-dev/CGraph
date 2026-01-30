@@ -30,6 +30,9 @@
  */
 
 import SecureStorage from './secureStorage';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('Migration');
 
 const LEGACY_KEYS = {
   IDENTITY_KEY: 'cgraph_e2ee_identity',
@@ -109,7 +112,7 @@ export async function migrateToSecureStorage(
       if (result.backupCreated) {
         // Store backup in sessionStorage temporarily
         sessionStorage.setItem('cgraph_e2ee_migration_backup', JSON.stringify(backup));
-        console.debug('[Migration] Backup created with', Object.keys(backup).length, 'keys');
+        logger.debug(' Backup created with', Object.keys(backup).length, 'keys');
       }
     }
 
@@ -149,7 +152,7 @@ export async function migrateToSecureStorage(
           const retrieved = await SecureStorage.getItem(migration.secure);
           if (retrieved === legacyValue) {
             result.migratedKeys.push(migration.name);
-            console.debug(`[Migration] ✓ ${migration.name} migrated successfully`);
+            logger.debug(`✓ ${migration.name} migrated successfully`);
           } else {
             throw new Error(`Verification failed for ${migration.name}`);
           }
@@ -157,7 +160,7 @@ export async function migrateToSecureStorage(
       } catch (error) {
         const errorMsg = `Failed to migrate ${migration.name}: ${error instanceof Error ? error.message : 'Unknown error'}`;
         result.errors.push(errorMsg);
-        console.error(`[Migration] ✗ ${errorMsg}`);
+        logger.warn(`✗ ${errorMsg}`);
       }
     }
 
@@ -166,7 +169,7 @@ export async function migrateToSecureStorage(
       Object.values(LEGACY_KEYS).forEach((key) => {
         localStorage.removeItem(key);
       });
-      console.debug('[Migration] Legacy keys cleared from localStorage');
+      logger.debug(' Legacy keys cleared from localStorage');
     }
 
     // Step 5: Mark success if at least one key migrated
@@ -176,7 +179,7 @@ export async function migrateToSecureStorage(
   } catch (error) {
     const errorMsg = `Migration failed: ${error instanceof Error ? error.message : 'Unknown error'}`;
     result.errors.push(errorMsg);
-    console.error('[Migration]', errorMsg);
+    logger.warn('', errorMsg);
     return result;
   }
 }
@@ -188,7 +191,7 @@ export function restoreFromBackup(): boolean {
   try {
     const backupData = sessionStorage.getItem('cgraph_e2ee_migration_backup');
     if (!backupData) {
-      console.error('[Migration] No backup found');
+      logger.warn(' No backup found');
       return false;
     }
 
@@ -202,10 +205,10 @@ export function restoreFromBackup(): boolean {
     });
 
     sessionStorage.removeItem('cgraph_e2ee_migration_backup');
-    console.debug('[Migration] Backup restored successfully');
+    logger.debug(' Backup restored successfully');
     return true;
   } catch (error) {
-    console.error('[Migration] Restore failed:', error);
+    logger.warn(' Restore failed:', error);
     return false;
   }
 }

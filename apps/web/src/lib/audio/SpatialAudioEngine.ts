@@ -106,6 +106,10 @@ const REVERB_CONFIGS: Record<string, { decay: number; density: number; diffusion
   outdoor: { decay: 0.2, density: 0.3, diffusion: 0.4 },
 };
 
+// Import logger for production-safe debugging
+import { createLogger } from '@/lib/logger';
+const logger = createLogger('SpatialAudio');
+
 // =============================================================================
 // SPATIAL AUDIO ENGINE
 // =============================================================================
@@ -187,7 +191,7 @@ export class SpatialAudioEngine {
     // Start analysis loop
     this.startAnalysisLoop();
 
-    console.debug('[SpatialAudio] Engine initialized');
+    logger.debug(' Engine initialized');
   }
 
   private async initializeHRTF(): Promise<void> {
@@ -306,7 +310,7 @@ export class SpatialAudioEngine {
 
     this.sources.set(id, audioSource);
 
-    console.debug(`[SpatialAudio] Added source: ${id}`);
+    logger.debug(`Added source: ${id}`);
     return audioSource;
   }
 
@@ -319,7 +323,7 @@ export class SpatialAudioEngine {
       this.analyserNodes.delete(id);
       this.sources.delete(id);
       this.vadState.delete(id);
-      console.debug(`[SpatialAudio] Removed source: ${id}`);
+      logger.debug(`Removed source: ${id}`);
     }
   }
 
@@ -390,7 +394,7 @@ export class SpatialAudioEngine {
       this.convolverNodes.set(zone.id, convolver);
     }
 
-    console.debug(`[SpatialAudio] Added zone: ${zone.name}`);
+    logger.debug(`Added zone: ${zone.name}`);
   }
 
   removeZone(id: string): void {
@@ -645,7 +649,7 @@ export class SpatialAudioEngine {
     this.audioContext?.close();
     this.audioContext = null;
 
-    console.debug('[SpatialAudio] Engine destroyed');
+    logger.debug(' Engine destroyed');
   }
 
   // ===========================================================================

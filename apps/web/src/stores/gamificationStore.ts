@@ -1,6 +1,5 @@
-// Logger reserved for future debugging
-// import { createLogger } from '@/lib/logger';
-// const _logger = createLogger('GamificationStore');
+import { createLogger } from '@/lib/logger';
+const logger = createLogger('Gamification');
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -275,11 +274,11 @@ export const useGamificationStore = create<GamificationState>()(
         const { equippedBadges, achievements } = get();
         const achievement = achievements.find((a) => a.id === badgeId);
         if (!achievement || !achievement.unlocked) {
-          console.error('Cannot equip badge: Achievement not found or not unlocked');
+          logger.warn('Cannot equip badge: Achievement not found or not unlocked');
           return;
         }
         if (equippedBadges.length >= 3) {
-          console.error('Cannot equip more than 3 badges');
+          logger.warn('Cannot equip more than 3 badges');
           return;
         }
         if (equippedBadges.includes(badgeId)) {
@@ -289,7 +288,7 @@ export const useGamificationStore = create<GamificationState>()(
           await api.post(`/api/v1/gamification/badges/${badgeId}/equip`);
           set({ equippedBadges: [...equippedBadges, badgeId] });
         } catch (error: unknown) {
-          console.error('Failed to equip badge:', error);
+          logger.warn('Failed to equip badge:', error);
         }
       },
 
@@ -302,7 +301,7 @@ export const useGamificationStore = create<GamificationState>()(
           await api.post(`/api/v1/gamification/badges/${badgeId}/unequip`);
           set({ equippedBadges: equippedBadges.filter((id) => id !== badgeId) });
         } catch (error: unknown) {
-          console.error('Failed to unequip badge:', error);
+          logger.warn('Failed to unequip badge:', error);
         }
       },
 
@@ -374,7 +373,7 @@ export const useGamificationStore = create<GamificationState>()(
             isLoading: false,
           });
         } catch (error: unknown) {
-          console.error('[Gamification] Failed to fetch data:', error);
+          logger.error(' Failed to fetch data:', error);
           set({ isLoading: false });
         }
       },
@@ -406,7 +405,7 @@ export const useGamificationStore = create<GamificationState>()(
             isLoadingAchievements: false,
           });
         } catch (error: unknown) {
-          console.error('[Gamification] Failed to fetch achievements:', error);
+          logger.error(' Failed to fetch achievements:', error);
           set({ isLoadingAchievements: false });
         }
       },
@@ -462,7 +461,7 @@ export const useGamificationStore = create<GamificationState>()(
             }),
           });
         } catch (error: unknown) {
-          console.error('[Gamification] Failed to fetch quests:', error);
+          logger.error(' Failed to fetch quests:', error);
         }
       },
 
@@ -496,13 +495,11 @@ export const useGamificationStore = create<GamificationState>()(
 
         // Check if we leveled up
         if (newLevel > level) {
-          console.debug(`[Gamification] LEVEL UP! Now level ${newLevel}`);
+          logger.debug(` LEVEL UP! Now level ${newLevel}`);
           // Level up modal/celebration can be triggered here
         }
 
-        console.debug(
-          `[Gamification] +${amount} XP from ${source} | Total: ${newTotalXP} | Level: ${newLevel}`
-        );
+        logger.debug(`+${amount} XP from ${source} | Total: ${newTotalXP} | Level: ${newLevel}`);
       },
 
       /**
@@ -546,14 +543,12 @@ export const useGamificationStore = create<GamificationState>()(
               await get().unlockLoreEntry(achievement.loreFragment);
             }
 
-            console.debug(`[Gamification] Achievement unlocked: ${achievement.title}`);
+            logger.debug(`Achievement unlocked: ${achievement.title}`);
           } else {
-            console.debug(
-              `[Gamification] Achievement not ready: ${achievement.title} - ${result.message}`
-            );
+            logger.debug(`Achievement not ready: ${achievement.title} - ${result.message}`);
           }
         } catch (error: unknown) {
-          console.error('[Gamification] Failed to unlock achievement:', error);
+          logger.error(error instanceof Error ? error : new Error(String(error)));
         }
       },
 
@@ -579,11 +574,11 @@ export const useGamificationStore = create<GamificationState>()(
             ],
           });
 
-          console.debug(
-            `[Gamification] Quest completed: ${quest.title}, XP: ${rewards?.xp}, Coins: ${rewards?.coins}`
+          logger.debug(
+            `Quest completed: ${quest.title}, XP: ${rewards?.xp}, Coins: ${rewards?.coins}`
           );
         } catch (error: unknown) {
-          console.error('[Gamification] Failed to complete quest:', error);
+          logger.error(error instanceof Error ? error : new Error(String(error)));
         }
       },
 
@@ -631,7 +626,7 @@ export const useGamificationStore = create<GamificationState>()(
             })),
           });
         } catch (error: unknown) {
-          console.error('[Gamification] Failed to equip title:', error);
+          logger.error(' Failed to equip title:', error);
         }
       },
 
@@ -640,7 +635,7 @@ export const useGamificationStore = create<GamificationState>()(
        */
       unlockLoreEntry: async (_entryId: string) => {
         // Lore system is a future enhancement
-        console.debug('[Gamification] Lore system coming soon');
+        logger.debug(' Lore system coming soon');
       },
 
       /**
@@ -661,13 +656,13 @@ export const useGamificationStore = create<GamificationState>()(
             loginStreak: data.streak_days || data.streak || get().loginStreak + 1,
           });
 
-          console.debug(
-            `[Gamification] Daily login claimed! Streak: ${data.streak_days}, Coins: ${data.coins_earned}`
+          logger.debug(
+            `Daily login claimed! Streak: ${data.streak_days}, Coins: ${data.coins_earned}`
           );
         } catch (error: unknown) {
           // Already claimed or other error - update last login date anyway
           set({ lastLoginDate: today });
-          console.debug('[Gamification] Daily login already claimed or error:', error);
+          logger.debug('Daily login already claimed or error:', error);
         }
       },
     }),
