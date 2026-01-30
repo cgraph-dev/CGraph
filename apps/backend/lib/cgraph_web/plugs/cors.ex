@@ -18,6 +18,10 @@ defmodule CGraphWeb.Plugs.Cors do
   def call(conn, _opts) do
     origin = get_req_header(conn, "origin") |> List.first()
     
+    # Debug logging for CORS issues
+    require Logger
+    Logger.info("CORS: method=#{conn.method} origin=#{inspect(origin)} allowed=#{origin && origin_allowed?(origin)}")
+    
     if origin && origin_allowed?(origin) do
       conn
       |> put_resp_header("access-control-allow-origin", origin)
@@ -27,7 +31,15 @@ defmodule CGraphWeb.Plugs.Cors do
       |> put_resp_header("access-control-max-age", "86400")
       |> handle_preflight()
     else
-      conn
+      # Still handle OPTIONS for non-allowed origins to prevent 404
+      if conn.method == "OPTIONS" do
+        Logger.warning("CORS: Rejecting preflight from origin=#{inspect(origin)}")
+        conn
+        |> send_resp(403, "Origin not allowed")
+        |> halt()
+      else
+        conn
+      end
     end
   end
 
