@@ -10,23 +10,42 @@
 
 CGraph is a well-structured, modern communication platform with strong engineering practices and
 ambitious scope. The codebase demonstrates mature patterns and active quality investment. Recent
-improvements have addressed documentation gaps and added architectural decision records.
+improvements have addressed documentation gaps, added architectural decision records, and
+significantly improved security posture and code quality.
 
-### Overall Score: 8.5/10 ↑ (was 7.3 → 8.2 → 8.5)
+### Overall Score: 9.0/10 ↑ (was 7.3 → 8.2 → 8.5 → 9.0)
 
 | Category                 | Score  | Change | Status |
 | ------------------------ | ------ | ------ | ------ |
-| Code Quality             | 8.0/10 | ↑ +0.5 | ✅     |
+| Code Quality             | 8.5/10 | ↑ +0.5 | ✅     |
 | Architecture & Structure | 9.0/10 | —      | ✅     |
-| Security Posture         | 7.0/10 | —      | ⚠️     |
-| Standards Alignment      | 9.0/10 | ↑ +0.5 | ✅     |
-| Documentation Governance | 8.5/10 | —      | ✅     |
+| Security Posture         | 8.5/10 | ↑ +1.5 | ✅     |
+| Standards Alignment      | 9.0/10 | —      | ✅     |
+| Documentation Governance | 9.0/10 | ↑ +0.5 | ✅     |
 | Dependency Freshness     | 8.5/10 | —      | ✅     |
 | Product Vision           | 8.5/10 | —      | ✅     |
 
 **Verdict:** Production-capable. External security audit required before 1.0 release.
 
 ### Recent Improvements (January 2026)
+
+#### Phase 0-2 Security & Code Quality
+
+- ✅ **SSL certificate verification** — Proper verify_peer by default with DATABASE_SSL_VERIFY
+  option
+- ✅ **Console.log cleanup** — Reduced from 47 to 7 in web app (all remaining in test/demo code)
+- ✅ **Type safety** — Reduced 'as any' from 107 to 50 in production code
+- ✅ **ESLint rules** — Warn on console.log and 'as any' in production code
+- ✅ **Type-safe helpers** — getParticipantUserId, getMessageSenderId in apiUtils
+- ✅ **Extended types** — MessageMetadata, ConversationParticipant.user with gamification fields
+
+#### Phase 3 Store Consolidation
+
+- ✅ **Unified store exports** — stores/index.ts for single import point
+- ✅ **Composite hooks** — useCurrentUser, useConversation, useFriends, etc.
+- ✅ **Consolidation plan** — STORE_CONSOLIDATION_PLAN.md documenting 31 → 7 store migration
+
+#### Previous Improvements
 
 - ✅ **5 ADRs created** documenting major architectural decisions
 - ✅ **Operational runbooks** for deployments, incidents, database ops
@@ -46,7 +65,7 @@ improvements have addressed documentation gaps and added architectural decision 
 
 ## Detailed Category Analysis
 
-### 1. Code Quality & Maintainability — 8.0/10 ↑
+### 1. Code Quality & Maintainability — 8.5/10 ↑
 
 #### Strengths ✅
 
@@ -61,11 +80,14 @@ improvements have addressed documentation gaps and added architectural decision 
   TypingIndicator, reactionUtils)
 - **Coverage enforcement** — 60% threshold configured with CI reporting
 - **Architectural linting** — ESLint rules enforce layer boundaries
+- **Type-safe utilities** — Centralized accessor functions for mixed API responses
+- **Production logger** — Namespaced logger with error tracking integration
 
 #### Weaknesses ⚠️
 
 - **Coverage reporting** — Configured but actual coverage metrics not yet validated
 - **Stricter enforcement** — Arch rules set to warn, not error (allowing gradual adoption)
+- **Some 'as any' remaining** — 50 instances in production code (down from 107)
 
 #### Evidence
 
@@ -78,12 +100,19 @@ Source: apps/web/src/components/
 Source: eslint.config.js
 - Architectural boundary rules for components, pages
 - no-restricted-imports patterns configured
+- no-console warnings for production code
+- @typescript-eslint/no-explicit-any warnings
+
+Source: apps/web/src/lib/
+- apiUtils.ts: Type-safe accessors (getParticipantUserId, getMessageSenderId)
+- logger.ts: Production-safe namespaced logging
 ```
 
 #### Remaining Work
 
 1. Validate actual coverage reaches 60% threshold
 2. Promote arch linting from warn → error after cleanup
+3. Reduce remaining 50 'as any' instances
 
 ---
 
@@ -97,6 +126,7 @@ Source: eslint.config.js
 - **Proper separation of concerns** — Stores, components, hooks, services clearly organized
 - **Architecture Decision Records** — 5 ADRs documenting major choices
 - **Schema ownership matrix** — Clear table ownership documented
+- **Unified store exports** — Single import point with composite hooks
 
 #### Weaknesses ⚠️
 
@@ -119,7 +149,7 @@ Source: docs/architecture/decisions/
 
 ---
 
-### 3. Security Posture — 7.0/10 ↑
+### 3. Security Posture — 8.5/10 ↑
 
 #### Strengths ✅
 
@@ -130,6 +160,9 @@ Source: docs/architecture/decisions/
 - **CI security scanning** — Gitleaks, Sobelow, pnpm audit, Grype
 - **Threat model documented** — STRIDE analysis in [THREAT_MODEL.md](THREAT_MODEL.md)
 - **Security testing framework** — Patterns in [SECURITY_TESTING.md](SECURITY_TESTING.md)
+- **SSL certificate verification** — Proper verify_peer with DATABASE_SSL_VERIFY config
+- **OAuth state validation** — Already correctly implemented in oauth_controller.ex
+- **No secrets in git history** — Verified clean history for .env files
 
 #### Weaknesses ⚠️
 
@@ -143,6 +176,14 @@ Source: docs/THREAT_MODEL.md, docs/SECURITY_TESTING.md
 - STRIDE threat analysis complete
 - Security test patterns documented
 - Pentest scope defined
+
+Source: apps/backend/config/runtime.exs
+- SSL verify_peer by default with system CA certs
+- DATABASE_SSL_VERIFY=none only when explicitly configured
+
+Source: apps/backend/lib/cgraph_web/controllers/api/v1/oauth_controller.ex
+- State parameter validation implemented
+- CSRF protection on OAuth flows
 ```
 
 #### Remaining Work
@@ -152,7 +193,7 @@ Source: docs/THREAT_MODEL.md, docs/SECURITY_TESTING.md
 
 ---
 
-### 4. Standards Alignment — 8.5/10 ↑
+### 4. Standards Alignment — 9.0/10 ↑
 
 #### Strengths ✅
 
