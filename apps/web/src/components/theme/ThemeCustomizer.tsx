@@ -284,7 +284,7 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                   selectedBorder={theme.avatarBorder}
                   selectedColor={theme.avatarBorderColor}
                   onSelectBorder={handleBorderSelect}
-                  onSelectColor={(color) => setAvatarBorder(theme.avatarBorder, color)}
+                  onSelectColor={(color) => updateTheme({ avatarBorderColor: color })}
                   glowEnabled={theme.glowEnabled}
                   onToggleGlow={toggleGlow}
                 />
@@ -298,19 +298,19 @@ export function ThemeCustomizer({ onClose, className = '' }: ThemeCustomizerProp
                     radius: theme.bubbleBorderRadius,
                     shadow: theme.bubbleShadowIntensity,
                     glass: theme.bubbleGlassEffect,
-                    tail: theme.bubbleShowTail,
-                    hover: theme.bubbleHoverEffect,
-                    entrance: theme.bubbleEntranceAnimation,
+                    tail: theme.bubbleShowTail ?? true,
+                    hover: theme.bubbleHoverEffect ?? true,
+                    entrance: theme.bubbleEntranceAnimation ?? 'slide',
                   }}
                   onSelectStyle={handleBubbleStyleSelect}
-                  onSelectColor={(color) => setChatBubbleStyle(theme.chatBubbleStyle, color)}
+                  onSelectColor={(color) => updateTheme({ chatBubbleColor: color })}
                   onUpdateSettings={(settings) => updateTheme(settings)}
                 />
               )}
               {activeTab === 'effects' && (
                 <EffectsTab
                   key="effects"
-                  selectedEffect={theme.effect}
+                  selectedEffect={theme.effectPreset}
                   animationSpeed={theme.animationSpeed}
                   particlesEnabled={theme.particlesEnabled}
                   onSelectEffect={handleEffectSelect}

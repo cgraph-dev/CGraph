@@ -2,9 +2,25 @@ import React, { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAvatarBorderStore } from '@/stores/avatarBorderStore';
 import type { BorderTheme, BorderRarity } from '@/types/avatar-borders';
-import { useProfileThemeStore } from '@/stores/profileThemeStore';
+import { useThemeStore, THEME_PRESETS, type ThemePresetConfig } from '@/stores/theme';
 import { useChatEffectsStore } from '@/stores/chatEffectsStore';
 import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
+
+// Convert THEME_PRESETS record to array with id
+interface ThemePresetWithId extends ThemePresetConfig {
+  id: string;
+  description?: string;
+  backgroundConfig?: ThemePresetConfig['background'];
+}
+
+const THEME_PRESETS_ARRAY: ThemePresetWithId[] = Object.entries(THEME_PRESETS).map(
+  ([id, config]) => ({
+    ...config,
+    id,
+    description: `${config.name} theme`,
+    backgroundConfig: config.background,
+  })
+);
 
 /**
  * Cosmetics Settings Panel
@@ -433,21 +449,22 @@ function AvatarBordersSection({ filters, setFilters, viewMode, setViewMode }: Se
 
 function ProfileThemesSection({ filters, setFilters, viewMode: _viewMode }: SectionProps) {
   void _viewMode; // Reserved for future view mode toggle
-  const { presets, activePresetId, activatePreset } = useProfileThemeStore();
+  const profileThemeId = useThemeStore((s) => s.profileThemeId);
+  const setProfileTheme = useThemeStore((s) => s.setProfileTheme);
 
   const filteredPresets = useMemo(() => {
-    let result = presets;
+    let result = THEME_PRESETS_ARRAY;
 
     if (filters.search) {
       const search = filters.search.toLowerCase();
       result = result.filter(
-        (p) =>
+        (p: ThemePresetWithId) =>
           p.name.toLowerCase().includes(search) || p.description?.toLowerCase().includes(search)
       );
     }
 
     return result;
-  }, [presets, filters.search]);
+  }, [filters.search]);
 
   return (
     <div className="space-y-6">
@@ -464,8 +481,8 @@ function ProfileThemesSection({ filters, setFilters, viewMode: _viewMode }: Sect
 
       {/* Theme Grid */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredPresets.map((preset) => {
-          const isActive = activePresetId === preset.id;
+        {filteredPresets.map((preset: ThemePresetWithId) => {
+          const isActive = profileThemeId === preset.id;
 
           return (
             <motion.div
@@ -482,7 +499,7 @@ function ProfileThemesSection({ filters, setFilters, viewMode: _viewMode }: Sect
                     ? preset.backgroundConfig.value
                     : preset.colors?.background || '#1a1a1a',
               }}
-              onClick={() => activatePreset(preset.id)}
+              onClick={() => setProfileTheme(preset.id)}
             >
               {/* Preview Content */}
               <div className="min-h-[200px] p-6">
@@ -499,7 +516,7 @@ function ProfileThemesSection({ filters, setFilters, viewMode: _viewMode }: Sect
                       {preset.name}
                     </h3>
                     <p className="text-sm" style={{ color: preset.colors?.secondary || '#888888' }}>
-                      {preset.category}
+                      Profile Theme
                     </p>
                   </div>
                 </div>
@@ -533,9 +550,9 @@ function ProfileThemesSection({ filters, setFilters, viewMode: _viewMode }: Sect
                 </div>
               )}
 
-              {/* Rarity Badge */}
+              {/* Category Badge */}
               <div className="absolute left-3 top-3 rounded-full bg-black/50 px-2 py-1 text-xs">
-                {preset.rarity || 'common'}
+                {preset.cardLayout || 'standard'}
               </div>
             </motion.div>
           );

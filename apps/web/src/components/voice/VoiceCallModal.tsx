@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  PhoneIcon,
   PhoneXMarkIcon,
   MicrophoneIcon,
   SpeakerWaveIcon,
@@ -31,15 +30,15 @@ export function VoiceCallModal({
   otherParticipantAvatar,
   incomingRoomId,
 }: VoiceCallModalProps) {
-  const { user } = useAuthStore();
+  const { user: _user } = useAuthStore();
   const [duration, setDuration] = useState(0);
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // WebRTC integration
   const {
     callState,
-    localStream,
-    remoteStream,
+    localStream: _localStream,
+    remoteStream: _remoteStream,
     startCall,
     answerCall,
     endCall: endWebRTCCall,
@@ -51,7 +50,7 @@ export function VoiceCallModal({
     onCallConnected: () => {
       toast.success('Call connected');
     },
-    onCallEnded: (reason) => {
+    onCallEnded: (_reason) => {
       handleEndCall();
     },
     onError: (error) => {

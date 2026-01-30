@@ -338,7 +338,7 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
         try {
           try {
             await api.post(`/api/v1/avatar-borders/${borderId}/purchase`);
-          } catch (purchaseError) {
+          } catch (_purchaseError) {
             // Fallback to legacy unlock endpoint
             await api.post(`/api/v1/avatar-borders/${borderId}/unlock`);
           }
@@ -371,15 +371,15 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
               avatar_border_preferences: mergedPreferences,
             },
           });
-          set((state) => ({
+          set({
             preferences: mergedPreferences,
             isSaving: false,
-          }));
+          });
         } catch (error) {
           console.error('Failed to update preferences:', error);
           // Apply optimistically
-          set((state) => ({
-            preferences: { ...state.preferences, ...updates },
+          set((prevState) => ({
+            preferences: { ...prevState.preferences, ...updates },
             isSaving: false,
           }));
         }

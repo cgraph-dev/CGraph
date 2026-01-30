@@ -1,7 +1,6 @@
-import { createLogger } from '@/lib/logger';
-
-// Logger available for error handling - currently all errors are re-thrown
-const _logger = createLogger('NotificationStore');
+// Logger reserved for future debugging
+// import { createLogger } from '@/lib/logger';
+// const _logger = createLogger('NotificationStore');
 
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';

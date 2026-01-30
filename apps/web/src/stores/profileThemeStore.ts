@@ -17,7 +17,7 @@ export {
   type ProfileCardConfig,
 } from './theme';
 
-import { useThemeStore, useProfileTheme, PROFILE_CARD_CONFIGS } from './theme';
+import { useThemeStore, useProfileTheme } from './theme';
 
 export default useThemeStore;
 

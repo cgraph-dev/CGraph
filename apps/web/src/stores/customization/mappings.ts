@@ -14,7 +14,7 @@ import type {
   ThemePreset,
   ChatBubbleStyle,
   BubbleAnimation,
-  ProfileCardStyle,
+  // ProfileCardStyle - reserved for future use
 } from './index';
 
 // =============================================================================

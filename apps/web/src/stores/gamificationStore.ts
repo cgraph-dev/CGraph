@@ -1,6 +1,6 @@
-import { createLogger } from '@/lib/logger';
-
-const _logger = createLogger('GamificationStore');
+// Logger reserved for future debugging
+// import { createLogger } from '@/lib/logger';
+// const _logger = createLogger('GamificationStore');
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';

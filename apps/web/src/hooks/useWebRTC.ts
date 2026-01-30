@@ -67,7 +67,7 @@ export interface UseWebRTCReturn {
  * ```
  */
 export function useWebRTC(options: UseWebRTCOptions = {}): UseWebRTCReturn {
-  const { conversationId, onCallConnected, onCallEnded, onError } = options;
+  const { conversationId: _conversationId, onCallConnected, onCallEnded, onError } = options;
   const socketManager = useSocket();
   const webrtcManagerRef = useRef<WebRTCManager | null>(null);
 

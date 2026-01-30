@@ -412,11 +412,13 @@ export interface ChatBubbleConfig {
   ownMessageText: string;
   otherMessageText: string;
   useGradient: boolean;
+  gradientDirection?: 'horizontal' | 'vertical' | 'diagonal';
 
   // Shape
   borderRadius: number;
   bubbleShape: 'rounded' | 'sharp' | 'super-rounded' | 'bubble' | 'modern';
   showTail: boolean;
+  borderStyle?: 'none' | 'solid' | 'dashed' | 'gradient';
 
   // Effects
   glassEffect: boolean;
@@ -432,7 +434,11 @@ export interface ChatBubbleConfig {
   maxWidth: number;
   spacing: number;
   showTimestamp: boolean;
+  timestampPosition?: 'inside' | 'outside' | 'hover';
   showAvatar: boolean;
+  avatarSize?: 'sm' | 'md' | 'lg';
+  alignSent?: 'left' | 'right';
+  alignReceived?: 'left' | 'right';
   groupMessages: boolean;
 }
 
@@ -442,9 +448,11 @@ const DEFAULT_CHAT_BUBBLE: ChatBubbleConfig = {
   ownMessageText: '#ffffff',
   otherMessageText: '#ffffff',
   useGradient: true,
+  gradientDirection: 'diagonal',
   borderRadius: 16,
   bubbleShape: 'rounded',
   showTail: true,
+  borderStyle: 'none',
   glassEffect: false,
   glassBlur: 10,
   shadowIntensity: 20,
@@ -454,7 +462,11 @@ const DEFAULT_CHAT_BUBBLE: ChatBubbleConfig = {
   maxWidth: 70,
   spacing: 4,
   showTimestamp: true,
+  timestampPosition: 'inside',
   showAvatar: true,
+  avatarSize: 'md',
+  alignSent: 'right',
+  alignReceived: 'left',
   groupMessages: true,
 };
 
@@ -577,14 +589,21 @@ export interface LegacyTheme {
   colorPreset: ColorPreset;
   avatarBorder: AvatarBorderType;
   avatarBorderColor: ColorPreset;
+  avatarSize?: 'sm' | 'md' | 'lg';
   chatBubbleStyle: ChatBubbleStylePreset;
   chatBubbleColor: ColorPreset;
   bubbleBorderRadius: number;
   bubbleShadowIntensity: number;
   bubbleGlassEffect: boolean;
+  bubbleShowTail?: boolean;
+  bubbleHoverEffect?: boolean;
+  bubbleEntranceAnimation?: 'none' | 'slide' | 'fade' | 'scale' | 'bounce' | 'flip';
   glowEnabled: boolean;
+  blurEnabled?: boolean;
   particlesEnabled: boolean;
+  animatedBackground?: boolean;
   effectPreset: EffectPreset;
+  effect?: EffectPreset;
   animationSpeed: AnimationSpeed;
   isPremium: boolean;
 }
@@ -609,6 +628,7 @@ interface ThemeActions {
   setAnimationSpeed: (speed: AnimationSpeed) => void;
   toggleParticles: () => void;
   toggleGlow: () => void;
+  toggleBlur: () => void;
   toggleAnimatedBackground: () => void;
 
   // Sync
@@ -675,7 +695,10 @@ export const useThemeStore = create<ThemeStore>()(
       // === Profile Theme ===
       setProfileTheme: (themeId) => set({ profileThemeId: themeId }),
       setProfileCardLayout: (layout) => set({ profileCardLayout: layout }),
-      getProfileCardConfig: () => PROFILE_CARD_CONFIGS[get().profileCardLayout],
+      getProfileCardConfig: () => {
+        const config = PROFILE_CARD_CONFIGS[get().profileCardLayout];
+        return config ?? PROFILE_CARD_CONFIGS.minimal!;
+      },
 
       // === Chat Bubble ===
       updateChatBubble: (updates) =>
@@ -697,6 +720,10 @@ export const useThemeStore = create<ThemeStore>()(
       setAnimationSpeed: (speed) => set({ animationSpeed: speed }),
       toggleParticles: () => set((s) => ({ particlesEnabled: !s.particlesEnabled })),
       toggleGlow: () => set((s) => ({ glowEnabled: !s.glowEnabled })),
+      toggleBlur: () =>
+        set((s) => ({
+          chatBubble: { ...s.chatBubble, glassEffect: !s.chatBubble.glassEffect },
+        })),
       toggleAnimatedBackground: () => set((s) => ({ animatedBackground: !s.animatedBackground })),
 
       // === Sync ===
@@ -760,14 +787,21 @@ export const useThemeStore = create<ThemeStore>()(
           colorPreset: state.colorPreset,
           avatarBorder: state.avatarBorder,
           avatarBorderColor: state.avatarBorderColor,
+          avatarSize: state.chatBubble.avatarSize,
           chatBubbleStyle: state.chatBubbleStyle,
           chatBubbleColor: state.chatBubbleColor,
           bubbleBorderRadius: state.chatBubble.borderRadius,
           bubbleShadowIntensity: state.chatBubble.shadowIntensity,
           bubbleGlassEffect: state.chatBubble.glassEffect,
+          bubbleShowTail: state.chatBubble.showTail,
+          bubbleHoverEffect: state.chatBubble.hoverEffect,
+          bubbleEntranceAnimation: state.chatBubble.entranceAnimation,
           glowEnabled: state.glowEnabled,
+          blurEnabled: state.chatBubble.glassEffect,
           particlesEnabled: state.particlesEnabled,
+          animatedBackground: state.animatedBackground,
           effectPreset: state.effectPreset,
+          effect: state.effectPreset,
           animationSpeed: state.animationSpeed,
           isPremium: state.isPremium,
         };
@@ -781,13 +815,20 @@ export const useThemeStore = create<ThemeStore>()(
           chatBubbleColor: updates.chatBubbleColor ?? state.chatBubbleColor,
           glowEnabled: updates.glowEnabled ?? state.glowEnabled,
           particlesEnabled: updates.particlesEnabled ?? state.particlesEnabled,
-          effectPreset: updates.effectPreset ?? state.effectPreset,
+          effectPreset: updates.effectPreset ?? updates.effect ?? state.effectPreset,
           animationSpeed: updates.animationSpeed ?? state.animationSpeed,
+          animatedBackground: updates.animatedBackground ?? state.animatedBackground,
           chatBubble: {
             ...state.chatBubble,
             borderRadius: updates.bubbleBorderRadius ?? state.chatBubble.borderRadius,
             shadowIntensity: updates.bubbleShadowIntensity ?? state.chatBubble.shadowIntensity,
-            glassEffect: updates.bubbleGlassEffect ?? state.chatBubble.glassEffect,
+            glassEffect:
+              updates.bubbleGlassEffect ?? updates.blurEnabled ?? state.chatBubble.glassEffect,
+            showTail: updates.bubbleShowTail ?? state.chatBubble.showTail,
+            hoverEffect: updates.bubbleHoverEffect ?? state.chatBubble.hoverEffect,
+            entranceAnimation:
+              updates.bubbleEntranceAnimation ?? state.chatBubble.entranceAnimation,
+            avatarSize: updates.avatarSize ?? state.chatBubble.avatarSize,
           },
         }));
       },
@@ -879,7 +920,8 @@ export function getColorsForPreset(preset: ColorPreset): ColorDefinition {
 export function getProfileCardConfigForLayout(
   layout: keyof typeof PROFILE_CARD_CONFIGS
 ): ProfileCardConfig {
-  return PROFILE_CARD_CONFIGS[layout];
+  const config = PROFILE_CARD_CONFIGS[layout];
+  return config ?? PROFILE_CARD_CONFIGS.minimal!;
 }
 
 export function getThemePreset(themeId: string): ThemePresetConfig | undefined {

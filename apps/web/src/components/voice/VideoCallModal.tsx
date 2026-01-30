@@ -32,7 +32,7 @@ export function VideoCallModal({
   otherParticipantAvatar,
   incomingRoomId,
 }: VideoCallModalProps) {
-  const { user } = useAuthStore();
+  const { user: _user } = useAuthStore();
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [duration, setDuration] = useState(0);
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -56,7 +56,7 @@ export function VideoCallModal({
     onCallConnected: () => {
       toast.success('Video call connected');
     },
-    onCallEnded: (reason) => {
+    onCallEnded: (_reason) => {
       handleEndCall();
     },
     onError: (error) => {

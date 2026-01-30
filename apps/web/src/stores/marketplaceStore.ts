@@ -1,6 +1,6 @@
-import { createLogger } from '@/lib/logger';
-
-const _logger = createLogger('MarketplaceStore');
+// Logger reserved for future debugging
+// import { createLogger } from '@/lib/logger';
+// const _logger = createLogger('MarketplaceStore');
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';

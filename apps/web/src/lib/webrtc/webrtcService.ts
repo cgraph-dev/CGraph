@@ -326,7 +326,8 @@ export class WebRTCManager {
     });
   }
 
-  private async pushToChannel(event: string, payload: Record<string, unknown>): Promise<unknown> {
+  // @ts-expect-error - Method prepared for future signaling implementation
+  private async _pushToChannel(event: string, payload: Record<string, unknown>): Promise<unknown> {
     if (!this.channel) {
       throw new Error('Channel not initialized');
     }

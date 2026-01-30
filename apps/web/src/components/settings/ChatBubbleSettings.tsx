@@ -98,9 +98,7 @@ export default function ChatBubbleSettings() {
         entranceAnimation: style.entranceAnimation,
         hoverEffect: style.hoverEffect ? 'lift' : 'none',
         glassEffect: style.glassEffect ? 'default' : 'none',
-        borderStyle: style.borderStyle,
-      }).catch(() => {
-        // Keep UI responsive even if sync fails
+        borderStyle: style.borderStyle ?? 'none',
       });
     }, 500);
 
@@ -169,9 +167,9 @@ export default function ChatBubbleSettings() {
             {style.showAvatar && (
               <div
                 className={`${
-                  style.avatarSize === 'small'
+                  style.avatarSize === 'sm'
                     ? 'h-6 w-6'
-                    : style.avatarSize === 'large'
+                    : style.avatarSize === 'lg'
                       ? 'h-10 w-10'
                       : 'h-8 w-8'
                 } flex-shrink-0 rounded-full bg-purple-600`}
@@ -211,9 +209,9 @@ export default function ChatBubbleSettings() {
             {style.showAvatar && (
               <div
                 className={`${
-                  style.avatarSize === 'small'
+                  style.avatarSize === 'sm'
                     ? 'h-6 w-6'
-                    : style.avatarSize === 'large'
+                    : style.avatarSize === 'lg'
                       ? 'h-10 w-10'
                       : 'h-8 w-8'
                 } flex-shrink-0 rounded-full bg-primary-600`}

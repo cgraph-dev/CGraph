@@ -33,6 +33,8 @@ export interface UserTheme {
   colorPreset?: ColorPreset;
   avatarBorder?: AvatarBorderType;
   avatarBorderColor?: ColorPreset;
+  chatBubbleColor?: ColorPreset;
+  chatBubbleStyle?: string;
   animationSpeed?: AnimationSpeed;
   particlesEnabled?: boolean;
   glowEnabled?: boolean;

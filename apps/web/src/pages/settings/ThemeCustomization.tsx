@@ -1,6 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useThemeStore, THEME_COLORS, type ThemeColorPreset, type AvatarBorderType, type ChatBubbleStylePreset, type EffectPreset } from '@/stores/themeStore';
+import {
+  useThemeStore,
+  THEME_COLORS,
+  type ThemeColorPreset,
+  type AvatarBorderType,
+  type ChatBubbleStylePreset,
+  type EffectPreset,
+} from '@/stores/themeStore';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { ThemedChatBubble } from '@/components/theme/ThemedChatBubble';
 
@@ -59,32 +66,30 @@ export default function ThemeCustomization() {
   return (
     <div className="min-h-screen bg-gray-950 text-white">
       {/* Header */}
-      <div className="border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+      <div className="sticky top-0 z-10 border-b border-gray-800 bg-gray-900/50 backdrop-blur-sm">
+        <div className="mx-auto max-w-7xl px-4 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold">Theme Customization</h1>
-              <p className="text-sm text-gray-400 mt-1">
-                Personalize your identity across CGraph
-              </p>
+              <p className="mt-1 text-sm text-gray-400">Personalize your identity across CGraph</p>
             </div>
 
             <div className="flex gap-2">
               <button
                 onClick={handleExport}
-                className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors text-sm"
+                className="rounded-lg bg-gray-800 px-4 py-2 text-sm transition-colors hover:bg-gray-700"
               >
                 Export Theme
               </button>
               <button
                 onClick={handleImport}
-                className="px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition-colors text-sm"
+                className="rounded-lg bg-gray-800 px-4 py-2 text-sm transition-colors hover:bg-gray-700"
               >
                 Import Theme
               </button>
               <button
                 onClick={resetTheme}
-                className="px-4 py-2 rounded-lg bg-red-600/20 hover:bg-red-600/30 text-red-400 transition-colors text-sm"
+                className="rounded-lg bg-red-600/20 px-4 py-2 text-sm text-red-400 transition-colors hover:bg-red-600/30"
               >
                 Reset to Default
               </button>
@@ -93,34 +98,30 @@ export default function ThemeCustomization() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="mx-auto max-w-7xl px-4 py-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Preview Panel */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="space-y-6 lg:col-span-1">
             <motion.div
-              className="rounded-xl border border-gray-800 bg-gray-900/50 p-6 backdrop-blur-sm sticky top-24"
+              className="sticky top-24 rounded-xl border border-gray-800 bg-gray-900/50 p-6 backdrop-blur-sm"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <h2 className="text-lg font-semibold mb-4">Live Preview</h2>
+              <h2 className="mb-4 text-lg font-semibold">Live Preview</h2>
 
               {/* Avatar Preview */}
-              <div className="flex justify-center mb-6">
-                <ThemedAvatar
-                  src="/default-avatar.png"
-                  alt="Preview"
-                  size="xlarge"
-                />
+              <div className="mb-6 flex justify-center">
+                <ThemedAvatar src="/default-avatar.png" alt="Preview" size="xlarge" />
               </div>
 
               {/* User Info */}
-              <div className="text-center mb-6">
+              <div className="mb-6 text-center">
                 <h3 className="text-lg font-bold">Your Name</h3>
                 <p className="text-sm text-gray-400">@username</p>
               </div>
 
               {/* Chat Bubble Previews */}
-              <div className="space-y-4 bg-gray-950/50 rounded-lg p-4">
+              <div className="space-y-4 rounded-lg bg-gray-950/50 p-4">
                 <ThemedChatBubble
                   message="This is how your messages will look!"
                   timestamp="12:34 PM"
@@ -142,8 +143,8 @@ export default function ThemeCustomization() {
               </div>
 
               {/* Theme Info */}
-              <div className="mt-6 p-4 rounded-lg bg-gray-800/50 border border-gray-700">
-                <div className="text-xs text-gray-400 space-y-1">
+              <div className="mt-6 rounded-lg border border-gray-700 bg-gray-800/50 p-4">
+                <div className="space-y-1 text-xs text-gray-400">
                   <div className="flex justify-between">
                     <span>Color:</span>
                     <span className="font-medium" style={{ color: colors.primary }}>
@@ -160,7 +161,7 @@ export default function ThemeCustomization() {
                   </div>
                   <div className="flex justify-between">
                     <span>Effect:</span>
-                    <span className="font-medium text-white">{theme.effect}</span>
+                    <span className="font-medium text-white">{theme.effectPreset}</span>
                   </div>
                 </div>
               </div>
@@ -170,19 +171,21 @@ export default function ThemeCustomization() {
           {/* Customization Panel */}
           <div className="lg:col-span-2">
             {/* Tabs */}
-            <div className="flex gap-2 mb-6 overflow-x-auto">
+            <div className="mb-6 flex gap-2 overflow-x-auto">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2 rounded-lg transition-all whitespace-nowrap ${
+                  className={`whitespace-nowrap rounded-lg px-4 py-2 transition-all ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r text-white shadow-lg'
-                      : 'bg-gray-800 text-gray-400 hover:bg-gray-750'
+                      : 'hover:bg-gray-750 bg-gray-800 text-gray-400'
                   }`}
                   style={
                     activeTab === tab.id
-                      ? { background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})` }
+                      ? {
+                          background: `linear-gradient(135deg, ${colors.primary}, ${colors.secondary})`,
+                        }
                       : undefined
                   }
                 >
@@ -231,15 +234,15 @@ function ThemeTab() {
     <div className="space-y-6">
       {/* Quick Presets */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Quick Presets</h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <h3 className="mb-4 text-lg font-semibold">Quick Presets</h3>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {presets.map((preset) => (
             <button
               key={preset.id}
               onClick={() => applyPreset(preset.id as any)}
-              className="p-4 rounded-lg border border-gray-700 bg-gray-800/50 hover:bg-gray-800 transition-all text-left"
+              className="rounded-lg border border-gray-700 bg-gray-800/50 p-4 text-left transition-all hover:bg-gray-800"
             >
-              <div className="font-medium text-sm mb-1">{preset.name}</div>
+              <div className="mb-1 text-sm font-medium">{preset.name}</div>
               <div className="text-xs text-gray-400">{preset.description}</div>
             </button>
           ))}
@@ -248,8 +251,8 @@ function ThemeTab() {
 
       {/* Color Themes */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Color Theme</h3>
-        <div className="grid grid-cols-4 md:grid-cols-6 gap-3">
+        <h3 className="mb-4 text-lg font-semibold">Color Theme</h3>
+        <div className="grid grid-cols-4 gap-3 md:grid-cols-6">
           {(Object.keys(THEME_COLORS) as ThemeColorPreset[]).map((colorKey) => {
             const color = THEME_COLORS[colorKey];
             return (
@@ -257,9 +260,7 @@ function ThemeTab() {
                 key={colorKey}
                 onClick={() => setColorPreset(colorKey)}
                 className={`relative aspect-square rounded-lg transition-all ${
-                  theme.colorPreset === colorKey
-                    ? 'ring-2 ring-white scale-110'
-                    : 'hover:scale-105'
+                  theme.colorPreset === colorKey ? 'scale-110 ring-2 ring-white' : 'hover:scale-105'
                 }`}
                 style={{
                   background: `linear-gradient(135deg, ${color.primary}, ${color.secondary})`,
@@ -301,22 +302,20 @@ function AvatarTab() {
     <div className="space-y-6">
       {/* Border Style */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Border Style</h3>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+        <h3 className="mb-4 text-lg font-semibold">Border Style</h3>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
           {borders.map((border) => (
             <button
               key={border.type}
               onClick={() => setAvatarBorder(border.type)}
-              className={`p-3 rounded-lg border transition-all ${
+              className={`rounded-lg border p-3 transition-all ${
                 theme.avatarBorder === border.type
                   ? 'border-emerald-500 bg-emerald-500/10'
                   : 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
               }`}
             >
               <div className="text-sm font-medium">{border.name}</div>
-              {border.premium && (
-                <span className="text-xs text-yellow-400">👑 Premium</span>
-              )}
+              {border.premium && <span className="text-xs text-yellow-400">👑 Premium</span>}
             </button>
           ))}
         </div>
@@ -324,19 +323,19 @@ function AvatarTab() {
 
       {/* Avatar Size */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Avatar Size</h3>
+        <h3 className="mb-4 text-lg font-semibold">Avatar Size</h3>
         <div className="flex gap-3">
-          {(['small', 'medium', 'large'] as const).map((size) => (
+          {(['sm', 'md', 'lg'] as const).map((size) => (
             <button
               key={size}
               onClick={() => updateTheme({ avatarSize: size })}
-              className={`px-4 py-2 rounded-lg border transition-all capitalize ${
+              className={`rounded-lg border px-4 py-2 capitalize transition-all ${
                 theme.avatarSize === size
                   ? 'border-emerald-500 bg-emerald-500/10 text-white'
                   : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:bg-gray-800'
               }`}
             >
-              {size}
+              {size === 'sm' ? 'Small' : size === 'md' ? 'Medium' : 'Large'}
             </button>
           ))}
         </div>
@@ -364,13 +363,13 @@ function ChatTab() {
     <div className="space-y-6">
       {/* Bubble Style */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Bubble Style</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <h3 className="mb-4 text-lg font-semibold">Bubble Style</h3>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {styles.map((style) => (
             <button
               key={style.type}
               onClick={() => setChatBubbleStyle(style.type)}
-              className={`p-3 rounded-lg border transition-all ${
+              className={`rounded-lg border p-3 transition-all ${
                 theme.chatBubbleStyle === style.type
                   ? 'border-emerald-500 bg-emerald-500/10'
                   : 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
@@ -384,9 +383,7 @@ function ChatTab() {
 
       {/* Border Radius */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">
-          Border Radius: {theme.bubbleBorderRadius}px
-        </h3>
+        <h3 className="mb-4 text-lg font-semibold">Border Radius: {theme.bubbleBorderRadius}px</h3>
         <input
           type="range"
           min="0"
@@ -399,7 +396,7 @@ function ChatTab() {
 
       {/* Shadow Intensity */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">
+        <h3 className="mb-4 text-lg font-semibold">
           Shadow Intensity: {theme.bubbleShadowIntensity}%
         </h3>
         <input
@@ -414,33 +411,33 @@ function ChatTab() {
 
       {/* Options */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Options</h3>
+        <h3 className="mb-4 text-lg font-semibold">Options</h3>
         <div className="space-y-3">
-          <label className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
             <span>Show Tail</span>
             <input
               type="checkbox"
-              checked={theme.bubbleShowTail}
+              checked={theme.bubbleShowTail ?? true}
               onChange={(e) => updateTheme({ bubbleShowTail: e.target.checked })}
-              className="w-5 h-5"
+              className="h-5 w-5"
             />
           </label>
-          <label className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
             <span>Glass Effect</span>
             <input
               type="checkbox"
               checked={theme.bubbleGlassEffect}
               onChange={(e) => updateTheme({ bubbleGlassEffect: e.target.checked })}
-              className="w-5 h-5"
+              className="h-5 w-5"
             />
           </label>
-          <label className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
             <span>Hover Effect</span>
             <input
               type="checkbox"
-              checked={theme.bubbleHoverEffect}
+              checked={theme.bubbleHoverEffect ?? true}
               onChange={(e) => updateTheme({ bubbleHoverEffect: e.target.checked })}
-              className="w-5 h-5"
+              className="h-5 w-5"
             />
           </label>
         </div>
@@ -474,14 +471,14 @@ function EffectsTab() {
     <div className="space-y-6">
       {/* Effect Style */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Effect Style</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <h3 className="mb-4 text-lg font-semibold">Effect Style</h3>
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
           {effects.map((effect) => (
             <button
               key={effect.type}
               onClick={() => setEffect(effect.type)}
-              className={`p-3 rounded-lg border transition-all ${
-                theme.effect === effect.type
+              className={`rounded-lg border p-3 transition-all ${
+                theme.effectPreset === effect.type
                   ? 'border-emerald-500 bg-emerald-500/10'
                   : 'border-gray-700 bg-gray-800/50 hover:bg-gray-800'
               }`}
@@ -494,13 +491,13 @@ function EffectsTab() {
 
       {/* Animation Speed */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Animation Speed</h3>
+        <h3 className="mb-4 text-lg font-semibold">Animation Speed</h3>
         <div className="flex gap-3">
           {(['slow', 'normal', 'fast'] as const).map((speed) => (
             <button
               key={speed}
               onClick={() => setAnimationSpeed(speed)}
-              className={`flex-1 px-4 py-2 rounded-lg border transition-all capitalize ${
+              className={`flex-1 rounded-lg border px-4 py-2 capitalize transition-all ${
                 theme.animationSpeed === speed
                   ? 'border-emerald-500 bg-emerald-500/10 text-white'
                   : 'border-gray-700 bg-gray-800/50 text-gray-400 hover:bg-gray-800'
@@ -514,9 +511,9 @@ function EffectsTab() {
 
       {/* Toggle Effects */}
       <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Visual Effects</h3>
+        <h3 className="mb-4 text-lg font-semibold">Visual Effects</h3>
         <div className="space-y-3">
-          <label className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
             <div>
               <div className="font-medium">Particles</div>
               <div className="text-xs text-gray-400">Animated particle effects</div>
@@ -525,10 +522,10 @@ function EffectsTab() {
               type="checkbox"
               checked={theme.particlesEnabled}
               onChange={toggleParticles}
-              className="w-5 h-5"
+              className="h-5 w-5"
             />
           </label>
-          <label className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
             <div>
               <div className="font-medium">Glow</div>
               <div className="text-xs text-gray-400">Glowing borders and effects</div>
@@ -537,31 +534,31 @@ function EffectsTab() {
               type="checkbox"
               checked={theme.glowEnabled}
               onChange={toggleGlow}
-              className="w-5 h-5"
+              className="h-5 w-5"
             />
           </label>
-          <label className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
             <div>
               <div className="font-medium">Blur</div>
               <div className="text-xs text-gray-400">Backdrop blur effects</div>
             </div>
             <input
               type="checkbox"
-              checked={theme.blurEnabled}
+              checked={theme.blurEnabled ?? false}
               onChange={toggleBlur}
-              className="w-5 h-5"
+              className="h-5 w-5"
             />
           </label>
-          <label className="flex items-center justify-between p-3 rounded-lg bg-gray-800/50">
+          <label className="flex items-center justify-between rounded-lg bg-gray-800/50 p-3">
             <div>
               <div className="font-medium">Animated Background</div>
               <div className="text-xs text-gray-400">Moving gradient backgrounds</div>
             </div>
             <input
               type="checkbox"
-              checked={theme.animatedBackground}
+              checked={theme.animatedBackground ?? false}
               onChange={toggleAnimatedBackground}
-              className="w-5 h-5"
+              className="h-5 w-5"
             />
           </label>
         </div>

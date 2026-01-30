@@ -242,11 +242,23 @@ interface ClassifyRule<T> {
  * const category = classifyByRules('apple', [{ category: 'fruit', test: () => true }], 'unknown');
  * // => 'fruit'
  */
+/* eslint-disable no-redeclare */
+export function classifyByRules<T>(
+  items: T,
+  rules: Array<ClassifyRule<T>>,
+  defaultCategory: string
+): string;
+export function classifyByRules<T>(
+  items: T[],
+  rules: Array<ClassifyRule<T>>,
+  defaultCategory?: string
+): Record<string, T[]>;
 export function classifyByRules<T>(
   items: T | T[],
   rules: Array<ClassifyRule<T>>,
   defaultCategory?: string
 ): Record<string, T[]> | string {
+  /* eslint-enable no-redeclare */
   // Single item classification (returns string)
   if (!Array.isArray(items) && defaultCategory !== undefined) {
     for (const rule of rules) {
@@ -272,13 +284,13 @@ export function classifyByRules<T>(
     for (const rule of rules) {
       if (rule.test(item)) {
         const key = rule.name ?? rule.category ?? 'unknown';
-        result[key].push(item);
+        result[key]?.push(item);
         matched = true;
         break;
       }
     }
     if (!matched) {
-      result['other'].push(item);
+      result['other']?.push(item);
     }
   }
 
