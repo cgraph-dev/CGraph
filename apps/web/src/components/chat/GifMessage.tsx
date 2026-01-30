@@ -29,7 +29,11 @@ export interface GifMessageProps {
  * - Loading state
  * - Error fallback
  */
-export function GifMessage({ message, isOwnMessage, className = '' }: GifMessageProps) {
+export function GifMessage({
+  message,
+  isOwnMessage: _isOwnMessage,
+  className = '',
+}: GifMessageProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
   const [showFullscreen, setShowFullscreen] = useState(false);

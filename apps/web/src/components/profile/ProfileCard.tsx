@@ -12,6 +12,7 @@ import {
   type ProfileTheme,
   type ProfileCardConfig,
   type ProfileHoverEffect,
+  type ThemePresetConfig,
 } from '@/stores/profileThemeStore';
 import type { Achievement } from '@/stores/gamificationStore';
 
@@ -66,7 +67,7 @@ export interface ProfileCardUser {
 
 export interface ProfileCardProps {
   user: ProfileCardUser;
-  theme?: ProfileTheme;
+  theme?: ProfileTheme | ThemePresetConfig;
   cardConfig?: ProfileCardConfig;
   className?: string;
   onClick?: () => void;
@@ -227,7 +228,7 @@ interface LayoutProps {
   user: ProfileCardUser;
   config: ProfileCardConfig;
   sizeConfig: typeof SIZE_CONFIG.md;
-  theme: ProfileTheme | null;
+  theme: ProfileTheme | ThemePresetConfig | null | undefined;
 }
 
 const MinimalLayout = memo(function MinimalLayout({

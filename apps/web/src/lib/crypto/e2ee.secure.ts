@@ -25,6 +25,16 @@
 
 import SecureStorage from './secureStorage';
 
+// Import types for local use
+import type {
+  KeyBundle,
+  IdentityKeyPair,
+  OneTimePreKey,
+  ServerPrekeyBundle,
+  EncryptedMessage,
+  Session,
+} from './e2ee';
+
 // Re-export all utility functions and types from original implementation
 export {
   arrayBufferToBase64,
@@ -76,9 +86,11 @@ const SECURE_KEYS = {
  * - Encryption key derived from user password
  * - Protection against XSS attacks
  */
-export async function storeKeyBundle(bundle: any): Promise<void> {
+export async function storeKeyBundle(bundle: KeyBundle): Promise<void> {
   if (!SecureStorage.isReady()) {
-    throw new Error('SecureStorage not initialized. Call SecureStorage.initialize(password) first.');
+    throw new Error(
+      'SecureStorage not initialized. Call SecureStorage.initialize(password) first.'
+    );
   }
 
   const { exportPublicKey, exportPrivateKey, arrayBufferToBase64 } = await import('./e2ee');
@@ -111,7 +123,7 @@ export async function storeKeyBundle(bundle: any): Promise<void> {
 /**
  * Load identity key pair from ENCRYPTED storage
  */
-export async function loadIdentityKeyPair(): Promise<any | null> {
+export async function loadIdentityKeyPair(): Promise<IdentityKeyPair | null> {
   if (!SecureStorage.isReady()) {
     return null;
   }
@@ -187,14 +199,16 @@ export async function isE2EESetUp(): Promise<boolean> {
 /**
  * Format key bundle for server registration
  */
-export async function formatKeysForRegistration(bundle: any): Promise<Record<string, unknown>> {
+export async function formatKeysForRegistration(
+  bundle: KeyBundle
+): Promise<Record<string, unknown>> {
   const { exportPublicKey, arrayBufferToBase64 } = await import('./e2ee');
 
   const identityPublic = await exportPublicKey(bundle.identityKey.keyPair.publicKey);
   const signedPreKeyPublic = await exportPublicKey(bundle.signedPreKey.keyPair.publicKey);
 
   const oneTimePreKeysFormatted = await Promise.all(
-    bundle.oneTimePreKeys.map(async (pk: any) => ({
+    bundle.oneTimePreKeys.map(async (pk: OneTimePreKey) => ({
       public_key: arrayBufferToBase64(await exportPublicKey(pk.keyPair.publicKey)),
       key_id: pk.keyId,
     }))
@@ -218,8 +232,8 @@ export async function formatKeysForRegistration(bundle: any): Promise<Record<str
  */
 export async function encryptForRecipient(
   plaintext: string,
-  recipientBundle: any
-): Promise<any> {
+  recipientBundle: ServerPrekeyBundle
+): Promise<EncryptedMessage> {
   const identityKey = await loadIdentityKeyPair();
   if (!identityKey) {
     throw new Error('Identity key not found - call setupE2EE first');
@@ -246,7 +260,7 @@ export async function encryptForRecipient(
  * Decrypt a message (uses encrypted key storage)
  */
 export async function decryptFromSender(
-  encryptedMessage: any,
+  encryptedMessage: EncryptedMessage,
   senderIdentityKey: ArrayBuffer
 ): Promise<string> {
   const identityKey = await loadIdentityKeyPair();
@@ -256,13 +270,8 @@ export async function decryptFromSender(
     throw new Error('Keys not found');
   }
 
-  const {
-    importPublicKey,
-    base64ToArrayBuffer,
-    deriveSharedSecret,
-    hkdf,
-    decryptAES,
-  } = await import('./e2ee');
+  const { importPublicKey, base64ToArrayBuffer, deriveSharedSecret, hkdf, decryptAES } =
+    await import('./e2ee');
 
   // Import sender's ephemeral key
   const ephemeralKey = await importPublicKey(
@@ -297,7 +306,7 @@ export async function decryptFromSender(
 /**
  * Session management (ENCRYPTED storage)
  */
-export async function loadSessions(): Promise<Map<string, any>> {
+export async function loadSessions(): Promise<Map<string, Session>> {
   if (!SecureStorage.isReady()) {
     return new Map();
   }
@@ -313,7 +322,7 @@ export async function loadSessions(): Promise<Map<string, any>> {
   }
 }
 
-export async function saveSession(recipientId: string, session: any): Promise<void> {
+export async function saveSession(recipientId: string, session: Session): Promise<void> {
   if (!SecureStorage.isReady()) {
     throw new Error('SecureStorage not initialized');
   }
@@ -321,7 +330,7 @@ export async function saveSession(recipientId: string, session: any): Promise<vo
   const sessions = await loadSessions();
   sessions.set(recipientId, session);
 
-  const obj: Record<string, any> = {};
+  const obj: Record<string, Session> = {};
   for (const [id, s] of sessions) {
     obj[id] = s;
   }
@@ -329,7 +338,7 @@ export async function saveSession(recipientId: string, session: any): Promise<vo
   await SecureStorage.setItem(SECURE_KEYS.SESSIONS, JSON.stringify(obj));
 }
 
-export async function getSession(recipientId: string): Promise<any | null> {
+export async function getSession(recipientId: string): Promise<Session | null> {
   const sessions = await loadSessions();
   return sessions.get(recipientId) || null;
 }

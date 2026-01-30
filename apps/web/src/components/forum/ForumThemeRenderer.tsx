@@ -593,9 +593,19 @@ export function useForumThemeStyles() {
     };
   }
 
-  const { colors, borderRadius, glassmorphism, shadows } = theme;
+  const { borderRadius = 'md', glassmorphism = false, shadows = 'subtle' } = theme;
+  const colors = theme.colors ?? {
+    primary: '#3b82f6',
+    secondary: '#64748b',
+    background: '#ffffff',
+    surface: '#f8fafc',
+    textPrimary: '#1e293b',
+    textSecondary: '#64748b',
+    border: '#e2e8f0',
+    accent: '#8b5cf6',
+  };
 
-  const radiusMap = {
+  const radiusMap: Record<string, string> = {
     none: '0',
     sm: '0.25rem',
     md: '0.5rem',
@@ -603,7 +613,7 @@ export function useForumThemeStyles() {
     full: '9999px',
   };
 
-  const shadowMap = {
+  const shadowMap: Record<string, string> = {
     none: 'none',
     subtle: '0 1px 3px rgba(0,0,0,0.1)',
     medium: '0 4px 6px rgba(0,0,0,0.1)',
@@ -619,19 +629,19 @@ export function useForumThemeStyles() {
       backgroundColor: glassmorphism ? 'rgba(255,255,255,0.05)' : colors.surface,
       backdropFilter: glassmorphism ? 'blur(10px)' : 'none',
       border: `1px solid ${colors.border}`,
-      borderRadius: radiusMap[borderRadius],
-      boxShadow: shadowMap[shadows],
+      borderRadius: radiusMap[borderRadius] ?? radiusMap.md,
+      boxShadow: shadowMap[shadows] ?? shadowMap.subtle,
     },
     buttonStyle: {
       backgroundColor: colors.primary,
       color: '#ffffff',
-      borderRadius: radiusMap[borderRadius],
+      borderRadius: radiusMap[borderRadius] ?? radiusMap.md,
     },
     inputStyle: {
       backgroundColor: colors.surface,
       border: `1px solid ${colors.border}`,
       color: colors.textPrimary,
-      borderRadius: radiusMap[borderRadius],
+      borderRadius: radiusMap[borderRadius] ?? radiusMap.md,
     },
   };
 }

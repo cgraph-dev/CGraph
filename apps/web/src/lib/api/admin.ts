@@ -1,6 +1,6 @@
 /**
  * Admin API Client
- * 
+ *
  * Provides type-safe API calls for the admin dashboard.
  * All endpoints require admin authentication.
  */
@@ -119,6 +119,108 @@ export interface SystemConfig {
   maxFileUploadMb: number;
   rateLimitEnabled: boolean;
   rateLimitRequestsPerMinute: number;
+}
+
+// ============================================================================
+// API Response Types (snake_case from backend)
+// ============================================================================
+
+/** Raw API response for system metrics (snake_case) */
+interface ApiMetricsResponse {
+  users?: {
+    total?: number;
+    new_today?: number;
+    active_24h?: number;
+    premium?: number;
+    banned?: number;
+  };
+  messages?: {
+    total?: number;
+    today?: number;
+    voice_messages?: number;
+  };
+  groups?: {
+    total?: number;
+    public?: number;
+    private?: number;
+  };
+  system?: {
+    uptime_seconds?: number;
+    memory_usage_mb?: number;
+    cpu_usage_percent?: number;
+    db_connections?: number;
+  };
+  jobs?: {
+    pending?: number;
+    executing?: number;
+    failed?: number;
+    completed_24h?: number;
+  };
+  collected_at: string;
+}
+
+/** Raw API response for realtime stats (snake_case) */
+interface ApiRealtimeResponse {
+  active_connections?: number;
+  requests_per_minute?: number;
+  database_latency_ms?: number;
+  cache_hit_rate?: number;
+  memory_usage_mb?: number;
+  timestamp: string;
+}
+
+/** Raw API response for user data (snake_case) */
+interface ApiUserResponse {
+  id: string;
+  username: string;
+  email: string;
+  display_name: string | null;
+  avatar_url: string | null;
+  status: 'active' | 'banned' | 'deleted';
+  inserted_at: string;
+  last_seen_at: string | null;
+  is_premium?: boolean;
+  banned_at: string | null;
+  ban_reason: string | null;
+}
+
+/** Raw API response for report data (snake_case) */
+interface ApiReportResponse {
+  id: string;
+  type: 'spam' | 'harassment' | 'hate_speech' | 'illegal' | 'other';
+  status: 'pending' | 'resolved' | 'dismissed';
+  content_type: 'message' | 'post' | 'user' | 'group';
+  content_id: string;
+  reporter_id: string;
+  reporter_username: string;
+  reason: string;
+  inserted_at: string;
+  resolved_at: string | null;
+  resolved_by: string | null;
+}
+
+/** Raw API response for audit entry (snake_case) */
+interface ApiAuditResponse {
+  id: string;
+  category: string;
+  action: string;
+  actor_id: string;
+  actor_username: string;
+  target_id: string | null;
+  metadata?: Record<string, unknown>;
+  ip_address: string;
+  timestamp: string;
+}
+
+/** Raw API response for system config (snake_case) */
+interface ApiConfigResponse {
+  registration_enabled?: boolean;
+  email_verification_required?: boolean;
+  maintenance_mode?: boolean;
+  max_message_length?: number;
+  max_file_upload_mb?: number;
+  rate_limit_enabled?: boolean;
+  rate_limit_requests_per_minute?: number;
 }
 
 // ============================================================================
@@ -268,14 +370,14 @@ export const adminApi = {
       rate_limit_enabled: updates.rateLimitEnabled,
       rate_limit_requests_per_minute: updates.rateLimitRequestsPerMinute,
     };
-    
+
     // Remove undefined values
-    Object.keys(payload).forEach(key => {
+    Object.keys(payload).forEach((key) => {
       if (payload[key as keyof typeof payload] === undefined) {
         delete payload[key as keyof typeof payload];
       }
     });
-    
+
     const response = await apiClient.put('/api/v1/admin/config', payload);
     return transformConfigResponse(response.data.data);
   },
@@ -294,7 +396,10 @@ export const adminApi = {
   /**
    * Trigger a manual job (e.g., cleanup, cache clear)
    */
-  async triggerJob(jobName: string, params?: Record<string, unknown>): Promise<{
+  async triggerJob(
+    jobName: string,
+    params?: Record<string, unknown>
+  ): Promise<{
     jobId: string;
     status: string;
   }> {
@@ -311,11 +416,7 @@ export const adminApi = {
   /**
    * Get failed jobs
    */
-  async getFailedJobs(params: {
-    queue?: string;
-    page?: number;
-    perPage?: number;
-  }): Promise<{
+  async getFailedJobs(params: { queue?: string; page?: number; perPage?: number }): Promise<{
     jobs: Array<{
       id: string;
       queue: string;
@@ -379,7 +480,7 @@ export const adminApi = {
 // Response Transformers (snake_case to camelCase)
 // ============================================================================
 
-function transformMetricsResponse(data: any): SystemMetrics {
+function transformMetricsResponse(data: ApiMetricsResponse): SystemMetrics {
   return {
     users: {
       total: data.users?.total || 0,
@@ -414,7 +515,7 @@ function transformMetricsResponse(data: any): SystemMetrics {
   };
 }
 
-function transformRealtimeResponse(data: any): RealtimeStats {
+function transformRealtimeResponse(data: ApiRealtimeResponse): RealtimeStats {
   return {
     activeConnections: data.active_connections || 0,
     requestsPerMinute: data.requests_per_minute || 0,
@@ -425,7 +526,7 @@ function transformRealtimeResponse(data: any): RealtimeStats {
   };
 }
 
-function transformUserResponse(data: any): AdminUser {
+function transformUserResponse(data: ApiUserResponse): AdminUser {
   return {
     id: data.id,
     username: data.username,
@@ -441,7 +542,7 @@ function transformUserResponse(data: any): AdminUser {
   };
 }
 
-function transformReportResponse(data: any): Report {
+function transformReportResponse(data: ApiReportResponse): Report {
   return {
     id: data.id,
     type: data.type,
@@ -457,7 +558,7 @@ function transformReportResponse(data: any): Report {
   };
 }
 
-function transformAuditResponse(data: any): AuditEntry {
+function transformAuditResponse(data: ApiAuditResponse): AuditEntry {
   return {
     id: data.id,
     category: data.category,
@@ -471,7 +572,7 @@ function transformAuditResponse(data: any): AuditEntry {
   };
 }
 
-function transformConfigResponse(data: any): SystemConfig {
+function transformConfigResponse(data: ApiConfigResponse): SystemConfig {
   return {
     registrationEnabled: data.registration_enabled ?? true,
     emailVerificationRequired: data.email_verification_required ?? true,

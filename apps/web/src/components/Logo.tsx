@@ -9,7 +9,7 @@
  * - Overlapping C and G in the center
  */
 
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { useMemo, useId } from 'react';
 
 export type LogoColorVariant =
@@ -98,7 +98,7 @@ export function LogoIcon({
   );
 
   // Animation variants for trace drawing
-  const pathVariants = {
+  const pathVariants: Variants = {
     hidden: { pathLength: 0, opacity: 0 },
     visible: (delay: number) => ({
       pathLength: 1,
@@ -110,7 +110,7 @@ export function LogoIcon({
     }),
   };
 
-  const nodeVariants = {
+  const nodeVariants: Variants = {
     hidden: { scale: 0, opacity: 0 },
     visible: (delay: number) => ({
       scale: 1,
@@ -124,7 +124,7 @@ export function LogoIcon({
     }),
   };
 
-  const glowVariants = {
+  const glowVariants: Variants = {
     hidden: { opacity: 0 },
     visible: (delay: number) => ({
       opacity: [0, 1, 0.7],
