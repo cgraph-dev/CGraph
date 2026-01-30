@@ -12,6 +12,7 @@ import {
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import { useGamificationStore } from '@/stores/gamificationStore';
+import { gamificationLogger as logger } from '@/lib/logger';
 
 /**
  * ProgressionCustomization Component
@@ -306,7 +307,7 @@ export default function ProgressionCustomization() {
   // Handle claiming daily reward
   const handleClaimReward = (day: number) => {
     // TODO: Implement API call to claim daily reward
-    console.log(`Claiming reward for day ${day}`);
+    logger.log(`Claiming reward for day ${day}`);
     // In production, this would:
     // 1. Call API to claim the reward
     // 2. Update local state to mark the reward as claimed

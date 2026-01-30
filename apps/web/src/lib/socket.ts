@@ -152,11 +152,9 @@ function getSocketUrl(): string {
 const SOCKET_URL = getSocketUrl();
 
 // Debug logging for development only
-if (import.meta.env.DEV) {
-  console.log('[Socket] Configured URL:', SOCKET_URL);
-  console.log('[Socket] VITE_WS_URL:', import.meta.env.VITE_WS_URL);
-  console.log('[Socket] VITE_API_URL:', import.meta.env.VITE_API_URL);
-}
+logger.debug('Configured URL:', SOCKET_URL);
+logger.debug('VITE_WS_URL:', import.meta.env.VITE_WS_URL);
+logger.debug('VITE_API_URL:', import.meta.env.VITE_API_URL);
 
 class SocketManager {
   private socket: Socket | null = null;
@@ -182,23 +180,22 @@ class SocketManager {
     }
 
     const token = useAuthStore.getState().token;
-    if (import.meta.env.DEV) console.log('[Socket] connect() called, token exists:', !!token);
+    logger.debug('connect() called, token exists:', !!token);
     if (!token) {
       logger.warn('Cannot connect to socket: no auth token');
       return Promise.resolve();
     }
 
     if (this.socket?.isConnected()) {
-      if (import.meta.env.DEV) console.log('[Socket] Already connected');
+      logger.debug('Already connected');
       return Promise.resolve();
     }
 
-    if (import.meta.env.DEV) console.log('[Socket] Connecting to:', SOCKET_URL);
+    logger.debug('Connecting to:', SOCKET_URL);
     this.connectionPromise = new Promise<void>((resolve, reject) => {
       // Connection timeout - don't hang forever
       const connectionTimeout = setTimeout(() => {
         logger.error('Socket connection timeout after 15s');
-        if (import.meta.env.DEV) console.log('[Socket] ⏱️ Connection timeout');
         this.connectionPromise = null;
         reject(new Error('Socket connection timeout'));
       }, 15000);
@@ -214,8 +211,7 @@ class SocketManager {
 
       this.socket.onOpen(() => {
         clearTimeout(connectionTimeout);
-        logger.log('Socket connected');
-        if (import.meta.env.DEV) console.log('[Socket] ✅ Connected successfully to:', SOCKET_URL);
+        logger.log('Socket connected to:', SOCKET_URL);
         if (this.reconnectTimer) {
           clearTimeout(this.reconnectTimer);
           this.reconnectTimer = null;
@@ -226,14 +222,12 @@ class SocketManager {
 
       this.socket.onClose(() => {
         logger.log('Socket disconnected');
-        if (import.meta.env.DEV) console.log('[Socket] ⚠️ Disconnected');
         this.connectionPromise = null;
       });
 
       this.socket.onError((error: unknown) => {
         clearTimeout(connectionTimeout);
         logger.error('Socket error:', error);
-        if (import.meta.env.DEV) console.log('[Socket] ❌ Error:', error);
         this.connectionPromise = null;
         // Reject on error - don't proceed with broken socket
         reject(error);
@@ -243,8 +237,6 @@ class SocketManager {
     }).catch((err) => {
       // Log but don't throw - allow app to continue in degraded mode
       logger.warn('Socket connection failed, app will work in offline mode:', err);
-      if (import.meta.env.DEV)
-        console.log('[Socket] ⚠️ Connection failed, continuing in offline mode');
     });
 
     return this.connectionPromise ?? Promise.resolve();
@@ -355,12 +347,11 @@ class SocketManager {
     // Handle new conversation created (real-time sync for multi-device)
     channel.on('conversation_created', (payload) => {
       logger.log('New conversation created:', payload);
-      if (import.meta.env.DEV) console.log('[Socket] 🆕 conversation_created event:', payload);
       const data = payload as { conversation: Record<string, unknown> };
       if (data.conversation) {
         // Normalize the conversation data before adding to store
         const normalized = normalizeConversation(data.conversation) as unknown as Conversation;
-        if (import.meta.env.DEV) console.log('[Socket] Normalized conversation:', normalized);
+        logger.debug('Normalized conversation:', normalized);
         useChatStore.getState().addConversation(normalized);
       }
     });
@@ -409,7 +400,6 @@ class SocketManager {
     // Handle incoming WebRTC calls
     channel.on('incoming_call', (payload) => {
       logger.log('Incoming call received:', payload);
-      if (import.meta.env.DEV) console.log('[Socket] 📞 Incoming call:', payload);
       const data = payload as { room_id: string; caller_id: string; type: 'audio' | 'video' };
 
       // Fetch caller info from auth store or friends list
@@ -434,12 +424,9 @@ class SocketManager {
       .join()
       .receive('ok', () => {
         logger.log(`Joined user channel: ${topic}`);
-        if (import.meta.env.DEV) console.log(`[Socket] ✅ Joined user channel: ${topic}`);
       })
       .receive('error', (resp: unknown) => {
         logger.error(`Failed to join user channel: ${topic}`, resp);
-        if (import.meta.env.DEV)
-          console.log(`[Socket] ❌ Failed to join user channel: ${topic}`, resp);
         this.channels.delete(topic);
       });
 

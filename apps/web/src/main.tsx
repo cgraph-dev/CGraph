@@ -1,6 +1,9 @@
-if (import.meta.env.DEV) {
-  console.log('[CGraph] Module loading - start');
-}
+// Startup debug logging (only in development)
+const debugLog = import.meta.env.DEV
+  ? (msg: string, ...args: unknown[]) => console.debug('[CGraph]', msg, ...args)
+  : () => {};
+
+debugLog('Module loading - start');
 
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
@@ -17,16 +20,9 @@ import { NotificationProvider } from './providers/NotificationProvider';
 import AnimatedLogo from './components/AnimatedLogo';
 import './index.css';
 
-if (import.meta.env.DEV) {
-  console.log('[CGraph] All imports completed successfully');
-}
-
-// Development mode logging
-if (import.meta.env.DEV) {
-  console.log('[CGraph] Application initializing...');
-  console.log('[CGraph] Environment:', import.meta.env.MODE);
-  console.log('[CGraph] API URL:', import.meta.env.VITE_API_URL || 'http://localhost:4000');
-}
+debugLog('All imports completed');
+debugLog('Environment:', import.meta.env.MODE);
+debugLog('API URL:', import.meta.env.VITE_API_URL || 'http://localhost:4000');
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -142,14 +138,10 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('[CGraph] Unhandled promise rejection:', event.reason);
 });
 
-if (import.meta.env.DEV) {
-  console.log('[CGraph] About to call ReactDOM.createRoot...');
-}
+debugLog('Creating React root...');
 try {
   const root = ReactDOM.createRoot(rootElement);
-  if (import.meta.env.DEV) {
-    console.log('[CGraph] Root created, about to render...');
-  }
+  debugLog('Root created, rendering...');
   root.render(
     <React.StrictMode>
       <ErrorBoundary>
@@ -180,13 +172,9 @@ try {
       </ErrorBoundary>
     </React.StrictMode>
   );
-  if (import.meta.env.DEV) {
-    console.log('[CGraph] Render called successfully');
-  }
+  debugLog('Application rendered successfully');
 } catch (err) {
   console.error('[CGraph] Failed to render:', err);
 }
 
-if (import.meta.env.DEV) {
-  console.log('[CGraph] Application mounted successfully');
-}
+debugLog('Application mounted');

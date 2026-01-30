@@ -13,6 +13,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PhoneIcon, VideoCameraIcon, XMarkIcon, CheckIcon } from '@heroicons/react/24/outline';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { logger } from '@/lib/logger';
 import type { IncomingCall } from '@/stores/incomingCallStore';
 
 export interface IncomingCallModalProps {
@@ -186,7 +187,7 @@ export function IncomingCallNotification() {
   const handleAccept = (roomId: string, isVideo: boolean) => {
     // Handle accepting the call
     // This will be implemented when wiring up to WebRTC
-    console.log('Accepting call:', { roomId, isVideo });
+    logger.log('Accepting call:', { roomId, isVideo });
     setCall(null);
   };
 

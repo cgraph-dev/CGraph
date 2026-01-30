@@ -19,6 +19,7 @@ void Cog6ToothIcon; // Reserved for channel settings
 void LockClosedIcon; // Reserved for private channel indicator
 import { useGroupStore, type Channel, type ChannelCategory } from '@/stores/groupStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { chatLogger as logger } from '@/lib/logger';
 
 /**
  * ChannelList Component
@@ -294,11 +295,11 @@ function CreateChannelModal({
     setIsCreating(true);
     try {
       // TODO: Implement create channel API call
-      console.log('Creating channel:', { groupId, categoryId, name, type, isNsfw });
+      logger.log('Creating channel:', { groupId, categoryId, name, type, isNsfw });
       HapticFeedback.success();
       onClose();
     } catch (error) {
-      console.error('Failed to create channel:', error);
+      logger.error('Failed to create channel:', error);
       HapticFeedback.error();
     } finally {
       setIsCreating(false);

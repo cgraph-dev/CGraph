@@ -101,4 +101,28 @@ export default [
       'no-undef': 'off',
     },
   },
+  // Enforce logger usage instead of console in source files
+  {
+    files: ['apps/web/src/**/*.{ts,tsx}', 'apps/mobile/src/**/*.{ts,tsx}'],
+    ignores: ['**/lib/logger.ts', '**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'],
+    rules: {
+      'no-console': [
+        'warn',
+        {
+          allow: ['warn', 'error'], // Allow console.warn/error as fallback
+        },
+      ],
+    },
+  },
+  // Ban explicit 'any' type assertions
+  {
+    files: [
+      'apps/web/src/**/*.{ts,tsx}',
+      'apps/mobile/src/**/*.{ts,tsx}',
+      'packages/**/*.{ts,tsx}',
+    ],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'warn',
+    },
+  },
 ];

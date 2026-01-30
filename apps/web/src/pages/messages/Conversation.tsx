@@ -1,10 +1,16 @@
 import { useEffect, useRef, useState, useCallback, useMemo, memo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { useChatStore, Message } from '@/stores/chatStore';
+import { useChatStore, Message, ConversationParticipant } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useFriendStore } from '@/stores/friendStore';
 import { socketManager } from '@/lib/socket';
 import { api } from '@/lib/api';
+import {
+  getParticipantUserId,
+  getParticipantDisplayName,
+  getParticipantAvatarUrl,
+  getMessageSenderId,
+} from '@/lib/apiUtils';
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/components/Toast';
@@ -187,31 +193,21 @@ export default function Conversation() {
     ? (typingUsers[conversationId] || []).filter((userId) => userId !== user?.id)
     : [];
 
-  // Get other participant for DM - handle multiple data formats
-  // Backend returns participants with userId and nested user object
-  const otherParticipant = conversation?.participants.find((p: any) => {
-    const participantUserId = p.userId || p.user_id || p.user?.id || p.id;
-    return participantUserId !== user?.id;
-  });
+  // Get other participant for DM - use type-safe helpers
+  const otherParticipant = useMemo(() => {
+    return conversation?.participants.find((p) => {
+      const participantUserId = getParticipantUserId(p as unknown as Record<string, unknown>);
+      return participantUserId !== user?.id;
+    });
+  }, [conversation?.participants, user?.id]);
 
-  // Extract userId with fallbacks for matching
-  const otherParticipantUserId =
-    (otherParticipant as any)?.userId ||
-    (otherParticipant as any)?.user_id ||
-    otherParticipant?.user?.id ||
-    (otherParticipant as any)?.id;
-
-  // Extract display name with fallbacks for both nested and flat formats
+  // Type-safe extraction of userId and display name
+  const otherParticipantUserId = getParticipantUserId(
+    otherParticipant as unknown as Record<string, unknown>
+  );
   const conversationName =
     conversation?.name ||
-    otherParticipant?.nickname ||
-    otherParticipant?.user?.displayName ||
-    (otherParticipant?.user as any)?.display_name ||
-    otherParticipant?.user?.username ||
-    (otherParticipant as any)?.displayName ||
-    (otherParticipant as any)?.display_name ||
-    (otherParticipant as any)?.username ||
-    'Unknown';
+    getParticipantDisplayName(otherParticipant as unknown as Record<string, unknown>);
 
   // Track online status of the other participant
   const [isOtherUserOnline, setIsOtherUserOnline] = useState(false);
@@ -1121,27 +1117,16 @@ export default function Conversation() {
               {/* Messages */}
               <div className="space-y-1">
                 {group.messages.map((message, msgIndex) => {
-                  // Extract sender ID with comprehensive fallback chain
-                  // Check both camelCase and snake_case, plus nested sender.id
-                  const rawSenderId =
-                    message.senderId ||
-                    (message as any).sender_id ||
-                    message.sender?.id ||
-                    (message.sender as any)?.user_id ||
-                    '';
-                  const messageSenderId = rawSenderId ? String(rawSenderId).trim() : '';
-
-                  // Extract current user ID with same robust handling
-                  const rawUserId = user?.id || (user as any)?.userId || '';
-                  const currentUserId = rawUserId ? String(rawUserId).trim() : '';
+                  // Extract sender ID using type-safe helper
+                  const messageSenderId =
+                    getMessageSenderId(message as unknown as Record<string, unknown>) || '';
+                  const currentUserId = user?.id || '';
 
                   // Debug logging for alignment issues
                   if (import.meta.env.DEV && msgIndex === 0) {
                     console.debug('[Conversation Web] First message debug:', {
                       messageId: message.id,
-                      rawSenderId,
                       messageSenderId,
-                      rawUserId,
                       currentUserId,
                       isEqual: messageSenderId === currentUserId,
                     });
@@ -1155,12 +1140,7 @@ export default function Conversation() {
 
                   const prevMessage = group.messages[msgIndex - 1];
                   const prevSenderId = prevMessage
-                    ? String(
-                        prevMessage.senderId ||
-                          (prevMessage as any).sender_id ||
-                          prevMessage.sender?.id ||
-                          ''
-                      ).trim()
+                    ? getMessageSenderId(prevMessage as unknown as Record<string, unknown>) || ''
                     : '';
                   const showAvatar = !isOwn && (msgIndex === 0 || prevSenderId !== messageSenderId);
 
@@ -1590,18 +1570,18 @@ export default function Conversation() {
               username: otherParticipant?.user?.username || 'Unknown',
               displayName: otherParticipant?.user?.displayName || otherParticipant?.user?.username,
               avatarUrl: otherParticipant?.user?.avatarUrl ?? undefined,
-              level: (otherParticipant?.user as any)?.level || 1,
-              xp: (otherParticipant?.user as any)?.xp || 0,
-              karma: (otherParticipant?.user as any)?.karma || 0,
-              streak: (otherParticipant?.user as any)?.streak || 0,
+              level: otherParticipant?.user?.level ?? 1,
+              xp: otherParticipant?.user?.xp ?? 0,
+              karma: otherParticipant?.user?.karma ?? 0,
+              streak: otherParticipant?.user?.streak ?? 0,
               onlineStatus: isOtherUserOnline ? 'online' : 'offline',
               lastSeenAt: otherParticipant?.user?.lastSeenAt ?? undefined,
-              bio: (otherParticipant?.user as any)?.bio,
-              badges: (otherParticipant?.user as any)?.badges || [],
-              theme: (otherParticipant?.user as any)?.theme,
+              bio: otherParticipant?.user?.bio ?? undefined,
+              badges: otherParticipant?.user?.badges ?? [],
+              theme: otherParticipant?.user?.theme ?? undefined,
             }}
             mutualFriends={mutualFriends}
-            sharedForums={(otherParticipant?.user as any)?.sharedForums || []}
+            sharedForums={otherParticipant?.user?.sharedForums ?? []}
             onClose={() => setShowInfoPanel(false)}
           />
         )}
@@ -1714,11 +1694,8 @@ const MessageBubble = memo(
                   src={message.sender?.avatarUrl}
                   alt={message.sender?.displayName || message.sender?.username || 'User'}
                   size="small"
-                  userTheme={(message as any).senderTheme}
-                  avatarBorderId={
-                    (message.sender as any)?.avatarBorderId ??
-                    (message.sender as any)?.avatar_border_id
-                  }
+                  userTheme={message.senderTheme ?? message.sender?.theme}
+                  avatarBorderId={message.sender?.avatarBorderId}
                 />
               </UserProfileCard>
             )}
@@ -2060,13 +2037,13 @@ const MessageBubble = memo(
                     </motion.div>
                   ))}
               </div>
-              {(message.metadata.readBy as any[]).length > 3 && (
+              {(message.metadata.readBy?.length ?? 0) > 3 && (
                 <span className="text-[10px] font-medium text-gray-500">
-                  +{(message.metadata.readBy as any[]).length - 3}
+                  +{(message.metadata.readBy?.length ?? 0) - 3}
                 </span>
               )}
               <span className="text-[10px] text-gray-500">
-                {(message.metadata.readBy as any[]).length === 1 ? 'Seen' : 'Seen'}
+                {(message.metadata.readBy?.length ?? 0) === 1 ? 'Seen' : 'Seen'}
               </span>
             </motion.div>
           )}

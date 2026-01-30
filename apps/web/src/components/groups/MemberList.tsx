@@ -17,6 +17,7 @@ void THEME_COLORS; // Reserved for role color theming
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { chatLogger as logger } from '@/lib/logger';
 
 /**
  * MemberList Component
@@ -308,7 +309,7 @@ function MemberContextMenu({
       icon: ChatBubbleLeftIcon,
       label: 'Message',
       action: () => {
-        console.log('Opening DM with', member.userId);
+        logger.log('Opening DM with', member.userId);
         onClose();
       },
     },
@@ -316,7 +317,7 @@ function MemberContextMenu({
       icon: UserPlusIcon,
       label: 'View Profile',
       action: () => {
-        console.log('Viewing profile of', member.userId);
+        logger.log('Viewing profile of', member.userId);
         onClose();
       },
     },
@@ -325,7 +326,7 @@ function MemberContextMenu({
       icon: ShieldCheckIcon,
       label: 'Manage Roles',
       action: () => {
-        console.log('Managing roles for', member.userId);
+        logger.log('Managing roles for', member.userId);
         onClose();
       },
       adminOnly: true,
@@ -334,7 +335,7 @@ function MemberContextMenu({
       icon: UserMinusIcon,
       label: 'Kick',
       action: () => {
-        console.log('Kicking', member.userId);
+        logger.log('Kicking', member.userId);
         onClose();
       },
       adminOnly: true,
@@ -344,7 +345,7 @@ function MemberContextMenu({
       icon: NoSymbolIcon,
       label: 'Ban',
       action: () => {
-        console.log('Banning', member.userId);
+        logger.log('Banning', member.userId);
         onClose();
       },
       adminOnly: true,

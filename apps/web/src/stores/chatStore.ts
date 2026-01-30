@@ -85,7 +85,7 @@ export interface Message {
   isPinned: boolean;
   isEdited: boolean;
   deletedAt: string | null;
-  metadata: Record<string, any>;
+  metadata: MessageMetadata;
   reactions: Reaction[];
   sender: {
     id: string;
@@ -93,7 +93,11 @@ export interface Message {
     displayName: string | null;
     avatarUrl: string | null;
     avatarBorderId?: string | null;
+    // Sender theme for customization
+    theme?: string | null;
   };
+  // Sender theme (may also be at root level)
+  senderTheme?: string | null;
   createdAt: string;
   updatedAt: string;
   // E2EE metadata for decryption
@@ -103,6 +107,32 @@ export interface Message {
   // Message scheduling
   scheduledAt?: string | null;
   scheduleStatus?: 'immediate' | 'scheduled' | 'sent' | 'cancelled';
+}
+
+/**
+ * Message metadata - extensible with typed common properties
+ */
+export interface MessageMetadata {
+  // File/media metadata
+  url?: string;
+  filename?: string;
+  size?: number;
+  mimeType?: string;
+  thumbnailUrl?: string;
+  duration?: number;
+  waveform?: number[];
+  width?: number;
+  height?: number;
+  // Read receipts
+  readBy?: Array<{ userId: string; readAt: string }>;
+  // Sticker metadata
+  stickerId?: string;
+  stickerPackId?: string;
+  // GIF metadata
+  gifId?: string;
+  gifUrl?: string;
+  // Allow additional properties
+  [key: string]: unknown;
 }
 
 export interface Reaction {
@@ -141,6 +171,15 @@ export interface ConversationParticipant {
     status: string;
     lastSeenAt?: string | null;
     avatarBorderId?: string | null;
+    // Gamification fields (optional - may not be present in all contexts)
+    level?: number;
+    xp?: number;
+    karma?: number;
+    streak?: number;
+    bio?: string | null;
+    badges?: string[];
+    theme?: string | null;
+    sharedForums?: Array<{ id: string; name: string }>;
   };
   nickname: string | null;
   isMuted: boolean;

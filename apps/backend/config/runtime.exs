@@ -42,10 +42,26 @@ if config_env() == :prod do
   ]
 
   repo_config = if ssl_enabled do
-    # For cloud databases like Supabase, we need to disable certificate verification
-    # because Erlang/OTP 27's stricter TLS defaults reject some cloud provider certs
-    # This is safe for cloud-managed databases where we trust the connection
-    ssl_opts = [verify: :verify_none]
+    # SSL configuration with proper certificate verification
+    # Use system CA certificates for verification
+    ssl_opts = case System.get_env("DATABASE_SSL_VERIFY") do
+      "none" ->
+        # Only use verify_none when explicitly configured (e.g., certain cloud providers)
+        # This should be documented and only used when absolutely necessary
+        [verify: :verify_none]
+      _ ->
+        # Default: Proper certificate verification using system CA store
+        [
+          verify: :verify_peer,
+          cacerts: :public_key.cacerts_get(),
+          depth: 3,
+          customize_hostname_check: [
+            match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
+          ],
+          # Allow server name indication for SNI
+          server_name_indication: to_charlist(System.get_env("DATABASE_HOST", "localhost"))
+        ]
+    end
     repo_config
     |> Keyword.put(:ssl, true)
     |> Keyword.put(:ssl_opts, ssl_opts)
