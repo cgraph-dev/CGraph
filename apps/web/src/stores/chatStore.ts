@@ -269,7 +269,7 @@ export const useChatStore = create<ChatState>()(
             isLoadingConversations: false,
             conversationsLastFetchedAt: now,
           });
-        } catch (error) {
+        } catch (error: unknown) {
           set({ isLoadingConversations: false });
           throw error;
         }
@@ -310,7 +310,7 @@ export const useChatStore = create<ChatState>()(
               isLoadingMessages: false,
             };
           });
-        } catch (error) {
+        } catch (error: unknown) {
           set({ isLoadingMessages: false });
           throw error;
         }
@@ -475,7 +475,7 @@ export const useChatStore = create<ChatState>()(
           }
 
           logger.log('Sent E2EE encrypted message via sendEncryptedMessage');
-        } catch (error) {
+        } catch (error: unknown) {
           logger.error('Failed to send encrypted message:', error);
           throw error;
         }
@@ -526,7 +526,7 @@ export const useChatStore = create<ChatState>()(
           // Add decrypted message
           get().addMessage({ ...message, content: plaintext });
           logger.log('Decrypted and added E2EE message');
-        } catch (error) {
+        } catch (error: unknown) {
           logger.error('Failed to decrypt message:', error);
           // Show placeholder for failed decryption
           get().addMessage({ ...message, content: '[Unable to decrypt message]' });
@@ -777,24 +777,18 @@ export const useChatStore = create<ChatState>()(
         username?: string
       ) => {
         set((state) => {
-          const updatedMessages = updateMessageReactions(
-            state.messages,
-            messageId,
-            (reactions) => {
-              const alreadyExists = reactions.some(
-                (r) => r.emoji === emoji && r.userId === userId
-              );
-              if (alreadyExists) return reactions;
+          const updatedMessages = updateMessageReactions(state.messages, messageId, (reactions) => {
+            const alreadyExists = reactions.some((r) => r.emoji === emoji && r.userId === userId);
+            if (alreadyExists) return reactions;
 
-              const newReaction: Reaction = {
-                id: `${messageId}-${emoji}-${userId}`,
-                emoji,
-                userId,
-                user: { id: userId, username: username || 'User' },
-              };
-              return [...reactions, newReaction];
-            }
-          );
+            const newReaction: Reaction = {
+              id: `${messageId}-${emoji}-${userId}`,
+              emoji,
+              userId,
+              user: { id: userId, username: username || 'User' },
+            };
+            return [...reactions, newReaction];
+          });
           return { messages: { ...state.messages, ...updatedMessages } };
         });
       },
@@ -805,10 +799,8 @@ export const useChatStore = create<ChatState>()(
        */
       removeReactionFromMessage: (messageId: string, emoji: string, userId: string) => {
         set((state) => {
-          const updatedMessages = updateMessageReactions(
-            state.messages,
-            messageId,
-            (reactions) => reactions.filter((r) => !(r.emoji === emoji && r.userId === userId))
+          const updatedMessages = updateMessageReactions(state.messages, messageId, (reactions) =>
+            reactions.filter((r) => !(r.emoji === emoji && r.userId === userId))
           );
           return { messages: { ...state.messages, ...updatedMessages } };
         });
@@ -830,7 +822,7 @@ export const useChatStore = create<ChatState>()(
             },
             isLoadingScheduledMessages: false,
           }));
-        } catch (error) {
+        } catch (error: unknown) {
           logger.error('Failed to fetch scheduled messages:', error);
           set({ isLoadingScheduledMessages: false });
           throw error;
@@ -878,7 +870,7 @@ export const useChatStore = create<ChatState>()(
           });
 
           logger.info('Message scheduled successfully:', scheduledMessage.id);
-        } catch (error) {
+        } catch (error: unknown) {
           logger.error('Failed to schedule message:', error);
           throw error;
         }
@@ -901,7 +893,7 @@ export const useChatStore = create<ChatState>()(
           });
 
           logger.info('Scheduled message cancelled:', messageId);
-        } catch (error) {
+        } catch (error: unknown) {
           logger.error('Failed to cancel scheduled message:', error);
           throw error;
         }
@@ -931,7 +923,7 @@ export const useChatStore = create<ChatState>()(
           });
 
           logger.info('Message rescheduled:', messageId);
-        } catch (error) {
+        } catch (error: unknown) {
           logger.error('Failed to reschedule message:', error);
           throw error;
         }

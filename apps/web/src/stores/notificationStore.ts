@@ -1,3 +1,8 @@
+import { createLogger } from '@/lib/logger';
+
+// Logger available for error handling - currently all errors are re-thrown
+const _logger = createLogger('NotificationStore');
+
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { api } from '@/lib/api';
@@ -55,7 +60,8 @@ export const useNotificationStore = create<NotificationState>()(
           const hasMore = newNotifications.length === 20 || meta.hasMore;
 
           const responseData = response.data as Record<string, unknown>;
-          const metaUnreadCount = (responseData?.meta as Record<string, number> | undefined)?.unread_count;
+          const metaUnreadCount = (responseData?.meta as Record<string, number> | undefined)
+            ?.unread_count;
           const calculatedUnreadCount = newNotifications.filter((n) => !n.isRead).length;
 
           set((state) => ({
@@ -65,7 +71,7 @@ export const useNotificationStore = create<NotificationState>()(
             hasMore,
             isLoading: false,
           }));
-        } catch (error) {
+        } catch (error: unknown) {
           set({ isLoading: false });
           throw error;
         }

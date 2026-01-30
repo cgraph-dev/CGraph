@@ -16,13 +16,29 @@ export {
   type AnimationSpeed,
   type BorderRadius,
   type ColorDefinition,
+  type AvatarBorderType,
 } from './theme';
 
 export default useThemeStore;
 
-import { useThemeStore } from './theme';
+import {
+  useThemeStore,
+  type ColorPreset,
+  type AnimationSpeed,
+  type AvatarBorderType,
+} from './theme';
 
-// Legacy type aliases
+// UserTheme interface for passing theme settings to components
+export interface UserTheme {
+  colorPreset?: ColorPreset;
+  avatarBorder?: AvatarBorderType;
+  avatarBorderColor?: ColorPreset;
+  animationSpeed?: AnimationSpeed;
+  particlesEnabled?: boolean;
+  glowEnabled?: boolean;
+}
+
+// Legacy type aliases - re-export from theme module
 export type EffectPreset =
   | 'glassmorphism'
   | 'neon'
@@ -31,17 +47,7 @@ export type EffectPreset =
   | 'aurora'
   | 'cyberpunk';
 
-export type AvatarBorderType =
-  | 'none'
-  | 'static'
-  | 'glow'
-  | 'pulse'
-  | 'rotate'
-  | 'fire'
-  | 'ice'
-  | 'electric'
-  | 'legendary'
-  | 'mythic';
+// AvatarBorderType already exported from './theme' above
 
 export type ChatBubbleStylePreset =
   | 'default'

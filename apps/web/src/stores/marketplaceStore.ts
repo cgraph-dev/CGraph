@@ -1,3 +1,7 @@
+import { createLogger } from '@/lib/logger';
+
+const _logger = createLogger('MarketplaceStore');
+
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { api } from '@/lib/api';
@@ -212,7 +216,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
               currencyTypes: response.data.filters?.currencies ?? state.currencyTypes,
             });
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to fetch marketplace listings:', error);
         } finally {
           set({ isLoading: false });
@@ -230,7 +234,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
               recommendedPrice: response.data.recommendedPrice,
             });
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to fetch listing details:', error);
         } finally {
           set({ isLoading: false });
@@ -245,7 +249,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           if (response.data?.listings) {
             set({ myListings: response.data.listings });
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to fetch my listings:', error);
         }
       },
@@ -261,7 +265,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
               userTotals: response.data.totals,
             });
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to fetch transaction history:', error);
         }
       },
@@ -288,7 +292,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             };
           }
           return { success: false };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to create listing:', error);
           return { success: false };
         } finally {
@@ -307,7 +311,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             return { success: true };
           }
           return { success: false };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to update listing:', error);
           return { success: false };
         }
@@ -324,7 +328,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             return { success: true };
           }
           return { success: false };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to cancel listing:', error);
           return { success: false };
         }
@@ -348,7 +352,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             };
           }
           return { success: false };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to purchase listing:', error);
           return { success: false };
         } finally {

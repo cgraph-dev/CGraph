@@ -29,6 +29,13 @@ import { getThemeById, type ProfileThemeConfig } from '@/data/profileThemes';
 // Animation presets for chat bubbles
 import { springs, chatBubbleAnimations, hoverAnimations } from '@/lib/animationPresets';
 
+// Animation speed multipliers - extracted from nested ternary
+const ANIMATION_SPEED_MULTIPLIERS: Record<'slow' | 'normal' | 'fast', number> = {
+  slow: 2,
+  normal: 1,
+  fast: 0.5,
+};
+
 // Import enhanced UI components
 import TiltCard from '@/components/ui/TiltCard';
 import GlowText, { FireText } from '@/components/ui/GlowText';
@@ -184,8 +191,7 @@ const ProfileCardPreview = memo(function ProfileCardPreview() {
     effectiveTitle && ['t5', 't6', 't14', 't15', 't16', 't17', 't18'].includes(effectiveTitle);
 
   const colors = themeColors[effectiveColorPreset];
-  const speedMultiplier =
-    settings.animationSpeed === 'slow' ? 2 : settings.animationSpeed === 'fast' ? 0.5 : 1;
+  const speedMultiplier = ANIMATION_SPEED_MULTIPLIERS[settings.animationSpeed];
 
   // Memoize particle data to prevent recalculation - REDUCED from 20 to 10 particles
   const particleData = useMemo(() => {

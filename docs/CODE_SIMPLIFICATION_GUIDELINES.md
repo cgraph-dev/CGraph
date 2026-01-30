@@ -3,7 +3,7 @@
 This document outlines code standards, anti-patterns to avoid, and industry best practices for the
 CGraph codebase. **All agents and developers must follow these guidelines.**
 
-**Generated**: January 2026 **Version**: 4.1 **Status**: MANDATORY **Standards**: Google, Meta,
+**Generated**: January 2026 **Version**: 4.2 **Status**: MANDATORY **Standards**: Google, Meta,
 Telegram, Discord **Tech-Specific**: Oban, Stripe, E2EE, WebRTC, React 19.1, Expo 54, Phoenix 1.8,
 Fly.io **Enforcement**: `code-simplifier@claude-plugins-official` plugin active
 
@@ -95,6 +95,17 @@ This guide incorporates best practices from companies serving billions of users:
 40. [Expo 54 Mobile](#expo-54-mobile)
 41. [Phoenix 1.8 Specifics](#phoenix-18-specifics)
 42. [Fly.io Deployment](#flyio-deployment)
+
+### Part 10: Advanced Patterns & Scalability
+
+43. [Dependency Injection Patterns](#dependency-injection-patterns)
+44. [Feature Flags & Gradual Rollouts](#feature-flags--gradual-rollouts)
+45. [Event Sourcing Patterns](#event-sourcing-patterns)
+46. [Graceful Degradation](#graceful-degradation)
+47. [Idempotency Patterns](#idempotency-patterns)
+48. [Dead Letter Queue Handling](#dead-letter-queue-handling)
+49. [Configuration Management](#configuration-management)
+50. [Code Organization Patterns](#code-organization-patterns)
 
 ---
 
@@ -7027,6 +7038,1415 @@ fly status
 
 echo "✅ Rollback complete"
 ```
+
+---
+
+## Dependency Injection Patterns
+
+Proper dependency injection improves testability and makes code more modular.
+
+### TypeScript DI Patterns
+
+```typescript
+// ❌ BAD: Hard-coded dependencies
+class UserService {
+  private api = new ApiClient();
+  private cache = new RedisCache();
+  private logger = new Logger();
+
+  async getUser(id: string): Promise<User> {
+    return this.api.get(`/users/${id}`);
+  }
+}
+
+// ✅ GOOD: Constructor injection
+interface UserServiceDeps {
+  api: ApiClient;
+  cache: CacheService;
+  logger: Logger;
+}
+
+class UserService {
+  constructor(private deps: UserServiceDeps) {}
+
+  async getUser(id: string): Promise<User> {
+    this.deps.logger.debug('Fetching user', { id });
+
+    const cached = await this.deps.cache.get(`user:${id}`);
+    if (cached) return cached;
+
+    const user = await this.deps.api.get(`/users/${id}`);
+    await this.deps.cache.set(`user:${id}`, user);
+    return user;
+  }
+}
+
+// Factory for production
+function createUserService(): UserService {
+  return new UserService({
+    api: new ApiClient(),
+    cache: new RedisCache(),
+    logger: createLogger('UserService'),
+  });
+}
+
+// Easy testing
+const mockDeps = {
+  api: { get: vi.fn() },
+  cache: { get: vi.fn(), set: vi.fn() },
+  logger: { debug: vi.fn() },
+};
+const testService = new UserService(mockDeps);
+```
+
+### Elixir DI with Behaviors
+
+```elixir
+# Define behavior for dependency interface
+defmodule CGraph.Cache.Behaviour do
+  @callback get(String.t()) :: {:ok, term()} | :miss
+  @callback set(String.t(), term(), keyword()) :: :ok | {:error, term()}
+  @callback delete(String.t()) :: :ok
+end
+
+# Production implementation
+defmodule CGraph.Cache.Redis do
+  @behaviour CGraph.Cache.Behaviour
+
+  @impl true
+  def get(key), do: Redix.command(:cache, ["GET", key])
+
+  @impl true
+  def set(key, value, opts) do
+    ttl = Keyword.get(opts, :ttl, 300)
+    Redix.command(:cache, ["SETEX", key, ttl, value])
+  end
+
+  @impl true
+  def delete(key), do: Redix.command(:cache, ["DEL", key])
+end
+
+# Test implementation
+defmodule CGraph.Cache.InMemory do
+  @behaviour CGraph.Cache.Behaviour
+  use Agent
+
+  def start_link(_), do: Agent.start_link(fn -> %{} end, name: __MODULE__)
+
+  @impl true
+  def get(key), do: Agent.get(__MODULE__, &Map.get(&1, key))
+
+  @impl true
+  def set(key, value, _opts), do: Agent.update(__MODULE__, &Map.put(&1, key, value))
+
+  @impl true
+  def delete(key), do: Agent.update(__MODULE__, &Map.delete(&1, key))
+end
+
+# Configuration-based injection
+defmodule CGraph.Cache do
+  @cache_impl Application.compile_env(:cgraph, :cache_impl, CGraph.Cache.Redis)
+
+  defdelegate get(key), to: @cache_impl
+  defdelegate set(key, value, opts \\ []), to: @cache_impl
+  defdelegate delete(key), to: @cache_impl
+end
+
+# config/test.exs
+config :cgraph, cache_impl: CGraph.Cache.InMemory
+```
+
+### React Context for Dependencies
+
+```typescript
+// Create typed context for services
+interface Services {
+  api: ApiClient;
+  socket: SocketManager;
+  storage: StorageService;
+  analytics: AnalyticsService;
+}
+
+const ServicesContext = createContext<Services | null>(null);
+
+export function useServices(): Services {
+  const services = useContext(ServicesContext);
+  if (!services) {
+    throw new Error('useServices must be used within ServicesProvider');
+  }
+  return services;
+}
+
+// Provider with lazy initialization
+export function ServicesProvider({ children }: { children: ReactNode }) {
+  const services = useMemo<Services>(() => ({
+    api: createApiClient(),
+    socket: createSocketManager(),
+    storage: createStorageService(),
+    analytics: createAnalyticsService(),
+  }), []);
+
+  return (
+    <ServicesContext.Provider value={services}>
+      {children}
+    </ServicesContext.Provider>
+  );
+}
+
+// Usage in components
+function UserProfile({ userId }: { userId: string }) {
+  const { api, analytics } = useServices();
+
+  useEffect(() => {
+    analytics.track('profile_viewed', { userId });
+  }, [userId, analytics]);
+
+  // ...
+}
+```
+
+---
+
+## Feature Flags & Gradual Rollouts
+
+Safely deploy new features with gradual rollouts and kill switches.
+
+### Feature Flag Service
+
+```typescript
+// apps/web/src/lib/featureFlags.ts
+interface FeatureFlag {
+  name: string;
+  enabled: boolean;
+  rolloutPercentage?: number;
+  allowedUserIds?: string[];
+  allowedTiers?: SubscriptionTier[];
+}
+
+const FLAGS: Record<string, FeatureFlag> = {
+  NEW_CHAT_UI: {
+    name: 'new_chat_ui',
+    enabled: true,
+    rolloutPercentage: 25, // 25% of users
+  },
+  VOICE_MESSAGES: {
+    name: 'voice_messages',
+    enabled: true,
+    allowedTiers: ['pro', 'business', 'enterprise'],
+  },
+  AI_SUGGESTIONS: {
+    name: 'ai_suggestions',
+    enabled: false, // Kill switch
+    allowedUserIds: ['internal-testers'],
+  },
+};
+
+export function isFeatureEnabled(
+  flagName: string,
+  userId: string,
+  userTier?: SubscriptionTier
+): boolean {
+  const flag = FLAGS[flagName];
+  if (!flag || !flag.enabled) return false;
+
+  // Check user allowlist first
+  if (flag.allowedUserIds?.includes(userId)) return true;
+
+  // Check tier restrictions
+  if (flag.allowedTiers && userTier) {
+    if (!flag.allowedTiers.includes(userTier)) return false;
+  }
+
+  // Check rollout percentage (deterministic based on userId)
+  if (flag.rolloutPercentage !== undefined) {
+    const hash = hashString(userId + flagName);
+    const bucket = hash % 100;
+    return bucket < flag.rolloutPercentage;
+  }
+
+  return true;
+}
+
+// Deterministic hash for consistent bucketing
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash = hash & hash;
+  }
+  return Math.abs(hash);
+}
+
+// React hook
+export function useFeatureFlag(flagName: string): boolean {
+  const user = useAuthStore((s) => s.user);
+  return useMemo(
+    () => isFeatureEnabled(flagName, user?.id ?? '', user?.tier),
+    [flagName, user?.id, user?.tier]
+  );
+}
+```
+
+### Elixir Feature Flags
+
+```elixir
+defmodule CGraph.FeatureFlags do
+  @moduledoc """
+  Feature flag system for gradual rollouts and kill switches.
+  """
+
+  alias CGraph.{Cache, Accounts}
+
+  @flags %{
+    "new_forum_algorithm" => %{
+      enabled: true,
+      rollout_percentage: 50,
+      allowed_tiers: [:pro, :business, :enterprise]
+    },
+    "e2ee_group_chats" => %{
+      enabled: true,
+      rollout_percentage: 10,
+      allowed_user_ids: ["beta-testers"]
+    },
+    "ai_moderation" => %{
+      enabled: false  # Kill switch - disabled for all
+    }
+  }
+
+  def enabled?(flag_name, user_id) do
+    flag = Map.get(@flags, flag_name)
+    check_flag(flag, user_id)
+  end
+
+  defp check_flag(nil, _user_id), do: false
+  defp check_flag(%{enabled: false}, _user_id), do: false
+  defp check_flag(flag, user_id) do
+    cond do
+      # Check user allowlist
+      user_id in (flag[:allowed_user_ids] || []) ->
+        true
+
+      # Check tier restrictions
+      flag[:allowed_tiers] ->
+        user = Accounts.get_user(user_id)
+        user && user.tier in flag.allowed_tiers
+
+      # Check rollout percentage
+      flag[:rollout_percentage] ->
+        bucket = :erlang.phash2({user_id, flag.name}, 100)
+        bucket < flag.rollout_percentage
+
+      # Default enabled
+      true ->
+        true
+    end
+  end
+
+  # Plug for feature-gated routes
+  defmodule Plug do
+    import Plug.Conn
+
+    def init(opts), do: opts
+
+    def call(conn, flag: flag_name) do
+      user_id = conn.assigns[:current_user]&.id
+
+      if CGraph.FeatureFlags.enabled?(flag_name, user_id) do
+        conn
+      else
+        conn
+        |> put_status(:not_found)
+        |> Phoenix.Controller.json(%{error: "Feature not available"})
+        |> halt()
+      end
+    end
+  end
+end
+
+# Usage in router
+scope "/api/v1", CGraphWeb do
+  pipe_through [:api, :auth]
+
+  # Feature-gated endpoint
+  scope "/ai" do
+    plug CGraph.FeatureFlags.Plug, flag: "ai_moderation"
+    post "/moderate", AIController, :moderate
+  end
+end
+```
+
+---
+
+## Event Sourcing Patterns
+
+Event sourcing for audit trails and temporal queries.
+
+### Event Store Design
+
+```elixir
+defmodule CGraph.Events do
+  @moduledoc """
+  Event sourcing for critical business events.
+  Provides audit trail and enables event replay.
+  """
+
+  alias CGraph.Repo
+  alias CGraph.Events.Event
+
+  @doc """
+  Append an event to the event store.
+  """
+  def append(aggregate_type, aggregate_id, event_type, data, metadata \\ %{}) do
+    %Event{}
+    |> Event.changeset(%{
+      aggregate_type: aggregate_type,
+      aggregate_id: aggregate_id,
+      event_type: event_type,
+      data: data,
+      metadata: Map.merge(metadata, %{
+        timestamp: DateTime.utc_now(),
+        version: get_next_version(aggregate_type, aggregate_id)
+      })
+    })
+    |> Repo.insert()
+  end
+
+  @doc """
+  Get all events for an aggregate.
+  """
+  def get_events(aggregate_type, aggregate_id) do
+    Event
+    |> where(aggregate_type: ^aggregate_type, aggregate_id: ^aggregate_id)
+    |> order_by(asc: :version)
+    |> Repo.all()
+  end
+
+  @doc """
+  Replay events to rebuild state.
+  """
+  def replay(aggregate_type, aggregate_id, initial_state, reducer) do
+    get_events(aggregate_type, aggregate_id)
+    |> Enum.reduce(initial_state, fn event, state ->
+      reducer.(state, event)
+    end)
+  end
+
+  defp get_next_version(aggregate_type, aggregate_id) do
+    Event
+    |> where(aggregate_type: ^aggregate_type, aggregate_id: ^aggregate_id)
+    |> select([e], max(e.version))
+    |> Repo.one()
+    |> Kernel.||(0)
+    |> Kernel.+(1)
+  end
+end
+
+# Usage: Forum moderation with audit trail
+defmodule CGraph.Forums.Moderation do
+  alias CGraph.Events
+
+  def remove_post(post_id, moderator_id, reason) do
+    # Record the event
+    Events.append(
+      "post",
+      post_id,
+      "post_removed",
+      %{reason: reason},
+      %{actor_id: moderator_id}
+    )
+
+    # Apply the change
+    CGraph.Forums.soft_delete_post(post_id)
+  end
+
+  def restore_post(post_id, moderator_id, reason) do
+    Events.append(
+      "post",
+      post_id,
+      "post_restored",
+      %{reason: reason},
+      %{actor_id: moderator_id}
+    )
+
+    CGraph.Forums.restore_post(post_id)
+  end
+
+  # Get moderation history for a post
+  def get_moderation_history(post_id) do
+    Events.get_events("post", post_id)
+    |> Enum.filter(&(&1.event_type in ["post_removed", "post_restored", "post_edited"]))
+  end
+end
+```
+
+### Frontend Event Tracking
+
+```typescript
+// apps/web/src/lib/eventTracking.ts
+interface TrackedEvent {
+  type: string;
+  payload: Record<string, unknown>;
+  timestamp: number;
+  sessionId: string;
+  userId?: string;
+}
+
+class EventTracker {
+  private queue: TrackedEvent[] = [];
+  private flushInterval: number;
+  private sessionId: string;
+
+  constructor() {
+    this.sessionId = crypto.randomUUID();
+    this.flushInterval = window.setInterval(() => this.flush(), 5000);
+  }
+
+  track(type: string, payload: Record<string, unknown> = {}) {
+    const event: TrackedEvent = {
+      type,
+      payload,
+      timestamp: Date.now(),
+      sessionId: this.sessionId,
+      userId: useAuthStore.getState().user?.id,
+    };
+
+    this.queue.push(event);
+
+    // Flush immediately for critical events
+    if (type.startsWith('error_') || type === 'purchase') {
+      this.flush();
+    }
+  }
+
+  private async flush() {
+    if (this.queue.length === 0) return;
+
+    const events = [...this.queue];
+    this.queue = [];
+
+    try {
+      await api.post('/analytics/events', { events });
+    } catch {
+      // Re-queue on failure
+      this.queue.unshift(...events);
+    }
+  }
+
+  destroy() {
+    clearInterval(this.flushInterval);
+    this.flush();
+  }
+}
+
+export const eventTracker = new EventTracker();
+
+// Usage
+eventTracker.track('message_sent', { conversationId, hasMedia: true });
+eventTracker.track('forum_post_created', { forumId, threadId });
+```
+
+---
+
+## Graceful Degradation
+
+Ensure the application remains usable when services fail.
+
+### Circuit Breaker Pattern (Detailed)
+
+```typescript
+// apps/web/src/lib/circuitBreaker.ts
+type CircuitState = 'closed' | 'open' | 'half-open';
+
+interface CircuitBreakerConfig {
+  failureThreshold: number;
+  resetTimeout: number;
+  halfOpenRequests: number;
+}
+
+class CircuitBreaker {
+  private state: CircuitState = 'closed';
+  private failures = 0;
+  private lastFailure = 0;
+  private halfOpenSuccesses = 0;
+
+  constructor(
+    private name: string,
+    private config: CircuitBreakerConfig = {
+      failureThreshold: 5,
+      resetTimeout: 30000,
+      halfOpenRequests: 3,
+    }
+  ) {}
+
+  async execute<T>(fn: () => Promise<T>, fallback?: () => T): Promise<T> {
+    if (this.state === 'open') {
+      if (Date.now() - this.lastFailure > this.config.resetTimeout) {
+        this.state = 'half-open';
+        this.halfOpenSuccesses = 0;
+      } else {
+        if (fallback) return fallback();
+        throw new CircuitOpenError(this.name);
+      }
+    }
+
+    try {
+      const result = await fn();
+      this.onSuccess();
+      return result;
+    } catch (error) {
+      this.onFailure();
+      if (fallback) return fallback();
+      throw error;
+    }
+  }
+
+  private onSuccess() {
+    if (this.state === 'half-open') {
+      this.halfOpenSuccesses++;
+      if (this.halfOpenSuccesses >= this.config.halfOpenRequests) {
+        this.state = 'closed';
+        this.failures = 0;
+      }
+    } else {
+      this.failures = 0;
+    }
+  }
+
+  private onFailure() {
+    this.failures++;
+    this.lastFailure = Date.now();
+
+    if (this.failures >= this.config.failureThreshold) {
+      this.state = 'open';
+    }
+  }
+}
+
+// Usage with fallbacks
+const searchCircuitBreaker = new CircuitBreaker('search');
+
+async function searchMessages(query: string): Promise<SearchResult[]> {
+  return searchCircuitBreaker.execute(
+    () => api.get(`/search?q=${query}`),
+    () => {
+      // Fallback: local search in cached messages
+      const cached = useChatStore.getState().messages;
+      return localSearch(cached, query);
+    }
+  );
+}
+```
+
+### Fallback UI Components
+
+```typescript
+// apps/web/src/components/FallbackUI.tsx
+interface GracefulDegradationProps {
+  children: ReactNode;
+  fallback: ReactNode;
+  featureName: string;
+}
+
+export function GracefulDegradation({
+  children,
+  fallback,
+  featureName,
+}: GracefulDegradationProps) {
+  const isHealthy = useServiceHealth(featureName);
+
+  if (!isHealthy) {
+    return (
+      <div className="degraded-feature">
+        <div className="degraded-banner">
+          <AlertIcon />
+          <span>Limited functionality - some features temporarily unavailable</span>
+        </div>
+        {fallback}
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+// Usage
+function ForumPage() {
+  return (
+    <GracefulDegradation
+      featureName="forum-service"
+      fallback={<CachedForumFeed />}
+    >
+      <LiveForumFeed />
+    </GracefulDegradation>
+  );
+}
+
+// Cached fallback component
+function CachedForumFeed() {
+  const cachedThreads = useLocalStorage('cached-forum-threads', []);
+
+  return (
+    <div>
+      <p className="text-muted">Showing cached content from your last visit</p>
+      {cachedThreads.map(thread => (
+        <ThreadCard key={thread.id} thread={thread} />
+      ))}
+    </div>
+  );
+}
+```
+
+---
+
+## Idempotency Patterns
+
+Ensure operations can be safely retried without side effects.
+
+### Idempotency Keys
+
+```typescript
+// apps/web/src/lib/idempotency.ts
+const pendingRequests = new Map<string, Promise<unknown>>();
+
+export async function idempotentRequest<T>(
+  key: string,
+  request: () => Promise<T>,
+  ttlMs: number = 60000
+): Promise<T> {
+  // Check for in-flight request with same key
+  const pending = pendingRequests.get(key);
+  if (pending) {
+    return pending as Promise<T>;
+  }
+
+  // Create new request
+  const promise = request().finally(() => {
+    // Clean up after TTL
+    setTimeout(() => pendingRequests.delete(key), ttlMs);
+  });
+
+  pendingRequests.set(key, promise);
+  return promise;
+}
+
+// Usage: Prevent duplicate message sends
+async function sendMessage(conversationId: string, content: string) {
+  const idempotencyKey = `send-msg:${conversationId}:${hashContent(content)}`;
+
+  return idempotentRequest(idempotencyKey, () =>
+    api.post('/messages', {
+      conversation_id: conversationId,
+      content,
+      idempotency_key: idempotencyKey,
+    })
+  );
+}
+```
+
+### Backend Idempotency
+
+```elixir
+defmodule CGraph.Idempotency do
+  @moduledoc """
+  Idempotency handling for safe request retries.
+  """
+
+  alias CGraph.{Cache, Repo}
+
+  @ttl :timer.hours(24)
+
+  @doc """
+  Execute a function idempotently using the provided key.
+  Returns cached result if key was seen before.
+  """
+  def execute(key, fun) do
+    cache_key = "idempotency:#{key}"
+
+    case Cache.get(cache_key) do
+      {:ok, result} ->
+        # Return cached result
+        {:ok, result, :cached}
+
+      :miss ->
+        # Execute and cache
+        result = fun.()
+        Cache.set(cache_key, result, ttl: @ttl)
+        {:ok, result, :executed}
+    end
+  end
+
+  @doc """
+  Wrap a changeset operation with idempotency.
+  """
+  def insert_idempotent(changeset, key) do
+    execute(key, fn ->
+      Repo.insert(changeset)
+    end)
+    |> case do
+      {:ok, {:ok, record}, _status} -> {:ok, record}
+      {:ok, {:error, changeset}, _status} -> {:error, changeset}
+      error -> error
+    end
+  end
+end
+
+# Usage in controller
+defmodule CGraphWeb.MessageController do
+  def create(conn, %{"idempotency_key" => key} = params) do
+    case Idempotency.execute(key, fn ->
+      Messaging.create_message(params)
+    end) do
+      {:ok, {:ok, message}, :cached} ->
+        conn
+        |> put_resp_header("x-idempotent-replayed", "true")
+        |> render(:show, message: message)
+
+      {:ok, {:ok, message}, :executed} ->
+        conn
+        |> put_status(:created)
+        |> render(:show, message: message)
+
+      {:ok, {:error, changeset}, _} ->
+        conn
+        |> put_status(:unprocessable_entity)
+        |> render(:errors, changeset: changeset)
+    end
+  end
+end
+```
+
+---
+
+## Dead Letter Queue Handling
+
+Handle failed background jobs gracefully.
+
+```elixir
+defmodule CGraph.DeadLetterQueue do
+  @moduledoc """
+  Dead letter queue for failed Oban jobs.
+  Stores failed jobs for manual review and potential replay.
+  """
+
+  alias CGraph.Repo
+  alias CGraph.DeadLetterQueue.FailedJob
+
+  @max_dlq_age_days 30
+
+  def store_failed_job(job, error) do
+    %FailedJob{}
+    |> FailedJob.changeset(%{
+      worker: job.worker,
+      args: job.args,
+      queue: job.queue,
+      attempt: job.attempt,
+      max_attempts: job.max_attempts,
+      error_message: format_error(error),
+      error_stacktrace: format_stacktrace(error),
+      original_job_id: job.id,
+      failed_at: DateTime.utc_now()
+    })
+    |> Repo.insert()
+  end
+
+  @doc """
+  Replay a failed job (manual intervention).
+  """
+  def replay_job(failed_job_id) do
+    failed_job = Repo.get!(FailedJob, failed_job_id)
+    worker = String.to_existing_atom(failed_job.worker)
+
+    case Oban.insert(worker.new(failed_job.args)) do
+      {:ok, new_job} ->
+        Repo.update!(FailedJob.changeset(failed_job, %{
+          replayed_at: DateTime.utc_now(),
+          replayed_job_id: new_job.id
+        }))
+        {:ok, new_job}
+
+      error ->
+        error
+    end
+  end
+
+  @doc """
+  Clean up old DLQ entries.
+  """
+  def cleanup do
+    cutoff = DateTime.add(DateTime.utc_now(), -@max_dlq_age_days, :day)
+
+    from(f in FailedJob,
+      where: f.failed_at < ^cutoff,
+      where: not is_nil(f.replayed_at) or f.failed_at < ^cutoff
+    )
+    |> Repo.delete_all()
+  end
+
+  defp format_error(%{message: msg}), do: msg
+  defp format_error(error), do: inspect(error)
+
+  defp format_stacktrace(%{stacktrace: st}), do: Exception.format_stacktrace(st)
+  defp format_stacktrace(_), do: nil
+end
+
+# Oban error handler
+defmodule CGraph.ObanErrorHandler do
+  def handle_event([:oban, :job, :exception], _measure, meta, _config) do
+    if meta.attempt >= meta.max_attempts do
+      # Job exhausted all retries - move to DLQ
+      CGraph.DeadLetterQueue.store_failed_job(meta.job, meta.error)
+
+      # Alert on critical failures
+      if critical_worker?(meta.worker) do
+        CGraph.Alerts.send_alert(:job_failed, %{
+          worker: meta.worker,
+          args: meta.args,
+          error: inspect(meta.error)
+        })
+      end
+    end
+  end
+
+  defp critical_worker?(worker) do
+    worker in [
+      CGraph.Workers.PaymentWorker,
+      CGraph.Workers.SubscriptionWorker,
+      CGraph.Workers.SecurityAlertWorker
+    ]
+  end
+end
+```
+
+---
+
+## Configuration Management
+
+Centralized, type-safe configuration patterns.
+
+### TypeScript Configuration
+
+```typescript
+// apps/web/src/config/index.ts
+import { z } from 'zod';
+
+const configSchema = z.object({
+  api: z.object({
+    baseUrl: z.string().url(),
+    timeout: z.number().min(1000).max(60000),
+    retryAttempts: z.number().min(0).max(5),
+  }),
+  socket: z.object({
+    url: z.string(),
+    heartbeatInterval: z.number(),
+    reconnectBackoff: z.object({
+      initial: z.number(),
+      max: z.number(),
+      multiplier: z.number(),
+    }),
+  }),
+  features: z.object({
+    e2eeEnabled: z.boolean(),
+    voiceCallsEnabled: z.boolean(),
+    maxUploadSizeMb: z.number(),
+  }),
+  logging: z.object({
+    level: z.enum(['debug', 'info', 'warn', 'error']),
+    enableRemote: z.boolean(),
+  }),
+});
+
+type Config = z.infer<typeof configSchema>;
+
+function loadConfig(): Config {
+  const raw = {
+    api: {
+      baseUrl: import.meta.env.VITE_API_URL ?? 'http://localhost:4000',
+      timeout: Number(import.meta.env.VITE_API_TIMEOUT ?? 30000),
+      retryAttempts: Number(import.meta.env.VITE_API_RETRY_ATTEMPTS ?? 3),
+    },
+    socket: {
+      url: import.meta.env.VITE_SOCKET_URL ?? 'ws://localhost:4000/socket',
+      heartbeatInterval: 30000,
+      reconnectBackoff: {
+        initial: 1000,
+        max: 30000,
+        multiplier: 2,
+      },
+    },
+    features: {
+      e2eeEnabled: import.meta.env.VITE_E2EE_ENABLED === 'true',
+      voiceCallsEnabled: import.meta.env.VITE_VOICE_CALLS_ENABLED !== 'false',
+      maxUploadSizeMb: Number(import.meta.env.VITE_MAX_UPLOAD_SIZE_MB ?? 50),
+    },
+    logging: {
+      level: (import.meta.env.VITE_LOG_LEVEL ?? 'info') as Config['logging']['level'],
+      enableRemote: import.meta.env.PROD,
+    },
+  };
+
+  // Validate at startup
+  const result = configSchema.safeParse(raw);
+  if (!result.success) {
+    console.error('Invalid configuration:', result.error.flatten());
+    throw new Error('Configuration validation failed');
+  }
+
+  return result.data;
+}
+
+export const config = loadConfig();
+
+// Freeze to prevent accidental mutations
+Object.freeze(config);
+Object.freeze(config.api);
+Object.freeze(config.socket);
+Object.freeze(config.features);
+Object.freeze(config.logging);
+```
+
+### Elixir Runtime Configuration
+
+```elixir
+# config/runtime.exs
+import Config
+
+defmodule ConfigHelper do
+  def get_env!(key, type \\ :string) do
+    value = System.get_env(key) || raise "Missing required env var: #{key}"
+    cast(value, type)
+  end
+
+  def get_env(key, default, type \\ :string) do
+    case System.get_env(key) do
+      nil -> default
+      value -> cast(value, type)
+    end
+  end
+
+  defp cast(value, :string), do: value
+  defp cast(value, :integer), do: String.to_integer(value)
+  defp cast("true", :boolean), do: true
+  defp cast("false", :boolean), do: false
+  defp cast(value, :list), do: String.split(value, ",", trim: true)
+  defp cast(value, :json), do: Jason.decode!(value)
+end
+
+import ConfigHelper
+
+if config_env() == :prod do
+  config :cgraph, CGraph.Repo,
+    url: get_env!("DATABASE_URL"),
+    ssl: get_env("DATABASE_SSL", false, :boolean),
+    pool_size: get_env("POOL_SIZE", 10, :integer),
+    socket_options: [:inet6]
+
+  config :cgraph, CGraphWeb.Endpoint,
+    url: [host: get_env!("PHX_HOST"), port: 443, scheme: "https"],
+    http: [
+      ip: {0, 0, 0, 0, 0, 0, 0, 0},
+      port: get_env("PORT", 4000, :integer)
+    ],
+    secret_key_base: get_env!("SECRET_KEY_BASE")
+
+  config :cgraph, CGraph.Guardian,
+    secret_key: get_env!("JWT_SECRET")
+
+  # Feature flags from environment
+  config :cgraph, :feature_flags,
+    e2ee_enabled: get_env("FEATURE_E2EE", true, :boolean),
+    voice_calls_enabled: get_env("FEATURE_VOICE_CALLS", true, :boolean),
+    max_upload_size_mb: get_env("MAX_UPLOAD_SIZE_MB", 50, :integer)
+
+  # Stripe configuration
+  config :stripity_stripe,
+    api_key: get_env!("STRIPE_SECRET_KEY"),
+    webhook_secret: get_env!("STRIPE_WEBHOOK_SECRET")
+
+  # CORS allowed origins
+  config :cgraph, :cors_origins,
+    get_env("CORS_ORIGINS", "https://cgraph.org,https://app.cgraph.org", :list)
+end
+```
+
+---
+
+## Code Organization Patterns
+
+Patterns for maintainable codebase structure.
+
+### Feature-Based Directory Structure
+
+```
+apps/web/src/
+├── features/                     # Feature modules (domain-driven)
+│   ├── auth/
+│   │   ├── components/
+│   │   │   ├── LoginForm.tsx
+│   │   │   ├── RegisterForm.tsx
+│   │   │   └── index.ts
+│   │   ├── hooks/
+│   │   │   ├── useAuth.ts
+│   │   │   └── index.ts
+│   │   ├── api/
+│   │   │   └── authApi.ts
+│   │   ├── store/
+│   │   │   └── authStore.ts
+│   │   ├── types.ts
+│   │   └── index.ts              # Public API
+│   │
+│   ├── messaging/
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── api/
+│   │   ├── store/
+│   │   └── index.ts
+│   │
+│   └── forums/
+│       ├── components/
+│       ├── hooks/
+│       ├── api/
+│       ├── store/
+│       └── index.ts
+│
+├── shared/                       # Shared across features
+│   ├── components/               # Generic UI components
+│   │   ├── Button/
+│   │   ├── Modal/
+│   │   └── index.ts
+│   ├── hooks/                    # Generic hooks
+│   ├── lib/                      # Utilities
+│   └── types/                    # Shared types
+│
+├── pages/                        # Route pages (thin, import from features)
+│   ├── messages/
+│   ├── forums/
+│   └── settings/
+│
+└── app/                          # App shell
+    ├── App.tsx
+    ├── Router.tsx
+    └── providers/
+```
+
+### Module Boundary Rules
+
+```typescript
+// Feature module index.ts - defines public API
+// apps/web/src/features/messaging/index.ts
+
+// Components
+export { MessageList } from './components/MessageList';
+export { MessageComposer } from './components/MessageComposer';
+export { ConversationSidebar } from './components/ConversationSidebar';
+
+// Hooks
+export { useConversations } from './hooks/useConversations';
+export { useMessages } from './hooks/useMessages';
+
+// Types
+export type { Message, Conversation, MessageStatus } from './types';
+
+// DO NOT export internal components, utilities, or store internals
+// Internal imports should use relative paths within the feature
+
+// ❌ BAD: Cross-feature import of internals
+import { formatMessageTime } from '../messaging/utils/format';
+
+// ✅ GOOD: Import from public API
+import { MessageList } from '@/features/messaging';
+
+// ✅ GOOD: Or move shared utility to shared/
+import { formatTime } from '@/shared/lib/format';
+```
+
+### Elixir Context Boundaries
+
+```elixir
+# Contexts define clear boundaries
+# Only interact with other contexts through their public API
+
+# ❌ BAD: Direct Repo access across contexts
+defmodule CGraph.Forums do
+  def create_thread(attrs) do
+    # Don't directly query users!
+    user = CGraph.Repo.get(CGraph.Accounts.User, attrs.author_id)
+    # ...
+  end
+end
+
+# ✅ GOOD: Use context APIs
+defmodule CGraph.Forums do
+  alias CGraph.Accounts
+
+  def create_thread(attrs) do
+    with {:ok, author} <- Accounts.get_user(attrs.author_id),
+         :ok <- Accounts.can_post?(author) do
+      # Create thread...
+    end
+  end
+end
+
+# Context module structure
+defmodule CGraph.Forums do
+  @moduledoc """
+  The Forums context - all forum-related business logic.
+
+  Public API:
+  - list_threads/2
+  - get_thread/1
+  - create_thread/1
+  - update_thread/2
+  - delete_thread/1
+  - create_post/1
+  - vote/3
+  """
+
+  # Delegate to submodules for complex operations
+  defdelegate search_threads(query, opts), to: CGraph.Forums.Search
+  defdelegate calculate_hot_score(thread), to: CGraph.Forums.Scoring
+  defdelegate moderate_content(content), to: CGraph.Forums.Moderation
+
+  # Core CRUD operations
+  def list_threads(forum_id, opts \\ []) do
+    # Implementation...
+  end
+
+  def get_thread(id) do
+    # Implementation...
+  end
+end
+```
+
+### Import Organization
+
+```typescript
+// Consistent import ordering (enforced by ESLint)
+// 1. React/framework imports
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+// 2. Third-party libraries
+import { motion } from 'framer-motion';
+import { z } from 'zod';
+
+// 3. Internal absolute imports (features, shared)
+import { useAuth } from '@/features/auth';
+import { Button, Modal } from '@/shared/components';
+import { formatDate } from '@/shared/lib/format';
+
+// 4. Relative imports (same feature)
+import { MessageBubble } from './MessageBubble';
+import { useMessageActions } from '../hooks/useMessageActions';
+
+// 5. Types (always last in their category)
+import type { Message, Conversation } from '../types';
+import type { User } from '@/shared/types';
+```
+
+---
+
+## Additional Anti-Patterns
+
+### Avoid These Common Mistakes
+
+```typescript
+// ❌ Anti-Pattern: Prop Drilling
+function App() {
+  const [user, setUser] = useState<User | null>(null);
+  return (
+    <Layout user={user}>
+      <Sidebar user={user}>
+        <UserInfo user={user}>
+          <Avatar user={user} />  {/* Drilled through 4 levels! */}
+        </UserInfo>
+      </Sidebar>
+    </Layout>
+  );
+}
+
+// ✅ Solution: Use context or state management
+function App() {
+  return (
+    <AuthProvider>
+      <Layout>
+        <Sidebar>
+          <UserInfo />  {/* Gets user from context/store */}
+        </Sidebar>
+      </Layout>
+    </AuthProvider>
+  );
+}
+
+// ❌ Anti-Pattern: useEffect for derived state
+function UserStats({ posts }: { posts: Post[] }) {
+  const [totalLikes, setTotalLikes] = useState(0);
+
+  useEffect(() => {
+    setTotalLikes(posts.reduce((sum, p) => sum + p.likes, 0));
+  }, [posts]);
+
+  return <span>Total likes: {totalLikes}</span>;
+}
+
+// ✅ Solution: Derive during render
+function UserStats({ posts }: { posts: Post[] }) {
+  const totalLikes = posts.reduce((sum, p) => sum + p.likes, 0);
+  return <span>Total likes: {totalLikes}</span>;
+}
+
+// ❌ Anti-Pattern: Storing server data in useState
+function UserProfile({ userId }: { userId: string }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    fetchUser(userId)
+      .then(setUser)
+      .catch(setError)
+      .finally(() => setLoading(false));
+  }, [userId]);
+
+  // Manual refetch, stale data, no caching...
+}
+
+// ✅ Solution: Use React Query / TanStack Query
+function UserProfile({ userId }: { userId: string }) {
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ['user', userId],
+    queryFn: () => fetchUser(userId),
+    staleTime: 5 * 60 * 1000,  // 5 minutes
+  });
+
+  // Automatic caching, refetching, deduplication
+}
+
+// ❌ Anti-Pattern: Unbounded arrays in state
+interface ChatState {
+  messages: Message[];  // Grows forever!
+}
+
+// ✅ Solution: Bounded collections with eviction
+interface ChatState {
+  messages: Map<string, Message>;  // Keyed by ID
+  messageOrder: string[];          // Bounded to last N
+}
+
+const MAX_MESSAGES = 500;
+
+function addMessage(state: ChatState, message: Message): ChatState {
+  const newMessages = new Map(state.messages).set(message.id, message);
+  let newOrder = [...state.messageOrder, message.id];
+
+  // Evict old messages
+  while (newOrder.length > MAX_MESSAGES) {
+    const oldestId = newOrder.shift()!;
+    newMessages.delete(oldestId);
+  }
+
+  return { messages: newMessages, messageOrder: newOrder };
+}
+```
+
+### Elixir Anti-Patterns
+
+```elixir
+# ❌ Anti-Pattern: String keys in maps
+def process(%{"user_id" => user_id, "action" => action}) do
+  # String keys are error-prone and not compile-time checked
+end
+
+# ✅ Solution: Atom keys with pattern matching
+def process(%{user_id: user_id, action: action}) do
+  # Atom keys are safer and faster
+end
+
+# ❌ Anti-Pattern: Overly broad try/rescue
+def get_user(id) do
+  try do
+    user = Repo.get!(User, id)
+    {:ok, user}
+  rescue
+    _ -> {:error, :not_found}  # Catches ALL errors!
+  end
+end
+
+# ✅ Solution: Specific error handling
+def get_user(id) do
+  case Repo.get(User, id) do
+    nil -> {:error, :not_found}
+    user -> {:ok, user}
+  end
+end
+
+# ❌ Anti-Pattern: Large functions with multiple concerns
+def process_order(order_params) do
+  # Validate
+  # Calculate totals
+  # Check inventory
+  # Process payment
+  # Send confirmation
+  # Update analytics
+  # ... 200 lines later
+end
+
+# ✅ Solution: Pipeline of focused functions
+def process_order(order_params) do
+  with {:ok, validated} <- validate_order(order_params),
+       {:ok, with_totals} <- calculate_totals(validated),
+       :ok <- check_inventory(with_totals),
+       {:ok, payment} <- process_payment(with_totals),
+       {:ok, order} <- create_order(with_totals, payment) do
+    # Side effects after success
+    send_confirmation_async(order)
+    track_order_analytics(order)
+    {:ok, order}
+  end
+end
+```
+
+---
+
+## Quick Wins Checklist
+
+Use this checklist when reviewing or writing code:
+
+### Before Committing
+
+- [ ] No `any` types - use `unknown` with type guards
+- [ ] No nested ternaries - use early returns or switch
+- [ ] No inline object/function props - extract to constants/useCallback
+- [ ] No `console.log` - use logger utility
+- [ ] No magic numbers - use named constants
+- [ ] All async operations have error handling
+- [ ] Loading and error states are handled in UI
+- [ ] No direct DOM manipulation - use React state
+- [ ] No synchronous localStorage in render - use effects
+
+### Code Quality
+
+- [ ] Functions are under 20 lines
+- [ ] Maximum 3 parameters (use options object for more)
+- [ ] Pure functions are at module level
+- [ ] Complex conditionals extracted to named functions
+- [ ] Types exported from index files
+- [ ] No cross-feature internal imports
+
+### Performance
+
+- [ ] Lists with >50 items are virtualized
+- [ ] Heavy computations are memoized
+- [ ] Images have explicit dimensions
+- [ ] Lazy loading for routes/heavy components
+- [ ] No unnecessary re-renders (check with React DevTools)
+
+### Accessibility
+
+- [ ] Interactive elements are focusable
+- [ ] Images have alt text
+- [ ] Form inputs have labels
+- [ ] Color is not the only indicator
+- [ ] Keyboard navigation works
 
 ---
 

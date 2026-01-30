@@ -1,3 +1,7 @@
+import { createLogger } from '@/lib/logger';
+
+const _logger = createLogger('SeasonalEventStore');
+
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { safeLocalStorage } from '@/lib/safeStorage';
@@ -195,7 +199,7 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
               featuredEvent: response.data.featured || null,
             });
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to fetch events:', error);
         } finally {
           set({ isLoading: false });
@@ -212,7 +216,7 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
               currentEvent: response.data.event,
             });
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to fetch event details:', error);
         } finally {
           set({ isLoading: false });
@@ -229,7 +233,7 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
               availableRewards: response.data.availableRewards || [],
             });
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to fetch event progress:', error);
           // User hasn't joined yet
           set({
@@ -252,7 +256,7 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
             };
           }
           return { success: false };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to join event:', error);
           return { success: false };
         } finally {
@@ -281,7 +285,7 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
             };
           }
           return { success: false };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to claim reward:', error);
           return { success: false };
         } finally {
@@ -300,7 +304,7 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
               userRank: response.data.yourRank || null,
             });
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to fetch event leaderboard:', error);
         }
       },
@@ -317,7 +321,7 @@ export const useSeasonalEventStore = create<SeasonalEventState>()(
             };
           }
           return { success: false };
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to purchase battle pass:', error);
           return { success: false };
         } finally {

@@ -1,3 +1,7 @@
+import { createLogger } from '@/lib/logger';
+
+const _logger = createLogger('CustomizationStoreV2.tsStore');
+
 /**
  * @deprecated This file is deprecated. Import from '@/stores/customization' instead.
  *

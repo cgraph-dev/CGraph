@@ -41,6 +41,13 @@ const sizePxMap = {
   xlarge: 96,
 };
 
+// Animation speed multipliers - extracted from nested ternary
+const ANIMATION_SPEED_MULTIPLIERS: Record<'slow' | 'normal' | 'fast', number> = {
+  slow: 2,
+  normal: 1,
+  fast: 0.5,
+};
+
 export function ThemedAvatar({
   src,
   alt = 'Avatar',
@@ -59,8 +66,7 @@ export function ThemedAvatar({
   const colors = THEME_COLORS[theme.avatarBorderColor];
 
   const borderWidth = borderWidthMap[size];
-  const speedMultiplier =
-    theme.animationSpeed === 'slow' ? 2 : theme.animationSpeed === 'fast' ? 0.5 : 1;
+  const speedMultiplier = ANIMATION_SPEED_MULTIPLIERS[theme.animationSpeed];
 
   // Prefer advanced avatar borders when provided (discord-style compatibility)
   const resolvedBorder: AvatarBorderConfig | undefined =
@@ -227,12 +233,12 @@ export function ThemedAvatar({
       />
 
       {/* Gradient overlay for glassmorphism effect */}
-      {theme.effect === 'glassmorphism' && theme.blurEnabled && (
+      {theme.effectPreset === 'glassmorphism' && theme.glowEnabled && (
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/10 to-transparent" />
       )}
 
       {/* Holographic effect */}
-      {theme.effect === 'holographic' && (
+      {theme.effectPreset === 'holographic' && (
         <motion.div
           className="pointer-events-none absolute inset-0 opacity-20"
           style={{

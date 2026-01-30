@@ -208,7 +208,7 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
         isDirty: false,
         isLoading: false,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       set({
         isLoading: false,
         error: error instanceof Error ? error.message : 'Failed to save theme',
@@ -239,7 +239,7 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
         // No saved theme, use default
         set({ isLoading: false });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       set({
         isLoading: false,
         error: error instanceof Error ? error.message : 'Failed to load theme',
@@ -259,7 +259,7 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
     try {
       const importedTheme = CustomizationEngine.importTheme(json);
       get().setTheme(importedTheme);
-    } catch (error) {
+    } catch (error: unknown) {
       set({
         error: error instanceof Error ? error.message : 'Failed to import theme',
       });
@@ -291,20 +291,20 @@ export const useCustomizationStore = create<CustomizationState>((set, get) => ({
 // SELECTORS (for optimized access)
 // ============================================================================
 
-export const useTheme = () => useCustomizationStore(state => state.theme);
-export const useColors = () => useCustomizationStore(state => state.theme.colors);
-export const useTypography = () => useCustomizationStore(state => state.theme.typography);
-export const useSpacing = () => useCustomizationStore(state => state.theme.spacing);
-export const useBorderRadius = () => useCustomizationStore(state => state.theme.borderRadius);
-export const useEffects = () => useCustomizationStore(state => state.theme.effects);
-export const useAnimations = () => useCustomizationStore(state => state.theme.animations);
-export const useLayout = () => useCustomizationStore(state => state.theme.layout);
-export const useAccessibility = () => useCustomizationStore(state => state.theme.accessibility);
-export const usePerformance = () => useCustomizationStore(state => state.theme.performance);
+export const useTheme = () => useCustomizationStore((state) => state.theme);
+export const useColors = () => useCustomizationStore((state) => state.theme.colors);
+export const useTypography = () => useCustomizationStore((state) => state.theme.typography);
+export const useSpacing = () => useCustomizationStore((state) => state.theme.spacing);
+export const useBorderRadius = () => useCustomizationStore((state) => state.theme.borderRadius);
+export const useEffects = () => useCustomizationStore((state) => state.theme.effects);
+export const useAnimations = () => useCustomizationStore((state) => state.theme.animations);
+export const useLayout = () => useCustomizationStore((state) => state.theme.layout);
+export const useAccessibility = () => useCustomizationStore((state) => state.theme.accessibility);
+export const usePerformance = () => useCustomizationStore((state) => state.theme.performance);
 
-export const useIsPreviewMode = () => useCustomizationStore(state => state.isPreviewMode);
-export const useIsDirty = () => useCustomizationStore(state => state.isDirty);
-export const useCanUndo = () => useCustomizationStore(state => state.canUndo());
-export const useCanRedo = () => useCustomizationStore(state => state.canRedo());
+export const useIsPreviewMode = () => useCustomizationStore((state) => state.isPreviewMode);
+export const useIsDirty = () => useCustomizationStore((state) => state.isDirty);
+export const useCanUndo = () => useCustomizationStore((state) => state.canUndo());
+export const useCanRedo = () => useCustomizationStore((state) => state.canRedo());
 
 export default useCustomizationStore;

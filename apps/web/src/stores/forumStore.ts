@@ -1,3 +1,7 @@
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ForumStore');
+
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray, ensureObject } from '@/lib/apiUtils';
@@ -590,7 +594,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
         forums,
         isLoadingForums: false,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       set({ isLoadingForums: false });
       throw error;
     }
@@ -635,7 +639,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
         hasMorePosts: newPosts.length === 25,
         isLoadingPosts: false,
       }));
-    } catch (error) {
+    } catch (error: unknown) {
       set({ isLoadingPosts: false });
       throw error;
     }
@@ -658,7 +662,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
         },
         isLoadingComments: false,
       }));
-    } catch (error) {
+    } catch (error: unknown) {
       set({ isLoadingComments: false });
       throw error;
     }
@@ -786,7 +790,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
       } else {
         await api.post(endpoint, { value });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       // Rollback optimistic update on error
       if (type === 'post') {
         set({ posts: previousPosts, currentPost: previousCurrentPost });
@@ -859,7 +863,7 @@ export const useForumStore = create<ForumState>((set, get) => ({
         },
         isLoadingLeaderboard: false,
       });
-    } catch (error) {
+    } catch (error: unknown) {
       set({ isLoadingLeaderboard: false });
       throw error;
     }
@@ -899,8 +903,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
         return forum;
       }
       throw new Error('Failed to create forum - no forum returned');
-    } catch (error) {
-      console.error('[forumStore] createForum error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'createForum');
       throw error;
     }
   },
@@ -925,8 +929,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
         return mappedForum;
       }
       throw new Error('Failed to update forum');
-    } catch (error) {
-      console.error('[forumStore] updateForum error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'updateForum');
       throw error;
     }
   },
@@ -937,8 +941,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         forums: state.forums.filter((f) => f.id !== forumId),
       }));
-    } catch (error) {
-      console.error('[forumStore] deleteForum error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'deleteForum');
       throw error;
     }
   },
@@ -953,8 +957,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
             ? { ...state.currentPost, isPinned: true }
             : state.currentPost,
       }));
-    } catch (error) {
-      console.error('[forumStore] pinPost error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'pinPost');
       throw error;
     }
   },
@@ -969,8 +973,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
             ? { ...state.currentPost, isPinned: false }
             : state.currentPost,
       }));
-    } catch (error) {
-      console.error('[forumStore] unpinPost error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'unpinPost');
       throw error;
     }
   },
@@ -985,8 +989,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
             ? { ...state.currentPost, isLocked: true }
             : state.currentPost,
       }));
-    } catch (error) {
-      console.error('[forumStore] lockPost error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'lockPost');
       throw error;
     }
   },
@@ -1001,8 +1005,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
             ? { ...state.currentPost, isLocked: false }
             : state.currentPost,
       }));
-    } catch (error) {
-      console.error('[forumStore] unlockPost error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'unlockPost');
       throw error;
     }
   },
@@ -1014,8 +1018,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
         posts: state.posts.filter((p) => p.id !== postId),
         currentPost: state.currentPost?.id === postId ? null : state.currentPost,
       }));
-    } catch (error) {
-      console.error('[forumStore] deletePost error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'deletePost');
       throw error;
     }
   },
@@ -1050,8 +1054,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
         threadPrefixes: [...state.threadPrefixes, prefix],
       }));
       return prefix;
-    } catch (error) {
-      console.error('[forumStore] createThreadPrefix error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'createThreadPrefix');
       throw error;
     }
   },
@@ -1061,8 +1065,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         threadPrefixes: state.threadPrefixes.filter((p) => p.id !== prefixId),
       }));
-    } catch (error) {
-      console.error('[forumStore] deleteThreadPrefix error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'deleteThreadPrefix');
       throw error;
     }
   },
@@ -1091,8 +1095,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
               }
             : state.currentPost,
       }));
-    } catch (error) {
-      console.error('[forumStore] rateThread error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'rateThread');
       throw error;
     }
   },
@@ -1100,8 +1104,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
     try {
       const response = await api.get(`/api/v1/posts/${threadId}/ratings`);
       return ensureArray<ThreadRating>(response.data, 'ratings');
-    } catch (error) {
-      console.error('[forumStore] fetchThreadRatings error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'fetchThreadRatings');
       return [];
     }
   },
@@ -1116,16 +1120,16 @@ export const useForumStore = create<ForumState>((set, get) => ({
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       return response.data.attachment as PostAttachment;
-    } catch (error) {
-      console.error('[forumStore] uploadAttachment error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'uploadAttachment');
       throw error;
     }
   },
   deleteAttachment: async (attachmentId: string) => {
     try {
       await api.delete(`/api/v1/attachments/${attachmentId}`);
-    } catch (error) {
-      console.error('[forumStore] deleteAttachment error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'deleteAttachment');
       throw error;
     }
   },
@@ -1133,8 +1137,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
     try {
       const response = await api.get(`/api/v1/posts/${postId}/edit-history`);
       return ensureArray<PostEditHistory>(response.data, 'history');
-    } catch (error) {
-      console.error('[forumStore] fetchEditHistory error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'fetchEditHistory');
       return [];
     }
   },
@@ -1149,24 +1153,24 @@ export const useForumStore = create<ForumState>((set, get) => ({
         public: data.public,
       });
       return response.data.poll as Poll;
-    } catch (error) {
-      console.error('[forumStore] createPoll error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'createPoll');
       throw error;
     }
   },
   votePoll: async (pollId: string, optionIds: string[]) => {
     try {
       await api.post(`/api/v1/polls/${pollId}/vote`, { option_ids: optionIds });
-    } catch (error) {
-      console.error('[forumStore] votePoll error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'votePoll');
       throw error;
     }
   },
   closePoll: async (pollId: string) => {
     try {
       await api.post(`/api/v1/polls/${pollId}/close`);
-    } catch (error) {
-      console.error('[forumStore] closePoll error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'closePoll');
       throw error;
     }
   },
@@ -1188,8 +1192,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
           },
         ],
       }));
-    } catch (error) {
-      console.error('[forumStore] subscribeThread error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'subscribeThread');
       throw error;
     }
   },
@@ -1199,8 +1203,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         subscriptions: state.subscriptions.filter((s) => s.entityId !== threadId),
       }));
-    } catch (error) {
-      console.error('[forumStore] unsubscribeThread error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'unsubscribeThread');
       throw error;
     }
   },
@@ -1214,8 +1218,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
           s.id === subscriptionId ? { ...s, notificationMode } : s
         ),
       }));
-    } catch (error) {
-      console.error('[forumStore] updateSubscription error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'updateSubscription');
       throw error;
     }
   },
@@ -1224,8 +1228,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       const response = await api.get('/api/v1/subscriptions');
       const subscriptions = ensureArray<Subscription>(response.data, 'subscriptions');
       set({ subscriptions });
-    } catch (error) {
-      console.error('[forumStore] fetchSubscriptions error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'fetchSubscriptions');
     }
   },
   fetchUserGroups: async () => {
@@ -1233,8 +1237,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       const response = await api.get('/api/v1/user-groups');
       const userGroups = ensureArray<UserGroup>(response.data, 'user_groups');
       set({ userGroups });
-    } catch (error) {
-      console.error('[forumStore] fetchUserGroups error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'fetchUserGroups');
     }
   },
   createUserGroup: async (data) => {
@@ -1251,8 +1255,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
         userGroups: [...state.userGroups, group],
       }));
       return group;
-    } catch (error) {
-      console.error('[forumStore] createUserGroup error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'createUserGroup');
       throw error;
     }
   },
@@ -1269,8 +1273,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
         userGroups: state.userGroups.map((g) => (g.id === groupId ? group : g)),
       }));
       return group;
-    } catch (error) {
-      console.error('[forumStore] updateUserGroup error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'updateUserGroup');
       throw error;
     }
   },
@@ -1280,8 +1284,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         userGroups: state.userGroups.filter((g) => g.id !== groupId),
       }));
-    } catch (error) {
-      console.error('[forumStore] deleteUserGroup error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'deleteUserGroup');
       throw error;
     }
   },
@@ -1292,8 +1296,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
         reason,
       });
       return response.data.warning as UserWarning;
-    } catch (error) {
-      console.error('[forumStore] warnUser error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'warnUser');
       throw error;
     }
   },
@@ -1301,8 +1305,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
     try {
       const response = await api.get(`/api/v1/admin/users/${userId}/warnings`);
       return ensureArray<UserWarning>(response.data, 'warnings');
-    } catch (error) {
-      console.error('[forumStore] fetchUserWarnings error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'fetchUserWarnings');
       return [];
     }
   },
@@ -1318,16 +1322,16 @@ export const useForumStore = create<ForumState>((set, get) => ({
         notes: data.notes,
       });
       return response.data.ban as Ban;
-    } catch (error) {
-      console.error('[forumStore] banUser error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'banUser');
       throw error;
     }
   },
   unbanUser: async (banId: string) => {
     try {
       await api.delete(`/api/v1/admin/bans/${banId}`);
-    } catch (error) {
-      console.error('[forumStore] unbanUser error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'unbanUser');
       throw error;
     }
   },
@@ -1335,8 +1339,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
     try {
       const response = await api.get('/api/v1/admin/bans');
       return ensureArray<Ban>(response.data, 'bans');
-    } catch (error) {
-      console.error('[forumStore] fetchBans error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'fetchBans');
       return [];
     }
   },
@@ -1345,8 +1349,11 @@ export const useForumStore = create<ForumState>((set, get) => ({
       const response = await api.get('/api/v1/admin/moderation/queue');
       const queue = ensureArray<ModerationQueueItem>(response.data, 'items');
       set({ moderationQueue: queue });
-    } catch (error) {
-      console.error('[forumStore] fetchModerationQueue error:', error);
+    } catch (error: unknown) {
+      logger.error(
+        error instanceof Error ? error : new Error(String(error)),
+        'fetchModerationQueue'
+      );
     }
   },
   approveQueueItem: async (itemId: string) => {
@@ -1355,8 +1362,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         moderationQueue: state.moderationQueue.filter((i) => i.id !== itemId),
       }));
-    } catch (error) {
-      console.error('[forumStore] approveQueueItem error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'approveQueueItem');
       throw error;
     }
   },
@@ -1366,8 +1373,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         moderationQueue: state.moderationQueue.filter((i) => i.id !== itemId),
       }));
-    } catch (error) {
-      console.error('[forumStore] rejectQueueItem error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'rejectQueueItem');
       throw error;
     }
   },
@@ -1394,8 +1401,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       const params = status ? { status } : {};
       const response = await api.get('/api/v1/admin/reports', { params });
       return ensureArray<Report>(response.data, 'reports');
-    } catch (error) {
-      console.error('[forumStore] fetchReports error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'fetchReports');
       return [];
     }
   },
@@ -1404,8 +1411,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       await api.post(`/api/v1/admin/reports/${reportId}/assign`, {
         moderator_id: moderatorId,
       });
-    } catch (error) {
-      console.error('[forumStore] assignReport error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'assignReport');
       throw error;
     }
   },
@@ -1414,8 +1421,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       await api.post(`/api/v1/admin/reports/${reportId}/resolve`, {
         resolution,
       });
-    } catch (error) {
-      console.error('[forumStore] resolveReport error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'resolveReport');
       throw error;
     }
   },
@@ -1443,8 +1450,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         posts: state.posts.filter((p) => p.id !== threadId),
       }));
-    } catch (error) {
-      console.error('[forumStore] moveThread error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'moveThread');
       throw error;
     }
   },
@@ -1456,8 +1463,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       });
       // Returns the new thread that was created
       return response.data.new_thread_id;
-    } catch (error) {
-      console.error('[forumStore] splitThread error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'splitThread');
       throw error;
     }
   },
@@ -1470,8 +1477,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
       set((state) => ({
         posts: state.posts.filter((p) => p.id !== sourceThreadId),
       }));
-    } catch (error) {
-      console.error('[forumStore] mergeThreads error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'mergeThreads');
       throw error;
     }
   },
@@ -1487,8 +1494,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
             ? { ...state.currentPost, isLocked: true, isClosed: true }
             : state.currentPost,
       }));
-    } catch (error) {
-      console.error('[forumStore] closeThread error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'closeThread');
       throw error;
     }
   },
@@ -1504,8 +1511,8 @@ export const useForumStore = create<ForumState>((set, get) => ({
             ? { ...state.currentPost, isLocked: false, isClosed: false }
             : state.currentPost,
       }));
-    } catch (error) {
-      console.error('[forumStore] reopenThread error:', error);
+    } catch (error: unknown) {
+      logger.error(error instanceof Error ? error : new Error(String(error)), 'reopenThread');
       throw error;
     }
   },

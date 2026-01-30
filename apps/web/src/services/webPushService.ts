@@ -1,3 +1,7 @@
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('WebPush');
+
 /**
  * Web Push Notification Service
  *
@@ -51,8 +55,8 @@ async function getVapidPublicKey(): Promise<string | null> {
       cachedVapidKey = response.data.data.vapid_public_key;
       return cachedVapidKey;
     }
-  } catch (error) {
-    console.error('[WebPush] Failed to fetch VAPID key from backend:', error);
+  } catch (error: unknown) {
+    logger.error(error instanceof Error ? error : new Error(String(error)), 'getVapidPublicKey');
   }
 
   return null;
@@ -102,7 +106,7 @@ export async function getPushState(): Promise<WebPushState> {
  */
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   if (!('serviceWorker' in navigator)) {
-    console.warn('[WebPush] Service workers not supported');
+    logger.warn(' Service workers not supported');
     return null;
   }
 
@@ -111,14 +115,17 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
       scope: '/',
     });
 
-    console.debug('[WebPush] Service worker registered:', registration.scope);
+    logger.debug(' Service worker registered:', registration.scope);
 
     // Wait for the service worker to be ready
     await navigator.serviceWorker.ready;
 
     return registration;
-  } catch (error) {
-    console.error('[WebPush] Service worker registration failed:', error);
+  } catch (error: unknown) {
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      'registerServiceWorker'
+    );
     return null;
   }
 }
@@ -128,12 +135,12 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
  */
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
   if (!isPushSupported()) {
-    console.warn('[WebPush] Push notifications not supported');
+    logger.warn(' Push notifications not supported');
     return 'denied';
   }
 
   const permission = await Notification.requestPermission();
-  console.debug('[WebPush] Permission result:', permission);
+  logger.debug(' Permission result:', permission);
   return permission;
 }
 
@@ -163,7 +170,7 @@ export async function subscribeToPush(
   try {
     const vapidKey = await getVapidPublicKey();
     if (!vapidKey) {
-      console.error('[WebPush] VAPID public key not available');
+      logger.error(new Error('VAPID public key not available'), 'subscribeToPush failed');
       return null;
     }
 
@@ -174,10 +181,10 @@ export async function subscribeToPush(
       applicationServerKey: vapidPublicKey as BufferSource,
     });
 
-    console.debug('[WebPush] Push subscription created');
+    logger.debug(' Push subscription created');
     return subscription;
-  } catch (error) {
-    console.error('[WebPush] Push subscription failed:', error);
+  } catch (error: unknown) {
+    logger.error(error instanceof Error ? error : new Error(String(error)), 'subscribeToPush');
     return null;
   }
 }
@@ -198,10 +205,10 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     }
 
     const success = await subscription.unsubscribe();
-    console.debug('[WebPush] Unsubscribed:', success);
+    logger.debug(' Unsubscribed:', success);
     return success;
-  } catch (error) {
-    console.error('[WebPush] Unsubscribe failed:', error);
+  } catch (error: unknown) {
+    logger.error(error instanceof Error ? error : new Error(String(error)), 'unsubscribeFromPush');
     return false;
   }
 }
@@ -227,7 +234,7 @@ export async function registerPushWithBackend(
     });
 
     if (response.status === 201 || response.status === 200) {
-      console.debug('[WebPush] Token registered with backend');
+      logger.debug(' Token registered with backend');
       return { success: true, subscription };
     }
 
@@ -235,9 +242,13 @@ export async function registerPushWithBackend(
       success: false,
       error: `Unexpected response: ${response.status}`,
     };
-  } catch (error) {
+  } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Unknown error';
-    console.error('[WebPush] Backend registration failed:', message);
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      'Backend registration failed:',
+      message
+    );
     return { success: false, error: message };
   }
 }
@@ -252,10 +263,13 @@ export async function unregisterPushFromBackend(subscription: PushSubscription):
     await api.delete('/api/v1/web-push/unsubscribe', {
       data: { endpoint: subscriptionData.endpoint },
     });
-    console.debug('[WebPush] Token unregistered from backend');
+    logger.debug(' Token unregistered from backend');
     return true;
-  } catch (error) {
-    console.error('[WebPush] Backend unregistration failed:', error);
+  } catch (error: unknown) {
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      'unregisterPushFromBackend'
+    );
     return false;
   }
 }
@@ -309,8 +323,11 @@ export async function unregisterFromPushNotifications(): Promise<boolean> {
     }
 
     return true;
-  } catch (error) {
-    console.error('[WebPush] Unregistration failed:', error);
+  } catch (error: unknown) {
+    logger.error(
+      error instanceof Error ? error : new Error(String(error)),
+      'unregisterFromPushNotifications'
+    );
     return false;
   }
 }

@@ -1,3 +1,7 @@
+import { createLogger } from '@/lib/logger';
+
+const _logger = createLogger('GamificationStore');
+
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { safeLocalStorage } from '@/lib/safeStorage';
@@ -284,7 +288,7 @@ export const useGamificationStore = create<GamificationState>()(
         try {
           await api.post(`/api/v1/gamification/badges/${badgeId}/equip`);
           set({ equippedBadges: [...equippedBadges, badgeId] });
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to equip badge:', error);
         }
       },
@@ -297,7 +301,7 @@ export const useGamificationStore = create<GamificationState>()(
         try {
           await api.post(`/api/v1/gamification/badges/${badgeId}/unequip`);
           set({ equippedBadges: equippedBadges.filter((id) => id !== badgeId) });
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('Failed to unequip badge:', error);
         }
       },
@@ -369,7 +373,7 @@ export const useGamificationStore = create<GamificationState>()(
             loginStreak: stats.streak_days || 0,
             isLoading: false,
           });
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('[Gamification] Failed to fetch data:', error);
           set({ isLoading: false });
         }
@@ -401,7 +405,7 @@ export const useGamificationStore = create<GamificationState>()(
             })),
             isLoadingAchievements: false,
           });
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('[Gamification] Failed to fetch achievements:', error);
           set({ isLoadingAchievements: false });
         }
@@ -457,7 +461,7 @@ export const useGamificationStore = create<GamificationState>()(
               };
             }),
           });
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('[Gamification] Failed to fetch quests:', error);
         }
       },
@@ -548,7 +552,7 @@ export const useGamificationStore = create<GamificationState>()(
               `[Gamification] Achievement not ready: ${achievement.title} - ${result.message}`
             );
           }
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('[Gamification] Failed to unlock achievement:', error);
         }
       },
@@ -578,7 +582,7 @@ export const useGamificationStore = create<GamificationState>()(
           console.debug(
             `[Gamification] Quest completed: ${quest.title}, XP: ${rewards?.xp}, Coins: ${rewards?.coins}`
           );
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('[Gamification] Failed to complete quest:', error);
         }
       },
@@ -626,7 +630,7 @@ export const useGamificationStore = create<GamificationState>()(
               isEquipped: t.id === titleId,
             })),
           });
-        } catch (error) {
+        } catch (error: unknown) {
           console.error('[Gamification] Failed to equip title:', error);
         }
       },
@@ -660,7 +664,7 @@ export const useGamificationStore = create<GamificationState>()(
           console.debug(
             `[Gamification] Daily login claimed! Streak: ${data.streak_days}, Coins: ${data.coins_earned}`
           );
-        } catch (error) {
+        } catch (error: unknown) {
           // Already claimed or other error - update last login date anyway
           set({ lastLoginDate: today });
           console.debug('[Gamification] Daily login already claimed or error:', error);
