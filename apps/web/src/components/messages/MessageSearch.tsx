@@ -389,7 +389,10 @@ export function MessageSearch({
                     <select
                       value={filters.messageType}
                       onChange={(e) =>
-                        setFilters({ ...filters, messageType: e.target.value as any })
+                        setFilters({
+                          ...filters,
+                          messageType: e.target.value as SearchFilters['messageType'],
+                        })
                       }
                       className="rounded-lg border border-dark-500 bg-dark-700 px-2 py-1 text-sm text-white"
                     >

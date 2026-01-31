@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useChatBubbleStore } from '@/stores/chatBubbleStore';
+import { useChatBubbleStore, CHAT_BUBBLE_PRESETS } from '@/stores/chatBubbleStore';
 import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -142,7 +142,7 @@ export default function ChatBubbleSettings() {
             <motion.button
               key={preset.id}
               onClick={() => {
-                applyPreset(preset.id as any);
+                applyPreset(preset.id as keyof typeof CHAT_BUBBLE_PRESETS);
                 HapticFeedback.light();
               }}
               className="flex flex-col items-center gap-2"

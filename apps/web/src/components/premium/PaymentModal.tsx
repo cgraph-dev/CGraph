@@ -65,7 +65,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   onError,
 }) => {
   const { addCoins, setSubscription, addPurchase } = usePremiumStore();
-  
+
   const [step, setStep] = useState<PaymentStep>('details');
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('card');
   const [promoCode, setPromoCode] = useState('');
@@ -80,11 +80,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   const [transactionId, setTransactionId] = useState('');
 
   const currency = item.currency || 'USD';
-  const finalPrice = promoApplied 
-    ? item.price * (1 - promoDiscount)
-    : item.price;
-  const savings = item.originalPrice 
-    ? item.originalPrice - item.price + (promoDiscount * item.price)
+  const finalPrice = promoApplied ? item.price * (1 - promoDiscount) : item.price;
+  const savings = item.originalPrice
+    ? item.originalPrice - item.price + promoDiscount * item.price
     : promoDiscount * item.price;
 
   const formatCardNumber = (value: string) => {
@@ -121,23 +119,34 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     setStep('processing');
 
     // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Simulate success (90% success rate for demo)
     if (Math.random() > 0.1) {
       const txId = `TXN_${Date.now()}_${Math.random().toString(36).substring(7)}`;
       setTransactionId(txId);
-      
+
       // Update store based on purchase type
       if (item.type === 'subscription') {
         const expiresAt = new Date();
-        expiresAt.setFullYear(expiresAt.getFullYear() + (item.billingInterval === 'yearly' ? 1 : 0));
+        expiresAt.setFullYear(
+          expiresAt.getFullYear() + (item.billingInterval === 'yearly' ? 1 : 0)
+        );
         expiresAt.setMonth(expiresAt.getMonth() + (item.billingInterval === 'monthly' ? 1 : 0));
-        setSubscription(item.id as any, expiresAt.toISOString());
+        // Map product id to subscription tier - all paid items default to 'pro'
+        const tierMap: Record<string, 'free' | 'plus' | 'pro' | 'ultimate'> = {
+          basic: 'plus',
+          plus: 'plus',
+          pro: 'pro',
+          premium: 'pro',
+          ultimate: 'ultimate',
+        };
+        const tier = tierMap[item.id] || 'pro';
+        setSubscription(tier, expiresAt.toISOString());
       } else if (item.type === 'coins') {
         addCoins(item.quantity || 0);
       }
-      
+
       // Add to purchase history
       addPurchase({
         id: txId,
@@ -149,17 +158,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         status: 'completed',
         createdAt: new Date().toISOString(),
       });
-      
+
       setStep('success');
       HapticFeedback.success();
-      
+
       // Celebration
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 },
       });
-      
+
       onSuccess?.(txId);
     } else {
       setErrorMessage('Payment failed. Please try again.');
@@ -192,16 +201,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             className="space-y-6"
           >
             {/* Order summary */}
-            <div className="bg-dark-800/50 rounded-xl p-4 space-y-3">
+            <div className="space-y-3 rounded-xl bg-dark-800/50 p-4">
               <h3 className="font-semibold text-white">Order Summary</h3>
-              <div className="flex justify-between items-start">
+              <div className="flex items-start justify-between">
                 <div>
                   <p className="font-medium text-white">{item.name}</p>
                   <p className="text-sm text-white/60">{item.description}</p>
                   {item.billingInterval && item.billingInterval !== 'one-time' && (
-                    <p className="text-xs text-white/40 mt-1">
-                      Billed {item.billingInterval}
-                    </p>
+                    <p className="mt-1 text-xs text-white/40">Billed {item.billingInterval}</p>
                   )}
                 </div>
                 <div className="text-right">
@@ -213,7 +220,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   <p className="font-bold text-white">${item.price.toFixed(2)}</p>
                 </div>
               </div>
-              
+
               {promoApplied && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
@@ -224,10 +231,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   <span>-${(item.price * promoDiscount).toFixed(2)}</span>
                 </motion.div>
               )}
-              
-              <div className="border-t border-white/10 pt-3 flex justify-between">
+
+              <div className="flex justify-between border-t border-white/10 pt-3">
                 <span className="font-semibold text-white">Total</span>
-                <span className="font-bold text-xl text-white">${finalPrice.toFixed(2)}</span>
+                <span className="text-xl font-bold text-white">${finalPrice.toFixed(2)}</span>
               </div>
             </div>
 
@@ -240,25 +247,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   value={promoCode}
                   onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
                   placeholder="Enter code"
-                  className="flex-1 bg-dark-800/50 border border-white/10 rounded-lg px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  className="flex-1 rounded-lg border border-white/10 bg-dark-800/50 px-4 py-2 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
                 <Button
                   onClick={handleApplyPromo}
                   disabled={!promoCode}
-                  className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg disabled:opacity-50"
+                  className="rounded-lg bg-white/10 px-4 py-2 text-white hover:bg-white/20 disabled:opacity-50"
                 >
                   Apply
                 </Button>
               </div>
-              {promoApplied && (
-                <p className="text-sm text-green-400">✓ Promo code applied!</p>
-              )}
+              {promoApplied && <p className="text-sm text-green-400">✓ Promo code applied!</p>}
             </div>
 
             {/* Continue button */}
             <Button
               onClick={() => setStep('payment')}
-              className="w-full py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90"
+              className="w-full rounded-xl bg-gradient-to-r from-primary-500 to-purple-600 py-3 font-semibold text-white hover:opacity-90"
             >
               Continue to Payment
             </Button>
@@ -286,13 +291,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       HapticFeedback.light();
                       setPaymentMethod(method.id);
                     }}
-                    className={`
-                      p-3 rounded-xl border transition-all flex items-center gap-2
-                      ${paymentMethod === method.id
+                    className={`flex items-center gap-2 rounded-xl border p-3 transition-all ${
+                      paymentMethod === method.id
                         ? 'border-primary-500 bg-primary-500/20'
                         : 'border-white/10 bg-dark-800/50 hover:border-white/20'
-                      }
-                    `}
+                    } `}
                   >
                     <span className="text-xl">{method.icon}</span>
                     <span className="text-sm text-white">{method.name}</span>
@@ -311,14 +314,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <div>
                   <label className="text-sm text-white/60">Card Number</label>
                   <div className="relative mt-1">
-                    <CreditCardIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                    <CreditCardIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
                     <input
                       type="text"
                       value={cardNumber}
                       onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                       placeholder="1234 5678 9012 3456"
                       maxLength={19}
-                      className="w-full bg-dark-800/50 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full rounded-lg border border-white/10 bg-dark-800/50 py-3 pl-10 pr-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 </div>
@@ -332,7 +335,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
                       placeholder="MM/YY"
                       maxLength={5}
-                      className="w-full mt-1 bg-dark-800/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="mt-1 w-full rounded-lg border border-white/10 bg-dark-800/50 px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                   <div>
@@ -340,10 +343,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     <input
                       type="text"
                       value={cardCvc}
-                      onChange={(e) => setCardCvc(e.target.value.replace(/\D/g, '').substring(0, 4))}
+                      onChange={(e) =>
+                        setCardCvc(e.target.value.replace(/\D/g, '').substring(0, 4))
+                      }
                       placeholder="123"
                       maxLength={4}
-                      className="w-full mt-1 bg-dark-800/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="mt-1 w-full rounded-lg border border-white/10 bg-dark-800/50 px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
                 </div>
@@ -355,11 +360,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     value={cardName}
                     onChange={(e) => setCardName(e.target.value)}
                     placeholder="John Doe"
-                    className="w-full mt-1 bg-dark-800/50 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="mt-1 w-full rounded-lg border border-white/10 bg-dark-800/50 px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-primary-500"
                   />
                 </div>
 
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex cursor-pointer items-center gap-2">
                   <input
                     type="checkbox"
                     checked={saveCard}
@@ -373,9 +378,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
             {/* Other payment methods message */}
             {paymentMethod !== 'card' && (
-              <div className="bg-dark-800/50 rounded-xl p-4 text-center">
+              <div className="rounded-xl bg-dark-800/50 p-4 text-center">
                 <p className="text-white/60">
-                  You will be redirected to {PAYMENT_METHODS.find(m => m.id === paymentMethod)?.name} to complete your payment.
+                  You will be redirected to{' '}
+                  {PAYMENT_METHODS.find((m) => m.id === paymentMethod)?.name} to complete your
+                  payment.
                 </p>
               </div>
             )}
@@ -390,14 +397,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="flex gap-3">
               <Button
                 onClick={() => setStep('details')}
-                className="flex-1 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20"
+                className="flex-1 rounded-xl bg-white/10 py-3 text-white hover:bg-white/20"
               >
                 Back
               </Button>
               <Button
                 onClick={handleSubmitPayment}
-                disabled={paymentMethod === 'card' && (!cardNumber || !cardExpiry || !cardCvc || !cardName)}
-                className="flex-1 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90 disabled:opacity-50"
+                disabled={
+                  paymentMethod === 'card' && (!cardNumber || !cardExpiry || !cardCvc || !cardName)
+                }
+                className="flex-1 rounded-xl bg-gradient-to-r from-primary-500 to-purple-600 py-3 font-semibold text-white hover:opacity-90 disabled:opacity-50"
               >
                 Pay ${finalPrice.toFixed(2)}
               </Button>
@@ -415,7 +424,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
-              className="w-16 h-16 mx-auto border-4 border-primary-500 border-t-transparent rounded-full"
+              className="mx-auto h-16 w-16 rounded-full border-4 border-primary-500 border-t-transparent"
             />
             <p className="mt-6 text-lg text-white">Processing payment...</p>
             <p className="mt-2 text-sm text-white/60">Please don't close this window</p>
@@ -433,21 +442,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', damping: 10, stiffness: 200 }}
-              className="w-20 h-20 mx-auto bg-green-500/20 rounded-full flex items-center justify-center"
+              className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-500/20"
             >
               <CheckCircleIcon className="h-12 w-12 text-green-500" />
             </motion.div>
             <h3 className="mt-6 text-xl font-bold text-white">Payment Successful!</h3>
             <p className="mt-2 text-white/60">Thank you for your purchase</p>
-            
-            <div className="mt-6 bg-dark-800/50 rounded-xl p-4 text-left">
+
+            <div className="mt-6 rounded-xl bg-dark-800/50 p-4 text-left">
               <div className="flex justify-between text-sm">
                 <span className="text-white/60">Transaction ID</span>
-                <span className="text-white font-mono">{transactionId}</span>
+                <span className="font-mono text-white">{transactionId}</span>
               </div>
-              <div className="flex justify-between text-sm mt-2">
+              <div className="mt-2 flex justify-between text-sm">
                 <span className="text-white/60">Amount</span>
-                <span className="text-white">${finalPrice.toFixed(2)} {currency}</span>
+                <span className="text-white">
+                  ${finalPrice.toFixed(2)} {currency}
+                </span>
               </div>
             </div>
 
@@ -455,7 +466,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-400 rounded-full text-sm"
+                className="mt-4 inline-flex items-center gap-2 rounded-full bg-green-500/20 px-4 py-2 text-sm text-green-400"
               >
                 <GiftIcon className="h-4 w-4" />
                 You saved ${savings.toFixed(2)}!
@@ -464,7 +475,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
             <Button
               onClick={handleClose}
-              className="w-full mt-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90"
+              className="mt-6 w-full rounded-xl bg-gradient-to-r from-primary-500 to-purple-600 py-3 font-semibold text-white hover:opacity-90"
             >
               Done
             </Button>
@@ -482,23 +493,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: 'spring', damping: 10, stiffness: 200 }}
-              className="w-20 h-20 mx-auto bg-red-500/20 rounded-full flex items-center justify-center"
+              className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-500/20"
             >
               <ExclamationTriangleIcon className="h-12 w-12 text-red-500" />
             </motion.div>
             <h3 className="mt-6 text-xl font-bold text-white">Payment Failed</h3>
             <p className="mt-2 text-white/60">{errorMessage}</p>
 
-            <div className="flex gap-3 mt-6">
+            <div className="mt-6 flex gap-3">
               <Button
                 onClick={handleClose}
-                className="flex-1 py-3 bg-white/10 text-white rounded-xl hover:bg-white/20"
+                className="flex-1 rounded-xl bg-white/10 py-3 text-white hover:bg-white/20"
               >
                 Cancel
               </Button>
               <Button
                 onClick={() => setStep('payment')}
-                className="flex-1 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white font-semibold rounded-xl hover:opacity-90"
+                className="flex-1 rounded-xl bg-gradient-to-r from-primary-500 to-purple-600 py-3 font-semibold text-white hover:opacity-90"
               >
                 Try Again
               </Button>
@@ -515,7 +526,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
           onClick={handleClose}
         >
           <motion.div
@@ -530,7 +541,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               {step !== 'processing' && (
                 <button
                   onClick={handleClose}
-                  className="absolute top-4 right-4 p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                  className="absolute right-4 top-4 rounded-lg bg-white/5 p-2 transition-colors hover:bg-white/10"
                 >
                   <XMarkIcon className="h-5 w-5 text-white/60" />
                 </button>
@@ -542,36 +553,29 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   <h2 className="text-xl font-bold text-white">
                     {step === 'details' ? 'Checkout' : 'Payment Details'}
                   </h2>
-                  <p className="text-sm text-white/60 mt-1">
-                    {step === 'details' 
-                      ? 'Review your order'
-                      : 'Enter your payment information'
-                    }
+                  <p className="mt-1 text-sm text-white/60">
+                    {step === 'details' ? 'Review your order' : 'Enter your payment information'}
                   </p>
                 </div>
               )}
 
               {/* Step indicator */}
               {step !== 'processing' && step !== 'success' && step !== 'error' && (
-                <div className="flex gap-2 mb-6">
+                <div className="mb-6 flex gap-2">
                   {['details', 'payment'].map((s) => (
                     <div
                       key={s}
-                      className={`
-                        flex-1 h-1 rounded-full transition-colors
-                        ${step === s || (step === 'payment' && s === 'details')
+                      className={`h-1 flex-1 rounded-full transition-colors ${
+                        step === s || (step === 'payment' && s === 'details')
                           ? 'bg-primary-500'
                           : 'bg-white/10'
-                        }
-                      `}
+                      } `}
                     />
                   ))}
                 </div>
               )}
 
-              <AnimatePresence mode="wait">
-                {renderContent()}
-              </AnimatePresence>
+              <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>
             </GlassCard>
           </motion.div>
         </motion.div>
