@@ -51,3 +51,6 @@ export { useCallModals, type CallModalState, type CallModalHandlers } from './us
 export { useConversationUI } from './useConversationUI';
 export { useE2EEError } from './useE2EEError';
 export { useMessageInputState } from './useMessageInputState';
+
+// Profile hooks
+export { useProfileData, useProfileActions, useProfileEdit } from './useProfileActions';
