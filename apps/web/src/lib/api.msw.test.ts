@@ -1,9 +1,14 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { api } from './api';
 import { server } from '../test/setup';
 import { http, HttpResponse } from 'msw';
 
 describe('api client (msw)', () => {
+  // Reset handlers after each test to ensure clean state
+  beforeEach(() => {
+    server.resetHandlers();
+  });
+
   it('sends idempotency key and parses tokens on login', async () => {
     const res = await api.post('/api/v1/auth/login', {
       identifier: 'demo',
@@ -18,9 +23,8 @@ describe('api client (msw)', () => {
   });
 
   it('surface missing idempotency as error when header absent', async () => {
-    const apiNoIdempotency = api.create({ headers: { 'Idempotency-Key': '' } });
-
-    server.resetHandlers(
+    // Add handler for this specific test
+    server.use(
       http.post('http://localhost:4000/api/v1/auth/login', async ({ request }) => {
         const idempotencyKey = request.headers.get('idempotency-key');
         if (!idempotencyKey) {
@@ -30,13 +34,16 @@ describe('api client (msw)', () => {
       })
     );
 
+    // Test with empty idempotency key should fail
+    const apiNoIdempotency = api.create({ headers: { 'Idempotency-Key': '' } });
+
     await expect(
       apiNoIdempotency.post('/api/v1/auth/login', { identifier: 'demo', password: 'secret' })
     ).rejects.toThrowError();
   });
 
   it('allows custom handlers override per test', async () => {
-    server.resetHandlers(
+    server.use(
       http.get('http://localhost:4000/api/v1/users/me', () =>
         HttpResponse.json({ data: { id: 'override', email: 'override@example.com' } })
       )
