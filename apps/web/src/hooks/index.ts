@@ -46,3 +46,8 @@ export {
 } from './useScheduleMessage';
 
 export { useCallModals, type CallModalState, type CallModalHandlers } from './useCallModals';
+
+// Conversation UI hooks
+export { useConversationUI } from './useConversationUI';
+export { useE2EEError } from './useE2EEError';
+export { useMessageInputState } from './useMessageInputState';

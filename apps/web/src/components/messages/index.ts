@@ -7,6 +7,9 @@
 // Core message display
 export { MessageBubble, type MessageBubbleProps, type UIPreferences } from './MessageBubble';
 
+// Message list with grouping
+export { MessageList } from './MessageList';
+
 // Input area with emoji/sticker/GIF pickers
 export { MessageInputArea, type MessageInputAreaProps } from './MessageInputArea';
 
