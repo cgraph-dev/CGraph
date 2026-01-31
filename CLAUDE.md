@@ -547,6 +547,42 @@ Required:
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
+## Current Status (v0.9.8+)
+
+**Updated:** January 31, 2026  
+**Commit:** `89fb94b`
+
+### Remediation Progress
+
+| Phase                          | Target                      | Status         | Completion |
+| ------------------------------ | --------------------------- | -------------- | ---------- |
+| Phase 0: Critical Security     | Remove secrets from git     | ✅ COMPLETE    | 100%       |
+| Phase 1: Security Hardening    | OAuth, CORS, SSL, Audit     | ✅ COMPLETE    | 100%       |
+| Phase 2: Code Quality          | Console.log, as any         | ✅ COMPLETE    | 95%        |
+| Phase 3: Store Consolidation   | 32 → 7 stores               | ⚠️ PARTIAL     | 25%        |
+| Phase 4: Component Refactoring | Break down large components | ✅ COMPLETE    | 100%       |
+| Phase 5: Feature Completeness  | Edit/delete, voice, E2EE    | ✅ COMPLETE    | 100%       |
+| Phase 6: Test Coverage         | 70% coverage                | ⚠️ IN PROGRESS | 35%        |
+
+### Key Metrics
+
+| Metric                | Before      | After                     |
+| --------------------- | ----------- | ------------------------- |
+| `.env` with secrets   | Present     | **DELETED**               |
+| `as any` casts        | 7           | **0** (1 comment)         |
+| `console.log` calls   | 325         | **55** (acceptable)       |
+| Settings.tsx          | 1,172 lines | **221 lines**             |
+| UserProfile.tsx       | 1,157 lines | **715 lines**             |
+| Store count           | 32          | 33 (consolidation needed) |
+| Test files (frontend) | 20          | **29**                    |
+| Test files (backend)  | 40          | 40                        |
+
+**Overall Score:** 7.3/10 (up from 4.8/10)
+
+See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
+
+---
+
 ## Recent Updates (v0.9.0)
 
 ### Backend Fixes
