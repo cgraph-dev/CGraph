@@ -33,11 +33,7 @@ function createTestQueryClient() {
 // Wrapper component with providers
 function TestWrapper({ children }: { children: React.ReactNode }) {
   const queryClient = createTestQueryClient();
-  return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
 
 // Render helper
@@ -224,9 +220,7 @@ describe('ReportDialog', () => {
 
     it('displays error message on failure', async () => {
       const user = userEvent.setup();
-      vi.mocked(api.post).mockRejectedValueOnce({
-        response: { data: { error: 'Rate limit exceeded' } },
-      });
+      vi.mocked(api.post).mockRejectedValueOnce(new Error('Rate limit exceeded'));
 
       renderReportDialog();
 
@@ -335,27 +329,17 @@ describe('ReportDialog', () => {
 
       // Close dialog
       await user.click(screen.getByText('Back'));
-      
+
       // Simulate closing and reopening (would normally reset state via handleClose)
       rerender(
         <TestWrapper>
-          <ReportDialog
-            isOpen={false}
-            onClose={vi.fn()}
-            targetType="user"
-            targetId="user-123"
-          />
+          <ReportDialog isOpen={false} onClose={vi.fn()} targetType="user" targetId="user-123" />
         </TestWrapper>
       );
 
       rerender(
         <TestWrapper>
-          <ReportDialog
-            isOpen={true}
-            onClose={vi.fn()}
-            targetType="user"
-            targetId="user-123"
-          />
+          <ReportDialog isOpen={true} onClose={vi.fn()} targetType="user" targetId="user-123" />
         </TestWrapper>
       );
 

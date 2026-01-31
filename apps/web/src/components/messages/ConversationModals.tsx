@@ -115,7 +115,7 @@ export function ConversationModals({
   setShowScheduleModal,
   messageToSchedule,
   setMessageToSchedule,
-  messageToReschedule,
+  messageToReschedule: _messageToReschedule,
   setMessageToReschedule,
   onSchedule,
   // Voice/Video Calls
@@ -258,7 +258,13 @@ export function ConversationModals({
               theme: otherParticipant?.user?.theme ?? undefined,
             }}
             mutualFriends={mutualFriends}
-            sharedForums={otherParticipant?.user?.sharedForums ?? []}
+            sharedForums={
+              (otherParticipant?.user?.sharedForums ?? []) as {
+                id: string;
+                name: string;
+                icon?: string;
+              }[]
+            }
             onClose={() => setShowInfoPanel(false)}
           />
         )}

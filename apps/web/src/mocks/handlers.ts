@@ -150,6 +150,16 @@ interface MockFriend {
 }
 
 // ============================================================================
+// Health Check Handler
+// ============================================================================
+
+const healthHandlers = [
+  http.get(`${API_BASE}/api/v1/health`, () => {
+    return HttpResponse.json({ status: 'healthy', timestamp: Date.now() });
+  }),
+];
+
+// ============================================================================
 // Authentication Handlers
 // ============================================================================
 
@@ -545,6 +555,7 @@ const uploadHandlers = [
 // ============================================================================
 
 export const handlers = [
+  ...healthHandlers,
   ...authHandlers,
   ...messageHandlers,
   ...friendHandlers,

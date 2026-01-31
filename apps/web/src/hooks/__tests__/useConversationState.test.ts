@@ -5,15 +5,15 @@ import { renderHook } from '@testing-library/react';
 vi.mock('@/stores/chatStore', () => ({
   useChatStore: vi.fn((selector) => {
     const state = {
-      conversations: {
-        'conv-1': {
+      conversations: [
+        {
           id: 'conv-1',
           name: 'Test Conversation',
-          participants: [],
+          participants: [{ id: 'participant-1', username: 'other-user', avatarUrl: '' }],
           createdAt: '2026-01-01T00:00:00Z',
           updatedAt: '2026-01-01T00:00:00Z',
         },
-      },
+      ],
       messages: {
         'conv-1': [
           {
@@ -25,7 +25,7 @@ vi.mock('@/stores/chatStore', () => ({
           },
         ],
       },
-      isLoadingMessages: {},
+      isLoadingMessages: false,
       typingUsers: { 'conv-1': [] },
       hasMoreMessages: { 'conv-1': false },
       presenceUsers: { 'conv-1': ['user-1'] },

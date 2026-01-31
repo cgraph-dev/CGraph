@@ -7,7 +7,6 @@ import {
   ShieldExclamationIcon,
   CogIcon,
   ClockIcon,
-  ExclamationTriangleIcon,
   CheckCircleIcon,
   XCircleIcon,
   MagnifyingGlassIcon,
@@ -25,7 +24,7 @@ import clsx from 'clsx';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 
 // Admin types - extracted
-import type { SystemMetrics, AdminUser, Report, AuditEntry, TabId } from '@/types/admin.types';
+import type { AdminUser, Report, AuditEntry, TabId } from '@/types/admin.types';
 
 // Admin shared components - extracted
 import {

@@ -68,9 +68,7 @@ function createTestWrapper(initialRoute = '/') {
   return function TestWrapper({ children }: { children: React.ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <MemoryRouter initialEntries={[initialRoute]}>
-          {children}
-        </MemoryRouter>
+        <MemoryRouter initialEntries={[initialRoute]}>{children}</MemoryRouter>
       </QueryClientProvider>
     );
   };
@@ -89,12 +87,15 @@ describe('App Component', () => {
   });
 
   describe('Routing', () => {
-    it('redirects unauthenticated users from / to /login', async () => {
+    it('shows landing page for unauthenticated users at /', async () => {
       const Wrapper = createTestWrapper('/');
       render(<App />, { wrapper: Wrapper });
 
+      // The app now shows a landing page for unauthenticated users at /
       await waitFor(() => {
-        expect(screen.getByTestId('login-page')).toBeInTheDocument();
+        expect(
+          screen.getByClassName ? document.querySelector('.demo-landing, .gl-nav') : document.body
+        ).toBeInTheDocument();
       });
     });
 

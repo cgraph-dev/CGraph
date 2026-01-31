@@ -9,7 +9,7 @@
 
 import { describe, it, expect, beforeEach, vi, beforeAll, afterAll } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { ReactNode } from 'react';
+import React, { ReactNode } from 'react';
 
 // =============================================================================
 // MOCKS

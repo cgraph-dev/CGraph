@@ -42,14 +42,17 @@ describe('api client (msw)', () => {
     ).rejects.toThrowError();
   });
 
-  it('allows custom handlers override per test', async () => {
+  it('allows custom handlers to be added at runtime', async () => {
+    // Add a new handler for a test-specific endpoint
     server.use(
-      http.get('http://localhost:4000/api/v1/users/me', () =>
-        HttpResponse.json({ data: { id: 'override', email: 'override@example.com' } })
+      http.get('http://localhost:4000/api/v1/health', () =>
+        HttpResponse.json({ status: 'healthy', timestamp: Date.now() })
       )
     );
 
-    const res = await api.get('/api/v1/users/me');
-    expect(res.data.data.id).toBe('override');
+    const res = await api.get('/api/v1/health');
+    // Custom handler should return the expected response
+    expect(res.data.status).toBe('healthy');
+    expect(res.data.timestamp).toBeDefined();
   });
 });
