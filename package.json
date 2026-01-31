@@ -56,7 +56,16 @@
       "react-dom": "19.1.0",
       "@wagmi/core": "2.16.4",
       "@wagmi/connectors": "5.7.7"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@next/swc",
+      "bufferutil",
+      "core-js",
+      "esbuild",
+      "msgpack",
+      "utf-8-validate"
+    ]
   },
   "packageManager": "pnpm@10.26.2",
   "lint-staged": {
