@@ -77,7 +77,7 @@ describe('friendStore', () => {
       });
 
       expect(useFriendStore.getState().friends).toHaveLength(1);
-      expect(useFriendStore.getState().friends[0].username).toBe('testfriend');
+      expect(useFriendStore.getState().friends[0]?.username).toBe('testfriend');
     });
 
     it('should handle multiple friends', () => {
@@ -101,12 +101,12 @@ describe('friendStore', () => {
       });
 
       const friend = useFriendStore.getState().friends[0];
-      expect(friend.id).toBe('user-123');
-      expect(friend.username).toBe('testfriend');
-      expect(friend.displayName).toBe('Test Friend');
-      expect(friend.avatarUrl).toBe('https://example.com/avatar.png');
-      expect(friend.status).toBe('online');
-      expect(friend.friendshipId).toBe('friend-456');
+      expect(friend?.id).toBe('user-123');
+      expect(friend?.username).toBe('testfriend');
+      expect(friend?.displayName).toBe('Test Friend');
+      expect(friend?.avatarUrl).toBe('https://example.com/avatar.png');
+      expect(friend?.status).toBe('online');
+      expect(friend?.friendshipId).toBe('friend-456');
     });
   });
 
@@ -117,7 +117,7 @@ describe('friendStore', () => {
       });
 
       expect(useFriendStore.getState().pendingRequests).toHaveLength(1);
-      expect(useFriendStore.getState().pendingRequests[0].type).toBe('incoming');
+      expect(useFriendStore.getState().pendingRequests[0]?.type).toBe('incoming');
     });
 
     it('should store request user info', () => {
@@ -126,9 +126,9 @@ describe('friendStore', () => {
       });
 
       const request = useFriendStore.getState().pendingRequests[0];
-      expect(request.user.id).toBe('user-999');
-      expect(request.user.username).toBe('requester');
-      expect(request.user.displayName).toBe('Request User');
+      expect(request?.user.id).toBe('user-999');
+      expect(request?.user.username).toBe('requester');
+      expect(request?.user.displayName).toBe('Request User');
     });
 
     it('should handle multiple pending requests', () => {
@@ -163,7 +163,7 @@ describe('friendStore', () => {
       });
 
       expect(useFriendStore.getState().sentRequests).toHaveLength(1);
-      expect(useFriendStore.getState().sentRequests[0].type).toBe('outgoing');
+      expect(useFriendStore.getState().sentRequests[0]?.type).toBe('outgoing');
     });
   });
 
@@ -215,7 +215,7 @@ describe('friendStore', () => {
 
       useFriendStore.setState({ friends: [onlineFriend] });
 
-      expect(useFriendStore.getState().friends[0].status).toBe('online');
+      expect(useFriendStore.getState().friends[0]?.status).toBe('online');
     });
 
     it('should store offline friend', () => {
@@ -226,7 +226,7 @@ describe('friendStore', () => {
 
       useFriendStore.setState({ friends: [offlineFriend] });
 
-      expect(useFriendStore.getState().friends[0].status).toBe('offline');
+      expect(useFriendStore.getState().friends[0]?.status).toBe('offline');
     });
 
     it('should store idle friend', () => {
@@ -237,7 +237,7 @@ describe('friendStore', () => {
 
       useFriendStore.setState({ friends: [idleFriend] });
 
-      expect(useFriendStore.getState().friends[0].status).toBe('idle');
+      expect(useFriendStore.getState().friends[0]?.status).toBe('idle');
     });
 
     it('should store dnd friend', () => {
@@ -248,7 +248,7 @@ describe('friendStore', () => {
 
       useFriendStore.setState({ friends: [dndFriend] });
 
-      expect(useFriendStore.getState().friends[0].status).toBe('dnd');
+      expect(useFriendStore.getState().friends[0]?.status).toBe('dnd');
     });
   });
 

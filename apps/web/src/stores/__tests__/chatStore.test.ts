@@ -45,9 +45,10 @@ const mockConversation: Conversation = {
   participants: [
     {
       id: 'part-1',
-      conversationId: 'conv-456',
       userId: 'user-789',
-      role: 'member',
+      nickname: null,
+      isMuted: false,
+      mutedUntil: null,
       joinedAt: '2026-01-01T00:00:00Z',
       user: {
         id: 'user-789',
@@ -62,7 +63,6 @@ const mockConversation: Conversation = {
   unreadCount: 0,
   isPinned: false,
   isMuted: false,
-  isArchived: false,
 };
 
 // Reset store state after each test
@@ -110,7 +110,7 @@ describe('chatStore', () => {
       useChatStore.getState().addConversation(mockConversation);
 
       expect(useChatStore.getState().conversations).toHaveLength(1);
-      expect(useChatStore.getState().conversations[0].id).toBe('conv-456');
+      expect(useChatStore.getState().conversations[0]?.id).toBe('conv-456');
     });
 
     it('should update conversation in list', () => {
@@ -155,7 +155,7 @@ describe('chatStore', () => {
 
       const messages = useChatStore.getState().messages['conv-456'];
       expect(messages).toHaveLength(1);
-      expect(messages[0].id).toBe('msg-123');
+      expect(messages?.[0]?.id).toBe('msg-123');
     });
 
     it('should update existing message', () => {
@@ -173,8 +173,8 @@ describe('chatStore', () => {
       useChatStore.getState().updateMessage(updatedMessage);
 
       const messages = useChatStore.getState().messages['conv-456'];
-      expect(messages[0].content).toBe('Updated content');
-      expect(messages[0].isEdited).toBe(true);
+      expect(messages?.[0]?.content).toBe('Updated content');
+      expect(messages?.[0]?.isEdited).toBe(true);
     });
 
     it('should remove message from conversation', () => {
@@ -226,9 +226,9 @@ describe('chatStore', () => {
       useChatStore.getState().addReactionToMessage('msg-123', '👍', 'user-999', 'reactor');
 
       const messages = useChatStore.getState().messages['conv-456'];
-      expect(messages[0].reactions).toHaveLength(1);
-      expect(messages[0].reactions[0].emoji).toBe('👍');
-      expect(messages[0].reactions[0].userId).toBe('user-999');
+      expect(messages?.[0]?.reactions).toHaveLength(1);
+      expect(messages?.[0]?.reactions?.[0]?.emoji).toBe('👍');
+      expect(messages?.[0]?.reactions?.[0]?.userId).toBe('user-999');
     });
 
     it('should remove reaction from message via removeReactionFromMessage', () => {
@@ -251,7 +251,7 @@ describe('chatStore', () => {
       useChatStore.getState().removeReactionFromMessage('msg-123', '👍', 'user-999');
 
       const messages = useChatStore.getState().messages['conv-456'];
-      expect(messages[0].reactions).toHaveLength(0);
+      expect(messages?.[0]?.reactions).toHaveLength(0);
     });
   });
 
@@ -296,9 +296,10 @@ describe('chatStore', () => {
         participants: [
           {
             id: 'part-1',
-            conversationId: 'conv-456',
             userId: 'current-user',
-            role: 'member',
+            nickname: null,
+            isMuted: false,
+            mutedUntil: null,
             joinedAt: '2026-01-01T00:00:00Z',
             user: {
               id: 'current-user',
@@ -310,9 +311,10 @@ describe('chatStore', () => {
           },
           {
             id: 'part-2',
-            conversationId: 'conv-456',
             userId: 'other-user',
-            role: 'member',
+            nickname: null,
+            isMuted: false,
+            mutedUntil: null,
             joinedAt: '2026-01-01T00:00:00Z',
             user: {
               id: 'other-user',
