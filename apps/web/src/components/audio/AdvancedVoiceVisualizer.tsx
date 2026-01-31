@@ -14,6 +14,13 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('AdvancedVoiceVisualizer');
 
+// Safari compatibility - webkitAudioContext
+declare global {
+  interface Window {
+    webkitAudioContext?: typeof AudioContext;
+  }
+}
+
 // =============================================================================
 // TYPES
 // =============================================================================
@@ -428,7 +435,8 @@ export default function AdvancedVoiceVisualizer({
 
   // Initialize audio context
   useEffect(() => {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioContextClass();
     const analyserNode = ctx.createAnalyser();
     analyserNode.fftSize = 2048;
     analyserNode.smoothingTimeConstant = 0.8;

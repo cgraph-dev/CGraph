@@ -10,6 +10,13 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('API');
 
+// Token payload interface for refresh response parsing
+interface TokenPayload {
+  access_token?: string;
+  token?: string;
+  refresh_token?: string;
+}
+
 /**
  * API URL Configuration
  *
@@ -70,10 +77,15 @@ export const api = createHttpClient({
     buildBody: (rt) => ({ refresh_token: rt }),
     withCredentials: true,
     parseTokens: (data: unknown) => {
-      const payload = (data as any)?.data || data;
-      const tokens = (payload as any)?.tokens || payload || {};
+      // Type-safe parsing of refresh token response
+      const response = data as
+        | { data?: { tokens?: TokenPayload }; tokens?: TokenPayload }
+        | TokenPayload;
+      const payload = 'data' in response && response.data ? response.data : response;
+      const tokens =
+        'tokens' in payload && payload.tokens ? payload.tokens : (payload as TokenPayload);
       return {
-        accessToken: tokens.access_token || tokens.token,
+        accessToken: tokens.access_token || tokens.token || '',
         refreshToken: tokens.refresh_token,
       };
     },

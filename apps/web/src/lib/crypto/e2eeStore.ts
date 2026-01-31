@@ -73,6 +73,7 @@ interface E2EEState {
   // Key management
   uploadMorePrekeys: (count?: number) => Promise<number>;
   getPrekeyCount: () => Promise<number>;
+  getRecipientBundle: (recipientId: string) => Promise<ServerPrekeyBundle>;
   getSafetyNumber: (userId: string) => Promise<string>;
   getDevices: () => Promise<Array<{ device_id: string; created_at: string }>>;
   revokeDevice: (deviceId: string) => Promise<void>;
@@ -256,7 +257,7 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
     }
 
     // Get recipient's prekey bundle
-    const recipientBundle = await (get() as any).getRecipientBundle(recipientId);
+    const recipientBundle = await get().getRecipientBundle(recipientId);
 
     // Encrypt the message
     return await encryptForRecipient(plaintext, recipientBundle);
@@ -349,7 +350,7 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
     const ourUserId = meResponse.data.data?.id || meResponse.data.id;
 
     // Get their public key
-    const recipientBundle = await (get() as any).getRecipientBundle(userId);
+    const recipientBundle = await get().getRecipientBundle(userId);
     const ourPublicKey = await exportPublicKey(identityKey.keyPair.publicKey);
     const theirPublicKey = base64ToArrayBuffer(recipientBundle.identity_key);
 
@@ -433,7 +434,7 @@ export const useE2EEStore = create<E2EEState>()((set, get) => ({
     // Get recipient's prekey bundle if we don't have a session
     let recipientBundle: ServerPrekeyBundle | undefined;
     if (!sessionManager.hasSession(recipientId)) {
-      recipientBundle = await (get() as any).getRecipientBundle(recipientId);
+      recipientBundle = await get().getRecipientBundle(recipientId);
     }
 
     // Get our user ID from the API
