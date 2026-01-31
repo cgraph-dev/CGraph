@@ -14,3 +14,19 @@ export {
   type ForumItem,
   type ForumOrderingAdminProps,
 } from './ForumOrderingAdmin';
+// Shared UI components
+export {
+  StatusBadge,
+  LoadingState,
+  EmptyState,
+  ProgressBar,
+  MetricCard,
+  RealtimeStat,
+  StatsCard,
+  SystemHealthCard,
+  JobsStatusCard,
+  SettingToggle,
+  SettingNumber,
+  formatUptime,
+  ChatBubbleIcon,
+} from './AdminSharedComponents';
