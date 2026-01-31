@@ -239,7 +239,7 @@ function ThemeTab() {
           {presets.map((preset) => (
             <button
               key={preset.id}
-              onClick={() => applyPreset(preset.id as any)}
+              onClick={() => applyPreset(preset.id)}
               className="rounded-lg border border-gray-700 bg-gray-800/50 p-4 text-left transition-all hover:bg-gray-800"
             >
               <div className="mb-1 text-sm font-medium">{preset.name}</div>

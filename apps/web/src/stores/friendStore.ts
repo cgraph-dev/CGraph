@@ -1,3 +1,56 @@
+/**
+ * Friend Store
+ *
+ * Manages friend list, friend requests, and user blocking functionality.
+ * Provides real-time presence updates and friend status tracking.
+ *
+ * ## Features
+ * - Friend list with online/offline status
+ * - Incoming and outgoing friend requests
+ * - User blocking and unblocking
+ * - Real-time status updates via Phoenix Channels
+ *
+ * ## Usage
+ *
+ * ```tsx
+ * import { useFriendStore } from '@/stores/friendStore';
+ *
+ * function FriendsList() {
+ *   const { friends, fetchFriends } = useFriendStore();
+ *
+ *   useEffect(() => {
+ *     fetchFriends();
+ *   }, []);
+ *
+ *   return (
+ *     <div>
+ *       {friends.map((friend) => (
+ *         <FriendItem key={friend.id} friend={friend} />
+ *       ))}
+ *     </div>
+ *   );
+ * }
+ * ```
+ *
+ * ## State
+ * - `friends` - List of user's friends
+ * - `pendingRequests` - Incoming friend requests
+ * - `sentRequests` - Outgoing friend requests
+ * - `isLoading` - Loading state
+ * - `error` - Last error message
+ *
+ * ## Actions
+ * - `fetchFriends()` - Load friend list
+ * - `sendFriendRequest(userId)` - Send friend request
+ * - `acceptRequest(requestId)` - Accept incoming request
+ * - `rejectRequest(requestId)` - Reject incoming request
+ * - `removeFriend(friendId)` - Remove friend
+ *
+ * @module stores/friendStore
+ * @version 0.9.9
+ * @since v0.1.0
+ */
+
 import { create } from 'zustand';
 import { createIdempotencyKey } from '@cgraph/utils';
 import { api } from '@/lib/api';

@@ -18,9 +18,9 @@ defmodule CGraphWeb.Plugs.Cors do
   def call(conn, _opts) do
     origin = get_req_header(conn, "origin") |> List.first()
     
-    # Debug logging for CORS issues
+    # Debug logging for CORS issues (use debug level in production)
     require Logger
-    Logger.info("CORS: method=#{conn.method} origin=#{inspect(origin)} allowed=#{origin && origin_allowed?(origin)}")
+    Logger.debug("CORS: method=#{conn.method} origin=#{inspect(origin)} allowed=#{origin && origin_allowed?(origin)}")
     
     if origin && origin_allowed?(origin) do
       conn
@@ -55,7 +55,7 @@ defmodule CGraphWeb.Plugs.Cors do
     require Logger
     allowed_origins = get_cors_origins()
     
-    Logger.info("CORS: checking origin=#{inspect(origin)} against #{inspect(allowed_origins)}")
+    Logger.debug("CORS: checking origin=#{inspect(origin)} against #{inspect(allowed_origins)}")
     
     case allowed_origins do
       "*" -> true
@@ -70,7 +70,7 @@ defmodule CGraphWeb.Plugs.Cors do
             if match, do: Logger.debug("CORS: exact match on #{allowed}")
             match
         end)
-        Logger.info("CORS: final result=#{result}")
+        Logger.debug("CORS: final result=#{result}")
         result
       _ -> false
     end

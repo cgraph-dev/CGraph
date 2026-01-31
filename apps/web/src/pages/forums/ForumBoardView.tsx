@@ -252,7 +252,7 @@ export default function ForumBoardView() {
                   <span className="flex items-center gap-1.5 text-gray-400">
                     <ChatBubbleLeftRightIcon className="h-4 w-4" />
                     <span className="font-medium text-white">
-                      {(forum as any).thread_count?.toLocaleString() || '0'}
+                      {(forum.threadCount ?? 0).toLocaleString()}
                     </span>
                     <span>threads</span>
                   </span>
@@ -274,14 +274,16 @@ export default function ForumBoardView() {
       <div className="border-b border-dark-700 bg-dark-800">
         <div className="mx-auto max-w-6xl px-4">
           <div className="flex items-center gap-1">
-            {[
-              { key: 'boards', label: 'Boards', icon: FolderIcon },
-              { key: 'threads', label: 'Recent Threads', icon: ChatBubbleLeftRightIcon },
-              { key: 'members', label: 'Members', icon: UserIcon },
-            ].map((tab) => (
+            {(
+              [
+                { key: 'boards', label: 'Boards', icon: FolderIcon },
+                { key: 'threads', label: 'Recent Threads', icon: ChatBubbleLeftRightIcon },
+                { key: 'members', label: 'Members', icon: UserIcon },
+              ] as const
+            ).map((tab) => (
               <button
                 key={tab.key}
-                onClick={() => setActiveTab(tab.key as any)}
+                onClick={() => setActiveTab(tab.key)}
                 className={`flex items-center gap-2 px-4 py-3 font-medium transition-colors ${
                   activeTab === tab.key
                     ? 'border-b-2 border-primary-400 text-primary-400'

@@ -146,16 +146,38 @@ export default function Conversation() {
   const [showScheduledList, setShowScheduledList] = useState(false);
   const [messageToReschedule, setMessageToReschedule] = useState<Message | null>(null);
 
-  const [uiPreferences, setUiPreferences] = useState({
-    glassEffect: 'holographic' as 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic',
-    animationIntensity: 'high' as 'low' | 'medium' | 'high',
+  // UI preferences with strict typing
+  type GlassEffect = 'default' | 'frosted' | 'crystal' | 'neon' | 'holographic';
+  type AnimationIntensity = 'low' | 'medium' | 'high';
+  type VoiceTheme = 'matrix-green' | 'cyber-blue' | 'neon-pink' | 'amber';
+  type EntranceAnimation = 'slide' | 'scale' | 'fade' | 'bounce';
+
+  interface UIPreferences {
+    glassEffect: GlassEffect;
+    animationIntensity: AnimationIntensity;
+    showParticles: boolean;
+    enableGlow: boolean;
+    enable3D: boolean;
+    enableHaptic: boolean;
+    voiceVisualizerTheme: VoiceTheme;
+    messageEntranceAnimation: EntranceAnimation;
+  }
+
+  const [uiPreferences, setUiPreferences] = useState<UIPreferences>({
+    glassEffect: 'holographic',
+    animationIntensity: 'high',
     showParticles: true,
     enableGlow: true,
     enable3D: true,
     enableHaptic: true,
-    voiceVisualizerTheme: 'matrix-green' as 'matrix-green' | 'cyber-blue' | 'neon-pink' | 'amber',
-    messageEntranceAnimation: 'slide' as 'slide' | 'scale' | 'fade' | 'bounce',
+    voiceVisualizerTheme: 'matrix-green',
+    messageEntranceAnimation: 'slide',
   });
+
+  // Type-safe preference updater
+  const updatePreference = <K extends keyof UIPreferences>(key: K, value: UIPreferences[K]) => {
+    setUiPreferences((prev) => ({ ...prev, [key]: value }));
+  };
 
   // Fetch friends list for mutual friends calculation
   useEffect(() => {
@@ -962,7 +984,7 @@ export default function Conversation() {
                       <select
                         value={uiPreferences.glassEffect}
                         onChange={(e) =>
-                          setUiPreferences({ ...uiPreferences, glassEffect: e.target.value as any })
+                          updatePreference('glassEffect', e.target.value as GlassEffect)
                         }
                         className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
                       >
@@ -982,10 +1004,7 @@ export default function Conversation() {
                       <select
                         value={uiPreferences.voiceVisualizerTheme}
                         onChange={(e) =>
-                          setUiPreferences({
-                            ...uiPreferences,
-                            voiceVisualizerTheme: e.target.value as any,
-                          })
+                          updatePreference('voiceVisualizerTheme', e.target.value as VoiceTheme)
                         }
                         className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
                       >
@@ -1004,10 +1023,10 @@ export default function Conversation() {
                       <select
                         value={uiPreferences.animationIntensity}
                         onChange={(e) =>
-                          setUiPreferences({
-                            ...uiPreferences,
-                            animationIntensity: e.target.value as any,
-                          })
+                          updatePreference(
+                            'animationIntensity',
+                            e.target.value as AnimationIntensity
+                          )
                         }
                         className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
                       >
@@ -1025,10 +1044,10 @@ export default function Conversation() {
                       <select
                         value={uiPreferences.messageEntranceAnimation}
                         onChange={(e) =>
-                          setUiPreferences({
-                            ...uiPreferences,
-                            messageEntranceAnimation: e.target.value as any,
-                          })
+                          updatePreference(
+                            'messageEntranceAnimation',
+                            e.target.value as EntranceAnimation
+                          )
                         }
                         className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
                       >

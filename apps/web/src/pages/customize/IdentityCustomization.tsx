@@ -14,6 +14,7 @@ import { useGamificationStore } from '@/stores/gamificationStore';
 import {
   useCustomizationStore,
   type AvatarBorderType,
+  type ProfileCardStyle,
 } from '@/stores/customization';
 import toast from 'react-hot-toast';
 
@@ -24,20 +25,14 @@ import {
   getBordersByTheme,
   type BorderTheme,
   type BorderRarity,
+  type BorderAnimationType,
 } from '@/data/borderCollections';
 
 // Import titles collection
-import {
-  ALL_TITLES,
-  type TitleDefinition,
-  type TitleAnimationType,
-} from '@/data/titlesCollection';
+import { ALL_TITLES, type TitleDefinition, type TitleAnimationType } from '@/data/titlesCollection';
 
 // Import badges collection
-import {
-  ALL_BADGES,
-  type BadgeDefinition,
-} from '@/data/badgesCollection';
+import { ALL_BADGES, type BadgeDefinition } from '@/data/badgesCollection';
 
 // Import reusable components
 import ThemedBorderCard from '@/components/customize/ThemedBorderCard';
@@ -581,7 +576,7 @@ export default function IdentityCustomization() {
     }
 
     updateIdentity('profileLayout', layoutId);
-    store.setProfileCardStyle(layoutId as any);
+    store.setProfileCardStyle(layoutId as ProfileCardStyle);
   };
 
   const handleSaveChanges = async () => {
@@ -800,7 +795,7 @@ function BordersSection({
           name: b.name,
           theme: 'elemental' as BorderTheme,
           rarity: b.rarity as BorderRarity,
-          animationType: b.animation as any,
+          animationType: b.animation as BorderAnimationType,
           colors: b.colors,
           isPremium: !b.unlocked,
           unlocked: b.unlocked,

@@ -18,6 +18,8 @@ export interface Forum {
   isPrivate: boolean;
   isPublic: boolean;
   memberCount: number;
+  threadCount?: number;
+  postCount?: number;
   // Voting fields for competition
   score: number;
   upvotes: number;

@@ -1,3 +1,54 @@
+/**
+ * Chat Store
+ *
+ * Manages messaging state including conversations, messages, typing indicators,
+ * reactions, and real-time updates. Core store for all chat functionality.
+ *
+ * ## Features
+ * - Real-time message sync via Phoenix Channels
+ * - End-to-end encryption (E2EE) support
+ * - Message reactions and threading
+ * - Typing indicators with debouncing
+ * - Optimistic updates with rollback
+ * - Virtualized message rendering support
+ *
+ * ## Usage
+ *
+ * ```tsx
+ * import { useChatStore } from '@/stores/chatStore';
+ *
+ * function MessageList({ conversationId }) {
+ *   const messages = useChatStore((s) => s.messages[conversationId] || []);
+ *   const sendMessage = useChatStore((s) => s.sendMessage);
+ *
+ *   return (
+ *     <div>
+ *       {messages.map((msg) => (
+ *         <Message key={msg.id} message={msg} />
+ *       ))}
+ *     </div>
+ *   );
+ * }
+ * ```
+ *
+ * ## State
+ * - `conversations` - List of user's conversations
+ * - `messages` - Messages indexed by conversation ID
+ * - `activeConversationId` - Currently open conversation
+ * - `typingUsers` - Users currently typing per conversation
+ *
+ * ## Actions
+ * - `fetchConversations()` - Load conversation list
+ * - `fetchMessages(conversationId)` - Load messages for conversation
+ * - `sendMessage(conversationId, content, options)` - Send a message
+ * - `addReactionToMessage(messageId, emoji)` - Add reaction
+ * - `setTyping(conversationId, isTyping)` - Broadcast typing status
+ *
+ * @module stores/chatStore
+ * @version 0.9.9
+ * @since v0.1.0
+ */
+
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { api } from '@/lib/api';

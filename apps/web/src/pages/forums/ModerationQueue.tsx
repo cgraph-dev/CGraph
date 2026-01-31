@@ -43,6 +43,14 @@ interface FilterState {
   searchQuery: string;
 }
 
+// Type-safe filter update helpers
+type FilterKey = keyof FilterState;
+const createFilterUpdater =
+  <K extends FilterKey>(setFilters: React.Dispatch<React.SetStateAction<FilterState>>, key: K) =>
+  (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFilters((prev) => ({ ...prev, [key]: e.target.value as FilterState[K] }));
+  };
+
 interface QueueItemCardProps {
   item: ModerationQueueItem;
   isSelected: boolean;
@@ -426,7 +434,7 @@ export default function ModerationQueue() {
           {/* Status Filter */}
           <select
             value={filters.status}
-            onChange={(e) => setFilters({ ...filters, status: e.target.value as any })}
+            onChange={createFilterUpdater(setFilters, 'status')}
             className="rounded-lg border border-dark-500 bg-dark-700 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
           >
             <option value="pending">Pending Only</option>
@@ -436,7 +444,7 @@ export default function ModerationQueue() {
           {/* Type Filter */}
           <select
             value={filters.itemType}
-            onChange={(e) => setFilters({ ...filters, itemType: e.target.value as any })}
+            onChange={createFilterUpdater(setFilters, 'itemType')}
             className="rounded-lg border border-dark-500 bg-dark-700 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
           >
             <option value="all">All Types</option>
@@ -450,7 +458,7 @@ export default function ModerationQueue() {
           {/* Priority Filter */}
           <select
             value={filters.priority}
-            onChange={(e) => setFilters({ ...filters, priority: e.target.value as any })}
+            onChange={createFilterUpdater(setFilters, 'priority')}
             className="rounded-lg border border-dark-500 bg-dark-700 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
           >
             <option value="all">All Priorities</option>
@@ -463,7 +471,7 @@ export default function ModerationQueue() {
           {/* Reason Filter */}
           <select
             value={filters.reason}
-            onChange={(e) => setFilters({ ...filters, reason: e.target.value as any })}
+            onChange={createFilterUpdater(setFilters, 'reason')}
             className="rounded-lg border border-dark-500 bg-dark-700 px-3 py-2 text-sm text-white outline-none focus:border-primary-500"
           >
             <option value="all">All Reasons</option>

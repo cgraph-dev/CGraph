@@ -1,3 +1,54 @@
+/**
+ * Authentication Store
+ *
+ * Manages user authentication state, session tokens, and user profile.
+ * Uses Zustand with persistence middleware for session management.
+ *
+ * ## Features
+ * - JWT token management with automatic refresh
+ * - Persistent sessions across page reloads
+ * - OAuth support (Google, Apple, Discord)
+ * - Two-factor authentication
+ * - Secure token storage with fingerprinting
+ *
+ * ## Usage
+ *
+ * ```tsx
+ * import { useAuthStore } from '@/stores/authStore';
+ *
+ * function LoginButton() {
+ *   const { login, isAuthenticated, user } = useAuthStore();
+ *
+ *   const handleLogin = async () => {
+ *     await login('email@example.com', 'password');
+ *   };
+ *
+ *   if (isAuthenticated) {
+ *     return <span>Welcome, {user?.displayName}</span>;
+ *   }
+ *
+ *   return <button onClick={handleLogin}>Log In</button>;
+ * }
+ * ```
+ *
+ * ## State
+ * - `user` - Current authenticated user or null
+ * - `isAuthenticated` - Whether user is logged in
+ * - `isLoading` - Loading state for auth operations
+ * - `error` - Last error message if any
+ *
+ * ## Actions
+ * - `login(identifier, password)` - Log in with credentials
+ * - `logout()` - Log out and clear session
+ * - `register(email, username, password)` - Create new account
+ * - `refreshToken()` - Refresh access token
+ * - `updateUser(updates)` - Update user profile
+ *
+ * @module stores/authStore
+ * @version 0.9.9
+ * @since v0.1.0
+ */
+
 import { create } from 'zustand';
 import { devtools, persist, createJSONStorage, type StateStorage } from 'zustand/middleware';
 import { api } from '@/lib/api';
