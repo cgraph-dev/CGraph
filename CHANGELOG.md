@@ -4,26 +4,104 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.9] - 2026-01-31
+
+**🔧 TYPE SAFETY & PRODUCTION LOGGING IMPROVEMENTS**
+
+Continued Phase 4 remediation with focus on eliminating unsafe type casts and implementing
+production-safe logging.
+
+### 🛡️ Type Safety Improvements
+
+#### New `getAvatarBorderId()` Utility
+
+- **lib/utils.ts**: Added type-safe utility function to handle both camelCase (`avatarBorderId`) and
+  snake_case (`avatar_border_id`) API responses
+- **Eliminates 21 'as any' casts** across 12 files
+- Accepts `unknown` input for maximum flexibility without unsafe casts
+
+#### Files Updated with Type-Safe Avatar Handling
+
+- `layouts/AppLayout.tsx`
+- `components/layout/Sidebar.tsx`
+- `components/layout/TopNav.tsx`
+- `components/chat/ChatInfoPanel.tsx`
+- `components/conversation/ConversationHeader.tsx`
+- `components/groups/MemberList.tsx`
+- `components/messaging/ConversationList.tsx`
+- `components/messaging/MessageList.tsx`
+- `components/settings/AccountSettings.tsx`
+- `pages/forums/ForumBoardView.tsx`
+- `pages/messages/EnhancedConversation.tsx`
+- `pages/messages/Messages.tsx`
+- `pages/social/Social.tsx`
+
+### 📝 Production-Safe Logging
+
+#### Logger Integration
+
+- **gamificationStore.ts**: Replaced 8 console statements with `createLogger('Gamification')`
+- **SpatialAudioEngine.ts**: Replaced 5 console statements with `createLogger('SpatialAudio')`
+- **migrateToSecureStorage.ts**: Replaced 8 console statements with `createLogger('Migration')`
+- **Conversation.tsx**: Replaced 6 console statements with `createLogger('Conversation')`
+
+#### Logging Improvements
+
+- Logger automatically gates `debug`, `info`, and `log` behind `isDev` checks
+- No debug output in production builds
+- Console statements reduced from **51 → 33**
+
+### 🏗️ Component Extraction
+
+#### AccountSettings Component
+
+- **components/settings/AccountSettings.tsx**: New ~275 line component extracted from Settings.tsx
+- Handles profile picture, username, display name, email, and wallet settings
+- Settings.tsx reduced from **1416 → 1169 lines**
+
+### 🧪 Test Fixes
+
+#### Test Type Corrections
+
+- **useConversationState.test.ts**: Fixed property names (`typingUserIds`, `hasMore`) and function
+  references
+- **MessageBubble.test.tsx**: Added required Message properties and fixed sender types
+
+### 📊 Metrics
+
+| Metric             | Before | After | Change |
+| ------------------ | ------ | ----- | ------ |
+| 'as any' casts     | 48     | 27    | -44%   |
+| Console statements | 51     | 33    | -35%   |
+| TypeScript errors  | 0      | 0     | ✅     |
+
+---
+
 ## [0.9.8] - 2026-01-30
 
 **🧹 CODE SIMPLIFICATION & COMPONENT EXTRACTION**
 
-Major code quality improvements following Google, Meta, and Telegram industry standards. Component extraction for better maintainability and reusability.
+Major code quality improvements following Google, Meta, and Telegram industry standards. Component
+extraction for better maintainability and reusability.
 
 ### 🏗️ Code Architecture Improvements
 
 #### Conversation.tsx Extraction (~175 lines removed)
-- **ConversationHeader**: Extracted header component with all controls (voice/video call, search, settings)
+
+- **ConversationHeader**: Extracted header component with all controls (voice/video call, search,
+  settings)
 - **TypingIndicator**: Extracted reusable animated typing indicator component
 - **reactionUtils**: Centralized reaction aggregation and handling utilities
 
 #### Centralized Customization Mappings
+
 - **mappings.ts**: New centralized mapping module with helper functions:
   - `getBorderType()`, `getThemeColor()`, `getThemePreset()`
   - `getBubbleStyle()`, `getBubbleAnimation()`, `getChatThemeColor()`
   - `getTitleDisplay()`, `isRareTitle()`
 
 #### CustomizationItemCard Component
+
 - **Generic reusable card** for all customization panels (bubbles, effects, reactions, borders)
 - Handles selection, preview, lock status, and animations
 - Supports `grid`, `list`, and `compact` layout variants
@@ -31,26 +109,28 @@ Major code quality improvements following Google, Meta, and Telegram industry st
 ### 🔧 Code Quality Fixes
 
 #### Anti-Pattern Elimination
+
 - Removed nested ternary operators (replaced with helper functions)
 - Replaced switch statements with Record<K,V> mappings
 - Moved pure functions to module level (out of components)
 - Extracted duplicate code into shared utilities
 
 #### Store Consolidation
+
 - Added `findConversationForMessage()` helper in chatStore
 - Added `updateMessageReactions()` helper for reaction updates
 - Improved notification store with clearAll functionality
 
 ### 📁 New Files
 
-| File | Purpose |
-|------|---------|
-| `components/conversation/TypingIndicator.tsx` | Animated typing indicator with glass effect |
-| `components/customize/CustomizationItemCard.tsx` | Generic customization item card |
-| `lib/chat/reactionUtils.ts` | Reaction aggregation utilities |
-| `lib/chat/index.ts` | Chat utilities barrel export |
-| `stores/customization/mappings.ts` | Centralized ID-to-type mappings |
-| `docs/CODE_SIMPLIFICATION_GUIDELINES.md` | Comprehensive coding standards (4000+ lines) |
+| File                                             | Purpose                                      |
+| ------------------------------------------------ | -------------------------------------------- |
+| `components/conversation/TypingIndicator.tsx`    | Animated typing indicator with glass effect  |
+| `components/customize/CustomizationItemCard.tsx` | Generic customization item card              |
+| `lib/chat/reactionUtils.ts`                      | Reaction aggregation utilities               |
+| `lib/chat/index.ts`                              | Chat utilities barrel export                 |
+| `stores/customization/mappings.ts`               | Centralized ID-to-type mappings              |
+| `docs/CODE_SIMPLIFICATION_GUIDELINES.md`         | Comprehensive coding standards (4000+ lines) |
 
 ### 📚 Documentation
 
