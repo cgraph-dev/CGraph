@@ -8,6 +8,9 @@
  */
 
 import { z } from 'zod';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('Validation');
 
 // ============================================================================
 // Base Schemas
@@ -375,11 +378,11 @@ export function validateResponse<T>(
 
   if (!result.success) {
     if (import.meta.env.DEV) {
-      console.warn(
-        `[API Validation${context ? ` - ${context}` : ''}] Schema validation failed:`,
+      logger.warn(
+        `Schema validation failed${context ? ` - ${context}` : ''}:`,
         result.error.format()
       );
-      console.warn('Received data:', data);
+      logger.warn('Received data:', data);
     }
     return { success: false, error: result.error };
   }
@@ -400,8 +403,8 @@ export function validateWithFallback<T>(
 
   if (!result.success) {
     if (import.meta.env.DEV) {
-      console.warn(
-        `[API Validation${context ? ` - ${context}` : ''}] Using fallback data due to validation error:`,
+      logger.warn(
+        `Using fallback data due to validation error${context ? ` - ${context}` : ''}:`,
         result.error.issues
       );
     }

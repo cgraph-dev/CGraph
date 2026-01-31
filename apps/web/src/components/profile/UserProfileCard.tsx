@@ -15,6 +15,9 @@ import { useAuthStore } from '@/stores/authStore';
 import { AvatarBorderRenderer } from '@/components/avatar/AvatarBorderRenderer';
 import { useAvatarBorderStore } from '@/stores/avatarBorderStore';
 import { getBorderById } from '@/data/avatar-borders';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('UserProfileCard');
 
 /**
  * UserProfileCard Component
@@ -382,7 +385,7 @@ export default function UserProfileCard({
 
   const handleViewProfile = () => {
     if (!userId || userId === 'undefined' || userId === 'null') {
-      console.warn('UserProfileCard: Cannot view profile - invalid userId');
+      logger.warn('UserProfileCard: Cannot view profile - invalid userId');
       return;
     }
     window.location.href = `/user/${userId}`;
@@ -390,7 +393,7 @@ export default function UserProfileCard({
 
   const handleMessage = () => {
     if (!userId || userId === 'undefined' || userId === 'null') {
-      console.warn('UserProfileCard: Cannot message - invalid userId');
+      logger.warn('UserProfileCard: Cannot message - invalid userId');
       return;
     }
     window.location.href = `/messages?userId=${userId}`;

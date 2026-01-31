@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
 import {
   TrophyIcon,
   SparklesIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
+
+const logger = createLogger('UserLeaderboard');
 import { TrophyIcon as TrophyIconSolid, CheckBadgeIcon } from '@heroicons/react/24/solid';
 import { ErrorState, EmptyState } from '@/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
@@ -248,7 +251,7 @@ export default function UserLeaderboard() {
           totalPages: metaData.total_pages || 1,
         });
       } catch (err: unknown) {
-        console.error('Failed to fetch leaderboard:', err);
+        logger.error('Failed to fetch leaderboard:', err);
         setError(err instanceof Error ? err.message : 'Failed to load leaderboard');
       } finally {
         setIsLoading(false);

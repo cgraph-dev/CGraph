@@ -6,6 +6,9 @@
  */
 
 import { useRef, useEffect } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('webgl-effects');
 
 // =============================================================================
 // SHADER BACKGROUND
@@ -38,7 +41,7 @@ export function ShaderBackground({
       canvas.getContext('webgl') ||
       (canvas.getContext('experimental-webgl') as WebGLRenderingContext);
     if (!gl) {
-      console.warn('WebGL not supported, falling back to CSS gradient');
+      logger.warn('WebGL not supported, falling back to CSS gradient');
       return;
     }
 

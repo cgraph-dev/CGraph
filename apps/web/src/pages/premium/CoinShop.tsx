@@ -1,5 +1,8 @@
 import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('CoinShop');
 import { useNavigate } from 'react-router-dom';
 import {
   CurrencyDollarIcon,
@@ -233,73 +236,79 @@ export default function CoinShop() {
         setCoinBalance(response.data.coin_balance || coinBalance);
         setDailyBonus(response.data.daily_bonus || dailyBonus);
       } catch (error) {
-        console.error('Failed to fetch owned items:', error);
+        logger.error('Failed to fetch owned items:', error);
       }
     }
     fetchOwnedItems();
   }, []);
 
   // Handle coin bundle purchase
-  const handlePurchaseBundle = useCallback(async (bundle: CoinBundle) => {
-    if (purchasingBundle) return;
+  const handlePurchaseBundle = useCallback(
+    async (bundle: CoinBundle) => {
+      if (purchasingBundle) return;
 
-    setPurchasingBundle(bundle.id);
-    HapticFeedback.medium();
+      setPurchasingBundle(bundle.id);
+      HapticFeedback.medium();
 
-    try {
-      const response = await api.post('/api/v1/shop/purchase-coins', {
-        bundle_id: bundle.id,
-      });
-
-      if (response.data.checkout_url) {
-        window.location.href = response.data.checkout_url;
-      } else {
-        // Success
-        const newBalance = coinBalance + bundle.coins + bundle.bonusCoins;
-        setCoinBalance(newBalance);
-
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#f59e0b', '#fbbf24', '#fcd34d'],
+      try {
+        const response = await api.post('/api/v1/shop/purchase-coins', {
+          bundle_id: bundle.id,
         });
+
+        if (response.data.checkout_url) {
+          window.location.href = response.data.checkout_url;
+        } else {
+          // Success
+          const newBalance = coinBalance + bundle.coins + bundle.bonusCoins;
+          setCoinBalance(newBalance);
+
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#f59e0b', '#fbbf24', '#fcd34d'],
+          });
+        }
+      } catch (error) {
+        logger.error('Purchase error:', error);
+      } finally {
+        setPurchasingBundle(null);
       }
-    } catch (error) {
-      console.error('Purchase error:', error);
-    } finally {
-      setPurchasingBundle(null);
-    }
-  }, [purchasingBundle, coinBalance]);
+    },
+    [purchasingBundle, coinBalance]
+  );
 
   // Handle item purchase with coins
-  const handlePurchaseItem = useCallback(async (item: ShopItem) => {
-    if (purchasingItem || coinBalance < item.coinPrice || ownedItems.includes(item.id)) return;
+  const handlePurchaseItem = useCallback(
+    async (item: ShopItem) => {
+      if (purchasingItem || coinBalance < item.coinPrice || ownedItems.includes(item.id)) return;
 
-    setPurchasingItem(item.id);
-    HapticFeedback.medium();
+      setPurchasingItem(item.id);
+      HapticFeedback.medium();
 
-    try {
-      await api.post('/api/v1/shop/purchase-item', {
-        item_id: item.id,
-      });
+      try {
+        await api.post('/api/v1/shop/purchase-item', {
+          item_id: item.id,
+        });
 
-      // Success
-      setCoinBalance((prev: number) => prev - item.coinPrice);
-      setOwnedItems((prev: string[]) => [...prev, item.id]);
+        // Success
+        setCoinBalance((prev: number) => prev - item.coinPrice);
+        setOwnedItems((prev: string[]) => [...prev, item.id]);
 
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#10b981', '#8b5cf6', '#f59e0b'],
-      });
-    } catch (error) {
-      console.error('Purchase error:', error);
-    } finally {
-      setPurchasingItem(null);
-    }
-  }, [purchasingItem, coinBalance, ownedItems]);
+        confetti({
+          particleCount: 80,
+          spread: 60,
+          origin: { y: 0.6 },
+          colors: ['#10b981', '#8b5cf6', '#f59e0b'],
+        });
+      } catch (error) {
+        logger.error('Purchase error:', error);
+      } finally {
+        setPurchasingItem(null);
+      }
+    },
+    [purchasingItem, coinBalance, ownedItems]
+  );
 
   // Claim daily bonus
   const handleClaimDailyBonus = useCallback(async () => {
@@ -318,22 +327,23 @@ export default function CoinShop() {
         origin: { y: 0.7 },
       });
     } catch (error) {
-      console.error('Failed to claim bonus:', error);
+      logger.error('Failed to claim bonus:', error);
     }
   }, [dailyBonus]);
 
   // Filter items by category
-  const filteredItems = activeCategory === 'all'
-    ? SHOP_ITEMS
-    : SHOP_ITEMS.filter(item => item.category === activeCategory);
+  const filteredItems =
+    activeCategory === 'all'
+      ? SHOP_ITEMS
+      : SHOP_ITEMS.filter((item) => item.category === activeCategory);
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Ambient particles */}
       {[...Array(15)].map((_, i) => (
         <motion.div
           key={i}
-          className="fixed w-1 h-1 rounded-full bg-yellow-400 pointer-events-none"
+          className="pointer-events-none fixed h-1 w-1 rounded-full bg-yellow-400"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -351,27 +361,25 @@ export default function CoinShop() {
         />
       ))}
 
-      <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 py-12">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8"
+          className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-center"
         >
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-white via-yellow-200 to-orange-200 bg-clip-text text-transparent mb-2">
+            <h1 className="mb-2 bg-gradient-to-r from-white via-yellow-200 to-orange-200 bg-clip-text text-3xl font-bold text-transparent md:text-4xl">
               Coin Shop
             </h1>
-            <p className="text-gray-400">
-              Purchase coins and unlock exclusive rewards
-            </p>
+            <p className="text-gray-400">Purchase coins and unlock exclusive rewards</p>
           </div>
 
           {/* Coin Balance */}
           <GlassCard variant="holographic" glow glowColor="rgba(245, 158, 11, 0.3)" className="p-4">
             <div className="flex items-center gap-4">
               <motion.div
-                className="h-12 w-12 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500 to-orange-500"
                 animate={{
                   scale: [1, 1.1, 1],
                   rotate: [0, 5, -5, 0],
@@ -401,7 +409,7 @@ export default function CoinShop() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <motion.div
-                    className="h-12 w-12 rounded-full bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center"
+                    className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-500"
                     animate={{ rotate: [0, 360] }}
                     transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                   >
@@ -416,7 +424,7 @@ export default function CoinShop() {
                 </div>
                 <motion.button
                   onClick={handleClaimDailyBonus}
-                  className="px-6 py-2 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold"
+                  className="rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 px-6 py-2 font-semibold text-white"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
@@ -434,12 +442,12 @@ export default function CoinShop() {
           transition={{ delay: 0.1 }}
           className="mb-12"
         >
-          <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+          <h2 className="mb-6 flex items-center gap-2 text-xl font-bold text-white">
             <CurrencyDollarIcon className="h-6 w-6 text-yellow-400" />
             Purchase Coins
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
             {COIN_BUNDLES.map((bundle, index) => (
               <motion.div
                 key={bundle.id}
@@ -452,19 +460,19 @@ export default function CoinShop() {
                   variant={bundle.popular || bundle.bestValue ? 'holographic' : 'frosted'}
                   glow={bundle.popular || bundle.bestValue}
                   glowColor={bundle.bestValue ? 'rgba(245, 158, 11, 0.3)' : undefined}
-                  className="p-4 h-full relative overflow-hidden"
+                  className="relative h-full overflow-hidden p-4"
                 >
                   {/* Labels */}
                   {bundle.popular && (
-                    <div className="absolute -top-1 -right-1">
-                      <div className="bg-primary-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">
+                    <div className="absolute -right-1 -top-1">
+                      <div className="rounded-bl bg-primary-500 px-2 py-0.5 text-[10px] font-bold text-white">
                         POPULAR
                       </div>
                     </div>
                   )}
                   {bundle.bestValue && (
-                    <div className="absolute -top-1 -right-1">
-                      <div className="bg-yellow-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-bl">
+                    <div className="absolute -right-1 -top-1">
+                      <div className="rounded-bl bg-yellow-500 px-2 py-0.5 text-[10px] font-bold text-white">
                         BEST VALUE
                       </div>
                     </div>
@@ -472,7 +480,7 @@ export default function CoinShop() {
 
                   <div className="text-center">
                     <motion.div
-                      className="h-10 w-10 rounded-full bg-gradient-to-br from-yellow-500 to-orange-500 flex items-center justify-center mx-auto mb-3"
+                      className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-yellow-500 to-orange-500"
                       animate={{
                         scale: [1, 1.1, 1],
                       }}
@@ -481,26 +489,28 @@ export default function CoinShop() {
                       <CurrencyDollarIcon className="h-5 w-5 text-white" />
                     </motion.div>
 
-                    <p className="text-xl font-bold text-white">{(bundle?.coins ?? 0).toLocaleString()}</p>
+                    <p className="text-xl font-bold text-white">
+                      {(bundle?.coins ?? 0).toLocaleString()}
+                    </p>
                     {(bundle?.bonusCoins ?? 0) > 0 && (
-                      <p className="text-xs text-green-400 font-semibold">
+                      <p className="text-xs font-semibold text-green-400">
                         +{bundle.bonusCoins} bonus
                       </p>
                     )}
-                    <p className="text-lg font-semibold text-yellow-400 mt-2">
+                    <p className="mt-2 text-lg font-semibold text-yellow-400">
                       ${bundle.price.toFixed(2)}
                     </p>
 
                     <motion.button
                       onClick={() => handlePurchaseBundle(bundle)}
                       disabled={!!purchasingBundle}
-                      className="mt-3 w-full py-2 rounded-lg bg-dark-700 hover:bg-dark-600 text-sm text-white transition-all"
+                      className="mt-3 w-full rounded-lg bg-dark-700 py-2 text-sm text-white transition-all hover:bg-dark-600"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
                       {purchasingBundle === bundle.id ? (
                         <motion.div
-                          className="h-4 w-4 rounded-full border-2 border-white border-t-transparent mx-auto"
+                          className="mx-auto h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                         />
@@ -521,18 +531,18 @@ export default function CoinShop() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-xl font-bold text-white">
               <ShoppingBagIcon className="h-6 w-6 text-primary-400" />
               Rewards Shop
             </h2>
           </div>
 
           {/* Category Filters */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="mb-6 flex flex-wrap gap-2">
             <button
               onClick={() => setActiveCategory('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                 activeCategory === 'all'
                   ? 'bg-primary-500 text-white'
                   : 'bg-dark-700 text-gray-400 hover:text-white'
@@ -544,7 +554,7 @@ export default function CoinShop() {
               <button
                 key={key}
                 onClick={() => setActiveCategory(key)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                   activeCategory === key
                     ? 'bg-primary-500 text-white'
                     : 'bg-dark-700 text-gray-400 hover:text-white'
@@ -556,7 +566,7 @@ export default function CoinShop() {
           </div>
 
           {/* Items Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             <AnimatePresence mode="popLayout">
               {filteredItems.map((item, index) => {
                 const colors = RARITY_COLORS[item.rarity];
@@ -576,12 +586,12 @@ export default function CoinShop() {
                     <GlassCard
                       variant="frosted"
                       glow={item.limited}
-                      className={`p-4 h-full relative ${isOwned ? 'opacity-75' : ''}`}
+                      className={`relative h-full p-4 ${isOwned ? 'opacity-75' : ''}`}
                     >
                       {/* Limited Badge */}
                       {item.limited && (
-                        <div className="absolute top-2 right-2">
-                          <span className="px-2 py-0.5 rounded-full bg-red-500/20 border border-red-500/30 text-red-400 text-[10px] font-bold">
+                        <div className="absolute right-2 top-2">
+                          <span className="rounded-full border border-red-500/30 bg-red-500/20 px-2 py-0.5 text-[10px] font-bold text-red-400">
                             LIMITED {item.stock && `(${item.stock} left)`}
                           </span>
                         </div>
@@ -589,33 +599,35 @@ export default function CoinShop() {
 
                       {/* Owned Badge */}
                       {isOwned && (
-                        <div className="absolute top-2 left-2">
+                        <div className="absolute left-2 top-2">
                           <CheckCircleIcon className="h-6 w-6 text-green-400" />
                         </div>
                       )}
 
                       <div className="flex items-start gap-4">
                         <motion.div
-                          className={`h-14 w-14 rounded-xl ${colors.bg} border ${colors.border} flex items-center justify-center flex-shrink-0`}
+                          className={`h-14 w-14 rounded-xl ${colors.bg} border ${colors.border} flex flex-shrink-0 items-center justify-center`}
                           whileHover={{ scale: 1.1, rotate: 5 }}
                         >
                           <div className={colors.text}>{item.icon}</div>
                         </motion.div>
 
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-white truncate">{item.name}</h3>
+                        <div className="min-w-0 flex-1">
+                          <div className="mb-1 flex items-center gap-2">
+                            <h3 className="truncate font-semibold text-white">{item.name}</h3>
                           </div>
-                          <span className={`text-[10px] uppercase tracking-wider font-bold ${colors.text}`}>
+                          <span
+                            className={`text-[10px] font-bold uppercase tracking-wider ${colors.text}`}
+                          >
                             {item.rarity}
                           </span>
-                          <p className="text-sm text-gray-400 mt-1 line-clamp-2">
+                          <p className="mt-1 line-clamp-2 text-sm text-gray-400">
                             {item.description}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-dark-700">
+                      <div className="mt-4 flex items-center justify-between border-t border-dark-700 pt-4">
                         <div className="flex items-center gap-1">
                           <CurrencyDollarIcon className="h-5 w-5 text-yellow-400" />
                           <span className="font-bold text-yellow-400">
@@ -626,19 +638,19 @@ export default function CoinShop() {
                         <motion.button
                           onClick={() => handlePurchaseItem(item)}
                           disabled={isOwned || !canAfford || isPurchasing}
-                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                          className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
                             isOwned
-                              ? 'bg-green-500/20 text-green-400 cursor-default'
+                              ? 'cursor-default bg-green-500/20 text-green-400'
                               : canAfford
-                              ? 'bg-primary-500 hover:bg-primary-400 text-white'
-                              : 'bg-dark-700 text-gray-500 cursor-not-allowed'
+                                ? 'bg-primary-500 text-white hover:bg-primary-400'
+                                : 'cursor-not-allowed bg-dark-700 text-gray-500'
                           }`}
                           whileHover={canAfford && !isOwned ? { scale: 1.05 } : {}}
                           whileTap={canAfford && !isOwned ? { scale: 0.95 } : {}}
                         >
                           {isPurchasing ? (
                             <motion.div
-                              className="h-4 w-4 rounded-full border-2 border-white border-t-transparent mx-auto"
+                              className="mx-auto h-4 w-4 rounded-full border-2 border-white border-t-transparent"
                               animate={{ rotate: 360 }}
                               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                             />
@@ -666,7 +678,7 @@ export default function CoinShop() {
           transition={{ delay: 0.4 }}
           className="mt-12 text-center"
         >
-          <p className="text-gray-400 mb-4">
+          <p className="mb-4 text-gray-400">
             Want unlimited features instead? Check out our premium plans.
           </p>
           <Button variant="secondary" onClick={() => navigate('/premium')}>

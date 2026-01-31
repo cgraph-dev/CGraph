@@ -180,7 +180,7 @@ function AuthInitializer({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isAuthenticated) {
       fetchCustomizations().catch((error) => {
-        console.error('Customization initialization failed:', error);
+        authLogger.error('Customization initialization failed:', error);
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

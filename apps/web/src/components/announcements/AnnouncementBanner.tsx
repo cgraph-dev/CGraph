@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import DOMPurify from 'dompurify';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('AnnouncementBanner');
 import {
   MegaphoneIcon,
   XMarkIcon,
@@ -60,7 +63,7 @@ export function AnnouncementBanner({
       try {
         setDismissedIds(new Set(JSON.parse(stored)));
       } catch (e) {
-        console.error('Failed to parse dismissed announcements:', e);
+        logger.error('Failed to parse dismissed announcements:', e);
       }
     }
   }, []);

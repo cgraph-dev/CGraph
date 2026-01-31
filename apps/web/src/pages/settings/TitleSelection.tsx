@@ -6,7 +6,10 @@ import { useAuthStore } from '@/stores/authStore';
 import { TitleBadge } from '@/components/gamification/TitleBadge';
 import VisibilityBadge from '@/components/settings/VisibilityBadge';
 import { toast } from '@/components/Toast';
+import { createLogger } from '@/lib/logger';
 import type { TitleRarity } from '@/data/titles';
+
+const logger = createLogger('TitleSelection');
 
 /**
  * Title Selection Page
@@ -48,7 +51,7 @@ export default function TitleSelection() {
       await equipTitle(titleId);
       toast.success('Title equipped successfully!');
     } catch (error) {
-      console.error('Failed to equip title:', error);
+      logger.error('Failed to equip title:', error);
       toast.error('Failed to equip title. Please try again.');
     }
   };

@@ -27,6 +27,9 @@ import {
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 import { api } from '@/lib/api';
 import { useDebounce } from '@/hooks/useDebounce';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('CustomEmojiPicker');
 
 // =============================================================================
 // TYPES
@@ -816,7 +819,7 @@ function useCustomEmojis(forumId?: string) {
         setRecent(recentRes.data?.data || []);
         setError(null);
       } catch (err) {
-        console.error('Failed to fetch emojis:', err);
+        logger.error('Failed to fetch emojis:', err);
         setError('Failed to load emojis');
       } finally {
         setLoading(false);
@@ -839,7 +842,7 @@ function useCustomEmojis(forumId?: string) {
           setFavorites((prev) => [...prev, emoji]);
         }
       } catch (err) {
-        console.error('Failed to toggle favorite:', err);
+        logger.error('Failed to toggle favorite:', err);
       }
     },
     [favorites]

@@ -15,6 +15,9 @@ import { useForumStore, type Poll } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import GlassCard from '@/components/ui/GlassCard';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('PollWidget');
 
 interface PollWidgetProps {
   poll: Poll;
@@ -66,7 +69,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
       await votePoll(poll.id, selectedOptions);
       HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to vote:', error);
+      logger.error('Failed to vote:', error);
       HapticFeedback.error();
     } finally {
       setIsSubmitting(false);
@@ -80,7 +83,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
       await closePoll(poll.id);
       HapticFeedback.medium();
     } catch (error) {
-      console.error('Failed to close poll:', error);
+      logger.error('Failed to close poll:', error);
       HapticFeedback.error();
     }
   };
@@ -109,9 +112,9 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
   return (
     <GlassCard className={`p-6 ${className}`} variant="frosted">
       {/* Poll Header */}
-      <div className="flex items-start justify-between gap-4 mb-4">
+      <div className="mb-4 flex items-start justify-between gap-4">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-white mb-1">{poll.question}</h3>
+          <h3 className="mb-1 text-lg font-semibold text-white">{poll.question}</h3>
           <div className="flex items-center gap-3 text-sm text-gray-400">
             <span className="flex items-center gap-1">
               <UserGroupIcon className="h-4 w-4" />
@@ -138,7 +141,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
             onClick={handleClosePoll}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-3 py-1.5 text-sm bg-red-500/20 border border-red-500 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+            className="rounded-lg border border-red-500 bg-red-500/20 px-3 py-1.5 text-sm text-red-400 transition-colors hover:bg-red-500/30"
           >
             Close Poll
           </motion.button>
@@ -146,7 +149,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
       </div>
 
       {/* Poll Options */}
-      <div className="space-y-3 mb-4">
+      <div className="mb-4 space-y-3">
         {poll.options.map((option) => {
           const percentage = getPercentage(option.votes);
           const isSelected = selectedOptions.includes(option.id);
@@ -173,7 +176,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
                   {/* Content */}
                   <div className="relative flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-white font-medium">{option.text}</span>
+                      <span className="font-medium text-white">{option.text}</span>
                       {option.voters?.includes(user?.id || '') && (
                         <CheckCircleIcon className="h-5 w-5 text-primary-400" />
                       )}
@@ -188,7 +191,7 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
                   {poll.public && option.voters && option.voters.length > 0 && (
                     <motion.button
                       onClick={() => setShowVoters(showVoters === option.id ? null : option.id)}
-                      className="mt-2 text-xs text-primary-400 hover:text-primary-300 transition-colors"
+                      className="mt-2 text-xs text-primary-400 transition-colors hover:text-primary-300"
                     >
                       {showVoters === option.id ? 'Hide' : 'Show'} voters ({option.voters.length})
                     </motion.button>
@@ -201,16 +204,21 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="mt-2 pt-2 border-t border-dark-600"
+                        className="mt-2 border-t border-dark-600 pt-2"
                       >
                         <div className="flex flex-wrap gap-2">
                           {option.voters.slice(0, 10).map((voterId) => (
-                            <span key={voterId} className="text-xs text-gray-400 bg-dark-700 px-2 py-1 rounded">
+                            <span
+                              key={voterId}
+                              className="rounded bg-dark-700 px-2 py-1 text-xs text-gray-400"
+                            >
                               User {voterId.slice(0, 8)}
                             </span>
                           ))}
                           {option.voters.length > 10 && (
-                            <span className="text-xs text-gray-500">+{option.voters.length - 10} more</span>
+                            <span className="text-xs text-gray-500">
+                              +{option.voters.length - 10} more
+                            </span>
                           )}
                         </div>
                       </motion.div>
@@ -224,37 +232,27 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
                   whileHover={{ scale: 1.01 }}
                   whileTap={{ scale: 0.99 }}
                   disabled={isPollClosed}
-                  className={`
-                    w-full p-3 rounded-lg border-2 transition-all text-left
-                    ${
-                      isSelected
-                        ? 'border-primary-500 bg-primary-500/20'
-                        : 'border-dark-600 bg-dark-800/50 hover:border-primary-500/50'
-                    }
-                    ${isPollClosed ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                  `}
+                  className={`w-full rounded-lg border-2 p-3 text-left transition-all ${
+                    isSelected
+                      ? 'border-primary-500 bg-primary-500/20'
+                      : 'border-dark-600 bg-dark-800/50 hover:border-primary-500/50'
+                  } ${isPollClosed ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} `}
                 >
                   <div className="flex items-center gap-3">
                     {poll.allowMultiple ? (
                       <div
-                        className={`
-                          h-5 w-5 rounded border-2 flex items-center justify-center
-                          ${isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-500'}
-                        `}
+                        className={`flex h-5 w-5 items-center justify-center rounded border-2 ${isSelected ? 'border-primary-500 bg-primary-500' : 'border-gray-500'} `}
                       >
                         {isSelected && <CheckCircleIcon className="h-4 w-4 text-white" />}
                       </div>
                     ) : (
                       <div
-                        className={`
-                          h-5 w-5 rounded-full border-2 flex items-center justify-center
-                          ${isSelected ? 'border-primary-500' : 'border-gray-500'}
-                        `}
+                        className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${isSelected ? 'border-primary-500' : 'border-gray-500'} `}
                       >
                         {isSelected && <div className="h-3 w-3 rounded-full bg-primary-500" />}
                       </div>
                     )}
-                    <span className="text-white font-medium">{option.text}</span>
+                    <span className="font-medium text-white">{option.text}</span>
                   </div>
                 </motion.button>
               )}
@@ -270,26 +268,23 @@ export default function PollWidget({ poll, isCreator = false, className = '' }: 
           disabled={selectedOptions.length === 0 || isSubmitting}
           whileHover={{ scale: selectedOptions.length > 0 ? 1.02 : 1 }}
           whileTap={{ scale: selectedOptions.length > 0 ? 0.98 : 1 }}
-          className={`
-            w-full py-3 rounded-lg font-semibold transition-all
-            ${
-              selectedOptions.length > 0
-                ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white hover:shadow-lg hover:shadow-primary-500/50'
-                : 'bg-dark-700 text-gray-500 cursor-not-allowed'
-            }
-            ${isSubmitting ? 'opacity-50' : ''}
-          `}
+          className={`w-full rounded-lg py-3 font-semibold transition-all ${
+            selectedOptions.length > 0
+              ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white hover:shadow-lg hover:shadow-primary-500/50'
+              : 'cursor-not-allowed bg-dark-700 text-gray-500'
+          } ${isSubmitting ? 'opacity-50' : ''} `}
         >
           {isSubmitting ? 'Submitting...' : 'Submit Vote'}
         </motion.button>
       )}
 
       {/* Poll Info */}
-      <div className="mt-4 pt-4 border-t border-dark-600 text-xs text-gray-500">
+      <div className="mt-4 border-t border-dark-600 pt-4 text-xs text-gray-500">
         {poll.allowMultiple && !hasVoted && !isPollClosed && (
           <p>
             Multiple choice poll
-            {poll.maxSelections && ` (max ${poll.maxSelections} selection${poll.maxSelections > 1 ? 's' : ''})`}
+            {poll.maxSelections &&
+              ` (max ${poll.maxSelections} selection${poll.maxSelections > 1 ? 's' : ''})`}
           </p>
         )}
         {poll.public ? (

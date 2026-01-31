@@ -19,6 +19,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('EnhancedConversation');
 import { motion, AnimatePresence } from 'framer-motion';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -100,7 +103,7 @@ function EnhancedMessageBubble({
       setShowReactionPicker(false);
     } catch (err) {
       // Optionally show error toast
-      console.error('Failed to add reaction:', err);
+      logger.error('Failed to add reaction:', err);
       HapticFeedback.error();
     } finally {
       setIsReacting(false);
@@ -367,7 +370,7 @@ export default function EnhancedConversation() {
       }
       socketManager.sendTyping(`conversation:${conversationId}`, false);
     } catch (error) {
-      console.error('Failed to send message:', error);
+      logger.error('Failed to send message:', error);
       HapticFeedback.error();
     } finally {
       setIsSending(false);
@@ -388,7 +391,7 @@ export default function EnhancedConversation() {
       await sendMessage(conversationId, stickerMessage, replyTo?.id);
       setReplyTo(null);
     } catch (error) {
-      console.error('Failed to send sticker:', error);
+      logger.error('Failed to send sticker:', error);
       HapticFeedback.error();
     } finally {
       setIsSending(false);

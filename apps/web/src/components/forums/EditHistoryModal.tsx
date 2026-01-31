@@ -9,6 +9,9 @@ import { XMarkIcon, ClockIcon, UserIcon } from '@heroicons/react/24/outline';
 import { useForumStore, type PostEditHistory } from '@/stores/forumStore';
 import { formatTimeAgo } from '@/lib/utils';
 import GlassCard from '@/components/ui/GlassCard';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('EditHistoryModal');
 
 interface EditHistoryModalProps {
   postId: string;
@@ -37,7 +40,7 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
         setSelectedEdit(data[0] ?? null);
       }
     } catch (error) {
-      console.error('Failed to load edit history:', error);
+      logger.error('Failed to load edit history:', error);
     } finally {
       setIsLoading(false);
     }
@@ -62,15 +65,15 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-4xl max-h-[80vh] overflow-hidden"
+          className="relative max-h-[80vh] w-full max-w-4xl overflow-hidden"
         >
-          <GlassCard variant="frosted" className="flex flex-col h-full">
+          <GlassCard variant="frosted" className="flex h-full flex-col">
             {/* Header */}
-            <div className="flex items-center justify-between p-6 border-b border-dark-600">
+            <div className="flex items-center justify-between border-b border-dark-600 p-6">
               <h2 className="text-2xl font-bold text-white">Edit History</h2>
               <button
                 onClick={onClose}
-                className="p-2 rounded-lg hover:bg-dark-700 transition-colors"
+                className="rounded-lg p-2 transition-colors hover:bg-dark-700"
               >
                 <XMarkIcon className="h-6 w-6 text-gray-400" />
               </button>
@@ -79,32 +82,32 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
             {/* Content */}
             <div className="flex-1 overflow-hidden">
               {isLoading ? (
-                <div className="flex items-center justify-center h-full">
-                  <div className="h-8 w-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+                <div className="flex h-full items-center justify-center">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
                 </div>
               ) : history.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-center p-6">
-                  <ClockIcon className="h-16 w-16 text-gray-500 mb-4" />
+                <div className="flex h-full flex-col items-center justify-center p-6 text-center">
+                  <ClockIcon className="mb-4 h-16 w-16 text-gray-500" />
                   <p className="text-gray-400">No edit history available</p>
                 </div>
               ) : (
                 <div className="flex h-full">
                   {/* Timeline Sidebar */}
-                  <div className="w-64 border-r border-dark-600 overflow-y-auto">
-                    <div className="p-4 space-y-2">
+                  <div className="w-64 overflow-y-auto border-r border-dark-600">
+                    <div className="space-y-2 p-4">
                       {history.map((edit, index) => (
                         <button
                           key={edit.id}
                           onClick={() => setSelectedEdit(edit)}
-                          className={`w-full text-left p-3 rounded-lg transition-colors ${
+                          className={`w-full rounded-lg p-3 text-left transition-colors ${
                             selectedEdit?.id === edit.id
-                              ? 'bg-primary-500/20 border border-primary-500'
-                              : 'bg-dark-700/50 hover:bg-dark-700 border border-transparent'
+                              ? 'border border-primary-500 bg-primary-500/20'
+                              : 'border border-transparent bg-dark-700/50 hover:bg-dark-700'
                           }`}
                         >
-                          <div className="flex items-center gap-2 mb-1">
-                            <ClockIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                            <span className="text-sm text-white font-medium truncate">
+                          <div className="mb-1 flex items-center gap-2">
+                            <ClockIcon className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                            <span className="truncate text-sm font-medium text-white">
                               Edit #{history.length - index}
                             </span>
                           </div>
@@ -112,7 +115,7 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
                             <UserIcon className="h-3 w-3 flex-shrink-0" />
                             <span className="truncate">{edit.editedByUsername}</span>
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">
+                          <p className="mt-1 text-xs text-gray-500">
                             {formatTimeAgo(edit.editedAt)}
                           </p>
                         </button>
@@ -130,35 +133,42 @@ export default function EditHistoryModal({ postId, isOpen, onClose }: EditHistor
                         className="space-y-4"
                       >
                         {/* Edit Info */}
-                        <div className="flex items-center gap-4 pb-4 border-b border-dark-600">
+                        <div className="flex items-center gap-4 border-b border-dark-600 pb-4">
                           <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-white mb-1">
+                            <h3 className="mb-1 text-lg font-semibold text-white">
                               Edit #{history.findIndex((h) => h.id === selectedEdit.id) + 1}
                             </h3>
                             <p className="text-sm text-gray-400">
-                              By {selectedEdit.editedByUsername} • {formatTimeAgo(selectedEdit.editedAt)}
+                              By {selectedEdit.editedByUsername} •{' '}
+                              {formatTimeAgo(selectedEdit.editedAt)}
                             </p>
                           </div>
                         </div>
 
                         {/* Reason */}
                         {selectedEdit.reason && (
-                          <div className="bg-dark-700/50 rounded-lg p-4 border border-dark-600">
-                            <h4 className="text-sm font-semibold text-gray-300 mb-2">Edit Reason</h4>
+                          <div className="rounded-lg border border-dark-600 bg-dark-700/50 p-4">
+                            <h4 className="mb-2 text-sm font-semibold text-gray-300">
+                              Edit Reason
+                            </h4>
                             <p className="text-sm text-gray-400">{selectedEdit.reason}</p>
                           </div>
                         )}
 
                         {/* Previous Content */}
-                        <div className="bg-dark-700/50 rounded-lg p-4 border border-dark-600">
-                          <h4 className="text-sm font-semibold text-gray-300 mb-2">Previous Content</h4>
+                        <div className="rounded-lg border border-dark-600 bg-dark-700/50 p-4">
+                          <h4 className="mb-2 text-sm font-semibold text-gray-300">
+                            Previous Content
+                          </h4>
                           <div className="prose prose-invert prose-sm max-w-none">
-                            <p className="text-gray-300 whitespace-pre-wrap">{selectedEdit.previousContent}</p>
+                            <p className="whitespace-pre-wrap text-gray-300">
+                              {selectedEdit.previousContent}
+                            </p>
                           </div>
                         </div>
 
                         {/* Diff View Note */}
-                        <div className="bg-primary-500/10 border border-primary-500/30 rounded-lg p-4">
+                        <div className="rounded-lg border border-primary-500/30 bg-primary-500/10 p-4">
                           <p className="text-sm text-primary-400">
                             💡 Tip: Compare this with the current version to see what changed.
                           </p>

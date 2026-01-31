@@ -10,6 +10,9 @@ import { useForumStore, type Report } from '@/stores/forumStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import GlassCard from '@/components/ui/GlassCard';
 import { toast } from '@/components/ui';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ReportModal');
 
 interface ReportModalProps {
   isOpen: boolean;
@@ -67,7 +70,7 @@ export default function ReportModal({
       HapticFeedback.success();
       handleClose();
     } catch (error) {
-      console.error('Failed to submit report:', error);
+      logger.error('Failed to submit report:', error);
       toast.error('Failed to submit report');
       HapticFeedback.error();
     } finally {
@@ -104,36 +107,37 @@ export default function ReportModal({
         >
           <GlassCard variant="frosted" className="p-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="mb-6 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-500/20 rounded-lg">
+                <div className="rounded-lg bg-red-500/20 p-2">
                   <FlagIcon className="h-6 w-6 text-red-400" />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-white">Report {itemType}</h2>
                   {itemTitle && (
-                    <p className="text-sm text-gray-400 truncate max-w-xs">{itemTitle}</p>
+                    <p className="max-w-xs truncate text-sm text-gray-400">{itemTitle}</p>
                   )}
                 </div>
               </div>
               <button
                 onClick={handleClose}
-                className="p-2 rounded-lg hover:bg-dark-700 transition-colors"
+                className="rounded-lg p-2 transition-colors hover:bg-dark-700"
               >
                 <XMarkIcon className="h-5 w-5 text-gray-400" />
               </button>
             </div>
 
             {/* Warning */}
-            <div className="mb-6 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <div className="mb-6 rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4">
               <p className="text-sm text-yellow-400">
-                ⚠️ False reports may result in action against your account. Please report only genuine violations.
+                ⚠️ False reports may result in action against your account. Please report only
+                genuine violations.
               </p>
             </div>
 
             {/* Reason Selection */}
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-300 mb-3">
+              <label className="mb-3 block text-sm font-medium text-gray-300">
                 What's the issue?
               </label>
               <div className="space-y-2">
@@ -144,7 +148,7 @@ export default function ReportModal({
                       setSelectedReason(reason.value);
                       HapticFeedback.light();
                     }}
-                    className={`w-full text-left p-3 rounded-lg border-2 transition-all ${
+                    className={`w-full rounded-lg border-2 p-3 text-left transition-all ${
                       selectedReason === reason.value
                         ? 'border-red-500 bg-red-500/20'
                         : 'border-dark-600 bg-dark-700/50 hover:border-red-500/50'
@@ -152,7 +156,7 @@ export default function ReportModal({
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${
+                        className={`flex h-5 w-5 items-center justify-center rounded-full border-2 ${
                           selectedReason === reason.value
                             ? 'border-red-500 bg-red-500'
                             : 'border-gray-500'
@@ -171,7 +175,7 @@ export default function ReportModal({
 
             {/* Additional Details */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-300">
                 Additional details {selectedReason === 'other' && '(required)'}
               </label>
               <textarea
@@ -179,12 +183,10 @@ export default function ReportModal({
                 onChange={(e) => setDetails(e.target.value)}
                 placeholder="Provide more information to help moderators review this report..."
                 rows={4}
-                className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                className="w-full resize-none rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500"
                 maxLength={1000}
               />
-              <div className="text-right text-xs text-gray-500 mt-1">
-                {details.length}/1000
-              </div>
+              <div className="mt-1 text-right text-xs text-gray-500">{details.length}/1000</div>
             </div>
 
             {/* Actions */}
@@ -193,7 +195,7 @@ export default function ReportModal({
                 onClick={handleClose}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex-1 px-4 py-3 bg-dark-700 hover:bg-dark-600 text-white rounded-lg transition-colors font-medium"
+                className="flex-1 rounded-lg bg-dark-700 px-4 py-3 font-medium text-white transition-colors hover:bg-dark-600"
               >
                 Cancel
               </motion.button>
@@ -202,10 +204,10 @@ export default function ReportModal({
                 disabled={!selectedReason || isSubmitting}
                 whileHover={{ scale: selectedReason ? 1.02 : 1 }}
                 whileTap={{ scale: selectedReason ? 0.98 : 1 }}
-                className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
+                className={`flex-1 rounded-lg px-4 py-3 font-medium transition-all ${
                   selectedReason && !isSubmitting
-                    ? 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-500/20'
-                    : 'bg-dark-700 text-gray-500 cursor-not-allowed'
+                    ? 'bg-red-600 text-white shadow-lg shadow-red-500/20 hover:bg-red-500'
+                    : 'cursor-not-allowed bg-dark-700 text-gray-500'
                 }`}
               >
                 {isSubmitting ? 'Submitting...' : 'Submit Report'}

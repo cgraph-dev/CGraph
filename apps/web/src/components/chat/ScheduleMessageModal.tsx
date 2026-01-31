@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ScheduleMessageModal');
 import { ClockIcon, XMarkIcon, CalendarIcon, PaperAirplaneIcon } from '@heroicons/react/24/outline';
 import { add, format, isBefore, isAfter, addHours, type Duration } from 'date-fns';
 import GlassCard from '@/components/ui/GlassCard';
@@ -88,7 +91,7 @@ export function ScheduleMessageModal({
       HapticFeedback.success();
       handleClose();
     } catch (error) {
-      console.error('Failed to schedule message:', error);
+      logger.error('Failed to schedule message:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to schedule message';
       toast.error(errorMessage);
       HapticFeedback.error();

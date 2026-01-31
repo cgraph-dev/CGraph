@@ -17,6 +17,9 @@ import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import { useForumStore, type Post as PostType, type ForumCategory } from '@/stores/forumStore';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ForumSearch');
 
 // Reserved for future features
 const _reservedForumSearch = { ArrowTrendingUpIcon, CalendarIcon, useForumStore };
@@ -143,7 +146,7 @@ export function ForumSearch({
       setResults(searchResults);
       setSelectedIndex(-1);
     } catch (error) {
-      console.error('Search failed:', error);
+      logger.error('Search failed:', error);
       setResults([]);
     } finally {
       setIsLoading(false);

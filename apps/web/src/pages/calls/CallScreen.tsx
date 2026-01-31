@@ -19,6 +19,9 @@ import { useCall } from '@/lib/webrtc';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('CallScreen');
 
 // =============================================================================
 // TYPES
@@ -260,7 +263,7 @@ export default function CallScreen() {
         const response = await api.get(`/api/v1/users/${recipientId}`);
         setRecipient(response.data);
       } catch (error) {
-        console.error('Failed to fetch recipient:', error);
+        logger.error('Failed to fetch recipient:', error);
       }
     }
     fetchRecipient();

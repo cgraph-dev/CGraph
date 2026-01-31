@@ -6,6 +6,9 @@
  */
 
 import { useCallback } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('useToast');
 
 export interface ToastOptions {
   type: 'success' | 'error' | 'warning' | 'info';
@@ -31,15 +34,7 @@ export function useToast(): UseToastReturn {
     // This is a simple implementation that uses the browser's alert
     // In production, replace with your toast library (react-hot-toast, sonner, etc.)
 
-    // For now, log to console with styling
-    const styles = {
-      success: 'color: green; font-weight: bold;',
-      error: 'color: red; font-weight: bold;',
-      warning: 'color: orange; font-weight: bold;',
-      info: 'color: blue; font-weight: bold;',
-    };
-
-    console.debug(`%c[${options.type.toUpperCase()}] ${options.message}`, styles[options.type]);
+    logger.debug(`[${options.type.toUpperCase()}] ${options.message}`);
 
     // If there's a toast container in the DOM, dispatch a custom event
     if (typeof window !== 'undefined') {

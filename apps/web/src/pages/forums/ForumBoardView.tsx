@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ForumBoardView');
 import { useForumHostingStore, Board, Thread, ForumMember } from '@/stores/forumHostingStore';
 import { useForumStore, Forum } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
@@ -85,7 +88,7 @@ export default function ForumBoardView() {
       // Load boards and threads for this forum
       await Promise.all([fetchBoards(forumData.id), fetchRecentThreads(forumData.id)]);
     } catch (error) {
-      console.error('Failed to load forum:', error);
+      logger.error('Failed to load forum:', error);
     } finally {
       setIsLoadingForum(false);
     }

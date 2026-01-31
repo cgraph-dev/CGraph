@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { createLogger } from '@/lib/logger';
+const logger = createLogger('forumHostingStore');
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
 
@@ -312,7 +314,7 @@ export const useForumHostingStore = create<ForumHostingState>((set) => ({
     } catch (error) {
       set({ isLoadingThreads: false });
       // Don't throw - forum may not have threads endpoint yet
-      console.warn('Failed to fetch recent threads:', error);
+      logger.warn('Failed to fetch recent threads:', error);
     }
   },
 

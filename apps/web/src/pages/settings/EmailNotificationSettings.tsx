@@ -17,6 +17,9 @@ import toast from 'react-hot-toast';
 import GlassCard from '@/components/ui/GlassCard';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('EmailNotificationSettings');
 
 interface EmailPreferences {
   emailNotificationsEnabled: boolean;
@@ -67,7 +70,7 @@ export default function EmailNotificationSettings() {
         emailOnAchievement: userData.email_on_achievement ?? false,
       });
     } catch (error) {
-      console.error('Failed to fetch email preferences:', error);
+      logger.error('Failed to fetch email preferences:', error);
       toast.error('Failed to load email preferences');
     } finally {
       setLoading(false);
@@ -93,7 +96,7 @@ export default function EmailNotificationSettings() {
 
       toast.success('Email preferences saved successfully!');
     } catch (error) {
-      console.error('Failed to save email preferences:', error);
+      logger.error('Failed to save email preferences:', error);
       toast.error('Failed to save email preferences');
     } finally {
       setSaving(false);

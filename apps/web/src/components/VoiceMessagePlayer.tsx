@@ -2,6 +2,9 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { PlayIcon, PauseIcon, ArrowDownTrayIcon } from '@heroicons/react/24/solid';
 import { Waveform, generatePlaceholderWaveform } from './Waveform';
 import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('VoiceMessagePlayer');
 
 interface VoiceMessagePlayerProps {
   /** Voice message ID */
@@ -20,7 +23,7 @@ interface VoiceMessagePlayerProps {
 
 /**
  * Audio player component for voice messages.
- * 
+ *
  * Features:
  * - Play/pause controls
  * - Waveform visualization with progress
@@ -60,7 +63,7 @@ export function VoiceMessagePlayer({
           setWaveform(response.data.waveform);
         }
       } catch (error) {
-        console.warn('Failed to fetch waveform:', error);
+        logger.warn('Failed to fetch waveform:', error);
       } finally {
         if (!cancelled) {
           setIsLoading(false);
@@ -69,7 +72,9 @@ export function VoiceMessagePlayer({
     };
 
     fetchWaveform();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [messageId, waveformData]);
 
   // Update progress during playback
@@ -150,26 +155,30 @@ export function VoiceMessagePlayer({
     if (isPlaying) {
       audio.pause();
     } else {
-      audio.play().catch(console.error);
+      audio.play().catch((err) => logger.error('Playback failed', err));
     }
   }, [isPlaying]);
 
-  const handleSeek = useCallback((newProgress: number) => {
-    const audio = audioRef.current;
-    if (!audio) return;
+  const handleSeek = useCallback(
+    (newProgress: number) => {
+      const audio = audioRef.current;
+      if (!audio) return;
 
-    // Use actual audio duration or fall back to state
-    const duration = audio.duration && !isNaN(audio.duration) && isFinite(audio.duration) 
-      ? audio.duration 
-      : audioDuration;
-    
-    if (duration > 0) {
-      const newTime = newProgress * duration;
-      audio.currentTime = newTime;
-      setProgress(newProgress);
-      setCurrentTime(newTime);
-    }
-  }, [audioDuration]);
+      // Use actual audio duration or fall back to state
+      const duration =
+        audio.duration && !isNaN(audio.duration) && isFinite(audio.duration)
+          ? audio.duration
+          : audioDuration;
+
+      if (duration > 0) {
+        const newTime = newProgress * duration;
+        audio.currentTime = newTime;
+        setProgress(newProgress);
+        setCurrentTime(newTime);
+      }
+    },
+    [audioDuration]
+  );
 
   const handleDownload = useCallback(() => {
     const link = document.createElement('a');
@@ -187,24 +196,22 @@ export function VoiceMessagePlayer({
   };
 
   return (
-    <div className={`flex items-center gap-3 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg ${className}`}>
+    <div
+      className={`flex items-center gap-3 rounded-lg bg-gray-100 p-3 dark:bg-gray-800 ${className}`}
+    >
       <audio ref={audioRef} src={audioUrl} preload="metadata" />
 
       {/* Play/Pause Button */}
       <button
         onClick={togglePlayback}
-        className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors"
+        className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-500 text-white transition-colors hover:bg-blue-600"
         aria-label={isPlaying ? 'Pause' : 'Play'}
       >
-        {isPlaying ? (
-          <PauseIcon className="h-5 w-5" />
-        ) : (
-          <PlayIcon className="h-5 w-5 ml-0.5" />
-        )}
+        {isPlaying ? <PauseIcon className="h-5 w-5" /> : <PlayIcon className="ml-0.5 h-5 w-5" />}
       </button>
 
       {/* Waveform and Time */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0 flex-1">
         <Waveform
           data={waveform}
           progress={progress}
@@ -215,7 +222,7 @@ export function VoiceMessagePlayer({
           barGap={1}
           className={isLoading ? 'opacity-50' : ''}
         />
-        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-1">
+        <div className="mt-1 flex justify-between text-xs text-gray-500 dark:text-gray-400">
           <span>{formatTime(currentTime)}</span>
           <span>{formatTime(audioDuration)}</span>
         </div>
@@ -225,7 +232,7 @@ export function VoiceMessagePlayer({
       {showDownload && (
         <button
           onClick={handleDownload}
-          className="flex-shrink-0 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+          className="flex-shrink-0 p-2 text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           aria-label="Download voice message"
         >
           <ArrowDownTrayIcon className="h-5 w-5" />

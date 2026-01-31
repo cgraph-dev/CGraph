@@ -1,10 +1,13 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('pmStore');
 
 /**
  * Private Messaging Store
- * 
+ *
  * Complete PM system with MyBB-style features:
  * - Folders (Inbox, Sent, Drafts, Trash, Custom)
  * - Multiple recipients with BCC support
@@ -39,41 +42,41 @@ export interface PrivateMessage {
   id: string;
   subject: string;
   content: string; // BBCode/HTML content
-  
+
   // Sender
   senderId: string;
   senderUsername: string;
   senderDisplayName: string | null;
   senderAvatarUrl: string | null;
-  
+
   // Recipients
   recipients: PMParticipant[];
   bccRecipients?: PMParticipant[]; // Only visible to sender
-  
+
   // Status
   folderId: string;
   isRead: boolean;
   isStarred: boolean;
   isArchived: boolean;
   isDraft: boolean;
-  
+
   // Read receipt
   readAt: string | null;
   readReceiptEnabled: boolean;
-  
+
   // Attachments
   hasAttachments: boolean;
   attachments?: PMAttachment[];
-  
+
   // Reply chain
   parentId: string | null;
   replyCount: number;
-  
+
   // Dates
   createdAt: string;
   updatedAt: string;
   sentAt: string | null;
-  
+
   // Post icon (decorative)
   postIcon?: string;
 }
@@ -144,35 +147,35 @@ interface PMState {
   messages: PrivateMessage[];
   currentMessage: PrivateMessage | null;
   conversations: PMConversation[];
-  
+
   // Folders
   folders: PMFolder[];
   currentFolderId: string;
-  
+
   // Drafts
   drafts: PrivateMessage[];
   currentDraft: Partial<CreatePMData> | null;
-  
+
   // Loading states
   isLoading: boolean;
   isSending: boolean;
-  
+
   // Pagination
   hasMore: boolean;
   page: number;
-  
+
   // Settings
   settings: PMSettings;
-  
+
   // Counts
   totalUnread: number;
-  
+
   // Actions - Folders
   fetchFolders: () => Promise<void>;
   createFolder: (name: string, color?: string) => Promise<PMFolder>;
   updateFolder: (folderId: string, data: Partial<PMFolder>) => Promise<void>;
   deleteFolder: (folderId: string) => Promise<void>;
-  
+
   // Actions - Messages
   fetchMessages: (folderId?: string, page?: number) => Promise<void>;
   fetchMessage: (messageId: string) => Promise<PrivateMessage>;
@@ -180,7 +183,7 @@ interface PMState {
   saveDraft: (data: CreatePMData) => Promise<PrivateMessage>;
   updateDraft: (draftId: string, data: Partial<CreatePMData>) => Promise<void>;
   deleteDraft: (draftId: string) => Promise<void>;
-  
+
   // Actions - Message operations
   markAsRead: (messageIds: string[]) => Promise<void>;
   markAsUnread: (messageIds: string[]) => Promise<void>;
@@ -190,21 +193,21 @@ interface PMState {
   deleteMessages: (messageIds: string[], permanent?: boolean) => Promise<void>;
   restoreMessages: (messageIds: string[]) => Promise<void>;
   emptyTrash: () => Promise<void>;
-  
+
   // Actions - Conversations
   fetchConversations: () => Promise<void>;
   fetchConversation: (conversationId: string) => Promise<PrivateMessage[]>;
-  
+
   // Actions - Search
   searchMessages: (filters: PMSearchFilters) => Promise<PrivateMessage[]>;
-  
+
   // Actions - Export
   exportMessages: (messageIds: string[], format: 'txt' | 'html' | 'json') => Promise<Blob>;
-  
+
   // Actions - Settings
   fetchSettings: () => Promise<void>;
   updateSettings: (settings: Partial<PMSettings>) => Promise<void>;
-  
+
   // Actions - Helpers
   getUnreadCount: () => number;
   setCurrentDraft: (draft: Partial<CreatePMData> | null) => void;
@@ -255,30 +258,32 @@ export const usePMStore = create<PMState>((set, get) => ({
   fetchFolders: async () => {
     try {
       const response = await api.get('/api/v1/pm/folders');
-      const folders = (ensureArray(response.data, 'folders') as Record<string, unknown>[]).map((f) => ({
-        id: f.id as string,
-        name: f.name as string,
-        type: (f.type as 'system' | 'custom') || 'custom',
-        icon: f.icon as string | undefined,
-        color: f.color as string | undefined,
-        messageCount: (f.message_count as number) || 0,
-        unreadCount: (f.unread_count as number) || 0,
-        order: (f.order as number) || 0,
-      }));
-      
+      const folders = (ensureArray(response.data, 'folders') as Record<string, unknown>[]).map(
+        (f) => ({
+          id: f.id as string,
+          name: f.name as string,
+          type: (f.type as 'system' | 'custom') || 'custom',
+          icon: f.icon as string | undefined,
+          color: f.color as string | undefined,
+          messageCount: (f.message_count as number) || 0,
+          unreadCount: (f.unread_count as number) || 0,
+          order: (f.order as number) || 0,
+        })
+      );
+
       // Merge with system folders
-      const systemFolders = get().folders.filter(f => f.type === 'system');
-      const customFolders = folders.filter(f => f.type === 'custom');
-      
+      const systemFolders = get().folders.filter((f) => f.type === 'system');
+      const customFolders = folders.filter((f) => f.type === 'custom');
+
       // Update counts in system folders
-      const updatedSystemFolders = systemFolders.map(sf => {
-        const apiFolder = folders.find(f => f.id === sf.id);
+      const updatedSystemFolders = systemFolders.map((sf) => {
+        const apiFolder = folders.find((f) => f.id === sf.id);
         return apiFolder ? { ...sf, ...apiFolder } : sf;
       });
-      
+
       set({ folders: [...updatedSystemFolders, ...customFolders] });
     } catch (error) {
-      console.error('[pmStore] Failed to fetch folders:', error);
+      logger.error('Failed to fetch folders:', error);
     }
   },
 
@@ -297,7 +302,7 @@ export const usePMStore = create<PMState>((set, get) => ({
       set((state) => ({ folders: [...state.folders, folder] }));
       return folder;
     } catch (error) {
-      console.error('[pmStore] Failed to create folder:', error);
+      logger.error('Failed to create folder:', error);
       throw error;
     }
   },
@@ -310,12 +315,10 @@ export const usePMStore = create<PMState>((set, get) => ({
         order: data.order,
       });
       set((state) => ({
-        folders: state.folders.map((f) =>
-          f.id === folderId ? { ...f, ...data } : f
-        ),
+        folders: state.folders.map((f) => (f.id === folderId ? { ...f, ...data } : f)),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to update folder:', error);
+      logger.error('Failed to update folder:', error);
       throw error;
     }
   },
@@ -327,7 +330,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         folders: state.folders.filter((f) => f.id !== folderId),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to delete folder:', error);
+      logger.error('Failed to delete folder:', error);
       throw error;
     }
   },
@@ -339,14 +342,16 @@ export const usePMStore = create<PMState>((set, get) => ({
   fetchMessages: async (folderId?: string, page = 1) => {
     const targetFolder = folderId || get().currentFolderId;
     set({ isLoading: true, currentFolderId: targetFolder });
-    
+
     try {
       const response = await api.get('/api/v1/pm/messages', {
         params: { folder_id: targetFolder, page, per_page: 25 },
       });
-      
-      const messages = (ensureArray(response.data, 'messages') as Record<string, unknown>[]).map(mapMessageFromApi);
-      
+
+      const messages = (ensureArray(response.data, 'messages') as Record<string, unknown>[]).map(
+        mapMessageFromApi
+      );
+
       set({
         messages: page === 1 ? messages : [...get().messages, ...messages],
         hasMore: messages.length === 25,
@@ -354,7 +359,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         isLoading: false,
       });
     } catch (error) {
-      console.error('[pmStore] Failed to fetch messages:', error);
+      logger.error('Failed to fetch messages:', error);
       set({ isLoading: false });
     }
   },
@@ -364,15 +369,15 @@ export const usePMStore = create<PMState>((set, get) => ({
       const response = await api.get(`/api/v1/pm/messages/${messageId}`);
       const message = mapMessageFromApi(response.data.message || response.data);
       set({ currentMessage: message });
-      
+
       // Mark as read if not already
       if (!message.isRead) {
         get().markAsRead([messageId]);
       }
-      
+
       return message;
     } catch (error) {
-      console.error('[pmStore] Failed to fetch message:', error);
+      logger.error('Failed to fetch message:', error);
       throw error;
     }
   },
@@ -392,22 +397,20 @@ export const usePMStore = create<PMState>((set, get) => ({
         attachment_ids: data.attachmentIds,
         include_signature: data.signature ?? get().settings.showSignature,
       });
-      
+
       const message = mapMessageFromApi(response.data.message || response.data);
-      
+
       // Update sent folder count
       set((state) => ({
         isSending: false,
         folders: state.folders.map((f) =>
-          f.id === SYSTEM_FOLDERS.SENT
-            ? { ...f, messageCount: f.messageCount + 1 }
-            : f
+          f.id === SYSTEM_FOLDERS.SENT ? { ...f, messageCount: f.messageCount + 1 } : f
         ),
       }));
-      
+
       return message;
     } catch (error) {
-      console.error('[pmStore] Failed to send message:', error);
+      logger.error('Failed to send message:', error);
       set({ isSending: false });
       throw error;
     }
@@ -425,22 +428,20 @@ export const usePMStore = create<PMState>((set, get) => ({
         post_icon: data.postIcon,
         attachment_ids: data.attachmentIds,
       });
-      
+
       const draft = mapMessageFromApi(response.data.draft || response.data);
       draft.isDraft = true;
-      
+
       set((state) => ({
         drafts: [...state.drafts, draft],
         folders: state.folders.map((f) =>
-          f.id === SYSTEM_FOLDERS.DRAFTS
-            ? { ...f, messageCount: f.messageCount + 1 }
-            : f
+          f.id === SYSTEM_FOLDERS.DRAFTS ? { ...f, messageCount: f.messageCount + 1 } : f
         ),
       }));
-      
+
       return draft;
     } catch (error) {
-      console.error('[pmStore] Failed to save draft:', error);
+      logger.error('Failed to save draft:', error);
       throw error;
     }
   },
@@ -453,7 +454,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         recipient_ids: data.recipientIds,
         bcc_recipient_ids: data.bccRecipientIds,
       });
-      
+
       set((state) => ({
         drafts: state.drafts.map((d) =>
           d.id === draftId
@@ -462,7 +463,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         ),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to update draft:', error);
+      logger.error('Failed to update draft:', error);
       throw error;
     }
   },
@@ -479,7 +480,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         ),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to delete draft:', error);
+      logger.error('Failed to delete draft:', error);
       throw error;
     }
   },
@@ -498,7 +499,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         totalUnread: Math.max(0, state.totalUnread - messageIds.length),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to mark as read:', error);
+      logger.error('Failed to mark as read:', error);
     }
   },
 
@@ -512,7 +513,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         totalUnread: state.totalUnread + messageIds.length,
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to mark as unread:', error);
+      logger.error('Failed to mark as unread:', error);
     }
   },
 
@@ -520,12 +521,10 @@ export const usePMStore = create<PMState>((set, get) => ({
     try {
       await api.post(`/api/v1/pm/messages/${messageId}/star`);
       set((state) => ({
-        messages: state.messages.map((m) =>
-          m.id === messageId ? { ...m, isStarred: true } : m
-        ),
+        messages: state.messages.map((m) => (m.id === messageId ? { ...m, isStarred: true } : m)),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to star message:', error);
+      logger.error('Failed to star message:', error);
     }
   },
 
@@ -533,12 +532,10 @@ export const usePMStore = create<PMState>((set, get) => ({
     try {
       await api.delete(`/api/v1/pm/messages/${messageId}/star`);
       set((state) => ({
-        messages: state.messages.map((m) =>
-          m.id === messageId ? { ...m, isStarred: false } : m
-        ),
+        messages: state.messages.map((m) => (m.id === messageId ? { ...m, isStarred: false } : m)),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to unstar message:', error);
+      logger.error('Failed to unstar message:', error);
     }
   },
 
@@ -549,12 +546,10 @@ export const usePMStore = create<PMState>((set, get) => ({
         folder_id: folderId,
       });
       set((state) => ({
-        messages: state.messages.map((m) =>
-          messageIds.includes(m.id) ? { ...m, folderId } : m
-        ),
+        messages: state.messages.map((m) => (messageIds.includes(m.id) ? { ...m, folderId } : m)),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to move messages:', error);
+      logger.error('Failed to move messages:', error);
       throw error;
     }
   },
@@ -573,7 +568,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         await get().moveToFolder(messageIds, SYSTEM_FOLDERS.TRASH);
       }
     } catch (error) {
-      console.error('[pmStore] Failed to delete messages:', error);
+      logger.error('Failed to delete messages:', error);
       throw error;
     }
   },
@@ -588,7 +583,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         ),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to restore messages:', error);
+      logger.error('Failed to restore messages:', error);
       throw error;
     }
   },
@@ -603,7 +598,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         ),
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to empty trash:', error);
+      logger.error('Failed to empty trash:', error);
       throw error;
     }
   },
@@ -616,10 +611,14 @@ export const usePMStore = create<PMState>((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await api.get('/api/v1/pm/conversations');
-      const conversations = (ensureArray(response.data, 'conversations') as Record<string, unknown>[]).map((c) => ({
+      const conversations = (
+        ensureArray(response.data, 'conversations') as Record<string, unknown>[]
+      ).map((c) => ({
         id: c.id as string,
         subject: c.subject as string,
-        participants: (ensureArray(c.participants, 'participants') as Record<string, unknown>[]).map(mapParticipant),
+        participants: (
+          ensureArray(c.participants, 'participants') as Record<string, unknown>[]
+        ).map(mapParticipant),
         lastMessage: mapMessageFromApi(c.last_message as Record<string, unknown>),
         messageCount: (c.message_count as number) || 0,
         unreadCount: (c.unread_count as number) || 0,
@@ -628,7 +627,7 @@ export const usePMStore = create<PMState>((set, get) => ({
       }));
       set({ conversations, isLoading: false });
     } catch (error) {
-      console.error('[pmStore] Failed to fetch conversations:', error);
+      logger.error('Failed to fetch conversations:', error);
       set({ isLoading: false });
     }
   },
@@ -636,10 +635,12 @@ export const usePMStore = create<PMState>((set, get) => ({
   fetchConversation: async (conversationId: string) => {
     try {
       const response = await api.get(`/api/v1/pm/conversations/${conversationId}`);
-      const messages = (ensureArray(response.data, 'messages') as Record<string, unknown>[]).map(mapMessageFromApi);
+      const messages = (ensureArray(response.data, 'messages') as Record<string, unknown>[]).map(
+        mapMessageFromApi
+      );
       return messages;
     } catch (error) {
-      console.error('[pmStore] Failed to fetch conversation:', error);
+      logger.error('Failed to fetch conversation:', error);
       throw error;
     }
   },
@@ -663,9 +664,11 @@ export const usePMStore = create<PMState>((set, get) => ({
           date_to: filters.dateTo,
         },
       });
-      return (ensureArray(response.data, 'messages') as Record<string, unknown>[]).map(mapMessageFromApi);
+      return (ensureArray(response.data, 'messages') as Record<string, unknown>[]).map(
+        mapMessageFromApi
+      );
     } catch (error) {
-      console.error('[pmStore] Failed to search messages:', error);
+      logger.error('Failed to search messages:', error);
       return [];
     }
   },
@@ -676,13 +679,17 @@ export const usePMStore = create<PMState>((set, get) => ({
 
   exportMessages: async (messageIds: string[], format: 'txt' | 'html' | 'json') => {
     try {
-      const response = await api.post('/api/v1/pm/export', {
-        message_ids: messageIds,
-        format,
-      }, { responseType: 'blob' });
+      const response = await api.post(
+        '/api/v1/pm/export',
+        {
+          message_ids: messageIds,
+          format,
+        },
+        { responseType: 'blob' }
+      );
       return response.data;
     } catch (error) {
-      console.error('[pmStore] Failed to export messages:', error);
+      logger.error('Failed to export messages:', error);
       throw error;
     }
   },
@@ -707,7 +714,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         },
       });
     } catch (error) {
-      console.error('[pmStore] Failed to fetch PM settings:', error);
+      logger.error('Failed to fetch PM settings:', error);
     }
   },
 
@@ -725,7 +732,7 @@ export const usePMStore = create<PMState>((set, get) => ({
         settings: { ...state.settings, ...settings },
       }));
     } catch (error) {
-      console.error('[pmStore] Failed to update PM settings:', error);
+      logger.error('Failed to update PM settings:', error);
       throw error;
     }
   },
@@ -757,9 +764,13 @@ function mapMessageFromApi(data: Record<string, unknown>): PrivateMessage {
     senderUsername: (data.sender_username as string) || 'Unknown',
     senderDisplayName: (data.sender_display_name as string) || null,
     senderAvatarUrl: (data.sender_avatar_url as string) || null,
-    recipients: (ensureArray(data.recipients, 'recipients') as Record<string, unknown>[]).map(mapParticipant),
+    recipients: (ensureArray(data.recipients, 'recipients') as Record<string, unknown>[]).map(
+      mapParticipant
+    ),
     bccRecipients: data.bcc_recipients
-      ? (ensureArray(data.bcc_recipients, 'bcc_recipients') as Record<string, unknown>[]).map(mapParticipant)
+      ? (ensureArray(data.bcc_recipients, 'bcc_recipients') as Record<string, unknown>[]).map(
+          mapParticipant
+        )
       : undefined,
     folderId: (data.folder_id as string) || 'inbox',
     isRead: (data.is_read as boolean) || false,
@@ -781,7 +792,8 @@ function mapMessageFromApi(data: Record<string, unknown>): PrivateMessage {
       : undefined,
     parentId: (data.parent_id as string) || null,
     replyCount: (data.reply_count as number) || 0,
-    createdAt: (data.created_at as string) || (data.inserted_at as string) || new Date().toISOString(),
+    createdAt:
+      (data.created_at as string) || (data.inserted_at as string) || new Date().toISOString(),
     updatedAt: (data.updated_at as string) || new Date().toISOString(),
     sentAt: (data.sent_at as string) || null,
     postIcon: data.post_icon as string | undefined,

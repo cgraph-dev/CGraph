@@ -1,10 +1,13 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ReferralStore');
 
 /**
  * Referral System Store
- * 
+ *
  * Complete MyBB-style referral system with:
  * - Unique referral codes/links
  * - Referral tracking
@@ -25,15 +28,15 @@ export interface Referral {
   referredUsername: string;
   referredAvatarUrl: string | null;
   status: ReferralStatus;
-  
+
   // Tracking
   code: string; // Referral code used
   source?: string; // Where they came from
-  
+
   // Rewards
   referrerReward?: ReferralReward;
   referredReward?: ReferralReward;
-  
+
   // Dates
   createdAt: string;
   verifiedAt: string | null;
@@ -101,48 +104,50 @@ interface ReferralState {
   // User's referrals
   referrals: Referral[];
   pendingReferrals: Referral[];
-  
+
   // Referral code
   referralCode: ReferralCode | null;
-  
+
   // Stats
   stats: ReferralStats | null;
-  
+
   // Leaderboard
   leaderboard: ReferralLeader[];
-  
+
   // Reward tiers
   rewardTiers: RewardTier[];
-  
+
   // Loading
   isLoading: boolean;
   isLoadingStats: boolean;
-  
+
   // Actions - Referral Code
   fetchReferralCode: () => Promise<ReferralCode>;
   regenerateCode: () => Promise<ReferralCode>;
-  
+
   // Actions - Referrals
   fetchReferrals: () => Promise<void>;
   fetchPendingReferrals: () => Promise<void>;
-  
+
   // Actions - Stats
   fetchStats: () => Promise<void>;
-  
+
   // Actions - Leaderboard
   fetchLeaderboard: (period?: 'all' | 'month' | 'week') => Promise<void>;
-  
+
   // Actions - Rewards
   fetchRewardTiers: () => Promise<void>;
   claimReward: (rewardId: string) => Promise<void>;
-  
+
   // Actions - Validation
-  validateReferralCode: (code: string) => Promise<{ valid: boolean; referrer?: { username: string; avatarUrl: string | null } }>;
+  validateReferralCode: (
+    code: string
+  ) => Promise<{ valid: boolean; referrer?: { username: string; avatarUrl: string | null } }>;
   applyReferralCode: (code: string) => Promise<void>;
-  
+
   // Helpers
   getReferralUrl: () => string;
-  
+
   clearState: () => void;
 }
 
@@ -165,7 +170,7 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
     try {
       const response = await api.get('/api/v1/referrals/code');
       const data = response.data.code || response.data;
-      
+
       const code: ReferralCode = {
         code: data.code,
         url: data.url || `${window.location.origin}/register?ref=${data.code}`,
@@ -176,11 +181,11 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
         expiresAt: data.expires_at || null,
         createdAt: data.created_at || new Date().toISOString(),
       };
-      
+
       set({ referralCode: code });
       return code;
     } catch (error) {
-      console.error('[referralStore] Failed to fetch referral code:', error);
+      logger.error('Failed to fetch referral code:', error);
       throw error;
     }
   },
@@ -189,7 +194,7 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
     try {
       const response = await api.post('/api/v1/referrals/code/regenerate');
       const data = response.data.code || response.data;
-      
+
       const code: ReferralCode = {
         code: data.code,
         url: data.url || `${window.location.origin}/register?ref=${data.code}`,
@@ -200,11 +205,11 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
         expiresAt: data.expires_at || null,
         createdAt: new Date().toISOString(),
       };
-      
+
       set({ referralCode: code });
       return code;
     } catch (error) {
-      console.error('[referralStore] Failed to regenerate code:', error);
+      logger.error('Failed to regenerate code:', error);
       throw error;
     }
   },
@@ -217,10 +222,12 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await api.get('/api/v1/referrals');
-      const referrals = (ensureArray(response.data, 'referrals') as Record<string, unknown>[]).map(mapReferralFromApi);
+      const referrals = (ensureArray(response.data, 'referrals') as Record<string, unknown>[]).map(
+        mapReferralFromApi
+      );
       set({ referrals, isLoading: false });
     } catch (error) {
-      console.error('[referralStore] Failed to fetch referrals:', error);
+      logger.error('Failed to fetch referrals:', error);
       set({ isLoading: false });
     }
   },
@@ -228,10 +235,12 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
   fetchPendingReferrals: async () => {
     try {
       const response = await api.get('/api/v1/referrals/pending');
-      const pendingReferrals = (ensureArray(response.data, 'referrals') as Record<string, unknown>[]).map(mapReferralFromApi);
+      const pendingReferrals = (
+        ensureArray(response.data, 'referrals') as Record<string, unknown>[]
+      ).map(mapReferralFromApi);
       set({ pendingReferrals });
     } catch (error) {
-      console.error('[referralStore] Failed to fetch pending referrals:', error);
+      logger.error('Failed to fetch pending referrals:', error);
     }
   },
 
@@ -244,7 +253,7 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
     try {
       const response = await api.get('/api/v1/referrals/stats');
       const data = response.data.stats || response.data;
-      
+
       const stats: ReferralStats = {
         totalReferrals: data.total_referrals || 0,
         pendingReferrals: data.pending_referrals || 0,
@@ -258,10 +267,10 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
         rank: data.rank || 0,
         rankChange: data.rank_change || 0,
       };
-      
+
       set({ stats, isLoadingStats: false });
     } catch (error) {
-      console.error('[referralStore] Failed to fetch stats:', error);
+      logger.error('Failed to fetch stats:', error);
       set({ isLoadingStats: false });
     }
   },
@@ -275,8 +284,10 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
       const response = await api.get('/api/v1/referrals/leaderboard', {
         params: { period },
       });
-      
-      const leaderboard = (ensureArray(response.data, 'leaderboard') as Record<string, unknown>[]).map((entry, index) => ({
+
+      const leaderboard = (
+        ensureArray(response.data, 'leaderboard') as Record<string, unknown>[]
+      ).map((entry, index) => ({
         userId: entry.user_id as string,
         username: (entry.username as string) || 'Unknown',
         displayName: (entry.display_name as string) || null,
@@ -285,10 +296,10 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
         rank: (entry.rank as number) || index + 1,
         badge: entry.badge as string | undefined,
       }));
-      
+
       set({ leaderboard });
     } catch (error) {
-      console.error('[referralStore] Failed to fetch leaderboard:', error);
+      logger.error('Failed to fetch leaderboard:', error);
     }
   },
 
@@ -299,44 +310,44 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
   fetchRewardTiers: async () => {
     try {
       const response = await api.get('/api/v1/referrals/rewards');
-      const tiers = (ensureArray(response.data, 'tiers') as Record<string, unknown>[]).map((tier) => ({
-        id: tier.id as string,
-        name: (tier.name as string) || '',
-        referralsRequired: (tier.referrals_required as number) || 0,
-        rewards: ((tier.rewards as Record<string, unknown>[]) || []).map((r) => ({
-          id: r.id as string,
-          type: (r.type as ReferralReward['type']) || 'xp',
-          amount: (r.amount as number) || 0,
-          description: (r.description as string) || '',
-          claimed: (r.claimed as boolean) || false,
-          claimedAt: (r.claimed_at as string) || null,
-        })),
-        achieved: (tier.achieved as boolean) || false,
-      }));
-      
+      const tiers = (ensureArray(response.data, 'tiers') as Record<string, unknown>[]).map(
+        (tier) => ({
+          id: tier.id as string,
+          name: (tier.name as string) || '',
+          referralsRequired: (tier.referrals_required as number) || 0,
+          rewards: ((tier.rewards as Record<string, unknown>[]) || []).map((r) => ({
+            id: r.id as string,
+            type: (r.type as ReferralReward['type']) || 'xp',
+            amount: (r.amount as number) || 0,
+            description: (r.description as string) || '',
+            claimed: (r.claimed as boolean) || false,
+            claimedAt: (r.claimed_at as string) || null,
+          })),
+          achieved: (tier.achieved as boolean) || false,
+        })
+      );
+
       set({ rewardTiers: tiers });
     } catch (error) {
-      console.error('[referralStore] Failed to fetch reward tiers:', error);
+      logger.error('Failed to fetch reward tiers:', error);
     }
   },
 
   claimReward: async (rewardId: string) => {
     try {
       await api.post(`/api/v1/referrals/rewards/${rewardId}/claim`);
-      
+
       // Update local state
       set((state) => ({
         rewardTiers: state.rewardTiers.map((tier) => ({
           ...tier,
           rewards: tier.rewards.map((r) =>
-            r.id === rewardId
-              ? { ...r, claimed: true, claimedAt: new Date().toISOString() }
-              : r
+            r.id === rewardId ? { ...r, claimed: true, claimedAt: new Date().toISOString() } : r
           ),
         })),
       }));
     } catch (error) {
-      console.error('[referralStore] Failed to claim reward:', error);
+      logger.error('Failed to claim reward:', error);
       throw error;
     }
   },
@@ -349,7 +360,7 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
     try {
       const response = await api.get(`/api/v1/referrals/validate/${code}`);
       const data = response.data;
-      
+
       return {
         valid: data.valid || false,
         referrer: data.referrer
@@ -360,7 +371,7 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
           : undefined,
       };
     } catch (error) {
-      console.error('[referralStore] Failed to validate code:', error);
+      logger.error('Failed to validate code:', error);
       return { valid: false };
     }
   },
@@ -369,7 +380,7 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
     try {
       await api.post('/api/v1/referrals/apply', { code });
     } catch (error) {
-      console.error('[referralStore] Failed to apply referral code:', error);
+      logger.error('Failed to apply referral code:', error);
       throw error;
     }
   },
@@ -402,7 +413,7 @@ export const useReferralStore = create<ReferralState>((set, get) => ({
 function mapReferralFromApi(data: Record<string, unknown>): Referral {
   const referrerReward = data.referrer_reward as Record<string, unknown> | undefined;
   const referredReward = data.referred_reward as Record<string, unknown> | undefined;
-  
+
   return {
     id: data.id as string,
     referrerId: data.referrer_id as string,

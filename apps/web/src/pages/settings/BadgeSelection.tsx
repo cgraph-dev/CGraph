@@ -5,6 +5,9 @@ import { useGamificationStore } from '@/stores/gamificationStore';
 import { useAuthStore } from '@/stores/authStore';
 import VisibilityBadge from '@/components/settings/VisibilityBadge';
 import { toast } from '@/components/Toast';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('BadgeSelection');
 
 /**
  * Badge Selection Page
@@ -85,7 +88,7 @@ export default function BadgeSelection() {
         toast.success('Badge equipped!');
       }
     } catch (error) {
-      console.error('Failed to equip/unequip badge:', error);
+      logger.error('Failed to equip/unequip badge:', error);
       toast.error('Failed to update badge. Please try again.');
     }
   };

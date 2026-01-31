@@ -1,4 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('useLocalStorage');
 
 /**
  * Hook that syncs state with localStorage.
@@ -28,7 +31,7 @@ export function useLocalStorage<T>(
       const item = window.localStorage.getItem(key);
       return item !== null ? (JSON.parse(item) as T) : initialValue;
     } catch (error: unknown) {
-      console.warn(
+      logger.warn(
         `Error reading localStorage key "${key}":`,
         error instanceof Error ? error.message : error
       );
@@ -50,7 +53,7 @@ export function useLocalStorage<T>(
           window.dispatchEvent(new StorageEvent('storage', { key }));
         }
       } catch (error: unknown) {
-        console.warn(
+        logger.warn(
           `Error setting localStorage key "${key}":`,
           error instanceof Error ? error.message : error
         );
@@ -68,7 +71,7 @@ export function useLocalStorage<T>(
       }
       setStoredValue(initialValue);
     } catch (error: unknown) {
-      console.warn(
+      logger.warn(
         `Error removing localStorage key "${key}":`,
         error instanceof Error ? error.message : error
       );

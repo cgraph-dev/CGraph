@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('CreatePost');
 import { useForumStore, type PostAttachment } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { MarkdownEditor } from '@/components';
@@ -21,7 +24,8 @@ export default function CreatePost() {
   const { forumSlug } = useParams();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthStore();
-  const { forums, fetchForum, createPost, subscribe, threadPrefixes, fetchThreadPrefixes } = useForumStore();
+  const { forums, fetchForum, createPost, subscribe, threadPrefixes, fetchThreadPrefixes } =
+    useForumStore();
 
   const [postType, setPostType] = useState<PostType>('text');
   const [title, setTitle] = useState('');
@@ -74,7 +78,7 @@ export default function CreatePost() {
       toast.success(`Joined c/${forum.name} successfully!`);
     } catch (err) {
       toast.error('Failed to join forum');
-      console.error('Failed to join forum:', err);
+      logger.error('Failed to join forum:', err);
     } finally {
       setIsJoining(false);
     }
@@ -147,7 +151,7 @@ export default function CreatePost() {
 
   if (!forum) {
     return (
-      <div className="flex-1 flex items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
       </div>
     );
@@ -155,12 +159,12 @@ export default function CreatePost() {
 
   return (
     <div className="flex-1 overflow-y-auto bg-dark-900">
-      <div className="max-w-3xl mx-auto py-8 px-4 animate-fadeIn">
+      <div className="animate-fadeIn mx-auto max-w-3xl px-4 py-8">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-6">
+        <div className="mb-6 flex items-center gap-4">
           <Link
             to={`/forums/${forumSlug}`}
-            className="p-2 rounded-lg hover:bg-dark-700 transition-colors"
+            className="rounded-lg p-2 transition-colors hover:bg-dark-700"
           >
             <ArrowLeftIcon className="h-5 w-5 text-gray-400" />
           </Link>
@@ -168,10 +172,7 @@ export default function CreatePost() {
             <h1 className="text-2xl font-bold text-white">Create a Post</h1>
             <p className="text-sm text-gray-400">
               in{' '}
-              <Link
-                to={`/forums/${forumSlug}`}
-                className="text-primary-400 hover:text-primary-300"
-              >
+              <Link to={`/forums/${forumSlug}`} className="text-primary-400 hover:text-primary-300">
                 c/{forum.name}
               </Link>
             </p>
@@ -180,7 +181,7 @@ export default function CreatePost() {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-500/20 border border-red-500 rounded-lg flex items-center justify-between">
+          <div className="mb-6 flex items-center justify-between rounded-lg border border-red-500 bg-red-500/20 p-4">
             <span className="text-red-400">{error}</span>
             <button onClick={() => setError(null)}>
               <XMarkIcon className="h-5 w-5 text-red-400" />
@@ -190,7 +191,7 @@ export default function CreatePost() {
 
         {/* Not a member warning */}
         {!canPost && (
-          <div className="mb-6 p-4 bg-yellow-500/20 border border-yellow-500 rounded-lg">
+          <div className="mb-6 rounded-lg border border-yellow-500 bg-yellow-500/20 p-4">
             <p className="text-yellow-400">
               You must join this forum to create posts.{' '}
               <button
@@ -205,10 +206,10 @@ export default function CreatePost() {
         )}
 
         {/* Post Type Tabs */}
-        <div className="flex gap-2 mb-6 border-b border-dark-700 pb-4">
+        <div className="mb-6 flex gap-2 border-b border-dark-700 pb-4">
           <button
             onClick={() => setPostType('text')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
               postType === 'text'
                 ? 'bg-primary-600 text-white'
                 : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -218,7 +219,7 @@ export default function CreatePost() {
           </button>
           <button
             onClick={() => setPostType('image')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
               postType === 'image'
                 ? 'bg-primary-600 text-white'
                 : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -229,7 +230,7 @@ export default function CreatePost() {
           </button>
           <button
             onClick={() => setPostType('link')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
               postType === 'link'
                 ? 'bg-primary-600 text-white'
                 : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -240,7 +241,7 @@ export default function CreatePost() {
           </button>
           <button
             onClick={() => setPostType('poll')}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 font-medium transition-colors ${
               postType === 'poll'
                 ? 'bg-primary-600 text-white'
                 : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -261,25 +262,23 @@ export default function CreatePost() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               maxLength={300}
-              className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
               required
             />
-            <div className="text-right text-xs text-gray-500 mt-1">
-              {title.length}/300
-            </div>
+            <div className="mt-1 text-right text-xs text-gray-500">{title.length}/300</div>
           </div>
 
           {/* Thread Prefix Selector */}
           {threadPrefixes.length > 0 && (
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+              <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-300">
                 <TagIcon className="h-4 w-4" />
                 Thread Prefix (Optional)
               </label>
               <select
                 value={selectedPrefix}
                 onChange={(e) => setSelectedPrefix(e.target.value)}
-                className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">No Prefix</option>
                 {threadPrefixes.map((prefix) => (
@@ -304,16 +303,16 @@ export default function CreatePost() {
           )}
 
           {postType === 'image' && (
-            <div className="border-2 border-dashed border-dark-600 rounded-lg p-8 text-center">
-              <PhotoIcon className="h-12 w-12 mx-auto text-gray-500 mb-4" />
-              <p className="text-gray-400 mb-2">Drag and drop images or</p>
+            <div className="rounded-lg border-2 border-dashed border-dark-600 p-8 text-center">
+              <PhotoIcon className="mx-auto mb-4 h-12 w-12 text-gray-500" />
+              <p className="mb-2 text-gray-400">Drag and drop images or</p>
               <button
                 type="button"
-                className="px-4 py-2 bg-dark-600 hover:bg-dark-500 text-white rounded-lg transition-colors"
+                className="rounded-lg bg-dark-600 px-4 py-2 text-white transition-colors hover:bg-dark-500"
               >
                 Upload
               </button>
-              <p className="text-xs text-gray-500 mt-2">
+              <p className="mt-2 text-xs text-gray-500">
                 Max file size: 10MB. Supported formats: JPG, PNG, GIF
               </p>
             </div>
@@ -326,7 +325,7 @@ export default function CreatePost() {
                 placeholder="URL"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
                 required={postType === 'link'}
               />
             </div>
@@ -341,7 +340,7 @@ export default function CreatePost() {
                   placeholder="Poll Question"
                   value={pollQuestion}
                   onChange={(e) => setPollQuestion(e.target.value)}
-                  className="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-3 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
                   required
                 />
               </div>
@@ -360,14 +359,14 @@ export default function CreatePost() {
                         newOptions[index] = e.target.value;
                         setPollOptions(newOptions);
                       }}
-                      className="flex-1 px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      className="flex-1 rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-white placeholder-gray-500 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary-500"
                       required
                     />
                     {pollOptions.length > 2 && (
                       <button
                         type="button"
                         onClick={() => setPollOptions(pollOptions.filter((_, i) => i !== index))}
-                        className="px-3 py-2 bg-red-500/20 hover:bg-red-500/30 border border-red-500 text-red-400 rounded-lg transition-colors"
+                        className="rounded-lg border border-red-500 bg-red-500/20 px-3 py-2 text-red-400 transition-colors hover:bg-red-500/30"
                       >
                         <XMarkIcon className="h-5 w-5" />
                       </button>
@@ -377,29 +376,29 @@ export default function CreatePost() {
                 <button
                   type="button"
                   onClick={() => setPollOptions([...pollOptions, ''])}
-                  className="w-full px-4 py-2 bg-dark-700 hover:bg-dark-600 border border-dark-600 text-gray-300 rounded-lg transition-colors"
+                  className="w-full rounded-lg border border-dark-600 bg-dark-700 px-4 py-2 text-gray-300 transition-colors hover:bg-dark-600"
                 >
                   + Add Option
                 </button>
               </div>
 
               {/* Poll Settings */}
-              <div className="space-y-3 p-4 bg-dark-800/50 rounded-lg border border-dark-700">
-                <label className="flex items-center gap-2 cursor-pointer">
+              <div className="space-y-3 rounded-lg border border-dark-700 bg-dark-800/50 p-4">
+                <label className="flex cursor-pointer items-center gap-2">
                   <input
                     type="checkbox"
                     checked={pollAllowMultiple}
                     onChange={(e) => setPollAllowMultiple(e.target.checked)}
-                    className="h-4 w-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+                    className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
                   />
                   <span className="text-sm text-gray-300">Allow multiple selections</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex cursor-pointer items-center gap-2">
                   <input
                     type="checkbox"
                     checked={pollPublic}
                     onChange={(e) => setPollPublic(e.target.checked)}
-                    className="h-4 w-4 rounded bg-dark-700 border-dark-600 text-primary-500 focus:ring-primary-500"
+                    className="h-4 w-4 rounded border-dark-600 bg-dark-700 text-primary-500 focus:ring-primary-500"
                   />
                   <span className="text-sm text-gray-300">Public poll (show who voted)</span>
                 </label>
@@ -410,7 +409,7 @@ export default function CreatePost() {
           {/* Attachments for text/link/poll posts */}
           {(postType === 'text' || postType === 'link' || postType === 'poll') && (
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-300 mb-2">
+              <label className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-300">
                 <PaperClipIcon className="h-4 w-4" />
                 Attachments (Optional)
               </label>
@@ -427,14 +426,14 @@ export default function CreatePost() {
           <div className="flex items-center justify-end gap-3 pt-4">
             <Link
               to={`/forums/${forumSlug}`}
-              className="px-6 py-2.5 bg-dark-700 hover:bg-dark-600 text-white font-medium rounded-lg transition-colors"
+              className="rounded-lg bg-dark-700 px-6 py-2.5 font-medium text-white transition-colors hover:bg-dark-600"
             >
               Cancel
             </Link>
             <button
               type="submit"
               disabled={isSubmitting || !title.trim() || !canPost}
-              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 disabled:bg-primary-600/50 disabled:cursor-not-allowed text-white font-medium rounded-lg transition-colors"
+              className="rounded-lg bg-primary-600 px-6 py-2.5 font-medium text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:bg-primary-600/50"
             >
               {isSubmitting ? 'Posting...' : 'Post'}
             </button>

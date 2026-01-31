@@ -1,10 +1,13 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray, ensureObject } from '@/lib/apiUtils';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ModerationStore');
 
 /**
  * Moderation Store
- * 
+ *
  * Comprehensive moderation system for MyBB-style forums:
  * - Thread moderation (split, merge, move, lock, pin, delete)
  * - Post moderation (approve, soft-delete, restore, move)
@@ -141,25 +144,25 @@ interface ModerationState {
     reported: number;
   };
   isLoadingQueue: boolean;
-  
+
   // Warning types
   warningTypes: WarningType[];
-  
+
   // User warnings (for user being viewed)
   currentUserWarnings: UserWarning[];
   currentUserStats: UserModerationStats | null;
-  
+
   // Bans
   bans: Ban[];
   isLoadingBans: boolean;
-  
+
   // Moderation log
   moderationLog: ModerationLogEntry[];
   isLoadingLog: boolean;
-  
+
   // Bulk selection for inline moderation
   bulkSelection: BulkSelection;
-  
+
   // Actions - Queue
   fetchModerationQueue: (filters?: {
     status?: 'pending' | 'all';
@@ -168,11 +171,24 @@ interface ModerationState {
   }) => Promise<void>;
   approveQueueItem: (itemId: string, notes?: string) => Promise<void>;
   rejectQueueItem: (itemId: string, reason: string, notes?: string) => Promise<void>;
-  
+
   // Actions - Thread Moderation
-  moveThread: (threadId: string, targetForumId: string, leaveRedirect?: boolean) => Promise<ThreadModerationResult>;
-  splitThread: (threadId: string, postIds: string[], newTitle: string, targetForumId?: string) => Promise<ThreadModerationResult>;
-  mergeThreads: (sourceThreadId: string, targetThreadId: string, mergePolls?: boolean) => Promise<ThreadModerationResult>;
+  moveThread: (
+    threadId: string,
+    targetForumId: string,
+    leaveRedirect?: boolean
+  ) => Promise<ThreadModerationResult>;
+  splitThread: (
+    threadId: string,
+    postIds: string[],
+    newTitle: string,
+    targetForumId?: string
+  ) => Promise<ThreadModerationResult>;
+  mergeThreads: (
+    sourceThreadId: string,
+    targetThreadId: string,
+    mergePolls?: boolean
+  ) => Promise<ThreadModerationResult>;
   copyThread: (threadId: string, targetForumId: string) => Promise<ThreadModerationResult>;
   closeThread: (threadId: string, reason?: string) => Promise<void>;
   reopenThread: (threadId: string) => Promise<void>;
@@ -180,14 +196,14 @@ interface ModerationState {
   restoreThread: (threadId: string) => Promise<void>;
   approveThread: (threadId: string) => Promise<void>;
   unapproveThread: (threadId: string) => Promise<void>;
-  
+
   // Actions - Post Moderation
   movePost: (postId: string, targetThreadId: string) => Promise<void>;
   softDeletePost: (postId: string, reason?: string) => Promise<void>;
   restorePost: (postId: string) => Promise<void>;
   approvePost: (postId: string) => Promise<void>;
   unapprovePost: (postId: string) => Promise<void>;
-  
+
   // Actions - Bulk Moderation
   toggleBulkSelection: (type: 'threads' | 'posts' | 'comments', id: string) => void;
   clearBulkSelection: () => void;
@@ -195,13 +211,18 @@ interface ModerationState {
   bulkDeleteThreads: (reason?: string) => Promise<void>;
   bulkLockThreads: () => Promise<void>;
   bulkApproveThreads: () => Promise<void>;
-  
+
   // Actions - User Moderation
   fetchUserModerationStats: (userId: string) => Promise<UserModerationStats>;
   fetchUserWarnings: (userId: string) => Promise<UserWarning[]>;
-  issueWarning: (userId: string, warningTypeId: string, reason: string, notes?: string) => Promise<UserWarning>;
+  issueWarning: (
+    userId: string,
+    warningTypeId: string,
+    reason: string,
+    notes?: string
+  ) => Promise<UserWarning>;
   revokeWarning: (warningId: string, reason: string) => Promise<void>;
-  
+
   // Actions - Bans
   fetchBans: (filters?: { active?: boolean }) => Promise<void>;
   banUser: (data: {
@@ -214,10 +235,10 @@ interface ModerationState {
     notes?: string;
   }) => Promise<Ban>;
   liftBan: (banId: string, reason: string) => Promise<void>;
-  
+
   // Actions - Warning Types
   fetchWarningTypes: () => Promise<void>;
-  
+
   // Actions - Moderation Log
   fetchModerationLog: (filters?: {
     moderatorId?: string;
@@ -225,9 +246,15 @@ interface ModerationState {
     targetType?: string;
     page?: number;
   }) => Promise<void>;
-  
+
   // Utility
-  logModAction: (action: string, targetType: string, targetId: string, reason?: string, details?: Record<string, unknown>) => Promise<void>;
+  logModAction: (
+    action: string,
+    targetType: string,
+    targetId: string,
+    reason?: string,
+    details?: Record<string, unknown>
+  ) => Promise<void>;
 }
 
 export const useModerationStore = create<ModerationState>((set, get) => ({
@@ -256,39 +283,44 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       if (filters.priority) params.priority = filters.priority;
 
       const response = await api.get('/api/v1/admin/moderation/queue', { params });
-      const items = (ensureArray(response.data, 'items') as Record<string, unknown>[]).map((item) => ({
-        id: item.id as string,
-        itemType: item.item_type as ModerationQueueItem['itemType'],
-        itemId: item.item_id as string,
-        authorId: item.author_id as string,
-        authorUsername: item.author_username as string,
-        forumId: item.forum_id as string | undefined,
-        forumName: item.forum_name as string | undefined,
-        title: item.title as string | undefined,
-        content: item.content as string,
-        contentPreview: item.content_preview as string || (item.content as string).slice(0, 200),
-        reason: item.reason as ModerationQueueItem['reason'],
-        status: item.status as ModerationQueueItem['status'],
-        priority: item.priority as ModerationQueueItem['priority'],
-        reportCount: item.report_count as number || 0,
-        moderatedById: item.moderated_by_id as string | undefined,
-        moderatedAt: item.moderated_at as string | undefined,
-        moderationNotes: item.moderation_notes as string | undefined,
-        createdAt: item.created_at as string || item.inserted_at as string,
-      }));
+      const items = (ensureArray(response.data, 'items') as Record<string, unknown>[]).map(
+        (item) => ({
+          id: item.id as string,
+          itemType: item.item_type as ModerationQueueItem['itemType'],
+          itemId: item.item_id as string,
+          authorId: item.author_id as string,
+          authorUsername: item.author_username as string,
+          forumId: item.forum_id as string | undefined,
+          forumName: item.forum_name as string | undefined,
+          title: item.title as string | undefined,
+          content: item.content as string,
+          contentPreview:
+            (item.content_preview as string) || (item.content as string).slice(0, 200),
+          reason: item.reason as ModerationQueueItem['reason'],
+          status: item.status as ModerationQueueItem['status'],
+          priority: item.priority as ModerationQueueItem['priority'],
+          reportCount: (item.report_count as number) || 0,
+          moderatedById: item.moderated_by_id as string | undefined,
+          moderatedAt: item.moderated_at as string | undefined,
+          moderationNotes: item.moderation_notes as string | undefined,
+          createdAt: (item.created_at as string) || (item.inserted_at as string),
+        })
+      );
 
       const counts = response.data.counts || {};
       set({
         queue: items,
         queueCounts: {
-          pending: counts.pending || items.filter((i: ModerationQueueItem) => i.status === 'pending').length,
+          pending:
+            counts.pending ||
+            items.filter((i: ModerationQueueItem) => i.status === 'pending').length,
           flagged: counts.flagged || 0,
           reported: counts.reported || 0,
         },
         isLoadingQueue: false,
       });
     } catch (error) {
-      console.error('[moderationStore] Failed to fetch queue:', error);
+      logger.error(' Failed to fetch queue:', error);
       set({ isLoadingQueue: false });
       throw error;
     }
@@ -307,7 +339,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         },
       }));
     } catch (error) {
-      console.error('[moderationStore] Failed to approve item:', error);
+      logger.error(' Failed to approve item:', error);
       throw error;
     }
   },
@@ -325,7 +357,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         },
       }));
     } catch (error) {
-      console.error('[moderationStore] Failed to reject item:', error);
+      logger.error(' Failed to reject item:', error);
       throw error;
     }
   },
@@ -347,7 +379,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         threadId,
       };
     } catch (error) {
-      console.error('[moderationStore] Failed to move thread:', error);
+      logger.error(' Failed to move thread:', error);
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Failed to move thread',
@@ -355,14 +387,22 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
     }
   },
 
-  splitThread: async (threadId: string, postIds: string[], newTitle: string, targetForumId?: string) => {
+  splitThread: async (
+    threadId: string,
+    postIds: string[],
+    newTitle: string,
+    targetForumId?: string
+  ) => {
     try {
       const response = await api.post(`/api/v1/admin/threads/${threadId}/split`, {
         post_ids: postIds,
         new_title: newTitle,
         target_forum_id: targetForumId,
       });
-      await get().logModAction('split_thread', 'thread', threadId, undefined, { postIds, newTitle });
+      await get().logModAction('split_thread', 'thread', threadId, undefined, {
+        postIds,
+        newTitle,
+      });
       return {
         success: true,
         message: response.data.message || 'Thread split successfully',
@@ -370,7 +410,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         newThreadId: response.data.new_thread_id,
       };
     } catch (error) {
-      console.error('[moderationStore] Failed to split thread:', error);
+      logger.error(' Failed to split thread:', error);
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Failed to split thread',
@@ -384,14 +424,16 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         target_thread_id: targetThreadId,
         merge_polls: mergePolls,
       });
-      await get().logModAction('merge_threads', 'thread', sourceThreadId, undefined, { targetThreadId });
+      await get().logModAction('merge_threads', 'thread', sourceThreadId, undefined, {
+        targetThreadId,
+      });
       return {
         success: true,
         message: response.data.message || 'Threads merged successfully',
         threadId: targetThreadId,
       };
     } catch (error) {
-      console.error('[moderationStore] Failed to merge threads:', error);
+      logger.error(' Failed to merge threads:', error);
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Failed to merge threads',
@@ -412,7 +454,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         newThreadId: response.data.new_thread_id,
       };
     } catch (error) {
-      console.error('[moderationStore] Failed to copy thread:', error);
+      logger.error(' Failed to copy thread:', error);
       return {
         success: false,
         message: error instanceof Error ? error.message : 'Failed to copy thread',
@@ -425,7 +467,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/threads/${threadId}/close`, { reason });
       await get().logModAction('close_thread', 'thread', threadId, reason);
     } catch (error) {
-      console.error('[moderationStore] Failed to close thread:', error);
+      logger.error(' Failed to close thread:', error);
       throw error;
     }
   },
@@ -435,7 +477,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/threads/${threadId}/reopen`);
       await get().logModAction('reopen_thread', 'thread', threadId);
     } catch (error) {
-      console.error('[moderationStore] Failed to reopen thread:', error);
+      logger.error(' Failed to reopen thread:', error);
       throw error;
     }
   },
@@ -445,7 +487,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/threads/${threadId}/soft-delete`, { reason });
       await get().logModAction('soft_delete_thread', 'thread', threadId, reason);
     } catch (error) {
-      console.error('[moderationStore] Failed to soft-delete thread:', error);
+      logger.error(' Failed to soft-delete thread:', error);
       throw error;
     }
   },
@@ -455,7 +497,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/threads/${threadId}/restore`);
       await get().logModAction('restore_thread', 'thread', threadId);
     } catch (error) {
-      console.error('[moderationStore] Failed to restore thread:', error);
+      logger.error(' Failed to restore thread:', error);
       throw error;
     }
   },
@@ -465,7 +507,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/threads/${threadId}/approve`);
       await get().logModAction('approve_thread', 'thread', threadId);
     } catch (error) {
-      console.error('[moderationStore] Failed to approve thread:', error);
+      logger.error(' Failed to approve thread:', error);
       throw error;
     }
   },
@@ -475,7 +517,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/threads/${threadId}/unapprove`);
       await get().logModAction('unapprove_thread', 'thread', threadId);
     } catch (error) {
-      console.error('[moderationStore] Failed to unapprove thread:', error);
+      logger.error(' Failed to unapprove thread:', error);
       throw error;
     }
   },
@@ -491,7 +533,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       });
       await get().logModAction('move_post', 'post', postId, undefined, { targetThreadId });
     } catch (error) {
-      console.error('[moderationStore] Failed to move post:', error);
+      logger.error(' Failed to move post:', error);
       throw error;
     }
   },
@@ -501,7 +543,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/posts/${postId}/soft-delete`, { reason });
       await get().logModAction('soft_delete_post', 'post', postId, reason);
     } catch (error) {
-      console.error('[moderationStore] Failed to soft-delete post:', error);
+      logger.error(' Failed to soft-delete post:', error);
       throw error;
     }
   },
@@ -511,7 +553,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/posts/${postId}/restore`);
       await get().logModAction('restore_post', 'post', postId);
     } catch (error) {
-      console.error('[moderationStore] Failed to restore post:', error);
+      logger.error(' Failed to restore post:', error);
       throw error;
     }
   },
@@ -521,7 +563,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/posts/${postId}/approve`);
       await get().logModAction('approve_post', 'post', postId);
     } catch (error) {
-      console.error('[moderationStore] Failed to approve post:', error);
+      logger.error(' Failed to approve post:', error);
       throw error;
     }
   },
@@ -531,7 +573,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/posts/${postId}/unapprove`);
       await get().logModAction('unapprove_post', 'post', postId);
     } catch (error) {
-      console.error('[moderationStore] Failed to unapprove post:', error);
+      logger.error(' Failed to unapprove post:', error);
       throw error;
     }
   },
@@ -543,9 +585,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
   toggleBulkSelection: (type: 'threads' | 'posts' | 'comments', id: string) => {
     set((state) => {
       const current = state.bulkSelection[type];
-      const updated = current.includes(id)
-        ? current.filter((i) => i !== id)
-        : [...current, id];
+      const updated = current.includes(id) ? current.filter((i) => i !== id) : [...current, id];
       return {
         bulkSelection: {
           ...state.bulkSelection,
@@ -570,7 +610,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       });
       get().clearBulkSelection();
     } catch (error) {
-      console.error('[moderationStore] Failed to bulk move threads:', error);
+      logger.error(' Failed to bulk move threads:', error);
       throw error;
     }
   },
@@ -586,7 +626,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       });
       get().clearBulkSelection();
     } catch (error) {
-      console.error('[moderationStore] Failed to bulk delete threads:', error);
+      logger.error(' Failed to bulk delete threads:', error);
       throw error;
     }
   },
@@ -601,7 +641,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       });
       get().clearBulkSelection();
     } catch (error) {
-      console.error('[moderationStore] Failed to bulk lock threads:', error);
+      logger.error(' Failed to bulk lock threads:', error);
       throw error;
     }
   },
@@ -616,7 +656,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       });
       get().clearBulkSelection();
     } catch (error) {
-      console.error('[moderationStore] Failed to bulk approve threads:', error);
+      logger.error(' Failed to bulk approve threads:', error);
       throw error;
     }
   },
@@ -644,7 +684,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       set({ currentUserStats: stats });
       return stats;
     } catch (error) {
-      console.error('[moderationStore] Failed to fetch user moderation stats:', error);
+      logger.error(' Failed to fetch user moderation stats:', error);
       throw error;
     }
   },
@@ -652,29 +692,31 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
   fetchUserWarnings: async (userId: string) => {
     try {
       const response = await api.get(`/api/v1/admin/users/${userId}/warnings`);
-      const warnings = (ensureArray(response.data, 'warnings') as Record<string, unknown>[]).map((w) => ({
-        id: w.id as string,
-        userId: w.user_id as string,
-        username: w.username as string,
-        warningTypeId: w.warning_type_id as string,
-        warningTypeName: w.warning_type_name as string,
-        points: w.points as number,
-        reason: w.reason as string,
-        notes: w.notes as string | undefined,
-        issuedById: w.issued_by_id as string,
-        issuedByUsername: w.issued_by_username as string,
-        issuedAt: w.issued_at as string,
-        expiresAt: w.expires_at as string | null,
-        isActive: w.is_active as boolean,
-        isRevoked: w.is_revoked as boolean,
-        revokedById: w.revoked_by_id as string | undefined,
-        revokedAt: w.revoked_at as string | undefined,
-        revokeReason: w.revoke_reason as string | undefined,
-      }));
+      const warnings = (ensureArray(response.data, 'warnings') as Record<string, unknown>[]).map(
+        (w) => ({
+          id: w.id as string,
+          userId: w.user_id as string,
+          username: w.username as string,
+          warningTypeId: w.warning_type_id as string,
+          warningTypeName: w.warning_type_name as string,
+          points: w.points as number,
+          reason: w.reason as string,
+          notes: w.notes as string | undefined,
+          issuedById: w.issued_by_id as string,
+          issuedByUsername: w.issued_by_username as string,
+          issuedAt: w.issued_at as string,
+          expiresAt: w.expires_at as string | null,
+          isActive: w.is_active as boolean,
+          isRevoked: w.is_revoked as boolean,
+          revokedById: w.revoked_by_id as string | undefined,
+          revokedAt: w.revoked_at as string | undefined,
+          revokeReason: w.revoke_reason as string | undefined,
+        })
+      );
       set({ currentUserWarnings: warnings });
       return warnings;
     } catch (error) {
-      console.error('[moderationStore] Failed to fetch user warnings:', error);
+      logger.error(' Failed to fetch user warnings:', error);
       throw error;
     }
   },
@@ -698,7 +740,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         notes,
         issuedById: warning.issued_by_id as string,
         issuedByUsername: warning.issued_by_username as string,
-        issuedAt: warning.issued_at as string || new Date().toISOString(),
+        issuedAt: (warning.issued_at as string) || new Date().toISOString(),
         expiresAt: warning.expires_at as string | null,
         isActive: true,
         isRevoked: false,
@@ -708,7 +750,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       }));
       return newWarning;
     } catch (error) {
-      console.error('[moderationStore] Failed to issue warning:', error);
+      logger.error(' Failed to issue warning:', error);
       throw error;
     }
   },
@@ -718,13 +760,11 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/warnings/${warningId}/revoke`, { reason });
       set((state) => ({
         currentUserWarnings: state.currentUserWarnings.map((w) =>
-          w.id === warningId
-            ? { ...w, isActive: false, isRevoked: true, revokeReason: reason }
-            : w
+          w.id === warningId ? { ...w, isActive: false, isRevoked: true, revokeReason: reason } : w
         ),
       }));
     } catch (error) {
-      console.error('[moderationStore] Failed to revoke warning:', error);
+      logger.error(' Failed to revoke warning:', error);
       throw error;
     }
   },
@@ -760,7 +800,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       }));
       set({ bans, isLoadingBans: false });
     } catch (error) {
-      console.error('[moderationStore] Failed to fetch bans:', error);
+      logger.error(' Failed to fetch bans:', error);
       set({ isLoadingBans: false });
       throw error;
     }
@@ -788,7 +828,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
         notes: data.notes,
         bannedById: ban.banned_by_id as string,
         bannedByUsername: ban.banned_by_username as string,
-        bannedAt: ban.banned_at as string || new Date().toISOString(),
+        bannedAt: (ban.banned_at as string) || new Date().toISOString(),
         expiresAt: data.expiresAt || null,
         isActive: true,
         isLifted: false,
@@ -798,7 +838,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       }));
       return newBan;
     } catch (error) {
-      console.error('[moderationStore] Failed to ban user:', error);
+      logger.error(' Failed to ban user:', error);
       throw error;
     }
   },
@@ -808,13 +848,11 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       await api.post(`/api/v1/admin/bans/${banId}/lift`, { reason });
       set((state) => ({
         bans: state.bans.map((b) =>
-          b.id === banId
-            ? { ...b, isActive: false, isLifted: true, liftReason: reason }
-            : b
+          b.id === banId ? { ...b, isActive: false, isLifted: true, liftReason: reason } : b
         ),
       }));
     } catch (error) {
-      console.error('[moderationStore] Failed to lift ban:', error);
+      logger.error(' Failed to lift ban:', error);
       throw error;
     }
   },
@@ -826,18 +864,20 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
   fetchWarningTypes: async () => {
     try {
       const response = await api.get('/api/v1/admin/warning-types');
-      const types = (ensureArray(response.data, 'warning_types') as Record<string, unknown>[]).map((t) => ({
-        id: t.id as string,
-        name: t.name as string,
-        description: t.description as string || '',
-        points: t.points as number,
-        expiryDays: t.expiry_days as number,
-        action: t.action as WarningType['action'],
-        actionThreshold: t.action_threshold as number | undefined,
-      }));
+      const types = (ensureArray(response.data, 'warning_types') as Record<string, unknown>[]).map(
+        (t) => ({
+          id: t.id as string,
+          name: t.name as string,
+          description: (t.description as string) || '',
+          points: t.points as number,
+          expiryDays: t.expiry_days as number,
+          action: t.action as WarningType['action'],
+          actionThreshold: t.action_threshold as number | undefined,
+        })
+      );
       set({ warningTypes: types });
     } catch (error) {
-      console.error('[moderationStore] Failed to fetch warning types:', error);
+      logger.error(' Failed to fetch warning types:', error);
       throw error;
     }
   },
@@ -856,27 +896,35 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       if (filters.page) params.page = filters.page;
 
       const response = await api.get('/api/v1/admin/moderation/log', { params });
-      const entries = (ensureArray(response.data, 'entries') as Record<string, unknown>[]).map((e) => ({
-        id: e.id as string,
-        action: e.action as string,
-        targetType: e.target_type as ModerationLogEntry['targetType'],
-        targetId: e.target_id as string,
-        targetTitle: e.target_title as string | undefined,
-        moderatorId: e.moderator_id as string,
-        moderatorUsername: e.moderator_username as string,
-        reason: e.reason as string | undefined,
-        details: e.details as Record<string, unknown> | undefined,
-        createdAt: e.created_at as string || e.inserted_at as string,
-      }));
+      const entries = (ensureArray(response.data, 'entries') as Record<string, unknown>[]).map(
+        (e) => ({
+          id: e.id as string,
+          action: e.action as string,
+          targetType: e.target_type as ModerationLogEntry['targetType'],
+          targetId: e.target_id as string,
+          targetTitle: e.target_title as string | undefined,
+          moderatorId: e.moderator_id as string,
+          moderatorUsername: e.moderator_username as string,
+          reason: e.reason as string | undefined,
+          details: e.details as Record<string, unknown> | undefined,
+          createdAt: (e.created_at as string) || (e.inserted_at as string),
+        })
+      );
       set({ moderationLog: entries, isLoadingLog: false });
     } catch (error) {
-      console.error('[moderationStore] Failed to fetch moderation log:', error);
+      logger.error(' Failed to fetch moderation log:', error);
       set({ isLoadingLog: false });
       throw error;
     }
   },
 
-  logModAction: async (action: string, targetType: string, targetId: string, reason?: string, details?: Record<string, unknown>) => {
+  logModAction: async (
+    action: string,
+    targetType: string,
+    targetId: string,
+    reason?: string,
+    details?: Record<string, unknown>
+  ) => {
     try {
       await api.post('/api/v1/admin/moderation/log', {
         action,
@@ -887,7 +935,7 @@ export const useModerationStore = create<ModerationState>((set, get) => ({
       });
     } catch (error) {
       // Don't throw - logging failures shouldn't break the main action
-      console.error('[moderationStore] Failed to log moderation action:', error);
+      logger.error(' Failed to log moderation action:', error);
     }
   },
 }));

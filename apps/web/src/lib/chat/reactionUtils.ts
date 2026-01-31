@@ -7,6 +7,9 @@
 
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/chatStore';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ReactionUtils');
 
 // ============================================================================
 // TYPE DEFINITIONS
@@ -126,7 +129,7 @@ export async function handleRemoveReaction(messageId: string, emoji: string): Pr
     const { removeReaction } = useChatStore.getState();
     await removeReaction(messageId, emoji);
   } catch (error) {
-    console.error('Failed to remove reaction:', error);
+    logger.error('Failed to remove reaction:', error);
   }
 }
 
@@ -137,15 +140,12 @@ export async function handleRemoveReaction(messageId: string, emoji: string): Pr
  * @param messageId - The ID of the message to add reaction to
  * @param emoji - The emoji to add
  */
-export async function handleAddReaction(
-  messageId: string,
-  emoji: string
-): Promise<void> {
+export async function handleAddReaction(messageId: string, emoji: string): Promise<void> {
   try {
     const { addReaction } = useChatStore.getState();
     await addReaction(messageId, emoji);
   } catch (error) {
-    console.error('Failed to add reaction:', error);
+    logger.error('Failed to add reaction:', error);
   }
 }
 

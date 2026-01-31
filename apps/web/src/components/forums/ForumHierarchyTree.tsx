@@ -29,6 +29,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
 import { useAuth } from '@/features/auth/hooks';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ForumHierarchyTree');
 
 // =============================================================================
 // TYPES
@@ -121,7 +124,7 @@ export function useForumTree(rootForumId?: string, maxDepth = 10, showHidden = f
         setTree(response.data?.data || []);
         setError(null);
       } catch (err) {
-        console.error('Failed to fetch forum tree:', err);
+        logger.error('Failed to fetch forum tree:', err);
         setError('Failed to load forum structure');
       } finally {
         setLoading(false);
@@ -153,7 +156,7 @@ export function useForumBreadcrumbs(forumId: string | undefined) {
         const response = await api.get(`/api/v1/forums/${forumId}/breadcrumbs`);
         setBreadcrumbs(response.data?.data || []);
       } catch (err) {
-        console.error('Failed to fetch breadcrumbs:', err);
+        logger.error('Failed to fetch breadcrumbs:', err);
         setBreadcrumbs([]);
       } finally {
         setLoading(false);

@@ -3,6 +3,9 @@
  */
 
 import { useState, useCallback } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('useSubscription');
 
 type SubscriptionType = 'forum' | 'board' | 'thread';
 type NotificationMode = 'instant' | 'daily' | 'weekly' | 'none';
@@ -164,7 +167,7 @@ export function useSubscriptions(): UseSubscriptionsResult {
       const data = await response.json();
       setSubscriptions(data.subscriptions || []);
     } catch (error) {
-      console.error('Failed to fetch subscriptions:', error);
+      logger.error('Failed to fetch subscriptions:', error);
     } finally {
       setIsLoading(false);
     }

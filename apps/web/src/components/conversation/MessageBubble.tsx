@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { FaceSmileIcon, EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import { Message, useChatStore } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('MessageBubble');
 
 // UI Components
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
@@ -59,7 +62,7 @@ async function handleAddReaction(
     const { addReaction } = useChatStore.getState();
     await addReaction(messageId, emoji);
   } catch (error) {
-    console.error('Failed to add reaction:', error);
+    logger.error('Failed to add reaction:', error);
   }
 }
 

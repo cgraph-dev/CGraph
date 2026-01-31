@@ -1,6 +1,5 @@
-// Logger reserved for future debugging
-// import { createLogger } from '@/lib/logger';
-// const _logger = createLogger('MarketplaceStore');
+import { createLogger } from '@/lib/logger';
+const logger = createLogger('MarketplaceStore');
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -217,7 +216,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             });
           }
         } catch (error: unknown) {
-          console.error('Failed to fetch marketplace listings:', error);
+          logger.error('Failed to fetch marketplace listings:', error);
         } finally {
           set({ isLoading: false });
         }
@@ -235,7 +234,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             });
           }
         } catch (error: unknown) {
-          console.error('Failed to fetch listing details:', error);
+          logger.error('Failed to fetch listing details:', error);
         } finally {
           set({ isLoading: false });
         }
@@ -250,7 +249,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             set({ myListings: response.data.listings });
           }
         } catch (error: unknown) {
-          console.error('Failed to fetch my listings:', error);
+          logger.error('Failed to fetch my listings:', error);
         }
       },
 
@@ -266,7 +265,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
             });
           }
         } catch (error: unknown) {
-          console.error('Failed to fetch transaction history:', error);
+          logger.error('Failed to fetch transaction history:', error);
         }
       },
 
@@ -293,7 +292,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           }
           return { success: false };
         } catch (error: unknown) {
-          console.error('Failed to create listing:', error);
+          logger.error('Failed to create listing:', error);
           return { success: false };
         } finally {
           set({ isCreating: false });
@@ -312,7 +311,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           }
           return { success: false };
         } catch (error: unknown) {
-          console.error('Failed to update listing:', error);
+          logger.error('Failed to update listing:', error);
           return { success: false };
         }
       },
@@ -329,7 +328,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           }
           return { success: false };
         } catch (error: unknown) {
-          console.error('Failed to cancel listing:', error);
+          logger.error('Failed to cancel listing:', error);
           return { success: false };
         }
       },
@@ -353,7 +352,7 @@ export const useMarketplaceStore = create<MarketplaceState>()(
           }
           return { success: false };
         } catch (error: unknown) {
-          console.error('Failed to purchase listing:', error);
+          logger.error('Failed to purchase listing:', error);
           return { success: false };
         } finally {
           set({ isPurchasing: false });

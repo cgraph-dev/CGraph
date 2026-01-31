@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
 import { OAuthButtonGroup } from '@/components/auth/OAuthButtons';
 import { TextScramble, GlitchText, prefersReducedMotion } from '@/components/auth/AuthEffects';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('Login');
 
 // Animation variants for staggered children
 const containerVariants = {
@@ -87,7 +90,7 @@ export default function Login() {
       navigate('/messages');
     } catch (err) {
       // Error is handled by store or shown locally
-      console.error('Wallet login error:', err);
+      logger.error('Wallet login error:', err);
     }
   };
 
@@ -309,7 +312,7 @@ export default function Login() {
           providers={['google', 'apple', 'facebook', 'tiktok']}
           variant="icon"
           onSuccess={() => navigate('/messages')}
-          onError={(err) => console.error('OAuth error:', err)}
+          onError={(err) => logger.error('OAuth error:', err)}
         />
       </motion.div>
 

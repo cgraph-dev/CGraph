@@ -1,13 +1,13 @@
 /**
  * Matrix Cipher Background Animation - React Hook
- * 
+ *
  * @description Custom React hook for integrating the Matrix animation engine.
  * Provides a declarative API for controlling the animation lifecycle.
- * 
+ *
  * @version 1.0.0
  * @since v0.6.3
  * @author CGraph Development Team
- * 
+ *
  * @example
  * ```tsx
  * function MyComponent() {
@@ -15,7 +15,7 @@
  *     autoStart: true,
  *     theme: 'cyber-blue',
  *   });
- *   
+ *
  *   return <canvas ref={canvasRef} className="fixed inset-0" />;
  * }
  * ```
@@ -31,6 +31,9 @@ import type {
   ThemePreset,
   DeepPartial,
 } from './types';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('MatrixAnimation');
 import { MatrixEngine, createMatrixEngine } from './engine';
 import { getTheme, THEME_REGISTRY } from './themes';
 import { createConfig } from './config';
@@ -41,7 +44,7 @@ import { createConfig } from './config';
 
 /**
  * React hook for Matrix cipher background animation
- * 
+ *
  * @param options - Configuration options
  * @returns Control object with refs and methods
  */
@@ -53,24 +56,28 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
     events,
     canvasRef: externalCanvasRef,
   } = options;
-  
+
   // Create internal canvas ref if not provided externally
   const internalCanvasRef = useRef<HTMLCanvasElement>(null);
   const canvasRef = externalCanvasRef || internalCanvasRef;
-  
+
   // Engine instance ref
   const engineRef = useRef<MatrixEngine | null>(null);
-  
+
   // Resolve initial theme (must be a complete MatrixTheme, not DeepPartial)
   const resolvedTheme = useMemo((): MatrixTheme => {
-    if (initialConfig?.theme && typeof initialConfig.theme === 'object' && 'id' in initialConfig.theme) {
+    if (
+      initialConfig?.theme &&
+      typeof initialConfig.theme === 'object' &&
+      'id' in initialConfig.theme
+    ) {
       // If a full theme object is provided with id, use it
       return initialConfig.theme as MatrixTheme;
     }
     // Fall back to default theme
     return THEME_REGISTRY['matrix-green'];
   }, [initialConfig?.theme]);
-  
+
   // State
   const [state, setState] = useState<MatrixEngineState>(() => ({
     state: 'idle',
@@ -88,16 +95,16 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
     isPaused: false,
     isVisible: true,
   }));
-  
+
   // Create configuration
   const config = useMemo(() => {
     return createConfig(initialConfig);
   }, [initialConfig]);
-  
+
   // =========================================================================
   // ENGINE LIFECYCLE
   // =========================================================================
-  
+
   /**
    * Initialize the engine
    */
@@ -106,11 +113,11 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
     if (!canvas) {
       return;
     }
-    
+
     // Create engine instance
     const engine = createMatrixEngine(config);
     engineRef.current = engine;
-    
+
     // Set event handlers
     engine.setEventHandlers({
       onStart: () => {
@@ -133,38 +140,38 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
         events?.onError?.(error);
       },
     });
-    
+
     // Initialize with canvas
     try {
       engine.init(canvas);
-      
+
       if (autoStart) {
         engine.start();
       }
     } catch (error) {
-      console.error('Failed to initialize Matrix engine:', error);
+      logger.error('Failed to initialize Matrix engine:', error);
       events?.onError?.(error as Error);
     }
-    
+
     // Cleanup on unmount
     return () => {
       engine.destroy();
       engineRef.current = null;
     };
   }, [canvasRef]); // Only re-init if canvas ref changes
-  
+
   /**
    * Handle visibility changes
    */
   useEffect(() => {
     if (!pauseOnHidden) return;
-    
+
     const handleVisibilityChange = () => {
       const engine = engineRef.current;
       if (!engine) return;
-      
+
       const currentState = engine.getState();
-      
+
       if (document.hidden && currentState.state === 'running') {
         engine.pause();
         setState((prev: MatrixEngineState) => ({ ...prev, isVisible: false }));
@@ -173,31 +180,33 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
         setState((prev: MatrixEngineState) => ({ ...prev, isVisible: true }));
       }
     };
-    
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    
+
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
   }, [pauseOnHidden]);
-  
+
   /**
    * Sync state with engine periodically
    * Reduced frequency since engine is now more efficient
    */
   useEffect(() => {
     let isMounted = true;
-    
+
     const syncInterval = setInterval(() => {
       if (!isMounted) return;
-      
+
       const engine = engineRef.current;
       if (engine) {
         const engineState = engine.getState();
         setState((prev: MatrixEngineState) => {
           // Only update if metrics actually changed
-          if (prev.metrics.fps === engineState.metrics.fps &&
-              prev.metrics.activeColumns === engineState.metrics.activeColumns) {
+          if (
+            prev.metrics.fps === engineState.metrics.fps &&
+            prev.metrics.activeColumns === engineState.metrics.activeColumns
+          ) {
             return prev;
           }
           return {
@@ -208,59 +217,59 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
         });
       }
     }, 1000); // Sync every 1000ms (reduced from 500ms)
-    
+
     return () => {
       isMounted = false;
       clearInterval(syncInterval);
     };
   }, []);
-  
+
   // =========================================================================
   // CONTROL METHODS
   // =========================================================================
-  
+
   /**
    * Start the animation
    */
   const start = useCallback(() => {
     engineRef.current?.start();
   }, []);
-  
+
   /**
    * Stop the animation
    */
   const stop = useCallback(() => {
     engineRef.current?.stop();
   }, []);
-  
+
   /**
    * Pause the animation
    */
   const pause = useCallback(() => {
     engineRef.current?.pause();
   }, []);
-  
+
   /**
    * Resume the animation
    */
   const resume = useCallback(() => {
     engineRef.current?.resume();
   }, []);
-  
+
   /**
    * Toggle pause/resume
    */
   const toggle = useCallback(() => {
     engineRef.current?.toggle();
   }, []);
-  
+
   /**
    * Update configuration
    */
   const updateConfig = useCallback((updates: DeepPartial<MatrixConfig>) => {
     engineRef.current?.updateConfig(updates);
   }, []);
-  
+
   /**
    * Change theme
    */
@@ -275,15 +284,15 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
       theme: typeof theme === 'string' ? getTheme(theme) : theme,
     }));
   }, []);
-  
+
   // =========================================================================
   // DERIVED STATE
   // =========================================================================
-  
+
   const isRunning = state.state === 'running';
   const isPaused = state.isPaused;
   const fps = state.metrics.fps;
-  
+
   return {
     canvasRef,
     state,
@@ -306,7 +315,7 @@ export function useMatrix(options: UseMatrixOptions = {}): UseMatrixReturn {
 
 /**
  * Hook for theme selection
- * 
+ *
  * @returns Theme utilities
  */
 export function useMatrixThemes() {
@@ -318,11 +327,11 @@ export function useMatrixThemes() {
       theme,
     }));
   }, []);
-  
+
   const getThemeById = useCallback((id: ThemePreset): MatrixTheme => {
     return getTheme(id);
   }, []);
-  
+
   return {
     themes,
     getTheme: getThemeById,
@@ -332,28 +341,29 @@ export function useMatrixThemes() {
 
 /**
  * Hook for monitoring animation performance
- * 
+ *
  * @param engineState - Current engine state
  * @returns Performance metrics
  */
 export function useMatrixPerformance(engineState: MatrixEngineState) {
   const [avgFps, setAvgFps] = useState(0);
   const fpsHistory = useRef<number[]>([]);
-  
+
   useEffect(() => {
     fpsHistory.current.push(engineState.metrics.fps);
-    
+
     if (fpsHistory.current.length > 60) {
       fpsHistory.current.shift();
     }
-    
-    const avg = fpsHistory.current.reduce((a: number, b: number) => a + b, 0) / fpsHistory.current.length;
+
+    const avg =
+      fpsHistory.current.reduce((a: number, b: number) => a + b, 0) / fpsHistory.current.length;
     setAvgFps(Math.round(avg));
   }, [engineState.metrics.fps]);
-  
+
   const isPerformanceGood = avgFps >= 50;
   const isPerformanceOk = avgFps >= 30;
-  
+
   return {
     currentFps: engineState.metrics.fps,
     averageFps: avgFps,

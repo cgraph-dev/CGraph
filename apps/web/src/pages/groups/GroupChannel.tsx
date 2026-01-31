@@ -3,6 +3,9 @@ import { useParams } from 'react-router-dom';
 import { useGroupStore, ChannelMessage, Member } from '@/stores/groupStore';
 import { useAuthStore } from '@/stores/authStore';
 import { socketManager } from '@/lib/socket';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('GroupChannel');
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import {
   PaperAirplaneIcon,
@@ -101,7 +104,7 @@ export default function GroupChannel() {
       }
       socketManager.sendTyping(`channel:${channelId}`, false);
     } catch (error) {
-      console.error('Failed to send message:', error);
+      logger.error('Failed to send message:', error);
     } finally {
       setIsSending(false);
     }

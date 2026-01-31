@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { createLogger } from '@/lib/logger';
+const logger = createLogger('chatEffectsStore');
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
@@ -659,7 +661,7 @@ export const useChatEffectsStore = create<ChatEffectsState>()(
           });
           set({ lastSyncedAt: new Date().toISOString() });
         } catch (error) {
-          console.error('Failed to sync chat effects:', error);
+          logger.error('Failed to sync chat effects:', error);
         } finally {
           set({ isSyncing: false });
         }
@@ -688,7 +690,7 @@ export const useChatEffectsStore = create<ChatEffectsState>()(
             });
           }
         } catch (error) {
-          console.error('Failed to load chat effects from server:', error);
+          logger.error('Failed to load chat effects from server:', error);
         } finally {
           set({ isSyncing: false });
         }

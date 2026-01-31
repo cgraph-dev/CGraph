@@ -16,9 +16,12 @@ import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
+import { createLogger } from '@/lib/logger';
 import OnlineStatusIndicator from '@/components/common/OnlineStatusIndicator';
 import UserStars from '@/components/common/UserStars';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+
+const logger = createLogger('MemberList');
 
 /**
  * Member List Page
@@ -112,7 +115,7 @@ export default function MemberList() {
           }))
         );
       } catch (err) {
-        console.error('[MemberList] Failed to fetch user groups:', err);
+        logger.error('[MemberList] Failed to fetch user groups:', err);
       }
     };
     fetchUserGroups();
@@ -163,7 +166,7 @@ export default function MemberList() {
       setTotalPages(data.total_pages || 1);
       setTotalMembers(data.total || memberList.length);
     } catch (err) {
-      console.error('[MemberList] Failed to fetch members:', err);
+      logger.error('[MemberList] Failed to fetch members:', err);
       setError('Failed to load member list. Please try again.');
     } finally {
       setIsLoading(false);

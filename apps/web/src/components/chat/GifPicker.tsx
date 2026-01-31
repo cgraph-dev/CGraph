@@ -11,6 +11,9 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('GifPicker');
 import {
   XMarkIcon,
   MagnifyingGlassIcon,
@@ -211,7 +214,7 @@ export function GifPicker({ onSelect, onClose, isOpen, className }: GifPickerPro
       if (storedFavorites) setFavorites(JSON.parse(storedFavorites));
       if (storedRecent) setRecentlyUsed(JSON.parse(storedRecent));
     } catch (error) {
-      console.warn('Failed to load GIF preferences:', error);
+      logger.warn('Failed to load GIF preferences:', error);
     }
   }, []);
 
@@ -250,7 +253,7 @@ export function GifPicker({ onSelect, onClose, isOpen, className }: GifPickerPro
         setGifs(generateSampleGifs(query));
       }
     } catch (error) {
-      console.warn('GIF API not available, using fallback:', error);
+      logger.warn('GIF API not available, using fallback:', error);
       // Use sample GIFs as fallback
       setGifs(generateSampleGifs(query));
     } finally {

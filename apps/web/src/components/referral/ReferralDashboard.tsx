@@ -16,6 +16,9 @@ import {
 import { Link } from 'react-router-dom';
 import { useReferralStore } from '@/stores/referralStore';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ReferralDashboard');
 
 /**
  * Referral Dashboard Component
@@ -79,7 +82,7 @@ export default function ReferralDashboard() {
         setCopiedType(null);
       }, 2000);
     } catch (error) {
-      console.error('[ReferralDashboard] Failed to copy:', error);
+      logger.error('Failed to copy:', error);
     }
   };
 
@@ -108,7 +111,7 @@ export default function ReferralDashboard() {
         });
       } catch (error) {
         if ((error as Error).name !== 'AbortError') {
-          console.error('[ReferralDashboard] Share failed:', error);
+          logger.error('Share failed:', error);
         }
       }
     } else {

@@ -9,6 +9,9 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutlineIcon } from '@heroicons/react/24/outline';
 import { useForumStore } from '@/stores/forumStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ThreadRating');
 
 interface ThreadRatingProps {
   threadId: string;
@@ -51,22 +54,19 @@ export default function ThreadRating({
       await rateThread(threadId, starValue);
       HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to rate thread:', error);
+      logger.error('Failed to rate thread:', error);
       HapticFeedback.error();
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const displayRating = hoveredStar !== null ? hoveredStar : (myRating || rating);
+  const displayRating = hoveredStar !== null ? hoveredStar : myRating || rating;
 
   return (
     <div className={`flex items-center gap-2 ${className}`}>
       {/* Star Rating Display/Input */}
-      <div
-        className="flex items-center gap-0.5"
-        onMouseLeave={() => setHoveredStar(null)}
-      >
+      <div className="flex items-center gap-0.5" onMouseLeave={() => setHoveredStar(null)}>
         {[1, 2, 3, 4, 5].map((starValue) => {
           const isFilled = starValue <= displayRating;
           const isMyRating = myRating !== null && starValue <= myRating;
@@ -79,11 +79,7 @@ export default function ThreadRating({
               disabled={!interactive || isSubmitting}
               whileHover={interactive ? { scale: 1.1 } : {}}
               whileTap={interactive ? { scale: 0.9 } : {}}
-              className={`
-                transition-colors duration-150
-                ${interactive ? 'cursor-pointer' : 'cursor-default'}
-                ${isSubmitting ? 'opacity-50' : ''}
-              `}
+              className={`transition-colors duration-150 ${interactive ? 'cursor-pointer' : 'cursor-default'} ${isSubmitting ? 'opacity-50' : ''} `}
               aria-label={`Rate ${starValue} star${starValue > 1 ? 's' : ''}`}
             >
               {isFilled ? (
@@ -92,8 +88,8 @@ export default function ThreadRating({
                     isMyRating
                       ? 'text-primary-400'
                       : hoveredStar !== null
-                      ? 'text-yellow-400'
-                      : 'text-yellow-500'
+                        ? 'text-yellow-400'
+                        : 'text-yellow-500'
                   }`}
                 />
               ) : (
@@ -111,9 +107,7 @@ export default function ThreadRating({
       {/* Rating Stats */}
       {showCount && ratingCount > 0 && (
         <div className="flex items-center gap-1 text-sm text-gray-400">
-          <span className="font-semibold text-white">
-            {rating.toFixed(1)}
-          </span>
+          <span className="font-semibold text-white">{rating.toFixed(1)}</span>
           <span className="text-gray-500">
             ({ratingCount} {ratingCount === 1 ? 'rating' : 'ratings'})
           </span>
@@ -122,9 +116,7 @@ export default function ThreadRating({
 
       {/* My Rating Indicator */}
       {myRating !== null && interactive && (
-        <span className="text-xs text-primary-400">
-          Your rating: {myRating}★
-        </span>
+        <span className="text-xs text-primary-400">Your rating: {myRating}★</span>
       )}
     </div>
   );

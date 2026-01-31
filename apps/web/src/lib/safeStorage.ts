@@ -15,6 +15,9 @@
  */
 
 import { type StateStorage } from 'zustand/middleware';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('SafeStorage');
 
 /**
  * Creates a safe localStorage wrapper that handles errors gracefully
@@ -25,7 +28,7 @@ export function createSafeLocalStorage(): StateStorage {
       try {
         return localStorage.getItem(name);
       } catch (error) {
-        console.warn(`[Storage] Failed to read "${name}" from localStorage:`, error);
+        logger.warn(`Failed to read "${name}" from localStorage:`, error);
         return null;
       }
     },
@@ -33,14 +36,14 @@ export function createSafeLocalStorage(): StateStorage {
       try {
         localStorage.setItem(name, value);
       } catch (error) {
-        console.warn(`[Storage] Failed to write "${name}" to localStorage:`, error);
+        logger.warn(`Failed to write "${name}" to localStorage:`, error);
       }
     },
     removeItem: (name: string): void => {
       try {
         localStorage.removeItem(name);
       } catch (error) {
-        console.warn(`[Storage] Failed to remove "${name}" from localStorage:`, error);
+        logger.warn(`Failed to remove "${name}" from localStorage:`, error);
       }
     },
   };
@@ -55,7 +58,7 @@ export function createSafeSessionStorage(): StateStorage {
       try {
         return sessionStorage.getItem(name);
       } catch (error) {
-        console.warn(`[Storage] Failed to read "${name}" from sessionStorage:`, error);
+        logger.warn(`Failed to read "${name}" from sessionStorage:`, error);
         return null;
       }
     },
@@ -63,14 +66,14 @@ export function createSafeSessionStorage(): StateStorage {
       try {
         sessionStorage.setItem(name, value);
       } catch (error) {
-        console.warn(`[Storage] Failed to write "${name}" to sessionStorage:`, error);
+        logger.warn(`Failed to write "${name}" to sessionStorage:`, error);
       }
     },
     removeItem: (name: string): void => {
       try {
         sessionStorage.removeItem(name);
       } catch (error) {
-        console.warn(`[Storage] Failed to remove "${name}" from sessionStorage:`, error);
+        logger.warn(`Failed to remove "${name}" from sessionStorage:`, error);
       }
     },
   };

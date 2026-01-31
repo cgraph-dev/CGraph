@@ -11,10 +11,13 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 import { useCalendarStore, EventFormData, RecurrencePattern } from '@/stores/calendarStore';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('EventForm');
 
 /**
  * Event Form Component
- * 
+ *
  * Create/Edit calendar events with:
  * - Title, description, location
  * - Start/end date/time
@@ -33,14 +36,8 @@ interface EventFormProps {
 }
 
 export default function EventForm({ eventId, initialDate, onClose, onSuccess }: EventFormProps) {
-  const {
-    events,
-    categories,
-    isLoading,
-    createEvent,
-    updateEvent,
-    fetchEvent,
-  } = useCalendarStore();
+  const { events, categories, isLoading, createEvent, updateEvent, fetchEvent } =
+    useCalendarStore();
 
   // Form state
   const [formData, setFormData] = useState<EventFormData>({
@@ -185,7 +182,7 @@ export default function EventForm({ eventId, initialDate, onClose, onSuccess }: 
       onSuccess?.();
       onClose();
     } catch (error) {
-      console.error('[EventForm] Failed to save event:', error);
+      logger.error('[EventForm] Failed to save event:', error);
       setErrors({ submit: 'Failed to save event. Please try again.' });
     } finally {
       setIsSubmitting(false);
@@ -193,45 +190,40 @@ export default function EventForm({ eventId, initialDate, onClose, onSuccess }: 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-      <div className="bg-card border border-border rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div className="bg-card border-border max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-xl border shadow-xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border">
-          <h2 className="text-xl font-semibold text-foreground">
+        <div className="border-border flex items-center justify-between border-b p-4">
+          <h2 className="text-foreground text-xl font-semibold">
             {eventId ? 'Edit Event' : 'Create Event'}
           </h2>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
-          >
+          <button onClick={onClose} className="hover:bg-muted rounded-lg p-2 transition-colors">
             <XMarkIcon className="h-5 w-5" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+        <form onSubmit={handleSubmit} className="max-h-[calc(90vh-140px)] overflow-y-auto p-6">
           <div className="space-y-6">
             {/* Title */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="text-foreground mb-1 block text-sm font-medium">
                 Event Title *
               </label>
               <div className="relative">
-                <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <CalendarIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
                 <input
                   type="text"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
                   placeholder="Enter event title"
-                  className={`w-full pl-10 pr-4 py-2 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                  className={`bg-background focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 ${
                     errors.title ? 'border-destructive' : 'border-border'
                   }`}
                 />
               </div>
-              {errors.title && (
-                <p className="mt-1 text-sm text-destructive">{errors.title}</p>
-              )}
+              {errors.title && <p className="text-destructive mt-1 text-sm">{errors.title}</p>}
             </div>
 
             {/* All Day Toggle */}
@@ -242,105 +234,110 @@ export default function EventForm({ eventId, initialDate, onClose, onSuccess }: 
                 name="allDay"
                 checked={formData.allDay}
                 onChange={handleChange}
-                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+                className="border-border text-primary focus:ring-primary h-4 w-4 rounded"
               />
-              <label htmlFor="allDay" className="text-sm font-medium text-foreground cursor-pointer">
+              <label
+                htmlFor="allDay"
+                className="text-foreground cursor-pointer text-sm font-medium"
+              >
                 All-day event
               </label>
             </div>
 
             {/* Date/Time */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
+                <label className="text-foreground mb-1 block text-sm font-medium">
                   Start {formData.allDay ? 'Date' : 'Date & Time'} *
                 </label>
                 <div className="relative">
-                  <ClockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <ClockIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
                   <input
                     type={formData.allDay ? 'date' : 'datetime-local'}
-                    value={formData.allDay ? formatDateLocal(formData.startDate) : formatDateTimeLocal(formData.startDate)}
+                    value={
+                      formData.allDay
+                        ? formatDateLocal(formData.startDate)
+                        : formatDateTimeLocal(formData.startDate)
+                    }
                     onChange={(e) => handleDateChange('startDate', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-2 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                    className={`bg-background focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 ${
                       errors.startDate ? 'border-destructive' : 'border-border'
                     }`}
                   />
                 </div>
                 {errors.startDate && (
-                  <p className="mt-1 text-sm text-destructive">{errors.startDate}</p>
+                  <p className="text-destructive mt-1 text-sm">{errors.startDate}</p>
                 )}
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
+                <label className="text-foreground mb-1 block text-sm font-medium">
                   End {formData.allDay ? 'Date' : 'Date & Time'}
                 </label>
                 <div className="relative">
-                  <ClockIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <ClockIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
                   <input
                     type={formData.allDay ? 'date' : 'datetime-local'}
-                    value={formData.allDay ? formatDateLocal(formData.endDate || '') : formatDateTimeLocal(formData.endDate || '')}
+                    value={
+                      formData.allDay
+                        ? formatDateLocal(formData.endDate || '')
+                        : formatDateTimeLocal(formData.endDate || '')
+                    }
                     onChange={(e) => handleDateChange('endDate', e.target.value)}
-                    className={`w-full pl-10 pr-4 py-2 bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${
+                    className={`bg-background focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2 ${
                       errors.endDate ? 'border-destructive' : 'border-border'
                     }`}
                   />
                 </div>
                 {errors.endDate && (
-                  <p className="mt-1 text-sm text-destructive">{errors.endDate}</p>
+                  <p className="text-destructive mt-1 text-sm">{errors.endDate}</p>
                 )}
               </div>
             </div>
 
             {/* Location */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Location
-              </label>
+              <label className="text-foreground mb-1 block text-sm font-medium">Location</label>
               <div className="relative">
-                <MapPinIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <MapPinIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
                 <input
                   type="text"
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
                   placeholder="Add location (optional)"
-                  className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="bg-background border-border focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
                 />
               </div>
             </div>
 
             {/* Description */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Description
-              </label>
+              <label className="text-foreground mb-1 block text-sm font-medium">Description</label>
               <div className="relative">
-                <DocumentTextIcon className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                <DocumentTextIcon className="text-muted-foreground absolute left-3 top-3 h-5 w-5" />
                 <textarea
                   name="description"
                   value={formData.description}
                   onChange={handleChange}
                   placeholder="Add description (optional)"
                   rows={4}
-                  className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+                  className="bg-background border-border focus:ring-primary w-full resize-none rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
                 />
               </div>
             </div>
 
             {/* Category & Visibility */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Category
-                </label>
+                <label className="text-foreground mb-1 block text-sm font-medium">Category</label>
                 <div className="relative">
-                  <TagIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <TagIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
                   <select
                     name="categoryId"
                     value={formData.categoryId || ''}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+                    className="bg-background border-border focus:ring-primary w-full appearance-none rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
                   >
                     <option value="">No category</option>
                     {categories.map((cat) => (
@@ -353,16 +350,14 @@ export default function EventForm({ eventId, initialDate, onClose, onSuccess }: 
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-1">
-                  Visibility
-                </label>
+                <label className="text-foreground mb-1 block text-sm font-medium">Visibility</label>
                 <div className="relative">
-                  <GlobeAltIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <GlobeAltIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
                   <select
                     name="visibility"
                     value={formData.visibility}
                     onChange={handleChange}
-                    className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+                    className="bg-background border-border focus:ring-primary w-full appearance-none rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
                   >
                     <option value="public">🌐 Public</option>
                     <option value="members">👥 Members Only</option>
@@ -375,15 +370,13 @@ export default function EventForm({ eventId, initialDate, onClose, onSuccess }: 
 
             {/* Recurrence */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
-                Repeat
-              </label>
+              <label className="text-foreground mb-1 block text-sm font-medium">Repeat</label>
               <div className="relative">
-                <ArrowPathIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <ArrowPathIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
                 <select
                   value={formData.recurrence?.pattern || ''}
                   onChange={(e) => handleRecurrenceChange(e.target.value as RecurrencePattern | '')}
-                  className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary appearance-none"
+                  className="bg-background border-border focus:ring-primary w-full appearance-none rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
                 >
                   <option value="">Does not repeat</option>
                   <option value="daily">Daily</option>
@@ -397,11 +390,11 @@ export default function EventForm({ eventId, initialDate, onClose, onSuccess }: 
 
             {/* Max Attendees */}
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">
+              <label className="text-foreground mb-1 block text-sm font-medium">
                 Max Attendees
               </label>
               <div className="relative">
-                <UsersIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                <UsersIcon className="text-muted-foreground absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2" />
                 <input
                   type="number"
                   name="maxAttendees"
@@ -409,35 +402,35 @@ export default function EventForm({ eventId, initialDate, onClose, onSuccess }: 
                   onChange={handleChange}
                   placeholder="Unlimited"
                   min="1"
-                  className="w-full pl-10 pr-4 py-2 bg-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="bg-background border-border focus:ring-primary w-full rounded-lg border py-2 pl-10 pr-4 focus:outline-none focus:ring-2"
                 />
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-xs">
                 Leave empty for unlimited attendees
               </p>
             </div>
 
             {/* Submit Error */}
             {errors.submit && (
-              <div className="p-3 bg-destructive/10 text-destructive border border-destructive/20 rounded-lg text-sm">
+              <div className="bg-destructive/10 text-destructive border-destructive/20 rounded-lg border p-3 text-sm">
                 {errors.submit}
               </div>
             )}
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-border">
+          <div className="border-border mt-6 flex items-center justify-end gap-3 border-t pt-6">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-foreground bg-secondary hover:bg-secondary/80 rounded-lg transition-colors"
+              className="text-foreground bg-secondary hover:bg-secondary/80 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || isLoading}
-              className="px-4 py-2 text-sm font-medium text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg transition-colors disabled:opacity-50"
+              className="text-primary-foreground bg-primary hover:bg-primary/90 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50"
             >
               {isSubmitting ? 'Saving...' : eventId ? 'Update Event' : 'Create Event'}
             </button>

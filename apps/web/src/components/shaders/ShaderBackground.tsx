@@ -9,6 +9,9 @@
  */
 
 import { useRef, useEffect, useMemo } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ShaderBackground');
 
 // =============================================================================
 // TYPES
@@ -225,7 +228,7 @@ export default function ShaderBackground({
 
     const gl = canvas.getContext('webgl');
     if (!gl) {
-      console.error('WebGL not supported');
+      logger.error('WebGL not supported');
       return;
     }
 
@@ -240,7 +243,7 @@ export default function ShaderBackground({
       gl.compileShader(shader);
 
       if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error('Shader compile error:', gl.getShaderInfoLog(shader));
+        logger.error('Shader compile error:', gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
         return null;
       }
@@ -261,7 +264,7 @@ export default function ShaderBackground({
     gl.linkProgram(program);
 
     if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error('Program link error:', gl.getProgramInfoLog(program));
+      logger.error('Program link error:', gl.getProgramInfoLog(program));
       return;
     }
 
@@ -329,7 +332,7 @@ export default function ShaderBackground({
     if (!gl || !program) return;
 
     const render = () => {
-      const time = (Date.now() - startTimeRef.current) / 1000 * speed;
+      const time = ((Date.now() - startTimeRef.current) / 1000) * speed;
 
       gl.clearColor(0, 0, 0, 1);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -345,8 +348,7 @@ export default function ShaderBackground({
       const mouseLocation = gl.getUniformLocation(program, 'mouse');
 
       if (timeLocation) gl.uniform1f(timeLocation, time);
-      if (resolutionLocation)
-        gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+      if (resolutionLocation) gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
       if (color1Location) gl.uniform3fv(color1Location, colors.color1);
       if (color2Location) gl.uniform3fv(color2Location, colors.color2);
       if (color3Location) gl.uniform3fv(color3Location, colors.color3);

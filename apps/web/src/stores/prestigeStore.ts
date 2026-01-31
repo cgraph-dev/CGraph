@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('prestigeStore');
 
 /**
  * Prestige Store
@@ -159,7 +162,7 @@ export const usePrestigeStore = create<PrestigeState>()(
             });
           }
         } catch (error) {
-          console.error('Failed to fetch prestige data:', error);
+          logger.error('Failed to fetch prestige data:', error);
           // Set default data for new users
           set({
             prestige: {
@@ -194,7 +197,7 @@ export const usePrestigeStore = create<PrestigeState>()(
             set({ allTiers: response.data.rewards });
           }
         } catch (error) {
-          console.error('Failed to fetch prestige rewards:', error);
+          logger.error('Failed to fetch prestige rewards:', error);
           // Generate default tiers
           const tiers: PrestigeTier[] = Array.from({ length: 20 }, (_, i) => ({
             level: i + 1,
@@ -215,7 +218,7 @@ export const usePrestigeStore = create<PrestigeState>()(
             set({ leaderboard: response.data.leaderboard });
           }
         } catch (error) {
-          console.error('Failed to fetch prestige leaderboard:', error);
+          logger.error('Failed to fetch prestige leaderboard:', error);
         }
       },
 
@@ -244,7 +247,7 @@ export const usePrestigeStore = create<PrestigeState>()(
           }
           return { success: false };
         } catch (error) {
-          console.error('Failed to perform prestige:', error);
+          logger.error('Failed to perform prestige:', error);
           return { success: false };
         } finally {
           set({ isPrestiging: false });

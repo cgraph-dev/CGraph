@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('AccountSettings');
 import { api } from '@/lib/api';
 import { toast } from '@/components/Toast';
 import { motion } from 'framer-motion';
@@ -42,7 +45,7 @@ export function AccountSettings() {
       });
       toast.success('Settings saved');
     } catch (error) {
-      console.error('Failed to save settings:', error);
+      logger.error('Failed to save settings:', error);
       toast.error('Failed to save settings');
     } finally {
       setIsSaving(false);

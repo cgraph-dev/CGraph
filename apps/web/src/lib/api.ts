@@ -6,6 +6,9 @@ import {
   setTokens as setTokensInStore,
   triggerLogout,
 } from './tokenService';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('API');
 
 /**
  * API URL Configuration
@@ -30,7 +33,7 @@ async function reconnectSocket(): Promise<void> {
       await socketManager.reconnectWithNewToken();
     }
   } catch (err) {
-    console.warn('[API] Socket reconnect failed:', err);
+    logger.warn('Socket reconnect failed:', err);
   }
 }
 

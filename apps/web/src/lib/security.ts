@@ -10,6 +10,10 @@
  * - Authentication helpers
  */
 
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('Security');
+
 // ============================================================================
 // XSS Prevention
 // ============================================================================
@@ -171,7 +175,7 @@ export function secureStore<T>(key: string, value: T, options: StorageOptions = 
   try {
     localStorage.setItem(prefixedKey, JSON.stringify(item));
   } catch (e) {
-    console.warn('[Security] Failed to store item:', e);
+    logger.warn('Failed to store item:', e);
   }
 }
 

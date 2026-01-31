@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createLogger } from '@/lib/logger';
 import Card, { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
+
+const logger = createLogger('SubscriptionManager');
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -59,7 +62,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
       } catch (error) {
         // Ignore abort errors, log others
         if (error instanceof Error && error.name !== 'AbortError') {
-          console.error('Failed to fetch subscriptions:', error);
+          logger.error('Failed to fetch subscriptions:', error);
         }
       } finally {
         if (!signal.aborted) {
@@ -85,7 +88,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
       });
       setSubscriptions((prev) => prev.map((sub) => (sub.id === id ? { ...sub, ...updates } : sub)));
     } catch (error) {
-      console.error('Failed to update subscription:', error);
+      logger.error('Failed to update subscription:', error);
     }
   };
 
@@ -96,7 +99,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
       });
       setSubscriptions((prev) => prev.filter((sub) => sub.id !== id));
     } catch (error) {
-      console.error('Failed to delete subscription:', error);
+      logger.error('Failed to delete subscription:', error);
     }
   };
 
@@ -110,7 +113,7 @@ export const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ classN
       });
       setSubscriptions((prev) => prev.map((sub) => ({ ...sub, notificationMode: mode })));
     } catch (error) {
-      console.error('Failed to bulk update:', error);
+      logger.error('Failed to bulk update:', error);
     } finally {
       setBulkUpdating(false);
     }

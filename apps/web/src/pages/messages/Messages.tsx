@@ -5,7 +5,10 @@ import { useChatStore, Conversation } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { socketManager } from '@/lib/socket';
 import { formatTimeAgo, getAvatarBorderId } from '@/lib/utils';
+import { createLogger } from '@/lib/logger';
 import { toast } from '@/components/Toast';
+
+const logger = createLogger('Messages');
 import {
   MagnifyingGlassIcon,
   PlusIcon,
@@ -104,7 +107,7 @@ export default function Messages() {
         const newConv = await createConversation([userId]);
         navigate(`/messages/${newConv.id}`, { replace: true });
       } catch (error) {
-        console.error('Failed to create conversation:', error);
+        logger.error('Failed to create conversation:', error);
         toast.error('Failed to start conversation. Please try again.');
         navigate('/messages', { replace: true });
       } finally {

@@ -10,6 +10,9 @@
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { ReactNode, useMemo } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('Stripe');
 
 // Stripe publishable key from environment
 const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
@@ -84,7 +87,7 @@ export function StripeProvider({ children }: StripeProviderProps) {
   const stripePromise = useMemo(() => getStripe(), []);
 
   if (!isStripeConfigured()) {
-    console.warn('Stripe is not configured. Set VITE_STRIPE_PUBLISHABLE_KEY.');
+    logger.warn('Stripe is not configured. Set VITE_STRIPE_PUBLISHABLE_KEY.');
     return <>{children}</>;
   }
 

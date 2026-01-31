@@ -18,6 +18,9 @@ import { RoleManager } from './RoleManager';
 import { InviteModal } from './InviteModal';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('GroupSettings');
 
 /**
  * GroupSettings Component
@@ -79,7 +82,7 @@ export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps
       setHasChanges(false);
       HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to save:', error);
+      logger.error('Failed to save:', error);
       HapticFeedback.error();
     } finally {
       setIsSaving(false);
@@ -92,7 +95,7 @@ export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps
       HapticFeedback.warning();
       navigate('/groups');
     } catch (error) {
-      console.error('Failed to leave group:', error);
+      logger.error('Failed to leave group:', error);
       HapticFeedback.error();
     }
   };
@@ -103,7 +106,7 @@ export function GroupSettings({ groupId, onClose: _onClose }: GroupSettingsProps
       HapticFeedback.warning();
       navigate('/groups');
     } catch (error) {
-      console.error('Failed to delete group:', error);
+      logger.error('Failed to delete group:', error);
       HapticFeedback.error();
     }
   };

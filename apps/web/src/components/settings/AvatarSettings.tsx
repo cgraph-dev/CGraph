@@ -4,6 +4,9 @@
  */
 
 import { useState, useEffect } from 'react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('AvatarSettings');
 import { motion } from 'framer-motion';
 import AnimatedAvatar, { useAvatarStyle } from '@/components/ui/AnimatedAvatar';
 import { useAuthStore } from '@/stores/authStore';
@@ -70,7 +73,7 @@ export default function AvatarSettings() {
       setSaved();
       toast.success('Profile updated successfully');
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      logger.error('Failed to update profile:', error);
       setError('Failed to save profile');
       toast.error('Failed to update profile');
     }
@@ -115,7 +118,7 @@ export default function AvatarSettings() {
       setSaved();
       toast.success('Avatar uploaded successfully');
     } catch (error) {
-      console.error('Failed to upload avatar:', error);
+      logger.error('Failed to upload avatar:', error);
       setError('Failed to upload avatar');
       toast.error('Failed to upload avatar');
     }
@@ -134,7 +137,7 @@ export default function AvatarSettings() {
       setSaved();
       toast.success('Banner uploaded successfully');
     } catch (error) {
-      console.error('Failed to upload banner:', error);
+      logger.error('Failed to upload banner:', error);
       setError('Failed to upload banner');
       toast.error('Failed to upload banner');
     }

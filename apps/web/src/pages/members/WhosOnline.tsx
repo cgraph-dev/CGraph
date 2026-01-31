@@ -13,8 +13,11 @@ import {
 import { Link } from 'react-router-dom';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
+import { createLogger } from '@/lib/logger';
 import OnlineStatusIndicator from '@/components/common/OnlineStatusIndicator';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+
+const logger = createLogger('WhosOnline');
 
 /**
  * Who's Online Page
@@ -127,7 +130,7 @@ export default function WhosOnline() {
 
       setLastUpdated(new Date());
     } catch (err) {
-      console.error('[WhosOnline] Failed to fetch data:', err);
+      logger.error('[WhosOnline] Failed to fetch data:', err);
       setError('Failed to load online users. Please try again.');
     } finally {
       setIsLoading(false);

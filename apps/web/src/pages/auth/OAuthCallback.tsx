@@ -1,6 +1,6 @@
 /**
  * OAuth Callback Handler
- * 
+ *
  * This page handles the OAuth callback from providers.
  * It can work in two modes:
  * 1. Popup mode - sends result back to opener window
@@ -11,6 +11,9 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { handleOAuthCallback, OAuthProvider } from '@/lib/oauth';
 import { useAuthStore } from '@/stores/authStore';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('OAuthCallback');
 
 export function OAuthCallbackPage() {
   const [searchParams] = useSearchParams();
@@ -18,37 +21,40 @@ export function OAuthCallbackPage() {
   const navigate = useNavigate();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  
+
   useEffect(() => {
     const code = searchParams.get('code');
     const state = searchParams.get('state');
     const error = searchParams.get('error');
     const errorDescription = searchParams.get('error_description');
-    
+
     // Handle OAuth error
     if (error) {
       const message = errorDescription || 'Authorization was denied';
       setStatus('error');
       setErrorMessage(message);
-      
+
       // Send error to opener if in popup
       if (window.opener) {
-        window.opener.postMessage({
-          type: 'oauth_callback',
-          error: message,
-        }, window.location.origin);
+        window.opener.postMessage(
+          {
+            type: 'oauth_callback',
+            error: message,
+          },
+          window.location.origin
+        );
         window.close();
       }
       return;
     }
-    
+
     // Validate required params
     if (!code || !state || !provider) {
       setStatus('error');
       setErrorMessage('Missing authorization parameters');
       return;
     }
-    
+
     // Validate provider
     const validProviders: OAuthProvider[] = ['google', 'apple', 'facebook', 'tiktok'];
     if (!validProviders.includes(provider as OAuthProvider)) {
@@ -56,7 +62,7 @@ export function OAuthCallbackPage() {
       setErrorMessage('Invalid OAuth provider');
       return;
     }
-    
+
     // Verify state matches (CSRF protection)
     const storedState = sessionStorage.getItem('oauth_state');
     if (state !== storedState) {
@@ -64,25 +70,28 @@ export function OAuthCallbackPage() {
       setErrorMessage('Invalid state parameter. Please try again.');
       return;
     }
-    
+
     // Exchange code for tokens
     handleOAuthCallback(provider as OAuthProvider, code, state)
       .then((response) => {
         setStatus('success');
-        
+
         // If opened as popup, send result to opener
         if (window.opener) {
-          window.opener.postMessage({
-            type: 'oauth_callback',
-            response,
-          }, window.location.origin);
+          window.opener.postMessage(
+            {
+              type: 'oauth_callback',
+              response,
+            },
+            window.location.origin
+          );
           window.close();
         } else {
           // Redirect mode - update store and navigate
           useAuthStore.setState({
             user: {
               id: response.user.id,
-              uid: (response.user as Record<string, unknown>).uid as string || '',
+              uid: ((response.user as Record<string, unknown>).uid as string) || '',
               userId: 0,
               userIdDisplay: '#0000',
               email: response.user.email,
@@ -108,35 +117,38 @@ export function OAuthCallbackPage() {
             isLoading: false,
             error: null,
           });
-          
+
           // Clear stored OAuth data
           sessionStorage.removeItem('oauth_state');
           sessionStorage.removeItem('oauth_provider');
-          
+
           // Navigate to app
           navigate('/', { replace: true });
         }
       })
       .catch((err) => {
-        console.error('OAuth callback error:', err);
+        logger.error('OAuth callback error:', err);
         setStatus('error');
         setErrorMessage(err.message || 'Authentication failed');
-        
+
         // Send error to opener if in popup
         if (window.opener) {
-          window.opener.postMessage({
-            type: 'oauth_callback',
-            error: err.message || 'Authentication failed',
-          }, window.location.origin);
+          window.opener.postMessage(
+            {
+              type: 'oauth_callback',
+              error: err.message || 'Authentication failed',
+            },
+            window.location.origin
+          );
           window.close();
         }
       });
   }, [searchParams, provider, navigate]);
-  
+
   // Render loading state
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">
           <svg
             className="mx-auto h-12 w-12 animate-spin text-blue-600"
@@ -168,26 +180,34 @@ export function OAuthCallbackPage() {
       </div>
     );
   }
-  
+
   // Render error state
   if (status === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-        <div className="text-center max-w-md px-4">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="max-w-md px-4 text-center">
           <div className="mx-auto h-12 w-12 text-red-500">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+              />
             </svg>
           </div>
           <h2 className="mt-4 text-xl font-semibold text-gray-900 dark:text-white">
             Authentication Failed
           </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            {errorMessage}
-          </p>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">{errorMessage}</p>
           <button
             onClick={() => navigate('/login', { replace: true })}
-            className="mt-6 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="mt-6 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700"
           >
             Back to Login
           </button>
@@ -195,22 +215,30 @@ export function OAuthCallbackPage() {
       </div>
     );
   }
-  
+
   // Render success state (redirect mode only - popup will close)
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
       <div className="text-center">
         <div className="mx-auto h-12 w-12 text-green-500">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
           </svg>
         </div>
         <p className="mt-4 text-lg font-medium text-gray-700 dark:text-gray-300">
           Successfully signed in!
         </p>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Redirecting...
-        </p>
+        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">Redirecting...</p>
       </div>
     </div>
   );

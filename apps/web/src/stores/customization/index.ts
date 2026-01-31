@@ -19,6 +19,9 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { safeLocalStorage } from '@/lib/safeStorage';
 import { createToggle, createSchemaMapper, createDebouncedSave } from '@/stores/utils/storeHelpers';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('customizationStore');
 
 // =============================================================================
 // TYPES
@@ -517,7 +520,7 @@ export const useCustomizationStore = create<CustomizationStore>()(
           });
         } catch (error) {
           const message = error instanceof Error ? error.message : 'Failed to load';
-          console.error('Failed to fetch customizations:', error);
+          logger.error('Failed to fetch customizations:', error);
           set({ isLoading: false, error: message });
         }
       },
@@ -640,7 +643,7 @@ export function useAvatarThemeColors(): typeof THEME_COLORS.emerald {
  */
 export const useChatSettings = () => {
   if (process.env.NODE_ENV === 'development') {
-    console.warn(
+    logger.warn(
       '[useChatSettings] Deprecated: Use individual selectors like useChatBubbleStyle() instead. ' +
         'Object selectors cause infinite render loops.'
     );

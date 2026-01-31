@@ -8,6 +8,9 @@
  */
 
 import { useThemeStore, CHAT_BUBBLE_PRESETS, type ChatBubbleConfig } from './theme';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('chatBubbleStore');
 
 export { CHAT_BUBBLE_PRESETS, type ChatBubbleConfig as ChatBubbleStyle };
 
@@ -67,7 +70,7 @@ export const useChatBubbleStore = () => {
         const imported = JSON.parse(json);
         updateChatBubble({ ...defaultChatBubbleStyle, ...imported });
       } catch (e) {
-        console.error('Failed to import chat bubble style:', e);
+        logger.error('Failed to import chat bubble style:', e);
       }
     },
   };

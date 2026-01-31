@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ScheduledMessagesList');
 import {
   ClockIcon,
   XMarkIcon,
@@ -62,7 +65,7 @@ export function ScheduledMessagesList({
       toast.success('Scheduled message cancelled');
       HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to cancel scheduled message:', error);
+      logger.error('Failed to cancel scheduled message:', error);
       toast.error('Failed to cancel message');
       HapticFeedback.error();
     } finally {

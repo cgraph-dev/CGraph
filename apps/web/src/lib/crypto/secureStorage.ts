@@ -30,6 +30,10 @@
  * @security CRITICAL - DO NOT MODIFY WITHOUT SECURITY REVIEW
  */
 
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('SecureStorage');
+
 const DB_NAME = 'cgraph_secure';
 const DB_VERSION = 2;
 const STORE_NAME = 'encrypted_data';
@@ -243,7 +247,7 @@ class SecureStorage {
       // Clean up expired items
       await this.cleanupExpiredItems();
     } catch (error) {
-      console.error('[SecureStorage] Initialization failed:', error);
+      logger.error('Initialization failed:', error);
       throw new Error('Failed to initialize secure storage');
     }
   }
@@ -258,11 +262,7 @@ class SecureStorage {
   /**
    * Store encrypted item
    */
-  static async setItem(
-    key: string,
-    value: string,
-    ttlSeconds?: number
-  ): Promise<void> {
+  static async setItem(key: string, value: string, ttlSeconds?: number): Promise<void> {
     if (!this.isReady()) {
       throw new Error('SecureStorage not initialized - call initialize() first');
     }
@@ -321,14 +321,10 @@ class SecureStorage {
         }
 
         try {
-          const plaintext = await decryptData(
-            item.ciphertext,
-            item.iv,
-            this.encryptionKey!
-          );
+          const plaintext = await decryptData(item.ciphertext, item.iv, this.encryptionKey!);
           resolve(plaintext);
         } catch (error) {
-          console.error('[SecureStorage] Decryption failed:', error);
+          logger.error('Decryption failed:', error);
           resolve(null);
         }
       };

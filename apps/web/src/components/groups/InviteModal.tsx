@@ -13,6 +13,9 @@ import { useGroupStore } from '@/stores/groupStore';
 import { useThemeStore, THEME_COLORS } from '@/stores/themeStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('InviteModal');
 
 // Reserved for future use
 void useGroupStore;
@@ -117,7 +120,7 @@ export function InviteModal({ groupId: _groupId, groupName, onClose }: InviteMod
       setInviteLink(mockUrl);
       HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to generate invite:', error);
+      logger.error('Failed to generate invite:', error);
       HapticFeedback.error();
     } finally {
       setIsGenerating(false);
@@ -131,7 +134,7 @@ export function InviteModal({ groupId: _groupId, groupName, onClose }: InviteMod
       HapticFeedback.success();
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Failed to copy:', error);
+      logger.error('Failed to copy:', error);
     }
   }, []);
 

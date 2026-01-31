@@ -3,7 +3,10 @@ import { useParams, NavLink, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useSettingsStore } from '@/stores/settingsStore';
 import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
 import { toast } from '@/components/Toast';
+
+const logger = createLogger('Settings');
 // These components are available for extended settings functionality
 import AppearanceSettingsEnhanced from '@/components/settings/AppearanceSettingsEnhanced';
 import ChatBubbleSettings from '@/components/settings/ChatBubbleSettings';
@@ -657,7 +660,7 @@ function SessionsSettings() {
 
       setSessions(mappedSessions);
     } catch (error) {
-      console.error('Failed to fetch sessions:', error);
+      logger.error('Failed to fetch sessions:', error);
       toast.error('Failed to load sessions');
     } finally {
       setIsLoading(false);

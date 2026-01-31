@@ -8,6 +8,9 @@
 import type { AppTheme, ThemeAPI, ThemeCategory } from './theme-types';
 import { defaultTheme } from './presets/default-theme';
 import { matrixTheme } from './presets/matrix-theme';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ThemeRegistry');
 
 /**
  * Theme Registry - Manages all available themes
@@ -40,7 +43,7 @@ class ThemeRegistryClass {
    */
   unregisterTheme(themeId: string): boolean {
     if (themeId === 'default') {
-      console.warn('Cannot unregister default theme');
+      logger.warn('Cannot unregister default theme');
       return false;
     }
     return this.themes.delete(themeId);
@@ -101,7 +104,7 @@ class ThemeRegistryClass {
   applyTheme(themeId: string): boolean {
     const theme = this.getTheme(themeId);
     if (!theme) {
-      console.error(`Theme '${themeId}' not found`);
+      logger.error(`Theme '${themeId}' not found`);
       return false;
     }
 
@@ -127,7 +130,7 @@ class ThemeRegistryClass {
     const toTheme = this.getTheme(toThemeId);
 
     if (!fromTheme || !toTheme) {
-      console.error('Invalid theme IDs for switching');
+      logger.error('Invalid theme IDs for switching');
       return;
     }
 

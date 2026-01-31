@@ -7,6 +7,9 @@ import {
   ArrowPathIcon,
 } from '@heroicons/react/24/solid';
 import { Waveform, generatePlaceholderWaveform } from './Waveform';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('VoiceMessageRecorder');
 
 interface VoiceMessageRecorderProps {
   /** Callback when recording is complete and ready to send */
@@ -32,7 +35,7 @@ function formatTime(seconds: number): string {
 
 /**
  * Voice message recorder component.
- * 
+ *
  * Features:
  * - Microphone recording with visual feedback
  * - Live waveform visualization during recording
@@ -76,7 +79,7 @@ export function VoiceMessageRecorder({
       animationRef.current = null;
     }
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
       streamRef.current = null;
     }
     mediaRecorderRef.current = null;
@@ -145,9 +148,8 @@ export function VoiceMessageRecorder({
 
       // Start waveform visualization
       visualizeWaveform();
-
     } catch (err) {
-      console.error('Failed to start recording:', err);
+      logger.error('Failed to start recording:', err);
       setError('Microphone access denied. Please allow microphone access.');
       cleanup();
     }
@@ -169,7 +171,7 @@ export function VoiceMessageRecorder({
       const sum = dataArray.reduce((acc, val) => acc + val, 0);
       const average = sum / bufferLength / 255;
 
-      setWaveformData(prev => [...prev, average].slice(-100));
+      setWaveformData((prev) => [...prev, average].slice(-100));
 
       animationRef.current = requestAnimationFrame(update);
     };
@@ -193,7 +195,7 @@ export function VoiceMessageRecorder({
     }
 
     if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current.getTracks().forEach((track) => track.stop());
     }
   }, []);
 
@@ -228,15 +230,13 @@ export function VoiceMessageRecorder({
       <div className={className}>
         <button
           onClick={startRecording}
-          className="flex items-center gap-2 px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          className="flex items-center gap-2 rounded-lg px-4 py-2 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
           aria-label="Record voice message"
         >
           <MicrophoneIcon className="h-5 w-5" />
           <span className="text-sm">Voice message</span>
         </button>
-        {error && (
-          <p className="text-sm text-red-500 mt-2">{error}</p>
-        )}
+        {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
       </div>
     );
   }
@@ -244,10 +244,12 @@ export function VoiceMessageRecorder({
   // Recording state - show live waveform
   if (state === 'recording') {
     return (
-      <div className={`flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg ${className}`}>
-        <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-        
-        <div className="flex-1 min-w-0">
+      <div
+        className={`flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-800 dark:bg-red-900/20 ${className}`}
+      >
+        <div className="h-3 w-3 animate-pulse rounded-full bg-red-500" />
+
+        <div className="min-w-0 flex-1">
           <Waveform
             data={waveformData.length > 0 ? waveformData : generatePlaceholderWaveform(50)}
             progress={1}
@@ -255,14 +257,14 @@ export function VoiceMessageRecorder({
             unplayedColor="#fca5a5"
             height={32}
           />
-          <div className="text-sm text-red-600 dark:text-red-400 mt-1">
+          <div className="mt-1 text-sm text-red-600 dark:text-red-400">
             Recording: {formatTime(duration)} / {formatTime(maxDuration)}
           </div>
         </div>
 
         <button
           onClick={stopRecording}
-          className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-colors"
+          className="rounded-full bg-red-500 p-2 text-white transition-colors hover:bg-red-600"
           aria-label="Stop recording"
         >
           <StopIcon className="h-4 w-4" />
@@ -270,7 +272,7 @@ export function VoiceMessageRecorder({
 
         <button
           onClick={handleCancel}
-          className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
+          className="p-2 text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
           aria-label="Cancel recording"
         >
           <TrashIcon className="h-5 w-5" />
@@ -282,20 +284,20 @@ export function VoiceMessageRecorder({
   // Preview state - show recorded audio
   if (state === 'preview') {
     return (
-      <div className={`flex items-center gap-3 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg ${className}`}>
+      <div
+        className={`flex items-center gap-3 rounded-lg bg-gray-100 p-3 dark:bg-gray-800 ${className}`}
+      >
         <Waveform
           data={waveformData.length > 0 ? waveformData : generatePlaceholderWaveform(50)}
           progress={0}
           height={32}
         />
-        
-        <span className="text-sm text-gray-600 dark:text-gray-400">
-          {formatTime(duration)}
-        </span>
+
+        <span className="text-sm text-gray-600 dark:text-gray-400">{formatTime(duration)}</span>
 
         <button
           onClick={handleCancel}
-          className="p-2 text-gray-500 hover:text-red-500 transition-colors"
+          className="p-2 text-gray-500 transition-colors hover:text-red-500"
           aria-label="Delete recording"
         >
           <TrashIcon className="h-5 w-5" />
@@ -303,7 +305,7 @@ export function VoiceMessageRecorder({
 
         <button
           onClick={handleSend}
-          className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full transition-colors"
+          className="rounded-full bg-blue-500 p-2 text-white transition-colors hover:bg-blue-600"
           aria-label="Send voice message"
         >
           <PaperAirplaneIcon className="h-4 w-4" />
@@ -314,7 +316,9 @@ export function VoiceMessageRecorder({
 
   // Uploading state
   return (
-    <div className={`flex items-center justify-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded-lg ${className}`}>
+    <div
+      className={`flex items-center justify-center gap-2 rounded-lg bg-gray-100 p-3 dark:bg-gray-800 ${className}`}
+    >
       <ArrowPathIcon className="h-5 w-5 animate-spin" />
       <span className="text-sm text-gray-600 dark:text-gray-400">Sending...</span>
     </div>

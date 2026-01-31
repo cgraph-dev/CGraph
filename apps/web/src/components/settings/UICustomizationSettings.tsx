@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('UICustomizationSettings');
 import {
   SparklesIcon,
   SwatchIcon,
@@ -183,7 +186,7 @@ export const useUIPreferences = create<{
           applyPreferencesToDOM(get().preferences);
           HapticFeedback.success();
         } catch (error) {
-          console.error('Failed to import preferences:', error);
+          logger.error('Failed to import preferences:', error);
           HapticFeedback.error();
         }
       },

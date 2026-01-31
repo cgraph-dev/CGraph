@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
 import { OAuthButtonGroup } from '@/components/auth/OAuthButtons';
 import { TextScramble, GlitchText, prefersReducedMotion } from '@/components/auth/AuthEffects';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('Register');
 
 // Animation variants for staggered children
 const containerVariants = {
@@ -386,7 +389,7 @@ export default function Register() {
           providers={['google', 'apple', 'facebook', 'tiktok']}
           variant="icon"
           onSuccess={() => navigate('/messages')}
-          onError={(err) => console.error('OAuth error:', err)}
+          onError={(err) => logger.error('OAuth error:', err)}
         />
       </motion.div>
 

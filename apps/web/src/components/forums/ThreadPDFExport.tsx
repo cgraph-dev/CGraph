@@ -20,6 +20,9 @@ import { useState, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DocumentArrowDownIcon, XMarkIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { useToast } from '@/hooks/useToast';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ThreadPDFExport');
 
 // =============================================================================
 // TYPES
@@ -728,7 +731,7 @@ export const ThreadPDFExport = memo(function ThreadPDFExport({
 
         showToast?.({ type: 'success', message: 'PDF exported successfully!' });
       } catch (error) {
-        console.error('PDF export error:', error);
+        logger.error('PDF export error:', error);
         showToast?.({ type: 'error', message: 'Failed to export PDF. Please try again.' });
       } finally {
         setIsExporting(false);

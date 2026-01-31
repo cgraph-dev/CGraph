@@ -11,6 +11,9 @@
 
 import { devtools, type DevtoolsOptions } from 'zustand/middleware';
 import type { StateCreator } from 'zustand';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('StoreMiddleware');
 
 // Check if we're in development mode
 const isDev = import.meta.env.DEV;
@@ -158,7 +161,7 @@ export function withPerformance<T extends object>(
       const duration = performance.now() - start;
 
       if (isDev && duration > warnThresholdMs) {
-        console.warn(`[${storeName}] Slow state update: ${duration.toFixed(2)}ms`);
+        logger.warn(`[${storeName}] Slow state update: ${duration.toFixed(2)}ms`);
       }
     };
 

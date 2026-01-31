@@ -1,10 +1,13 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('profileStore');
 
 /**
  * User Profile Store
- * 
+ *
  * Manages user profile data including:
  * - User signature (appended to all posts)
  * - Profile fields (custom fields like website, social links, etc.)
@@ -71,7 +74,7 @@ export interface ExtendedProfile {
   bannerUrl: string | null;
   bio: string | null;
   signature: UserSignature;
-  
+
   // Profile fields
   location: string | null;
   website: string | null;
@@ -90,21 +93,21 @@ export interface ExtendedProfile {
     linkedin?: string;
   };
   customFields: ProfileField[];
-  
+
   // Title & badges
   currentTitle: UserTitle | null;
   availableTitles: UserTitle[];
   badges: UserBadge[];
   equippedBadges: UserBadge[];
   stars: UserStars;
-  
+
   // Privacy settings
   isProfilePrivate: boolean;
   showOnlineStatus: boolean;
   showLastActive: boolean;
   showEmail: boolean;
   showLocation: boolean;
-  
+
   // Stats
   postCount: number;
   topicCount: number;
@@ -113,17 +116,17 @@ export interface ExtendedProfile {
   reputationPositive: number;
   reputationNegative: number;
   warnLevel: number; // 0-100%
-  
+
   // Dates
   registeredAt: string;
   lastActive: string | null;
   lastPostAt: string | null;
-  
+
   // Status
   isOnline: boolean;
   status: 'online' | 'away' | 'busy' | 'dnd' | 'offline';
   statusMessage: string | null;
-  
+
   // Relationships
   isFriend: boolean;
   isBlocked: boolean;
@@ -175,43 +178,43 @@ interface ProfileState {
   currentProfile: ExtendedProfile | null;
   isLoadingProfile: boolean;
   profileError: string | null;
-  
+
   // Own profile data
   myProfile: ExtendedProfile | null;
   mySignature: UserSignature | null;
-  
+
   // Block/ignore list
   blockedUsers: BlockedUser[];
   isLoadingBlocked: boolean;
-  
+
   // Available profile fields (admin-defined)
   availableFields: ProfileField[];
-  
+
   // Actions
   fetchProfile: (userId: string) => Promise<ExtendedProfile>;
   fetchMyProfile: () => Promise<void>;
   updateProfile: (data: UpdateProfileData) => Promise<void>;
   updateSignature: (data: UpdateSignatureData) => Promise<void>;
   updatePrivacySettings: (data: UpdatePrivacySettings) => Promise<void>;
-  
+
   // Title & badges
   equipTitle: (titleId: string | null) => Promise<void>;
   equipBadge: (badgeId: string) => Promise<void>;
   unequipBadge: (badgeId: string) => Promise<void>;
-  
+
   // Block/ignore
   fetchBlockedUsers: () => Promise<void>;
   blockUser: (userId: string, reason?: string) => Promise<void>;
   unblockUser: (userId: string) => Promise<void>;
   isUserBlocked: (userId: string) => boolean;
-  
+
   // Avatar/banner upload
   uploadAvatar: (file: File) => Promise<string>;
   uploadBanner: (file: File) => Promise<string>;
-  
+
   // Profile fields
   fetchProfileFields: () => Promise<void>;
-  
+
   // Clear state
   clearProfile: () => void;
 }
@@ -226,13 +229,13 @@ function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfile {
     avatarUrl: (user.avatar_url as string) || null,
     bannerUrl: (user.banner_url as string) || null,
     bio: (user.bio as string) || null,
-    
+
     signature: {
       enabled: (user.signature_enabled as boolean) || false,
       content: (user.signature as string) || '',
       maxLength: (user.signature_max_length as number) || 500,
     },
-    
+
     location: (user.location as string) || null,
     website: (user.website as string) || null,
     occupation: (user.occupation as string) || null,
@@ -240,7 +243,7 @@ function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfile {
     birthDate: (user.birth_date as string) || null,
     showBirthDate: (user.show_birth_date as boolean) || false,
     gender: (user.gender as string) || null,
-    
+
     socialLinks: {
       twitter: (user.twitter as string) || undefined,
       github: (user.github as string) || undefined,
@@ -250,23 +253,31 @@ function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfile {
       instagram: (user.instagram as string) || undefined,
       linkedin: (user.linkedin as string) || undefined,
     },
-    
+
     customFields: ensureArray(user.custom_fields, 'custom_fields'),
-    
-    currentTitle: user.current_title ? {
-      id: (user.current_title as Record<string, unknown>).id as string,
-      name: (user.current_title as Record<string, unknown>).name as string,
-      color: (user.current_title as Record<string, unknown>).color as string,
-      type: ((user.current_title as Record<string, unknown>).type as 'system' | 'custom' | 'earned') || 'system',
-    } : null,
-    
-    availableTitles: (ensureArray(user.available_titles, 'available_titles') as Record<string, unknown>[]).map((t) => ({
+
+    currentTitle: user.current_title
+      ? {
+          id: (user.current_title as Record<string, unknown>).id as string,
+          name: (user.current_title as Record<string, unknown>).name as string,
+          color: (user.current_title as Record<string, unknown>).color as string,
+          type:
+            ((user.current_title as Record<string, unknown>).type as
+              | 'system'
+              | 'custom'
+              | 'earned') || 'system',
+        }
+      : null,
+
+    availableTitles: (
+      ensureArray(user.available_titles, 'available_titles') as Record<string, unknown>[]
+    ).map((t) => ({
       id: t.id as string,
       name: t.name as string,
       color: (t.color as string) || '#ffffff',
       type: (t.type as 'system' | 'custom' | 'earned') || 'system',
     })),
-    
+
     badges: (ensureArray(user.badges, 'badges') as Record<string, unknown>[]).map((b) => ({
       id: b.id as string,
       name: b.name as string,
@@ -277,8 +288,10 @@ function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfile {
       earnedAt: (b.earned_at as string) || new Date().toISOString(),
       isEquipped: (b.is_equipped as boolean) || false,
     })),
-    
-    equippedBadges: (ensureArray(user.equipped_badges, 'equipped_badges') as Record<string, unknown>[]).map((b) => ({
+
+    equippedBadges: (
+      ensureArray(user.equipped_badges, 'equipped_badges') as Record<string, unknown>[]
+    ).map((b) => ({
       id: b.id as string,
       name: b.name as string,
       description: (b.description as string) || '',
@@ -288,18 +301,18 @@ function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfile {
       earnedAt: (b.earned_at as string) || new Date().toISOString(),
       isEquipped: true as const,
     })),
-    
+
     stars: {
       count: Math.min(5, Math.floor(((user.post_count as number) || 0) / 100) + 1),
       color: '#fbbf24',
     },
-    
+
     isProfilePrivate: (user.is_profile_private as boolean) || false,
     showOnlineStatus: (user.show_online_status as boolean) ?? true,
     showLastActive: (user.show_last_active as boolean) ?? true,
     showEmail: (user.show_email as boolean) || false,
     showLocation: (user.show_location as boolean) ?? true,
-    
+
     postCount: (user.post_count as number) || (user.total_posts_created as number) || 0,
     topicCount: (user.topic_count as number) || 0,
     commentCount: (user.comment_count as number) || 0,
@@ -307,15 +320,16 @@ function mapProfileFromApi(data: Record<string, unknown>): ExtendedProfile {
     reputationPositive: (user.reputation_positive as number) || 0,
     reputationNegative: (user.reputation_negative as number) || 0,
     warnLevel: (user.warn_level as number) || 0,
-    
-    registeredAt: (user.inserted_at as string) || (user.registered_at as string) || new Date().toISOString(),
+
+    registeredAt:
+      (user.inserted_at as string) || (user.registered_at as string) || new Date().toISOString(),
     lastActive: (user.last_active_at as string) || (user.last_seen_at as string) || null,
     lastPostAt: (user.last_post_at as string) || null,
-    
-    isOnline: (user.is_online as boolean) || (user.status === 'online'),
+
+    isOnline: (user.is_online as boolean) || user.status === 'online',
     status: (user.status as ExtendedProfile['status']) || 'offline',
     statusMessage: (user.status_message as string) || (user.custom_status as string) || null,
-    
+
     isFriend: (user.is_friend as boolean) || false,
     isBlocked: (user.is_blocked as boolean) || false,
     friendshipStatus: (user.friendship_status as ExtendedProfile['friendshipStatus']) || 'none',
@@ -352,7 +366,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       const profile = mapProfileFromApi(response.data);
       set({ myProfile: profile, mySignature: profile.signature });
     } catch (error) {
-      console.error('[profileStore] Failed to fetch my profile:', error);
+      logger.error('Failed to fetch my profile:', error);
       throw error;
     }
   },
@@ -360,7 +374,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   updateProfile: async (data: UpdateProfileData) => {
     try {
       const payload: Record<string, unknown> = {};
-      
+
       if (data.displayName !== undefined) payload.display_name = data.displayName;
       if (data.bio !== undefined) payload.bio = data.bio;
       if (data.location !== undefined) payload.location = data.location;
@@ -380,7 +394,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         payload.linkedin = data.socialLinks.linkedin;
       }
       if (data.customFields !== undefined) {
-        payload.custom_fields = data.customFields.map(f => ({
+        payload.custom_fields = data.customFields.map((f) => ({
           field_id: f.fieldId,
           value: f.value,
         }));
@@ -390,7 +404,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       const profile = mapProfileFromApi(response.data);
       set({ myProfile: profile });
     } catch (error) {
-      console.error('[profileStore] Failed to update profile:', error);
+      logger.error('Failed to update profile:', error);
       throw error;
     }
   },
@@ -413,7 +427,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         myProfile: state.myProfile ? { ...state.myProfile, signature } : null,
       }));
     } catch (error) {
-      console.error('[profileStore] Failed to update signature:', error);
+      logger.error('Failed to update signature:', error);
       throw error;
     }
   },
@@ -431,7 +445,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       const profile = mapProfileFromApi(response.data);
       set({ myProfile: profile });
     } catch (error) {
-      console.error('[profileStore] Failed to update privacy settings:', error);
+      logger.error('Failed to update privacy settings:', error);
       throw error;
     }
   },
@@ -444,7 +458,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       const profile = mapProfileFromApi(response.data);
       set({ myProfile: profile });
     } catch (error) {
-      console.error('[profileStore] Failed to equip title:', error);
+      logger.error('Failed to equip title:', error);
       throw error;
     }
   },
@@ -457,7 +471,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       const profile = mapProfileFromApi(response.data);
       set({ myProfile: profile });
     } catch (error) {
-      console.error('[profileStore] Failed to equip badge:', error);
+      logger.error('Failed to equip badge:', error);
       throw error;
     }
   },
@@ -468,7 +482,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
       const profile = mapProfileFromApi(response.data);
       set({ myProfile: profile });
     } catch (error) {
-      console.error('[profileStore] Failed to unequip badge:', error);
+      logger.error('Failed to unequip badge:', error);
       throw error;
     }
   },
@@ -477,17 +491,19 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     set({ isLoadingBlocked: true });
     try {
       const response = await api.get('/api/v1/users/me/blocked');
-      const blockedUsers = (ensureArray(response.data, 'blocked') as Record<string, unknown>[]).map((u) => ({
-        id: u.id as string,
-        username: u.username as string,
-        displayName: (u.display_name as string) || null,
-        avatarUrl: (u.avatar_url as string) || null,
-        blockedAt: u.blocked_at as string,
-        reason: (u.reason as string) || undefined,
-      }));
+      const blockedUsers = (ensureArray(response.data, 'blocked') as Record<string, unknown>[]).map(
+        (u) => ({
+          id: u.id as string,
+          username: u.username as string,
+          displayName: (u.display_name as string) || null,
+          avatarUrl: (u.avatar_url as string) || null,
+          blockedAt: u.blocked_at as string,
+          reason: (u.reason as string) || undefined,
+        })
+      );
       set({ blockedUsers, isLoadingBlocked: false });
     } catch (error) {
-      console.error('[profileStore] Failed to fetch blocked users:', error);
+      logger.error('Failed to fetch blocked users:', error);
       set({ isLoadingBlocked: false });
       throw error;
     }
@@ -506,7 +522,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         set({ currentProfile: { ...current, isBlocked: true } });
       }
     } catch (error) {
-      console.error('[profileStore] Failed to block user:', error);
+      logger.error('Failed to block user:', error);
       throw error;
     }
   },
@@ -515,7 +531,7 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     try {
       await api.delete(`/api/v1/users/me/blocked/${userId}`);
       set((state) => ({
-        blockedUsers: state.blockedUsers.filter(u => u.id !== userId),
+        blockedUsers: state.blockedUsers.filter((u) => u.id !== userId),
       }));
       // Update current profile if viewing unblocked user
       const current = get().currentProfile;
@@ -523,65 +539,67 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         set({ currentProfile: { ...current, isBlocked: false } });
       }
     } catch (error) {
-      console.error('[profileStore] Failed to unblock user:', error);
+      logger.error('Failed to unblock user:', error);
       throw error;
     }
   },
 
   isUserBlocked: (userId: string) => {
-    return get().blockedUsers.some(u => u.id === userId);
+    return get().blockedUsers.some((u) => u.id === userId);
   },
 
   uploadAvatar: async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     const response = await api.post('/api/v1/users/me/avatar', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    
+
     const avatarUrl = response.data.avatar_url || response.data.url;
-    
+
     set((state) => ({
       myProfile: state.myProfile ? { ...state.myProfile, avatarUrl } : null,
     }));
-    
+
     return avatarUrl;
   },
 
   uploadBanner: async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
-    
+
     const response = await api.post('/api/v1/users/me/banner', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
-    
+
     const bannerUrl = response.data.banner_url || response.data.url;
-    
+
     set((state) => ({
       myProfile: state.myProfile ? { ...state.myProfile, bannerUrl } : null,
     }));
-    
+
     return bannerUrl;
   },
 
   fetchProfileFields: async () => {
     try {
       const response = await api.get('/api/v1/profile-fields');
-      const fields = (ensureArray(response.data, 'fields') as Record<string, unknown>[]).map((f) => ({
-        id: f.id as string,
-        name: f.name as string,
-        type: (f.type as ProfileField['type']) || 'text',
-        value: null,
-        options: f.options as string[] | undefined,
-        required: (f.required as boolean) || false,
-        editable: (f.editable as boolean) ?? true,
-        visible: (f.visible as boolean) ?? true,
-      }));
+      const fields = (ensureArray(response.data, 'fields') as Record<string, unknown>[]).map(
+        (f) => ({
+          id: f.id as string,
+          name: f.name as string,
+          type: (f.type as ProfileField['type']) || 'text',
+          value: null,
+          options: f.options as string[] | undefined,
+          required: (f.required as boolean) || false,
+          editable: (f.editable as boolean) ?? true,
+          visible: (f.visible as boolean) ?? true,
+        })
+      );
       set({ availableFields: fields });
     } catch (error) {
-      console.error('[profileStore] Failed to fetch profile fields:', error);
+      logger.error('Failed to fetch profile fields:', error);
     }
   },
 

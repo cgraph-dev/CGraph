@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { safeLocalStorage } from '@/lib/safeStorage';
 import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('AvatarBorderStore');
 import type {
   AvatarBorderConfig,
   BorderTheme,
@@ -242,7 +245,7 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
               preferences = { ...DEFAULT_PREFERENCES, ...storedPrefs };
             }
           } catch (prefError) {
-            console.warn('Failed to fetch avatar border preferences:', prefError);
+            logger.warn('Failed to fetch avatar border preferences:', prefError);
           }
 
           const unlocked = data.unlocked || [];
@@ -273,7 +276,7 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
           });
         } catch (error) {
           // If API fails, use defaults (offline mode)
-          console.warn('Failed to fetch avatar borders from API, using defaults:', error);
+          logger.warn('Failed to fetch avatar borders from API, using defaults:', error);
           set({ isLoading: false });
         }
       },
@@ -301,7 +304,7 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
             isSaving: false,
           }));
         } catch (error) {
-          console.error('Failed to equip border:', error);
+          logger.error('Failed to equip border:', error);
           // Optimistic update - equip locally even if API fails
           set((state) => ({
             preferences: { ...state.preferences, equippedBorderId: borderId },
@@ -355,7 +358,7 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
           });
           return true;
         } catch (error) {
-          console.error('Failed to purchase border:', error);
+          logger.error('Failed to purchase border:', error);
           set({ error: 'Failed to purchase border', isSaving: false });
           return false;
         }
@@ -376,7 +379,7 @@ export const useAvatarBorderStore = create<AvatarBorderState>()(
             isSaving: false,
           });
         } catch (error) {
-          console.error('Failed to update preferences:', error);
+          logger.error('Failed to update preferences:', error);
           // Apply optimistically
           set((prevState) => ({
             preferences: { ...prevState.preferences, ...updates },

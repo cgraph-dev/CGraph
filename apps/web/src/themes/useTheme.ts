@@ -7,6 +7,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ThemeRegistry } from './ThemeRegistry';
 import type { AppTheme } from './theme-types';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('useTheme');
 
 interface UseThemeReturn {
   currentTheme: AppTheme;
@@ -78,7 +81,7 @@ export function useTheme(): UseThemeReturn {
       ThemeRegistry.importTheme(json);
       setAllThemes(ThemeRegistry.getAllThemes());
     } catch (error) {
-      console.error('Failed to import theme:', error);
+      logger.error('Failed to import theme:', error);
       throw error;
     }
   }, []);

@@ -1,10 +1,12 @@
 import { create } from 'zustand';
+import { createLogger } from '@/lib/logger';
+const logger = createLogger('calendarStore');
 import { api } from '@/lib/api';
 import { ensureArray } from '@/lib/apiUtils';
 
 /**
  * Calendar/Events Store
- * 
+ *
  * Complete MyBB-style calendar system with:
  * - Events (single and multi-day)
  * - Categories for organization
@@ -26,13 +28,13 @@ export interface CalendarEvent {
   id: string;
   title: string;
   description: string;
-  
+
   // Timing
   startDate: string;
   endDate: string | null; // Null for single-day events
   allDay: boolean;
   timezone: string;
-  
+
   // Type and recurrence
   type: EventType; // Alias for backward compatibility
   eventType: EventType;
@@ -46,32 +48,32 @@ export interface CalendarEvent {
     endDate?: string | null;
     count?: number;
   };
-  
+
   // Location
   location?: string;
   locationUrl?: string; // For virtual events
-  
+
   // Category
   categoryId: string | null;
   categoryName?: string;
   categoryColor?: string;
-  
+
   // Author
   authorId: string;
   authorUsername: string;
   authorAvatarUrl: string | null;
-  
+
   // Visibility
   visibility: EventVisibility;
   forumId?: string | null; // If forum-specific
-  
+
   // RSVP
   rsvpEnabled: boolean;
   rsvpDeadline?: string | null;
   maxAttendees?: number | null;
   attendeeCount: number;
   myRsvp?: RSVPStatus;
-  
+
   // Meta
   createdAt: string;
   updatedAt: string;
@@ -144,58 +146,58 @@ interface CalendarState {
   // Events
   events: CalendarEvent[];
   currentEvent: CalendarEvent | null;
-  
+
   // Categories
   categories: EventCategory[];
-  
+
   // RSVPs
   eventRsvps: Map<string, EventRSVP[]>;
-  
+
   // View state
   currentYear: number;
   currentMonth: number;
   viewMode: 'month' | 'week' | 'day' | 'list';
-  
+
   // Loading
   isLoading: boolean;
   isLoadingEvent: boolean;
-  
+
   // Actions - Events
   fetchEvents: (filters?: CalendarFilters) => Promise<void>;
   fetchEvent: (id: string) => Promise<CalendarEvent | null>;
   createEvent: (data: EventFormData) => Promise<CalendarEvent>;
   updateEvent: (id: string, data: Partial<EventFormData>) => Promise<void>;
   deleteEvent: (id: string) => Promise<void>;
-  
+
   // Actions - Categories
   fetchCategories: () => Promise<void>;
   createCategory: (data: Partial<EventCategory>) => Promise<EventCategory>;
   updateCategory: (id: string, data: Partial<EventCategory>) => Promise<void>;
   deleteCategory: (id: string) => Promise<void>;
-  
+
   // Actions - RSVP
   fetchRsvps: (eventId: string) => Promise<EventRSVP[]>;
   rsvp: (eventId: string, status: RSVPStatus, note?: string) => Promise<void>;
   cancelRsvp: (eventId: string) => Promise<void>;
-  
+
   // Actions - View
   setViewMode: (mode: 'month' | 'week' | 'day' | 'list') => void;
   goToMonth: (year: number, month: number) => void;
   goToPreviousMonth: () => void;
   goToNextMonth: () => void;
   goToToday: () => void;
-  
+
   // Helpers
   getEventsForDate: (date: Date) => CalendarEvent[];
   getEventsForMonth: (year: number, month: number) => CalendarEvent[];
   getUpcomingEvents: (limit?: number) => CalendarEvent[];
-  
+
   clearState: () => void;
 }
 
 export const useCalendarStore = create<CalendarState>((set, get) => {
   const now = new Date();
-  
+
   return {
     // Initial state
     events: [],
@@ -217,7 +219,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
       try {
         const year = filters?.year ?? get().currentYear;
         const month = filters?.month ?? get().currentMonth;
-        
+
         const response = await api.get('/api/v1/calendar/events', {
           params: {
             year,
@@ -228,11 +230,13 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
             forum_id: filters?.forumId,
           },
         });
-        
-        const events = (ensureArray(response.data, 'events') as Record<string, unknown>[]).map(mapEventFromApi);
+
+        const events = (ensureArray(response.data, 'events') as Record<string, unknown>[]).map(
+          mapEventFromApi
+        );
         set({ events, isLoading: false });
       } catch (error) {
-        console.error('[calendarStore] Failed to fetch events:', error);
+        logger.error('[calendarStore] Failed to fetch events:', error);
         set({ isLoading: false });
       }
     },
@@ -245,7 +249,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
         set({ currentEvent: event, isLoadingEvent: false });
         return event;
       } catch (error) {
-        console.error('[calendarStore] Failed to fetch event:', error);
+        logger.error('[calendarStore] Failed to fetch event:', error);
         set({ isLoadingEvent: false });
         return null;
       }
@@ -273,14 +277,14 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
           rsvp_deadline: data.rsvpDeadline,
           max_attendees: data.maxAttendees,
         });
-        
+
         const event = mapEventFromApi(response.data.event || response.data);
         set((state) => ({
           events: [...state.events, event],
         }));
         return event;
       } catch (error) {
-        console.error('[calendarStore] Failed to create event:', error);
+        logger.error('[calendarStore] Failed to create event:', error);
         throw error;
       }
     },
@@ -307,14 +311,14 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
           rsvp_deadline: data.rsvpDeadline,
           max_attendees: data.maxAttendees,
         });
-        
+
         const updated = mapEventFromApi(response.data.event || response.data);
         set((state) => ({
           events: state.events.map((e) => (e.id === id ? updated : e)),
           currentEvent: state.currentEvent?.id === id ? updated : state.currentEvent,
         }));
       } catch (error) {
-        console.error('[calendarStore] Failed to update event:', error);
+        logger.error('[calendarStore] Failed to update event:', error);
         throw error;
       }
     },
@@ -327,7 +331,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
           currentEvent: state.currentEvent?.id === id ? null : state.currentEvent,
         }));
       } catch (error) {
-        console.error('[calendarStore] Failed to delete event:', error);
+        logger.error('[calendarStore] Failed to delete event:', error);
         throw error;
       }
     },
@@ -339,7 +343,9 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
     fetchCategories: async () => {
       try {
         const response = await api.get('/api/v1/calendar/categories');
-        const categories = (ensureArray(response.data, 'categories') as Record<string, unknown>[]).map((c) => ({
+        const categories = (
+          ensureArray(response.data, 'categories') as Record<string, unknown>[]
+        ).map((c) => ({
           id: c.id as string,
           name: (c.name as string) || 'Uncategorized',
           color: (c.color as string) || '#6366f1',
@@ -350,7 +356,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
         }));
         set({ categories });
       } catch (error) {
-        console.error('[calendarStore] Failed to fetch categories:', error);
+        logger.error('[calendarStore] Failed to fetch categories:', error);
       }
     },
 
@@ -362,7 +368,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
           icon: data.icon,
           description: data.description,
         });
-        
+
         const category = {
           id: response.data.category?.id || response.data.id,
           name: response.data.category?.name || response.data.name,
@@ -372,13 +378,13 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
           isDefault: false,
           order: get().categories.length,
         };
-        
+
         set((state) => ({
           categories: [...state.categories, category],
         }));
         return category;
       } catch (error) {
-        console.error('[calendarStore] Failed to create category:', error);
+        logger.error('[calendarStore] Failed to create category:', error);
         throw error;
       }
     },
@@ -391,14 +397,12 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
           icon: data.icon,
           description: data.description,
         });
-        
+
         set((state) => ({
-          categories: state.categories.map((c) =>
-            c.id === id ? { ...c, ...data } : c
-          ),
+          categories: state.categories.map((c) => (c.id === id ? { ...c, ...data } : c)),
         }));
       } catch (error) {
-        console.error('[calendarStore] Failed to update category:', error);
+        logger.error('[calendarStore] Failed to update category:', error);
         throw error;
       }
     },
@@ -410,7 +414,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
           categories: state.categories.filter((c) => c.id !== id),
         }));
       } catch (error) {
-        console.error('[calendarStore] Failed to delete category:', error);
+        logger.error('[calendarStore] Failed to delete category:', error);
         throw error;
       }
     },
@@ -422,18 +426,20 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
     fetchRsvps: async (eventId: string) => {
       try {
         const response = await api.get(`/api/v1/calendar/events/${eventId}/rsvps`);
-        const rsvps = (ensureArray(response.data, 'rsvps') as Record<string, unknown>[]).map((r) => ({
-          id: r.id as string,
-          eventId: r.event_id as string,
-          userId: r.user_id as string,
-          username: (r.username as string) || 'Unknown',
-          displayName: (r.display_name as string) || null,
-          avatarUrl: (r.avatar_url as string) || null,
-          status: (r.status as RSVPStatus) || 'no_response',
-          note: r.note as string | undefined,
-          respondedAt: (r.responded_at as string) || new Date().toISOString(),
-        }));
-        
+        const rsvps = (ensureArray(response.data, 'rsvps') as Record<string, unknown>[]).map(
+          (r) => ({
+            id: r.id as string,
+            eventId: r.event_id as string,
+            userId: r.user_id as string,
+            username: (r.username as string) || 'Unknown',
+            displayName: (r.display_name as string) || null,
+            avatarUrl: (r.avatar_url as string) || null,
+            status: (r.status as RSVPStatus) || 'no_response',
+            note: r.note as string | undefined,
+            respondedAt: (r.responded_at as string) || new Date().toISOString(),
+          })
+        );
+
         set((state) => {
           const updated = new Map(state.eventRsvps);
           updated.set(eventId, rsvps);
@@ -441,7 +447,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
         });
         return rsvps;
       } catch (error) {
-        console.error('[calendarStore] Failed to fetch RSVPs:', error);
+        logger.error('[calendarStore] Failed to fetch RSVPs:', error);
         return [];
       }
     },
@@ -452,7 +458,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
           status,
           note,
         });
-        
+
         // Update local event
         set((state) => ({
           events: state.events.map((e) =>
@@ -464,8 +470,8 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
                     status === 'going' && e.myRsvp !== 'going'
                       ? e.attendeeCount + 1
                       : status !== 'going' && e.myRsvp === 'going'
-                      ? e.attendeeCount - 1
-                      : e.attendeeCount,
+                        ? e.attendeeCount - 1
+                        : e.attendeeCount,
                 }
               : e
           ),
@@ -475,7 +481,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
               : state.currentEvent,
         }));
       } catch (error) {
-        console.error('[calendarStore] Failed to RSVP:', error);
+        logger.error('[calendarStore] Failed to RSVP:', error);
         throw error;
       }
     },
@@ -483,7 +489,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
     cancelRsvp: async (eventId: string) => {
       try {
         await api.delete(`/api/v1/calendar/events/${eventId}/rsvp`);
-        
+
         set((state) => ({
           events: state.events.map((e) =>
             e.id === eventId
@@ -500,7 +506,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
               : state.currentEvent,
         }));
       } catch (error) {
-        console.error('[calendarStore] Failed to cancel RSVP:', error);
+        logger.error('[calendarStore] Failed to cancel RSVP:', error);
         throw error;
       }
     },
@@ -542,7 +548,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
     getEventsForDate: (date: Date) => {
       const { events } = get();
       const dateStr = date.toISOString().split('T')[0];
-      
+
       return events.filter((event) => {
         const eventStart = event.startDate?.split('T')[0];
         const eventEnd = event.endDate?.split('T')[0] || eventStart;
@@ -553,7 +559,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
 
     getEventsForMonth: (year: number, month: number) => {
       const { events } = get();
-      
+
       return events.filter((event) => {
         const eventDate = new Date(event.startDate);
         return eventDate.getFullYear() === year && eventDate.getMonth() === month;
@@ -563,7 +569,7 @@ export const useCalendarStore = create<CalendarState>((set, get) => {
     getUpcomingEvents: (limit = 5) => {
       const { events } = get();
       const now = new Date();
-      
+
       return events
         .filter((event) => new Date(event.startDate) >= now)
         .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
@@ -588,7 +594,7 @@ function mapEventFromApi(data: Record<string, unknown>): CalendarEvent {
   const author = (data.author as Record<string, unknown>) || {};
   const category = (data.category as Record<string, unknown>) || {};
   const eventType = (data.event_type as EventType) || 'single';
-  
+
   return {
     id: data.id as string,
     title: (data.title as string) || 'Untitled Event',
@@ -603,12 +609,14 @@ function mapEventFromApi(data: Record<string, unknown>): CalendarEvent {
     recurrencePattern: data.recurrence_pattern as RecurrencePattern | undefined,
     recurrenceEndDate: (data.recurrence_end_date as string) || null,
     recurrenceCount: data.recurrence_count as number | undefined,
-    recurrence: data.recurrence_pattern ? {
-      pattern: data.recurrence_pattern as RecurrencePattern,
-      interval: (data.recurrence_interval as number) || 1,
-      endDate: (data.recurrence_end_date as string) || null,
-      count: data.recurrence_count as number | undefined,
-    } : undefined,
+    recurrence: data.recurrence_pattern
+      ? {
+          pattern: data.recurrence_pattern as RecurrencePattern,
+          interval: (data.recurrence_interval as number) || 1,
+          endDate: (data.recurrence_end_date as string) || null,
+          count: data.recurrence_count as number | undefined,
+        }
+      : undefined,
     location: data.location as string | undefined,
     locationUrl: data.location_url as string | undefined,
     categoryId: (data.category_id as string) || null,

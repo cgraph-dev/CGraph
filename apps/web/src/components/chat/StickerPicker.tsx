@@ -11,6 +11,9 @@
 
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('StickerPicker');
 import {
   XMarkIcon,
   MagnifyingGlassIcon,
@@ -273,7 +276,7 @@ export function StickerPicker({
           HapticFeedback.success();
         }
       } catch (error) {
-        console.error('Failed to purchase sticker pack:', error);
+        logger.error('Failed to purchase sticker pack:', error);
         HapticFeedback.error();
 
         // Optimistic fallback - still unlock locally if API fails

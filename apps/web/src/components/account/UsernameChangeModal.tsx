@@ -14,6 +14,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import Badge from '@/components/ui/Badge';
 import { Loader2, AlertCircle, CheckCircle2, Clock, History } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('UsernameChangeModal');
 
 interface UsernameChangeModalProps {
   isOpen: boolean;
@@ -156,7 +159,7 @@ export const UsernameChangeModal: React.FC<UsernameChangeModalProps> = ({
       }
     } catch (error) {
       if (error instanceof Error && error.name !== 'AbortError') {
-        console.error('Failed to load username history');
+        logger.error('Failed to load username history');
       }
     } finally {
       if (!signal.aborted) {

@@ -24,6 +24,10 @@
  * - Maintains the same security model as direct store access
  */
 
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('TokenService');
+
 type TokenGetter = () => string | null | undefined;
 type TokenSetter = (tokens: { accessToken: string; refreshToken?: string | null }) => void;
 type LogoutHandler = () => void | Promise<void>;
@@ -60,7 +64,7 @@ export function registerTokenHandlers(config: TokenServiceConfig): void {
   registrationResolvers = [];
 
   if (import.meta.env.DEV) {
-    console.debug('[TokenService] Handlers registered successfully');
+    logger.debug('Handlers registered successfully');
   }
 }
 
@@ -114,7 +118,7 @@ export function getRefreshToken(): string | null {
  */
 export function setTokens(tokens: { accessToken: string; refreshToken?: string | null }): void {
   if (!tokenConfig) {
-    console.warn('[TokenService] Cannot set tokens - handlers not registered');
+    logger.warn('Cannot set tokens - handlers not registered');
     return;
   }
   tokenConfig.setTokens(tokens);
@@ -126,7 +130,7 @@ export function setTokens(tokens: { accessToken: string; refreshToken?: string |
  */
 export async function triggerLogout(): Promise<void> {
   if (!tokenConfig) {
-    console.warn('[TokenService] Cannot logout - handlers not registered');
+    logger.warn('Cannot logout - handlers not registered');
     return;
   }
   await tokenConfig.onLogout();

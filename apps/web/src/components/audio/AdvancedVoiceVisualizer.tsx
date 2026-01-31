@@ -10,6 +10,9 @@
 
 import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('AdvancedVoiceVisualizer');
 
 // =============================================================================
 // TYPES
@@ -136,14 +139,7 @@ function WaveformVisualizer({
     };
   }, [analyser, theme, width, height]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className="absolute inset-0"
-    />
-  );
+  return <canvas ref={canvasRef} width={width} height={height} className="absolute inset-0" />;
 }
 
 // =============================================================================
@@ -215,14 +211,7 @@ function SpectrumVisualizer({
     };
   }, [analyser, theme, width, height]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className="absolute inset-0"
-    />
-  );
+  return <canvas ref={canvasRef} width={width} height={height} className="absolute inset-0" />;
 }
 
 // =============================================================================
@@ -317,14 +306,7 @@ function CircularVisualizer({
     };
   }, [analyser, theme, width, height]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className="absolute inset-0"
-    />
-  );
+  return <canvas ref={canvasRef} width={width} height={height} className="absolute inset-0" />;
 }
 
 // =============================================================================
@@ -422,14 +404,7 @@ function ParticleVisualizer({
     };
   }, [analyser, theme, width, height]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      width={width}
-      height={height}
-      className="absolute inset-0"
-    />
-  );
+  return <canvas ref={canvasRef} width={width} height={height} className="absolute inset-0" />;
 }
 
 // =============================================================================
@@ -487,7 +462,7 @@ export default function AdvancedVoiceVisualizer({
   useEffect(() => {
     if (audioRef.current && audioUrl) {
       if (isPlaying) {
-        audioRef.current.play().catch(console.error);
+        audioRef.current.play().catch((err) => logger.error('Playback failed', err));
       } else {
         audioRef.current.pause();
       }
@@ -498,7 +473,7 @@ export default function AdvancedVoiceVisualizer({
 
   return (
     <motion.div
-      className={`relative overflow-hidden rounded-xl bg-black/40 backdrop-blur-sm border border-white/10 ${className}`}
+      className={`relative overflow-hidden rounded-xl border border-white/10 bg-black/40 backdrop-blur-sm ${className}`}
       style={{ width, height }}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -506,54 +481,29 @@ export default function AdvancedVoiceVisualizer({
     >
       {/* Hidden audio element */}
       {audioUrl && (
-        <audio
-          ref={audioRef}
-          src={audioUrl}
-          onEnded={onPlaybackEnd}
-          crossOrigin="anonymous"
-        />
+        <audio ref={audioRef} src={audioUrl} onEnded={onPlaybackEnd} crossOrigin="anonymous" />
       )}
 
       {/* Visualizers */}
       {(variant === 'waveform' || variant === 'all') && (
-        <WaveformVisualizer
-          analyser={analyser}
-          theme={theme}
-          width={width}
-          height={height}
-        />
+        <WaveformVisualizer analyser={analyser} theme={theme} width={width} height={height} />
       )}
 
       {(variant === 'spectrum' || variant === 'all') && (
-        <SpectrumVisualizer
-          analyser={analyser}
-          theme={theme}
-          width={width}
-          height={height}
-        />
+        <SpectrumVisualizer analyser={analyser} theme={theme} width={width} height={height} />
       )}
 
       {(variant === 'circular' || variant === 'all') && (
-        <CircularVisualizer
-          analyser={analyser}
-          theme={theme}
-          width={width}
-          height={height}
-        />
+        <CircularVisualizer analyser={analyser} theme={theme} width={width} height={height} />
       )}
 
       {(variant === 'particles' || variant === 'all') && (
-        <ParticleVisualizer
-          analyser={analyser}
-          theme={theme}
-          width={width}
-          height={height}
-        />
+        <ParticleVisualizer analyser={analyser} theme={theme} width={width} height={height} />
       )}
 
       {/* Glow overlay */}
       <div
-        className="absolute inset-0 pointer-events-none"
+        className="pointer-events-none absolute inset-0"
         style={{
           boxShadow: `inset 0 0 60px ${THEMES[theme].glow}`,
           opacity: 0.3,

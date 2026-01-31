@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { AxiosError } from 'axios';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('SettingsStore');
 
 /**
  * Settings Store - Manages user settings with backend sync
@@ -621,7 +624,7 @@ export const useSettingsStore = create<SettingsState>()(
             try {
               return localStorage.getItem(name);
             } catch (error) {
-              console.warn('[Settings] Failed to read from localStorage:', error);
+              logger.warn('Failed to read from localStorage:', error);
               return null;
             }
           },
@@ -629,14 +632,14 @@ export const useSettingsStore = create<SettingsState>()(
             try {
               localStorage.setItem(name, value);
             } catch (error) {
-              console.warn('[Settings] Failed to write to localStorage:', error);
+              logger.warn('Failed to write to localStorage:', error);
             }
           },
           removeItem: (name: string): void => {
             try {
               localStorage.removeItem(name);
             } catch (error) {
-              console.warn('[Settings] Failed to remove from localStorage:', error);
+              logger.warn('Failed to remove from localStorage:', error);
             }
           },
         };

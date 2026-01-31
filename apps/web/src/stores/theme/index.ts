@@ -20,6 +20,9 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { api } from '@/lib/api';
 import { safeLocalStorage } from '@/lib/safeStorage';
 import { createConfigPresets, classifyByRules } from '@/stores/utils/storeHelpers';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ThemeStore');
 
 // =============================================================================
 // SHARED TYPES
@@ -748,7 +751,7 @@ export const useThemeStore = create<ThemeStore>()(
             });
           }
         } catch (error) {
-          console.warn('Failed to sync theme:', error);
+          logger.warn('Failed to sync theme:', error);
           set({ isLoading: false });
         }
       },
@@ -769,7 +772,7 @@ export const useThemeStore = create<ThemeStore>()(
           });
           set({ isSaving: false, lastSyncedAt: Date.now() });
         } catch (error) {
-          console.warn('Failed to save theme:', error);
+          logger.warn('Failed to save theme:', error);
           set({ isSaving: false });
         }
       },
@@ -873,7 +876,7 @@ export const useThemeStore = create<ThemeStore>()(
           });
           return true;
         } catch (error) {
-          console.error('Failed to import theme:', error);
+          logger.error('Failed to import theme:', error);
           return false;
         }
       },

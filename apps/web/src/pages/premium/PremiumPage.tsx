@@ -17,6 +17,9 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
 import confetti from 'canvas-confetti';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('PremiumPage');
 
 /**
  * Premium Subscription Page
@@ -145,45 +148,48 @@ export default function PremiumPage() {
   };
 
   // Handle subscription
-  const handleSubscribe = useCallback(async (tierId: string) => {
-    if (tierId === 'free' || tierId === currentSubscription) return;
+  const handleSubscribe = useCallback(
+    async (tierId: string) => {
+      if (tierId === 'free' || tierId === currentSubscription) return;
 
-    setIsSubscribing(true);
-    HapticFeedback.medium();
+      setIsSubscribing(true);
+      HapticFeedback.medium();
 
-    try {
-      // This would integrate with Stripe in production
-      const response = await api.post('/api/v1/subscription/subscribe', {
-        tier: tierId,
-        billing_interval: billingInterval,
-      });
-
-      if (response.data.checkout_url) {
-        // Redirect to Stripe checkout
-        window.location.href = response.data.checkout_url;
-      } else {
-        // Success - show celebration
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#10b981', '#8b5cf6', '#f59e0b'],
+      try {
+        // This would integrate with Stripe in production
+        const response = await api.post('/api/v1/subscription/subscribe', {
+          tier: tierId,
+          billing_interval: billingInterval,
         });
+
+        if (response.data.checkout_url) {
+          // Redirect to Stripe checkout
+          window.location.href = response.data.checkout_url;
+        } else {
+          // Success - show celebration
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ['#10b981', '#8b5cf6', '#f59e0b'],
+          });
+        }
+      } catch (error) {
+        logger.error('Subscription error:', error);
+      } finally {
+        setIsSubscribing(false);
       }
-    } catch (error) {
-      console.error('Subscription error:', error);
-    } finally {
-      setIsSubscribing(false);
-    }
-  }, [billingInterval, currentSubscription]);
+    },
+    [billingInterval, currentSubscription]
+  );
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Ambient particles */}
       {[...Array(20)].map((_, i) => (
         <motion.div
           key={i}
-          className="fixed w-1 h-1 rounded-full bg-primary-400 pointer-events-none"
+          className="pointer-events-none fixed h-1 w-1 rounded-full bg-primary-400"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,
@@ -202,35 +208,38 @@ export default function PremiumPage() {
         />
       ))}
 
-      <div className="max-w-6xl mx-auto px-6 py-12 relative z-10">
+      <div className="relative z-10 mx-auto max-w-6xl px-6 py-12">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="mb-12 text-center"
         >
           <motion.div
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-500/20 border border-primary-500/30 mb-6"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary-500/30 bg-primary-500/20 px-4 py-2"
             whileHover={{ scale: 1.05 }}
           >
             <SparklesIcon className="h-5 w-5 text-primary-400" />
-            <span className="text-primary-400 font-semibold">Unlock Your Potential</span>
+            <span className="font-semibold text-primary-400">Unlock Your Potential</span>
           </motion.div>
 
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-transparent mb-4">
+          <h1 className="mb-4 bg-gradient-to-r from-white via-primary-200 to-purple-200 bg-clip-text text-4xl font-bold text-transparent md:text-5xl">
             Upgrade to Premium
           </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Get access to exclusive features, unlimited customization, and the best CGraph experience.
+          <p className="mx-auto max-w-2xl text-lg text-gray-400">
+            Get access to exclusive features, unlimited customization, and the best CGraph
+            experience.
           </p>
 
           {/* Coin Balance */}
           <motion.div
-            className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-yellow-500/20 border border-yellow-500/30"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl border border-yellow-500/30 bg-yellow-500/20 px-4 py-2"
             whileHover={{ scale: 1.05 }}
           >
             <CurrencyDollarIcon className="h-5 w-5 text-yellow-400" />
-            <span className="text-yellow-400 font-semibold">{(coinBalance ?? 0).toLocaleString()} Coins</span>
+            <span className="font-semibold text-yellow-400">
+              {(coinBalance ?? 0).toLocaleString()} Coins
+            </span>
             <Button
               variant="ghost"
               size="sm"
@@ -247,12 +256,12 @@ export default function PremiumPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="flex justify-center mb-10"
+          className="mb-10 flex justify-center"
         >
-          <div className="inline-flex items-center gap-4 p-1 rounded-xl bg-dark-800 border border-dark-700">
+          <div className="inline-flex items-center gap-4 rounded-xl border border-dark-700 bg-dark-800 p-1">
             <button
               onClick={() => setBillingInterval('month')}
-              className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`rounded-lg px-6 py-2 text-sm font-medium transition-all ${
                 billingInterval === 'month'
                   ? 'bg-primary-500 text-white'
                   : 'text-gray-400 hover:text-white'
@@ -262,14 +271,14 @@ export default function PremiumPage() {
             </button>
             <button
               onClick={() => setBillingInterval('year')}
-              className={`px-6 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+              className={`flex items-center gap-2 rounded-lg px-6 py-2 text-sm font-medium transition-all ${
                 billingInterval === 'year'
                   ? 'bg-primary-500 text-white'
                   : 'text-gray-400 hover:text-white'
               }`}
             >
               Yearly
-              <span className="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-xs">
+              <span className="rounded-full bg-green-500/20 px-2 py-0.5 text-xs text-green-400">
                 Save 20%
               </span>
             </button>
@@ -277,7 +286,7 @@ export default function PremiumPage() {
         </motion.div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div className="mb-12 grid grid-cols-1 gap-6 md:grid-cols-3">
           {PREMIUM_TIERS.map((tier, index) => {
             const isCurrentPlan = currentSubscription === tier.id;
             const isSelected = selectedTier === tier.id;
@@ -296,14 +305,14 @@ export default function PremiumPage() {
                   glow={tier.popular || isSelected}
                   glowColor={tier.popular ? 'rgba(16, 185, 129, 0.3)' : undefined}
                   borderGradient={tier.popular}
-                  className={`p-6 h-full relative overflow-hidden transition-all ${
+                  className={`relative h-full overflow-hidden p-6 transition-all ${
                     isSelected ? 'ring-2 ring-primary-500' : ''
                   }`}
                 >
                   {/* Popular Badge */}
                   {tier.popular && (
-                    <div className="absolute top-0 right-0">
-                      <div className="bg-gradient-to-r from-primary-500 to-purple-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
+                    <div className="absolute right-0 top-0">
+                      <div className="rounded-bl-lg bg-gradient-to-r from-primary-500 to-purple-500 px-4 py-1 text-xs font-bold text-white">
                         MOST POPULAR
                       </div>
                     </div>
@@ -314,15 +323,15 @@ export default function PremiumPage() {
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      className="absolute top-4 left-4 px-3 py-1 rounded-full bg-green-500/20 border border-green-500/30"
+                      className="absolute left-4 top-4 rounded-full border border-green-500/30 bg-green-500/20 px-3 py-1"
                     >
-                      <span className="text-xs text-green-400 font-semibold">Current Plan</span>
+                      <span className="text-xs font-semibold text-green-400">Current Plan</span>
                     </motion.div>
                   )}
 
                   {/* Tier Header */}
-                  <div className="flex items-center gap-3 mb-4 mt-4">
-                    <div className={`p-3 rounded-xl bg-gradient-to-br ${tier.gradient}`}>
+                  <div className="mb-4 mt-4 flex items-center gap-3">
+                    <div className={`rounded-xl bg-gradient-to-br p-3 ${tier.gradient}`}>
                       {tier.icon}
                     </div>
                     <div>
@@ -334,9 +343,7 @@ export default function PremiumPage() {
                   {/* Price */}
                   <div className="mb-6">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-4xl font-bold text-white">
-                        ${getPrice(tier)}
-                      </span>
+                      <span className="text-4xl font-bold text-white">${getPrice(tier)}</span>
                       {tier.price > 0 && (
                         <span className="text-gray-400">
                           /{billingInterval === 'year' ? 'year' : 'month'}
@@ -344,14 +351,14 @@ export default function PremiumPage() {
                       )}
                     </div>
                     {billingInterval === 'year' && tier.price > 0 && (
-                      <p className="text-sm text-green-400 mt-1">
+                      <p className="mt-1 text-sm text-green-400">
                         ${(tier.price * 12).toFixed(2)} billed annually
                       </p>
                     )}
                   </div>
 
                   {/* Features */}
-                  <ul className="space-y-3 mb-6">
+                  <ul className="mb-6 space-y-3">
                     {tier.features.slice(0, 8).map((feature, fIndex) => (
                       <motion.li
                         key={fIndex}
@@ -361,14 +368,14 @@ export default function PremiumPage() {
                         className="flex items-center gap-2"
                       >
                         {feature.included ? (
-                          <CheckIcon className="h-5 w-5 text-green-400 flex-shrink-0" />
+                          <CheckIcon className="h-5 w-5 flex-shrink-0 text-green-400" />
                         ) : (
-                          <XMarkIcon className="h-5 w-5 text-gray-600 flex-shrink-0" />
+                          <XMarkIcon className="h-5 w-5 flex-shrink-0 text-gray-600" />
                         )}
                         <span className={feature.included ? 'text-gray-300' : 'text-gray-600'}>
                           {feature.name}
                           {feature.detail && (
-                            <span className="text-xs text-gray-500 ml-1">({feature.detail})</span>
+                            <span className="ml-1 text-xs text-gray-500">({feature.detail})</span>
                           )}
                         </span>
                       </motion.li>
@@ -382,19 +389,19 @@ export default function PremiumPage() {
                       handleSubscribe(tier.id);
                     }}
                     disabled={isCurrentPlan || isSubscribing}
-                    className={`w-full py-3 rounded-xl font-semibold transition-all ${
+                    className={`w-full rounded-xl py-3 font-semibold transition-all ${
                       isCurrentPlan
-                        ? 'bg-dark-700 text-gray-500 cursor-not-allowed'
+                        ? 'cursor-not-allowed bg-dark-700 text-gray-500'
                         : tier.popular
-                        ? `bg-gradient-to-r ${tier.gradient} text-white hover:opacity-90`
-                        : 'bg-dark-700 text-white hover:bg-dark-600'
+                          ? `bg-gradient-to-r ${tier.gradient} text-white hover:opacity-90`
+                          : 'bg-dark-700 text-white hover:bg-dark-600'
                     }`}
                     whileHover={!isCurrentPlan ? { scale: 1.02 } : {}}
                     whileTap={!isCurrentPlan ? { scale: 0.98 } : {}}
                   >
                     {isSubscribing && selectedTier === tier.id ? (
                       <motion.div
-                        className="h-5 w-5 rounded-full border-2 border-white border-t-transparent mx-auto"
+                        className="mx-auto h-5 w-5 rounded-full border-2 border-white border-t-transparent"
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                       />
@@ -417,14 +424,14 @@ export default function PremiumPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-center mb-8"
+          className="mb-8 text-center"
         >
           <button
             onClick={() => {
               setShowFeatureComparison(!showFeatureComparison);
               HapticFeedback.light();
             }}
-            className="text-primary-400 hover:text-primary-300 font-medium flex items-center gap-2 mx-auto"
+            className="mx-auto flex items-center gap-2 font-medium text-primary-400 hover:text-primary-300"
           >
             {showFeatureComparison ? 'Hide' : 'Show'} full feature comparison
             <motion.div
@@ -432,7 +439,12 @@ export default function PremiumPage() {
               transition={{ duration: 0.3 }}
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </motion.div>
           </button>
@@ -447,16 +459,18 @@ export default function PremiumPage() {
               exit={{ height: 0, opacity: 0 }}
               className="overflow-hidden"
             >
-              <GlassCard variant="frosted" className="p-6 overflow-x-auto">
+              <GlassCard variant="frosted" className="overflow-x-auto p-6">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-dark-700">
-                      <th className="text-left py-4 px-4 text-gray-400 font-medium">Feature</th>
-                      {PREMIUM_TIERS.map(tier => (
-                        <th key={tier.id} className="text-center py-4 px-4">
-                          <span className={`font-bold ${
-                            tier.popular ? 'text-primary-400' : 'text-white'
-                          }`}>
+                      <th className="px-4 py-4 text-left font-medium text-gray-400">Feature</th>
+                      {PREMIUM_TIERS.map((tier) => (
+                        <th key={tier.id} className="px-4 py-4 text-center">
+                          <span
+                            className={`font-bold ${
+                              tier.popular ? 'text-primary-400' : 'text-white'
+                            }`}
+                          >
                             {tier.name}
                           </span>
                         </th>
@@ -466,15 +480,15 @@ export default function PremiumPage() {
                   <tbody>
                     {(PREMIUM_TIERS[0]?.features ?? []).map((feature, index) => (
                       <tr key={index} className="border-b border-dark-800">
-                        <td className="py-4 px-4 text-gray-300">{feature.name}</td>
-                        {PREMIUM_TIERS.map(tier => {
+                        <td className="px-4 py-4 text-gray-300">{feature.name}</td>
+                        {PREMIUM_TIERS.map((tier) => {
                           const tierFeature = tier.features[index];
                           return (
-                            <td key={tier.id} className="text-center py-4 px-4">
+                            <td key={tier.id} className="px-4 py-4 text-center">
                               {tierFeature?.included ? (
-                                <CheckIcon className="h-5 w-5 text-green-400 mx-auto" />
+                                <CheckIcon className="mx-auto h-5 w-5 text-green-400" />
                               ) : (
-                                <XMarkIcon className="h-5 w-5 text-gray-600 mx-auto" />
+                                <XMarkIcon className="mx-auto h-5 w-5 text-gray-600" />
                               )}
                             </td>
                           );
@@ -495,11 +509,11 @@ export default function PremiumPage() {
           transition={{ delay: 0.6 }}
           className="mt-16"
         >
-          <h2 className="text-2xl font-bold text-white text-center mb-8">
+          <h2 className="mb-8 text-center text-2xl font-bold text-white">
             Frequently Asked Questions
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-6 md:grid-cols-2">
             {[
               {
                 q: 'Can I cancel anytime?',
@@ -515,12 +529,12 @@ export default function PremiumPage() {
               },
               {
                 q: 'Is there a free trial?',
-                a: 'We offer a 7-day free trial for Premium. Cancel anytime during the trial and you won\'t be charged.',
+                a: "We offer a 7-day free trial for Premium. Cancel anytime during the trial and you won't be charged.",
               },
             ].map((faq, index) => (
               <GlassCard key={index} variant="frosted" className="p-6">
-                <h3 className="font-semibold text-white mb-2">{faq.q}</h3>
-                <p className="text-gray-400 text-sm">{faq.a}</p>
+                <h3 className="mb-2 font-semibold text-white">{faq.q}</h3>
+                <p className="text-sm text-gray-400">{faq.a}</p>
               </GlassCard>
             ))}
           </div>
@@ -533,17 +547,13 @@ export default function PremiumPage() {
           transition={{ delay: 0.7 }}
           className="mt-16 text-center"
         >
-          <GlassCard variant="holographic" glow borderGradient className="p-8 inline-block">
-            <GiftIcon className="h-12 w-12 text-primary-400 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">
-              Not ready for Premium?
-            </h3>
-            <p className="text-gray-400 mb-4">
+          <GlassCard variant="holographic" glow borderGradient className="inline-block p-8">
+            <GiftIcon className="mx-auto mb-4 h-12 w-12 text-primary-400" />
+            <h3 className="mb-2 text-xl font-bold text-white">Not ready for Premium?</h3>
+            <p className="mb-4 text-gray-400">
               Get coins to unlock individual features and rewards!
             </p>
-            <Button onClick={() => navigate('/premium/coins')}>
-              Explore Coin Shop
-            </Button>
+            <Button onClick={() => navigate('/premium/coins')}>Explore Coin Shop</Button>
           </GlassCard>
         </motion.div>
       </div>

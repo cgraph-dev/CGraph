@@ -1,6 +1,6 @@
 /**
  * CGraph Theme Engine
- * 
+ *
  * Comprehensive theming system providing:
  * - Multiple preset themes (dark, light, matrix, holographic, etc.)
  * - Custom theme creation with full color control
@@ -8,16 +8,20 @@
  * - CSS variable injection for real-time updates
  * - Accessibility compliance (WCAG 2.1 AA contrast ratios)
  * - Theme synchronization across browser tabs
- * 
+ *
  * Architecture:
  * - ThemeRegistry: Central store for all available themes
  * - ThemeProvider: React context for theme distribution
  * - ThemeEngine: Core logic for theme application and persistence
- * 
+ *
  * @version 4.0.0
  * @since v0.7.36
  * @author CGraph Development Team
  */
+
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ThemeEngine');
 
 // =============================================================================
 // TYPE DEFINITIONS
@@ -34,47 +38,47 @@ export interface ThemeColors {
   primaryLight: string;
   /** Darker variant of primary for pressed states */
   primaryDark: string;
-  
+
   /** Secondary accent color for supplementary elements */
   secondary: string;
   secondaryLight: string;
   secondaryDark: string;
-  
+
   /** Accent color for highlighting and emphasis */
   accent: string;
   accentLight: string;
   accentDark: string;
-  
+
   /** Background colors for different elevation levels */
   background: string;
   backgroundElevated: string;
   backgroundSunken: string;
-  
+
   /** Surface colors for cards, modals, and overlays */
   surface: string;
   surfaceElevated: string;
   surfaceBorder: string;
-  
+
   /** Text colors for different contexts */
   textPrimary: string;
   textSecondary: string;
   textMuted: string;
   textInverse: string;
-  
+
   /** Semantic colors for status indicators */
   success: string;
   warning: string;
   error: string;
   info: string;
-  
+
   /** Interactive element colors */
   link: string;
   linkHover: string;
-  
+
   /** Glow and shadow colors for effects */
   glow: string;
   shadow: string;
-  
+
   /** Holographic-specific colors */
   holoPrimary: string;
   holoSecondary: string;
@@ -678,13 +682,13 @@ class ThemeEngineImpl {
   private preferences: ThemePreferences;
   private broadcastChannel: BroadcastChannel | null = null;
   private listeners: Set<(theme: Theme) => void> = new Set();
-  
+
   constructor() {
     this.preferences = this.loadPreferences();
     this.initBroadcastChannel();
     this.applyTheme(this.getActiveTheme());
   }
-  
+
   /**
    * Load user preferences from localStorage.
    */
@@ -692,7 +696,7 @@ class ThemeEngineImpl {
     if (typeof window === 'undefined') {
       return this.getDefaultPreferences();
     }
-    
+
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
@@ -700,12 +704,12 @@ class ThemeEngineImpl {
         return { ...this.getDefaultPreferences(), ...parsed };
       }
     } catch (error) {
-      console.error('[ThemeEngine] Failed to load preferences:', error);
+      logger.error('Failed to load preferences:', error);
     }
-    
+
     return this.getDefaultPreferences();
   }
-  
+
   /**
    * Get default preferences.
    */
@@ -727,26 +731,26 @@ class ThemeEngineImpl {
       },
     };
   }
-  
+
   /**
    * Save preferences to localStorage.
    */
   private savePreferences(): void {
     if (typeof window === 'undefined') return;
-    
+
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(this.preferences));
     } catch (error) {
-      console.error('[ThemeEngine] Failed to save preferences:', error);
+      logger.error('Failed to save preferences:', error);
     }
   }
-  
+
   /**
    * Initialize broadcast channel for cross-tab synchronization.
    */
   private initBroadcastChannel(): void {
     if (typeof window === 'undefined' || !('BroadcastChannel' in window)) return;
-    
+
     try {
       this.broadcastChannel = new BroadcastChannel(BROADCAST_CHANNEL);
       this.broadcastChannel.onmessage = (event) => {
@@ -755,10 +759,10 @@ class ThemeEngineImpl {
         }
       };
     } catch (error) {
-      console.error('[ThemeEngine] Failed to initialize broadcast channel:', error);
+      logger.error('Failed to initialize broadcast channel:', error);
     }
   }
-  
+
   /**
    * Get the currently active theme.
    */
@@ -769,38 +773,38 @@ class ThemeEngineImpl {
       const systemThemeId = prefersDark ? 'dark' : 'light';
       return THEME_REGISTRY[systemThemeId] ?? THEME_DARK;
     }
-    
+
     // Check custom themes first
     const customTheme = this.preferences.customThemes.find(
-      t => t.id === this.preferences.activeThemeId
+      (t) => t.id === this.preferences.activeThemeId
     );
     if (customTheme) return customTheme;
-    
+
     // Check built-in themes
     return THEME_REGISTRY[this.preferences.activeThemeId] ?? THEME_DARK;
   }
-  
+
   /**
    * Apply a theme to the document.
    */
   applyTheme(theme: Theme, broadcast = true): void {
     this.currentTheme = theme;
     this.preferences.activeThemeId = theme.id;
-    
+
     if (typeof document !== 'undefined') {
       this.injectCSSVariables(theme);
       this.updateDocumentClasses(theme);
     }
-    
+
     this.savePreferences();
-    
+
     if (broadcast && this.broadcastChannel) {
       this.broadcastChannel.postMessage({ type: 'theme-change', theme });
     }
-    
+
     this.notifyListeners(theme);
   }
-  
+
   /**
    * Inject CSS variables into the document root.
    */
@@ -808,19 +812,19 @@ class ThemeEngineImpl {
     const root = document.documentElement;
     const { colors, typography, spacing, animations } = theme;
     const { settings } = this.preferences;
-    
+
     // Apply font scale
     const scaledFontSize = (size: string) => {
       const value = parseFloat(size);
       return `${value * settings.fontScale}px`;
     };
-    
+
     // Color variables
     Object.entries(colors).forEach(([key, value]) => {
       const cssVarName = `--color-${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`;
       root.style.setProperty(cssVarName, value);
     });
-    
+
     // Typography variables
     root.style.setProperty('--font-family', typography.fontFamily);
     root.style.setProperty('--font-family-mono', typography.fontFamilyMono);
@@ -832,7 +836,7 @@ class ThemeEngineImpl {
     root.style.setProperty('--line-height-normal', typography.lineHeightNormal);
     root.style.setProperty('--line-height-tight', typography.lineHeightTight);
     root.style.setProperty('--line-height-loose', typography.lineHeightLoose);
-    
+
     // Spacing variables
     root.style.setProperty('--spacing-unit', `${spacing.unit}px`);
     root.style.setProperty('--spacing-xs', spacing.xs);
@@ -844,35 +848,35 @@ class ThemeEngineImpl {
     root.style.setProperty('--border-radius', spacing.borderRadius);
     root.style.setProperty('--border-radius-lg', spacing.borderRadiusLarge);
     root.style.setProperty('--border-radius-full', spacing.borderRadiusFull);
-    
+
     // Animation variables
     root.style.setProperty('--duration-fast', animations.durationFast);
     root.style.setProperty('--duration-normal', animations.durationNormal);
     root.style.setProperty('--duration-slow', animations.durationSlow);
     root.style.setProperty('--easing-default', animations.easingDefault);
     root.style.setProperty('--easing-emphasized', animations.easingEmphasized);
-    
+
     // Message spacing
     root.style.setProperty('--message-spacing', `${16 * settings.messageSpacing}px`);
   }
-  
+
   /**
    * Update document classes based on theme.
    */
   private updateDocumentClasses(theme: Theme): void {
     const root = document.documentElement;
     const { settings } = this.preferences;
-    
+
     // Remove existing theme classes
     root.classList.remove('light', 'dark', 'theme-matrix', 'theme-holo', 'theme-special');
-    
+
     // Add category class
     if (theme.category === 'light') {
       root.classList.add('light');
     } else {
       root.classList.add('dark');
     }
-    
+
     // Add special theme classes
     if (theme.id === 'matrix') {
       root.classList.add('theme-matrix');
@@ -882,39 +886,39 @@ class ThemeEngineImpl {
     if (theme.category === 'special') {
       root.classList.add('theme-special');
     }
-    
+
     // Accessibility classes
     if (settings.reduceMotion) {
       root.classList.add('reduce-motion');
     } else {
       root.classList.remove('reduce-motion');
     }
-    
+
     if (settings.highContrast) {
       root.classList.add('high-contrast');
     } else {
       root.classList.remove('high-contrast');
     }
-    
+
     // Message display
     root.classList.remove('message-cozy', 'message-compact');
     root.classList.add(`message-${settings.messageDisplay}`);
   }
-  
+
   /**
    * Set the active theme by ID.
    */
   setTheme(themeId: string): void {
-    const theme = THEME_REGISTRY[themeId] ?? 
-                  this.preferences.customThemes.find(t => t.id === themeId);
-    
+    const theme =
+      THEME_REGISTRY[themeId] ?? this.preferences.customThemes.find((t) => t.id === themeId);
+
     if (theme) {
       this.applyTheme(theme);
     } else {
-      console.error(`[ThemeEngine] Theme "${themeId}" not found`);
+      logger.error(`Theme "${themeId}" not found`);
     }
   }
-  
+
   /**
    * Update theme settings.
    */
@@ -923,24 +927,21 @@ class ThemeEngineImpl {
     this.savePreferences();
     this.applyTheme(this.currentTheme);
   }
-  
+
   /**
    * Get all available themes.
    */
   getAllThemes(): Theme[] {
-    return [
-      ...Object.values(THEME_REGISTRY),
-      ...this.preferences.customThemes,
-    ];
+    return [...Object.values(THEME_REGISTRY), ...this.preferences.customThemes];
   }
-  
+
   /**
    * Get themes by category.
    */
   getThemesByCategory(category: Theme['category']): Theme[] {
-    return this.getAllThemes().filter(t => t.category === category);
+    return this.getAllThemes().filter((t) => t.category === category);
   }
-  
+
   /**
    * Create a custom theme.
    */
@@ -954,27 +955,25 @@ class ThemeEngineImpl {
         updatedAt: new Date().toISOString(),
       },
     };
-    
+
     // Remove existing theme with same ID
     this.preferences.customThemes = this.preferences.customThemes.filter(
-      t => t.id !== newTheme.id
+      (t) => t.id !== newTheme.id
     );
-    
+
     this.preferences.customThemes.push(newTheme);
     this.savePreferences();
-    
+
     return newTheme;
   }
-  
+
   /**
    * Delete a custom theme.
    */
   deleteCustomTheme(themeId: string): boolean {
     const initialLength = this.preferences.customThemes.length;
-    this.preferences.customThemes = this.preferences.customThemes.filter(
-      t => t.id !== themeId
-    );
-    
+    this.preferences.customThemes = this.preferences.customThemes.filter((t) => t.id !== themeId);
+
     if (this.preferences.customThemes.length < initialLength) {
       // If active theme was deleted, switch to default
       if (this.preferences.activeThemeId === themeId) {
@@ -983,24 +982,24 @@ class ThemeEngineImpl {
       this.savePreferences();
       return true;
     }
-    
+
     return false;
   }
-  
+
   /**
    * Get current theme.
    */
   getCurrentTheme(): Theme {
     return this.currentTheme;
   }
-  
+
   /**
    * Get current preferences.
    */
   getPreferences(): ThemePreferences {
     return { ...this.preferences };
   }
-  
+
   /**
    * Subscribe to theme changes.
    */
@@ -1008,16 +1007,16 @@ class ThemeEngineImpl {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
   }
-  
+
   /**
    * Notify all listeners of theme change.
    */
   private notifyListeners(theme: Theme): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
         listener(theme);
       } catch (error) {
-        console.error('[ThemeEngine] Listener error:', error);
+        logger.error('Listener error:', error);
       }
     });
   }
@@ -1031,4 +1030,5 @@ export const setTheme = (themeId: string) => themeEngine.setTheme(themeId);
 export const getCurrentTheme = () => themeEngine.getCurrentTheme();
 export const getAllThemes = () => themeEngine.getAllThemes();
 export const getThemeById = (themeId: string): Theme | undefined => THEME_REGISTRY[themeId];
-export const subscribeToTheme = (listener: (theme: Theme) => void) => themeEngine.subscribe(listener);
+export const subscribeToTheme = (listener: (theme: Theme) => void) =>
+  themeEngine.subscribe(listener);

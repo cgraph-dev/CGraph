@@ -14,6 +14,9 @@ import { useGroupStore, type Group } from '@/stores/groupStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('GroupList');
 
 // Reserved for future use
 void ThemedAvatar;
@@ -400,7 +403,7 @@ function CreateGroupModal({ onClose }: { onClose: () => void }) {
       onClose();
       navigate(`/groups/${group.id}`);
     } catch (error) {
-      console.error('Failed to create group:', error);
+      logger.error('Failed to create group:', error);
       HapticFeedback.error();
     } finally {
       setIsCreating(false);

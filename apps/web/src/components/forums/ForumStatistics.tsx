@@ -9,10 +9,13 @@ import {
   ChartBarIcon,
 } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ForumStatistics');
 
 /**
  * ForumStatistics Component
- * 
+ *
  * MyBB-style forum statistics panel showing:
  * - Total threads, posts, members
  * - Newest member
@@ -27,19 +30,19 @@ interface ForumStats {
   totalThreads: number;
   totalPosts: number;
   totalMembers: number;
-  
+
   // Newest
   newestMember: {
     id: string;
     username: string;
     displayName: string | null;
   } | null;
-  
+
   // Activity
   postsToday: number;
   threadsToday: number;
   newMembersToday: number;
-  
+
   // Online
   usersOnline: number;
   guestsOnline: number;
@@ -50,7 +53,7 @@ interface ForumStats {
   }[];
   mostUsersOnline: number;
   mostUsersOnlineDate: string | null;
-  
+
   // Active
   activeUsers24h: number;
 }
@@ -78,24 +81,24 @@ export function ForumStatistics({
     async function fetchStats() {
       setIsLoading(true);
       setError(null);
-      
+
       try {
-        const endpoint = forumId 
-          ? `/api/v1/forums/${forumId}/statistics`
-          : '/api/v1/statistics';
-        
+        const endpoint = forumId ? `/api/v1/forums/${forumId}/statistics` : '/api/v1/statistics';
+
         const response = await api.get(endpoint);
         const data = response.data.statistics || response.data;
-        
+
         setStats({
           totalThreads: data.total_threads || 0,
           totalPosts: data.total_posts || 0,
           totalMembers: data.total_members || 0,
-          newestMember: data.newest_member ? {
-            id: data.newest_member.id,
-            username: data.newest_member.username,
-            displayName: data.newest_member.display_name || null,
-          } : null,
+          newestMember: data.newest_member
+            ? {
+                id: data.newest_member.id,
+                username: data.newest_member.username,
+                displayName: data.newest_member.display_name || null,
+              }
+            : null,
           postsToday: data.posts_today || 0,
           threadsToday: data.threads_today || 0,
           newMembersToday: data.new_members_today || 0,
@@ -111,7 +114,7 @@ export function ForumStatistics({
           activeUsers24h: data.active_users_24h || 0,
         });
       } catch (err) {
-        console.error('[ForumStatistics] Failed to fetch:', err);
+        logger.error('[ForumStatistics] Failed to fetch:', err);
         setError('Failed to load statistics');
       } finally {
         setIsLoading(false);
@@ -119,7 +122,7 @@ export function ForumStatistics({
     }
 
     fetchStats();
-    
+
     // Refresh every 60 seconds
     const interval = setInterval(fetchStats, 60000);
     return () => clearInterval(interval);
@@ -127,11 +130,11 @@ export function ForumStatistics({
 
   if (isLoading) {
     return (
-      <div className={`animate-pulse bg-gray-100 dark:bg-gray-800 rounded-lg p-4 ${className}`}>
-        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-3"></div>
+      <div className={`animate-pulse rounded-lg bg-gray-100 p-4 dark:bg-gray-800 ${className}`}>
+        <div className="mb-3 h-4 w-1/4 rounded bg-gray-200 dark:bg-gray-700"></div>
         <div className="space-y-2">
-          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          <div className="h-3 w-3/4 rounded bg-gray-200 dark:bg-gray-700"></div>
+          <div className="h-3 w-1/2 rounded bg-gray-200 dark:bg-gray-700"></div>
         </div>
       </div>
     );
@@ -139,7 +142,9 @@ export function ForumStatistics({
 
   if (error || !stats) {
     return (
-      <div className={`bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg p-4 ${className}`}>
+      <div
+        className={`rounded-lg bg-red-50 p-4 text-red-600 dark:bg-red-900/20 dark:text-red-400 ${className}`}
+      >
         {error || 'Statistics unavailable'}
       </div>
     );
@@ -148,50 +153,68 @@ export function ForumStatistics({
   if (compact) {
     return (
       <div className={`flex items-center gap-6 text-sm ${className}`}>
-        <StatBadge icon={<DocumentTextIcon className="w-4 h-4" />} label="Threads" value={stats.totalThreads} />
-        <StatBadge icon={<ChatBubbleLeftRightIcon className="w-4 h-4" />} label="Posts" value={stats.totalPosts} />
-        <StatBadge icon={<UsersIcon className="w-4 h-4" />} label="Members" value={stats.totalMembers} />
-        <StatBadge icon={<UserIcon className="w-4 h-4" />} label="Online" value={stats.usersOnline + stats.guestsOnline} />
+        <StatBadge
+          icon={<DocumentTextIcon className="h-4 w-4" />}
+          label="Threads"
+          value={stats.totalThreads}
+        />
+        <StatBadge
+          icon={<ChatBubbleLeftRightIcon className="h-4 w-4" />}
+          label="Posts"
+          value={stats.totalPosts}
+        />
+        <StatBadge
+          icon={<UsersIcon className="h-4 w-4" />}
+          label="Members"
+          value={stats.totalMembers}
+        />
+        <StatBadge
+          icon={<UserIcon className="h-4 w-4" />}
+          label="Online"
+          value={stats.usersOnline + stats.guestsOnline}
+        />
       </div>
     );
   }
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}>
+    <div
+      className={`rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 ${className}`}
+    >
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-          <ChartBarIcon className="w-5 h-5 text-blue-500" />
+      <div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
+        <h3 className="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+          <ChartBarIcon className="h-5 w-5 text-blue-500" />
           Forum Statistics
         </h3>
       </div>
 
       {/* Stats Grid */}
       <div className="p-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-4">
           <StatCard
-            icon={<DocumentTextIcon className="w-6 h-6" />}
+            icon={<DocumentTextIcon className="h-6 w-6" />}
             label="Threads"
             value={stats.totalThreads}
             subValue={`+${stats.threadsToday} today`}
             iconColor="text-blue-500"
           />
           <StatCard
-            icon={<ChatBubbleLeftRightIcon className="w-6 h-6" />}
+            icon={<ChatBubbleLeftRightIcon className="h-6 w-6" />}
             label="Posts"
             value={stats.totalPosts}
             subValue={`+${stats.postsToday} today`}
             iconColor="text-green-500"
           />
           <StatCard
-            icon={<UsersIcon className="w-6 h-6" />}
+            icon={<UsersIcon className="h-6 w-6" />}
             label="Members"
             value={stats.totalMembers}
             subValue={`+${stats.newMembersToday} today`}
             iconColor="text-purple-500"
           />
           <StatCard
-            icon={<ArrowTrendingUpIcon className="w-6 h-6" />}
+            icon={<ArrowTrendingUpIcon className="h-6 w-6" />}
             label="Active (24h)"
             value={stats.activeUsers24h}
             iconColor="text-orange-500"
@@ -199,9 +222,9 @@ export function ForumStatistics({
         </div>
 
         {/* Online Now */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+        <div className="border-t border-gray-200 pt-4 dark:border-gray-700">
+          <div className="mb-3 flex items-center gap-2">
+            <div className="h-2 w-2 animate-pulse rounded-full bg-green-500"></div>
             <span className="font-medium text-gray-900 dark:text-white">
               {stats.usersOnline + stats.guestsOnline} Users Online
             </span>
@@ -212,12 +235,12 @@ export function ForumStatistics({
 
           {/* Online Members List */}
           {showOnlineList && stats.membersOnline.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="mb-4 flex flex-wrap gap-2">
               {stats.membersOnline.slice(0, 20).map((member) => (
                 <a
                   key={member.id}
                   href={`/profile/${member.username}`}
-                  className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                  className="text-sm text-blue-600 hover:underline dark:text-blue-400"
                 >
                   {member.displayName || member.username}
                 </a>
@@ -233,9 +256,13 @@ export function ForumStatistics({
           {/* Record Stats */}
           {showRecordStats && stats.mostUsersOnline > 0 && (
             <div className="flex items-center gap-2 text-sm text-gray-500">
-              <ClockIcon className="w-4 h-4" />
+              <ClockIcon className="h-4 w-4" />
               <span>
-                Record: <strong className="text-gray-700 dark:text-gray-300">{stats.mostUsersOnline}</strong> users online
+                Record:{' '}
+                <strong className="text-gray-700 dark:text-gray-300">
+                  {stats.mostUsersOnline}
+                </strong>{' '}
+                users online
                 {stats.mostUsersOnlineDate && (
                   <span> on {new Date(stats.mostUsersOnlineDate).toLocaleDateString()}</span>
                 )}
@@ -246,13 +273,13 @@ export function ForumStatistics({
 
         {/* Newest Member */}
         {stats.newestMember && (
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4 mt-4">
+          <div className="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700">
             <div className="flex items-center gap-2 text-sm">
-              <UserIcon className="w-4 h-4 text-gray-400" />
+              <UserIcon className="h-4 w-4 text-gray-400" />
               <span className="text-gray-500">Welcome our newest member:</span>
               <a
                 href={`/profile/${stats.newestMember.username}`}
-                className="font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                className="font-medium text-blue-600 hover:underline dark:text-blue-400"
               >
                 {stats.newestMember.displayName || stats.newestMember.username}
               </a>
@@ -275,7 +302,7 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, subValue, iconColor = 'text-gray-500' }: StatCardProps) {
   return (
-    <div className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+    <div className="flex items-start gap-3 rounded-lg bg-gray-50 p-3 dark:bg-gray-700/50">
       <div className={iconColor}>{icon}</div>
       <div>
         <div className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -283,7 +310,7 @@ function StatCard({ icon, label, value, subValue, iconColor = 'text-gray-500' }:
         </div>
         <div className="text-sm text-gray-500">{label}</div>
         {subValue && (
-          <div className="text-xs text-green-600 dark:text-green-400 mt-1">{subValue}</div>
+          <div className="mt-1 text-xs text-green-600 dark:text-green-400">{subValue}</div>
         )}
       </div>
     </div>

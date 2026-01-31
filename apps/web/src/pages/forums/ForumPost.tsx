@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ForumPost');
 import { useForumStore, Comment } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
 import { formatTimeAgo } from '@/lib/utils';
@@ -103,7 +106,7 @@ export default function ForumPost() {
       await createComment(postId, commentContent.trim());
       setCommentContent('');
     } catch (error) {
-      console.error('Failed to submit comment:', error);
+      logger.error('Failed to submit comment:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -118,7 +121,7 @@ export default function ForumPost() {
       setReplyContent('');
       setReplyingTo(null);
     } catch (error) {
-      console.error('Failed to submit reply:', error);
+      logger.error('Failed to submit reply:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -673,7 +676,7 @@ export default function ForumPost() {
                     setShowReportModal(false);
                     setReportReason('');
                   } catch (err) {
-                    console.error('Failed to submit report:', err);
+                    logger.error('Failed to submit report:', err);
                     toast.error('Failed to submit report', 'Please try again later.');
                   } finally {
                     setIsReporting(false);

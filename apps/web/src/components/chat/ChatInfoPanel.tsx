@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ChatInfoPanel');
 import {
   XMarkIcon,
   UserCircleIcon,
@@ -99,7 +102,7 @@ export default function ChatInfoPanel({
       } catch (error) {
         // Revert on error
         setIsMuted(!newMutedState);
-        console.error('Failed to toggle mute:', error);
+        logger.error('Failed to toggle mute:', error);
       }
     }
   }, [isMuted, conversationId, onMuteToggle]);
@@ -115,7 +118,7 @@ export default function ChatInfoPanel({
       onBlock?.();
       onClose(); // Close panel after blocking
     } catch (error) {
-      console.error('Failed to block user:', error);
+      logger.error('Failed to block user:', error);
     } finally {
       setIsBlocking(false);
       setShowBlockConfirm(false);
@@ -138,7 +141,7 @@ export default function ChatInfoPanel({
       setShowReportModal(false);
       setReportReason('');
     } catch (error) {
-      console.error('Failed to report user:', error);
+      logger.error('Failed to report user:', error);
     } finally {
       setIsReporting(false);
     }
@@ -453,7 +456,7 @@ export default function ChatInfoPanel({
           <motion.button
             onClick={() => {
               if (!userId || userId === 'undefined' || userId === 'null') {
-                console.warn('ChatInfoPanel: Cannot view profile - invalid userId');
+                logger.warn('ChatInfoPanel: Cannot view profile - invalid userId');
                 return;
               }
               navigate(`/user/${userId}`);
@@ -471,7 +474,7 @@ export default function ChatInfoPanel({
               try {
                 navigate('/customize/chat');
               } catch (error) {
-                console.error('Navigation to customize/chat failed:', error);
+                logger.error('Navigation to customize/chat failed:', error);
               }
             }}
             className="flex w-full items-center justify-center gap-2 rounded-lg border border-purple-500/30 bg-purple-600/20 px-4 py-2 font-medium text-purple-400 transition-colors hover:bg-purple-600/30"

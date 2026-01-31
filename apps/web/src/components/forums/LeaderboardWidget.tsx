@@ -13,6 +13,9 @@ import { api } from '@/lib/api';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { TrophyIcon, SparklesIcon, ChevronRightIcon, FireIcon } from '@heroicons/react/24/outline';
 import { TrophyIcon as TrophyIconSolid, CheckBadgeIcon } from '@heroicons/react/24/solid';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('LeaderboardWidget');
 
 interface ContributorUser {
   id: string;
@@ -220,7 +223,7 @@ export function ForumLeaderboardWidget({
           }))
         );
       } catch (err) {
-        console.error('Failed to fetch forum contributors:', err);
+        logger.error('Failed to fetch forum contributors:', err);
       } finally {
         setIsLoading(false);
       }
@@ -360,7 +363,7 @@ export function GlobalLeaderboardWidget({
           }))
         );
       } catch (err) {
-        console.error('Failed to fetch global leaderboard:', err);
+        logger.error('Failed to fetch global leaderboard:', err);
       } finally {
         setIsLoading(false);
       }

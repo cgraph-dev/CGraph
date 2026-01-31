@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('ForwardMessageModal');
 import {
   PaperAirplaneIcon,
   XMarkIcon,
@@ -68,7 +71,7 @@ export function ForwardMessageModal({
       HapticFeedback.success();
       handleClose();
     } catch (error) {
-      console.error('Failed to forward message:', error);
+      logger.error('Failed to forward message:', error);
       HapticFeedback.error();
     } finally {
       setIsForwarding(false);

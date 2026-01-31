@@ -11,6 +11,9 @@
 
 import { useState, useEffect } from 'react';
 import { CreditCard, ExternalLink, Check, Loader2, AlertCircle } from 'lucide-react';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('BillingSettings');
 import { billingService, type BillingStatus } from '../../services/billing';
 import { PLANS, type PlanId } from '../../lib/stripe';
 
@@ -37,7 +40,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
       setStatus(data);
     } catch (err) {
       setError('Failed to load billing information');
-      console.error('Billing status error:', err);
+      logger.error('Billing status error:', err);
     } finally {
       setLoading(false);
     }
@@ -55,7 +58,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
       await billingService.redirectToCheckout(planId, billingCycle === 'yearly');
     } catch (err) {
       setError('Failed to start checkout process');
-      console.error('Checkout error:', err);
+      logger.error('Checkout error:', err);
       setCheckoutLoading(null);
     }
   }
@@ -66,7 +69,7 @@ export function BillingSettings({ className = '' }: BillingSettingsProps) {
       await billingService.redirectToPortal();
     } catch (err) {
       setError('Failed to open billing portal');
-      console.error('Portal error:', err);
+      logger.error('Portal error:', err);
       setPortalLoading(false);
     }
   }

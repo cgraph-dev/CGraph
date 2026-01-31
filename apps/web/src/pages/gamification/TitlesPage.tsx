@@ -1,15 +1,18 @@
 /**
  * Titles Page
- * 
+ *
  * Title collection browser with equip/unequip functionality.
  * Displays all available and owned titles with rarity and animations.
- * 
+ *
  * @version 1.0.0
  * @since v0.8.3
  */
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('TitlesPage');
 import {
   TagIcon,
   SparklesIcon,
@@ -43,7 +46,15 @@ const TABS: { id: TitleTab; name: string; icon: React.ReactNode }[] = [
   { id: 'purchasable', name: 'Shop', icon: <ShoppingBagIcon className="h-4 w-4" /> },
 ];
 
-const RARITY_ORDER: TitleRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic', 'unique'];
+const RARITY_ORDER: TitleRarity[] = [
+  'common',
+  'uncommon',
+  'rare',
+  'epic',
+  'legendary',
+  'mythic',
+  'unique',
+];
 
 const RARITY_STYLES: Record<TitleRarity, { bg: string; border: string; text: string }> = {
   common: { bg: 'bg-gray-500/20', border: 'border-gray-500/40', text: 'text-gray-400' },
@@ -67,9 +78,17 @@ interface TitleCardProps {
   isLoading?: boolean;
 }
 
-function TitleCard({ title, isOwned, isEquipped, onEquip, onUnequip, onPurchase, isLoading }: TitleCardProps) {
+function TitleCard({
+  title,
+  isOwned,
+  isEquipped,
+  onEquip,
+  onUnequip,
+  onPurchase,
+  isLoading,
+}: TitleCardProps) {
   const styles = RARITY_STYLES[title.rarity];
-  
+
   return (
     <motion.div
       layout
@@ -77,8 +96,8 @@ function TitleCard({ title, isOwned, isEquipped, onEquip, onUnequip, onPurchase,
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
       whileHover={{ scale: 1.02, y: -4 }}
-      className={`relative p-4 rounded-2xl transition-all ${styles.bg} border ${styles.border} ${
-        isEquipped ? 'ring-2 ring-primary-500 shadow-lg shadow-primary-500/20' : ''
+      className={`relative rounded-2xl p-4 transition-all ${styles.bg} border ${styles.border} ${
+        isEquipped ? 'shadow-lg shadow-primary-500/20 ring-2 ring-primary-500' : ''
       } ${!isOwned ? 'opacity-70' : ''}`}
     >
       {/* Equipped indicator */}
@@ -86,34 +105,27 @@ function TitleCard({ title, isOwned, isEquipped, onEquip, onUnequip, onPurchase,
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
-          className="absolute -top-2 -right-2 p-1 rounded-full bg-primary-500"
+          className="absolute -right-2 -top-2 rounded-full bg-primary-500 p-1"
         >
           <CheckCircleIcon className="h-4 w-4 text-white" />
         </motion.div>
       )}
-      
+
       {/* Content */}
       <div className="space-y-3">
         {/* Title Preview */}
         <div className="flex justify-center">
-          <TitleBadge
-            title={title}
-            size="lg"
-            animated={isOwned}
-            showTooltip={false}
-          />
+          <TitleBadge title={title} size="lg" animated={isOwned} showTooltip={false} />
         </div>
-        
+
         {/* Info */}
         <div className="text-center">
           <p className={`text-xs font-bold uppercase tracking-wider ${styles.text}`}>
             {title.rarity}
           </p>
-          <p className="text-xs text-gray-500 mt-1 line-clamp-2">
-            {title.description}
-          </p>
+          <p className="mt-1 line-clamp-2 text-xs text-gray-500">{title.description}</p>
         </div>
-        
+
         {/* Unlock requirement or price */}
         {!isOwned && (
           <div className="text-center text-xs text-gray-500">
@@ -130,7 +142,7 @@ function TitleCard({ title, isOwned, isEquipped, onEquip, onUnequip, onPurchase,
             ) : null}
           </div>
         )}
-        
+
         {/* Actions */}
         <div className="flex justify-center">
           {isOwned ? (
@@ -143,7 +155,7 @@ function TitleCard({ title, isOwned, isEquipped, onEquip, onUnequip, onPurchase,
                   HapticFeedback.light();
                 }}
                 disabled={isLoading}
-                className="px-3 py-1.5 rounded-lg bg-dark-700 text-gray-400 text-xs font-medium disabled:opacity-50"
+                className="rounded-lg bg-dark-700 px-3 py-1.5 text-xs font-medium text-gray-400 disabled:opacity-50"
               >
                 Unequip
               </motion.button>
@@ -156,7 +168,7 @@ function TitleCard({ title, isOwned, isEquipped, onEquip, onUnequip, onPurchase,
                   HapticFeedback.medium();
                 }}
                 disabled={isLoading}
-                className="px-3 py-1.5 rounded-lg bg-gradient-to-r from-primary-500 to-purple-500 text-white text-xs font-medium disabled:opacity-50"
+                className="rounded-lg bg-gradient-to-r from-primary-500 to-purple-500 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
               >
                 {isLoading ? 'Equipping...' : 'Equip'}
               </motion.button>
@@ -170,15 +182,13 @@ function TitleCard({ title, isOwned, isEquipped, onEquip, onUnequip, onPurchase,
                 HapticFeedback.medium();
               }}
               disabled={isLoading}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-medium disabled:opacity-50"
+              className="flex items-center gap-1 rounded-lg bg-gradient-to-r from-yellow-500 to-orange-500 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
             >
               <ShoppingBagIcon className="h-3 w-3" />
               Purchase
             </motion.button>
           ) : (
-            <span className="px-3 py-1.5 rounded-lg bg-dark-800 text-gray-500 text-xs">
-              Locked
-            </span>
+            <span className="rounded-lg bg-dark-800 px-3 py-1.5 text-xs text-gray-500">Locked</span>
           )}
         </div>
       </div>
@@ -200,34 +210,35 @@ export default function TitlesPage() {
   // Fetch owned titles
   useEffect(() => {
     let isMounted = true;
-    
+
     const fetchOwnedTitles = async () => {
       setIsLoading(true);
       try {
         const response = await api.get('/api/v1/titles/owned');
         const data = response.data?.data || response.data || [];
-        
+
         if (isMounted) {
           setOwnedTitles(data);
-          
+
           // Get equipped title from user data - check both camelCase and snake_case
-          const equippedTitle = (user as { equipped_title?: string; equippedTitle?: string })?.equipped_title || 
-                               (user as { equipped_title?: string; equippedTitle?: string })?.equippedTitle;
+          const equippedTitle =
+            (user as { equipped_title?: string; equippedTitle?: string })?.equipped_title ||
+            (user as { equipped_title?: string; equippedTitle?: string })?.equippedTitle;
           if (equippedTitle) {
             setEquippedTitleId(equippedTitle);
           }
         }
       } catch (error) {
-        console.error('Failed to fetch titles:', error);
+        logger.error('Failed to fetch titles:', error);
       } finally {
         if (isMounted) {
           setIsLoading(false);
         }
       }
     };
-    
+
     fetchOwnedTitles();
-    
+
     return () => {
       isMounted = false;
     };
@@ -235,7 +246,7 @@ export default function TitlesPage() {
 
   // Check if title is owned
   const isOwned = (titleId: string) => {
-    return ownedTitles.some(ot => ot.title_id === titleId || ot.id === titleId);
+    return ownedTitles.some((ot) => ot.title_id === titleId || ot.id === titleId);
   };
 
   // Handle equip
@@ -246,7 +257,7 @@ export default function TitlesPage() {
       setEquippedTitleId(titleId);
       HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to equip title:', error);
+      logger.error('Failed to equip title:', error);
     } finally {
       setActionLoading(null);
     }
@@ -260,7 +271,7 @@ export default function TitlesPage() {
       setEquippedTitleId(null);
       HapticFeedback.light();
     } catch (error) {
-      console.error('Failed to unequip title:', error);
+      logger.error('Failed to unequip title:', error);
     } finally {
       setActionLoading(null);
     }
@@ -276,7 +287,7 @@ export default function TitlesPage() {
       setOwnedTitles(response.data?.data || []);
       HapticFeedback.success();
     } catch (error) {
-      console.error('Failed to purchase title:', error);
+      logger.error('Failed to purchase title:', error);
     } finally {
       setActionLoading(null);
     }
@@ -285,23 +296,23 @@ export default function TitlesPage() {
   // Filter titles based on tab and rarity
   const filteredTitles = useMemo(() => {
     let titles = TITLES;
-    
+
     // Filter by tab
     switch (selectedTab) {
       case 'owned':
-        titles = titles.filter(t => isOwned(t.id));
+        titles = titles.filter((t) => isOwned(t.id));
         break;
       case 'purchasable':
-        titles = titles.filter(t => t.coinPrice && !isOwned(t.id));
+        titles = titles.filter((t) => t.coinPrice && !isOwned(t.id));
         break;
       // 'all' shows everything
     }
-    
+
     // Filter by rarity
     if (selectedRarity !== 'all') {
-      titles = titles.filter(t => t.rarity === selectedRarity);
+      titles = titles.filter((t) => t.rarity === selectedRarity);
     }
-    
+
     // Sort by rarity then name
     return titles.sort((a, b) => {
       const rarityDiff = RARITY_ORDER.indexOf(a.rarity) - RARITY_ORDER.indexOf(b.rarity);
@@ -311,23 +322,29 @@ export default function TitlesPage() {
   }, [selectedTab, selectedRarity, ownedTitles]);
 
   // Stats
-  const stats = useMemo(() => ({
-    owned: ownedTitles.length,
-    total: TITLES.length,
-    byRarity: RARITY_ORDER.reduce((acc, rarity) => {
-      acc[rarity] = {
-        owned: TITLES.filter(t => t.rarity === rarity && isOwned(t.id)).length,
-        total: TITLES.filter(t => t.rarity === rarity).length,
-      };
-      return acc;
-    }, {} as Record<TitleRarity, { owned: number; total: number }>),
-  }), [ownedTitles]);
+  const stats = useMemo(
+    () => ({
+      owned: ownedTitles.length,
+      total: TITLES.length,
+      byRarity: RARITY_ORDER.reduce(
+        (acc, rarity) => {
+          acc[rarity] = {
+            owned: TITLES.filter((t) => t.rarity === rarity && isOwned(t.id)).length,
+            total: TITLES.filter((t) => t.rarity === rarity).length,
+          };
+          return acc;
+        },
+        {} as Record<TitleRarity, { owned: number; total: number }>
+      ),
+    }),
+    [ownedTitles]
+  );
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
       {/* Header */}
-      <div className="sticky top-0 z-20 bg-dark-950/80 backdrop-blur-xl border-b border-white/5">
-        <div className="max-w-6xl mx-auto px-4 py-4">
+      <div className="sticky top-0 z-20 border-b border-white/5 bg-dark-950/80 backdrop-blur-xl">
+        <div className="mx-auto max-w-6xl px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <motion.div
@@ -337,7 +354,7 @@ export default function TitlesPage() {
                 <TagIcon className="h-8 w-8 text-primary-400" />
               </motion.div>
               <div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-transparent">
+                <h1 className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-2xl font-bold text-transparent">
                   Titles
                 </h1>
                 <p className="text-sm text-gray-400">
@@ -345,7 +362,7 @@ export default function TitlesPage() {
                 </p>
               </div>
             </div>
-            
+
             {/* Currently equipped */}
             {equippedTitleId && (
               <div className="flex items-center gap-2">
@@ -357,10 +374,10 @@ export default function TitlesPage() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-6">
+      <div className="mx-auto max-w-6xl px-4 py-6">
         {/* Rarity Stats */}
-        <div className="grid grid-cols-3 md:grid-cols-7 gap-2 mb-6">
-          {RARITY_ORDER.map(rarity => {
+        <div className="mb-6 grid grid-cols-3 gap-2 md:grid-cols-7">
+          {RARITY_ORDER.map((rarity) => {
             const data = stats.byRarity[rarity];
             const styles = RARITY_STYLES[rarity];
             return (
@@ -372,22 +389,26 @@ export default function TitlesPage() {
                   setSelectedRarity(selectedRarity === rarity ? 'all' : rarity);
                   HapticFeedback.light();
                 }}
-                className={`p-2 rounded-xl transition-all ${styles.bg} border ${
+                className={`rounded-xl p-2 transition-all ${styles.bg} border ${
                   selectedRarity === rarity ? styles.border : 'border-transparent'
                 }`}
               >
-                <p className={`text-[10px] font-bold uppercase tracking-wider ${styles.text} truncate`}>
+                <p
+                  className={`text-[10px] font-bold uppercase tracking-wider ${styles.text} truncate`}
+                >
                   {rarity}
                 </p>
-                <p className="text-sm font-bold text-white">{data.owned}/{data.total}</p>
+                <p className="text-sm font-bold text-white">
+                  {data.owned}/{data.total}
+                </p>
               </motion.button>
             );
           })}
         </div>
 
         {/* Tabs */}
-        <div className="flex items-center gap-2 mb-6">
-          {TABS.map(tab => (
+        <div className="mb-6 flex items-center gap-2">
+          {TABS.map((tab) => (
             <motion.button
               key={tab.id}
               whileHover={{ scale: 1.02 }}
@@ -396,7 +417,7 @@ export default function TitlesPage() {
                 setSelectedTab(tab.id);
                 HapticFeedback.light();
               }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+              className={`flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all ${
                 selectedTab === tab.id
                   ? 'bg-gradient-to-r from-primary-500 to-purple-500 text-white shadow-lg'
                   : 'bg-dark-800 text-gray-400 hover:text-white'
@@ -419,21 +440,21 @@ export default function TitlesPage() {
           </div>
         ) : filteredTitles.length === 0 ? (
           <GlassCard className="p-12 text-center">
-            <TagIcon className="h-16 w-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-400 mb-2">No titles found</h3>
+            <TagIcon className="mx-auto mb-4 h-16 w-16 text-gray-600" />
+            <h3 className="mb-2 text-lg font-semibold text-gray-400">No titles found</h3>
             <p className="text-sm text-gray-500">
-              {selectedTab === 'owned' 
+              {selectedTab === 'owned'
                 ? 'Unlock titles through achievements and purchases!'
                 : 'Try adjusting your filters'}
             </p>
           </GlassCard>
         ) : (
-          <motion.div 
+          <motion.div
             layout
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+            className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
           >
             <AnimatePresence mode="popLayout">
-              {filteredTitles.map(title => (
+              {filteredTitles.map((title) => (
                 <TitleCard
                   key={title.id}
                   title={title}

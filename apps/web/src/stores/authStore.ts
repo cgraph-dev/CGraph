@@ -506,7 +506,7 @@ export const useAuthStore = create<AuthState>()(
           return (state, error) => {
             authLogger.debug('Rehydration callback - state:', !!state, 'error:', error);
             if (error) {
-              console.error('Auth store rehydration failed:', error);
+              authLogger.error('Auth store rehydration failed:', error);
               // On error, reset to safe state
               useAuthStore.setState({
                 isLoading: false,

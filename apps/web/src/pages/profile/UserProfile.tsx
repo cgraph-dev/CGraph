@@ -1,5 +1,8 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('UserProfile');
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
 import { useFriendStore } from '@/stores/friendStore';
@@ -160,7 +163,7 @@ export default function UserProfile() {
         HapticFeedback.success();
         toast.success(`${type === 'avatar' ? 'Avatar' : 'Banner'} updated successfully!`);
       } catch (err) {
-        console.error(`Failed to upload ${type}:`, err);
+        logger.error(`Failed to upload ${type}:`, err);
         toast.error(`Failed to upload ${type}. Please try again.`);
         HapticFeedback.error();
       } finally {
@@ -277,7 +280,7 @@ export default function UserProfile() {
 
         setFriendshipStatus(userData.friendship_status || 'none');
       } catch (err) {
-        console.error('Failed to load profile:', err);
+        logger.error('Failed to load profile:', err);
         setError('Failed to load user profile');
       } finally {
         setIsLoading(false);
@@ -362,7 +365,7 @@ export default function UserProfile() {
       HapticFeedback.success();
       toast.success('Profile updated successfully!');
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      logger.error('Failed to update profile:', error);
       toast.error('Failed to update profile. Please try again.');
       HapticFeedback.error();
     } finally {

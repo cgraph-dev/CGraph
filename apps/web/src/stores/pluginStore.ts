@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { api } from '@/lib/api';
 import { ensureArray, ensureObject } from '@/lib/apiUtils';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('pluginStore');
 
 // =============================================================================
 // Types - Plugin System
@@ -44,21 +47,33 @@ interface PluginState {
   marketplacePlugins: MarketplacePlugin[];
   marketplaceCategories: string[];
   isLoadingMarketplace: boolean;
-  
+
   // Installed plugins (per forum)
   installedPlugins: Record<string, InstalledPlugin[]>;
   isLoadingInstalled: boolean;
-  
+
   // Actions - Marketplace
-  fetchMarketplace: (options?: { category?: string; search?: string; official?: boolean }) => Promise<void>;
+  fetchMarketplace: (options?: {
+    category?: string;
+    search?: string;
+    official?: boolean;
+  }) => Promise<void>;
   getMarketplacePlugin: (pluginId: string) => Promise<MarketplacePlugin>;
-  
+
   // Actions - Installed
   fetchInstalledPlugins: (forumId: string) => Promise<void>;
-  installPlugin: (forumId: string, pluginId: string, settings?: Record<string, unknown>) => Promise<InstalledPlugin>;
+  installPlugin: (
+    forumId: string,
+    pluginId: string,
+    settings?: Record<string, unknown>
+  ) => Promise<InstalledPlugin>;
   uninstallPlugin: (forumId: string, pluginInstanceId: string) => Promise<void>;
   togglePlugin: (forumId: string, pluginInstanceId: string) => Promise<InstalledPlugin>;
-  updatePluginSettings: (forumId: string, pluginInstanceId: string, settings: Record<string, unknown>) => Promise<InstalledPlugin>;
+  updatePluginSettings: (
+    forumId: string,
+    pluginInstanceId: string,
+    settings: Record<string, unknown>
+  ) => Promise<InstalledPlugin>;
 }
 
 // =============================================================================
@@ -83,20 +98,20 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
       if (options?.category) params.append('category', options.category);
       if (options?.search) params.append('search', options.search);
       if (options?.official !== undefined) params.append('official', String(options.official));
-      
+
       const url = `/api/v1/plugins/marketplace${params.toString() ? `?${params}` : ''}`;
       const response = await api.get(url);
-      
+
       const plugins = ensureArray<MarketplacePlugin>(response.data, 'data');
       const categories = response.data.meta?.categories || [];
-      
+
       set({
         marketplacePlugins: plugins,
         marketplaceCategories: categories,
         isLoadingMarketplace: false,
       });
     } catch (error) {
-      console.error('[pluginStore] fetchMarketplace error:', error);
+      logger.error('fetchMarketplace error:', error);
       set({ isLoadingMarketplace: false });
       throw error;
     }
@@ -116,7 +131,7 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
     try {
       const response = await api.get(`/api/v1/forums/${forumId}/plugins`);
       const plugins = ensureArray<InstalledPlugin>(response.data, 'data');
-      
+
       set((state) => ({
         installedPlugins: {
           ...state.installedPlugins,
@@ -125,7 +140,7 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
         isLoadingInstalled: false,
       }));
     } catch (error) {
-      console.error('[pluginStore] fetchInstalledPlugins error:', error);
+      logger.error('fetchInstalledPlugins error:', error);
       set({ isLoadingInstalled: false });
       throw error;
     }
@@ -136,9 +151,9 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
       plugin_id: pluginId,
       settings,
     });
-    
+
     const plugin = ensureObject<InstalledPlugin>(response.data, 'plugin') as InstalledPlugin;
-    
+
     // Add to installed plugins list
     set((state) => ({
       installedPlugins: {
@@ -146,31 +161,27 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
         [forumId]: [...(state.installedPlugins[forumId] || []), plugin],
       },
     }));
-    
+
     return plugin;
   },
 
   uninstallPlugin: async (forumId, pluginInstanceId) => {
     await api.delete(`/api/v1/forums/${forumId}/plugins/${pluginInstanceId}`);
-    
+
     // Remove from installed plugins list
     set((state) => ({
       installedPlugins: {
         ...state.installedPlugins,
-        [forumId]: (state.installedPlugins[forumId] || []).filter(
-          (p) => p.id !== pluginInstanceId
-        ),
+        [forumId]: (state.installedPlugins[forumId] || []).filter((p) => p.id !== pluginInstanceId),
       },
     }));
   },
 
   togglePlugin: async (forumId, pluginInstanceId) => {
-    const response = await api.post(
-      `/api/v1/forums/${forumId}/plugins/${pluginInstanceId}/toggle`
-    );
-    
+    const response = await api.post(`/api/v1/forums/${forumId}/plugins/${pluginInstanceId}/toggle`);
+
     const updatedPlugin = ensureObject<InstalledPlugin>(response.data, 'plugin') as InstalledPlugin;
-    
+
     // Update in installed plugins list
     set((state) => ({
       installedPlugins: {
@@ -180,18 +191,17 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
         ),
       },
     }));
-    
+
     return updatedPlugin;
   },
 
   updatePluginSettings: async (forumId, pluginInstanceId, settings) => {
-    const response = await api.put(
-      `/api/v1/forums/${forumId}/plugins/${pluginInstanceId}`,
-      { settings }
-    );
-    
+    const response = await api.put(`/api/v1/forums/${forumId}/plugins/${pluginInstanceId}`, {
+      settings,
+    });
+
     const updatedPlugin = ensureObject<InstalledPlugin>(response.data, 'plugin') as InstalledPlugin;
-    
+
     // Update in installed plugins list
     set((state) => ({
       installedPlugins: {
@@ -201,7 +211,7 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
         ),
       },
     }));
-    
+
     return updatedPlugin;
   },
 }));
@@ -215,16 +225,16 @@ export const usePluginStore = create<PluginState>((set, _get) => ({
  */
 export function getPluginIconName(icon: string): string {
   const iconMap: Record<string, string> = {
-    'code': 'CodeBracketIcon',
+    code: 'CodeBracketIcon',
     'chart-bar': 'ChartBarIcon',
     'eye-slash': 'EyeSlashIcon',
-    'trophy': 'TrophyIcon',
+    trophy: 'TrophyIcon',
     'shield-check': 'ShieldCheckIcon',
     'chat-bubble': 'ChatBubbleLeftRightIcon',
-    'play': 'PlayIcon',
-    'tag': 'TagIcon',
-    'bookmark': 'BookmarkIcon',
-    'download': 'ArrowDownTrayIcon',
+    play: 'PlayIcon',
+    tag: 'TagIcon',
+    bookmark: 'BookmarkIcon',
+    download: 'ArrowDownTrayIcon',
   };
   return iconMap[icon] || 'PuzzlePieceIcon';
 }
@@ -234,14 +244,14 @@ export function getPluginIconName(icon: string): string {
  */
 export function getCategoryDisplayName(category: string): string {
   const categoryMap: Record<string, string> = {
-    'content': 'Content',
-    'engagement': 'Engagement',
-    'moderation': 'Moderation',
-    'integration': 'Integration',
-    'gamification': 'Gamification',
-    'customization': 'Customization',
-    'organization': 'Organization',
-    'migration': 'Migration',
+    content: 'Content',
+    engagement: 'Engagement',
+    moderation: 'Moderation',
+    integration: 'Integration',
+    gamification: 'Gamification',
+    customization: 'Customization',
+    organization: 'Organization',
+    migration: 'Migration',
   };
   return categoryMap[category] || category;
 }

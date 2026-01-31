@@ -1,6 +1,9 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { create } from 'zustand';
 import { Socket, Channel } from 'phoenix';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('GamificationSocket');
 
 /**
  * Gamification WebSocket Hook
@@ -137,7 +140,7 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
     });
 
     socket.onError((error) => {
-      console.error('[GamificationSocket] Error:', error);
+      logger.error('Socket error:', error);
       set((state) => ({
         state: { ...state.state, lastError: 'Connection error', connected: false },
       }));
@@ -156,7 +159,7 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
     channel
       .join()
       .receive('ok', (response: unknown) => {
-        console.debug('[GamificationSocket] Joined successfully', response);
+        logger.debug('Joined successfully', response);
         set((state) => ({
           state: { ...state.state, connected: true, lastError: null },
         }));
@@ -170,7 +173,7 @@ export const useGamificationSocketStore = create<GamificationSocketStore>((set, 
       })
       .receive('error', (err: unknown) => {
         const error = err as Record<string, unknown>;
-        console.error('[GamificationSocket] Join failed:', error);
+        logger.error('Join failed:', error);
         set((state) => ({
           state: { ...state.state, lastError: (error.reason as string) || 'Join failed' },
         }));

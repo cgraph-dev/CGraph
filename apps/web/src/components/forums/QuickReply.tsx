@@ -1,9 +1,18 @@
 import React, { useState, useCallback } from 'react';
-import { PaperAirplaneIcon, ChevronUpIcon, ChevronDownIcon, PhotoIcon, LinkIcon } from '@heroicons/react/24/outline';
+import {
+  PaperAirplaneIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+  PhotoIcon,
+  LinkIcon,
+} from '@heroicons/react/24/outline';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('QuickReply');
 
 /**
  * QuickReply Component
- * 
+ *
  * MyBB-style quick reply box that appears at the bottom of threads.
  * Features:
  * - Collapsible/expandable
@@ -42,52 +51,58 @@ export function QuickReply({
 
   const handleSubmit = useCallback(async () => {
     if (!content.trim() || isSubmitting) return;
-    
+
     setIsSubmitting(true);
     try {
       await onSubmit(content, attachments.length > 0 ? attachments : undefined);
       setContent('');
       setAttachments([]);
     } catch (error) {
-      console.error('Failed to submit quick reply:', error);
+      logger.error('Failed to submit quick reply:', error);
     } finally {
       setIsSubmitting(false);
     }
   }, [content, attachments, onSubmit, isSubmitting]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    // Ctrl+Enter to submit
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      handleSubmit();
-    }
-  }, [handleSubmit]);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      // Ctrl+Enter to submit
+      if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        handleSubmit();
+      }
+    },
+    [handleSubmit]
+  );
 
-  const insertBBCode = useCallback((tag: string, value?: string) => {
-    const textarea = document.querySelector(`#quick-reply-${threadId}`) as HTMLTextAreaElement;
-    if (!textarea) return;
+  const insertBBCode = useCallback(
+    (tag: string, value?: string) => {
+      const textarea = document.querySelector(`#quick-reply-${threadId}`) as HTMLTextAreaElement;
+      if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = content.substring(start, end);
-    
-    let insertion: string;
-    if (value) {
-      insertion = `[${tag}=${value}]${selectedText}[/${tag}]`;
-    } else {
-      insertion = `[${tag}]${selectedText}[/${tag}]`;
-    }
-    
-    const newContent = content.substring(0, start) + insertion + content.substring(end);
-    setContent(newContent);
-    
-    // Focus back and set cursor
-    setTimeout(() => {
-      textarea.focus();
-      const newCursorPos = start + insertion.length;
-      textarea.setSelectionRange(newCursorPos, newCursorPos);
-    }, 0);
-  }, [content, threadId]);
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = content.substring(start, end);
+
+      let insertion: string;
+      if (value) {
+        insertion = `[${tag}=${value}]${selectedText}[/${tag}]`;
+      } else {
+        insertion = `[${tag}]${selectedText}[/${tag}]`;
+      }
+
+      const newContent = content.substring(0, start) + insertion + content.substring(end);
+      setContent(newContent);
+
+      // Focus back and set cursor
+      setTimeout(() => {
+        textarea.focus();
+        const newCursorPos = start + insertion.length;
+        textarea.setSelectionRange(newCursorPos, newCursorPos);
+      }, 0);
+    },
+    [content, threadId]
+  );
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -103,18 +118,20 @@ export function QuickReply({
   const isOverLimit = remainingChars < 0;
 
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 ${className}`}>
+    <div
+      className={`rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800 ${className}`}
+    >
       {/* Header */}
       <button
         type="button"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+        className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
       >
         <span className="font-medium text-gray-900 dark:text-white">Quick Reply</span>
         {isExpanded ? (
-          <ChevronUpIcon className="w-5 h-5 text-gray-500" />
+          <ChevronUpIcon className="h-5 w-5 text-gray-500" />
         ) : (
-          <ChevronDownIcon className="w-5 h-5 text-gray-500" />
+          <ChevronDownIcon className="h-5 w-5 text-gray-500" />
         )}
       </button>
 
@@ -122,11 +139,11 @@ export function QuickReply({
       {isExpanded && (
         <div className="px-4 pb-4">
           {/* Toolbar Toggle */}
-          <div className="flex items-center gap-2 mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <button
               type="button"
               onClick={() => setShowToolbar(!showToolbar)}
-              className="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+              className="text-xs text-blue-600 hover:underline dark:text-blue-400"
             >
               {showToolbar ? 'Hide formatting' : 'Show formatting'}
             </button>
@@ -143,7 +160,7 @@ export function QuickReply({
 
           {/* BBCode Toolbar */}
           {showToolbar && (
-            <div className="flex flex-wrap gap-1 mb-2 p-2 bg-gray-50 dark:bg-gray-700/50 rounded">
+            <div className="mb-2 flex flex-wrap gap-1 rounded bg-gray-50 p-2 dark:bg-gray-700/50">
               <ToolbarButton title="Bold" onClick={() => insertBBCode('b')}>
                 <span className="font-bold">B</span>
               </ToolbarButton>
@@ -156,24 +173,30 @@ export function QuickReply({
               <ToolbarButton title="Strikethrough" onClick={() => insertBBCode('s')}>
                 <span className="line-through">S</span>
               </ToolbarButton>
-              <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+              <div className="mx-1 h-6 w-px bg-gray-300 dark:bg-gray-600" />
               <ToolbarButton title="Quote" onClick={() => insertBBCode('quote')}>
                 <span className="text-sm">"</span>
               </ToolbarButton>
               <ToolbarButton title="Code" onClick={() => insertBBCode('code')}>
                 <span className="font-mono text-xs">&lt;/&gt;</span>
               </ToolbarButton>
-              <ToolbarButton title="Link" onClick={() => {
-                const url = prompt('Enter URL:');
-                if (url) insertBBCode('url', url);
-              }}>
-                <LinkIcon className="w-4 h-4" />
+              <ToolbarButton
+                title="Link"
+                onClick={() => {
+                  const url = prompt('Enter URL:');
+                  if (url) insertBBCode('url', url);
+                }}
+              >
+                <LinkIcon className="h-4 w-4" />
               </ToolbarButton>
-              <ToolbarButton title="Image" onClick={() => {
-                const url = prompt('Enter image URL:');
-                if (url) insertBBCode('img');
-              }}>
-                <PhotoIcon className="w-4 h-4" />
+              <ToolbarButton
+                title="Image"
+                onClick={() => {
+                  const url = prompt('Enter image URL:');
+                  if (url) insertBBCode('img');
+                }}
+              >
+                <PhotoIcon className="h-4 w-4" />
               </ToolbarButton>
             </div>
           )}
@@ -187,23 +210,18 @@ export function QuickReply({
             placeholder={placeholder}
             disabled={disabled || isSubmitting}
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg 
-                       bg-white dark:bg-gray-700 text-gray-900 dark:text-white
-                       placeholder-gray-400 dark:placeholder-gray-500
-                       focus:ring-2 focus:ring-blue-500 focus:border-transparent
-                       disabled:opacity-50 disabled:cursor-not-allowed
-                       resize-y min-h-[100px]"
+            className="min-h-[100px] w-full resize-y rounded-lg border border-gray-300 bg-white px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-transparent focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-500"
           />
 
           {/* Attachments Preview */}
           {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               {attachments.map((file, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded text-sm"
+                  className="flex items-center gap-1 rounded bg-gray-100 px-2 py-1 text-sm dark:bg-gray-700"
                 >
-                  <span className="truncate max-w-[100px]">{file.name}</span>
+                  <span className="max-w-[100px] truncate">{file.name}</span>
                   <button
                     type="button"
                     onClick={() => removeAttachment(index)}
@@ -217,10 +235,10 @@ export function QuickReply({
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between mt-3">
+          <div className="mt-3 flex items-center justify-between">
             {/* Left side - attachments */}
             <div className="flex items-center gap-2">
-              <label className="cursor-pointer p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors">
+              <label className="cursor-pointer rounded p-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">
                 <input
                   type="file"
                   multiple
@@ -228,7 +246,7 @@ export function QuickReply({
                   className="hidden"
                   disabled={disabled || isSubmitting}
                 />
-                <PhotoIcon className="w-5 h-5 text-gray-500" />
+                <PhotoIcon className="h-5 w-5 text-gray-500" />
               </label>
               <span className={`text-xs ${isOverLimit ? 'text-red-500' : 'text-gray-500'}`}>
                 {remainingChars.toLocaleString()} characters remaining
@@ -242,14 +260,12 @@ export function QuickReply({
                 type="button"
                 onClick={handleSubmit}
                 disabled={disabled || isSubmitting || !content.trim() || isOverLimit}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg
-                         hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed
-                         transition-colors"
+                className="flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <span className="animate-spin">⏳</span>
                 ) : (
-                  <PaperAirplaneIcon className="w-4 h-4" />
+                  <PaperAirplaneIcon className="h-4 w-4" />
                 )}
                 <span>{isSubmitting ? 'Posting...' : 'Post Reply'}</span>
               </button>
@@ -274,7 +290,7 @@ function ToolbarButton({ title, onClick, children }: ToolbarButtonProps) {
       type="button"
       title={title}
       onClick={onClick}
-      className="w-8 h-8 flex items-center justify-center rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+      className="flex h-8 w-8 items-center justify-center rounded transition-colors hover:bg-gray-200 dark:hover:bg-gray-600"
     >
       {children}
     </button>
