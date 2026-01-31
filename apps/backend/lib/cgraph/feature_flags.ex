@@ -84,8 +84,8 @@ defmodule CGraph.FeatureFlags do
 
     # Premium features
     file_uploads_enabled: %{type: :boolean, enabled: true},
-    video_calls_enabled: %{type: :boolean, enabled: false},
-    screen_share_enabled: %{type: :boolean, enabled: false},
+    video_calls_enabled: %{type: :boolean, enabled: true},
+    screen_share_enabled: %{type: :boolean, enabled: true},
 
     # Experimental features
     new_ui: %{type: :percentage, percentage: 0, enabled: false},

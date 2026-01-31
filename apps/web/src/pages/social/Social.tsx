@@ -17,7 +17,7 @@ import { BellIcon as BellIconSolid } from '@heroicons/react/24/solid';
 import GlassCard from '@/components/ui/GlassCard';
 import UserProfileCard from '@/components/profile/UserProfileCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import { useFriendStore } from '@/stores/friendStore';
+import { useFriendStore, type Friend, type FriendRequest } from '@/stores/friendStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
 
@@ -316,9 +316,9 @@ export default function Social() {
 // ==================== TAB COMPONENTS ====================
 
 interface FriendsTabProps {
-  friends: any[];
-  pendingRequests: any[];
-  sentRequests: any[];
+  friends: Friend[];
+  pendingRequests: FriendRequest[];
+  sentRequests: FriendRequest[];
   searchQuery: string;
   onSearchChange: (query: string) => void;
   onAcceptRequest: (requestId: string) => void;

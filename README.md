@@ -12,7 +12,7 @@
 [![Status](https://img.shields.io/badge/status-production-brightgreen.svg)](#)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
-**Current version:** 0.9.8 (January 2026)
+**Current version:** 0.9.8 (February 2026)
 
 [🌐 Website](https://cgraph.app) · [📚 Documentation](https://docs.cgraph.app) ·
 [🔌 API Reference](https://api.cgraph.app/docs)

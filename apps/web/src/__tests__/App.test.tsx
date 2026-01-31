@@ -94,7 +94,7 @@ describe('App Component', () => {
       // The app now shows a landing page for unauthenticated users at /
       await waitFor(() => {
         expect(
-          screen.getByClassName ? document.querySelector('.demo-landing, .gl-nav') : document.body
+          document.querySelector('.demo-landing, .gl-nav') ?? document.body
         ).toBeInTheDocument();
       });
     });

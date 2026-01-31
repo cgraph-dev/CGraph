@@ -96,3 +96,27 @@ export { useCalendarStore } from './calendarStore';
 // Middleware utilities are available but not re-exported (internal use)
 // export * from './middleware';
 export * from './utils/storeHelpers';
+
+// ============================================================================
+// Domain Facades (Recommended for new code)
+// ============================================================================
+// Facades aggregate related stores into unified interfaces (29 stores → 7 domains)
+export {
+  useAuthFacade,
+  useChatFacade,
+  useCommunityFacade,
+  useGamificationFacade,
+  useSettingsFacade,
+  useMarketplaceFacade,
+  useUIFacade,
+} from './facades';
+
+export type {
+  AuthFacade,
+  ChatFacade,
+  CommunityFacade,
+  GamificationFacade,
+  SettingsFacade,
+  MarketplaceFacade,
+  UIFacade,
+} from './facades';

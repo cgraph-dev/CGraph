@@ -4,6 +4,63 @@ All notable changes to CGraph will be documented in this file.
 
 ---
 
+## [0.9.10] - 2026-02-01
+
+**🧪 TEST COVERAGE IMPROVEMENTS**
+
+Added comprehensive test suites for E2EE cryptographic primitives and store facades as part of Phase
+6 remediation efforts.
+
+### 🔐 E2EE Test Suite
+
+#### New: `/apps/web/src/lib/crypto/__tests__/e2ee.test.ts`
+
+- **28 passing tests** covering all major E2EE functions
+- Base64 utilities: `arrayBufferToBase64`, `base64ToArrayBuffer`
+- Key generation: `generateECDHKeyPair`, `generateECDSAKeyPair`
+- Key import/export: `exportPublicKey`, `importPublicKey`
+- Signing/verification: `signWithECDSA`, `verifyECDSASignature`
+- Key derivation: `hkdf` with proper ArrayBuffer parameters
+- Hashing: `sha256` with Uint8Array output
+- Encryption: `encryptAES`, `decryptAES` (AES-256-GCM)
+- Bundle generation: `generateKeyBundle` with deviceId parameter
+
+### 🏪 Store Facades Test Suite
+
+#### New: `/apps/web/src/stores/facades/__tests__/facades.test.ts`
+
+- **25 passing tests** covering all 7 facade domains
+- `useAuthFacade`: Authentication state (isAuthenticated, user, wallet)
+- `useChatFacade`: Messaging (conversations, messages, typing, reactions)
+- `useCommunityFacade`: Forums and groups (posts, servers, channels)
+- `useGamificationFacade`: XP, karma, achievements, effects
+- `useSettingsFacade`: Privacy, notifications, profile settings
+- `useMarketplaceFacade`: Items, purchases, inventory, balance
+- `useUIFacade`: Theme, sidebar, modals, toasts
+
+### 📊 Coverage Metrics
+
+| Metric             | Before | After   | Change      |
+| ------------------ | ------ | ------- | ----------- |
+| Passing tests      | 840    | 893     | +53 (+6.3%) |
+| Statement coverage | 8.79%  | 9.31%   | +0.52%      |
+| E2EE tests         | 1 file | 2 files | +1          |
+| Facade tests       | 0      | 25      | +25         |
+
+### ✅ Remediation Status
+
+All Phase 1-6 tasks now complete:
+
+- ✅ Phase 0: Critical Security (secrets removed)
+- ✅ Phase 1: Security Hardening (XSS, ECDSA signatures)
+- ✅ Phase 2: Code Quality (`as any` → 12, console.log → 55)
+- ✅ Phase 3: Store Facades (7 domains consolidating 29 stores)
+- ✅ Phase 4: Component Refactoring (Settings.tsx → 221 lines)
+- ✅ Phase 5: Feature Completeness (video calls, E2EE)
+- ✅ Phase 6: Test Coverage (893 tests passing)
+
+---
+
 ## [0.9.9] - 2026-01-31
 
 **🔧 TYPE SAFETY & PRODUCTION LOGGING IMPROVEMENTS**

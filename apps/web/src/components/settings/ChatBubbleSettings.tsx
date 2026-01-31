@@ -1,6 +1,10 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useChatBubbleStore, CHAT_BUBBLE_PRESETS } from '@/stores/chatBubbleStore';
+import {
+  useChatBubbleStore,
+  CHAT_BUBBLE_PRESETS,
+  type ChatBubbleStyle,
+} from '@/stores/chatBubbleStore';
 import { useChatCustomization } from '@/stores/unifiedCustomizationStore';
 import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
@@ -301,8 +305,14 @@ export default function ChatBubbleSettings() {
   );
 }
 
+// Tab component props interface
+interface TabProps {
+  style: ChatBubbleStyle;
+  updateStyle: <K extends keyof ChatBubbleStyle>(key: K, value: ChatBubbleStyle[K]) => void;
+}
+
 // Helper components for each tab
-function ColorsTab({ style, updateStyle }: any) {
+function ColorsTab({ style, updateStyle }: TabProps) {
   return (
     <GlassCard variant="frosted" className="space-y-6 p-6">
       <div>
@@ -360,11 +370,11 @@ function ColorsTab({ style, updateStyle }: any) {
         <div>
           <label className="mb-3 block text-sm font-medium text-gray-300">Gradient Direction</label>
           <div className="grid grid-cols-3 gap-2">
-            {['to-r', 'to-l', 'to-br', 'to-bl', 'to-tr', 'to-tl'].map((dir) => (
+            {(['horizontal', 'vertical', 'diagonal'] as const).map((dir) => (
               <button
                 key={dir}
                 onClick={() => updateStyle('gradientDirection', dir)}
-                className={`rounded-lg px-3 py-2 text-xs font-medium transition-all ${
+                className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
                   style.gradientDirection === dir
                     ? 'bg-primary-600 text-white'
                     : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
@@ -380,7 +390,7 @@ function ColorsTab({ style, updateStyle }: any) {
   );
 }
 
-function ShapeTab({ style, updateStyle }: any) {
+function ShapeTab({ style, updateStyle }: TabProps) {
   return (
     <GlassCard variant="frosted" className="space-y-6 p-6">
       <div>
@@ -401,7 +411,7 @@ function ShapeTab({ style, updateStyle }: any) {
       <div>
         <label className="mb-3 block text-sm font-medium text-gray-300">Bubble Shape</label>
         <div className="grid grid-cols-2 gap-2">
-          {['rounded', 'sharp', 'super-rounded', 'bubble', 'modern'].map((shape) => (
+          {(['rounded', 'sharp', 'super-rounded', 'bubble', 'modern'] as const).map((shape) => (
             <button
               key={shape}
               onClick={() => updateStyle('bubbleShape', shape)}
@@ -435,7 +445,7 @@ function ShapeTab({ style, updateStyle }: any) {
   );
 }
 
-function EffectsTab({ style, updateStyle }: any) {
+function EffectsTab({ style, updateStyle }: TabProps) {
   return (
     <GlassCard variant="frosted" className="space-y-6 p-6">
       <div className="flex items-center justify-between">
@@ -503,13 +513,13 @@ function EffectsTab({ style, updateStyle }: any) {
   );
 }
 
-function AnimationsTab({ style, updateStyle }: any) {
+function AnimationsTab({ style, updateStyle }: TabProps) {
   return (
     <GlassCard variant="frosted" className="space-y-6 p-6">
       <div>
         <label className="mb-3 block text-sm font-medium text-gray-300">Entrance Animation</label>
         <div className="grid grid-cols-3 gap-2">
-          {['none', 'slide', 'fade', 'scale', 'bounce', 'flip'].map((anim) => (
+          {(['none', 'slide', 'fade', 'scale', 'bounce', 'flip'] as const).map((anim) => (
             <button
               key={anim}
               onClick={() => updateStyle('entranceAnimation', anim)}
@@ -539,30 +549,11 @@ function AnimationsTab({ style, updateStyle }: any) {
           />
         </button>
       </div>
-
-      <div>
-        <label className="mb-3 block text-sm font-medium text-gray-300">Typing Indicator</label>
-        <div className="grid grid-cols-2 gap-2">
-          {['dots', 'wave', 'pulse', 'bars'].map((type) => (
-            <button
-              key={type}
-              onClick={() => updateStyle('typingIndicatorStyle', type)}
-              className={`rounded-lg px-3 py-2 text-xs font-medium capitalize transition-all ${
-                style.typingIndicatorStyle === type
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
-              }`}
-            >
-              {type}
-            </button>
-          ))}
-        </div>
-      </div>
     </GlassCard>
   );
 }
 
-function LayoutTab({ style, updateStyle }: any) {
+function LayoutTab({ style, updateStyle }: TabProps) {
   return (
     <GlassCard variant="frosted" className="space-y-6 p-6">
       <div>
@@ -599,7 +590,7 @@ function LayoutTab({ style, updateStyle }: any) {
         <div>
           <label className="mb-3 block text-sm font-medium text-gray-300">Avatar Size</label>
           <div className="grid grid-cols-3 gap-2">
-            {['small', 'medium', 'large'].map((size) => (
+            {(['sm', 'md', 'lg'] as const).map((size) => (
               <button
                 key={size}
                 onClick={() => updateStyle('avatarSize', size)}
@@ -609,7 +600,7 @@ function LayoutTab({ style, updateStyle }: any) {
                     : 'bg-dark-700 text-gray-400 hover:bg-dark-600'
                 }`}
               >
-                {size}
+                {size === 'sm' ? 'Small' : size === 'md' ? 'Medium' : 'Large'}
               </button>
             ))}
           </div>
@@ -634,8 +625,8 @@ function LayoutTab({ style, updateStyle }: any) {
       {style.showTimestamp && (
         <div>
           <label className="mb-3 block text-sm font-medium text-gray-300">Timestamp Position</label>
-          <div className="grid grid-cols-2 gap-2">
-            {['inside', 'outside'].map((pos) => (
+          <div className="grid grid-cols-3 gap-2">
+            {(['inside', 'outside', 'hover'] as const).map((pos) => (
               <button
                 key={pos}
                 onClick={() => updateStyle('timestampPosition', pos)}

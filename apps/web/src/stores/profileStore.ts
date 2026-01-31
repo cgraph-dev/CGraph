@@ -173,7 +173,7 @@ export interface UpdatePrivacySettings {
   showLocation?: boolean;
 }
 
-interface ProfileState {
+export interface ProfileState {
   // Current profile being viewed
   currentProfile: ExtendedProfile | null;
   isLoadingProfile: boolean;

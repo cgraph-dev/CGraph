@@ -10,7 +10,7 @@ export interface IncomingCall {
   timestamp: number;
 }
 
-interface IncomingCallState {
+export interface IncomingCallState {
   incomingCall: IncomingCall | null;
   setIncomingCall: (call: IncomingCall | null) => void;
   acceptCall: () => void;

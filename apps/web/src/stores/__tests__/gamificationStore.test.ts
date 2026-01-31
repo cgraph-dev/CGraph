@@ -358,7 +358,7 @@ describe('gamificationStore', () => {
     it('should store achievements correctly', () => {
       const state = useGamificationStore.getState();
       expect(state.achievements).toHaveLength(3);
-      expect(state.achievements[0].id).toBe('first-message');
+      expect(state.achievements[0]!.id).toBe('first-message');
     });
 
     it('should track unlocked achievement status', () => {
@@ -402,17 +402,17 @@ describe('gamificationStore', () => {
       const hiddenAchievements = state.achievements.filter((a) => a.isHidden);
 
       expect(hiddenAchievements).toHaveLength(1);
-      expect(hiddenAchievements[0].id).toBe('secret-finder');
+      expect(hiddenAchievements[0]!.id).toBe('secret-finder');
     });
 
     it('should track recently unlocked achievements', () => {
       useGamificationStore.setState({
-        recentlyUnlocked: [mockAchievements[2]],
+        recentlyUnlocked: [mockAchievements[2]!],
       });
 
       const state = useGamificationStore.getState();
       expect(state.recentlyUnlocked).toHaveLength(1);
-      expect(state.recentlyUnlocked[0].id).toBe('secret-finder');
+      expect(state.recentlyUnlocked[0]!.id).toBe('secret-finder');
     });
   });
 
@@ -433,16 +433,16 @@ describe('gamificationStore', () => {
       const state = useGamificationStore.getState();
       const dailyQuest = state.activeQuests.find((q) => q.id === 'daily-chat');
 
-      expect(dailyQuest?.objectives[0].currentValue).toBe(5);
-      expect(dailyQuest?.objectives[0].targetValue).toBe(10);
-      expect(dailyQuest?.objectives[0].completed).toBe(false);
+      expect(dailyQuest?.objectives[0]!.currentValue).toBe(5);
+      expect(dailyQuest?.objectives[0]!.targetValue).toBe(10);
+      expect(dailyQuest?.objectives[0]!.completed).toBe(false);
     });
 
     it('should identify completed objectives', () => {
       const state = useGamificationStore.getState();
       const weeklyQuest = state.activeQuests.find((q) => q.id === 'weekly-explorer');
 
-      expect(weeklyQuest?.objectives[0].completed).toBe(true);
+      expect(weeklyQuest?.objectives[0]!.completed).toBe(true);
     });
 
     it('should track quest types correctly', () => {
@@ -461,8 +461,8 @@ describe('gamificationStore', () => {
       const state = useGamificationStore.getState();
       const quest = state.activeQuests.find((q) => q.id === 'daily-chat');
 
-      expect(quest?.objectives[0].currentValue).toBe(8);
-      expect(quest?.objectives[0].completed).toBe(false);
+      expect(quest?.objectives[0]!.currentValue).toBe(8);
+      expect(quest?.objectives[0]!.completed).toBe(false);
     });
 
     it('should mark objective as complete when target is reached', () => {
@@ -471,8 +471,8 @@ describe('gamificationStore', () => {
       const state = useGamificationStore.getState();
       const quest = state.activeQuests.find((q) => q.id === 'daily-chat');
 
-      expect(quest?.objectives[0].currentValue).toBe(10);
-      expect(quest?.objectives[0].completed).toBe(true);
+      expect(quest?.objectives[0]!.currentValue).toBe(10);
+      expect(quest?.objectives[0]!.completed).toBe(true);
     });
 
     it('should cap objective progress at target value', () => {
@@ -482,7 +482,7 @@ describe('gamificationStore', () => {
       const quest = state.activeQuests.find((q) => q.id === 'daily-chat');
 
       // Should be capped at targetValue (10)
-      expect(quest?.objectives[0].currentValue).toBe(10);
+      expect(quest?.objectives[0]!.currentValue).toBe(10);
     });
 
     it('should not affect other quests when updating one', () => {
@@ -492,14 +492,14 @@ describe('gamificationStore', () => {
       const weeklyQuest = state.activeQuests.find((q) => q.id === 'weekly-explorer');
 
       // Weekly quest should be unchanged
-      expect(weeklyQuest?.objectives[0].currentValue).toBe(5);
+      expect(weeklyQuest?.objectives[0]!.currentValue).toBe(5);
     });
 
     it('should track completed quests separately', () => {
       useGamificationStore.setState({
         completedQuests: [
           {
-            ...mockQuests[0],
+            ...mockQuests[0]!,
             completed: true,
             completedAt: '2026-01-30T12:00:00Z',
           },
@@ -508,7 +508,7 @@ describe('gamificationStore', () => {
 
       const state = useGamificationStore.getState();
       expect(state.completedQuests).toHaveLength(1);
-      expect(state.completedQuests[0].completed).toBe(true);
+      expect(state.completedQuests[0]!.completed).toBe(true);
     });
   });
 
@@ -540,7 +540,7 @@ describe('gamificationStore', () => {
 
       expect(unlockedTitles).toHaveLength(2);
       expect(lockedTitles).toHaveLength(1);
-      expect(lockedTitles[0].id).toBe('legend');
+      expect(lockedTitles[0]!.id).toBe('legend');
     });
 
     it('should categorize titles by rarity', () => {
@@ -567,7 +567,7 @@ describe('gamificationStore', () => {
       // Verify availableTitles has the expected data
       const state = useGamificationStore.getState();
       expect(state.availableTitles).toHaveLength(3);
-      expect(state.availableTitles[0].id).toBe('newcomer');
+      expect(state.availableTitles[0]!.id).toBe('newcomer');
     });
   });
 

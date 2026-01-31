@@ -182,7 +182,7 @@ interface CreateThreadData {
   prefix?: string;
 }
 
-interface CreatePostData {
+export interface CreatePostData {
   content: string;
   replyToId?: string;
 }

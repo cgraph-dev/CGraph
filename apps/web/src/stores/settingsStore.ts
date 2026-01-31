@@ -323,7 +323,7 @@ function mapSettingsToApi(settings: Partial<UserSettings>): Record<string, unkno
 // Store Interface
 // ============================================================================
 
-interface SettingsState {
+export interface SettingsState {
   settings: UserSettings;
   isLoading: boolean;
   isSaving: boolean;

@@ -181,7 +181,7 @@ export const XP_REWARDS = {
 
 // ==================== STORE STATE ====================
 
-interface GamificationState {
+export interface GamificationState {
   // Level & XP
   level: number;
   currentXP: number;

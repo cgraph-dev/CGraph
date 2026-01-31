@@ -7,6 +7,7 @@
  * @since v0.9.2
  */
 
+import DOMPurify from 'dompurify';
 import { motion } from 'framer-motion';
 import { MarketingLayout } from '@/components/marketing';
 
@@ -277,7 +278,9 @@ export default function CookiePolicy() {
               </h2>
               <div
                 className="legal-content"
-                dangerouslySetInnerHTML={{ __html: section.content }}
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(section.content, { USE_PROFILES: { html: true } }),
+                }}
               />
             </motion.section>
           ))}

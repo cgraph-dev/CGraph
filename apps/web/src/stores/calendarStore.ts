@@ -142,7 +142,7 @@ export interface CalendarFilters {
   forumId?: string;
 }
 
-interface CalendarState {
+export interface CalendarState {
   // Events
   events: CalendarEvent[];
   currentEvent: CalendarEvent | null;

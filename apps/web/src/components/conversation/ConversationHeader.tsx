@@ -23,10 +23,11 @@ import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import UserProfileCard from '@/components/profile/UserProfileCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
+import type { Conversation } from '@/stores/chatStore';
 
 interface ConversationHeaderProps {
   conversationName: string;
-  otherParticipant: any;
+  otherParticipant: Conversation['participants'][0] | undefined;
   isOtherUserOnline: boolean;
   typing: string[];
   uiPreferences: {
@@ -90,7 +91,6 @@ function ConversationHeaderComponent({
                 src={otherParticipant?.user?.avatarUrl}
                 alt={conversationName}
                 size="large"
-                userTheme={otherParticipant?.user?.theme}
                 avatarBorderId={getAvatarBorderId(otherParticipant?.user)}
               />
               {isOtherUserOnline && (

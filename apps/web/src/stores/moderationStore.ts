@@ -135,7 +135,7 @@ export interface UserModerationStats {
   approvalRate: number;
 }
 
-interface ModerationState {
+export interface ModerationState {
   // Moderation queue
   queue: ModerationQueueItem[];
   queueCounts: {

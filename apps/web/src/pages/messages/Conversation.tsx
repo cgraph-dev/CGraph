@@ -972,7 +972,6 @@ export default function Conversation() {
                 emoji: string;
                 rarity: string;
               }>,
-              theme: otherParticipant?.user?.theme ?? undefined,
             }}
             mutualFriends={mutualFriends}
             sharedForums={otherParticipant?.user?.sharedForums ?? []}

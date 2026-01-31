@@ -61,7 +61,7 @@ export default function E2EEConnectionTester({
     {
       name: 'Public Key Retrieval',
       status: 'pending',
-      message: 'Fetching recipient\'s public key...',
+      message: "Fetching recipient's public key...",
     },
     {
       name: 'Shared Secret Generation',
@@ -105,7 +105,9 @@ export default function E2EEConnectionTester({
     },
   ]);
 
-  const [overallStatus, setOverallStatus] = useState<'idle' | 'testing' | 'success' | 'partial' | 'failed'>('idle');
+  const [overallStatus, setOverallStatus] = useState<
+    'idle' | 'testing' | 'success' | 'partial' | 'failed'
+  >('idle');
   const [testStartTime, setTestStartTime] = useState<number>(0);
   const [totalDuration, setTotalDuration] = useState<number>(0);
 
@@ -126,9 +128,9 @@ export default function E2EEConnectionTester({
 
     // Determine overall status
     const results = tests;
-    const hasError = results.some(t => t.status === 'error');
-    const hasWarning = results.some(t => t.status === 'warning');
-    const allSuccess = results.every(t => t.status === 'success');
+    const hasError = results.some((t) => t.status === 'error');
+    const hasWarning = results.some((t) => t.status === 'warning');
+    const allSuccess = results.every((t) => t.status === 'success');
 
     if (hasError) {
       setOverallStatus('failed');
@@ -146,12 +148,10 @@ export default function E2EEConnectionTester({
     const testStartTime = Date.now();
 
     // Update status to running
-    setTests(prev => prev.map((t, i) =>
-      i === index ? { ...t, status: 'running' } : t
-    ));
+    setTests((prev) => prev.map((t, i) => (i === index ? { ...t, status: 'running' } : t)));
 
     // Wait a bit to show the running state
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise((resolve) => setTimeout(resolve, 300));
 
     try {
       switch (index) {
@@ -190,27 +190,35 @@ export default function E2EEConnectionTester({
       const duration = Date.now() - testStartTime;
 
       // Update status to success
-      setTests(prev => prev.map((t, i) =>
-        i === index ? {
-          ...t,
-          status: 'success',
-          message: getSuccessMessage(index),
-          duration,
-        } : t
-      ));
-
-    } catch (error: any) {
+      setTests((prev) =>
+        prev.map((t, i) =>
+          i === index
+            ? {
+                ...t,
+                status: 'success',
+                message: getSuccessMessage(index),
+                duration,
+              }
+            : t
+        )
+      );
+    } catch (error: unknown) {
       const duration = Date.now() - testStartTime;
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
-      setTests(prev => prev.map((t, i) =>
-        i === index ? {
-          ...t,
-          status: 'error',
-          message: 'Test failed',
-          details: error.message || 'Unknown error',
-          duration,
-        } : t
-      ));
+      setTests((prev) =>
+        prev.map((t, i) =>
+          i === index
+            ? {
+                ...t,
+                status: 'error',
+                message: 'Test failed',
+                details: errorMessage,
+                duration,
+              }
+            : t
+        )
+      );
     }
   };
 
@@ -291,24 +299,15 @@ export default function E2EEConnectionTester({
 
     // Test round-trip encrypt/decrypt
     const testData = new TextEncoder().encode('Decrypt test');
-    const key = await window.crypto.subtle.generateKey(
-      { name: 'AES-GCM', length: 256 },
-      true,
-      ['encrypt', 'decrypt']
-    );
+    const key = await window.crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, [
+      'encrypt',
+      'decrypt',
+    ]);
 
     const iv = window.crypto.getRandomValues(new Uint8Array(12));
-    const encrypted = await window.crypto.subtle.encrypt(
-      { name: 'AES-GCM', iv },
-      key,
-      testData
-    );
+    const encrypted = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, testData);
 
-    const decrypted = await window.crypto.subtle.decrypt(
-      { name: 'AES-GCM', iv },
-      key,
-      encrypted
-    );
+    const decrypted = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, encrypted);
 
     const decryptedText = new TextDecoder().decode(decrypted);
     if (decryptedText !== 'Decrypt test') {
@@ -320,25 +319,15 @@ export default function E2EEConnectionTester({
     // Test HMAC signatures
     await simulateWork(400);
 
-    const key = await window.crypto.subtle.generateKey(
-      { name: 'HMAC', hash: 'SHA-256' },
-      true,
-      ['sign', 'verify']
-    );
+    const key = await window.crypto.subtle.generateKey({ name: 'HMAC', hash: 'SHA-256' }, true, [
+      'sign',
+      'verify',
+    ]);
 
     const data = new TextEncoder().encode('Test message');
-    const signature = await window.crypto.subtle.sign(
-      'HMAC',
-      key,
-      data
-    );
+    const signature = await window.crypto.subtle.sign('HMAC', key, data);
 
-    const isValid = await window.crypto.subtle.verify(
-      'HMAC',
-      key,
-      signature,
-      data
-    );
+    const isValid = await window.crypto.subtle.verify('HMAC', key, signature, data);
 
     if (!isValid) {
       throw new Error('HMAC verification failed');
@@ -404,14 +393,18 @@ export default function E2EEConnectionTester({
 
     if (latency > 1000) {
       // Warning if latency is high
-      setTests(prev => prev.map((t, i) =>
-        i === 8 ? {
-          ...t,
-          status: 'warning',
-          message: `High latency detected (${latency.toFixed(0)}ms)`,
-          details: 'Consider checking your internet connection',
-        } : t
-      ));
+      setTests((prev) =>
+        prev.map((t, i) =>
+          i === 8
+            ? {
+                ...t,
+                status: 'warning',
+                message: `High latency detected (${latency.toFixed(0)}ms)`,
+                details: 'Consider checking your internet connection',
+              }
+            : t
+        )
+      );
     }
   }
 
@@ -435,7 +428,7 @@ export default function E2EEConnectionTester({
   }
 
   async function simulateWork(ms: number) {
-    await new Promise(resolve => setTimeout(resolve, ms + Math.random() * 200));
+    await new Promise((resolve) => setTimeout(resolve, ms + Math.random() * 200));
   }
 
   function getSuccessMessage(index: number): string {
@@ -478,14 +471,14 @@ export default function E2EEConnectionTester({
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={onClose}
     >
       <motion.div
-        className="max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto"
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -493,19 +486,20 @@ export default function E2EEConnectionTester({
       >
         <GlassCard variant="holographic" glow borderGradient className="p-6">
           {/* Header */}
-          <div className="flex items-start justify-between mb-6">
+          <div className="mb-6 flex items-start justify-between">
             <div>
-              <h3 className="text-2xl font-bold text-white flex items-center gap-3">
+              <h3 className="flex items-center gap-3 text-2xl font-bold text-white">
                 <ShieldCheckIcon className="h-7 w-7 text-green-400" />
                 E2EE Connection Test
               </h3>
-              <p className="text-gray-400 mt-1">
-                Testing encryption with <span className="text-primary-400 font-semibold">{recipientName}</span>
+              <p className="mt-1 text-gray-400">
+                Testing encryption with{' '}
+                <span className="font-semibold text-primary-400">{recipientName}</span>
               </p>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-dark-700 text-gray-400 hover:text-white transition-colors"
+              className="rounded-full p-2 text-gray-400 transition-colors hover:bg-dark-700 hover:text-white"
             >
               <XMarkIcon className="h-6 w-6" />
             </button>
@@ -514,14 +508,14 @@ export default function E2EEConnectionTester({
           {/* Overall Status */}
           {overallStatus !== 'idle' && (
             <motion.div
-              className={`mb-6 p-4 rounded-xl border-2 ${
+              className={`mb-6 rounded-xl border-2 p-4 ${
                 overallStatus === 'success'
-                  ? 'bg-green-500/10 border-green-500/30'
+                  ? 'border-green-500/30 bg-green-500/10'
                   : overallStatus === 'partial'
-                  ? 'bg-yellow-500/10 border-yellow-500/30'
-                  : overallStatus === 'failed'
-                  ? 'bg-red-500/10 border-red-500/30'
-                  : 'bg-primary-500/10 border-primary-500/30'
+                    ? 'border-yellow-500/30 bg-yellow-500/10'
+                    : overallStatus === 'failed'
+                      ? 'border-red-500/30 bg-red-500/10'
+                      : 'border-primary-500/30 bg-primary-500/10'
               }`}
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -535,8 +529,12 @@ export default function E2EEConnectionTester({
                     <ShieldCheckIcon className="h-6 w-6 text-primary-400" />
                   </motion.div>
                 )}
-                {overallStatus === 'success' && <CheckCircleIcon className="h-6 w-6 text-green-400" />}
-                {overallStatus === 'partial' && <ExclamationTriangleIcon className="h-6 w-6 text-yellow-400" />}
+                {overallStatus === 'success' && (
+                  <CheckCircleIcon className="h-6 w-6 text-green-400" />
+                )}
+                {overallStatus === 'partial' && (
+                  <ExclamationTriangleIcon className="h-6 w-6 text-yellow-400" />
+                )}
                 {overallStatus === 'failed' && <XCircleIcon className="h-6 w-6 text-red-400" />}
 
                 <div className="flex-1">
@@ -547,7 +545,7 @@ export default function E2EEConnectionTester({
                     {overallStatus === 'failed' && 'Some tests failed'}
                   </div>
                   {totalDuration > 0 && (
-                    <div className="text-xs text-gray-400 mt-0.5">
+                    <div className="mt-0.5 text-xs text-gray-400">
                       Completed in {(totalDuration / 1000).toFixed(2)}s
                     </div>
                   )}
@@ -557,39 +555,39 @@ export default function E2EEConnectionTester({
           )}
 
           {/* Test Results */}
-          <div className="space-y-2 mb-6">
+          <div className="mb-6 space-y-2">
             {tests.map((test, index) => (
               <motion.div
                 key={test.name}
-                className={`p-4 rounded-lg border transition-all ${
+                className={`rounded-lg border p-4 transition-all ${
                   test.status === 'success'
-                    ? 'bg-green-500/5 border-green-500/20'
+                    ? 'border-green-500/20 bg-green-500/5'
                     : test.status === 'error'
-                    ? 'bg-red-500/5 border-red-500/20'
-                    : test.status === 'warning'
-                    ? 'bg-yellow-500/5 border-yellow-500/20'
-                    : test.status === 'running'
-                    ? 'bg-primary-500/5 border-primary-500/30'
-                    : 'bg-dark-700/30 border-dark-600'
+                      ? 'border-red-500/20 bg-red-500/5'
+                      : test.status === 'warning'
+                        ? 'border-yellow-500/20 bg-yellow-500/5'
+                        : test.status === 'running'
+                          ? 'border-primary-500/30 bg-primary-500/5'
+                          : 'border-dark-600 bg-dark-700/30'
                 }`}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-0.5">{getStatusIcon(test.status)}</div>
-                  <div className="flex-1 min-w-0">
+                  <div className="mt-0.5 flex-shrink-0">{getStatusIcon(test.status)}</div>
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <div className="font-medium text-white text-sm">{test.name}</div>
+                      <div className="text-sm font-medium text-white">{test.name}</div>
                       {test.duration && (
-                        <span className="text-xs text-gray-500 whitespace-nowrap">
+                        <span className="whitespace-nowrap text-xs text-gray-500">
                           {test.duration}ms
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-gray-400 mt-0.5">{test.message}</div>
+                    <div className="mt-0.5 text-xs text-gray-400">{test.message}</div>
                     {test.details && (
-                      <div className="text-xs text-gray-500 mt-1 italic">{test.details}</div>
+                      <div className="mt-1 text-xs italic text-gray-500">{test.details}</div>
                     )}
                   </div>
                 </div>
@@ -603,7 +601,7 @@ export default function E2EEConnectionTester({
               <>
                 <motion.button
                   onClick={runTests}
-                  className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-purple-600 hover:from-primary-500 hover:to-purple-500 text-white font-semibold transition-all flex items-center justify-center gap-2"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-600 to-purple-600 px-6 py-3 font-semibold text-white transition-all hover:from-primary-500 hover:to-purple-500"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -612,7 +610,7 @@ export default function E2EEConnectionTester({
                 </motion.button>
                 <motion.button
                   onClick={onClose}
-                  className="px-6 py-3 rounded-xl bg-dark-700 hover:bg-dark-600 text-white font-semibold transition-colors"
+                  className="rounded-xl bg-dark-700 px-6 py-3 font-semibold text-white transition-colors hover:bg-dark-600"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
@@ -622,7 +620,7 @@ export default function E2EEConnectionTester({
             ) : (
               <button
                 disabled
-                className="flex-1 px-6 py-3 rounded-xl bg-dark-700 text-gray-500 font-semibold cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex flex-1 cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-dark-700 px-6 py-3 font-semibold text-gray-500"
               >
                 <motion.div
                   animate={{ rotate: 360 }}
@@ -637,19 +635,20 @@ export default function E2EEConnectionTester({
 
           {/* Info Box */}
           <motion.div
-            className="mt-4 p-4 rounded-lg bg-blue-500/10 border border-blue-500/20"
+            className="mt-4 rounded-lg border border-blue-500/20 bg-blue-500/10 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
           >
             <div className="flex gap-3">
-              <InformationCircleIcon className="h-5 w-5 text-blue-400 flex-shrink-0 mt-0.5" />
+              <InformationCircleIcon className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-400" />
               <div className="text-xs text-gray-300">
-                <p className="font-semibold text-blue-300 mb-1">About this test</p>
+                <p className="mb-1 font-semibold text-blue-300">About this test</p>
                 <p>
-                  This diagnostic performs real cryptographic operations using Web Crypto API to verify that
-                  end-to-end encryption is functioning correctly. All tests use industry-standard algorithms:
-                  X25519 for key exchange, AES-256-GCM for encryption, and HMAC-SHA256 for authentication.
+                  This diagnostic performs real cryptographic operations using Web Crypto API to
+                  verify that end-to-end encryption is functioning correctly. All tests use
+                  industry-standard algorithms: X25519 for key exchange, AES-256-GCM for encryption,
+                  and HMAC-SHA256 for authentication.
                 </p>
               </div>
             </div>

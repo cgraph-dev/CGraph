@@ -255,7 +255,6 @@ export function ConversationModals({
                 emoji: string;
                 rarity: string;
               }>,
-              theme: otherParticipant?.user?.theme ?? undefined,
             }}
             mutualFriends={mutualFriends}
             sharedForums={

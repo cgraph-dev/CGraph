@@ -6,7 +6,7 @@
  * typing indicators, and all async API operations.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
 import { useGroupStore } from '../groupStore';
 import type { Group, Channel, Member, ChannelMessage, Role } from '../groupStore';
 
@@ -25,9 +25,16 @@ vi.mock('@cgraph/utils', () => ({
   createIdempotencyKey: () => 'test-idempotency-key-123',
 }));
 
-// Import the mocked api
+// Import the mocked api with proper typing
 import { api } from '@/lib/api';
-const mockedApi = vi.mocked(api);
+
+// Type the mocked API properly
+const mockedApi = {
+  get: api.get as MockedFunction<typeof api.get>,
+  post: api.post as MockedFunction<typeof api.post>,
+  patch: api.patch as MockedFunction<typeof api.patch>,
+  delete: api.delete as MockedFunction<typeof api.delete>,
+};
 
 // Mock role
 const mockRole: Role = {
@@ -260,8 +267,8 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.groups).toHaveLength(2);
-      expect(state.groups[0].id).toBe('group-1');
-      expect(state.groups[1].id).toBe('group-2');
+      expect(state.groups[0]!.id).toBe('group-1');
+      expect(state.groups[1]!.id).toBe('group-2');
     });
 
     it('should call API with correct endpoint', async () => {
@@ -289,7 +296,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.groups).toHaveLength(1);
-      expect(state.groups[0].name).toBe('Test Group');
+      expect(state.groups[0]!.name).toBe('Test Group');
     });
 
     it('should update existing group in store', async () => {
@@ -301,7 +308,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.groups).toHaveLength(1);
-      expect(state.groups[0].name).toBe('Updated Group Name');
+      expect(state.groups[0]!.name).toBe('Updated Group Name');
     });
 
     it('should call API with correct endpoint', async () => {
@@ -353,7 +360,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.groups).toHaveLength(2);
-      expect(state.groups[0].id).toBe('group-1');
+      expect(state.groups[0]!.id).toBe('group-1');
     });
 
     it('should throw error if group creation fails', async () => {
@@ -373,7 +380,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.groups).toHaveLength(1);
-      expect(state.groups[0].id).toBe('group-1');
+      expect(state.groups[0]!.id).toBe('group-1');
     });
 
     it('should call API with correct endpoint', async () => {
@@ -404,7 +411,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.groups).toHaveLength(1);
-      expect(state.groups[0].id).toBe('group-2');
+      expect(state.groups[0]!.id).toBe('group-2');
     });
 
     it('should call API with correct endpoint', async () => {
@@ -447,7 +454,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.channelMessages['channel-1']).toHaveLength(1);
-      expect(state.channelMessages['channel-1'][0].content).toBe('Hello, world!');
+      expect(state.channelMessages['channel-1']![0]!.content).toBe('Hello, world!');
     });
 
     it('should call API with correct payload', async () => {
@@ -558,7 +565,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.channelMessages['channel-1']).toHaveLength(1);
-      expect(state.channelMessages['channel-1'][0].id).toBe('msg-1');
+      expect(state.channelMessages['channel-1']![0]!.id).toBe('msg-1');
     });
 
     it('should not duplicate messages with same id', () => {
@@ -591,7 +598,7 @@ describe('groupStore', () => {
       useGroupStore.getState().updateChannelMessage(updatedMessage);
 
       const state = useGroupStore.getState();
-      expect(state.channelMessages['channel-1'][0].content).toBe('Updated content');
+      expect(state.channelMessages['channel-1']![0]!.content).toBe('Updated content');
     });
 
     it('should not modify other messages', () => {
@@ -603,7 +610,7 @@ describe('groupStore', () => {
       useGroupStore.getState().updateChannelMessage(updatedMessage);
 
       const state = useGroupStore.getState();
-      expect(state.channelMessages['channel-1'][1].content).toBe('Hi there!');
+      expect(state.channelMessages['channel-1']![1]!.content).toBe('Hi there!');
     });
   });
 
@@ -617,7 +624,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.channelMessages['channel-1']).toHaveLength(1);
-      expect(state.channelMessages['channel-1'][0].id).toBe('msg-2');
+      expect(state.channelMessages['channel-1']![0]!.id).toBe('msg-2');
     });
 
     it('should handle removing from empty channel', () => {
@@ -706,7 +713,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.members['group-1']).toHaveLength(1);
-      expect(state.members['group-1'][0].userId).toBe('user-123');
+      expect(state.members['group-1']![0]!.userId).toBe('user-123');
     });
 
     it('should call API with correct endpoint', async () => {
@@ -729,7 +736,7 @@ describe('groupStore', () => {
         .updateGroup('group-1', { name: 'Updated Name' });
 
       expect(result.name).toBe('Updated Name');
-      expect(useGroupStore.getState().groups[0].name).toBe('Updated Name');
+      expect(useGroupStore.getState().groups[0]!.name).toBe('Updated Name');
     });
 
     it('should throw error if update fails', async () => {
@@ -750,7 +757,7 @@ describe('groupStore', () => {
 
       const state = useGroupStore.getState();
       expect(state.groups).toHaveLength(1);
-      expect(state.groups[0].id).toBe('group-2');
+      expect(state.groups[0]!.id).toBe('group-2');
     });
 
     it('should reset activeGroupId if deleting active group', async () => {

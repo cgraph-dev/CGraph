@@ -1,6 +1,6 @@
 /**
  * E2EE Key Verification Component
- * 
+ *
  * Displays safety number for verifying end-to-end encryption with a contact.
  * Users compare this number in-person or via a trusted channel to ensure
  * no man-in-the-middle attack is present.
@@ -9,7 +9,11 @@
 import { useState, useEffect } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { api } from '@/lib/api';
-import { CheckCircleIcon, ExclamationTriangleIcon, ShieldCheckIcon } from '@heroicons/react/24/outline';
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  ShieldCheckIcon,
+} from '@heroicons/react/24/outline';
 
 interface KeyVerificationProps {
   userId: string;
@@ -63,25 +67,32 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
   const fetchSafetyNumber = async () => {
     try {
       setState((s) => ({ ...s, loading: true, error: null }));
-      
+
       const response = await api.get(`/api/v1/e2ee/safety-number/${userId}`);
       const { safety_number } = response.data.data;
-      
+
       // Check if already verified
       const verifyResponse = await api.get(`/api/v1/e2ee/keys/${userId}/verification-status`);
       const isVerified = verifyResponse.data.data?.verified || false;
-      
+
       setState({
         safetyNumber: safety_number,
         isVerified,
         loading: false,
         error: null,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'object' && err !== null && 'response' in err
+            ? ((err as { response?: { data?: { message?: string } } }).response?.data?.message ??
+              'Failed to load safety number')
+            : 'Failed to load safety number';
       setState((s) => ({
         ...s,
         loading: false,
-        error: err.response?.data?.message || 'Failed to load safety number',
+        error: errorMessage,
       }));
     }
   };
@@ -91,10 +102,17 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
       await api.post(`/api/v1/e2ee/keys/${userId}/verify`);
       setState((s) => ({ ...s, isVerified: true }));
       onVerified?.();
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'object' && err !== null && 'response' in err
+            ? ((err as { response?: { data?: { message?: string } } }).response?.data?.message ??
+              'Failed to mark as verified')
+            : 'Failed to mark as verified';
       setState((s) => ({
         ...s,
-        error: err.response?.data?.message || 'Failed to mark as verified',
+        error: errorMessage,
       }));
     }
   };
@@ -103,10 +121,17 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
     try {
       await api.delete(`/api/v1/e2ee/keys/${userId}/verify`);
       setState((s) => ({ ...s, isVerified: false }));
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'object' && err !== null && 'response' in err
+            ? ((err as { response?: { data?: { message?: string } } }).response?.data?.message ??
+              'Failed to remove verification')
+            : 'Failed to remove verification';
       setState((s) => ({
         ...s,
-        error: err.response?.data?.message || 'Failed to remove verification',
+        error: errorMessage,
       }));
     }
   };
@@ -114,7 +139,7 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
   if (state.loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-indigo-600" />
       </div>
     );
   }
@@ -122,12 +147,12 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
   if (state.error) {
     return (
       <div className="p-6 text-center">
-        <ExclamationTriangleIcon className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
-        <h3 className="text-lg font-medium text-gray-900 mb-2">Verification Unavailable</h3>
-        <p className="text-gray-600 mb-4">{state.error}</p>
+        <ExclamationTriangleIcon className="mx-auto mb-4 h-12 w-12 text-yellow-500" />
+        <h3 className="mb-2 text-lg font-medium text-gray-900">Verification Unavailable</h3>
+        <p className="mb-4 text-gray-600">{state.error}</p>
         <button
           onClick={onClose}
-          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-gray-700"
+          className="rounded-lg bg-gray-100 px-4 py-2 text-gray-700 hover:bg-gray-200"
         >
           Close
         </button>
@@ -138,28 +163,26 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
   const formattedNumber = formatSafetyNumber(state.safetyNumber || '');
 
   return (
-    <div className="p-6 max-w-md">
+    <div className="max-w-md p-6">
       {/* Header */}
-      <div className="flex items-center mb-6">
-        <ShieldCheckIcon className={`h-8 w-8 mr-3 ${state.isVerified ? 'text-green-500' : 'text-indigo-500'}`} />
+      <div className="mb-6 flex items-center">
+        <ShieldCheckIcon
+          className={`mr-3 h-8 w-8 ${state.isVerified ? 'text-green-500' : 'text-indigo-500'}`}
+        />
         <div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            Verify Security with {username}
-          </h2>
-          <p className="text-sm text-gray-500">
-            End-to-end encryption active
-          </p>
+          <h2 className="text-xl font-semibold text-gray-900">Verify Security with {username}</h2>
+          <p className="text-sm text-gray-500">End-to-end encryption active</p>
         </div>
       </div>
 
       {/* Verification Status */}
       {state.isVerified && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
-          <CheckCircleIcon className="h-5 w-5 text-green-600 mr-2" />
-          <span className="text-green-800 font-medium">Verified</span>
+        <div className="mb-6 flex items-center rounded-lg border border-green-200 bg-green-50 p-4">
+          <CheckCircleIcon className="mr-2 h-5 w-5 text-green-600" />
+          <span className="font-medium text-green-800">Verified</span>
           <button
             onClick={handleUnverify}
-            className="ml-auto text-sm text-green-600 hover:text-green-800 underline"
+            className="ml-auto text-sm text-green-600 underline hover:text-green-800"
           >
             Remove
           </button>
@@ -168,14 +191,12 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
 
       {/* Instructions */}
       <div className="mb-6">
-        <p className="text-gray-700 text-sm leading-relaxed">
+        <p className="text-sm leading-relaxed text-gray-700">
           To verify that your messages are truly end-to-end encrypted with{' '}
           <strong>{username}</strong>, compare the safety number below with theirs.
         </p>
-        <p className="text-gray-600 text-sm mt-2">
-          You can compare via:
-        </p>
-        <ul className="text-sm text-gray-600 list-disc list-inside mt-1">
+        <p className="mt-2 text-sm text-gray-600">You can compare via:</p>
+        <ul className="mt-1 list-inside list-disc text-sm text-gray-600">
           <li>In-person meeting</li>
           <li>Video call (show QR code)</li>
           <li>Trusted side channel</li>
@@ -184,9 +205,9 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
 
       {/* Safety Number Display */}
       <div className="mb-6">
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <p className="text-xs text-gray-500 mb-2 uppercase tracking-wide">Safety Number</p>
-          <p className="font-mono text-lg text-center text-gray-900 tracking-widest select-all">
+        <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+          <p className="mb-2 text-xs uppercase tracking-wide text-gray-500">Safety Number</p>
+          <p className="select-all text-center font-mono text-lg tracking-widest text-gray-900">
             {formattedNumber}
           </p>
         </div>
@@ -196,14 +217,14 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
       <div className="mb-6">
         <button
           onClick={() => setShowQR(!showQR)}
-          className="w-full py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center justify-center"
+          className="flex w-full items-center justify-center rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50"
         >
           {showQR ? 'Hide QR Code' : 'Show QR Code for Scanning'}
         </button>
-        
+
         {showQR && state.safetyNumber && (
           <div className="mt-4 flex justify-center">
-            <div className="p-4 bg-white border rounded-lg">
+            <div className="rounded-lg border bg-white p-4">
               <QRCodeSVG
                 value={getQRData(userId, state.safetyNumber)}
                 size={200}
@@ -219,14 +240,14 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
       <div className="flex gap-3">
         <button
           onClick={onClose}
-          className="flex-1 py-2 px-4 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+          className="flex-1 rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50"
         >
           Close
         </button>
         {!state.isVerified && (
           <button
             onClick={handleMarkVerified}
-            className="flex-1 py-2 px-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium"
+            className="flex-1 rounded-lg bg-indigo-600 px-4 py-2 font-medium text-white hover:bg-indigo-700"
           >
             Mark as Verified
           </button>
@@ -234,9 +255,9 @@ export function KeyVerification({ userId, username, onVerified, onClose }: KeyVe
       </div>
 
       {/* Security Note */}
-      <p className="mt-4 text-xs text-gray-500 text-center">
-        If the safety numbers don't match, your communication may be compromised.
-        Do not mark as verified until you've confirmed they match.
+      <p className="mt-4 text-center text-xs text-gray-500">
+        If the safety numbers don't match, your communication may be compromised. Do not mark as
+        verified until you've confirmed they match.
       </p>
     </div>
   );

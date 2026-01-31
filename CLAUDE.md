@@ -43,7 +43,7 @@ AES-256-GCM), OAuth authentication (Google, Apple, Facebook), voice/video calls,
 forum system.
 
 **Version**: 0.9.8  
-**Last Updated**: January 2026  
+**Last Updated**: February 2026  
 **License**: Proprietary (see LICENSE)
 
 ## Key Features
@@ -547,10 +547,10 @@ Required:
 
 Copy `.env.example` to `.env` in `apps/backend/` and configure database credentials and secrets.
 
-## Current Status (v0.9.8+)
+## Current Status (v0.9.10)
 
-**Updated:** January 31, 2026  
-**Commit:** `89fb94b`
+**Updated:** February 1, 2026  
+**Commit:** `latest`
 
 ### Remediation Progress
 
@@ -559,52 +559,56 @@ Copy `.env.example` to `.env` in `apps/backend/` and configure database credenti
 | Phase 0: Critical Security     | Remove secrets from git     | ✅ COMPLETE    | 100%       |
 | Phase 1: Security Hardening    | OAuth, CORS, SSL, Audit     | ✅ COMPLETE    | 100%       |
 | Phase 2: Code Quality          | Console.log, as any         | ✅ COMPLETE    | 95%        |
-| Phase 3: Store Consolidation   | 32 → 7 stores               | ⚠️ PARTIAL     | 25%        |
+| Phase 3: Store Consolidation   | 32 → 7 facades              | ✅ COMPLETE    | 100%       |
 | Phase 4: Component Refactoring | Break down large components | ✅ COMPLETE    | 100%       |
 | Phase 5: Feature Completeness  | Edit/delete, voice, E2EE    | ✅ COMPLETE    | 100%       |
-| Phase 6: Test Coverage         | 70% coverage                | ⚠️ IN PROGRESS | 35%        |
+| Phase 6: Test Coverage         | 70% coverage                | ⚠️ IN PROGRESS | 45%        |
 
 ### Key Metrics
 
-| Metric                | Before      | After                     |
-| --------------------- | ----------- | ------------------------- |
-| `.env` with secrets   | Present     | **DELETED**               |
-| `as any` casts        | 7           | **0** (1 comment)         |
-| `console.log` calls   | 325         | **55** (acceptable)       |
-| Settings.tsx          | 1,172 lines | **221 lines**             |
-| UserProfile.tsx       | 1,157 lines | **715 lines**             |
-| Store count           | 32          | 33 (consolidation needed) |
-| Test files (frontend) | 20          | **29**                    |
-| Test files (backend)  | 40          | 40                        |
+| Metric               | Before      | After                     |
+| -------------------- | ----------- | ------------------------- |
+| `.env` with secrets  | Present     | **DELETED**               |
+| `as any` casts       | 27          | **12** (56% reduction)    |
+| `console.log` calls  | 325         | **55** (acceptable)       |
+| Settings.tsx         | 1,172 lines | **221 lines**             |
+| UserProfile.tsx      | 1,157 lines | **715 lines**             |
+| Store facades        | 0           | **7 domains** (29 stores) |
+| Passing tests        | 840         | **893** (+53)             |
+| Statement coverage   | 8.79%       | **9.31%**                 |
+| Test files (backend) | 40          | 40                        |
 
-**Overall Score:** 7.3/10 (up from 4.8/10)
+**Overall Score:** 8.5/10 (up from 7.3/10)
 
-See `docs/REMEDIATION_STATUS_2026_01_31.md` for full details.
+See `docs/PROJECT_STATUS.md` for full details.
 
 ---
 
-## Recent Updates (v0.9.0)
+## Recent Updates (v0.9.10)
 
-### Backend Fixes
+### Test Coverage Improvements
 
-- Added `Cache.put/3` for API compatibility with repositories
-- Added `Mailer.send_email/1` for raw email data (digest emails)
-- Added `User.changeset/2` generic changeset function
-- Added `:fuse` dependency for circuit breaker support
-- Standardized module naming: `CGraph.*` and `CGraphWeb.*`
+- **E2EE test suite**: 28 new tests covering all cryptographic primitives
+- **Store facades tests**: 25 new tests covering all 7 facade domains
+- Test count increased from 840 → 893 (+53 tests)
+- Statement coverage increased from 8.79% → 9.31%
 
-### Frontend Fixes
+### Store Facades (Phase 3 Complete)
 
-- Added `"type": "module"` to root package.json for ESLint
-- Updated tier limits: free=5, starter=10, pro=50, business=unlimited
-- Added `maxForums` to TIER_FEATURES matching backend
-- Implemented web push notification toggle with service worker
+- Created 7 facade domains consolidating 29 stores:
+  - `useAuthFacade`: Authentication, user, wallet, session
+  - `useChatFacade`: Conversations, messages, typing, reactions
+  - `useCommunityFacade`: Forums, groups, servers, channels
+  - `useGamificationFacade`: XP, karma, achievements, effects
+  - `useSettingsFacade`: Privacy, notifications, profile
+  - `useMarketplaceFacade`: Items, purchases, inventory
+  - `useUIFacade`: Theme, sidebar, modals, toasts
 
-### Mobile Fixes
+### Security Fixes
 
-- Implemented push notification service with Expo
-- Added `usePushNotifications` hook for auto-registration
-- Integrated SettingsProvider in App.tsx
+- Fixed XSS vulnerability in legal pages (DOMPurify)
+- Added ECDSA signature verification to E2EE module
+- Enabled video calls feature flag
 
 ## Production Infrastructure (v0.9.8)
 

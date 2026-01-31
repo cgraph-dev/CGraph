@@ -62,23 +62,24 @@ const mockMessage: Message = {
   senderId: 'user-1',
   content: 'This is a test message',
   messageType: 'text',
-  status: 'sent',
+  encryptedContent: null,
+  isEncrypted: false,
+  replyToId: null,
+  replyTo: null,
+  isPinned: false,
+  isEdited: false,
+  deletedAt: null,
+  metadata: {},
+  reactions: [],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
-  reactions: [],
-  readBy: [],
   sender: {
     id: 'user-1',
     username: 'testuser',
     displayName: 'Test User',
     avatarUrl: null,
-    level: 1,
-    karma: 100,
-    xp: 500,
-    streak: 5,
+    avatarBorderId: null,
     theme: 'default',
-    badges: [],
-    bio: null,
   },
 };
 
@@ -109,8 +110,8 @@ describe('ReplyPreview', () => {
     const messageWithoutDisplayName: Message = {
       ...mockMessage,
       sender: {
-        ...mockMessage.sender!,
-        displayName: undefined,
+        ...mockMessage.sender,
+        displayName: null,
       },
     };
 
@@ -138,10 +139,15 @@ describe('ReplyPreview', () => {
   });
 
   it('shows "Unknown" when sender is not available', () => {
-    const messageWithoutSender: Message = {
+    const messageWithoutSender = {
       ...mockMessage,
-      sender: undefined,
-    };
+      sender: {
+        id: '',
+        username: '',
+        displayName: null,
+        avatarUrl: null,
+      },
+    } as Message;
 
     render(
       <ReplyPreview

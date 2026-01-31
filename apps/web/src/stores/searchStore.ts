@@ -51,7 +51,7 @@ export interface SearchMessage {
 
 export type SearchCategory = 'all' | 'users' | 'groups' | 'forums' | 'posts' | 'messages';
 
-interface SearchState {
+export interface SearchState {
   query: string;
   category: SearchCategory;
   users: SearchUser[];

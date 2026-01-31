@@ -148,7 +148,7 @@ function MiniProfileCard({ user, onViewProfile, onMessage }: MiniProfileCardProp
 
 interface FullProfileCardProps {
   user: ProfileCardUser;
-  mutualFriends: any[];
+  mutualFriends: Array<{ id: string; username: string; avatarUrl?: string }>;
   onClose: () => void;
 }
 

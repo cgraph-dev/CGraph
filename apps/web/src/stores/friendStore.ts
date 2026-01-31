@@ -145,7 +145,7 @@ function normalizeFriend(data: Record<string, unknown>): Friend {
   };
 }
 
-interface FriendState {
+export interface FriendState {
   friends: Friend[];
   pendingRequests: FriendRequest[];
   sentRequests: FriendRequest[];

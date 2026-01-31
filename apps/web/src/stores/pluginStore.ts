@@ -42,7 +42,7 @@ export interface InstalledPlugin {
   forum_id: string;
 }
 
-interface PluginState {
+export interface PluginState {
   // Marketplace
   marketplacePlugins: MarketplacePlugin[];
   marketplaceCategories: string[];

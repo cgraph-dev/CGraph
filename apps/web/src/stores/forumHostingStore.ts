@@ -117,7 +117,7 @@ interface PaginationMeta {
 // Store State
 // =============================================================================
 
-interface ForumHostingState {
+export interface ForumHostingState {
   // Boards
   boards: Board[];
   currentBoard: Board | null;
@@ -182,7 +182,7 @@ interface CreateThreadData {
   prefix?: string;
 }
 
-interface CreatePostData {
+export interface CreatePostData {
   content: string;
   replyToId?: string;
 }

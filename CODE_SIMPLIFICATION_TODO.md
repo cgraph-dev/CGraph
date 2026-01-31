@@ -529,8 +529,40 @@ After completing any task:
 
 ### Regression
 
-- [ ] Run `pnpm test`
+- [x] Run `pnpm test` - **893 tests passing** (as of February 1, 2026)
 - [ ] Manual smoke test of customization flow
+
+### Test Coverage Status (Updated February 1, 2026)
+
+| Metric             | Value | Notes                                            |
+| ------------------ | ----- | ------------------------------------------------ |
+| Passing tests      | 893   | +53 from previous session                        |
+| Statement coverage | 9.31% | Up from 8.79%                                    |
+| E2EE tests         | 28    | New: `/lib/crypto/__tests__/e2ee.test.ts`        |
+| Facade tests       | 25    | New: `/stores/facades/__tests__/facades.test.ts` |
+
+### Recent Test Additions
+
+**E2EE Test Suite** (`/apps/web/src/lib/crypto/__tests__/e2ee.test.ts`):
+
+- [x] Base64 utilities (arrayBufferToBase64, base64ToArrayBuffer)
+- [x] Key generation (ECDH, ECDSA)
+- [x] Key import/export
+- [x] Signing/verification (ECDSA)
+- [x] Key derivation (HKDF)
+- [x] Hashing (SHA-256)
+- [x] Encryption/decryption (AES-256-GCM)
+- [x] Key bundle generation
+
+**Store Facades Test Suite** (`/apps/web/src/stores/facades/__tests__/facades.test.ts`):
+
+- [x] useAuthFacade (auth, user, wallet)
+- [x] useChatFacade (conversations, messages, typing)
+- [x] useCommunityFacade (forums, groups)
+- [x] useGamificationFacade (XP, karma, achievements)
+- [x] useSettingsFacade (privacy, notifications)
+- [x] useMarketplaceFacade (items, inventory)
+- [x] useUIFacade (theme, modals, toasts)
 
 ---
 

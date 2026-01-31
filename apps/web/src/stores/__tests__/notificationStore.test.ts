@@ -126,7 +126,7 @@ describe('notificationStore', () => {
     it('should append notifications when paginating', async () => {
       // First page
       useNotificationStore.setState({
-        notifications: [mockNotifications[0]],
+        notifications: [mockNotifications[0]!],
         unreadCount: 1,
       });
 
@@ -164,7 +164,7 @@ describe('notificationStore', () => {
 
       const state = useNotificationStore.getState();
       expect(state.notifications).toHaveLength(1);
-      expect(state.notifications[0].id).toBe('new-1');
+      expect(state.notifications[0]!.id).toBe('new-1');
     });
 
     it('should handle fetch errors and reset loading state', async () => {
@@ -282,7 +282,7 @@ describe('notificationStore', () => {
   describe('addNotification', () => {
     it('should add a new notification to the beginning of the list', () => {
       useNotificationStore.setState({
-        notifications: [mockNotifications[1]],
+        notifications: [mockNotifications[1]!],
         unreadCount: 1,
       });
 
@@ -296,7 +296,7 @@ describe('notificationStore', () => {
 
       const state = useNotificationStore.getState();
       expect(state.notifications).toHaveLength(2);
-      expect(state.notifications[0].id).toBe('new-notif');
+      expect(state.notifications[0]!.id).toBe('new-notif');
       expect(state.unreadCount).toBe(2);
     });
 

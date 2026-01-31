@@ -25,7 +25,7 @@ export interface Notification {
   createdAt: string;
 }
 
-interface NotificationState {
+export interface NotificationState {
   notifications: Notification[];
   unreadCount: number;
   isLoading: boolean;

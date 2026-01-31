@@ -6,9 +6,9 @@
  * blocked users, and all async API operations.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
 import { useProfileStore } from '../profileStore';
-import type { ExtendedProfile, UserSignature, ProfileField, BlockedUser } from '../profileStore';
+import type { ExtendedProfile, UserSignature, BlockedUser } from '../profileStore';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({
@@ -29,9 +29,16 @@ vi.mock('@/lib/logger', () => ({
   }),
 }));
 
-// Import the mocked api
+// Import the mocked api with proper typing
 import { api } from '@/lib/api';
-const mockedApi = vi.mocked(api);
+
+// Type the mocked API properly
+const mockedApi = {
+  get: api.get as MockedFunction<typeof api.get>,
+  post: api.post as MockedFunction<typeof api.post>,
+  put: api.put as MockedFunction<typeof api.put>,
+  delete: api.delete as MockedFunction<typeof api.delete>,
+};
 
 // Mock profile data
 const mockSignature: UserSignature = {

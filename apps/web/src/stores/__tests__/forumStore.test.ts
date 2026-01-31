@@ -6,9 +6,9 @@
  * subscriptions, and all async API operations.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
 import { useForumStore } from '../forumStore';
-import type { Forum, Post, Comment, Subscription, ForumCategory } from '../forumStore';
+import type { Forum, Post, Comment, ForumCategory } from '../forumStore';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({
@@ -20,9 +20,16 @@ vi.mock('@/lib/api', () => ({
   },
 }));
 
-// Import the mocked api
+// Import the mocked api with proper typing
 import { api } from '@/lib/api';
-const mockedApi = vi.mocked(api);
+
+// Type the mocked API properly
+const mockedApi = {
+  get: api.get as MockedFunction<typeof api.get>,
+  post: api.post as MockedFunction<typeof api.post>,
+  patch: api.patch as MockedFunction<typeof api.patch>,
+  delete: api.delete as MockedFunction<typeof api.delete>,
+};
 
 // Mock forum category
 const mockCategory: ForumCategory = {
@@ -420,7 +427,7 @@ describe('forumStore', () => {
 
       const state = useForumStore.getState();
       expect(state.posts).toHaveLength(1);
-      expect(state.posts[0].id).toBe('post-2');
+      expect(state.posts[0]!.id).toBe('post-2');
     });
 
     it('should set hasMorePosts to false when less than 25 posts returned', async () => {
@@ -513,7 +520,7 @@ describe('forumStore', () => {
 
       const state = useForumStore.getState();
       expect(state.posts).toHaveLength(2);
-      expect(state.posts[0].id).toBe('post-1');
+      expect(state.posts[0]!.id).toBe('post-1');
     });
 
     it('should throw error if post creation fails', async () => {
@@ -579,8 +586,8 @@ describe('forumStore', () => {
       await useForumStore.getState().vote('post', 'post-1', 1);
 
       const state = useForumStore.getState();
-      expect(state.posts[0].myVote).toBe(1);
-      expect(state.posts[0].upvotes).toBe(11);
+      expect(state.posts[0]!.myVote).toBe(1);
+      expect(state.posts[0]!.upvotes).toBe(11);
     });
 
     it('should downvote a post and update state', async () => {
@@ -590,8 +597,8 @@ describe('forumStore', () => {
       await useForumStore.getState().vote('post', 'post-1', -1);
 
       const state = useForumStore.getState();
-      expect(state.posts[0].myVote).toBe(-1);
-      expect(state.posts[0].downvotes).toBe(3);
+      expect(state.posts[0]!.myVote).toBe(-1);
+      expect(state.posts[0]!.downvotes).toBe(3);
     });
 
     it('should remove vote when value is null', async () => {
@@ -627,8 +634,8 @@ describe('forumStore', () => {
       await expect(useForumStore.getState().vote('post', 'post-1', 1)).rejects.toThrow();
 
       const state = useForumStore.getState();
-      expect(state.posts[0].myVote).toBeNull();
-      expect(state.posts[0].upvotes).toBe(10);
+      expect(state.posts[0]!.myVote).toBeNull();
+      expect(state.posts[0]!.upvotes).toBe(10);
     });
 
     it('should update currentPost when voting on current post', async () => {
@@ -650,8 +657,8 @@ describe('forumStore', () => {
       await useForumStore.getState().subscribe('forum-1');
 
       const state = useForumStore.getState();
-      expect(state.forums[0].isSubscribed).toBe(true);
-      expect(state.forums[0].memberCount).toBe(151);
+      expect(state.forums[0]!.isSubscribed).toBe(true);
+      expect(state.forums[0]!.memberCount).toBe(151);
     });
 
     it('should call subscribe API with correct endpoint', async () => {
@@ -670,8 +677,8 @@ describe('forumStore', () => {
       await useForumStore.getState().unsubscribe('forum-1');
 
       const state = useForumStore.getState();
-      expect(state.forums[0].isSubscribed).toBe(false);
-      expect(state.forums[0].memberCount).toBe(149);
+      expect(state.forums[0]!.isSubscribed).toBe(false);
+      expect(state.forums[0]!.memberCount).toBe(149);
     });
 
     it('should call unsubscribe API with correct endpoint', async () => {
@@ -806,7 +813,7 @@ describe('forumStore', () => {
 
       const state = useForumStore.getState();
       expect(state.forums).toHaveLength(1);
-      expect(state.forums[0].name).toBe('Updated Forum Name');
+      expect(state.forums[0]!.name).toBe('Updated Forum Name');
     });
 
     it('should throw error if forum not found', async () => {

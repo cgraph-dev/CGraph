@@ -1,13 +1,13 @@
 /**
  * End-to-End Encryption (E2EE) Implementation for Web
- * 
+ *
  * Browser-native implementation using Web Crypto API:
  * - X3DH (Extended Triple Diffie-Hellman) for key agreement
  * - ECDH with P-256 curve (X25519 alternative for browser compatibility)
  * - ECDSA for signatures
  * - AES-256-GCM for message encryption
  * - HKDF for key derivation
- * 
+ *
  * @module lib/crypto/e2ee
  */
 
@@ -32,7 +32,8 @@ export interface ExportedKeyPair {
 }
 
 export interface IdentityKeyPair {
-  keyPair: KeyPair;
+  keyPair: KeyPair; // ECDH key pair for key exchange
+  signingKeyPair: KeyPair; // ECDSA key pair for signatures
   keyId: string;
 }
 
@@ -57,6 +58,7 @@ export interface KeyBundle {
 export interface ServerPrekeyBundle {
   identity_key: string;
   identity_key_id: string;
+  signing_key?: string; // ECDSA public key for signature verification
   signed_prekey: string;
   signed_prekey_signature: string;
   signed_prekey_id: string;
@@ -105,7 +107,7 @@ export function base64ToArrayBuffer(base64: string): ArrayBuffer {
 export function arrayBufferToHex(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
   return Array.from(bytes)
-    .map(b => b.toString(16).padStart(2, '0'))
+    .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
 }
 
@@ -209,24 +211,48 @@ export async function importPrivateKey(pkcs8Key: ArrayBuffer): Promise<CryptoKey
 }
 
 /**
- * Sign data with ECDSA
+ * Import a public key from raw format (ECDSA for signatures)
  */
-export async function sign(privateKey: CryptoKey, data: ArrayBuffer): Promise<ArrayBuffer> {
-  // For ECDH keys, we use HMAC-SHA256 as a signature substitute
-  // In a full implementation, you'd have a separate ECDSA identity key
-  const keyMaterial = await crypto.subtle.exportKey('pkcs8', privateKey);
-  const hmacKey = await crypto.subtle.importKey(
+export async function importSigningPublicKey(rawKey: ArrayBuffer): Promise<CryptoKey> {
+  return await crypto.subtle.importKey(
     'raw',
-    new Uint8Array(keyMaterial).slice(0, 32),
-    { name: 'HMAC', hash: 'SHA-256' },
-    false,
+    rawKey,
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-256',
+    },
+    true,
+    ['verify']
+  );
+}
+
+/**
+ * Import a private key from PKCS8 format (ECDSA for signatures)
+ */
+export async function importSigningPrivateKey(pkcs8Key: ArrayBuffer): Promise<CryptoKey> {
+  return await crypto.subtle.importKey(
+    'pkcs8',
+    pkcs8Key,
+    {
+      name: 'ECDSA',
+      namedCurve: 'P-256',
+    },
+    true,
     ['sign']
   );
-  return await crypto.subtle.sign('HMAC', hmacKey, data);
+}
+
+/**
+ * Sign data with ECDSA
+ * Uses proper ECDSA P-256 signatures for cryptographic authenticity
+ */
+export async function sign(privateKey: CryptoKey, data: ArrayBuffer): Promise<ArrayBuffer> {
+  return await crypto.subtle.sign({ name: 'ECDSA', hash: { name: 'SHA-256' } }, privateKey, data);
 }
 
 /**
  * Verify signature with ECDSA
+ * Validates cryptographic signatures for authenticity
  */
 export async function verify(
   publicKey: CryptoKey,
@@ -234,15 +260,12 @@ export async function verify(
   data: ArrayBuffer
 ): Promise<boolean> {
   try {
-    const keyMaterial = await crypto.subtle.exportKey('raw', publicKey);
-    const hmacKey = await crypto.subtle.importKey(
-      'raw',
-      new Uint8Array(keyMaterial).slice(0, 32),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['verify']
+    return await crypto.subtle.verify(
+      { name: 'ECDSA', hash: { name: 'SHA-256' } },
+      publicKey,
+      signature,
+      data
     );
-    return await crypto.subtle.verify('HMAC', hmacKey, signature, data);
   } catch {
     return false;
   }
@@ -274,14 +297,10 @@ export async function hkdf(
   info: ArrayBuffer,
   length: number
 ): Promise<ArrayBuffer> {
-  const keyMaterial = await crypto.subtle.importKey(
-    'raw',
-    sharedSecret,
-    'HKDF',
-    false,
-    ['deriveBits']
-  );
-  
+  const keyMaterial = await crypto.subtle.importKey('raw', sharedSecret, 'HKDF', false, [
+    'deriveBits',
+  ]);
+
   return await crypto.subtle.deriveBits(
     {
       name: 'HKDF',
@@ -305,13 +324,10 @@ export async function sha256(data: ArrayBuffer): Promise<ArrayBuffer> {
  * Generate AES-GCM key from raw bytes
  */
 async function importAESKey(rawKey: ArrayBuffer): Promise<CryptoKey> {
-  return await crypto.subtle.importKey(
-    'raw',
-    rawKey,
-    { name: 'AES-GCM' },
-    false,
-    ['encrypt', 'decrypt']
-  );
+  return await crypto.subtle.importKey('raw', rawKey, { name: 'AES-GCM' }, false, [
+    'encrypt',
+    'decrypt',
+  ]);
 }
 
 /**
@@ -324,14 +340,14 @@ export async function encryptAES(
   const nonce = randomBytes(12);
   const encoder = new TextEncoder();
   const data = encoder.encode(plaintext);
-  
+
   const cryptoKey = await importAESKey(key);
   const ciphertext = await crypto.subtle.encrypt(
     { name: 'AES-GCM', iv: new Uint8Array(nonce.buffer as ArrayBuffer) },
     cryptoKey,
     data
   );
-  
+
   return { ciphertext, nonce: nonce.buffer as ArrayBuffer };
 }
 
@@ -349,7 +365,7 @@ export async function decryptAES(
     cryptoKey,
     ciphertext
   );
-  
+
   const decoder = new TextDecoder();
   return decoder.decode(plaintext);
 }
@@ -361,16 +377,19 @@ export async function generateKeyBundle(
   deviceId: string,
   numOneTimePreKeys: number = 100
 ): Promise<KeyBundle> {
-  // Generate identity key pair
+  // Generate identity key pair (ECDH for key exchange)
   const identityKeyPair = await generateECDHKeyPair();
+  // Generate ECDSA signing key pair for cryptographic signatures
+  const signingKeyPair = await generateECDSAKeyPair();
   const identityKeyId = generateKeyId();
-  
+
   // Generate signed prekey
   const signedPreKeyPair = await generateECDHKeyPair();
   const signedPreKeyId = generateKeyId();
   const signedPreKeyPublic = await exportPublicKey(signedPreKeyPair.publicKey);
-  const signature = await sign(identityKeyPair.privateKey, signedPreKeyPublic);
-  
+  // Sign with ECDSA key (proper cryptographic signature)
+  const signature = await sign(signingKeyPair.privateKey, signedPreKeyPublic);
+
   // Generate one-time prekeys
   const oneTimePreKeys: OneTimePreKey[] = [];
   for (let i = 0; i < numOneTimePreKeys; i++) {
@@ -380,11 +399,12 @@ export async function generateKeyBundle(
       keyId: generateKeyId(),
     });
   }
-  
+
   return {
     deviceId,
     identityKey: {
       keyPair: identityKeyPair,
+      signingKeyPair: signingKeyPair,
       keyId: identityKeyId,
     },
     signedPreKey: {
@@ -403,22 +423,26 @@ export async function storeKeyBundle(bundle: KeyBundle): Promise<void> {
   // Export keys to storable format
   const identityPublic = await exportPublicKey(bundle.identityKey.keyPair.publicKey);
   const identityPrivate = await exportPrivateKey(bundle.identityKey.keyPair.privateKey);
+  const signingPublic = await exportPublicKey(bundle.identityKey.signingKeyPair.publicKey);
+  const signingPrivate = await exportPrivateKey(bundle.identityKey.signingKeyPair.privateKey);
   const signedPreKeyPublic = await exportPublicKey(bundle.signedPreKey.keyPair.publicKey);
   const signedPreKeyPrivate = await exportPrivateKey(bundle.signedPreKey.keyPair.privateKey);
-  
+
   const storedIdentity = {
     publicKey: arrayBufferToBase64(identityPublic),
     privateKey: arrayBufferToBase64(identityPrivate),
+    signingPublicKey: arrayBufferToBase64(signingPublic),
+    signingPrivateKey: arrayBufferToBase64(signingPrivate),
     keyId: bundle.identityKey.keyId,
   };
-  
+
   const storedSignedPreKey = {
     publicKey: arrayBufferToBase64(signedPreKeyPublic),
     privateKey: arrayBufferToBase64(signedPreKeyPrivate),
     keyId: bundle.signedPreKey.keyId,
     signature: arrayBufferToBase64(bundle.signedPreKey.signature),
   };
-  
+
   localStorage.setItem(IDENTITY_KEY, JSON.stringify(storedIdentity));
   localStorage.setItem(SIGNED_PREKEY, JSON.stringify(storedSignedPreKey));
   localStorage.setItem(DEVICE_ID, bundle.deviceId);
@@ -430,14 +454,36 @@ export async function storeKeyBundle(bundle: KeyBundle): Promise<void> {
 export async function loadIdentityKeyPair(): Promise<IdentityKeyPair | null> {
   const stored = localStorage.getItem(IDENTITY_KEY);
   if (!stored) return null;
-  
+
   try {
     const parsed = JSON.parse(stored);
     const publicKey = await importPublicKey(base64ToArrayBuffer(parsed.publicKey));
     const privateKey = await importPrivateKey(base64ToArrayBuffer(parsed.privateKey));
-    
+
+    // Load signing key pair (ECDSA)
+    let signingKeyPair: KeyPair;
+    if (parsed.signingPublicKey && parsed.signingPrivateKey) {
+      const signingPublicKey = await importSigningPublicKey(
+        base64ToArrayBuffer(parsed.signingPublicKey)
+      );
+      const signingPrivateKey = await importSigningPrivateKey(
+        base64ToArrayBuffer(parsed.signingPrivateKey)
+      );
+      signingKeyPair = { publicKey: signingPublicKey, privateKey: signingPrivateKey };
+    } else {
+      // Migration: generate new signing key pair for existing installations
+      signingKeyPair = await generateECDSAKeyPair();
+      // Update storage with new signing keys
+      const signingPublic = await exportPublicKey(signingKeyPair.publicKey);
+      const signingPrivate = await exportPrivateKey(signingKeyPair.privateKey);
+      parsed.signingPublicKey = arrayBufferToBase64(signingPublic);
+      parsed.signingPrivateKey = arrayBufferToBase64(signingPrivate);
+      localStorage.setItem(IDENTITY_KEY, JSON.stringify(parsed));
+    }
+
     return {
       keyPair: { publicKey, privateKey },
+      signingKeyPair,
       keyId: parsed.keyId,
     };
   } catch {
@@ -451,12 +497,12 @@ export async function loadIdentityKeyPair(): Promise<IdentityKeyPair | null> {
 export async function loadSignedPreKey(): Promise<SignedPreKey | null> {
   const stored = localStorage.getItem(SIGNED_PREKEY);
   if (!stored) return null;
-  
+
   try {
     const parsed = JSON.parse(stored);
     const publicKey = await importPublicKey(base64ToArrayBuffer(parsed.publicKey));
     const privateKey = await importPrivateKey(base64ToArrayBuffer(parsed.privateKey));
-    
+
     return {
       keyPair: { publicKey, privateKey },
       keyId: parsed.keyId,
@@ -489,17 +535,19 @@ export async function formatKeysForRegistration(
   bundle: KeyBundle
 ): Promise<Record<string, unknown>> {
   const identityPublic = await exportPublicKey(bundle.identityKey.keyPair.publicKey);
+  const signingPublic = await exportPublicKey(bundle.identityKey.signingKeyPair.publicKey);
   const signedPreKeyPublic = await exportPublicKey(bundle.signedPreKey.keyPair.publicKey);
-  
+
   const oneTimePreKeysFormatted = await Promise.all(
     bundle.oneTimePreKeys.map(async (pk) => ({
       public_key: arrayBufferToBase64(await exportPublicKey(pk.keyPair.publicKey)),
       key_id: pk.keyId,
     }))
   );
-  
+
   return {
     identity_key: arrayBufferToBase64(identityPublic),
+    signing_key: arrayBufferToBase64(signingPublic),
     key_id: bundle.identityKey.keyId,
     device_id: bundle.deviceId,
     signed_prekey: {
@@ -521,7 +569,7 @@ export async function x3dhInitiate(
   // Generate ephemeral key pair
   const ephemeralKeyPair = await generateECDHKeyPair();
   const ephemeralPublic = await exportPublicKey(ephemeralKeyPair.publicKey);
-  
+
   // Import recipient's keys
   const recipientIdentityKey = await importPublicKey(
     base64ToArrayBuffer(recipientBundle.identity_key)
@@ -529,26 +577,31 @@ export async function x3dhInitiate(
   const recipientSignedPreKey = await importPublicKey(
     base64ToArrayBuffer(recipientBundle.signed_prekey)
   );
-  
+
+  // Verify signed prekey signature (CRITICAL for E2EE security)
+  if (recipientBundle.signing_key) {
+    const signingKey = await importSigningPublicKey(
+      base64ToArrayBuffer(recipientBundle.signing_key)
+    );
+    const signedPreKeyData = base64ToArrayBuffer(recipientBundle.signed_prekey);
+    const signature = base64ToArrayBuffer(recipientBundle.signed_prekey_signature);
+
+    const isValid = await verify(signingKey, signature, signedPreKeyData);
+    if (!isValid) {
+      throw new Error('E2EE: Signed prekey signature verification failed - possible MITM attack');
+    }
+  }
+
   // Compute DH results
   // DH1 = DH(IK_A, SPK_B)
-  const dh1 = await deriveSharedSecret(
-    identityKeyPair.keyPair.privateKey,
-    recipientSignedPreKey
-  );
-  
+  const dh1 = await deriveSharedSecret(identityKeyPair.keyPair.privateKey, recipientSignedPreKey);
+
   // DH2 = DH(EK_A, IK_B)
-  const dh2 = await deriveSharedSecret(
-    ephemeralKeyPair.privateKey,
-    recipientIdentityKey
-  );
-  
+  const dh2 = await deriveSharedSecret(ephemeralKeyPair.privateKey, recipientIdentityKey);
+
   // DH3 = DH(EK_A, SPK_B)
-  const dh3 = await deriveSharedSecret(
-    ephemeralKeyPair.privateKey,
-    recipientSignedPreKey
-  );
-  
+  const dh3 = await deriveSharedSecret(ephemeralKeyPair.privateKey, recipientSignedPreKey);
+
   // DH4 = DH(EK_A, OPK_B) if available
   let dh4: ArrayBuffer | null = null;
   if (recipientBundle.one_time_prekey) {
@@ -557,7 +610,7 @@ export async function x3dhInitiate(
     );
     dh4 = await deriveSharedSecret(ephemeralKeyPair.privateKey, recipientOneTimePreKey);
   }
-  
+
   // Combine DH results
   const combinedLength = 32 + 32 + 32 + (dh4 ? 32 : 0);
   const combined = new Uint8Array(combinedLength);
@@ -567,12 +620,12 @@ export async function x3dhInitiate(
   if (dh4) {
     combined.set(new Uint8Array(dh4), 96);
   }
-  
+
   // Derive shared secret using HKDF
   const salt = new Uint8Array(32); // Zero salt for X3DH
   const info = new TextEncoder().encode('CGraph E2EE v1');
   const sharedSecret = await hkdf(combined.buffer, salt.buffer, info.buffer, 32);
-  
+
   return { sharedSecret, ephemeralPublic };
 }
 
@@ -587,13 +640,13 @@ export async function encryptForRecipient(
   if (!identityKey) {
     throw new Error('Identity key not found - call setupE2EE first');
   }
-  
+
   // Perform X3DH key agreement
   const { sharedSecret, ephemeralPublic } = await x3dhInitiate(identityKey, recipientBundle);
-  
+
   // Encrypt the message
   const { ciphertext, nonce } = await encryptAES(plaintext, sharedSecret);
-  
+
   return {
     ciphertext: arrayBufferToBase64(ciphertext),
     ephemeralPublicKey: arrayBufferToBase64(ephemeralPublic),
@@ -612,38 +665,38 @@ export async function decryptFromSender(
 ): Promise<string> {
   const identityKey = await loadIdentityKeyPair();
   const signedPreKey = await loadSignedPreKey();
-  
+
   if (!identityKey || !signedPreKey) {
     throw new Error('Keys not found');
   }
-  
+
   // Import sender's ephemeral key
   const ephemeralKey = await importPublicKey(
     base64ToArrayBuffer(encryptedMessage.ephemeralPublicKey)
   );
   const senderIdentity = await importPublicKey(senderIdentityKey);
-  
+
   // Compute DH results (receiver side - mirrors sender's computation)
   // DH1 = DH(SPK_B, IK_A)
   const dh1 = await deriveSharedSecret(signedPreKey.keyPair.privateKey, senderIdentity);
-  
+
   // DH2 = DH(IK_B, EK_A)
   const dh2 = await deriveSharedSecret(identityKey.keyPair.privateKey, ephemeralKey);
-  
+
   // DH3 = DH(SPK_B, EK_A)
   const dh3 = await deriveSharedSecret(signedPreKey.keyPair.privateKey, ephemeralKey);
-  
+
   // Combine DH results
   const combined = new Uint8Array(96);
   combined.set(new Uint8Array(dh1), 0);
   combined.set(new Uint8Array(dh2), 32);
   combined.set(new Uint8Array(dh3), 64);
-  
+
   // Derive shared secret
   const salt = new Uint8Array(32);
   const info = new TextEncoder().encode('CGraph E2EE v1');
   const sharedSecret = await hkdf(combined.buffer, salt.buffer, info.buffer, 32);
-  
+
   // Decrypt
   return await decryptAES(
     base64ToArrayBuffer(encryptedMessage.ciphertext),
@@ -664,33 +717,37 @@ export async function generateSafetyNumber(
   const encoder = new TextEncoder();
   const ourPart = encoder.encode(ourUserId);
   const theirPart = encoder.encode(theirUserId);
-  
+
   let combined: Uint8Array;
   if (ourUserId < theirUserId) {
     combined = new Uint8Array(
-      ourPart.length + ourIdentityKey.byteLength + 
-      theirPart.length + theirIdentityKey.byteLength
+      ourPart.length + ourIdentityKey.byteLength + theirPart.length + theirIdentityKey.byteLength
     );
     let offset = 0;
-    combined.set(ourPart, offset); offset += ourPart.length;
-    combined.set(new Uint8Array(ourIdentityKey), offset); offset += ourIdentityKey.byteLength;
-    combined.set(theirPart, offset); offset += theirPart.length;
+    combined.set(ourPart, offset);
+    offset += ourPart.length;
+    combined.set(new Uint8Array(ourIdentityKey), offset);
+    offset += ourIdentityKey.byteLength;
+    combined.set(theirPart, offset);
+    offset += theirPart.length;
     combined.set(new Uint8Array(theirIdentityKey), offset);
   } else {
     combined = new Uint8Array(
-      theirPart.length + theirIdentityKey.byteLength + 
-      ourPart.length + ourIdentityKey.byteLength
+      theirPart.length + theirIdentityKey.byteLength + ourPart.length + ourIdentityKey.byteLength
     );
     let offset = 0;
-    combined.set(theirPart, offset); offset += theirPart.length;
-    combined.set(new Uint8Array(theirIdentityKey), offset); offset += theirIdentityKey.byteLength;
-    combined.set(ourPart, offset); offset += ourPart.length;
+    combined.set(theirPart, offset);
+    offset += theirPart.length;
+    combined.set(new Uint8Array(theirIdentityKey), offset);
+    offset += theirIdentityKey.byteLength;
+    combined.set(ourPart, offset);
+    offset += ourPart.length;
     combined.set(new Uint8Array(ourIdentityKey), offset);
   }
-  
+
   const hash = await sha256(combined.buffer as ArrayBuffer);
   const hashBytes = new Uint8Array(hash);
-  
+
   // Convert to 60-digit safety number (12 groups of 5 digits)
   const digits: string[] = [];
   for (let i = 0; i < 12; i++) {
@@ -699,7 +756,7 @@ export async function generateSafetyNumber(
     const value = (byte1 << 8) | byte2;
     digits.push(value.toString().padStart(5, '0'));
   }
-  
+
   return digits.join(' ');
 }
 
@@ -717,7 +774,7 @@ export async function fingerprint(publicKey: ArrayBuffer): Promise<string> {
 export function loadSessions(): Map<string, Session> {
   const stored = localStorage.getItem(SESSIONS);
   if (!stored) return new Map();
-  
+
   try {
     const parsed = JSON.parse(stored);
     return new Map(Object.entries(parsed));
@@ -729,12 +786,12 @@ export function loadSessions(): Map<string, Session> {
 export function saveSession(recipientId: string, session: Session): void {
   const sessions = loadSessions();
   sessions.set(recipientId, session);
-  
+
   const obj: Record<string, Session> = {};
   for (const [id, s] of sessions) {
     obj[id] = s;
   }
-  
+
   localStorage.setItem(SESSIONS, JSON.stringify(obj));
 }
 

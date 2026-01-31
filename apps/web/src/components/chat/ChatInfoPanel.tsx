@@ -17,6 +17,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import GlassCard from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
+import type { UserTheme } from '@/stores/themeStore';
 import { springs } from '@/lib/animations/transitions';
 import { getAvatarBorderId } from '@/lib/utils';
 import { useFriendStore } from '@/stores/friendStore';
@@ -44,7 +45,7 @@ interface ChatInfoPanelProps {
       emoji: string;
       rarity: string;
     }>;
-    theme?: any;
+    theme?: Partial<UserTheme>;
   };
   mutualFriends?: Array<{
     id: string;

@@ -99,7 +99,7 @@ export interface AnnouncementFilters {
   groupId?: string;
 }
 
-interface AnnouncementState {
+export interface AnnouncementState {
   // All announcements (admin view)
   announcements: Announcement[];
 

@@ -521,7 +521,7 @@ export interface ForumState {
   reopenThread: (threadId: string) => Promise<void>;
 }
 
-interface CreatePostData {
+export interface CreatePostData {
   forumId: string;
   title: string;
   content?: string;

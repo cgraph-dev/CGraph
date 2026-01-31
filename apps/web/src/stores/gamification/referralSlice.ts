@@ -100,7 +100,7 @@ export interface RewardTier {
   achieved: boolean;
 }
 
-interface ReferralState {
+export interface ReferralState {
   // User's referrals
   referrals: Referral[];
   pendingReferrals: Referral[];

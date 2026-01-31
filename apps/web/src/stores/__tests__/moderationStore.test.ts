@@ -6,16 +6,9 @@
  * bulk selection, and all async API operations.
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi, type MockedFunction } from 'vitest';
 import { useModerationStore } from '../moderationStore';
-import type {
-  ModerationQueueItem,
-  UserWarning,
-  Ban,
-  ModerationLogEntry,
-  WarningType,
-  UserModerationStats,
-} from '../moderationStore';
+import type { ModerationQueueItem, UserWarning, Ban } from '../moderationStore';
 
 // Mock the API module
 vi.mock('@/lib/api', () => ({
@@ -36,9 +29,16 @@ vi.mock('@/lib/logger', () => ({
   }),
 }));
 
-// Import the mocked api
+// Import the mocked api with proper typing
 import { api } from '@/lib/api';
-const mockedApi = vi.mocked(api);
+
+// Type the mocked API properly
+const mockedApi = {
+  get: api.get as MockedFunction<typeof api.get>,
+  post: api.post as MockedFunction<typeof api.post>,
+  put: api.put as MockedFunction<typeof api.put>,
+  delete: api.delete as MockedFunction<typeof api.delete>,
+};
 
 // Mock moderation queue items
 const mockQueueItem: ModerationQueueItem = {
@@ -110,44 +110,6 @@ const mockBan: Ban = {
   expiresAt: null, // Permanent
   isActive: true,
   isLifted: false,
-};
-
-// Mock moderation log entry
-const mockLogEntry: ModerationLogEntry = {
-  id: 'log-1',
-  action: 'approve_post',
-  targetType: 'post',
-  targetId: 'post-123',
-  targetTitle: 'Test Post',
-  moderatorId: 'mod-1',
-  moderatorUsername: 'moderator',
-  reason: 'Content is appropriate',
-  createdAt: '2026-01-30T10:30:00Z',
-};
-
-// Mock warning type
-const mockWarningType: WarningType = {
-  id: 'wtype-1',
-  name: 'Spam',
-  description: 'Posting spam or advertising',
-  points: 10,
-  expiryDays: 90,
-  action: 'moderate',
-  actionThreshold: 30,
-};
-
-// Mock user moderation stats
-const mockUserStats: UserModerationStats = {
-  userId: 'user-456',
-  totalWarnings: 3,
-  activeWarnings: 1,
-  warningPoints: 10,
-  isBanned: false,
-  isSuspended: false,
-  suspendedUntil: null,
-  postCount: 150,
-  reportedCount: 2,
-  approvalRate: 98.5,
 };
 
 // Get initial state for reset
@@ -282,9 +244,9 @@ describe('moderationStore', () => {
 
       const state = useModerationStore.getState();
       expect(state.queue).toHaveLength(1);
-      expect(state.queue[0].id).toBe('queue-1');
-      expect(state.queue[0].itemType).toBe('post');
-      expect(state.queue[0].status).toBe('pending');
+      expect(state.queue[0]!.id).toBe('queue-1');
+      expect(state.queue[0]!.itemType).toBe('post');
+      expect(state.queue[0]!.status).toBe('pending');
     });
 
     it('should call API with correct filters', async () => {
@@ -439,7 +401,7 @@ describe('moderationStore', () => {
 
       const state = useModerationStore.getState();
       expect(state.currentUserWarnings).toHaveLength(1);
-      expect(state.currentUserWarnings[0].id).toBe('warning-new');
+      expect(state.currentUserWarnings[0]!.id).toBe('warning-new');
     });
 
     it('should call API with correct payload', async () => {
@@ -757,8 +719,8 @@ describe('moderationStore', () => {
 
       const state = useModerationStore.getState();
       expect(state.moderationLog).toHaveLength(1);
-      expect(state.moderationLog[0].action).toBe('approve_post');
-      expect(state.moderationLog[0].moderatorUsername).toBe('moderator');
+      expect(state.moderationLog[0]!.action).toBe('approve_post');
+      expect(state.moderationLog[0]!.moderatorUsername).toBe('moderator');
     });
 
     it('should set loading state while fetching log', async () => {
@@ -962,8 +924,8 @@ describe('moderationStore', () => {
 
       const state = useModerationStore.getState();
       expect(state.warningTypes).toHaveLength(2);
-      expect(state.warningTypes[0].name).toBe('Spam');
-      expect(state.warningTypes[1].points).toBe(25);
+      expect(state.warningTypes[0]!.name).toBe('Spam');
+      expect(state.warningTypes[1]!.points).toBe(25);
     });
   });
 
@@ -1057,8 +1019,8 @@ describe('moderationStore', () => {
 
       const state = useModerationStore.getState();
       expect(state.bans).toHaveLength(1);
-      expect(state.bans[0].username).toBe('baduser');
-      expect(state.bans[0].isActive).toBe(true);
+      expect(state.bans[0]!.username).toBe('baduser');
+      expect(state.bans[0]!.isActive).toBe(true);
     });
 
     it('should pass active filter to API', async () => {
@@ -1099,7 +1061,7 @@ describe('moderationStore', () => {
       const result = await useModerationStore.getState().fetchUserWarnings('user-456');
 
       expect(result).toHaveLength(1);
-      expect(result[0].warningTypeName).toBe('Spam');
+      expect(result[0]!.warningTypeName).toBe('Spam');
 
       const state = useModerationStore.getState();
       expect(state.currentUserWarnings).toHaveLength(1);

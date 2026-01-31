@@ -132,13 +132,45 @@ export async function loadIdentityKeyPair(): Promise<IdentityKeyPair | null> {
   if (!stored) return null;
 
   try {
-    const { importPublicKey, importPrivateKey, base64ToArrayBuffer } = await import('./e2ee');
+    const {
+      importPublicKey,
+      importPrivateKey,
+      importSigningPublicKey,
+      importSigningPrivateKey,
+      generateECDSAKeyPair,
+      exportPublicKey,
+      exportPrivateKey,
+      arrayBufferToBase64,
+      base64ToArrayBuffer,
+    } = await import('./e2ee');
     const parsed = JSON.parse(stored);
     const publicKey = await importPublicKey(base64ToArrayBuffer(parsed.publicKey));
     const privateKey = await importPrivateKey(base64ToArrayBuffer(parsed.privateKey));
 
+    // Load or generate signing key pair (ECDSA)
+    let signingKeyPair: { publicKey: CryptoKey; privateKey: CryptoKey };
+    if (parsed.signingPublicKey && parsed.signingPrivateKey) {
+      const signingPublicKey = await importSigningPublicKey(
+        base64ToArrayBuffer(parsed.signingPublicKey)
+      );
+      const signingPrivateKey = await importSigningPrivateKey(
+        base64ToArrayBuffer(parsed.signingPrivateKey)
+      );
+      signingKeyPair = { publicKey: signingPublicKey, privateKey: signingPrivateKey };
+    } else {
+      // Migration: generate new signing key pair for existing installations
+      signingKeyPair = await generateECDSAKeyPair();
+      // Update storage with new signing keys
+      const signingPublic = await exportPublicKey(signingKeyPair.publicKey);
+      const signingPrivate = await exportPrivateKey(signingKeyPair.privateKey);
+      parsed.signingPublicKey = arrayBufferToBase64(signingPublic);
+      parsed.signingPrivateKey = arrayBufferToBase64(signingPrivate);
+      await SecureStorage.setItem(SECURE_KEYS.IDENTITY_KEY, JSON.stringify(parsed));
+    }
+
     return {
       keyPair: { publicKey, privateKey },
+      signingKeyPair,
       keyId: parsed.keyId,
     };
   } catch {
