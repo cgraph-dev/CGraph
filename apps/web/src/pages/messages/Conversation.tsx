@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useChatStore, Message } from '@/stores/chatStore';
 import { useAuthStore } from '@/stores/authStore';
 import { useFriendStore } from '@/stores/friendStore';
@@ -11,11 +11,16 @@ import {
   getParticipantDisplayName,
   getMessageSenderId,
 } from '@/lib/apiUtils';
-import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/components/Toast';
 import type { GifResult } from '@/components/chat/GifPicker';
 import type { Sticker } from '@/data/stickers';
+
+// Extracted hooks
+import { useMessageActions, useScheduleMessage, useCallModals } from '@/hooks';
+
+// Utility functions
+import { formatDateHeader, formatLastSeen, groupMessagesByDate } from '@/lib/chat/messageUtils';
 
 // Enhanced UI v3.0 components - NEXT GEN
 import {
@@ -64,12 +69,15 @@ export default function Conversation() {
   }, []);
   const { conversationId } = useParams<{ conversationId: string }>();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuthStore();
   const { friends, fetchFriends } = useFriendStore();
 
+  // Use extracted hooks for cleaner code
+  const messageActions = useMessageActions();
+  const scheduleActions = useScheduleMessage();
+  const callModals = useCallModals(conversationId);
+
   // Split Zustand selectors to prevent infinite re-renders
-  // Each selector returns a stable reference (primitive or function)
   const conversations = useChatStore((state) => state.conversations);
   const messages = useChatStore((state) => state.messages);
   const isLoadingMessages = useChatStore((state) => state.isLoadingMessages);
@@ -79,8 +87,6 @@ export default function Conversation() {
   const sendMessage = useChatStore((state) => state.sendMessage);
   const markAsRead = useChatStore((state) => state.markAsRead);
   const setActiveConversation = useChatStore((state) => state.setActiveConversation);
-  const scheduleMessage = useChatStore((state) => state.scheduleMessage);
-  const rescheduleMessage = useChatStore((state) => state.rescheduleMessage);
 
   const [messageInput, setMessageInput] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -95,16 +101,6 @@ export default function Conversation() {
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ====== MESSAGE ACTIONS STATE ======
-  const [activeMessageMenu, setActiveMessageMenu] = useState<string | null>(null);
-  const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState('');
-
-  // ====== CALL STATE ======
-  const [showVoiceCallModal, setShowVoiceCallModal] = useState(false);
-  const [showVideoCallModal, setShowVideoCallModal] = useState(false);
-  const [incomingRoomId, setIncomingRoomId] = useState<string | undefined>(undefined);
-
   // ====== NEXT GEN UI CUSTOMIZATION STATE ======
   const [showSettings, setShowSettings] = useState(false);
   const [showE2EETester, setShowE2EETester] = useState(false);
@@ -116,18 +112,8 @@ export default function Conversation() {
   const [pendingMessage, setPendingMessage] = useState<{
     content: string;
     replyToId?: string;
-    options?: { type?: string; metadata?: Record<string, any> };
+    options?: { type?: string; metadata?: Record<string, unknown> };
   } | null>(null);
-
-  // ====== FORWARD MESSAGE STATE ======
-  const [showForwardModal, setShowForwardModal] = useState(false);
-  const [messageToForward, setMessageToForward] = useState<Message | null>(null);
-
-  // ====== SCHEDULE MESSAGE STATE ======
-  const [showScheduleModal, setShowScheduleModal] = useState(false);
-  const [messageToSchedule, setMessageToSchedule] = useState<string>('');
-  const [showScheduledList, setShowScheduledList] = useState(false);
-  const [messageToReschedule, setMessageToReschedule] = useState<Message | null>(null);
 
   // UI preferences - using imported UIPreferences type
   const [uiPreferences, setUiPreferences] = useState<UIPreferences>({
@@ -153,29 +139,6 @@ export default function Conversation() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [friends.length]);
-
-  // Handle incoming call query params - auto-answer calls from notifications
-  useEffect(() => {
-    const incomingCallParam = searchParams.get('incomingCall');
-    const callTypeParam = searchParams.get('callType');
-
-    if (incomingCallParam && callTypeParam) {
-      // Store the incoming room ID
-      setIncomingRoomId(incomingCallParam);
-
-      // Auto-open the appropriate modal
-      if (callTypeParam === 'video') {
-        setShowVideoCallModal(true);
-      } else {
-        setShowVoiceCallModal(true);
-      }
-
-      // Clean up query params after handling
-      searchParams.delete('incomingCall');
-      searchParams.delete('callType');
-      setSearchParams(searchParams, { replace: true });
-    }
-  }, [searchParams, setSearchParams]);
 
   const conversation = conversations.find((c) => c.id === conversationId);
   const conversationMessages = conversationId ? messages[conversationId] || [] : [];
@@ -467,58 +430,28 @@ export default function Conversation() {
     }
   };
 
-  // Handle schedule message
   // Handle emoji selection
   const handleEmojiSelect = (emoji: string) => {
     setMessageInput((prev) => prev + emoji);
     if (uiPreferences.enableHaptic) HapticFeedback.light();
   };
 
+  // Wrapper for schedule that passes required context
   const handleSchedule = async (scheduledAt: Date) => {
     if (!conversationId) return;
-
-    // Check if we're rescheduling an existing message
-    if (messageToReschedule) {
-      try {
-        await rescheduleMessage(messageToReschedule.id, scheduledAt);
-        setMessageToReschedule(null);
-        if (uiPreferences.enableHaptic) HapticFeedback.success();
-      } catch (error) {
-        logger.warn('Failed to reschedule message:', error);
-        const errorMessage =
-          error instanceof Error ? error.message : 'Failed to reschedule message';
-        toast.error(errorMessage);
-        if (uiPreferences.enableHaptic) HapticFeedback.error();
-        throw error;
-      }
-    } else if (messageToSchedule.trim()) {
-      // Scheduling a new message
-      try {
-        await scheduleMessage(conversationId, messageToSchedule, scheduledAt, {
-          type: 'text',
-          replyToId: replyTo?.id,
-        });
-        setMessageInput('');
-        setMessageToSchedule('');
-        setReplyTo(null);
-        if (uiPreferences.enableHaptic) HapticFeedback.success();
-      } catch (error) {
-        logger.warn('Failed to schedule message:', error);
-        const errorMessage = error instanceof Error ? error.message : 'Failed to schedule message';
-        toast.error(errorMessage);
-        if (uiPreferences.enableHaptic) HapticFeedback.error();
-        throw error;
-      }
-    }
+    await scheduleActions.handleSchedule(
+      scheduledAt,
+      conversationId,
+      replyTo?.id,
+      uiPreferences.enableHaptic
+    );
+    setMessageInput('');
+    setReplyTo(null);
   };
 
-  // Handle opening reschedule modal
+  // Wrapper for reschedule click
   const handleRescheduleClick = (message: Message) => {
-    setMessageToReschedule(message);
-    setMessageToSchedule(message.content);
-    setShowScheduledList(false);
-    setShowScheduleModal(true);
-    if (uiPreferences.enableHaptic) HapticFeedback.medium();
+    scheduleActions.handleRescheduleClick(message, uiPreferences.enableHaptic);
   };
 
   // Handle voice message complete - upload and send
@@ -629,107 +562,25 @@ export default function Conversation() {
     }
   };
 
-  // ====== MESSAGE ACTION HANDLERS ======
+  // ====== MESSAGE ACTION HANDLERS (delegating to hooks) ======
 
-  // Start editing a message
-  const handleStartEdit = (message: Message) => {
-    setEditingMessageId(message.id);
-    setEditContent(message.content);
-    setActiveMessageMenu(null);
-  };
-
-  // Cancel editing
-  const handleCancelEdit = () => {
-    setEditingMessageId(null);
-    setEditContent('');
-  };
-
-  // Save edited message
-  const handleSaveEdit = async () => {
-    if (!conversationId || !editingMessageId || !editContent.trim()) return;
-
-    try {
-      const { editMessage } = useChatStore.getState();
-      await editMessage(editingMessageId, editContent.trim());
-      toast.success('Message edited');
-      handleCancelEdit();
-    } catch (error) {
-      logger.warn('Failed to edit message:', error);
-      toast.error('Failed to edit message');
-    }
-  };
-
-  // Delete a message
-  const handleDeleteMessage = async (messageId: string) => {
-    if (!conversationId) return;
-
-    try {
-      const { deleteMessage } = useChatStore.getState();
-      await deleteMessage(messageId);
-      toast.success('Message deleted');
-      setActiveMessageMenu(null);
-    } catch (error) {
-      logger.warn('Failed to delete message:', error);
-      toast.error('Failed to delete message');
-    }
-  };
-
-  // Pin a message
-  const handlePinMessage = async (messageId: string) => {
-    if (!conversationId) return;
-
-    try {
-      await api.post(`/api/v1/conversations/${conversationId}/messages/${messageId}/pin`);
-      toast.success('Message pinned');
-      setActiveMessageMenu(null);
-    } catch (error) {
-      logger.warn('Failed to pin message:', error);
-      toast.error('Failed to pin message');
-    }
-  };
-
-  // Open forward modal
-  const handleOpenForward = (message: Message) => {
-    setMessageToForward(message);
-    setShowForwardModal(true);
-    setActiveMessageMenu(null);
-    if (uiPreferences.enableHaptic) HapticFeedback.medium();
-  };
-
-  // Forward message to selected conversations
-  const handleForwardMessage = async (conversationIds: string[]) => {
-    if (!messageToForward) return;
-
-    try {
-      // Forward to each selected conversation
-      const forwardPromises = conversationIds.map((targetConversationId) => {
-        const forwardedContent =
-          messageToForward.messageType === 'text'
-            ? messageToForward.content
-            : `[Forwarded ${messageToForward.messageType}]`;
-
-        return sendMessage(targetConversationId, forwardedContent, undefined, {
-          type: messageToForward.messageType,
-          metadata: {
-            ...messageToForward.metadata,
-            forwarded: true,
-            originalSenderId: messageToForward.senderId,
-            originalMessageId: messageToForward.id,
-          },
-        });
-      });
-
-      await Promise.all(forwardPromises);
-
-      const count = conversationIds.length;
-      toast.success(`Message forwarded to ${count} conversation${count > 1 ? 's' : ''}`);
-      if (uiPreferences.enableHaptic) HapticFeedback.success();
-    } catch (error) {
-      logger.warn('Failed to forward message:', error);
-      toast.error('Failed to forward message');
-      if (uiPreferences.enableHaptic) HapticFeedback.error();
-    }
-  };
+  // Wrapper handlers that delegate to messageActions hook
+  const handleStartEdit = (message: Message) => messageActions.handleStartEdit(message);
+  const handleCancelEdit = () => messageActions.handleCancelEdit();
+  const handleSaveEdit = () => messageActions.handleSaveEdit();
+  const handleDeleteMessage = (messageId: string) => messageActions.handleDeleteMessage(messageId);
+  const handlePinMessage = (messageId: string) =>
+    messageActions.handlePinMessage(messageId, conversationId || '');
+  const handleOpenForward = (message: Message) =>
+    messageActions.handleOpenForward(message, uiPreferences.enableHaptic);
+  const handleForwardMessage = (targetConversationIds: string[]) =>
+    messageActions.handleForwardMessage(
+      targetConversationIds,
+      sendMessage,
+      uiPreferences.enableHaptic
+    );
+  const handleToggleMessageMenu = (messageId: string) =>
+    messageActions.handleToggleMessageMenu(messageId);
 
   // Handle search result click - navigate to conversation and scroll to message
   const handleSearchResultClick = (searchConversationId: string, messageId: string) => {
@@ -766,76 +617,16 @@ export default function Conversation() {
     if (uiPreferences.enableHaptic) HapticFeedback.success();
   };
 
-  // Toggle message action menu
-  const handleToggleMessageMenu = (messageId: string) => {
-    setActiveMessageMenu(activeMessageMenu === messageId ? null : messageId);
-  };
+  // ====== CALL HANDLERS (delegating to hooks) ======
 
-  // ====== CALL HANDLERS ======
+  const handleStartVoiceCall = () => callModals.handleStartVoiceCall(uiPreferences.enableHaptic);
+  const handleStartVideoCall = () => callModals.handleStartVideoCall(uiPreferences.enableHaptic);
 
-  // Start voice call
-  const handleStartVoiceCall = () => {
-    if (!conversationId) return;
-    setShowVoiceCallModal(true);
-    if (uiPreferences.enableHaptic) HapticFeedback.medium();
-  };
-
-  // Start video call
-  const handleStartVideoCall = () => {
-    if (!conversationId) return;
-    setShowVideoCallModal(true);
-    if (uiPreferences.enableHaptic) HapticFeedback.medium();
-  };
-
-  // Format date header
-  const formatDateHeader = (date: Date) => {
-    if (!date || isNaN(date.getTime())) return 'Unknown';
-    if (isToday(date)) return 'Today';
-    if (isYesterday(date)) return 'Yesterday';
-    return format(date, 'MMMM d, yyyy');
-  };
-
-  // Format last seen timestamp into human-readable text
-  const formatLastSeen = (lastSeenAt: string | null | undefined): string => {
-    if (!lastSeenAt) return 'Offline';
-
-    const lastSeen = new Date(lastSeenAt);
-    if (isNaN(lastSeen.getTime())) return 'Offline';
-
-    const now = new Date();
-    const diffMs = now.getTime() - lastSeen.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'Last seen just now';
-    if (diffMins < 60) return `Last seen ${diffMins}m ago`;
-    if (diffHours < 24) return `Last seen ${diffHours}h ago`;
-    if (diffDays === 1) return 'Last seen yesterday';
-    if (diffDays < 7) return `Last seen ${diffDays}d ago`;
-    return `Last seen ${format(lastSeen, 'MMM d')}`;
-  };
-
-  // Safe date parser that handles various formats and invalid dates
-  const parseMessageDate = (dateStr: string | undefined | null): Date => {
-    if (!dateStr) return new Date();
-    const parsed = new Date(dateStr);
-    return isNaN(parsed.getTime()) ? new Date() : parsed;
-  };
-
-  // Group messages by date
-  const groupedMessages: { date: Date; messages: Message[] }[] = [];
-  let currentGroup: { date: Date; messages: Message[] } | null = null;
-
-  conversationMessages.forEach((msg) => {
-    const msgDate = parseMessageDate(msg.createdAt);
-    if (!currentGroup || !isSameDay(currentGroup.date, msgDate)) {
-      currentGroup = { date: msgDate, messages: [msg] };
-      groupedMessages.push(currentGroup);
-    } else {
-      currentGroup.messages.push(msg);
-    }
-  });
+  // Group messages by date using extracted utility
+  const groupedMessages = useMemo(
+    () => groupMessagesByDate(conversationMessages),
+    [conversationMessages]
+  );
 
   if (!conversation) {
     return (
@@ -866,7 +657,7 @@ export default function Conversation() {
             if (uiPreferences.enableHaptic) HapticFeedback.medium();
           }}
           onToggleScheduledList={() => {
-            setShowScheduledList(!showScheduledList);
+            scheduleActions.setShowScheduledList(!scheduleActions.showScheduledList);
             if (uiPreferences.enableHaptic) HapticFeedback.medium();
           }}
           onToggleInfoPanel={() => {
@@ -881,7 +672,7 @@ export default function Conversation() {
             setShowE2EETester(true);
             HapticFeedback.medium();
           }}
-          showScheduledList={showScheduledList}
+          showScheduledList={scheduleActions.showScheduledList}
           showInfoPanel={showInfoPanel}
           showSettings={showSettings}
           formatLastSeen={formatLastSeen}
@@ -989,11 +780,11 @@ export default function Conversation() {
                         onDelete={() => handleDeleteMessage(message.id)}
                         onPin={() => handlePinMessage(message.id)}
                         onForward={() => handleOpenForward(message)}
-                        isMenuOpen={activeMessageMenu === message.id}
+                        isMenuOpen={messageActions.activeMessageMenu === message.id}
                         onToggleMenu={() => handleToggleMessageMenu(message.id)}
-                        isEditing={editingMessageId === message.id}
-                        editContent={editContent}
-                        onEditContentChange={setEditContent}
+                        isEditing={messageActions.editingMessageId === message.id}
+                        editContent={messageActions.editContent}
+                        onEditContentChange={messageActions.setEditContent}
                         onSaveEdit={handleSaveEdit}
                         onCancelEdit={handleCancelEdit}
                       />
@@ -1075,8 +866,8 @@ export default function Conversation() {
           onGifSelect={handleGifSelect}
           onEmojiSelect={handleEmojiSelect}
           onScheduleClick={() => {
-            setMessageToSchedule(messageInput);
-            setShowScheduleModal(true);
+            scheduleActions.setMessageToSchedule(messageInput);
+            scheduleActions.setShowScheduleModal(true);
           }}
         />
 
@@ -1106,15 +897,14 @@ export default function Conversation() {
         />
 
         {/* Forward Message Modal */}
-        {messageToForward && (
+        {messageActions.messageToForward && (
           <ForwardMessageModal
-            isOpen={showForwardModal}
+            isOpen={messageActions.showForwardModal}
             onClose={() => {
-              setShowForwardModal(false);
-              setMessageToForward(null);
+              messageActions.handleCloseForward();
             }}
             onForward={handleForwardMessage}
-            message={messageToForward}
+            message={messageActions.messageToForward}
           />
         )}
 
@@ -1129,8 +919,8 @@ export default function Conversation() {
         {/* Scheduled Messages List */}
         {conversationId && (
           <ScheduledMessagesList
-            isOpen={showScheduledList}
-            onClose={() => setShowScheduledList(false)}
+            isOpen={scheduleActions.showScheduledList}
+            onClose={() => scheduleActions.setShowScheduledList(false)}
             conversationId={conversationId}
             onReschedule={handleRescheduleClick}
           />
@@ -1138,14 +928,14 @@ export default function Conversation() {
 
         {/* Schedule Message Modal */}
         <ScheduleMessageModal
-          isOpen={showScheduleModal}
+          isOpen={scheduleActions.showScheduleModal}
           onClose={() => {
-            setShowScheduleModal(false);
-            setMessageToSchedule('');
-            setMessageToReschedule(null);
+            scheduleActions.setShowScheduleModal(false);
+            scheduleActions.setMessageToSchedule('');
+            scheduleActions.setMessageToReschedule(null);
           }}
           onSchedule={handleSchedule}
-          messagePreview={messageToSchedule}
+          messagePreview={scheduleActions.messageToSchedule}
         />
 
         {/* Hidden File Input */}
@@ -1193,30 +983,24 @@ export default function Conversation() {
 
       {/* Voice Call Modal */}
       <VoiceCallModal
-        isOpen={showVoiceCallModal}
-        onClose={() => {
-          setShowVoiceCallModal(false);
-          setIncomingRoomId(undefined);
-        }}
+        isOpen={callModals.showVoiceCallModal}
+        onClose={() => callModals.closeVoiceCallModal()}
         conversationId={conversationId || ''}
         otherParticipantId={otherParticipant?.user?.id || ''}
         otherParticipantName={conversationName}
         otherParticipantAvatar={otherParticipant?.user?.avatarUrl ?? undefined}
-        incomingRoomId={incomingRoomId}
+        incomingRoomId={callModals.incomingRoomId}
       />
 
       {/* Video Call Modal */}
       <VideoCallModal
-        isOpen={showVideoCallModal}
-        onClose={() => {
-          setShowVideoCallModal(false);
-          setIncomingRoomId(undefined);
-        }}
+        isOpen={callModals.showVideoCallModal}
+        onClose={() => callModals.closeVideoCallModal()}
         conversationId={conversationId || ''}
         otherParticipantId={otherParticipant?.user?.id || ''}
         otherParticipantName={conversationName}
         otherParticipantAvatar={otherParticipant?.user?.avatarUrl ?? undefined}
-        incomingRoomId={incomingRoomId}
+        incomingRoomId={callModals.incomingRoomId}
       />
     </div>
   );
