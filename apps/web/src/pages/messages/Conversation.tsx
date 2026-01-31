@@ -32,12 +32,27 @@ import { themeEngine } from '@/lib/ai/ThemeEngine';
 import {
   MessageBubble,
   MessageInputArea,
-  ConversationModals,
   UISettingsPanel,
   ReplyPreview,
   AmbientBackground,
+  MessageSearch,
   type UIPreferences,
 } from '@/components/messages';
+
+// Chat components
+import E2EEConnectionTester from '@/components/chat/E2EEConnectionTester';
+import { E2EEErrorModal } from '@/components/chat/E2EEErrorModal';
+import { ForwardMessageModal } from '@/components/chat/ForwardMessageModal';
+import { ScheduledMessagesList } from '@/components/chat/ScheduledMessagesList';
+import { ScheduleMessageModal } from '@/components/chat/ScheduleMessageModal';
+import ChatInfoPanel from '@/components/chat/ChatInfoPanel';
+
+// Voice components
+import { VoiceCallModal } from '@/components/voice/VoiceCallModal';
+import { VideoCallModal } from '@/components/voice/VideoCallModal';
+
+// Reaction utilities
+import { handleAddReaction } from '@/lib/chat/reactionUtils';
 
 const logger = createLogger('Conversation');
 
@@ -78,7 +93,6 @@ export default function Conversation() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const inputContainerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // ====== MESSAGE ACTIONS STATE ======
@@ -835,41 +849,8 @@ export default function Conversation() {
     <div className="relative flex h-full max-h-screen flex-1 overflow-hidden">
       {/* Main Chat Area */}
       <div className="relative flex h-full flex-1 flex-col overflow-hidden bg-gradient-to-br from-dark-950 via-dark-900 to-dark-950">
-        {/* Ambient Background Effects - Optimized */}
-        {uiPreferences.showParticles && (
-          <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
-            {[
-              ...Array(
-                uiPreferences.animationIntensity === 'low'
-                  ? 5
-                  : uiPreferences.animationIntensity === 'medium'
-                    ? 10
-                    : 15
-              ),
-            ].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute h-1 w-1 rounded-full bg-primary-400"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  opacity: 0.15,
-                }}
-                animate={{
-                  y: [0, -30, 0],
-                  opacity: [0.1, 0.25, 0.1],
-                  scale: [1, 1.3, 1],
-                }}
-                transition={{
-                  duration: 4 + Math.random() * 3,
-                  repeat: Infinity,
-                  delay: Math.random() * 4,
-                  ease: 'easeInOut',
-                }}
-              />
-            ))}
-          </div>
-        )}
+        {/* Ambient Background Effects - Using extracted component */}
+        <AmbientBackground uiPreferences={uiPreferences} />
 
         {/* Glassmorphic Header */}
         <ConversationHeader
@@ -906,144 +887,14 @@ export default function Conversation() {
           formatLastSeen={formatLastSeen}
         />
 
-        {/* Settings Panel (Next Gen UI Customization) */}
+        {/* Settings Panel (Next Gen UI Customization) - Using extracted component */}
         <AnimatePresence>
           {showSettings && (
-            <motion.div
-              initial={{ opacity: 0, y: -20, height: 0 }}
-              animate={{ opacity: 1, y: 0, height: 'auto' }}
-              exit={{ opacity: 0, y: -20, height: 0 }}
-              transition={{ duration: 0.3 }}
-              className="z-20"
-            >
-              <GlassCard variant="neon" glow className="mx-4 mt-4 rounded-2xl p-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between border-b border-primary-500/20 pb-3">
-                    <h3 className="flex items-center gap-2 text-lg font-bold text-white">
-                      <SparklesIcon className="h-5 w-5 text-primary-400" />
-                      Next Gen UI Customization
-                    </h3>
-                    <span className="rounded-full bg-primary-500/10 px-2 py-1 text-xs text-gray-400">
-                      BETA
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    {/* Glass Effect */}
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-300">
-                        Glass Effect
-                      </label>
-                      <select
-                        value={uiPreferences.glassEffect}
-                        onChange={(e) =>
-                          updatePreference('glassEffect', e.target.value as GlassEffect)
-                        }
-                        className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
-                      >
-                        <option value="default">Default</option>
-                        <option value="frosted">Frosted</option>
-                        <option value="crystal">Crystal</option>
-                        <option value="neon">Neon</option>
-                        <option value="holographic">Holographic</option>
-                      </select>
-                    </div>
-
-                    {/* Voice Visualizer Theme */}
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-300">
-                        Voice Theme
-                      </label>
-                      <select
-                        value={uiPreferences.voiceVisualizerTheme}
-                        onChange={(e) =>
-                          updatePreference('voiceVisualizerTheme', e.target.value as VoiceTheme)
-                        }
-                        className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
-                      >
-                        <option value="matrix-green">Matrix Green</option>
-                        <option value="cyber-blue">Cyber Blue</option>
-                        <option value="neon-pink">Neon Pink</option>
-                        <option value="amber">Amber</option>
-                      </select>
-                    </div>
-
-                    {/* Animation Intensity */}
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-300">
-                        Animation Intensity
-                      </label>
-                      <select
-                        value={uiPreferences.animationIntensity}
-                        onChange={(e) =>
-                          updatePreference(
-                            'animationIntensity',
-                            e.target.value as AnimationIntensity
-                          )
-                        }
-                        className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
-                      >
-                        <option value="low">Low (Performance)</option>
-                        <option value="medium">Medium</option>
-                        <option value="high">High (Beautiful)</option>
-                      </select>
-                    </div>
-
-                    {/* Message Animation */}
-                    <div>
-                      <label className="mb-2 block text-sm font-medium text-gray-300">
-                        Message Animation
-                      </label>
-                      <select
-                        value={uiPreferences.messageEntranceAnimation}
-                        onChange={(e) =>
-                          updatePreference(
-                            'messageEntranceAnimation',
-                            e.target.value as EntranceAnimation
-                          )
-                        }
-                        className="w-full rounded-lg border border-primary-500/30 bg-dark-700/50 px-3 py-2 text-sm text-white transition-colors focus:border-primary-500 focus:outline-none"
-                      >
-                        <option value="slide">Slide</option>
-                        <option value="scale">Scale</option>
-                        <option value="fade">Fade</option>
-                        <option value="bounce">Bounce</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Toggle Options */}
-                  <div className="grid grid-cols-3 gap-3">
-                    {[
-                      { key: 'showParticles', label: 'Particles' },
-                      { key: 'enableGlow', label: 'Glow Effects' },
-                      { key: 'enable3D', label: '3D Effects' },
-                      { key: 'enableHaptic', label: 'Haptic' },
-                    ].map(({ key, label }) => (
-                      <motion.button
-                        key={key}
-                        onClick={() => {
-                          setUiPreferences({
-                            ...uiPreferences,
-                            [key]: !uiPreferences[key as keyof typeof uiPreferences],
-                          });
-                          if (uiPreferences.enableHaptic) HapticFeedback.light();
-                        }}
-                        className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-                          uiPreferences[key as keyof typeof uiPreferences]
-                            ? 'bg-primary-500 text-white shadow-[0_0_20px_rgba(16,185,129,0.3)]'
-                            : 'border border-dark-600 bg-dark-700/50 text-gray-400'
-                        }`}
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        {label}
-                      </motion.button>
-                    ))}
-                  </div>
-                </div>
-              </GlassCard>
-            </motion.div>
+            <UISettingsPanel
+              uiPreferences={uiPreferences}
+              setUiPreferences={setUiPreferences}
+              updatePreference={updatePreference}
+            />
           )}
         </AnimatePresence>
 
@@ -1163,7 +1014,7 @@ export default function Conversation() {
                               key={emoji}
                               reaction={{ emoji, count, hasReacted }}
                               isOwnMessage={isOwn}
-                              onPress={() => handleAddReaction(message.id, emoji, conversationId)}
+                              onPress={() => handleAddReaction(message.id, emoji)}
                             />
                           ))}
                         </div>
@@ -1187,273 +1038,47 @@ export default function Conversation() {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Enhanced Reply preview */}
+        {/* Enhanced Reply preview - Using extracted component */}
         <AnimatePresence>
           {replyTo && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3, type: 'spring' }}
-              className="z-10 px-4 py-2"
-            >
-              <GlassCard
-                variant={uiPreferences.glassEffect}
-                glow={uiPreferences.enableGlow}
-                borderGradient
-                className="flex items-center justify-between rounded-2xl p-4"
-              >
-                <div className="flex items-center gap-3">
-                  <motion.div
-                    className="h-10 w-1.5 rounded-full bg-gradient-to-b from-primary-500 to-purple-500"
-                    animate={
-                      uiPreferences.enableGlow
-                        ? {
-                            boxShadow: [
-                              '0 0 5px rgba(16, 185, 129, 0.3)',
-                              '0 0 15px rgba(16, 185, 129, 0.6)',
-                              '0 0 5px rgba(16, 185, 129, 0.3)',
-                            ],
-                          }
-                        : {}
-                    }
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                  <div>
-                    <p className="bg-gradient-to-r from-primary-400 to-purple-400 bg-clip-text text-xs font-semibold text-transparent">
-                      Replying to{' '}
-                      {replyTo.sender?.displayName || replyTo.sender?.username || 'Unknown'}
-                    </p>
-                    <p className="max-w-md truncate text-sm text-gray-300">{replyTo.content}</p>
-                  </div>
-                </div>
-                <motion.button
-                  onClick={() => {
-                    setReplyTo(null);
-                    if (uiPreferences.enableHaptic) HapticFeedback.light();
-                  }}
-                  className="group rounded-xl p-2 text-gray-400 transition-colors hover:bg-red-500/20 hover:text-red-400"
-                  whileHover={{ scale: 1.1, rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <svg
-                    className="h-4 w-4 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </motion.button>
-              </GlassCard>
-            </motion.div>
+            <ReplyPreview
+              replyTo={replyTo}
+              uiPreferences={uiPreferences}
+              onClear={() => {
+                setReplyTo(null);
+                if (uiPreferences.enableHaptic) HapticFeedback.light();
+              }}
+            />
           )}
         </AnimatePresence>
 
-        {/* Enhanced Input Area */}
-        <div className="z-10 p-4">
-          <GlassCard
-            variant={uiPreferences.glassEffect}
-            glow={uiPreferences.enableGlow}
-            hover3D={false}
-            borderGradient
-            className="rounded-2xl p-2"
-          >
-            {/* Sticker & GIF Pickers - positioned above input */}
-            <div className="relative" ref={inputContainerRef}>
-              <StickerPicker
-                isOpen={showStickerPicker}
-                onClose={() => setShowStickerPicker(false)}
-                onSelect={handleStickerSelect}
-              />
-              <GifPicker
-                isOpen={showGifPicker}
-                onClose={() => setShowGifPicker(false)}
-                onSelect={handleGifSelect}
-                className="bottom-16 left-0"
-              />
-              <EmojiPicker
-                isOpen={showEmojiPicker}
-                onClose={() => setShowEmojiPicker(false)}
-                onSelect={handleEmojiSelect}
-                className="bottom-16 left-0"
-              />
-            </div>
-
-            {isVoiceMode ? (
-              /* Voice Recorder UI */
-              <VoiceMessageRecorder
-                onComplete={handleVoiceComplete}
-                onCancel={() => {
-                  setIsVoiceMode(false);
-                  if (uiPreferences.enableHaptic) HapticFeedback.medium();
-                }}
-                maxDuration={120}
-                className="w-full"
-              />
-            ) : (
-              /* Next Gen Input UI */
-              <div className="flex items-end gap-3 p-2">
-                <motion.button
-                  onClick={() => {
-                    fileInputRef.current?.click();
-                    if (uiPreferences.enableHaptic) HapticFeedback.light();
-                  }}
-                  className="group rounded-xl p-2.5 text-gray-400 transition-all hover:bg-primary-500/20 hover:text-primary-400"
-                  whileHover={{ scale: 1.1, rotate: -15 }}
-                  whileTap={{ scale: 0.9 }}
-                  title="Attach file"
-                >
-                  <PaperClipIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                </motion.button>
-
-                <div className="flex-1 rounded-xl border border-primary-500/20 bg-dark-900/50 transition-all focus-within:border-primary-500/50">
-                  <textarea
-                    value={messageInput}
-                    onChange={(e) => {
-                      setMessageInput(e.target.value);
-                      handleTyping();
-                    }}
-                    onKeyDown={handleKeyPress}
-                    placeholder="Type a message..."
-                    rows={1}
-                    className="max-h-32 w-full resize-none bg-transparent px-4 py-3 text-white placeholder-gray-500 focus:outline-none"
-                    style={{ minHeight: '48px' }}
-                  />
-                </div>
-
-                {/* Emoji Button */}
-                <motion.button
-                  onClick={() => {
-                    setShowEmojiPicker(!showEmojiPicker);
-                    setShowStickerPicker(false);
-                    setShowGifPicker(false);
-                    if (uiPreferences.enableHaptic) HapticFeedback.light();
-                  }}
-                  className={`group rounded-xl p-2.5 transition-all ${
-                    showEmojiPicker
-                      ? 'bg-primary-500/20 text-primary-400'
-                      : 'text-gray-400 hover:bg-primary-500/20 hover:text-primary-400'
-                  }`}
-                  whileHover={{ scale: 1.1, rotate: -10 }}
-                  whileTap={{ scale: 0.9 }}
-                  title="Add emoji"
-                >
-                  <FaceSmileIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                </motion.button>
-
-                {/* Sticker Button */}
-                <StickerButton
-                  onClick={() => {
-                    setShowStickerPicker(!showStickerPicker);
-                    setShowGifPicker(false);
-                    setShowEmojiPicker(false);
-                    if (uiPreferences.enableHaptic) HapticFeedback.light();
-                  }}
-                  isActive={showStickerPicker}
-                  className="rounded-xl hover:bg-primary-500/20 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                />
-
-                {/* GIF Button */}
-                <motion.button
-                  onClick={() => {
-                    setShowGifPicker(!showGifPicker);
-                    setShowStickerPicker(false);
-                    setShowEmojiPicker(false);
-                    if (uiPreferences.enableHaptic) HapticFeedback.light();
-                  }}
-                  className={`group rounded-xl p-2.5 transition-all ${
-                    showGifPicker
-                      ? 'bg-primary-500/20 text-primary-400'
-                      : 'text-gray-400 hover:bg-primary-500/20 hover:text-primary-400'
-                  }`}
-                  whileHover={{ scale: 1.1, rotate: -15 }}
-                  whileTap={{ scale: 0.9 }}
-                  title="Send GIF"
-                >
-                  <SparklesIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                </motion.button>
-
-                {/* Schedule Button */}
-                {messageInput.trim() && (
-                  <motion.button
-                    onClick={() => {
-                      setMessageToSchedule(messageInput);
-                      setShowScheduleModal(true);
-                      if (uiPreferences.enableHaptic) HapticFeedback.medium();
-                    }}
-                    className="group rounded-xl p-2.5 text-gray-400 transition-all hover:bg-purple-500/20 hover:text-purple-400"
-                    whileHover={{ scale: 1.1, rotate: -10 }}
-                    whileTap={{ scale: 0.9 }}
-                    title="Schedule message"
-                    initial={{ scale: 0, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0, opacity: 0 }}
-                  >
-                    <ClockIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
-                  </motion.button>
-                )}
-
-                {/* Morphing Send/Mic Button */}
-                <AnimatePresence mode="wait">
-                  {messageInput.trim() ? (
-                    <motion.button
-                      key="send"
-                      onClick={() => {
-                        handleSend();
-                        if (uiPreferences.enableHaptic) HapticFeedback.success();
-                      }}
-                      disabled={isSending}
-                      className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-primary-600 to-purple-600 p-3 text-white transition-all hover:from-primary-500 hover:to-purple-500 disabled:cursor-not-allowed disabled:opacity-50"
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      exit={{ scale: 0, rotate: 180 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      {uiPreferences.enableGlow && (
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-r from-primary-400 to-purple-400 opacity-0 transition-opacity group-hover:opacity-50"
-                          animate={{
-                            scale: [1, 1.2, 1],
-                            opacity: [0.3, 0.6, 0.3],
-                          }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        />
-                      )}
-                      <PaperAirplaneIcon className="relative z-10 h-5 w-5" />
-                    </motion.button>
-                  ) : (
-                    <motion.button
-                      key="mic"
-                      onClick={() => {
-                        setIsVoiceMode(true);
-                        if (uiPreferences.enableHaptic) HapticFeedback.medium();
-                      }}
-                      disabled={isSending}
-                      className="group rounded-xl border border-red-500/20 p-3 text-gray-400 transition-all hover:bg-red-500/20 hover:text-red-400"
-                      title="Record voice message"
-                      initial={{ scale: 0, rotate: 180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      exit={{ scale: 0, rotate: -180 }}
-                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                    >
-                      <MicrophoneIcon className="h-5 w-5 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-                    </motion.button>
-                  )}
-                </AnimatePresence>
-              </div>
-            )}
-          </GlassCard>
-        </div>
+        {/* Enhanced Input Area - Using extracted component */}
+        <MessageInputArea
+          messageInput={messageInput}
+          setMessageInput={setMessageInput}
+          isSending={isSending}
+          isVoiceMode={isVoiceMode}
+          setIsVoiceMode={setIsVoiceMode}
+          showStickerPicker={showStickerPicker}
+          setShowStickerPicker={setShowStickerPicker}
+          showGifPicker={showGifPicker}
+          setShowGifPicker={setShowGifPicker}
+          showEmojiPicker={showEmojiPicker}
+          setShowEmojiPicker={setShowEmojiPicker}
+          uiPreferences={uiPreferences}
+          fileInputRef={fileInputRef}
+          onTyping={handleTyping}
+          onSend={handleSend}
+          onKeyPress={handleKeyPress}
+          onVoiceComplete={handleVoiceComplete}
+          onStickerSelect={handleStickerSelect}
+          onGifSelect={handleGifSelect}
+          onEmojiSelect={handleEmojiSelect}
+          onScheduleClick={() => {
+            setMessageToSchedule(messageInput);
+            setShowScheduleModal(true);
+          }}
+        />
 
         {/* E2EE Connection Tester Modal */}
         <AnimatePresence>

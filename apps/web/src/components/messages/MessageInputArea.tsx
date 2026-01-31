@@ -30,7 +30,7 @@ export interface MessageInputAreaProps {
   showEmojiPicker: boolean;
   setShowEmojiPicker: (value: boolean) => void;
   uiPreferences: UIPreferences;
-  fileInputRef: RefObject<HTMLInputElement>;
+  fileInputRef: RefObject<HTMLInputElement | null>;
   onTyping: () => void;
   onSend: () => void;
   onKeyPress: (e: React.KeyboardEvent) => void;
