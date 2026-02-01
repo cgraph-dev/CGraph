@@ -200,6 +200,12 @@ const FeatureShowcaseCard = memo(function FeatureShowcaseCard({
   data: ShowcaseCardData;
 }) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  // Detect touch device on mount
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   const renderContent = () => {
     switch (data.id) {
@@ -363,11 +369,18 @@ const FeatureShowcaseCard = memo(function FeatureShowcaseCard({
     }
   };
 
+  // Handle touch for mobile - toggle on tap
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    e.preventDefault();
+    setIsHovered(!isHovered);
+  };
+
   return (
     <motion.div
       className="showcase-card"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onTouchEnd={handleTouchEnd}
       onFocus={() => setIsHovered(true)}
       onBlur={() => setIsHovered(false)}
       onKeyDown={handleKeyDown}
@@ -376,11 +389,13 @@ const FeatureShowcaseCard = memo(function FeatureShowcaseCard({
       role="button"
       tabIndex={0}
       aria-pressed={isHovered}
-      aria-label={`${data.label} showcase - ${isHovered ? 'showing premium version' : 'hover to see premium version'}`}
+      aria-label={`${data.label} showcase - ${isHovered ? 'showing premium version' : 'tap to see premium version'}`}
     >
       <div className="showcase-card__indicator" aria-hidden="true">
         <span className={`showcase-card__dot ${isHovered ? 'showcase-card__dot--active' : ''}`} />
-        <span className="showcase-card__hover-hint">{isHovered ? 'Premium' : 'Hover me'}</span>
+        <span className="showcase-card__hover-hint">
+          {isHovered ? 'Premium' : isTouchDevice ? 'Tap me' : 'Hover me'}
+        </span>
       </div>
       {renderContent()}
       <div className="showcase-card__footer">
@@ -661,6 +676,7 @@ function SwapButton({
 export default function LandingPage() {
   const [navHidden, setNavHidden] = useState(false);
   const [navScrolled, setNavScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
@@ -970,7 +986,108 @@ export default function LandingPage() {
         </div>
 
         <SignInButton />
+
+        {/* Mobile Hamburger Button */}
+        <button
+          className={`mobile-menu-toggle ${mobileMenuOpen ? 'active' : ''}`}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          aria-label="Toggle mobile menu"
+          aria-expanded={mobileMenuOpen}
+        >
+          <span className="hamburger-line" />
+          <span className="hamburger-line" />
+          <span className="hamburger-line" />
+        </button>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      {mobileMenuOpen && (
+        <div className="mobile-menu-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <nav className="mobile-menu" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-menu__header">
+              <Link to="/" className="mobile-menu__logo" onClick={() => setMobileMenuOpen(false)}>
+                <LogoIcon size={28} showGlow animated color="gradient" />
+                <span>CGraph</span>
+              </Link>
+              <button
+                className="mobile-menu__close"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-label="Close menu"
+              >
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M18 6L6 18M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mobile-menu__links">
+              <a
+                href="#features"
+                className="mobile-menu__link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  const el = document.getElementById('features');
+                  if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+                }}
+              >
+                <span className="mobile-menu__link-icon">✨</span>
+                Features
+              </a>
+              <a
+                href="#security"
+                className="mobile-menu__link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  const el = document.getElementById('security');
+                  if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+                }}
+              >
+                <span className="mobile-menu__link-icon">🔐</span>
+                Security
+              </a>
+              <a
+                href="#pricing"
+                className="mobile-menu__link"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  const el = document.getElementById('pricing');
+                  if (el) window.scrollTo({ top: el.offsetTop - 100, behavior: 'smooth' });
+                }}
+              >
+                <span className="mobile-menu__link-icon">💎</span>
+                Pricing
+              </a>
+            </div>
+
+            <div className="mobile-menu__cta">
+              <Link
+                to="/auth/login"
+                className="mobile-menu__signin"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Sign In
+              </Link>
+              <Link
+                to="/auth/register"
+                className="mobile-menu__signup"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Get Started Free
+              </Link>
+            </div>
+          </nav>
+        </div>
+      )}
 
       {/* Hero */}
       <section ref={heroRef} className="hero">
