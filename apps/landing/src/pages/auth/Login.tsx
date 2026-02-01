@@ -33,17 +33,17 @@ export default function Login() {
     });
 
     // Redirect to the web app's login endpoint
-    window.location.href = `${WEB_APP_URL}/auth/login?${params.toString()}`;
+    window.location.href = `${WEB_APP_URL}/login?${params.toString()}`;
   };
 
   const handleOAuthLogin = (provider: string) => {
     setIsLoading(true);
-    window.location.href = `${WEB_APP_URL}/auth/${provider}`;
+    window.location.href = `${WEB_APP_URL}/auth/oauth/${provider}`;
   };
 
   const handleWalletConnect = () => {
     setIsLoading(true);
-    window.location.href = `${WEB_APP_URL}/auth/wallet`;
+    window.location.href = `${WEB_APP_URL}/login?method=wallet`;
   };
 
   return (

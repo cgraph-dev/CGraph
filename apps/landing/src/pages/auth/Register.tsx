@@ -60,12 +60,12 @@ export default function Register() {
       redirect: '/onboarding',
     });
 
-    window.location.href = `${WEB_APP_URL}/auth/register?${params.toString()}`;
+    window.location.href = `${WEB_APP_URL}/register?${params.toString()}`;
   };
 
   const handleOAuthRegister = (provider: string) => {
     setIsLoading(true);
-    window.location.href = `${WEB_APP_URL}/auth/${provider}?action=register`;
+    window.location.href = `${WEB_APP_URL}/auth/oauth/${provider}?action=register`;
   };
 
   // Password strength indicator
