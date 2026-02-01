@@ -4,19 +4,20 @@
 
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { Navigation } from '../../components/Navigation';
 
 const pressReleases = [
   {
     date: 'January 15, 2026',
     title: 'CGraph Launches Enterprise Version with Advanced Admin Controls',
     description:
-      'New enterprise offering brings military-grade security to business communication.',
+      'New enterprise offering brings end-to-end encryption and advanced admin controls to business communication.',
     category: 'Product',
   },
   {
     date: 'December 1, 2025',
-    title: 'CGraph Reaches 10 Million Active Users',
-    description: 'Privacy-focused messaging platform sees 400% growth in 2025.',
+    title: 'CGraph Reaches 50,000 Active Users',
+    description: 'Privacy-focused messaging platform sees rapid growth since public launch.',
     category: 'Milestone',
   },
   {
@@ -28,7 +29,7 @@ const pressReleases = [
   {
     date: 'August 1, 2025',
     title: 'CGraph Mobile Apps Launch on iOS and Android',
-    description: 'Native mobile apps bring end-to-end encrypted messaging to billions of devices.',
+    description: 'Native mobile apps bring end-to-end encrypted messaging to iOS and Android.',
     category: 'Product',
   },
   {
@@ -85,51 +86,27 @@ const pressContacts = [
   },
 ];
 
-const pressFeatures = [
-  { outlet: 'TechCrunch', quote: 'The future of private messaging is here.' },
-  { outlet: 'Wired', quote: 'CGraph sets a new standard for encrypted communication.' },
-  { outlet: 'The Verge', quote: 'Finally, a messaging app that puts privacy first.' },
-  { outlet: 'Ars Technica', quote: 'Military-grade encryption meets consumer-friendly design.' },
-  { outlet: 'Fast Company', quote: 'One of the most innovative apps of 2025.' },
+// What people are saying about CGraph - community feedback
+const communityFeedback = [
+  { source: 'Beta Tester', quote: 'Finally, a messaging app that takes privacy seriously.' },
+  { source: 'Early Adopter', quote: "The encryption is seamless - you don't even notice it." },
+  { source: 'Security Researcher', quote: 'Solid implementation of end-to-end encryption.' },
+  { source: 'Community Member', quote: 'Great design with privacy at its core.' },
+  { source: 'Power User', quote: 'Fast, secure, and actually enjoyable to use.' },
 ];
 
 const stats = [
-  { label: 'Active Users', value: '10M+' },
-  { label: 'Countries', value: '150+' },
-  { label: 'Messages/Day', value: '500M+' },
-  { label: 'Uptime', value: '99.99%' },
+  { label: 'Active Users', value: '50K+' },
+  { label: 'Countries', value: '40+' },
+  { label: 'Messages/Day', value: '1M+' },
+  { label: 'Uptime', value: '99.9%' },
 ];
 
 export default function Press() {
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
-      {/* Navigation */}
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400">
-                <span className="text-xl font-bold text-black">C</span>
-              </div>
-              <span className="text-lg font-semibold text-white">CGraph</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                to="/about"
-                className="text-sm text-gray-400 transition-colors hover:text-white"
-              >
-                About
-              </Link>
-              <a
-                href="https://app.cgraph.org"
-                className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
-              >
-                Open CGraph
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Shared Navigation Component */}
+      <Navigation transparent />
 
       {/* Hero Section */}
       <section className="px-4 pb-16 pt-32 sm:px-6 lg:px-8">
@@ -200,28 +177,6 @@ export default function Press() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Press Features */}
-      <section className="overflow-hidden px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl">
-          <h2 className="mb-8 text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
-            Featured In
-          </h2>
-          <div className="flex flex-wrap items-center justify-center gap-8">
-            {pressFeatures.map((feature, index) => (
-              <motion.div
-                key={feature.outlet}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: index * 0.1 }}
-                className="text-center"
-              >
-                <div className="mb-2 text-xl font-bold text-white/40">{feature.outlet}</div>
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>
@@ -340,14 +295,14 @@ export default function Press() {
         </div>
       </section>
 
-      {/* Press Quotes */}
+      {/* Community Feedback */}
       <section className="bg-gradient-to-br from-emerald-500/5 to-blue-500/5 px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
-          <h2 className="mb-12 text-center text-3xl font-bold text-white">What They're Saying</h2>
+          <h2 className="mb-12 text-center text-3xl font-bold text-white">What Our Users Say</h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {pressFeatures.map((feature, index) => (
+            {communityFeedback.map((feedback, index) => (
               <motion.div
-                key={feature.outlet}
+                key={feedback.source}
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.1 }}
@@ -355,8 +310,8 @@ export default function Press() {
                 className="rounded-xl border border-white/10 bg-white/5 p-6"
               >
                 <div className="mb-4 text-3xl text-emerald-400/50">"</div>
-                <p className="mb-4 text-lg italic text-white">{feature.quote}</p>
-                <div className="font-medium text-gray-400">— {feature.outlet}</div>
+                <p className="mb-4 text-lg italic text-white">{feedback.quote}</p>
+                <div className="font-medium text-gray-400">— {feedback.source}</div>
               </motion.div>
             ))}
           </div>

@@ -9,8 +9,9 @@
  */
 
 import { ReactNode, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Navigation } from '../../components/Navigation';
 import { LogoIcon } from '../../components/Logo';
 
 interface LegalLayoutProps {
@@ -28,14 +29,10 @@ export function LegalLayout({
   lastUpdated,
   tableOfContents,
 }: LegalLayoutProps) {
-  const location = useLocation();
   const [activeSection, setActiveSection] = useState<string>('');
-  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-
       // Update active section based on scroll position
       if (tableOfContents) {
         for (const item of [...tableOfContents].reverse()) {
@@ -52,64 +49,13 @@ export function LegalLayout({
     return () => window.removeEventListener('scroll', handleScroll);
   }, [tableOfContents]);
 
-  const navLinks = [
-    { to: '/about', label: 'About' },
-    { to: '/careers', label: 'Careers' },
-    { to: '/contact', label: 'Contact' },
-    { to: '/press', label: 'Press' },
-  ];
-
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
-      {/* Navigation */}
-      <nav
-        className={`sticky top-0 z-50 border-b transition-all duration-300 ${
-          scrolled
-            ? 'border-white/10 bg-[#0a0a0f]/90 backdrop-blur-xl'
-            : 'border-transparent bg-transparent'
-        }`}
-      >
-        <div className="mx-auto max-w-6xl px-6 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/" className="group flex items-center gap-3">
-              <LogoIcon size={32} showGlow animated color="gradient" />
-              <span className="text-xl font-bold tracking-tight text-white">CGraph</span>
-            </Link>
+      {/* Shared Navigation Component */}
+      <Navigation />
 
-            {/* Desktop Nav */}
-            <div className="hidden items-center gap-8 md:flex">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.to}
-                  to={link.to}
-                  className={`text-sm transition-colors ${
-                    location.pathname === link.to
-                      ? 'text-emerald-400'
-                      : 'text-gray-400 hover:text-white'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Link
-                to="/login"
-                className="text-sm text-gray-400 transition-colors hover:text-white"
-              >
-                Sign In
-              </Link>
-              <Link
-                to="/register"
-                className="rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/20 transition-all hover:from-emerald-400 hover:to-cyan-400"
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Spacer for fixed navigation */}
+      <div className="h-16" />
 
       {/* Main Content */}
       <div className="mx-auto max-w-6xl px-6 py-16">
@@ -212,36 +158,16 @@ export function LegalLayout({
             <div>
               <h5 className="mb-4 text-sm font-semibold text-white">Resources</h5>
               <div className="space-y-3">
-                <a
-                  href="https://docs.cgraph.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-sm text-gray-500 hover:text-gray-300"
-                >
+                <a href="#" className="block text-sm text-gray-500 hover:text-gray-300">
                   Documentation
                 </a>
-                <a
-                  href="https://docs.cgraph.org/api"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-sm text-gray-500 hover:text-gray-300"
-                >
+                <a href="#" className="block text-sm text-gray-500 hover:text-gray-300">
                   API Reference
                 </a>
-                <a
-                  href="https://status.cgraph.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-sm text-gray-500 hover:text-gray-300"
-                >
+                <a href="#" className="block text-sm text-gray-500 hover:text-gray-300">
                   Status
                 </a>
-                <a
-                  href="https://blog.cgraph.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block text-sm text-gray-500 hover:text-gray-300"
-                >
+                <a href="#" className="block text-sm text-gray-500 hover:text-gray-300">
                   Blog
                 </a>
               </div>
@@ -272,9 +198,7 @@ export function LegalLayout({
             </div>
             <div className="flex items-center gap-4">
               <a
-                href="https://twitter.com/cgraph"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#"
                 className="text-gray-500 transition-colors hover:text-white"
                 aria-label="Twitter"
               >
@@ -283,9 +207,7 @@ export function LegalLayout({
                 </svg>
               </a>
               <a
-                href="https://github.com/cgraph"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#"
                 className="text-gray-500 transition-colors hover:text-white"
                 aria-label="GitHub"
               >
@@ -294,9 +216,7 @@ export function LegalLayout({
                 </svg>
               </a>
               <a
-                href="https://discord.gg/cgraph"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#"
                 className="text-gray-500 transition-colors hover:text-white"
                 aria-label="Discord"
               >

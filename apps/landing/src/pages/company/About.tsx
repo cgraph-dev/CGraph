@@ -4,12 +4,13 @@
 
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import { Navigation } from '../../components/Navigation';
 
 const stats = [
-  { value: '10M+', label: 'Active Users' },
-  { value: '99.99%', label: 'Uptime' },
-  { value: '150+', label: 'Countries' },
-  { value: '500M+', label: 'Messages/Day' },
+  { value: '50K+', label: 'Active Users' },
+  { value: '99.9%', label: 'Uptime' },
+  { value: '40+', label: 'Countries' },
+  { value: '1M+', label: 'Messages/Day' },
 ];
 
 const values = [
@@ -61,7 +62,7 @@ const timeline = [
   {
     year: '2025',
     title: 'Mobile Apps',
-    description: 'Native iOS and Android apps launched, bringing CGraph to billions of devices.',
+    description: 'Native iOS and Android apps launched, bringing CGraph to mobile users.',
   },
   {
     year: '2026',
@@ -73,56 +74,31 @@ const timeline = [
 const team = [
   {
     name: 'Leadership',
-    description: 'Our executive team brings decades of experience from leading tech companies.',
-    count: '5',
+    description: 'Our founding team brings experience from leading tech companies.',
+    count: '3',
   },
   {
     name: 'Engineering',
-    description: 'World-class engineers passionate about building secure, scalable systems.',
-    count: '45+',
+    description: 'Talented engineers passionate about building secure, scalable systems.',
+    count: '8',
   },
   {
     name: 'Design',
     description: 'Designers focused on creating delightful user experiences.',
-    count: '12',
+    count: '2',
   },
   {
     name: 'Security',
     description: 'Dedicated security researchers and cryptography experts.',
-    count: '8',
+    count: '2',
   },
 ];
 
 export default function About() {
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
-      {/* Navigation */}
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400">
-                <span className="text-xl font-bold text-black">C</span>
-              </div>
-              <span className="text-lg font-semibold text-white">CGraph</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                to="/careers"
-                className="text-sm text-gray-400 transition-colors hover:text-white"
-              >
-                Careers
-              </Link>
-              <a
-                href="https://app.cgraph.org/login"
-                className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
-              >
-                Open CGraph
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Shared Navigation Component */}
+      <Navigation transparent />
 
       {/* Hero Section */}
       <section className="px-4 pb-20 pt-32 sm:px-6 lg:px-8">
@@ -248,7 +224,9 @@ export default function About() {
         <div className="mx-auto max-w-4xl">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-3xl font-bold text-white md:text-4xl">Our Journey</h2>
-            <p className="text-lg text-gray-400">From idea to millions of users worldwide.</p>
+            <p className="text-lg text-gray-400">
+              Our journey to build a better messaging platform.
+            </p>
           </div>
           <div className="relative">
             <div className="absolute bottom-0 left-4 top-0 w-px bg-gradient-to-b from-emerald-500 via-cyan-500 to-purple-500 md:left-1/2" />
@@ -326,7 +304,7 @@ export default function About() {
             Ready to Experience CGraph?
           </h2>
           <p className="mb-8 text-xl text-gray-400">
-            Join millions of users who trust CGraph for their private communications.
+            Join our growing community of users who trust CGraph for their private communications.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a

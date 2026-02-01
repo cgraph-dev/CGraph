@@ -88,7 +88,7 @@ export default function Register() {
   const passwordStrength = getPasswordStrength(formData.password);
 
   return (
-    <AuthLayout title="Create account" subtitle="Join millions of users on CGraph">
+    <AuthLayout title="Create account" subtitle="Join the CGraph community today">
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Error Message */}
         {error && (

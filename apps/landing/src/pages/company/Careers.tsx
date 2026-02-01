@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { Navigation } from '../../components/Navigation';
 
 const benefits = [
   {
@@ -65,7 +66,7 @@ const openings = [
     department: 'Engineering',
     location: 'Remote (US/EU)',
     type: 'Full-time',
-    description: 'Build scalable, secure systems that power real-time communication for millions.',
+    description: 'Build scalable, secure systems that power real-time communication.',
   },
   {
     title: 'Staff Frontend Engineer',
@@ -79,7 +80,7 @@ const openings = [
     department: 'Engineering',
     location: 'Remote (Worldwide)',
     type: 'Full-time',
-    description: 'Build native iOS experiences that delight millions of users.',
+    description: 'Build native iOS experiences that users love.',
   },
   {
     title: 'Mobile Engineer (Android)',
@@ -121,7 +122,7 @@ const openings = [
     department: 'Operations',
     location: 'Remote (Worldwide)',
     type: 'Full-time',
-    description: 'Build and maintain infrastructure that supports millions of concurrent users.',
+    description: 'Build and maintain infrastructure that scales with our growing user base.',
   },
   {
     title: 'Growth Marketing Manager',
@@ -133,10 +134,10 @@ const openings = [
 ];
 
 const culturePhotos = [
-  { title: 'Team Retreat 2025', location: 'Lisbon, Portugal' },
-  { title: 'Hackathon Winners', location: 'Virtual' },
-  { title: 'Product Launch', location: 'San Francisco' },
-  { title: 'Design Sprint', location: 'Berlin' },
+  { title: 'Annual Team Retreat', location: 'Remote First' },
+  { title: 'Hackathon Event', location: 'Virtual' },
+  { title: 'Product Launch Day', location: 'Global' },
+  { title: 'Design Sprint', location: 'Collaborative' },
 ];
 
 export default function Careers() {
@@ -149,33 +150,8 @@ export default function Careers() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
-      {/* Navigation */}
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400">
-                <span className="text-xl font-bold text-black">C</span>
-              </div>
-              <span className="text-lg font-semibold text-white">CGraph</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                to="/about"
-                className="text-sm text-gray-400 transition-colors hover:text-white"
-              >
-                About
-              </Link>
-              <a
-                href="https://app.cgraph.org"
-                className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
-              >
-                Open CGraph
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Shared Navigation Component */}
+      <Navigation transparent />
 
       {/* Hero Section */}
       <section className="px-4 pb-20 pt-32 sm:px-6 lg:px-8">
@@ -205,7 +181,7 @@ export default function Careers() {
             className="mx-auto mb-8 max-w-3xl text-xl text-gray-400"
           >
             Join a team of passionate engineers, designers, and security experts building technology
-            that empowers millions to communicate freely.
+            that empowers people to communicate freely and securely.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -338,14 +314,15 @@ export default function Careers() {
               <div className="relative rounded-2xl border border-white/10 bg-white/5 p-8">
                 <div className="mb-4 text-5xl">💬</div>
                 <blockquote className="mb-4 text-xl italic text-white">
-                  "At CGraph, every engineer has the opportunity to directly impact how millions of
-                  people communicate. It's challenging, rewarding, and genuinely fun."
+                  "At CGraph, every engineer has the opportunity to build something meaningful.
+                  We're creating tools that truly respect user privacy. It's challenging and
+                  rewarding."
                 </blockquote>
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full bg-gradient-to-br from-emerald-400 to-cyan-400" />
                   <div>
-                    <div className="font-medium text-white">Sarah Chen</div>
-                    <div className="text-sm text-gray-400">Engineering Lead</div>
+                    <div className="font-medium text-white">Team Member</div>
+                    <div className="text-sm text-gray-400">Engineering</div>
                   </div>
                 </div>
               </div>

@@ -21,6 +21,12 @@ const Careers = lazy(() => import('./pages/company/Careers'));
 const Contact = lazy(() => import('./pages/company/Contact'));
 const Press = lazy(() => import('./pages/company/Press'));
 
+// Resource Pages
+const Download = lazy(() => import('./pages/resources/Download'));
+const Documentation = lazy(() => import('./pages/resources/Documentation'));
+const Blog = lazy(() => import('./pages/resources/Blog'));
+const Status = lazy(() => import('./pages/resources/Status'));
+
 // Loading fallback
 function PageLoader() {
   return (
@@ -58,6 +64,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="/careers" element={<Careers />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/press" element={<Press />} />
+
+          {/* Resource Pages */}
+          <Route path="/download" element={<Download />} />
+          <Route path="/docs" element={<Documentation />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/status" element={<Status />} />
 
           {/* Static Pages - redirect to sections */}
           <Route path="/features" element={<Navigate to="/#features" replace />} />

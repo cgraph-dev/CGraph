@@ -5,6 +5,7 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useState } from 'react';
+import { Navigation } from '../../components/Navigation';
 
 const contactOptions = [
   {
@@ -65,11 +66,11 @@ const topics = [
 ];
 
 const socialLinks = [
-  { name: 'Twitter', url: 'https://twitter.com/cgraph', icon: '𝕏' },
-  { name: 'GitHub', url: 'https://github.com/cgraph', icon: '⚡' },
-  { name: 'Discord', url: 'https://discord.gg/cgraph', icon: '💬' },
-  { name: 'LinkedIn', url: 'https://linkedin.com/company/cgraph', icon: '💼' },
-  { name: 'Mastodon', url: 'https://mastodon.social/@cgraph', icon: '🐘' },
+  { name: 'Twitter / X', url: '#', icon: '𝕏' },
+  { name: 'GitHub', url: '#', icon: '⚡' },
+  { name: 'Discord', url: '#', icon: '💬' },
+  { name: 'LinkedIn', url: '#', icon: '💼' },
+  { name: 'Mastodon', url: '#', icon: '🐘' },
 ];
 
 export default function Contact() {
@@ -93,33 +94,8 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
-      {/* Navigation */}
-      <nav className="fixed left-0 right-0 top-0 z-50 border-b border-white/5 bg-[#0a0a0f]/80 backdrop-blur-xl">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400">
-                <span className="text-xl font-bold text-black">C</span>
-              </div>
-              <span className="text-lg font-semibold text-white">CGraph</span>
-            </Link>
-            <div className="flex items-center gap-4">
-              <Link
-                to="/about"
-                className="text-sm text-gray-400 transition-colors hover:text-white"
-              >
-                About
-              </Link>
-              <a
-                href="https://app.cgraph.org"
-                className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
-              >
-                Open CGraph
-              </a>
-            </div>
-          </div>
-        </div>
-      </nav>
+      {/* Shared Navigation Component */}
+      <Navigation transparent />
 
       {/* Hero Section */}
       <section className="px-4 pb-12 pt-32 sm:px-6 lg:px-8">
@@ -330,9 +306,7 @@ export default function Contact() {
                   comprehensive Help Center.
                 </p>
                 <a
-                  href="https://help.cgraph.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#"
                   className="inline-flex items-center gap-2 font-medium text-emerald-400 transition-colors hover:text-emerald-300"
                 >
                   Visit Help Center →
@@ -353,9 +327,7 @@ export default function Contact() {
                   on the latest features.
                 </p>
                 <a
-                  href="https://discord.gg/cgraph"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="#"
                   className="inline-flex items-center gap-2 font-medium text-emerald-400 transition-colors hover:text-emerald-300"
                 >
                   Join Discord Community →

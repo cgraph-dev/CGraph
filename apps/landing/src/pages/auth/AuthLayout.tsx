@@ -74,7 +74,7 @@ export function AuthLayout({ children, title, subtitle }: AuthLayoutProps) {
               </span>
             </h1>
             <p className="max-w-md text-lg text-gray-400">
-              Join millions of users on the most secure messaging platform. End-to-end encrypted.
+              Join a growing community on the most secure messaging platform. End-to-end encrypted.
               Privacy-first. Always free.
             </p>
 
