@@ -128,6 +128,8 @@ const Contact = lazy(() => import('@/pages/company/Contact'));
 const Careers = lazy(() => import('@/pages/company/Careers'));
 const Press = lazy(() => import('@/pages/company/Press'));
 const Status = lazy(() => import('@/pages/company/Status'));
+const Blog = lazy(() => import('@/pages/company/Blog'));
+const Documentation = lazy(() => import('@/pages/company/Documentation'));
 
 // Test pages (dev only, lazy)
 const MatrixTest = lazy(() => import('@/pages/test/MatrixTest'));
@@ -345,6 +347,8 @@ export default function App() {
           <Route path="/careers" element={<Careers />} />
           <Route path="/press" element={<Press />} />
           <Route path="/status" element={<Status />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/docs" element={<Documentation />} />
 
           {/* Auth routes */}
           <Route
