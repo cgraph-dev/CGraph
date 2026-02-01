@@ -42,12 +42,10 @@ if config_env() == :prod do
   ]
 
   repo_config = if ssl_enabled do
-    # SSL configuration with proper certificate verification
-    # Use system CA certificates for verification
+    # SSL configuration - Postgrex uses `ssl: opts_list` directly (not ssl_opts)
     ssl_opts = case System.get_env("DATABASE_SSL_VERIFY") do
       "none" ->
-        # Only use verify_none when explicitly configured (e.g., certain cloud providers)
-        # This should be documented and only used when absolutely necessary
+        # Only use verify_none when explicitly configured (e.g., Supabase, some cloud providers)
         [verify: :verify_none]
       _ ->
         # Default: Proper certificate verification using system CA store
@@ -58,13 +56,11 @@ if config_env() == :prod do
           customize_hostname_check: [
             match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
           ],
-          # Allow server name indication for SNI
           server_name_indication: to_charlist(System.get_env("DATABASE_HOST", "localhost"))
         ]
     end
-    repo_config
-    |> Keyword.put(:ssl, true)
-    |> Keyword.put(:ssl_opts, ssl_opts)
+    # Pass ssl options directly - Postgrex 0.18+ uses `ssl: opts` not `ssl: true, ssl_opts: opts`
+    Keyword.put(repo_config, :ssl, ssl_opts)
   else
     repo_config
   end
