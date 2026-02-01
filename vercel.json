@@ -1,8 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
-  "buildCommand": "cd apps/landing && npm run build",
-  "installCommand": "npm install --legacy-peer-deps",
+  "buildCommand": "pnpm turbo run build --filter=@cgraph/landing",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "outputDirectory": "apps/landing/dist",
   "redirects": [
     {
