@@ -1,6 +1,6 @@
 /**
  * Forum Components
- * 
+ *
  * Re-exports forum-related components from the legacy structure
  * for backward compatibility while enabling feature-based imports.
  */
@@ -38,5 +38,5 @@ export { default as RSSFeedLinks } from '@/components/common/RSSFeedLinks';
 export { default as OnlineStatusIndicator } from '@/components/common/OnlineStatusIndicator';
 
 // Subscription components
-export { SubscriptionButton } from '@/components/forum/SubscriptionButton';
-export { SubscriptionManager } from '@/components/forum/SubscriptionManager';
+export { SubscriptionButton } from '@/components/forums/SubscriptionButton';
+export { SubscriptionManager } from '@/components/forums/SubscriptionManager';

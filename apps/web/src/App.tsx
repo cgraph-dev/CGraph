@@ -131,13 +131,13 @@ const Status = lazy(() => import('@/pages/company/Status'));
 const Blog = lazy(() => import('@/pages/company/Blog'));
 const Documentation = lazy(() => import('@/pages/company/Documentation'));
 
-// Test pages (dev only, lazy)
-const MatrixTest = lazy(() => import('@/pages/test/MatrixTest'));
-const EnhancedDemo = lazy(() => import('@/pages/test/EnhancedDemo'));
-const ThemeApplicationTest = lazy(() => import('@/pages/test/ThemeApplicationTest'));
+// Test pages (dev only, lazy) - moved to __dev__ directory
+const MatrixTest = lazy(() => import('@/__dev__/test/MatrixTest'));
+const EnhancedDemo = lazy(() => import('@/__dev__/test/EnhancedDemo'));
+const ThemeApplicationTest = lazy(() => import('@/__dev__/test/ThemeApplicationTest'));
 
-// Demo pages
-const LandingDemoWorkshop = lazy(() => import('@/pages/demo/LandingDemoWorkshop'));
+// Demo pages - moved to __dev__ directory
+const LandingDemoWorkshop = lazy(() => import('@/__dev__/demo/LandingDemoWorkshop'));
 
 // Initialize auth check on app load - non-blocking
 function AuthInitializer({ children }: { children: React.ReactNode }) {
