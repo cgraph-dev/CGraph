@@ -10,8 +10,8 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AuthLayout } from './AuthLayout';
 
-// Web app URL - in production this would be app.cgraph.org or the main cgraph.org/app
-const WEB_APP_URL = import.meta.env.VITE_WEB_APP_URL || 'https://app.cgraph.org';
+// Web app URL - in production this is web.cgraph.org
+const WEB_APP_URL = import.meta.env.VITE_WEB_APP_URL || 'https://web.cgraph.org';
 
 export default function Login() {
   const [email, setEmail] = useState('');

@@ -308,7 +308,7 @@ export default function About() {
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a
-              href="https://app.cgraph.org/register"
+              href="https://web.cgraph.org/register"
               className="rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-8 py-4 font-semibold text-white transition-all hover:shadow-lg hover:shadow-emerald-500/25"
             >
               Create Free Account

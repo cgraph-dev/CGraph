@@ -24,7 +24,7 @@ import './landing-page.css';
 gsap.registerPlugin(ScrollTrigger);
 
 // Web app URL for auth links (direct navigation, not SPA routing)
-const WEB_APP_URL = 'https://app.cgraph.org';
+const WEB_APP_URL = 'https://web.cgraph.org';
 
 // =============================================================================
 // PERFORMANCE UTILITIES

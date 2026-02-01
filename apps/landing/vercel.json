@@ -8,34 +8,34 @@
   "redirects": [
     {
       "source": "/login",
-      "destination": "https://app.cgraph.org/login",
+      "destination": "https://web.cgraph.org/login",
       "statusCode": 308
     },
     {
       "source": "/register",
-      "destination": "https://app.cgraph.org/register",
+      "destination": "https://web.cgraph.org/register",
       "statusCode": 308
     },
     {
       "source": "/signup",
-      "destination": "https://app.cgraph.org/register",
+      "destination": "https://web.cgraph.org/register",
       "statusCode": 308
     },
     {
       "source": "/forgot-password",
-      "destination": "https://app.cgraph.org/forgot-password",
+      "destination": "https://web.cgraph.org/forgot-password",
       "statusCode": 308
     },
     {
       "source": "/reset-password",
-      "destination": "https://app.cgraph.org/reset-password",
+      "destination": "https://web.cgraph.org/reset-password",
       "statusCode": 308
     }
   ],
   "rewrites": [
     {
       "source": "/app/:path*",
-      "destination": "https://app.cgraph.org/:path*"
+      "destination": "https://web.cgraph.org/:path*"
     },
     {
       "source": "/(.*)",
