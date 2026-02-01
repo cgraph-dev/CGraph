@@ -8,6 +8,8 @@
  * - GSAP for premium scroll animations
  * - Framer Motion for micro-interactions
  * - SEO optimized with semantic HTML
+ *
+ * Version: 2.0.0 - Added resource pages (/docs, /blog, /status, /download)
  */
 
 import { useState, useEffect, useRef, useCallback, memo } from 'react';
