@@ -7,7 +7,7 @@ import './index.css';
 // Lazy load pages for optimal performance
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 
-// Auth pages are handled via Vercel redirects to app.cgraph.org
+// Auth pages are handled via Vercel redirects to web.cgraph.org
 
 // Legal Pages
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
@@ -47,7 +47,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           {/* Landing Page */}
           <Route path="/" element={<LandingPage />} />
 
-          {/* Auth routes are handled by Vercel redirects to app.cgraph.org */}
+          {/* Auth routes are handled by Vercel redirects to web.cgraph.org */}
 
           {/* Legal Pages */}
           <Route path="/privacy" element={<PrivacyPolicy />} />

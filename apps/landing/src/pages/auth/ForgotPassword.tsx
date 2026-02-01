@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AuthLayout } from './AuthLayout';
 
-const WEB_APP_URL = import.meta.env.VITE_WEB_APP_URL || 'https://app.cgraph.org';
+const WEB_APP_URL = import.meta.env.VITE_WEB_APP_URL || 'https://web.cgraph.org';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
