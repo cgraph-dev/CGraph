@@ -83,7 +83,7 @@ defmodule CGraphWeb.Plugs.Cors do
           # Production domains
           "https://cgraph.org",
           "https://www.cgraph.org",
-          "https://app.cgraph.org",
+          "https://web.cgraph.org",
           # Vercel deployment domains (specific deployments)
           "https://cgraph.vercel.app",
           "https://cgraph-web.vercel.app",
