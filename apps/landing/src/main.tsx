@@ -1,6 +1,7 @@
 import React, { lazy, Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import './index.css';
 
 // Lazy load pages for optimal performance
@@ -75,6 +76,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Route path="*" element={<LandingPage />} />
         </Routes>
       </Suspense>
+      <SpeedInsights />
     </BrowserRouter>
   </React.StrictMode>
 );
