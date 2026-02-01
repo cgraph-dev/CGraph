@@ -8,27 +8,37 @@
     {
       "source": "/login",
       "destination": "https://app.cgraph.org/login",
-      "permanent": false
+      "statusCode": 308
     },
     {
       "source": "/register",
       "destination": "https://app.cgraph.org/register",
-      "permanent": false
+      "statusCode": 308
     },
     {
       "source": "/signup",
       "destination": "https://app.cgraph.org/register",
-      "permanent": false
+      "statusCode": 308
     },
     {
       "source": "/forgot-password",
       "destination": "https://app.cgraph.org/forgot-password",
-      "permanent": false
+      "statusCode": 308
+    },
+    {
+      "source": "/reset-password",
+      "destination": "https://app.cgraph.org/reset-password",
+      "statusCode": 308
+    },
+    {
+      "source": "/app/:path*",
+      "destination": "https://app.cgraph.org/:path*",
+      "statusCode": 308
     }
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets|favicon|robots|sitemap).*)",
       "destination": "/index.html"
     }
   ],
