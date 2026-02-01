@@ -1,31 +1,44 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
+  "buildCommand": "pnpm build",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "outputDirectory": "dist",
   "redirects": [
     {
       "source": "/login",
       "destination": "https://app.cgraph.org/login",
-      "permanent": false
+      "statusCode": 308
     },
     {
       "source": "/register",
       "destination": "https://app.cgraph.org/register",
-      "permanent": false
+      "statusCode": 308
     },
     {
       "source": "/signup",
       "destination": "https://app.cgraph.org/register",
-      "permanent": false
+      "statusCode": 308
     },
     {
       "source": "/forgot-password",
       "destination": "https://app.cgraph.org/forgot-password",
-      "permanent": false
+      "statusCode": 308
+    },
+    {
+      "source": "/reset-password",
+      "destination": "https://app.cgraph.org/reset-password",
+      "statusCode": 308
+    },
+    {
+      "source": "/app/:path*",
+      "destination": "https://app.cgraph.org/:path*",
+      "statusCode": 308
     }
   ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!assets).*)",
       "destination": "/index.html"
     }
   ],
@@ -39,7 +52,8 @@
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" }
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
       ]
     }
   ],
