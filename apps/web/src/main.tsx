@@ -18,6 +18,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ThemeProviderEnhanced } from './contexts/ThemeContextEnhanced';
 import { NotificationProvider } from './providers/NotificationProvider';
 import AnimatedLogo from './components/AnimatedLogo';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import './index.css';
 
 debugLog('All imports completed');
@@ -168,6 +169,7 @@ try {
               </QueryClientProvider>
             </ThemeProviderEnhanced>
           </ThemeProvider>
+          <SpeedInsights />
         </Suspense>
       </ErrorBoundary>
     </React.StrictMode>
