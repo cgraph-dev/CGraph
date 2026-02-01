@@ -23,6 +23,9 @@ import './landing-page.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Web app URL for auth links (direct navigation, not SPA routing)
+const WEB_APP_URL = 'https://app.cgraph.org';
+
 // =============================================================================
 // PERFORMANCE UTILITIES
 // =============================================================================
@@ -606,7 +609,7 @@ function TiltCard({
 
 function SignInButton() {
   return (
-    <Link to="/login" className="btn-signin group">
+    <a href={`${WEB_APP_URL}/login`} className="btn-signin group">
       <span className="btn-signin__glow" />
       <span className="btn-signin__border" />
       <span className="btn-signin__content">
@@ -628,7 +631,7 @@ function SignInButton() {
         <span className="btn-signin__text">Sign In</span>
         <span className="btn-signin__text-hover">Welcome</span>
       </span>
-    </Link>
+    </a>
   );
 }
 
@@ -1072,20 +1075,12 @@ export default function LandingPage() {
             </div>
 
             <div className="mobile-menu__cta">
-              <Link
-                to="/login"
-                className="mobile-menu__signin"
-                onClick={() => setMobileMenuOpen(false)}
-              >
+              <a href={`${WEB_APP_URL}/login`} className="mobile-menu__signin">
                 Sign In
-              </Link>
-              <Link
-                to="/register"
-                className="mobile-menu__signup"
-                onClick={() => setMobileMenuOpen(false)}
-              >
+              </a>
+              <a href={`${WEB_APP_URL}/register`} className="mobile-menu__signup">
                 Get Started Free
-              </Link>
+              </a>
             </div>
           </nav>
         </div>
@@ -1252,12 +1247,12 @@ export default function LandingPage() {
                 ))}
               </ul>
 
-              <Link
-                to="/register"
+              <a
+                href={`${WEB_APP_URL}/register`}
                 className={`pricing__cta ${tier.highlighted ? 'pricing__cta--primary' : ''}`}
               >
                 {tier.cta}
-              </Link>
+              </a>
             </div>
           ))}
         </div>
@@ -1276,8 +1271,13 @@ export default function LandingPage() {
             Create forums, customize your space, and connect with like-minded people.
           </p>
           <div className="cta__buttons">
-            <SwapButton primary mainText="Create Account" altText="Join Now!" href="/register" />
-            <SwapButton mainText="Sign In" altText="Welcome Back" href="/login" />
+            <SwapButton
+              primary
+              mainText="Create Account"
+              altText="Join Now!"
+              href={`${WEB_APP_URL}/register`}
+            />
+            <SwapButton mainText="Sign In" altText="Welcome Back" href={`${WEB_APP_URL}/login`} />
           </div>
         </div>
       </section>

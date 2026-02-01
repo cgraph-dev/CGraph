@@ -9,6 +9,9 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LogoIcon } from './Logo';
 
+// Web app URL for auth redirects (direct navigation, not SPA routing)
+const WEB_APP_URL = 'https://app.cgraph.org';
+
 interface NavigationProps {
   transparent?: boolean;
 }
@@ -87,18 +90,18 @@ export function Navigation({ transparent = false }: NavigationProps) {
 
             {/* Desktop CTA Buttons */}
             <div className="hidden items-center gap-3 md:flex">
-              <Link
-                to="/login"
+              <a
+                href={`${WEB_APP_URL}/login`}
                 className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
               >
                 Sign In
-              </Link>
-              <Link
-                to="/register"
+              </a>
+              <a
+                href={`${WEB_APP_URL}/register`}
                 className="rounded-lg bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-2 text-sm font-medium text-white shadow-lg shadow-emerald-500/20 transition-all hover:from-emerald-400 hover:to-cyan-400 hover:shadow-emerald-500/30"
               >
                 Get Started
-              </Link>
+              </a>
             </div>
 
             {/* Mobile Hamburger Button */}
@@ -209,20 +212,18 @@ export function Navigation({ transparent = false }: NavigationProps) {
 
           {/* Mobile Menu CTA */}
           <div className="mt-auto space-y-3 border-t border-white/10 pt-6">
-            <Link
-              to="/login"
+            <a
+              href={`${WEB_APP_URL}/login`}
               className="flex w-full items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base font-medium text-white transition-colors hover:bg-white/10"
-              onClick={() => setMobileMenuOpen(false)}
             >
               Sign In
-            </Link>
-            <Link
-              to="/register"
+            </a>
+            <a
+              href={`${WEB_APP_URL}/register`}
               className="flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 px-4 py-3 text-base font-semibold text-white shadow-lg shadow-emerald-500/30 transition-all hover:shadow-emerald-500/50"
-              onClick={() => setMobileMenuOpen(false)}
             >
               Get Started Free
-            </Link>
+            </a>
           </div>
         </div>
       </div>
