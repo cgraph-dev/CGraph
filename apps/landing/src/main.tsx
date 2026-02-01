@@ -5,9 +5,8 @@ import './index.css';
 
 // Lazy load pages for optimal performance
 const LandingPage = lazy(() => import('./pages/LandingPage'));
-const Login = lazy(() => import('./pages/auth/Login'));
-const Register = lazy(() => import('./pages/auth/Register'));
-const ForgotPassword = lazy(() => import('./pages/auth/ForgotPassword'));
+
+// Auth pages are handled via Vercel redirects to app.cgraph.org
 
 // Legal Pages
 const PrivacyPolicy = lazy(() => import('./pages/legal/PrivacyPolicy'));
@@ -47,11 +46,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           {/* Landing Page */}
           <Route path="/" element={<LandingPage />} />
 
-          {/* Authentication Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/signup" element={<Navigate to="/register" replace />} />
+          {/* Auth routes are handled by Vercel redirects to app.cgraph.org */}
 
           {/* Legal Pages */}
           <Route path="/privacy" element={<PrivacyPolicy />} />

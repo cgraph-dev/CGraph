@@ -5,6 +5,28 @@
   "installCommand": "pnpm install",
   "outputDirectory": "dist",
   "regions": ["fra1", "iad1", "sfo1"],
+  "redirects": [
+    {
+      "source": "/login",
+      "destination": "https://app.cgraph.org/login",
+      "permanent": false
+    },
+    {
+      "source": "/register",
+      "destination": "https://app.cgraph.org/register",
+      "permanent": false
+    },
+    {
+      "source": "/signup",
+      "destination": "https://app.cgraph.org/register",
+      "permanent": false
+    },
+    {
+      "source": "/forgot-password",
+      "destination": "https://app.cgraph.org/forgot-password",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/app/:path*",
