@@ -43,7 +43,8 @@ import {
   AnimatedReactionBubble,
   ReactionPicker,
 } from '@/components/conversation/AnimatedReactionBubble';
-import GlassCard, { GlassCardNeon } from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
+import { GlassCardNeon } from '@/components/ui/GlassCard';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import AdvancedVoiceVisualizer from '@/components/audio/AdvancedVoiceVisualizer';
 import ShaderBackground from '@/components/shaders/ShaderBackground';

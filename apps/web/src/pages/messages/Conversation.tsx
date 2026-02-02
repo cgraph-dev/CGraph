@@ -29,7 +29,7 @@ import {
   ConversationHeader,
   TypingIndicator,
 } from '@/components/conversation';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { themeEngine } from '@/lib/ai/ThemeEngine';
 

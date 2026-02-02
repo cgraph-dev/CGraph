@@ -14,7 +14,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
 import { createLogger } from '@/lib/logger';

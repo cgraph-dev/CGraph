@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useFriendStore, Friend, FriendRequest } from '@/stores/friendStore';
 import { extractErrorMessage } from '@/lib/apiUtils';
 import { motion, AnimatePresence } from 'framer-motion';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import UserProfileCard from '@/components/profile/UserProfileCard';
 import {

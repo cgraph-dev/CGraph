@@ -15,7 +15,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '@/lib/api';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 // =============================================================================
 // TYPES

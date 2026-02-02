@@ -24,9 +24,8 @@ import {
 } from '@heroicons/react/24/outline';
 import Dropdown, { DropdownItem } from '@/components/Dropdown';
 import { motion } from 'framer-motion';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard, AnimatedAvatar } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import AnimatedAvatar from '@/components/ui/AnimatedAvatar';
 import LevelProgress from '@/components/gamification/LevelProgress';
 import { TitleBadge } from '@/components/gamification/TitleBadge';
 import { ACHIEVEMENT_DEFINITIONS } from '@/data/achievements';

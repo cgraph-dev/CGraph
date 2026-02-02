@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet, useParams, NavLink } from 'react-router-dom';
 import { useGroupStore, Group, Channel } from '@/stores/groupStore';
 import { motion, AnimatePresence } from 'framer-motion';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {
   PlusIcon,
