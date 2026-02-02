@@ -1,7 +1,33 @@
 /**
- * Feedback Components
+ * Shared Feedback Components
  *
- * Toast, Alert, Loading, etc.
+ * Re-exports feedback components (Toast, Alert, Loading states).
+ * Import from '@/shared/components/feedback' for the new architecture.
+ *
+ * @module @shared/components/feedback
  */
 
-// Add feedback component exports here as they are migrated
+// Toast and notifications
+export { ToastContainer, toast, useToastStore } from '@/components/ui/Toast';
+
+// Alert components
+export { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+// Error and empty states
+export {
+  ErrorState,
+  NetworkError,
+  NotFoundError,
+  PermissionError,
+  RateLimitError,
+  EmptyState,
+  NoPostsEmpty,
+  NoCommentsEmpty,
+  NoMembersEmpty,
+  NoMessagesEmpty,
+  NoFriendsEmpty,
+  SearchNoResults,
+} from '@/components/ui';
+
+// Loading states
+export { Skeleton, PostCardSkeleton, ForumCardSkeleton, CommentSkeleton } from '@/components/ui';

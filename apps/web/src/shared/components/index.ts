@@ -1,9 +1,17 @@
 /**
  * Shared Components - Single Export Point
  *
- * TODO: Uncomment exports as components are migrated to shared/
+ * All reusable UI components organized by category.
+ * Import from '@/shared/components' for module-based architecture.
+ *
+ * @module @shared/components
  */
 
-// export * from './ui';
-// export * from './layout';
-// export * from './feedback';
+// UI primitives (Button, Card, Dialog, etc.)
+export * from './ui';
+
+// Layout components (Sidebar, TopNav, PageContainer)
+export * from './layout';
+
+// Feedback components (Toast, Alert, Loading states)
+export * from './feedback';
