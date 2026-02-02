@@ -15,7 +15,7 @@
       "destination": "https://cgraph-backend.fly.dev/socket/:path*"
     },
     {
-      "source": "/((?!assets|api|socket).*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ],
