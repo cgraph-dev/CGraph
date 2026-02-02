@@ -1,9 +1,8 @@
 /**
- * Module - placeholder until migration
- * TODO: Uncomment exports as components/hooks/stores are migrated
+ * Admin Module - Admin Dashboard Components
  */
 
-// export * from './components';
+export * from './components';
 // export * from './hooks';
 // export * from './store';
 // export * from './types';
