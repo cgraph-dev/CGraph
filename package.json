@@ -58,8 +58,8 @@
       "@wagmi/connectors": "5.7.7"
     },
     "onlyBuiltDependencies": [
-      "@parcel/watcher",
       "@next/swc",
+      "@parcel/watcher",
       "bufferutil",
       "core-js",
       "esbuild",
