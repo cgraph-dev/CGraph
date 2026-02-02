@@ -3,6 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useSeasonalEventStore, useFeaturedEvent } from '@/stores/seasonalEventStore';
 import { XMarkIcon, SparklesIcon, ClockIcon, TrophyIcon } from '@heroicons/react/24/outline';
 import { GlassCard } from '@/shared/components/ui';
+import { createLogger } from '@/lib/logger';
+
+const logger = createLogger('SeasonalEventBanner');
 
 /**
  * SeasonalEventBanner Component
@@ -57,8 +60,7 @@ export default function SeasonalEventBanner({
   const handleJoin = async () => {
     const result = await joinEvent(featuredEvent.id);
     if (result.success) {
-      // Could show a success toast here
-      console.debug('Joined event successfully');
+      logger.debug('Joined event successfully');
     }
   };
 
