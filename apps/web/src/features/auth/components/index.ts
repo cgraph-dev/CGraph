@@ -1,20 +1,31 @@
 /**
  * Auth Components
- * 
- * Re-exports authentication-related components.
+ *
+ * Re-exports authentication-related components from the auth module.
+ *
+ * @deprecated Import from '@/modules/auth/components' instead
  */
 
-// OAuth buttons - available from OAuthButtons.tsx
-// Note: Individual provider buttons are created via OAuthButton component with provider prop
-// export { default as GoogleOAuthButton } from '@/components/auth/GoogleOAuthButton';
-// export { default as AppleOAuthButton } from '@/components/auth/AppleOAuthButton';
-// export { default as GitHubOAuthButton } from '@/components/auth/GitHubOAuthButton';
+// Re-export from auth module
+export {
+  AuthFormInput,
+  AuthButton,
+  PasswordStrengthMeter,
+  AuthCard,
+  SocialLoginDivider,
+  OAuthButton,
+  OAuthButtonGroup,
+} from '@/modules/auth/components';
 
-// Wallet auth components - TODO: Create component
-// export { default as WalletConnectButton } from '@/components/WalletConnectButton';
+// Re-export types
+export type {
+  AuthFormInputProps,
+  AuthButtonProps,
+  PasswordStrengthMeterProps,
+  AuthCardProps,
+  SocialLoginDividerProps,
+} from '@/modules/auth/components';
 
-// 2FA components - TODO: Create component
-// export { default as TwoFactorSetup } from '@/components/TwoFactorSetup';
-
-// Available exports
-export { default as OAuthButtonGroup, OAuthButton, AuthDivider } from '@/components/auth/OAuthButtons';
+// OAuth convenience exports (for backward compatibility)
+export { OAuthButtonGroup as default } from '@/modules/auth/components';
+export { OAuthButton as AuthDivider } from '@/modules/auth/components';
