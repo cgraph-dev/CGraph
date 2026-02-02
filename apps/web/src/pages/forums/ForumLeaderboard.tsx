@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForumStore, Forum } from '@/stores/forumStore';
 import { useAuthStore } from '@/stores/authStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import {

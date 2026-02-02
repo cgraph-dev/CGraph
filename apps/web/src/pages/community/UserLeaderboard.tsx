@@ -11,10 +11,9 @@ import {
 
 const logger = createLogger('UserLeaderboard');
 import { TrophyIcon as TrophyIconSolid, CheckBadgeIcon } from '@heroicons/react/24/solid';
-import { ErrorState, EmptyState } from '@/components/ui';
+import { ErrorState, EmptyState, GlassCard } from '@/shared/components/ui';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
 import { motion, AnimatePresence } from 'framer-motion';
-import GlassCard from '@/components/ui/GlassCard';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 
 interface LeaderboardUser {

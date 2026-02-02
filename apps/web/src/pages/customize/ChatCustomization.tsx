@@ -7,13 +7,9 @@ import {
   FaceSmileIcon,
   AdjustmentsHorizontalIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { useAuthStore } from '@/stores/authStore';
-import {
-  useCustomizationStore,
-  getBubbleStyle,
-  getBubbleAnimation,
-} from '@/stores/customization';
+import { useCustomizationStore, getBubbleStyle, getBubbleAnimation } from '@/stores/customization';
 import { CustomizationItemCard, type CustomizationItem } from '@/components/customize';
 import toast from 'react-hot-toast';
 

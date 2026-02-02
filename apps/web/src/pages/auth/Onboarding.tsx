@@ -19,7 +19,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '@/stores/authStore';
 import { api } from '@/lib/api';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('Onboarding');

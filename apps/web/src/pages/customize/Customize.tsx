@@ -8,7 +8,7 @@ import {
   SparklesIcon,
   TrophyIcon,
 } from '@heroicons/react/24/outline';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 
 // Lazy load heavy customization components for better performance
 const IdentityCustomization = lazy(() => import('./IdentityCustomization'));

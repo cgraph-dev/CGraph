@@ -29,7 +29,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useModerationStore, type ModerationQueueItem } from '@/stores/moderationStore';
 import { useAuthStore } from '@/stores/authStore';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { cn } from '@/lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 

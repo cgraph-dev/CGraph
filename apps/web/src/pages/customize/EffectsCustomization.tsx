@@ -9,12 +9,9 @@ import {
   EyeIcon,
 } from '@heroicons/react/24/outline';
 import { CheckCircleIcon as CheckCircleIconSolid } from '@heroicons/react/24/solid';
-import GlassCard from '@/components/ui/GlassCard';
+import { GlassCard } from '@/shared/components/ui';
 import { useAuthStore } from '@/stores/authStore';
-import {
-  useCustomizationStore,
-  type EffectPreset,
-} from '@/stores/customization';
+import { useCustomizationStore, type EffectPreset } from '@/stores/customization';
 import { usePrefersReducedMotion } from '@/hooks';
 import toast from 'react-hot-toast';
 
