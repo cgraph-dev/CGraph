@@ -21,10 +21,7 @@ import Animated, {
   interpolate,
   Extrapolate,
 } from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 
 import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
@@ -138,10 +135,7 @@ export function SwipeableCard({
   }, [rightActions.length]);
 
   // Gesture handler
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
+  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
     onStart: (_, ctx) => {
       ctx.startX = translateX.value;
       ctx.startY = translateY.value;
@@ -233,12 +227,16 @@ export function SwipeableCard({
           if (onSwipeUp) {
             runOnJS(onSwipeUp)();
           }
-          upAction.onPress && runOnJS(upAction.onPress)();
+          if (upAction.onPress) {
+            runOnJS(upAction.onPress)();
+          }
         } else if (translateY.value > swipeThreshold && downAction) {
           if (onSwipeDown) {
             runOnJS(onSwipeDown)();
           }
-          downAction.onPress && runOnJS(downAction.onPress)();
+          if (downAction.onPress) {
+            runOnJS(downAction.onPress)();
+          }
         }
         translateY.value = withSpring(0, springConfig);
       }
@@ -253,10 +251,7 @@ export function SwipeableCard({
 
   // Animated styles
   const cardAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-    ],
+    transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
   }));
 
   // Left actions style (revealed when swiping right)
@@ -270,9 +265,7 @@ export function SwipeableCard({
 
     return {
       opacity: progress,
-      transform: [
-        { scale: interpolate(progress, [0, 1], [0.8, 1]) },
-      ],
+      transform: [{ scale: interpolate(progress, [0, 1], [0.8, 1]) }],
     };
   });
 
@@ -287,9 +280,7 @@ export function SwipeableCard({
 
     return {
       opacity: progress,
-      transform: [
-        { scale: interpolate(progress, [0, 1], [0.8, 1]) },
-      ],
+      transform: [{ scale: interpolate(progress, [0, 1], [0.8, 1]) }],
     };
   });
 
@@ -363,20 +354,14 @@ interface ActionButtonProps {
 function ActionButton({ action, index, onPress }: ActionButtonProps) {
   // Stagger animation delay based on index
   const staggerDelay = index * 50;
-  
+
   return (
     <Animated.View
       entering={require('react-native-reanimated').FadeInRight.delay(staggerDelay).springify()}
-      style={[
-        styles.actionButton,
-        { backgroundColor: action.color },
-      ]}
+      style={[styles.actionButton, { backgroundColor: action.color }]}
     >
       <Animated.Text
-        style={[
-          styles.actionText,
-          { color: action.textColor || '#fff' },
-        ]}
+        style={[styles.actionText, { color: action.textColor || '#fff' }]}
         onPress={onPress}
       >
         {action.icon}

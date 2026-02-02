@@ -11,13 +11,7 @@
  */
 
 import React, { useCallback, useEffect, useMemo } from 'react';
-import {
-  StyleSheet,
-  View,
-  ViewStyle,
-  StyleProp,
-  TextStyle,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle, StyleProp, TextStyle } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -29,10 +23,7 @@ import Animated, {
   interpolateColor,
   Extrapolate,
 } from 'react-native-reanimated';
-import {
-  PanGestureHandler,
-  PanGestureHandlerGestureEvent,
-} from 'react-native-gesture-handler';
+import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
 
 import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
@@ -181,10 +172,7 @@ export function Slider({
     [hapticFeedback]
   );
 
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    GestureContext
-  >({
+  const gestureHandler = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
     onStart: (_, ctx) => {
       ctx.startX = thumbX.value;
       scale.value = withSpring(1.15, SPRING_PRESETS.snappy);
@@ -207,10 +195,7 @@ export function Slider({
 
   // Animated styles
   const thumbStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: thumbX.value },
-      { scale: scale.value },
-    ],
+    transform: [{ translateX: thumbX.value }, { scale: scale.value }],
   }));
 
   const activeTrackStyle = useAnimatedStyle(() => ({
@@ -227,7 +212,9 @@ export function Slider({
       {(label || showValue) && (
         <View style={styles.sliderHeader}>
           {label && (
-            <Animated.Text style={[styles.sliderLabel, { fontSize: sizeConfig.fontSize }, labelStyle]}>
+            <Animated.Text
+              style={[styles.sliderLabel, { fontSize: sizeConfig.fontSize }, labelStyle]}
+            >
               {label}
             </Animated.Text>
           )}
@@ -342,62 +329,77 @@ export function RangeSlider({
     }
   }, [values, trackWidth, valueToPosition]);
 
-  const createGestureHandler = (thumbIndex: 0 | 1) => {
-    return useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
-      onStart: (_, ctx) => {
-        ctx.startX = thumbIndex === 0 ? thumbX1.value : thumbX2.value;
-        (thumbIndex === 0 ? scale1 : scale2).value = withSpring(1.15, SPRING_PRESETS.snappy);
-      },
-      onActive: (event, ctx) => {
-        if (disabled) return;
+  // Gesture handler for thumb 1 (left)
+  const gestureHandler1 = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
+    onStart: (_, ctx) => {
+      ctx.startX = thumbX1.value;
+      scale1.value = withSpring(1.15, SPRING_PRESETS.snappy);
+    },
+    onActive: (event, ctx) => {
+      if (disabled) return;
 
-        const maxX = trackWidth - sizeConfig.thumbSize;
-        const otherThumbX = thumbIndex === 0 ? thumbX2.value : thumbX1.value;
-        const minRangePixels = (minRange / (max - min)) * maxX;
+      const maxX = trackWidth - sizeConfig.thumbSize;
+      const otherThumbX = thumbX2.value;
+      const minRangePixels = (minRange / (max - min)) * maxX;
 
-        let newX = ctx.startX + event.translationX;
+      let newX = ctx.startX + event.translationX;
 
-        if (thumbIndex === 0) {
-          // Left thumb
-          const maxAllowedX = otherThumbX - minRangePixels;
-          newX = Math.max(0, Math.min(maxAllowedX, newX));
-          thumbX1.value = newX;
-        } else {
-          // Right thumb
-          const minAllowedX = thumbX1.value + minRangePixels;
-          newX = Math.max(minAllowedX, Math.min(maxX, newX));
-          thumbX2.value = newX;
-        }
+      // Left thumb - constrained by right thumb
+      const maxAllowedX = otherThumbX - minRangePixels;
+      newX = Math.max(0, Math.min(maxAllowedX, newX));
+      thumbX1.value = newX;
 
-        const value1 = positionToValue(thumbX1.value);
-        const value2 = positionToValue(thumbIndex === 1 ? newX : thumbX2.value);
-        runOnJS(onChange)([value1, value2] as [number, number]);
+      const value1 = positionToValue(newX);
+      const value2 = positionToValue(thumbX2.value);
+      runOnJS(onChange)([value1, value2] as [number, number]);
 
-        if (hapticFeedback) {
-          runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
-        }
-      },
-      onEnd: () => {
-        (thumbIndex === 0 ? scale1 : scale2).value = withSpring(1, SPRING_PRESETS.snappy);
-      },
-    });
-  };
+      if (hapticFeedback) {
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+      }
+    },
+    onEnd: () => {
+      scale1.value = withSpring(1, SPRING_PRESETS.snappy);
+    },
+  });
 
-  const gestureHandler1 = createGestureHandler(0);
-  const gestureHandler2 = createGestureHandler(1);
+  // Gesture handler for thumb 2 (right)
+  const gestureHandler2 = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, GestureContext>({
+    onStart: (_, ctx) => {
+      ctx.startX = thumbX2.value;
+      scale2.value = withSpring(1.15, SPRING_PRESETS.snappy);
+    },
+    onActive: (event, ctx) => {
+      if (disabled) return;
+
+      const maxX = trackWidth - sizeConfig.thumbSize;
+      const minRangePixels = (minRange / (max - min)) * maxX;
+
+      let newX = ctx.startX + event.translationX;
+
+      // Right thumb - constrained by left thumb
+      const minAllowedX = thumbX1.value + minRangePixels;
+      newX = Math.max(minAllowedX, Math.min(maxX, newX));
+      thumbX2.value = newX;
+
+      const value1 = positionToValue(thumbX1.value);
+      const value2 = positionToValue(newX);
+      runOnJS(onChange)([value1, value2] as [number, number]);
+
+      if (hapticFeedback) {
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+      }
+    },
+    onEnd: () => {
+      scale2.value = withSpring(1, SPRING_PRESETS.snappy);
+    },
+  });
 
   const thumbStyle1 = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: thumbX1.value },
-      { scale: scale1.value },
-    ],
+    transform: [{ translateX: thumbX1.value }, { scale: scale1.value }],
   }));
 
   const thumbStyle2 = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: thumbX2.value },
-      { scale: scale2.value },
-    ],
+    transform: [{ translateX: thumbX2.value }, { scale: scale2.value }],
   }));
 
   const activeTrackStyle = useAnimatedStyle(() => ({

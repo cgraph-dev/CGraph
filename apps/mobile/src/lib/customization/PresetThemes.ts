@@ -19,8 +19,8 @@
  * @since v0.10.0
  */
 
-import type { ThemeConfig } from './CustomizationEngine';
 import {
+  type ThemeConfig,
   DEFAULT_TYPOGRAPHY,
   DEFAULT_SPACING,
   DEFAULT_BORDER_RADIUS,

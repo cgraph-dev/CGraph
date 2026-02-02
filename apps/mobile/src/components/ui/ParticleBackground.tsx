@@ -4,20 +4,20 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  View,
-  StyleSheet,
-  Animated,
-  Dimensions,
-  ViewStyle,
-  Easing,
-} from 'react-native';
+import { View, StyleSheet, Animated, Dimensions, ViewStyle, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Rarity, RarityColors } from '@/lib/design/DesignSystem';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-export type ParticleType = 'orbs' | 'stars' | 'snow' | 'bubbles' | 'confetti' | 'matrix' | 'fireflies';
+export type ParticleType =
+  | 'orbs'
+  | 'stars'
+  | 'snow'
+  | 'bubbles'
+  | 'confetti'
+  | 'matrix'
+  | 'fireflies';
 
 interface Particle {
   id: number;
@@ -58,22 +58,22 @@ export default function ParticleBackground({
   const animationsRef = useRef<Animated.CompositeAnimation[]>([]);
 
   // Get colors based on rarity or use provided colors
-  const particleColors = colors || (rarity ? [
-    RarityColors[rarity].primary,
-    RarityColors[rarity].secondary,
-    RarityColors[rarity].glow,
-  ] : [
-    Colors.primary[500],
-    Colors.purple[500],
-    Colors.neon.cyan,
-    Colors.pink[500],
-    Colors.amber[500],
-  ]);
+  const particleColors =
+    colors ||
+    (rarity
+      ? [RarityColors[rarity].primary, RarityColors[rarity].secondary, RarityColors[rarity].glow]
+      : [
+          Colors.primary[500],
+          Colors.purple[500],
+          Colors.neon.cyan,
+          Colors.pink[500],
+          Colors.amber[500],
+        ]);
 
   useEffect(() => {
     initParticles();
     return () => {
-      animationsRef.current.forEach(anim => anim.stop());
+      animationsRef.current.forEach((anim) => anim.stop());
     };
   }, [type, count, speed]);
 
@@ -108,18 +108,25 @@ export default function ParticleBackground({
 
   const getSizeRange = () => {
     switch (type) {
-      case 'stars': return { min: 2, max: 8 };
-      case 'snow': return { min: 4, max: 12 };
-      case 'bubbles': return { min: 8, max: 24 };
-      case 'confetti': return { min: 6, max: 12 };
-      case 'matrix': return { min: 10, max: 20 };
-      case 'fireflies': return { min: 4, max: 10 };
-      default: return { min: 8, max: 32 };
+      case 'stars':
+        return { min: 2, max: 8 };
+      case 'snow':
+        return { min: 4, max: 12 };
+      case 'bubbles':
+        return { min: 8, max: 24 };
+      case 'confetti':
+        return { min: 6, max: 12 };
+      case 'matrix':
+        return { min: 10, max: 20 };
+      case 'fireflies':
+        return { min: 4, max: 10 };
+      default:
+        return { min: 8, max: 32 };
     }
   };
 
   const animateParticle = (particle: Particle) => {
-    const duration = (8000 / particle.speed);
+    const duration = 8000 / particle.speed;
 
     // Float animation
     const floatAnimation = Animated.loop(
@@ -258,7 +265,7 @@ export default function ParticleBackground({
           />
         );
 
-      case 'matrix':
+      case 'matrix': {
         const chars = '01アイウエオカキクケコ';
         return (
           <Animated.View key={particle.id} style={baseStyle}>
@@ -273,6 +280,7 @@ export default function ParticleBackground({
             </Animated.Text>
           </Animated.View>
         );
+      }
 
       case 'fireflies':
         return (

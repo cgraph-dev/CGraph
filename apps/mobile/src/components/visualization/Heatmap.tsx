@@ -11,13 +11,7 @@
  */
 
 import React, { useMemo, useEffect, useCallback, useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  ViewStyle,
-  StyleProp,
-  Pressable,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle, StyleProp, Pressable } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -30,6 +24,69 @@ import Animated, {
 import chroma from 'chroma-js';
 
 import { SPRING_PRESETS } from '../../lib/animations/AnimationLibrary';
+
+// ============================================================================
+// Helper Components
+// ============================================================================
+
+/**
+ * Animated matrix cell - extracted to satisfy React hooks rules
+ */
+interface AnimatedMatrixCellProps {
+  value: number;
+  color: string;
+  cellSize: number;
+  cellGap: number;
+  rowIndex: number;
+  colIndex: number;
+  cols: number;
+  animated: boolean;
+  showValues: boolean;
+}
+
+function AnimatedMatrixCell({
+  value,
+  color,
+  cellSize,
+  cellGap,
+  rowIndex,
+  colIndex,
+  cols,
+  animated,
+  showValues,
+}: AnimatedMatrixCellProps) {
+  const opacity = useSharedValue(animated ? 0 : 1);
+
+  useEffect(() => {
+    if (animated) {
+      opacity.value = withDelay(
+        (rowIndex * cols + colIndex) * 20,
+        withTiming(1, { duration: 300 })
+      );
+    }
+  }, [animated, rowIndex, cols, colIndex, opacity]);
+
+  const animatedCellStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+  }));
+
+  return (
+    <Animated.View
+      style={[
+        styles.matrixCell,
+        {
+          width: cellSize,
+          height: cellSize,
+          backgroundColor: color,
+          margin: cellGap / 2,
+        },
+        animatedCellStyle,
+      ]}
+    >
+      {showValues && <Animated.Text style={styles.matrixValue}>{value.toFixed(1)}</Animated.Text>}
+    </Animated.View>
+  );
+}
 
 // ============================================================================
 // Types
@@ -246,10 +303,7 @@ export function Heatmap({
             {monthLabels.map((label, index) => (
               <Animated.Text
                 key={`month-${index}`}
-                style={[
-                  styles.monthLabel,
-                  { left: label.weekIndex * (cellSize + cellGap) },
-                ]}
+                style={[styles.monthLabel, { left: label.weekIndex * (cellSize + cellGap) }]}
               >
                 {label.month}
               </Animated.Text>
@@ -264,10 +318,7 @@ export function Heatmap({
               {[1, 3, 5].map((day) => (
                 <Animated.Text
                   key={`weekday-${day}`}
-                  style={[
-                    styles.weekdayLabel,
-                    { top: day * (cellSize + cellGap) + cellSize / 4 },
-                  ]}
+                  style={[styles.weekdayLabel, { top: day * (cellSize + cellGap) + cellSize / 4 }]}
                 >
                   {WEEKDAYS[day]}
                 </Animated.Text>
@@ -351,10 +402,7 @@ function HeatmapCell({
         animationDelay,
         withTiming(1, { duration: 200, easing: Easing.out(Easing.ease) })
       );
-      scale.value = withDelay(
-        animationDelay,
-        withSpring(1, SPRING_PRESETS.bouncy)
-      );
+      scale.value = withDelay(animationDelay, withSpring(1, SPRING_PRESETS.bouncy));
     }
   }, [animated, animationDelay]);
 
@@ -506,10 +554,10 @@ export function MatrixHeatmap({
     [minValue, maxValue, colorScale]
   );
 
-  const rows = data.length;
+  const _rows = data.length;
   const cols = data[0]?.length || 0;
   const labelWidth = rowLabels ? 60 : 0;
-  const labelHeight = columnLabels ? 20 : 0;
+  const _labelHeight = columnLabels ? 20 : 0;
 
   return (
     <View style={[styles.matrixContainer, style]}>
@@ -546,44 +594,20 @@ export function MatrixHeatmap({
         <View style={styles.matrixGrid}>
           {data.map((row, rowIndex) => (
             <View key={`row-${rowIndex}`} style={styles.matrixGridRow}>
-              {row.map((value, colIndex) => {
-                const opacity = useSharedValue(animated ? 0 : 1);
-
-                useEffect(() => {
-                  if (animated) {
-                    opacity.value = withDelay(
-                      (rowIndex * cols + colIndex) * 20,
-                      withTiming(1, { duration: 300 })
-                    );
-                  }
-                }, [animated]);
-
-                const animatedCellStyle = useAnimatedStyle(() => ({
-                  opacity: opacity.value,
-                }));
-
-                return (
-                  <Animated.View
-                    key={`cell-${rowIndex}-${colIndex}`}
-                    style={[
-                      styles.matrixCell,
-                      {
-                        width: cellSize,
-                        height: cellSize,
-                        backgroundColor: getColor(value),
-                        margin: cellGap / 2,
-                      },
-                      animatedCellStyle,
-                    ]}
-                  >
-                    {showValues && (
-                      <Animated.Text style={styles.matrixValue}>
-                        {value.toFixed(1)}
-                      </Animated.Text>
-                    )}
-                  </Animated.View>
-                );
-              })}
+              {row.map((value, colIndex) => (
+                <AnimatedMatrixCell
+                  key={`cell-${rowIndex}-${colIndex}`}
+                  value={value}
+                  color={getColor(value)}
+                  cellSize={cellSize}
+                  cellGap={cellGap}
+                  rowIndex={rowIndex}
+                  colIndex={colIndex}
+                  cols={cols}
+                  animated={animated}
+                  showValues={showValues}
+                />
+              ))}
             </View>
           ))}
         </View>

@@ -1,12 +1,12 @@
 /**
  * End-to-End Encryption (E2EE) Implementation for Mobile
- * 
+ *
  * Implements Signal Protocol-inspired encryption:
  * - X3DH (Extended Triple Diffie-Hellman) for key agreement
  * - Ed25519 for identity keys and signatures
  * - X25519 for key exchange
  * - AES-256-GCM for message encryption
- * 
+ *
  * @module crypto/e2ee
  */
 
@@ -48,7 +48,9 @@ export function randomBytes(length: number): Uint8Array {
     // CRITICAL: Crypto not available - this should never happen in production
     // Log error and throw to prevent insecure key generation
     logger.error('CRITICAL: Secure random not available');
-    throw new Error('Cryptographically secure random number generator not available. Please ensure react-native-get-random-values is installed.');
+    throw new Error(
+      'Cryptographically secure random number generator not available. Please ensure react-native-get-random-values is installed.'
+    );
   }
   return bytes;
 }
@@ -79,14 +81,10 @@ export async function hkdf(
 ): Promise<Uint8Array> {
   // Use SubtleCrypto HKDF when available
   if (typeof global.crypto?.subtle?.importKey === 'function') {
-    const keyMaterial = await global.crypto.subtle.importKey(
-      'raw',
-      sharedSecret,
-      'HKDF',
-      false,
-      ['deriveBits']
-    );
-    
+    const keyMaterial = await global.crypto.subtle.importKey('raw', sharedSecret, 'HKDF', false, [
+      'deriveBits',
+    ]);
+
     const derivedBits = await global.crypto.subtle.deriveBits(
       {
         name: 'HKDF',
@@ -97,7 +95,7 @@ export async function hkdf(
       keyMaterial,
       length * 8
     );
-    
+
     return new Uint8Array(derivedBits);
   }
   throw new Error('HKDF not available');
@@ -123,7 +121,7 @@ export interface SignedPreKey extends PreKey {
   signature: Uint8Array;
 }
 
-export interface OneTimePreKey extends PreKey {}
+export type OneTimePreKey = PreKey;
 
 /**
  * Complete key bundle for registration
@@ -202,19 +200,21 @@ export async function generateIdentityKeyPair(): Promise<IdentityKeyPair> {
       true,
       ['deriveKey', 'deriveBits']
     );
-    
+
     const publicKeyRaw = await global.crypto.subtle.exportKey('raw', keyPair.publicKey);
     const privateKeyRaw = await global.crypto.subtle.exportKey('pkcs8', keyPair.privateKey);
-    
+
     return {
       publicKey: new Uint8Array(publicKeyRaw),
       privateKey: new Uint8Array(privateKeyRaw),
       keyId: generateKeyId(),
     };
   }
-  
+
   // Fallback: throw error - insecure key generation is not acceptable
-  throw new Error('SubtleCrypto not available. Please install react-native-quick-crypto for secure key generation.');
+  throw new Error(
+    'SubtleCrypto not available. Please install react-native-quick-crypto for secure key generation.'
+  );
 }
 
 /**
@@ -233,10 +233,7 @@ export async function generatePreKeyPair(): Promise<PreKey> {
  * Sign a message with identity key
  * In production, use Ed25519 signing
  */
-export async function sign(
-  privateKey: Uint8Array,
-  message: Uint8Array
-): Promise<Uint8Array> {
+export async function sign(privateKey: Uint8Array, message: Uint8Array): Promise<Uint8Array> {
   // For demo, use HMAC-SHA256 as "signature"
   // In production, use Ed25519
   const key = await global.crypto.subtle.importKey(
@@ -246,7 +243,7 @@ export async function sign(
     false,
     ['sign']
   );
-  
+
   const signature = await global.crypto.subtle.sign('HMAC', key, message);
   return new Uint8Array(signature);
 }
@@ -267,7 +264,7 @@ export async function verify(
       false,
       ['verify']
     );
-    
+
     return await global.crypto.subtle.verify('HMAC', key, signature, message);
   } catch {
     return false;
@@ -285,7 +282,7 @@ export async function generateKeyBundle(
 ): Promise<KeyBundle> {
   // Generate identity key
   const identityKey = await generateIdentityKeyPair();
-  
+
   // Generate signed prekey
   const preKey = await generatePreKeyPair();
   const signature = await sign(identityKey.privateKey, preKey.publicKey);
@@ -293,13 +290,13 @@ export async function generateKeyBundle(
     ...preKey,
     signature,
   };
-  
+
   // Generate one-time prekeys
   const oneTimePreKeys: OneTimePreKey[] = [];
   for (let i = 0; i < numOneTimePreKeys; i++) {
     oneTimePreKeys.push(await generatePreKeyPair());
   }
-  
+
   return {
     deviceId,
     identityKey,
@@ -335,11 +332,11 @@ export async function loadIdentityKeyPair(): Promise<IdentityKeyPair | null> {
   const privateKeyB64 = await SecureStore.getItemAsync(IDENTITY_KEY_PRIVATE);
   const publicKeyB64 = await SecureStore.getItemAsync(IDENTITY_KEY_PUBLIC);
   const keyId = await SecureStore.getItemAsync(IDENTITY_KEY_ID);
-  
+
   if (!privateKeyB64 || !publicKeyB64 || !keyId) {
     return null;
   }
-  
+
   return {
     privateKey: Buffer.from(privateKeyB64, 'base64'),
     publicKey: Buffer.from(publicKeyB64, 'base64'),
@@ -367,7 +364,7 @@ export function formatKeysForRegistration(bundle: KeyBundle): Record<string, unk
       signature: Buffer.from(bundle.signedPreKey.signature).toString('base64'),
       key_id: bundle.signedPreKey.keyId,
     },
-    one_time_prekeys: bundle.oneTimePreKeys.map(pk => ({
+    one_time_prekeys: bundle.oneTimePreKeys.map((pk) => ({
       public_key: Buffer.from(pk.publicKey).toString('base64'),
       key_id: pk.keyId,
     })),
@@ -384,31 +381,31 @@ export async function x3dhInitiate(
 ): Promise<{ sharedSecret: Uint8Array; ephemeralPublic: Uint8Array }> {
   // Generate ephemeral key pair
   const ephemeralKey = await generatePreKeyPair();
-  
+
   // Decode recipient's public keys
   const recipientIdentityKey = Buffer.from(recipientBundle.identity_key, 'base64');
   const recipientSignedPrekey = Buffer.from(recipientBundle.signed_prekey, 'base64');
-  
+
   // Compute shared secrets (simplified - in production use actual ECDH)
   // DH1 = DH(IK_A, SPK_B)
   // DH2 = DH(EK_A, IK_B)
   // DH3 = DH(EK_A, SPK_B)
   // DH4 = DH(EK_A, OPK_B) if available
-  
+
   // For demo, combine keys with XOR (NOT secure - use actual ECDH in production)
   const combined = new Uint8Array(32);
   for (let i = 0; i < 32; i++) {
-    combined[i] = 
+    combined[i] =
       (identityKeyPair.privateKey[i] || 0) ^
       (recipientIdentityKey[i] || 0) ^
       (recipientSignedPrekey[i] || 0) ^
       (ephemeralKey.privateKey[i] || 0);
   }
-  
+
   // Derive shared secret using HKDF
   const salt = new Uint8Array(32); // Zero salt
   const info = textEncoder.encode('CGraph E2EE v1');
-  
+
   let sharedSecret: Uint8Array;
   try {
     sharedSecret = await hkdf(combined, salt, info, 32);
@@ -416,7 +413,7 @@ export async function x3dhInitiate(
     // Fallback: use the combined directly (not recommended)
     sharedSecret = await sha256(combined);
   }
-  
+
   return {
     sharedSecret,
     ephemeralPublic: ephemeralKey.publicKey,
@@ -432,28 +429,24 @@ export async function encryptMessage(
 ): Promise<{ ciphertext: Uint8Array; nonce: Uint8Array }> {
   const nonce = randomBytes(12); // GCM nonce is 12 bytes
   const plaintextBytes = textEncoder.encode(plaintext);
-  
+
   if (typeof global.crypto?.subtle?.encrypt === 'function') {
-    const cryptoKey = await global.crypto.subtle.importKey(
-      'raw',
-      key,
-      { name: 'AES-GCM' },
-      false,
-      ['encrypt']
-    );
-    
+    const cryptoKey = await global.crypto.subtle.importKey('raw', key, { name: 'AES-GCM' }, false, [
+      'encrypt',
+    ]);
+
     const ciphertextBuffer = await global.crypto.subtle.encrypt(
       { name: 'AES-GCM', iv: nonce },
       cryptoKey,
       plaintextBytes
     );
-    
+
     return {
       ciphertext: new Uint8Array(ciphertextBuffer),
       nonce,
     };
   }
-  
+
   throw new Error('AES-GCM encryption not available');
 }
 
@@ -466,23 +459,19 @@ export async function decryptMessage(
   key: Uint8Array
 ): Promise<string> {
   if (typeof global.crypto?.subtle?.decrypt === 'function') {
-    const cryptoKey = await global.crypto.subtle.importKey(
-      'raw',
-      key,
-      { name: 'AES-GCM' },
-      false,
-      ['decrypt']
-    );
-    
+    const cryptoKey = await global.crypto.subtle.importKey('raw', key, { name: 'AES-GCM' }, false, [
+      'decrypt',
+    ]);
+
     const plaintextBuffer = await global.crypto.subtle.decrypt(
       { name: 'AES-GCM', iv: nonce },
       cryptoKey,
       ciphertext
     );
-    
+
     return textDecoder.decode(new Uint8Array(plaintextBuffer));
   }
-  
+
   throw new Error('AES-GCM decryption not available');
 }
 
@@ -499,13 +488,13 @@ export async function encryptForRecipient(
   if (!identityKey) {
     throw new Error('Identity key not found - call setupE2EE first');
   }
-  
+
   // Perform X3DH key agreement
   const { sharedSecret, ephemeralPublic } = await x3dhInitiate(identityKey, recipientBundle);
-  
+
   // Encrypt the message
   const { ciphertext, nonce } = await encryptMessage(plaintext, sharedSecret);
-  
+
   return {
     ciphertext: Buffer.from(ciphertext).toString('base64'),
     ephemeralPublicKey: Buffer.from(ephemeralPublic).toString('base64'),
@@ -528,17 +517,17 @@ export async function generateSafetyNumber(
   // Combine identities in deterministic order
   const ourPart = textEncoder.encode(ourUserId);
   const theirPart = textEncoder.encode(theirUserId);
-  
+
   let combined: Uint8Array;
   if (ourUserId < theirUserId) {
     combined = new Uint8Array([...ourPart, ...ourIdentityKey, ...theirPart, ...theirIdentityKey]);
   } else {
     combined = new Uint8Array([...theirPart, ...theirIdentityKey, ...ourPart, ...ourIdentityKey]);
   }
-  
+
   // Hash the combined data
   const hash = await sha256(combined);
-  
+
   // Convert to numeric representation (5 digits per 2 bytes)
   const digits: string[] = [];
   for (let i = 0; i < 12; i++) {
@@ -547,7 +536,7 @@ export async function generateSafetyNumber(
     const value = (highByte << 8) | lowByte;
     digits.push(value.toString().padStart(5, '0'));
   }
-  
+
   return digits.join(' ');
 }
 
@@ -567,10 +556,10 @@ export async function loadSessions(): Promise<Map<string, Session>> {
   if (!sessionsJson) {
     return new Map();
   }
-  
+
   const sessions = JSON.parse(sessionsJson);
   const map = new Map<string, Session>();
-  
+
   for (const [recipientId, session] of Object.entries(sessions)) {
     const s = session as Session;
     map.set(recipientId, {
@@ -580,14 +569,14 @@ export async function loadSessions(): Promise<Map<string, Session>> {
       chainKey: Buffer.from(s.chainKey as unknown as string, 'base64'),
     });
   }
-  
+
   return map;
 }
 
 export async function saveSession(recipientId: string, session: Session): Promise<void> {
   const sessions = await loadSessions();
   sessions.set(recipientId, session);
-  
+
   const serialized: Record<string, unknown> = {};
   for (const [id, s] of sessions) {
     serialized[id] = {
@@ -597,7 +586,7 @@ export async function saveSession(recipientId: string, session: Session): Promis
       chainKey: Buffer.from(s.chainKey).toString('base64'),
     };
   }
-  
+
   await SecureStore.setItemAsync(SESSIONS_KEY, JSON.stringify(serialized));
 }
 

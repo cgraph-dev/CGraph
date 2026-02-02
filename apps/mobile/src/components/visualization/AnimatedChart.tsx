@@ -11,13 +11,7 @@
  */
 
 import React, { useMemo, useEffect } from 'react';
-import {
-  StyleSheet,
-  View,
-  ViewStyle,
-  StyleProp,
-  Dimensions,
-} from 'react-native';
+import { StyleSheet, View, ViewStyle, StyleProp, Dimensions } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedProps,
@@ -75,6 +69,87 @@ const AnimatedRect = Animated.createAnimatedComponent(Rect);
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 // ============================================================================
+// Helper Components for Animated Items
+// ============================================================================
+
+/**
+ * Animated data point circle - hooks must be at component level
+ */
+interface AnimatedDataPointProps {
+  cx: number;
+  cy: number;
+  color: string;
+  progress: Animated.SharedValue<number>;
+}
+
+function AnimatedDataPoint({ cx, cy, color, progress }: AnimatedDataPointProps) {
+  const animatedProps = useAnimatedProps(() => ({
+    opacity: progress.value,
+  }));
+
+  return (
+    <AnimatedCircle
+      cx={cx}
+      cy={cy}
+      r={4}
+      fill={color}
+      stroke="#ffffff"
+      strokeWidth={2}
+      animatedProps={animatedProps}
+    />
+  );
+}
+
+/**
+ * Animated bar for bar chart - hooks must be at component level
+ */
+interface AnimatedBarProps {
+  x: number;
+  chartHeight: number;
+  barWidth: number;
+  barHeight: number;
+  fill: string;
+  progress: Animated.SharedValue<number>;
+}
+
+function AnimatedBar({ x, chartHeight, barWidth, barHeight, fill, progress }: AnimatedBarProps) {
+  const animatedProps = useAnimatedProps(() => ({
+    height: barHeight * progress.value,
+    y: chartHeight - barHeight * progress.value,
+  }));
+
+  return (
+    <AnimatedRect
+      x={x}
+      y={chartHeight - barHeight}
+      width={barWidth}
+      height={barHeight}
+      rx={4}
+      fill={fill}
+      animatedProps={animatedProps}
+    />
+  );
+}
+
+/**
+ * Animated pie slice - hooks must be at component level
+ */
+interface AnimatedPieSliceProps {
+  path: string;
+  color: string;
+  progress: Animated.SharedValue<number>;
+}
+
+function AnimatedPieSlice({ path, color, progress }: AnimatedPieSliceProps) {
+  const animatedProps = useAnimatedProps(() => ({
+    opacity: progress.value,
+    transform: [{ scale: interpolate(progress.value, [0, 1], [0.5, 1]) }],
+  }));
+
+  return <AnimatedPath d={path} fill={color} animatedProps={animatedProps} />;
+}
+
+// ============================================================================
 // Line Chart
 // ============================================================================
 
@@ -123,7 +198,7 @@ export function LineChart({
       maxValue: max + padding,
       xScale: (index: number) => (index / (data.length - 1)) * chartWidth,
       yScale: (value: number) =>
-        chartHeight - ((value - (min - padding)) / ((max + padding) - (min - padding))) * chartHeight,
+        chartHeight - ((value - (min - padding)) / (max + padding - (min - padding))) * chartHeight,
     };
   }, [data, chartWidth, chartHeight]);
 
@@ -201,13 +276,7 @@ export function LineChart({
             strokeDasharray="4,4"
           />
           {showLabels && (
-            <SvgText
-              x={-8}
-              y={y + 4}
-              fill="#9ca3af"
-              fontSize={10}
-              textAnchor="end"
-            >
+            <SvgText x={-8} y={y + 4} fill="#9ca3af" fontSize={10} textAnchor="end">
               {value.toFixed(0)}
             </SvgText>
           )}
@@ -227,21 +296,10 @@ export function LineChart({
       const y = yScale(point.value);
 
       return (
-        <AnimatedCircle
-          key={`point-${index}`}
-          cx={x}
-          cy={y}
-          r={4}
-          fill={color}
-          stroke="#ffffff"
-          strokeWidth={2}
-          animatedProps={useAnimatedProps(() => ({
-            opacity: progress.value,
-          }))}
-        />
+        <AnimatedDataPoint key={`point-${index}`} cx={x} cy={y} color={color} progress={progress} />
       );
     });
-  }, [data, xScale, yScale, color, showPoints]);
+  }, [data, xScale, yScale, color, showPoints, progress]);
 
   // X-axis labels
   const xLabels = useMemo(() => {
@@ -344,7 +402,8 @@ export function BarChart({
   const chartHeight = height - margin.top - margin.bottom;
 
   // Calculate bar dimensions
-  const calculatedBarWidth = barWidth || (chartWidth - (data.length - 1) * barSpacing) / data.length;
+  const calculatedBarWidth =
+    barWidth || (chartWidth - (data.length - 1) * barSpacing) / data.length;
 
   // Calculate scale
   const { maxValue, yScale } = useMemo(() => {
@@ -400,13 +459,7 @@ export function BarChart({
                     strokeDasharray="4,4"
                   />
                   {showLabels && (
-                    <SvgText
-                      x={-8}
-                      y={y + 4}
-                      fill="#9ca3af"
-                      fontSize={10}
-                      textAnchor="end"
-                    >
+                    <SvgText x={-8} y={y + 4} fill="#9ca3af" fontSize={10} textAnchor="end">
                       {value.toFixed(0)}
                     </SvgText>
                   )}
@@ -418,21 +471,16 @@ export function BarChart({
           {data.map((point, index) => {
             const x = index * (calculatedBarWidth + barSpacing);
             const barHeight = yScale(point.value);
-            const y = chartHeight - barHeight;
 
             return (
               <G key={`bar-${index}`}>
-                <AnimatedRect
+                <AnimatedBar
                   x={x}
-                  y={y}
-                  width={calculatedBarWidth}
-                  height={barHeight}
-                  rx={4}
+                  chartHeight={chartHeight}
+                  barWidth={calculatedBarWidth}
+                  barHeight={barHeight}
                   fill={point.color || `url(#${gradientId})`}
-                  animatedProps={useAnimatedProps(() => ({
-                    height: barHeight * progress.value,
-                    y: chartHeight - barHeight * progress.value,
-                  }))}
+                  progress={progress}
                 />
 
                 {showLabels && (
@@ -529,7 +577,10 @@ export function PieChart({
   // Animation
   useEffect(() => {
     if (animated) {
-      progress.value = withTiming(1, { duration: animationDuration, easing: Easing.out(Easing.cubic) });
+      progress.value = withTiming(1, {
+        duration: animationDuration,
+        easing: Easing.out(Easing.cubic),
+      });
     } else {
       progress.value = 1;
     }
@@ -539,16 +590,11 @@ export function PieChart({
     <View style={[styles.pieContainer, { width: size, height: size }, style]}>
       <Svg width={size} height={size}>
         {slices.map((slice, index) => (
-          <AnimatedPath
+          <AnimatedPieSlice
             key={`slice-${index}`}
-            d={slice.path}
-            fill={slice.color}
-            animatedProps={useAnimatedProps(() => ({
-              opacity: progress.value,
-              transform: [
-                { scale: interpolate(progress.value, [0, 1], [0.5, 1]) },
-              ],
-            }))}
+            path={slice.path}
+            color={slice.color}
+            progress={progress}
           />
         ))}
       </Svg>

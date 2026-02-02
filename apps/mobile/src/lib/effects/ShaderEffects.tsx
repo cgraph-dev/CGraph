@@ -177,9 +177,7 @@ export function ScanlineEffect({ config, style }: ScanlineEffectProps) {
     const offset = interpolate(scanlineOffset.value, [0, 1], [0, 100]);
     return {
       transform: [
-        mergedConfig.direction === 'horizontal'
-          ? { translateY: offset }
-          : { translateX: offset },
+        mergedConfig.direction === 'horizontal' ? { translateY: offset } : { translateX: offset },
       ],
     };
   });
@@ -287,19 +285,22 @@ export function GlitchEffect({ config, style, children }: GlitchEffectProps) {
   const mergedConfig = { ...DEFAULT_GLITCH_CONFIG, ...config };
 
   const glitchActive = useSharedValue(0);
-  const sliceOffsets = Array.from({ length: mergedConfig.sliceCount }, () =>
-    useSharedValue(0)
-  );
+
+  // Pre-create a fixed number of shared values (max slice count)
+  // Using individual hooks to satisfy React's rules of hooks
+  const slice0 = useSharedValue(0);
+  const slice1 = useSharedValue(0);
+  const slice2 = useSharedValue(0);
+  const slice3 = useSharedValue(0);
+  const slice4 = useSharedValue(0);
+  const sliceOffsets = [slice0, slice1, slice2, slice3, slice4].slice(0, mergedConfig.sliceCount);
 
   useEffect(() => {
     const triggerGlitch = () => {
       // Activate glitch
       glitchActive.value = withSequence(
         withTiming(1, { duration: 50 }),
-        withDelay(
-          mergedConfig.duration,
-          withTiming(0, { duration: 50 })
-        )
+        withDelay(mergedConfig.duration, withTiming(0, { duration: 50 }))
       );
 
       // Randomize slice offsets
@@ -307,17 +308,14 @@ export function GlitchEffect({ config, style, children }: GlitchEffectProps) {
         const randomOffset = (Math.random() - 0.5) * 20 * mergedConfig.intensity;
         offset.value = withSequence(
           withTiming(randomOffset, { duration: 50 }),
-          withDelay(
-            mergedConfig.duration,
-            withTiming(0, { duration: 50 })
-          )
+          withDelay(mergedConfig.duration, withTiming(0, { duration: 50 }))
         );
       });
     };
 
     const interval = setInterval(triggerGlitch, 1000 / mergedConfig.frequency);
     return () => clearInterval(interval);
-  }, [mergedConfig.frequency, mergedConfig.intensity, mergedConfig.duration]);
+  }, [mergedConfig.frequency, mergedConfig.intensity, mergedConfig.duration, sliceOffsets]);
 
   const mainStyle = useAnimatedStyle(() => ({
     opacity: interpolate(glitchActive.value, [0, 1], [1, 0.95]),
@@ -349,12 +347,7 @@ function GlitchColorLayer({ color, offset }: GlitchColorLayerProps) {
     backgroundColor: color,
   }));
 
-  return (
-    <Animated.View
-      style={[StyleSheet.absoluteFill, animatedStyle]}
-      pointerEvents="none"
-    />
-  );
+  return <Animated.View style={[StyleSheet.absoluteFill, animatedStyle]} pointerEvents="none" />;
 }
 
 // ============================================================================
@@ -391,20 +384,14 @@ export function ChromaticEffect({ config, style, children }: ChromaticEffectProp
   const redStyle = useAnimatedStyle(() => {
     const scale = mergedConfig.animated ? pulseValue.value : 1;
     return {
-      transform: [
-        { translateX: -offsetX * scale },
-        { translateY: -offsetY * scale },
-      ],
+      transform: [{ translateX: -offsetX * scale }, { translateY: -offsetY * scale }],
     };
   });
 
   const blueStyle = useAnimatedStyle(() => {
     const scale = mergedConfig.animated ? pulseValue.value : 1;
     return {
-      transform: [
-        { translateX: offsetX * scale },
-        { translateY: offsetY * scale },
-      ],
+      transform: [{ translateX: offsetX * scale }, { translateY: offsetY * scale }],
     };
   });
 
@@ -415,12 +402,7 @@ export function ChromaticEffect({ config, style, children }: ChromaticEffectProp
         style={[StyleSheet.absoluteFill, { opacity: 0.5 }, redStyle]}
         pointerEvents="none"
       >
-        <View
-          style={[
-            StyleSheet.absoluteFill,
-            { backgroundColor: 'rgba(255, 0, 0, 0.1)' },
-          ]}
-        />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(255, 0, 0, 0.1)' }]} />
       </Animated.View>
 
       {/* Main content */}
@@ -431,12 +413,7 @@ export function ChromaticEffect({ config, style, children }: ChromaticEffectProp
         style={[StyleSheet.absoluteFill, { opacity: 0.5 }, blueStyle]}
         pointerEvents="none"
       >
-        <View
-          style={[
-            StyleSheet.absoluteFill,
-            { backgroundColor: 'rgba(0, 0, 255, 0.1)' },
-          ]}
-        />
+        <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(0, 0, 255, 0.1)' }]} />
       </Animated.View>
     </View>
   );
@@ -466,10 +443,7 @@ export function GrainEffect({ config, style }: GrainEffectProps) {
   }, [mergedConfig.animated, mergedConfig.speed]);
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: noiseOffset.value % 10 },
-      { translateY: noiseOffset.value % 7 },
-    ],
+    transform: [{ translateX: noiseOffset.value % 10 }, { translateY: noiseOffset.value % 7 }],
   }));
 
   // Generate pseudo-noise pattern
@@ -575,9 +549,7 @@ export function CRTEffect({ config, style, children }: CRTEffectProps) {
 
   return (
     <View style={[style]}>
-      <Animated.View style={[{ flex: 1 }, flickerStyle]}>
-        {children}
-      </Animated.View>
+      <Animated.View style={[{ flex: 1 }, flickerStyle]}>{children}</Animated.View>
 
       {/* Scanlines */}
       {mergedConfig.scanlines && (
