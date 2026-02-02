@@ -26,7 +26,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { StarIcon as StarSolidIcon } from '@heroicons/react/24/solid';
 import { api } from '@/lib/api';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useDebounce } from '@/shared/hooks';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('CustomEmojiPicker');

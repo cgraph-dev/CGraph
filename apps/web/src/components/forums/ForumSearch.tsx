@@ -27,7 +27,7 @@ void _reservedForumSearch;
 void (0 as unknown as PostType);
 import { formatTimeAgo } from '@/lib/utils';
 import { ThemedAvatar } from '@/components/theme/ThemedAvatar';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useDebounce } from '@/shared/hooks';
 
 /**
  * ForumSearch Component

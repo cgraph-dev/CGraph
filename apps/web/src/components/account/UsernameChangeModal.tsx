@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import Badge from '@/components/ui/Badge';
 import { Loader2, AlertCircle, CheckCircle2, Clock, History } from 'lucide-react';
-import { useDebounce } from '@/hooks/useDebounce';
+import { useDebounce } from '@/shared/hooks';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('UsernameChangeModal');
