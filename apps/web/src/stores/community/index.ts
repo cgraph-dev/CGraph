@@ -2,16 +2,16 @@
  * Community Module
  *
  * Unified community features combining:
- * - Forums management (forumSlice)
+ * - Forums management (forumStore)
  * - Groups/channels (groupSlice)
  * - Moderation tools (moderationSlice)
- * - Forum hosting/customization (forumHostingSlice)
+ * - Forum hosting/customization (forumHostingStore)
  *
  * This module provides a single entry point for all community features
  * while maintaining backward compatibility with existing imports.
  */
 
-// Re-export forum slice
+// Re-export forum store from root
 export {
   useForumStore,
   type Forum,
@@ -22,7 +22,7 @@ export {
   type Poll,
   type PollOption,
   type PostAttachment,
-} from './forumSlice';
+} from '@/stores/forumStore';
 
 // Re-export group slice
 export {
@@ -44,14 +44,14 @@ export {
   type WarningType,
 } from './moderationSlice';
 
-// Re-export forum hosting slice
+// Re-export forum hosting store from root
 export {
   useForumHostingStore,
   type Board,
   type Thread,
   type ThreadPost,
   type ForumMember,
-} from './forumHostingSlice';
+} from '@/stores/forumHostingStore';
 
 // Unified community state type
 export interface CommunityData {
@@ -72,6 +72,6 @@ export interface CommunityData {
 }
 
 // Import types for the unified interface
-import type { Forum, Post } from './forumSlice';
+import type { Forum, Post } from '@/stores/forumStore';
 import type { Group } from './groupSlice';
 import type { ModerationQueueItem } from './moderationSlice';

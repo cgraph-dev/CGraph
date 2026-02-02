@@ -33,7 +33,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useNotificationStore } from '@/stores/notificationStore';
-import { usePremiumStore } from '@/features/premium/stores';
+import { usePremiumStore } from '@/modules/premium/store';
 
 export interface TopNavProps {
   variant?: 'default' | 'transparent' | 'solid';

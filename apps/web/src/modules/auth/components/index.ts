@@ -1,29 +1,28 @@
 /**
- * Auth Module Components
+ * Auth Components
  *
- * Re-exports authentication components from centralized location.
- * Import from '@/modules/auth/components' for module-based organization.
- *
- * @module @modules/auth/components
- * @deprecated Import from '@/components/auth' until full migration complete
+ * Reusable authentication UI components with animations.
  */
 
-// Re-export all auth components from legacy location
-export {
-  AuthFormInput,
-  AuthButton,
-  PasswordStrengthMeter,
-  AuthCard,
-  SocialLoginDivider,
-  OAuthButton,
-  OAuthButtonGroup,
-} from '@/components/auth';
+// Form components
+export { AuthFormInput } from './AuthFormInput';
+export type { AuthFormInputProps } from './AuthFormInput';
 
-// Re-export types
-export type {
-  AuthFormInputProps,
-  AuthButtonProps,
-  PasswordStrengthMeterProps,
-  AuthCardProps,
-  SocialLoginDividerProps,
-} from '@/components/auth';
+export { AuthButton } from './AuthButton';
+export type { AuthButtonProps } from './AuthButton';
+
+export { PasswordStrengthMeter } from './PasswordStrengthMeter';
+export type { PasswordStrengthMeterProps } from './PasswordStrengthMeter';
+
+// Layout components
+export { AuthCard } from './AuthCard';
+export type { AuthCardProps } from './AuthCard';
+
+export { SocialLoginDivider } from './SocialLoginDivider';
+export type { SocialLoginDividerProps } from './SocialLoginDivider';
+
+// OAuth buttons (existing)
+export { OAuthButton, OAuthButtonGroup } from './OAuthButtons';
+
+// Default export
+export { AuthCard as default } from './AuthCard';

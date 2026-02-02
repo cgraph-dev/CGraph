@@ -28,7 +28,7 @@ import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { getAvatarBorderId } from '@/lib/utils';
 import { useAuthStore } from '@/stores/authStore';
 import { useGroupStore } from '@/stores/groupStore';
-import { usePremiumStore } from '@/features/premium/stores';
+import { usePremiumStore } from '@/modules/premium/store';
 
 export interface SidebarProps {
   variant?: 'default' | 'compact' | 'floating';

@@ -2,21 +2,21 @@
  * Social Module
  *
  * Unified social features combining:
- * - Friends management (friendSlice)
+ * - Friends management (friendStore)
  * - Notifications (notificationSlice)
- * - User profiles (profileSlice)
+ * - User profiles (profileStore)
  *
  * This module provides a single entry point for all social features
  * while maintaining backward compatibility with existing imports.
  */
 
-// Re-export friend slice
-export { useFriendStore, type Friend, type FriendRequest } from './friendSlice';
+// Re-export friend store from root
+export { useFriendStore, type Friend, type FriendRequest } from '@/stores/friendStore';
 
 // Re-export notification slice
 export { useNotificationStore, type Notification } from './notificationSlice';
 
-// Re-export profile slice
+// Re-export profile store from root
 export {
   useProfileStore,
   type ExtendedProfile,
@@ -26,7 +26,7 @@ export {
   type UserBadge,
   type UserTitle,
   type BlockedUser,
-} from './profileSlice';
+} from '@/stores/profileStore';
 
 // Unified social state type
 export interface SocialData {
@@ -45,9 +45,9 @@ export interface SocialData {
 }
 
 // Import types for the unified interface
-import type { Friend, FriendRequest } from './friendSlice';
+import type { Friend, FriendRequest } from '@/stores/friendStore';
 import type { Notification } from './notificationSlice';
-import type { ExtendedProfile } from './profileSlice';
+import type { ExtendedProfile } from '@/stores/profileStore';
 
 // Combined selectors for common use cases
 export const useSocialUnreadCount = () => {
@@ -58,4 +58,4 @@ export const useSocialUnreadCount = () => {
 
 // Re-import stores for selector
 import { useNotificationStore } from './notificationSlice';
-import { useFriendStore } from './friendSlice';
+import { useFriendStore } from '@/stores/friendStore';

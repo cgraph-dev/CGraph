@@ -23,7 +23,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import type { SubscriptionTier, SubscriptionPlan } from '@/features/premium/stores/types';
+import type { SubscriptionTier, SubscriptionPlan } from '@/modules/premium/store/types';
 
 export interface FeatureCategory {
   name: string;
@@ -191,9 +191,10 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
   const getPlanPrice = (tier: SubscriptionTier) => {
     const plan = plans.find((p) => p.tier === tier);
     if (!plan || plan.priceMonthly === 0) return 'Free';
-    const price = billingInterval === 'yearly' 
-      ? (plan.priceYearly / 12).toFixed(2)
-      : plan.priceMonthly.toFixed(2);
+    const price =
+      billingInterval === 'yearly'
+        ? (plan.priceYearly / 12).toFixed(2)
+        : plan.priceMonthly.toFixed(2);
     return `$${price}/mo`;
   };
 
@@ -205,7 +206,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
         <XMarkIcon className="h-5 w-5 text-white/20" />
       );
     }
-    return <span className="text-white font-medium">{value}</span>;
+    return <span className="font-medium text-white">{value}</span>;
   };
 
   const handleSelectPlan = (tier: SubscriptionTier) => {
@@ -219,7 +220,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
         {/* Header */}
         <thead>
           <tr>
-            <th className="sticky left-0 bg-dark-900 p-4 text-left w-64">
+            <th className="sticky left-0 w-64 bg-dark-900 p-4 text-left">
               <span className="text-lg font-bold text-white">Features</span>
             </th>
             {tiers.map((tier) => {
@@ -233,11 +234,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
                   key={tier}
                   onMouseEnter={() => setHoveredTier(tier)}
                   onMouseLeave={() => setHoveredTier(null)}
-                  className={`
-                    relative p-4 text-center min-w-[140px] transition-all
-                    ${isHighlighted ? 'bg-purple-500/10' : ''}
-                    ${isHovered ? 'bg-white/5' : ''}
-                  `}
+                  className={`relative min-w-[140px] p-4 text-center transition-all ${isHighlighted ? 'bg-purple-500/10' : ''} ${isHovered ? 'bg-white/5' : ''} `}
                 >
                   {/* Recommended badge */}
                   {isHighlighted && (
@@ -246,7 +243,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
                       animate={{ opacity: 1, y: 0 }}
                       className="absolute -top-3 left-1/2 -translate-x-1/2"
                     >
-                      <span className="px-2 py-0.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold rounded-full">
+                      <span className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-2 py-0.5 text-xs font-bold text-white">
                         Recommended
                       </span>
                     </motion.div>
@@ -255,30 +252,23 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
                   {/* Tier icon and name */}
                   <div className="flex flex-col items-center gap-2">
                     <motion.div
-                      animate={{ 
+                      animate={{
                         scale: isHovered ? 1.1 : 1,
                       }}
-                      className={`
-                        p-3 rounded-xl
-                        bg-gradient-to-br ${TIER_GRADIENTS[tier]} text-white
-                      `}
+                      className={`rounded-xl bg-gradient-to-br p-3 ${TIER_GRADIENTS[tier]} text-white`}
                     >
                       {TIER_ICONS[tier]}
                     </motion.div>
                     <span className="font-bold text-white">{plan?.name || tier}</span>
-                    
+
                     {/* Price */}
                     {showPricing && (
-                      <span className="text-sm text-white/60">
-                        {getPlanPrice(tier)}
-                      </span>
+                      <span className="text-sm text-white/60">{getPlanPrice(tier)}</span>
                     )}
 
                     {/* Current plan indicator */}
                     {isCurrent && (
-                      <span className="text-xs text-primary-400 font-medium">
-                        Current Plan
-                      </span>
+                      <span className="text-xs font-medium text-primary-400">Current Plan</span>
                     )}
                   </div>
                 </th>
@@ -295,17 +285,18 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
               <tr>
                 <td
                   colSpan={tiers.length + 1}
-                  className="sticky left-0 bg-dark-800/50 p-3 border-t border-white/5"
+                  className="sticky left-0 border-t border-white/5 bg-dark-800/50 p-3"
                 >
                   <button
-                    onClick={() => setExpandedCategory(
-                      expandedCategory === category.name ? null : category.name
-                    )}
+                    onClick={() =>
+                      setExpandedCategory(expandedCategory === category.name ? null : category.name)
+                    }
                     className="flex items-center gap-2 text-sm font-semibold text-white/80 hover:text-white"
                   >
                     <motion.span
-                      animate={{ 
-                        rotate: expandedCategory === category.name || expandedCategory === null ? 0 : -90,
+                      animate={{
+                        rotate:
+                          expandedCategory === category.name || expandedCategory === null ? 0 : -90,
                       }}
                     >
                       ▼
@@ -335,7 +326,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
                               <button
                                 onMouseEnter={() => setTooltipFeature(feature.name)}
                                 onMouseLeave={() => setTooltipFeature(null)}
-                                className="p-1 hover:bg-white/10 rounded"
+                                className="rounded p-1 hover:bg-white/10"
                               >
                                 <InformationCircleIcon className="h-4 w-4 text-white/40" />
                               </button>
@@ -345,7 +336,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
                                     initial={{ opacity: 0, y: 5 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 5 }}
-                                    className="absolute left-0 top-full mt-1 z-10 w-48 p-2 bg-dark-700 rounded-lg text-xs text-white/70 shadow-lg"
+                                    className="absolute left-0 top-full z-10 mt-1 w-48 rounded-lg bg-dark-700 p-2 text-xs text-white/70 shadow-lg"
                                   >
                                     {feature.description}
                                   </motion.div>
@@ -364,11 +355,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
                         return (
                           <td
                             key={tier}
-                            className={`
-                              p-4 text-center transition-all
-                              ${isHighlighted ? 'bg-purple-500/5' : ''}
-                              ${isHovered ? 'bg-white/5' : ''}
-                            `}
+                            className={`p-4 text-center transition-all ${isHighlighted ? 'bg-purple-500/5' : ''} ${isHovered ? 'bg-white/5' : ''} `}
                           >
                             {renderValue(feature.values[tier], tier)}
                           </td>
@@ -394,15 +381,13 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
                   <Button
                     onClick={() => handleSelectPlan(tier)}
                     disabled={isCurrent}
-                    className={`
-                      px-6 py-2 font-semibold rounded-lg transition-all
-                      ${isCurrent
-                        ? 'bg-white/10 text-white/60 cursor-default'
+                    className={`rounded-lg px-6 py-2 font-semibold transition-all ${
+                      isCurrent
+                        ? 'cursor-default bg-white/10 text-white/60'
                         : isHighlighted
                           ? `bg-gradient-to-r ${TIER_GRADIENTS[tier]} text-white hover:opacity-90`
                           : 'bg-white/10 text-white hover:bg-white/20'
-                      }
-                    `}
+                    } `}
                   >
                     {isCurrent ? 'Current' : tier === 'free' ? 'Get Started' : 'Upgrade'}
                   </Button>
@@ -414,7 +399,7 @@ export const FeatureComparison: React.FC<FeatureComparisonProps> = ({
       </table>
 
       {/* Mobile-friendly view hint */}
-      <div className="lg:hidden text-center text-xs text-white/40 mt-4">
+      <div className="mt-4 text-center text-xs text-white/40 lg:hidden">
         ← Scroll horizontally to see all plans →
       </div>
     </div>

@@ -1,3 +1,3 @@
 // Premium Store
-// TODO: Add premium store exports when implemented
-export {};
+export * from './premiumStore';
+export * from './types';

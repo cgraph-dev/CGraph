@@ -23,7 +23,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import type { SubscriptionTier, SubscriptionPlan } from '@/features/premium/stores/types';
+import type { SubscriptionTier, SubscriptionPlan } from '@/modules/premium/store/types';
 
 export interface FeatureCategory {
   name: string;

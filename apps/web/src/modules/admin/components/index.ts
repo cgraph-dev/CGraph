@@ -1,17 +1,21 @@
 /**
- * Admin Module Components
+ * Admin Components Index
  *
- * Re-exports admin components from centralized location.
- * Import from '@/modules/admin/components' for module-based organization.
- *
- * @module @modules/admin/components
+ * Exports all admin-related components for the CGraph admin panel.
  */
 
-// Re-export all admin components from legacy location
+// Dashboard
+export { default as AdminDashboard } from './AdminDashboard';
+
+// Forum Management
 export {
-  AdminDashboard,
-  ForumOrderingAdmin,
-  ForumOrderingAdminComponent,
+  default as ForumOrderingAdmin,
+  ForumOrderingAdmin as ForumOrderingAdminComponent,
+  type ForumItem,
+  type ForumOrderingAdminProps,
+} from './ForumOrderingAdmin';
+// Shared UI components
+export {
   StatusBadge,
   LoadingState,
   EmptyState,
@@ -24,7 +28,5 @@ export {
   SettingToggle,
   SettingNumber,
   formatUptime,
-} from '@/components/admin';
-
-// Re-export types
-export type { ForumItem, ForumOrderingAdminProps } from '@/components/admin';
+  ChatBubbleIcon,
+} from './AdminSharedComponents';

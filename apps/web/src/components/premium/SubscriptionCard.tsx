@@ -22,7 +22,7 @@ import {
 import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import type { SubscriptionTier, SubscriptionPlan } from '@/features/premium/stores/types';
+import type { SubscriptionTier, SubscriptionPlan } from '@/modules/premium/store/types';
 
 export interface SubscriptionCardProps {
   plan: SubscriptionPlan;

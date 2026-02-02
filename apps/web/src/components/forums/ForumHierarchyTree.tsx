@@ -28,7 +28,7 @@ import {
   ArrowsPointingOutIcon,
 } from '@heroicons/react/24/outline';
 import { api } from '@/lib/api';
-import { useAuth } from '@/features/auth/hooks';
+import { useAuth } from '@/modules/auth/hooks';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('ForumHierarchyTree');

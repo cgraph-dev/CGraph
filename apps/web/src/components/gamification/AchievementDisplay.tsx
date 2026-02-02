@@ -26,7 +26,7 @@ import type {
   Achievement,
   AchievementCategory,
   AchievementRarity,
-} from '@/features/gamification/stores/types';
+} from '@/modules/gamification/store/types';
 
 /**
  * AchievementDisplay Component

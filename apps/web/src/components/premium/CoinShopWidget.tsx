@@ -16,8 +16,8 @@ import { SparklesIcon, FireIcon, StarIcon, PlusIcon, CheckIcon } from '@heroicon
 import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { usePremiumStore } from '@/features/premium/stores';
-import type { CoinPackage } from '@/features/premium/stores/types';
+import { usePremiumStore } from '@/modules/premium/store';
+import type { CoinPackage } from '@/modules/premium/store/types';
 
 export interface CoinShopWidgetProps {
   variant?: 'default' | 'compact' | 'inline';

@@ -24,7 +24,7 @@ import {
 import { GlassCard } from '@/shared/components/ui';
 import { Button } from '@/components';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
-import { usePremiumStore } from '@/features/premium/stores';
+import { usePremiumStore } from '@/modules/premium/store';
 
 export interface PremiumBannerProps {
   variant?: 'hero' | 'bar' | 'card' | 'floating' | 'minimal';
