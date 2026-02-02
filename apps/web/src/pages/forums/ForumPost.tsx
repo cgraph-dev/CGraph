@@ -8,7 +8,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { formatTimeAgo } from '@/lib/utils';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import Dropdown, { DropdownItem, DropdownDivider } from '@/components/Dropdown';
-import { toast } from '@/components/ui';
+import { toast } from '@/shared/components/ui';
 import ThreadPrefix from '@/components/forums/ThreadPrefix';
 import ThreadRating from '@/components/forums/ThreadRating';
 import PollWidget from '@/components/forums/PollWidget';

@@ -6,7 +6,7 @@ import { useChatStore } from '@/stores/chatStore';
 import { useGroupStore } from '@/stores/groupStore';
 import { useNotificationStore } from '@/stores/notificationStore';
 import { socketManager } from '@/lib/socket';
-import { ToastContainer } from '@/components/ui';
+import { ToastContainer } from '@/shared/components/ui';
 import { useThemeEnhanced } from '@/contexts/ThemeContextEnhanced';
 import ShaderBackground from '@/components/shaders/ShaderBackground';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';

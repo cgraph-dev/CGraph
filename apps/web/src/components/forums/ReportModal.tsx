@@ -9,7 +9,7 @@ import { XMarkIcon, FlagIcon } from '@heroicons/react/24/outline';
 import { useForumStore, type Report } from '@/stores/forumStore';
 import { HapticFeedback } from '@/lib/animations/AnimationEngine';
 import { GlassCard } from '@/shared/components/ui';
-import { toast } from '@/components/ui';
+import { toast } from '@/shared/components/ui';
 import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('ReportModal');
