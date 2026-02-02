@@ -437,7 +437,7 @@ export class AIThemeEngine {
     }
 
     // Find most satisfactory theme
-    const bestTheme = history.reduce((best: any, current: any) =>
+    const bestTheme = history.reduce((best, current) =>
       current.satisfaction > best.satisfaction ? current : best
     );
 

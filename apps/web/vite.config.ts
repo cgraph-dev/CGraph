@@ -43,13 +43,13 @@ export default defineConfig({
         '**/test/**',
         '**/mocks/**',
       ],
-      // Thresholds disabled temporarily - focus on test stability first
-      // Target: incrementally increase coverage over time
+      // Progressive coverage thresholds - gradually increase as tests are added
+      // Current baseline: 9.44%, Target: 80%+
       thresholds: {
-        statements: 0,
-        branches: 0,
-        functions: 0,
-        lines: 0,
+        statements: 10,
+        branches: 5,
+        functions: 10,
+        lines: 10,
       },
     },
   },

@@ -9,6 +9,21 @@ import { createLogger } from '@/lib/logger';
 
 const logger = createLogger('BadgeSelection');
 
+// Badge type derived from achievement mapping
+interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  category: string;
+  rarity: string;
+  isUnlocked: boolean;
+  isPremium: boolean;
+  unlockedAt?: string;
+  progress: number;
+  requirement: number;
+}
+
 /**
  * Badge Selection Page
  *
@@ -22,7 +37,7 @@ export default function BadgeSelection() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedRarity, setSelectedRarity] = useState<string>('all');
-  const [previewBadge, setPreviewBadge] = useState<any | null>(null);
+  const [previewBadge, setPreviewBadge] = useState<Badge | null>(null);
 
   // Convert achievements to badges (achievements ARE badges in CGraph)
   const badges = useMemo(() => {
@@ -56,7 +71,7 @@ export default function BadgeSelection() {
 
   // Group badges by category
   const badgesByCategory = useMemo(() => {
-    const grouped: Record<string, any[]> = {};
+    const grouped: Record<string, Badge[]> = {};
 
     filteredBadges.forEach((badge) => {
       const category = badge.category ?? 'other';
@@ -373,7 +388,7 @@ export default function BadgeSelection() {
 }
 
 interface BadgeCardProps {
-  badge: any;
+  badge: Badge;
   isEquipped: boolean;
   onEquip: () => void;
   onPreview: () => void;

@@ -34,6 +34,19 @@ interface LeaderboardMeta {
   totalPages: number;
 }
 
+// API response type for leaderboard users
+interface LeaderboardApiUser {
+  rank: number;
+  id: string;
+  username: string;
+  display_name?: string;
+  avatar_url?: string;
+  avatar_border_id?: string;
+  avatarBorderId?: string;
+  karma: number;
+  is_verified?: boolean;
+}
+
 function getRankBadge(rank: number) {
   if (rank === 1) {
     return (
@@ -231,7 +244,7 @@ export default function UserLeaderboard() {
         const metaData = response.data?.meta || {};
 
         setUsers(
-          data.map((u: any) => ({
+          data.map((u: LeaderboardApiUser) => ({
             rank: u.rank,
             id: u.id,
             username: u.username,

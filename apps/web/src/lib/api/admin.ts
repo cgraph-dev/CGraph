@@ -430,15 +430,25 @@ export const adminApi = {
   }> {
     const response = await apiClient.get('/api/v1/admin/jobs/failed', { params });
     return {
-      jobs: response.data.data.map((job: any) => ({
-        id: job.id,
-        queue: job.queue,
-        worker: job.worker,
-        args: job.args,
-        errors: job.errors,
-        insertedAt: job.inserted_at,
-        failedAt: job.failed_at,
-      })),
+      jobs: response.data.data.map(
+        (job: {
+          id: string;
+          queue: string;
+          worker: string;
+          args: Record<string, unknown>;
+          errors: string[];
+          inserted_at: string;
+          failed_at: string;
+        }) => ({
+          id: job.id,
+          queue: job.queue,
+          worker: job.worker,
+          args: job.args,
+          errors: job.errors,
+          insertedAt: job.inserted_at,
+          failedAt: job.failed_at,
+        })
+      ),
       totalCount: response.data.meta.total_count,
     };
   },
