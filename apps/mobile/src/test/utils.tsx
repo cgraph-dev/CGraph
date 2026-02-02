@@ -15,9 +15,9 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { AuthProvider } from '../contexts/AuthContext';
+import { AuthProvider as _AuthProvider } from '../contexts/AuthContext';
 import { E2EEProvider } from '../lib/crypto/E2EEContext';
-import { User } from '../types';
+import type { User as _User } from '../types';
 
 // ============================================================================
 // Types
@@ -200,11 +200,7 @@ function MockAuthProvider({
   children: ReactNode;
   value: MockAuthContextValue;
 }) {
-  return (
-    <MockAuthContext.Provider value={value}>
-      {children}
-    </MockAuthContext.Provider>
-  );
+  return <MockAuthContext.Provider value={value}>{children}</MockAuthContext.Provider>;
 }
 
 // ============================================================================
@@ -267,22 +263,14 @@ function AllProviders({
 
   // Navigation Container (optional)
   if (!options.skipNavigation) {
-    wrapped = (
-      <NavigationContainer>
-        {wrapped}
-      </NavigationContainer>
-    );
+    wrapped = <NavigationContainer>{wrapped}</NavigationContainer>;
   }
 
   // Safe Area Provider
   wrapped = <SafeAreaProvider>{wrapped}</SafeAreaProvider>;
 
   // Gesture Handler Root
-  wrapped = (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      {wrapped}
-    </GestureHandlerRootView>
-  );
+  wrapped = <GestureHandlerRootView style={{ flex: 1 }}>{wrapped}</GestureHandlerRootView>;
 
   return <>{wrapped}</>;
 }
@@ -320,9 +308,7 @@ export function renderWithProviders(
   const { wrapperOptions, ...renderOptions } = options;
 
   return render(ui, {
-    wrapper: ({ children }) => (
-      <AllProviders options={wrapperOptions}>{children}</AllProviders>
-    ),
+    wrapper: ({ children }) => <AllProviders options={wrapperOptions}>{children}</AllProviders>,
     ...renderOptions,
   });
 }
@@ -422,10 +408,7 @@ export function createMockNavigation() {
 /**
  * Creates a mock route prop for screen testing
  */
-export function createMockRoute<T extends object = object>(
-  name: string,
-  params: T = {} as T
-) {
+export function createMockRoute<T extends object = object>(name: string, params: T = {} as T) {
   return {
     key: `${name}-key`,
     name,

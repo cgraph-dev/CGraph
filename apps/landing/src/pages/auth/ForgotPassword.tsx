@@ -34,7 +34,7 @@ export default function ForgotPassword() {
       }
 
       setIsSubmitted(true);
-    } catch (err) {
+    } catch (_err) {
       // Always show success to prevent email enumeration
       setIsSubmitted(true);
     } finally {

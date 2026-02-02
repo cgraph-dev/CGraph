@@ -106,14 +106,14 @@ jest.mock('expo-font', () => ({
 jest.mock('@expo/vector-icons', () => {
   const React = require('react');
   const { Text } = require('react-native');
-  
+
   const createMockIcon = (name: string) => {
-    const MockIcon = (props: { name?: string; size?: number; color?: string }) => 
+    const MockIcon = (props: { name?: string; size?: number; color?: string }) =>
       React.createElement(Text, { testID: `icon-${props.name || 'unknown'}` }, `[${name}]`);
     MockIcon.displayName = name;
     return MockIcon;
   };
-  
+
   return {
     Ionicons: createMockIcon('Ionicons'),
     MaterialIcons: createMockIcon('MaterialIcons'),

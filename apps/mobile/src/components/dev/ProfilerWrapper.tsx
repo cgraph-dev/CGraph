@@ -1,10 +1,10 @@
 /**
  * React Profiler Wrapper Component (Mobile)
- * 
+ *
  * A development utility component that wraps children with React's Profiler
  * API to measure rendering performance in React Native. Logs render timings
  * and can be used to identify performance bottlenecks.
- * 
+ *
  * @module components/dev/ProfilerWrapper
  * @since v0.7.29
  */
@@ -18,7 +18,8 @@ interface RenderMetric {
   baseDuration: number;
   startTime: number;
   commitTime: number;
-  timestamp: number;}
+  timestamp: number;
+}
 
 interface ProfilerWrapperProps {
   /** Unique identifier for this profiler instance */
@@ -72,12 +73,12 @@ export function getProfilerStats(id: string): {
   const metrics = metricsStore.get(id);
   if (!metrics || metrics.length === 0) return null;
 
-  const mountMetrics = metrics.filter(m => m.phase === 'mount');
-  const updateMetrics = metrics.filter(m => m.phase === 'update');
+  const mountMetrics = metrics.filter((m) => m.phase === 'mount');
+  const updateMetrics = metrics.filter((m) => m.phase === 'update');
 
   const totalActual = metrics.reduce((sum, m) => sum + m.actualDuration, 0);
   const totalBase = metrics.reduce((sum, m) => sum + m.baseDuration, 0);
-  const maxActual = Math.max(...metrics.map(m => m.actualDuration));
+  const maxActual = Math.max(...metrics.map((m) => m.actualDuration));
 
   return {
     count: metrics.length,
@@ -89,19 +90,19 @@ export function getProfilerStats(id: string): {
   };
 }
 
-// @ts-ignore - __DEV__ is a React Native global
+// @ts-expect-error - __DEV__ is a React Native global
 const isDev = typeof __DEV__ !== 'undefined' ? __DEV__ : process.env.NODE_ENV === 'development';
 
 /**
  * ProfilerWrapper component that measures render performance.
- * 
+ *
  * Features:
  * - Wraps children with React.Profiler
  * - Configurable threshold for logging slow renders
  * - Stores metrics in memory for later analysis
  * - Custom callback support for analytics integration
  * - Automatically disabled in production by default
- * 
+ *
  * @example
  * ```tsx
  * <ProfilerWrapper id="MessageList" thresholdMs={16}>
@@ -188,15 +189,15 @@ export function withProfiler<P extends object>(
   options?: Omit<ProfilerWrapperProps, 'id' | 'children'>
 ): React.FC<P> {
   const displayName = WrappedComponent.displayName || WrappedComponent.name || 'Component';
-  
+
   const WithProfiler: React.FC<P> = (props) => (
     <ProfilerWrapper id={id} {...options}>
       <WrappedComponent {...props} />
     </ProfilerWrapper>
   );
-  
+
   WithProfiler.displayName = `withProfiler(${displayName})`;
-  
+
   return WithProfiler;
 }
 

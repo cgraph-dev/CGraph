@@ -1,10 +1,10 @@
 /**
  * Standardized API Response Types
- * 
+ *
  * Provides consistent wrapper types for all API responses.
  * This ensures uniform error handling and data access patterns
  * throughout the mobile application.
- * 
+ *
  * @module types/api
  * @since v0.7.29
  */
@@ -22,8 +22,6 @@ import type {
   Friend,
   FriendRequest,
   Member,
-  Role,
-  Flair,
 } from './index';
 
 // ============================================================================
@@ -98,211 +96,211 @@ export interface PaginationMeta {
 // Authentication Responses
 // ============================================================================
 
-export interface LoginResponse extends ApiResponse<{
+export type LoginResponse = ApiResponse<{
   user: User;
   token: string;
   refresh_token?: string;
   expires_at?: string;
-}> {}
+}>;
 
-export interface RegisterResponse extends ApiResponse<{
+export type RegisterResponse = ApiResponse<{
   user: User;
   token: string;
   requires_verification?: boolean;
-}> {}
+}>;
 
-export interface RefreshTokenResponse extends ApiResponse<{
+export type RefreshTokenResponse = ApiResponse<{
   token: string;
   expires_at: string;
-}> {}
+}>;
 
-export interface LogoutResponse extends ApiResponse<{
+export type LogoutResponse = ApiResponse<{
   logged_out: boolean;
-}> {}
+}>;
 
 // ============================================================================
 // User Responses
 // ============================================================================
 
-export interface GetUserResponse extends ApiResponse<User> {}
+export type GetUserResponse = ApiResponse<User>;
 
-export interface UpdateUserResponse extends ApiResponse<User> {}
+export type UpdateUserResponse = ApiResponse<User>;
 
-export interface SearchUsersResponse extends PaginatedResponse<UserBasic> {}
+export type SearchUsersResponse = PaginatedResponse<UserBasic>;
 
-export interface GetUserProfileResponse extends ApiResponse<{
+export type GetUserProfileResponse = ApiResponse<{
   user: User;
   mutual_friends_count?: number;
   is_friend?: boolean;
   friendship_status?: 'none' | 'pending' | 'accepted' | 'blocked';
-}> {}
+}>;
 
 // ============================================================================
 // Conversation Responses
 // ============================================================================
 
-export interface GetConversationsResponse extends PaginatedResponse<Conversation> {}
+export type GetConversationsResponse = PaginatedResponse<Conversation>;
 
-export interface GetConversationResponse extends ApiResponse<Conversation> {}
+export type GetConversationResponse = ApiResponse<Conversation>;
 
-export interface CreateConversationResponse extends ApiResponse<Conversation> {}
+export type CreateConversationResponse = ApiResponse<Conversation>;
 
-export interface DeleteConversationResponse extends ApiResponse<{
+export type DeleteConversationResponse = ApiResponse<{
   deleted: boolean;
-}> {}
+}>;
 
 // ============================================================================
 // Message Responses
 // ============================================================================
 
-export interface GetMessagesResponse extends PaginatedResponse<Message> {}
+export type GetMessagesResponse = PaginatedResponse<Message>;
 
-export interface SendMessageResponse extends ApiResponse<Message> {}
+export type SendMessageResponse = ApiResponse<Message>;
 
-export interface EditMessageResponse extends ApiResponse<Message> {}
+export type EditMessageResponse = ApiResponse<Message>;
 
-export interface DeleteMessageResponse extends ApiResponse<{
+export type DeleteMessageResponse = ApiResponse<{
   deleted: boolean;
-}> {}
+}>;
 
-export interface PinMessageResponse extends ApiResponse<Message> {}
+export type PinMessageResponse = ApiResponse<Message>;
 
-export interface AddReactionResponse extends ApiResponse<Message> {}
+export type AddReactionResponse = ApiResponse<Message>;
 
-export interface RemoveReactionResponse extends ApiResponse<Message> {}
+export type RemoveReactionResponse = ApiResponse<Message>;
 
 // ============================================================================
 // Friend Responses
 // ============================================================================
 
-export interface GetFriendsResponse extends PaginatedResponse<Friend> {}
+export type GetFriendsResponse = PaginatedResponse<Friend>;
 
-export interface GetFriendRequestsResponse extends PaginatedResponse<FriendRequest> {}
+export type GetFriendRequestsResponse = PaginatedResponse<FriendRequest>;
 
-export interface SendFriendRequestResponse extends ApiResponse<{
+export type SendFriendRequestResponse = ApiResponse<{
   request_id: string;
   status: 'sent' | 'already_friends' | 'already_pending';
-}> {}
+}>;
 
-export interface AcceptFriendRequestResponse extends ApiResponse<Friend> {}
+export type AcceptFriendRequestResponse = ApiResponse<Friend>;
 
-export interface DeclineFriendRequestResponse extends ApiResponse<{
+export type DeclineFriendRequestResponse = ApiResponse<{
   declined: boolean;
-}> {}
+}>;
 
-export interface RemoveFriendResponse extends ApiResponse<{
+export type RemoveFriendResponse = ApiResponse<{
   removed: boolean;
-}> {}
+}>;
 
-export interface BlockUserResponse extends ApiResponse<{
+export type BlockUserResponse = ApiResponse<{
   blocked: boolean;
-}> {}
+}>;
 
 // ============================================================================
 // Group Responses
 // ============================================================================
 
-export interface GetGroupsResponse extends PaginatedResponse<Group> {}
+export type GetGroupsResponse = PaginatedResponse<Group>;
 
-export interface GetGroupResponse extends ApiResponse<Group> {}
+export type GetGroupResponse = ApiResponse<Group>;
 
-export interface CreateGroupResponse extends ApiResponse<Group> {}
+export type CreateGroupResponse = ApiResponse<Group>;
 
-export interface UpdateGroupResponse extends ApiResponse<Group> {}
+export type UpdateGroupResponse = ApiResponse<Group>;
 
-export interface DeleteGroupResponse extends ApiResponse<{
+export type DeleteGroupResponse = ApiResponse<{
   deleted: boolean;
-}> {}
+}>;
 
-export interface JoinGroupResponse extends ApiResponse<{
+export type JoinGroupResponse = ApiResponse<{
   member: Member;
-}> {}
+}>;
 
-export interface LeaveGroupResponse extends ApiResponse<{
+export type LeaveGroupResponse = ApiResponse<{
   left: boolean;
-}> {}
+}>;
 
 // ============================================================================
 // Channel Responses
 // ============================================================================
 
-export interface GetChannelResponse extends ApiResponse<Channel> {}
+export type GetChannelResponse = ApiResponse<Channel>;
 
-export interface CreateChannelResponse extends ApiResponse<Channel> {}
+export type CreateChannelResponse = ApiResponse<Channel>;
 
-export interface UpdateChannelResponse extends ApiResponse<Channel> {}
+export type UpdateChannelResponse = ApiResponse<Channel>;
 
-export interface DeleteChannelResponse extends ApiResponse<{
+export type DeleteChannelResponse = ApiResponse<{
   deleted: boolean;
-}> {}
+}>;
 
-export interface GetChannelMessagesResponse extends PaginatedResponse<Message> {}
+export type GetChannelMessagesResponse = PaginatedResponse<Message>;
 
 // ============================================================================
 // Forum Responses
 // ============================================================================
 
-export interface GetForumsResponse extends PaginatedResponse<Forum> {}
+export type GetForumsResponse = PaginatedResponse<Forum>;
 
-export interface GetForumResponse extends ApiResponse<Forum> {}
+export type GetForumResponse = ApiResponse<Forum>;
 
-export interface CreateForumResponse extends ApiResponse<Forum> {}
+export type CreateForumResponse = ApiResponse<Forum>;
 
 // ============================================================================
 // Post Responses
 // ============================================================================
 
-export interface GetPostsResponse extends PaginatedResponse<Post> {}
+export type GetPostsResponse = PaginatedResponse<Post>;
 
-export interface GetPostResponse extends ApiResponse<Post> {}
+export type GetPostResponse = ApiResponse<Post>;
 
-export interface CreatePostResponse extends ApiResponse<Post> {}
+export type CreatePostResponse = ApiResponse<Post>;
 
-export interface UpdatePostResponse extends ApiResponse<Post> {}
+export type UpdatePostResponse = ApiResponse<Post>;
 
-export interface DeletePostResponse extends ApiResponse<{
+export type DeletePostResponse = ApiResponse<{
   deleted: boolean;
-}> {}
+}>;
 
-export interface VotePostResponse extends ApiResponse<{
+export type VotePostResponse = ApiResponse<{
   vote_count: number;
   my_vote: 1 | -1 | null;
-}> {}
+}>;
 
 // ============================================================================
 // Comment Responses
 // ============================================================================
 
-export interface GetCommentsResponse extends PaginatedResponse<Comment> {}
+export type GetCommentsResponse = PaginatedResponse<Comment>;
 
-export interface CreateCommentResponse extends ApiResponse<Comment> {}
+export type CreateCommentResponse = ApiResponse<Comment>;
 
-export interface UpdateCommentResponse extends ApiResponse<Comment> {}
+export type UpdateCommentResponse = ApiResponse<Comment>;
 
-export interface DeleteCommentResponse extends ApiResponse<{
+export type DeleteCommentResponse = ApiResponse<{
   deleted: boolean;
-}> {}
+}>;
 
-export interface VoteCommentResponse extends ApiResponse<{
+export type VoteCommentResponse = ApiResponse<{
   vote_count: number;
   my_vote: 1 | -1 | null;
-}> {}
+}>;
 
 // ============================================================================
 // Upload Responses
 // ============================================================================
 
-export interface UploadFileResponse extends ApiResponse<{
+export type UploadFileResponse = ApiResponse<{
   url: string;
   filename: string;
   size: number;
   mime_type: string;
   thumbnail_url?: string;
-}> {}
+}>;
 
-export interface UploadAvatarResponse extends ApiResponse<{
+export type UploadAvatarResponse = ApiResponse<{
   avatar_url: string;
-}> {}
+}>;
 
 // ============================================================================
 // Notification Responses
@@ -318,15 +316,15 @@ export interface Notification {
   inserted_at: string;
 }
 
-export interface GetNotificationsResponse extends PaginatedResponse<Notification> {}
+export type GetNotificationsResponse = PaginatedResponse<Notification>;
 
-export interface MarkNotificationReadResponse extends ApiResponse<{
+export type MarkNotificationReadResponse = ApiResponse<{
   marked: boolean;
-}> {}
+}>;
 
-export interface MarkAllNotificationsReadResponse extends ApiResponse<{
+export type MarkAllNotificationsReadResponse = ApiResponse<{
   count: number;
-}> {}
+}>;
 
 // ============================================================================
 // Type Guards
@@ -335,14 +333,18 @@ export interface MarkAllNotificationsReadResponse extends ApiResponse<{
 /**
  * Type guard to check if a response is successful
  */
-export function isSuccessResponse<T>(response: ApiResponse<T>): response is ApiResponse<T> & { data: T } {
+export function isSuccessResponse<T>(
+  response: ApiResponse<T>
+): response is ApiResponse<T> & { data: T } {
   return response.success === true && response.data !== undefined;
 }
 
 /**
  * Type guard to check if a response is an error
  */
-export function isErrorResponse<T>(response: ApiResponse<T>): response is ApiResponse<T> & { error: ApiError } {
+export function isErrorResponse<T>(
+  response: ApiResponse<T>
+): response is ApiResponse<T> & { error: ApiError } {
   return response.success === false && response.error !== undefined;
 }
 
